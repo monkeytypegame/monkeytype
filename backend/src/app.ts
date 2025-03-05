@@ -8,17 +8,20 @@ import {
   badAuthRateLimiterHandler,
   rootRateLimiter,
 } from "./middlewares/rate-limit";
+import { compatibilityCheckMiddleware } from "./middlewares/compatibilityCheck";
+import { COMPATIBILITY_CHECK_HEADER } from "@monkeytype/contracts";
 
 function buildApp(): express.Application {
   const app = express();
 
   app.use(urlencoded({ extended: true }));
   app.use(json());
-  app.use(cors());
+  app.use(cors({ exposedHeaders: [COMPATIBILITY_CHECK_HEADER] }));
   app.use(helmet());
 
   app.set("trust proxy", 1);
 
+  app.use(compatibilityCheckMiddleware);
   app.use(contextMiddleware);
 
   app.use(badAuthRateLimiterHandler);

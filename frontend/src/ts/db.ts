@@ -1,11 +1,9 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
 import * as LoadingPage from "./pages/loading";
-import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
-import { getFunboxList } from "./utils/json-data";
 import { migrateConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
@@ -14,14 +12,7 @@ import {
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
-import {
-  Badge,
-  CustomTheme,
-  ResultFilters,
-  User,
-  UserProfileDetails,
-  UserTag,
-} from "@monkeytype/contracts/schemas/users";
+import { Badge, CustomTheme } from "@monkeytype/contracts/schemas/users";
 import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -29,84 +20,15 @@ import {
   PersonalBest,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
-import { Preset } from "@monkeytype/contracts/schemas/presets";
-import defaultSnapshot from "./constants/default-snapshot";
-import { Result } from "@monkeytype/contracts/schemas/results";
-
-export type SnapshotUserTag = UserTag & {
-  active?: boolean;
-  display: string;
-};
-
-export type SnapshotResult<M extends Mode> = Omit<
-  Result<M>,
-  | "_id"
-  | "bailedOut"
-  | "blindMode"
-  | "lazyMode"
-  | "difficulty"
-  | "funbox"
-  | "language"
-  | "numbers"
-  | "punctuation"
-  | "quoteLength"
-  | "restartCount"
-  | "incompleteTestSeconds"
-  | "afkDuration"
-  | "tags"
-> & {
-  _id: string;
-  bailedOut: boolean;
-  blindMode: boolean;
-  lazyMode: boolean;
-  difficulty: string;
-  funbox: string;
-  language: string;
-  numbers: boolean;
-  punctuation: boolean;
-  quoteLength: number;
-  restartCount: number;
-  incompleteTestSeconds: number;
-  afkDuration: number;
-  tags: string[];
-};
-
-export type Snapshot = Omit<
-  User,
-  | "timeTyping"
-  | "startedTests"
-  | "completedTests"
-  | "profileDetails"
-  | "streak"
-  | "resultFilterPresets"
-  | "tags"
-  | "xp"
-  | "testActivity"
-> & {
-  typingStats: {
-    timeTyping: number;
-    startedTests: number;
-    completedTests: number;
-  };
-  details?: UserProfileDetails;
-  inboxUnreadSize: number;
-  streak: number;
-  maxStreak: number;
-  filterPresets: ResultFilters[];
-  isPremium: boolean;
-  streakHourOffset?: number;
-  config: Config;
-  tags: SnapshotUserTag[];
-  presets: SnapshotPreset[];
-  results?: SnapshotResult<Mode>[];
-  xp: number;
-  testActivity?: ModifiableTestActivityCalendar;
-  testActivityByYear?: { [key: string]: TestActivityCalendar };
-};
-
-export type SnapshotPreset = Preset & {
-  display: string;
-};
+import {
+  getDefaultSnapshot,
+  Snapshot,
+  SnapshotPreset,
+  SnapshotResult,
+  SnapshotUserTag,
+} from "./constants/default-snapshot";
+import { getDefaultConfig } from "./constants/default-config";
+import { FunboxMetadata } from "../../../packages/funbox/src/types";
 
 let dbSnapshot: Snapshot | undefined;
 
@@ -147,7 +69,7 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
 
 export async function initSnapshot(): Promise<Snapshot | number | boolean> {
   //send api request with token that returns tags, presets, and data needed for snap
-  const snap = defaultSnapshot as Snapshot;
+  const snap = getDefaultSnapshot();
   try {
     if (!isAuthenticated()) return false;
     // if (ActivePage.get() === "loading") {
@@ -260,7 +182,7 @@ export async function initSnapshot(): Promise<Snapshot | number | boolean> {
     // LoadingPage.updateText("Downloading config...");
     if (configData === undefined || configData === null) {
       snap.config = {
-        ...DefaultConfig,
+        ...getDefaultConfig(),
       };
     } else {
       snap.config = migrateConfig(configData);
@@ -340,7 +262,7 @@ export async function initSnapshot(): Promise<Snapshot | number | boolean> {
     dbSnapshot = snap;
     return dbSnapshot;
   } catch (e) {
-    dbSnapshot = defaultSnapshot;
+    dbSnapshot = getDefaultSnapshot();
     throw e;
   }
 }
@@ -371,6 +293,9 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     Notifications.add("Error getting results: " + response.body.message, -1);
     return false;
   }
+
+  //another check in case user logs out while waiting for response
+  if (!isAuthenticated()) return false;
 
   const results: SnapshotResult<Mode>[] = response.body.data.map((result) => {
     if (result.bailedOut === undefined) result.bailedOut = false;
@@ -422,7 +347,7 @@ export async function addCustomTheme(
     dbSnapshot.customThemes = [];
   }
 
-  if (dbSnapshot.customThemes.length >= 10) {
+  if (dbSnapshot.customThemes.length >= 20) {
     Notifications.add("Too many custom themes!", 0);
     return false;
   }
@@ -704,12 +629,8 @@ export async function getLocalPB<M extends Mode>(
   language: string,
   difficulty: Difficulty,
   lazyMode: boolean,
-  funbox: string
+  funboxes: FunboxMetadata[]
 ): Promise<PersonalBest | undefined> {
-  const funboxes = (await getFunboxList()).filter((fb) => {
-    return funbox?.split("#").includes(fb.name);
-  });
-
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;
   }

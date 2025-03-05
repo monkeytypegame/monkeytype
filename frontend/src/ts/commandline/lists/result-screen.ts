@@ -34,6 +34,7 @@ const practiceSubgroup: CommandsSubgroup = {
     {
       id: "practiseWordsCustom",
       display: "custom...",
+      opensModal: true,
       exec: (options): void => {
         PractiseWordsModal.show({
           animationMode: "modalOnly",
@@ -111,8 +112,8 @@ const commands: Command[] = [
     exec: (): void => {
       const words = (
         Config.mode === "zen"
-          ? TestInput.input.history
-          : TestWords.words.list.slice(0, TestInput.input.history.length)
+          ? TestInput.input.getHistory()
+          : TestWords.words.list.slice(0, TestInput.input.getHistory().length)
       ).join(" ");
 
       navigator.clipboard.writeText(words).then(

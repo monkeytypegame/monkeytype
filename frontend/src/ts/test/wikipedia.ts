@@ -2,6 +2,8 @@ import * as Loader from "../elements/loader";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
+import { z } from "zod";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 export async function getTLD(
   languageGroup: JSONData.LanguageGroup
@@ -241,6 +243,18 @@ type SectionObject = {
   author: string;
 };
 
+// Section Schema
+const SectionSchema = z.object({
+  query: z.object({
+    pages: z.record(
+      z.string(),
+      z.object({
+        extract: z.string(),
+      })
+    ),
+  }),
+});
+
 export async function getSection(language: string): Promise<JSONData.Section> {
   // console.log("Getting section");
   Loader.show();
@@ -285,10 +299,17 @@ export async function getSection(language: string): Promise<JSONData.Section> {
     sectionReq.onload = (): void => {
       if (sectionReq.readyState === 4) {
         if (sectionReq.status === 200) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          let sectionText = JSON.parse(sectionReq.responseText).query.pages[
-            pageid.toString()
-          ].extract as string;
+          const parsedResponse = parseJsonWithSchema(
+            sectionReq.responseText,
+            SectionSchema
+          );
+          const page = parsedResponse.query.pages[pageid.toString()];
+          if (!page) {
+            Loader.hide();
+            rej("Page not found");
+            return;
+          }
+          let sectionText = page.extract;
 
           // Converting to one paragraph
           sectionText = sectionText.replace(/<\/p><p>+/g, " ");

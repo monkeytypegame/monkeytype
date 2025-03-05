@@ -145,6 +145,9 @@ describe("Config", () => {
     expect(Config.setSmoothCaret("medium")).toBe(true);
     expect(Config.setSmoothCaret("invalid" as any)).toBe(false);
   });
+  it("setCodeUnindentOnBackspace", () => {
+    testBoolean(Config.setCodeUnindentOnBackspace);
+  });
   it("setQuickRestartMode", () => {
     expect(Config.setQuickRestartMode("off")).toBe(true);
     expect(Config.setQuickRestartMode("tab")).toBe(true);
@@ -329,10 +332,8 @@ describe("Config", () => {
     expect(Config.setFavThemes([stringOfLength(51)])).toBe(false);
   });
   it("setFunbox", () => {
-    expect(Config.setFunbox("one")).toBe(true);
-    expect(Config.setFunbox("one#two")).toBe(true);
-    expect(Config.setFunbox("one#two#")).toBe(true);
-    expect(Config.setFunbox(stringOfLength(100))).toBe(true);
+    expect(Config.setFunbox("mirror")).toBe(true);
+    expect(Config.setFunbox("mirror#58008")).toBe(true);
 
     expect(Config.setFunbox(stringOfLength(101))).toBe(false);
   });
@@ -439,8 +440,8 @@ describe("Config", () => {
   it("setKeymapLayout", () => {
     expect(Config.setKeymapLayout("overrideSync")).toBe(true);
     expect(Config.setKeymapLayout("override_sync")).toBe(true);
-    expect(Config.setKeymapLayout("override sync")).toBe(true);
-    expect(Config.setKeymapLayout("override-sync!")).toBe(true);
+    expect(Config.setKeymapLayout("override sync")).toBe(false);
+    expect(Config.setKeymapLayout("override-sync!")).toBe(false);
     expect(Config.setKeymapLayout(stringOfLength(50))).toBe(true);
 
     expect(Config.setKeymapLayout(stringOfLength(51))).toBe(false);
@@ -451,7 +452,7 @@ describe("Config", () => {
     expect(Config.setLayout(stringOfLength(50))).toBe(true);
 
     expect(Config.setLayout("semi mak")).toBe(false);
-    expect(Config.setLayout("semi-mak")).toBe(false);
+    expect(Config.setLayout("semi-mak")).toBe(true);
     expect(Config.setLayout(stringOfLength(51))).toBe(false);
   });
   it("setFontSize", () => {

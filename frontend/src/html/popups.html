@@ -4,6 +4,15 @@
   </div>
 </dialog>
 
+<dialog id="forgotPasswordModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Forgot password</div>
+    <input type="text" placeholder="email" />
+    <div class="g-recaptcha"></div>
+    <!-- <button>send</button> -->
+  </div>
+</dialog>
+
 <dialog id="miniResultChartModal" class="modalWrapper hidden">
   <div class="modal">
     <canvas></canvas>
@@ -115,7 +124,7 @@
   <form class="modal"></form>
 </dialog>
 
-<dialog id="cookiesModal" class="modalWrapper hidden">
+<dialog id="cookiesModal" class="modalWrapper hidden" data-nosnippet>
   <div class="extensionMessage">
     If you see this text, that means an extension is blocking a cookie consent
     popup. This will cause the website to incorrectly assume its still visible
@@ -569,6 +578,20 @@
         </div>
       </div>
 
+      <div class="group" data-id="zeroWidth">
+        <div class="title">
+          <i class="fas fa-fw fa-text-width"></i>
+          Remove zero-width characters
+        </div>
+        <div class="sub">Fully remove zero-width characters.</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="false">no</button>
+            <button value="true">yes</button>
+          </div>
+        </div>
+      </div>
+
       <div class="group" data-id="fancy">
         <div class="title">
           <i class="fas fa-fw fa-pen-fancy"></i>
@@ -629,6 +652,11 @@
     <div class="list"></div>
     <div class="title">Saved long texts</div>
     <div class="listLong"></div>
+    <div class="divider"></div>
+    <div class="message">
+      Heads up! These texts are only stored locally. If you switch devices or
+      clear your local browser data they will be lost.
+    </div>
   </div>
 </dialog>
 <dialog id="saveCustomTextModal" class="modalWrapper hidden">
@@ -917,14 +945,6 @@
     </div>
     <div class="quotes"></div>
   </div>
-</dialog>
-<dialog id="editTagModal" class="modalWrapper hidden">
-  <form class="modal">
-    <div class="title"></div>
-    <input type="text" title="tag" />
-    <div class="text"></div>
-    <button type="submit"></button>
-  </form>
 </dialog>
 <dialog id="streakHourOffsetModal" class="modalWrapper hidden">
   <div class="modal">

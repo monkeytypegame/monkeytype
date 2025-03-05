@@ -6,10 +6,7 @@ import {
   Configuration,
   ValidModeRule,
 } from "@monkeytype/contracts/schemas/configuration";
-import {
-  DailyLeaderboardRank,
-  LeaderboardEntry,
-} from "@monkeytype/contracts/schemas/leaderboards";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import MonkeyError from "./error";
 import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 import { getCurrentDayTimestamp } from "@monkeytype/util/date-and-time";
@@ -109,8 +106,8 @@ export class DailyLeaderboard {
   }
 
   public async getResults(
-    minRank: number,
-    maxRank: number,
+    page: number,
+    pageSize: number,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
     premiumFeaturesEnabled: boolean
   ): Promise<LeaderboardEntry[]> {
@@ -119,19 +116,26 @@ export class DailyLeaderboard {
       return [];
     }
 
+    if (page < 0 || pageSize < 0) {
+      throw new MonkeyError(500, "Invalid page or pageSize");
+    }
+
+    const minRank = page * pageSize;
+    const maxRank = minRank + pageSize - 1;
+
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
     // @ts-expect-error we are doing some weird file to function mapping, thats why its any
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const [results] = (await connection.getResults(
+    const [results, _] = (await connection.getResults(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
       minRank,
       maxRank,
       "false"
-    )) as string[][];
+    )) as [string[], string[]];
 
     if (results === undefined) {
       throw new Error(
@@ -158,10 +162,33 @@ export class DailyLeaderboard {
     return resultsWithRanks;
   }
 
+  public async getMinWpm(
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
+  ): Promise<number> {
+    const connection = RedisClient.getConnection();
+    if (!connection || !dailyLeaderboardsConfig.enabled) {
+      return 0;
+    }
+
+    const { leaderboardScoresKey } = this.getTodaysLeaderboardKeys();
+
+    const [_uid, minScore] = (await connection.zrange(
+      leaderboardScoresKey,
+      0,
+      0,
+      "WITHSCORES"
+    )) as [string, string];
+
+    const minWpm =
+      minScore !== undefined ? parseInt(minScore?.slice(1, 6)) / 100 : 0;
+
+    return minWpm;
+  }
+
   public async getRank(
     uid: string,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardRank> {
+  ): Promise<LeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       throw new MonkeyError(500, "Redis connnection is unavailable");
@@ -175,35 +202,33 @@ export class DailyLeaderboard {
       .zrevrank(leaderboardScoresKey, uid)
       .zcard(leaderboardScoresKey)
       .hget(leaderboardResultsKey, uid)
-      .zrange(leaderboardScoresKey, 0, 0, "WITHSCORES")
       .exec()) as [
       [null, number | null],
       [null, number | null],
-      [null, string | null],
-      [null, [string, string] | null]
+      [null, string | null]
     ];
 
-    const [[, rank], [, count], [, result], [, minScore]] = redisExecResult;
+    const [[, rank], [, _count], [, result]] = redisExecResult;
 
-    const minWpm =
-      minScore !== null && minScore.length > 0
-        ? parseInt(minScore[1]?.slice(1, 6)) / 100
-        : 0;
     if (rank === null) {
-      return {
-        minWpm,
-        count: count ?? 0,
-      };
+      return null;
     }
 
     return {
-      minWpm,
-      count: count ?? 0,
+      ...(JSON.parse(result ?? "null") as LeaderboardEntry),
       rank: rank + 1,
-      entry: {
-        ...(JSON.parse(result ?? "null") as LeaderboardEntry),
-      },
     };
+  }
+
+  public async getCount(): Promise<number> {
+    const connection = RedisClient.getConnection();
+    if (!connection) {
+      throw new MonkeyError(500, "Redis connnection is unavailable");
+    }
+
+    const { leaderboardScoresKey } = this.getTodaysLeaderboardKeys();
+
+    return connection.zcard(leaderboardScoresKey);
   }
 }
 

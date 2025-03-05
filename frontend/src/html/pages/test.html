@@ -1,4 +1,4 @@
-<div class="page pageTest hidden full-width content-grid">
+<div class="page pageTest hidden full-width content-grid" data-nosnippet>
   <div id="testConfig" class="full-width">
     <div class="row">
       <div class="puncAndNum">
@@ -242,7 +242,7 @@
           <div class="top">characters</div>
           <div
             class="bottom"
-            aria-label="correct, incorrect, extra, and missed"
+            aria-label="correct&NewLine;incorrect&NewLine;extra&NewLine;missed"
             data-balloon-break=""
             data-balloon-pos="up"
           >
@@ -269,7 +269,14 @@
 
         <div class="group dailyLeaderboard hidden">
           <div class="top">daily leaderboard</div>
-          <div class="bottom">-</div>
+          <div
+            id="dailyLeaderboardRank"
+            aria-label="Show daily leaderboard"
+            data-balloon-pos="up"
+            class="bottom"
+          >
+            -
+          </div>
         </div>
 
         <div class="group source hidden">

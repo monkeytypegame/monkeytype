@@ -8,10 +8,10 @@ let isAltGrPressed = false;
 const isPunctuationPattern = /\p{P}/u;
 
 export async function getCharFromEvent(
-  event: JQuery.KeyDownEvent
+  event: JQuery.KeyDownEvent | JQuery.KeyUpEvent
 ): Promise<string | null> {
   function emulatedLayoutGetVariant(
-    event: JQuery.KeyDownEvent,
+    event: JQuery.KeyDownEvent | JQuery.KeyUpEvent,
     keyVariants: string
   ): string | undefined {
     let isCapitalized = event.shiftKey;

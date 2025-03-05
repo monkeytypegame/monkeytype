@@ -6,13 +6,13 @@ type InputIndicatorOption = {
 };
 
 export class InputIndicator {
-  private inputElement: JQuery;
+  private inputElement: JQuery | HTMLInputElement;
   private parentElement: JQuery;
   private options: Record<string, InputIndicatorOption>;
   private currentStatus: keyof typeof this.options | null;
 
   constructor(
-    inputElement: JQuery,
+    inputElement: JQuery | HTMLInputElement,
     options: Record<string, InputIndicatorOption>
   ) {
     this.inputElement = inputElement;
@@ -34,7 +34,7 @@ export class InputIndicator {
             ? `data-balloon-length="large"`
             : ""
         }
-        data-balloon-pos="up"
+        data-balloon-pos="left"
         ${option.message ?? "" ? `aria-label="${option.message}"` : ""}
       >
         <i class="fas fa-fw ${option.icon} ${

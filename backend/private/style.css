@@ -74,7 +74,8 @@ body {
   background-color: #d84b4b;
 }
 
-#save {
+#save,
+#export {
   position: fixed;
   right: 6rem;
   bottom: 3rem;
@@ -90,7 +91,12 @@ body {
   transition: 0.125s;
 }
 
-#save:hover {
+#export {
+  bottom: 9rem;
+}
+
+#save:hover,
+#export:hover {
   background-color: var(--text-color);
   color: var(--bg-color);
 }

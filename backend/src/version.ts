@@ -29,7 +29,7 @@ function getVersion(): string {
     return readFileSync(SERVER_VERSION_FILE_PATH, "utf-8");
   }
 
-  const serverVersion = `${getDateVersion()}.${COMMIT_HASH}`;
+  const serverVersion = `${getDateVersion()}_${COMMIT_HASH}`;
   writeFileSync(SERVER_VERSION_FILE_PATH, serverVersion);
 
   return serverVersion;

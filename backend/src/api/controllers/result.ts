@@ -6,7 +6,7 @@ import Logger from "../../utils/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
-import { areFunboxesCompatible, isTestTooShort } from "../../utils/validation";
+import { isTestTooShort } from "../../utils/validation";
 import {
   implemented as anticheatImplemented,
   validateResult,
@@ -22,7 +22,6 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import FunboxList from "../../constants/funbox-list";
 import _, { omit } from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
@@ -57,6 +56,11 @@ import {
   getStartOfDayTimestamp,
 } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
+import {
+  getFunbox,
+  checkCompatibility,
+  stringToFunboxNames,
+} from "@monkeytype/funbox";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -232,7 +236,9 @@ export async function addResult(
     }
   }
 
-  if (!areFunboxesCompatible(completedEvent.funbox ?? "")) {
+  const funboxNames = stringToFunboxNames(completedEvent.funbox ?? "");
+
+  if (!checkCompatibility(funboxNames)) {
     throw new MonkeyError(400, "Impossible funbox combination");
   }
 
@@ -276,6 +282,8 @@ export async function addResult(
     ) {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
       throw new MonkeyError(status.code, "Result data doesn't make sense");
+    } else if (isDevEnvironment()) {
+      Logger.success("Result data validated");
     }
   } else {
     if (!isDevEnvironment()) {
@@ -298,7 +306,6 @@ export async function addResult(
   //   );
   //   return res.status(400).json({ message: "Time traveler detected" });
 
-  //convert result test duration to miliseconds
   //get latest result ordered by timestamp
   let lastResultTimestamp: null | number = null;
   try {
@@ -307,11 +314,14 @@ export async function addResult(
     //
   }
 
+  //convert result test duration to miliseconds
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
 
   //check if now is earlier than last result plus duration (-1 second as a buffer)
   const testDurationMilis = completedEvent.testDuration * 1000;
-  const earliestPossible = (lastResultTimestamp ?? 0) + testDurationMilis;
+  const incompleteTestsMilis = completedEvent.incompleteTestSeconds * 1000;
+  const earliestPossible =
+    (lastResultTimestamp ?? 0) + testDurationMilis + incompleteTestsMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
   if (lastResultTimestamp && nowNoMilis < earliestPossible - 1000) {
     void addLog(
@@ -427,7 +437,12 @@ export async function addResult(
 
   if (completedEvent.mode === "time" && completedEvent.mode2 === "60") {
     void UserDAL.incrementBananas(uid, completedEvent.wpm);
-    if (isPb && user.discordId !== undefined && user.discordId !== "") {
+    if (
+      isPb &&
+      user.discordId !== undefined &&
+      user.discordId !== "" &&
+      user.lbOptOut !== true
+    ) {
       void GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
     }
   }
@@ -578,6 +593,7 @@ export async function addResult(
           discordId: user.discordId,
           badgeId: selectedBadgeId,
           lastActivityTimestamp: Date.now(),
+          isPremium,
         },
         xpGained: xpGained.xp,
         timeTypedSeconds: totalDurationTypedSeconds,
@@ -656,7 +672,7 @@ async function calculateXp(
     charStats,
     punctuation,
     numbers,
-    funbox,
+    funbox: resultFunboxes,
   } = result;
 
   const {
@@ -709,12 +725,15 @@ async function calculateXp(
     }
   }
 
-  if (funboxBonusConfiguration > 0) {
-    const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
-      const funbox = FunboxList.find((f) => f.name === funboxName);
-      const difficultyLevel = funbox?.difficultyLevel ?? 0;
-      return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
-    });
+  if (funboxBonusConfiguration > 0 && resultFunboxes !== "none") {
+    const funboxModifier = _.sumBy(
+      stringToFunboxNames(resultFunboxes),
+      (funboxName) => {
+        const funbox = getFunbox(funboxName);
+        const difficultyLevel = funbox?.difficultyLevel ?? 0;
+        return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
+      }
+    );
     if (funboxModifier > 0) {
       modifier += funboxModifier;
       breakdown.funbox = Math.round(baseXp * funboxModifier);
