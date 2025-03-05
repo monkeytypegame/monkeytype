@@ -485,7 +485,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
 function updateWordsWrapperHeight(force = false): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
-  if (!force && Config.mode !== "custom") return;
+  if (!force && Config.mode !== "custom" && Config.mode !== "zen") return;
   const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
   const wordElements = wrapperEl.querySelectorAll<HTMLElement>("#words .word");
   const activeWordEl = wordElements[activeWordElementIndex];
@@ -1076,7 +1076,7 @@ export function lineJump(currentTop: number): void {
         const wordsWrapperWidth = (
           document.querySelector("#wordsWrapper") as HTMLElement
         ).offsetWidth;
-        const newMargin = wordsWrapperWidth / 2;
+        const newMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
         newCss["marginLeft"] = `${newMargin}px`;
       }
       currentLinesAnimating++;
