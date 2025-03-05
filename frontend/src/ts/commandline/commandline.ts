@@ -130,9 +130,13 @@ function hide(clearModalChain = false): void {
     clearModalChain,
     afterAnimation: async () => {
       addCommandlineBackground();
-      const isWordsFocused = $("#wordsInput").is(":focus");
-      if (ActivePage.get() === "test" && !isWordsFocused) {
-        focusWords();
+      if (ActivePage.get() === "test") {
+        const isWordsFocused = $("#wordsInput").is(":focus");
+        if (ActivePage.get() === "test" && !isWordsFocused) {
+          focusWords();
+        }
+      } else {
+        (document.activeElement as HTMLElement | undefined)?.blur();
       }
       isAnimating = false;
     },

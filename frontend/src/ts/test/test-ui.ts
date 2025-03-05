@@ -497,7 +497,7 @@ export function updateTestLine(): void {
   if (firstLine < currentTop - 10) lineJump(firstLine, true);
 }
 
-function updateWordsWrapperHeight(force = false): void {
+export function updateWordsWrapperHeight(force = false): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom" && Config.mode !== "zen") return;
   const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
@@ -529,12 +529,7 @@ function updateWordsWrapperHeight(force = false): void {
   const shouldLimitToThreeLines =
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "word" &&
-      CustomText.getLimitValue() === 0) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "section" &&
-      CustomText.getLimitValue() === 0);
+    (Config.mode === "custom" && CustomText.getLimitValue() === 0);
 
   if (Config.showAllLines && !shouldLimitToThreeLines) {
     maxWrapperHeight = "unset";
@@ -545,17 +540,17 @@ function updateWordsWrapperHeight(force = false): void {
     beforeNewlineHeight = activeWordEl.offsetHeight + "px";
   } else {
     let lines = 0;
-    let lastHeight = 0;
+    let lastTop = 0;
     let wordIndex = 0;
 
     while (lines < 3) {
       const word = wordElements[wordIndex] as HTMLElement | null;
       if (!word) break;
-      const height = word.offsetTop;
-      if (height > lastHeight) {
+      const top = word.offsetTop;
+      if (top > lastTop) {
         lines++;
         wrapperHeight += word.offsetHeight + wordMargin;
-        lastHeight = height;
+        lastTop = top;
       }
       wordIndex++;
     }

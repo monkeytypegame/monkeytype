@@ -338,30 +338,33 @@ async function handleSpace(): Promise<void> {
   TestUI.updateActiveElement();
   void Caret.updatePosition();
 
-  if (
-    !Config.showAllLines ||
+  const shouldLimitToThreeLines =
     Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
-  ) {
-    const currentTop: number = Math.floor(
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+    (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+
+  const currentTop: number = Math.floor(
+    document.querySelectorAll<HTMLElement>("#words .word")[
+      TestUI.activeWordElementIndex - 1
+    ]?.offsetTop ?? 0
+  );
+  let nextTop: number;
+  try {
+    nextTop = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
-        TestUI.activeWordElementIndex - 1
+        TestUI.activeWordElementIndex
       ]?.offsetTop ?? 0
     );
-    let nextTop: number;
-    try {
-      nextTop = Math.floor(
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.activeWordElementIndex
-        ]?.offsetTop ?? 0
-      );
-    } catch (e) {
-      nextTop = 0;
-    }
+  } catch (e) {
+    nextTop = 0;
+  }
 
-    if (nextTop > currentTop) {
+  if (nextTop > currentTop) {
+    if (!Config.showAllLines || shouldLimitToThreeLines) {
       TestUI.lineJump(currentTop);
+    } else if (Config.mode === "zen") {
+      // this makes wrapper height changes less jumpy in zen+showAllLines
+      TestUI.updateWordsWrapperHeight();
     }
   } //end of line wrap
 
