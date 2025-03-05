@@ -31,7 +31,11 @@ import {
 } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
-import { KeymapCustom, stringToKeymap } from "../utils/custom-keymap";
+import {
+  KeymapCustom,
+  keymapToString,
+  stringToKeymap,
+} from "../utils/custom-keymap";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -696,7 +700,7 @@ async function fillSettingsPage(): Promise<void> {
   // TODO: check why the configs are not being save in database after hard reload
   // [["a","","",""], ["","","",""], ["","","",""], ["","","",""]]
   $(".pageSettings .section[data-config-name='keymapCustom'] input").val(
-    Config.keymapCustom.toString()
+    keymapToString(Config.keymapCustom)
   );
 
   $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(

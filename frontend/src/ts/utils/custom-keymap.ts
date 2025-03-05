@@ -65,12 +65,34 @@ export function keyToData(key: string): string {
 }
 
 export function stringToKeymap(keymap: string): KeymapCustom {
-  const processedKeymap = keymap.replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":');
-  // TODO here something for replacing the quotes
-  const jsonKeymap: KeymapCustom = JSON.parse(
-    `[${processedKeymap}]`
-  ) as KeymapCustom;
-  return jsonKeymap;
+  try {
+    const processedKeymap = keymap.replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":');
+    // TODO here something for replacing the quotes
+    const jsonKeymap: KeymapCustom = JSON.parse(
+      processedKeymap
+    ) as KeymapCustom;
+    return jsonKeymap;
+  } catch (error) {
+    console.error("Error converting string to keymap:", error);
+    return [[]];
+  }
+}
+
+export function keymapToString(keymap: KeymapCustom): string {
+  try {
+    if (keymap?.length == 1 && keymap[0]?.length == 0) {
+      return "";
+    }
+    let jsonString = JSON.stringify(keymap ?? "");
+
+    jsonString = jsonString.replace(/"(\w+)":/g, "$1:");
+
+    console.log("this is the keymap", jsonString);
+    return jsonString;
+  } catch (error) {
+    console.error("Error converting keymap to string:", error);
+    return "";
+  }
 }
 
 export function getCustomKeymapSyle(
