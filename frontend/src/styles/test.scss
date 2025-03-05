@@ -1183,8 +1183,6 @@
 
 .pageTest {
   #wordsWrapper {
-    height: auto;
-    transition: max-height 0.125s;
     position: relative;
     overflow: visible clip;
     &.tape {
