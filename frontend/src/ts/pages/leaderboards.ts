@@ -40,6 +40,8 @@ import {
   serialize as serializeUrlSearchParams,
 } from "zod-urlsearchparams";
 import { UTCDateMini } from "@date-fns/utc";
+import * as ConfigEvent from "../observables/config-event";
+import * as ActivePage from "../states/active-page";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
@@ -811,11 +813,6 @@ function fillUser(): void {
         `;
 
     $(".page.pageLeaderboards .bigUser").html(html);
-    for (const element of document.querySelectorAll(
-      ".page.pageLeaderboards .speedUnit"
-    )) {
-      element.innerHTML = Config.typingSpeedUnit;
-    }
   } else if (state.type === "weekly") {
     if (!state.userData || !state.count) {
       $(".page.pageLeaderboards .bigUser").addClass("hidden");
@@ -947,6 +944,12 @@ function updateContent(): void {
   updateJumpButtons();
   updateTimerVisibility();
   fillTable();
+
+  for (const element of document.querySelectorAll(
+    ".page.pageLeaderboards .speedUnit"
+  )) {
+    element.innerHTML = Config.typingSpeedUnit;
+  }
 
   if (state.scrollToUserAfterFill) {
     const windowHeight = $(window).height() ?? 0;
@@ -1349,4 +1352,11 @@ export const page = new Page({
 
 $(async () => {
   Skeleton.save("pageLeaderboards");
+});
+
+ConfigEvent.subscribe((eventKey) => {
+  if (ActivePage.get() === "leaderboards" && eventKey === "typingSpeedUnit") {
+    updateContent();
+    fillUser();
+  }
 });
