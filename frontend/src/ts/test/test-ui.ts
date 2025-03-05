@@ -152,9 +152,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   }
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
-    updateWordsWrapperHeight(true);
-    updateWordsMargin();
-    void updateWordsInputPosition(true);
+    updateWordWrapperClasses();
   }
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
@@ -565,9 +563,7 @@ function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
     scrollTape();
   } else {
-    setTimeout(() => {
-      $("#words").css("margin-left", "unset");
-    }, 125);
+    setTimeout(() => $("#words").css("margin-left", "unset"), 0);
   }
 }
 
