@@ -7,7 +7,6 @@ import {
   isConfigValueValid,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
-import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
@@ -29,14 +28,15 @@ import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
+import { getDefaultConfig } from "./constants/default-config";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
   schema: ConfigSchemas.ConfigSchema,
-  fallback: DefaultConfig,
+  fallback: getDefaultConfig(),
   migrate: (value, _issues) => {
     if (!isObject(value)) {
-      return DefaultConfig;
+      return getDefaultConfig();
     }
     //todo maybe send a full config to db so that it removes legacy values
 
@@ -47,7 +47,7 @@ const configLS = new LocalStorageWithSchema({
 let loadDone: (value?: unknown) => void;
 
 const config = {
-  ...DefaultConfig,
+  ...getDefaultConfig(),
 };
 
 let configToSend = {} as Config;
@@ -1095,7 +1095,7 @@ export function setTimeConfig(
   time: ConfigSchemas.TimeConfig,
   nosave?: boolean
 ): boolean {
-  time = isNaN(time) || time < 0 ? DefaultConfig.time : time;
+  time = isNaN(time) || time < 0 ? getDefaultConfig().time : time;
   if (!isConfigValueValid("time", time, ConfigSchemas.TimeConfigSchema))
     return false;
 
@@ -1168,7 +1168,7 @@ export function setWordCount(
   nosave?: boolean
 ): boolean {
   wordCount =
-    wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
+    wordCount < 0 || wordCount > 100000 ? getDefaultConfig().words : wordCount;
 
   if (!isConfigValueValid("words", wordCount, ConfigSchemas.WordCountSchema))
     return false;
@@ -1382,7 +1382,7 @@ export function setAutoSwitchTheme(
     return false;
   }
 
-  boolean = boolean ?? DefaultConfig.autoSwitchTheme;
+  boolean = boolean ?? getDefaultConfig().autoSwitchTheme;
   config.autoSwitchTheme = boolean;
   saveToLocalStorage("autoSwitchTheme", nosave);
   ConfigEvent.dispatch("autoSwitchTheme", config.autoSwitchTheme);
@@ -1985,9 +1985,9 @@ export async function apply(
   ConfigEvent.dispatch("fullConfigChange");
 
   const configObj = configToApply as Config;
-  (Object.keys(DefaultConfig) as (keyof Config)[]).forEach((configKey) => {
+  (Object.keys(getDefaultConfig()) as (keyof Config)[]).forEach((configKey) => {
     if (configObj[configKey] === undefined) {
-      const newValue = DefaultConfig[configKey];
+      const newValue = getDefaultConfig()[configKey];
       (configObj[configKey] as typeof newValue) = newValue;
     }
   });
@@ -2095,7 +2095,7 @@ export async function apply(
 }
 
 export async function reset(): Promise<void> {
-  await apply(DefaultConfig);
+  await apply(getDefaultConfig());
   await DB.resetConfig();
   saveFullConfigToLocalStorage(true);
 }
@@ -2116,7 +2116,7 @@ export function getConfigChanges(): Partial<Config> {
   const configChanges: Partial<Config> = {};
   typedKeys(config)
     .filter((key) => {
-      return config[key] !== DefaultConfig[key];
+      return config[key] !== getDefaultConfig()[key];
     })
     .forEach((key) => {
       //@ts-expect-error this is fine
