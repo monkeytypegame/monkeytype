@@ -16,7 +16,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: peek_icons.yml
           run_id: ${{ github.event.workflow_run.id }}
 
       - name: Read the pr_num file
