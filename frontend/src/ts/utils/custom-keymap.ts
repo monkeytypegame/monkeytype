@@ -66,8 +66,8 @@ export function keyToData(key: string): string {
 
 export function stringToKeymap(keymap: string): KeymapCustom {
   try {
-    const processedKeymap = keymap.replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":');
-    // TODO here something for replacing the quotes
+    let processedKeymap = keymap.replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":');
+    processedKeymap = processedKeymap.replace(/"'"/g, '"&apos;"');
     const jsonKeymap: KeymapCustom = JSON.parse(
       processedKeymap
     ) as KeymapCustom;
