@@ -54,14 +54,14 @@ const keyToDataObject: { [key: string]: string } = {
   "]": "]}",
   "\\": "\\|",
   ";": ";:",
-  "'": `'"`,
+  "&apos;": "&apos;&quot;",
   ",": ",<",
   ".": ".>",
   "/": "/?",
 };
 
 export function keyToData(key: string): string {
-  return (key && keyToDataObject[key]?.replace(`'"`, "&apos;&quot;")) ?? "";
+  return (key && keyToDataObject[key]) ?? "";
 }
 
 export function stringToKeymap(keymap: string): KeymapCustom {
