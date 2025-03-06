@@ -88,6 +88,7 @@ type State = {
   error?: string;
   discordAvatarUrls: Map<string, string>;
   scrollToUserAfterFill: boolean;
+  navigateToUser: boolean;
 } & (AllTimeState | WeeklyState | DailyState);
 
 const state = {
@@ -102,6 +103,7 @@ const state = {
   title: "All-time English Time 15 Leaderboard",
   discordAvatarUrls: new Map<string, string>(),
   scrollToUserAfterFill: false,
+  navigateToUser: false,
 } as State;
 
 const SelectorSchema = z.object({
@@ -113,6 +115,7 @@ const SelectorSchema = z.object({
 });
 const UrlParameterSchema = SelectorSchema.extend({
   page: z.number(),
+  navigateToUser: z.boolean(),
 }).partial();
 type UrlParameter = z.infer<typeof UrlParameterSchema>;
 
@@ -326,6 +329,12 @@ async function requestData(update = false): Promise<void> {
           -1
         );
       }
+    }
+
+    if (state.navigateToUser) {
+      handleJumpButton("userPage");
+      state.navigateToUser = false;
+      return requestData(true);
     }
 
     if (state.data !== null) {
@@ -1105,7 +1114,13 @@ export function goToPage(pageId: number): void {
   handleJumpButton("goToPage", pageId);
 }
 
-function handleJumpButton(action: string, page?: number): void {
+type Action =
+  | "firstPage"
+  | "previousPage"
+  | "nextPage"
+  | "goToPage"
+  | "userPage";
+function handleJumpButton(action: Action, page?: number): void {
   if (action === "firstPage") {
     state.page = 0;
   } else if (action === "previousPage" && state.page > 0) {
@@ -1240,6 +1255,9 @@ function readGetParameters(): void {
       state.page = 0;
     }
   }
+  if (params.navigateToUser) {
+    state.navigateToUser = true;
+  }
 }
 
 function utcToLocalDate(timestamp: UTCDateMini): Date {
@@ -1263,7 +1281,7 @@ function updateTimeText(
 }
 
 $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
-  const action = $(this).data("action") as string;
+  const action = $(this).data("action") as Action;
   if (action !== "goToPage") {
     handleJumpButton(action);
   }
