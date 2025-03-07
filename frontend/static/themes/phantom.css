@@ -26,6 +26,18 @@
   }
 }
 
+@keyframes tokyo-glow-incorrect {
+  0% {
+    text-shadow: 0 0 5px #f7768e, 0 0 10px #db4b4b;
+  }
+  50% {
+    text-shadow: 0 0 8px #ff7a93, 0 0 15px #ff9e64;
+  }
+  100% {
+    text-shadow: 0 0 5px #f7768e, 0 0 10px #db4b4b;
+  }
+}
+
 @keyframes tokyo-bg {
   0% {
     background: #7aa2f7;
@@ -69,6 +81,15 @@ button.text.active,
   color: var(--main-color);
 }
 
+button.text:hover,
+.textButton:hover {
+  animation: tokyo-glow 5s linear infinite;
+}
+
+.word .active {
+  animation: tokyo-glow 5s linear infinite;
+}
+
 button:hover,
 .button:hover,
 input[type="button"]:hover,
@@ -103,7 +124,8 @@ a:not(.button):hover {
 .textButton.active {
   animation: tokyo-glow 3s linear infinite;
 }
-
+.afk,
+.timeToday,
 #words .word letter.correct,
 #words .word.typed letter.correct,
 #words.highlight-word .word.typed letter,
@@ -115,6 +137,10 @@ a:not(.button):hover {
 
 #words.flipped .word.typed letter {
   animation: none;
+}
+
+.incorrect {
+  animation: tokyo-glow-incorrect 5s linear infinite;
 }
 
 #words.highlight-off .word letter,
