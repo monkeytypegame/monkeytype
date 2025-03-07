@@ -21,6 +21,13 @@
     "textColor": "#eee"
   },
   {
+    "name": "phantom",
+    "bgColor": "#1a1b26",
+    "mainColor": "#7aa2f7",
+    "subColor": "#414868",
+    "textColor": "#c0caf5"
+  },
+  {
     "name": "muted",
     "bgColor": "#525252",
     "mainColor": "#c5b4e3",
