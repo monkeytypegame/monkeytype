@@ -2,7 +2,7 @@ import { Response, Router } from "express";
 
 const router = Router();
 
-const root = __dirname + "../../../static";
+const root = __dirname + "/../../../dist/static";
 
 router.use("/internal", (req, res) => {
   setCsp(res);

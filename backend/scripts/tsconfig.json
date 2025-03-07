@@ -3,9 +3,5 @@
   "compilerOptions": {
     "target": "ES6"
   },
-  "ts-node": {
-    "files": true
-  },
-  "files": ["../src/types/types.d.ts"],
   "include": ["./**/*"]
 }
