@@ -42,12 +42,7 @@ jobs:
             Title "{title}"
             didn't match the configured pattern. Please ensure that the title
             contains your name so that you can be credited in our changelog.
-            A correct version would look something like: 
-            
-            feat: add new feature (@github-username)
-            impr(quotes): add english quotes (@github-username)
-            fix: resolve bug (@github-username)
-            
+
       - uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
@@ -66,9 +61,9 @@ jobs:
             ```
             A correct version would look something like: 
 
-            feat: add new feature (@github-username)
-            impr(quotes): add english quotes (@github-username)
-            fix: resolve bug (@github-username)
+            feat: add new feature (@github_username)
+            impr(quotes): add english quotes (@username)
+            fix(leaderboard): show user rank correctly (@user1, @user2, @user3)
 
       # Delete a previous comment when the issue has been resolved
       - if: ${{ steps.lint_pr_title.outputs.error_message == null }}
