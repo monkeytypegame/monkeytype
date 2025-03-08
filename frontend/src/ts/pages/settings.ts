@@ -92,6 +92,9 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .section[data-config-name='keymapSize']").addClass(
           "hidden"
         );
+        $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+          "hidden"
+        );
       } else {
         $(".pageSettings .section[data-config-name='keymapStyle']").removeClass(
           "hidden"
@@ -108,13 +111,27 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .section[data-config-name='keymapSize']").removeClass(
           "hidden"
         );
+        $(
+          ".pageSettings .section[data-config-name='keymapCustom']"
+        ).removeClass("hidden");
       }
     }
   ) as SettingsGroup<ConfigValue>;
   groups["keymapMatrix"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
-    "button"
+    "button",
+    () => {
+      if (Config.keymapStyle !== "custom") {
+        $(
+          ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton"
+        ).addClass("hidden");
+      } else {
+        $(
+          ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton"
+        ).removeClass("hidden");
+      }
+    }
   ) as SettingsGroup<ConfigValue>;
   groups["keymapLayout"] = new SettingsGroup(
     "keymapLayout",
@@ -1185,10 +1202,10 @@ $(
 });
 
 $(
-  ".pageSettings .section[data-config-name='keymapCustom'] .inputAndButton button.save"
+  ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton button.save"
 ).on("click", () => {
   const stringValue = $(
-    ".pageSettings .section[data-config-name='keymapCustom'] .inputAndButton input"
+    ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
   ).val() as string;
   //TODO maybe do this better
   const keymap: KeymapCustom = stringToKeymap(stringValue);
@@ -1201,11 +1218,11 @@ $(
 });
 
 $(
-  ".pageSettings .section[data-config-name='keymapCustom'] .inputAndButton input"
+  ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
 ).on("keypress", (e) => {
   if (e.key === "Enter") {
     const stringValue = $(
-      ".pageSettings .section[data-config-name='keymapCustom'] .inputAndButton input"
+      ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
     ).val() as string;
     const keymap: KeymapCustom = stringToKeymap(stringValue);
     const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
