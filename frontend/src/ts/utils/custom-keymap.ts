@@ -87,7 +87,6 @@ export function keymapToString(keymap: KeymapCustom): string {
 
     jsonString = jsonString.replace(/"(\w+)":/g, "$1:");
 
-    console.log("this is the keymap", jsonString);
     return jsonString;
   } catch (error) {
     console.error("Error converting keymap to string:", error);
