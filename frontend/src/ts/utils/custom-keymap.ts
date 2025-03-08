@@ -1,4 +1,5 @@
 import { Config } from "@monkeytype/contracts/schemas/configs";
+import { dataKeys as keyToDataObject } from "../constants/data-keys";
 
 export type KeyProperties = {
   a?: number; // legend alignment: ignore
@@ -9,56 +10,6 @@ export type KeyProperties = {
 };
 
 export type KeymapCustom = (KeyProperties | string)[][];
-
-//TODO move this to other side
-const keyToDataObject: { [key: string]: string } = {
-  a: "aA",
-  b: "bB",
-  c: "cC",
-  d: "dD",
-  e: "eE",
-  f: "fF",
-  g: "gG",
-  h: "hH",
-  i: "iI",
-  j: "jJ",
-  k: "kK",
-  l: "lL",
-  m: "mM",
-  n: "nN",
-  o: "oO",
-  p: "pP",
-  q: "qQ",
-  r: "rR",
-  s: "sS",
-  t: "tT",
-  u: "uU",
-  v: "vV",
-  w: "wW",
-  x: "xX",
-  y: "yY",
-  z: "zZ",
-  1: "1!",
-  2: "2@",
-  3: "3#",
-  4: "4$",
-  5: "5%",
-  6: "6^",
-  7: "7&",
-  8: "8*",
-  9: "9(",
-  0: "0)",
-  "-": "-_",
-  "=": "=+",
-  "[": "[{",
-  "]": "]}",
-  "\\": "\\|",
-  ";": ";:",
-  "&apos;": "&apos;&quot;",
-  ",": ",<",
-  ".": ".>",
-  "/": "/?",
-};
 
 export function keyToData(key: string): string {
   return (key && keyToDataObject[key]) ?? "";

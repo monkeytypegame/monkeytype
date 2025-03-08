@@ -384,13 +384,6 @@ export async function refresh(
     // );
 
     if (Config.keymapStyle === "custom") {
-      // let customKeymap = [
-      //   ["","1","2","3","4","5","6","7","8","9","0","-","=","",""],
-      //   [{ w: 1.5 },"","Q","W","E","R","T","Y","U","I","O","P","[","]",{ w: 1.5 },"\\"],
-      //   [{ w: 1.75 },"","A","S","D","F","G","H","J","K","L",";","",{ w: 2.25 },""],
-      //   [{ w: 2.25 },"","Z","X","C","V","B","N","M",",",".","/",{ w: 1.75 },"",""],
-      //   ["", { w: 1.5 }, "", { w: 6.25 }, "spc", { w: 1.5 }, "", ""]
-      // ]
       const customKeymap: KeymapCustom = Config.keymapCustom;
       keymapElement = getCustomKeymapSyle(customKeymap, Config);
     }

@@ -714,8 +714,6 @@ async function fillSettingsPage(): Promise<void> {
   $(".pageSettings .section[data-config-name='fontSize'] input").val(
     Config.fontSize
   );
-  // TODO: check why the configs are not being save in database after hard reload
-  // [["a","","",""], ["","","",""], ["","","",""], ["","","",""]]
   $(".pageSettings .section[data-config-name='keymapCustom'] input").val(
     keymapToString(Config.keymapCustom)
   );
@@ -1207,7 +1205,6 @@ $(
   const stringValue = $(
     ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
   ).val() as string;
-  //TODO maybe do this better
   const keymap: KeymapCustom = stringToKeymap(stringValue);
   const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
   if (didConfigSave) {
