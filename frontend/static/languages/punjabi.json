@@ -1,7 +1,7 @@
 {
   "name": "punjabi",
-  "rightToLeft": false,
   "ligatures": true,
+  "noLazyMode": true,
   "bcp47": "pa-Guru",
   "words": [
     "ਇੱਕ",
