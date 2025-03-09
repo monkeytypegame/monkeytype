@@ -572,10 +572,6 @@
     "languages": ["quenya"]
   },
   {
-    "name": "punjabi",
-    "languages": ["punjabi"]
-  },
-  {
     "name": "lorem_ipsum",
     "languages": ["lorem_ipsum"]
   },
