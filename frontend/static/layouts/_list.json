@@ -2267,7 +2267,7 @@
       "row5": [" "]
     }
   },
-    "panini_wide": {
+  "panini_wide": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
@@ -2278,7 +2278,7 @@
       "row5": [" "]
     }
   },
-    "ergopti": {
+  "ergopti": {
     "keymapShowTopRow": false,
     "type": "iso",
     "keys": {
