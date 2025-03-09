@@ -2,18 +2,23 @@ import * as DB from "../db";
 import { format } from "date-fns/format";
 import { differenceInDays } from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as Levels from "../utils/levels";
-import * as DateTime from "../utils/date-and-time";
+import * as DateTime from "@monkeytype/util/date-and-time";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as ActivePage from "../states/active-page";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
+import { UserProfile, RankAndCount } from "@monkeytype/contracts/schemas/users";
+import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
+import { secondsToString } from "../utils/date-and-time";
+import { Auth } from "../firebase";
+import { Snapshot } from "../constants/default-snapshot";
 
 type ProfileViewPaths = "profile" | "account";
-type UserProfileOrSnapshot = SharedTypes.UserProfile | MonkeyTypes.Snapshot;
+type UserProfileOrSnapshot = UserProfile | Snapshot;
 
 //this is probably the dirtiest code ive ever written
 
@@ -126,7 +131,7 @@ export async function update(
     const results = DB.getSnapshot()?.results;
     const lastResult = results?.[0];
 
-    const streakOffset = (profile as MonkeyTypes.Snapshot).streakHourOffset;
+    const streakOffset = (profile as Snapshot).streakHourOffset;
 
     const dayInMilis = 1000 * 60 * 60 * 24;
 
@@ -151,7 +156,7 @@ export async function update(
     );
     console.debug("profile.streakHourOffset", streakOffset);
 
-    if (lastResult) {
+    if (lastResult !== undefined) {
       //check if the last result is from today
       const isToday = DateTime.isToday(lastResult.timestamp, streakOffset);
       const isYesterday = DateTime.isYesterday(
@@ -185,7 +190,7 @@ export async function update(
       console.debug(hoverText);
 
       if (streakOffset === undefined) {
-        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
+        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Account Settings > Account > Set streak hour offset.`;
       }
     }
   }
@@ -226,7 +231,7 @@ export async function update(
   typingStatsEl
     .find(".timeTyping .value")
     .text(
-      DateTime.secondsToString(
+      secondsToString(
         Math.round(profile.typingStats?.timeTyping ?? 0),
         true,
         true
@@ -245,9 +250,12 @@ export async function update(
     details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
     if (
-      profile.details?.socialProfiles.github !== undefined ||
-      profile.details?.socialProfiles.twitter !== undefined ||
-      profile.details?.socialProfiles.website !== undefined
+      (profile.details?.socialProfiles?.github !== undefined &&
+        profile.details?.socialProfiles?.github !== "") ||
+      (profile.details?.socialProfiles?.twitter !== undefined &&
+        profile.details?.socialProfiles?.twitter !== "") ||
+      (profile.details?.socialProfiles?.website !== undefined &&
+        profile.details?.socialProfiles?.website !== "")
     ) {
       socials = true;
       const socialsEl = details.find(".socials .value");
@@ -267,7 +275,7 @@ export async function update(
       const twitter = profile.details?.socialProfiles.twitter ?? "";
       if (twitter) {
         socialsEl.append(
-          `<a href='https://twitter.com/${Misc.escapeHTML(
+          `<a href='https://x.com/${Misc.escapeHTML(
             twitter
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             twitter
@@ -293,33 +301,7 @@ export async function update(
     }
   }
 
-  const xp = profile.xp ?? 0;
-  const xpDetails = Levels.getXpDetails(xp);
-  const xpForLevel = xpDetails.levelMaxXp;
-  const xpToDisplay = xpDetails.levelCurrentXp;
-  details
-    .find(".level")
-    .text(xpDetails.level)
-    .attr("aria-label", `${Numbers.abbreviateNumber(xp)} total xp`);
-  details
-    .find(".xp")
-    .text(
-      `${Numbers.abbreviateNumber(xpToDisplay)}/${Numbers.abbreviateNumber(
-        xpForLevel
-      )}`
-    )
-    .attr(
-      "aria-label",
-      `${Numbers.abbreviateNumber(
-        xpForLevel - xpToDisplay
-      )} xp until next level`
-    );
-  details
-    .find(".xpBar .bar")
-    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
-  details
-    .find(".xpBar")
-    .attr("aria-label", `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`);
+  updateXp(profile.xp ?? 0);
   //lbs
 
   if (banned) {
@@ -327,8 +309,8 @@ export async function update(
   } else {
     profileElement.find(".leaderboardsPositions").removeClass("hidden");
 
-    const t15 = profile.allTimeLbs.time?.["15"]?.["english"] ?? null;
-    const t60 = profile.allTimeLbs.time?.["60"]?.["english"] ?? null;
+    const t15 = profile.allTimeLbs?.time?.["15"]?.["english"] ?? null;
+    const t60 = profile.allTimeLbs?.time?.["60"]?.["english"] ?? null;
 
     if (t15 === null && t60 === null) {
       profileElement.find(".leaderboardsPositions").addClass("hidden");
@@ -352,6 +334,12 @@ export async function update(
           .text(formatTopPercentage(t60));
       }
     }
+  }
+
+  if (profile.uid === Auth?.currentUser?.uid) {
+    profileElement.find(".userReportButton").addClass("hidden");
+  } else {
+    profileElement.find(".userReportButton").removeClass("hidden");
   }
 
   //structure
@@ -401,6 +389,31 @@ export async function update(
   }
 }
 
+export function updateXp(xp: number): void {
+  const details = $(" .profile .details .levelAndBar");
+  if (details === undefined || details === null) return;
+  const xpDetails = Levels.getXpDetails(xp);
+  const xpForLevel = xpDetails.levelMaxXp;
+  const xpToDisplay = xpDetails.levelCurrentXp;
+  details
+    .find(".level")
+    .text(xpDetails.level)
+    .attr("aria-label", `${formatXp(xp)} total xp`);
+  details
+    .find(".xp")
+    .text(`${formatXp(xpToDisplay)}/${formatXp(xpForLevel)}`)
+    .attr(
+      "aria-label",
+      `${formatXp(xpForLevel - xpToDisplay)} xp until next level`
+    );
+  details
+    .find(".xpBar .bar")
+    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
+  details
+    .find(".xpBar")
+    .attr("aria-label", `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`);
+}
+
 export function updateNameFontSize(where: ProfileViewPaths): void {
   //dont run this function in safari because OH MY GOD IT IS SO SLOW
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -416,7 +429,7 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   const nameFieldjQ = details.find(".user");
   const nameFieldParent = nameFieldjQ.parent()[0];
   const nameField = nameFieldjQ[0];
-  const upperLimit = Numbers.convertRemToPixels(2);
+  const upperLimit = convertRemToPixels(2);
 
   if (!nameField || !nameFieldParent) return;
 
@@ -440,8 +453,16 @@ $(window).on("resize", () => {
   throttledEvent();
 });
 
-function formatTopPercentage(lbRank: SharedTypes.RankAndCount): string {
+function formatTopPercentage(lbRank: RankAndCount): string {
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
   return "Top " + Numbers.roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+}
+
+function formatXp(xp: number): string {
+  if (xp < 1000) {
+    return Math.round(xp).toString();
+  } else {
+    return abbreviateNumber(xp);
+  }
 }

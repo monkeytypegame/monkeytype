@@ -6,6 +6,7 @@ import AnimatedModal, {
   ShowOptions,
 } from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
+import * as Notifications from "../elements/notifications";
 
 async function fill(): Promise<void> {
   const names = CustomText.getCustomTextNames();
@@ -15,7 +16,7 @@ async function fill(): Promise<void> {
     list += "<div>No saved custom texts found</div>";
   } else {
     for (const name of names) {
-      list += `<div class="savedText" data-name="${name}">
+      list += `<div class="savedText" data-name="${escapeHTML(name)}">
       <div class="button name">${escapeHTML(name)}</div>
       <div class="button delete">
       <i class="fas fa-fw fa-trash"></i>
@@ -32,7 +33,7 @@ async function fill(): Promise<void> {
     longList += "<div>No saved long custom texts found</div>";
   } else {
     for (const name of longNames) {
-      longList += `<div class="savedLongText" data-name="${name}">
+      longList += `<div class="savedLongText" data-name="${escapeHTML(name)}">
       <div class="button name">${escapeHTML(name)}</div>
       <div class="button ${
         CustomText.getCustomTextLongProgress(name) <= 0 ? "disabled" : ""
@@ -46,7 +47,13 @@ async function fill(): Promise<void> {
   longListEl.html(longList);
 
   $("#savedTextsModal .list .savedText .button.delete").on("click", (e) => {
-    const name = $(e.target).closest(".savedText").data("name");
+    const name = $(e.target).closest(".savedText").data("name") as
+      | string
+      | undefined;
+    if (name === undefined) {
+      Notifications.add("Failed to show delete modal: no name found", -1);
+      return;
+    }
     showPopup("deleteCustomText", [name], {
       modalChain: modal as AnimatedModal<unknown, unknown>,
     });
@@ -55,7 +62,13 @@ async function fill(): Promise<void> {
   $("#savedTextsModal .listLong .savedLongText .button.delete").on(
     "click",
     (e) => {
-      const name = $(e.target).closest(".savedLongText").data("name");
+      const name = $(e.target).closest(".savedLongText").data("name") as
+        | string
+        | undefined;
+      if (name === undefined) {
+        Notifications.add("Failed to show delete modal: no name found", -1);
+        return;
+      }
       showPopup("deleteCustomTextLong", [name], {
         modalChain: modal as AnimatedModal<unknown, unknown>,
       });
@@ -65,7 +78,13 @@ async function fill(): Promise<void> {
   $("#savedTextsModal .listLong .savedLongText .button.resetProgress").on(
     "click",
     (e) => {
-      const name = $(e.target).closest(".savedLongText").data("name");
+      const name = $(e.target).closest(".savedLongText").data("name") as
+        | string
+        | undefined;
+      if (name === undefined) {
+        Notifications.add("Failed to show delete modal: no name found", -1);
+        return;
+      }
       showPopup("resetProgressCustomTextLong", [name], {
         modalChain: modal as AnimatedModal<unknown, unknown>,
       });

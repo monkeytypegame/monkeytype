@@ -1,0 +1,91 @@
+:root {
+  --bg-color: #f1e5da;
+  --main-color: #e0794e;
+  --caret-color: #e0794e;
+  --sub-color: #688e8f;
+  --sub-alt-color: #e3d3c6;
+  --text-color: #023e3b;
+  --error-color: #a01034;
+  --error-extra-color: #a01034;
+  --colorful-error-color: #a01034;
+  --colorful-error-extra-color: #a01034;
+}
+
+/* hide buttons while typing */
+header.focus nav > .textButton {
+  background: none;
+}
+
+nav > .textButton:nth-child(1) {
+  background: var(--sub-color);
+  color: var(--bg-color);
+  border-radius: calc(var(--roundness) * 2) calc(var(--roundness) * 1.3)
+    calc(var(--roundness) * 1.7) calc(var(--roundness) * 1);
+}
+nav > .textButton:nth-child(2) {
+  background: #9a7a61;
+  color: var(--bg-color);
+  border-radius: calc(var(--roundness) * 1.2) calc(var(--roundness) * 1.7)
+    calc(var(--roundness) * 2.1) calc(var(--roundness) * 1);
+  transform: rotateY(9deg);
+}
+nav > .textButton:nth-child(3) {
+  background: var(--main-color);
+  color: var(--bg-color);
+  border-radius: calc(var(--roundness) * 2.8) calc(var(--roundness) * 0.6)
+    calc(var(--roundness) * 2) calc(var(--roundness) * 1.6);
+  transform: rotateY(-3deg);
+}
+nav > .textButton:nth-child(4) {
+  background: var(--text-color);
+  color: var(--bg-color);
+  border-radius: calc(var(--roundness) * 0.8) calc(var(--roundness) * 2.4)
+    calc(var(--roundness) * 0.8) calc(var(--roundness) * 2.8);
+}
+
+nav > .textButton:nth-child(1):hover,
+nav > .textButton:nth-child(2):hover,
+nav > .textButton:nth-child(3):hover,
+nav > .textButton:nth-child(4):hover {
+  opacity: 0.8;
+}
+
+body.crtmode nav > .textButton:nth-child(1) {
+  box-shadow: 3px 0 1px color-mix(in srgb, var(--sub-color) 20%, transparent),
+    -3px 0 color-mix(in srgb, var(--sub-color) 30%, transparent), 0 0 3px;
+}
+body.crtmode nav > .textButton:nth-child(2) {
+  box-shadow: 3px 0 1px color-mix(in srgb, #9a7a61 20%, transparent),
+    -3px 0 color-mix(in srgb, #9a7a61 30%, transparent), 0 0 3px;
+}
+body.crtmode nav > .textButton:nth-child(3) {
+  box-shadow: 3px 0 1px color-mix(in srgb, var(--main-color) 20%, transparent),
+    -3px 0 color-mix(in srgb, var(--main-color) 30%, transparent), 0 0 3px;
+}
+body.crtmode nav > .textButton:nth-child(4) {
+  box-shadow: 3px 0 1px color-mix(in srgb, var(--text-color) 20%, transparent),
+    -3px 0 color-mix(in srgb, var(--text-color) 30%, transparent), 0 0 3px;
+}
+body.crtmode header.focus nav > .textButton {
+  box-shadow: none;
+}
+
+/* color individual parts of the mt logo */
+#logo .icon svg path:nth-child(2),
+#logo .icon svg path:nth-child(8) {
+  fill: var(--text-color);
+}
+#logo .icon svg path:nth-child(1),
+#logo .icon svg path:nth-child(6),
+#logo .icon svg path:nth-child(7) {
+  fill: var(--sub-color);
+}
+#logo .icon svg path:nth-child(3),
+#logo .icon svg path:nth-child(4),
+#logo .icon svg path:nth-child(5) {
+  fill: var(--main-color);
+}
+
+#logo .icon svg path:nth-child(9) {
+  fill: #9a7a61;
+}

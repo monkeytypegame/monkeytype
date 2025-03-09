@@ -3,26 +3,47 @@ import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
-import { getCachedConfiguration } from "../init/configuration";
+import {
+  getCachedConfiguration,
+  getLiveConfiguration,
+} from "../init/configuration";
 
-const leaderboardUpdating: Record<string, boolean> = {};
+import { addLog } from "./logs";
+import { Collection, ObjectId } from "mongodb";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import { omit } from "lodash";
+import { DBUser, getUsersCollection } from "./user";
+import MonkeyError from "../utils/error";
+
+export type DBLeaderboardEntry = LeaderboardEntry & {
+  _id: ObjectId;
+};
+
+export const getCollection = (key: {
+  language: string;
+  mode: string;
+  mode2: string;
+}): Collection<DBLeaderboardEntry> =>
+  db.collection<DBLeaderboardEntry>(
+    `leaderboards.${key.language}.${key.mode}.${key.mode2}`
+  );
 
 export async function get(
   mode: string,
   mode2: string,
   language: string,
-  skip: number,
-  limit = 50
-): Promise<SharedTypes.LeaderboardEntry[] | false> {
-  //if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
+  page: number,
+  pageSize: number
+): Promise<DBLeaderboardEntry[] | false> {
+  if (page < 0 || pageSize < 0) {
+    throw new MonkeyError(500, "Invalid page or pageSize");
+  }
 
-  if (limit > 50 || limit <= 0) limit = 50;
-  if (skip < 0) skip = 0;
+  const skip = page * pageSize;
+  const limit = pageSize;
+
   try {
-    const preset = await db
-      .collection<SharedTypes.LeaderboardEntry>(
-        `leaderboards.${language}.${mode}.${mode2}`
-      )
+    const preset = await getCollection({ language, mode, mode2 })
       .find()
       .sort({ rank: 1 })
       .skip(skip)
@@ -33,10 +54,12 @@ export async function get(
       .premium.enabled;
 
     if (!premiumFeaturesEnabled) {
-      preset.forEach((it) => (it.isPremium = undefined));
+      return preset.map((it) => omit(it, "isPremium"));
     }
+
     return preset;
   } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {
       //QueryPlanKilled, collection was removed during the query
       return false;
@@ -45,33 +68,34 @@ export async function get(
   }
 }
 
-type GetRankResponse = {
-  count: number;
-  rank: number | null;
-  entry: SharedTypes.LeaderboardEntry | null;
-};
+export async function getCount(
+  mode: string,
+  mode2: string,
+  language: string
+): Promise<number> {
+  return getCollection({ language, mode, mode2 }).estimatedDocumentCount();
+}
 
 export async function getRank(
   mode: string,
   mode2: string,
   language: string,
   uid: string
-): Promise<GetRankResponse | false> {
-  if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
-  const entry = await db
-    .collection<SharedTypes.LeaderboardEntry>(
-      `leaderboards.${language}.${mode}.${mode2}`
-    )
-    .findOne({ uid });
-  const count = await db
-    .collection(`leaderboards.${language}.${mode}.${mode2}`)
-    .estimatedDocumentCount();
+): Promise<LeaderboardEntry | null | false> {
+  try {
+    const entry = await getCollection({ language, mode, mode2 }).findOne({
+      uid,
+    });
 
-  return {
-    count,
-    rank: entry ? entry.rank : null,
-    entry,
-  };
+    return entry;
+  } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (e.error === 175) {
+      //QueryPlanKilled, collection was removed during the query
+      return false;
+    }
+    throw e;
+  }
 }
 
 export async function update(
@@ -84,78 +108,75 @@ export async function update(
 }> {
   const key = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
-  leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
-  const lb = db
-    .collection<MonkeyTypes.DBUser>("users")
-    .aggregate<SharedTypes.LeaderboardEntry>(
-      [
-        {
-          $match: {
-            [`${key}.wpm`]: {
-              $gt: 0,
-            },
-            [`${key}.acc`]: {
-              $gt: 0,
-            },
-            [`${key}.timestamp`]: {
-              $gt: 0,
-            },
-            banned: {
-              $ne: true,
-            },
-            lbOptOut: {
-              $ne: true,
-            },
-            needsToChangeName: {
-              $ne: true,
-            },
-            timeTyping: {
-              $gt: isDevEnvironment() ? 0 : 7200,
-            },
+  const lb = db.collection<DBUser>("users").aggregate<LeaderboardEntry>(
+    [
+      {
+        $match: {
+          [`${key}.wpm`]: {
+            $gt: 0,
+          },
+          [`${key}.acc`]: {
+            $gt: 0,
+          },
+          [`${key}.timestamp`]: {
+            $gt: 0,
+          },
+          banned: {
+            $ne: true,
+          },
+          lbOptOut: {
+            $ne: true,
+          },
+          needsToChangeName: {
+            $ne: true,
+          },
+          timeTyping: {
+            $gt: isDevEnvironment() ? 0 : 7200,
           },
         },
-        {
-          $sort: {
-            [`${key}.wpm`]: -1,
-            [`${key}.acc`]: -1,
-            [`${key}.timestamp`]: -1,
-          },
+      },
+      {
+        $sort: {
+          [`${key}.wpm`]: -1,
+          [`${key}.acc`]: -1,
+          [`${key}.timestamp`]: -1,
         },
-        {
-          $project: {
-            _id: 0,
-            [`${key}.wpm`]: 1,
-            [`${key}.acc`]: 1,
-            [`${key}.raw`]: 1,
-            [`${key}.consistency`]: 1,
-            [`${key}.timestamp`]: 1,
-            uid: 1,
-            name: 1,
-            discordId: 1,
-            discordAvatar: 1,
-            inventory: 1,
-            premium: 1,
-          },
+      },
+      {
+        $project: {
+          _id: 0,
+          [`${key}.wpm`]: 1,
+          [`${key}.acc`]: 1,
+          [`${key}.raw`]: 1,
+          [`${key}.consistency`]: 1,
+          [`${key}.timestamp`]: 1,
+          uid: 1,
+          name: 1,
+          discordId: 1,
+          discordAvatar: 1,
+          inventory: 1,
+          premium: 1,
         },
+      },
 
-        {
-          $addFields: {
-            "user.uid": "$uid",
-            "user.name": "$name",
-            "user.discordId": { $ifNull: ["$discordId", "$$REMOVE"] },
-            "user.discordAvatar": { $ifNull: ["$discordAvatar", "$$REMOVE"] },
-            [`${key}.consistency`]: {
-              $ifNull: [`$${key}.consistency`, "$$REMOVE"],
-            },
-            calculated: {
-              $function: {
-                lang: "js",
-                args: [
-                  "$premium.expirationTimestamp",
-                  "$$NOW",
-                  "$inventory.badges",
-                ],
-                body: `function(expiration, currentTime, badges) { 
+      {
+        $addFields: {
+          "user.uid": "$uid",
+          "user.name": "$name",
+          "user.discordId": { $ifNull: ["$discordId", "$$REMOVE"] },
+          "user.discordAvatar": { $ifNull: ["$discordAvatar", "$$REMOVE"] },
+          [`${key}.consistency`]: {
+            $ifNull: [`$${key}.consistency`, "$$REMOVE"],
+          },
+          calculated: {
+            $function: {
+              lang: "js",
+              args: [
+                "$premium.expirationTimestamp",
+                "$$NOW",
+                "$inventory.badges",
+              ],
+              body: `function(expiration, currentTime, badges) { 
                         try {row_number+= 1;} catch (e) {row_number= 1;} 
                         var badgeId = undefined;
                         if(badges)for(let i=0; i<badges.length; i++){
@@ -164,19 +185,19 @@ export async function update(
                         var isPremium = expiration !== undefined && (expiration === -1 || new Date(expiration)>currentTime) || undefined;
                         return {rank:row_number,badgeId, isPremium};
                       }`,
-              },
             },
           },
         },
-        {
-          $replaceWith: {
-            $mergeObjects: [`$${key}`, "$user", "$calculated"],
-          },
+      },
+      {
+        $replaceWith: {
+          $mergeObjects: [`$${key}`, "$user", "$calculated"],
         },
-        { $out: lbCollectionName },
-      ],
-      { allowDiskUse: true }
-    );
+      },
+      { $out: lbCollectionName },
+    ],
+    { allowDiskUse: true }
+  );
 
   const start1 = performance.now();
   await lb.toArray();
@@ -185,7 +206,6 @@ export async function update(
   const start2 = performance.now();
   await db.collection(lbCollectionName).createIndex({ uid: -1 });
   await db.collection(lbCollectionName).createIndex({ rank: 1 });
-  leaderboardUpdating[`${language}_${mode}_${mode2}`] = false;
   const end2 = performance.now();
 
   //update speedStats
@@ -235,7 +255,7 @@ export async function update(
   const timeToRunIndex = (end2 - start2) / 1000;
   const timeToSaveHistogram = (end3 - start3) / 1000; // not sent to prometheus yet
 
-  void Logger.logToDb(
+  void addLog(
     `system_lb_update_${language}_${mode}_${mode2}`,
     `Aggregate ${timeToRunAggregate}s, loop 0s, insert 0s, index ${timeToRunIndex}s, histogram ${timeToSaveHistogram}`
   );
@@ -252,7 +272,11 @@ export async function update(
   };
 }
 
-async function createIndex(key: string): Promise<void> {
+async function createIndex(
+  key: string,
+  minTimeTyping: number,
+  dropIfMismatch = true
+): Promise<void> {
   const index = {
     [`${key}.wpm`]: -1,
     [`${key}.acc`]: -1,
@@ -276,16 +300,41 @@ async function createIndex(key: string): Promise<void> {
         $gt: 0,
       },
       timeTyping: {
-        $gt: isDevEnvironment() ? 0 : 7200,
+        $gt: minTimeTyping,
       },
     },
   };
-  await db.collection("users").createIndex(index, partial);
+  try {
+    await getUsersCollection().createIndex(index, partial);
+  } catch (e) {
+    if (!dropIfMismatch) throw e;
+    if (
+      (e as Error).message.startsWith(
+        "An existing index has the same name as the requested index"
+      )
+    ) {
+      Logger.warning(`Index ${key} not matching, dropping and recreating...`);
+
+      const existingIndex = (await getUsersCollection().listIndexes().toArray())
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        .map((it) => it.name as string)
+        .find((it) => it.startsWith(key));
+
+      if (existingIndex !== undefined && existingIndex !== null) {
+        await getUsersCollection().dropIndex(existingIndex);
+        return createIndex(key, minTimeTyping, false);
+      } else {
+        throw e;
+      }
+    }
+  }
 }
 
 export async function createIndicies(): Promise<void> {
-  await createIndex("lbPersonalBests.time.15.english");
-  await createIndex("lbPersonalBests.time.60.english");
+  const minTimeTyping = (await getLiveConfiguration()).leaderboards
+    .minTimeTyping;
+  await createIndex("lbPersonalBests.time.15.english", minTimeTyping);
+  await createIndex("lbPersonalBests.time.60.english", minTimeTyping);
 
   if (isDevEnvironment()) {
     Logger.info("Updating leaderboards in dev mode...");

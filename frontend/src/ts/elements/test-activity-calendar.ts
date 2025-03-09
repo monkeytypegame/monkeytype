@@ -1,9 +1,7 @@
-import type { Interval } from "date-fns/types";
 import { UTCDateMini } from "@date-fns/utc/date/mini";
 import {
   format,
   endOfMonth,
-  subYears,
   addDays,
   differenceInDays,
   eachMonthOfInterval,
@@ -18,9 +16,21 @@ import {
   isSunday,
   nextSaturday,
   isSaturday,
+  subWeeks,
+  Interval,
 } from "date-fns";
 
-export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
+type TestActivityDay = {
+  level: string;
+  label?: string;
+};
+
+export type TestActivityMonth = {
+  text: string;
+  weeks: number;
+};
+
+export class TestActivityCalendar implements TestActivityCalendar {
   protected data: (number | null | undefined)[];
   protected startDay: Date;
   protected endDay: Date;
@@ -44,7 +54,8 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     const end = fullYear ? endOfYear(lastDay) : new Date();
     let start = startOfYear(lastDay);
     if (!fullYear) {
-      start = addDays(subYears(end, 1), 1);
+      //show the last 52 weeks. Not using one year to avoid the graph to show 54 weeks
+      start = addDays(subWeeks(end, 52), 1);
       if (!isSunday(start)) start = previousSunday(start);
     }
 
@@ -56,7 +67,9 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     lastDay: Date
   ): (number | null | undefined)[] {
     //fill calendar with enough values
-    const values = new Array(Math.max(0, 386 - data.length)).fill(undefined);
+    const values = new Array(Math.max(0, 386 - data.length)).fill(
+      undefined
+    ) as (number | null | undefined)[];
     values.push(...data);
 
     //discard values outside the calendar range
@@ -66,36 +79,40 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     return values.slice(offset);
   }
 
-  getMonths(): MonkeyTypes.TestActivityMonth[] {
+  getMonths(): TestActivityMonth[] {
     const months: Date[] = eachMonthOfInterval({
       start: this.startDay,
       end: this.endDay,
     });
-
-    const results: MonkeyTypes.TestActivityMonth[] = [];
+    const results: TestActivityMonth[] = [];
 
     for (let i = 0; i < months.length; i++) {
       const month: Date = months[i] as Date;
-      let start =
-        i === 0 ? new UTCDateMini(this.startDay) : startOfMonth(month);
-      let end = i === 12 ? new UTCDateMini(this.endDay) : endOfMonth(start);
+      let start = i === 0 ? this.startDay : startOfMonth(month);
+      let end = i === months.length - 1 ? this.endDay : endOfMonth(start);
 
-      if (!isSunday(start))
+      if (!isSunday(start)) {
         start = (i === 0 ? previousSunday : nextSunday)(start);
-      if (!isSaturday(end)) end = nextSaturday(end);
+      }
+      if (!isSaturday(end)) {
+        end = nextSaturday(end);
+      }
 
       const weeks = differenceInWeeks(end, start, { roundingMethod: "ceil" });
-      if (weeks > 2)
+      if (weeks > 2) {
         results.push({
           text: format(month, "MMM").toLowerCase(),
           weeks: weeks,
         });
+      } else if (i == 0) {
+        results.push({ text: "", weeks: weeks });
+      }
     }
     return results;
   }
 
-  getDays(): MonkeyTypes.TestActivityDay[] {
-    const result: MonkeyTypes.TestActivityDay[] = [];
+  getDays(): TestActivityDay[] {
+    const result: TestActivityDay[] = [];
     const buckets = this.getBuckets();
     const getValue = (v: number | null | undefined): string => {
       if (v === undefined) return "0";
@@ -140,10 +157,17 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     return result;
   }
 
+  getTotalTests(): number {
+    const days = differenceInDays(this.endDay, this.startDay);
+    return (
+      this.data.slice(0, days + 1).reduce((a, c) => {
+        return (a ?? 0) + (c ?? 0);
+      }, 0) ?? 0
+    );
+  }
+
   private getBuckets(): number[] {
-    const filtered = this.data.filter(
-      (it) => it !== null && it !== undefined
-    ) as number[];
+    const filtered = this.data.filter((it) => it !== null && it !== undefined);
     const sorted = filtered.sort((a, b) => a - b);
 
     const trimmed = sorted.slice(
@@ -158,7 +182,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
 
 export class ModifiableTestActivityCalendar
   extends TestActivityCalendar
-  implements MonkeyTypes.ModifiableTestActivityCalendar
+  implements ModifiableTestActivityCalendar
 {
   private lastDay: Date;
 
@@ -191,7 +215,7 @@ export class ModifiableTestActivityCalendar
     this.data = this.buildData(this.data, this.lastDay);
   }
 
-  getFullYearCalendar(): MonkeyTypes.TestActivityCalendar {
+  getFullYearCalendar(): TestActivityCalendar {
     const today = new Date();
     if (this.lastDay.getFullYear() !== new UTCDateMini(today).getFullYear()) {
       return new TestActivityCalendar([], today, true);

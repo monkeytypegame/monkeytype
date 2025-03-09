@@ -1,6 +1,9 @@
 {
   "name": "serbian_latin",
-  "noLazyMode": true,
+  "rightToLeft": false,
+  "ligatures": false,
+  "bcp47": "sr-Latn",
+  "additionalAccents": [["đ", "dj"]],
   "words": [
     "kao",
     "ja",

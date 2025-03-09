@@ -1,10 +1,13 @@
+import { Challenge } from "../utils/json-data";
+
 export let isRepeated = false;
 export let isPaceRepeat = false;
 export let isActive = false;
-export let activeChallenge: null | MonkeyTypes.Challenge = null;
+export let activeChallenge: null | Challenge = null;
 export let savingEnabled = true;
 export let bailedOut = false;
 export let selectedQuoteId = 1;
+export let activeWordIndex = 0;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -18,7 +21,7 @@ export function setActive(tf: boolean): void {
   isActive = tf;
 }
 
-export function setActiveChallenge(val: null | MonkeyTypes.Challenge): void {
+export function setActiveChallenge(val: null | Challenge): void {
   activeChallenge = val;
 }
 
@@ -32,4 +35,16 @@ export function setBailedOut(tf: boolean): void {
 
 export function setSelectedQuoteId(id: number): void {
   selectedQuoteId = id;
+}
+
+export function setActiveWordIndex(index: number): void {
+  activeWordIndex = index;
+}
+
+export function increaseActiveWordIndex(): void {
+  activeWordIndex++;
+}
+
+export function decreaseActiveWordIndex(): void {
+  activeWordIndex--;
 }

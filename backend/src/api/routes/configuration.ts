@@ -1,46 +1,20 @@
-import joi from "joi";
-import { Router } from "express";
-import {
-  asyncHandler,
-  checkIfUserIsAdmin,
-  useInProduction,
-  validateRequest,
-} from "../../middlewares/api-utils";
+import { configurationContract } from "@monkeytype/contracts/configuration";
+import { initServer } from "@ts-rest/express";
 import * as ConfigurationController from "../controllers/configuration";
-import { authenticateRequest } from "../../middlewares/auth";
-import { adminLimit } from "../../middlewares/rate-limit";
+import { callController } from "../ts-rest-adapter";
 
-const router = Router();
+const s = initServer();
 
-router.get("/", asyncHandler(ConfigurationController.getConfiguration));
-
-router.patch(
-  "/",
-  adminLimit,
-  useInProduction([
-    authenticateRequest({
-      noCache: true,
-    }),
-    checkIfUserIsAdmin(),
-  ]),
-  validateRequest({
-    body: {
-      configuration: joi.object(),
-    },
-  }),
-  asyncHandler(ConfigurationController.updateConfiguration)
-);
-
-router.get(
-  "/schema",
-  adminLimit,
-  useInProduction([
-    authenticateRequest({
-      noCache: true,
-    }),
-    checkIfUserIsAdmin(),
-  ]),
-  asyncHandler(ConfigurationController.getSchema)
-);
-
-export default router;
+export default s.router(configurationContract, {
+  get: {
+    handler: async (r) =>
+      callController(ConfigurationController.getConfiguration)(r),
+  },
+  update: {
+    handler: async (r) =>
+      callController(ConfigurationController.updateConfiguration)(r),
+  },
+  getSchema: {
+    handler: async (r) => callController(ConfigurationController.getSchema)(r),
+  },
+});

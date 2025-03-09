@@ -79,6 +79,10 @@ describe("test-activity-calendar.ts", () => {
 
         expect(calendar.getMonths()).toEqual([
           {
+            text: "",
+            weeks: 2,
+          },
+          {
             text: "may",
             weeks: 4,
           },
@@ -297,6 +301,122 @@ describe("test-activity-calendar.ts", () => {
           {
             text: "dec",
             weeks: 5,
+          },
+        ]);
+      });
+      it("for first day in june", () => {
+        //set today
+        vi.setSystemTime(getDate("2024-06-01"));
+        const calendar = new TestActivityCalendar([], getDate("2024-06-01"));
+
+        expect(calendar.getMonths()).toEqual([
+          {
+            text: "jun",
+            weeks: 4,
+          },
+          {
+            text: "jul",
+            weeks: 5,
+          },
+          {
+            text: "aug",
+            weeks: 4,
+          },
+          {
+            text: "sep",
+            weeks: 4,
+          },
+          {
+            text: "oct",
+            weeks: 5,
+          },
+          {
+            text: "nov",
+            weeks: 4,
+          },
+          {
+            text: "dec",
+            weeks: 5,
+          },
+          {
+            text: "jan",
+            weeks: 4,
+          },
+          {
+            text: "feb",
+            weeks: 4,
+          },
+          {
+            text: "mar",
+            weeks: 5,
+          },
+          {
+            text: "apr",
+            weeks: 4,
+          },
+          {
+            text: "may",
+            weeks: 4,
+          },
+        ]);
+      });
+      it("no double month for for 16th june", () => {
+        //set today
+        vi.setSystemTime(getDate("2024-06-16"));
+        const calendar = new TestActivityCalendar([], getDate("2024-06-01"));
+
+        expect(calendar.getMonths()).toEqual([
+          {
+            text: "",
+            weeks: 2,
+          },
+          {
+            text: "jul",
+            weeks: 5,
+          },
+          {
+            text: "aug",
+            weeks: 4,
+          },
+          {
+            text: "sep",
+            weeks: 4,
+          },
+          {
+            text: "oct",
+            weeks: 5,
+          },
+          {
+            text: "nov",
+            weeks: 4,
+          },
+          {
+            text: "dec",
+            weeks: 5,
+          },
+          {
+            text: "jan",
+            weeks: 4,
+          },
+          {
+            text: "feb",
+            weeks: 4,
+          },
+          {
+            text: "mar",
+            weeks: 5,
+          },
+          {
+            text: "apr",
+            weeks: 4,
+          },
+          {
+            text: "may",
+            weeks: 4,
+          },
+          {
+            text: "jun",
+            weeks: 3,
           },
         ]);
       });
@@ -666,6 +786,9 @@ describe("test-activity-calendar.ts", () => {
   });
   describe("getFullYearCalendar", () => {
     it("gets calendar", () => {
+      const date = new Date(2024, 8, 1);
+      vi.setSystemTime(date);
+
       //GIVEN
       const lastDate = getDate("2024-01-02");
       const calendar = new ModifiableTestActivityCalendar(
@@ -692,6 +815,25 @@ describe("test-activity-calendar.ts", () => {
       expect(days[368]).toBeFiller();
       expect(days[369]).toBeFiller();
       expect(days[370]).toBeFiller();
+    });
+  });
+  describe("getTotalTests", () => {
+    it("gets amount of tests", () => {
+      const date = new Date(2024, 8, 1);
+      vi.setSystemTime(date);
+      //GIVEN
+      const lastDate = getDate("2024-01-02");
+      const calendar = new ModifiableTestActivityCalendar(
+        [1, 2, 3, 4],
+        lastDate
+      );
+
+      //THEN
+      expect(calendar.getTotalTests()).toEqual(1 + 2 + 3 + 4);
+
+      //WHEN
+      const fullYear = calendar.getFullYearCalendar();
+      expect(fullYear.getTotalTests()).toEqual(3 + 4);
     });
   });
 });

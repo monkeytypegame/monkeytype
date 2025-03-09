@@ -1,4 +1,5 @@
 import Ape from "../ape";
+import { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
@@ -15,7 +16,7 @@ type QuoteStats = {
 };
 
 let quoteStats: QuoteStats | null | Record<string, never> = null;
-let currentQuote: MonkeyTypes.Quote | null = null;
+let currentQuote: Quote | null = null;
 
 export function clearQuoteStats(): void {
   quoteStats = null;
@@ -39,26 +40,31 @@ function getRatingAverage(quoteStats: QuoteStats): number {
 }
 
 export async function getQuoteStats(
-  quote?: MonkeyTypes.Quote
+  quote?: Quote
 ): Promise<QuoteStats | undefined> {
   if (!quote) {
     return;
   }
 
   currentQuote = quote;
-  const response = await Ape.quotes.getRating(currentQuote);
+  const response = await Ape.quotes.getRating({
+    query: { quoteId: currentQuote.id, language: currentQuote.language },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to get quote ratings: " + response.message, -1);
+    Notifications.add(
+      "Failed to get quote ratings: " + response.body.message,
+      -1
+    );
     return;
   }
 
-  if (response.data === null) {
+  if (response.body.data === null) {
     return {} as QuoteStats;
   }
 
-  quoteStats = response.data as QuoteStats;
+  quoteStats = response.body.data as QuoteStats;
   if (quoteStats !== undefined && !quoteStats.average) {
     quoteStats.average = getRatingAverage(quoteStats);
   }
@@ -101,10 +107,7 @@ function updateData(): void {
   void updateRatingStats();
 }
 
-export function show(
-  quote: MonkeyTypes.Quote,
-  showOptions?: ShowOptions
-): void {
+export function show(quote: Quote, showOptions?: ShowOptions): void {
   void modal.show({
     ...showOptions,
     beforeAnimation: async () => {
@@ -131,7 +134,8 @@ function hide(clearChain = false): void {
 
 async function submit(): Promise<void> {
   if (rating === 0) {
-    return Notifications.add("Please select a rating");
+    Notifications.add("Please select a rating");
+    return;
   }
   if (!currentQuote) {
     return;
@@ -139,14 +143,17 @@ async function submit(): Promise<void> {
 
   hide(true);
 
-  const response = await Ape.quotes.addRating(currentQuote, rating);
+  const response = await Ape.quotes.addRating({
+    body: { quoteId: currentQuote.id, language: currentQuote.language, rating },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    return Notifications.add(
-      "Failed to submit quote rating: " + response.message,
+    Notifications.add(
+      "Failed to submit quote rating: " + response.body.message,
       -1
     );
+    return;
   }
 
   const snapshot = DB.getSnapshot();

@@ -16,19 +16,32 @@
   display: none;
 }
 
-// uncomment to debug media queries
-
-// #mediaQueryDebug {
-//   display: block;
-// }
-
-// .content-grid > * {
-//   border: 0.1rem dashed var(--sub-color);
-// }
-
-// .content-grid {
-//   border: 0.1rem dashed var(--main-color);
-// }
+body {
+  &.mediaQueryDebugLevel1 {
+    #mediaQueryDebug {
+      display: block;
+    }
+  }
+  &.mediaQueryDebugLevel2 {
+    #mediaQueryDebug {
+      display: block;
+    }
+    .content-grid {
+      border: 0.1rem dashed var(--main-color);
+    }
+  }
+  &.mediaQueryDebugLevel3 {
+    #mediaQueryDebug {
+      display: block;
+    }
+    .content-grid > * {
+      border: 0.1rem dashed var(--sub-color);
+    }
+    .content-grid {
+      border: 0.1rem dashed var(--main-color);
+    }
+  }
+}
 
 //media queries based on tailwind breakpoints https://tailwindcss.com/docs/container
 @import "media-queries-orange";
@@ -523,7 +536,7 @@
 // @media only screen and (max-width: 40.625rem) {
 //   header {
 //     nav {
-//       .textButton.account {
+//       .textButton.view-account {
 //         .text {
 //           display: none;
 //         }
@@ -735,7 +748,7 @@
 //       }
 //     }
 //     // nav {
-//     //   .textButton.account {
+//     //   .textButton.view-account {
 //     //     .text {
 //     //       display: none;
 //     //     }
@@ -1024,5 +1037,23 @@
 @media (hover: none) and (pointer: coarse) {
   #commandLineMobileButton {
     display: block !important;
+  }
+}
+
+@media (prefers-reduced-motion) {
+  body:not(.ignore-reduced-motion)
+    *:not(.fa-spin, #backgroundLoader, .preloader) {
+    animation: none !important;
+    transition: none !important;
+
+    &::after,
+    &::before {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  html {
+    scroll-behavior: auto !important;
   }
 }

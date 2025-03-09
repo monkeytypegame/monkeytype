@@ -1,3 +1,7 @@
+.turbo
+.github
+*.md
+docker/
 *.min.js
 *.min.css
 layouts.ts
@@ -7,8 +11,11 @@ sound/*
 node_modules
 css/balloon.css
 _list.json
-backend/build
 backend/logs
 backend/coverage
 backend/globalConfig.json
 frontend/public
+dist/
+build/
+frontend/coverage
+pnpm*.yaml

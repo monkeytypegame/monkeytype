@@ -1,6 +1,12 @@
+import {
+  ConfigValue,
+  QuoteLength,
+} from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
+import { applyReducedMotion } from "../utils/misc";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
@@ -18,10 +24,7 @@ export async function instantUpdate(): Promise<void> {
     "active"
   );
 
-  $("#testConfig .puncAndNum").css({
-    width: 0,
-    opacity: 0,
-  });
+  $("#testConfig .puncAndNum").addClass("hidden");
   $("#testConfig .spacer").addClass("scrolled");
   $("#testConfig .time").addClass("hidden");
   $("#testConfig .wordCount").addClass("hidden");
@@ -30,24 +33,16 @@ export async function instantUpdate(): Promise<void> {
   $("#testConfig .zen").addClass("hidden");
 
   if (Config.mode === "time") {
-    $("#testConfig .puncAndNum").css({
-      width: "unset",
-      opacity: 1,
-    });
+    $("#testConfig .puncAndNum").removeClass("hidden");
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .time").removeClass("hidden");
 
     updateExtras("time", Config.time);
   } else if (Config.mode === "words") {
-    $("#testConfig .puncAndNum").css({
-      width: "unset",
-      opacity: 1,
-    });
-
+    $("#testConfig .puncAndNum").removeClass("hidden");
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
-
     $("#testConfig .wordCount").removeClass("hidden");
 
     updateExtras("words", Config.words);
@@ -57,14 +52,9 @@ export async function instantUpdate(): Promise<void> {
 
     updateExtras("quoteLength", Config.quoteLength);
   } else if (Config.mode === "custom") {
-    $("#testConfig .puncAndNum").css({
-      width: "unset",
-      opacity: 1,
-    });
-
+    $("#testConfig .puncAndNum").removeClass("hidden");
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
-
     $("#testConfig .customText").removeClass("hidden");
   }
 
@@ -72,10 +62,7 @@ export async function instantUpdate(): Promise<void> {
   updateExtras("punctuation", Config.punctuation);
 }
 
-export async function update(
-  previous: SharedTypes.Config.Mode,
-  current: SharedTypes.Config.Mode
-): Promise<void> {
+export async function update(previous: Mode, current: Mode): Promise<void> {
   if (previous === current) return;
   $("#testConfig .mode .textButton").removeClass("active");
   $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
@@ -88,17 +75,12 @@ export async function update(
     zen: "zen",
   };
 
-  const animTime = 250;
+  const animTime = applyReducedMotion(250);
   const easing = {
     both: "easeInOutSine",
     in: "easeInSine",
     out: "easeOutSine",
   };
-  // const easing = {
-  //   both: "linear",
-  //   in: "linear",
-  //   out: "linear",
-  // };
 
   const puncAndNumVisible = {
     time: true,
@@ -117,39 +99,34 @@ export async function update(
       $("#testConfig .leftSpacer").removeClass("scrolled");
     }
 
-    const previousWidth = Math.round(
-      puncAndNumEl[0]?.getBoundingClientRect().width ?? 0
-    );
-
-    if (previousWidth === 0) {
-      puncAndNumEl.css({
+    puncAndNumEl
+      .css({
         width: "unset",
-      });
-    } else {
-      puncAndNumEl.css({
-        width: 0,
-      });
-    }
+        opacity: 1,
+      })
+      .removeClass("hidden");
 
-    const currentWidth = Math.round(
+    const width = Math.round(
       puncAndNumEl[0]?.getBoundingClientRect().width ?? 0
     );
 
     puncAndNumEl
       .css({
-        opacity: puncAndNumVisible[current] ? 0 : 1,
-        width: previousWidth,
+        width: puncAndNumVisible[previous] ? width : 0,
+        opacity: puncAndNumVisible[previous] ? 1 : 0,
       })
       .animate(
         {
-          width: currentWidth,
+          width: puncAndNumVisible[current] ? width : 0,
           opacity: puncAndNumVisible[current] ? 1 : 0,
         },
         animTime,
         easing.both,
         () => {
-          if (currentWidth !== 0) {
+          if (puncAndNumVisible[current]) {
             puncAndNumEl.css("width", "unset");
+          } else {
+            puncAndNumEl.addClass("hidden");
           }
         }
       );
@@ -224,10 +201,7 @@ export async function update(
     );
 }
 
-export function updateExtras(
-  key: string,
-  value: SharedTypes.ConfigValue
-): void {
+export function updateExtras(key: string, value: ConfigValue): void {
   if (key === "time") {
     $("#testConfig .time .textButton").removeClass("active");
     const timeCustom = ![15, 30, 60, 120].includes(value as number)
@@ -248,7 +222,7 @@ export function updateExtras(
     ).addClass("active");
   } else if (key === "quoteLength") {
     $("#testConfig .quoteLength .textButton").removeClass("active");
-    (value as SharedTypes.Config.QuoteLength[]).forEach((ql) => {
+    (value as QuoteLength[]).forEach((ql) => {
       $(
         "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
       ).addClass("active");
@@ -279,10 +253,7 @@ export function hideFavoriteQuoteLength(): void {
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
   if (ActivePage.get() !== "test") return;
   if (eventKey === "mode") {
-    void update(
-      eventPreviousValue as SharedTypes.Config.Mode,
-      eventValue as SharedTypes.Config.Mode
-    );
+    void update(eventPreviousValue as Mode, eventValue as Mode);
 
     let m2;
 

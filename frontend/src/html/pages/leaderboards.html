@@ -1,0 +1,218 @@
+<div class="page pageLeaderboards hidden" id="pageLeaderboards">
+  <div class="content">
+    <div class="tableAndUser">
+      <div class="bigtitle">
+        <div class="text">-</div>
+        <div class="subtext">
+          <div class="text" data-balloon-pos="down" data-balloon-break></div>
+          <div class="divider hidden"></div>
+          <button class="textButton hidden" data-action="toggleYesterday">
+            <i class="fas fa-backward"></i>
+            show yesterday
+          </button>
+          <button class="textButton hidden" data-action="toggleLastWeek">
+            <i class="fas fa-backward"></i>
+            show last week
+          </button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <!-- <div class="title needAuth">You</div> -->
+      <div class="bigUser you needAuth"></div>
+      <div class="titleAndButtons">
+        <div class="title timer">Updates in: -</div>
+
+        <div class="jumpButtons">
+          <div class="updating hidden">
+            <i class="fas fa-circle-notch fa-spin"></i>
+          </div>
+          <button data-action="firstPage"><i class="fas fa-crown"></i></button>
+          <button data-action="userPage" class="needAuth">
+            <i class="fas fa-user"></i>
+          </button>
+          <button data-action="previousPage">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button data-action="goToPage"><i class="fas fa-hashtag"></i></button>
+          <button data-action="nextPage">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+      <div class="loading hidden">
+        <i class="fas fa-circle-notch fa-spin"></i>
+      </div>
+      <div class="error hidden">
+        <i class="fas fa-times"></i>
+        <p>Something went wrong</p>
+      </div>
+      <table>
+        <thead class="allTimeAndDaily">
+          <tr>
+            <td>#</td>
+            <td>name</td>
+            <td class="stat narrow speedUnit">
+              wpm
+              <div class="sub">accuracy</div>
+            </td>
+            <td class="stat narrow">
+              raw
+              <div class="sub">consistency</div>
+            </td>
+            <td class="stat wide speedUnit">wpm</td>
+            <td class="stat wide">accuracy</td>
+            <td class="stat wide">raw</td>
+            <td class="stat wide">consistency</td>
+            <td class="date">date</td>
+          </tr>
+        </thead>
+        <thead class="weekly">
+          <tr>
+            <td>#</td>
+            <td>name</td>
+            <td class="stat wide">xp gained</td>
+            <td class="stat wide">time typed</td>
+            <td class="stat narrow">
+              xp gained
+              <div class="sub">time typed</div>
+            </td>
+            <td class="date">last activity</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>
+              <div class="avatarNameBadge">
+                <div class="lbav">
+                  <div class="avatarPlaceholder">
+                    <i class="fas fa-user-circle"></i>
+                  </div>
+                </div>
+                <div class="name">Username</div>
+              </div>
+            </td>
+            <td>100.00</td>
+            <td>100.00%</td>
+            <td>100.00</td>
+            <td>100.00%</td>
+            <td class="small">23 Aug 2024 12:10</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>
+              <div class="avatarNameBadge">
+                <div class="lbav">
+                  <div class="avatarPlaceholder">
+                    <i class="fas fa-user-circle"></i>
+                  </div>
+                </div>
+                <div class="name">Username</div>
+              </div>
+            </td>
+            <td>100.00</td>
+            <td>100.00%</td>
+            <td>100.00</td>
+            <td>100.00%</td>
+            <td class="small">23 Aug 2024 12:10</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>
+              <div class="avatarNameBadge">
+                <div class="lbav">
+                  <div class="avatarPlaceholder">
+                    <i class="fas fa-user-circle"></i>
+                  </div>
+                </div>
+                <div class="name">Username</div>
+              </div>
+            </td>
+            <td>100.00</td>
+            <td>100.00%</td>
+            <td>100.00</td>
+            <td>100.00%</td>
+            <td class="small">23 Aug 2024 12:10</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="titleAndButtons" style="margin-top: 1em">
+        <div></div>
+        <div class="jumpButtons">
+          <div class="updating hidden">
+            <i class="fas fa-circle-notch fa-spin"></i>
+          </div>
+          <button data-action="firstPage"><i class="fas fa-crown"></i></button>
+          <button data-action="userPage" class="needAuth">
+            <i class="fas fa-user"></i>
+          </button>
+          <button data-action="previousPage">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button data-action="goToPage"><i class="fas fa-hashtag"></i></button>
+          <button data-action="nextPage">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="buttons">
+      <div class="buttonGroup typeButtons">
+        <button data-type="allTime">
+          <i class="fas fa-globe-americas"></i>
+          all-time english
+        </button>
+        <button data-type="weekly">
+          <i class="fas fa-calendar-day"></i>
+          weekly xp
+        </button>
+        <button data-type="daily">
+          <i class="fas fa-sun"></i>
+          daily
+        </button>
+      </div>
+      <div class="divider hidden"></div>
+      <div class="buttonGroup hidden secondary modeButtons">
+        <button data-mode="15">
+          <i class="fas fa-clock"></i>
+          time 15
+        </button>
+        <button data-mode="60">
+          <i class="fas fa-clock"></i>
+          time 60
+        </button>
+      </div>
+      <div class="divider divider2 hidden"></div>
+      <div class="buttonGroup hidden secondary languageButtons">
+        <button data-language="english">
+          <i class="fas fa-globe"></i>
+          english
+        </button>
+        <button data-language="spanish">
+          <i class="fas fa-globe"></i>
+          spanish
+        </button>
+        <button data-language="german">
+          <i class="fas fa-globe"></i>
+          german
+        </button>
+        <button data-language="french">
+          <i class="fas fa-globe"></i>
+          french
+        </button>
+        <button data-language="portuguese">
+          <i class="fas fa-globe"></i>
+          portuguese
+        </button>
+        <button data-language="indonesian">
+          <i class="fas fa-globe"></i>
+          indonesian
+        </button>
+        <button data-language="italian">
+          <i class="fas fa-globe"></i>
+          italian
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

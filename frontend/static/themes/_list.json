@@ -399,6 +399,13 @@
     "textColor": "#181819"
   },
   {
+    "name": "solarized_osaka",
+    "bgColor": "#00141a",
+    "mainColor": "#859900",
+    "subColor": "#2aa198",
+    "textColor": "#b58900"
+  },
+  {
     "name": "terra",
     "bgColor": "#0c100e",
     "mainColor": "#89c559",
@@ -1230,5 +1237,33 @@
     "mainColor": " #ffdd6d",
     "subColor": "#779097",
     "textColor": "#E5E5E5"
+  },
+  {
+    "name": "lilac_mist",
+    "bgColor": "#fffbfe",
+    "mainColor": "#b94189",
+    "subColor": "#e094c2",
+    "textColor": "#5c2954"
+  },
+  {
+    "name": "terrazzo",
+    "bgColor": "#f1e5da",
+    "mainColor": "#e0794e",
+    "subColor": "#688e8f",
+    "textColor": "#023e3b"
+  },
+  {
+    "name": "suisei",
+    "bgColor": "#3b4a62",
+    "mainColor": "#bef0ff",
+    "subColor": "#fe9841",
+    "textColor": "#dbdeeb"
+  },
+  {
+    "name": "github",
+    "bgColor": "#212830",
+    "mainColor": "#41ce5c",
+    "subColor": "#788386",
+    "textColor": "#ccdae6"
   }
 ]

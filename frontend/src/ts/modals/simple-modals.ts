@@ -2,15 +2,13 @@ import Ape from "../ape";
 import * as AccountController from "../controllers/account-controller";
 import * as DB from "../db";
 import * as UpdateConfig from "../config";
-import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
-import * as ThemePicker from "../settings/theme-picker";
+import * as ThemePicker from "../elements/settings/theme-picker";
 import * as CustomText from "../test/custom-text";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
 import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
-import * as ConnectionState from "../states/connection";
 import {
   EmailAuthProvider,
   User,
@@ -18,7 +16,6 @@ import {
   reauthenticateWithCredential,
   reauthenticateWithPopup,
   unlink,
-  updatePassword,
 } from "firebase/auth";
 import {
   createErrorMessage,
@@ -28,30 +25,18 @@ import {
 } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
-import AnimatedModal, {
-  HideOptions,
-  ShowOptions,
-} from "../utils/animated-modal";
-
-type Input = {
-  placeholder?: string;
-  type?: string;
-  initVal: string;
-  hidden?: boolean;
-  disabled?: boolean;
-  label?: string;
-};
-
-let activePopup: SimpleModal | null = null;
-
-type ExecReturn = {
-  status: 1 | 0 | -1;
-  message: string;
-  showNotification?: false;
-  notificationOptions?: MonkeyTypes.AddNotificationOptions;
-  hideOptions?: HideOptions;
-  afterHide?: () => void;
-};
+import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
+import * as AccountSettings from "../pages/account-settings";
+import {
+  ExecReturn,
+  PasswordInput,
+  SimpleModal,
+  TextInput,
+} from "../utils/simple-modal";
+import { ShowOptions } from "../utils/animated-modal";
+import { GenerateDataRequest } from "@monkeytype/contracts/dev";
+import { UserEmailSchema, UserNameSchema } from "@monkeytype/contracts/users";
+import { goToPage } from "../pages/leaderboards";
 
 type PopupKey =
   | "updateEmail"
@@ -59,27 +44,24 @@ type PopupKey =
   | "updatePassword"
   | "removeGoogleAuth"
   | "removeGithubAuth"
+  | "removePasswordAuth"
   | "addPasswordAuth"
   | "deleteAccount"
   | "resetAccount"
-  | "clearTagPb"
   | "optOutOfLeaderboards"
-  | "clearTagPb"
   | "applyCustomFont"
   | "resetPersonalBests"
   | "resetSettings"
   | "revokeAllTokens"
   | "unlinkDiscord"
-  | "generateApeKey"
-  | "viewApeKey"
-  | "deleteApeKey"
   | "editApeKey"
   | "deleteCustomText"
   | "deleteCustomTextLong"
   | "resetProgressCustomTextLong"
   | "updateCustomTheme"
   | "deleteCustomTheme"
-  | "forgotPassword";
+  | "devGenerateData"
+  | "lbGoToPage";
 
 const list: Record<PopupKey, SimpleModal | undefined> = {
   updateEmail: undefined,
@@ -87,291 +69,25 @@ const list: Record<PopupKey, SimpleModal | undefined> = {
   updatePassword: undefined,
   removeGoogleAuth: undefined,
   removeGithubAuth: undefined,
+  removePasswordAuth: undefined,
   addPasswordAuth: undefined,
   deleteAccount: undefined,
   resetAccount: undefined,
-  clearTagPb: undefined,
   optOutOfLeaderboards: undefined,
   applyCustomFont: undefined,
   resetPersonalBests: undefined,
   resetSettings: undefined,
   revokeAllTokens: undefined,
   unlinkDiscord: undefined,
-  generateApeKey: undefined,
-  viewApeKey: undefined,
-  deleteApeKey: undefined,
   editApeKey: undefined,
   deleteCustomText: undefined,
   deleteCustomTextLong: undefined,
   resetProgressCustomTextLong: undefined,
   updateCustomTheme: undefined,
   deleteCustomTheme: undefined,
-  forgotPassword: undefined,
+  devGenerateData: undefined,
+  lbGoToPage: undefined,
 };
-
-type SimpleModalOptions = {
-  id: string;
-  type: string;
-  title: string;
-  inputs?: Input[];
-  text?: string;
-  buttonText: string;
-  execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
-  beforeInitFn?: (thisPopup: SimpleModal) => void;
-  beforeShowFn?: (thisPopup: SimpleModal) => void;
-  canClose?: boolean;
-  onlineOnly?: boolean;
-  hideCallsExec?: boolean;
-};
-
-const modal = new AnimatedModal({
-  dialogId: "simpleModal",
-  setup: async (modalEl): Promise<void> => {
-    modalEl.addEventListener("submit", (e) => {
-      e.preventDefault();
-      activePopup?.exec();
-    });
-  },
-  customEscapeHandler: (e): void => {
-    hide();
-  },
-  customWrapperClickHandler: (e): void => {
-    hide();
-  },
-});
-
-class SimpleModal {
-  parameters: string[];
-  wrapper: HTMLElement;
-  element: HTMLElement;
-  id: string;
-  type: string;
-  title: string;
-  inputs: Input[];
-  text?: string;
-  buttonText: string;
-  execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
-  beforeInitFn: ((thisPopup: SimpleModal) => void) | undefined;
-  beforeShowFn: ((thisPopup: SimpleModal) => void) | undefined;
-  canClose: boolean;
-  onlineOnly: boolean;
-  hideCallsExec: boolean;
-  constructor(options: SimpleModalOptions) {
-    this.parameters = [];
-    this.id = options.id;
-    this.type = options.type;
-    this.execFn = options.execFn;
-    this.title = options.title;
-    this.inputs = options.inputs ?? [];
-    this.text = options.text;
-    this.wrapper = modal.getWrapper();
-    this.element = modal.getModal();
-    this.buttonText = options.buttonText;
-    this.beforeInitFn = options.beforeInitFn;
-    this.beforeShowFn = options.beforeShowFn;
-    this.canClose = options.canClose ?? true;
-    this.onlineOnly = options.onlineOnly ?? false;
-    this.hideCallsExec = options.hideCallsExec ?? false;
-  }
-  reset(): void {
-    this.element.innerHTML = `
-    <div class="title"></div>
-    <div class="inputs"></div>
-    <div class="text"></div>
-    <button type="submit" class="submitButton"></button>`;
-  }
-
-  init(): void {
-    const el = $(this.element);
-    el.find("input").val("");
-    this.reset();
-    el.attr("data-popup-id", this.id);
-    el.find(".title").text(this.title);
-    el.find(".text").text(this.text ?? "");
-
-    this.initInputs();
-
-    if (this.buttonText === "") {
-      el.find(".submitButton").remove();
-    } else {
-      el.find(".submitButton").text(this.buttonText);
-    }
-
-    if ((this.text ?? "") === "") {
-      el.find(".text").addClass("hidden");
-    } else {
-      el.find(".text").removeClass("hidden");
-    }
-
-    // }
-  }
-
-  initInputs(): void {
-    const el = $(this.element);
-
-    const allInputsHidden = this.inputs.every((i) => i.hidden);
-    if (allInputsHidden || this.inputs.length === 0) {
-      el.find(".inputs").addClass("hidden");
-      return;
-    }
-
-    if (this.type === "number") {
-      this.inputs.forEach((input) => {
-        el.find(".inputs").append(`
-            <input
-              type="number"
-              min="1"
-              value="${input.initVal}"
-              placeholder="${input.placeholder}"
-              class="${input.hidden ? "hidden" : ""}"
-              ${input.hidden ? "" : "required"}
-              autocomplete="off"
-            >
-          `);
-      });
-    } else if (this.type === "text") {
-      this.inputs.forEach((input) => {
-        if (input.type !== undefined && input.type !== "") {
-          if (input.type === "textarea") {
-            el.find(".inputs").append(`
-                <textarea
-                  placeholder="${input.placeholder}"
-                  class="${input.hidden ? "hidden" : ""}"
-                  ${input.hidden ? "" : "required"}
-                  ${input.disabled ? "disabled" : ""}
-                  autocomplete="off"
-                >${input.initVal}</textarea>
-              `);
-          } else if (input.type === "checkbox") {
-            el.find(".inputs").append(`
-              <label class="checkbox">
-                <input type="checkbox" checked="">
-                <div>${input.label}</div>
-              </label>
-              `);
-          } else {
-            el.find(".inputs").append(`
-              <input
-              type="${input.type}"
-              value="${input.initVal}"
-              placeholder="${input.placeholder}"
-              class="${input.hidden ? "hidden" : ""}"
-              ${input.hidden ? "" : "required"}
-              ${input.disabled ? "disabled" : ""}
-              autocomplete="off"
-              >
-              `);
-          }
-        } else {
-          el.find(".inputs").append(`
-              <input
-                type="text"
-                value="${input.initVal}"
-                placeholder="${input.placeholder}"
-                class="${input.hidden ? "hidden" : ""}"
-                ${input.hidden ? "" : "required"}
-                ${input.disabled ? "disabled" : ""}
-                autocomplete="off"
-              >
-            `);
-        }
-      });
-    }
-    el.find(".inputs").removeClass("hidden");
-  }
-
-  exec(): void {
-    if (!this.canClose) return;
-    const vals: string[] = [];
-    for (const el of $("#simpleModal input, #simpleModal textarea")) {
-      if ($(el).is(":checkbox")) {
-        vals.push($(el).is(":checked") ? "true" : "false");
-      } else {
-        vals.push($(el).val() as string);
-      }
-    }
-
-    const inputsWithCurrentValue = [];
-    for (let i = 0; i < this.inputs.length; i++) {
-      inputsWithCurrentValue.push({ ...this.inputs[i], currentValue: vals[i] });
-    }
-
-    if (
-      inputsWithCurrentValue
-        .filter((i) => !i.hidden)
-        .some((v) => v.currentValue === undefined || v.currentValue === "")
-    ) {
-      Notifications.add("Please fill in all fields", 0);
-      return;
-    }
-
-    this.disableInputs();
-    Loader.show();
-    void this.execFn(this, ...vals).then((res) => {
-      Loader.hide();
-      if (res.showNotification ?? true) {
-        Notifications.add(res.message, res.status, res.notificationOptions);
-      }
-      if (res.status === 1) {
-        void this.hide(true, res.hideOptions).then(() => {
-          if (res.afterHide) {
-            res.afterHide();
-          }
-        });
-      } else {
-        this.enableInputs();
-        $($("#simpleModal").find("input")[0] as HTMLInputElement).trigger(
-          "focus"
-        );
-      }
-    });
-  }
-
-  disableInputs(): void {
-    $("#simpleModal input").prop("disabled", true);
-    $("#simpleModal button").prop("disabled", true);
-    $("#simpleModal textarea").prop("disabled", true);
-    $("#simpleModal .checkbox").addClass("disabled");
-  }
-
-  enableInputs(): void {
-    $("#simpleModal input").prop("disabled", false);
-    $("#simpleModal button").prop("disabled", false);
-    $("#simpleModal textarea").prop("disabled", false);
-    $("#simpleModal .checkbox").removeClass("disabled");
-  }
-
-  show(parameters: string[] = [], showOptions: ShowOptions): void {
-    activePopup = this;
-    this.parameters = parameters;
-    void modal.show({
-      ...showOptions,
-      focusFirstInput: true,
-      beforeAnimation: async () => {
-        this.beforeInitFn?.(this);
-        this.init();
-        this.beforeShowFn?.(this);
-      },
-    });
-  }
-
-  async hide(callerIsExec?: boolean, hideOptions?: HideOptions): Promise<void> {
-    if (!this.canClose) return;
-    if (this.hideCallsExec && !callerIsExec) {
-      this.exec();
-    } else {
-      activePopup = null;
-      await modal.hide(hideOptions);
-    }
-  }
-}
-
-function hide(): void {
-  if (activePopup) {
-    void activePopup.hide();
-    return;
-  }
-}
 
 type AuthMethod = "password" | "github.com" | "google.com";
 
@@ -482,6 +198,12 @@ async function reauthenticate(
         status: 0,
         message: "Incorrect password",
       };
+    } else if (typedError.code === "auth/invalid-credential") {
+      return {
+        status: 0,
+        message:
+          "Password is incorrect or your account does not have password authentication enabled.",
+      };
     } else {
       return {
         status: -1,
@@ -495,7 +217,6 @@ async function reauthenticate(
 
 list.updateEmail = new SimpleModal({
   id: "updateEmail",
-  type: "text",
   title: "Update email",
   inputs: [
     {
@@ -504,12 +225,23 @@ list.updateEmail = new SimpleModal({
       initVal: "",
     },
     {
+      type: "text",
       placeholder: "New email",
       initVal: "",
+      validation: {
+        schema: UserEmailSchema,
+      },
     },
     {
+      type: "text",
       placeholder: "Confirm new email",
       initVal: "",
+      validation: {
+        schema: UserEmailSchema,
+        isValid: async (currentValue, thisPopup) =>
+          currentValue === thisPopup.inputs?.[1]?.currentValue() ||
+          "Emails don't match",
+      },
     },
   ],
   buttonText: "update",
@@ -535,15 +267,17 @@ list.updateEmail = new SimpleModal({
       };
     }
 
-    const response = await Ape.users.updateEmail(
-      email,
-      reauth.user.email as string
-    );
+    const response = await Ape.users.updateEmail({
+      body: {
+        newEmail: email,
+        previousEmail: reauth.user.email as string,
+      },
+    });
 
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to update email: " + response.message,
+        message: "Failed to update email: " + response.body.message,
       };
     }
 
@@ -566,7 +300,6 @@ list.updateEmail = new SimpleModal({
 
 list.removeGoogleAuth = new SimpleModal({
   id: "removeGoogleAuth",
-  type: "text",
   title: "Remove Google authentication",
   inputs: [
     {
@@ -599,7 +332,7 @@ list.removeGoogleAuth = new SimpleModal({
       };
     }
 
-    Settings.updateAuthSections();
+    AccountSettings.updateUI();
 
     reloadAfter(3);
     return {
@@ -621,7 +354,6 @@ list.removeGoogleAuth = new SimpleModal({
 
 list.removeGithubAuth = new SimpleModal({
   id: "removeGithubAuth",
-  type: "text",
   title: "Remove GitHub authentication",
   inputs: [
     {
@@ -654,7 +386,7 @@ list.removeGithubAuth = new SimpleModal({
       };
     }
 
-    Settings.updateAuthSections();
+    AccountSettings.updateUI();
 
     reloadAfter(3);
     return {
@@ -674,9 +406,56 @@ list.removeGithubAuth = new SimpleModal({
   },
 });
 
+list.removePasswordAuth = new SimpleModal({
+  id: "removePaswordAuth",
+  title: "Remove Password authentication",
+  inputs: [
+    {
+      type: "checkbox",
+      label: `I understand I will lose access to my Monkeytype account if my Google/GitHub account is lost or disabled.`,
+    },
+  ],
+  onlineOnly: true,
+  buttonText: "reauthenticate to remove",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
+    const reauth = await reauthenticate({
+      excludeMethod: "password",
+    });
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
+    }
+
+    try {
+      await unlink(reauth.user, "password");
+    } catch (e) {
+      const message = createErrorMessage(
+        e,
+        "Failed to remove password authentication"
+      );
+      return {
+        status: -1,
+        message,
+      };
+    }
+
+    AccountSettings.updateUI();
+
+    reloadAfter(3);
+    return {
+      status: 1,
+      message: "Password authentication removed",
+    };
+  },
+  beforeInitFn: (): void => {
+    if (!isAuthenticated()) return;
+  },
+});
+
 list.updateName = new SimpleModal({
   id: "updateName",
-  type: "text",
   title: "Update name",
   inputs: [
     {
@@ -688,6 +467,18 @@ list.updateName = new SimpleModal({
       placeholder: "new name",
       type: "text",
       initVal: "",
+      validation: {
+        schema: UserNameSchema,
+        isValid: async (newName: string) => {
+          const checkNameResponse = (
+            await Ape.users.getNameAvailability({
+              params: { name: newName },
+            })
+          ).status;
+
+          return checkNameResponse === 200 ? true : "Name not available";
+        },
+      },
     },
   ],
   buttonText: "update",
@@ -701,36 +492,25 @@ list.updateName = new SimpleModal({
       };
     }
 
-    const checkNameResponse = await Ape.users.getNameAvailability(newName);
-
-    if (checkNameResponse.status === 409) {
-      return {
-        status: 0,
-        message: "Name not available",
-      };
-    } else if (checkNameResponse.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to check name: " + checkNameResponse.message,
-      };
-    }
-
-    const updateNameResponse = await Ape.users.updateName(newName);
+    const updateNameResponse = await Ape.users.updateName({
+      body: { name: newName },
+    });
     if (updateNameResponse.status !== 200) {
       return {
         status: -1,
-        message: "Failed to update name: " + updateNameResponse.message,
+        message: "Failed to update name: " + updateNameResponse.body.message,
       };
     }
 
     const snapshot = DB.getSnapshot();
     if (snapshot) {
       snapshot.name = newName;
+      DB.setSnapshot(snapshot);
       if (snapshot.needsToChangeName) {
         reloadAfter(2);
       }
+      AccountButton.update(snapshot);
     }
-    $("nav .textButton.account .text").text(newName);
 
     return {
       status: 1,
@@ -742,7 +522,7 @@ list.updateName = new SimpleModal({
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
     if (!isUsingPasswordAuthentication()) {
-      (thisPopup.inputs[0] as Input).hidden = true;
+      (thisPopup.inputs[0] as PasswordInput).hidden = true;
       thisPopup.buttonText = "reauthenticate to update";
     }
     if (snapshot.needsToChangeName === true) {
@@ -754,7 +534,6 @@ list.updateName = new SimpleModal({
 
 list.updatePassword = new SimpleModal({
   id: "updatePassword",
-  type: "text",
   title: "Update password",
   inputs: [
     {
@@ -778,24 +557,24 @@ list.updatePassword = new SimpleModal({
   execFn: async (
     _thisPopup,
     previousPass,
-    newPass,
+    newPassword,
     newPassConfirm
   ): Promise<ExecReturn> => {
-    if (newPass !== newPassConfirm) {
+    if (newPassword !== newPassConfirm) {
       return {
         status: 0,
         message: "New passwords don't match",
       };
     }
 
-    if (newPass === previousPass) {
+    if (newPassword === previousPass) {
       return {
         status: 0,
         message: "New password must be different from previous password",
       };
     }
 
-    if (!isDevEnvironment() && !isPasswordStrong(newPass)) {
+    if (!isDevEnvironment() && !isPasswordStrong(newPassword)) {
       return {
         status: 0,
         message:
@@ -811,17 +590,18 @@ list.updatePassword = new SimpleModal({
       };
     }
 
-    try {
-      await updatePassword(reauth.user, newPass);
-    } catch (e) {
-      const message = createErrorMessage(e, "Failed to update password");
+    const response = await Ape.users.updatePassword({
+      body: { newPassword },
+    });
+
+    if (response.status !== 200) {
       return {
         status: -1,
-        message,
+        message: "Failed to update password: " + response.body.message,
       };
     }
 
-    reloadAfter(3);
+    AccountController.signOut();
 
     return {
       status: 1,
@@ -840,7 +620,6 @@ list.updatePassword = new SimpleModal({
 
 list.addPasswordAuth = new SimpleModal({
   id: "addPasswordAuth",
-  type: "text",
   title: "Add password authentication",
   inputs: [
     {
@@ -909,20 +688,22 @@ list.addPasswordAuth = new SimpleModal({
       };
     }
 
-    const response = await Ape.users.updateEmail(
-      email,
-      reauth.user.email as string
-    );
+    const response = await Ape.users.updateEmail({
+      body: {
+        newEmail: email,
+        previousEmail: reauth.user.email as string,
+      },
+    });
     if (response.status !== 200) {
       return {
         status: -1,
         message:
           "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error: " +
-          response.message,
+          response.body.message,
       };
     }
 
-    Settings.updateAuthSections();
+    AccountSettings.updateUI();
     return {
       status: 1,
       message: "Password authentication added",
@@ -932,7 +713,6 @@ list.addPasswordAuth = new SimpleModal({
 
 list.deleteAccount = new SimpleModal({
   id: "deleteAccount",
-  type: "text",
   title: "Delete account",
   inputs: [
     {
@@ -959,7 +739,7 @@ list.deleteAccount = new SimpleModal({
     if (usersResponse.status !== 200) {
       return {
         status: -1,
-        message: "Failed to delete user data: " + usersResponse.message,
+        message: "Failed to delete user data: " + usersResponse.body.message,
       };
     }
 
@@ -981,7 +761,6 @@ list.deleteAccount = new SimpleModal({
 
 list.resetAccount = new SimpleModal({
   id: "resetAccount",
-  type: "text",
   title: "Reset account",
   inputs: [
     {
@@ -1010,7 +789,7 @@ list.resetAccount = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to reset account: " + response.message,
+        message: "Failed to reset account: " + response.body.message,
       };
     }
 
@@ -1032,7 +811,6 @@ list.resetAccount = new SimpleModal({
 
 list.optOutOfLeaderboards = new SimpleModal({
   id: "optOutOfLeaderboards",
-  type: "text",
   title: "Opt out of leaderboards",
   inputs: [
     {
@@ -1057,7 +835,7 @@ list.optOutOfLeaderboards = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to opt out: " + response.message,
+        message: "Failed to opt out: " + response.body.message,
       };
     }
 
@@ -1077,55 +855,10 @@ list.optOutOfLeaderboards = new SimpleModal({
   },
 });
 
-list.clearTagPb = new SimpleModal({
-  id: "clearTagPb",
-  type: "text",
-  title: "Clear tag PB",
-  text: "Are you sure you want to clear this tags PB?",
-  buttonText: "clear",
-  execFn: async (thisPopup): Promise<ExecReturn> => {
-    const tagId = thisPopup.parameters[0] as string;
-    const response = await Ape.users.deleteTagPersonalBest(tagId);
-    if (response.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to clear tag PB: " + response.message,
-      };
-    }
-
-    const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
-
-    if (tag === undefined) {
-      return {
-        status: -1,
-        message: "Tag not found",
-      };
-    }
-    tag.personalBests = {
-      time: {},
-      words: {},
-      quote: {},
-      zen: {},
-      custom: {},
-    };
-    $(
-      `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
-    ).attr("aria-label", "No PB found");
-    return {
-      status: 1,
-      message: "Tag PB cleared",
-    };
-  },
-  beforeInitFn: (thisPopup): void => {
-    thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
-  },
-});
-
 list.applyCustomFont = new SimpleModal({
   id: "applyCustomFont",
-  type: "text",
   title: "Custom font",
-  inputs: [{ placeholder: "Font name", initVal: "" }],
+  inputs: [{ type: "text", placeholder: "Font name", initVal: "" }],
   text: "Make sure you have the font installed on your computer before applying",
   buttonText: "apply",
   execFn: async (_thisPopup, fontName): Promise<ExecReturn> => {
@@ -1140,7 +873,6 @@ list.applyCustomFont = new SimpleModal({
 
 list.resetPersonalBests = new SimpleModal({
   id: "resetPersonalBests",
-  type: "text",
   title: "Reset personal bests",
   inputs: [
     {
@@ -1164,7 +896,7 @@ list.resetPersonalBests = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to reset personal bests: " + response.message,
+        message: "Failed to reset personal bests: " + response.body.message,
       };
     }
 
@@ -1200,7 +932,6 @@ list.resetPersonalBests = new SimpleModal({
 
 list.resetSettings = new SimpleModal({
   id: "resetSettings",
-  type: "text",
   title: "Reset settings",
   text: "Are you sure you want to reset all your settings?",
   buttonText: "reset",
@@ -1216,7 +947,6 @@ list.resetSettings = new SimpleModal({
 
 list.revokeAllTokens = new SimpleModal({
   id: "revokeAllTokens",
-  type: "text",
   title: "Revoke all tokens",
   inputs: [
     {
@@ -1225,7 +955,7 @@ list.revokeAllTokens = new SimpleModal({
       initVal: "",
     },
   ],
-  text: "Are you sure you want to this? This will log you out of all devices.",
+  text: "Are you sure you want to do this? This will log you out of all devices.",
   buttonText: "revoke all",
   onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
@@ -1241,7 +971,7 @@ list.revokeAllTokens = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to revoke tokens: " + response.message,
+        message: "Failed to revoke tokens: " + response.body.message,
       };
     }
 
@@ -1257,7 +987,7 @@ list.revokeAllTokens = new SimpleModal({
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
     if (!isUsingPasswordAuthentication()) {
-      (thisPopup.inputs[0] as Input).hidden = true;
+      (thisPopup.inputs[0] as PasswordInput).hidden = true;
       thisPopup.buttonText = "reauthenticate to revoke all tokens";
     }
   },
@@ -1265,7 +995,6 @@ list.revokeAllTokens = new SimpleModal({
 
 list.unlinkDiscord = new SimpleModal({
   id: "unlinkDiscord",
-  type: "text",
   title: "Unlink Discord",
   text: "Are you sure you want to unlink your Discord account?",
   buttonText: "unlink",
@@ -1283,15 +1012,15 @@ list.unlinkDiscord = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to unlink Discord: " + response.message,
+        message: "Failed to unlink Discord: " + response.body.message,
       };
     }
 
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
-    void AccountButton.update();
+    AccountButton.updateAvatar(undefined, undefined);
     DB.setSnapshot(snap);
-    Settings.updateDiscordSection();
+    AccountSettings.updateUI();
 
     return {
       status: 1,
@@ -1300,149 +1029,8 @@ list.unlinkDiscord = new SimpleModal({
   },
 });
 
-list.generateApeKey = new SimpleModal({
-  id: "generateApeKey",
-  type: "text",
-  title: "Generate new Ape key",
-  inputs: [
-    {
-      placeholder: "Name",
-      initVal: "",
-    },
-  ],
-  buttonText: "generate",
-  onlineOnly: true,
-  execFn: async (_thisPopup, name): Promise<ExecReturn> => {
-    const response = await Ape.apeKeys.generate(name, false);
-    if (response.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to generate key: " + response.message,
-      };
-    }
-
-    //if response is 200 data is guaranteed to not be null
-    const data = response.data as Ape.ApeKeys.GenerateApeKey;
-
-    const modalChain = modal.getPreviousModalInChain();
-    return {
-      status: 1,
-      message: "Key generated",
-      hideOptions: {
-        clearModalChain: true,
-        animationMode: "modalOnly",
-      },
-      afterHide: (): void => {
-        showPopup("viewApeKey", [data.apeKey], {
-          modalChain,
-          animationMode: "modalOnly",
-        });
-      },
-    };
-  },
-});
-
-list.viewApeKey = new SimpleModal({
-  id: "viewApeKey",
-  type: "text",
-  title: "Ape key",
-  inputs: [
-    {
-      type: "textarea",
-      disabled: true,
-      placeholder: "key",
-      initVal: "",
-    },
-  ],
-  text: "This is your new Ape Key. Please keep it safe. You will only see it once!",
-  buttonText: "close",
-  hideCallsExec: true,
-  execFn: async (_thisPopup): Promise<ExecReturn> => {
-    return {
-      status: 1,
-      message: "Key generated",
-      showNotification: false,
-      hideOptions: {
-        clearModalChain: true,
-      },
-    };
-  },
-  beforeInitFn: (_thisPopup): void => {
-    (_thisPopup.inputs[0] as Input).initVal = _thisPopup
-      .parameters[0] as string;
-  },
-  beforeShowFn: (_thisPopup): void => {
-    _thisPopup.canClose = false;
-    $("#simpleModal textarea").css("height", "110px");
-    $("#simpleModal .submitButton").addClass("hidden");
-    setTimeout(() => {
-      _thisPopup.canClose = true;
-      $("#simpleModal .submitButton").removeClass("hidden");
-    }, 5000);
-  },
-});
-
-list.deleteApeKey = new SimpleModal({
-  id: "deleteApeKey",
-  type: "text",
-  title: "Delete Ape key",
-  text: "Are you sure?",
-  buttonText: "delete",
-  onlineOnly: true,
-  execFn: async (_thisPopup): Promise<ExecReturn> => {
-    const response = await Ape.apeKeys.delete(_thisPopup.parameters[0] ?? "");
-    if (response.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to delete key: " + response.message,
-      };
-    }
-
-    return {
-      status: 1,
-      message: "Key deleted",
-      hideOptions: {
-        clearModalChain: true,
-      },
-    };
-  },
-});
-
-list.editApeKey = new SimpleModal({
-  id: "editApeKey",
-  type: "text",
-  title: "Edit Ape key",
-  inputs: [
-    {
-      placeholder: "name",
-      initVal: "",
-    },
-  ],
-  buttonText: "edit",
-  onlineOnly: true,
-  execFn: async (_thisPopup, input): Promise<ExecReturn> => {
-    const response = await Ape.apeKeys.update(_thisPopup.parameters[0] ?? "", {
-      name: input,
-    });
-    if (response.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to update key: " + response.message,
-      };
-    }
-    return {
-      status: 1,
-      message: "Key updated",
-      hideOptions: {
-        clearModalChain: true,
-      },
-    };
-  },
-});
-
 list.deleteCustomText = new SimpleModal({
   id: "deleteCustomText",
-  type: "text",
   title: "Delete custom text",
   text: "Are you sure?",
   buttonText: "delete",
@@ -1462,7 +1050,6 @@ list.deleteCustomText = new SimpleModal({
 
 list.deleteCustomTextLong = new SimpleModal({
   id: "deleteCustomTextLong",
-  type: "text",
   title: "Delete custom text",
   text: "Are you sure?",
   buttonText: "delete",
@@ -1482,7 +1069,6 @@ list.deleteCustomTextLong = new SimpleModal({
 
 list.resetProgressCustomTextLong = new SimpleModal({
   id: "resetProgressCustomTextLong",
-  type: "text",
   title: "Reset progress for custom text",
   text: "Are you sure?",
   buttonText: "reset",
@@ -1505,7 +1091,6 @@ list.resetProgressCustomTextLong = new SimpleModal({
 
 list.updateCustomTheme = new SimpleModal({
   id: "updateCustomTheme",
-  type: "text",
   title: "Update custom theme",
   inputs: [
     {
@@ -1515,8 +1100,9 @@ list.updateCustomTheme = new SimpleModal({
     },
     {
       type: "checkbox",
-      initVal: "false",
+      initVal: false,
       label: "Update custom theme to current colors",
+      optional: true,
     },
   ],
   buttonText: "update",
@@ -1555,7 +1141,7 @@ list.updateCustomTheme = new SimpleModal({
 
     const newTheme = {
       name: name.replaceAll(" ", "_"),
-      colors: newColors,
+      colors: newColors as CustomThemeColors,
     };
     const validation = await DB.editCustomTheme(customTheme._id, newTheme);
     if (!validation) {
@@ -1564,7 +1150,7 @@ list.updateCustomTheme = new SimpleModal({
         message: "Failed to update custom theme",
       };
     }
-    UpdateConfig.setCustomThemeColors(newColors);
+    UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
     void ThemePicker.refreshButtons();
 
     return {
@@ -1580,13 +1166,12 @@ list.updateCustomTheme = new SimpleModal({
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (!customTheme) return;
-    (_thisPopup.inputs[0] as Input).initVal = customTheme.name;
+    (_thisPopup.inputs[0] as TextInput).initVal = customTheme.name;
   },
 });
 
 list.deleteCustomTheme = new SimpleModal({
   id: "deleteCustomTheme",
-  type: "text",
   title: "Delete custom theme",
   text: "Are you sure?",
   buttonText: "delete",
@@ -1602,42 +1187,123 @@ list.deleteCustomTheme = new SimpleModal({
   },
 });
 
-list.forgotPassword = new SimpleModal({
-  id: "forgotPassword",
-  type: "text",
-  title: "Forgot password",
+list.devGenerateData = new SimpleModal({
+  id: "devGenerateData",
+  title: "Generate data",
+  showLabels: true,
   inputs: [
     {
       type: "text",
-      placeholder: "email",
-      initVal: "",
+      label: "username",
+      placeholder: "username",
+      oninput: (event): void => {
+        const target = event.target as HTMLInputElement;
+        const span = document.querySelector(
+          "#devGenerateData_1 + span"
+        ) as HTMLInputElement;
+        span.innerHTML = `if checked, user will be created with ${target.value}@example.com and password: password`;
+        return;
+      },
+      validation: {
+        schema: UserNameSchema,
+      },
+    },
+    {
+      type: "checkbox",
+      label: "create user",
+      description:
+        "if checked, user will be created with {username}@example.com and password: password",
+      optional: true,
+    },
+    {
+      type: "date",
+      label: "first test",
+      optional: true,
+    },
+    {
+      type: "date",
+      label: "last test",
+      max: new Date(),
+      optional: true,
+    },
+    {
+      type: "range",
+      label: "min tests per day",
+      initVal: 0,
+      min: 0,
+      max: 200,
+      step: 10,
+    },
+    {
+      type: "range",
+      label: "max tests per day",
+      initVal: 50,
+      min: 0,
+      max: 200,
+      step: 10,
     },
   ],
-  buttonText: "send",
-  execFn: async (_thisPopup, email): Promise<ExecReturn> => {
-    const result = await Ape.users.forgotPasswordEmail(email.trim());
-    if (result.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to send password reset email: " + result.message,
-      };
-    }
+  buttonText: "generate (might take a while)",
+  execFn: async (
+    _thisPopup,
+    username,
+    createUser,
+    firstTestTimestamp,
+    lastTestTimestamp,
+    minTestsPerDay,
+    maxTestsPerDay
+  ): Promise<ExecReturn> => {
+    const request: GenerateDataRequest = {
+      username,
+      createUser: createUser === "true",
+    };
+    if (firstTestTimestamp !== undefined && firstTestTimestamp.length > 0)
+      request.firstTestTimestamp = Date.parse(firstTestTimestamp);
+    if (lastTestTimestamp !== undefined && lastTestTimestamp.length > 0)
+      request.lastTestTimestamp = Date.parse(lastTestTimestamp);
+    if (minTestsPerDay !== undefined && minTestsPerDay.length > 0)
+      request.minTestsPerDay = Number.parseInt(minTestsPerDay);
+    if (maxTestsPerDay !== undefined && maxTestsPerDay.length > 0)
+      request.maxTestsPerDay = Number.parseInt(maxTestsPerDay);
+
+    const result = await Ape.dev.generateData({ body: request });
 
     return {
-      status: 1,
-      message: result.message,
-      notificationOptions: {
-        duration: 8,
+      status: result.status === 200 ? 1 : -1,
+      message: result.body.message,
+      hideOptions: {
+        clearModalChain: true,
       },
     };
   },
-  beforeInitFn: (thisPopup): void => {
-    const inputValue = $(
-      `.pageLogin .login input[name="current-email"]`
-    ).val() as string;
-    if (inputValue) {
-      (thisPopup.inputs[0] as Input).initVal = inputValue;
+});
+
+list.lbGoToPage = new SimpleModal({
+  id: "lbGoToPage",
+  title: "Go to page",
+  inputs: [
+    {
+      type: "number",
+      placeholder: "Page number",
+    },
+  ],
+  buttonText: "Go",
+  execFn: async (_thisPopup, pageNumber): Promise<ExecReturn> => {
+    const page = parseInt(pageNumber, 10);
+    if (isNaN(page) || page < 1) {
+      return {
+        status: 0,
+        message: "Invalid page number",
+      };
     }
+
+    goToPage(page - 1);
+
+    return {
+      status: 1,
+      message: "Navigating to page " + page,
+      showNotification: false,
+    };
   },
 });
 
@@ -1651,46 +1317,39 @@ export function showPopup(
     Notifications.add("Failed to show popup - popup is not defined", -1);
     return;
   }
-  if (popup.onlineOnly === true && !ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   popup.show(showParams, showOptions);
 }
 
 //todo: move these event handlers to their respective files (either global event files or popup files)
-$(".pageLogin #forgotPasswordButton").on("click", () => {
-  showPopup("forgotPassword");
+$(".pageAccountSettings").on("click", "#unlinkDiscordButton", () => {
+  showPopup("unlinkDiscord");
 });
 
-$(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
-  "click",
-  () => {
-    showPopup("unlinkDiscord");
-  }
-);
-
-$(".pageSettings #removeGoogleAuth").on("click", () => {
+$(".pageAccountSettings").on("click", "#removeGoogleAuth", () => {
   showPopup("removeGoogleAuth");
 });
 
-$(".pageSettings #removeGithubAuth").on("click", () => {
+$(".pageAccountSettings").on("click", "#removeGithubAuth", () => {
   showPopup("removeGithubAuth");
+});
+
+$(".pageAccountSettings").on("click", "#removePasswordAuth", () => {
+  showPopup("removePasswordAuth");
 });
 
 $("#resetSettingsButton").on("click", () => {
   showPopup("resetSettings");
 });
 
-$("#revokeAllTokens").on("click", () => {
+$(".pageAccountSettings").on("click", "#revokeAllTokens", () => {
   showPopup("revokeAllTokens");
 });
 
-$(".pageSettings #resetPersonalBestsButton").on("click", () => {
+$(".pageAccountSettings").on("click", "#resetPersonalBestsButton", () => {
   showPopup("resetPersonalBests");
 });
 
-$(".pageSettings #updateAccountName").on("click", () => {
+$(".pageAccountSettings").on("click", "#updateAccountName", () => {
   showPopup("updateName");
 });
 
@@ -1698,27 +1357,27 @@ $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
   showPopup("updateName");
 });
 
-$(".pageSettings #addPasswordAuth").on("click", () => {
+$(".pageAccountSettings").on("click", "#addPasswordAuth", () => {
   showPopup("addPasswordAuth");
 });
 
-$(".pageSettings #emailPasswordAuth").on("click", () => {
+$(".pageAccountSettings").on("click", "#emailPasswordAuth", () => {
   showPopup("updateEmail");
 });
 
-$(".pageSettings #passPasswordAuth").on("click", () => {
+$(".pageAccountSettings").on("click", "#passPasswordAuth", () => {
   showPopup("updatePassword");
 });
 
-$(".pageSettings #deleteAccount").on("click", () => {
+$(".pageAccountSettings").on("click", "#deleteAccount", () => {
   showPopup("deleteAccount");
 });
 
-$(".pageSettings #resetAccount").on("click", () => {
+$(".pageAccountSettings").on("click", "#resetAccount", () => {
   showPopup("resetAccount");
 });
 
-$(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
+$(".pageAccountSettings").on("click", "#optOutOfLeaderboardsButton", () => {
   showPopup("optOutOfLeaderboards");
 });
 
@@ -1738,7 +1397,9 @@ $(".pageSettings").on(
   (e) => {
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
-    showPopup("updateCustomTheme", [customThemeId]);
+    showPopup("updateCustomTheme", [customThemeId], {
+      focusFirstInput: "focusAndSelect",
+    });
   }
 );
 

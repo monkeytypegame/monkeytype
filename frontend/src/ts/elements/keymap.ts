@@ -10,7 +10,7 @@ import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
 import * as TestWords from "../test/test-words";
 
-const stenoKeys: MonkeyTypes.Layout = {
+const stenoKeys: JSONData.Layout = {
   keymapShowTopRow: true,
   type: "matrix",
   keys: {
@@ -33,7 +33,7 @@ function highlightKey(currentKey: string): void {
       currentKey = Hangul.disassemble(currentKey)[0] ?? currentKey;
     }
     if (currentKey === " ") {
-      highlightKey = "#keymap .keySpace, #keymap .keySplitSpace";
+      highlightKey = "#keymap .keySpace";
     } else if (currentKey === '"') {
       highlightKey = `#keymap .keymapKey[data-key*='${currentKey}']`;
     } else {
@@ -54,7 +54,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
   if (key === undefined) return;
   //console.log("key", key);
   if (key === " ") {
-    key = "#keymap .keySpace, #keymap .keySplitSpace";
+    key = "#keymap .keySpace";
   } else if (key === '"') {
     key = `#keymap .keymapKey[data-key*='${key}']`;
   } else {
@@ -113,6 +113,8 @@ export async function refresh(
   if (Config.keymapMode === "off") return;
   if (ActivePage.get() !== "test") return;
   if (!layoutName) return;
+  let r5_grid = "";
+  let hasAlphas = false;
   try {
     let layouts;
     try {
@@ -133,18 +135,18 @@ export async function refresh(
         lts = layouts["qwerty"];
         layoutString = "default";
       } else {
-        lts = layouts[Config.layout as keyof typeof layouts];
+        lts = layouts[Config.layout];
         layoutString = Config.layout;
       }
     } else {
-      lts = layouts[Config.keymapLayout as keyof typeof layouts];
+      lts = layouts[Config.keymapLayout];
       layoutString = Config.keymapLayout;
     }
 
     const showTopRow =
       (TestWords.hasNumbers && Config.keymapMode === "next") ||
       Config.keymapShowTopRow === "always" ||
-      ((lts as typeof layouts["qwerty"]).keymapShowTopRow &&
+      ((lts as (typeof layouts)["qwerty"]).keymapShowTopRow &&
         Config.keymapShowTopRow !== "never");
 
     const isMatrix =
@@ -152,6 +154,8 @@ export async function refresh(
 
     const isSteno =
       Config.keymapStyle === "steno" || Config.keymapStyle === "steno_matrix";
+
+    const isAlice = Config.keymapStyle === "alice";
 
     if (isSteno) {
       lts = stenoKeys;
@@ -161,6 +165,8 @@ export async function refresh(
       throw new Error("Failed to refresh keymap: layout not found");
     }
 
+    const isISO = lts.type === "iso";
+
     let keymapElement = "";
 
     // ( as (keyof MonkeyTypes.Keys)[]).forEach(
@@ -169,7 +175,7 @@ export async function refresh(
     const rowIds = Object.keys(lts.keys);
 
     for (let index = 0; index < rowIds.length; index++) {
-      const row = rowIds[index] as keyof MonkeyTypes.Keys;
+      const row = rowIds[index] as keyof JSONData.Keys;
       let rowKeys = lts.keys[row];
       if (row === "row1" && (isMatrix || Config.keymapStyle === "staggered")) {
         rowKeys = rowKeys.slice(1);
@@ -187,7 +193,7 @@ export async function refresh(
         rowElement += "<div></div>";
       }
 
-      if (row === "row4" && lts.type !== "iso" && !isMatrix && !isSteno) {
+      if (row === "row4" && !isISO && !isMatrix && !isSteno) {
         rowElement += "<div></div>";
       }
 
@@ -201,26 +207,87 @@ export async function refresh(
 
       if (row === "row5") {
         if (isSteno) continue;
-        const layoutDisplay = layoutString.replace(/_/g, " ");
+        let layoutDisplay = layoutString.replace(/_/g, " ");
         let letterStyle = "";
         if (Config.keymapLegendStyle === "blank") {
           letterStyle = `style="display: none;"`;
         }
+        /* ROW 5 in alternate keymaps allow for alphas in thumb keys.
+         * These keymaps MUST include two keys in row 5,
+         * an alpha and a space, or a space and an alpha.
+         * Alpha key is rendered with the regular alpha size.
+         * Layout name is automatically added in the space key.
+         * Visual keymap will be:
+         * 1-3 for 1 alpha and 1 space
+         * 3-1 for 1 space and 1 alpha
+         * Together with the data-row5-has-alpha="true",
+         * these two will be used to edit the CSS grid layout.
+         * 3-3 for two spaces of size 3. This will not be used to edit CSS,
+         * since it means a traditional layout, can keep current CSS grid.
+         * It is just created for simplicity in the for loop below.
+         * */
+        // If only one space, add another
+        if (rowKeys.length === 1 && rowKeys[0] === " ") {
+          rowKeys[1] = rowKeys[0];
+        }
+        // If only one alpha, add one space and place it on the left
+        if (rowKeys.length === 1 && rowKeys[0] !== " ") {
+          rowKeys[1] = " ";
+          rowKeys.reverse();
+        }
+        // If two alphas equal, replace one with a space on the left
+        if (
+          rowKeys.length > 1 &&
+          rowKeys[0] !== " " &&
+          rowKeys[0] === rowKeys[1]
+        ) {
+          rowKeys[0] = " ";
+        }
+        const alphas = (v: string): boolean => v !== " ";
+        hasAlphas = rowKeys.some(alphas);
+
         rowElement += "<div></div>";
-        rowElement += `<div class="keymapKey keySpace">
-          <div class="letter" ${letterStyle}>${layoutDisplay}</div>
-        </div>`;
-        rowElement += `<div class="keymapSplitSpacer"></div>`;
-        rowElement += `<div class="keymapKey keySplitSpace">
-          <div class="letter"></div>
-        </div>`;
+
+        for (let i = 0; i < rowKeys.length; i++) {
+          const key = rowKeys[i] as string;
+          let keyDisplay = key[0] as string;
+          if (Config.keymapLegendStyle === "uppercase") {
+            keyDisplay = keyDisplay.toUpperCase();
+          }
+          const keyVisualValue = key.replace('"', "&quot;");
+          // these are used to keep grid layout but magically hide keys using opacity:
+          let side = i < 1 ? "left" : "right";
+          // we won't use this trick for alternate layouts, unless Alice (for rotation):
+          if (hasAlphas && !isAlice) side = "";
+          if (i === 1) {
+            rowElement += `<div class="keymapSplitSpacer"></div>`;
+            r5_grid += "-";
+          }
+          if (keyVisualValue === " ") {
+            rowElement += `<div class="keymapKey keySpace layoutIndicator ${side}">
+              <div class="letter" ${letterStyle}>${layoutDisplay}</div>
+            </div>`;
+            r5_grid += "3";
+            // potential second space in next loop iterations will be empty:
+            layoutDisplay = "";
+          } else {
+            rowElement += `<div class="keymapKey ${side}">
+              <div class="letter">${keyDisplay}</div>
+            </div>`;
+            r5_grid += "1";
+          }
+        }
       } else {
         for (let i = 0; i < rowKeys.length; i++) {
           if (row === "row2" && i === 12) continue;
+          if (row === "row4" && isMatrix && isISO && i === 0) continue;
 
           let colLimit = 10;
           if (lts.matrixShowRightColumn) {
             colLimit = 11;
+          }
+          if (row === "row4" && isMatrix && isISO) {
+            colLimit += 1;
           }
 
           if (
@@ -270,7 +337,7 @@ export async function refresh(
               row === "row4" &&
               (Config.keymapStyle === "split" ||
                 Config.keymapStyle === "alice") &&
-              lts.type === "iso"
+              isISO
             ) {
               if (i === 6) {
                 splitSpacer += `<div class="keymapSplitSpacer"></div>`;
@@ -282,6 +349,10 @@ export async function refresh(
               if (i === 7) {
                 splitSpacer += `<div class="keymapSplitSpacer"></div>`;
               }
+            } else if (row === "row4" && isMatrix && isISO) {
+              if (i === 6) {
+                splitSpacer += `<div class="keymapSplitSpacer"></div>`;
+              }
             } else {
               if (i === 5) {
                 splitSpacer += `<div class="keymapSplitSpacer"></div>`;
@@ -290,10 +361,7 @@ export async function refresh(
           }
 
           if (Config.keymapStyle === "alice" && row === "row4") {
-            if (
-              (lts.type === "iso" && i === 6) ||
-              (lts.type !== "iso" && i === 5)
-            ) {
+            if ((isISO && i === 6) || (!isISO && i === 5)) {
               splitSpacer += `<div class="extraKey"><span class="letter"></span></div>`;
             }
           }
@@ -302,7 +370,15 @@ export async function refresh(
         }
       }
 
-      keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
+      if (row === "row5") {
+        keymapElement += `<div
+          class="row r${index + 1}"
+          data-row5-grid="${r5_grid}"
+          data-row5-has-alpha="${hasAlphas}"
+        >${rowElement}</div>`;
+      } else {
+        keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
+      }
     }
     // );
 

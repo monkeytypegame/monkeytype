@@ -4,35 +4,45 @@ import { secondsToString } from "../utils/date-and-time";
 import * as Notifications from "./notifications";
 import { format } from "date-fns/format";
 import * as Alerts from "./alerts";
+import { PSA } from "@monkeytype/contracts/schemas/psas";
+import { z } from "zod";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { IdSchema } from "@monkeytype/contracts/schemas/util";
+
+const confirmedPSAs = new LocalStorageWithSchema({
+  key: "confirmedPSAs",
+  schema: z.array(IdSchema),
+  fallback: [],
+});
 
 function clearMemory(): void {
-  window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
+  confirmedPSAs.set([]);
 }
 
 function getMemory(): string[] {
-  return JSON.parse(window.localStorage.getItem("confirmedPSAs") ?? "[]") ?? [];
+  return confirmedPSAs.get();
 }
 
 function setMemory(id: string): void {
   const list = getMemory();
   list.push(id);
-  window.localStorage.setItem("confirmedPSAs", JSON.stringify(list));
+  confirmedPSAs.set(list);
 }
 
-async function getLatest(): Promise<SharedTypes.PSA[] | null> {
+async function getLatest(): Promise<PSA[] | null> {
   const response = await Ape.psas.get();
 
   if (response.status === 500) {
     if (isDevEnvironment()) {
-      Notifications.addBanner(
+      Notifications.addPSA(
         "Dev Info: Backend server not running",
         0,
         "exclamation-triangle",
         false
       );
     } else {
-      Notifications.addBanner(
-        "Looks like the server is experiencing maintenance or some unexpected down time.<br>Check the <a target= '_blank' href='https://monkeytype.instatus.com/'>status page</a> or <a target= '_blank' href='https://twitter.com/monkeytypegame'>Twitter</a> for more information.",
+      Notifications.addPSA(
+        "Looks like the server is experiencing maintenance or some unexpected down time.<br>Check the <a target= '_blank' href='https://monkeytype.instatus.com/'>status page</a> or <a target= '_blank' href='https://x.com/monkeytype'>Twitter</a> for more information.",
         -1,
         "exclamation-triangle",
         false,
@@ -43,7 +53,7 @@ async function getLatest(): Promise<SharedTypes.PSA[] | null> {
 
     return null;
   } else if (response.status === 503) {
-    Notifications.addBanner(
+    Notifications.addPSA(
       "Server is currently under maintenance. <a target= '_blank' href='https://monkeytype.instatus.com/'>Check the status page</a> for more info.",
       -1,
       "bullhorn",
@@ -55,7 +65,7 @@ async function getLatest(): Promise<SharedTypes.PSA[] | null> {
   } else if (response.status !== 200) {
     return null;
   }
-  return response.data;
+  return response.body.data;
 }
 
 export async function show(): Promise<void> {
@@ -95,7 +105,7 @@ export async function show(): Promise<void> {
       return;
     }
 
-    Notifications.addBanner(
+    Notifications.addPSA(
       psa.message,
       psa.level,
       "bullhorn",

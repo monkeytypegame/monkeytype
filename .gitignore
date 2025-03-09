@@ -71,7 +71,6 @@ node_modules_bak/
 #vs code
 .vscode/*
 .vscode/.*
-!.vscode/extensions.json
 *.code-workspace
 !monkeytype.code-workspace
 
@@ -121,3 +120,10 @@ content-validation.js
 ads.txt
 updateContributors.mjs
 copyAnticheatToDev.sh
+
+
+# ignore generated fonts
+frontend/src/webfonts-generated
+frontend/static/webfonts-preview
+
+.turbo

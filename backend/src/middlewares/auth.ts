@@ -3,55 +3,80 @@ import { getApeKey, updateLastUsedOn } from "../dal/ape-keys";
 import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode, isDevEnvironment } from "../utils/misc";
-import { NextFunction, Response, Handler } from "express";
+import { NextFunction, Response } from "express";
 import statuses from "../constants/monkey-status-codes";
 import {
   incrementAuth,
   recordAuthTime,
   recordRequestCountry,
-  // recordRequestForUid,
 } from "../utils/prometheus";
 import crypto from "crypto";
 import { performance } from "perf_hooks";
+import { TsRestRequestHandler } from "@ts-rest/express";
+import { AppRoute, AppRouter } from "@ts-rest/core";
+import {
+  EndpointMetadata,
+  RequestAuthenticationOptions,
+} from "@monkeytype/contracts/schemas/api";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { getMetadata } from "./utility";
+import { TsRestRequestWithContext } from "../api/types";
 
-type RequestAuthenticationOptions = {
-  isPublic?: boolean;
-  acceptApeKeys?: boolean;
-  requireFreshToken?: boolean;
-  noCache?: boolean;
+export type DecodedToken = {
+  type: "Bearer" | "ApeKey" | "None" | "GithubWebhook";
+  uid: string;
+  email: string;
 };
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
+  isGithubWebhook: false,
   isPublic: false,
   acceptApeKeys: false,
   requireFreshToken: false,
+  isPublicOnDev: false,
 };
 
-function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
-  const options = {
-    ...DEFAULT_OPTIONS,
-    ...authOptions,
-  };
-
+/**
+ * Authenticate request based on the auth settings of the route.
+ * By default a Bearer token with user authentication is required.
+ * @returns
+ */
+export function authenticateTsRestRequest<
+  T extends AppRouter | AppRoute
+>(): TsRestRequestHandler<T> {
   return async (
-    req: MonkeyTypes.Request,
+    req: TsRestRequestWithContext,
     _res: Response,
     next: NextFunction
   ): Promise<void> => {
+    const options = {
+      ...DEFAULT_OPTIONS,
+      ...((getMetadata(req)["authenticationOptions"] ??
+        {}) as EndpointMetadata),
+    };
+
     const startTime = performance.now();
-    let token: MonkeyTypes.DecodedToken;
+    let token: DecodedToken;
     let authType = "None";
 
-    const { authorization: authHeader } = req.headers;
+    const isPublic =
+      options.isPublic || (options.isPublicOnDev && isDevEnvironment());
+
+    const {
+      authorization: authHeader,
+      "x-hub-signature-256": githubWebhookHeader,
+    } = req.headers;
 
     try {
-      if (authHeader !== undefined && authHeader !== "") {
+      if (options.isGithubWebhook) {
+        token = authenticateGithubWebhook(req, githubWebhookHeader);
+      } else if (authHeader !== undefined && authHeader !== "") {
         token = await authenticateWithAuthHeader(
           authHeader,
           req.ctx.configuration,
           options
         );
-      } else if (options.isPublic === true) {
+      } else if (isPublic === true) {
         token = {
           type: "None",
           uid: "",
@@ -81,7 +106,8 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
         req
       );
 
-      return next(error);
+      next(error);
+      return;
     }
     recordAuthTime(
       token.type,
@@ -92,7 +118,7 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
 
     const country = req.headers["cf-ipcountry"] as string;
     if (country) {
-      recordRequestCountry(country, req as MonkeyTypes.Request);
+      recordRequestCountry(country, req);
     }
 
     // if (req.method !== "OPTIONS" && req?.ctx?.decodedToken?.uid) {
@@ -105,26 +131,10 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
 
 async function authenticateWithAuthHeader(
   authHeader: string,
-  configuration: SharedTypes.Configuration,
+  configuration: Configuration,
   options: RequestAuthenticationOptions
-): Promise<MonkeyTypes.DecodedToken> {
-  if (authHeader === undefined || authHeader === "") {
-    throw new MonkeyError(
-      401,
-      "Missing authentication header",
-      "authenticateWithAuthHeader"
-    );
-  }
-
+): Promise<DecodedToken> {
   const [authScheme, token] = authHeader.split(" ");
-
-  if (authScheme === undefined) {
-    throw new MonkeyError(
-      401,
-      "Missing authentication scheme",
-      "authenticateWithAuthHeader"
-    );
-  }
 
   if (token === undefined) {
     throw new MonkeyError(
@@ -134,7 +144,7 @@ async function authenticateWithAuthHeader(
     );
   }
 
-  const normalizedAuthScheme = authScheme.trim();
+  const normalizedAuthScheme = authScheme?.trim();
 
   switch (normalizedAuthScheme) {
     case "Bearer":
@@ -155,7 +165,7 @@ async function authenticateWithAuthHeader(
 async function authenticateWithBearerToken(
   token: string,
   options: RequestAuthenticationOptions
-): Promise<MonkeyTypes.DecodedToken> {
+): Promise<DecodedToken> {
   try {
     const decodedToken = await verifyIdToken(
       token,
@@ -181,33 +191,28 @@ async function authenticateWithBearerToken(
       email: decodedToken.email ?? "",
     };
   } catch (error) {
-    const errorCode = error?.errorInfo?.code;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const errorCode = error?.errorInfo?.code as string | undefined;
 
-    if (errorCode?.includes("auth/id-token-expired") as boolean | undefined) {
+    if (errorCode?.includes("auth/id-token-expired")) {
       throw new MonkeyError(
         401,
         "Token expired - please login again",
         "authenticateWithBearerToken"
       );
-    } else if (
-      errorCode?.includes("auth/id-token-revoked") as boolean | undefined
-    ) {
+    } else if (errorCode?.includes("auth/id-token-revoked")) {
       throw new MonkeyError(
         401,
         "Token revoked - please login again",
         "authenticateWithBearerToken"
       );
-    } else if (
-      errorCode?.includes("auth/user-not-found") as boolean | undefined
-    ) {
+    } else if (errorCode?.includes("auth/user-not-found")) {
       throw new MonkeyError(
         404,
         "User not found",
         "authenticateWithBearerToken"
       );
-    } else if (
-      errorCode?.includes("auth/argument-error") as boolean | undefined
-    ) {
+    } else if (errorCode?.includes("auth/argument-error")) {
       throw new MonkeyError(
         400,
         "Incorrect Bearer token format",
@@ -221,15 +226,20 @@ async function authenticateWithBearerToken(
 
 async function authenticateWithApeKey(
   key: string,
-  configuration: SharedTypes.Configuration,
+  configuration: Configuration,
   options: RequestAuthenticationOptions
-): Promise<MonkeyTypes.DecodedToken> {
-  if (!configuration.apeKeys.acceptKeys) {
-    throw new MonkeyError(503, "ApeKeys are not being accepted at this time");
-  }
+): Promise<DecodedToken> {
+  const isPublic =
+    options.isPublic || (options.isPublicOnDev && isDevEnvironment());
 
-  if (!options.acceptApeKeys && !options.isPublic) {
-    throw new MonkeyError(401, "This endpoint does not accept ApeKeys");
+  if (!isPublic) {
+    if (!configuration.apeKeys.acceptKeys) {
+      throw new MonkeyError(503, "ApeKeys are not being accepted at this time");
+    }
+
+    if (!options.acceptApeKeys) {
+      throw new MonkeyError(401, "This endpoint does not accept ApeKeys");
+    }
   }
 
   try {
@@ -278,9 +288,7 @@ async function authenticateWithApeKey(
   }
 }
 
-async function authenticateWithUid(
-  token: string
-): Promise<MonkeyTypes.DecodedToken> {
+async function authenticateWithUid(token: string): Promise<DecodedToken> {
   if (!isDevEnvironment()) {
     throw new MonkeyError(401, "Baerer type uid is not supported");
   }
@@ -297,45 +305,49 @@ async function authenticateWithUid(
   };
 }
 
-function authenticateGithubWebhook(): Handler {
-  return async (
-    req: MonkeyTypes.Request,
-    _res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    //authorize github webhook
-    const { "x-hub-signature-256": authHeader } = req.headers;
-
+export function authenticateGithubWebhook(
+  req: TsRestRequestWithContext,
+  authHeader: string | string[] | undefined
+): DecodedToken {
+  try {
     const webhookSecret = process.env["GITHUB_WEBHOOK_SECRET"];
 
-    try {
-      if (webhookSecret === undefined || webhookSecret === "") {
-        throw new MonkeyError(500, "Missing Github Webhook Secret");
-      } else if (
-        authHeader === undefined ||
-        authHeader === "" ||
-        authHeader.length === 0
-      ) {
-        throw new MonkeyError(401, "Missing Github signature header");
-      } else {
-        const signature = crypto
-          .createHmac("sha256", webhookSecret)
-          .update(JSON.stringify(req.body))
-          .digest("hex");
-        const trusted = Buffer.from(`sha256=${signature}`, "ascii");
-        const untrusted = Buffer.from(authHeader as string, "ascii");
-        const isSignatureValid = crypto.timingSafeEqual(trusted, untrusted);
-
-        if (!isSignatureValid) {
-          throw new MonkeyError(401, "Github webhook signature invalid");
-        }
-      }
-    } catch (e) {
-      return next(e);
+    if (webhookSecret === undefined || webhookSecret === "") {
+      throw new MonkeyError(500, "Missing Github Webhook Secret");
     }
 
-    next();
-  };
-}
+    if (
+      Array.isArray(authHeader) ||
+      authHeader === undefined ||
+      authHeader === ""
+    ) {
+      throw new MonkeyError(401, "Missing Github signature header");
+    }
 
-export { authenticateRequest, authenticateGithubWebhook };
+    const signature = crypto
+      .createHmac("sha256", webhookSecret)
+      .update(JSON.stringify(req.body))
+      .digest("hex");
+    const trusted = Buffer.from(`sha256=${signature}`, "ascii");
+    const untrusted = Buffer.from(authHeader, "ascii");
+    const isSignatureValid = crypto.timingSafeEqual(trusted, untrusted);
+
+    if (!isSignatureValid) {
+      throw new MonkeyError(401, "Github webhook signature invalid");
+    }
+
+    return {
+      type: "GithubWebhook",
+      uid: "",
+      email: "",
+    };
+  } catch (error) {
+    if (error instanceof MonkeyError) {
+      throw error;
+    }
+    throw new MonkeyError(
+      500,
+      "Failed to authenticate Github webhook: " + (error as Error).message
+    );
+  }
+}

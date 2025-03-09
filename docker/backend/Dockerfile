@@ -1,42 +1,49 @@
-FROM node:18.19.1-alpine3.19 as builder
+FROM node:20.16.0-alpine3.19 AS builder
+
 WORKDIR /app
 
 #copy
-COPY .eslintignore .eslintignore
-COPY .eslintrc.json .eslintrc.json
-COPY package.json package.json
-COPY package-lock.json package-lock.json
-COPY shared-types shared-types
+COPY ["package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "turbo.json", "./"]
+COPY packages packages
 COPY backend backend
 
-#build
-RUN npm ci
-RUN cd backend && npm ci
-RUN cd backend && npm run build
+#gimme pnpm + build
+RUN npm i -g pnpm && \
+    pnpm i --frozen-lockfile && \
+    npm run build
 
-# target
-FROM node:18.19.1-alpine3.19
-RUN apk add wget
-WORKDIR /
-COPY backend/redis-scripts /redis-scripts
+#deploy (install all non-dev dependencies in a single node_module folder)
+RUN pnpm deploy --filter backend --prod /prod/backend
 
-WORKDIR /app
-COPY backend/package.json package.json
-COPY backend/package-lock.json package-lock.json
-COPY docker/backend/entry-point.sh entry-point.sh
-COPY docker/backend/applyConfig.sh applyConfig.sh
-COPY --from=builder /app/backend/build .
+#---------------------------------
 
-#install deps (no dev-dependencies)
-RUN npm ci --omit=dev
+## target image
+FROM node:20.16.0-alpine3.19
 
+## get server_version from build-arg, default to UNKNOWN
+ARG server_version=UNKNOWN
+
+# COPY to target
+COPY --from=builder /prod/backend/node_modules /app/backend/node_modules
+COPY --from=builder /prod/backend/dist /app/backend/dist
+COPY --from=builder /prod/backend/email-templates /app/backend/email-templates
+COPY --from=builder /prod/backend/redis-scripts /app/backend/redis-scripts
+COPY --from=builder /prod/backend/private /app/backend/private
+
+## to build directory
+WORKDIR /app/backend/dist
 
 ## logs 
-RUN mkdir logs
+RUN mkdir -p /app/backend/dist/logs
 
-#run in env mode (no anticheat)
-ENV MODE=dev
+COPY ["docker/backend/entry-point.sh", "./"]
 
+RUN echo "${server_version}" > /app/backend/dist/server.version
+
+#run in prod mode, but don't require anti-cheat or email client
+ENV MODE=prod
+ENV BYPASS_ANTICHEAT=true
+ENV BYPASS_EMAILCLIENT=true
 
 EXPOSE 5005
 USER node

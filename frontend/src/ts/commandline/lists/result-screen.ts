@@ -1,43 +1,21 @@
 import * as TestLogic from "../../test/test-logic";
 import * as TestUI from "../../test/test-ui";
-import * as PractiseWords from "../../test/practise-words";
-import * as GetText from "../../utils/generate";
+import * as PractiseWordsModal from "../../modals/practise-words";
 import * as Notifications from "../../elements/notifications";
+import * as TestInput from "../../test/test-input";
+import * as TestWords from "../../test/test-words";
+import Config from "../../config";
+import * as PractiseWords from "../../test/practise-words";
+import { Command, CommandsSubgroup } from "../types";
 
-const copyWords: MonkeyTypes.CommandsSubgroup = {
-  title: "Are you sure...",
-  list: [
-    {
-      id: "copyNo",
-      display: "Nevermind",
-    },
-    {
-      id: "copyYes",
-      display: "Yes, I am sure",
-      exec: (): void => {
-        const words = GetText.getWords();
-
-        navigator.clipboard.writeText(words).then(
-          () => {
-            Notifications.add("Copied to clipboard", 1);
-          },
-          () => {
-            Notifications.add("Failed to copy!", -1);
-          }
-        );
-      },
-    },
-  ],
-};
-
-const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
+const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
   list: [
     {
       id: "practiseWordsMissed",
       display: "missed",
       exec: (): void => {
-        PractiseWords.init(true, false);
+        PractiseWords.init("words", false);
         TestLogic.restart({
           practiseMissed: true,
         });
@@ -47,26 +25,27 @@ const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
       id: "practiseWordsSlow",
       display: "slow",
       exec: (): void => {
-        PractiseWords.init(false, true);
+        PractiseWords.init("off", true);
         TestLogic.restart({
           practiseMissed: true,
         });
       },
     },
     {
-      id: "practiseWordsBoth",
-      display: "both",
-      exec: (): void => {
-        PractiseWords.init(true, true);
-        TestLogic.restart({
-          practiseMissed: true,
+      id: "practiseWordsCustom",
+      display: "custom...",
+      opensModal: true,
+      exec: (options): void => {
+        PractiseWordsModal.show({
+          animationMode: "modalOnly",
+          modalChain: options.commandlineModal,
         });
       },
     },
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "nextTest",
     display: "Next test",
@@ -130,7 +109,22 @@ const commands: MonkeyTypes.Command[] = [
     id: "copyWordsToClipboard",
     display: "Copy words to clipboard",
     icon: "fa-copy",
-    subgroup: copyWords,
+    exec: (): void => {
+      const words = (
+        Config.mode === "zen"
+          ? TestInput.input.getHistory()
+          : TestWords.words.list.slice(0, TestInput.input.getHistory().length)
+      ).join(" ");
+
+      navigator.clipboard.writeText(words).then(
+        () => {
+          Notifications.add("Copied to clipboard", 1);
+        },
+        () => {
+          Notifications.add("Failed to copy!", -1);
+        }
+      );
+    },
     available: (): boolean => {
       return TestUI.resultVisible;
     },

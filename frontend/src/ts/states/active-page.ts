@@ -1,9 +1,11 @@
-let activePage: MonkeyTypes.PageName = "loading";
+import { PageName } from "../pages/page";
 
-export function get(): MonkeyTypes.PageName {
+let activePage: PageName = "loading";
+
+export function get(): PageName {
   return activePage;
 }
 
-export function set(active: MonkeyTypes.PageName): void {
+export function set(active: PageName): void {
   activePage = active;
 }

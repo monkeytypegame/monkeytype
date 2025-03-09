@@ -41,12 +41,59 @@
       font-size: 1.5rem;
       color: var(--sub-color);
     }
+
+    .inputs.withLabel {
+      display: grid;
+      grid-template-columns: max-content auto;
+      grid-auto-flow: row;
+    }
+
+    .inputs {
+      div:has(> input[type="range"]) {
+        display: grid;
+        grid-auto-columns: auto 3rem;
+        grid-auto-flow: column;
+        gap: 0.5rem;
+
+        span {
+          text-align: right;
+        }
+      }
+    }
+  }
+}
+
+body.darkMode {
+  .popupWrapper,
+  .modalWrapper {
+    .modal .inputs {
+      input[type="date"]::-webkit-calendar-picker-indicator,
+      input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+      }
+    }
   }
 }
 
 #registerCaptchaModal {
   .modal {
     box-sizing: unset;
+  }
+}
+
+#miniResultChartModal {
+  .modal {
+    overflow: hidden;
+    max-width: 70rem;
+    canvas {
+      max-height: 200px;
+    }
+  }
+}
+
+#forgotPasswordModal {
+  .modal {
+    max-width: 400px;
   }
 }
 
@@ -152,7 +199,7 @@
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
-      min-height: 477px;
+      min-height: 589px;
       color: var(--text-color);
       overflow-x: hidden;
       overflow-y: scroll;
@@ -239,6 +286,39 @@
   }
 }
 
+#practiseWordsModal {
+  .modal {
+    max-width: 400px;
+
+    .group {
+      width: 100%;
+      display: grid;
+      .title {
+        color: var(--sub-color);
+        text-transform: lowercase;
+      }
+      .sub {
+        color: var(--text-color);
+        margin-top: 0.25rem;
+        margin-bottom: 0.5rem;
+      }
+      .buttonGroup {
+        display: flex;
+        gap: 0.5rem;
+        width: 100%;
+        button {
+          flex-grow: 1;
+        }
+      }
+    }
+
+    .text {
+      font-size: 1rem;
+      color: var(--text-color);
+    }
+  }
+}
+
 #savedTextsModal {
   .modal {
     max-width: 500px;
@@ -253,6 +333,18 @@
           pointer-events: none;
         }
       }
+    }
+
+    .divider {
+      height: 0.25rem;
+      background: var(--sub-alt-color);
+      border-radius: var(--roundness);
+      margin: 1rem 0;
+    }
+
+    .message {
+      font-size: 0.75em;
+      color: var(--sub-color);
     }
 
     .listLong {
@@ -486,6 +578,9 @@
       opacity: 1;
     }
   }
+  & [data-popup-id="devGenerateData"] {
+    max-width: 700px;
+  }
 }
 
 #mobileTestConfigModal {
@@ -515,32 +610,6 @@
     .tip,
     .preview {
       font-size: 0.75rem;
-      color: var(--text-color);
-    }
-  }
-}
-
-#practiseWordsPopupWrapper {
-  #practiseWordsPopup {
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    width: 400px;
-
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
-
-    .tip {
-      font-size: 0.75rem;
-      color: var(--sub-color);
-    }
-
-    .text {
-      font-size: 1rem;
       color: var(--text-color);
     }
   }
@@ -594,23 +663,61 @@
   }
 }
 
-#shareTestSettingsPopup {
-  background: var(--bg-color);
-  border-radius: var(--roundness);
-  padding: 2rem;
-  display: grid;
-  gap: 1rem;
-  width: 500px;
-  .title {
-    font-size: 1.5rem;
-    color: var(--sub-color);
+#lastSignedOutResult {
+  .modal {
+    max-width: 600px;
+
+    .buttons {
+      display: flex;
+      flex-direction: row-reverse;
+      gap: 0.5rem;
+      button {
+        flex-grow: 1;
+      }
+    }
+    .result {
+      display: grid;
+      gap: 0.5rem;
+      grid-template-columns: 1fr 1fr;
+    }
+    .divider {
+      background: var(--sub-alt-color);
+      width: 100%;
+      height: 0.25rem;
+      border-radius: var(--roundness);
+    }
+    .group {
+      .sub {
+        font-size: 0.75em;
+        color: var(--sub-color);
+      }
+      &.testType {
+        grid-column: 1;
+      }
+      &.wpm,
+      &.acc {
+        font-size: 2em;
+      }
+    }
   }
-  .subgroup {
-    padding-left: 2rem;
+}
+
+#devOptionsModal {
+  .modal {
+    max-width: 400px;
   }
-  .tooLongWarning {
-    font-size: 0.75rem;
-    color: var(--error-color);
+}
+
+#shareTestSettingsModal {
+  .modal {
+    max-width: 600px;
+    .subgroup {
+      padding-left: 2rem;
+    }
+    .tooLongWarning {
+      font-size: 0.75rem;
+      color: var(--error-color);
+    }
   }
 }
 #cookiesModal {
@@ -641,6 +748,12 @@
       margin-top: 0.25rem;
       display: grid;
       gap: 1rem;
+    }
+    .title {
+      color: var(--sub-color);
+    }
+    .description {
+      color: var(--text-color);
     }
     .settings {
       display: grid;
@@ -937,17 +1050,6 @@
       line-height: 1.2rem;
       min-height: 5rem;
     }
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
-    }
   }
 }
 #apeKeysModal {
@@ -1167,18 +1269,6 @@
       line-height: 1.2rem;
       min-height: 5rem;
     }
-
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
-    }
   }
 }
 
@@ -1205,18 +1295,6 @@
       padding: 10px;
       line-height: 1.2rem;
       min-height: 5rem;
-    }
-
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
     }
   }
 }
@@ -1418,12 +1496,62 @@
 #editPresetModal {
   .modal {
     max-width: 450px;
+    gap: 1rem;
+    .presetNameTitle {
+      font-size: 0.75rem;
+      color: var(--sub-color);
+      text-transform: lowercase;
+    }
   }
-}
 
-#editTagModal {
-  .modal {
-    max-width: 450px;
+  .group {
+    display: grid;
+    gap: 0.5rem;
+    align-items: center;
+    width: 100%;
+  }
+
+  input[type="text"] {
+    width: 100%;
+  }
+
+  .inputs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    font-size: 0.75rem;
+    .title {
+      color: var(--sub-color);
+      text-transform: lowercase;
+    }
+    .partialPresetGroups {
+      .checkboxList {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr 1fr;
+        .title {
+          color: var(--text-color);
+          text-transform: lowercase;
+        }
+        .checkboxTitlePair {
+          display: flex;
+          gap: 0.5rem;
+          button {
+            flex-grow: 1;
+          }
+        }
+      }
+    }
+    .presetType {
+      .presetTypeButtonGroup {
+        display: flex;
+        width: 100%;
+        gap: 0.5rem;
+        button {
+          flex-grow: 1;
+        }
+      }
+    }
   }
 }
 

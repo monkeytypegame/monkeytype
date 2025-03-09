@@ -1,3 +1,4 @@
+import { CustomBackgroundFilter } from "@monkeytype/contracts/schemas/configs";
 import * as UpdateConfig from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import { debounce } from "throttle-debounce";
@@ -82,7 +83,7 @@ export function updateUI(): void {
   updateNumbers();
 }
 
-function loadConfig(config: SharedTypes.Config.CustomBackgroundFilter): void {
+function loadConfig(config: CustomBackgroundFilter): void {
   filters.blur.value = config[0];
   filters.brightness.value = config[1];
   filters.saturate.value = config[2];
@@ -152,13 +153,13 @@ $(".section[data-config-name='customBackgroundFilter'] input").on(
 const debouncedSave = debounce(2000, async () => {
   const arr = Object.keys(filters).map(
     (filterKey) => filters[filterKey as keyof typeof filters].value
-  ) as SharedTypes.Config.CustomBackgroundFilter;
+  ) as CustomBackgroundFilter;
   UpdateConfig.setCustomBackgroundFilter(arr, false);
 });
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "customBackgroundFilter" && (eventValue as boolean)) {
-    loadConfig(eventValue as SharedTypes.Config.CustomBackgroundFilter);
+    loadConfig(eventValue as CustomBackgroundFilter);
     apply();
   }
 });

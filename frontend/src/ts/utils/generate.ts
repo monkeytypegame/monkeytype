@@ -1,4 +1,4 @@
-import { randomIntFromRange } from "./numbers";
+import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "./arrays";
 import * as Strings from "./strings";
 
@@ -9,6 +9,19 @@ import * as Strings from "./strings";
 export function getBinary(): string {
   const ret = Math.floor(Math.random() * 256).toString(2);
   return ret.padStart(8, "0");
+}
+
+/**
+ * Generates a random hexadecimal string between 1 and 8 bytes.
+ * @returns The generated hexadecimal string.
+ */
+export function getHexadecimal(): string {
+  const randLen = randomIntFromRange(1, 4);
+  return Array.from({ length: randLen }, () => {
+    return Math.floor(Math.random() * 256)
+      .toString(16)
+      .padStart(2, "0");
+  }).join("");
 }
 
 /**
@@ -95,22 +108,6 @@ export function getGibberish(): string {
     ret += String.fromCharCode(97 + randomIntFromRange(0, 25));
   }
   return ret;
-}
-
-/**
- * Retrieves the words from the HTML elements with IDs "words" and returns them as a string.
- * @returns The words extracted from the HTML elements.
- */
-export function getWords(): string {
-  const words = [...document.querySelectorAll("#words .word")]
-    .map((word) => {
-      return [...word.querySelectorAll("letter")]
-        .map((letter) => letter.textContent)
-        .join("");
-    })
-    .join(" ");
-
-  return words;
 }
 
 /**

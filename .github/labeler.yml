@@ -14,5 +14,8 @@ docs:
 frontend:
   - any: ["frontend/**/*"]
 
+packages:
+  - any: ["packages/**/*"]
+
 local dev:
   - any: ["**/gulpfile.js", "**/tsconfig.json"]

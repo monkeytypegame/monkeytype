@@ -3,7 +3,7 @@ import { Chart, type PluginChartOptions } from "chart.js";
 import Config from "../config";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
-import QuotesController from "../controllers/quotes-controller";
+import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
@@ -15,11 +15,9 @@ import * as SlowTimer from "../states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as FunboxList from "./funbox/funbox-list";
 import * as PbCrown from "./pb-crown";
 import * as TestConfig from "./test-config";
 import * as TestInput from "./test-input";
@@ -32,12 +30,22 @@ import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
 import Format from "../utils/format";
-
 import confetti from "canvas-confetti";
-import type { AnnotationOptions } from "chartjs-plugin-annotation";
+import type {
+  AnnotationOptions,
+  LabelPosition,
+} from "chartjs-plugin-annotation";
 import Ape from "../ape";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import {
+  getActiveFunboxes,
+  getFromString,
+  isFunboxActiveWithProperty,
+} from "./funbox/list";
+import { getFunboxesFromString } from "@monkeytype/funbox";
+import { SnapshotUserTag } from "../constants/default-snapshot";
 
-let result: SharedTypes.Result<SharedTypes.Config.Mode>;
+let result: CompletedEvent;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -123,10 +131,10 @@ async function updateGraph(): Promise<void> {
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = "";
-    for (const f of FunboxList.get(Config.funbox)) {
-      content += f.name;
-      if (f.functions?.getResultContent) {
-        content += "(" + f.functions.getResultContent() + ")";
+    for (const fb of getActiveFunboxes()) {
+      content += fb.name;
+      if (fb.functions?.getResultContent) {
+        content += "(" + fb.functions.getResultContent() + ")";
       }
       content += " ";
     }
@@ -153,7 +161,7 @@ async function updateGraph(): Promise<void> {
         padding: 3,
         borderRadius: 3,
         position: "start",
-        enabled: true,
+        display: true,
         content: `${content}`,
       },
     });
@@ -168,7 +176,7 @@ async function updateGraph(): Promise<void> {
 
 export async function updateGraphPBLine(): Promise<void> {
   const themecolors = await ThemeColors.getAll();
-  const lpb = await DB.getLocalPB(
+  const localPb = await DB.getLocalPB(
     result.mode,
     result.mode2,
     result.punctuation ?? false,
@@ -176,11 +184,14 @@ export async function updateGraphPBLine(): Promise<void> {
     result.language,
     result.difficulty,
     result.lazyMode ?? false,
-    result.funbox ?? "none"
+    getFunboxesFromString(result.funbox ?? "none")
   );
-  if (lpb === 0) return;
+  const localPbWpm = localPb?.wpm ?? 0;
+  if (localPbWpm === 0) return;
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  const chartlpb = Numbers.roundTo2(typingSpeedUnit.fromWpm(lpb)).toFixed(2);
+  const chartlpb = Numbers.roundTo2(
+    typingSpeedUnit.fromWpm(localPbWpm)
+  ).toFixed(2);
   resultAnnotation.push({
     display: true,
     type: "line",
@@ -203,8 +214,8 @@ export async function updateGraphPBLine(): Promise<void> {
       padding: 3,
       borderRadius: 3,
       position: "center",
-      enabled: true,
       content: `PB: ${chartlpb}`,
+      display: true,
     },
   });
   const lpbRange = typingSpeedUnit.fromWpm(20);
@@ -261,7 +272,7 @@ function updateWpmAndAcc(): void {
 
     $("#result .stats .acc .bottom").attr(
       "aria-label",
-      `${TestInput.accuracy.correct} correct / ${TestInput.accuracy.incorrect} incorrect`
+      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`
     );
   } else {
     //not showing decimal places
@@ -280,16 +291,18 @@ function updateWpmAndAcc(): void {
     $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
     $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
 
-    $("#result .stats .acc .bottom").attr(
-      "aria-label",
-      `${
-        result.acc === 100
-          ? "100"
-          : Format.percentage(result.acc, { showDecimalPlaces: true })
-      } (${TestInput.accuracy.correct} correct / ${
-        TestInput.accuracy.incorrect
-      } incorrect)`
-    );
+    $("#result .stats .acc .bottom")
+      .attr(
+        "aria-label",
+        `${
+          result.acc === 100
+            ? "100%"
+            : Format.percentage(result.acc, { showDecimalPlaces: true })
+        }\n${TestInput.accuracy.correct} correct\n${
+          TestInput.accuracy.incorrect
+        } incorrect`
+      )
+      .attr("data-balloon-break", "");
   }
 }
 
@@ -363,8 +376,148 @@ function updateKey(): void {
   );
 }
 
-export function showCrown(): void {
+export function showCrown(type: PbCrown.CrownType): void {
   PbCrown.show();
+  PbCrown.update(type);
+}
+
+export function updateCrownText(text: string, wide = false): void {
+  $("#result .stats .wpm .crown").attr("aria-label", text);
+  $("#result .stats .wpm .crown").attr(
+    "data-balloon-length",
+    wide ? "medium" : ""
+  );
+}
+
+export async function updateCrown(dontSave: boolean): Promise<void> {
+  if (Config.mode === "quote" || dontSave) {
+    hideCrown();
+    return;
+  }
+
+  let pbDiff = 0;
+  const canGetPb = await resultCanGetPb();
+
+  console.debug("Result can get PB:", canGetPb.value, canGetPb.reason ?? "");
+
+  if (canGetPb.value) {
+    const localPb = await DB.getLocalPB(
+      Config.mode,
+      result.mode2,
+      Config.punctuation,
+      Config.numbers,
+      Config.language,
+      Config.difficulty,
+      Config.lazyMode,
+      getActiveFunboxes()
+    );
+    const localPbWpm = localPb?.wpm ?? 0;
+    pbDiff = result.wpm - localPbWpm;
+    console.debug("Local PB", localPb, "diff", pbDiff);
+    if (pbDiff <= 0) {
+      hideCrown();
+      console.debug("Hiding crown");
+    } else {
+      //show half crown as the pb is not confirmed by the server
+      console.debug("Showing pending crown");
+      showCrown("pending");
+      updateCrownText(
+        "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
+      );
+    }
+  } else {
+    const localPb = await DB.getLocalPB(
+      Config.mode,
+      result.mode2,
+      Config.punctuation,
+      Config.numbers,
+      Config.language,
+      Config.difficulty,
+      Config.lazyMode,
+      []
+    );
+    const localPbWpm = localPb?.wpm ?? 0;
+    pbDiff = result.wpm - localPbWpm;
+    console.debug("Local PB", localPb, "diff", pbDiff);
+    if (pbDiff <= 0) {
+      // hideCrown();
+      console.debug("Showing warning crown");
+      showCrown("warning");
+      updateCrownText(
+        `This result is not eligible for a new PB (${canGetPb.reason})`,
+        true
+      );
+    } else {
+      console.debug("Showing ineligible crown");
+      showCrown("ineligible");
+      updateCrownText(
+        `You could've gotten a new PB (+${Format.typingSpeed(pbDiff, {
+          showDecimalPlaces: true,
+        })}), but your config does not allow it (${canGetPb.reason})`,
+        true
+      );
+    }
+  }
+}
+
+export function hideCrown(): void {
+  PbCrown.hide();
+  updateCrownText("");
+}
+
+export function showErrorCrownIfNeeded(): void {
+  if (PbCrown.getCurrentType() !== "pending") return;
+  PbCrown.show();
+  PbCrown.update("error");
+  updateCrownText(
+    `Local PB data is out of sync with the server - please refresh (pb mismatch)`,
+    true
+  );
+}
+
+type CanGetPbObject = {
+  value: boolean;
+  reason?: string;
+};
+
+async function resultCanGetPb(): Promise<CanGetPbObject> {
+  const funboxes = result.funbox?.split("#") ?? [];
+  const funboxObjects = getFromString(result.funbox);
+  const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
+
+  const funboxesOk =
+    result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb;
+  const notUsingStopOnLetter = Config.stopOnError !== "letter";
+  const notBailedOut = !result.bailedOut;
+
+  if (funboxesOk && notUsingStopOnLetter && notBailedOut) {
+    return {
+      value: true,
+    };
+  } else {
+    if (!funboxesOk) {
+      return {
+        value: false,
+        reason: "funbox",
+      };
+    }
+    if (!notUsingStopOnLetter) {
+      return {
+        value: false,
+        reason: "stop on letter",
+      };
+    }
+    if (!notBailedOut) {
+      return {
+        value: false,
+        reason: "bailed out",
+      };
+    }
+    return {
+      value: false,
+      reason: "unknown",
+    };
+  }
 }
 
 export function showConfetti(): void {
@@ -399,32 +552,8 @@ export function showConfetti(): void {
   })();
 }
 
-export function hideCrown(): void {
-  PbCrown.hide();
-  $("#result .stats .wpm .crown").attr("aria-label", "");
-}
-
-export async function updateCrown(): Promise<void> {
-  let pbDiff = 0;
-  const lpb = await DB.getLocalPB(
-    Config.mode,
-    result.mode2,
-    Config.punctuation,
-    Config.numbers,
-    Config.language,
-    Config.difficulty,
-    Config.lazyMode,
-    Config.funbox
-  );
-  pbDiff = Math.abs(result.wpm - lpb);
-  $("#result .stats .wpm .crown").attr(
-    "aria-label",
-    "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
-  );
-}
-
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: MonkeyTypes.UserTag[] = [];
+  const activeTags: SnapshotUserTag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
     DB.getSnapshot()?.tags?.forEach((tag) => {
@@ -451,15 +580,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   );
   $("#result .stats .tags .editTagsButton").addClass("invisible");
 
-  const funboxes = result.funbox?.split("#") ?? [];
-
-  const funboxObjects = await Promise.all(
-    funboxes.map(async (f) => JSONData.getFunbox(f))
-  );
-
-  const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
-
-  let annotationSide = "start";
+  let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
     const tpb = await DB.getLocalTagPB(
@@ -479,7 +600,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     if (
       Config.mode !== "quote" &&
       !dontSave &&
-      (result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb)
+      (await resultCanGetPb()).value
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
@@ -530,7 +651,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             borderRadius: 3,
             position: annotationSide,
             xAdjust: labelAdjust,
-            enabled: true,
+            display: true,
             content: `${tag.display} PB: ${Numbers.roundTo2(
               typingSpeedUnit.fromWpm(tpb)
             ).toFixed(2)}`,
@@ -548,7 +669,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   });
 }
 
-function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
+function updateTestType(randomQuote: Quote | null): void {
   let testType = "";
 
   testType += Config.mode;
@@ -562,10 +683,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
   }
-  const ignoresLanguage =
-    FunboxList.get(Config.funbox).find((f) =>
-      f.properties?.includes("ignoresLanguage")
-    ) !== undefined;
+  const ignoresLanguage = isFunboxActiveWithProperty("ignoresLanguage");
   if (Config.mode !== "custom" && !ignoresLanguage) {
     testType += "<br>" + Strings.getLanguageDisplayString(result.language);
   }
@@ -655,7 +773,7 @@ function updateOther(
   }
 }
 
-export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
+export function updateRateQuote(randomQuote: Quote | null): void {
   if (Config.mode === "quote") {
     if (randomQuote === null) {
       console.error(
@@ -678,7 +796,7 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
           quoteStats?.average?.toFixed(1) ?? ""
         );
       })
-      .catch((e) => {
+      .catch((e: unknown) => {
         $(".pageTest #result #rateQuoteButton .rating").text("?");
       });
     $(".pageTest #result #rateQuoteButton")
@@ -688,7 +806,7 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
   }
 }
 
-function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote | null): void {
+function updateQuoteFavorite(randomQuote: Quote | null): void {
   const icon = $(".pageTest #result #favoriteQuoteButton .icon");
 
   if (Config.mode !== "quote" || !isAuthenticated()) {
@@ -711,7 +829,7 @@ function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote | null): void {
   icon.parent().removeClass("hidden");
 }
 
-function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
+function updateQuoteSource(randomQuote: Quote | null): void {
   if (Config.mode === "quote") {
     $("#result .stats .source").removeClass("hidden");
     $("#result .stats .source .bottom").html(
@@ -723,17 +841,17 @@ function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
 }
 
 export async function update(
-  res: SharedTypes.Result<SharedTypes.Config.Mode>,
+  res: CompletedEvent,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,
   isRepeated: boolean,
   tooShort: boolean,
-  randomQuote: MonkeyTypes.Quote | null,
+  randomQuote: Quote | null,
   dontSave: boolean
 ): Promise<void> {
   resultAnnotation = [];
-  result = Object.assign({}, res);
+  result = Misc.deepClone(res);
   hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
@@ -763,6 +881,7 @@ export async function update(
   updateTestType(randomQuote);
   updateQuoteSource(randomQuote);
   updateQuoteFavorite(randomQuote);
+  await updateCrown(dontSave);
   await updateGraph();
   await updateGraphPBLine();
   await updateTags(dontSave);
@@ -848,7 +967,7 @@ export async function update(
         {
           opacity: 1,
         },
-        125
+        Misc.applyReducedMotion(125)
       );
 
       const canQuickRestart = Misc.canQuickRestart(
@@ -910,7 +1029,7 @@ export function updateTagsAfterEdit(
 
     tagIds.forEach((tag, index) => {
       if (checked.includes(tag)) return;
-      if (tagPbIds.includes(tag) as boolean) {
+      if (tagPbIds.includes(tag)) {
         html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
       } else {
         html += `<div tagid="${tag}">${tagNames[index]}</div>`;
@@ -939,13 +1058,15 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
   if ($button.hasClass("fas")) {
     // Remove from favorites
     Loader.show();
-    const response = await Ape.users.removeQuoteFromFavorites(
-      quoteLang,
-      quoteId
-    );
+    const response = await Ape.users.removeQuoteFromFavorites({
+      body: {
+        language: quoteLang,
+        quoteId,
+      },
+    });
     Loader.hide();
 
-    Notifications.add(response.message, response.status === 200 ? 1 : -1);
+    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
     if (response.status === 200) {
       $button.removeClass("fas").addClass("far");
@@ -957,10 +1078,12 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
   } else {
     // Add to favorites
     Loader.show();
-    const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
+    const response = await Ape.users.addQuoteToFavorites({
+      body: { language: quoteLang, quoteId },
+    });
     Loader.hide();
 
-    Notifications.add(response.message, response.status === 200 ? 1 : -1);
+    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
     if (response.status === 200) {
       $button.removeClass("far").addClass("fas");

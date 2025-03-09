@@ -10,10 +10,11 @@ import * as OutOfFocus from "../test/out-of-focus";
 import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
+import { Command, CommandsSubgroup } from "./types";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
-  command: MonkeyTypes.Command | null;
+  command: Command | null;
   placeholder: string | null;
   value: string | null;
   icon: string | null;
@@ -22,7 +23,7 @@ type InputModeParams = {
 let activeIndex = 0;
 let usingSingleList = false;
 let inputValue = "";
-let activeCommand: MonkeyTypes.Command | null = null;
+let activeCommand: Command | null = null;
 let mouseMode = false;
 let mode: CommandlineMode = "search";
 let inputModeParams: InputModeParams = {
@@ -31,7 +32,9 @@ let inputModeParams: InputModeParams = {
   value: "",
   icon: "",
 };
-let subgroupOverride: MonkeyTypes.CommandsSubgroup | null = null;
+let subgroupOverride: CommandsSubgroup | null = null;
+let isAnimating = false;
+let lastSingleListModeInputValue = "";
 
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
@@ -49,7 +52,7 @@ function addCommandlineBackground(): void {
 }
 
 type ShowSettings = {
-  subgroupOverride?: MonkeyTypes.CommandsSubgroup | string;
+  subgroupOverride?: CommandsSubgroup | string;
   singleListOverride?: boolean;
 };
 
@@ -122,13 +125,20 @@ function hide(clearModalChain = false): void {
   if (ActivePage.get() === "test") {
     focusWords();
   }
+  isAnimating = true;
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
       addCommandlineBackground();
       if (ActivePage.get() === "test") {
-        focusWords();
+        const isWordsFocused = $("#wordsInput").is(":focus");
+        if (ActivePage.get() === "test" && !isWordsFocused) {
+          focusWords();
+        }
+      } else {
+        (document.activeElement as HTMLElement | undefined)?.blur();
       }
+      isAnimating = false;
     },
   });
 }
@@ -283,9 +293,9 @@ function hideCommands(): void {
   element.innerHTML = "";
 }
 
-let cachedSingleSubgroup: MonkeyTypes.CommandsSubgroup | null = null;
+let cachedSingleSubgroup: CommandsSubgroup | null = null;
 
-async function getSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
+async function getSubgroup(): Promise<CommandsSubgroup> {
   if (subgroupOverride !== null) {
     return subgroupOverride;
   }
@@ -301,7 +311,7 @@ async function getSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
   return CommandlineLists.getTopOfStack();
 }
 
-async function getList(): Promise<MonkeyTypes.Command[]> {
+async function getList(): Promise<Command[]> {
   return (await getSubgroup()).list;
 }
 
@@ -378,8 +388,9 @@ async function showCommands(): Promise<void> {
       );
     }
 
-    if (command.id.startsWith("changeTheme") && command.customData) {
-      html += `<div class="command withThemeBubbles" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">
+    if (command.customData !== undefined) {
+      if (command.id.startsWith("changeTheme")) {
+        html += `<div class="command withThemeBubbles" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">
       ${iconHTML}<div>${display}</div>
       <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
         <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
@@ -387,6 +398,20 @@ async function showCommands(): Promise<void> {
         <div class="themeBubble" style="background: ${command.customData["textColor"]}"></div>
       </div>
       </div>`;
+      }
+      if (command.id.startsWith("changeFont")) {
+        let fontFamily = command.customData["name"];
+
+        if (fontFamily === "Helvetica") {
+          fontFamily = "Comic Sans MS";
+        }
+
+        if (command.customData["isSystem"] === false) {
+          fontFamily += " Preview";
+        }
+
+        html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="font-family: ${fontFamily}">${iconHTML}<div>${display}</div></div>`;
+      }
     } else {
       html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
     }
@@ -409,13 +434,19 @@ async function showCommands(): Promise<void> {
       await updateActiveCommand();
     });
     command.addEventListener("click", async () => {
+      const previous = activeIndex;
       activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
+      if (previous !== activeIndex) {
+        await updateActiveCommand();
+      }
       await runActiveCommand();
     });
   }
 }
 
 async function updateActiveCommand(): Promise<void> {
+  if (isAnimating) return;
+
   const elements = [
     ...document.querySelectorAll("#commandLine .suggestions .command"),
   ];
@@ -448,10 +479,12 @@ async function updateActiveCommand(): Promise<void> {
 }
 
 function handleInputSubmit(): void {
+  if (isAnimating) return;
   if (inputModeParams.command === null) {
     throw new Error("Can't handle input submit - command is null");
   }
   inputModeParams.command.exec?.({
+    commandlineModal: modal,
     input: inputValue,
   });
   void AnalyticsController.log("usedCommandLine", {
@@ -461,6 +494,7 @@ function handleInputSubmit(): void {
 }
 
 async function runActiveCommand(): Promise<void> {
+  if (isAnimating) return;
   if (activeCommand === null) return;
   const command = activeCommand;
   if (command.input) {
@@ -475,9 +509,7 @@ async function runActiveCommand(): Promise<void> {
     updateInput(inputModeParams.value as string);
     hideCommands();
   } else if (command.subgroup) {
-    CommandlineLists.pushToStack(
-      command.subgroup as MonkeyTypes.CommandsSubgroup
-    );
+    CommandlineLists.pushToStack(command.subgroup);
     updateInput("");
     await filterSubgroup();
     await showCommands();
@@ -486,6 +518,9 @@ async function runActiveCommand(): Promise<void> {
     command.exec?.({
       commandlineModal: modal,
     });
+    if (Config.singleListCommandLine === "on") {
+      lastSingleListModeInputValue = inputValue;
+    }
     const isSticky = command.sticky ?? false;
     if (!isSticky) {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
@@ -551,6 +586,14 @@ function updateInput(setInput?: string): void {
   } else {
     iconElement.innerHTML = '<i class="fas fa-search"></i>';
     element.placeholder = "Search...";
+
+    let length = inputValue.length;
+    if (setInput !== undefined) {
+      length = setInput.length;
+    }
+    setTimeout(() => {
+      element.setSelectionRange(length, length);
+    }, 0);
   }
 }
 
@@ -603,11 +646,31 @@ const modal = new AnimatedModal({
 
     input.addEventListener("keydown", async (e) => {
       mouseMode = false;
-      if (e.key === "ArrowUp") {
+      if (
+        e.key === "ArrowUp" ||
+        (e.ctrlKey &&
+          (e.key.toLowerCase() === "k" || e.key.toLowerCase() === "p"))
+      ) {
+        if (
+          Config.singleListCommandLine === "on" &&
+          inputValue === "" &&
+          lastSingleListModeInputValue !== ""
+        ) {
+          inputValue = lastSingleListModeInputValue;
+          updateInput();
+          await filterSubgroup();
+          await showCommands();
+          await updateActiveCommand();
+          return;
+        }
         e.preventDefault();
         await decrementActiveIndex();
       }
-      if (e.key === "ArrowDown") {
+      if (
+        e.key === "ArrowDown" ||
+        (e.ctrlKey &&
+          (e.key.toLowerCase() === "j" || e.key.toLowerCase() === "n"))
+      ) {
         e.preventDefault();
         await incrementActiveIndex();
       }
@@ -630,6 +693,8 @@ const modal = new AnimatedModal({
         }
       }
       if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
         await goBackOrHide();
       }
     });

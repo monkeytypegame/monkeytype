@@ -1,44 +1,45 @@
 import _ from "lodash";
 import * as db from "../init/db";
 import {
-  Filter,
+  type Filter,
+  type MatchKeysAndValues,
+  type WithId,
   ObjectId,
-  MatchKeysAndValues,
   Collection,
-  WithId,
 } from "mongodb";
 import MonkeyError from "../utils/error";
+import { ApeKey } from "@monkeytype/contracts/schemas/ape-keys";
 
-export const getApeKeysCollection = (): Collection<
-  WithId<MonkeyTypes.ApeKeyDB>
-> => db.collection<MonkeyTypes.ApeKeyDB>("ape-keys");
+export type DBApeKey = ApeKey & {
+  _id: ObjectId;
+  uid: string;
+  hash: string;
+  useCount: number;
+};
 
-function getApeKeyFilter(
-  uid: string,
-  keyId: string
-): Filter<MonkeyTypes.ApeKeyDB> {
+export const getApeKeysCollection = (): Collection<WithId<DBApeKey>> =>
+  db.collection<DBApeKey>("ape-keys");
+
+function getApeKeyFilter(uid: string, keyId: string): Filter<DBApeKey> {
   return {
     _id: new ObjectId(keyId),
     uid,
   };
 }
 
-export async function getApeKeys(uid: string): Promise<MonkeyTypes.ApeKeyDB[]> {
+export async function getApeKeys(uid: string): Promise<DBApeKey[]> {
   return await getApeKeysCollection().find({ uid }).toArray();
 }
 
-export async function getApeKey(
-  keyId: string
-): Promise<MonkeyTypes.ApeKeyDB | null> {
+export async function getApeKey(keyId: string): Promise<DBApeKey | null> {
   return await getApeKeysCollection().findOne({ _id: new ObjectId(keyId) });
 }
 
 export async function countApeKeysForUser(uid: string): Promise<number> {
-  const apeKeys = await getApeKeys(uid);
-  return _.size(apeKeys);
+  return getApeKeysCollection().countDocuments({ uid });
 }
 
-export async function addApeKey(apeKey: MonkeyTypes.ApeKeyDB): Promise<string> {
+export async function addApeKey(apeKey: DBApeKey): Promise<string> {
   const insertionResult = await getApeKeysCollection().insertOne(apeKey);
   return insertionResult.insertedId.toHexString();
 }
@@ -46,7 +47,7 @@ export async function addApeKey(apeKey: MonkeyTypes.ApeKeyDB): Promise<string> {
 async function updateApeKey(
   uid: string,
   keyId: string,
-  updates: MatchKeysAndValues<MonkeyTypes.ApeKeyDB>
+  updates: MatchKeysAndValues<DBApeKey>
 ): Promise<void> {
   const updateResult = await getApeKeysCollection().updateOne(
     getApeKeyFilter(uid, keyId),
@@ -64,9 +65,11 @@ async function updateApeKey(
 export async function editApeKey(
   uid: string,
   keyId: string,
-  name: string,
-  enabled: boolean
+  name?: string,
+  enabled?: boolean
 ): Promise<void> {
+  //check if there is a change
+  if (name === undefined && enabled === undefined) return;
   const apeKeyUpdates = {
     name,
     enabled,

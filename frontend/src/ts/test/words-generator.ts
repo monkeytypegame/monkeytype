@@ -1,8 +1,10 @@
 import Config, * as UpdateConfig from "../config";
-import * as FunboxList from "./funbox/funbox-list";
 import * as CustomText from "./custom-text";
 import * as Wordset from "./wordset";
-import QuotesController from "../controllers/quotes-controller";
+import QuotesController, {
+  Quote,
+  QuoteWithTextSplit,
+} from "../controllers/quotes-controller";
 import * as TestWords from "./test-words";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
@@ -13,6 +15,13 @@ import * as Strings from "../utils/strings";
 import * as Arrays from "../utils/arrays";
 import * as TestState from "../test/test-state";
 import * as GetText from "../utils/generate";
+import { FunboxWordOrder, LanguageObject } from "../utils/json-data";
+import {
+  findSingleActiveFunboxWithFunction,
+  getActiveFunboxes,
+  getActiveFunboxesWithFunction,
+  isFunboxActiveWithFunction,
+} from "./funbox/list";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -31,10 +40,8 @@ export async function punctuateWord(
 
   const lastChar = Strings.getLastChar(previousWord);
 
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.punctuateWord
-  );
-  if (funbox?.functions?.punctuateWord) {
+  const funbox = findSingleActiveFunboxWithFunction("punctuateWord");
+  if (funbox) {
     return funbox.functions.punctuateWord(word);
   }
   if (
@@ -50,7 +57,7 @@ export async function punctuateWord(
       word = word.replace(/I/g, "İ");
     }
 
-    if (currentLanguage === "spanish" || currentLanguage === "catalan") {
+    if (currentLanguage === "spanish") {
       const rand = Math.random();
       if (rand > 0.9) {
         word = "¿" + word;
@@ -67,7 +74,7 @@ export async function punctuateWord(
       index !== maxindex - 2) ||
     index === maxindex - 1
   ) {
-    if (currentLanguage === "spanish" || currentLanguage === "catalan") {
+    if (currentLanguage === "spanish") {
       if (spanishSentenceTracker === "?" || spanishSentenceTracker === "!") {
         word += spanishSentenceTracker;
         spanishSentenceTracker = "";
@@ -174,8 +181,6 @@ export async function punctuateWord(
   ) {
     if (currentLanguage === "french") {
       word = ":";
-    } else if (currentLanguage === "greek") {
-      word = "·";
     } else if (currentLanguage === "chinese") {
       word += "：";
     } else {
@@ -200,7 +205,10 @@ export async function punctuateWord(
     if (currentLanguage === "french") {
       word = ";";
     } else if (currentLanguage === "greek") {
-      word = "·";
+      // Normally U+00B7 ('middle dot' or 'ano teleia') would be used here.
+      // However, a) it has fallen into disuse in contemporary times and
+      // b) there isn't a dedicated key on a keyboard to input it
+      word = ".";
     } else if (currentLanguage === "arabic" || currentLanguage === "kurdish") {
       word += "؛";
     } else if (currentLanguage === "chinese") {
@@ -280,6 +288,16 @@ export async function punctuateWord(
   ) {
     word = await applyEnglishPunctuationToWord(word);
   }
+
+  if (word.includes("\t")) {
+    word = word.replace(/\t/g, "");
+    word += "\t";
+  }
+  if (word.includes("\n")) {
+    word = word.replace(/\n/g, "");
+    word += "\n";
+  }
+
   return word;
 }
 
@@ -287,28 +305,24 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
   return EnglishPunctuation.replace(word);
 }
 
-function getFunboxWordsFrequency():
-  | MonkeyTypes.FunboxWordsFrequency
-  | undefined {
-  const wordFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWordsFrequencyMode
-  );
-  if (wordFunbox?.functions?.getWordsFrequencyMode) {
-    return wordFunbox.functions.getWordsFrequencyMode();
+function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
+  const funbox = findSingleActiveFunboxWithFunction("getWordsFrequencyMode");
+  if (funbox) {
+    return funbox.functions.getWordsFrequencyMode();
   }
   return undefined;
 }
 
 async function getFunboxSection(): Promise<string[]> {
   const ret = [];
-  const sectionFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.pullSection
-  );
-  if (sectionFunbox?.functions?.pullSection) {
-    const section = await sectionFunbox.functions.pullSection(Config.language);
+
+  const funbox = findSingleActiveFunboxWithFunction("pullSection");
+
+  if (funbox) {
+    const section = await funbox.functions.pullSection(Config.language);
 
     if (section === false || section === undefined) {
-      UpdateConfig.toggleFunbox(sectionFunbox.name);
+      UpdateConfig.toggleFunbox(funbox.name);
       throw new Error("Failed to pull section");
     }
 
@@ -327,20 +341,21 @@ function getFunboxWord(
   wordIndex: number,
   wordset?: Wordset.Wordset
 ): string {
-  const wordFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWord
-  );
-  if (wordFunbox?.functions?.getWord) {
-    word = wordFunbox.functions.getWord(wordset, wordIndex);
+  const funbox = findSingleActiveFunboxWithFunction("getWord");
+
+  if (funbox) {
+    word = funbox.functions.getWord(wordset, wordIndex);
   }
   return word;
 }
 
-function applyFunboxesToWord(word: string): string {
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.alterText) {
-      word = f.functions.alterText(word);
-    }
+function applyFunboxesToWord(
+  word: string,
+  wordIndex: number,
+  wordsBound: number
+): string {
+  for (const fb of getActiveFunboxesWithFunction("alterText")) {
+    word = fb.functions.alterText(word, wordIndex, wordsBound);
   }
   return word;
 }
@@ -362,10 +377,7 @@ async function applyBritishEnglishToWord(
   return await BritishEnglish.replace(word, previousWord);
 }
 
-function applyLazyModeToWord(
-  word: string,
-  language: MonkeyTypes.LanguageObject
-): string {
+function applyLazyModeToWord(word: string, language: LanguageObject): string {
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
   if (Config.lazyMode && allowLazyMode) {
     word = LazyMode.replaceAccents(word, language.additionalAccents);
@@ -373,16 +385,16 @@ function applyLazyModeToWord(
   return word;
 }
 
-export function getWordOrder(): MonkeyTypes.FunboxWordOrder {
+export function getWordOrder(): FunboxWordOrder {
   const wordOrder =
-    FunboxList.get(Config.funbox)
+    getActiveFunboxes()
       .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
       ?.properties?.find((fp) => fp.startsWith("wordOrder")) ?? "";
 
   if (!wordOrder) {
     return "normal";
   } else {
-    return wordOrder.split(":")[1] as MonkeyTypes.FunboxWordOrder;
+    return wordOrder.split(":")[1] as FunboxWordOrder;
   }
 }
 
@@ -400,7 +412,7 @@ export function getWordsLimit(): number {
   }
 
   const funboxToPush =
-    FunboxList.get(Config.funbox)
+    getActiveFunboxes()
       .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
       ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
 
@@ -412,7 +424,7 @@ export function getWordsLimit(): number {
       limit = Config.words;
     }
     if (Config.mode === "quote") {
-      limit = (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length;
+      limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
     }
   }
 
@@ -423,7 +435,10 @@ export function getWordsLimit(): number {
 
   //custom
   if (Config.mode === "custom") {
-    if (CustomText.getLimitValue() === 0) {
+    if (
+      CustomText.getLimitValue() === 0 ||
+      CustomText.getLimitMode() === "time"
+    ) {
       limit = 100;
     } else {
       limit =
@@ -443,9 +458,9 @@ export function getWordsLimit(): number {
 
   if (
     Config.mode === "quote" &&
-    (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length < limit
+    (currentQuote as QuoteWithTextSplit).textSplit.length < limit
   ) {
-    limit = (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length;
+    limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
   }
 
   if (
@@ -468,8 +483,8 @@ export class WordGenError extends Error {
 }
 
 async function getQuoteWordList(
-  language: MonkeyTypes.LanguageObject,
-  wordOrder?: MonkeyTypes.FunboxWordOrder
+  language: LanguageObject,
+  wordOrder?: FunboxWordOrder
 ): Promise<string[]> {
   if (TestState.isRepeated) {
     if (currentWordset === null) {
@@ -504,7 +519,7 @@ async function getQuoteWordList(
     );
   }
 
-  let rq: MonkeyTypes.Quote;
+  let rq: Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
     const targetQuote = QuotesController.getQuoteById(
       TestState.selectedQuoteId
@@ -550,7 +565,7 @@ async function getQuoteWordList(
     rq.textSplit = rq.text.split(" ");
   }
 
-  TestWords.setCurrentQuote(rq as MonkeyTypes.QuoteWithTextSplit);
+  TestWords.setCurrentQuote(rq as QuoteWithTextSplit);
 
   if (TestWords.currentQuote === null) {
     throw new WordGenError("Random quote is null");
@@ -564,7 +579,7 @@ async function getQuoteWordList(
 }
 
 let currentWordset: Wordset.Wordset | null = null;
-let currentLanguage: MonkeyTypes.LanguageObject | null = null;
+let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
 type GenerateWordsReturn = {
@@ -574,10 +589,10 @@ type GenerateWordsReturn = {
   hasNewline: boolean;
 };
 
-let previousRandomQuote: MonkeyTypes.QuoteWithTextSplit | null = null;
+let previousRandomQuote: QuoteWithTextSplit | null = null;
 
 export async function generateWords(
-  language: MonkeyTypes.LanguageObject
+  language: LanguageObject
 ): Promise<GenerateWordsReturn> {
   if (!TestState.isRepeated) {
     previousGetNextWordReturns = [];
@@ -595,11 +610,7 @@ export async function generateWords(
     hasNewline: false,
   };
 
-  const sectionFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.pullSection
-  );
-  isCurrentlyUsingFunboxSection =
-    sectionFunbox?.functions?.pullSection !== undefined;
+  isCurrentlyUsingFunboxSection = isFunboxActiveWithFunction("pullSection");
 
   const wordOrder = getWordOrder();
   console.debug("Word order", wordOrder);
@@ -620,7 +631,13 @@ export async function generateWords(
     wordList = wordList.reverse();
   }
 
-  currentWordset = await Wordset.withWords(wordList);
+  const funbox = findSingleActiveFunboxWithFunction("withWords");
+  if (funbox) {
+    currentWordset = await funbox.functions.withWords(wordList);
+  } else {
+    currentWordset = await Wordset.withWords(wordList);
+  }
+
   console.debug("Wordset", currentWordset);
 
   if (limit === 0) {
@@ -643,7 +660,7 @@ export async function generateWords(
       const sectionFinishedAndOverLimit =
         currentSection.length === 0 &&
         sectionIndex >= CustomText.getLimitValue();
-      if (sectionFinishedAndOverLimit) {
+      if (sectionFinishedAndOverLimit || ret.words.length >= limit) {
         stop = true;
       }
     } else if (ret.words.length >= limit) {
@@ -659,19 +676,15 @@ export async function generateWords(
   }
 
   ret.hasTab =
-    ret.words.some((w) => /\t/.test(w)) ||
-    currentWordset.words.some((w) => /\t/.test(w)) ||
+    ret.words.some((w) => w.includes("\t")) ||
+    currentWordset.words.some((w) => w.includes("\t")) ||
     (Config.mode === "quote" &&
-      (quote as MonkeyTypes.QuoteWithTextSplit).textSplit.some((w) =>
-        /\t/.test(w)
-      ));
+      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
   ret.hasNewline =
-    ret.words.some((w) => /\n/.test(w)) ||
-    currentWordset.words.some((w) => /\n/.test(w)) ||
+    ret.words.some((w) => w.includes("\n")) ||
+    currentWordset.words.some((w) => w.includes("\n")) ||
     (Config.mode === "quote" &&
-      (quote as MonkeyTypes.QuoteWithTextSplit).textSplit.some((w) =>
-        /\n/.test(w)
-      ));
+      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
@@ -693,7 +706,7 @@ export async function getNextWord(
   wordIndex: number,
   wordsBound: number,
   previousWord: string,
-  previousWord2: string
+  previousWord2: string | undefined
 ): Promise<GetNextWordReturn> {
   console.debug("Getting next word", {
     isRepeated: TestState.isRepeated,
@@ -728,7 +741,11 @@ export async function getNextWord(
 
       if (
         Config.mode === "time" ||
-        (Config.mode === "custom" && CustomText.getLimitMode() === "time")
+        (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+        (Config.mode === "custom" &&
+          CustomText.getLimitMode() === "word" &&
+          wordIndex < CustomText.getLimitValue()) ||
+        (Config.mode === "words" && wordIndex < Config.words)
       ) {
         continueRandomGeneration = true;
       }
@@ -742,6 +759,7 @@ export async function getNextWord(
       }
     } else {
       console.debug("Repeated word: ", repeated);
+      sectionIndex++;
       return repeated;
     }
   }
@@ -750,7 +768,7 @@ export async function getNextWord(
   let randomWord = currentWordset.randomWord(funboxFrequency);
   const previousWordRaw = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
   const previousWord2Raw = previousWord2
-    .replace(/[.?!":\-,']/g, "")
+    ?.replace(/[.?!":\-,']/g, "")
     .toLowerCase();
 
   if (currentSection.length === 0) {
@@ -843,6 +861,8 @@ export async function getNextWord(
     throw new WordGenError("Random word contains spaces");
   }
 
+  const usingFunboxWithGetWord = isFunboxActiveWithFunction("getWord");
+
   if (
     Config.mode !== "custom" &&
     Config.mode !== "quote" &&
@@ -852,7 +872,8 @@ export async function getNextWord(
     !Config.language.startsWith("swiss_german") &&
     !Config.language.startsWith("code") &&
     !Config.language.startsWith("klingon") &&
-    !isCurrentlyUsingFunboxSection
+    !isCurrentlyUsingFunboxSection &&
+    !usingFunboxWithGetWord
   ) {
     randomWord = randomWord.toLowerCase();
   }
@@ -894,7 +915,7 @@ export async function getNextWord(
     }
   }
 
-  randomWord = applyFunboxesToWord(randomWord);
+  randomWord = applyFunboxesToWord(randomWord, wordIndex, wordsBound);
 
   console.debug("Word:", randomWord);
 

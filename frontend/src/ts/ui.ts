@@ -16,6 +16,7 @@ export function previewFontFamily(font: string): void {
     "--font",
     '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
   );
+  void TestUI.updateHintsPosition();
   isPreviewingFont = true;
 }
 
@@ -23,6 +24,18 @@ export function clearFontPreview(): void {
   if (!isPreviewingFont) return;
   previewFontFamily(Config.fontFamily);
   isPreviewingFont = false;
+}
+
+export function setMediaQueryDebugLevel(level: number): void {
+  const body = document.querySelector("body") as HTMLElement;
+
+  body.classList.remove("mediaQueryDebugLevel1");
+  body.classList.remove("mediaQueryDebugLevel2");
+  body.classList.remove("mediaQueryDebugLevel3");
+
+  if (level > 0 && level < 4) {
+    body.classList.add(`mediaQueryDebugLevel${level}`);
+  }
 }
 
 function updateKeytips(): void {
@@ -34,13 +47,21 @@ function updateKeytips(): void {
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $("footer .keyTips").html(`
-    <key>${Config.quickRestart}</key> - restart test<br>
+    ${
+      Config.quickRestart == "off"
+        ? "<key>tab</key> + <key>enter</key>"
+        : `<key>${Config.quickRestart}</key>`
+    } - restart test<br>
     <key>${commandKey}</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
 }
 
 if (isDevEnvironment()) {
   window.onerror = function (error): void {
-    Notifications.add(JSON.stringify(error), -1);
+    if (JSON.stringify(error).includes("x_magnitude")) return;
+    Notifications.add(JSON.stringify(error), -1, {
+      important: true,
+      duration: 5,
+    });
   };
   $("header #logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
@@ -85,7 +106,7 @@ const debouncedEvent = debounce(250, () => {
     } else {
       const word =
         document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.currentWordElementIndex - 1
+          TestUI.activeWordElementIndex - 1
         ];
       if (word) {
         const currentTop: number = Math.floor(word.offsetTop);

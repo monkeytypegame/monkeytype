@@ -28,6 +28,7 @@
   .notif {
     --notif-border-color: rgba(0, 130, 251, 0.985);
     --notif-background-color: rgba(0, 77, 148, 0.9);
+    transition: 0.125s background;
 
     -webkit-user-select: none;
     user-select: none;
@@ -74,8 +75,16 @@
     }
 
     &:hover {
-      opacity: 0.5;
       cursor: pointer;
+      --notif-background-color: rgba(0, 77, 148, 0.5);
+
+      &.bad {
+        --notif-background-color: rgba(138, 18, 12, 0.5);
+      }
+
+      &.good {
+        --notif-background-color: rgba(0, 148, 0, 0.5);
+      }
     }
   }
 }

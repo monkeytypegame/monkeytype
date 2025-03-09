@@ -1,13 +1,10 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
 import * as LoadingPage from "./pages/loading";
-import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
-import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
-import { getFunboxList } from "./utils/json-data";
-import { mergeWithDefaultConfig } from "./utils/config";
+import { migrateConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
   TestActivityCalendar,
@@ -15,15 +12,39 @@ import {
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
-let dbSnapshot: MonkeyTypes.Snapshot | undefined;
+import { Badge, CustomTheme } from "@monkeytype/contracts/schemas/users";
+import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
+import {
+  Mode,
+  Mode2,
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
+import {
+  getDefaultSnapshot,
+  Snapshot,
+  SnapshotPreset,
+  SnapshotResult,
+  SnapshotUserTag,
+} from "./constants/default-snapshot";
+import { getDefaultConfig } from "./constants/default-config";
+import { FunboxMetadata } from "../../../packages/funbox/src/types";
 
-export function getSnapshot(): MonkeyTypes.Snapshot | undefined {
+let dbSnapshot: Snapshot | undefined;
+
+export class SnapshotInitError extends Error {
+  constructor(message: string, public responseCode: number) {
+    super(message);
+    this.name = "SnapshotInitError";
+    this.responseCode = responseCode;
+  }
+}
+
+export function getSnapshot(): Snapshot | undefined {
   return dbSnapshot;
 }
 
-export function setSnapshot(
-  newSnapshot: MonkeyTypes.Snapshot | undefined
-): void {
+export function setSnapshot(newSnapshot: Snapshot | undefined): void {
   const originalBanned = dbSnapshot?.banned;
   const originalVerified = dbSnapshot?.verified;
   const lbOptOut = dbSnapshot?.lbOptOut;
@@ -46,11 +67,9 @@ export function setSnapshot(
   }
 }
 
-export async function initSnapshot(): Promise<
-  MonkeyTypes.Snapshot | number | boolean
-> {
+export async function initSnapshot(): Promise<Snapshot | number | boolean> {
   //send api request with token that returns tags, presets, and data needed for snap
-  const snap = { ...defaultSnap };
+  const snap = getDefaultSnapshot();
   try {
     if (!isAuthenticated()) return false;
     // if (ActivePage.get() === "loading") {
@@ -61,44 +80,45 @@ export async function initSnapshot(): Promise<
     // LoadingPage.updateText("Downloading user...");
 
     const [userResponse, configResponse, presetsResponse] = await Promise.all([
-      Ape.users.getData(),
+      Ape.users.get(),
       Ape.configs.get(),
       Ape.presets.get(),
     ]);
 
-    //these objects are explicitly handled so its ok to throw that way
     if (userResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw {
-        message: `${userResponse.message} (user)`,
-        responseCode: userResponse.status,
-      };
+      throw new SnapshotInitError(
+        `${userResponse.body.message} (user)`,
+        userResponse.status
+      );
     }
     if (configResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw {
-        message: `${configResponse.message} (config)`,
-        responseCode: configResponse.status,
-      };
+      throw new SnapshotInitError(
+        `${configResponse.body.message} (config)`,
+        configResponse.status
+      );
     }
     if (presetsResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw {
-        message: `${presetsResponse.message} (presets)`,
-        responseCode: presetsResponse.status,
-      };
+      throw new SnapshotInitError(
+        `${presetsResponse.body.message} (presets)`,
+        presetsResponse.status
+      );
     }
 
-    const userData = userResponse.data;
-    const configData = configResponse.data;
-    const presetsData = presetsResponse.data;
+    const userData = userResponse.body.data;
+    const configData = configResponse.body.data;
+    const presetsData = presetsResponse.body.data;
 
     if (userData === null) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw {
-        message: "Request was successful but user data is null",
-        responseCode: 200,
-      };
+      throw new SnapshotInitError(
+        `Request was successful but user data is null`,
+        200
+      );
+    }
+
+    if (configData !== null && "config" in configData) {
+      throw new Error(
+        "Config data is not in the correct format. Please refresh the page or contact support."
+      );
     }
 
     snap.name = userData.name;
@@ -112,7 +132,7 @@ export async function initSnapshot(): Promise<
     };
 
     for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-      snap.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
+      snap.personalBests[mode as keyof PersonalBests] ??= {};
     }
 
     snap.banned = userData.banned;
@@ -137,7 +157,7 @@ export async function initSnapshot(): Promise<
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
     snap.filterPresets = userData.resultFilterPresets ?? [];
-    snap.isPremium = userData?.isPremium;
+    snap.isPremium = userData?.isPremium ?? false;
     snap.allTimeLbs = userData.allTimeLbs;
 
     if (userData.testActivity !== undefined) {
@@ -162,10 +182,10 @@ export async function initSnapshot(): Promise<
     // LoadingPage.updateText("Downloading config...");
     if (configData === undefined || configData === null) {
       snap.config = {
-        ...DefaultConfig,
+        ...getDefaultConfig(),
       };
     } else {
-      snap.config = mergeWithDefaultConfig(configData.config);
+      snap.config = migrateConfig(configData);
     }
     // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(67.5);
@@ -188,7 +208,7 @@ export async function initSnapshot(): Promise<
     //   };
 
     //   for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-    //     tag.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
+    //     tag.personalBests[mode as keyof PersonalBests] ??= {};
     //   }
     // });
 
@@ -223,24 +243,26 @@ export async function initSnapshot(): Promise<
           ...preset,
           display: preset.name.replace(/_/gi, " "),
         };
-      }) as MonkeyTypes.SnapshotPreset[];
+      }) as SnapshotPreset[];
       snap.presets = presetsWithDisplay;
 
-      snap.presets = snap.presets?.sort((a, b) => {
-        if (a.name > b.name) {
-          return 1;
-        } else if (a.name < b.name) {
-          return -1;
-        } else {
-          return 0;
+      snap.presets = snap.presets?.sort(
+        (a: SnapshotPreset, b: SnapshotPreset) => {
+          if (a.name > b.name) {
+            return 1;
+          } else if (a.name < b.name) {
+            return -1;
+          } else {
+            return 0;
+          }
         }
-      });
+      );
     }
 
     dbSnapshot = snap;
     return dbSnapshot;
   } catch (e) {
-    dbSnapshot = defaultSnap;
+    dbSnapshot = getDefaultSnapshot();
     throw e;
   }
 }
@@ -265,17 +287,17 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     LoadingPage.updateBar(90);
   }
 
-  const response = await Ape.results.get(offset);
+  const response = await Ape.results.get({ query: { offset } });
 
   if (response.status !== 200) {
-    Notifications.add("Error getting results: " + response.message, -1);
+    Notifications.add("Error getting results: " + response.body.message, -1);
     return false;
   }
 
-  const results =
-    response.data as SharedTypes.DBResult<SharedTypes.Config.Mode>[];
-  results?.sort((a, b) => b.timestamp - a.timestamp);
-  results.forEach((result) => {
+  //another check in case user logs out while waiting for response
+  if (!isAuthenticated()) return false;
+
+  const results: SnapshotResult<Mode>[] = response.body.data.map((result) => {
     if (result.bailedOut === undefined) result.bailedOut = false;
     if (result.blindMode === undefined) result.blindMode = false;
     if (result.lazyMode === undefined) result.lazyMode = false;
@@ -294,14 +316,9 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     }
     if (result.afkDuration === undefined) result.afkDuration = 0;
     if (result.tags === undefined) result.tags = [];
-
-    if (
-      result.correctChars !== undefined &&
-      result.incorrectChars !== undefined
-    ) {
-      result.charStats = [result.correctChars, result.incorrectChars, 0, 0];
-    }
+    return result as SnapshotResult<Mode>;
   });
+  results?.sort((a, b) => b.timestamp - a.timestamp);
 
   if (dbSnapshot.results !== undefined && dbSnapshot.results.length > 0) {
     //merge
@@ -310,24 +327,19 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     const resultsWithoutDuplicates = results.filter(
       (it) => it.timestamp < oldestTimestamp
     );
-    dbSnapshot.results.push(
-      ...(resultsWithoutDuplicates as unknown as SharedTypes.Result<SharedTypes.Config.Mode>[])
-    );
+    dbSnapshot.results.push(...resultsWithoutDuplicates);
   } else {
-    dbSnapshot.results =
-      results as unknown as SharedTypes.Result<SharedTypes.Config.Mode>[];
+    dbSnapshot.results = results;
   }
   return true;
 }
 
-function _getCustomThemeById(
-  themeID: string
-): MonkeyTypes.CustomTheme | undefined {
+function _getCustomThemeById(themeID: string): CustomTheme | undefined {
   return dbSnapshot?.customThemes?.find((t) => t._id === themeID);
 }
 
 export async function addCustomTheme(
-  theme: MonkeyTypes.RawCustomTheme
+  theme: Omit<CustomTheme, "_id">
 ): Promise<boolean> {
   if (!dbSnapshot) return false;
 
@@ -335,25 +347,28 @@ export async function addCustomTheme(
     dbSnapshot.customThemes = [];
   }
 
-  if (dbSnapshot.customThemes.length >= 10) {
+  if (dbSnapshot.customThemes.length >= 20) {
     Notifications.add("Too many custom themes!", 0);
     return false;
   }
 
-  const response = await Ape.users.addCustomTheme(theme);
+  const response = await Ape.users.addCustomTheme({ body: { ...theme } });
   if (response.status !== 200) {
-    Notifications.add("Error adding custom theme: " + response.message, -1);
+    Notifications.add(
+      "Error adding custom theme: " + response.body.message,
+      -1
+    );
     return false;
   }
 
-  if (response.data === null) {
+  if (response.body.data === null) {
     Notifications.add("Error adding custom theme: No data returned", -1);
     return false;
   }
 
-  const newCustomTheme: MonkeyTypes.CustomTheme = {
+  const newCustomTheme: CustomTheme = {
     ...theme,
-    _id: response.data._id as string,
+    _id: response.body.data._id,
   };
 
   dbSnapshot.customThemes.push(newCustomTheme);
@@ -362,7 +377,7 @@ export async function addCustomTheme(
 
 export async function editCustomTheme(
   themeId: string,
-  newTheme: MonkeyTypes.RawCustomTheme
+  newTheme: Omit<CustomTheme, "_id">
 ): Promise<boolean> {
   if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
@@ -380,13 +395,18 @@ export async function editCustomTheme(
     return false;
   }
 
-  const response = await Ape.users.editCustomTheme(themeId, newTheme);
+  const response = await Ape.users.editCustomTheme({
+    body: { themeId, theme: newTheme },
+  });
   if (response.status !== 200) {
-    Notifications.add("Error editing custom theme: " + response.message, -1);
+    Notifications.add(
+      "Error editing custom theme: " + response.body.message,
+      -1
+    );
     return false;
   }
 
-  const newCustomTheme: MonkeyTypes.CustomTheme = {
+  const newCustomTheme: CustomTheme = {
     ...newTheme,
     _id: themeId,
   };
@@ -404,9 +424,12 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) return false;
 
-  const response = await Ape.users.deleteCustomTheme(themeId);
+  const response = await Ape.users.deleteCustomTheme({ body: { themeId } });
   if (response.status !== 200) {
-    Notifications.add("Error deleting custom theme: " + response.message, -1);
+    Notifications.add(
+      "Error deleting custom theme: " + response.body.message,
+      -1
+    );
     return false;
   }
 
@@ -417,13 +440,13 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   return true;
 }
 
-export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
+export async function getUserAverage10<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean
 ): Promise<[number, number]> {
   const snapshot = getSnapshot();
@@ -456,7 +479,7 @@ export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
           (result.lazyMode === lazyMode ||
             (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
-            activeTagIds.some((tagId) => result.tags.includes(tagId)))
+            activeTagIds.some((tagId) => result.tags?.includes(tagId)))
         ) {
           // Continue if the mode2 doesn't match and it's not a quote
           if (
@@ -502,13 +525,13 @@ export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
   return retval;
 }
 
-export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
+export async function getUserDailyBest<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean
 ): Promise<number> {
   const snapshot = getSnapshot();
@@ -536,7 +559,7 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
           (result.lazyMode === lazyMode ||
             (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
-            activeTagIds.some((tagId) => result.tags.includes(tagId)))
+            activeTagIds.some((tagId) => result.tags?.includes(tagId)))
         ) {
           if (result.timestamp < Date.now() - 86400000) {
             continue;
@@ -567,50 +590,72 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
   return retval;
 }
 
-export async function getLocalPB<M extends SharedTypes.Config.Mode>(
+export async function getActiveTagsPB<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
-  lazyMode: boolean,
-  funbox: string
+  difficulty: Difficulty,
+  lazyMode: boolean
 ): Promise<number> {
-  const funboxes = (await getFunboxList()).filter((fb) => {
-    return funbox?.split("#").includes(fb.name);
-  });
+  const snapshot = getSnapshot();
+  if (!snapshot) return 0;
 
-  if (!funboxes.every((f) => f.canGetPb)) {
-    return 0;
+  let tagPbWpm = 0;
+  for (const tag of snapshot.tags) {
+    if (!tag.active) continue;
+    const currTagPB = await getLocalTagPB(
+      tag._id,
+      mode,
+      mode2,
+      punctuation,
+      numbers,
+      language,
+      difficulty,
+      lazyMode
+    );
+    if (currTagPB > tagPbWpm) tagPbWpm = currTagPB;
   }
-  if (dbSnapshot === null || dbSnapshot?.personalBests === null) return 0;
 
-  const bestsByMode = dbSnapshot?.personalBests[mode][
-    mode2
-  ] as SharedTypes.PersonalBest[];
+  return tagPbWpm;
+}
 
-  if (bestsByMode === undefined) return 0;
+export async function getLocalPB<M extends Mode>(
+  mode: M,
+  mode2: Mode2<M>,
+  punctuation: boolean,
+  numbers: boolean,
+  language: string,
+  difficulty: Difficulty,
+  lazyMode: boolean,
+  funboxes: FunboxMetadata[]
+): Promise<PersonalBest | undefined> {
+  if (!funboxes.every((f) => f.canGetPb)) {
+    return undefined;
+  }
 
-  return (
-    bestsByMode.find(
-      (pb) =>
-        (pb.punctuation ?? false) === punctuation &&
-        (pb.numbers ?? false) === numbers &&
-        pb.difficulty === difficulty &&
-        pb.language === language &&
-        (pb.lazyMode ?? false) === lazyMode
-    )?.wpm ?? 0
+  const pbs = dbSnapshot?.personalBests?.[mode]?.[mode2] as
+    | PersonalBest[]
+    | undefined;
+
+  return pbs?.find(
+    (pb) =>
+      (pb.punctuation ?? false) === punctuation &&
+      (pb.numbers ?? false) === numbers &&
+      pb.difficulty === difficulty &&
+      pb.language === language &&
+      (pb.lazyMode ?? false) === lazyMode
   );
 }
 
-export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
+export async function saveLocalPB<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
   acc: number,
@@ -636,12 +681,10 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
     };
 
     dbSnapshot.personalBests[mode][mode2] ??=
-      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+      [] as unknown as PersonalBests[M][Mode2<M>];
 
     (
-      dbSnapshot.personalBests[mode][
-        mode2
-      ] as unknown as SharedTypes.PersonalBest[]
+      dbSnapshot.personalBests[mode][mode2] as unknown as PersonalBest[]
     ).forEach((pb) => {
       if (
         (pb.punctuation ?? false) === punctuation &&
@@ -661,22 +704,20 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
     });
     if (!found) {
       //nothing found
-      (
-        dbSnapshot.personalBests[mode][
-          mode2
-        ] as unknown as SharedTypes.PersonalBest[]
-      ).push({
-        language,
-        difficulty,
-        lazyMode,
-        punctuation,
-        numbers,
-        wpm,
-        acc,
-        raw,
-        timestamp: Date.now(),
-        consistency,
-      });
+      (dbSnapshot.personalBests[mode][mode2] as unknown as PersonalBest[]).push(
+        {
+          language,
+          difficulty,
+          lazyMode,
+          punctuation,
+          numbers,
+          wpm,
+          acc,
+          raw,
+          timestamp: Date.now(),
+          consistency,
+        }
+      );
     }
   }
 
@@ -685,14 +726,14 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
   }
 }
 
-export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
+export async function getLocalTagPB<M extends Mode>(
   tagId: string,
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean
 ): Promise<number> {
   if (dbSnapshot === null) return 0;
@@ -718,10 +759,10 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
   };
 
   filteredtag.personalBests[mode][mode2] ??=
-    [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+    [] as unknown as PersonalBests[M][Mode2<M>];
 
   const personalBests = (filteredtag.personalBests[mode][mode2] ??
-    []) as SharedTypes.PersonalBest[];
+    []) as PersonalBest[];
 
   ret =
     personalBests.find(
@@ -736,14 +777,14 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
   return ret;
 }
 
-export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
+export async function saveLocalTagPB<M extends Mode>(
   tagId: string,
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
   acc: number,
@@ -755,7 +796,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
   function cont(): void {
     const filteredtag = dbSnapshot?.tags?.filter(
       (t) => t._id === tagId
-    )[0] as MonkeyTypes.UserTag;
+    )[0] as SnapshotUserTag;
 
     filteredtag.personalBests ??= {
       time: {},
@@ -770,15 +811,13 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
     };
 
     filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+      [] as unknown as PersonalBests[M][Mode2<M>];
 
     try {
       let found = false;
 
       (
-        filteredtag.personalBests[mode][
-          mode2
-        ] as unknown as SharedTypes.PersonalBest[]
+        filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
       ).forEach((pb) => {
         if (
           (pb.punctuation ?? false) === punctuation &&
@@ -799,9 +838,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
       if (!found) {
         //nothing found
         (
-          filteredtag.personalBests[mode][
-            mode2
-          ] as unknown as SharedTypes.PersonalBest[]
+          filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
         ).push({
           language,
           difficulty,
@@ -837,7 +874,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
           timestamp: Date.now(),
           consistency: consistency,
         },
-      ] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+      ] as unknown as PersonalBests[M][Mode2<M>];
     }
   }
 
@@ -848,15 +885,15 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
   return;
 }
 
-export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
+export async function updateLbMemory<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   language: string,
   rank: number,
   api = false
 ): Promise<void> {
   if (mode === "time") {
-    const timeMode = mode as "time";
+    const timeMode = mode;
     const timeMode2 = mode2 as "15" | "60";
 
     const snapshot = getSnapshot();
@@ -878,30 +915,36 @@ export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
     const current = snapshot.lbMemory?.[timeMode]?.[timeMode2]?.[language];
 
     //this is protected above so not sure why it would be undefined
-    const mem = snapshot.lbMemory[timeMode][timeMode2] as Record<
-      string,
-      number
-    >;
+    const mem = snapshot.lbMemory[timeMode][timeMode2];
     mem[language] = rank;
     if (api && current !== rank) {
-      await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);
+      await Ape.users.updateLeaderboardMemory({
+        body: { mode, mode2, language, rank },
+      });
     }
     setSnapshot(snapshot);
   }
 }
 
-export async function saveConfig(config: SharedTypes.Config): Promise<void> {
+export async function saveConfig(config: Config): Promise<void> {
   if (isAuthenticated()) {
-    const response = await Ape.configs.save(config);
+    const response = await Ape.configs.save({ body: config });
     if (response.status !== 200) {
-      Notifications.add("Failed to save config: " + response.message, -1);
+      Notifications.add("Failed to save config: " + response.body.message, -1);
     }
   }
 }
 
-export function saveLocalResult(
-  result: SharedTypes.Result<SharedTypes.Config.Mode>
-): void {
+export async function resetConfig(): Promise<void> {
+  if (isAuthenticated()) {
+    const response = await Ape.configs.delete();
+    if (response.status !== 200) {
+      Notifications.add("Failed to reset config: " + response.body.message, -1);
+    }
+  }
+}
+
+export function saveLocalResult(result: SnapshotResult<Mode>): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
@@ -946,7 +989,7 @@ export function addXp(xp: number): void {
   setSnapshot(snapshot);
 }
 
-export function addBadge(badge: SharedTypes.Badge): void {
+export function addBadge(badge: Badge): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
@@ -974,7 +1017,7 @@ export function setStreak(streak: number): void {
 
 export async function getTestActivityCalendar(
   yearString: string
-): Promise<MonkeyTypes.TestActivityCalendar | undefined> {
+): Promise<TestActivityCalendar | undefined> {
   if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
 
   if (yearString === "current") return dbSnapshot.testActivity;
@@ -993,7 +1036,7 @@ export async function getTestActivityCalendar(
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
       Notifications.add(
-        "Error getting test activities: " + response.message,
+        "Error getting test activities: " + response.body.message,
         -1
       );
       Loader.hide();
@@ -1001,9 +1044,9 @@ export async function getTestActivityCalendar(
     }
 
     dbSnapshot.testActivityByYear = {};
-    for (const year in response.data) {
+    for (const year in response.body.data) {
       if (year === currentYear) continue;
-      const testsByDays = response.data[year] ?? [];
+      const testsByDays = response.body.data[year] ?? [];
       const lastDay = Dates.addDays(
         new Date(parseInt(year), 0, 1),
         testsByDays.length

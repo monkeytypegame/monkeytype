@@ -1,3 +1,2 @@
-#!bin/sh
-./applyConfig.sh &
+#!/bin/sh
 node server.js

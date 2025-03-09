@@ -8,10 +8,10 @@ let isAltGrPressed = false;
 const isPunctuationPattern = /\p{P}/u;
 
 export async function getCharFromEvent(
-  event: JQuery.KeyDownEvent
+  event: JQuery.KeyDownEvent | JQuery.KeyUpEvent
 ): Promise<string | null> {
   function emulatedLayoutGetVariant(
-    event: JQuery.KeyDownEvent,
+    event: JQuery.KeyDownEvent | JQuery.KeyUpEvent,
     keyVariants: string
   ): string | undefined {
     let isCapitalized = event.shiftKey;
@@ -230,12 +230,16 @@ export async function getCharFromEvent(
   }
 }
 
-function updateAltGrState(event: JQuery.KeyboardEventBase): void {
+export function updateAltGrState(event: JQuery.KeyboardEventBase): void {
   const shouldHandleLeftAlt =
     event.code === "AltLeft" && navigator.userAgent.includes("Mac");
   if (event.code !== "AltRight" && !shouldHandleLeftAlt) return;
   if (event.type === "keydown") isAltGrPressed = true;
   if (event.type === "keyup") isAltGrPressed = false;
+}
+
+export function getIsAltGrPressed(): boolean {
+  return isAltGrPressed;
 }
 
 $(document).on("keydown", updateAltGrState);

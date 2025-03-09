@@ -1,9 +1,7 @@
 import * as ShareCustomThemeModal from "../modals/share-custom-theme";
 import * as CookiesModal from "../modals/cookies";
-import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import * as EditPresetPopup from "../modals/edit-preset";
 import * as EditTagPopup from "../modals/edit-tag";
-import * as ApeKeysModal from "../modals/ape-keys";
 
 import * as Notifications from "../elements/notifications";
 
@@ -22,12 +20,6 @@ settingsPage
   });
 
 settingsPage
-  ?.querySelector("#setStreakHourOffset")
-  ?.addEventListener("click", () => {
-    StreakHourOffsetModal.show();
-  });
-
-settingsPage
   ?.querySelector(".section.presets")
   ?.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
@@ -35,7 +27,7 @@ settingsPage
       EditPresetPopup.show("add");
     } else if (target.classList.contains("editButton")) {
       const presetid = target.parentElement?.getAttribute("data-id");
-      const name = target.parentElement?.getAttribute("data-name");
+      const name = target.parentElement?.getAttribute("data-display");
       if (
         presetid === undefined ||
         name === undefined ||
@@ -53,7 +45,7 @@ settingsPage
       EditPresetPopup.show("edit", presetid, name);
     } else if (target.classList.contains("removeButton")) {
       const presetid = target.parentElement?.getAttribute("data-id");
-      const name = target.parentElement?.getAttribute("data-name");
+      const name = target.parentElement?.getAttribute("data-display");
       if (
         presetid === undefined ||
         name === undefined ||
@@ -132,9 +124,3 @@ settingsPage?.querySelector(".section.tags")?.addEventListener("click", (e) => {
     EditTagPopup.show("remove", tagid, name);
   }
 });
-
-settingsPage
-  ?.querySelector(".section.apeKeys #showApeKeysPopup")
-  ?.addEventListener("click", () => {
-    void ApeKeysModal.show();
-  });

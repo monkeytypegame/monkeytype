@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Load nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+
+if [ $(git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/') = "master" ] && [ $(git remote get-url origin) = "https://github.com/monkeytypegame/monkeytype" ]; then
+  nvm use
+  echo "Running a full check before pushing to master..."
+  npm run full-check
+  if [ $? -ne 0 ]; then
+    echo "Full check failed, aborting push."
+    exit 1
+  fi
+fi

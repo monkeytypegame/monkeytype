@@ -1,8 +1,9 @@
 import Config, * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Pace caret mode...",
   configKey: "paceCaret",
   list: [
@@ -21,6 +22,15 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "pb",
       exec: (): void => {
         UpdateConfig.setPaceCaret("pb");
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "setPaceCaretTagPb",
+      display: "tag pb",
+      configValue: "tagPb",
+      exec: (): void => {
+        UpdateConfig.setPaceCaret("tagPb");
         TestLogic.restart();
       },
     },
@@ -69,7 +79,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changePaceCaret",
     display: "Pace caret mode...",

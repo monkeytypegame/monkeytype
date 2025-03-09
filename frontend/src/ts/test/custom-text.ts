@@ -1,80 +1,153 @@
-let text: string[] = [
-  "The",
-  "quick",
-  "brown",
-  "fox",
-  "jumps",
-  "over",
-  "the",
-  "lazy",
-  "dog",
-];
+import {
+  CustomTextLimitMode,
+  CustomTextLimitModeSchema,
+  CustomTextMode,
+  CustomTextModeSchema,
+} from "@monkeytype/contracts/schemas/util";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { z } from "zod";
+import { CustomTextDataWithTextLen } from "@monkeytype/contracts/schemas/results";
 
-let mode: SharedTypes.CustomTextMode = "repeat";
-const limit: SharedTypes.CustomTextLimit = {
-  value: 9,
-  mode: "word",
+const CustomTextObjectSchema = z.record(z.string(), z.string());
+type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
+
+const CustomTextLongObjectSchema = z.record(
+  z.string(),
+  z.object({ text: z.string(), progress: z.number() })
+);
+type CustomTextLongObject = z.infer<typeof CustomTextLongObjectSchema>;
+
+const customTextLS = new LocalStorageWithSchema({
+  key: "customText",
+  schema: CustomTextObjectSchema,
+  fallback: {},
+});
+//todo maybe add migrations here?
+const customTextLongLS = new LocalStorageWithSchema({
+  key: "customTextLong",
+  schema: CustomTextLongObjectSchema,
+  fallback: {},
+});
+
+export const CustomTextSettingsSchema = z.object({
+  text: z.array(z.string()),
+  mode: CustomTextModeSchema,
+  limit: z.object({ value: z.number(), mode: CustomTextLimitModeSchema }),
+  pipeDelimiter: z.boolean(),
+});
+
+export type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
+
+type CustomTextLimit = z.infer<typeof CustomTextSettingsSchema>["limit"];
+
+const defaultCustomTextSettings: CustomTextSettings = {
+  text: ["The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"],
+  mode: "repeat",
+  limit: { value: 9, mode: "word" },
+  pipeDelimiter: false,
 };
-let pipeDelimiter = false;
+
+const customTextSettings = new LocalStorageWithSchema({
+  key: "customTextSettings",
+  schema: CustomTextSettingsSchema,
+  fallback: defaultCustomTextSettings,
+  migrate: (oldData, _zodIssues, fallback) => {
+    if (typeof oldData !== "object" || oldData === null) {
+      return fallback;
+    }
+    const migratedData = fallback;
+    if (
+      "text" in oldData &&
+      z.array(z.string()).safeParse(migratedData.text).success
+    ) {
+      migratedData.text = oldData.text as string[];
+    }
+    return migratedData;
+  },
+});
 
 export function getText(): string[] {
-  return text;
+  return customTextSettings.get().text;
 }
 
 export function setText(txt: string[]): void {
-  text = txt;
-  limit.value = text.length;
+  const currentSettings = customTextSettings.get();
+  customTextSettings.set({
+    ...currentSettings,
+    text: txt,
+    limit: { value: txt.length, mode: currentSettings.limit.mode },
+  });
 }
 
-export function getMode(): SharedTypes.CustomTextMode {
-  return mode;
+export function getMode(): CustomTextMode {
+  const currentSettings = customTextSettings.get();
+  return currentSettings.mode;
 }
 
-export function setMode(val: SharedTypes.CustomTextMode): void {
-  mode = val;
-  limit.value = text.length;
+export function setMode(val: CustomTextMode): void {
+  const currentSettings = customTextSettings.get();
+  customTextSettings.set({
+    ...currentSettings,
+    mode: val,
+    limit: {
+      value: currentSettings.text.length,
+      mode: currentSettings.limit.mode,
+    },
+  });
 }
 
-export function getLimit(): SharedTypes.CustomTextLimit {
-  return limit;
+export function getLimit(): CustomTextLimit {
+  return customTextSettings.get().limit as CustomTextLimit;
 }
 
 export function getLimitValue(): number {
-  return limit.value;
+  return customTextSettings.get().limit.value;
 }
 
-export function getLimitMode(): SharedTypes.CustomTextLimitMode {
-  return limit.mode;
+export function getLimitMode(): CustomTextLimitMode {
+  return customTextSettings.get().limit.mode;
 }
 
 export function setLimitValue(val: number): void {
-  limit.value = val;
+  const currentSettings = customTextSettings.get();
+  customTextSettings.set({
+    ...currentSettings,
+    limit: { value: val, mode: currentSettings.limit.mode },
+  });
 }
 
-export function setLimitMode(val: SharedTypes.CustomTextLimitMode): void {
-  limit.mode = val;
+export function setLimitMode(val: CustomTextLimitMode): void {
+  const currentSettings = customTextSettings.get();
+  customTextSettings.set({
+    ...currentSettings,
+    limit: { value: currentSettings.limit.value, mode: val },
+  });
 }
 
 export function getPipeDelimiter(): boolean {
-  return pipeDelimiter;
+  return customTextSettings.get().pipeDelimiter;
 }
 
 export function setPipeDelimiter(val: boolean): void {
-  pipeDelimiter = val;
+  const currentSettings = customTextSettings.get();
+  customTextSettings.set({
+    ...currentSettings,
+    pipeDelimiter: val,
+  });
 }
 
-export function getData(): SharedTypes.CustomTextData {
+export type CustomTextData = Omit<CustomTextDataWithTextLen, "textLen"> & {
+  text: string[];
+};
+
+export function getData(): CustomTextData {
   return {
-    text,
-    mode,
-    limit,
-    pipeDelimiter,
+    text: getText(),
+    mode: getMode(),
+    limit: getLimit(),
+    pipeDelimiter: getPipeDelimiter(),
   };
 }
-
-type CustomTextObject = Record<string, string>;
-
-type CustomTextLongObject = Record<string, { text: string; progress: number }>;
 
 export function getCustomText(name: string, long = false): string[] {
   if (long) {
@@ -162,19 +235,19 @@ export function setCustomTextLongProgress(
 }
 
 function getLocalStorage(): CustomTextObject {
-  return JSON.parse(window.localStorage.getItem("customText") ?? "{}");
+  return customTextLS.get();
 }
 
 function getLocalStorageLong(): CustomTextLongObject {
-  return JSON.parse(window.localStorage.getItem("customTextLong") ?? "{}");
+  return customTextLongLS.get();
 }
 
 function setLocalStorage(data: CustomTextObject): void {
-  window.localStorage.setItem("customText", JSON.stringify(data));
+  customTextLS.set(data);
 }
 
 function setLocalStorageLong(data: CustomTextLongObject): void {
-  window.localStorage.setItem("customTextLong", JSON.stringify(data));
+  customTextLongLS.set(data);
 }
 
 export function getCustomTextNames(long = false): string[] {

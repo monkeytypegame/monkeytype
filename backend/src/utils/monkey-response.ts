@@ -1,38 +1,17 @@
-import { Response } from "express";
-import { isCustomCode } from "../constants/monkey-status-codes";
+import { MonkeyResponseType } from "@monkeytype/contracts/schemas/api";
 
-//TODO FIX ANYS
+export type MonkeyDataAware<T> = {
+  data: T | null;
+};
 
-export class MonkeyResponse {
-  message: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
-  status: number;
+export class MonkeyResponse<T = null>
+  implements MonkeyResponseType, MonkeyDataAware<T>
+{
+  public message: string;
+  public data: T;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(message?: string, data?: any, status = 200) {
-    this.message = message ?? "ok";
-    this.data = data ?? null;
-    this.status = status;
+  constructor(message: string, data: T) {
+    this.message = message;
+    this.data = data;
   }
-}
-
-export function handleMonkeyResponse(
-  monkeyResponse: MonkeyResponse,
-  res: Response
-): void {
-  const { message, data, status } = monkeyResponse;
-
-  res.status(status);
-  if (isCustomCode(status)) {
-    res.statusMessage = message;
-  }
-
-  //@ts-expect-error ignored so that we can see message in swagger stats
-  res.monkeyMessage = message;
-  if ([301, 302].includes(status)) {
-    return res.redirect(data);
-  }
-
-  res.json({ message, data });
 }

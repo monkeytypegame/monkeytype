@@ -4,9 +4,12 @@ import * as UserDal from "../../src/dal/user";
 import * as LeaderboardsDal from "../../src/dal/leaderboards";
 import * as PublicDal from "../../src/dal/public";
 import * as Configuration from "../../src/init/configuration";
+import type { DBLeaderboardEntry } from "../../src/dal/leaderboards";
+import type { PersonalBest } from "@monkeytype/contracts/schemas/shared";
 const configuration = Configuration.getCachedConfiguration();
 
 import * as DB from "../../src/init/db";
+import { LbPersonalBests } from "../../src/utils/pb";
 
 describe("LeaderboardsDal", () => {
   describe("update", () => {
@@ -25,11 +28,13 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
-      const result = await LeaderboardsDal.get("time", "15", "english", 0);
+      const result = await LeaderboardsDal.get("time", "15", "english", 0, 50);
 
       //THEN
       expect(result).toHaveLength(1);
-      expect(result[0]).toHaveProperty("uid", applicableUser.uid);
+      expect(
+        (result as LeaderboardsDal.DBLeaderboardEntry[])[0]
+      ).toHaveProperty("uid", applicableUser.uid);
     });
 
     it("should create leaderboard time english 15", async () => {
@@ -45,8 +50,9 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
-      )) as SharedTypes.LeaderboardEntry[];
+        0,
+        50
+      )) as DBLeaderboardEntry[];
 
       //THEN
       const lb = result.map((it) => _.omit(it, ["_id"]));
@@ -71,8 +77,9 @@ describe("LeaderboardsDal", () => {
         "time",
         "60",
         "english",
-        0
-      )) as SharedTypes.LeaderboardEntry[];
+        0,
+        50
+      )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
       const lb = result.map((it) => _.omit(it, ["_id"]));
@@ -97,8 +104,9 @@ describe("LeaderboardsDal", () => {
         "time",
         "60",
         "english",
-        0
-      )) as SharedTypes.LeaderboardEntry[];
+        0,
+        50
+      )) as DBLeaderboardEntry[];
 
       //THEN
       expect(lb[0]).not.toHaveProperty("discordId");
@@ -120,8 +128,9 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
-      )) as SharedTypes.LeaderboardEntry[];
+        0,
+        50
+      )) as DBLeaderboardEntry[];
 
       //THEN
       expect(lb[0]).not.toHaveProperty("consistency");
@@ -182,8 +191,9 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
-      )) as SharedTypes.LeaderboardEntry[];
+        0,
+        50
+      )) as DBLeaderboardEntry[];
 
       //THEN
       const lb = result.map((it) => _.omit(it, ["_id"]));
@@ -218,8 +228,9 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
-      )) as SharedTypes.LeaderboardEntry[];
+        0,
+        50
+      )) as DBLeaderboardEntry[];
 
       //THEN
       const lb = result.map((it) => _.omit(it, ["_id"]));
@@ -250,8 +261,9 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
-      )) as SharedTypes.LeaderboardEntry[];
+        0,
+        50
+      )) as DBLeaderboardEntry[];
 
       //THEN
       expect(result[0]?.isPremium).toBeUndefined();
@@ -263,8 +275,10 @@ function expectedLbEntry(
   time: string,
   { rank, user, badgeId, isPremium }: ExpectedLbEntry
 ) {
-  const lbBest: SharedTypes.PersonalBest =
-    user.lbPersonalBests?.time[time].english;
+  // @ts-expect-error
+  const lbBest: PersonalBest =
+    // @ts-expect-error
+    user.lbPersonalBests?.time[Number.parseInt(time)].english;
 
   return {
     rank,
@@ -283,14 +297,14 @@ function expectedLbEntry(
 }
 
 async function createUser(
-  lbPersonalBests?: MonkeyTypes.LbPersonalBests,
-  userProperties?: Partial<MonkeyTypes.DBUser>
-): Promise<MonkeyTypes.DBUser> {
+  lbPersonalBests?: LbPersonalBests,
+  userProperties?: Partial<UserDal.DBUser>
+): Promise<UserDal.DBUser> {
   const uid = new ObjectId().toHexString();
   await UserDal.addUser("User " + uid, uid + "@example.com", uid);
 
   await DB.getDb()
-    ?.collection<MonkeyTypes.DBUser>("users")
+    ?.collection<UserDal.DBUser>("users")
     .updateOne(
       { uid },
       {
@@ -307,21 +321,18 @@ async function createUser(
   return await UserDal.getUser(uid, "test");
 }
 
-function lbBests(
-  pb15?: SharedTypes.PersonalBest,
-  pb60?: SharedTypes.PersonalBest
-): MonkeyTypes.LbPersonalBests {
-  const result = { time: {} };
+function lbBests(pb15?: PersonalBest, pb60?: PersonalBest): LbPersonalBests {
+  const result: LbPersonalBests = { time: {} };
   if (pb15) result.time["15"] = { english: pb15 };
   if (pb60) result.time["60"] = { english: pb60 };
   return result;
 }
 
-function pb(
+export function pb(
   wpm: number,
   acc: number = 90,
   timestamp: number = 1
-): SharedTypes.PersonalBest {
+): PersonalBest {
   return {
     acc,
     consistency: 100,
@@ -335,7 +346,7 @@ function pb(
   };
 }
 
-function premium(expirationDeltaSeconds) {
+function premium(expirationDeltaSeconds: number) {
   return {
     premium: {
       startTimestamp: 0,
@@ -349,7 +360,7 @@ function premium(expirationDeltaSeconds) {
 
 interface ExpectedLbEntry {
   rank: number;
-  user: MonkeyTypes.DBUser;
+  user: UserDal.DBUser;
   badgeId?: number;
   isPremium?: boolean;
 }

@@ -94,23 +94,20 @@ header .button.discord.dotHidden::after {
 header .config .group .buttons .textButton.active,
 #result .stats .group .bottom,
 nav .textButton:hover,
+nav button.text:hover,
 header .config .group .buttons .textButton:hover,
-a:hover,
+a:not(.button):hover,
 #words.flipped .word {
   animation: rgb 5s linear infinite;
 }
 
-/* .word letter.correct{
-  animation: rgb 5s linear infinite;
-
-}  */
-
-#words.flipped .word letter.correct {
-  color: var(--sub-color);
+#words {
+  --correct-letter-animation: rgb 5s linear infinite;
 }
 
-#words:not(.flipped) .word letter.correct {
-  animation: rgb 5s linear infinite;
+#words.flipped {
+  --correct-letter-animation: none;
+  --untyped-letter-animation: rgb 5s linear infinite;
 }
 
 header #logo path {

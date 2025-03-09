@@ -1,7 +1,10 @@
 import "dotenv/config";
 import * as db from "./init/db";
 import jobs from "./jobs";
-import { getLiveConfiguration } from "./init/configuration";
+import {
+  getLiveConfiguration,
+  updateFromConfigurationFile,
+} from "./init/configuration";
 import app from "./app";
 import { Server } from "http";
 import { version } from "./version";
@@ -12,8 +15,9 @@ import workers from "./workers";
 import Logger from "./utils/logger";
 import * as EmailClient from "./init/email-client";
 import { init as initFirebaseAdmin } from "./init/firebase-admin";
-
 import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
+import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
+import { getErrorMessage } from "./utils/error";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -29,6 +33,7 @@ async function bootServer(port: number): Promise<Server> {
     Logger.info("Fetching live configuration...");
     await getLiveConfiguration();
     Logger.success("Live configuration fetched");
+    await updateFromConfigurationFile();
 
     Logger.info("Initializing email client...");
     await EmailClient.init();
@@ -68,10 +73,14 @@ async function bootServer(port: number): Promise<Server> {
     Logger.info("Setting up leaderboard indicies...");
     await leaderboardDbSetup();
 
+    Logger.info("Setting up blocklist indicies...");
+    await blocklistDbSetup();
+
     recordServerVersion(version);
   } catch (error) {
     Logger.error("Failed to boot server");
-    Logger.error(error.message);
+    const message = getErrorMessage(error);
+    Logger.error(message ?? "Unknown error");
     console.error(error);
     return process.exit(1);
   }

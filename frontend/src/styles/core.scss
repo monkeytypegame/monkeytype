@@ -28,6 +28,9 @@
     var(--caret-color) 20%,
     transparent
   );
+
+  --balloon-font-size: 1rem;
+  --balloon-border-radius: calc(var(--roundness) / 2);
 }
 
 ::placeholder {
@@ -56,35 +59,37 @@
   --padding-inline: 2rem;
   --content-max-width: 1536px;
 
-  // --breakout-max-width: 1200px;
-
-  // --breakout-size: calc(
-  //   (var(--breakout-max-width) - var(--content-max-width)) / 2
-  // );
+  --breakout-size: calc(
+    (calc(var(--content-max-width) + 12rem) - var(--content-max-width)) / 2
+  );
 
   justify-content: center;
   display: grid;
   grid-template-columns:
-    [full-width-start] minmax(0, var(--padding-inline))
-    [full-width-padding-start] minmax(0, 1fr)
-    // [breakout-start] minmax(0, var(--breakout-size))
-    [content-start] min(
-      100% - (var(--padding-inline) * 2),
-      var(--content-max-width)
-    )
+    [full-width-start]
+    var(--padding-inline)
+    [full-width-padding-start]
+    minmax(0, 1fr)
+    [breakout-start]
+    minmax(0, var(--breakout-size))
+    [content-start]
+    min(100% - (var(--padding-inline) * 2), var(--content-max-width))
     [content-end]
-    // minmax(0, var(--breakout-size)) [breakout-end]
-    minmax(0, 1fr) [full-width-padding-end]
-    minmax(0, var(--padding-inline)) [full-width-end];
+    minmax(0, var(--breakout-size))
+    [breakout-end]
+    minmax(0, 1fr)
+    [full-width-padding-end]
+    var(--padding-inline)
+    [full-width-end];
 }
 
 .content-grid > :not(.breakout, .full-width, .full-width-padding) {
   grid-column: content;
 }
 
-// #app > .breakout {
-//   grid-column: breakout;
-// }
+.content-grid > .breakout {
+  grid-column: breakout;
+}
 
 .content-grid > .full-width {
   grid-column: full-width;
@@ -277,26 +282,37 @@ key {
 .invisible {
   opacity: 0 !important;
   pointer-events: none !important;
+  visibility: hidden !important;
 }
 
-.scrollToTopButton {
-  bottom: 4rem;
-  right: 2rem;
+.scrollToTopContainer {
   position: fixed;
-  font-size: 2rem;
-  width: 4rem;
-  height: 4rem;
-  text-align: center;
-  line-height: 4rem;
-  background: var(--sub-alt-color);
-  border-radius: 99rem;
-  z-index: 99;
-  cursor: pointer;
-  color: var(--sub-color);
-  transition: 0.25s;
-  &:hover {
-    background: var(--text-color);
-    color: var(--bg-color);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 99999999;
+
+  .scrollToTopButton {
+    pointer-events: all;
+    place-self: end end;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    width: 4rem;
+    height: 4rem;
+    text-align: center;
+
+    line-height: 4rem;
+    background: var(--sub-alt-color);
+    border-radius: 99rem;
+    outline: 0.5rem solid var(--bg-color);
+
+    cursor: pointer;
+    color: var(--sub-color);
+    transition: 0.25s;
+    &:hover {
+      background: var(--text-color);
+      color: var(--bg-color);
+    }
   }
 }
 
@@ -334,17 +350,22 @@ key {
   }
 }
 
-.configureAPI.button {
+#devButtons {
   position: fixed;
   left: 0;
   top: 10rem;
   display: grid;
-  grid-auto-flow: column;
+  grid-auto-flow: row;
   gap: 0.5rem;
   text-decoration: none;
   z-index: 999999999;
   border-radius: 0 1rem 1rem 0;
-  padding: 1rem;
+
+  .button {
+    padding: 1rem;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 }
 
 .avatar {
@@ -411,4 +432,11 @@ key {
   &.error {
     color: var(--error-color);
   }
+}
+
+// mouseover texts
+[aria-label][data-balloon-pos]:after {
+  font-family: var(--font);
+  font-size: var(--balloon-font-size);
+  line-height: var(--balloon-font-size);
 }

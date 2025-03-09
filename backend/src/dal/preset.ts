@@ -1,10 +1,20 @@
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
-import { ObjectId, Filter, Collection, WithId } from "mongodb";
+import { ObjectId, type Filter, Collection, type WithId } from "mongodb";
+import {
+  EditPresetRequest,
+  Preset,
+} from "@monkeytype/contracts/schemas/presets";
+import { omit } from "lodash";
+import { WithObjectId } from "../utils/misc";
 
 const MAX_PRESETS = 10;
 
-type DBConfigPreset = MonkeyTypes.WithObjectId<SharedTypes.DBConfigPreset>;
+type DBConfigPreset = WithObjectId<
+  Preset & {
+    uid: string;
+  }
+>;
 
 function getPresetKeyFilter(
   uid: string,
@@ -33,37 +43,39 @@ export async function getPresets(uid: string): Promise<DBConfigPreset[]> {
 
 export async function addPreset(
   uid: string,
-  name: string,
-  config: SharedTypes.ConfigPreset
+  preset: Omit<Preset, "_id">
 ): Promise<PresetCreationResult> {
-  const presets = await getPresets(uid);
-  if (presets.length >= MAX_PRESETS) {
+  const presets = await getPresetsCollection().countDocuments({ uid });
+
+  if (presets >= MAX_PRESETS) {
     throw new MonkeyError(409, "Too many presets");
   }
 
-  const preset = await getPresetsCollection().insertOne({
+  const result = await getPresetsCollection().insertOne({
+    ...preset,
     _id: new ObjectId(),
     uid,
-    name,
-    config,
   });
   return {
-    presetId: preset.insertedId.toHexString(),
+    presetId: result.insertedId.toHexString(),
   };
 }
 
 export async function editPreset(
   uid: string,
-  presetId: string,
-  name: string,
-  config: SharedTypes.ConfigPreset
+  preset: EditPresetRequest
 ): Promise<void> {
-  const presetUpdates =
-    config !== undefined && config !== null && Object.keys(config).length > 0
-      ? { name, config }
-      : { name };
-  await getPresetsCollection().updateOne(getPresetKeyFilter(uid, presetId), {
-    $set: presetUpdates,
+  const update: Partial<Omit<Preset, "_id">> = omit(preset, "_id");
+  if (
+    preset.config === undefined ||
+    preset.config === null ||
+    Object.keys(preset.config).length === 0
+  ) {
+    delete update.config;
+  }
+
+  await getPresetsCollection().updateOne(getPresetKeyFilter(uid, preset._id), {
+    $set: update,
   });
 }
 

@@ -10,6 +10,7 @@ import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { CustomTextMode } from "@monkeytype/contracts/schemas/util";
 
 const popup = "#customTextModal .modal";
 
@@ -18,7 +19,7 @@ type State = {
   longCustomTextWarning: boolean;
   challengeWarning: boolean;
 
-  customTextMode: "simple" | SharedTypes.CustomTextMode;
+  customTextMode: "simple" | CustomTextMode;
   customTextLimits: {
     word: string;
     time: string;
@@ -28,6 +29,7 @@ type State = {
   replaceControlCharactersEnabled: boolean;
   customTextPipeDelimiter: boolean;
   replaceNewlines: "off" | "space" | "periodSpace";
+  removeZeroWidthCharactersEnabled: boolean;
 };
 
 const state: State = {
@@ -46,6 +48,7 @@ const state: State = {
   replaceControlCharactersEnabled: true,
   customTextPipeDelimiter: false,
   replaceNewlines: "off",
+  removeZeroWidthCharactersEnabled: true,
 };
 
 function updateUI(): void {
@@ -112,6 +115,13 @@ function updateUI(): void {
   $(`${popup} .inputs .group[data-id="control"] button`).removeClass("active");
   $(
     `${popup} .inputs .group[data-id="control"] button[value="${state.replaceControlCharactersEnabled}"]`
+  ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="zeroWidth"] button`).removeClass(
+    "active"
+  );
+  $(
+    `${popup} .inputs .group[data-id="zeroWidth"] button[value="${state.removeZeroWidthCharactersEnabled}"]`
   ).addClass("active");
 
   $(`${popup} .inputs .group[data-id="delimiter"] button`).removeClass(
@@ -211,9 +221,9 @@ async function afterAnimation(): Promise<void> {
 }
 
 export function show(showOptions?: ShowOptions): void {
-  state.textarea = CustomText.getText().join(
-    CustomText.getPipeDelimiter() ? "|" : " "
-  );
+  state.textarea = CustomText.getText()
+    .join(CustomText.getPipeDelimiter() ? "|" : " ")
+    .replace(/^ +/gm, "");
   void modal.show({
     ...(showOptions as ShowOptions<IncomingData>),
     beforeAnimation,
@@ -263,8 +273,10 @@ function cleanUpText(): string[] {
   //replace any characters that look like a space with an actual space
   text = text.replace(/[\u2000-\u200A\u202F\u205F\u00A0]/g, " ");
 
-  //replace zero width characters
-  text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
+  if (state.removeZeroWidthCharactersEnabled) {
+    //replace zero width characters
+    text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
+  }
 
   if (state.replaceControlCharactersEnabled) {
     text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
@@ -357,7 +369,10 @@ function apply(): void {
   CustomText.setPipeDelimiter(state.customTextPipeDelimiter);
   CustomText.setText(text);
 
-  if (state.customTextLimits.word !== "") {
+  if (state.customTextMode === "simple" && state.customTextPipeDelimiter) {
+    CustomText.setLimitMode("section");
+    CustomText.setLimitValue(text.length);
+  } else if (state.customTextLimits.word !== "") {
     CustomText.setLimitMode("word");
     CustomText.setLimitValue(parseInt(state.customTextLimits.word));
   } else if (state.customTextLimits.time !== "") {
@@ -420,6 +435,16 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   )) {
     button.addEventListener("click", (e) => {
       state.replaceControlCharactersEnabled =
+        (e.target as HTMLButtonElement).value === "true" ? true : false;
+      updateUI();
+    });
+  }
+
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='zeroWidth'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.removeZeroWidthCharactersEnabled =
         (e.target as HTMLButtonElement).value === "true" ? true : false;
       updateUI();
     });

@@ -1,0 +1,278 @@
+<div class="page pageAccountSettings hidden" id="pageAccountSettings">
+  <div class="content">
+    <!-- <div class="title">
+      <i class="fas fa-cog"></i>
+      account settings
+    </div> -->
+    <div class="main">
+      <div class="tabs">
+        <button class="text active" data-tab="general">
+          <i class="fas fa-user"></i>
+          account
+        </button>
+        <button class="text" data-tab="authentication">
+          <i class="fas fa-key"></i>
+          authentication
+        </button>
+        <button class="text" data-tab="api">
+          <i class="fas fa-code"></i>
+          ape keys
+        </button>
+        <button class="text" data-tab="dangerZone">
+          <i class="fas fa-exclamation-triangle"></i>
+          danger zone
+        </button>
+      </div>
+      <div class="right">
+        <div class="tab" data-tab="general">
+          <div class="section discordIntegration">
+            <div class="title">
+              <i class="fab fa-discord"></i>
+              <span>discord integration</span>
+            </div>
+            <div class="text">
+              When you connect your monkeytype account to your Discord account,
+              you will be automatically assigned a new role every time you
+              achieve a new personal best in a 60 second test. If you link your
+              accounts before joining the Discord server, the bot
+              <i>will not</i>
+              give you a role.
+            </div>
+            <div class="buttons">
+              <button class="getLinkAndGoToOauth">link</button>
+            </div>
+            <div class="info hidden">
+              <div>
+                <i class="fas fa-check"></i>
+                Your accounts are linked!
+              </div>
+              <div id="discordButtonGroup">
+                <button
+                  id="updateDiscordAvatarButton"
+                  class="textButton getLinkAndGoToOauth"
+                >
+                  <i class="fas fa-sync-alt" aria-hidden="true"></i>
+                  Update avatar
+                </button>
+                <button id="unlinkDiscordButton" class="textButton">
+                  <i class="fas fa-unlink" aria-hidden="true"></i>
+                  Unlink
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="section updateAccountName">
+            <div class="title">
+              <i class="fas fa-user"></i>
+              <span>update account name</span>
+            </div>
+            <div class="text">
+              Change the name of your account.
+              <span class="red">You can only do this once every 30 days.</span>
+            </div>
+            <div class="buttons">
+              <button id="updateAccountName">update name</button>
+            </div>
+          </div>
+          <div class="section setStreakHourOffset">
+            <div class="title">
+              <i class="fas fa-clock"></i>
+              <span>set streak hour offset</span>
+            </div>
+            <div class="text">
+              Streaks reset at midnight UTC by default. If this is not
+              convenient for you (for example if it means that streaks reset in
+              the middle of the day), you can change the hour offset here.
+              <span class="red">You can only do this once!</span>
+            </div>
+            <div class="buttons">
+              <button id="setStreakHourOffset">update hour offset</button>
+            </div>
+            <div class="info">
+              <i class="fas fa-exclamation-triangle"></i>
+              You have already set your streak hour offset to
+              <span>0</span>
+              .
+            </div>
+          </div>
+          <div class="section optOutOfLeaderboards">
+            <div class="title">
+              <i class="fas fa-crown"></i>
+              <span>opt out of leaderboards</span>
+            </div>
+            <div class="text">
+              Use this if you frequently trigger the anticheat (for example if
+              using stenography) to opt out of leaderboards.
+              <span class="red">You can't undo this action!</span>
+            </div>
+            <div class="optedOut">
+              <i class="fas fa-exclamation-triangle"></i>
+              You have opted out of leaderboards.
+            </div>
+            <div class="buttons">
+              <button id="optOutOfLeaderboardsButton">opt out</button>
+            </div>
+          </div>
+          <div class="section resetPersonalBests">
+            <div class="title">
+              <i class="fas fa-crown"></i>
+              <span>reset personal bests</span>
+            </div>
+            <div class="text">
+              Resets all your personal bests (but doesn't delete any tests from
+              your history).
+              <span class="red">You can't undo this!</span>
+            </div>
+            <div class="buttons">
+              <button id="resetPersonalBestsButton">
+                reset personal bests
+              </button>
+            </div>
+          </div>
+          <!--  -->
+        </div>
+        <div class="tab hidden" data-tab="api">
+          <div class="section apeKeys">
+            <div class="title">
+              <i class="fas fa-key"></i>
+              <span>ape keys</span>
+            </div>
+            <div class="text">
+              Generate Ape Keys to access certain API endpoints
+              <span style="display: inline-flex">
+                (
+                <a
+                  href="https://api.monkeytype.com/docs"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  documentation
+                </a>
+                ).&nbsp;
+              </span>
+              More endpoints will be added in the future.
+            </div>
+            <div class="lostAccess hidden">
+              <i class="fas fa-times"></i>
+              You have lost access to Ape Keys. Please contact support if you
+              believe this is a mistake.
+            </div>
+            <div class="buttons">
+              <button id="generateNewApeKey">generate new key</button>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <td width="1px">active</td>
+                <td>name</td>
+                <td>created on</td>
+                <td>modified on</td>
+                <td>last used on</td>
+                <td width="1px"></td>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="tab hidden" data-tab="authentication">
+          <!-- <div class="title">
+            <i class="fas fa-key"></i>
+            authentication
+          </div> -->
+          <div class="section passwordAuthSettings">
+            <div class="title">
+              <i class="fas fa-lock"></i>
+              <span>password authentication settings</span>
+            </div>
+            <div class="text">
+              Add password authentication, update your password or email.
+            </div>
+            <div class="buttons vertical">
+              <button id="addPasswordAuth">add password authentication</button>
+              <button id="emailPasswordAuth">update email</button>
+              <button id="passPasswordAuth">update password</button>
+              <button id="removePasswordAuth">
+                remove password authentication
+              </button>
+            </div>
+          </div>
+          <div class="section googleAuthSettings">
+            <div class="title">
+              <i class="fab fa-google"></i>
+              <span>google authentication settings</span>
+            </div>
+            <div class="text">Add or remove Google authentication.</div>
+            <div class="buttons vertical">
+              <button id="addGoogleAuth">add google authentication</button>
+              <button id="removeGoogleAuth">
+                remove google authentication
+              </button>
+            </div>
+          </div>
+          <div class="section githubAuthSettings">
+            <div class="title">
+              <i class="fab fa-github"></i>
+              <span>github authentication settings</span>
+            </div>
+            <div class="text">Add or remove GitHub authentication.</div>
+            <div class="buttons vertical">
+              <button id="addGithubAuth">add github authentication</button>
+              <button id="removeGithubAuth">
+                remove github authentication
+              </button>
+            </div>
+          </div>
+          <div class="section revokeAllTokens">
+            <div class="title">
+              <i class="fas fa-user-slash"></i>
+              <span>revoke all tokens</span>
+            </div>
+            <div class="text">
+              Revokes all tokens connected to your account. Do this if you think
+              someone else has access to your account.
+              <br />
+              <span class="red">This will log you out of all devices.</span>
+            </div>
+            <div class="buttons">
+              <button class="danger" id="revokeAllTokens">
+                revoke all tokens
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="tab hidden" data-tab="dangerZone">
+          <div class="section resetAccount">
+            <div class="title">
+              <i class="fas fa-redo-alt"></i>
+              <span>reset account</span>
+            </div>
+            <div class="text">
+              Completely resets your account to a blank state.
+              <br />
+              <span class="red">You can't undo this action!</span>
+            </div>
+            <div class="buttons">
+              <button class="danger" id="resetAccount">reset account</button>
+            </div>
+          </div>
+          <div class="section deleteAccount">
+            <div class="title">
+              <i class="fas fa-trash"></i>
+              <span>delete account</span>
+            </div>
+            <div class="text">
+              Deletes your account and all data connected to it.
+              <br />
+              <span class="red">You can't undo this action!</span>
+            </div>
+            <div class="buttons">
+              <button class="danger" id="deleteAccount">delete account</button>
+            </div>
+          </div>
+        </div>
+        <!-- end of tabs -->
+      </div>
+    </div>
+  </div>
+</div>

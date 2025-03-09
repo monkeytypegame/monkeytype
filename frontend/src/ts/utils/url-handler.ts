@@ -6,12 +6,26 @@ import * as TestState from "../test/test-state";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import Ape from "../ape";
-import * as Settings from "../pages/settings";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
+import {
+  DifficultySchema,
+  Mode2Schema,
+  ModeSchema,
+} from "@monkeytype/contracts/schemas/shared";
+import {
+  CustomBackgroundFilter,
+  CustomBackgroundFilterSchema,
+  CustomBackgroundSize,
+  CustomBackgroundSizeSchema,
+  CustomThemeColors,
+  CustomThemeColorsSchema,
+} from "@monkeytype/contracts/schemas/configs";
+import { z } from "zod";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -23,29 +37,27 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     const state = fragment.get("state") as string;
 
     Loader.show();
-    const response = await Ape.users.linkDiscord(tokenType, accessToken, state);
+    const response = await Ape.users.linkDiscord({
+      body: { tokenType, accessToken, state },
+    });
     Loader.hide();
 
     if (response.status !== 200) {
-      return Notifications.add(
-        "Failed to link Discord: " + response.message,
-        -1
-      );
+      Notifications.add("Failed to link Discord: " + response.body.message, -1);
+      return;
     }
 
-    if (response.data === null) {
-      return Notifications.add(
-        "Failed to link Discord: data returned was null",
-        -1
-      );
+    if (response.body.data === null) {
+      Notifications.add("Failed to link Discord: data returned was null", -1);
+      return;
     }
 
-    Notifications.add(response.message, 1);
+    Notifications.add(response.body.message, 1);
 
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
 
-    const { discordId, discordAvatar } = response.data;
+    const { discordId, discordAvatar } = response.body.data;
     if (discordId !== undefined) {
       snapshot.discordId = discordId;
     } else {
@@ -53,26 +65,37 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     }
 
     DB.setSnapshot(snapshot);
-
-    void AccountButton.update(undefined, discordId, discordAvatar);
-
-    Settings.updateDiscordSection();
+    AccountButton.updateAvatar(discordId, discordAvatar);
   }
 }
+
+const customThemeUrlDataSchema = z.object({
+  c: CustomThemeColorsSchema,
+  i: z.string().optional(),
+  s: CustomBackgroundSizeSchema.optional(),
+  f: CustomBackgroundFilterSchema.optional(),
+});
 
 export function loadCustomThemeFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("customTheme", getOverride);
   if (getValue === null) return;
 
-  let decoded = null;
+  let decoded: z.infer<typeof customThemeUrlDataSchema>;
   try {
-    decoded = JSON.parse(atob(getValue));
+    decoded = parseJsonWithSchema(atob(getValue), customThemeUrlDataSchema);
   } catch (e) {
-    return Notifications.add("Invalid custom theme ", 0);
+    console.log("Custom theme URL decoding failed", e);
+    Notifications.add(
+      "Failed to load theme from URL: " + (e as Error).message,
+      0
+    );
+    return;
   }
 
-  let colorArray = [];
-  let image, size, filter;
+  let colorArray: CustomThemeColors | undefined;
+  let image: string | undefined;
+  let size: CustomBackgroundSize | undefined;
+  let filter: CustomBackgroundFilter | undefined;
   if (Array.isArray(decoded.c) && decoded.c.length === 10) {
     colorArray = decoded.c;
     image = decoded.i;
@@ -80,11 +103,12 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
     filter = decoded.f;
   } else if (Array.isArray(decoded) && decoded.length === 10) {
     // This is for backward compatibility with old format
-    colorArray = decoded;
+    colorArray = decoded as unknown as CustomThemeColors;
   }
 
-  if (colorArray.length === 0) {
-    return Notifications.add("Invalid custom theme ", 0);
+  if (colorArray === undefined || colorArray.length !== 10) {
+    Notifications.add("Failed to load theme from URL: no colors found", 0);
+    return;
   }
 
   const oldCustomTheme = Config.customTheme;
@@ -93,7 +117,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
     UpdateConfig.setCustomThemeColors(colorArray);
     Notifications.add("Custom theme applied", 1);
 
-    if (image !== undefined) {
+    if (image !== undefined && size !== undefined && filter !== undefined) {
       UpdateConfig.setCustomBackground(image);
       UpdateConfig.setCustomBackgroundSize(size);
       UpdateConfig.setCustomBackgroundFilter(filter);
@@ -108,22 +132,48 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   }
 }
 
-type SharedTestSettings = [
-  SharedTypes.Config.Mode | null,
-  SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
-  SharedTypes.CustomTextData | null,
-  boolean | null,
-  boolean | null,
-  string | null,
-  SharedTypes.Config.Difficulty | null,
-  string | null
-];
+const TestSettingsSchema = z.tuple([
+  ModeSchema.nullable(),
+  Mode2Schema.nullable(),
+  CustomText.CustomTextSettingsSchema.partial({
+    pipeDelimiter: true,
+    limit: true,
+    mode: true,
+  })
+    //legacy values
+    .extend({
+      isTimeRandom: z.boolean().optional(),
+      isWordRandom: z.boolean().optional(),
+      word: z.number().int().optional(),
+      time: z.number().int().optional(),
+      delimiter: z.string().optional(),
+    })
+    .nullable(),
+  z.boolean().nullable(), //punctuation
+  z.boolean().nullable(), //numbers
+  z.string().nullable(), //language
+  DifficultySchema.nullable(),
+  z.string().nullable(), //funbox
+]);
+
+type SharedTestSettings = z.infer<typeof TestSettingsSchema>;
 
 export function loadTestSettingsFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("testSettings", getOverride);
   if (getValue === null) return;
 
-  const de: SharedTestSettings = JSON.parse(decompressFromURI(getValue) ?? "");
+  let de: SharedTestSettings;
+  try {
+    const decompressed = decompressFromURI(getValue) ?? "";
+    de = parseJsonWithSchema(decompressed, TestSettingsSchema);
+  } catch (e) {
+    console.error("Failed to parse test settings:", e);
+    Notifications.add(
+      "Failed to load test settings from URL: " + (e as Error).message,
+      0
+    );
+    return;
+  }
 
   const applied: Record<string, string> = {};
 
@@ -132,12 +182,13 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     applied["mode"] = de[0];
   }
 
+  const mode = de[0] ?? Config.mode;
   if (de[1] !== null) {
-    if (Config.mode === "time") {
+    if (mode === "time") {
       UpdateConfig.setTimeConfig(parseInt(de[1], 10), true);
-    } else if (Config.mode === "words") {
+    } else if (mode === "words") {
       UpdateConfig.setWordCount(parseInt(de[1], 10), true);
-    } else if (Config.mode === "quote") {
+    } else if (mode === "quote") {
       UpdateConfig.setQuoteLength(-2, false);
       TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();
@@ -148,9 +199,34 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (de[2] !== null) {
     const customTextSettings = de[2];
     CustomText.setText(customTextSettings.text);
-    CustomText.setLimitMode(customTextSettings.limit.mode);
-    CustomText.setLimitValue(customTextSettings.limit.value);
-    CustomText.setPipeDelimiter(customTextSettings.pipeDelimiter);
+
+    if (customTextSettings.limit !== undefined) {
+      CustomText.setLimitMode(customTextSettings.limit.mode);
+      CustomText.setLimitValue(customTextSettings.limit.value);
+    }
+    //convert legacy values
+    else {
+      if (customTextSettings.isWordRandom) {
+        CustomText.setLimitMode("word");
+      } else if (customTextSettings.isTimeRandom) {
+        CustomText.setLimitMode("time");
+      }
+      if (customTextSettings.word !== undefined) {
+        CustomText.setLimitValue(customTextSettings.word);
+      } else if (customTextSettings.time !== undefined) {
+        CustomText.setLimitValue(customTextSettings.time);
+      }
+    }
+
+    if (customTextSettings.pipeDelimiter) {
+      CustomText.setPipeDelimiter(customTextSettings.pipeDelimiter);
+    }
+    //convert legacy values
+    else if (customTextSettings.delimiter === "|") {
+      CustomText.setPipeDelimiter(true);
+    }
+
+    CustomText.setMode(customTextSettings.mode ?? "repeat");
 
     applied["custom text settings"] = "";
   }
@@ -210,14 +286,14 @@ export function loadChallengeFromUrl(getOverride?: string): void {
   Notifications.add("Loading challenge", 0);
   ChallengeController.setup(getValue)
     .then((result) => {
-      if (result === true) {
+      if (result) {
         Notifications.add("Challenge loaded", 1);
         restartTest({
           nosave: true,
         });
       }
     })
-    .catch((e) => {
+    .catch((e: unknown) => {
       Notifications.add("Failed to load challenge", -1);
       console.error(e);
     });

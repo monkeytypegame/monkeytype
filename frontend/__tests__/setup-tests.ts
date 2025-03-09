@@ -14,4 +14,5 @@ vi.mock("../src/ts/constants/env-config", () => ({
 vi.mock("../src/ts/firebase", () => ({
   app: undefined,
   Auth: undefined,
+  isAuthenticated: () => false,
 }));

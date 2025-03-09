@@ -5,6 +5,8 @@ import * as CaptchaController from "../controllers/captcha-controller";
 import SlimSelect from "slim-select";
 import AnimatedModal from "../utils/animated-modal";
 import { isAuthenticated } from "../firebase";
+import { CharacterCounter } from "../elements/character-counter";
+import { ReportUserReason } from "@monkeytype/contracts/schemas/users";
 
 type State = {
   userUid?: string;
@@ -26,7 +28,8 @@ let select: SlimSelect | undefined = undefined;
 
 export async function show(options: ShowOptions): Promise<void> {
   if (!isAuthenticated()) {
-    return Notifications.add("You must be logged in to submit a report", 0);
+    Notifications.add("You must be logged in to submit a report", 0);
+    return;
   }
 
   void modal.show({
@@ -46,8 +49,6 @@ export async function show(options: ShowOptions): Promise<void> {
       (modalEl.querySelector(".reason") as HTMLSelectElement).value =
         "Inappropriate name";
       (modalEl.querySelector(".comment") as HTMLTextAreaElement).value = "";
-      (modalEl.querySelector(".characterCount") as HTMLElement).textContent =
-        "-";
 
       select = new SlimSelect({
         select: modalEl.querySelector(".reason") as HTMLElement,
@@ -58,64 +59,68 @@ export async function show(options: ShowOptions): Promise<void> {
       });
     },
   });
+
+  new CharacterCounter($("#userReportModal .comment"), 250);
 }
 
 async function hide(): Promise<void> {
-  void modal.hide({
-    afterAnimation: async () => {
-      select?.destroy();
-      select = undefined;
-      CaptchaController.reset("userReportModal");
-    },
-  });
+  void modal.hide();
 }
 
 async function submitReport(): Promise<void> {
   const captchaResponse = CaptchaController.getResponse("userReportModal");
   if (!captchaResponse) {
-    return Notifications.add("Please complete the captcha");
+    Notifications.add("Please complete the captcha");
+    return;
   }
 
-  const reason = $("#userReportModal .reason").val() as string;
+  const reason = $("#userReportModal .reason").val() as ReportUserReason;
   const comment = $("#userReportModal .comment").val() as string;
-  const captcha = captchaResponse as string;
+  const captcha = captchaResponse;
 
   if (!reason) {
-    return Notifications.add("Please select a valid report reason");
+    Notifications.add("Please select a valid report reason");
+    return;
   }
 
   if (!comment) {
-    return Notifications.add("Please provide a comment");
+    Notifications.add("Please provide a comment");
+    return;
   }
 
   if (reason === "Suspected cheating" && state.lbOptOut) {
-    return Notifications.add(
+    Notifications.add(
       "You cannot report this user for suspected cheating as they have opted out of the leaderboards.",
       0,
       {
         duration: 10,
       }
     );
+    return;
   }
 
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
-    return Notifications.add(
+    Notifications.add(
       `Report comment is ${characterDifference} character(s) too long`
     );
+    return;
   }
 
   Loader.show();
-  const response = await Ape.users.report(
-    state.userUid as string,
-    reason,
-    comment,
-    captcha
-  );
+  const response = await Ape.users.report({
+    body: {
+      uid: state.userUid as string,
+      reason,
+      comment,
+      captcha,
+    },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    return Notifications.add("Failed to report user: " + response.message, -1);
+    Notifications.add("Failed to report user: " + response.body.message, -1);
+    return;
   }
 
   Notifications.add("Report submitted. Thank you!", 1);
@@ -128,19 +133,10 @@ const modal = new AnimatedModal({
     modalEl.querySelector("button")?.addEventListener("click", () => {
       void submitReport();
     });
-    modalEl.querySelector(".comment")?.addEventListener("input", (e) => {
-      setTimeout(() => {
-        const len = (e.target as HTMLTextAreaElement).value.length;
-        const characterCount = modalEl.querySelector(
-          ".characterCount"
-        ) as HTMLElement;
-        characterCount.textContent = len.toString();
-        if (len > 250) {
-          characterCount.classList.add("red");
-        } else {
-          characterCount.classList.remove("red");
-        }
-      }, 1);
-    });
+  },
+  cleanup: async (): Promise<void> => {
+    select?.destroy();
+    select = undefined;
+    CaptchaController.reset("userReportModal");
   },
 });

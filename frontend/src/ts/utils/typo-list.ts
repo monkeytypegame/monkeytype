@@ -1,6 +1,7 @@
 export default [
   "gmaill.com",
   "gamil.com",
+  "gmali.com",
   "gnail.com",
   "gmil.com",
   "gamail.com",
@@ -90,7 +91,7 @@ export default [
   "hotmal.de",
   "mx.de",
   "mx.net",
-  "otmail.com",
+  "@otmail.com",
   "r-online.de",
   "rcor.de",
   "reenet.de",
@@ -125,6 +126,12 @@ export default [
   "yaoo.de",
   "yhoo.de",
   "yahhoo.de",
+  "icoud.com",
+  "icloud.cim",
+  "icloud.con",
+  "icloud.ocm",
+  "icloud.om",
+  "icloud.cm",
 ];
 // source(from line 1 - 48): Generated using ChatGPT
 // source(from line 48 - 127): https://github.com/gruns/typo

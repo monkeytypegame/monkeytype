@@ -1,4 +1,4 @@
-import { isPopupVisible } from "./misc";
+import { applyReducedMotion, isPopupVisible } from "./misc";
 import * as Skeleton from "./skeleton";
 
 type CustomAnimation = {
@@ -48,6 +48,7 @@ type ConstructorParams<T> = {
   customEscapeHandler?: (e: KeyboardEvent) => void;
   customWrapperClickHandler?: (e: MouseEvent) => void;
   setup?: (modal: HTMLElement) => Promise<void>;
+  cleanup?: () => Promise<void>;
 };
 
 const DEFAULT_ANIMATION_DURATION = 125;
@@ -73,6 +74,7 @@ export default class AnimatedModal<
   private customEscapeHandler: ((e: KeyboardEvent) => void) | undefined;
   private customWrapperClickHandler: ((e: MouseEvent) => void) | undefined;
   private setup: ((modal: HTMLElement) => Promise<void>) | undefined;
+  private cleanup: (() => Promise<void>) | undefined;
 
   constructor(constructorParams: ConstructorParams<IncomingModalChainData>) {
     if (constructorParams.dialogId.startsWith("#")) {
@@ -123,6 +125,7 @@ export default class AnimatedModal<
     this.customWrapperClickHandler =
       constructorParams?.customWrapperClickHandler;
     this.setup = constructorParams?.setup;
+    this.cleanup = constructorParams?.cleanup;
 
     Skeleton.save(this.dialogId);
   }
@@ -132,22 +135,26 @@ export default class AnimatedModal<
   }
 
   async runSetup(): Promise<void> {
-    this.wrapperEl.addEventListener("keydown", (e) => {
+    this.wrapperEl.addEventListener("keydown", async (e) => {
       if (e.key === "Escape" && isPopupVisible(this.dialogId)) {
+        e.preventDefault();
+        e.stopPropagation();
         if (this.customEscapeHandler !== undefined) {
           this.customEscapeHandler(e);
+          void this.cleanup?.();
         } else {
-          void this.hide();
+          await this.hide();
         }
       }
     });
 
-    this.wrapperEl.addEventListener("mousedown", (e) => {
+    this.wrapperEl.addEventListener("mousedown", async (e) => {
       if (e.target === this.wrapperEl) {
         if (this.customWrapperClickHandler !== undefined) {
           this.customWrapperClickHandler(e);
+          void this.cleanup?.();
         } else {
-          void this.hide();
+          await this.hide();
         }
       }
     });
@@ -195,7 +202,10 @@ export default class AnimatedModal<
   async show(options?: ShowOptions<IncomingModalChainData>): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      if (this.open) return resolve();
+      if (this.open) {
+        resolve();
+        return;
+      }
       Skeleton.append(this.dialogId, this.skeletonAppendParent);
 
       if (!this.setupRan) {
@@ -203,16 +213,20 @@ export default class AnimatedModal<
         this.setupRan = true;
       }
 
-      if (isPopupVisible(this.dialogId)) return resolve();
+      if (isPopupVisible(this.dialogId)) {
+        resolve();
+        return;
+      }
 
-      const modalAnimationDuration =
+      const modalAnimationDuration = applyReducedMotion(
         (options?.customAnimation?.modal?.durationMs ??
           options?.animationDurationMs ??
           this.customShowAnimations?.modal?.durationMs ??
           DEFAULT_ANIMATION_DURATION) *
-        (options?.modalChain !== undefined
-          ? MODAL_ONLY_ANIMATION_MULTIPLIER
-          : 1);
+          (options?.modalChain !== undefined
+            ? MODAL_ONLY_ANIMATION_MULTIPLIER
+            : 1)
+      );
 
       if (options?.modalChain !== undefined) {
         this.previousModalInChain = options.modalChain;
@@ -246,10 +260,11 @@ export default class AnimatedModal<
           to: { opacity: "1" },
           easing: "swing",
         };
-      const wrapperAnimationDuration =
+      const wrapperAnimationDuration = applyReducedMotion(
         options?.customAnimation?.wrapper?.durationMs ??
-        this.customShowAnimations?.wrapper?.durationMs ??
-        DEFAULT_ANIMATION_DURATION;
+          this.customShowAnimations?.wrapper?.durationMs ??
+          DEFAULT_ANIMATION_DURATION
+      );
 
       const animationMode =
         this.previousModalInChain !== undefined
@@ -316,7 +331,10 @@ export default class AnimatedModal<
   async hide(options?: HideOptions<OutgoingModalChainData>): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      if (!isPopupVisible(this.dialogId)) return resolve();
+      if (!isPopupVisible(this.dialogId)) {
+        resolve();
+        return;
+      }
 
       if (options?.clearModalChain) {
         this.previousModalInChain = undefined;
@@ -326,24 +344,26 @@ export default class AnimatedModal<
 
       const modalAnimation =
         options?.customAnimation?.modal ?? this.customHideAnimations?.modal;
-      const modalAnimationDuration =
+      const modalAnimationDuration = applyReducedMotion(
         (options?.customAnimation?.modal?.durationMs ??
           options?.animationDurationMs ??
           this.customHideAnimations?.modal?.durationMs ??
           DEFAULT_ANIMATION_DURATION) *
-        (this.previousModalInChain !== undefined
-          ? MODAL_ONLY_ANIMATION_MULTIPLIER
-          : 1);
+          (this.previousModalInChain !== undefined
+            ? MODAL_ONLY_ANIMATION_MULTIPLIER
+            : 1)
+      );
       const wrapperAnimation = options?.customAnimation?.wrapper ??
         this.customHideAnimations?.wrapper ?? {
           from: { opacity: "1" },
           to: { opacity: "0" },
           easing: "swing",
         };
-      const wrapperAnimationDuration =
+      const wrapperAnimationDuration = applyReducedMotion(
         options?.customAnimation?.wrapper?.durationMs ??
-        this.customHideAnimations?.wrapper?.durationMs ??
-        DEFAULT_ANIMATION_DURATION;
+          this.customHideAnimations?.wrapper?.durationMs ??
+          DEFAULT_ANIMATION_DURATION
+      );
       const animationMode =
         this.previousModalInChain !== undefined
           ? "modalOnly"
@@ -377,6 +397,7 @@ export default class AnimatedModal<
               Skeleton.remove(this.dialogId);
               this.open = false;
               await options?.afterAnimation?.(this.modalEl);
+              void this.cleanup?.();
 
               if (
                 this.previousModalInChain !== undefined &&
@@ -413,6 +434,7 @@ export default class AnimatedModal<
             Skeleton.remove(this.dialogId);
             this.open = false;
             await options?.afterAnimation?.(this.modalEl);
+            void this.cleanup?.();
 
             if (
               this.previousModalInChain !== undefined &&
@@ -438,6 +460,7 @@ export default class AnimatedModal<
   destroy(): void {
     this.wrapperEl.close();
     this.wrapperEl.classList.add("hidden");
+    void this.cleanup?.();
     Skeleton.remove(this.dialogId);
     this.open = false;
   }

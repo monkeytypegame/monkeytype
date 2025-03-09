@@ -1,4 +1,4 @@
-@keyframes woah {
+@keyframes choochoo {
   0% {
     transform: rotateZ(0deg);
   }
@@ -12,6 +12,7 @@
   }
 }
 
-letter {
-  animation: woah 2s infinite linear;
+#words {
+  --correct-letter-animation: choochoo 2s infinite linear;
+  --untyped-letter-animation: choochoo 2s infinite linear;
 }

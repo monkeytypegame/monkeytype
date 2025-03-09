@@ -9,14 +9,14 @@ const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
 async function getTop10(
   leaderboardTime: string
-): Promise<SharedTypes.LeaderboardEntry[]> {
+): Promise<LeaderboardsDAL.DBLeaderboardEntry[]> {
   return (await LeaderboardsDAL.get(
     "time",
     leaderboardTime,
     "english",
     0,
     10
-  )) as SharedTypes.LeaderboardEntry[]; //can do that because gettop10 will not be called during an update
+  )) as LeaderboardsDAL.DBLeaderboardEntry[]; //can do that because gettop10 will not be called during an update
 }
 
 async function updateLeaderboardAndNotifyChanges(

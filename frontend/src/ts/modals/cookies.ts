@@ -4,28 +4,27 @@ import { isPopupVisible } from "../utils/misc";
 import * as AdController from "../controllers/ad-controller";
 import AnimatedModal from "../utils/animated-modal";
 import { focusWords } from "../test/test-ui";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { z } from "zod";
 
-type Accepted = {
-  security: boolean;
-  analytics: boolean;
-};
+const AcceptedSchema = z.object({
+  security: z.boolean(),
+  analytics: z.boolean(),
+});
+type Accepted = z.infer<typeof AcceptedSchema>;
 
-function getAcceptedObject(): Accepted | null {
-  const acceptedCookies = localStorage.getItem("acceptedCookies") ?? "";
-  if (acceptedCookies) {
-    return JSON.parse(acceptedCookies);
-  } else {
-    return null;
-  }
-}
+const acceptedCookiesLS = new LocalStorageWithSchema({
+  key: "acceptedCookies",
+  schema: AcceptedSchema,
+  fallback: undefined,
+});
 
 function setAcceptedObject(obj: Accepted): void {
-  localStorage.setItem("acceptedCookies", JSON.stringify(obj));
+  acceptedCookiesLS.set(obj);
 }
 
 export function check(): void {
-  const accepted = getAcceptedObject();
-  if (accepted === null) {
+  if (acceptedCookiesLS.get() === undefined) {
     show();
   }
 }
@@ -109,17 +108,17 @@ const modal = new AnimatedModal({
         }
       });
     modalEl.querySelector(".acceptSelected")?.addEventListener("click", () => {
-      const analytics = (
+      const analyticsChecked = (
         modalEl.querySelector(".cookie.analytics input") as HTMLInputElement
       ).checked;
       const accepted = {
         security: true,
-        analytics,
+        analytics: analyticsChecked,
       };
       setAcceptedObject(accepted);
       void hide();
 
-      if (analytics === true) {
+      if (analyticsChecked) {
         activateAnalytics();
       }
     });

@@ -398,12 +398,6 @@
       "id": 69
     },
     {
-      "text": "Cuando las leyes de la matemática se refieren a la realidad, no son ciertas; cuando son ciertas, no se refieren a la realidad.",
-      "source": "Albert Einstein",
-      "length": 126,
-      "id": 70
-    },
-    {
       "text": "Las proposiciones matemáticas, en cuanto tienen que ver con la realidad, no son ciertas; y en cuanto que son ciertas, no tienen nada que ver con la realidad.",
       "source": "Albert Einstein",
       "length": 157,
@@ -800,12 +794,6 @@
       "id": 139
     },
     {
-      "text": "Me hablas te hablo, me ignoras te ignoro, me tratas mal, yo te trato peor, tú me tratas bien, yo te trato mejor. Así de simple.",
-      "source": "Pablo Escobar",
-      "length": 127,
-      "id": 140
-    },
-    {
       "text": "Ser pobre no te hace humilde, ser humilde no significa que seas pobre.",
       "source": "Pablo Escobar",
       "length": 70,
@@ -830,8 +818,8 @@
       "id": 144
     },
     {
-      "text": "Me llamo Maximo Décimo Meridio, Comandante de los ejércitos del Norte, General de las legiones felix, Leal servidor del verdadero emperador Marco Aurelio, Padre de un hijo asesinado, Marido de una mujer asesinada y alcanzaré mi venganza en esta vida o en la otra.",
-      "source": "Maximo Décimo Meridio - Gladiator",
+      "text": "Me llamo Máximo Décimo Meridio, comandante de los ejércitos del Norte, general de las legiones Félix, leal servidor del verdadero emperador Marco Aurelio, padre de un hijo asesinado, marido de una mujer asesinada y alcanzaré mi venganza en esta vida o en la otra.",
+      "source": "Máximo Décimo Meridio - Gladiator",
       "length": 263,
       "id": 145
     },
@@ -860,9 +848,9 @@
       "id": 149
     },
     {
-      "text": "Errar es humano, pero más lo es culpar de ello a otros",
+      "text": "Errar es humano, pero más lo es culpar de ello a otros.",
       "source": "Baltasar Gracián",
-      "length": 54,
+      "length": 55,
       "id": 150
     },
     {
@@ -948,6 +936,210 @@
       "source": "Anónimo",
       "length": 62,
       "id": 164
+    },
+    {
+      "text": "No me arrepiento de este amor, aunque me cueste el corazón. Amar es un milagro, y yo te amé como nunca jamás me imaginé.",
+      "source": "Attaque 77 - No Me Arrepiento De Este Amor",
+      "length": 120,
+      "id": 165
+    },
+    {
+      "text": "Había una vez una niñita en un pueblo, la más bonita que jamás se hubiera visto; su madre estaba enloquecida con ella y su abuela mucho más todavía. Esta buena mujer le había mandado hacer una caperucita roja y le sentaba tanto que todos la llamaban Caperucita Roja.",
+      "source": "Charles Perrault - Caperucita Roja",
+      "length": 266,
+      "id": 166
+    },
+    {
+      "text": "Tal vez no pensaba golpearlo, pero desgraciadamente le dio con precisión en la cabeza, de tal forma que el pobre Grillo apenas tuvo fuerzas para decir cri-cri-cri, quedando allí mismo tieso y pegado a la pared.",
+      "source": "Carlo Collodi - Las Aventuras De Pinocho",
+      "length": 210,
+      "id": 167
+    },
+    {
+      "text": "Una zorra hambrienta, como viera unos racimos colgar de una parra, quiso apoderarse de ellos y no pudo. Marchándose, dijo para sí: \"Están verdes\".",
+      "source": "Esopo - La Zorra y Las Uvas",
+      "length": 146,
+      "id": 168
+    },
+    {
+      "text": "Un lobo que se había atragantado con un hueso iba de un lado a otro buscando a quien lo curara. Al encontrarse con una garza, le pidió que le sacase el hueso a cambio de una retribución. Y aquélla metió su propia cabeza en la garganta del lobo, sacó el hueso y le reclamó la paga acordada. Él, respondiendo, dijo: \"¡Eh tú!, ¿no te contentas con haber sacado sana tu cabeza de la boca del lobo, sino que también pides paga?\".",
+      "source": "Esopo - El Lobo y la Garza",
+      "length": 424,
+      "id": 169
+    },
+    {
+      "text": "El espejo que da su reflejo. En todo lo pinta tal como es. Mi cuerpo, que no tiene peso. Si escucho tu voz llamándome.",
+      "source": "Eres para mí - Julieta Venegas",
+      "length": 118,
+      "id": 170
+    },
+    {
+      "text": "Hoy he seguido a Lima y a Belano durante todo el día. Hemos caminado, hemos tomado el metro, camiones, un pesero, hemos vuelto a caminar y durante todo el rato no hemos dejado de hablar. De vez en cuando ellos se detenían y entraban en casas particulares y yo entonces me tenía que quedar en la calle esperándolos. Cuando les pregunté qué era lo que hacían me dijeron que llevaban a cabo una investigación.",
+      "source": "Roberto Bolaño - Los Detectives Salvajes",
+      "length": 406,
+      "id": 171
+    },
+    {
+      "text": "La cólera canta, oh diosa, del Pelida Aquiles, maldita, que causó a los aqueos incontables dolores, precipitó al Hades muchas valientes vidas de héroes y a ellos mismos los hizo presa para los perros y para todas las aves -y así cumplía el plan de Zeus-, desde que por primera vez se separaron tras haber reñido el Atrida, soberano de hombres, y Aquiles, de la casta de Zeus.",
+      "source": "Homero - Ilíada",
+      "length": 375,
+      "id": 172
+    },
+    {
+      "text": "Musa, dime del hábil varón que en su largo extravío, tras haber arrasado el alcázar sagrado de Troya, conoció las ciudades y el genio de innúmeras gentes. Muchos males pasó por las rutas marinas luchando por sí mismo y su vida y la vuelta al hogar de sus hombres, pero a estos no pudo salvarlos con todo su empeño, que en las propias locuras hallaron la muerte.",
+      "source": "Homero - Odisea",
+      "length": 361,
+      "id": 173
+    },
+    {
+      "text": "Mientras Macondo celebraba la reconquista de los recuerdos, José Arcadio Buendía y Melquíades le sacudieron el polvo a su vieja amistad. El gitano iba dispuesto a quedarse en el pueblo. Había estado en la muerte, en efecto, pero había regresado porque no pudo soportar la soledad. Repudiado por su tribu, desprovisto de toda facultad sobrenatural como castigo por su fidelidad a la vida, decidió refugiarse en aquel rincón del mundo todavía no descubierto por la muerte, dedicado a la explotación de un laboratorio de daguerrotipia.",
+      "source": "Cien Años de Soledad - Gabriel García Márquez",
+      "length": 532,
+      "id": 174
+    },
+    {
+      "text": "Calla, he dicho. ¿No hay nadie aquí? Debía contestarme mi hijo. Pero mi hijo es ya un brazado de flores secas. Mi hijo es ya una voz oscura detrás de los montes. ¿Te quieres callar? No quiero llantos en esta casa. Vuestras lágrimas son lágrimas de los ojos nada más, y las mías vendrán cuando yo esté sola, de las plantas de mis pies, de mis raíces, y serán más ardientes que la sangre.",
+      "source": "Federico García Lorca - Bodas de Sangre",
+      "length": 386,
+      "id": 175
+    },
+    {
+      "text": "No debo tener miedo. El miedo mata la mente. El miedo es la pequeña muerte que conduce a la destrucción total. Afrontaré mi miedo. Permitiré que pase sobre mí y a través de mí. Y cuando haya pasado, giraré mi ojo interior para escrutar su camino. Allá donde haya pasado el miedo ya no habrá nada. Solo estaré yo.",
+      "source": "Frank Herbert - Dune",
+      "length": 312,
+      "id": 176
+    },
+    {
+      "text": "Su traje era sencillo, de bota a la inglesa, pantalón y chaqueta de paño fino azul, sombrero redondo, sin más distintivo que el sable y la faja de malla de seda de color carmesí",
+      "source": "Dámaso A. Larrañaga - Viaje a Paysandú",
+      "length": 177,
+      "id": 177
+    },
+    {
+      "text": "El que desea llegar, no encuentra impedimento en el engaño de la niebla",
+      "source": "Pedro Prado - La niebla",
+      "length": 71,
+      "id": 178
+    },
+    {
+      "text": "Junto a la casa cerrada están en flor las magnolias y en flor están todas blancas las coronitas de novia.",
+      "source": "Juana de Ibarbourou - La casa vieja",
+      "length": 105,
+      "id": 179
+    },
+    {
+      "text": "El cielo extiende su maravilla más azul, y esplende, con brillo nuevo, el sol.",
+      "source": "Rafael Alberto Arrieta - Es la primaveral...",
+      "length": 78,
+      "id": 180
+    },
+    {
+      "text": "Tú me enseñaste que lo que arde congrega a los seres en torno de su llama",
+      "source": "Gabriela Mistral - El brasero",
+      "length": 73,
+      "id": 181
+    },
+    {
+      "text": "Sobre el remanso azul, agudo asecha desde un lánguido gajo del sauzal, en inminente inclinación de flecha la lentitud profunda del caudal.",
+      "source": "Leopoldo Lugones - El martín pescador",
+      "length": 138,
+      "id": 182
+    },
+    {
+      "text": "El cielo se alejaba. Mudábanse los tintes áureos de las nubes en rojos, los rojos en pardos.",
+      "source": "Ricardo Güiraldes - La pesca",
+      "length": 92,
+      "id": 183
+    },
+    {
+      "text": "Vamos llegando. En el horizonte se comienza a ver un mar azul en calma. Oro derretido es el sol en la siesta de fuego.",
+      "source": "Arturo Capdevila - En Miramar",
+      "length": 118,
+      "id": 184
+    },
+    {
+      "text": "Corre, corre, mi caballo, por la veredita blanca, que bien sabes el camino donde te guían mis ansias.",
+      "source": "Manuel Machado - Balada matinal",
+      "length": 101,
+      "id": 185
+    },
+    {
+      "text": "Al sur de las casas, había un cuadro de paraísos, criollos viejos, fundadores de la estancia, compañeros de higueras dentro de un cerco de cinacina.",
+      "source": "Ricardo Güiraldes - Un monte",
+      "length": 148,
+      "id": 186
+    },
+    {
+      "text": "Los molinos, en lo alto de la colina, movían lentamente sus aspas; la llanura bermeja, monótona, rasa, se extendía abajo.",
+      "source": "Azorín - Llegada a un pueblo",
+      "length": 121,
+      "id": 187
+    },
+    {
+      "text": "Como gotas de sangre que sonríen, las margaritas rojas se despiertan; despiertan las azules y esas hijas sin nombre de la hierba, de un amarillo y blanco deslumbrantes, que en el campo se cuentan como en las claras noches de diciembre se cuentan en el cielo las estrellas.",
+      "source": "Juan Zorilla de San Martín - Amanecer",
+      "length": 272,
+      "id": 188
+    },
+    {
+      "text": "La claridad naciente va ganando colinas y laderas; tras ella el sol dispara victorioso, a través de los aires, sus saetas.",
+      "source": "Juan Zorilla de San Martín - Amanecer",
+      "length": 122,
+      "id": 189
+    },
+    {
+      "text": "Nunca a vivirse vuelven las horas malgastadas, y cuando a morir tocan, hallamos que nos faltan.",
+      "source": "Eduardo Marquina - Consejos Maternales",
+      "length": 95,
+      "id": 190
+    },
+    {
+      "text": "Afanosas, las arañas zurcen los vidrios rotos de la casa abandonada, y continuos calofríos estremecen los yerbajos del patio.",
+      "source": "Pedro Prado - La casa abandonada",
+      "length": 125,
+      "id": 191
+    },
+    {
+      "text": "Lejos, encima del mar, el cielo estaba blanco, como encandecido de tanta lumbre, y las paradas aguas, que de tanto en tanto hacían una blanda palpitación, ofrecían el sol infinitamente roto.",
+      "source": "Gabriel Miró - En el puerto",
+      "length": 190,
+      "id": 192
+    },
+    {
+      "text": "Las virtudes, en los hombres, como en los animales, como en las cosas, no se dan todas juntas, sino, más bien, repartidas.",
+      "source": "Fernán Silva Valdés - Los dos petisos",
+      "length": 122,
+      "id": 193
+    },
+    {
+      "text": "En medio del humo que forma el tabaco ve el viejo el lejano, brumoso país, a donde una tarde caliente y dorada, tendidas la velas, partió el bergantín...",
+      "source": "Rubén Dario - Sinfonía en gris mayor",
+      "length": 153,
+      "id": 194
+    },
+    {
+      "text": "El paisaje, sacudiendo con vago esfuerzo el letargo pesado del bochorno, empezaba a agitarse soñoliento.",
+      "source": "Manuel P. Bernárdez - Puesta de sol en el Arequita",
+      "length": 104,
+      "id": 195
+    },
+    {
+      "text": "El cielo era una sola claridad quebradiza, como una mica, que palpitaba sin cesar.",
+      "source": "Arturo Capdevila - Tempestad",
+      "length": 82,
+      "id": 196
+    },
+    {
+      "text": "Aquella verde pompa de trigales, yace en gavillas de oro por el suelo que el sol oblicuo de la tarde estiva tuesta implacablemente con el fuego.",
+      "source": "Fernández Moreno - Verano",
+      "length": 144,
+      "id": 197
+    },
+    {
+      "text": "En quietud amorosa la llanura se baña; recórtase en el cielo soberbia la montaña.",
+      "source": "Enrique de Mesa - La alegre carreta",
+      "length": 81,
+      "id": 198
     }
   ]
 }

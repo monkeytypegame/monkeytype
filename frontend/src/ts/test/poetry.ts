@@ -1,5 +1,4 @@
-import axios from "axios";
-import { Section } from "../utils/misc";
+import { Section } from "../utils/json-data";
 
 const bannedChars = ["—", "_", " "];
 const maxWords = 100;
@@ -49,8 +48,13 @@ export async function getPoem(): Promise<Section | false> {
   console.log("Getting poem");
 
   try {
-    const response = await axios.get(apiURL);
-    const poemObj: PoemObject = response.data[0];
+    const response = await fetch(apiURL);
+    const data = (await response.json()) as PoemObject[];
+    const poemObj = data[0];
+
+    if (!poemObj) {
+      return false;
+    }
 
     const words: string[] = [];
 
