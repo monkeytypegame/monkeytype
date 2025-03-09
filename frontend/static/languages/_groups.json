@@ -368,6 +368,10 @@
     "languages": ["bulgarian", "bulgarian_latin"]
   },
   {
+    "name": "bosnian",
+    "languages": ["bosnian"]
+  },
+  {
     "name": "esperanto",
     "languages": [
       "esperanto",
