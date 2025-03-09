@@ -354,7 +354,9 @@ function applyCustomBackground(): void {
     $("#words").addClass("noErrorBorder");
     $("#resultWordsHistory").addClass("noErrorBorder");
     $(".customBackground").html(
-      `<img src="${Config.customBackground}" alt="" onerror="javascript:window.dispatchEvent(new Event('customBackgroundFailed'))" />`
+      `<img src="${encodeURI(
+        Config.customBackground
+      )}" alt="" onerror="javascript:window.dispatchEvent(new Event('customBackgroundFailed'))" />`
     );
     BackgroundFilter.apply();
     applyCustomBackgroundSize();
