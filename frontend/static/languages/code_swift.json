@@ -69,7 +69,9 @@
     "optional",
     "override",
     "postfix",
-    "Protocall",
-    "required"
+    "protocol",
+    "required",
+    "print",
+    "stride"
   ]
 }
