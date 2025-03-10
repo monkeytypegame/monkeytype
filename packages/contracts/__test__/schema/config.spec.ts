@@ -54,7 +54,7 @@ describe("config schema", () => {
       },
       {
         name: "javascript url",
-        input: `javascript://alert('asdf')//https://example.com/img.jpg`,
+        input: `javascript:alert('asdf');//https://example.com/img.jpg`,
         expectedError: "Unsupported protocol.",
       },
       {
