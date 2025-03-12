@@ -75,7 +75,7 @@ services:
 
   monkeytype-mongodb:
     container_name: monkeytype-mongodb
-    image: mongo:5.0.8
+    image: mongo:5.0.13
     restart: on-failure
     volumes:
       - mongo-data:/data/db
