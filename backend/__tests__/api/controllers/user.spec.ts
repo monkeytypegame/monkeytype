@@ -415,7 +415,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Firebase failed to generate an email verification link: Internal server error"
+        "Failed to generate an email verification link: Internal server error"
       );
     });
   });
