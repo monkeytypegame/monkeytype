@@ -119,6 +119,9 @@ export function getLanguageDisplayString(
  * @returns The language string with the size indicator removed.
  */
 export function removeLanguageSize(language: string): string {
+  if (language === "arabic_Egy") {
+    return "arabic";
+  }
   return language.replace(/_\d*k$/g, "");
 }
 
