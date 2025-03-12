@@ -262,12 +262,12 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
       "email",
       "discordId",
     ]);
-
-    if (userInfo.banned === true) {
-      await BlocklistDal.add(userInfo);
-    }
   } catch (e) {
     //userinfo was already deleted. We ignore this and still try to remove the  other data
+  }
+
+  if (userInfo?.banned === true) {
+    await BlocklistDal.add(userInfo);
   }
 
   //cleanup database
