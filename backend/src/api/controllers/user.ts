@@ -212,7 +212,7 @@ export async function sendVerificationEmail(
       if (message === undefined) {
         throw new MonkeyError(
           500,
-          "Firebase failed to generate an email verification link. Unknown error occured"
+          "Failed to generate an email verification link. Unknown error occured"
         );
       } else {
         if (message.toLowerCase().includes("too_many_attempts")) {
@@ -223,8 +223,7 @@ export async function sendVerificationEmail(
         } else {
           throw new MonkeyError(
             500,
-            "Firebase failed to generate an email verification link: " +
-              message,
+            "Failed to generate an email verification link: " + message,
             (e as Error).stack
           );
         }
