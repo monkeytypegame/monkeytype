@@ -82,9 +82,11 @@ export class LocalStorageWithSchema<T> {
       let message = "Unknown error occurred";
 
       if (isZodError(e)) {
-        message = e.issues
-          .map((i) => (i.message ? i.message : JSON.stringify(i)))
-          .join(", ");
+        console.error(e);
+        // message = e.issues
+        //   .map((i) => (i.message ? i.message : JSON.stringify(i)))
+        //   .join(", ");
+        message = "Schema validation failed";
       } else {
         if ((e as Error).message.includes("exceeded the quota")) {
           message =

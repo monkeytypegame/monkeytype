@@ -5,7 +5,7 @@ import { readFileSync } from "fs";
 import Logger from "../../utils/logger";
 
 function addSwaggerMiddlewares(app: Application): void {
-  const openApiSpec = __dirname + "/../../static/api/openapi.json";
+  const openApiSpec = __dirname + "/../../../dist/static/api/openapi.json";
   let spec = {};
   try {
     spec = JSON.parse(readFileSync(openApiSpec, "utf8")) as string;

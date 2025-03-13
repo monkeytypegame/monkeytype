@@ -118,18 +118,16 @@ async function updateFilterPresets(): Promise<void> {
 
   buttons.innerHTML = "";
 
-  const filterPresets =
-    DB.getSnapshot()?.filterPresets.map((filter) => {
-      filter.name = filter.name.replace(/_/g, " ");
-      return filter;
-    }) ?? [];
+  const filterPresets = DB.getSnapshot()?.filterPresets ?? [];
 
   if (filterPresets.length > 0) {
     let html = "";
 
     for (const filter of filterPresets) {
       html += `<div class="filterPresets">
-      <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
+      <div class="select-filter-preset button" data-id="${
+        filter._id
+      }">${filter.name.replace(/_/g, " ")}</div>
       <div class="button delete-filter-preset" data-id="${filter._id}">
         <i class="fas fa-fw fa-trash"></i>
       </div>
