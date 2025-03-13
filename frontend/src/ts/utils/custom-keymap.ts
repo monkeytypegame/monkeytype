@@ -24,8 +24,7 @@ export function stringToKeymap(keymap: string): KeymapCustom {
     ) as KeymapCustom;
     return jsonKeymap;
   } catch (error) {
-    console.error("Error converting string to keymap:", error);
-    return [[]];
+    throw new Error("Wrong keymap, make sure you copy the right JSON file!");
   }
 }
 
@@ -50,14 +49,16 @@ export function getCustomKeymapSyle(
   config: Config
 ): string {
   let keymapText = "";
-  keymapStyle.map((row: (KeyProperties | string)[], index: number) => {
+  const keymapCopy = { ...keymapStyle };
+
+  keymapCopy.map((row: (KeyProperties | string)[], index: number) => {
     let rowText = "";
     const hide =
       index == 0 && config.keymapShowTopRow === "never" ? ` invisible` : "";
     row.map((key: KeyProperties | string, index: number) => {
       const element: KeyProperties | string = key;
-      let size = "";
-      let keyString: string = typeof key === "string" ? key?.toString() : "";
+      let size = "",
+        keyString: string = typeof key === "string" ? key?.toString() : "";
       if (typeof element === "object" && element != null) {
         if ("x" in element) {
           rowText += `<div class="keymapKey invisible"></div>`;
@@ -70,20 +71,16 @@ export function getCustomKeymapSyle(
         row.splice(index, 1);
       }
       let keyText = `
-                <div class="keymapKey${size}${hide}" data-key="${keyToData(
+        <div class="keymapKey${size}${hide}" data-key="${keyToData(
         keyString.toLowerCase()
       )}">
-                    <span class="letter">${keyString
-                      ?.toLowerCase()
-                      .toString()}</span>
-                </div>
-            `;
+          <span class="letter">${keyString?.toLowerCase().toString()}</span>
+        </div>`;
       if (keyString === "spc") {
         keyText = `
         <div class="keymapKey${size} keySpace layoutIndicator">
-        <span class="letter">${config.layout}</span>
-        </div>
-        `;
+          <span class="letter">${config.layout}</span>
+        </div>`;
       }
       rowText += keyText;
     });
