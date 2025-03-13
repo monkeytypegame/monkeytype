@@ -48,14 +48,16 @@ export function getCustomKeymapSyle(
   keymapStyle: KeymapCustom,
   config: Config
 ): string {
+  // TODO refactor this
   let keymapText = "";
-  const keymapCopy = { ...keymapStyle };
+  const keymapCopy = [...keymapStyle];
 
   keymapCopy.map((row: (KeyProperties | string)[], index: number) => {
     let rowText = "";
     const hide =
-      index == 0 && config.keymapShowTopRow === "never" ? ` invisible` : "";
-    row.map((key: KeyProperties | string, index: number) => {
+        index == 0 && config.keymapShowTopRow === "never" ? ` invisible` : "",
+      rowCopy = [...row];
+    rowCopy.map((key: KeyProperties | string, index: number) => {
       const element: KeyProperties | string = key;
       let size = "",
         keyString: string = typeof key === "string" ? key?.toString() : "";
@@ -67,8 +69,8 @@ export function getCustomKeymapSyle(
           size = ` key${(element.w * 100).toString()}`;
         }
         // we take the next one since is the content of the current key
-        keyString = row[index + 1]?.toString() ?? "";
-        row.splice(index, 1);
+        keyString = rowCopy[index + 1]?.toString() ?? "";
+        rowCopy.splice(index, 1);
       }
       let keyText = `
         <div class="keymapKey${size}${hide}" data-key="${keyToData(
