@@ -111,9 +111,11 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .section[data-config-name='keymapSize']").removeClass(
           "hidden"
         );
-        $(
-          ".pageSettings .section[data-config-name='keymapCustom']"
-        ).removeClass("hidden");
+        if (Config.keymapStyle === "custom") {
+          $(
+            ".pageSettings .section[data-config-name='keymapCustom']"
+          ).removeClass("hidden");
+        }
       }
     }
   ) as SettingsGroup<ConfigValue>;
@@ -123,12 +125,12 @@ async function initGroups(): Promise<void> {
     "button",
     () => {
       if (Config.keymapStyle !== "custom") {
-        $(
-          ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton"
-        ).addClass("hidden");
+        $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+          "hidden"
+        );
       } else {
         $(
-          ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton"
+          ".pageSettings .section[data-config-name='keymapCustom']"
         ).removeClass("hidden");
       }
     }
@@ -536,6 +538,16 @@ async function fillSettingsPage(): Promise<void> {
   const keymapLayoutSelectElement = document.querySelector(
     ".pageSettings .section[data-config-name='keymapLayout'] select"
   ) as Element;
+
+  if (Config.keymapStyle !== "custom") {
+    $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+      "hidden"
+    );
+  } else {
+    $(".pageSettings .section[data-config-name='keymapCustom']").removeClass(
+      "hidden"
+    );
+  }
 
   let layoutHtml = '<option value="default">off</option>';
   let keymapLayoutHtml = '<option value="overrideSync">emulator sync</option>';
