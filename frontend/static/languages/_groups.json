@@ -515,6 +515,26 @@
     "languages": ["bashkir"]
   },
   {
+    "name": "crimean_tatar",
+    "languages": [ 
+      "crimean_tatar", 
+      "crimean_tatar_1k", 
+      "crimean_tatar_5k", 
+      "crimean_tatar_10k",
+      "crimean_tatar_15k"
+    ]
+  },
+  {
+    "name": "crimean_tatar_cyrillic",
+    "languages": [ 
+      "crimean_tatar_cyrillic", 
+      "crimean_tatar_cyrillic_1k", 
+      "crimean_tatar_cyrillic_5k", 
+      "crimean_tatar_cyrillic_10k",
+      "crimean_tatar_cyrillic_15k"
+    ]
+  },
+  {
     "name": "other",
     "languages": [
       "lojban_gismu",
