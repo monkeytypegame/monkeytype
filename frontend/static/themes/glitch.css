@@ -1,0 +1,57 @@
+:root {
+    --bg-color: #090c0b;
+    --main-color: #de3d3d;
+    --caret-color: #de3d3d;
+    --sub-color: #00b1a0;
+    --sub-alt-color: #0d2527;
+    --text-color: #ffffff;
+    --error-color: #de3d3d;
+    --error-extra-color: #a72d2d;
+    --colorful-error-color: #de3d3d;
+    --colorful-error-extra-color: #a72d2d;
+  }
+   
+  /* Main logo glitch effect */
+  #logo {
+    position: relative;
+    animation: textGlitch 3s infinite;
+  }
+  
+  @keyframes textGlitch {
+    0% { text-shadow: 0.05em 0 0 rgba(255,0,0,0.75), -0.05em -0.025em 0 rgba(0,255,0,0.75), 0.025em 0.05em 0 rgba(0,0,255,0.75); }
+    14% { text-shadow: 0.05em 0 0 rgba(255,0,0,0.75), -0.05em -0.025em 0 rgba(0,255,0,0.75), 0.025em 0.05em 0 rgba(0,0,255,0.75); }
+    15% { text-shadow: -0.05em -0.025em 0 rgba(255,0,0,0.75), 0.025em 0.025em 0 rgba(0,255,0,0.75), -0.05em -0.05em 0 rgba(0,0,255,0.75); }
+    49% { text-shadow: -0.05em -0.025em 0 rgba(255,0,0,0.75), 0.025em 0.025em 0 rgba(0,255,0,0.75), -0.05em -0.05em 0 rgba(0,0,255,0.75); }
+    50% { text-shadow: 0.025em 0.05em 0 rgba(255,0,0,0.75), 0.05em 0 0 rgba(0,255,0,0.75), 0 -0.05em 0 rgba(0,0,255,0.75); }
+    99% { text-shadow: 0.025em 0.05em 0 rgba(255,0,0,0.75), 0.05em 0 0 rgba(0,255,0,0.75), 0 -0.05em 0 rgba(0,0,255,0.75); }
+    100% { text-shadow: -0.025em 0 0 rgba(255,0,0,0.75), -0.025em -0.025em 0 rgba(0,255,0,0.75), -0.025em -0.05em 0 rgba(0,0,255,0.75); }
+  }
+  
+  /* Word Error Effect */
+  #words .word.error {
+    animation: errorGlitch 0.3s;
+    position: relative;
+  }
+  
+  @keyframes errorGlitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+  }
+  
+  /* Digital noise on hover for buttons */
+  button:hover, .keyTips:hover {
+    position: relative;
+    text-shadow: 0.05em 0 0 rgba(255,0,0,0.75), -0.025em -0.05em 0 rgba(0,255,0,0.75), 0.025em 0.05em 0 rgba(0,0,255,0.75);
+    animation: btnNoise 0.3s infinite;
+  }
+  
+  @keyframes btnNoise {
+    0% { transform: translate(0); }
+    33% { transform: translate(-1px, 1px); }
+    66% { transform: translate(1px, -1px); }
+    100% { transform: translate(0); }
+  }
