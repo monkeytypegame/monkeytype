@@ -45,7 +45,7 @@ jobs:
 
       - name: Apply label changes
         if: env.ADD_LABELS || env.REMOVE_LABELS
-        uses: PauMAVA/add-remove-label-action@v1
+        uses: PauMAVA/add-remove-label-action@v1.0.3
         with:
           issue_number: ${{ fromJSON(steps.json_reader.outputs.content).pr_num }}
           add: ${{ env.ADD_LABELS }}
