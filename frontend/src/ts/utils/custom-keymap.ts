@@ -11,8 +11,14 @@ export type KeyProperties = {
 
 export type KeymapCustom = (KeyProperties | string)[][];
 
-export function keyToData(key: string): string {
+function keyToData(key: string): string {
   return (key && keyToDataObject[key]) ?? "";
+}
+
+function isKeyProperties(
+  element: KeyProperties | string
+): element is KeyProperties {
+  return typeof element === "object" && element != null;
 }
 
 export function stringToKeymap(keymap: string): KeymapCustom {
@@ -48,45 +54,45 @@ export function getCustomKeymapSyle(
   keymapStyle: KeymapCustom,
   config: Config
 ): string {
-  // TODO refactor this
-  let keymapText = "";
   const keymapCopy = [...keymapStyle];
 
-  keymapCopy.map((row: (KeyProperties | string)[], index: number) => {
-    let rowText = "";
-    const hide =
-        index == 0 && config.keymapShowTopRow === "never" ? ` invisible` : "",
-      rowCopy = [...row];
-    rowCopy.map((key: KeyProperties | string, index: number) => {
-      const element: KeyProperties | string = key;
-      let size = "",
-        keyString: string = typeof key === "string" ? key?.toString() : "";
-      if (typeof element === "object" && element != null) {
-        if ("x" in element) {
-          rowText += `<div class="keymapKey invisible"></div>`;
-        }
-        if (element.w && "w" in element) {
-          size = ` key${(element.w * 100).toString()}`;
-        }
-        // we take the next one since is the content of the current key
-        keyString = rowCopy[index + 1]?.toString() ?? "";
-        rowCopy.splice(index, 1);
-      }
-      let keyText = `
-        <div class="keymapKey${size}${hide}" data-key="${keyToData(
-        keyString.toLowerCase()
-      )}">
+  const keymapHtml = keymapCopy.map(
+    (row: (KeyProperties | string)[], index: number) => {
+      const rowCopy = [...row];
+      const rowHtml = rowCopy.map(
+        (element: KeyProperties | string, index: number) => {
+          let size = "",
+            keyHtml: string = "",
+            keyString: string =
+              typeof element === "string" ? element.toString() : "";
+          if (isKeyProperties(element)) {
+            if (element.x && "x" in element) {
+              keyHtml += `<div class="keymapKey invisible"></div>`;
+            }
+            if (element.w && "w" in element) {
+              size = ` key${(element.w * 100).toString()}`;
+            }
+            // we take the next one since is the content of the current key
+            keyString = rowCopy[index + 1]?.toString() ?? "";
+            rowCopy.splice(index, 1);
+          }
+          keyHtml += `
+        <div class="keymapKey${size}" data-key="${keyToData(
+            keyString.toLowerCase()
+          )}">
           <span class="letter">${keyString?.toLowerCase().toString()}</span>
         </div>`;
-      if (keyString === "spc") {
-        keyText = `
+          if (keyString === "spc") {
+            keyHtml += `
         <div class="keymapKey${size} keySpace layoutIndicator">
           <span class="letter">${config.layout}</span>
         </div>`;
-      }
-      rowText += keyText;
-    });
-    keymapText += `<div class="row r${index + 1}">${rowText}</div>`;
-  });
-  return keymapText;
+          }
+          return keyHtml;
+        }
+      );
+      return `<div class="row r${index + 1}">${rowHtml.join("")}</div>`;
+    }
+  );
+  return keymapHtml.join("");
 }
