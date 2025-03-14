@@ -83,7 +83,7 @@ export function getCustomKeymapSyle(
           <span class="letter">${keyString?.toLowerCase().toString()}</span>
         </div>`;
           if (keyString === "spc") {
-            keyHtml += `
+            keyHtml = `
         <div class="keymapKey${size} keySpace layoutIndicator">
           <span class="letter">${config.layout}</span>
         </div>`;
