@@ -31,6 +31,11 @@ import {
 } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
+import {
+  KeymapCustom,
+  keymapToString,
+  stringToKeymap,
+} from "../utils/custom-keymap";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -87,6 +92,9 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .section[data-config-name='keymapSize']").addClass(
           "hidden"
         );
+        $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+          "hidden"
+        );
       } else {
         $(".pageSettings .section[data-config-name='keymapStyle']").removeClass(
           "hidden"
@@ -103,13 +111,29 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .section[data-config-name='keymapSize']").removeClass(
           "hidden"
         );
+        if (Config.keymapStyle === "custom") {
+          $(
+            ".pageSettings .section[data-config-name='keymapCustom']"
+          ).removeClass("hidden");
+        }
       }
     }
   ) as SettingsGroup<ConfigValue>;
   groups["keymapMatrix"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
-    "button"
+    "button",
+    () => {
+      if (Config.keymapStyle !== "custom") {
+        $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+          "hidden"
+        );
+      } else {
+        $(
+          ".pageSettings .section[data-config-name='keymapCustom']"
+        ).removeClass("hidden");
+      }
+    }
   ) as SettingsGroup<ConfigValue>;
   groups["keymapLayout"] = new SettingsGroup(
     "keymapLayout",
@@ -335,6 +359,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setFontSize,
     "button"
   ) as SettingsGroup<ConfigValue>;
+  groups["keymapCustom"] = new SettingsGroup(
+    "keymapCustom",
+    UpdateConfig.setKeymapCustom,
+    "button"
+  ) as SettingsGroup<ConfigValue>;
   groups["maxLineWidth"] = new SettingsGroup(
     "maxLineWidth",
     UpdateConfig.setMaxLineWidth,
@@ -509,6 +538,16 @@ async function fillSettingsPage(): Promise<void> {
   const keymapLayoutSelectElement = document.querySelector(
     ".pageSettings .section[data-config-name='keymapLayout'] select"
   ) as Element;
+
+  if (Config.keymapStyle !== "custom") {
+    $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+      "hidden"
+    );
+  } else {
+    $(".pageSettings .section[data-config-name='keymapCustom']").removeClass(
+      "hidden"
+    );
+  }
 
   let layoutHtml = '<option value="default">off</option>';
   let keymapLayoutHtml = '<option value="overrideSync">emulator sync</option>';
@@ -686,6 +725,9 @@ async function fillSettingsPage(): Promise<void> {
 
   $(".pageSettings .section[data-config-name='fontSize'] input").val(
     Config.fontSize
+  );
+  $(".pageSettings .section[data-config-name='keymapCustom'] textarea").val(
+    keymapToString(Config.keymapCustom)
   );
 
   $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
@@ -1161,6 +1203,38 @@ $(
         ).val() as string
       )
     );
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton button.save"
+).on("click", () => {
+  const stringValue = $(
+    ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+  ).val() as string;
+  const keymap: KeymapCustom = stringToKeymap(stringValue);
+  const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+).on("keypress", (e) => {
+  if (e.key === "Enter") {
+    const stringValue = $(
+      ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+    ).val() as string;
+    const keymap: KeymapCustom = stringToKeymap(stringValue);
+    const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
     if (didConfigSave) {
       Notifications.add("Saved", 1, {
         duration: 1,

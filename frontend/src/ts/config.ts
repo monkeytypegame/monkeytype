@@ -29,6 +29,7 @@ import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
+import { KeymapCustom } from "./utils/custom-keymap";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -1762,15 +1763,26 @@ export function setLayout(
   return true;
 }
 
-// export function setSavedLayout(layout: string, nosave?: boolean): boolean {
-//   if (layout === null || layout === undefined) {
-//     layout = "qwerty";
-//   }
-//   config.savedLayout = layout;
-//   setLayout(layout, nosave);
+export function setKeymapCustom(
+  keymapCustom: KeymapCustom,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid(
+      "keymap custom",
+      keymapCustom,
+      ConfigSchemas.KeymapCustomSchema
+    )
+  )
+    return false;
 
-//   return true;
-// }
+  //better validation for the custom keymap
+  config.keymapCustom = keymapCustom;
+  saveToLocalStorage("keymapCustom", nosave);
+  ConfigEvent.dispatch("keymapCustom", config.keymapCustom, nosave);
+
+  return true;
+}
 
 export function setFontSize(
   fontSize: ConfigSchemas.FontSize,
@@ -2037,6 +2049,7 @@ export async function apply(
     setKeymapLayout(configObj.keymapLayout, true);
     setKeymapShowTopRow(configObj.keymapShowTopRow, true);
     setKeymapSize(configObj.keymapSize, true);
+    setKeymapCustom(configObj.keymapCustom, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setCodeUnindentOnBackspace(configObj.codeUnindentOnBackspace, true);

@@ -77,8 +77,27 @@ export const KeymapStyleSchema = z.enum([
   "split_matrix",
   "steno",
   "steno_matrix",
+  "custom",
 ]);
 export type KeymapStyle = z.infer<typeof KeymapStyleSchema>;
+
+export const KeymapCustomSchema = z.array(
+  z.array(
+    z.union([
+      z.string(),
+      z
+        .object({
+          w: z.number(),
+          a: z.number(),
+          h: z.number(),
+          x: z.number(),
+          y: z.number(),
+        })
+        .partial(),
+    ])
+  )
+);
+export type KeymapCustom = z.infer<typeof KeymapCustomSchema>;
 
 export const KeymapLegendStyleSchema = z.enum([
   "lowercase",
@@ -342,6 +361,7 @@ export const ConfigSchema = z
     keymapLayout: KeymapLayoutSchema,
     keymapShowTopRow: KeymapShowTopRowSchema,
     keymapSize: KeymapSizeSchema,
+    keymapCustom: KeymapCustomSchema,
     fontFamily: FontFamilySchema,
     smoothLineScroll: z.boolean(),
     alwaysShowDecimalPlaces: z.boolean(),
@@ -455,6 +475,7 @@ export const ConfigGroupsLiteral = {
   keymapLayout: "appearance",
   keymapShowTopRow: "appearance",
   keymapSize: "appearance",
+  keymapCustom: "appearance",
   fontFamily: "appearance",
   smoothLineScroll: "appearance",
   alwaysShowDecimalPlaces: "appearance",

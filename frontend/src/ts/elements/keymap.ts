@@ -9,6 +9,7 @@ import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
 import * as TestWords from "../test/test-words";
+import { getCustomKeymapSyle, KeymapCustom } from "../utils/custom-keymap";
 
 const stenoKeys: JSONData.Layout = {
   keymapShowTopRow: true,
@@ -382,6 +383,10 @@ export async function refresh(
     }
     // );
 
+    if (Config.keymapStyle === "custom") {
+      const customKeymap: KeymapCustom = Config.keymapCustom;
+      keymapElement = getCustomKeymapSyle(customKeymap, Config);
+    }
     $("#keymap").html(keymapElement);
 
     $("#keymap").removeClass("staggered");
@@ -391,6 +396,7 @@ export async function refresh(
     $("#keymap").removeClass("alice");
     $("#keymap").removeClass("steno");
     $("#keymap").removeClass("steno_matrix");
+    $("#keymap").removeClass("custom");
     $("#keymap").addClass(Config.keymapStyle);
   } catch (e) {
     if (e instanceof Error) {
