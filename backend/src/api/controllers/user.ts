@@ -200,11 +200,20 @@ export async function sendVerificationEmail(
         );
       } else if (e.errorInfo.code === "auth/too-many-requests") {
         throw new MonkeyError(429, "Too many requests. Please try again later");
+      } else if (
+        e.errorInfo.code === "auth/internal-error" &&
+        e.errorInfo.message.toLowerCase().includes("too_many_attempts")
+      ) {
+        throw new MonkeyError(
+          429,
+          "Too many Firebase requests. Please try again later"
+        );
       } else {
         throw new MonkeyError(
           500,
           "Firebase failed to generate an email verification link: " +
-            e.errorInfo.message
+            e.errorInfo.message,
+          JSON.stringify(e)
         );
       }
     } else {
@@ -212,7 +221,7 @@ export async function sendVerificationEmail(
       if (message === undefined) {
         throw new MonkeyError(
           500,
-          "Firebase failed to generate an email verification link. Unknown error occured"
+          "Failed to generate an email verification link. Unknown error occured"
         );
       } else {
         if (message.toLowerCase().includes("too_many_attempts")) {
@@ -223,8 +232,7 @@ export async function sendVerificationEmail(
         } else {
           throw new MonkeyError(
             500,
-            "Firebase failed to generate an email verification link: " +
-              message,
+            "Failed to generate an email verification link: " + message,
             (e as Error).stack
           );
         }
