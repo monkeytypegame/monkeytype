@@ -81,21 +81,22 @@ export const KeymapStyleSchema = z.enum([
 ]);
 export type KeymapStyle = z.infer<typeof KeymapStyleSchema>;
 
+export const KeyPropertiesSchema = z.object({
+  w: z.number().optional(),
+  a: z.number().optional(),
+  h: z.number().optional(),
+  x: z.number().optional(),
+  y: z.number().optional(),
+});
+
+export type KeyProperties = z.infer<typeof KeyPropertiesSchema>;
+
 export const KeymapCustomSchema = z.array(
-  z.array(
-    z.union([
-      z.string(),
-      z
-        .object({
-          w: z.number(),
-          a: z.number(),
-          h: z.number(),
-          x: z.number(),
-          y: z.number(),
-        })
-        .partial(),
-    ])
-  )
+  z
+    .array(z.union([z.string(), KeyPropertiesSchema.partial()]))
+    .refine((val) => JSON.stringify(val).length <= 4096, {
+      message: "Keymap data must be less than 4096 chars.",
+    })
 );
 export type KeymapCustom = z.infer<typeof KeymapCustomSchema>;
 

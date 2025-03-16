@@ -9,7 +9,8 @@ import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
 import * as TestWords from "../test/test-words";
-import { getCustomKeymapSyle, KeymapCustom } from "../utils/custom-keymap";
+import { getCustomKeymapSyle } from "../utils/custom-keymap";
+import { KeymapCustom } from "@monkeytype/contracts/schemas/configs";
 
 const stenoKeys: JSONData.Layout = {
   keymapShowTopRow: true,

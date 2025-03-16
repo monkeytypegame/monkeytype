@@ -1,15 +1,9 @@
-import { Config } from "@monkeytype/contracts/schemas/configs";
+import {
+  Config,
+  KeyProperties,
+  KeymapCustom,
+} from "@monkeytype/contracts/schemas/configs";
 import { dataKeys as keyToDataObject } from "../constants/data-keys";
-
-export type KeyProperties = {
-  a?: number; // legend alignment: ignore
-  w?: number; // width
-  h?: number; // height
-  x?: number; // x position
-  y?: number; // y position
-};
-
-export type KeymapCustom = (KeyProperties | string)[][];
 
 function keyToData(key: string): string {
   return (key && keyToDataObject[key]) ?? "";

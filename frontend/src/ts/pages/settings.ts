@@ -23,6 +23,7 @@ import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
   ConfigValue,
   CustomLayoutFluid,
+  KeymapCustom,
 } from "@monkeytype/contracts/schemas/configs";
 import {
   getAllFunboxes,
@@ -31,11 +32,7 @@ import {
 } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
-import {
-  KeymapCustom,
-  keymapToString,
-  stringToKeymap,
-} from "../utils/custom-keymap";
+import { keymapToString, stringToKeymap } from "../utils/custom-keymap";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
