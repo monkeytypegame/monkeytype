@@ -269,7 +269,9 @@ async function requestData(update = false): Promise<void> {
   const rankRequest =
     isAuthenticated() && state.userData === null
       ? state.type === "allTime"
-        ? Ape.leaderboards.getRank({ query: baseQuery as GetLeaderboardQuery })
+        ? Ape.leaderboards.getRank({
+            query: baseQuery as GetLeaderboardQuery,
+          })
         : state.type === "daily"
         ? Ape.leaderboards.getDailyRank({
             query: baseQuery as GetDailyLeaderboardQuery,
@@ -280,6 +282,7 @@ async function requestData(update = false): Promise<void> {
       : undefined;
 
   if (rankRequest && state.navigateToUser) {
+    state.navigateToUser = false;
     const rankResponse = await rankRequest;
     if (
       rankResponse !== undefined &&
@@ -288,6 +291,7 @@ async function requestData(update = false): Promise<void> {
     ) {
       state.userData = rankResponse.body.data;
       state.page = Math.floor((state.userData.rank - 1) / state.pageSize);
+      updateGetParameters();
     }
   }
 
@@ -1113,6 +1117,9 @@ function handleYesterdayLastWeekButton(action: string): void {
 }
 
 function updateGetParameters(): void {
+  if (state.navigateToUser) {
+    return;
+  }
   const params: UrlParameter = {};
 
   params.type = state.type;
