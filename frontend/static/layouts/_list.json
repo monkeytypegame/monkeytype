@@ -2267,7 +2267,7 @@
       "row5": [" "]
     }
   },
-    "panini_wide": {
+  "panini_wide": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
@@ -2275,6 +2275,28 @@
       "row2": ["vV", "wW", "lL", "yY", "kK", "[{", "jJ", "fF", "oO", "uU", ".>", ",<", "\\|"],
       "row3": ["cC", "rR", "sS", "tT", "pP", "]}", "bB", "nN", "aA", "eE", "iI"],
       "row4": ["zZ", "xX", "dD", "gG", "qQ", "/?", "mM", "hH", "'\"", ";:"],
+      "row5": [" "]
+    }
+  },
+  "ergopti": {
+    "keymapShowTopRow": false,
+    "type": "iso",
+    "keys": {
+      "row1": ["=+", "11", "22", "33", "44", "55", "66", "77", "88", "99", "0º", "€£", "%‰"],
+      "row2": ["èÈ", "yY", "oO", "wW", "bB", "fF", "gG", "hH", "cC", "xX", "zZ", "çÇ"],
+      "row3": ["aA", "iI", "eE", "uU", ".:", "vV", "sS", "nN", "tT", "rR", "qQ", "^!"],
+      "row4": ["êÊ", "éÉ", "àÀ", "jJ", ",;", "kK", "mM", "dD", "lL", "pP", "'?"],
+      "row5": [" -"]
+    }
+  },
+  "sword": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["qQ", "jJ", "oO", "uU", "rR", "yY", "mM", "pP", "wW", "vV", "[{", "]}", "\\|"],
+      "row3": ["zZ", "eE", "aA", "iI", "nN", "cC", "lL", "tT", "sS", "kK", ";:"],
+      "row4": [";:", "xX", ",<", ".>", "fF", "gG", "hH", "dD", "bB", "'\""],
       "row5": [" "]
     }
   }

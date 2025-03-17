@@ -1321,7 +1321,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
   "click",
   "button",
   function () {
-    const mode = $(this).data("mode") as "15" | "60";
+    const mode = $(this).attr("data-mode") as "15" | "60" | undefined;
     const language = $(this).data("language") as string;
     if (
       mode !== undefined &&
