@@ -42,6 +42,11 @@ import {
 import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
+import {
+  GetDailyLeaderboardQuery,
+  GetLeaderboardQuery,
+  GetWeeklyXpLeaderboardQuery,
+} from "@monkeytype/contracts/leaderboards";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
@@ -230,11 +235,7 @@ function updateTitle(): void {
   }
 }
 
-async function requestData(
-  update = false,
-  keepUserData = false
-): Promise<void> {
-  console.log("### requestData", { update, keepUserData });
+async function requestData(update = false): Promise<void> {
   if (update) {
     state.updating = true;
     state.error = undefined;
@@ -242,206 +243,93 @@ async function requestData(
     state.loading = true;
     state.error = undefined;
     state.data = null;
-    if (!keepUserData) {
-      state.userData = null;
-    }
+
+    state.userData = null;
   }
   updateContent();
 
-  if (state.type === "allTime" || state.type === "daily") {
-    const baseQuery = {
-      language: state.type === "allTime" ? "english" : state.language,
-      mode: "time" as Mode,
-      mode2: state.mode2,
-    };
+  const baseQuery = getBaseQuery();
 
-    const requests: {
-      data:
-        | ReturnType<typeof Ape.leaderboards.get>
-        | ReturnType<typeof Ape.leaderboards.getDaily>
-        | undefined;
-      rank:
-        | ReturnType<typeof Ape.leaderboards.getRank>
-        | ReturnType<typeof Ape.leaderboards.getDailyRank>
-        | undefined;
-    } = {
-      data: undefined,
-      rank: undefined,
-    };
+  const dataFunction =
+    state.type === "allTime"
+      ? Ape.leaderboards.get
+      : state.type === "daily"
+      ? Ape.leaderboards.getDaily
+      : Ape.leaderboards.getWeeklyXp;
 
-    if (state.type === "allTime") {
-      requests.data = Ape.leaderboards.get({
-        query: { ...baseQuery, page: state.page, pageSize: state.pageSize },
-      });
-    } else {
-      requests.data = Ape.leaderboards.getDaily({
-        query: {
-          ...baseQuery,
-          page: state.page,
-          pageSize: state.pageSize,
-          daysBefore: state.yesterday ? 1 : undefined,
-        },
-      });
-    }
-
-    if (isAuthenticated() && state.userData === null) {
-      if (state.type === "allTime") {
-        requests.rank = Ape.leaderboards.getRank({
-          query: { ...baseQuery },
-        });
-      } else {
-        requests.rank = Ape.leaderboards.getDailyRank({
-          query: {
-            ...baseQuery,
-            daysBefore: state.yesterday ? 1 : undefined,
-          },
-        });
-      }
-    }
-
-    const [dataResponse, rankResponse] = await Promise.all([
-      requests.data,
-      requests.rank,
-    ]);
-
-    if (dataResponse.status === 200) {
-      state.data = dataResponse.body.data.entries;
-      state.count = dataResponse.body.data.count;
-      state.pageSize = dataResponse.body.data.pageSize;
-
-      if (state.type === "daily") {
-        //@ts-ignore not sure why this is causing errors when it's clearly defined in the schema
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        state.minWpm = dataResponse.body.data.minWpm;
-      }
-    } else {
-      state.data = null;
-      state.error = "Something went wrong";
-      Notifications.add(
-        "Failed to get leaderboard: " + dataResponse.body.message,
-        -1
-      );
-    }
-
-    if (state.userData === null && rankResponse !== undefined) {
-      if (rankResponse.status === 200) {
-        if (rankResponse.body.data !== null) {
-          state.userData = rankResponse.body.data;
-        }
-      } else {
-        state.userData = null;
-        state.error = "Something went wrong";
-        Notifications.add(
-          "Failed to get rank: " + rankResponse.body.message,
-          -1
-        );
-      }
-    }
-
-    if (state.data !== null) {
-      const entriesMissingAvatars = state.data.filter(
-        (entry) => !state.discordAvatarUrls.has(entry.uid)
-      );
-      void getAvatarUrls(entriesMissingAvatars).then((urlMap) => {
-        state.discordAvatarUrls = new Map([
-          ...state.discordAvatarUrls,
-          ...urlMap,
-        ]);
-        fillAvatars();
-      });
-    }
-
-    state.loading = false;
-    state.updating = false;
-    updateContent();
-    if (!update && isAuthenticated()) {
-      fillUser();
-    }
-    return;
-  } else if (state.type === "weekly") {
-    const requests: {
-      data: ReturnType<typeof Ape.leaderboards.getWeeklyXp> | undefined;
-      rank: ReturnType<typeof Ape.leaderboards.getWeeklyXpRank> | undefined;
-    } = {
-      data: undefined,
-      rank: undefined,
-    };
-
-    requests.data = Ape.leaderboards.getWeeklyXp({
-      query: {
-        page: state.page,
-        pageSize: state.pageSize,
-        weeksBefore: state.lastWeek ? 1 : undefined,
-      },
-    });
-
-    if (isAuthenticated() && state.userData === null) {
-      requests.rank = Ape.leaderboards.getWeeklyXpRank({
-        query: {
-          weeksBefore: state.lastWeek ? 1 : undefined,
-        },
-      });
-    }
-
-    const [dataResponse, rankResponse] = await Promise.all([
-      requests.data,
-      requests.rank,
-    ]);
-
-    if (dataResponse.status === 200) {
-      state.data = dataResponse.body.data.entries;
-      state.count = dataResponse.body.data.count;
-      state.pageSize = dataResponse.body.data.pageSize;
-    } else {
-      state.data = null;
-      state.error = "Something went wrong";
-      Notifications.add(
-        "Failed to get leaderboard: " + dataResponse.body.message,
-        -1
-      );
-    }
-
-    if (state.userData === null && rankResponse !== undefined) {
-      if (rankResponse.status === 200) {
-        if (rankResponse.body.data !== null) {
-          state.userData = rankResponse.body.data;
-        }
-      } else {
-        state.userData = null;
-        state.error = "Something went wrong";
-        Notifications.add(
-          "Failed to get rank: " + rankResponse.body.message,
-          -1
-        );
-      }
-    }
-
-    if (state.data !== null) {
-      const entriesMissingAvatars = state.data.filter(
-        (entry) => !state.discordAvatarUrls.has(entry.uid)
-      );
-      void getAvatarUrls(entriesMissingAvatars).then((urlMap) => {
-        state.discordAvatarUrls = new Map([
-          ...state.discordAvatarUrls,
-          ...urlMap,
-        ]);
-        fillAvatars();
-      });
-    }
-
-    state.loading = false;
-    state.updating = false;
-    updateContent();
-    if (!update && isAuthenticated()) {
-      fillUser();
-    }
-    return;
-  } else {
-    // state.updating = false;
-    // state.loading = false;
-    // state.error = "Unsupported mode";
-    // updateContent();
+  let rankFunction = undefined;
+  if (isAuthenticated() && state.userData === null) {
+    rankFunction =
+      state.type === "allTime"
+        ? Ape.leaderboards.getRank
+        : state.type === "daily"
+        ? Ape.leaderboards.getDailyRank
+        : Ape.leaderboards.getWeeklyXpRank;
   }
+
+  const requests = {
+    data: dataFunction({
+      query: { ...baseQuery, page: state.page, pageSize: state.pageSize },
+    }),
+    rank: rankFunction?.({ query: baseQuery }),
+  };
+
+  const [dataResponse, rankResponse] = await Promise.all([
+    requests.data,
+    requests.rank,
+  ]);
+
+  if (dataResponse.status === 200) {
+    state.data = dataResponse.body.data.entries;
+    state.count = dataResponse.body.data.count;
+    state.pageSize = dataResponse.body.data.pageSize;
+
+    if (state.type === "daily") {
+      //@ts-ignore not sure why this is causing errors when it's clearly defined in the schema
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      state.minWpm = dataResponse.body.data.minWpm;
+    }
+  } else {
+    state.data = null;
+    state.error = "Something went wrong";
+    Notifications.add(
+      "Failed to get leaderboard: " + dataResponse.body.message,
+      -1
+    );
+  }
+
+  if (state.userData === null && rankResponse !== undefined) {
+    if (rankResponse.status === 200) {
+      if (rankResponse.body.data !== null) {
+        state.userData = rankResponse.body.data;
+      }
+    } else {
+      state.userData = null;
+      state.error = "Something went wrong";
+      Notifications.add("Failed to get rank: " + rankResponse.body.message, -1);
+    }
+  }
+
+  if (state.data !== null) {
+    const entriesMissingAvatars = state.data.filter(
+      (entry) => !state.discordAvatarUrls.has(entry.uid)
+    );
+    void getAvatarUrls(entriesMissingAvatars).then((urlMap) => {
+      state.discordAvatarUrls = new Map([
+        ...state.discordAvatarUrls,
+        ...urlMap,
+      ]);
+      fillAvatars();
+    });
+  }
+
+  state.loading = false;
+  state.updating = false;
+  updateContent();
+  if (!update && isAuthenticated()) {
+    fillUser();
+  }
+  return;
 }
 
 function updateJumpButtons(): void {
@@ -486,7 +374,11 @@ function updateJumpButtons(): void {
 }
 
 async function getAvatarUrls(
-  data: LeaderboardEntry[] | XpLeaderboardEntry[]
+  data: {
+    uid: string;
+    discordId: string | undefined;
+    discordAvatar: string | undefined;
+  }[]
 ): Promise<Map<string, string>> {
   const results = await Promise.allSettled(
     data.map(async (entry) => ({
@@ -1285,46 +1177,28 @@ function updateTimeText(
   text.attr("aria-label", localDateString);
 }
 
-async function handleNavigateToUser(): Promise<void> {
-  let request;
-  if (state.type === "allTime") {
-    request = Ape.leaderboards.getRank({
-      query: {
+function getBaseQuery():
+  | GetLeaderboardQuery
+  | GetDailyLeaderboardQuery
+  | GetWeeklyXpLeaderboardQuery {
+  switch (state.type) {
+    case "allTime":
+      return {
         language: "english",
         mode: "time" as Mode,
         mode2: state.mode2,
-      },
-    });
-  } else if (state.type === "daily") {
-    request = Ape.leaderboards.getDailyRank({
-      query: {
+      } as GetLeaderboardQuery;
+    case "daily":
+      return {
         language: state.language,
         mode: "time" as Mode,
         mode2: state.mode2,
         daysBefore: state.yesterday ? 1 : undefined,
-      },
-    });
-  } else if (state.type === "weekly") {
-    request = Ape.leaderboards.getWeeklyXpRank({
-      query: {
+      } as GetDailyLeaderboardQuery;
+    case "weekly":
+      return {
         weeksBefore: state.lastWeek ? 1 : undefined,
-      },
-    });
-  }
-  const rankResponse = await request;
-
-  if (rankResponse !== undefined && rankResponse.status === 200) {
-    if (rankResponse.body.data !== null) {
-      state.userData = rankResponse.body.data;
-    }
-  } else {
-    state.userData = null;
-    state.error = "Something went wrong";
-    Notifications.add("Failed to get rank: " + rankResponse?.body.message, -1);
-  }
-
-  if (state.userData) {
-    state.page = Math.floor((state.userData.rank - 1) / state.pageSize);
+      } as GetWeeklyXpLeaderboardQuery;
   }
 }
 
@@ -1406,16 +1280,13 @@ export const page = new Page({
     Skeleton.append("pageLeaderboards", "main");
     // await appendLanguageButtons(); //todo figure out this race condition
     readGetParameters();
-    if (state.navigateToUser) {
-      await handleNavigateToUser();
-    }
     startTimer();
     updateTypeButtons();
     updateTitle();
     updateSecondaryButtons();
     updateContent();
     updateGetParameters();
-    void requestData(false, state.navigateToUser);
+    void requestData(false);
   },
   afterShow: async (): Promise<void> => {
     updateSecondaryButtons();
