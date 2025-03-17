@@ -7,7 +7,6 @@ import {
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { capitalizeFirstLetter } from "../utils/strings";
 import Ape from "../ape";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
 import * as Notifications from "../elements/notifications";
 import Format from "../utils/format";
 import { Auth, isAuthenticated } from "../firebase";
@@ -43,9 +42,9 @@ import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import {
-  GetDailyLeaderboardQuery,
-  GetLeaderboardQuery,
-  GetWeeklyXpLeaderboardQuery,
+  GetDailyLeaderboardRankQuery,
+  GetLeaderboardRankQuery,
+  GetWeeklyXpLeaderboardRankQuery,
 } from "@monkeytype/contracts/leaderboards";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
@@ -104,7 +103,7 @@ const state = {
   data: null,
   userData: null,
   page: 0,
-  pageSize: 2, //TODO revert
+  pageSize: 50,
   title: "All-time English Time 15 Leaderboard",
   discordAvatarUrls: new Map<string, string>(),
   scrollToUserAfterFill: false,
@@ -248,38 +247,62 @@ async function requestData(update = false): Promise<void> {
   }
   updateContent();
 
-  const baseQuery =
-    state.type === "allTime"
-      ? {
-          language: "english",
-          mode: "time" as Mode,
-          mode2: state.mode2,
-        }
-      : state.type === "daily"
-      ? {
-          language: state.language,
-          mode: "time" as Mode,
-          mode2: state.mode2,
-          daysBefore: state.yesterday ? 1 : undefined,
-        }
-      : {
-          weeksBefore: state.lastWeek ? 1 : undefined,
-        };
+  let rankRequest = undefined;
+  let dataRequestProvider = undefined;
 
-  const rankRequest =
-    isAuthenticated() && state.userData === null
-      ? state.type === "allTime"
-        ? Ape.leaderboards.getRank({
-            query: baseQuery as GetLeaderboardQuery,
-          })
-        : state.type === "daily"
-        ? Ape.leaderboards.getDailyRank({
-            query: baseQuery as GetDailyLeaderboardQuery,
-          })
-        : Ape.leaderboards.getWeeklyXpRank({
-            query: baseQuery as GetWeeklyXpLeaderboardQuery,
-          })
-      : undefined;
+  if (state.type === "allTime") {
+    const baseQuery: GetLeaderboardRankQuery = {
+      language: "english",
+      mode: "time",
+      mode2: state.mode2,
+    };
+
+    rankRequest = Ape.leaderboards.getRank({ query: baseQuery });
+    dataRequestProvider = async () =>
+      Ape.leaderboards.get({
+        query: {
+          page: state.page,
+          pageSize: state.pageSize,
+          ...baseQuery,
+        },
+      });
+  } else if (state.type === "daily") {
+    const baseQuery: GetDailyLeaderboardRankQuery = {
+      language: state.language,
+      mode: "time",
+      mode2: state.mode2,
+      daysBefore: state.yesterday ? 1 : undefined,
+    };
+
+    rankRequest = Ape.leaderboards.getDailyRank({ query: baseQuery });
+    dataRequestProvider = async () =>
+      Ape.leaderboards.getDaily({
+        query: {
+          page: state.page,
+          pageSize: state.pageSize,
+          ...baseQuery,
+        },
+      });
+  } else if (state.type === "weekly") {
+    const baseQuery: GetWeeklyXpLeaderboardRankQuery = {
+      weeksBefore: state.lastWeek ? 1 : undefined,
+    };
+
+    rankRequest = Ape.leaderboards.getWeeklyXpRank({ query: baseQuery });
+    dataRequestProvider = async () =>
+      Ape.leaderboards.getWeeklyXp({
+        query: {
+          ...{ page: state.page, pageSize: state.pageSize },
+          ...baseQuery,
+        },
+      });
+  } else {
+    throw new Error("unknown state type");
+  }
+
+  if (!isAuthenticated() || state.userData !== null) {
+    rankRequest = undefined;
+  }
 
   if (rankRequest && state.navigateToUser) {
     state.navigateToUser = false;
@@ -295,28 +318,8 @@ async function requestData(update = false): Promise<void> {
     }
   }
 
-  // need to be defined after navigateToUser is handled and set `state.page`
-  const paginatedQuery = {
-    ...baseQuery,
-    page: state.page,
-    pageSize: state.pageSize,
-  };
-
-  const dataRequest =
-    state.type === "allTime"
-      ? Ape.leaderboards.get({
-          query: paginatedQuery as GetLeaderboardQuery,
-        })
-      : state.type === "daily"
-      ? Ape.leaderboards.getDaily({
-          query: paginatedQuery as GetDailyLeaderboardQuery,
-        })
-      : Ape.leaderboards.getWeeklyXp({
-          query: paginatedQuery as GetWeeklyXpLeaderboardQuery,
-        });
-
   const requests = {
-    data: dataRequest,
+    data: dataRequestProvider(),
     rank: state.navigateToUser ? undefined : rankRequest,
   };
 
