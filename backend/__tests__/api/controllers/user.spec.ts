@@ -29,7 +29,7 @@ import {
 import { randomUUID } from "node:crypto";
 import _ from "lodash";
 import { MonkeyMail, UserStreak } from "@monkeytype/contracts/schemas/users";
-import { isFirebaseError } from "../../../src/utils/error";
+import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
 import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 
@@ -689,6 +689,141 @@ describe("user controller test", () => {
       //THEN
       expect(blocklistAddMock).not.toHaveBeenCalled();
 
+      expect(deleteUserMock).toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards
+      );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
+    });
+
+    it("should not fail if userInfo cannot be found", async () => {
+      //GIVEN
+      getUserMock.mockRejectedValue(new MonkeyError(404, "user not found"));
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(blocklistAddMock).not.toHaveBeenCalled();
+
+      expect(deleteUserMock).toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards
+      );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
+    });
+
+    it("should fail for unknown error from UserDal", async () => {
+      //GIVEN
+      getUserMock.mockRejectedValue(new Error("oops"));
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(500);
+
+      //THEN
+      expect(blocklistAddMock).not.toHaveBeenCalled();
+      expect(deleteUserMock).not.toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).not.toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).not.toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).not.toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).not.toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).not.toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).not.toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards
+      );
+      expect(purgeUserFromXpLeaderboardsMock).not.toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
+    });
+    it("should not fail if firebase user cannot be found", async () => {
+      //GIVEN
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+        discordId: "discordId",
+      } as Partial<UserDal.DBUser> as UserDal.DBUser;
+      getUserMock.mockResolvedValue(user);
+      firebaseDeleteUserMock.mockRejectedValue({
+        code: "user-not-found",
+        codePrefix: "auth",
+        errorInfo: { code: "auth/user-not-found", message: "user not found" },
+      });
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(blocklistAddMock).not.toHaveBeenCalled();
+
+      expect(deleteUserMock).toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards
+      );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
+    });
+
+    it("should fail for unknown error from firebase", async () => {
+      //GIVEN
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+        discordId: "discordId",
+      } as Partial<UserDal.DBUser> as UserDal.DBUser;
+      getUserMock.mockResolvedValue(user);
+      firebaseDeleteUserMock.mockRejectedValue({
+        code: "unknown",
+        codePrefix: "auth",
+        errorInfo: { code: "auth/unknown", message: "unknown" },
+      });
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(500);
+
+      //THEN
+      expect(blocklistAddMock).not.toHaveBeenCalled();
       expect(deleteUserMock).toHaveBeenCalledWith(uid);
       expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
       expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
