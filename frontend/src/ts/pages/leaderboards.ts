@@ -1118,8 +1118,10 @@ function handleYesterdayLastWeekButton(action: string): void {
 
 function updateGetParameters(): void {
   if (state.navigateToUser) {
+    //parameters are updated in the requestData method
     return;
   }
+
   const params: UrlParameter = {};
 
   params.type = state.type;
