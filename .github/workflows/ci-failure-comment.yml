@@ -13,15 +13,14 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
       - name: Download workflow artifact
-        uses: dawidd6/action-download-artifact@v6
+        uses: actions/download-artifact@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: peek_icons.yml
           run_id: ${{ github.event.workflow_run.id }}
 
       - name: Read the pr_num file
         id: pr_num_reader
-        uses: juliangruber/read-file-action@v1.0.0
+        uses: juliangruber/read-file-action@v1
         with:
           path: ./pr_num/pr_num.txt
 
@@ -31,3 +30,10 @@ jobs:
           issue-number: ${{ steps.pr_num_reader.outputs.content }}
           body: |
             Continuous integration check(s) failed. Please review the [failing check\'s logs](${{ github.event.workflow_run.html_url }}) and make the necessary changes.
+
+      - name: Apply label changes
+        uses: PauMAVA/add-remove-label-action@v1.0.3
+        with:
+          issue_number:  ${{ steps.pr_num_reader.outputs.content }}
+          add: "waiting for update"
+          remove: "waiting for review"

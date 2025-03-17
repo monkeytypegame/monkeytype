@@ -353,9 +353,17 @@ function applyCustomBackground(): void {
   } else {
     $("#words").addClass("noErrorBorder");
     $("#resultWordsHistory").addClass("noErrorBorder");
-    $(".customBackground").html(
-      `<img src="${Config.customBackground}" alt="" onerror="javascript:window.dispatchEvent(new Event('customBackgroundFailed'))" />`
+
+    //use setAttribute for possible unsafe customBackground value
+    const container = document.querySelector(".customBackground");
+    const img = document.createElement("img");
+    img.setAttribute("src", Config.customBackground);
+    img.setAttribute(
+      "onError",
+      "javascript:window.dispatchEvent(new Event('customBackgroundFailed'))"
     );
+    container?.replaceChildren(img);
+
     BackgroundFilter.apply();
     applyCustomBackgroundSize();
   }
