@@ -267,11 +267,25 @@ async function requestData(update = false): Promise<void> {
         : Ape.leaderboards.getWeeklyXpRank;
   }
 
+  if (isAuthenticated() && state.navigateToUser) {
+    const rankResponse = await rankFunction?.({ query: baseQuery });
+    if (
+      rankResponse !== undefined &&
+      rankResponse.status === 200 &&
+      rankResponse.body.data !== null
+    ) {
+      state.userData = rankResponse.body.data;
+      state.page = Math.floor((state.userData.rank - 1) / state.pageSize);
+    }
+  }
+
   const requests = {
     data: dataFunction({
       query: { ...baseQuery, page: state.page, pageSize: state.pageSize },
     }),
-    rank: rankFunction?.({ query: baseQuery }),
+    rank: state.navigateToUser
+      ? undefined
+      : rankFunction?.({ query: baseQuery }),
   };
 
   const [dataResponse, rankResponse] = await Promise.all([
