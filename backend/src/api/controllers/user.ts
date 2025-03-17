@@ -263,7 +263,9 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
       "discordId",
     ]);
   } catch (e) {
-    //userinfo was already deleted. We ignore this and still try to remove the  other data
+    if (e instanceof MonkeyError && e.status === 404) {
+      //userinfo was already deleted. We ignore this and still try to remove the  other data
+    } else throw e;
   }
 
   if (userInfo?.banned === true) {
