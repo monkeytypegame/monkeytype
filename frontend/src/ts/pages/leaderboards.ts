@@ -248,26 +248,39 @@ async function requestData(update = false): Promise<void> {
   }
   updateContent();
 
-  const baseQuery = getBaseQuery();
-
-  const dataFunction =
+  const baseQuery =
     state.type === "allTime"
-      ? Ape.leaderboards.get
+      ? {
+          language: "english",
+          mode: "time" as Mode,
+          mode2: state.mode2,
+        }
       : state.type === "daily"
-      ? Ape.leaderboards.getDaily
-      : Ape.leaderboards.getWeeklyXp;
+      ? {
+          language: state.language,
+          mode: "time" as Mode,
+          mode2: state.mode2,
+          daysBefore: state.yesterday ? 1 : undefined,
+        }
+      : {
+          weeksBefore: state.lastWeek ? 1 : undefined,
+        };
 
-  const rankFunction =
+  const rankRequest =
     isAuthenticated() && state.userData === null
       ? state.type === "allTime"
-        ? Ape.leaderboards.getRank
+        ? Ape.leaderboards.getRank({ query: baseQuery as GetLeaderboardQuery })
         : state.type === "daily"
-        ? Ape.leaderboards.getDailyRank
-        : Ape.leaderboards.getWeeklyXpRank
+        ? Ape.leaderboards.getDailyRank({
+            query: baseQuery as GetDailyLeaderboardQuery,
+          })
+        : Ape.leaderboards.getWeeklyXpRank({
+            query: baseQuery as GetWeeklyXpLeaderboardQuery,
+          })
       : undefined;
 
-  if (rankFunction && state.navigateToUser) {
-    const rankResponse = await rankFunction?.({ query: baseQuery });
+  if (rankRequest && state.navigateToUser) {
+    const rankResponse = await rankRequest;
     if (
       rankResponse !== undefined &&
       rankResponse.status === 200 &&
@@ -278,13 +291,29 @@ async function requestData(update = false): Promise<void> {
     }
   }
 
+  // need to be defined after navigateToUser is handled and set `state.page`
+  const paginatedQuery = {
+    ...baseQuery,
+    page: state.page,
+    pageSize: state.pageSize,
+  };
+
+  const dataRequest =
+    state.type === "allTime"
+      ? Ape.leaderboards.get({
+          query: paginatedQuery as GetLeaderboardQuery,
+        })
+      : state.type === "daily"
+      ? Ape.leaderboards.getDaily({
+          query: paginatedQuery as GetDailyLeaderboardQuery,
+        })
+      : Ape.leaderboards.getWeeklyXp({
+          query: paginatedQuery as GetWeeklyXpLeaderboardQuery,
+        });
+
   const requests = {
-    data: dataFunction({
-      query: { ...baseQuery, page: state.page, pageSize: state.pageSize },
-    }),
-    rank: state.navigateToUser
-      ? undefined
-      : rankFunction?.({ query: baseQuery }),
+    data: dataRequest,
+    rank: state.navigateToUser ? undefined : rankRequest,
   };
 
   const [dataResponse, rankResponse] = await Promise.all([
@@ -1188,31 +1217,6 @@ function updateTimeText(
   const text = $(".page.pageLeaderboards .bigtitle .subtext > .text");
   text.text(`${dateString}`);
   text.attr("aria-label", localDateString);
-}
-
-function getBaseQuery():
-  | GetLeaderboardQuery
-  | GetDailyLeaderboardQuery
-  | GetWeeklyXpLeaderboardQuery {
-  switch (state.type) {
-    case "allTime":
-      return {
-        language: "english",
-        mode: "time" as Mode,
-        mode2: state.mode2,
-      } as GetLeaderboardQuery;
-    case "daily":
-      return {
-        language: state.language,
-        mode: "time" as Mode,
-        mode2: state.mode2,
-        daysBefore: state.yesterday ? 1 : undefined,
-      } as GetDailyLeaderboardQuery;
-    case "weekly":
-      return {
-        weeksBefore: state.lastWeek ? 1 : undefined,
-      } as GetWeeklyXpLeaderboardQuery;
-  }
 }
 
 $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
