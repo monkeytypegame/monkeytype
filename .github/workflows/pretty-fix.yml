@@ -20,7 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          repository: "${{ github.event.pull_request.user.login }}/${{ github.event.pull_request.head.repo.name}}"
+          repository: ${{ github.event.pull_request.head.repo.full_name}}
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Node.js
