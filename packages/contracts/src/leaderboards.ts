@@ -26,6 +26,8 @@ const PaginationQuerySchema = z.object({
   pageSize: z.number().int().safe().positive().min(10).max(200).default(50),
 });
 
+export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;
+
 const LeaderboardResponseSchema = z.object({
   count: z.number().int().nonnegative(),
   pageSize: z.number().int().positive(),

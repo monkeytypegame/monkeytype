@@ -45,6 +45,7 @@ import {
   GetDailyLeaderboardRankQuery,
   GetLeaderboardRankQuery,
   GetWeeklyXpLeaderboardRankQuery,
+  PaginationQuery,
 } from "@monkeytype/contracts/leaderboards";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
@@ -247,57 +248,63 @@ async function requestData(update = false): Promise<void> {
   }
   updateContent();
 
+  const queryWithPagination = <T>(
+    query: T
+  ): { query: T & PaginationQuery } => ({
+    query: {
+      ...query,
+      page: state.page,
+      pageSize: state.pageSize,
+    },
+  });
+
   let rankRequest = undefined;
+
+  //dataRequest is using state.page which is updated after we prepare the dataRequest. Wrapping into a function ensures we use the correct state.page
   let dataRequestProvider = undefined;
 
-  if (state.type === "allTime") {
-    const baseQuery: GetLeaderboardRankQuery = {
-      language: "english",
-      mode: "time",
-      mode2: state.mode2,
-    };
+  switch (state.type) {
+    case "allTime": {
+      const baseQuery: GetLeaderboardRankQuery = {
+        language: "english",
+        mode: "time",
+        mode2: state.mode2,
+      };
 
-    rankRequest = Ape.leaderboards.getRank({ query: baseQuery });
-    dataRequestProvider = async () =>
-      Ape.leaderboards.get({
-        query: {
-          page: state.page,
-          pageSize: state.pageSize,
-          ...baseQuery,
-        },
-      });
-  } else if (state.type === "daily") {
-    const baseQuery: GetDailyLeaderboardRankQuery = {
-      language: state.language,
-      mode: "time",
-      mode2: state.mode2,
-      daysBefore: state.yesterday ? 1 : undefined,
-    };
+      rankRequest = Ape.leaderboards.getRank({ query: baseQuery });
+      dataRequestProvider = async () =>
+        Ape.leaderboards.get(queryWithPagination(baseQuery));
+      break;
+    }
 
-    rankRequest = Ape.leaderboards.getDailyRank({ query: baseQuery });
-    dataRequestProvider = async () =>
-      Ape.leaderboards.getDaily({
-        query: {
-          page: state.page,
-          pageSize: state.pageSize,
-          ...baseQuery,
-        },
-      });
-  } else if (state.type === "weekly") {
-    const baseQuery: GetWeeklyXpLeaderboardRankQuery = {
-      weeksBefore: state.lastWeek ? 1 : undefined,
-    };
+    case "daily": {
+      const baseQuery: GetDailyLeaderboardRankQuery = {
+        language: state.language,
+        mode: "time",
+        mode2: state.mode2,
+        daysBefore: state.yesterday ? 1 : undefined,
+      };
 
-    rankRequest = Ape.leaderboards.getWeeklyXpRank({ query: baseQuery });
-    dataRequestProvider = async () =>
-      Ape.leaderboards.getWeeklyXp({
-        query: {
-          ...{ page: state.page, pageSize: state.pageSize },
-          ...baseQuery,
-        },
-      });
-  } else {
-    throw new Error("unknown state type");
+      rankRequest = Ape.leaderboards.getDailyRank({ query: baseQuery });
+      dataRequestProvider = async () =>
+        Ape.leaderboards.getDaily(queryWithPagination(baseQuery));
+      break;
+    }
+
+    case "weekly": {
+      const baseQuery: GetWeeklyXpLeaderboardRankQuery = {
+        weeksBefore: state.lastWeek ? 1 : undefined,
+      };
+
+      rankRequest = Ape.leaderboards.getWeeklyXpRank({ query: baseQuery });
+      dataRequestProvider = async () =>
+        Ape.leaderboards.getWeeklyXp(queryWithPagination(baseQuery));
+
+      break;
+    }
+
+    default:
+      throw new Error("unknown state type");
   }
 
   if (!isAuthenticated() || state.userData !== null) {
