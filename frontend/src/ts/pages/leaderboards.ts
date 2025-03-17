@@ -257,17 +257,16 @@ async function requestData(update = false): Promise<void> {
       ? Ape.leaderboards.getDaily
       : Ape.leaderboards.getWeeklyXp;
 
-  let rankFunction = undefined;
-  if (isAuthenticated() && state.userData === null) {
-    rankFunction =
-      state.type === "allTime"
+  const rankFunction =
+    isAuthenticated() && state.userData === null
+      ? state.type === "allTime"
         ? Ape.leaderboards.getRank
         : state.type === "daily"
         ? Ape.leaderboards.getDailyRank
-        : Ape.leaderboards.getWeeklyXpRank;
-  }
+        : Ape.leaderboards.getWeeklyXpRank
+      : undefined;
 
-  if (isAuthenticated() && state.navigateToUser) {
+  if (rankFunction && state.navigateToUser) {
     const rankResponse = await rankFunction?.({ query: baseQuery });
     if (
       rankResponse !== undefined &&
@@ -390,8 +389,8 @@ function updateJumpButtons(): void {
 async function getAvatarUrls(
   data: {
     uid: string;
-    discordId: string | undefined;
-    discordAvatar: string | undefined;
+    discordId?: string | undefined;
+    discordAvatar?: string | undefined;
   }[]
 ): Promise<Map<string, string>> {
   const results = await Promise.allSettled(
