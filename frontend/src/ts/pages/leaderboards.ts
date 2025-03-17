@@ -99,7 +99,7 @@ const state = {
   data: null,
   userData: null,
   page: 0,
-  pageSize: 50,
+  pageSize: 2, //TODO revert
   title: "All-time English Time 15 Leaderboard",
   discordAvatarUrls: new Map<string, string>(),
   scrollToUserAfterFill: false,
@@ -230,7 +230,11 @@ function updateTitle(): void {
   }
 }
 
-async function requestData(update = false): Promise<void> {
+async function requestData(
+  update = false,
+  keepUserData = false
+): Promise<void> {
+  console.log("### requestData", { update, keepUserData });
   if (update) {
     state.updating = true;
     state.error = undefined;
@@ -238,7 +242,9 @@ async function requestData(update = false): Promise<void> {
     state.loading = true;
     state.error = undefined;
     state.data = null;
-    state.userData = null;
+    if (!keepUserData) {
+      state.userData = null;
+    }
   }
   updateContent();
 
@@ -265,13 +271,14 @@ async function requestData(update = false): Promise<void> {
 
     if (state.type === "allTime") {
       requests.data = Ape.leaderboards.get({
-        query: { ...baseQuery, page: state.page },
+        query: { ...baseQuery, page: state.page, pageSize: state.pageSize },
       });
     } else {
       requests.data = Ape.leaderboards.getDaily({
         query: {
           ...baseQuery,
           page: state.page,
+          pageSize: state.pageSize,
           daysBefore: state.yesterday ? 1 : undefined,
         },
       });
@@ -331,12 +338,6 @@ async function requestData(update = false): Promise<void> {
       }
     }
 
-    if (state.navigateToUser) {
-      handleJumpButton("userPage");
-      state.navigateToUser = false;
-      return requestData(true);
-    }
-
     if (state.data !== null) {
       const entriesMissingAvatars = state.data.filter(
         (entry) => !state.discordAvatarUrls.has(entry.uid)
@@ -367,7 +368,11 @@ async function requestData(update = false): Promise<void> {
     };
 
     requests.data = Ape.leaderboards.getWeeklyXp({
-      query: { page: state.page, weeksBefore: state.lastWeek ? 1 : undefined },
+      query: {
+        page: state.page,
+        pageSize: state.pageSize,
+        weeksBefore: state.lastWeek ? 1 : undefined,
+      },
     });
 
     if (isAuthenticated() && state.userData === null) {
@@ -1280,6 +1285,49 @@ function updateTimeText(
   text.attr("aria-label", localDateString);
 }
 
+async function handleNavigateToUser(): Promise<void> {
+  let request;
+  if (state.type === "allTime") {
+    request = Ape.leaderboards.getRank({
+      query: {
+        language: "english",
+        mode: "time" as Mode,
+        mode2: state.mode2,
+      },
+    });
+  } else if (state.type === "daily") {
+    request = Ape.leaderboards.getDailyRank({
+      query: {
+        language: state.language,
+        mode: "time" as Mode,
+        mode2: state.mode2,
+        daysBefore: state.yesterday ? 1 : undefined,
+      },
+    });
+  } else if (state.type === "weekly") {
+    request = Ape.leaderboards.getWeeklyXpRank({
+      query: {
+        weeksBefore: state.lastWeek ? 1 : undefined,
+      },
+    });
+  }
+  const rankResponse = await request;
+
+  if (rankResponse !== undefined && rankResponse.status === 200) {
+    if (rankResponse.body.data !== null) {
+      state.userData = rankResponse.body.data;
+    }
+  } else {
+    state.userData = null;
+    state.error = "Something went wrong";
+    Notifications.add("Failed to get rank: " + rankResponse?.body.message, -1);
+  }
+
+  if (state.userData) {
+    state.page = Math.floor((state.userData.rank - 1) / state.pageSize);
+  }
+}
+
 $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
   const action = $(this).data("action") as Action;
   if (action !== "goToPage") {
@@ -1358,13 +1406,16 @@ export const page = new Page({
     Skeleton.append("pageLeaderboards", "main");
     // await appendLanguageButtons(); //todo figure out this race condition
     readGetParameters();
+    if (state.navigateToUser) {
+      await handleNavigateToUser();
+    }
     startTimer();
     updateTypeButtons();
     updateTitle();
     updateSecondaryButtons();
     updateContent();
     updateGetParameters();
-    void requestData();
+    void requestData(false, state.navigateToUser);
   },
   afterShow: async (): Promise<void> => {
     updateSecondaryButtons();
