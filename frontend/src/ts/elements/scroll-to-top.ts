@@ -3,6 +3,16 @@ import { prefersReducedMotion } from "../utils/misc";
 
 let visible: boolean = false;
 
+export function hide(): void {
+  $(".scrollToTopButton").addClass("invisible");
+  visible = false;
+}
+
+function show(): void {
+  $(".scrollToTopButton").removeClass("invisible");
+  visible = true;
+}
+
 $(document).on("click", ".scrollToTopButton", () => {
   $(".scrollToTopButton").addClass("invisible");
   window.scrollTo({
@@ -17,11 +27,9 @@ $(window).on("scroll", () => {
 
   const scroll: number = window.scrollY;
   if (!visible && scroll > 100) {
-    $(".scrollToTopButton").removeClass("invisible");
-    visible = true;
+    show();
   } else if (visible && scroll < 100) {
-    $(".scrollToTopButton").addClass("invisible");
-    visible = false;
+    hide();
   }
 });
 

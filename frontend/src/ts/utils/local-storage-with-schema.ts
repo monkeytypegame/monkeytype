@@ -1,5 +1,7 @@
-import { ZodError, ZodIssue } from "zod";
+import { ZodIssue } from "zod";
 import { deepClone } from "./misc";
+import { isZodError } from "@monkeytype/util/zod";
+import * as Notifications from "../elements/notifications";
 
 export class LocalStorageWithSchema<T> {
   private key: string;
@@ -77,11 +79,25 @@ export class LocalStorageWithSchema<T> {
       window.localStorage.setItem(this.key, JSON.stringify(parsed));
       return true;
     } catch (e) {
-      console.error(
-        `Failed to set ${this.key} in localStorage`,
-        data,
-        (e as ZodError).issues
-      );
+      let message = "Unknown error occurred";
+
+      if (isZodError(e)) {
+        console.error(e);
+        // message = e.issues
+        //   .map((i) => (i.message ? i.message : JSON.stringify(i)))
+        //   .join(", ");
+        message = "Schema validation failed";
+      } else {
+        if ((e as Error).message.includes("exceeded the quota")) {
+          message =
+            "Local storage is full. Please clear some space and try again.";
+        }
+      }
+
+      const msg = `Failed to set ${this.key} in localStorage: ${message}`;
+      console.error(msg);
+      Notifications.add(msg, -1);
+
       return false;
     }
   }

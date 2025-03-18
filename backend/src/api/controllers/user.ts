@@ -200,11 +200,20 @@ export async function sendVerificationEmail(
         );
       } else if (e.errorInfo.code === "auth/too-many-requests") {
         throw new MonkeyError(429, "Too many requests. Please try again later");
+      } else if (
+        e.errorInfo.code === "auth/internal-error" &&
+        e.errorInfo.message.toLowerCase().includes("too_many_attempts")
+      ) {
+        throw new MonkeyError(
+          429,
+          "Too many Firebase requests. Please try again later"
+        );
       } else {
         throw new MonkeyError(
           500,
           "Firebase failed to generate an email verification link: " +
-            e.errorInfo.message
+            e.errorInfo.message,
+          JSON.stringify(e)
         );
       }
     } else {
@@ -212,7 +221,7 @@ export async function sendVerificationEmail(
       if (message === undefined) {
         throw new MonkeyError(
           500,
-          "Firebase failed to generate an email verification link. Unknown error occured"
+          "Failed to generate an email verification link. Unknown error occured"
         );
       } else {
         if (message.toLowerCase().includes("too_many_attempts")) {
@@ -223,8 +232,7 @@ export async function sendVerificationEmail(
         } else {
           throw new MonkeyError(
             500,
-            "Firebase failed to generate an email verification link: " +
-              message,
+            "Failed to generate an email verification link: " + message,
             (e as Error).stack
           );
         }
@@ -251,14 +259,26 @@ export async function sendForgotPasswordEmail(
 export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const userInfo = await UserDAL.getPartialUser(uid, "delete user", [
-    "banned",
-    "name",
-    "email",
-    "discordId",
-  ]);
+  let userInfo:
+    | Pick<UserDAL.DBUser, "banned" | "name" | "email" | "discordId">
+    | undefined;
 
-  if (userInfo.banned === true) {
+  try {
+    userInfo = await UserDAL.getPartialUser(uid, "delete user", [
+      "banned",
+      "name",
+      "email",
+      "discordId",
+    ]);
+  } catch (e) {
+    if (e instanceof MonkeyError && e.status === 404) {
+      //userinfo was already deleted. We ignore this and still try to remove the  other data
+    } else {
+      throw e;
+    }
+  }
+
+  if (userInfo?.banned === true) {
     await BlocklistDal.add(userInfo);
   }
 
@@ -280,12 +300,20 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
     ),
   ]);
 
-  //delete user from
-  await AuthUtil.deleteUser(uid);
+  try {
+    //delete user from firebase
+    await AuthUtil.deleteUser(uid);
+  } catch (e) {
+    if (isFirebaseError(e) && e.errorInfo.code === "auth/user-not-found") {
+      //user was already deleted, ok to ignore
+    } else {
+      throw e;
+    }
+  }
 
   void addImportantLog(
     "user_deleted",
-    `${userInfo.email} ${userInfo.name}`,
+    `${userInfo?.email} ${userInfo?.name}`,
     uid
   );
 
