@@ -237,7 +237,6 @@ async function requestData(update = false): Promise<void> {
     state.loading = true;
     state.error = undefined;
     state.data = null;
-
     state.userData = null;
   }
   updateContent();
