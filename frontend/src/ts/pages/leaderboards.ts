@@ -300,11 +300,11 @@ async function requestData(update = false): Promise<void> {
     ) {
       state.userData = rankResponse.body.data;
       state.page = Math.floor((state.userData.rank - 1) / state.pageSize);
+      state.goToUserPage = false;
       updateGetParameters();
     }
     requests.rank = undefined;
   }
-  state.goToUserPage = false;
 
   const [dataResponse, rankResponse] = await Promise.all([
     requests.data(),
