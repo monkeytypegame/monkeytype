@@ -41,12 +41,7 @@ import {
 import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import {
-  GetDailyLeaderboardRankQuery,
-  GetLeaderboardRankQuery,
-  GetWeeklyXpLeaderboardRankQuery,
-  PaginationQuery,
-} from "@monkeytype/contracts/leaderboards";
+import { PaginationQuery } from "@monkeytype/contracts/leaderboards";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
@@ -248,72 +243,65 @@ async function requestData(update = false): Promise<void> {
   }
   updateContent();
 
-  const queryWithPagination = <T>(
-    query: T
-  ): { query: T & PaginationQuery } => ({
-    query: {
-      ...query,
-      page: state.page,
-      pageSize: state.pageSize,
-    },
+  const defineRequests = <TQuery, TRank, TData>(
+    data: (args: { query: TQuery & PaginationQuery }) => Promise<TData>,
+    rank: (args: { query: TQuery }) => Promise<TRank>,
+    baseQuery: TQuery
+  ): {
+    rank: undefined | (() => Promise<TRank>);
+    data: () => Promise<TData>;
+  } => ({
+    rank: async () => rank({ query: baseQuery }),
+    data: async () =>
+      data({
+        query: { ...baseQuery, page: state.page, pageSize: state.pageSize },
+      }),
   });
 
-  let rankRequest = undefined;
-
-  //dataRequest is using state.page which is updated after we prepare the dataRequest. Wrapping into a function ensures we use the correct state.page
-  let dataRequestProvider = undefined;
+  let requests;
 
   switch (state.type) {
     case "allTime": {
-      const baseQuery: GetLeaderboardRankQuery = {
-        language: "english",
-        mode: "time",
-        mode2: state.mode2,
-      };
-
-      rankRequest = Ape.leaderboards.getRank({ query: baseQuery });
-      dataRequestProvider = async () =>
-        Ape.leaderboards.get(queryWithPagination(baseQuery));
+      requests = defineRequests(
+        Ape.leaderboards.get,
+        Ape.leaderboards.getRank,
+        {
+          language: "english",
+          mode: "time",
+          mode2: state.mode2,
+        }
+      );
       break;
     }
-
     case "daily": {
-      const baseQuery: GetDailyLeaderboardRankQuery = {
-        language: state.language,
-        mode: "time",
-        mode2: state.mode2,
-        daysBefore: state.yesterday ? 1 : undefined,
-      };
-
-      rankRequest = Ape.leaderboards.getDailyRank({ query: baseQuery });
-      dataRequestProvider = async () =>
-        Ape.leaderboards.getDaily(queryWithPagination(baseQuery));
+      requests = defineRequests(
+        Ape.leaderboards.getDaily,
+        Ape.leaderboards.getDailyRank,
+        {
+          language: state.language,
+          mode: "time",
+          mode2: state.mode2,
+          daysBefore: state.yesterday ? 1 : undefined,
+        }
+      );
       break;
     }
-
     case "weekly": {
-      const baseQuery: GetWeeklyXpLeaderboardRankQuery = {
-        weeksBefore: state.lastWeek ? 1 : undefined,
-      };
-
-      rankRequest = Ape.leaderboards.getWeeklyXpRank({ query: baseQuery });
-      dataRequestProvider = async () =>
-        Ape.leaderboards.getWeeklyXp(queryWithPagination(baseQuery));
-
+      requests = defineRequests(
+        Ape.leaderboards.getWeeklyXp,
+        Ape.leaderboards.getWeeklyXpRank,
+        {
+          weeksBefore: state.lastWeek ? 1 : undefined,
+        }
+      );
       break;
     }
-
     default:
       throw new Error("unknown state type");
   }
 
-  if (!isAuthenticated() || state.userData !== null) {
-    rankRequest = undefined;
-  }
-
-  if (rankRequest && state.navigateToUser) {
-    state.navigateToUser = false;
-    const rankResponse = await rankRequest;
+  if (state.navigateToUser && requests.rank !== undefined) {
+    const rankResponse = await requests.rank();
     if (
       rankResponse !== undefined &&
       rankResponse.status === 200 &&
@@ -324,15 +312,15 @@ async function requestData(update = false): Promise<void> {
       updateGetParameters();
     }
   }
+  state.navigateToUser = false;
 
-  const requests = {
-    data: dataRequestProvider(),
-    rank: state.navigateToUser ? undefined : rankRequest,
-  };
+  if (!isAuthenticated() || state.userData !== null) {
+    requests.rank = undefined;
+  }
 
   const [dataResponse, rankResponse] = await Promise.all([
-    requests.data,
-    requests.rank,
+    requests.data(),
+    requests.rank?.(),
   ]);
 
   if (dataResponse.status === 200) {
