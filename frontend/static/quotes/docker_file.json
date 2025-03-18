@@ -1,0 +1,131 @@
+{
+  "language": "docker_file",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "FROM node:14\nWORKDIR /usr/src/app\nCOPY package*.json ./\nRUN npm install\nCOPY . .\nEXPOSE 8080\nCMD [\"node\", \"server.js\"]",
+      "source": "Node.js Application Setup",
+      "length": 118,
+      "id": 1
+    },
+    {
+      "text": "FROM python:3.9-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . .\nCMD [\"python\", \"app.py\"]",
+      "source": "Python Application Setup",
+      "length": 142,
+      "id": 2
+    },
+    {
+      "text": "FROM golang:1.16-alpine\nWORKDIR /app\nCOPY . .\nRUN go mod tidy\nRUN go build -o main .\nCMD [\"./main\"]",
+      "source": "Go Application Setup",
+      "length": 99,
+      "id": 3
+    },
+    {
+      "text": "FROM ruby:2.7\nWORKDIR /myapp\nCOPY Gemfile Gemfile.lock ./\nRUN bundle install\nCOPY . .\nCMD [\"rails\", \"server\", \"-b\", \"0.0.0.0\"]",
+      "source": "Ruby on Rails Application Setup",
+      "length": 126,
+      "id": 4
+    },
+    {
+      "text": "FROM php:7.4-apache\nCOPY src/var/www/html\nEXPOSE 80",
+      "source": "PHP with Apache Setup",
+      "length": 51,
+      "id": 5
+    },
+    {
+      "text": "FROM nginx:alpine\nCOPY nginx.conf /etc/nginx/nginx.conf\nCOPY . /usr/share/nginx/html\nEXPOSE 80",
+      "source": "Nginx Server Setup",
+      "length": 94,
+      "id": 6
+    },
+    {
+      "text": "FROM ubuntu:20.04\nRUN apt-get update && apt-get install -y curl",
+      "source": "Ubuntu Base Image with Curl",
+      "length": 63,
+      "id": 7
+    },
+    {
+      "text": "FROM debian:bullseye\nRUN apt-get update && apt-get install -y vim",
+      "source": "Debian Base Image with Vim",
+      "length": 65,
+      "id": 8
+    },
+    {
+      "text": "FROM alpine:3.13\nRUN apk add --no-cache bash",
+      "source": "Alpine Linux with Bash",
+      "length": 44,
+      "id": 9
+    },
+    {
+      "text": "FROM centos:8\nRUN yum install -y wget",
+      "source": "CentOS Base Image with Wget",
+      "length": 37,
+      "id": 10
+    },
+    {
+      "text": "FROM openjdk:11-jre-slim\nWORKDIR /app\nCOPY target/myapp.jar myapp.jar\nCMD [\"java\", \"-jar\", \"myapp.jar\"]",
+      "source": "Java Application Setup",
+      "length": 103,
+      "id": 11
+    },
+    {
+      "text": "FROM maven:3.6.3-jdk-11\nWORKDIR /app\nCOPY . .\nRUN mvn clean install\nCMD [\"java\", \"-jar\", \"target/app.jar\"]",
+      "source": "Maven Build and Run",
+      "length": 106,
+      "id": 12
+    },
+    {
+      "text": "FROM python:3.8-slim\nWORKDIR /app\nCOPY . .\nRUN pip install -r requirements.txt\nCMD [\"flask\", \"run\", \"--host=0.0.0.0\"]",
+      "source": "Flask Application Setup",
+      "length": 117,
+      "id": 13
+    },
+    {
+      "text": "FROM node:12-alpine\nWORKDIR /app\nCOPY . .\nRUN npm install\nCMD [\"npm\", \"start\"]",
+      "source": "Node.js with Alpine",
+      "length": 78,
+      "id": 14
+    },
+    {
+      "text": "FROM golang:1.15\nWORKDIR /app\nCOPY . .\nRUN go build -o app .\nCMD [\"./app\"]",
+      "source": "Go Application Build",
+      "length": 74,
+      "id": 15
+    },
+    {
+      "text": "FROM ruby:2.6\nWORKDIR /app\nCOPY Gemfile Gemfile.lock ./\nRUN bundle install\nCOPY . .\nCMD [\"rails\", \"server\"]",
+      "source": "Ruby Application Setup",
+      "length": 107,
+      "id": 16
+    },
+    {
+      "text": "FROM php:8.0-fpm\nWORKDIR /var/www\nCOPY . .\nCMD [\"php-fpm\"]",
+      "source": "PHP-FPM Setup",
+      "length": 58,
+      "id": 17
+    },
+    {
+      "text": "FROM node:16\nWORKDIR /app\nCOPY . .\nRUN npm ci\nCMD [\"npm\", \"start\"]",
+      "source": "Node.js with NPM CI",
+      "length": 66,
+      "id": 18
+    },
+    {
+      "text": "FROM python:3.7\nWORKDIR /app\nCOPY . .\nRUN pip install -r requirements.txt\nCMD [\"gunicorn\", \"-b\", \"0.0.0.0:8000\", \"app:app\"]",
+      "source": "Python with Gunicorn",
+      "length": 123,
+      "id": 19
+    },
+    {
+      "text": "FROM nginx:latest\nCOPY nginx.conf /etc/nginx/nginx.conf\nCOPY . /usr/share/nginx/html\nEXPOSE 80",
+      "source": "Nginx with Custom Config",
+      "length": 94,
+      "id": 20
+    }
+  ]
+}

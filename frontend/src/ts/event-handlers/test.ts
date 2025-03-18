@@ -92,6 +92,6 @@ $(".pageTest #dailyLeaderboardRank").on("click", async () => {
     `/leaderboards?type=daily&language=${Config.language}&mode2=${getMode2(
       Config,
       null
-    )}`
+    )}&goToUserPage=true`
   );
 });

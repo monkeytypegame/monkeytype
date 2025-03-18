@@ -20,7 +20,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name}}
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -62,7 +63,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "prettier fix"
-          branch: ${{ github.event.pull_request.head.ref }}
 
       - name: Remove label
         uses: actions-ecosystem/action-remove-labels@v1

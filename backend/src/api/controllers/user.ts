@@ -259,14 +259,26 @@ export async function sendForgotPasswordEmail(
 export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const userInfo = await UserDAL.getPartialUser(uid, "delete user", [
-    "banned",
-    "name",
-    "email",
-    "discordId",
-  ]);
+  let userInfo:
+    | Pick<UserDAL.DBUser, "banned" | "name" | "email" | "discordId">
+    | undefined;
 
-  if (userInfo.banned === true) {
+  try {
+    userInfo = await UserDAL.getPartialUser(uid, "delete user", [
+      "banned",
+      "name",
+      "email",
+      "discordId",
+    ]);
+  } catch (e) {
+    if (e instanceof MonkeyError && e.status === 404) {
+      //userinfo was already deleted. We ignore this and still try to remove the  other data
+    } else {
+      throw e;
+    }
+  }
+
+  if (userInfo?.banned === true) {
     await BlocklistDal.add(userInfo);
   }
 
@@ -288,12 +300,20 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
     ),
   ]);
 
-  //delete user from
-  await AuthUtil.deleteUser(uid);
+  try {
+    //delete user from firebase
+    await AuthUtil.deleteUser(uid);
+  } catch (e) {
+    if (isFirebaseError(e) && e.errorInfo.code === "auth/user-not-found") {
+      //user was already deleted, ok to ignore
+    } else {
+      throw e;
+    }
+  }
 
   void addImportantLog(
     "user_deleted",
-    `${userInfo.email} ${userInfo.name}`,
+    `${userInfo?.email} ${userInfo?.name}`,
     uid
   );
 
