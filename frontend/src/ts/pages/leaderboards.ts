@@ -292,6 +292,7 @@ async function requestData(update = false): Promise<void> {
   }
 
   if (state.goToUserPage && requests.rank !== undefined) {
+    state.goToUserPage = false;
     const rankResponse = await requests.rank();
     if (
       rankResponse !== undefined &&
@@ -300,7 +301,6 @@ async function requestData(update = false): Promise<void> {
     ) {
       state.userData = rankResponse.body.data;
       state.page = Math.floor((state.userData.rank - 1) / state.pageSize);
-      state.goToUserPage = false;
       updateGetParameters();
     }
     requests.rank = undefined;
