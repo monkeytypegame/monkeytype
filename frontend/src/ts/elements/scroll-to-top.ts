@@ -1,7 +1,7 @@
 import * as ActivePage from "../states/active-page";
 import { prefersReducedMotion } from "../utils/misc";
 
-let visible = false;
+let visible: boolean = false;
 
 $(document).on("click", ".scrollToTopButton", () => {
   $(".scrollToTopButton").addClass("invisible");
@@ -12,10 +12,10 @@ $(document).on("click", ".scrollToTopButton", () => {
 });
 
 $(window).on("scroll", () => {
-  const page = ActivePage.get();
+  const page: string = ActivePage.get();
   if (page === "test") return;
 
-  const scroll = window.scrollY;
+  const scroll: number = window.scrollY;
   if (!visible && scroll > 100) {
     $(".scrollToTopButton").removeClass("invisible");
     visible = true;
@@ -24,3 +24,26 @@ $(window).on("scroll", () => {
     visible = false;
   }
 });
+
+// fix the button visibility (IN TEST PAGE)
+function updateButtonVisibility(): void {
+  const page: string = ActivePage.get();
+  const $button: JQuery<HTMLElement> = $(".scrollToTopButton");
+  if (page === "test") {
+    $button.css("display", "none");
+  } else {
+    $button.css("display", "block");
+  }
+}
+
+$(document).ready(() => {
+  updateButtonVisibility();
+});
+
+setInterval(() => {
+  updateButtonVisibility();
+}, 100);
+
+window.onpopstate = (): void => {
+  updateButtonVisibility();
+};
