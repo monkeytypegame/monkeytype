@@ -42,7 +42,6 @@ import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { PaginationQuery } from "@monkeytype/contracts/leaderboards";
-// import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -300,6 +299,10 @@ async function requestData(update = false): Promise<void> {
       throw new Error("unknown state type");
   }
 
+  if (!isAuthenticated() || state.userData !== null) {
+    requests.rank = undefined;
+  }
+
   if (state.navigateToUser && requests.rank !== undefined) {
     const rankResponse = await requests.rank();
     if (
@@ -311,12 +314,9 @@ async function requestData(update = false): Promise<void> {
       state.page = Math.floor((state.userData.rank - 1) / state.pageSize);
       updateGetParameters();
     }
-  }
-  state.navigateToUser = false;
-
-  if (!isAuthenticated() || state.userData !== null) {
     requests.rank = undefined;
   }
+  state.navigateToUser = false;
 
   const [dataResponse, rankResponse] = await Promise.all([
     requests.data(),
