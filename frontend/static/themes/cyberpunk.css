@@ -1,0 +1,896 @@
+:root {
+  --bg-color: #0a0e17;
+  --main-color: #36f6ff;
+  --caret-color: #fc1ff7;
+  --text-color: #e0fdff;
+  --error-color: #ff3270;
+  --sub-color: #7d4bfe;
+  --sub-alt-color: #101a25;
+  --error-extra-color: #b31b56;
+  --colorful-error-color: #ff3270;
+  --colorful-error-extra-color: #b31b56;
+}
+
+/* glitch effect */
+@keyframes cyberGlitch {
+  0% {
+    transform: translate(0);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  10% {
+    transform: translate(-2px, 2px);
+    clip-path: polygon(0 20%, 100% 0, 80% 100%, 20% 80%);
+  }
+  20% {
+    transform: translate(2px, -2px);
+    clip-path: polygon(0 0, 80% 20%, 100% 80%, 0 100%);
+  }
+  30% {
+    transform: skew(5deg);
+    clip-path: polygon(20% 0, 100% 20%, 80% 100%, 0 80%);
+  }
+  100% {
+    transform: translate(0);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+@keyframes textGlitch {
+  0% {
+    text-shadow: 0.05em 0 0 #36f6ff, -0.05em -0.025em 0 #fc1ff7;
+  }
+  14% {
+    text-shadow: 0.05em 0 0 #36f6ff, -0.05em -0.025em 0 #fc1ff7;
+  }
+  15% {
+    text-shadow: -0.05em -0.025em 0 #36f6ff, 0.025em 0.05em 0 #fc1ff7;
+  }
+  49% {
+    text-shadow: -0.05em -0.025em 0 #36f6ff, 0.025em 0.05em 0 #fc1ff7;
+  }
+  50% {
+    text-shadow: 0.025em 0.05em 0 #36f6ff, 0.05em 0 0 #fc1ff7;
+  }
+  99% {
+    text-shadow: 0.025em 0.05em 0 #36f6ff, 0.05em 0 0 #fc1ff7;
+  }
+  100% {
+    text-shadow: -0.05em 0 0 #36f6ff, -0.025em -0.05em 0 #fc1ff7;
+  }
+}
+
+@keyframes neonPulse {
+  0% {
+    filter: drop-shadow(0 0 2px #36f6ff) drop-shadow(0 0 5px #36f6ff);
+  }
+  50% {
+    filter: drop-shadow(0 0 5px #fc1ff7) drop-shadow(0 0 10px #fc1ff7);
+  }
+  100% {
+    filter: drop-shadow(0 0 2px #36f6ff) drop-shadow(0 0 5px #36f6ff);
+  }
+}
+
+@keyframes caretBlink {
+  0% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  40% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scaleY(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: scaleY(1.2);
+  }
+  70% {
+    opacity: 0.8;
+    transform: scaleY(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes holographicShift {
+  0% {
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  25% {
+    filter: hue-rotate(90deg) brightness(1.2);
+  }
+  50% {
+    filter: hue-rotate(180deg) brightness(1);
+  }
+  75% {
+    filter: hue-rotate(270deg) brightness(1.2);
+  }
+  100% {
+    filter: hue-rotate(360deg) brightness(1);
+  }
+}
+
+@keyframes scanLine {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Body W static overlay */
+body {
+  overflow: hidden; /* chk if it wll cz anything */
+  background-color: var(--bg-color);
+  background-image: linear-gradient(
+      rgba(10, 14, 23, 0.92),
+      rgba(10, 14, 23, 0.92)
+    ),
+    repeating-linear-gradient(
+      transparent,
+      transparent 2px,
+      rgba(54, 246, 255, 0.03) 2px,
+      rgba(54, 246, 255, 0.03) 4px
+    );
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+      transparent,
+      rgba(54, 246, 255, 0.15),
+      transparent
+    ),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+  z-index: 1000;
+  pointer-events: none;
+  animation: scanLine 10s linear infinite, flicker 0.2s infinite;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+      circle at center,
+      transparent 0%,
+      rgba(10, 14, 23, 0.4) 90%,
+      rgba(10, 14, 23, 0.6) 100%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 5px,
+      rgba(54, 246, 255, 0.05) 6px
+    );
+  pointer-events: none;
+  animation: flicker 0.1s infinite;
+}
+
+/* logo */
+header #logo .text {
+  top: 5px;
+  font-family: "Courier New", monospace;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: cyberGlitch 1.5s infinite alternate,
+    textGlitch 5s infinite alternate;
+}
+header.focus #logo .text {
+  animation: textGlitch 5s infinite alternate;
+}
+
+header #logo .icon {
+  animation: neonPulse 4s infinite, holographicShift 8s infinite;
+  transition: transform 0.3s cubic-bezier(0.5, 0, 0.5, 1.5);
+}
+
+header #logo:hover .icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Custom Caret */
+#caret {
+  background-image: linear-gradient(to bottom, #36f6ff, #fc1ff7) !important;
+  animation: caretBlink 0.8s infinite steps(4), cyberGlitch 2s infinite;
+  box-shadow: 0 0 8px #36f6ff, 0 0 12px #fc1ff7,
+    0 0 20px rgba(54, 246, 255, 0.5) !important;
+  width: 4px !important;
+}
+
+/* Words */
+#words .word {
+  transition: all 0.2s ease;
+}
+
+#words .word::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--main-color);
+  opacity: 0.3;
+  transform: translate(2px, -2px);
+  z-index: -1;
+  animation: cyberGlitch 0.5s infinite !important;
+}
+
+#words .correct {
+  text-shadow: 0 0 3px var(--main-color);
+}
+
+#words .incorrect {
+  text-shadow: 0 0 5px var(--error-color);
+  animation: cyberGlitch 1.5s infinite alternate !important;
+}
+
+#words .incorrect.extra {
+  opacity: 0.8;
+  transform: skew(-10deg);
+}
+
+/* Nav */
+nav > .textButton {
+  background: linear-gradient(135deg, #101a25, #1a2a40);
+  border: 1px solid #36f6ff33;
+  box-shadow: 0 0 5px #36f6ff33;
+  border-radius: 2px !important;
+  color: var(--text-color);
+  font-family: "Courier New", monospace;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+nav > .textButton::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(54, 246, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+nav > .textButton:hover {
+  background: linear-gradient(135deg, #1a2a40, #101a25);
+  border-color: var(--main-color);
+  box-shadow: 0 0 10px var(--main-color);
+  transform: translateY(-2px);
+}
+
+nav > .textButton:hover::before {
+  animation: shine 1s forwards;
+  opacity: 1;
+}
+
+/* CRT Mode */
+body.crtmode {
+  --crt-main-color-glow: rgba(54, 246, 255, 0.4);
+  --crt-sub-color-glow: rgba(125, 75, 254, 0.4);
+}
+
+body.crtmode::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    rgba(10, 14, 23, 0),
+    rgba(10, 14, 23, 0),
+    rgba(54, 246, 255, 0.03),
+    rgba(10, 14, 23, 0)
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 1001;
+}
+
+body.crtmode #caret {
+  box-shadow: 0 0 10px var(--main-color), 0 0 20px var(--caret-color) !important;
+  filter: brightness(1.2) !important;
+}
+
+/* Page */
+.page {
+  background-image: linear-gradient(
+      rgba(10, 14, 23, 0.92),
+      rgba(10, 14, 23, 0.92)
+    ),
+    url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 L90 10 L90 90 L10 90 Z' fill='none' stroke='%2336f6ff10' stroke-width='0.5'/%3E%3Cpath d='M30 10 L30 90 M50 10 L50 90 M70 10 L70 90 M10 30 L90 30 M10 50 L90 50 M10 70 L90 70' stroke='%2336f6ff08' stroke-width='0.5'/%3E%3Ccircle cx='10' cy='10' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='30' cy='10' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='50' cy='10' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='70' cy='10' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='90' cy='10' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='10' cy='30' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='30' cy='30' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='50' cy='30' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='70' cy='30' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='10' cy='50' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='30' cy='50' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='50' cy='50' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='70' cy='50' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='90' cy='50' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='10' cy='70' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='30' cy='70' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='50' cy='70' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='70' cy='70' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='90' cy='70' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='10' cy='90' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='50' cy='90' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='70' cy='90' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='90' cy='90' r='2' fill='%237d4bfe20'/%3E%3C/svg%3E") !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sub-alt-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--main-color), var(--sub-color));
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, var(--caret-color), var(--main-color));
+}
+
+/* Focus Mode */
+header.focus #logo .text {
+  letter-spacing: 4px;
+  filter: brightness(1.2);
+}
+
+/* Config */
+.config .title {
+  font-family: "Courier New", monospace;
+  letter-spacing: 1px;
+  color: var(--main-color);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  text-shadow: 0 0 5px var(--main-color);
+}
+
+.config .toggleButton {
+  border: 1px solid var(--main-color);
+  box-shadow: 0 0 5px var(--main-color);
+  transition: all 0.3s ease;
+}
+
+.config .toggleButton:hover {
+  border-color: var(--caret-color);
+  box-shadow: 0 0 10px var(--caret-color);
+}
+
+#testConfig .textButton {
+  background: linear-gradient(135deg, #101a25, #1a2a40);
+  border: 1px solid var(--main-color);
+  box-shadow: 0 0 5px var(--main-color);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+#testConfig .textButton:hover {
+  background: linear-gradient(135deg, #1a2a40, #101a25);
+  border-color: var(--caret-color);
+  box-shadow: 0 0 10px var(--caret-color);
+  transform: translateY(-2px);
+}
+
+#testConfig .textButton::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(54, 246, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+#testConfig .textButton:hover::before {
+  animation: shine 1s forwards;
+  opacity: 1;
+}
+/*.pageTest #testModesNotice {
+      background: rgba(16, 26, 37, 0.8);
+      border: 1px solid var(--main-color);
+      box-shadow: 0 0 10px var(--main-color);
+      padding: 0.5rem;
+    }*/
+
+.pageTest #testModesNotice .textButton {
+  background: linear-gradient(135deg, #101a25, #1a2a40);
+  /*border: 1px solid var(--main-color);*/
+  box-shadow: 0 0 5px var(--main-color);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.pageTest #testModesNotice .textButton:hover {
+  background: linear-gradient(135deg, #1a2a40, #101a25);
+  border-color: var(--caret-color);
+  box-shadow: 0 0 10px var(--caret-color);
+  transform: translateY(-2px);
+}
+
+.pageTest #testModesNotice .textButton::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(54, 246, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+.pageTest #testModesNotice .textButton:hover::before {
+  animation: shine 1s forwards;
+  opacity: 1;
+}
+.pageTest .outOfFocusWarning {
+  height: auto;
+  color: var(--error-color) !important;
+  background: transparent;
+  /*border: 1px solid var(--error-color);*/
+  box-shadow: 0 0 10px var(--error-color);
+  padding: 1rem;
+  animation: cyberGlitch 1.5s infinite alternate;
+}
+#restartTestButton {
+  box-shadow: 0 0 10px var(--main-color);
+}
+main.focus #restartTestButton {
+  box-shadow: none;
+}
+
+/* Footer */
+footer {
+  padding: 10px;
+  border-top: 1px solid var(--main-color);
+  box-shadow: 0 0 10px var(--main-color);
+  transition: border-top 0.3s ease, box-shadow 0.3s ease;
+}
+footer.focus {
+  box-shadow: none;
+  border-top: none;
+}
+
+footer a {
+  position: relative;
+  overflow: hidden;
+}
+
+footer a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--main-color),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: all 0.5s ease;
+}
+
+footer a:hover::after {
+  transform: translateX(0);
+}
+
+footer a:hover {
+  color: var(--main-color);
+  text-shadow: 0 0 5px var(--main-color);
+}
+
+/* Result */
+#result {
+  padding-top: 1rem;
+  margin: 0 50px 0;
+  border: 2px solid var(--main-color);
+  background: rgba(16, 26, 37, 0.8);
+  box-shadow: 0 0 15px var(--main-color), inset 0 0 5px var(--main-color);
+}
+
+#result .title {
+  color: var(--main-color);
+  font-family: "Courier New", monospace;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: cyberGlitch 1.5s infinite alternate;
+}
+
+#result .stats {
+  border-top: 1px solid var(--main-color);
+  border-bottom: 1px solid var(--main-color);
+  gap: 0 !important;
+}
+
+#result .stats .group .title {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+#result .stats .group .bottom {
+  font-weight: bold;
+  text-shadow: 0 0 5px var(--main-color);
+}
+
+#result .chart .title {
+  text-shadow: 0 0 3px var(--sub-color);
+  animation: textGlitch 3s infinite alternate;
+}
+#result .chart canvas {
+  filter: drop-shadow(0 0 5px var(--main-color));
+  animation: holographicShift 10s infinite;
+}
+
+/* Command Line */
+#commandLine {
+  background: rgba(10, 14, 23, 0.9);
+  border: 1px solid var(--main-color);
+  box-shadow: 0 0 15px var(--main-color);
+}
+
+#commandLine input {
+  color: var(--main-color);
+  font-family: "Courier New", monospace;
+  letter-spacing: 1px;
+}
+
+#commandLine .suggestions {
+  background: rgba(10, 14, 23, 0.95);
+  border: 1px solid var(--main-color);
+}
+
+#commandLine .suggestions .entry.active {
+  background: rgba(54, 246, 255, 0.2);
+}
+
+/* Theme Selector */
+footer .leftright .right .current-theme {
+  border: 1px solid rgba(54, 246, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+footer .leftright .right .current-theme:hover {
+  border-color: var(--main-color);
+  box-shadow: 0 0 10px var(--main-color);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  body::before {
+    height: 50px;
+  }
+
+  nav > .textButton {
+    font-size: 0.8rem;
+  }
+
+  header #logo .text {
+    font-size: 1.2rem;
+  }
+}
+
+/* Settings */
+.pageSettings .section .groupTitle {
+  color: var(--main-color) !important;
+  text-shadow: 0 0 5px var(--main-color);
+  font-family: "Courier New", monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  animation: textGlitch 5s infinite alternate;
+}
+.pageSettings .section .buttons .button {
+  background: linear-gradient(135deg, #101a25, #1a2a40);
+  border: 1px solid rgba(54, 246, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.pageSettings .section .buttons .button:hover {
+  background: linear-gradient(135deg, #1a2a40, #101a25);
+  border-color: var(--main-color);
+  box-shadow: 0 0 10px var(--main-color);
+}
+
+.pageSettings .section .buttons .button.active {
+  /*background: linear-gradient(135deg, #1a2a40, #101a25);
+      border: 1px solid var(--main-color);
+      box-shadow: 0 0 10px var(--main-color);*/
+  animation: cyberGlitch 1.5s infinite alternate;
+  border: 2px solid var(--caret-color) !important;
+}
+/* for account settings */
+.pageAccountSettings .main .tabs {
+  box-shadow: 0 0 5px var(--sub-alt-color);
+}
+
+/* Footer Version */
+footer .version {
+  color: var(--sub-color);
+  font-family: "Courier New", monospace;
+  letter-spacing: 1px;
+  font-size: 0.7rem;
+}
+
+/* Keys */
+/*.key {
+      background: linear-gradient(135deg, #101a25, #1a2a40);
+      border: 1px solid rgba(54, 246, 255, 0.3);
+      box-shadow: 0 0 5px rgba(54, 246, 255, 0.3);
+      color: var(--text-color);
+      transition: all 0.3s ease;
+    }
+    
+    .key:hover {
+      transform: translateY(-2px);
+      border-color: var(--main-color);
+      box-shadow: 0 0 10px var(--main-color);
+    }*/
+
+/* progress bar */
+#barTimerProgress.timerMain .bar {
+  background: var(--sub-color);
+}
+
+/* profile page */
+#pageProfile {
+  animation: holographicShift 10s infinite;
+}
+
+/* Panel W neon glow */
+#pageProfile .details,
+#pageProfile .pbsWords,
+#pageProfile .pbsTime,
+#pageProfile .leaderboardsPositions {
+  background: var(--sub-alt-color);
+  box-shadow: 0 0 10px var(--main-color), inset 0 0 5px var(--main-color);
+  border: 1px solid var(--main-color);
+  animation: neonPulse 4s infinite;
+}
+
+#pageProfile .leaderboardsPositions .pos {
+  color: var(--caret-color) !important;
+  text-shadow: 0 0 5px var(--caret-color);
+  animation: cyberGlitch 1.5s infinite alternate;
+}
+
+#pageProfile .leaderboardsPositions .group {
+  background: rgba(16, 26, 37, 0.8);
+  border: 1px solid var(--main-color);
+  box-shadow: 0 0 5px var(--main-color);
+  border-radius: var(--roundness);
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+#pageProfile .leaderboardsPositions .group:hover {
+  box-shadow: 0 0 10px var(--caret-color);
+  animation: cyberGlitch 1.5s infinite alternate;
+}
+
+#pageProfile .leaderboardsPositions .topPercentage {
+  animation: fadeIn 1s ease-in;
+}
+
+/* Specific element styling */
+#pageProfile .name {
+  color: var(--main-color) !important;
+  font-size: 24px;
+  font-weight: bold;
+  text-shadow: 0 0 5px var(--main-color);
+  animation: textGlitch 5s infinite alternate;
+}
+
+#pageProfile .value {
+  color: var(--sub-color) !important;
+  font-size: 1.5rem;
+}
+
+#pageProfile .level {
+  color: var(--caret-color) !important;
+  text-shadow: 0 0 5px var(--caret-color);
+  animation: cyberGlitch 1.5s infinite alternate;
+}
+
+#pageProfile .xpBar .bar {
+  background: var(--caret-color) !important;
+  box-shadow: 0 0 5px var(--caret-color);
+  animation: neonPulse 2s infinite;
+}
+
+#pageProfile .title {
+  color: var(--sub-color) !important;
+  text-shadow: 0 0 3px var(--sub-color);
+  animation: textGlitch 3s infinite alternate;
+}
+
+#pageProfile .avatars .placeholderAvatar {
+  color: var(--sub-color) !important;
+  text-shadow: 0 0 5px var(--sub-color);
+  animation: cyberGlitch 2s infinite;
+}
+
+#pageProfile .buttonGroup button:hover {
+  background: var(--main-color) !important;
+  color: var(--bg-color) !important;
+  text-shadow: none;
+  transform: scale(1.1);
+}
+
+/* Ensure preloader and error match theme */
+#pageProfile .preloader {
+  animation: spin 1s infinite linear;
+}
+
+#pageProfile .error {
+  border: 1px solid var(--error-color);
+  box-shadow: 0 0 10px var(--error-color);
+}
+
+#resultWordsHistory .word letter.correct {
+  text-shadow: 0 0 3px var(--main-color);
+  animation: neonPulse 4s infinite;
+}
+#resultWordsHistory .word letter.incorrect {
+  animation: cyberGlitch 1.5s infinite alternate;
+}
+
+/*login*/
+.pageLogin {
+  background: var(--bg-color);
+  /*animation: holographicShift 10s infinite;*/
+}
+.pageLogin .preloader {
+  animation: spin 1s infinite linear, neonPulse 4s infinite;
+  text-shadow: 0 0 5px var(--main-color);
+}
+
+.pageLogin .side .title {
+  color: var(--main-color) !important;
+  text-shadow: 0 0 5px var(--main-color) !important;
+  animation: textGlitch 5s infinite alternate;
+}
+
+.pageLogin .side input[type="email"],
+.pageLogin .side input[type="password"],
+.pageLogin .side input[type="text"] {
+  background: var(--sub-alt-color);
+  border: 1px solid var(--main-color);
+  color: var(--text-color);
+  box-shadow: 0 0 5px var(--main-color);
+  transition: all 0.3s ease;
+}
+
+.pageLogin .side input[type="email"]:hover,
+.pageLogin .side input[type="password"]:hover,
+.pageLogin .side input[type="text"]:hover {
+  border-color: var(--caret-color);
+  box-shadow: 0 0 10px var(--caret-color);
+}
+
+.pageLogin .side .button {
+  background: linear-gradient(135deg, #101a25, #1a2a40);
+  border: 1px solid var(--main-color);
+  box-shadow: 0 0 5px var(--main-color);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+.pageLogin .side .button:hover {
+  background: linear-gradient(135deg, #1a2a40, #101a25);
+  border-color: var(--caret-color);
+  box-shadow: 0 0 10px var(--caret-color);
+  transform: translateY(-2px);
+}
+
+/*Sec*/
+/* notification (won't change it too much tho just to match my theme) */
+#notificationCenter .notif {
+  box-shadow: 0 0 8px var(--notif-border-color),
+    inset 0 0 4px var(--notif-border-color);
+  transition: all 0.3s ease;
+  position: relative;
+}
+.pageAccount .accountVerificatinNotice {
+  box-shadow: 0 0 5px var(--sub-alt-color);
+  animation: neonPulse 4s infinite;
+}
+
+#notificationCenter .notif:hover {
+  box-shadow: 0 0 12px var(--notif-border-color);
+  transform: translateY(-1px);
+}
+
+/* Icon */
+#notificationCenter .notif .icon {
+  text-shadow: 0 0 3px var(--notif-border-color);
+  animation: neonPulse 3s infinite;
+}
+
+#notificationCenter .notif .message {
+  font-family: "Courier New", monospace;
+}
+
+/* Title with glitch effect */
+#notificationCenter .notif .message .title {
+  text-shadow: 0 0 3px var(--notif-border-color);
+  animation: textGlitch 4s infinite alternate;
+}
+
+/* "Clear All" Button with enhancement */
+#notificationCenter .clearAll.button {
+  border: 1px solid var(--main-color);
+  box-shadow: 0 0 4px var(--main-color);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+#notificationCenter .clearAll.button:hover {
+  box-shadow: 0 0 8px var(--caret-color);
+  transform: translateY(-1px);
+}

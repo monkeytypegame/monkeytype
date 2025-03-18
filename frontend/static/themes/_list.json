@@ -1265,5 +1265,12 @@
     "mainColor": "#41ce5c",
     "subColor": "#788386",
     "textColor": "#ccdae6"
+  },
+  {
+    "name": "cyberpunk",
+    "bgColor": "#0a0e17",
+    "mainColor": "#36f6ff",
+    "subColor": "#7d4bfe",
+    "textColor": "#e0fdff"
   }
 ]
