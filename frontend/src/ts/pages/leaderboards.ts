@@ -87,7 +87,7 @@ type State = {
   error?: string;
   discordAvatarUrls: Map<string, string>;
   scrollToUserAfterFill: boolean;
-  navigateToUser: boolean;
+  goToUserPage: boolean;
 } & (AllTimeState | WeeklyState | DailyState);
 
 const state = {
@@ -102,7 +102,7 @@ const state = {
   title: "All-time English Time 15 Leaderboard",
   discordAvatarUrls: new Map<string, string>(),
   scrollToUserAfterFill: false,
-  navigateToUser: false,
+  goToUserPage: false,
 } as State;
 
 const SelectorSchema = z.object({
@@ -114,7 +114,7 @@ const SelectorSchema = z.object({
 });
 const UrlParameterSchema = SelectorSchema.extend({
   page: z.number(),
-  navigateToUser: z.boolean(),
+  goToUserPage: z.boolean(),
 }).partial();
 type UrlParameter = z.infer<typeof UrlParameterSchema>;
 
@@ -303,7 +303,7 @@ async function requestData(update = false): Promise<void> {
     requests.rank = undefined;
   }
 
-  if (state.navigateToUser && requests.rank !== undefined) {
+  if (state.goToUserPage && requests.rank !== undefined) {
     const rankResponse = await requests.rank();
     if (
       rankResponse !== undefined &&
@@ -316,7 +316,7 @@ async function requestData(update = false): Promise<void> {
     }
     requests.rank = undefined;
   }
-  state.navigateToUser = false;
+  state.goToUserPage = false;
 
   const [dataResponse, rankResponse] = await Promise.all([
     requests.data(),
@@ -1115,7 +1115,7 @@ function handleYesterdayLastWeekButton(action: string): void {
 }
 
 function updateGetParameters(): void {
-  if (state.navigateToUser) {
+  if (state.goToUserPage) {
     //parameters are updated in the requestData method
     return;
   }
@@ -1201,8 +1201,8 @@ function readGetParameters(): void {
       state.page = 0;
     }
   }
-  if (params.navigateToUser) {
-    state.navigateToUser = true;
+  if (params.goToUserPage) {
+    state.goToUserPage = true;
   }
 }
 
