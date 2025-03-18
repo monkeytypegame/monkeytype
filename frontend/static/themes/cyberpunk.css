@@ -348,15 +348,6 @@ body.crtmode #caret {
   filter: brightness(1.2) !important;
 }
 
-/* Page */
-.page {
-  background-image: linear-gradient(
-      rgba(10, 14, 23, 0.92),
-      rgba(10, 14, 23, 0.92)
-    ),
-    url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 L90 10 L90 90 L10 90 Z' fill='none' stroke='%2336f6ff10' stroke-width='0.5'/%3E%3Cpath d='M30 10 L30 90 M50 10 L50 90 M70 10 L70 90 M10 30 L90 30 M10 50 L90 50 M10 70 L90 70' stroke='%2336f6ff08' stroke-width='0.5'/%3E%3Ccircle cx='10' cy='10' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='30' cy='10' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='50' cy='10' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='70' cy='10' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='90' cy='10' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='10' cy='30' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='30' cy='30' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='50' cy='30' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='70' cy='30' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='10' cy='50' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='30' cy='50' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='50' cy='50' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='70' cy='50' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='90' cy='50' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='10' cy='70' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='30' cy='70' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='50' cy='70' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='70' cy='70' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='90' cy='70' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='10' cy='90' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='50' cy='90' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='70' cy='90' r='2' fill='%237d4bfe20'/%3E%3Ccircle cx='90' cy='90' r='2' fill='%237d4bfe20'/%3E%3C/svg%3E") !important;
-}
-
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -441,11 +432,11 @@ header.focus #logo .text {
   opacity: 1;
 }
 /*.pageTest #testModesNotice {
-      background: rgba(16, 26, 37, 0.8);
-      border: 1px solid var(--main-color);
-      box-shadow: 0 0 10px var(--main-color);
-      padding: 0.5rem;
-    }*/
+    background: rgba(16, 26, 37, 0.8);
+    border: 1px solid var(--main-color);
+    box-shadow: 0 0 10px var(--main-color);
+    padding: 0.5rem;
+  }*/
 
 .pageTest #testModesNotice .textButton {
   background: linear-gradient(135deg, #101a25, #1a2a40);
@@ -658,8 +649,8 @@ footer .leftright .right .current-theme:hover {
 
 .pageSettings .section .buttons .button.active {
   /*background: linear-gradient(135deg, #1a2a40, #101a25);
-      border: 1px solid var(--main-color);
-      box-shadow: 0 0 10px var(--main-color);*/
+    border: 1px solid var(--main-color);
+    box-shadow: 0 0 10px var(--main-color);*/
   animation: cyberGlitch 1.5s infinite alternate;
   border: 2px solid var(--caret-color) !important;
 }
@@ -678,18 +669,18 @@ footer .version {
 
 /* Keys */
 /*.key {
-      background: linear-gradient(135deg, #101a25, #1a2a40);
-      border: 1px solid rgba(54, 246, 255, 0.3);
-      box-shadow: 0 0 5px rgba(54, 246, 255, 0.3);
-      color: var(--text-color);
-      transition: all 0.3s ease;
-    }
-    
-    .key:hover {
-      transform: translateY(-2px);
-      border-color: var(--main-color);
-      box-shadow: 0 0 10px var(--main-color);
-    }*/
+    background: linear-gradient(135deg, #101a25, #1a2a40);
+    border: 1px solid rgba(54, 246, 255, 0.3);
+    box-shadow: 0 0 5px rgba(54, 246, 255, 0.3);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+  }
+  
+  .key:hover {
+    transform: translateY(-2px);
+    border-color: var(--main-color);
+    box-shadow: 0 0 10px var(--main-color);
+  }*/
 
 /* progress bar */
 #barTimerProgress.timerMain .bar {
