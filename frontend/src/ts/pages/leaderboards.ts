@@ -258,45 +258,33 @@ async function requestData(update = false): Promise<void> {
   });
 
   let requests;
-
-  switch (state.type) {
-    case "allTime": {
-      requests = defineRequests(
-        Ape.leaderboards.get,
-        Ape.leaderboards.getRank,
-        {
-          language: "english",
-          mode: "time",
-          mode2: state.mode2,
-        }
-      );
-      break;
-    }
-    case "daily": {
-      requests = defineRequests(
-        Ape.leaderboards.getDaily,
-        Ape.leaderboards.getDailyRank,
-        {
-          language: state.language,
-          mode: "time",
-          mode2: state.mode2,
-          daysBefore: state.yesterday ? 1 : undefined,
-        }
-      );
-      break;
-    }
-    case "weekly": {
-      requests = defineRequests(
-        Ape.leaderboards.getWeeklyXp,
-        Ape.leaderboards.getWeeklyXpRank,
-        {
-          weeksBefore: state.lastWeek ? 1 : undefined,
-        }
-      );
-      break;
-    }
-    default:
-      throw new Error("unknown state type");
+  if (state.type === "allTime") {
+    requests = defineRequests(Ape.leaderboards.get, Ape.leaderboards.getRank, {
+      language: "english",
+      mode: "time",
+      mode2: state.mode2,
+    });
+  } else if (state.type === "daily") {
+    requests = defineRequests(
+      Ape.leaderboards.getDaily,
+      Ape.leaderboards.getDailyRank,
+      {
+        language: state.language,
+        mode: "time",
+        mode2: state.mode2,
+        daysBefore: state.yesterday ? 1 : undefined,
+      }
+    );
+  } else if (state.type === "weekly") {
+    requests = defineRequests(
+      Ape.leaderboards.getWeeklyXp,
+      Ape.leaderboards.getWeeklyXpRank,
+      {
+        weeksBefore: state.lastWeek ? 1 : undefined,
+      }
+    );
+  } else {
+    throw new Error("unknown state type");
   }
 
   if (!isAuthenticated() || state.userData !== null) {
