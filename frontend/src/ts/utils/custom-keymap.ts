@@ -1,9 +1,10 @@
 import {
-  Config,
   KeyProperties,
   KeymapCustom,
+  Layout,
 } from "@monkeytype/contracts/schemas/configs";
 import { dataKeys as keyToDataObject } from "../constants/data-keys";
+import { sanitizeString } from "@monkeytype/util/strings";
 
 function keyToData(key: string): string {
   return (key && keyToDataObject[key]) ?? "";
@@ -17,8 +18,10 @@ function isKeyProperties(
 
 export function stringToKeymap(keymap: string): KeymapCustom {
   try {
-    let processedKeymap = keymap.replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":');
-    processedKeymap = processedKeymap.replace(/"'"/g, '"&apos;"');
+    const processedKeymap = sanitizeString(keymap).replace(
+      /([{,])\s*(\w+)\s*:/g,
+      '$1"$2":'
+    );
     const jsonKeymap: KeymapCustom = JSON.parse(
       processedKeymap
     ) as KeymapCustom;
@@ -46,7 +49,7 @@ export function keymapToString(keymap: KeymapCustom): string {
 
 export function getCustomKeymapSyle(
   keymapStyle: KeymapCustom,
-  config: Config
+  layout: Layout
 ): string {
   const keymapCopy = [...keymapStyle];
 
@@ -58,7 +61,9 @@ export function getCustomKeymapSyle(
           let size = "",
             keyHtml: string = "",
             keyString: string =
-              typeof element === "string" ? element.toString() : "";
+              typeof element === "string"
+                ? sanitizeString(element.toString())
+                : "";
           if (isKeyProperties(element)) {
             if (element.x && "x" in element) {
               keyHtml += `<div class="keymapKey invisible"></div>`;
@@ -79,7 +84,7 @@ export function getCustomKeymapSyle(
           if (keyString === "spc") {
             keyHtml = `
         <div class="keymapKey${size} keySpace layoutIndicator">
-          <span class="letter">${config.layout}</span>
+          <span class="letter">${sanitizeString(layout)}</span>
         </div>`;
           }
           return keyHtml;

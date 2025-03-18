@@ -10,7 +10,7 @@ import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
 import * as TestWords from "../test/test-words";
 import { getCustomKeymapSyle } from "../utils/custom-keymap";
-import { KeymapCustom } from "@monkeytype/contracts/schemas/configs";
+import { KeymapCustom, Layout } from "@monkeytype/contracts/schemas/configs";
 
 const stenoKeys: JSONData.Layout = {
   keymapShowTopRow: true,
@@ -385,8 +385,11 @@ export async function refresh(
     // );
 
     if (Config.keymapStyle === "custom") {
-      const customKeymap: KeymapCustom = Config.keymapCustom;
-      keymapElement = getCustomKeymapSyle(customKeymap, Config);
+      const {
+        keymapCustom,
+        layout,
+      }: { keymapCustom: KeymapCustom; layout: Layout } = Config;
+      keymapElement = getCustomKeymapSyle(keymapCustom, layout);
     }
     $("#keymap").html(keymapElement);
 
