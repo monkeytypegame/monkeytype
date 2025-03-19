@@ -1,5 +1,6 @@
 import { roundTo2 } from "@monkeytype/util/numbers";
-
+import { Day } from "date-fns";
+import * as Locales from "date-fns/locale";
 /**
  * Converts seconds to a human-readable string representation of time.
  * @param sec The number of seconds to convert.
@@ -104,3 +105,61 @@ export function secondsToString(
   }
   return ret.trim();
 }
+
+let cachedFirstDayOfTheWeek: Day | undefined;
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
+export function getFirstDayOfTheWeek(): Day {
+  if (cachedFirstDayOfTheWeek !== undefined) {
+    return cachedFirstDayOfTheWeek;
+  }
+  let locale: unknown | undefined;
+
+  try {
+    locale = new Intl.Locale(navigator.language);
+  } catch (e) {
+    try {
+      //retry with language only
+      const language: undefined | string = navigator.language.split("-")[0];
+      if (language !== undefined) {
+        locale = new Intl.Locale(language);
+      }
+    } catch (e) {
+      //ignore
+    }
+  }
+
+  if (locale === undefined || locale === null) {
+    return 0; //sunday
+  }
+
+  //modern browsers support `weekInfo` or `getWeekInfo()`
+  // @ts-ignore
+  if (locale["weekInfo"] !== undefined) {
+    // @ts-ignore
+    return (locale.weekInfo.firstDay as number) % 7;
+  }
+  // @ts-ignore:
+  if (locale["getWeekInfo"] !== undefined) {
+    // @ts-ignore
+    return (locale.getWeekInfo().firstDay as number) % 7;
+  }
+
+  //use date-fns for browsers like firefox
+  // @ts-ignore
+  let dateFnsLocale = Locales[
+    navigator.language.replaceAll("-", "")
+  ] as Locales.Locale;
+
+  if (dateFnsLocale === undefined || dateFnsLocale === null) {
+    //retry with language only
+    // @ts-ignore
+    dateFnsLocale = Locales[navigator.language.split("-")[0]] as Locales.Locale;
+  }
+
+  if (dateFnsLocale !== undefined && dateFnsLocale !== null) {
+    return ((dateFnsLocale.options?.weekStartsOn ?? 0) % 7) as Day;
+  }
+
+  return 0; //start on sunday
+}
+/* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */

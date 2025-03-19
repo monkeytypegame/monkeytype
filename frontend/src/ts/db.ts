@@ -29,6 +29,7 @@ import {
 } from "./constants/default-snapshot";
 import { getDefaultConfig } from "./constants/default-config";
 import { FunboxMetadata } from "../../../packages/funbox/src/types";
+import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 
 let dbSnapshot: Snapshot | undefined;
 
@@ -163,7 +164,8 @@ export async function initSnapshot(): Promise<Snapshot | number | boolean> {
     if (userData.testActivity !== undefined) {
       snap.testActivity = new ModifiableTestActivityCalendar(
         userData.testActivity.testsByDays,
-        new Date(userData.testActivity.lastDay)
+        new Date(userData.testActivity.lastDay),
+        getFirstDayOfTheWeek()
       );
     }
 
@@ -1055,6 +1057,7 @@ export async function getTestActivityCalendar(
       dbSnapshot.testActivityByYear[year] = new TestActivityCalendar(
         testsByDays,
         lastDay,
+        getFirstDayOfTheWeek(),
         true
       );
     }
