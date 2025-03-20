@@ -55,6 +55,10 @@
     "languages": ["arabic", "arabic_10k"]
   },
   {
+    "name": "arabic_egypt",
+    "languages": ["arabic_egypt", "arabic_egypt_1k"]
+  },
+  {
     "name": "italian",
     "languages": [
       "italian",
@@ -180,7 +184,6 @@
       "greeklish_25k"
     ]
   },
-
   {
     "name": "turkish",
     "languages": ["turkish", "turkish_1k", "turkish_5k"]
