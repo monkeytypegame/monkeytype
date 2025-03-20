@@ -1,5 +1,8 @@
+import { KeymapCustom } from "@monkeytype/contracts/schemas/configs";
 import * as UpdateConfig from "../../config";
 import { Command, CommandsSubgroup } from "../types";
+import { stringToKeymap } from "../../utils/custom-keymap";
+import * as TestLogic from "../../test/test-logic";
 
 const subgroup: CommandsSubgroup = {
   title: "Keymap style...",
@@ -59,6 +62,19 @@ const subgroup: CommandsSubgroup = {
       configValue: "steno_matrix",
       exec: (): void => {
         UpdateConfig.setKeymapStyle("steno_matrix");
+      },
+    },
+    {
+      id: "setKeymapStyleCustom",
+      display: "custom...",
+      configValue: "custom",
+      input: true,
+      exec: ({ input }): void => {
+        if (input === undefined || input === "") return;
+        const keymap: KeymapCustom = stringToKeymap(input);
+        UpdateConfig.setKeymapCustom(keymap);
+        UpdateConfig.setKeymapStyle("custom");
+        TestLogic.restart();
       },
     },
   ],
