@@ -522,10 +522,6 @@
     font-size: var(--font-size);
   }
 
-  .days {
-    display: none;
-  }
-
   .daysFull {
     margin-right: 2rem;
   }
@@ -549,6 +545,10 @@
       // height: 0px;
       font-size: var(--font-size);
     }
+  }
+
+  .days {
+    display: none;
   }
 
   .nodata {
