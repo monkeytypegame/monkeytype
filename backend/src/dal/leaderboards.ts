@@ -77,8 +77,10 @@ export async function getCount(
 ): Promise<number> {
   const key = `${language}_${mode}_${mode2}`;
   if (cachedCounts.has(key)) {
+    console.log("lb", key, "returning cached count");
     return cachedCounts.get(key) as number;
   } else {
+    console.log("lb", key, "getting fresh count");
     const count = await getCollection({
       language,
       mode,
@@ -221,6 +223,7 @@ export async function update(
   await db.collection(lbCollectionName).createIndex({ rank: 1 });
   const end2 = performance.now();
 
+  console.log("lb", `${language}_${mode}_${mode2}`, "deleting count cache");
   cachedCounts.delete(`${language}_${mode}_${mode2}`);
 
   //update speedStats
