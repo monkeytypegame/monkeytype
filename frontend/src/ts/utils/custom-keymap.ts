@@ -72,8 +72,8 @@ export function getCustomKeymapSyle(
               keyHtml += `<div class="keymapKey invisible"></div>`;
             }
             if (element.w && "w" in element) {
-              const pixels = 2 * element.w * 16;
-              size = `style= "width: ${pixels}px"`;
+              const pixels = 2 * element.w;
+              size = `style= "width: ${pixels}rem"`;
             }
             // we take the next one since is the content of the current key
             keyString = rowCopy[index + 1]?.toString() ?? "";
