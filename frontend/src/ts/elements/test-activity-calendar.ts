@@ -66,22 +66,6 @@ export class TestActivityCalendar implements TestActivityCalendar {
     return { start, end };
   }
 
-  protected isFirstDayOfWeek(date: Date): boolean {
-    return toDate(date).getDay() === this.firstDayOfWeek;
-  }
-  protected previousFirstDayOfWeek(date: Date): Date {
-    return previousDay(date, this.firstDayOfWeek);
-  }
-  protected nextFirstDayOfWeek(date: Date): Date {
-    return nextDay(date, this.firstDayOfWeek);
-  }
-  protected isLastDayOfWeek(date: Date): boolean {
-    return toDate(date).getDay() === (this.firstDayOfWeek + 6) % 7;
-  }
-  protected nextLastDayOfWeek(date: Date): Date {
-    return nextDay(date, ((this.firstDayOfWeek + 6) % 7) as Day);
-  }
-
   protected buildData(
     data: (number | null | undefined)[],
     lastDay: Date
@@ -200,6 +184,22 @@ export class TestActivityCalendar implements TestActivityCalendar {
     const sum = trimmed.reduce((a, c) => a + c, 0);
     const mid = sum / trimmed.length;
     return [Math.floor(mid / 2), Math.round(mid), Math.round(mid * 1.5)];
+  }
+
+  private isFirstDayOfWeek(date: Date): boolean {
+    return toDate(date).getDay() === this.firstDayOfWeek;
+  }
+  private previousFirstDayOfWeek(date: Date): Date {
+    return previousDay(date, this.firstDayOfWeek);
+  }
+  private nextFirstDayOfWeek(date: Date): Date {
+    return nextDay(date, this.firstDayOfWeek);
+  }
+  private isLastDayOfWeek(date: Date): boolean {
+    return toDate(date).getDay() === (this.firstDayOfWeek + 6) % 7;
+  }
+  private nextLastDayOfWeek(date: Date): Date {
+    return nextDay(date, ((this.firstDayOfWeek + 6) % 7) as Day);
   }
 }
 

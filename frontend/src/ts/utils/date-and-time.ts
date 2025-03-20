@@ -106,41 +106,25 @@ export function secondsToString(
   return ret.trim();
 }
 
-let cachedFirstDayOfTheWeek: Day | undefined;
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
 export function getFirstDayOfTheWeek(): Day {
-  if (cachedFirstDayOfTheWeek !== undefined) {
-    return cachedFirstDayOfTheWeek;
-  }
-  let locale: unknown | undefined;
-
-  try {
-    locale = new Intl.Locale(navigator.language);
-  } catch (e) {
-    try {
-      //retry with language only
-      const language: undefined | string = navigator.language.split("-")[0];
-      if (language !== undefined) {
-        locale = new Intl.Locale(language);
-      }
-    } catch (e) {
-      //ignore
-    }
+  if (navigator.language === undefined || navigator.language === null) {
+    return 0;
   }
 
+  const locale = new Intl.Locale(navigator.language);
   if (locale === undefined || locale === null) {
     return 0; //sunday
   }
 
   //modern browsers support `weekInfo` or `getWeekInfo()`
-  // @ts-ignore
-  if (locale["weekInfo"] !== undefined) {
+  if ("weekInfo" in locale) {
     // @ts-ignore
     return (locale.weekInfo.firstDay as number) % 7;
   }
-  // @ts-ignore:
-  if (locale["getWeekInfo"] !== undefined) {
+
+  if ("getWeekInfo" in locale) {
     // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return (locale.getWeekInfo().firstDay as number) % 7;
   }
 
@@ -162,4 +146,3 @@ export function getFirstDayOfTheWeek(): Day {
 
   return 0; //start on sunday
 }
-/* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
