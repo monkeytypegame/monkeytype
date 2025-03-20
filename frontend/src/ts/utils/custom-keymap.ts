@@ -1,10 +1,12 @@
 import {
   KeyProperties,
   KeymapCustom,
+  KeymapCustomSchema,
   Layout,
 } from "@monkeytype/contracts/schemas/configs";
 import { dataKeys as keyToDataObject } from "../constants/data-keys";
 import { sanitizeString } from "@monkeytype/util/strings";
+import { parseWithSchema } from "@monkeytype/util/json";
 
 function keyToData(key: string): string {
   return (key && keyToDataObject[key]) ?? "";
@@ -22,9 +24,10 @@ export function stringToKeymap(keymap: string): KeymapCustom {
       /([{,])\s*(\w+)\s*:/g,
       '$1"$2":'
     );
-    const jsonKeymap: KeymapCustom = JSON.parse(
-      processedKeymap
-    ) as KeymapCustom;
+    const jsonKeymap: KeymapCustom = parseWithSchema(
+      processedKeymap,
+      KeymapCustomSchema
+    );
     return jsonKeymap;
   } catch (error) {
     throw new Error("Wrong keymap, make sure you copy the right JSON file!");
