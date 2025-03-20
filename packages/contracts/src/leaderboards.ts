@@ -22,13 +22,13 @@ const LanguageAndModeQuerySchema = z.object({
 });
 
 const PaginationQuerySchema = z.object({
-  page: z.number().int().nonnegative().default(0),
-  pageSize: z.number().int().nonnegative().max(200).default(50),
+  page: z.number().int().safe().nonnegative().default(0),
+  pageSize: z.number().int().safe().positive().min(10).max(200).default(50),
 });
 
 const LeaderboardResponseSchema = z.object({
   count: z.number().int().nonnegative(),
-  pageSize: z.number().int().nonnegative(),
+  pageSize: z.number().int().positive(),
 });
 
 //--------------------------------------------------------------------------
