@@ -52,7 +52,11 @@
   },
   {
     "name": "arabic",
-    "languages": ["arabic", "arabic_10k", "arabic_Egy"]
+    "languages": ["arabic", "arabic_10k"]
+  },
+  {
+    "name": "arabic_egypt",
+    "languages": ["arabic_egypt", "arabic_egypt_1k"]
   },
   {
     "name": "italian",
