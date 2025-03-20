@@ -68,12 +68,25 @@ export async function get(
   }
 }
 
+const cachedCounts = new Map<string, number>();
+
 export async function getCount(
   mode: string,
   mode2: string,
   language: string
 ): Promise<number> {
-  return getCollection({ language, mode, mode2 }).estimatedDocumentCount();
+  const key = `${language}_${mode}_${mode2}`;
+  if (cachedCounts.has(key)) {
+    return cachedCounts.get(key) as number;
+  } else {
+    const count = await getCollection({
+      language,
+      mode,
+      mode2,
+    }).estimatedDocumentCount();
+    cachedCounts.set(key, count);
+    return count;
+  }
 }
 
 export async function getRank(
@@ -207,6 +220,8 @@ export async function update(
   await db.collection(lbCollectionName).createIndex({ uid: -1 });
   await db.collection(lbCollectionName).createIndex({ rank: 1 });
   const end2 = performance.now();
+
+  cachedCounts.delete(`${language}_${mode}_${mode2}`);
 
   //update speedStats
   const boundaries = [...Array(32).keys()].map((it) => it * 10);
