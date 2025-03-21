@@ -38,6 +38,9 @@ const throttledHandleState = debounce(5000, () => {
       $(
         `#bannerCenter .banner[id="${noInternetBannerId}"] .closeButton`
       ).trigger("click");
+      $(
+        `#bannerCenter .psa.notice[id="${noInternetBannerId}"] .closeButton`
+      ).trigger("click");
     }
     bannerAlreadyClosed = false;
   } else if (!TestState.isActive) {
