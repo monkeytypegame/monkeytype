@@ -18,6 +18,17 @@ function isKeyProperties(
   return typeof element === "object" && element != null;
 }
 
+function sanitizeKeymap(keymap: KeymapCustom): KeymapCustom {
+  return keymap.map((row: (KeyProperties | string)[]) => {
+    return row.map((element: KeyProperties | string) => {
+      if (typeof element === "string") {
+        return sanitizeString(element);
+      }
+      return element;
+    });
+  });
+}
+
 export function stringToKeymap(keymap: string): KeymapCustom {
   try {
     const processedKeymap = keymap.replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":');
@@ -25,7 +36,7 @@ export function stringToKeymap(keymap: string): KeymapCustom {
       processedKeymap,
       KeymapCustomSchema
     );
-    return jsonKeymap;
+    return sanitizeKeymap(jsonKeymap);
   } catch (error) {
     throw new Error("Wrong keymap, make sure you copy the right JSON file!");
   }
@@ -61,9 +72,8 @@ export function getCustomKeymapSyle(
           let size = "",
             keyHtml: string = "",
             keyString: string =
-              typeof element === "string"
-                ? sanitizeString(element.toString())
-                : "";
+              typeof element === "string" ? sanitizeString(element) : "";
+          console.log("keystriung", keyString);
           if (isKeyProperties(element)) {
             if (element.x && "x" in element) {
               keyHtml += `<div class="keymapKey invisible"></div>`;
