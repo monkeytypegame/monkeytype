@@ -1,32 +1,3 @@
-import * as DB from "../db";
-import * as ResultFilters from "../elements/account/result-filters";
-import * as ThemeColors from "../elements/theme-colors";
-import * as ChartController from "../controllers/chart-controller";
-import Config, * as UpdateConfig from "../config";
-import * as MiniResultChartModal from "../modals/mini-result-chart";
-import * as PbTables from "../elements/account/pb-tables";
-import * as LoadingPage from "./loading";
-import * as Focus from "../test/focus";
-import * as TodayTracker from "../test/today-tracker";
-import * as Notifications from "../elements/notifications";
-import Page from "./page";
-import * as DateTime from "../utils/date-and-time";
-import * as Misc from "../utils/misc";
-import * as Arrays from "../utils/arrays";
-import * as Numbers from "@monkeytype/util/numbers";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as Profile from "../elements/profile";
-import { format } from "date-fns/format";
-import * as ConnectionState from "../states/connection";
-import * as Skeleton from "../utils/skeleton";
-import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
-import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
-import { Auth } from "../firebase";
-import * as Loader from "../elements/loader";
-import * as ResultBatches from "../elements/result-batches";
-import Format from "../utils/format";
-import * as TestActivity from "../elements/test-activity";
 import { ChartData } from "@monkeytype/contracts/schemas/results";
 import {
   Difficulty,
@@ -35,9 +6,38 @@ import {
   Mode2Custom,
 } from "@monkeytype/contracts/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
-import { findLineByLeastSquares } from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
+import type { LinearScaleOptions, ScaleChartOptions } from "chart.js";
+import { format } from "date-fns/format";
+import Config, * as UpdateConfig from "../config";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
+import * as ChartController from "../controllers/chart-controller";
+import * as DB from "../db";
+import * as PbTables from "../elements/account/pb-tables";
+import * as ResultFilters from "../elements/account/result-filters";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as Profile from "../elements/profile";
+import * as ResultBatches from "../elements/result-batches";
+import * as TestActivity from "../elements/test-activity";
+import * as ThemeColors from "../elements/theme-colors";
+import { Auth } from "../firebase";
+import * as MiniResultChartModal from "../modals/mini-result-chart";
+import * as ConfigEvent from "../observables/config-event";
+import * as ActivePage from "../states/active-page";
+import * as ConnectionState from "../states/connection";
+import * as Focus from "../test/focus";
+import * as TodayTracker from "../test/today-tracker";
+import * as Arrays from "../utils/arrays";
+import * as DateTime from "../utils/date-and-time";
+import Format from "../utils/format";
+import * as Misc from "../utils/misc";
+import { findLineByLeastSquares } from "../utils/numbers";
+import * as Skeleton from "../utils/skeleton";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import * as LoadingPage from "./loading";
+import Page from "./page";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -450,18 +450,51 @@ async function fillContent(): Promise<void> {
 
         if (validTags === undefined) return;
 
-        result.tags.forEach((tag) => {
-          //check if i even need to check tags anymore
-          if (!tagHide) return;
-          //check if tag is valid
-          if (validTags?.includes(tag)) {
-            //tag valid, check if filter is on
-            if (ResultFilters.getFilter("tags", tag)) tagHide = false;
+        if (ResultFilters.getTagsFilterMode() === "or") {
+          result.tags.forEach((tag) => {
+            //check if i even need to check tags anymore
+            if (!tagHide) return;
+            //check if tag is valid
+            if (validTags?.includes(tag)) {
+              //tag valid, check if filter is on
+              if (ResultFilters.getFilter("tags", tag)) tagHide = false;
+            } else {
+              //tag not found in valid tags, meaning probably deleted
+              if (ResultFilters.getFilter("tags", "none")) tagHide = false;
+            }
+          });
+        } else if (ResultFilters.getTagsFilterMode() === "and") {
+          // AND mode - show results that match ALL selected tags
+          // First, identify all the enabled tags using validTags
+          const enabledTagIds: string[] = [];
+
+          // Loop through all valid tags to find which ones are enabled in the filter
+          validTags.forEach((tagId) => {
+            if (tagId !== "none" && ResultFilters.getFilter("tags", tagId)) {
+              enabledTagIds.push(tagId);
+            }
+          });
+
+          if (enabledTagIds.length === 0) {
+            // No tag filters enabled, show everything
+            tagHide = false;
           } else {
-            //tag not found in valid tags, meaning probably deleted
-            if (ResultFilters.getFilter("tags", "none")) tagHide = false;
+            // Check if result has ALL the enabled tag filters
+            const resultHasAllTags = enabledTagIds.every((tagId) =>
+              result.tags?.includes(tagId)
+            );
+
+            if (resultHasAllTags) {
+              tagHide = false;
+            } else if (
+              ResultFilters.getFilter("tags", "none") &&
+              result.tags.length === 0
+            ) {
+              // Special case: "none" tag is enabled and result has no tags
+              tagHide = false;
+            }
           }
-        });
+        }
       }
 
       if (tagHide) {
