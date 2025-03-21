@@ -3,10 +3,12 @@ export function sanitizeString(str: string): string {
     return "";
   }
 
-  // TODO improve this sanitation
   return str
+    .replace(/`/g, "&#96;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"'"/g, '"&apos;"')
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;")
+    .replace(/\\/g, "&bsol;")
     .replace(/script/g, "");
 }

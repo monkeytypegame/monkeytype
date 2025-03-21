@@ -20,10 +20,7 @@ function isKeyProperties(
 
 export function stringToKeymap(keymap: string): KeymapCustom {
   try {
-    const processedKeymap = sanitizeString(keymap).replace(
-      /([{,])\s*(\w+)\s*:/g,
-      '$1"$2":'
-    );
+    const processedKeymap = keymap.replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":');
     const jsonKeymap: KeymapCustom = parseWithSchema(
       processedKeymap,
       KeymapCustomSchema
