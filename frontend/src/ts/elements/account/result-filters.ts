@@ -959,3 +959,7 @@ function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   });
   return filter;
 }
+
+export function getTagsFilterMode(): "and" | "or" {
+  return filters.tagsFilterMode;
+}
