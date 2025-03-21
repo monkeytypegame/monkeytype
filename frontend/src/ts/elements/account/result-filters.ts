@@ -1,23 +1,23 @@
-import * as Misc from "../../utils/misc";
-import * as Strings from "../../utils/strings";
-import * as JSONData from "../../utils/json-data";
-import * as DB from "../../db";
-import Config from "../../config";
-import * as Notifications from "../notifications";
-import Ape from "../../ape/index";
-import * as Loader from "../loader";
-import SlimSelect from "slim-select";
 import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 import {
   ResultFilters,
-  ResultFiltersSchema,
   ResultFiltersGroup,
   ResultFiltersGroupItem,
+  ResultFiltersSchema,
 } from "@monkeytype/contracts/schemas/users";
-import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
-import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
+import SlimSelect from "slim-select";
+import Ape from "../../ape/index";
+import Config from "../../config";
+import defaultResultFilters from "../../constants/default-result-filters";
 import { SnapshotUserTag } from "../../constants/default-snapshot";
+import * as DB from "../../db";
+import * as JSONData from "../../utils/json-data";
+import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
+import * as Misc from "../../utils/misc";
+import * as Strings from "../../utils/strings";
+import * as Loader from "../loader";
+import * as Notifications from "../notifications";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>
@@ -32,6 +32,8 @@ export function mergeWithDefaultFilters(
         }
         merged[groupKey] = id;
       } else if (groupKey === "name") {
+        merged[groupKey] = filters[groupKey] ?? defaultResultFilters[groupKey];
+      } else if (groupKey === "tagsFilterMode") {
         merged[groupKey] = filters[groupKey] ?? defaultResultFilters[groupKey];
       } else {
         // @ts-expect-error i cant figure this out
@@ -289,7 +291,7 @@ export function updateActive(): void {
 
   for (const group of Misc.typedKeys(getFilters())) {
     // id and name field do not correspond to any ui elements, no need to update
-    if (group === "_id" || group === "name") {
+    if (group === "_id" || group === "name" || group === "tagsFilterMode") {
       continue;
     }
 
@@ -486,6 +488,19 @@ export function updateActive(): void {
   setTimeout(() => {
     $(".pageAccount .group.chart .above").html(chartString);
   }, 0);
+}
+
+function updateTagsFilterModeIcon(): void {
+  const toggleElement = $(".pageAccount .tagsFilterModeToggle");
+  const modeTextElement = toggleElement.find(".mode-text");
+
+  if (filters.tagsFilterMode === "and") {
+    toggleElement.addClass("mode-and");
+    modeTextElement.text("AND");
+  } else {
+    toggleElement.removeClass("mode-and");
+    modeTextElement.text("OR");
+  }
 }
 
 function toggle<G extends ResultFiltersGroup>(
@@ -924,6 +939,13 @@ $(".group.presetFilterButtons .filterBtns").on(
     void deleteFilterPreset($(e.currentTarget).data("id") as string);
   }
 );
+
+$(document).on("click", ".pageAccount .tagsFilterModeToggle", () => {
+  filters.tagsFilterMode = filters.tagsFilterMode === "or" ? "and" : "or";
+  save();
+  updateTagsFilterModeIcon();
+  selectChangeCallbackFn();
+});
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   const filter = Misc.deepClone(filterIn);
