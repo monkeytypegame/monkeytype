@@ -1,37 +1,37 @@
-import request from "supertest";
-import app from "../../../src/app";
-import * as Configuration from "../../../src/init/configuration";
-import { generateCurrentTestActivity } from "../../../src/api/controllers/user";
-import * as UserDal from "../../../src/dal/user";
-import * as AuthUtils from "../../../src/utils/auth";
-import * as BlocklistDal from "../../../src/dal/blocklist";
-import * as ApeKeys from "../../../src/dal/ape-keys";
-import * as PresetDal from "../../../src/dal/preset";
-import * as ConfigDal from "../../../src/dal/config";
-import * as ResultDal from "../../../src/dal/result";
-import * as ReportDal from "../../../src/dal/report";
-import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
-import * as LeaderboardDal from "../../../src/dal/leaderboards";
-import GeorgeQueue from "../../../src/queues/george-queue";
-import * as DiscordUtils from "../../../src/utils/discord";
-import * as Captcha from "../../../src/utils/captcha";
-import * as FirebaseAdmin from "../../../src/init/firebase-admin";
-import { FirebaseError } from "firebase-admin";
-import * as ApeKeysDal from "../../../src/dal/ape-keys";
-import * as LogDal from "../../../src/dal/logs";
-import { ObjectId } from "mongodb";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import { PersonalBest } from "@monkeytype/contracts/schemas/shared";
-import { pb } from "../../dal/leaderboards.spec";
+import { MonkeyMail, UserStreak } from "@monkeytype/contracts/schemas/users";
+import { FirebaseError } from "firebase-admin";
+import _ from "lodash";
+import { ObjectId } from "mongodb";
+import { randomUUID } from "node:crypto";
+import request from "supertest";
+import { generateCurrentTestActivity } from "../../../src/api/controllers/user";
+import app from "../../../src/app";
+import * as ApeKeys from "../../../src/dal/ape-keys";
+import * as ApeKeysDal from "../../../src/dal/ape-keys";
+import * as BlocklistDal from "../../../src/dal/blocklist";
+import * as ConfigDal from "../../../src/dal/config";
+import * as LeaderboardDal from "../../../src/dal/leaderboards";
+import * as LogDal from "../../../src/dal/logs";
+import * as PresetDal from "../../../src/dal/preset";
+import * as ReportDal from "../../../src/dal/report";
+import * as ResultDal from "../../../src/dal/result";
+import * as UserDal from "../../../src/dal/user";
+import * as Configuration from "../../../src/init/configuration";
+import * as FirebaseAdmin from "../../../src/init/firebase-admin";
+import GeorgeQueue from "../../../src/queues/george-queue";
+import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
+import * as AuthUtils from "../../../src/utils/auth";
+import * as Captcha from "../../../src/utils/captcha";
+import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
+import * as DiscordUtils from "../../../src/utils/discord";
+import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
 import {
   mockAuthenticateWithApeKey,
   mockBearerAuthentication,
 } from "../../__testData__/auth";
-import { randomUUID } from "node:crypto";
-import _ from "lodash";
-import { MonkeyMail, UserStreak } from "@monkeytype/contracts/schemas/users";
-import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
-import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
-import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
+import { pb } from "../../dal/leaderboards.spec";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -1917,6 +1917,7 @@ describe("user controller test", () => {
       tags: {
         none: false,
       },
+      tagsFilterMode: "or",
       language: {
         english: true,
       },
@@ -1981,6 +1982,7 @@ describe("user controller test", () => {
           '"numbers" Required',
           '"date" Required',
           '"tags" Required',
+          '"tagsFilterMode" Required',
           '"language" Required',
           '"funbox" Required',
         ],
