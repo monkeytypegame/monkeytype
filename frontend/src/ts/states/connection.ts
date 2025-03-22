@@ -31,10 +31,10 @@ export function showOfflineBanner(): void {
 
 const throttledHandleState = debounce(5000, () => {
   if (state) {
+    Notifications.add("You're back online", 1, {
+      customTitle: "Connection",
+    });
     if (noInternetBannerId !== undefined) {
-      Notifications.add("You're back online", 1, {
-        customTitle: "Connection",
-      });
       $(
         `#bannerCenter .banner[id="${noInternetBannerId}"] .closeButton`
       ).trigger("click");
