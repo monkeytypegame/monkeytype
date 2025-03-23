@@ -89,6 +89,10 @@
     "languages": ["khmer"]
   },
   {
+    "name": "marathi",
+    "languages": ["marathi"]
+  },
+  {
     "name": "chinese",
     "languages": [
       "chinese_traditional",
