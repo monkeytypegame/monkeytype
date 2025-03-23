@@ -51,7 +51,7 @@ export const ResultFiltersSchema = z.object({
     })
     .strict(),
   tags: z.record(z.string(), z.boolean()),
-  tagsFilterMode: z.enum(["and", "or"]),
+  tagsFilterMode: z.enum(["and", "or", "exact"]),
   language: z.record(LanguageSchema, z.boolean()),
   funbox: z.record(z.string(), z.boolean()),
 });

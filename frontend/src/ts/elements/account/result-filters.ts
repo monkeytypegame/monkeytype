@@ -495,10 +495,10 @@ function updateTagsFilterModeIcon(): void {
   const modeTextElement = toggleElement.find(".mode-text");
 
   if (filters.tagsFilterMode === "and") {
-    toggleElement.addClass("mode-and");
     modeTextElement.text("AND");
+  } else if (filters.tagsFilterMode === "exact") {
+    modeTextElement.text("EXACT");
   } else {
-    toggleElement.removeClass("mode-and");
     modeTextElement.text("OR");
   }
 }
@@ -941,7 +941,14 @@ $(".group.presetFilterButtons .filterBtns").on(
 );
 
 $(document).on("click", ".pageAccount .tagsFilterModeToggle", () => {
-  filters.tagsFilterMode = filters.tagsFilterMode === "or" ? "and" : "or";
+  // Cycle between "or" -> "and" -> "exact" -> "or"
+  if (filters.tagsFilterMode === "or") {
+    filters.tagsFilterMode = "and";
+  } else if (filters.tagsFilterMode === "and") {
+    filters.tagsFilterMode = "exact";
+  } else {
+    filters.tagsFilterMode = "or";
+  }
   save();
   updateTagsFilterModeIcon();
   selectChangeCallbackFn();
@@ -960,6 +967,6 @@ function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   return filter;
 }
 
-export function getTagsFilterMode(): "and" | "or" {
+export function getTagsFilterMode(): "and" | "or" | "exact" {
   return filters.tagsFilterMode;
 }

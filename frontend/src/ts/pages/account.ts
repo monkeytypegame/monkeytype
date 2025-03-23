@@ -494,6 +494,37 @@ async function fillContent(): Promise<void> {
               tagHide = false;
             }
           }
+        } else if (ResultFilters.getTagsFilterMode() === "exact") {
+          // EXACT mode - show results where tags exactly match the selected filters
+          // First, identify all the enabled tags
+          const enabledTagIds: string[] = [];
+
+          // Loop through all valid tags to find which ones are enabled in the filter
+          validTags.forEach((tagId) => {
+            if (tagId !== "none" && ResultFilters.getFilter("tags", tagId)) {
+              enabledTagIds.push(tagId);
+            }
+          });
+
+          if (enabledTagIds.length === 0) {
+            // No tag filters enabled, show everything
+            tagHide = false;
+          } else {
+            // Check if result tags exactly match the enabled filters (same number and same tags)
+            const resultHasExactTags =
+              result.tags.length === enabledTagIds.length &&
+              enabledTagIds.every((tagId) => result.tags?.includes(tagId));
+
+            if (resultHasExactTags) {
+              tagHide = false;
+            } else if (
+              ResultFilters.getFilter("tags", "none") &&
+              result.tags.length === 0
+            ) {
+              // Special case: "none" tag is enabled and result has no tags
+              tagHide = false;
+            }
+          }
         }
       }
 
