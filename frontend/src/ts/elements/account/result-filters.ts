@@ -1,23 +1,23 @@
+import * as Misc from "../../utils/misc";
+import * as Strings from "../../utils/strings";
+import * as JSONData from "../../utils/json-data";
+import * as DB from "../../db";
+import Config from "../../config";
+import * as Notifications from "../notifications";
+import Ape from "../../ape/index";
+import * as Loader from "../loader";
+import SlimSelect from "slim-select";
 import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 import {
   ResultFilters,
+  ResultFiltersSchema,
   ResultFiltersGroup,
   ResultFiltersGroupItem,
-  ResultFiltersSchema,
 } from "@monkeytype/contracts/schemas/users";
-import { getAllFunboxes } from "@monkeytype/funbox";
-import SlimSelect from "slim-select";
-import Ape from "../../ape/index";
-import Config from "../../config";
-import defaultResultFilters from "../../constants/default-result-filters";
-import { SnapshotUserTag } from "../../constants/default-snapshot";
-import * as DB from "../../db";
-import * as JSONData from "../../utils/json-data";
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
-import * as Misc from "../../utils/misc";
-import * as Strings from "../../utils/strings";
-import * as Loader from "../loader";
-import * as Notifications from "../notifications";
+import defaultResultFilters from "../../constants/default-result-filters";
+import { getAllFunboxes } from "@monkeytype/funbox";
+import { SnapshotUserTag } from "../../constants/default-snapshot";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>

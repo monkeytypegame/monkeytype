@@ -1,3 +1,32 @@
+import * as DB from "../db";
+import * as ResultFilters from "../elements/account/result-filters";
+import * as ThemeColors from "../elements/theme-colors";
+import * as ChartController from "../controllers/chart-controller";
+import Config, * as UpdateConfig from "../config";
+import * as MiniResultChartModal from "../modals/mini-result-chart";
+import * as PbTables from "../elements/account/pb-tables";
+import * as LoadingPage from "./loading";
+import * as Focus from "../test/focus";
+import * as TodayTracker from "../test/today-tracker";
+import * as Notifications from "../elements/notifications";
+import Page from "./page";
+import * as DateTime from "../utils/date-and-time";
+import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
+import * as Numbers from "@monkeytype/util/numbers";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import * as Profile from "../elements/profile";
+import { format } from "date-fns/format";
+import * as ConnectionState from "../states/connection";
+import * as Skeleton from "../utils/skeleton";
+import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
+import * as ConfigEvent from "../observables/config-event";
+import * as ActivePage from "../states/active-page";
+import { Auth } from "../firebase";
+import * as Loader from "../elements/loader";
+import * as ResultBatches from "../elements/result-batches";
+import Format from "../utils/format";
+import * as TestActivity from "../elements/test-activity";
 import { ChartData } from "@monkeytype/contracts/schemas/results";
 import {
   Difficulty,
@@ -6,38 +35,9 @@ import {
   Mode2Custom,
 } from "@monkeytype/contracts/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
-import * as Numbers from "@monkeytype/util/numbers";
-import type { LinearScaleOptions, ScaleChartOptions } from "chart.js";
-import { format } from "date-fns/format";
-import Config, * as UpdateConfig from "../config";
+import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
-import * as ChartController from "../controllers/chart-controller";
-import * as DB from "../db";
-import * as PbTables from "../elements/account/pb-tables";
-import * as ResultFilters from "../elements/account/result-filters";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
-import * as Profile from "../elements/profile";
-import * as ResultBatches from "../elements/result-batches";
-import * as TestActivity from "../elements/test-activity";
-import * as ThemeColors from "../elements/theme-colors";
-import { Auth } from "../firebase";
-import * as MiniResultChartModal from "../modals/mini-result-chart";
-import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
-import * as ConnectionState from "../states/connection";
-import * as Focus from "../test/focus";
-import * as TodayTracker from "../test/today-tracker";
-import * as Arrays from "../utils/arrays";
-import * as DateTime from "../utils/date-and-time";
-import Format from "../utils/format";
-import * as Misc from "../utils/misc";
-import { findLineByLeastSquares } from "../utils/numbers";
-import * as Skeleton from "../utils/skeleton";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as LoadingPage from "./loading";
-import Page from "./page";
 
 let filterDebug = false;
 //toggle filterdebug

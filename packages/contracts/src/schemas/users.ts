@@ -1,16 +1,16 @@
 import { z, ZodEffects, ZodOptional, ZodString } from "zod";
-import { doesNotContainProfanity } from "../validation/validation";
-import { CustomThemeColorsSchema } from "./configs";
-import {
-  DefaultTimeModeSchema,
-  DefaultWordsModeSchema,
-  DifficultySchema,
-  Mode2Schema,
-  ModeSchema,
-  PersonalBestsSchema,
-  QuoteLengthSchema,
-} from "./shared";
 import { IdSchema, LanguageSchema, StringNumberSchema } from "./util";
+import {
+  ModeSchema,
+  Mode2Schema,
+  PersonalBestsSchema,
+  DefaultWordsModeSchema,
+  DefaultTimeModeSchema,
+  QuoteLengthSchema,
+  DifficultySchema,
+} from "./shared";
+import { CustomThemeColorsSchema } from "./configs";
+import { doesNotContainProfanity } from "../validation/validation";
 
 export const ResultFiltersSchema = z.object({
   _id: IdSchema,
