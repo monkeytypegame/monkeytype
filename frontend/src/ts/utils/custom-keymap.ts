@@ -78,7 +78,7 @@ export function getCustomKeymapSyle(
           if (isKeyProperties(element)) {
             if (element.x && "x" in element) {
               const pixels = 2 * element.x;
-              keyHtml += `<div class="keymapKey invisible" style= "width: ${pixels}rem"></div>`;
+              keyHtml += `<div class="keymapKey invisible" data-key="" style= "width: ${pixels}rem"></div>`;
             }
             if (element.w && "w" in element) {
               const pixels = 2 * element.w;
