@@ -7,6 +7,7 @@ import * as Skeleton from "../utils/skeleton";
 import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
 import { z } from "zod";
+import { UserNameSchema } from "@monkeytype/contracts/users";
 
 export function enableSignUpButton(): void {
   $(".page.pageLogin .register.side button").prop("disabled", false);
@@ -59,6 +60,14 @@ const checkNameDebounced = debounce(1000, async () => {
     updateSignupButton();
     return;
   }
+
+  const parsed = UserNameSchema.safeParse(val);
+  if (!parsed.success) {
+    nameIndicator.show("unavailable", parsed.error.errors[0]?.message);
+    updateSignupButton();
+    return;
+  }
+
   const response = await Ape.users.getNameAvailability({
     params: { name: val },
   });

@@ -13,8 +13,6 @@ import { LanguageSchema } from "./schemas/util";
 import { Mode2Schema, ModeSchema } from "./schemas/shared";
 import { initContract } from "@ts-rest/core";
 
-//TODO NOTIFY USERS ON OLD CLINT THAT SCHEMA CHNAGED
-
 const LanguageAndModeQuerySchema = z.object({
   language: LanguageSchema,
   mode: ModeSchema,
@@ -25,6 +23,8 @@ const PaginationQuerySchema = z.object({
   page: z.number().int().safe().nonnegative().default(0),
   pageSize: z.number().int().safe().positive().min(10).max(200).default(50),
 });
+
+export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;
 
 const LeaderboardResponseSchema = z.object({
   count: z.number().int().nonnegative(),

@@ -7,7 +7,6 @@ import {
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { capitalizeFirstLetter } from "../utils/strings";
 import Ape from "../ape";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
 import * as Notifications from "../elements/notifications";
 import Format from "../utils/format";
 import { Auth, isAuthenticated } from "../firebase";
@@ -42,7 +41,7 @@ import {
 import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-// import * as ServerConfiguration from "../ape/server-configuration";
+import { PaginationQuery } from "@monkeytype/contracts/leaderboards";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -88,6 +87,7 @@ type State = {
   error?: string;
   discordAvatarUrls: Map<string, string>;
   scrollToUserAfterFill: boolean;
+  goToUserPage: boolean;
 } & (AllTimeState | WeeklyState | DailyState);
 
 const state = {
@@ -102,6 +102,7 @@ const state = {
   title: "All-time English Time 15 Leaderboard",
   discordAvatarUrls: new Map<string, string>(),
   scrollToUserAfterFill: false,
+  goToUserPage: false,
 } as State;
 
 const SelectorSchema = z.object({
@@ -113,6 +114,7 @@ const SelectorSchema = z.object({
 });
 const UrlParameterSchema = SelectorSchema.extend({
   page: z.number(),
+  goToUserPage: z.boolean(),
 }).partial();
 type UrlParameter = z.infer<typeof UrlParameterSchema>;
 
@@ -239,195 +241,126 @@ async function requestData(update = false): Promise<void> {
   }
   updateContent();
 
-  if (state.type === "allTime" || state.type === "daily") {
-    const baseQuery = {
-      language: state.type === "allTime" ? "english" : state.language,
-      mode: "time" as Mode,
+  const defineRequests = <TQuery, TRank, TData>(
+    data: (args: { query: TQuery & PaginationQuery }) => Promise<TData>,
+    rank: (args: { query: TQuery }) => Promise<TRank>,
+    baseQuery: TQuery
+  ): {
+    rank: undefined | (() => Promise<TRank>);
+    data: () => Promise<TData>;
+  } => ({
+    rank: async () => rank({ query: baseQuery }),
+    data: async () =>
+      data({
+        query: { ...baseQuery, page: state.page, pageSize: state.pageSize },
+      }),
+  });
+
+  let requests;
+  if (state.type === "allTime") {
+    requests = defineRequests(Ape.leaderboards.get, Ape.leaderboards.getRank, {
+      language: "english",
+      mode: "time",
       mode2: state.mode2,
-    };
-
-    const requests: {
-      data:
-        | ReturnType<typeof Ape.leaderboards.get>
-        | ReturnType<typeof Ape.leaderboards.getDaily>
-        | undefined;
-      rank:
-        | ReturnType<typeof Ape.leaderboards.getRank>
-        | ReturnType<typeof Ape.leaderboards.getDailyRank>
-        | undefined;
-    } = {
-      data: undefined,
-      rank: undefined,
-    };
-
-    if (state.type === "allTime") {
-      requests.data = Ape.leaderboards.get({
-        query: { ...baseQuery, page: state.page },
-      });
-    } else {
-      requests.data = Ape.leaderboards.getDaily({
-        query: {
-          ...baseQuery,
-          page: state.page,
-          daysBefore: state.yesterday ? 1 : undefined,
-        },
-      });
-    }
-
-    if (isAuthenticated() && state.userData === null) {
-      if (state.type === "allTime") {
-        requests.rank = Ape.leaderboards.getRank({
-          query: { ...baseQuery },
-        });
-      } else {
-        requests.rank = Ape.leaderboards.getDailyRank({
-          query: {
-            ...baseQuery,
-            daysBefore: state.yesterday ? 1 : undefined,
-          },
-        });
-      }
-    }
-
-    const [dataResponse, rankResponse] = await Promise.all([
-      requests.data,
-      requests.rank,
-    ]);
-
-    if (dataResponse.status === 200) {
-      state.data = dataResponse.body.data.entries;
-      state.count = dataResponse.body.data.count;
-      state.pageSize = dataResponse.body.data.pageSize;
-
-      if (state.type === "daily") {
-        //@ts-ignore not sure why this is causing errors when it's clearly defined in the schema
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        state.minWpm = dataResponse.body.data.minWpm;
-      }
-    } else {
-      state.data = null;
-      state.error = "Something went wrong";
-      Notifications.add(
-        "Failed to get leaderboard: " + dataResponse.body.message,
-        -1
-      );
-    }
-
-    if (state.userData === null && rankResponse !== undefined) {
-      if (rankResponse.status === 200) {
-        if (rankResponse.body.data !== null) {
-          state.userData = rankResponse.body.data;
-        }
-      } else {
-        state.userData = null;
-        state.error = "Something went wrong";
-        Notifications.add(
-          "Failed to get rank: " + rankResponse.body.message,
-          -1
-        );
-      }
-    }
-
-    if (state.data !== null) {
-      const entriesMissingAvatars = state.data.filter(
-        (entry) => !state.discordAvatarUrls.has(entry.uid)
-      );
-      void getAvatarUrls(entriesMissingAvatars).then((urlMap) => {
-        state.discordAvatarUrls = new Map([
-          ...state.discordAvatarUrls,
-          ...urlMap,
-        ]);
-        fillAvatars();
-      });
-    }
-
-    state.loading = false;
-    state.updating = false;
-    updateContent();
-    if (!update && isAuthenticated()) {
-      fillUser();
-    }
-    return;
-  } else if (state.type === "weekly") {
-    const requests: {
-      data: ReturnType<typeof Ape.leaderboards.getWeeklyXp> | undefined;
-      rank: ReturnType<typeof Ape.leaderboards.getWeeklyXpRank> | undefined;
-    } = {
-      data: undefined,
-      rank: undefined,
-    };
-
-    requests.data = Ape.leaderboards.getWeeklyXp({
-      query: { page: state.page, weeksBefore: state.lastWeek ? 1 : undefined },
     });
-
-    if (isAuthenticated() && state.userData === null) {
-      requests.rank = Ape.leaderboards.getWeeklyXpRank({
-        query: {
-          weeksBefore: state.lastWeek ? 1 : undefined,
-        },
-      });
-    }
-
-    const [dataResponse, rankResponse] = await Promise.all([
-      requests.data,
-      requests.rank,
-    ]);
-
-    if (dataResponse.status === 200) {
-      state.data = dataResponse.body.data.entries;
-      state.count = dataResponse.body.data.count;
-      state.pageSize = dataResponse.body.data.pageSize;
-    } else {
-      state.data = null;
-      state.error = "Something went wrong";
-      Notifications.add(
-        "Failed to get leaderboard: " + dataResponse.body.message,
-        -1
-      );
-    }
-
-    if (state.userData === null && rankResponse !== undefined) {
-      if (rankResponse.status === 200) {
-        if (rankResponse.body.data !== null) {
-          state.userData = rankResponse.body.data;
-        }
-      } else {
-        state.userData = null;
-        state.error = "Something went wrong";
-        Notifications.add(
-          "Failed to get rank: " + rankResponse.body.message,
-          -1
-        );
+  } else if (state.type === "daily") {
+    requests = defineRequests(
+      Ape.leaderboards.getDaily,
+      Ape.leaderboards.getDailyRank,
+      {
+        language: state.language,
+        mode: "time",
+        mode2: state.mode2,
+        daysBefore: state.yesterday ? 1 : undefined,
       }
-    }
-
-    if (state.data !== null) {
-      const entriesMissingAvatars = state.data.filter(
-        (entry) => !state.discordAvatarUrls.has(entry.uid)
-      );
-      void getAvatarUrls(entriesMissingAvatars).then((urlMap) => {
-        state.discordAvatarUrls = new Map([
-          ...state.discordAvatarUrls,
-          ...urlMap,
-        ]);
-        fillAvatars();
-      });
-    }
-
-    state.loading = false;
-    state.updating = false;
-    updateContent();
-    if (!update && isAuthenticated()) {
-      fillUser();
-    }
-    return;
+    );
+  } else if (state.type === "weekly") {
+    requests = defineRequests(
+      Ape.leaderboards.getWeeklyXp,
+      Ape.leaderboards.getWeeklyXpRank,
+      {
+        weeksBefore: state.lastWeek ? 1 : undefined,
+      }
+    );
   } else {
-    // state.updating = false;
-    // state.loading = false;
-    // state.error = "Unsupported mode";
-    // updateContent();
+    throw new Error("unknown state type");
   }
+
+  if (!isAuthenticated() || state.userData !== null) {
+    requests.rank = undefined;
+  }
+
+  if (state.goToUserPage && requests.rank !== undefined) {
+    state.goToUserPage = false;
+    const rankResponse = await requests.rank();
+    if (
+      rankResponse !== undefined &&
+      rankResponse.status === 200 &&
+      rankResponse.body.data !== null
+    ) {
+      state.userData = rankResponse.body.data;
+      state.page = Math.floor((state.userData.rank - 1) / state.pageSize);
+      updateGetParameters();
+    }
+    requests.rank = undefined;
+  }
+
+  const [dataResponse, rankResponse] = await Promise.all([
+    requests.data(),
+    requests.rank?.(),
+  ]);
+
+  if (dataResponse.status === 200) {
+    state.data = dataResponse.body.data.entries;
+    state.count = dataResponse.body.data.count;
+    state.pageSize = dataResponse.body.data.pageSize;
+
+    if (state.type === "daily") {
+      //@ts-ignore not sure why this is causing errors when it's clearly defined in the schema
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      state.minWpm = dataResponse.body.data.minWpm;
+    }
+  } else {
+    state.data = null;
+    state.error = "Something went wrong";
+    Notifications.add(
+      "Failed to get leaderboard: " + dataResponse.body.message,
+      -1
+    );
+  }
+
+  if (state.userData === null && rankResponse !== undefined) {
+    if (rankResponse.status === 200) {
+      if (rankResponse.body.data !== null) {
+        state.userData = rankResponse.body.data;
+      }
+    } else {
+      state.userData = null;
+      state.error = "Something went wrong";
+      Notifications.add("Failed to get rank: " + rankResponse.body.message, -1);
+    }
+  }
+
+  if (state.data !== null) {
+    const entriesMissingAvatars = state.data.filter(
+      (entry) => !state.discordAvatarUrls.has(entry.uid)
+    );
+    void getAvatarUrls(entriesMissingAvatars).then((urlMap) => {
+      state.discordAvatarUrls = new Map([
+        ...state.discordAvatarUrls,
+        ...urlMap,
+      ]);
+      fillAvatars();
+    });
+  }
+
+  state.loading = false;
+  state.updating = false;
+  updateContent();
+  if (!update && isAuthenticated()) {
+    fillUser();
+  }
+  return;
 }
 
 function updateJumpButtons(): void {
@@ -472,7 +405,11 @@ function updateJumpButtons(): void {
 }
 
 async function getAvatarUrls(
-  data: LeaderboardEntry[] | XpLeaderboardEntry[]
+  data: {
+    uid: string;
+    discordId?: string | undefined;
+    discordAvatar?: string | undefined;
+  }[]
 ): Promise<Map<string, string>> {
   const results = await Promise.allSettled(
     data.map(async (entry) => ({
@@ -1105,7 +1042,13 @@ export function goToPage(pageId: number): void {
   handleJumpButton("goToPage", pageId);
 }
 
-function handleJumpButton(action: string, page?: number): void {
+type Action =
+  | "firstPage"
+  | "previousPage"
+  | "nextPage"
+  | "goToPage"
+  | "userPage";
+function handleJumpButton(action: Action, page?: number): void {
   if (action === "firstPage") {
     state.page = 0;
   } else if (action === "previousPage" && state.page > 0) {
@@ -1159,6 +1102,11 @@ function handleYesterdayLastWeekButton(action: string): void {
 }
 
 function updateGetParameters(): void {
+  if (state.goToUserPage) {
+    //parameters are updated in the requestData method
+    return;
+  }
+
   const params: UrlParameter = {};
 
   params.type = state.type;
@@ -1240,6 +1188,9 @@ function readGetParameters(): void {
       state.page = 0;
     }
   }
+  if (params.goToUserPage) {
+    state.goToUserPage = true;
+  }
 }
 
 function utcToLocalDate(timestamp: UTCDateMini): Date {
@@ -1263,7 +1214,7 @@ function updateTimeText(
 }
 
 $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
-  const action = $(this).data("action") as string;
+  const action = $(this).data("action") as Action;
   if (action !== "goToPage") {
     handleJumpButton(action);
   }
@@ -1346,7 +1297,7 @@ export const page = new Page({
     updateSecondaryButtons();
     updateContent();
     updateGetParameters();
-    void requestData();
+    void requestData(false);
   },
   afterShow: async (): Promise<void> => {
     updateSecondaryButtons();
