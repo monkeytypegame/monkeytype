@@ -549,8 +549,9 @@
     .r2,
     .r3,
     .r4,
-    .r5 {
-      justify-content: center;
+    .r5,
+    .r6 {
+      justify-content: left;
       display: flex;
       grid-template-columns: none;
     }

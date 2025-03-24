@@ -69,14 +69,16 @@ export function getCustomKeymapSyle(
       const rowCopy = [...row];
       const rowHtml = rowCopy.map(
         (element: KeyProperties | string, index: number) => {
-          let size = "",
+          let size = `style= "width: 2rem"`,
             keyHtml: string = "",
             keyString: string =
-              typeof element === "string" ? sanitizeString(element) : "";
-          console.log("keystriung", keyString);
+              typeof element === "string"
+                ? sanitizeString(element).toLowerCase()
+                : "";
           if (isKeyProperties(element)) {
             if (element.x && "x" in element) {
-              keyHtml += `<div class="keymapKey invisible"></div>`;
+              const pixels = 2 * element.x;
+              keyHtml += `<div class="keymapKey invisible" style= "width: ${pixels}rem"></div>`;
             }
             if (element.w && "w" in element) {
               const pixels = 2 * element.w;
@@ -87,10 +89,8 @@ export function getCustomKeymapSyle(
             rowCopy.splice(index, 1);
           }
           keyHtml += `
-        <div class="keymapKey" ${size} data-key="${keyToData(
-            keyString.toLowerCase()
-          )}">
-          <span class="letter">${keyString?.toLowerCase().toString()}</span>
+        <div class="keymapKey" ${size} data-key="${keyToData(keyString)}">
+          <span class="letter">${keyToData(keyString) && keyString}</span>
         </div>`;
           if (keyString === "spc") {
             keyHtml = `
