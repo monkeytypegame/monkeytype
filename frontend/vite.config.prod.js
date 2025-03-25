@@ -10,6 +10,7 @@ import { checker } from "vite-plugin-checker";
 import { writeFileSync } from "fs";
 // eslint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -169,6 +170,29 @@ export default {
       ],
       injectTo: "head-prepend",
     }),
+    {
+      name: "minify-json",
+      apply: "build",
+      generateBundle() {
+        const minifyJsonFiles = (dir) => {
+          readdirSync(dir).forEach((file) => {
+            const sourcePath = path.join(dir, file);
+            const stat = statSync(sourcePath);
+
+            if (stat.isDirectory()) {
+              minifyJsonFiles(sourcePath);
+            } else if (path.extname(file) === ".json") {
+              const minifiedContent = JSON.stringify(
+                JSON.parse(readFileSync(sourcePath, "utf8"))
+              );
+              writeFileSync(sourcePath, minifiedContent);
+              console.log(`Minified: ${sourcePath}`);
+            }
+          });
+        };
+        minifyJsonFiles("./dist");
+      },
+    },
   ],
   build: {
     emptyOutDir: true,
