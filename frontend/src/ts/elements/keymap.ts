@@ -15,9 +15,13 @@ const stenoKeys: JSONData.Layout = {
   type: "matrix",
   keys: {
     row1: [],
-    row2: ["sS", "tT", "pP", "hH", "**", "fF", "pP", "lL", "tT", "dD"],
-    row3: ["sS", "kK", "wW", "rR", "**", "rR", "bB", "gG", "sS", "zZ"],
-    row4: ["aA", "oO", "eE", "uU"],
+    row2: ["sS", "tT", "pP", "hH", "**", "fF", "pP", "lL", "tT", "dD"].map(
+      (it) => it.split("")
+    ),
+    row3: ["sS", "kK", "wW", "rR", "**", "rR", "bB", "gG", "sS", "zZ"].map(
+      (it) => it.split("")
+    ),
+    row4: ["aA", "oO", "eE", "uU"].map((it) => it.split("")),
     row5: [],
   },
 };
@@ -227,34 +231,34 @@ export async function refresh(
          * It is just created for simplicity in the for loop below.
          * */
         // If only one space, add another
-        if (rowKeys.length === 1 && rowKeys[0] === " ") {
+        if (rowKeys.length === 1 && rowKeys[0]?.join("") === " ") {
           rowKeys[1] = rowKeys[0];
         }
         // If only one alpha, add one space and place it on the left
-        if (rowKeys.length === 1 && rowKeys[0] !== " ") {
-          rowKeys[1] = " ";
+        if (rowKeys.length === 1 && rowKeys[0]?.join("") !== " ") {
+          rowKeys[1] = [" "];
           rowKeys.reverse();
         }
         // If two alphas equal, replace one with a space on the left
         if (
           rowKeys.length > 1 &&
-          rowKeys[0] !== " " &&
+          rowKeys[0]?.join("") !== " " &&
           rowKeys[0] === rowKeys[1]
         ) {
-          rowKeys[0] = " ";
+          rowKeys[0] = [" "];
         }
-        const alphas = (v: string): boolean => v !== " ";
+        const alphas = (v: string[]): boolean => v?.join("") !== " ";
         hasAlphas = rowKeys.some(alphas);
 
         rowElement += "<div></div>";
 
         for (let i = 0; i < rowKeys.length; i++) {
-          const key = rowKeys[i] as string;
+          const key = rowKeys[i];
           let keyDisplay = key[0] as string;
           if (Config.keymapLegendStyle === "uppercase") {
             keyDisplay = keyDisplay.toUpperCase();
           }
-          const keyVisualValue = key.replace('"', "&quot;");
+          const keyVisualValue = key?.join("").replace('"', "&quot;");
           // these are used to keep grid layout but magically hide keys using opacity:
           let side = i < 1 ? "left" : "right";
           // we won't use this trick for alternate layouts, unless Alice (for rotation):
@@ -297,7 +301,7 @@ export async function refresh(
           ) {
             continue;
           }
-          const key = rowKeys[i] as string;
+          const key = rowKeys[i] as string[];
           const bump = row === "row3" && (i === 3 || i === 6) ? true : false;
           let keyDisplay = key[0] as string;
           let letterStyle = "";
@@ -316,10 +320,9 @@ export async function refresh(
             hide = ` invisible`;
           }
 
-          const keyElement = `<div class="keymapKey${hide}" data-key="${key.replace(
-            '"',
-            "&quot;"
-          )}">
+          const keyElement = `<div class="keymapKey${hide}" data-key="${key
+            .join("")
+            .replace('"', "&quot;")}">
               <span class="letter" ${letterStyle}>${keyDisplay}</span>
               ${bump ? "<div class='bump'></div>" : ""}
           </div>`;

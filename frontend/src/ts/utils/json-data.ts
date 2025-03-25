@@ -1,5 +1,7 @@
 import { Accents } from "../test/lazy-mode";
 import { hexToHSL } from "./colors";
+import Graphemer from "graphemer";
+const graphemeSplitter = new Graphemer();
 
 /**
  * Fetches JSON data from the specified URL using the fetch API.
@@ -64,11 +66,11 @@ export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
 );
 
 export type Keys = {
-  row1: string[];
-  row2: string[];
-  row3: string[];
-  row4: string[];
-  row5: string[];
+  row1: string[][];
+  row2: string[][];
+  row3: string[][];
+  row4: string[][];
+  row5: string[][];
 };
 
 export type Layout = {
@@ -107,6 +109,16 @@ export async function getLayout(layoutName: string): Promise<Layout> {
   if (layout === undefined) {
     throw new Error(`Layout ${layoutName} is undefined`);
   }
+
+  const convert = (it: unknown): string[] =>
+    graphemeSplitter.splitGraphemes(it as string);
+
+  layout.keys.row1 = layout.keys.row1.map(convert);
+  layout.keys.row2 = layout.keys.row2.map(convert);
+  layout.keys.row3 = layout.keys.row3.map(convert);
+  layout.keys.row4 = layout.keys.row4.map(convert);
+  layout.keys.row5 = layout.keys.row5.map(convert);
+
   return layout;
 }
 
