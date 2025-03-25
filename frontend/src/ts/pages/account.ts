@@ -486,12 +486,6 @@ async function fillContent(): Promise<void> {
 
             if (resultHasAllTags) {
               tagHide = false;
-            } else if (
-              ResultFilters.getFilter("tags", "none") &&
-              result.tags.length === 0
-            ) {
-              // Special case: "none" tag is enabled and result has no tags
-              tagHide = false;
             }
           }
         } else if (ResultFilters.getTagsFilterMode() === "exact") {
@@ -516,12 +510,6 @@ async function fillContent(): Promise<void> {
               enabledTagIds.every((tagId) => result.tags?.includes(tagId));
 
             if (resultHasExactTags) {
-              tagHide = false;
-            } else if (
-              ResultFilters.getFilter("tags", "none") &&
-              result.tags.length === 0
-            ) {
-              // Special case: "none" tag is enabled and result has no tags
               tagHide = false;
             }
           }
