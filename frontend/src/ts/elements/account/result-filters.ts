@@ -872,7 +872,7 @@ export async function appendButtons(
     html +=
       "<select class='tagsSelect' group='tags' placeholder='select a tag' multiple>";
 
-    html += "<option value='all'>all</option>";
+    html += "<option value='all'>all (or no tag)</option>";
     html += "<option value='none'>no tag</option>";
 
     for (const tag of snapshot.tags) {
