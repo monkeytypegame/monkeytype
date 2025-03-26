@@ -393,6 +393,7 @@ export const commands: CommandsSubgroup = {
       id: "clearNotifications",
       display: "Clear all notifications",
       icon: "fa-trash-alt",
+      alias: "dismiss",
       exec: async (): Promise<void> => {
         Notifications.clearAllNotifications();
       },
