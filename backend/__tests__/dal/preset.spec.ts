@@ -13,8 +13,12 @@ describe("PresetDal", () => {
       });
       const second = await PresetDal.addPreset(uid, {
         name: "second",
+        settingGroups: ["hideElements"],
         config: {
-          ads: "result",
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: "off",
         },
       });
       await PresetDal.addPreset("unknown", { name: "unknown", config: {} });
@@ -36,7 +40,13 @@ describe("PresetDal", () => {
             _id: new ObjectId(second.presetId),
             uid: uid,
             name: "second",
-            config: { ads: "result" },
+            settingGroups: ["hideElements"],
+            config: {
+              showKeyTips: true,
+              capsLockWarning: true,
+              showOutOfFocusWarning: true,
+              showAverage: "off",
+            },
           }),
         ])
       );
@@ -52,7 +62,7 @@ describe("PresetDal", () => {
       }
 
       //WHEN / THEN
-      expect(() =>
+      await expect(() =>
         PresetDal.addPreset(uid, { name: "max", config: {} })
       ).rejects.toThrowError("Too many presets");
     });
@@ -160,7 +170,7 @@ describe("PresetDal", () => {
       );
     });
 
-    it("should edit with name only", async () => {
+    it("should edit with name only - full preset", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
       const first = (
@@ -174,7 +184,6 @@ describe("PresetDal", () => {
       await PresetDal.editPreset(uid, {
         _id: first,
         name: "newName",
-        config: {},
       });
       expect(await PresetDal.getPresets(uid)).toEqual(
         expect.arrayContaining([
@@ -183,6 +192,44 @@ describe("PresetDal", () => {
             uid: uid,
             name: "newName",
             config: { ads: "sellout" },
+          }),
+        ])
+      );
+    });
+    it("should edit with name only - partial preset", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const first = (
+        await PresetDal.addPreset(uid, {
+          name: "first",
+          settingGroups: ["hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: "off",
+          },
+        })
+      ).presetId;
+
+      //WHEN empty
+      await PresetDal.editPreset(uid, {
+        _id: first,
+        name: "newName",
+      });
+      expect(await PresetDal.getPresets(uid)).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: new ObjectId(first),
+            uid: uid,
+            name: "newName",
+            settingGroups: ["hideElements"],
+            config: {
+              showKeyTips: true,
+              capsLockWarning: true,
+              showOutOfFocusWarning: true,
+              showAverage: "off",
+            },
           }),
         ])
       );
@@ -219,11 +266,90 @@ describe("PresetDal", () => {
         ])
       );
     });
+    it("should edit when partial is edited to full", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const first = (
+        await PresetDal.addPreset(uid, {
+          name: "first",
+          settingGroups: ["hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: "off",
+          },
+        })
+      ).presetId;
+      //WHEN
+      await PresetDal.editPreset(uid, {
+        _id: first,
+        name: "newName",
+        settingGroups: null,
+        config: { ads: "off" },
+      });
+
+      //THEN
+      expect(await PresetDal.getPresets(uid)).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: new ObjectId(first),
+            uid: uid,
+            name: "newName",
+            config: { ads: "off" },
+            settingGroups: null,
+          }),
+        ])
+      );
+    });
+    it("should edit when full is edited to partial", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const first = (
+        await PresetDal.addPreset(uid, {
+          name: "first",
+          config: {
+            ads: "off",
+          },
+        })
+      ).presetId;
+
+      //WHEN
+      await PresetDal.editPreset(uid, {
+        _id: first,
+        name: "newName",
+        settingGroups: ["hideElements"],
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: "off",
+        },
+      });
+
+      //THEN
+      expect(await PresetDal.getPresets(uid)).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: new ObjectId(first),
+            uid: uid,
+            name: "newName",
+            settingGroups: ["hideElements"],
+            config: {
+              showKeyTips: true,
+              capsLockWarning: true,
+              showOutOfFocusWarning: true,
+              showAverage: "off",
+            },
+          }),
+        ])
+      );
+    });
   });
 
   describe("removePreset", () => {
     it("should fail if preset is unknown", async () => {
-      expect(() =>
+      await expect(() =>
         PresetDal.removePreset("uid", new ObjectId().toHexString())
       ).rejects.toThrowError("Preset not found");
     });
@@ -286,7 +412,7 @@ describe("PresetDal", () => {
       ).presetId;
 
       //WHEN
-      expect(() =>
+      await expect(() =>
         PresetDal.removePreset(decoyUid, first)
       ).rejects.toThrowError("Preset not found");
 

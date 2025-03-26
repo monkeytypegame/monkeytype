@@ -1,39 +1,43 @@
 import _ from "lodash";
-import {
-  getCurrentDayTimestamp,
-  MILLISECONDS_IN_DAY,
-  getCurrentWeekTimestamp,
-} from "../../utils/misc";
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
 import * as DailyLeaderboards from "../../utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import {
+  DailyLeaderboardQuery,
   GetDailyLeaderboardQuery,
   GetDailyLeaderboardRankQuery,
+  GetDailyLeaderboardResponse,
   GetLeaderboardDailyRankResponse,
   GetLeaderboardQuery,
+  GetLeaderboardRankQuery,
   GetLeaderboardRankResponse,
   GetLeaderboardResponse as GetLeaderboardResponse,
   GetWeeklyXpLeaderboardQuery,
+  GetWeeklyXpLeaderboardRankQuery,
   GetWeeklyXpLeaderboardRankResponse,
   GetWeeklyXpLeaderboardResponse,
-  LanguageAndModeQuery,
 } from "@monkeytype/contracts/leaderboards";
-import { Configuration } from "@monkeytype/shared-types";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import {
+  getCurrentDayTimestamp,
+  getCurrentWeekTimestamp,
+  MILLISECONDS_IN_DAY,
+} from "@monkeytype/util/date-and-time";
+import { MonkeyRequest } from "../types";
 
 export async function getLeaderboard(
-  req: MonkeyTypes.Request2<GetLeaderboardQuery>
+  req: MonkeyRequest<GetLeaderboardQuery>
 ): Promise<GetLeaderboardResponse> {
-  const { language, mode, mode2, skip = 0, limit = 50 } = req.query;
+  const { language, mode, mode2, page, pageSize } = req.query;
 
   const leaderboard = await LeaderboardsDAL.get(
     mode,
     mode2,
     language,
-    skip,
-    limit
+    page,
+    pageSize
   );
 
   if (leaderboard === false) {
@@ -43,13 +47,18 @@ export async function getLeaderboard(
     );
   }
 
+  const count = await LeaderboardsDAL.getCount(mode, mode2, language);
   const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
 
-  return new MonkeyResponse2("Leaderboard retrieved", normalizedLeaderboard);
+  return new MonkeyResponse("Leaderboard retrieved", {
+    count,
+    entries: normalizedLeaderboard,
+    pageSize,
+  });
 }
 
 export async function getRankFromLeaderboard(
-  req: MonkeyTypes.Request2<LanguageAndModeQuery>
+  req: MonkeyRequest<GetLeaderboardRankQuery>
 ): Promise<GetLeaderboardRankResponse> {
   const { language, mode, mode2 } = req.query;
   const { uid } = req.ctx.decodedToken;
@@ -62,11 +71,11 @@ export async function getRankFromLeaderboard(
     );
   }
 
-  return new MonkeyResponse2("Rank retrieved", data);
+  return new MonkeyResponse("Rank retrieved", data);
 }
 
 function getDailyLeaderboardWithError(
-  { language, mode, mode2, daysBefore }: GetDailyLeaderboardRankQuery,
+  { language, mode, mode2, daysBefore }: DailyLeaderboardQuery,
   config: Configuration["dailyLeaderboards"]
 ): DailyLeaderboards.DailyLeaderboard {
   const customTimestamp =
@@ -89,30 +98,38 @@ function getDailyLeaderboardWithError(
 }
 
 export async function getDailyLeaderboard(
-  req: MonkeyTypes.Request2<GetDailyLeaderboardQuery>
-): Promise<GetLeaderboardResponse> {
-  const { skip = 0, limit = 50 } = req.query;
+  req: MonkeyRequest<GetDailyLeaderboardQuery>
+): Promise<GetDailyLeaderboardResponse> {
+  const { page, pageSize } = req.query;
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
     req.query,
     req.ctx.configuration.dailyLeaderboards
   );
 
-  const minRank = skip;
-  const maxRank = minRank + limit - 1;
-
-  const topResults = await dailyLeaderboard.getResults(
-    minRank,
-    maxRank,
+  const results = await dailyLeaderboard.getResults(
+    page,
+    pageSize,
     req.ctx.configuration.dailyLeaderboards,
     req.ctx.configuration.users.premium.enabled
   );
 
-  return new MonkeyResponse2("Daily leaderboard retrieved", topResults);
+  const minWpm = await dailyLeaderboard.getMinWpm(
+    req.ctx.configuration.dailyLeaderboards
+  );
+
+  const count = await dailyLeaderboard.getCount();
+
+  return new MonkeyResponse("Daily leaderboard retrieved", {
+    entries: results,
+    minWpm,
+    count,
+    pageSize,
+  });
 }
 
 export async function getDailyLeaderboardRank(
-  req: MonkeyTypes.Request2<GetDailyLeaderboardRankQuery>
+  req: MonkeyRequest<GetDailyLeaderboardRankQuery>
 ): Promise<GetLeaderboardDailyRankResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -126,12 +143,12 @@ export async function getDailyLeaderboardRank(
     req.ctx.configuration.dailyLeaderboards
   );
 
-  return new MonkeyResponse2("Daily leaderboard rank retrieved", rank);
+  return new MonkeyResponse("Daily leaderboard rank retrieved", rank);
 }
 
 function getWeeklyXpLeaderboardWithError(
-  { weeksBefore }: GetWeeklyXpLeaderboardQuery,
-  config: Configuration["leaderboards"]["weeklyXp"]
+  config: Configuration["leaderboards"]["weeklyXp"],
+  weeksBefore?: number
 ): WeeklyXpLeaderboard.WeeklyXpLeaderboard {
   const customTimestamp =
     weeksBefore === undefined
@@ -147,39 +164,43 @@ function getWeeklyXpLeaderboardWithError(
 }
 
 export async function getWeeklyXpLeaderboardResults(
-  req: MonkeyTypes.Request2<GetWeeklyXpLeaderboardQuery>
+  req: MonkeyRequest<GetWeeklyXpLeaderboardQuery>
 ): Promise<GetWeeklyXpLeaderboardResponse> {
-  const { skip = 0, limit = 50 } = req.query;
-
-  const minRank = skip;
-  const maxRank = minRank + limit - 1;
+  const { page, pageSize, weeksBefore } = req.query;
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
-    req.query,
-    req.ctx.configuration.leaderboards.weeklyXp
+    req.ctx.configuration.leaderboards.weeklyXp,
+    weeksBefore
   );
   const results = await weeklyXpLeaderboard.getResults(
-    minRank,
-    maxRank,
-    req.ctx.configuration.leaderboards.weeklyXp
+    page,
+    pageSize,
+    req.ctx.configuration.leaderboards.weeklyXp,
+    req.ctx.configuration.users.premium.enabled
   );
 
-  return new MonkeyResponse2("Weekly xp leaderboard retrieved", results);
+  const count = await weeklyXpLeaderboard.getCount();
+
+  return new MonkeyResponse("Weekly xp leaderboard retrieved", {
+    entries: results,
+    count,
+    pageSize,
+  });
 }
 
 export async function getWeeklyXpLeaderboardRank(
-  req: MonkeyTypes.Request2
+  req: MonkeyRequest<GetWeeklyXpLeaderboardRankQuery>
 ): Promise<GetWeeklyXpLeaderboardRankResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
-    {},
-    req.ctx.configuration.leaderboards.weeklyXp
+    req.ctx.configuration.leaderboards.weeklyXp,
+    req.query.weeksBefore
   );
   const rankEntry = await weeklyXpLeaderboard.getRank(
     uid,
     req.ctx.configuration.leaderboards.weeklyXp
   );
 
-  return new MonkeyResponse2("Weekly xp leaderboard rank retrieved", rankEntry);
+  return new MonkeyResponse("Weekly xp leaderboard rank retrieved", rankEntry);
 }

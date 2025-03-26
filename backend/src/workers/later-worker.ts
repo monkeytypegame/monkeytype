@@ -7,7 +7,7 @@ import GeorgeQueue from "../queues/george-queue";
 import { buildMonkeyMail } from "../utils/monkey-mail";
 import { DailyLeaderboard } from "../utils/daily-leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
-import { formatSeconds, getOrdinalNumberString, mapRange } from "../utils/misc";
+import { formatSeconds, getOrdinalNumberString } from "../utils/misc";
 import LaterQueue, {
   type LaterTask,
   type LaterTaskContexts,
@@ -15,7 +15,8 @@ import LaterQueue, {
 } from "../queues/later-queue";
 import { recordTimeToCompleteJob } from "../utils/prometheus";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
-import { MonkeyMail } from "@monkeytype/shared-types";
+import { MonkeyMail } from "@monkeytype/contracts/schemas/users";
+import { mapRange } from "@monkeytype/util/numbers";
 
 async function handleDailyLeaderboardResults(
   ctx: LaterTaskContexts["daily-leaderboard-results"]
@@ -27,20 +28,26 @@ async function handleDailyLeaderboardResults(
     users: { inbox: inboxConfig },
   } = await getCachedConfiguration(false);
 
+  const { maxResults, xpRewardBrackets, topResultsToAnnounce } =
+    dailyLeaderboardsConfig;
+
+  const maxRankToGet = Math.max(
+    topResultsToAnnounce,
+    ...xpRewardBrackets.map((bracket) => bracket.maxRank)
+  );
+
   const dailyLeaderboard = new DailyLeaderboard(modeRule, yesterdayTimestamp);
 
-  const allResults = await dailyLeaderboard.getResults(
+  const results = await dailyLeaderboard.getResults(
     0,
-    -1,
+    maxRankToGet,
     dailyLeaderboardsConfig,
     false
   );
 
-  if (allResults.length === 0) {
+  if (results.length === 0) {
     return;
   }
-
-  const { maxResults, xpRewardBrackets } = dailyLeaderboardsConfig;
 
   if (inboxConfig.enabled && xpRewardBrackets.length > 0) {
     const mailEntries: {
@@ -48,7 +55,7 @@ async function handleDailyLeaderboardResults(
       mail: MonkeyMail[];
     }[] = [];
 
-    allResults.forEach((entry) => {
+    results.forEach((entry) => {
       const rank = entry.rank ?? maxResults;
       const wpm = Math.round(entry.wpm);
 
@@ -89,7 +96,7 @@ async function handleDailyLeaderboardResults(
     await addToInboxBulk(mailEntries, inboxConfig);
   }
 
-  const topResults = allResults.slice(
+  const topResults = results.slice(
     0,
     dailyLeaderboardsConfig.topResultsToAnnounce
   );
@@ -125,7 +132,8 @@ async function handleWeeklyXpLeaderboardResults(
   const allResults = await weeklyXpLeaderboard.getResults(
     0,
     maxRankToGet,
-    weeklyXpConfig
+    weeklyXpConfig,
+    false
   );
 
   if (allResults.length === 0) {
@@ -180,8 +188,8 @@ async function handleWeeklyXpLeaderboardResults(
   await addToInboxBulk(mailEntries, inboxConfig);
 }
 
-async function jobHandler(job: Job): Promise<void> {
-  const { taskName, ctx }: LaterTask<LaterTaskType> = job.data;
+async function jobHandler(job: Job<LaterTask<LaterTaskType>>): Promise<void> {
+  const { taskName, ctx } = job.data;
 
   Logger.info(`Starting job: ${taskName}`);
 
@@ -200,8 +208,15 @@ async function jobHandler(job: Job): Promise<void> {
   Logger.success(`Job: ${taskName} - completed in ${elapsed}ms`);
 }
 
-export default (redisConnection?: IORedis.Redis): Worker =>
-  new Worker(LaterQueue.queueName, jobHandler, {
+export default (redisConnection?: IORedis.Redis): Worker => {
+  const worker = new Worker(LaterQueue.queueName, jobHandler, {
     autorun: false,
     connection: redisConnection as ConnectionOptions,
   });
+  worker.on("failed", (job, error) => {
+    Logger.error(
+      `Job: ${job.data.taskName} - failed with error "${error.message}"`
+    );
+  });
+  return worker;
+};

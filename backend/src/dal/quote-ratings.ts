@@ -1,4 +1,13 @@
+import { QuoteRating } from "@monkeytype/contracts/schemas/quotes";
 import * as db from "../init/db";
+import { Collection } from "mongodb";
+import { WithObjectId } from "../utils/misc";
+
+type DBQuoteRating = WithObjectId<QuoteRating>;
+
+// Export for use in tests
+export const getQuoteRatingCollection = (): Collection<DBQuoteRating> =>
+  db.collection<DBQuoteRating>("quote-rating");
 
 export async function submit(
   quoteId: number,
@@ -7,21 +16,17 @@ export async function submit(
   update: boolean
 ): Promise<void> {
   if (update) {
-    await db
-      .collection<MonkeyTypes.QuoteRating>("quote-rating")
-      .updateOne(
-        { quoteId, language },
-        { $inc: { totalRating: rating } },
-        { upsert: true }
-      );
+    await getQuoteRatingCollection().updateOne(
+      { quoteId, language },
+      { $inc: { totalRating: rating } },
+      { upsert: true }
+    );
   } else {
-    await db
-      .collection<MonkeyTypes.QuoteRating>("quote-rating")
-      .updateOne(
-        { quoteId, language },
-        { $inc: { ratings: 1, totalRating: rating } },
-        { upsert: true }
-      );
+    await getQuoteRatingCollection().updateOne(
+      { quoteId, language },
+      { $inc: { ratings: 1, totalRating: rating } },
+      { upsert: true }
+    );
   }
 
   const quoteRating = await get(quoteId, language);
@@ -34,16 +39,15 @@ export async function submit(
     ).toFixed(1)
   );
 
-  await db
-    .collection<MonkeyTypes.QuoteRating>("quote-rating")
-    .updateOne({ quoteId, language }, { $set: { average } });
+  await getQuoteRatingCollection().updateOne(
+    { quoteId, language },
+    { $set: { average } }
+  );
 }
 
 export async function get(
   quoteId: number,
   language: string
-): Promise<MonkeyTypes.QuoteRating | null> {
-  return await db
-    .collection<MonkeyTypes.QuoteRating>("quote-rating")
-    .findOne({ quoteId, language });
+): Promise<DBQuoteRating | null> {
+  return await getQuoteRatingCollection().findOne({ quoteId, language });
 }

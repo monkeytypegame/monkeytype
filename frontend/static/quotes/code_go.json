@@ -80,12 +80,6 @@
       "id": 12
     },
     {
-      "text": "// Go program to illustrate the\n// use of simple for loop\npackage main\nimport \"fmt\"\n\nfunc main() {\n\tfor i := 0; i < 4; i++ {\n\t\tfmt.Printf(\"GeeksforGeeks\n\")\n\t}\n}",
-      "source": "GeekForGeeks - Loops in Golang",
-      "length": 160,
-      "id": 13
-    },
-    {
       "text": "// Go program to illustrate the\n// use of an infinite loop\npackage main\nimport \"fmt\"\n\nfunc main() {\n\tfor {\n\t\tfmt.Printf(\"GeeksforGeeks\n\")\n\t}\n}",
       "source": "GeekForGeeks - Loops in Golang",
       "length": 142,

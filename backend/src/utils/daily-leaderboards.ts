@@ -1,13 +1,15 @@
 import _, { omit } from "lodash";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
-import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
-import { Configuration, ValidModeRule } from "@monkeytype/shared-types";
+import { matchesAPattern, kogascore } from "./misc";
 import {
-  DailyLeaderboardRank,
-  LeaderboardEntry,
-} from "@monkeytype/contracts/schemas/leaderboards";
+  Configuration,
+  ValidModeRule,
+} from "@monkeytype/contracts/schemas/configuration";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import MonkeyError from "./error";
+import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import { getCurrentDayTimestamp } from "@monkeytype/util/date-and-time";
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
@@ -70,7 +72,8 @@ export class DailyLeaderboard {
 
     const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
 
-    // @ts-expect-error
+    // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const rank = (await connection.addResult(
       2,
       leaderboardScoresKey,
@@ -103,8 +106,8 @@ export class DailyLeaderboard {
   }
 
   public async getResults(
-    minRank: number,
-    maxRank: number,
+    page: number,
+    pageSize: number,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
     premiumFeaturesEnabled: boolean
   ): Promise<LeaderboardEntry[]> {
@@ -113,18 +116,26 @@ export class DailyLeaderboard {
       return [];
     }
 
+    if (page < 0 || pageSize < 0) {
+      throw new MonkeyError(500, "Invalid page or pageSize");
+    }
+
+    const minRank = page * pageSize;
+    const maxRank = minRank + pageSize - 1;
+
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    // @ts-expect-error
-    const [results]: string[][] = await connection.getResults(
+    // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const [results, _] = (await connection.getResults(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
       minRank,
       maxRank,
       "false"
-    );
+    )) as [string[], string[]];
 
     if (results === undefined) {
       throw new Error(
@@ -151,10 +162,33 @@ export class DailyLeaderboard {
     return resultsWithRanks;
   }
 
+  public async getMinWpm(
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
+  ): Promise<number> {
+    const connection = RedisClient.getConnection();
+    if (!connection || !dailyLeaderboardsConfig.enabled) {
+      return 0;
+    }
+
+    const { leaderboardScoresKey } = this.getTodaysLeaderboardKeys();
+
+    const [_uid, minScore] = (await connection.zrange(
+      leaderboardScoresKey,
+      0,
+      0,
+      "WITHSCORES"
+    )) as [string, string];
+
+    const minWpm =
+      minScore !== undefined ? parseInt(minScore?.slice(1, 6)) / 100 : 0;
+
+    return minWpm;
+  }
+
   public async getRank(
     uid: string,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardRank> {
+  ): Promise<LeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       throw new MonkeyError(500, "Redis connnection is unavailable");
@@ -163,32 +197,38 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    // @ts-expect-error
-    const [[, rank], [, count], [, result], [, minScore]] = await connection
+    const redisExecResult = (await connection
       .multi()
       .zrevrank(leaderboardScoresKey, uid)
       .zcard(leaderboardScoresKey)
       .hget(leaderboardResultsKey, uid)
-      .zrange(leaderboardScoresKey, 0, 0, "WITHSCORES")
-      .exec();
+      .exec()) as [
+      [null, number | null],
+      [null, number | null],
+      [null, string | null]
+    ];
 
-    const minWpm =
-      minScore.length > 0 ? parseInt(minScore[1]?.slice(1, 6)) / 100 : 0;
+    const [[, rank], [, _count], [, result]] = redisExecResult;
+
     if (rank === null) {
-      return {
-        minWpm,
-        count: count ?? 0,
-      };
+      return null;
     }
 
     return {
-      minWpm,
-      count: count ?? 0,
+      ...(JSON.parse(result ?? "null") as LeaderboardEntry),
       rank: rank + 1,
-      entry: {
-        ...JSON.parse(result ?? "null"),
-      },
     };
+  }
+
+  public async getCount(): Promise<number> {
+    const connection = RedisClient.getConnection();
+    if (!connection) {
+      throw new MonkeyError(500, "Redis connnection is unavailable");
+    }
+
+    const { leaderboardScoresKey } = this.getTodaysLeaderboardKeys();
+
+    return connection.zcard(leaderboardScoresKey);
   }
 }
 
@@ -201,7 +241,8 @@ export async function purgeUserFromDailyLeaderboards(
     return;
   }
 
-  // @ts-expect-error
+  // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   await connection.purgeResults(0, uid, dailyLeaderboardNamespace);
 }
 
@@ -221,14 +262,14 @@ function isValidModeRule(
 
 export function getDailyLeaderboard(
   language: string,
-  mode: string,
-  mode2: string,
+  mode: Mode,
+  mode2: Mode2<Mode>,
   dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
   customTimestamp = -1
 ): DailyLeaderboard | null {
   const { validModeRules, enabled } = dailyLeaderboardsConfig;
 
-  const modeRule = { language, mode, mode2 };
+  const modeRule: ValidModeRule = { language, mode, mode2 };
   const isValidMode = isValidModeRule(modeRule, validModeRules);
 
   if (!enabled || !isValidMode) {

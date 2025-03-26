@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z, ZodSchema } from "zod";
 import { LanguageSchema, token } from "./util";
 import * as Shared from "./shared";
 
@@ -158,6 +158,9 @@ export type HighlightMode = z.infer<typeof HighlightModeSchema>;
 export const TapeModeSchema = z.enum(["off", "letter", "word"]);
 export type TapeMode = z.infer<typeof TapeModeSchema>;
 
+export const TapeMarginSchema = z.number().min(10).max(90);
+export type TapeMargin = z.infer<typeof TapeMarginSchema>;
+
 export const TypingSpeedUnitSchema = z.enum([
   "wpm",
   "cpm",
@@ -265,10 +268,13 @@ export type ThemeName = z.infer<typeof ThemeNameSchema>;
 export const KeymapLayoutSchema = z
   .string()
   .max(50)
-  .regex(/[\w\-_]+/);
+  .regex(/^[a-zA-Z0-9\-_]+$/gi);
 export type KeymapLayout = z.infer<typeof KeymapLayoutSchema>;
 
-export const LayoutSchema = token().max(50);
+export const LayoutSchema = z
+  .string()
+  .max(50)
+  .regex(/^[a-zA-Z0-9\-_]+$/gi);
 export type Layout = z.infer<typeof LayoutSchema>;
 
 export const FontSizeSchema = z.number().positive();
@@ -279,7 +285,11 @@ export type MaxLineWidth = z.infer<typeof MaxLineWidthSchema>;
 
 export const CustomBackgroundSchema = z
   .string()
-  .regex(/(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi)
+  .url("Needs to be an URI.")
+  .regex(/^(https|http):\/\/.*/, "Unsupported protocol.")
+  .regex(/^[^`'"]*$/, "May not contain quotes.")
+  .regex(/.+(\.png|\.gif|\.jpeg|\.jpg)/gi, "Unsupported image format.")
+  .max(2048, "URL is too long.")
   .or(z.literal(""));
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
@@ -295,6 +305,7 @@ export const ConfigSchema = z
     favThemes: FavThemesSchema,
     showKeyTips: z.boolean(),
     smoothCaret: SmoothCaretSchema,
+    codeUnindentOnBackspace: z.boolean(),
     quickRestart: QuickRestartSchema,
     punctuation: z.boolean(),
     numbers: z.boolean(),
@@ -350,6 +361,7 @@ export const ConfigSchema = z
     minWpmCustomSpeed: MinWpmCustomSpeedSchema,
     highlightMode: HighlightModeSchema,
     tapeMode: TapeModeSchema,
+    tapeMargin: TapeMarginSchema,
     typingSpeedUnit: TypingSpeedUnitSchema,
     ads: AdsSchema,
     hideExtraLetters: z.boolean(),
@@ -371,11 +383,119 @@ export const ConfigSchema = z
     lazyMode: z.boolean(),
     showAverage: ShowAverageSchema,
     maxLineWidth: MaxLineWidthSchema,
-  })
+  } satisfies Record<string, ZodSchema>)
   .strict();
+
 export type Config = z.infer<typeof ConfigSchema>;
+export type ConfigKey = keyof Config;
+export type ConfigValue = Config[keyof Config];
 
 export const PartialConfigSchema = ConfigSchema.partial();
 export type PartialConfig = z.infer<typeof PartialConfigSchema>;
 
-export type ConfigValue = Config[keyof Config];
+export const ConfigGroupNameSchema = z.enum([
+  "test",
+  "behavior",
+  "input",
+  "sound",
+  "caret",
+  "appearance",
+  "theme",
+  "hideElements",
+  "ads",
+  "hidden",
+]);
+
+export type ConfigGroupName = z.infer<typeof ConfigGroupNameSchema>;
+
+export const ConfigGroupsLiteral = {
+  theme: "theme",
+  themeLight: "theme",
+  themeDark: "theme",
+  autoSwitchTheme: "theme",
+  customTheme: "theme",
+  customThemeColors: "theme",
+  favThemes: "theme",
+  showKeyTips: "hideElements",
+  smoothCaret: "caret",
+  codeUnindentOnBackspace: "input",
+  quickRestart: "behavior",
+  punctuation: "test",
+  numbers: "test",
+  words: "test",
+  time: "test",
+  mode: "test",
+  quoteLength: "test",
+  language: "test",
+  fontSize: "appearance",
+  freedomMode: "input",
+  difficulty: "behavior",
+  blindMode: "behavior",
+  quickEnd: "input",
+  caretStyle: "caret",
+  paceCaretStyle: "caret",
+  flipTestColors: "theme",
+  layout: "input",
+  funbox: "behavior",
+  confidenceMode: "input",
+  indicateTypos: "input",
+  timerStyle: "appearance",
+  liveSpeedStyle: "appearance",
+  liveAccStyle: "appearance",
+  liveBurstStyle: "appearance",
+  colorfulMode: "theme",
+  randomTheme: "theme",
+  timerColor: "appearance",
+  timerOpacity: "appearance",
+  stopOnError: "input",
+  showAllLines: "appearance",
+  keymapMode: "appearance",
+  keymapStyle: "appearance",
+  keymapLegendStyle: "appearance",
+  keymapLayout: "appearance",
+  keymapShowTopRow: "appearance",
+  keymapSize: "appearance",
+  fontFamily: "appearance",
+  smoothLineScroll: "appearance",
+  alwaysShowDecimalPlaces: "appearance",
+  alwaysShowWordsHistory: "behavior",
+  singleListCommandLine: "behavior",
+  capsLockWarning: "hideElements",
+  playSoundOnError: "sound",
+  playSoundOnClick: "sound",
+  soundVolume: "sound",
+  startGraphsAtZero: "appearance",
+  showOutOfFocusWarning: "hideElements",
+  paceCaret: "caret",
+  paceCaretCustomSpeed: "caret",
+  repeatedPace: "caret",
+  accountChart: "hidden",
+  minWpm: "behavior",
+  minWpmCustomSpeed: "behavior",
+  highlightMode: "appearance",
+  tapeMode: "appearance",
+  tapeMargin: "appearance",
+  typingSpeedUnit: "appearance",
+  ads: "ads",
+  hideExtraLetters: "input",
+  strictSpace: "input",
+  minAcc: "behavior",
+  minAccCustom: "behavior",
+  monkey: "hidden",
+  repeatQuotes: "behavior",
+  oppositeShiftMode: "input",
+  customBackground: "theme",
+  customBackgroundSize: "theme",
+  customBackgroundFilter: "theme",
+  customLayoutfluid: "behavior",
+  monkeyPowerLevel: "hidden",
+  minBurst: "behavior",
+  minBurstCustomSpeed: "behavior",
+  burstHeatmap: "test",
+  britishEnglish: "behavior",
+  lazyMode: "input",
+  showAverage: "hideElements",
+  maxLineWidth: "appearance",
+} as const satisfies Record<ConfigKey, ConfigGroupName>;
+
+export type ConfigGroups = typeof ConfigGroupsLiteral;

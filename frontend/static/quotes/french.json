@@ -1184,12 +1184,6 @@
       "id": 205
     },
     {
-      "text": "As night fell, Tate walked back towards the shack. But when he reached the lagoon, he stopped under the deep canopy and watched hundreds of fireflies beckoning far into the dark reaches of the marsh. Way out yonder, where the crawdads sing.",
-      "source": "Delia Owens - Where the crawdads sing",
-      "length": 240,
-      "id": 206
-    },
-    {
       "text": "Ah, les femmes ! s'exclama Poirot en français. Elles sont fantastiques. Elles inventent, au hasard, et comme par miracle elles ont raison. Non, pas vraiment par miracle. Elles observent, sans même en avoir conscience, une infinité de détails. Leur subconscient additionne toutes les petites choses et elles appellent le résultat intuition.",
       "source": "Agatha Christie - Intuition féminine - Le Meurtre de Roger Ackroyd",
       "length": 339,
@@ -1536,12 +1530,6 @@
       "source": "Patrick Rambaud - Préoccupations de Napoléon 1er avant Essling (La Bataille)",
       "length": 404,
       "id": 264
-    },
-    {
-      "text": "J'ai envie de te dire oui mais je ne sais pas comment faire alors aide moi. je pense que ne nous sommes pas en mesure de répondre à ceci dans la mesure où la question posée est compliquée à répondre et je pense que pour y répondre nous devons déjà connaître comment l'analyser afin de pouvoir mieux l'appréhender et la terminer à tout jamais. Le principe même de la réflexion est important pour bien comprendre la question et son enjeu et donc pour moi un manque d'analyse sur une question est end.",
-      "source": "fakes - aqf",
-      "length": 498,
-      "id": 265
     },
     {
       "text": "Vous savez, moi je ne crois pas qu'il y ait de bonne ou de mauvaise situation. Moi, si je devais résumer ma vie aujourd'hui avec vous, je dirais que c'est d'abord des rencontres. Des gens qui m'ont tendu la main, peut-être à un moment où je ne pouvais pas, où j'étais seul chez moi. Et c'est assez curieux de se dire que les hasards, les rencontres, forgent une destinée... Parce que quand on a le goût de la chose, quand on a le goût de la chose bien faite, le beau geste, parfois on ne trouve pas..",
@@ -2222,12 +2210,6 @@
       "id": 378
     },
     {
-      "text": "La educación es el pasaporte para el futuro, el mañana pertenece a aquellos que se preparan para él en el día de hoy. Oséase, el hábito del estudio es el más demandado en cuánto a éxito.",
-      "source": "Malcom X - La educación",
-      "length": 186,
-      "id": 379
-    },
-    {
       "text": "La fatalité fond sur nous. Le temps s'étire, les jours se suivent pesamment, en nous berçant de l'illusion que le désastre redouté va être différé. Puis, brusquement, les jours sombres que nous avons tous prédits sont sur nous, et l'heure est passée où nous aurions pu éviter le sort funeste. Jusqu'à quel âge faut-il vivre pour tirer des leçons de ses expériences ?",
       "source": "Robin Hobb - Les aventuriers de la mer",
       "length": 366,
@@ -2256,12 +2238,6 @@
       "source": "JK Rowling - Harry Potter et les Reliques de la Mort",
       "length": 362,
       "id": 384
-    },
-    {
-      "text": "Les femmes sont des plaies ... Capricieuses, Égoïstes, Râleuses ... Elles sont froides, sèches, calculatrices et en même temps extraordinairement mièvres et collantes. On ne sait jamais si elles s'entendent bien ou mal entre elles ... En plus, elles croient pouvoir manipuler tous les hommes ... En tout cas, c'est toujours un tas d'ennuis les femmes ...",
-      "source": "Filipe - Shikamaru",
-      "length": 354,
-      "id": 385
     },
     {
       "text": "Et j'ai appris à haïr ce monde de toutes mes forces, j'ai cherché à le détruire de mes propres mains, ce que l'Akatsuki cherche exactement à faire aujourd'hui. Mais ... Un certain ninja de Konoha ... A eu le cran de m'arrêter ! J'étais son ennemi, mais ça ne l'a pas empêché de pleurer pour moi ! Je l'ai blessé mais il a continué à m'appeler son ami ! Il m'a sauvé ! Moi, son ennemi ! Moi qui comme lui, étais un Jinchuuriki !",
@@ -2358,12 +2334,6 @@
       "source": "Frederic Worms - Les 100 mots de la philosophie",
       "length": 260,
       "id": 401
-    },
-    {
-      "text": "Dépourvue d'âme, la femme est dans l'incapacité de s'élever vers Dieu. En revanche, elle est en général pourvue d'un escabeau qui lui permet de s'élever vers le plafond pour faire les carreaux. C'est tout ce qu'on lui demande.",
-      "source": "Pierre Desproges - Pierre Desproges",
-      "length": 226,
-      "id": 402
     },
     {
       "text": "Longtemps, je me suis couché de bonne heure. Parfois, à peine ma bougie éteinte, mes yeux se fermaient si vite que je n'avais pas le temps de me dire : \"Je m'endors.\" Et, une demi-heure après, la pensée qu'il était temps de chercher le sommeil m'éveillait ; je voulais poser le volume que je croyais avoir encore dans les mains et souffler ma lumière ; je n'avais pas cessé en dormant de faire des réflexions sur ce que je venais de lire, mais ces réflexions avaient pris un tour un peu particulier.",
@@ -2468,9 +2438,9 @@
       "id": 420
     },
     {
-      "text": "Il n'y a rien dans le monde qui n'ait son moment décisif, et le chef-d'oeuvre de la bonne conduite est de connaître et de prendre ce moment : si on le manque, surtout dans la révolution des États, on court fortune ou de ne pas le retrouver, ou de ne le pas apercevoir.",
+      "text": "Il n'y a rien dans le monde qui n'ait son moment décisif, et le chef-d'oeuvre de la bonne conduite est de connaître et de prendre ce moment : si on le manque, surtout dans la révolution des États, on court fortune ou de ne pas le retrouver, ou de ne pas l'apercevoir.",
       "source": "Le Cardinal de Retz - Mémoires",
-      "length": 268,
+      "length": 267,
       "id": 421
     },
     {
@@ -2894,12 +2864,6 @@
       "id": 492
     },
     {
-      "text": "Je ne veux pas travailler Je ne veux pas déjeuner Je veux seulement l'oublier Et puis je fume Déjà j'ai connu le parfum de l'amour Un millions de roses n'embaumeraient pas autant.",
-      "source": "Pink Martini - Sympathique",
-      "length": 179,
-      "id": 493
-    },
-    {
       "text": "L'été craonnait, doux mais ferme, réchauffait ce bronze impeccablement lové sur lui-même : trois spires de vipères à tenter l'orfèvre, moins les saphirs classiques des yeux, car, heureusement pour moi, cette vipère, elle dormait.",
       "source": "Hervé Bazin - Vipère au Poing",
       "length": 229,
@@ -3080,12 +3044,6 @@
       "id": 523
     },
     {
-      "text": "Parler avec ces pétasses, songeait Bruno en retraversant le camping, c'est comme pisser dans un urinoir rempli de mégots ; ou encore c'est comme chier dans une chiotte remplie de serviettes hygiéniques : les choses ne rentrent pas, et elles se mettent à puer.",
-      "source": "Michel Houellebecq - Les Particules élémentaires",
-      "length": 259,
-      "id": 524
-    },
-    {
       "text": "Le sang est composé d'une partie liquide, le plasma, et d'une partie solide, les globules rouges, les globules blancs et les plaquettes. Le sang est essentiel à la vie des cellules et donc de notre corps.",
       "source": "Elisabeth Andréani, etc. - De quoi est fait le sang ?",
       "length": 204,
@@ -3108,12 +3066,6 @@
       "source": "Sylvie Girard-Lagorce - Guacamole",
       "length": 326,
       "id": 528
-    },
-    {
-      "text": "Venue de Texas et influencée par la cuisine mexicaine, d'où son nom, la cuisine tex-mex connaît un véritable engouement : chaleureuse et épicée avec des ingrédients colorés et relevés comme le maïs et le piment, la tomate et l'avocat, elle s'inscrit parfaitement dans un cuisine plein air qui jour la carte du dépaysement et de la joie de vivre. Faciles et rapides, les recettes tex-mex permettent de composer un buffet orignal.",
-      "source": "Sylvie Girard-Lagorce - Cuisine de plein-air - Le buffet TEX-MEX",
-      "length": 428,
-      "id": 529
     },
     {
       "text": "Ce qui fait que si peu de personnes sont agréables dans la conversation, c'est que chacun songe plus à ce qu'il veut dire qu'à ce que les autres disent.",
@@ -3980,12 +3932,6 @@
       "id": 674
     },
     {
-      "text": "He searches all the information on the internet for you. He helps you save some precious time: He helps you search for the best price for a train ticket, the opening hours of your favorite shop or a museum, a nice performance for a Saturday night.",
-      "source": "Sarah Lemaitre - He does all the researches for you.",
-      "length": 247,
-      "id": 675
-    },
-    {
       "text": "Il sauvegarde vos documents importants en toute sécurité : passeport, carte d'identité, permis, carte de groupe sanguin, de vaccination, cartes de fidélité... Tous vos documents sont alors à portée de main à tout moment ! Très utile pour vos voyages.",
       "source": "Sarah Lemaitre - Il sauvegarde vos documents",
       "length": 250,
@@ -4004,9 +3950,9 @@
       "id": 678
     },
     {
-      "text": "Celui qui sait tout ne sait rien. Celui qui veut apprendre tout ne pourra jamais le faire. Celui qui veut apprendre en commençant par le début sans se soucir de tout fera des grandes choses.",
+      "text": "Celui qui sait tout ne sait rien. Celui qui veut apprendre tout ne pourra jamais le faire. Celui qui veut apprendre en commençant par le début sans se soucier de tout fera des grandes choses.",
       "source": "Sarah Lemaitre",
-      "length": 190,
+      "length": 191,
       "id": 679
     },
     {
@@ -4388,9 +4334,9 @@
       "id": 742
     },
     {
-      "text": "Nous sommes servis par des fantômes organiques, pensa-t-il, qui par la parole et l'écriture pénètrent dans notre nouvel environnement. Des fantômes avisés qui veillent, issus du monde physique de la vie réelle, et qui se manifestent à nous comme des projections envahissantes mais bienveillantes, comme les battements anciens d'un coeur oublié. Et entre tous, songea-t-il, merci à Glen Runciter. Lui en particulier. Le rédacteur des modes d'emploi, des étiquettes et des messages. Des précieux message.",
+      "text": "Nous sommes servis par des fantômes organiques, pensa-t-il, qui par la parole et l'écriture pénètrent dans notre nouvel environnement. Des fantômes avisés qui veillent, issus du monde physique de la vie réelle, et qui se manifestent à nous comme des projections envahissantes mais bienveillantes, comme les battements anciens d'un coeur oublié. Et entre tous, songea-t-il, merci à Glen Runciter. Lui en particulier. Le rédacteur des modes d'emploi, des étiquettes et des messages. Des précieux messages.",
       "source": "Philip K Dick - Ubik",
-      "length": 502,
+      "length": 503,
       "id": 743
     },
     {
@@ -4514,7 +4460,7 @@
       "id": 763
     },
     {
-      "text": "Il arborait une courte barbe noire, aussi touffue et désordonnée que sa chevelure, et ses joues étaient tannées au-dessus. D'épais sourcils surplombaient ses yeux sombres. Sa poitrine bombait comme un tonneau et ses épaules tendaient le tissu de sa chemise. Ses poings étaient carrés et couturés de cicatrices, bien que les doigts de sa main droite fussent tachés d'encre.",
+      "text": "Il arborait une courte barbe noire, aussi touffue et désordonnée que sa chevelure, et ses joues étaient tannées au-dessus. D'épais sourcils surplombaient ses yeux sombres. Sa poitrine bombait comme un tonneau et ses épaules tendaient le tissu de sa chemise. Ses poings étaient carrés et couturés de cicatrices, bien que les doigts de sa main droite fussent tâchés d'encre.",
       "source": "Robin Hobb - L'assasin Royal : l'apprenti assassin",
       "length": 372,
       "id": 764
@@ -5798,12 +5744,6 @@
       "id": 977
     },
     {
-      "text": "La femme est assez proche de l'Homme, comme l'épagneul breton. À ce détail près qu'il ne manque à l'épagneul breton que la parole, alors qu'il ne manque à la femme que de se taire. Par ailleurs la robe de l'épagneul breton est rouge feu et il lui en suffit d'une.",
-      "source": "Pierre Desproges - La femme et l'épagneul",
-      "length": 263,
-      "id": 978
-    },
-    {
       "text": "Les chaussettes de l'archiduchesse sont-elles sèches, archi-sèches ? Un chasseur sachant chasser sans son chien est un bon chasseur. Jésus chez Zachée.",
       "source": "Inconu - Prononciation",
       "length": 151,
@@ -6666,6 +6606,12 @@
       "source": "Franz Kafka",
       "length": 206,
       "id": 1122
+    },
+    {
+      "text": "On marche lentement pour ne pas blesser nos pieds tout nus. On coupe à travers champ pour rejoindre un chapiteau, la musique est forte, ça empêche les vaches de dormir. Et on ne dit rien, on pense aux garçons qu'on ne connaît pas, qui sont là-bas, qui sont beaux, sûrement, qui ne sont pas fins, souvent. On pense aux garçons qui nous font rire avec leur maladresse, aux garçons qui sont juste beaux de la face et pas du dedans, et aux garçons qui sont beaux de partout aussi. Si ça existe. Ça existe, des garçons beaux de partout? Ils sont où, hein?",
+      "source": "Coeur de slush - Sarah-Maude Beauchesne",
+      "length": 550,
+      "id": 1123
     }
   ]
 }

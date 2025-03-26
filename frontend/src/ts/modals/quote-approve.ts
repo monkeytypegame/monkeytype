@@ -3,8 +3,9 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import { format } from "date-fns/format";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { Quote } from "@monkeytype/contracts/schemas/quotes";
 
-let quotes: Ape.Quotes.Quote[] = [];
+let quotes: Quote[] = [];
 
 function updateList(): void {
   $("#quoteApproveModal .quotes").empty();
@@ -96,11 +97,11 @@ async function getQuotes(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to get new quotes: " + response.message, -1);
+    Notifications.add("Failed to get new quotes: " + response.body.message, -1);
     return;
   }
 
-  quotes = response.data ?? [];
+  quotes = response.body.data ?? [];
   updateList();
 }
 
@@ -150,17 +151,19 @@ async function approveQuote(index: number, dbid: string): Promise<void> {
   quote.find("textarea, input").prop("disabled", true);
 
   Loader.show();
-  const response = await Ape.quotes.approveSubmission(dbid);
+  const response = await Ape.quotes.approveSubmission({
+    body: { quoteId: dbid },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
     resetButtons(index);
     quote.find("textarea, input").prop("disabled", false);
-    Notifications.add("Failed to approve quote: " + response.message, -1);
+    Notifications.add("Failed to approve quote: " + response.body.message, -1);
     return;
   }
 
-  Notifications.add(`Quote approved. ${response.message ?? ""}`, 1);
+  Notifications.add(`Quote approved. ${response.body.message ?? ""}`, 1);
   quotes.splice(index, 1);
   updateList();
 }
@@ -172,13 +175,15 @@ async function refuseQuote(index: number, dbid: string): Promise<void> {
   quote.find("textarea, input").prop("disabled", true);
 
   Loader.show();
-  const response = await Ape.quotes.rejectSubmission(dbid);
+  const response = await Ape.quotes.rejectSubmission({
+    body: { quoteId: dbid },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
     resetButtons(index);
     quote.find("textarea, input").prop("disabled", false);
-    Notifications.add("Failed to refuse quote: " + response.message, -1);
+    Notifications.add("Failed to refuse quote: " + response.body.message, -1);
     return;
   }
 
@@ -200,21 +205,26 @@ async function editQuote(index: number, dbid: string): Promise<void> {
   quote.find("textarea, input").prop("disabled", true);
 
   Loader.show();
-  const response = await Ape.quotes.approveSubmission(
-    dbid,
-    editText,
-    editSource
-  );
+  const response = await Ape.quotes.approveSubmission({
+    body: {
+      quoteId: dbid,
+      editText,
+      editSource,
+    },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
     resetButtons(index);
     quote.find("textarea, input").prop("disabled", false);
-    Notifications.add("Failed to approve quote: " + response.message, -1);
+    Notifications.add("Failed to approve quote: " + response.body.message, -1);
     return;
   }
 
-  Notifications.add(`Quote edited and approved. ${response.message ?? ""}`, 1);
+  Notifications.add(
+    `Quote edited and approved. ${response.body.message ?? ""}`,
+    1
+  );
   quotes.splice(index, 1);
   updateList();
 }

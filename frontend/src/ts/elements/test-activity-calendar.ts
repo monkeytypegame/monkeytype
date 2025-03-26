@@ -11,26 +11,38 @@ import {
   startOfYear,
   differenceInWeeks,
   startOfMonth,
-  nextSunday,
-  previousSunday,
-  isSunday,
-  nextSaturday,
-  isSaturday,
   subWeeks,
   Interval,
+  toDate,
+  previousDay,
+  Day,
+  nextDay,
 } from "date-fns";
 
-export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
+export type TestActivityDay = {
+  level: string;
+  label?: string;
+};
+
+export type TestActivityMonth = {
+  text: string;
+  weeks: number;
+};
+
+export class TestActivityCalendar implements TestActivityCalendar {
   protected data: (number | null | undefined)[];
   protected startDay: Date;
   protected endDay: Date;
   protected isFullYear: boolean;
+  public firstDayOfWeek: Day;
 
   constructor(
     data: (number | null | undefined)[],
     lastDay: Date,
+    firstDayOfWeek: Day,
     fullYear = false
   ) {
+    this.firstDayOfWeek = firstDayOfWeek;
     const local = new UTCDateMini(lastDay);
     const interval = this.getInterval(local, fullYear);
 
@@ -46,7 +58,9 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     if (!fullYear) {
       //show the last 52 weeks. Not using one year to avoid the graph to show 54 weeks
       start = addDays(subWeeks(end, 52), 1);
-      if (!isSunday(start)) start = previousSunday(start);
+      if (!this.isFirstDayOfWeek(start)) {
+        start = this.previousFirstDayOfWeek(start);
+      }
     }
 
     return { start, end };
@@ -57,9 +71,9 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     lastDay: Date
   ): (number | null | undefined)[] {
     //fill calendar with enough values
-    const values: (number | null | undefined)[] = new Array(
-      Math.max(0, 386 - data.length)
-    ).fill(undefined);
+    const values = new Array(Math.max(0, 386 - data.length)).fill(
+      undefined
+    ) as (number | null | undefined)[];
     values.push(...data);
 
     //discard values outside the calendar range
@@ -69,23 +83,26 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     return values.slice(offset);
   }
 
-  getMonths(): MonkeyTypes.TestActivityMonth[] {
+  getMonths(): TestActivityMonth[] {
     const months: Date[] = eachMonthOfInterval({
       start: this.startDay,
       end: this.endDay,
     });
-    const results: MonkeyTypes.TestActivityMonth[] = [];
+    const results: TestActivityMonth[] = [];
 
     for (let i = 0; i < months.length; i++) {
       const month: Date = months[i] as Date;
       let start = i === 0 ? this.startDay : startOfMonth(month);
       let end = i === months.length - 1 ? this.endDay : endOfMonth(start);
 
-      if (!isSunday(start)) {
-        start = (i === 0 ? previousSunday : nextSunday)(start);
+      if (!this.isFirstDayOfWeek(start)) {
+        start =
+          i === 0
+            ? this.previousFirstDayOfWeek(start)
+            : this.nextFirstDayOfWeek(start);
       }
-      if (!isSaturday(end)) {
-        end = nextSaturday(end);
+      if (!this.isLastDayOfWeek(end)) {
+        end = this.nextLastDayOfWeek(end);
       }
 
       const weeks = differenceInWeeks(end, start, { roundingMethod: "ceil" });
@@ -101,8 +118,8 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     return results;
   }
 
-  getDays(): MonkeyTypes.TestActivityDay[] {
-    const result: MonkeyTypes.TestActivityDay[] = [];
+  getDays(): TestActivityDay[] {
+    const result: TestActivityDay[] = [];
     const buckets = this.getBuckets();
     const getValue = (v: number | null | undefined): string => {
       if (v === undefined) return "0";
@@ -114,7 +131,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     };
 
     //skip weekdays in the previous month
-    for (let i = 0; i < this.startDay.getDay(); i++) {
+    for (let i = 0; i < this.startDay.getDay() - this.firstDayOfWeek; i++) {
       result.push({
         level: "filler",
       });
@@ -138,7 +155,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     }
 
     //add weekdays missing
-    for (let i = this.endDay.getDay(); i < 6; i++) {
+    for (let i = this.endDay.getDay() - this.firstDayOfWeek; i < 6; i++) {
       result.push({
         level: "filler",
       });
@@ -168,16 +185,32 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     const mid = sum / trimmed.length;
     return [Math.floor(mid / 2), Math.round(mid), Math.round(mid * 1.5)];
   }
+
+  private isFirstDayOfWeek(date: Date): boolean {
+    return toDate(date).getDay() === this.firstDayOfWeek;
+  }
+  private previousFirstDayOfWeek(date: Date): Date {
+    return previousDay(date, this.firstDayOfWeek);
+  }
+  private nextFirstDayOfWeek(date: Date): Date {
+    return nextDay(date, this.firstDayOfWeek);
+  }
+  private isLastDayOfWeek(date: Date): boolean {
+    return toDate(date).getDay() === (this.firstDayOfWeek + 6) % 7;
+  }
+  private nextLastDayOfWeek(date: Date): Date {
+    return nextDay(date, ((this.firstDayOfWeek + 6) % 7) as Day);
+  }
 }
 
 export class ModifiableTestActivityCalendar
   extends TestActivityCalendar
-  implements MonkeyTypes.ModifiableTestActivityCalendar
+  implements ModifiableTestActivityCalendar
 {
   private lastDay: Date;
 
-  constructor(data: (number | null)[], lastDay: Date) {
-    super(data, lastDay);
+  constructor(data: (number | null)[], lastDay: Date, firstDayOfWeek: Day) {
+    super(data, lastDay, firstDayOfWeek);
     this.lastDay = new UTCDateMini(lastDay);
   }
 
@@ -205,12 +238,17 @@ export class ModifiableTestActivityCalendar
     this.data = this.buildData(this.data, this.lastDay);
   }
 
-  getFullYearCalendar(): MonkeyTypes.TestActivityCalendar {
+  getFullYearCalendar(): TestActivityCalendar {
     const today = new Date();
     if (this.lastDay.getFullYear() !== new UTCDateMini(today).getFullYear()) {
-      return new TestActivityCalendar([], today, true);
+      return new TestActivityCalendar([], today, this.firstDayOfWeek, true);
     } else {
-      return new TestActivityCalendar(this.data, this.lastDay, true);
+      return new TestActivityCalendar(
+        this.data,
+        this.lastDay,
+        this.firstDayOfWeek,
+        true
+      );
     }
   }
 }

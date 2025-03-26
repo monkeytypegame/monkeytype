@@ -20,7 +20,7 @@
   --current-color: var(--main-color);
 }
 
-.button,
+.button:not(.accountButtonAndMenu *),
 #testConfig .row {
   --roundness: 5em; /* overwriting default roundness to make it softer */
 }
@@ -72,17 +72,17 @@ body::before {
   text-shadow: none;
 }
 
-#words.colorfulMode .word letter.incorrect:not(.extra),
-#words .word letter.incorrect:not(.extra) {
+#words:not(.blind).colorfulMode .word letter.incorrect:not(.extra),
+#words:not(.blind) .word letter.incorrect:not(.extra) {
   color: var(--current-color);
 }
 
-#words .word.error letter:not(.correct):not(.incorrect)::after {
+#words:not(.blind) .word.error letter:not(.correct):not(.incorrect)::after {
   background: var(--sub-color);
 }
 
-#words .word letter.incorrect,
-#words.colorfulMode .word letter.incorrect {
+#words:not(.blind) .word letter.incorrect,
+#words:not(.blind).colorfulMode .word letter.incorrect {
   text-decoration: line-through;
   text-decoration-color: var(--error-color);
   text-decoration-thickness: 2px;
@@ -101,11 +101,10 @@ body::before {
   --c-dot--error: var(--colorful-error-color);
 }
 
-#wordsWrapper .word:has(~ .active) letter {
-  animation: toDust 200ms ease-out 0ms 1 forwards;
+#words .word:has(~ .active) letter {
+  animation: toDust 200ms ease-out 0ms 1 forwards !important;
 }
-
-#wordsWrapper .word:has(~ .active) letter::after {
+#words .word:has(~ .active) letter::after {
   animation: fadeIn 100ms ease-in 100ms 1 forwards;
 }
 
@@ -129,7 +128,7 @@ body::before {
   background: var(--c-dot);
 }
 
-#wordsWrapper .word letter.incorrect::after {
+#wordsWrapper #words:not(.blind) .word letter.incorrect::after {
   background: var(--c-dot--error);
 }
 

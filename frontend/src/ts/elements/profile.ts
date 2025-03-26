@@ -2,19 +2,23 @@ import * as DB from "../db";
 import { format } from "date-fns/format";
 import { differenceInDays } from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as Levels from "../utils/levels";
-import * as DateTime from "../utils/date-and-time";
+import * as DateTime from "@monkeytype/util/date-and-time";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as ActivePage from "../states/active-page";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
-import { RankAndCount, UserProfile } from "@monkeytype/shared-types";
+import { UserProfile, RankAndCount } from "@monkeytype/contracts/schemas/users";
+import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
+import { secondsToString } from "../utils/date-and-time";
+import { Auth } from "../firebase";
+import { Snapshot } from "../constants/default-snapshot";
 
 type ProfileViewPaths = "profile" | "account";
-type UserProfileOrSnapshot = UserProfile | MonkeyTypes.Snapshot;
+type UserProfileOrSnapshot = UserProfile | Snapshot;
 
 //this is probably the dirtiest code ive ever written
 
@@ -127,7 +131,7 @@ export async function update(
     const results = DB.getSnapshot()?.results;
     const lastResult = results?.[0];
 
-    const streakOffset = (profile as MonkeyTypes.Snapshot).streakHourOffset;
+    const streakOffset = (profile as Snapshot).streakHourOffset;
 
     const dayInMilis = 1000 * 60 * 60 * 24;
 
@@ -152,7 +156,7 @@ export async function update(
     );
     console.debug("profile.streakHourOffset", streakOffset);
 
-    if (lastResult) {
+    if (lastResult !== undefined) {
       //check if the last result is from today
       const isToday = DateTime.isToday(lastResult.timestamp, streakOffset);
       const isYesterday = DateTime.isYesterday(
@@ -186,7 +190,7 @@ export async function update(
       console.debug(hoverText);
 
       if (streakOffset === undefined) {
-        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
+        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Account Settings > Account > Set streak hour offset.`;
       }
     }
   }
@@ -227,7 +231,7 @@ export async function update(
   typingStatsEl
     .find(".timeTyping .value")
     .text(
-      DateTime.secondsToString(
+      secondsToString(
         Math.round(profile.typingStats?.timeTyping ?? 0),
         true,
         true
@@ -246,9 +250,12 @@ export async function update(
     details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
     if (
-      profile.details?.socialProfiles.github !== undefined ||
-      profile.details?.socialProfiles.twitter !== undefined ||
-      profile.details?.socialProfiles.website !== undefined
+      (profile.details?.socialProfiles?.github !== undefined &&
+        profile.details?.socialProfiles?.github !== "") ||
+      (profile.details?.socialProfiles?.twitter !== undefined &&
+        profile.details?.socialProfiles?.twitter !== "") ||
+      (profile.details?.socialProfiles?.website !== undefined &&
+        profile.details?.socialProfiles?.website !== "")
     ) {
       socials = true;
       const socialsEl = details.find(".socials .value");
@@ -302,8 +309,8 @@ export async function update(
   } else {
     profileElement.find(".leaderboardsPositions").removeClass("hidden");
 
-    const t15 = profile.allTimeLbs.time?.["15"]?.["english"] ?? null;
-    const t60 = profile.allTimeLbs.time?.["60"]?.["english"] ?? null;
+    const t15 = profile.allTimeLbs?.time?.["15"]?.["english"] ?? null;
+    const t60 = profile.allTimeLbs?.time?.["60"]?.["english"] ?? null;
 
     if (t15 === null && t60 === null) {
       profileElement.find(".leaderboardsPositions").addClass("hidden");
@@ -327,6 +334,12 @@ export async function update(
           .text(formatTopPercentage(t60));
       }
     }
+  }
+
+  if (profile.uid === Auth?.currentUser?.uid) {
+    profileElement.find(".userReportButton").addClass("hidden");
+  } else {
+    profileElement.find(".userReportButton").removeClass("hidden");
   }
 
   //structure
@@ -416,7 +429,7 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   const nameFieldjQ = details.find(".user");
   const nameFieldParent = nameFieldjQ.parent()[0];
   const nameField = nameFieldjQ[0];
-  const upperLimit = Numbers.convertRemToPixels(2);
+  const upperLimit = convertRemToPixels(2);
 
   if (!nameField || !nameFieldParent) return;
 
@@ -450,6 +463,6 @@ function formatXp(xp: number): string {
   if (xp < 1000) {
     return Math.round(xp).toString();
   } else {
-    return Numbers.abbreviateNumber(xp);
+    return abbreviateNumber(xp);
   }
 }

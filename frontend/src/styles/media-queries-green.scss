@@ -30,18 +30,29 @@
       }
     }
     nav {
-      .textButton.account {
+      .textButton.view-account {
         gap: 0.5em;
-        .text {
-          display: none;
-        }
+      }
+    }
+  }
+  .pageAccountSettings .main {
+    gap: 2rem;
+    .right .tab .section {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "title"
+        "text" "buttons";
+      &.discordIntegration .info {
+        height: 8rem;
+        display: grid;
+        align-content: center;
       }
     }
   }
   .pageTest {
     #result .wrapper .stats.morestats {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(3, max-content);
       grid-template-rows: 1fr 1fr;
     }
     #liveStatsTextTop,
@@ -66,9 +77,13 @@
         }
       }
     }
-    .settingsGroup.quickNav .links {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    .settingsGroup.quickNav {
+      justify-content: unset;
+      .links {
+        max-width: unset;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+      }
     }
   }
   .pageAccount {
@@ -274,5 +289,23 @@
     //   height: 0.9em;
     //   border-radius: 0.2em;
     // }
+  }
+  .pageLeaderboards {
+    .content {
+      align-content: start;
+      grid-template-columns: 1fr;
+      grid-template-areas: "buttons" "table";
+      .buttons {
+        // grid-template-columns: 1fr 1fr;
+        font-size: 0.9em;
+        .buttonGroup {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+          button {
+            justify-content: center;
+          }
+        }
+      }
+    }
   }
 }

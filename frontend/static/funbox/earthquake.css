@@ -34,6 +34,9 @@
   }
 }
 
-letter {
-  animation: shake_dat_ass 0.25s infinite linear;
+#words {
+  --correct-letter-animation: shake_dat_ass 0.25s infinite linear;
+  --untyped-letter-animation: shake_dat_ass 0.25s infinite linear;
+  --incorrect-letter-animation: shake_dat_ass 0.25s infinite linear;
+  --extra-letter-animation: shake_dat_ass 0.25s infinite linear;
 }

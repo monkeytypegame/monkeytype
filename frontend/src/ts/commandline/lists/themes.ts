@@ -1,14 +1,16 @@
 import Config, * as UpdateConfig from "../../config";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import * as ThemeController from "../../controllers/theme-controller";
+import { Command, CommandsSubgroup } from "../types";
+import { Theme } from "../../utils/json-data";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Theme...",
   configKey: "theme",
   list: [],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeTheme",
     display: "Theme...",
@@ -17,9 +19,9 @@ const commands: MonkeyTypes.Command[] = [
   },
 ];
 
-function update(themes: MonkeyTypes.Theme[]): void {
+function update(themes: Theme[]): void {
   subgroup.list = [];
-  const favs: MonkeyTypes.Command[] = [];
+  const favs: Command[] = [];
   themes.forEach((theme) => {
     if (Config.favThemes.includes(theme.name)) {
       favs.push({

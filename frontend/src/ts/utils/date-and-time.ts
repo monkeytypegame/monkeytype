@@ -1,63 +1,6 @@
-import { roundTo2 } from "./numbers";
-
-/**
- * Returns the current day's timestamp adjusted by the hour offset.
- * @param hourOffset The offset in hours. Default is 0.
- * @returns The timestamp of the start of the current day adjusted by the hour offset.
- */
-export function getCurrentDayTimestamp(hourOffset = 0): number {
-  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
-  const currentTime = Date.now();
-  return getStartOfDayTimestamp(currentTime, offsetMilis);
-}
-
-const MILISECONDS_IN_HOUR = 3600000;
-const MILLISECONDS_IN_DAY = 86400000;
-
-/**
- * Returns the timestamp of the start of the day for the given timestamp adjusted by the offset.
- * @param timestamp The timestamp for which to get the start of the day.
- * @param offsetMilis The offset in milliseconds. Default is 0.
- * @returns The timestamp of the start of the day for the given timestamp adjusted by the offset.
- */
-export function getStartOfDayTimestamp(
-  timestamp: number,
-  offsetMilis = 0
-): number {
-  return timestamp - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY);
-}
-
-/**
- * Checks if the given timestamp is from yesterday, adjusted by the hour offset.
- * @param timestamp The timestamp to check.
- * @param hourOffset The offset in hours. Default is 0.
- * @returns True if the timestamp is from yesterday, false otherwise.
- */
-export function isYesterday(timestamp: number, hourOffset = 0): boolean {
-  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
-  const yesterday = getStartOfDayTimestamp(
-    Date.now() - MILLISECONDS_IN_DAY,
-    offsetMilis
-  );
-  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
-
-  return yesterday === date;
-}
-
-/**
- * Checks if the given timestamp is from today, adjusted by the hour offset.
- * @param timestamp The timestamp to check.
- * @param hourOffset The offset in hours. Default is 0.
- * @returns True if the timestamp is from today, false otherwise.
- */
-export function isToday(timestamp: number, hourOffset = 0): boolean {
-  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
-  const today = getStartOfDayTimestamp(Date.now(), offsetMilis);
-  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
-
-  return today === date;
-}
-
+import { roundTo2 } from "@monkeytype/util/numbers";
+import { Day } from "date-fns";
+import * as Locales from "date-fns/locale";
 /**
  * Converts seconds to a human-readable string representation of time.
  * @param sec The number of seconds to convert.
@@ -161,4 +104,45 @@ export function secondsToString(
     ret = "less than 1 minute";
   }
   return ret.trim();
+}
+
+export function getFirstDayOfTheWeek(): Day {
+  if (navigator.language === undefined || navigator.language === null) {
+    return 0;
+  }
+
+  const locale = new Intl.Locale(navigator.language);
+  if (locale === undefined || locale === null) {
+    return 0; //sunday
+  }
+
+  //modern browsers support `weekInfo` or `getWeekInfo()`
+  if ("weekInfo" in locale) {
+    // @ts-ignore
+    return (locale.weekInfo.firstDay as number) % 7;
+  }
+
+  if ("getWeekInfo" in locale) {
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    return (locale.getWeekInfo().firstDay as number) % 7;
+  }
+
+  //use date-fns for browsers like firefox
+  // @ts-ignore
+  let dateFnsLocale = Locales[
+    navigator.language.replaceAll("-", "")
+  ] as Locales.Locale;
+
+  if (dateFnsLocale === undefined || dateFnsLocale === null) {
+    //retry with language only
+    // @ts-ignore
+    dateFnsLocale = Locales[navigator.language.split("-")[0]] as Locales.Locale;
+  }
+
+  if (dateFnsLocale !== undefined && dateFnsLocale !== null) {
+    return ((dateFnsLocale.options?.weekStartsOn ?? 0) % 7) as Day;
+  }
+
+  return 0; //start on sunday
 }

@@ -1,6 +1,8 @@
 import { Collection, Db, MongoClient, WithId } from "mongodb";
 import { afterAll, beforeAll, afterEach } from "vitest";
 import * as MongoDbMock from "vitest-mongodb";
+import { MongoDbMockConfig } from "./global-setup";
+import { enableRateLimitExpects } from "./__testData__/rate-limit";
 
 process.env["MODE"] = "dev";
 //process.env["MONGOMS_DISTRO"] = "ubuntu-22.04";
@@ -15,9 +17,8 @@ let client: MongoClient;
 const collectionsForCleanUp = ["users"];
 
 beforeAll(async () => {
-  await MongoDbMock.setup({
-    //don't add any configuration here, add to global-setup.ts instead.
-  });
+  //don't add any configuration here, add to global-setup.ts instead.
+  await MongoDbMock.setup(MongoDbMockConfig);
 
   client = new MongoClient(globalThis.__MONGO_URI__);
   await client.connect();

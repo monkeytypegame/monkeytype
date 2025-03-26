@@ -37,18 +37,20 @@ const logDelimiter =
   "thisismylogdelimiterthatwilldefinitelynotappearintheactualcommitmessage";
 
 async function getLog() {
-  return new Promise((resolve, reject) => {
-    exec(
-      `git log --oneline $(git describe --tags --abbrev=0 @^)..@ --pretty="format:${lineDelimiter}%H${logDelimiter}%h${logDelimiter}%s${logDelimiter}%b"`,
-      (err, stdout, _stderr) => {
-        if (err) {
-          reject(err);
-        }
-
+  function execPromise(command) {
+    return new Promise((resolve, reject) => {
+      exec(command, (err, stdout, _stderr) => {
+        if (err) reject(err);
         resolve(stdout);
-      }
-    );
-  });
+      });
+    });
+  }
+
+  return execPromise(`git describe --tags --abbrev=0 HEAD^`).then((lastTag) =>
+    execPromise(
+      `git log --oneline ${lastTag.trim()}..HEAD --pretty="format:${lineDelimiter}%H${logDelimiter}%h${logDelimiter}%s${logDelimiter}%b"`
+    )
+  );
 }
 
 function itemIsAddingQuotes(item) {
@@ -84,7 +86,7 @@ const titles = {
 
 function getPrLink(pr) {
   const prNum = pr.replace("#", "");
-  return `[#${prNum}](https://github.com/monkeytypegame/monkeytype/issues/${prNum})`;
+  return `[#${prNum}](https://github.com/monkeytypegame/monkeytype/pull/${prNum})`;
 }
 
 function getCommitLink(hash, longHash) {
@@ -249,19 +251,11 @@ function convertStringToLog(logString) {
 
     //split message using regex based on fix(language): spelling mistakes in Nepali wordlist and quotes (sapradhan) (#4528)
     //scope is optional, username is optional, pr number is optional
-    const [_, type, scope, message, message2, message3] = title.split(
-      /^(\w+)(?:\(([^)]+)\))?:\s+(.+?)\s*(?:\(([^)]+)\))?(?:\s+\(([^)]+)\))?(?:\s+\(([^)]+)\))?$/
+    const [_, type, scope, message, username, pr] = title.split(
+      /^(\w+)(?:\(([^)]+)\))?:\s+(.+?)(?:\s*\((@[^)]+)\))?(?:\s+\((#[^)]+)\))?$/
     );
 
-    const usernames = message2 && message3 ? message2.split(", ") : [];
-
-    let pr;
-    if (message2 && message3) {
-      pr = message3;
-    } else if (message2 && !message3) {
-      pr = message2;
-    }
-
+    const usernames = username ? username.split(", ") : [];
     const prs = pr ? pr.split(", ") : [];
 
     if (type && message) {
@@ -276,7 +270,7 @@ function convertStringToLog(logString) {
         scope,
         message,
         usernames: usernames || [],
-        prs,
+        prs: prs || [],
         body: body || "",
       });
     } else {
@@ -358,7 +352,7 @@ async function main() {
     log.push({
       hashes: quoteAddCommits.map((item) => item.hashes).flat(),
       type: "impr",
-      scope: "quote",
+      scope: "quotes",
       message: "add quotes in various languages",
       usernames: quoteAddCommits.map((item) => item.usernames).flat(),
       prs: quoteAddCommits.map((item) => item.prs).flat(),
@@ -370,7 +364,7 @@ async function main() {
     log.push({
       hashes: quoteReportCommits.map((item) => item.hashes).flat(),
       type: "fix",
-      scope: "quote",
+      scope: "quotes",
       message: "update or remove quotes reported by users",
       usernames: quoteReportCommits.map((item) => item.usernames).flat(),
       prs: quoteReportCommits.map((item) => item.prs).flat(),

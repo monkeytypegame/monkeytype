@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import {
   CommonResponses,
-  EndpointMetadata,
+  meta,
   MonkeyResponseSchema,
   responseWithData,
 } from "./schemas/api";
@@ -50,6 +50,9 @@ export const apeKeysContract = c.router(
       responses: {
         200: GetApeKeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "apeKeysGet",
+      }),
     },
     add: {
       summary: "add ape key",
@@ -60,6 +63,9 @@ export const apeKeysContract = c.router(
       responses: {
         200: AddApeKeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "apeKeysGenerate",
+      }),
     },
     save: {
       summary: "update ape key",
@@ -71,6 +77,9 @@ export const apeKeysContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "apeKeysGenerate",
+      }),
     },
     delete: {
       summary: "delete ape key",
@@ -82,14 +91,22 @@ export const apeKeysContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "apeKeysGenerate",
+      }),
     },
   },
   {
     pathPrefix: "/ape-keys",
     strictStatusCodes: true,
-    metadata: {
+    metadata: meta({
       openApiTags: "ape-keys",
-    } as EndpointMetadata,
+      requirePermission: "canManageApeKeys",
+      requireConfiguration: {
+        path: "apeKeys.endpointsEnabled",
+        invalidMessage: "ApeKeys are currently disabled.",
+      },
+    }),
 
     commonResponses: CommonResponses,
   }

@@ -4,8 +4,9 @@ import * as Settings from "../../pages/settings";
 import * as PresetController from "../../controllers/preset-controller";
 import * as EditPresetPopup from "../../modals/edit-preset";
 import { isAuthenticated } from "../../firebase";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Presets...",
   list: [],
   beforeList: (): void => {
@@ -13,7 +14,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   },
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     visible: false,
     id: "applyPreset",
@@ -30,7 +31,7 @@ function update(): void {
   const snapshot = DB.getSnapshot();
   subgroup.list = [];
   if (!snapshot?.presets || snapshot.presets.length === 0) return;
-  snapshot.presets.forEach((preset: MonkeyTypes.SnapshotPreset) => {
+  snapshot.presets.forEach((preset) => {
     const dis = preset.display;
 
     subgroup.list.push({

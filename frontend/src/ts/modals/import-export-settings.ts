@@ -1,6 +1,9 @@
+import { PartialConfigSchema } from "@monkeytype/contracts/schemas/configs";
 import * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal from "../utils/animated-modal";
+import { migrateConfig } from "../utils/config";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 type State = {
   mode: "import" | "export";
@@ -45,10 +48,21 @@ const modal = new AnimatedModal({
         return;
       }
       try {
-        await UpdateConfig.apply(JSON.parse(state.value));
+        const parsedConfig = parseJsonWithSchema(
+          state.value,
+          PartialConfigSchema.strip()
+        );
+        await UpdateConfig.apply(migrateConfig(parsedConfig));
       } catch (e) {
-        Notifications.add("Failed to import settings: " + e, -1);
+        Notifications.add(
+          "Failed to import settings: incorrect data schema",
+          0
+        );
+        console.error(e);
+        void modal.hide();
+        return;
       }
+      Notifications.add("Settings imported", 1);
       UpdateConfig.saveFullConfigToLocalStorage();
       void modal.hide();
     });

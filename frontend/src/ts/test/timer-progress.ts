@@ -90,12 +90,11 @@ const miniTimerNumberElement = miniEl[0] as HTMLElement;
 function getCurrentCount(): number {
   if (Config.mode === "custom" && CustomText.getLimitMode() === "section") {
     return (
-      (TestWords.words.sectionIndexList[
-        TestWords.words.currentIndex
-      ] as number) - 1
+      (TestWords.words.sectionIndexList[TestState.activeWordIndex] as number) -
+      1
     );
   } else {
-    return TestInput.input.history.length;
+    return TestInput.input.getHistory().length;
   }
 }
 
@@ -152,7 +151,7 @@ export function update(): void {
     }
     if (Config.timerStyle === "bar") {
       const percent = Math.floor(
-        ((TestWords.words.currentIndex + 1) / outof) * 100
+        ((TestState.activeWordIndex + 1) / outof) * 100
       );
       barEl.stop(true, true).animate(
         {
@@ -164,7 +163,7 @@ export function update(): void {
       if (outof === 0) {
         if (timerNumberElement !== null) {
           timerNumberElement.innerHTML =
-            "<div>" + `${TestInput.input.history.length}` + "</div>";
+            "<div>" + `${TestInput.input.getHistory().length}` + "</div>";
         }
       } else {
         if (timerNumberElement !== null) {
@@ -175,7 +174,9 @@ export function update(): void {
     } else if (Config.timerStyle === "mini") {
       if (outof === 0) {
         if (miniTimerNumberElement !== null) {
-          miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}`;
+          miniTimerNumberElement.innerHTML = `${
+            TestInput.input.getHistory().length
+          }`;
         }
       } else {
         if (miniTimerNumberElement !== null) {
@@ -187,11 +188,13 @@ export function update(): void {
     if (Config.timerStyle === "text") {
       if (timerNumberElement !== null) {
         timerNumberElement.innerHTML =
-          "<div>" + `${TestInput.input.history.length}` + "</div>";
+          "<div>" + `${TestInput.input.getHistory().length}` + "</div>";
       }
     } else {
       if (miniTimerNumberElement !== null) {
-        miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}`;
+        miniTimerNumberElement.innerHTML = `${
+          TestInput.input.getHistory().length
+        }`;
       }
     }
   }

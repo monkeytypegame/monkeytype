@@ -2,7 +2,7 @@ import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import { createErrorMessage } from "../utils/misc";
 import { randomElementFromArray } from "../utils/arrays";
-import { randomIntFromRange } from "../utils/numbers";
+import { randomIntFromRange } from "@monkeytype/util/numbers";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";
@@ -412,10 +412,8 @@ export async function previewError(val: string): Promise<void> {
   const errorSoundIds = Object.keys(safeErrorSounds);
   if (!errorSoundIds.includes(val)) return;
 
-  //@ts-expect-error
-  errorClickSounds[val][0].sounds[0].seek(0);
-  //@ts-expect-error
-  errorClickSounds[val][0].sounds[0].play();
+  errorSounds?.[val]?.[0]?.sounds[0]?.seek(0);
+  errorSounds?.[val]?.[0]?.sounds[0]?.play();
 }
 
 let currentCode = "KeyA";
@@ -440,7 +438,7 @@ const notes = {
 } as const;
 
 type ValidNotes = keyof typeof notes;
-type ValidFrequencies = typeof notes[ValidNotes];
+type ValidFrequencies = (typeof notes)[ValidNotes];
 
 type GetNoteFrequencyCallback = (octave: number) => number;
 

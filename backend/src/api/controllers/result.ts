@@ -1,20 +1,12 @@
 import * as ResultDAL from "../../dal/result";
 import * as PublicDAL from "../../dal/public";
-import {
-  getCurrentDayTimestamp,
-  getStartOfDayTimestamp,
-  isDevEnvironment,
-  mapRange,
-  roundTo2,
-  stdDev,
-  stringToNumberOrDefault,
-} from "../../utils/misc";
+import { isDevEnvironment, replaceObjectId } from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
-import { areFunboxesCompatible, isTestTooShort } from "../../utils/validation";
+import { isTestTooShort } from "../../utils/validation";
 import {
   implemented as anticheatImplemented,
   validateResult,
@@ -30,18 +22,45 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import FunboxList from "../../constants/funbox-list";
-import _ from "lodash";
+import _, { omit } from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
-import { buildDbResult } from "../../utils/result";
+import {
+  buildDbResult,
+  DBResult,
+  replaceLegacyValues,
+} from "../../utils/result";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { addLog } from "../../dal/logs";
+import {
+  AddResultRequest,
+  AddResultResponse,
+  GetLastResultResponse,
+  GetResultsQuery,
+  GetResultsResponse,
+  UpdateResultTagsRequest,
+  UpdateResultTagsResponse,
+} from "@monkeytype/contracts/results";
 import {
   CompletedEvent,
-  Configuration,
+  KeyStats,
+  Result,
   PostResultResponse,
-} from "@monkeytype/shared-types";
-import { addLog } from "../../dal/logs";
+  XpBreakdown,
+} from "@monkeytype/contracts/schemas/results";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { mapRange, roundTo2, stdDev } from "@monkeytype/util/numbers";
+import {
+  getCurrentDayTimestamp,
+  getStartOfDayTimestamp,
+} from "@monkeytype/util/date-and-time";
+import { MonkeyRequest } from "../types";
+import {
+  getFunbox,
+  checkCompatibility,
+  stringToFunboxNames,
+} from "@monkeytype/funbox";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -60,10 +79,11 @@ try {
 }
 
 export async function getResults(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyRequest<GetResultsQuery>
+): Promise<GetResultsResponse> {
   const { uid } = req.ctx.decodedToken;
   const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
+  const { onOrAfterTimestamp = NaN, offset = 0 } = req.query;
   const userHasPremium = await UserDAL.checkIfUserIsPremium(uid);
 
   const maxLimit =
@@ -71,15 +91,9 @@ export async function getResults(
       ? req.ctx.configuration.results.limits.premiumUser
       : req.ctx.configuration.results.limits.regularUser;
 
-  const onOrAfterTimestamp = parseInt(
-    req.query["onOrAfterTimestamp"] as string,
-    10
-  );
-  let limit = stringToNumberOrDefault(
-    req.query["limit"] as string,
-    Math.min(req.ctx.configuration.results.maxBatchSize, maxLimit)
-  );
-  const offset = stringToNumberOrDefault(req.query["offset"] as string, 0);
+  let limit =
+    req.query.limit ??
+    Math.min(req.ctx.configuration.results.maxBatchSize, maxLimit);
 
   //check if premium features are disabled and current call exceeds the limit for regular users
   if (
@@ -114,30 +128,28 @@ export async function getResults(
     },
     uid
   );
-  return new MonkeyResponse("Results retrieved", results);
+  return new MonkeyResponse("Results retrieved", results.map(convertResult));
 }
 
 export async function getLastResult(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyRequest
+): Promise<GetLastResultResponse> {
   const { uid } = req.ctx.decodedToken;
   const results = await ResultDAL.getLastResult(uid);
-  return new MonkeyResponse("Result retrieved", results);
+  return new MonkeyResponse("Result retrieved", convertResult(results));
 }
 
-export async function deleteAll(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
   await ResultDAL.deleteAll(uid);
   void addLog("user_results_deleted", "", uid);
-  return new MonkeyResponse("All results deleted");
+  return new MonkeyResponse("All results deleted", null);
 }
 
 export async function updateTags(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyRequest<undefined, UpdateResultTagsRequest>
+): Promise<UpdateResultTagsResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagIds, resultId } = req.body;
 
@@ -171,8 +183,8 @@ export async function updateTags(
 }
 
 export async function addResult(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyRequest<undefined, AddResultRequest>
+): Promise<AddResultResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const user = await UserDAL.getUser(uid, "add result");
@@ -184,27 +196,22 @@ export async function addResult(
     );
   }
 
-  const completedEvent = Object.assign({}, req.body.result) as CompletedEvent;
-  if (!user.lbOptOut && completedEvent.acc < 75) {
-    throw new MonkeyError(
-      400,
-      "Cannot submit a result with less than 75% accuracy"
-    );
-  }
+  const completedEvent = req.body.result;
   completedEvent.uid = uid;
+
   if (isTestTooShort(completedEvent)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
     throw new MonkeyError(status.code, status.message);
   }
 
-  const resulthash = completedEvent.hash;
-  if (resulthash === undefined || resulthash === "") {
-    throw new MonkeyError(400, "Missing result hash");
+  if (user.lbOptOut !== true && completedEvent.acc < 75) {
+    throw new MonkeyError(400, "Accuracy too low");
   }
-  delete completedEvent.hash;
-  delete completedEvent.stringified;
+
+  const resulthash = completedEvent.hash;
   if (req.ctx.configuration.results.objectHashCheckEnabled) {
-    const serverhash = objectHash(completedEvent);
+    const objectToHash = omit(completedEvent, "hash");
+    const serverhash = objectHash(objectToHash);
     if (serverhash !== resulthash) {
       void addLog(
         "incorrect_result_hash",
@@ -218,6 +225,8 @@ export async function addResult(
       const status = MonkeyStatusCodes.RESULT_HASH_INVALID;
       throw new MonkeyError(status.code, "Incorrect result hash");
     }
+  } else {
+    Logger.warning("Object hash check is disabled, skipping hash check");
   }
 
   if (completedEvent.funbox) {
@@ -227,15 +236,18 @@ export async function addResult(
     }
   }
 
-  if (!areFunboxesCompatible(completedEvent.funbox ?? "")) {
+  const funboxNames = stringToFunboxNames(completedEvent.funbox ?? "");
+
+  if (!checkCompatibility(funboxNames)) {
     throw new MonkeyError(400, "Impossible funbox combination");
   }
 
+  let keySpacingStats: KeyStats | undefined = undefined;
   if (
     completedEvent.keySpacing !== "toolong" &&
     completedEvent.keySpacing.length > 0
   ) {
-    completedEvent.keySpacingStats = {
+    keySpacingStats = {
       average:
         completedEvent.keySpacing.reduce(
           (previous, current) => (current += previous)
@@ -244,11 +256,12 @@ export async function addResult(
     };
   }
 
+  let keyDurationStats: KeyStats | undefined = undefined;
   if (
     completedEvent.keyDuration !== "toolong" &&
     completedEvent.keyDuration.length > 0
   ) {
-    completedEvent.keyDurationStats = {
+    keyDurationStats = {
       average:
         completedEvent.keyDuration.reduce(
           (previous, current) => (current += previous)
@@ -261,14 +274,16 @@ export async function addResult(
     if (
       !validateResult(
         completedEvent,
-        ((req.headers["x-client-version"] as string) ||
-          req.headers["client-version"]) as string,
-        JSON.stringify(new UAParser(req.headers["user-agent"]).getResult()),
+        ((req.raw.headers["x-client-version"] as string) ||
+          req.raw.headers["client-version"]) as string,
+        JSON.stringify(new UAParser(req.raw.headers["user-agent"]).getResult()),
         user.lbOptOut === true
       )
     ) {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
       throw new MonkeyError(status.code, "Result data doesn't make sense");
+    } else if (isDevEnvironment()) {
+      Logger.success("Result data validated");
     }
   } else {
     if (!isDevEnvironment()) {
@@ -291,7 +306,6 @@ export async function addResult(
   //   );
   //   return res.status(400).json({ message: "Time traveler detected" });
 
-  //convert result test duration to miliseconds
   //get latest result ordered by timestamp
   let lastResultTimestamp: null | number = null;
   try {
@@ -300,11 +314,14 @@ export async function addResult(
     //
   }
 
+  //convert result test duration to miliseconds
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
 
   //check if now is earlier than last result plus duration (-1 second as a buffer)
   const testDurationMilis = completedEvent.testDuration * 1000;
-  const earliestPossible = (lastResultTimestamp ?? 0) + testDurationMilis;
+  const incompleteTestsMilis = completedEvent.incompleteTestSeconds * 1000;
+  const earliestPossible =
+    (lastResultTimestamp ?? 0) + testDurationMilis + incompleteTestsMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
   if (lastResultTimestamp && nowNoMilis < earliestPossible - 1000) {
     void addLog(
@@ -330,7 +347,7 @@ export async function addResult(
     (user.verified === false || user.verified === undefined) &&
     user.lbOptOut !== true
   ) {
-    if (!completedEvent.keySpacingStats || !completedEvent.keyDurationStats) {
+    if (!keySpacingStats || !keyDurationStats) {
       const status = MonkeyStatusCodes.MISSING_KEY_DATA;
       throw new MonkeyError(status.code, "Missing key data");
     }
@@ -338,7 +355,9 @@ export async function addResult(
       throw new MonkeyError(400, "Old key data format");
     }
     if (anticheatImplemented()) {
-      if (!validateKeys(completedEvent, uid)) {
+      if (
+        !validateKeys(completedEvent, keySpacingStats, keyDurationStats, uid)
+      ) {
         //autoban
         const autoBanConfig = req.ctx.configuration.users.autoBan;
         if (autoBanConfig.enabled) {
@@ -397,21 +416,13 @@ export async function addResult(
     }
   }
 
-  if (completedEvent.keyDurationStats) {
-    completedEvent.keyDurationStats.average = roundTo2(
-      completedEvent.keyDurationStats.average
-    );
-    completedEvent.keyDurationStats.sd = roundTo2(
-      completedEvent.keyDurationStats.sd
-    );
+  if (keyDurationStats) {
+    keyDurationStats.average = roundTo2(keyDurationStats.average);
+    keyDurationStats.sd = roundTo2(keyDurationStats.sd);
   }
-  if (completedEvent.keySpacingStats) {
-    completedEvent.keySpacingStats.average = roundTo2(
-      completedEvent.keySpacingStats.average
-    );
-    completedEvent.keySpacingStats.sd = roundTo2(
-      completedEvent.keySpacingStats.sd
-    );
+  if (keySpacingStats) {
+    keySpacingStats.average = roundTo2(keySpacingStats.average);
+    keySpacingStats.sd = roundTo2(keySpacingStats.sd);
   }
 
   let isPb = false;
@@ -426,7 +437,12 @@ export async function addResult(
 
   if (completedEvent.mode === "time" && completedEvent.mode2 === "60") {
     void UserDAL.incrementBananas(uid, completedEvent.wpm);
-    if (isPb && user.discordId !== undefined && user.discordId !== "") {
+    if (
+      isPb &&
+      user.discordId !== undefined &&
+      user.discordId !== "" &&
+      user.lbOptOut !== true
+    ) {
       void GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
     }
   }
@@ -577,6 +593,7 @@ export async function addResult(
           discordId: user.discordId,
           badgeId: selectedBadgeId,
           lastActivityTimestamp: Date.now(),
+          isPremium,
         },
         xpGained: xpGained.xp,
         timeTypedSeconds: totalDurationTypedSeconds,
@@ -585,6 +602,13 @@ export async function addResult(
   }
 
   const dbresult = buildDbResult(completedEvent, user.name, isPb);
+  if (keySpacingStats !== undefined) {
+    dbresult.keySpacingStats = keySpacingStats;
+  }
+  if (keyDurationStats !== undefined) {
+    dbresult.keyDurationStats = keyDurationStats;
+  }
+
   const addedResult = await ResultDAL.addResult(uid, dbresult);
 
   await UserDAL.incrementXp(uid, xpGained.xp);
@@ -602,12 +626,10 @@ export async function addResult(
     );
   }
 
-  const data: Omit<PostResultResponse, "insertedId"> & {
-    insertedId: ObjectId;
-  } = {
+  const data: PostResultResponse = {
     isPb,
     tagPbs,
-    insertedId: addedResult.insertedId,
+    insertedId: addedResult.insertedId.toHexString(),
     xp: xpGained.xp,
     dailyXpBonus: xpGained.dailyBonus ?? false,
     xpBreakdown: xpGained.breakdown ?? {},
@@ -622,7 +644,7 @@ export async function addResult(
     data.weeklyXpLeaderboardRank = weeklyXpLeaderboardRank;
   }
 
-  incrementResult(completedEvent);
+  incrementResult(completedEvent, dbresult.isPb);
 
   return new MonkeyResponse("Result saved", data);
 }
@@ -630,7 +652,7 @@ export async function addResult(
 type XpResult = {
   xp: number;
   dailyBonus?: boolean;
-  breakdown?: Record<string, number>;
+  breakdown?: XpBreakdown;
 };
 
 async function calculateXp(
@@ -650,7 +672,7 @@ async function calculateXp(
     charStats,
     punctuation,
     numbers,
-    funbox,
+    funbox: resultFunboxes,
   } = result;
 
   const {
@@ -667,10 +689,10 @@ async function calculateXp(
     };
   }
 
-  const breakdown: Record<string, number> = {};
+  const breakdown: XpBreakdown = {};
 
   const baseXp = Math.round((testDuration - afkDuration) * 2);
-  breakdown["base"] = baseXp;
+  breakdown.base = baseXp;
 
   let modifier = 1;
 
@@ -680,7 +702,7 @@ async function calculateXp(
 
   if (acc === 100) {
     modifier += 0.5;
-    breakdown["100%"] = Math.round(baseXp * 0.5);
+    breakdown.fullAccuracy = Math.round(baseXp * 0.5);
   } else if (correctedEverything) {
     // corrected everything bonus
     modifier += 0.25;
@@ -690,28 +712,31 @@ async function calculateXp(
   if (mode === "quote") {
     // real sentences bonus
     modifier += 0.5;
-    breakdown["quote"] = Math.round(baseXp * 0.5);
+    breakdown.quote = Math.round(baseXp * 0.5);
   } else {
     // punctuation bonus
     if (punctuation) {
       modifier += 0.4;
-      breakdown["punctuation"] = Math.round(baseXp * 0.4);
+      breakdown.punctuation = Math.round(baseXp * 0.4);
     }
     if (numbers) {
       modifier += 0.1;
-      breakdown["numbers"] = Math.round(baseXp * 0.1);
+      breakdown.numbers = Math.round(baseXp * 0.1);
     }
   }
 
-  if (funboxBonusConfiguration > 0) {
-    const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
-      const funbox = FunboxList.find((f) => f.name === funboxName);
-      const difficultyLevel = funbox?.difficultyLevel ?? 0;
-      return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
-    });
+  if (funboxBonusConfiguration > 0 && resultFunboxes !== "none") {
+    const funboxModifier = _.sumBy(
+      stringToFunboxNames(resultFunboxes),
+      (funboxName) => {
+        const funbox = getFunbox(funboxName);
+        const difficultyLevel = funbox?.difficultyLevel ?? 0;
+        return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
+      }
+    );
     if (funboxModifier > 0) {
       modifier += funboxModifier;
-      breakdown["funbox"] = Math.round(baseXp * funboxModifier);
+      breakdown.funbox = Math.round(baseXp * funboxModifier);
     }
   }
 
@@ -729,7 +754,7 @@ async function calculateXp(
 
     if (streakModifier > 0) {
       modifier += streakModifier;
-      breakdown["streak"] = Math.round(baseXp * streakModifier);
+      breakdown.streak = Math.round(baseXp * streakModifier);
     }
   }
 
@@ -740,10 +765,10 @@ async function calculateXp(
       if (modifier < 0) modifier = 0;
       incompleteXp += Math.round(it.seconds * modifier);
     });
-    breakdown["incomplete"] = incompleteXp;
+    breakdown.incomplete = incompleteXp;
   } else if (incompleteTestSeconds && incompleteTestSeconds > 0) {
     incompleteXp = Math.round(incompleteTestSeconds);
-    breakdown["incomplete"] = incompleteXp;
+    breakdown.incomplete = incompleteXp;
   }
 
   const accuracyModifier = (acc - 50) / 50;
@@ -767,14 +792,14 @@ async function calculateXp(
         Math.min(maxDailyBonus, proportionalXp),
         minDailyBonus
       );
-      breakdown["daily"] = dailyBonus;
+      breakdown.daily = dailyBonus;
     }
   }
 
   const xpWithModifiers = Math.round(baseXp * modifier);
 
   const xpAfterAccuracy = Math.round(xpWithModifiers * accuracyModifier);
-  breakdown["accPenalty"] = xpWithModifiers - xpAfterAccuracy;
+  breakdown.accPenalty = xpWithModifiers - xpAfterAccuracy;
 
   const totalXp =
     Math.round((xpAfterAccuracy + incompleteXp) * gainMultiplier) + dailyBonus;
@@ -784,7 +809,7 @@ async function calculateXp(
     //   "configMultiplier",
     //   Math.round((xpAfterAccuracy + incompleteXp) * (gainMultiplier - 1)),
     // ]);
-    breakdown["configMultiplier"] = gainMultiplier;
+    breakdown.configMultiplier = gainMultiplier;
   }
 
   const isAwardingDailyBonus = dailyBonus > 0;
@@ -794,4 +819,8 @@ async function calculateXp(
     dailyBonus: isAwardingDailyBonus,
     breakdown,
   };
+}
+
+function convertResult(db: DBResult): Result<Mode> {
+  return replaceObjectId(replaceLegacyValues(db));
 }

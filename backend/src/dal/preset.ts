@@ -1,11 +1,16 @@
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 import { ObjectId, type Filter, Collection, type WithId } from "mongodb";
-import { Preset } from "@monkeytype/contracts/schemas/presets";
+import {
+  EditPresetRequest,
+  Preset,
+} from "@monkeytype/contracts/schemas/presets";
+import { omit } from "lodash";
+import { WithObjectId } from "../utils/misc";
 
 const MAX_PRESETS = 10;
 
-type DBConfigPreset = MonkeyTypes.WithObjectId<
+type DBConfigPreset = WithObjectId<
   Preset & {
     uid: string;
   }
@@ -56,15 +61,21 @@ export async function addPreset(
   };
 }
 
-export async function editPreset(uid: string, preset: Preset): Promise<void> {
-  const config = preset.config;
-  const presetUpdates =
-    config !== undefined && config !== null && Object.keys(config).length > 0
-      ? { name: preset.name, config }
-      : { name: preset.name };
+export async function editPreset(
+  uid: string,
+  preset: EditPresetRequest
+): Promise<void> {
+  const update: Partial<Omit<Preset, "_id">> = omit(preset, "_id");
+  if (
+    preset.config === undefined ||
+    preset.config === null ||
+    Object.keys(preset.config).length === 0
+  ) {
+    delete update.config;
+  }
 
   await getPresetsCollection().updateOne(getPresetKeyFilter(uid, preset._id), {
-    $set: presetUpdates,
+    $set: update,
   });
 }
 

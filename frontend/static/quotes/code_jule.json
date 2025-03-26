@@ -1,0 +1,179 @@
+{
+  "language": "code_jule",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "fn main() {\n\tprintln(\"Hello, Jule!\")\n}",
+      "source": "Basic Hello World Example",
+      "length": 38,
+      "id": 1
+    },
+    {
+      "text": "let a: int = 0\na := 0\nlet mut a: int = 0\nmut a := 0\nlet a: int",
+      "source": "Basic Variable Declaration Example",
+      "length": 62,
+      "id": 2
+    },
+    {
+      "text": "struct Employee {\n\tname: str\n\tage: u8\n\ttitle: str\n\tsalary: u32\n}",
+      "source": "Common Concepts - Structures | manual.jule.dev",
+      "length": 64,
+      "id": 3
+    },
+    {
+      "text": "fn ok(a: int, mut b: int, c: ...str): (int, int) {\n\tfor _, v in c {\n\t\tprint(v)\n\t}\n\n\tb++\n\tret a, b\n}",
+      "source": "Basic Function Declaration Example",
+      "length": 99,
+      "id": 4
+    },
+    {
+      "text": "fn anon() {\n\tx, y := 10, 20\n\tmut f := fn(a: int, b: int): int {\n\t\tret a + b\n\t}\n\tprintln(f(x, y)) // 30\n\tf = fn(a: int, b: int): int {\n\t\tret a * b\n\t}\n\tprintln(f(x, y)) // 200\n}",
+      "source": "Common Concepts - Anonymous Functions | manual.jule.dev",
+      "length": 175,
+      "id": 5
+    },
+    {
+      "text": "let x: [2]int = [1, 2]\nlet x: [...]int = [1, 2, 3, 4, 5] // [5]int\nx := [5]int([1, 2, 3, 4, 5])\nlet x: [1000]int = [100, ...] // [1000]int = [100, 100, 100, ...]",
+      "source": "Common Concepts - Arrays | manual.jule.dev",
+      "length": 161,
+      "id": 6
+    },
+    {
+      "text": "fn arr() {\n\tlet mut myArray: [3]str = [\"Hello\", \"arrays\", \"indexes\"]\n\tprintln(myArray[0])\n\tmyArray[0] = \"Hi\"\n\tprintln(myArray)\n}",
+      "source": "Common Concepts - Arrays | manual.jule.dev",
+      "length": 128,
+      "id": 7
+    },
+    {
+      "text": "let myArray: [2][2]str = [\n\t[\"Apple\", \"Banana\"],\n\t[\"Bred\", \"Cheese\"],\n]\nprintln(myArray)\n// Outputs: [[Apple Banana] [Bred Cheese]]",
+      "source": "Common Concepts - Arrays | manual.jule.dev",
+      "length": 131,
+      "id": 8
+    },
+    {
+      "text": "let mut mySlice: []str = nil\nmySlice = [\"Hello\", \"Jule\", \"slices!\"]\nprintln(mySlice)\n// Outputs: [Hello Jule slices!]",
+      "source": "Common Concepts - Slices | manual.jule.dev",
+      "length": 117,
+      "id": 9
+    },
+    {
+      "text": "enum FileMode {\n\tRead: 35,\n\tWrite: 89\n\tBoth,\n}",
+      "source": "Common Concepts - Enums | manual.jule.dev",
+      "length": 46,
+      "id": 10
+    },
+    {
+      "text": "match {\n| false:\n\tprintln(\"Case1\")\n| true:\n\tprintln(\"Case2\")\n\tfall\n| false:\n\tprintln(\"Case3\")\n\tfall\n|:\n\tprintln(\"Default\")\n}",
+      "source": "Common Concepts - Match Statements | manual.jule.dev",
+      "length": 124,
+      "id": 11
+    },
+    {
+      "text": "fn example[T: int | uint]() {\n\tmatch type T {\n\t| int:\n\t\tprintln(\"int\")\n\t| uint:\n\t\tprintln(\"uint\")\n\t}\n}",
+      "source": "Types - Constraints | manual.jule.dev",
+      "length": 102,
+      "id": 12
+    },
+    {
+      "text": "let x: int = 10\nlet y: *int = &x\nprintln(y) // Prints stored address\nunsafe { println(*y) } // Prints value at address (so 10)",
+      "source": "Memory - Pointers | manual.jule.dev",
+      "length": 126,
+      "id": 13
+    },
+    {
+      "text": "let mut a = 20\nlet (mut &x, mut y) = a, 20\nx += y\nprintln(a) // 40",
+      "source": "Memory - References | manual.jule.dev",
+      "length": 66,
+      "id": 14
+    },
+    {
+      "text": "fn myExceptional()!: int {\n\terror(\"my error\")\n}",
+      "source": "Error Handling - Exceptions | manual.jule.dev",
+      "length": 47,
+      "id": 15
+    },
+    {
+      "text": "use \"snapbox\"\nuse \"snapbox/header\"\nuse \"snapbox/status\"\n\nfn main() {\n\tlet headerMap: header::HeaderMap = {\n\t\theader::ACCEPT: \"application/json\",\n\t}\n\n\trequest := snapbox::GET(\"https://httpbin.org/get\").Headers(headerMap)\n\tresponse := request.Send()\n\n\tif !status::IsSuccess(response.status) {\n\t\tprintln(\"Error: \")\n\t\tprintln(response.status)\n\t}\n\n\tprint(response.body)\n}",
+      "source": "Usage Examples | snapbox.adamperkowski.dev",
+      "length": 366,
+      "id": 16
+    },
+    {
+      "text": "fn cond(x: int)! {\n\tif x > 1000 {\n\t\tprintln(\"greater than thousand\")\n\t} else if x < 100 {\n\t\tprintln(\"less than hundred\")\n\t} else if x == 100 {\n\t\tprintln(\"equals to hundred\")\n\t} else {\n\t\terror(\"huh?\")\n\t}\n}",
+      "source": "Common Concepts - Conditional | manual.jule.dev",
+      "length": 204,
+      "id": 17
+    },
+    {
+      "text": "struct Dog {\n\tname: str\n\twords: str = \"woof woof\"\n}\n\nimpl Dog {\n    static fn spawn(name: str): Dog {\n\t\tret Dog { name: name }\n    }\n\n\tfn voice(self) {\n\t\tprintln(self.name + \" - \" + self.words)\n\t}\n}\n\nfn main() {\n\tdog0 := Dog.spawn(\"Rex\")\n\tdog1 := Dog.spawn(\"Buddy\")\n\n\tprintln(dog0.name)\n\n\tdog0.voice()\n\tdog1.voice()\n}",
+      "source": "Common Concepts - Structures | manual.jule.dev",
+      "length": 317,
+      "id": 18
+    },
+    {
+      "text": "let (x, y) = 20, false\nif x == 10 ||\n\ty == false {\n}",
+      "source": "Introduction - Syntax | manual.jule.dev",
+      "length": 52,
+      "id": 19
+    },
+    {
+      "text": "let mut counter = 0\nfor counter <= 5 {\n\tprintln(counter)\n\tcounter += 10\n}",
+      "source": "Common Concepts - Interations | manual.jule.dev",
+      "length": 73,
+      "id": 20
+    },
+    {
+      "text": "let mut i = 1\nfor i <= 5; i++ {\n\tprintln(i)\n}",
+      "source": "Common Concepts - Interations | manual.jule.dev",
+      "length": 45,
+      "id": 21
+    },
+    {
+      "text": "type Int: int\n\nimpl Int {\n\tfn IsEven(self): bool { ret self%2 == 0 }\n\tfn IsOdd(self): bool { ret self%2 == 1 }\n}\n\nfn main() {\n\tx := Int(20)\n\tprintln(x.IsEven())\n\tprintln(x.IsOdd())\n}",
+      "source": "Types - Aliasing | manual.jule.dev",
+      "length": 182,
+      "id": 22
+    },
+    {
+      "text": "fn sum[T](a: T, b: T) T {\n\tlet x: T = a + b\n\tret x\n}",
+      "source": "Types - Generics | manual.jule.dev",
+      "length": 52,
+      "id": 23
+    },
+    {
+      "text": "trait Foo {\n    fn foo(self)\n}\n\ntrait Bar {\n    fn bar(self)\n}\n\ntrait FooBar {\n    Foo\n    Bar\n}\n\nstruct Baz {}\n\nimpl FooBar for Baz {\n    fn foo(self) { println(\"foo\") }\n    fn bar(self) { println(\"bar\") }\n}\n\nfn main() {\n    let a: FooBar = Baz{}\n    a.foo()\n    a.bar()\n    let b: Foo = a\n    b.foo()\n    let c: Bar = a\n    c.bar()\n}",
+      "source": "Dynamic Types - Traits | manual.jule.dev",
+      "length": 335,
+      "id": 24
+    },
+    {
+      "text": "for {\n\tmatch {\n\t| true:\n\t\tbreak\n\t}\n}",
+      "source": "Common Concepts - Labels | manual.jule.dev",
+      "length": 36,
+      "id": 25
+    },
+    {
+      "text": "fn label() {\nfoo:\n\tfor {\n\t\tmatch {\n\t\t| true:\n\t\t\tbreak foo\n\t\t}\n\t}\n}",
+      "source": "Common Concepts - Labels | manual.jule.dev",
+      "length": 66,
+      "id": 26
+    },
+    {
+      "text": "use \"std/os\"\nuse \"std/strings\"\n\nfn main() {\n\tcontent := str(os::ReadFile(\"data.txt\")!)\n\tos::WriteFile(\"data.txt\", strings::ToLower(content))\n}",
+      "source": "Basic File I/O Example",
+      "length": 142,
+      "id": 27
+    },
+    {
+      "text": "use \"std/os\"\n\nfn main() {\n\ttext := os::Stdin().ReadLine()!\n\n\tprintln(\"You said: \" + text)\n}",
+      "source": "Basic Standard Input Example",
+      "length": 91,
+      "id": 28
+    }
+  ]
+}

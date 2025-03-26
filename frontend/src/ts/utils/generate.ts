@@ -1,4 +1,4 @@
-import { randomIntFromRange } from "./numbers";
+import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "./arrays";
 import * as Strings from "./strings";
 

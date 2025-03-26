@@ -3,11 +3,13 @@ import Config from "../config";
 import * as Strings from "../utils/strings";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
-import * as FunboxList from "./funbox/funbox-list";
 import * as TestState from "./test-state";
-import * as Numbers from "../utils/numbers";
-import { IncompleteTest, Result } from "@monkeytype/shared-types";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import * as Numbers from "@monkeytype/util/numbers";
+import {
+  CompletedEvent,
+  IncompleteTest,
+} from "@monkeytype/contracts/schemas/results";
+import { isFunboxActiveWithProperty } from "./funbox/list";
 
 type CharCount = {
   spaces: number;
@@ -39,9 +41,9 @@ export let start2: number, end2: number;
 export let start3: number, end3: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: Result<Mode>;
+export let lastResult: Omit<CompletedEvent, "hash" | "uid">;
 
-export function setLastResult(result: Result<Mode>): void {
+export function setLastResult(result: CompletedEvent): void {
   lastResult = result;
 }
 
@@ -50,6 +52,8 @@ export function getStats(): unknown {
     lastResult,
     start,
     end,
+    start3,
+    end3,
     afkHistory: TestInput.afkHistory,
     errorHistory: TestInput.errorHistory,
     wpmHistory: TestInput.wpmHistory,
@@ -62,8 +66,11 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
-    wordsHistory: TestWords.words.list.slice(0, TestInput.input.history.length),
-    inputHistory: TestInput.input.history,
+    wordsHistory: TestWords.words.list.slice(
+      0,
+      TestInput.input.getHistory().length
+    ),
+    inputHistory: TestInput.input.getHistory(),
   };
 
   try {
@@ -140,9 +147,10 @@ export function calculateTestSeconds(now?: number): number {
   }
 }
 
-export function calculateWpmAndRaw(
-  withDecimalPoints?: true
-): MonkeyTypes.WpmAndRaw {
+export function calculateWpmAndRaw(withDecimalPoints?: true): {
+  wpm: number;
+  raw: number;
+} {
   const testSeconds = calculateTestSeconds(
     TestState.isActive ? performance.now() : end
   );
@@ -238,7 +246,7 @@ export function removeAfkData(): void {
 function getInputWords(): string[] {
   const containsKorean = TestInput.input.getKoreanStatus();
 
-  let inputWords = [...TestInput.input.history];
+  let inputWords = [...TestInput.input.getHistory()];
 
   if (TestState.isActive) {
     inputWords.push(TestInput.input.current);
@@ -255,7 +263,9 @@ function getTargetWords(): string[] {
   const containsKorean = TestInput.input.getKoreanStatus();
 
   let targetWords = [
-    ...(Config.mode === "zen" ? TestInput.input.history : TestWords.words.list),
+    ...(Config.mode === "zen"
+      ? TestInput.input.getHistory()
+      : TestWords.words.list),
   ];
 
   if (TestState.isActive) {
@@ -347,9 +357,7 @@ function countChars(): CharCount {
       spaces++;
     }
   }
-  if (
-    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
-  ) {
+  if (isFunboxActiveWithProperty("nospace")) {
     spaces = 0;
     correctspaces = 0;
   }

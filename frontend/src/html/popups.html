@@ -4,6 +4,21 @@
   </div>
 </dialog>
 
+<dialog id="forgotPasswordModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Forgot password</div>
+    <input type="text" placeholder="email" />
+    <div class="g-recaptcha"></div>
+    <!-- <button>send</button> -->
+  </div>
+</dialog>
+
+<dialog id="miniResultChartModal" class="modalWrapper hidden">
+  <div class="modal">
+    <canvas></canvas>
+  </div>
+</dialog>
+
 <dialog id="lastSignedOutResult" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Last signed out result</div>
@@ -50,6 +65,7 @@
     <button class="toggleMediaQueryDebug">toggle media query debug</button>
     <button class="showTestNotifications">show test notifications</button>
     <button class="showRealWordsInput">show real words input</button>
+    <button class="xpBarTest">xp bar test</button>
   </div>
 </dialog>
 
@@ -108,7 +124,7 @@
   <form class="modal"></form>
 </dialog>
 
-<dialog id="cookiesModal" class="modalWrapper hidden">
+<dialog id="cookiesModal" class="modalWrapper hidden" data-nosnippet>
   <div class="extensionMessage">
     If you see this text, that means an extension is blocking a cookie consent
     popup. This will cause the website to incorrectly assume its still visible
@@ -545,6 +561,37 @@
         </div>
       </div>
 
+      <div class="group" data-id="delimiter">
+        <div class="title">
+          <i class="fas fa-fw fa-grip-lines-vertical"></i>
+          Word delimiter
+        </div>
+        <div class="sub">
+          Change how words are separated. Using the pipe delimiter allows you to
+          randomize groups of words.
+        </div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="true">pipe</button>
+            <button value="false">space</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="zeroWidth">
+        <div class="title">
+          <i class="fas fa-fw fa-text-width"></i>
+          Remove zero-width characters
+        </div>
+        <div class="sub">Fully remove zero-width characters.</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="false">no</button>
+            <button value="true">yes</button>
+          </div>
+        </div>
+      </div>
+
       <div class="group" data-id="fancy">
         <div class="title">
           <i class="fas fa-fw fa-pen-fancy"></i>
@@ -578,23 +625,6 @@
         </div>
       </div>
 
-      <div class="group" data-id="delimiter">
-        <div class="title">
-          <i class="fas fa-fw fa-grip-lines-vertical"></i>
-          Word delimiter
-        </div>
-        <div class="sub">
-          Change how words are separated. Using the pipe delimiter allows you to
-          randomize groups of words.
-        </div>
-        <div class="groupInputs">
-          <div class="buttonGroup">
-            <button value="true">pipe</button>
-            <button value="false">space</button>
-          </div>
-        </div>
-      </div>
-
       <div class="group" data-id="newlines">
         <div class="title">
           <i class="fas fa-fw fa-level-down-alt fa-rotate-90"></i>
@@ -622,6 +652,11 @@
     <div class="list"></div>
     <div class="title">Saved long texts</div>
     <div class="listLong"></div>
+    <div class="divider"></div>
+    <div class="message">
+      Heads up! These texts are only stored locally. If you switch devices or
+      clear your local browser data they will be lost.
+    </div>
   </div>
 </dialog>
 <dialog id="saveCustomTextModal" class="modalWrapper hidden">
@@ -843,30 +878,6 @@
     <button>submit</button>
   </div>
 </dialog>
-<dialog id="apeKeysModal" class="hidden modalWrapper">
-  <div class="modal">
-    <div class="top">
-      <div class="title">Ape Keys</div>
-      <button class="generateApeKey">
-        <i class="fas fa-plus"></i>
-        Generate new key
-      </button>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <td width="1px">active</td>
-          <td>name</td>
-          <td>created on</td>
-          <td>modified on</td>
-          <td>last used on</td>
-          <td width="1px"></td>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</dialog>
 <dialog id="quoteReportModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Report a quote</div>
@@ -935,14 +946,6 @@
     <div class="quotes"></div>
   </div>
 </dialog>
-<dialog id="editTagModal" class="modalWrapper hidden">
-  <form class="modal">
-    <div class="title"></div>
-    <input type="text" title="tag" />
-    <div class="text"></div>
-    <button type="submit"></button>
-  </form>
-</dialog>
 <dialog id="streakHourOffsetModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Set streak hour offset</div>
@@ -971,14 +974,30 @@
 </dialog>
 <dialog id="editPresetModal" class="modalWrapper hidden">
   <form class="modal">
-    <div class="title"></div>
-    <input type="text" title="presets" />
-    <label class="checkbox">
+    <div class="title popupTitle"></div>
+    <div class="group">
+      <div class="presetNameTitle">name</div>
+      <input type="text" title="presets" />
+    </div>
+    <label class="changePresetToCurrentCheckbox checkbox">
       <input type="checkbox" />
       Change preset to current settings
     </label>
-    <div class="text"></div>
-    <button type="submit">add</button>
+    <div class="inputs">
+      <div class="presetType group" data-id="presetType">
+        <div class="title">Preset Type</div>
+        <div class="presetTypeButtonGroup">
+          <button value="full" type="button">full</button>
+          <button value="partial" type="button">partial</button>
+        </div>
+      </div>
+      <div class="partialPresetGroups group">
+        <div class="title">partial groups</div>
+        <div class="checkboxList"></div>
+      </div>
+    </div>
+    <div class="text deletePrompt"></div>
+    <button class="submit" type="submit">add</button>
   </form>
 </dialog>
 <dialog id="shareCustomThemeModal" class="modalWrapper hidden">
@@ -1272,10 +1291,18 @@
   <form class="modal">
     <div class="title">Edit Profile</div>
     <div>
+      <label>name</label>
+      <div>
+        To update your name, go to Account Settings > Account > Update account
+        name
+      </div>
+    </div>
+    <div>
       <label>avatar</label>
       <div>
         To update your avatar make sure your Discord account is linked, then go
-        to Settings > Account > Discord Integration and click "Update Avatar"
+        to Account Settings > Account > Discord Integration and click "Update
+        Avatar"
       </div>
     </div>
     <div>

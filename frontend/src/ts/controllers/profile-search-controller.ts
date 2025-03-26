@@ -53,7 +53,7 @@ async function lookupProfile(): Promise<void> {
 
   await sleep(500);
 
-  const response = await Ape.users.getProfileByName(name);
+  const response = await Ape.users.getProfile({ params: { uidOrName: name } });
   enableInputs();
   if (response.status === 404) {
     focusInput();
@@ -61,12 +61,12 @@ async function lookupProfile(): Promise<void> {
     return;
   } else if (response.status !== 200) {
     focusInput();
-    searchIndicator.show("error", `Error: ${response.message}`);
+    searchIndicator.show("error", `Error: ${response.body.message}`);
     return;
   }
   searchIndicator.hide();
   navigate(`/profile/${name}`, {
-    data: response.data,
+    data: response.body.data,
   });
 }
 

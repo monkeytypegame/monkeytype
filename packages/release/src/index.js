@@ -30,7 +30,7 @@ const runCommand = (command, force) => {
       return output;
     } catch (error) {
       console.error(`Error executing command ${command}`);
-      console.error(error);
+      console.error(error.output.toString());
       process.exit(1);
     }
   }
@@ -55,6 +55,15 @@ const runProjectRootCommand = (command, force) => {
 };
 
 const checkBranchSync = () => {
+  console.log("Checking if local branch is master...");
+  const currentBranch = runProjectRootCommand("git branch --show-current");
+  if (currentBranch !== "master") {
+    console.error(
+      "Local branch is not master. Please checkout the master branch."
+    );
+    process.exit(1);
+  }
+
   console.log("Checking if local master branch is in sync with origin...");
 
   if (noSyncCheck) {
@@ -120,7 +129,7 @@ const updatePackage = (newVersion) => {
     console.log(`[Dry Run] Updated package.json to version ${newVersion}`);
     return;
   }
-  const packagePath = path.resolve(__dirname, "../package.json");
+  const packagePath = `${PROJECT_ROOT}/package.json`;
 
   // Read the package.json file
   const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf8"));
@@ -166,7 +175,8 @@ const buildProject = () => {
 
 const deployBackend = () => {
   console.log("Deploying backend...");
-  runCommand("sh ../bin/deployBackend.sh");
+  const p = path.resolve(__dirname, "../bin/deployBackend.sh");
+  runCommand(`sh ${p}`);
 };
 
 const deployFrontend = () => {
@@ -178,7 +188,8 @@ const deployFrontend = () => {
 
 const purgeCache = () => {
   console.log("Purging Cloudflare cache...");
-  runCommand("sh ../bin/purgeCfCache.sh");
+  const p = path.resolve(__dirname, "../bin/purgeCfCache.sh");
+  runCommand(`sh ${p}`);
 };
 
 const generateChangelog = async () => {
@@ -258,7 +269,12 @@ const main = async () => {
   if (!noDeploy) purgeCache();
   updatePackage(newVersion);
   createCommitAndTag(newVersion);
-  await createGithubRelease(newVersion, changelogContent);
+  try {
+    await createGithubRelease(newVersion, changelogContent);
+  } catch (e) {
+    console.error(`Failed to create release on GitHub: ${e}`);
+    console.log("Please create the release manually.");
+  }
 
   console.log(`Release ${newVersion} completed successfully.`);
   process.exit(0);

@@ -1,7 +1,8 @@
 import * as UpdateConfig from "../../config";
 import * as ModesNotice from "./../../elements/modes-notice";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Change opposite shift mode...",
   configKey: "oppositeShiftMode",
   list: [
@@ -35,7 +36,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeOppositeShiftMode",
     display: "Change opposite shift mode...",

@@ -1,6 +1,9 @@
 {
   "name": "serbian_10k",
   "noLazyMode": true,
+  "rightToLeft": false,
+  "ligatures": false,
+  "bcp47": "sr-Cyrl",
   "words": [
     "је",
     "да",

@@ -33,8 +33,11 @@ nav {
       display: grid;
       place-content: center center;
     }
+  }
 
-    &.account {
+  .accountButtonAndMenu {
+    position: relative;
+    .view-account {
       position: relative;
       align-items: center;
       gap: 0.33em;
@@ -71,15 +74,18 @@ nav {
       }
 
       .xpBar {
+        z-index: 5;
         opacity: 0;
         pointer-events: none;
         position: absolute;
         height: 0.25em;
         bottom: -0.5em;
         width: 100%;
-        left: 0;
+        min-width: 16ch;
+        right: 0;
         background: var(--sub-alt-color);
         border-radius: var(--roundness);
+        grid-template-columns: auto 2.5em;
         .bar {
           left: 0;
           width: 0%;
@@ -87,26 +93,62 @@ nav {
           background: var(--main-color);
           border-radius: var(--roundness);
         }
-        .xpGain {
-          position: absolute;
-          left: 100%;
-          margin-left: 0.5em;
-          top: 0.2em;
-          transform: translateY(-50%);
-          font-size: 0.75em;
-          color: var(--main-color);
-        }
         .xpBreakdown {
+          backdrop-filter: blur(1em);
+          /*background: linear-gradient(
+            90deg,
+            transparent 0%,
+            var(--bg-color) 10%
+          );*/
+          min-width: 100%;
+          width: max-content;
           position: absolute;
           color: var(--text-color);
           display: grid;
-          justify-items: center;
-          width: 100%;
-          margin-top: 0.75em;
-          .text {
+          // gap: 0.5em;
+          //justify-items: center;
+          // width: 32ch;
+          justify-self: end;
+          right: 0;
+          padding: 0.5em;
+          border-radius: var(--roundness);
+
+          .total {
+            text-align: right;
+            font-size: 1em;
+            color: var(--main-color);
             width: max-content;
-            font-size: 0.75em;
-            position: absolute;
+            justify-self: end;
+          }
+          .divider {
+            width: 100%;
+            height: 0.1rem;
+            background: var(--sub-alt-color);
+            border-radius: var(--roundness);
+            opacity: 0.5;
+          }
+          .list {
+            margin-top: 0.5em;
+            .line {
+              font-size: 0.8em;
+              display: grid;
+              grid-template-columns: auto 10ch;
+              gap: 0.5em;
+
+              & div {
+                text-align: right;
+              }
+
+              .positive {
+                color: var(--main-color);
+              }
+              .negative {
+                color: var(--error-color);
+              }
+              .total {
+                font-weight: bold;
+              }
+            }
           }
         }
       }
@@ -118,6 +160,66 @@ nav {
           color: var(--text-color);
         }
       }
+      &:focus-within {
+        z-index: 10;
+      }
+    }
+    .menu {
+      // display: none;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      position: absolute;
+      top: 99%;
+      right: 0;
+      font-size: 0.75rem;
+      min-width: 23ch;
+      width: 100%;
+      transition: opacity 0.125s;
+
+      .spacer {
+        width: 100%;
+        height: 0.5em;
+        background: transparent;
+      }
+
+      .items {
+        box-shadow: 0 0 0 0.5em var(--bg-color);
+        background: var(--sub-alt-color);
+        display: grid;
+        border-radius: var(--roundness);
+        gap: 0.25em;
+
+        * {
+          justify-content: left;
+          padding-left: 0;
+          border-radius: 0;
+          gap: 0;
+          i {
+            margin-right: 0.7em;
+            margin-left: 0.9em;
+          }
+          &:last-child {
+            border-radius: 0 0 var(--roundness) var(--roundness);
+          }
+          &:first-child {
+            border-radius: var(--roundness) var(--roundness) 0 0;
+          }
+          &:focus-visible {
+            border-radius: var(--roundness);
+          }
+        }
+      }
+    }
+    &:hover,
+    &:focus-within {
+      & .menu {
+        pointer-events: all;
+        opacity: 1;
+      }
+      // .view-account {
+      // background: var(--sub-alt-color);
+      // }
     }
   }
 

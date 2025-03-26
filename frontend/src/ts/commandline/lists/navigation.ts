@@ -1,8 +1,9 @@
 import { navigate } from "../../controllers/route-controller";
 import { isAuthenticated } from "../../firebase";
 import { toggleFullscreen } from "../../utils/misc";
+import { Command } from "../types";
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "viewTypingPage",
     display: "View Typing Page",
@@ -18,7 +19,7 @@ const commands: MonkeyTypes.Command[] = [
     alias: "navigate go to",
     icon: "fa-crown",
     exec: (): void => {
-      $("header nav .textButton.view-leaderboards").trigger("click");
+      navigate("/leaderboards");
     },
   },
   {

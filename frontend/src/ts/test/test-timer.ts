@@ -7,9 +7,8 @@ import * as TimerProgress from "./timer-progress";
 import * as LiveWpm from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
-import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as Notifications from "../elements/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
@@ -17,6 +16,13 @@ import * as TestState from "./test-state";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
+
+type TimerStats = {
+  dateNow: number;
+  now: number;
+  expected: number;
+  nextDelay: number;
+};
 
 let slowTimerCount = 0;
 let timer: NodeJS.Timeout | null = null;
@@ -54,7 +60,7 @@ function updateTimer(): void {
   if (timerDebug) console.timeEnd("timer progress update");
 }
 
-function calculateWpmRaw(): MonkeyTypes.WpmAndRaw {
+function calculateWpmRaw(): { wpm: number; raw: number } {
   if (timerDebug) console.time("calculate wpm and raw");
   const wpmAndRaw = TestStats.calculateWpmAndRaw();
   if (timerDebug) console.timeEnd("calculate wpm and raw");
@@ -68,7 +74,7 @@ function calculateWpmRaw(): MonkeyTypes.WpmAndRaw {
   return wpmAndRaw;
 }
 
-function monkey(wpmAndRaw: MonkeyTypes.WpmAndRaw): void {
+function monkey(wpmAndRaw: { wpm: number; raw: number }): void {
   if (timerDebug) console.time("update monkey");
   const num = Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm;
   Monkey.updateFastOpacity(num);
@@ -119,7 +125,10 @@ function layoutfluid(): void {
   if (timerDebug) console.timeEnd("layoutfluid");
 }
 
-function checkIfFailed(wpmAndRaw: MonkeyTypes.WpmAndRaw, acc: number): void {
+function checkIfFailed(
+  wpmAndRaw: { wpm: number; raw: number },
+  acc: number
+): boolean {
   if (timerDebug) console.time("fail conditions");
   TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
@@ -127,22 +136,23 @@ function checkIfFailed(wpmAndRaw: MonkeyTypes.WpmAndRaw, acc: number): void {
   if (
     Config.minWpm === "custom" &&
     wpmAndRaw.wpm < Config.minWpmCustomSpeed &&
-    TestWords.words.currentIndex > 3
+    TestState.activeWordIndex > 3
   ) {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
     slowTimerCount = 0;
     TimerEvent.dispatch("fail", "min speed");
-    return;
+    return true;
   }
   if (Config.minAcc === "custom" && acc < Config.minAccCustom) {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
     slowTimerCount = 0;
     TimerEvent.dispatch("fail", "min accuracy");
-    return;
+    return true;
   }
   if (timerDebug) console.timeEnd("fail conditions");
+  return false;
 }
 
 function checkIfTimeIsUp(): void {
@@ -175,9 +185,9 @@ function checkIfTimeIsUp(): void {
 
 // ---------------------------------------
 
-let timerStats: MonkeyTypes.TimerStats[] = [];
+let timerStats: TimerStats[] = [];
 
-export function getTimerStats(): MonkeyTypes.TimerStats[] {
+export function getTimerStats(): TimerStats[] {
   return timerStats;
 }
 
@@ -190,8 +200,8 @@ async function timerStep(): Promise<void> {
   const acc = calculateAcc();
   monkey(wpmAndRaw);
   layoutfluid();
-  checkIfFailed(wpmAndRaw, acc);
-  checkIfTimeIsUp();
+  const failed = checkIfFailed(wpmAndRaw, acc);
+  if (!failed) checkIfTimeIsUp();
   if (timerDebug) console.timeEnd("timer step -----------------------------");
 }
 

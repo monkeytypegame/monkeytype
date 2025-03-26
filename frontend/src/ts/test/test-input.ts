@@ -1,6 +1,6 @@
-import * as TestWords from "./test-words";
 import { lastElementFromArray } from "../utils/arrays";
-import { mean, roundTo2 } from "../utils/numbers";
+import { mean, roundTo2 } from "@monkeytype/util/numbers";
+import * as TestState from "./test-state";
 
 const keysToTrack = [
   "NumpadMultiply",
@@ -96,49 +96,25 @@ type ErrorHistoryObject = {
 
 class Input {
   current: string;
-  history: string[];
-  historyLength: number;
+  private history: string[];
   koreanStatus: boolean;
-  length: number;
   constructor() {
     this.current = "";
     this.history = [];
-    this.historyLength = 0;
-    this.length = 0;
     this.koreanStatus = false;
   }
 
   reset(): void {
     this.current = "";
     this.history = [];
-    this.length = 0;
   }
 
   resetHistory(): void {
     this.history = [];
-    this.length = 0;
-  }
-
-  setCurrent(val: string): void {
-    this.current = val;
-    this.length = this.current.length;
   }
 
   setKoreanStatus(val: boolean): void {
     this.koreanStatus = val;
-  }
-
-  appendCurrent(val: string): void {
-    this.current += val;
-    this.length = this.current.length;
-  }
-
-  resetCurrent(): void {
-    this.current = "";
-  }
-
-  getCurrent(): string {
-    return this.current;
   }
 
   getKoreanStatus(): boolean {
@@ -147,13 +123,11 @@ class Input {
 
   pushHistory(): void {
     this.history.push(this.current);
-    this.historyLength = this.history.length;
-    this.resetCurrent();
+    this.current = "";
   }
 
   popHistory(): string {
     const ret = this.history.pop() ?? "";
-    this.historyLength = this.history.length;
     return ret;
   }
 
@@ -174,30 +148,15 @@ class Input {
 
 class Corrected {
   current: string;
-  history: string[];
+  private history: string[];
   constructor() {
     this.current = "";
     this.history = [];
   }
-  setCurrent(val: string): void {
-    this.current = val;
-  }
-
-  appendCurrent(val: string): void {
-    this.current += val;
-  }
-
-  resetCurrent(): void {
-    this.current = "";
-  }
-
-  resetHistory(): void {
-    this.history = [];
-  }
 
   reset(): void {
-    this.resetCurrent();
-    this.resetHistory();
+    this.history = [];
+    this.current = "";
   }
 
   getHistory(i: number): string | undefined {
@@ -427,11 +386,11 @@ export function pushToRawHistory(raw: number): void {
 }
 
 export function pushBurstToHistory(speed: number): void {
-  if (burstHistory[TestWords.words.currentIndex] === undefined) {
+  if (burstHistory[TestState.activeWordIndex] === undefined) {
     burstHistory.push(speed);
   } else {
     //repeated word - override
-    burstHistory[TestWords.words.currentIndex] = speed;
+    burstHistory[TestState.activeWordIndex] = speed;
   }
 }
 

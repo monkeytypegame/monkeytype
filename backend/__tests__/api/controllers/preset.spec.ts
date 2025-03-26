@@ -2,9 +2,16 @@ import request from "supertest";
 import app from "../../../src/app";
 import * as PresetDal from "../../../src/dal/preset";
 import { ObjectId } from "mongodb";
+import { mockBearerAuthentication } from "../../__testData__/auth";
 const mockApp = request(app);
+const uid = new ObjectId().toHexString();
+const mockAuth = mockBearerAuthentication(uid);
 
 describe("PresetController", () => {
+  beforeEach(() => {
+    mockAuth.beforeEach();
+  });
+
   describe("get presets", () => {
     const getPresetsMock = vi.spyOn(PresetDal, "getPresets");
 
@@ -16,23 +23,29 @@ describe("PresetController", () => {
       //GIVEN
       const presetOne = {
         _id: new ObjectId(),
-        uid: "123456789",
+        uid: uid,
         name: "test1",
         config: { language: "english" },
       };
       const presetTwo = {
         _id: new ObjectId(),
-        uid: "123456789",
+        uid: uid,
         name: "test2",
-        config: { language: "polish" },
+        settingGroups: ["hideElements"],
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: "off",
+        },
       };
-
+      //@ts-expect-error
       getPresetsMock.mockResolvedValue([presetOne, presetTwo]);
 
       //WHEN
       const { body } = await mockApp
         .get("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -47,12 +60,18 @@ describe("PresetController", () => {
           {
             _id: presetTwo._id.toHexString(),
             name: "test2",
-            config: { language: "polish" },
+            settingGroups: ["hideElements"],
+            config: {
+              showKeyTips: true,
+              capsLockWarning: true,
+              showOutOfFocusWarning: true,
+              showAverage: "off",
+            },
           },
         ],
       });
 
-      expect(getPresetsMock).toHaveBeenCalledWith("123456789");
+      expect(getPresetsMock).toHaveBeenCalledWith(uid);
     });
     it("should return empty array if user has no presets", async () => {
       //GIVEN
@@ -61,7 +80,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .get("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -70,7 +89,7 @@ describe("PresetController", () => {
         data: [],
       });
 
-      expect(getPresetsMock).toHaveBeenCalledWith("123456789");
+      expect(getPresetsMock).toHaveBeenCalledWith(uid);
     });
   });
 
@@ -81,14 +100,14 @@ describe("PresetController", () => {
       addPresetMock.mockReset();
     });
 
-    it("should add the users preset", async () => {
+    it("should add the users full preset", async () => {
       //GIVEN
       addPresetMock.mockResolvedValue({ presetId: "1" });
 
       //WHEN
       const { body } = await mockApp
         .post("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           name: "new",
@@ -105,10 +124,69 @@ describe("PresetController", () => {
         data: { presetId: "1" },
       });
 
-      expect(addPresetMock).toHaveBeenCalledWith("123456789", {
+      expect(addPresetMock).toHaveBeenCalledWith(uid, {
         name: "new",
         config: { language: "english", tags: ["one", "two"] },
       });
+    });
+    it("should add the users partial preset", async () => {
+      //GIVEN
+      addPresetMock.mockResolvedValue({ presetId: "1" });
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/presets")
+        .set("Authorization", `Bearer ${uid}`)
+        .accept("application/json")
+        .send({
+          name: "new",
+          settingGroups: ["hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: "off",
+          },
+        })
+        .expect(200);
+
+      //THEN
+      expect(body).toStrictEqual({
+        message: "Preset created",
+        data: { presetId: "1" },
+      });
+
+      expect(addPresetMock).toHaveBeenCalledWith(uid, {
+        name: "new",
+        settingGroups: ["hideElements"],
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: "off",
+        },
+      });
+    });
+    it("should fail for no setting groups in partial presets", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/presets")
+        .set("Authorization", `Bearer ${uid}`)
+        .accept("application/json")
+        .send({
+          name: "update",
+          settingGroups: [],
+          config: {},
+        })
+        .expect(422);
+
+      expect(body).toStrictEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          `"settingGroups" Array must contain at least 1 element(s)`,
+        ],
+      });
+      expect(addPresetMock).not.toHaveBeenCalled();
     });
     it("should not fail with emtpy config", async () => {
       //GIVEN
@@ -118,7 +196,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({ name: "new", config: {} })
         .expect(200);
@@ -129,7 +207,7 @@ describe("PresetController", () => {
         data: { presetId: "1" },
       });
 
-      expect(addPresetMock).toHaveBeenCalledWith("123456789", {
+      expect(addPresetMock).toHaveBeenCalledWith(uid, {
         name: "new",
         config: {},
       });
@@ -138,7 +216,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({})
         .expect(422);
@@ -149,11 +227,11 @@ describe("PresetController", () => {
       });
       expect(addPresetMock).not.toHaveBeenCalled();
     });
-    it("should not fail with invalid preset", async () => {
+    it("should fail with invalid preset", async () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           _id: "1",
@@ -180,6 +258,32 @@ describe("PresetController", () => {
 
       expect(addPresetMock).not.toHaveBeenCalled();
     });
+    it("should fail with duplicate group settings in partial preset", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/presets")
+        .set("Authorization", `Bearer ${uid}`)
+        .accept("application/json")
+        .send({
+          name: "new",
+          settingGroups: ["hideElements", "hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: "off",
+          },
+        })
+        .expect(422);
+
+      //THEN
+      expect(body).toStrictEqual({
+        message: "Invalid request data schema",
+        validationErrors: [`"settingGroups" No duplicates allowed.`],
+      });
+
+      expect(addPresetMock).not.toHaveBeenCalled();
+    });
   });
 
   describe("update preset", () => {
@@ -196,7 +300,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           _id: "1",
@@ -214,10 +318,50 @@ describe("PresetController", () => {
         data: null,
       });
 
-      expect(editPresetMock).toHaveBeenCalledWith("123456789", {
+      expect(editPresetMock).toHaveBeenCalledWith(uid, {
         _id: "1",
         name: "new",
         config: { language: "english", tags: ["one", "two"] },
+      });
+    });
+    it("should update the users partial preset", async () => {
+      //GIVEN
+      editPresetMock.mockResolvedValue({} as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .patch("/presets")
+        .set("Authorization", `Bearer ${uid}`)
+        .accept("application/json")
+        .send({
+          _id: "1",
+          name: "new",
+          settingGroups: ["hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: "off",
+          },
+        })
+        .expect(200);
+
+      //THEN
+      expect(body).toStrictEqual({
+        message: "Preset updated",
+        data: null,
+      });
+
+      expect(editPresetMock).toHaveBeenCalledWith(uid, {
+        _id: "1",
+        name: "new",
+        settingGroups: ["hideElements"],
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: "off",
+        },
       });
     });
     it("should not fail with emtpy config", async () => {
@@ -228,7 +372,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({ _id: "1", name: "new", config: {} })
         .expect(200);
@@ -239,7 +383,7 @@ describe("PresetController", () => {
         data: null,
       });
 
-      expect(editPresetMock).toHaveBeenCalledWith("123456789", {
+      expect(editPresetMock).toHaveBeenCalledWith(uid, {
         _id: "1",
         name: "new",
         config: {},
@@ -249,31 +393,28 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({})
         .expect(422);
 
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
-        validationErrors: [
-          `"_id" Required`,
-          `"name" Required`,
-          `"config" Required`,
-        ],
+        validationErrors: [`"_id" Required`, `"name" Required`],
       });
       expect(editPresetMock).not.toHaveBeenCalled();
     });
-    it("should not fail with invalid preset", async () => {
+    it("should fail with invalid preset", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           _id: "1",
           name: "update",
           extra: "extra",
+          settingGroups: ["mappers"],
           config: {
             extra: "extra",
             autoSwitchTheme: "yes",
@@ -286,11 +427,39 @@ describe("PresetController", () => {
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
         validationErrors: [
+          `"settingGroups.0" Invalid enum value. Expected 'test' | 'behavior' | 'input' | 'sound' | 'caret' | 'appearance' | 'theme' | 'hideElements' | 'ads' | 'hidden', received 'mappers'`,
           `"config.autoSwitchTheme" Expected boolean, received string`,
           `"config.confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
           `"config" Unrecognized key(s) in object: 'extra'`,
           `Unrecognized key(s) in object: 'extra'`,
         ],
+      });
+
+      expect(editPresetMock).not.toHaveBeenCalled();
+    });
+    it("should fail with duplicate group settings in partial preset", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .patch("/presets")
+        .set("Authorization", `Bearer ${uid}`)
+        .accept("application/json")
+        .send({
+          _id: "1",
+          name: "new",
+          settingGroups: ["hideElements", "hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: "off",
+          },
+        })
+        .expect(422);
+
+      //THEN
+      expect(body).toStrictEqual({
+        message: "Invalid request data schema",
+        validationErrors: [`"settingGroups" No duplicates allowed.`],
       });
 
       expect(editPresetMock).not.toHaveBeenCalled();
@@ -311,7 +480,7 @@ describe("PresetController", () => {
 
       const { body } = await mockApp
         .delete("/presets/1")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -320,7 +489,7 @@ describe("PresetController", () => {
         data: null,
       });
 
-      expect(deletePresetMock).toHaveBeenCalledWith("123456789", "1");
+      expect(deletePresetMock).toHaveBeenCalledWith(uid, "1");
     });
     it("should fail without preset _id", async () => {
       //GIVEN
@@ -329,7 +498,7 @@ describe("PresetController", () => {
       //WHEN
       await mockApp
         .delete("/presets/")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(404);
 
       expect(deletePresetMock).not.toHaveBeenCalled();

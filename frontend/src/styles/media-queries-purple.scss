@@ -15,12 +15,25 @@
   .ad.ad-h-s {
     display: grid;
   }
+  .pageAccountSettings {
+    .main {
+      .tabs {
+        grid-auto-flow: row;
+      }
+    }
+  }
+  .pageLeaderboards {
+    .content .bigtitle .text:after {
+      left: 0.1rem;
+      transform: none;
+    }
+  }
   header {
     nav {
       font-size: 0.9rem;
       line-height: 0.9rem;
       gap: 0.25rem;
-      .account {
+      .view-account {
         .text {
           display: none;
         }
@@ -68,6 +81,11 @@
       .morestats {
         justify-self: unset;
         width: unset;
+
+        .group .bottom::after {
+          transform: none;
+          left: 0;
+        }
       }
       .buttons {
         grid-template-columns: 1fr 1fr;
@@ -86,6 +104,11 @@
     }
   }
   .pageAccount {
+    .accountVerificatinNotice {
+      button {
+        grid-column: -1 / 1;
+      }
+    }
     .group.resultBatches {
       gap: 1rem;
       grid-template-areas: "bar" "button" "text";

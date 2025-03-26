@@ -5,7 +5,7 @@ import * as Monkey from "../test/monkey";
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";
 import * as Funbox from "../test/funbox/funbox";
@@ -29,17 +29,24 @@ import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
-import * as FunboxList from "../test/funbox/funbox-list";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
+import * as Loader from "../elements/loader";
+import * as KeyConverter from "../utils/key-converter";
+import {
+  findSingleActiveFunboxWithFunction,
+  getActiveFunboxesWithFunction,
+  isFunboxActiveWithProperty,
+} from "../test/funbox/list";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
 let isKoCompiling = false;
 let isBackspace: boolean;
 let incorrectShiftsInARow = 0;
+let awaitingNextWord = false;
 
 const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -112,18 +119,18 @@ function backspaceToPrevious(): void {
   if (!TestState.isActive) return;
 
   if (
-    TestInput.input.history.length === 0 ||
-    TestUI.currentWordElementIndex === 0
+    TestInput.input.getHistory().length === 0 ||
+    TestUI.activeWordElementIndex === 0
   ) {
     return;
   }
 
   const wordElements = document.querySelectorAll("#words > .word");
   if (
-    (TestInput.input.history[TestWords.words.currentIndex - 1] ==
-      TestWords.words.get(TestWords.words.currentIndex - 1) &&
+    (TestInput.input.getHistory(TestState.activeWordIndex - 1) ==
+      TestWords.words.get(TestState.activeWordIndex - 1) &&
       !Config.freedomMode) ||
-    wordElements[TestWords.words.currentIndex - 1]?.classList.contains("hidden")
+    wordElements[TestState.activeWordIndex - 1]?.classList.contains("hidden")
   ) {
     return;
   }
@@ -133,26 +140,24 @@ function backspaceToPrevious(): void {
   }
 
   const incorrectLetterBackspaced =
-    wordElements[TestWords.words.currentIndex]?.children[0]?.classList.contains(
+    wordElements[TestState.activeWordIndex]?.children[0]?.classList.contains(
       "incorrect"
     );
   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
-    void TestUI.updateWordElement();
+    void TestUI.updateActiveWordLetters();
   }
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (
-    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
-  ) {
+  if (isFunboxActiveWithProperty("nospace")) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
-  TestWords.words.decreaseCurrentIndex();
-  TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
+  TestState.decreaseActiveWordIndex();
+  TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex - 1);
   TestUI.updateActiveElement(true);
   Funbox.toggleScript(TestWords.words.getCurrent());
-  void TestUI.updateWordElement();
+  void TestUI.updateActiveWordLetters();
 
   if (Config.mode === "zen") {
     TimerProgress.update();
@@ -193,10 +198,8 @@ async function handleSpace(): Promise<void> {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.handleSpace) {
-      f.functions.handleSpace();
-    }
+  for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
+    fb.functions.handleSpace();
   }
 
   dontInsertSpace = true;
@@ -205,10 +208,7 @@ async function handleSpace(): Promise<void> {
   void LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
-  const nospace =
-    FunboxList.get(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
-    ) !== undefined;
+  const nospace = isFunboxActiveWithProperty("nospace");
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -217,14 +217,14 @@ async function handleSpace(): Promise<void> {
   TestInput.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
     if (Config.stopOnError === "letter") {
-      void TestUI.updateWordElement();
+      void TestUI.updateActiveWordLetters();
     }
     PaceCaret.handleSpace(true, currentWord);
     TestInput.input.pushHistory();
-    TestWords.words.increaseCurrentIndex();
+    TestState.increaseActiveWordIndex();
     Funbox.toggleScript(TestWords.words.getCurrent());
     TestInput.incrementKeypressCount();
-    TestInput.pushKeypressWord(TestWords.words.currentIndex);
+    TestInput.pushKeypressWord(TestState.activeWordIndex);
     if (!nospace) {
       void Sound.playClick();
     }
@@ -259,7 +259,7 @@ async function handleSpace(): Promise<void> {
       if (Config.stopOnError === "word") {
         dontInsertSpace = false;
         Replay.addReplayEvent("incorrectLetter", "_");
-        void TestUI.updateWordElement();
+        void TestUI.updateActiveWordLetters();
         void Caret.updatePosition();
       }
       return;
@@ -267,26 +267,26 @@ async function handleSpace(): Promise<void> {
     PaceCaret.handleSpace(false, currentWord);
     if (Config.blindMode) {
       if (Config.highlightMode !== "off") {
-        TestUI.highlightAllLettersAsCorrect(TestUI.currentWordElementIndex);
+        TestUI.highlightAllLettersAsCorrect(TestUI.activeWordElementIndex);
       }
     } else {
-      TestUI.highlightBadWord(TestUI.currentWordElementIndex);
+      TestUI.highlightBadWord(TestUI.activeWordElementIndex);
     }
     TestInput.input.pushHistory();
-    TestWords.words.increaseCurrentIndex();
+    TestState.increaseActiveWordIndex();
     Funbox.toggleScript(TestWords.words.getCurrent());
     TestInput.incrementKeypressCount();
-    TestInput.pushKeypressWord(TestWords.words.currentIndex);
+    TestInput.pushKeypressWord(TestState.activeWordIndex);
     Replay.addReplayEvent("submitErrorWord");
     if (Config.difficulty === "expert" || Config.difficulty === "master") {
       TestLogic.fail("difficulty");
     }
   }
 
-  if (
-    TestLogic.areAllTestWordsGenerated() &&
-    TestWords.words.currentIndex === TestWords.words.length
-  ) {
+  TestInput.corrected.pushHistory();
+
+  const isLastWord = TestState.activeWordIndex === TestWords.words.length;
+  if (TestLogic.areAllTestWordsGenerated() && isLastWord) {
     void TestLogic.finish();
     return;
   }
@@ -307,8 +307,6 @@ async function handleSpace(): Promise<void> {
     return;
   }
 
-  TestInput.corrected.pushHistory();
-
   if (Config.keymapMode === "react") {
     void KeymapEvent.flash(" ", true);
   }
@@ -326,9 +324,17 @@ async function handleSpace(): Promise<void> {
     Config.mode === "custom" ||
     Config.mode === "quote"
   ) {
-    await TestLogic.addWord();
+    if (isLastWord) {
+      awaitingNextWord = true;
+      Loader.show();
+      await TestLogic.addWord();
+      Loader.hide();
+      awaitingNextWord = false;
+    } else {
+      void TestLogic.addWord();
+    }
   }
-  TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
+  TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex + 1);
   TestUI.updateActiveElement();
   void Caret.updatePosition();
 
@@ -340,14 +346,14 @@ async function handleSpace(): Promise<void> {
   ) {
     const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
-        TestUI.currentWordElementIndex - 1
+        TestUI.activeWordElementIndex - 1
       ]?.offsetTop ?? 0
     );
     let nextTop: number;
     try {
       nextTop = Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.currentWordElementIndex
+          TestUI.activeWordElementIndex
         ]?.offsetTop ?? 0
       );
     } catch (e) {
@@ -402,10 +408,8 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.isCharCorrect
-  );
-  if (funbox?.functions?.isCharCorrect) {
+  const funbox = findSingleActiveFunboxWithFunction("isCharCorrect");
+  if (funbox) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
 
@@ -423,12 +427,14 @@ function isCharCorrect(char: string, charIndex: number): boolean {
       char === "‘" ||
       char === "'" ||
       char === "ʼ" ||
-      char === "׳") &&
+      char === "׳" ||
+      char === "ʻ") &&
     (originalChar === "’" ||
       originalChar === "‘" ||
       originalChar === "'" ||
       originalChar === "ʼ" ||
-      originalChar === "׳")
+      originalChar === "׳" ||
+      originalChar === "ʻ")
   ) {
     return true;
   }
@@ -488,14 +494,11 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.handleChar) char = f.functions.handleChar(char);
+  for (const fb of getActiveFunboxesWithFunction("handleChar")) {
+    char = fb.functions.handleChar(char);
   }
 
-  const nospace =
-    FunboxList.get(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
-    ) !== undefined;
+  const nospace = isFunboxActiveWithProperty("nospace");
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
@@ -578,7 +581,7 @@ function handleChar(
     !Config.language.startsWith("korean")
   ) {
     TestInput.input.current = resultingWord;
-    void TestUI.updateWordElement();
+    void TestUI.updateActiveWordLetters();
     void Caret.updatePosition();
     return;
   }
@@ -651,7 +654,7 @@ function handleChar(
   }
 
   TestInput.incrementKeypressCount();
-  TestInput.pushKeypressWord(TestWords.words.currentIndex);
+  TestInput.pushKeypressWord(TestState.activeWordIndex);
 
   if (
     Config.difficulty !== "master" &&
@@ -659,7 +662,7 @@ function handleChar(
     !thisCharCorrect
   ) {
     if (!Config.blindMode) {
-      void TestUI.updateWordElement(TestInput.input.current + char);
+      void TestUI.updateActiveWordLetters(TestInput.input.current + char);
     }
     return;
   }
@@ -669,14 +672,16 @@ function handleChar(
     char
   );
 
+  const activeWord = document.querySelectorAll("#words .word")?.[
+    TestUI.activeWordElementIndex
+  ] as HTMLElement;
+
   const testInputLength: number = !isCharKorean
     ? TestInput.input.current.length
     : Hangul.disassemble(TestInput.input.current).length;
   //update the active word top, but only once
-  if (testInputLength === 1 && TestWords.words.currentIndex === 0) {
-    TestUI.setActiveWordTop(
-      (document.querySelector("#words .active") as HTMLElement)?.offsetTop
-    );
+  if (testInputLength === 1 && TestState.activeWordIndex === 0) {
+    TestUI.setActiveWordTop(activeWord?.offsetTop);
   }
 
   //max length of the input is 20 unless in zen mode then its 30
@@ -700,7 +705,7 @@ function handleChar(
     //auto stop the test if the last word is correct
     //do not stop if not all characters have been parsed by handleChar yet
     const currentWord = TestWords.words.getCurrent();
-    const lastWordIndex = TestWords.words.currentIndex;
+    const lastWordIndex = TestState.activeWordIndex;
     const lastWord = lastWordIndex === TestWords.words.length - 1;
     const allWordGenerated = TestLogic.areAllTestWordsGenerated();
     const wordIsTheSame = currentWord === TestInput.input.current;
@@ -724,14 +729,10 @@ function handleChar(
     }
   }
 
-  const activeWordTopBeforeJump = document.querySelector<HTMLElement>(
-    "#words .word.active"
-  )?.offsetTop as number;
-  void TestUI.updateWordElement();
+  const activeWordTopBeforeJump = activeWord?.offsetTop;
+  void TestUI.updateActiveWordLetters();
 
-  const newActiveTop = document.querySelector<HTMLElement>(
-    "#words .word.active"
-  )?.offsetTop as number;
+  const newActiveTop = activeWord?.offsetTop;
   //stop the word jump by slicing off the last character, update word again
   if (
     activeWordTopBeforeJump < newActiveTop &&
@@ -739,15 +740,10 @@ function handleChar(
     TestInput.input.current.length > 1
   ) {
     if (Config.mode === "zen") {
-      const currentTop = Math.floor(
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.currentWordElementIndex - 1
-        ]?.offsetTop ?? 0
-      );
-      if (!Config.showAllLines) TestUI.lineJump(currentTop);
+      if (!Config.showAllLines) TestUI.lineJump(activeWordTopBeforeJump);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
-      void TestUI.updateWordElement();
+      void TestUI.updateActiveWordLetters();
     }
   }
 
@@ -882,7 +878,8 @@ $("#wordsInput").on("keydown", (event) => {
     !leaderboardsVisible &&
     !popupVisible &&
     !TestUI.resultVisible &&
-    event.key !== "Enter";
+    event.key !== "Enter" &&
+    !awaitingNextWord;
 
   if (!allowTyping) {
     event.preventDefault();
@@ -901,7 +898,12 @@ $(document).on("keydown", async (event) => {
     console.debug(
       `Key ${event.key} is on the list of ignored keys. Stopping keydown event.`
     );
+    event.preventDefault();
     return;
+  }
+
+  for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
+    void fb.functions.handleKeydown(event);
   }
 
   //autofocus
@@ -918,7 +920,8 @@ $(document).on("keydown", async (event) => {
     !leaderboardsVisible &&
     !popupVisible &&
     !TestUI.resultVisible &&
-    (wordsFocused || event.key !== "Enter");
+    (wordsFocused || event.key !== "Enter") &&
+    !awaitingNextWord;
 
   if (
     allowTyping &&
@@ -1042,9 +1045,26 @@ $(document).on("keydown", async (event) => {
       event.preventDefault();
       return;
     }
-  }
 
-  Monkey.type();
+    // if the user backspaces the indentation in a code language we need to empty
+    // the current word so the user is set back to the end of the last line
+    if (
+      Config.codeUnindentOnBackspace &&
+      TestInput.input.current.length > 0 &&
+      /^\t*$/.test(TestInput.input.current) &&
+      Config.language.startsWith("code") &&
+      isCharCorrect(
+        TestInput.input.current.slice(-1),
+        TestInput.input.current.length - 1
+      ) &&
+      (TestInput.input.getHistory(TestState.activeWordIndex - 1) !=
+        TestWords.words.get(TestState.activeWordIndex - 1) ||
+        Config.freedomMode)
+    ) {
+      TestInput.input.current = "";
+      await TestUI.updateActiveWordLetters();
+    }
+  }
 
   if (event.key === "Backspace" && TestInput.input.current.length === 0) {
     backspaceToPrevious();
@@ -1087,20 +1107,21 @@ $(document).on("keydown", async (event) => {
     } else {
       handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
+      updateUI();
     }
   }
 
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
     void Sound.playClick();
-    const word: HTMLElement | null = document.querySelector<HTMLElement>(
-      "#words .word.active"
-    );
+    const activeWord: HTMLElement | null = document.querySelectorAll(
+      "#words .word"
+    )?.[TestUI.activeWordElementIndex] as HTMLElement;
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead
     const deadLetter: Element | undefined =
-      word?.querySelectorAll("letter")[len];
+      activeWord?.querySelectorAll("letter")[len];
     if (deadLetter) {
       deadLetter.classList.toggle("dead");
     }
@@ -1119,23 +1140,26 @@ $(document).on("keydown", async (event) => {
 
         return;
       }
-      const keycode = ShiftTracker.layoutKeyToKeycode(event.key, keymapLayout);
+      const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
 
       correctShiftUsed =
         keycode === undefined
           ? true
           : ShiftTracker.isUsingOppositeShift(keycode);
     } else {
-      correctShiftUsed = ShiftTracker.isUsingOppositeShift(event.code);
+      correctShiftUsed = ShiftTracker.isUsingOppositeShift(
+        event.code as KeyConverter.Keycode
+      );
     }
   }
 
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.preventDefaultEvent
-  );
-  if (funbox?.functions?.preventDefaultEvent) {
+  for (const fb of getActiveFunboxesWithFunction("preventDefaultEvent")) {
     if (
-      await funbox.functions.preventDefaultEvent(event as JQuery.KeyDownEvent)
+      await fb.functions.preventDefaultEvent(
+        //i cant figure this type out, but it works fine
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        event as JQuery.KeyDownEvent
+      )
     ) {
       event.preventDefault();
       handleChar(event.key, TestInput.input.current.length);
@@ -1174,6 +1198,7 @@ $("#wordsInput").on("keydown", (event) => {
     return;
   }
 
+  Monkey.type(event);
   // console.debug("Event: keydown", event);
 
   if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
@@ -1227,10 +1252,11 @@ $("#wordsInput").on("keyup", (event) => {
     return;
   }
 
+  Monkey.stop(event);
+
   if (IgnoredKeys.includes(event.key)) return;
 
   if (TestUI.resultVisible) return;
-  Monkey.stop();
 });
 
 $("#wordsInput").on("beforeinput", (event) => {
@@ -1343,7 +1369,7 @@ $("#wordsInput").on("input", (event) => {
       TestInput.input.current = inputValue;
     }
 
-    void TestUI.updateWordElement();
+    void TestUI.updateActiveWordLetters();
     void Caret.updatePosition();
     if (!CompositionState.getComposing()) {
       const keyStroke = event?.originalEvent as InputEvent;
@@ -1381,7 +1407,7 @@ $("#wordsInput").on("input", (event) => {
 
     const stateafter = CompositionState.getComposing();
     if (statebefore !== stateafter) {
-      void TestUI.updateWordElement();
+      void TestUI.updateActiveWordLetters();
     }
 
     // force caret at end of input

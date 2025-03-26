@@ -8,18 +8,23 @@ import * as ReportDal from "../../../src/dal/report";
 import GeorgeQueue from "../../../src/queues/george-queue";
 import * as AuthUtil from "../../../src/utils/auth";
 import _ from "lodash";
+import { enableRateLimitExpects } from "../../__testData__/rate-limit";
+import { mockBearerAuthentication } from "../../__testData__/auth";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
 const uid = new ObjectId().toHexString();
+const mockAuth = mockBearerAuthentication(uid);
+enableRateLimitExpects();
 
-describe("ApeKeyController", () => {
+describe("AdminController", () => {
   const isAdminMock = vi.spyOn(AdminUuidDal, "isAdmin");
 
   beforeEach(async () => {
     isAdminMock.mockReset();
     await enableAdminEndpoints(true);
     isAdminMock.mockResolvedValue(true);
+    mockAuth.beforeEach();
   });
 
   describe("check for admin", () => {
@@ -29,7 +34,7 @@ describe("ApeKeyController", () => {
       //WHEN
       const { body } = await mockApp
         .get("/admin")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -42,13 +47,18 @@ describe("ApeKeyController", () => {
     });
     it("should fail if user is no admin", async () => {
       await expectFailForNonAdmin(
-        mockApp.get("/admin").set("authorization", `Uid ${uid}`)
+        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
-        mockApp.get("/admin").set("authorization", `Uid ${uid}`)
+        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`)
       );
+    });
+    it("should be rate limited", async () => {
+      await expect(
+        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`)
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
 
@@ -75,7 +85,7 @@ describe("ApeKeyController", () => {
       const { body } = await mockApp
         .post("/admin/toggleBan")
         .send({ uid: victimUid })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -102,7 +112,7 @@ describe("ApeKeyController", () => {
       const { body } = await mockApp
         .post("/admin/toggleBan")
         .send({ uid: victimUid })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -125,7 +135,7 @@ describe("ApeKeyController", () => {
       const { body } = await mockApp
         .post("/admin/toggleBan")
         .send({})
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -141,7 +151,7 @@ describe("ApeKeyController", () => {
       const { body } = await mockApp
         .post("/admin/toggleBan")
         .send({ uid: new ObjectId().toHexString(), extra: "value" })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -155,7 +165,7 @@ describe("ApeKeyController", () => {
         mockApp
           .post("/admin/toggleBan")
           .send({ uid: new ObjectId().toHexString() })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
@@ -164,8 +174,24 @@ describe("ApeKeyController", () => {
         mockApp
           .post("/admin/toggleBan")
           .send({ uid: new ObjectId().toHexString() })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
+    });
+    it("should be rate limited", async () => {
+      //GIVEN
+      const victimUid = new ObjectId().toHexString();
+      getUserMock.mockResolvedValue({
+        banned: false,
+        discordId: "discordId",
+      } as any);
+
+      //WHEN
+      await expect(
+        mockApp
+          .post("/admin/toggleBan")
+          .send({ uid: victimUid })
+          .set("Authorization", `Bearer ${uid}`)
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
   describe("accept reports", () => {
@@ -184,11 +210,11 @@ describe("ApeKeyController", () => {
       const reportOne = {
         id: "1",
         reason: "one",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       const reportTwo = {
         id: "2",
         reason: "two",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       getReportsMock.mockResolvedValue([reportOne, reportTwo]);
 
       //WHEN
@@ -197,7 +223,7 @@ describe("ApeKeyController", () => {
         .send({
           reports: [{ reportId: reportOne.id }, { reportId: reportTwo.id }],
         })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       expect(body).toEqual({
@@ -213,7 +239,7 @@ describe("ApeKeyController", () => {
       const { body } = await mockApp
         .post("/admin/report/accept")
         .send({})
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -226,7 +252,7 @@ describe("ApeKeyController", () => {
       const { body } = await mockApp
         .post("/admin/report/accept")
         .send({ reports: [] })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -241,7 +267,7 @@ describe("ApeKeyController", () => {
       const { body } = await mockApp
         .post("/admin/report/accept")
         .send({ reports: [{ reportId: "1", extra2: "value" }], extra: "value" })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -257,7 +283,7 @@ describe("ApeKeyController", () => {
         mockApp
           .post("/admin/report/accept")
           .send({ reports: [] })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
@@ -266,8 +292,20 @@ describe("ApeKeyController", () => {
         mockApp
           .post("/admin/report/accept")
           .send({ reports: [] })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
+    });
+    it("should be rate limited", async () => {
+      //GIVEN
+      getReportsMock.mockResolvedValue([{ id: "1", reason: "one" } as any]);
+
+      //WHEN
+      await expect(
+        mockApp
+          .post("/admin/report/accept")
+          .send({ reports: [{ reportId: "1" }] })
+          .set("Authorization", `Bearer ${uid}`)
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
   describe("reject reports", () => {
@@ -286,11 +324,11 @@ describe("ApeKeyController", () => {
       const reportOne = {
         id: "1",
         reason: "one",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       const reportTwo = {
         id: "2",
         reason: "two",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       getReportsMock.mockResolvedValue([reportOne, reportTwo]);
 
       //WHEN
@@ -302,7 +340,7 @@ describe("ApeKeyController", () => {
             { reportId: reportTwo.id },
           ],
         })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       expect(body).toEqual({
@@ -318,7 +356,7 @@ describe("ApeKeyController", () => {
       const { body } = await mockApp
         .post("/admin/report/reject")
         .send({})
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -331,7 +369,7 @@ describe("ApeKeyController", () => {
       const { body } = await mockApp
         .post("/admin/report/reject")
         .send({ reports: [] })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -346,7 +384,7 @@ describe("ApeKeyController", () => {
       const { body } = await mockApp
         .post("/admin/report/reject")
         .send({ reports: [{ reportId: "1", extra2: "value" }], extra: "value" })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -362,7 +400,7 @@ describe("ApeKeyController", () => {
         mockApp
           .post("/admin/report/reject")
           .send({ reports: [] })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
@@ -371,8 +409,20 @@ describe("ApeKeyController", () => {
         mockApp
           .post("/admin/report/reject")
           .send({ reports: [] })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
+    });
+    it("should be rate limited", async () => {
+      //GIVEN
+      getReportsMock.mockResolvedValue([{ id: "1", reason: "one" } as any]);
+
+      //WHEN
+      await expect(
+        mockApp
+          .post("/admin/report/reject")
+          .send({ reports: [{ reportId: "1" }] })
+          .set("Authorization", `Bearer ${uid}`)
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
   describe("send forgot password email", () => {
@@ -392,7 +442,7 @@ describe("ApeKeyController", () => {
       const { body } = await mockApp
         .post("/admin/sendForgotPasswordEmail")
         .send({ email: "meowdec@example.com" })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -404,6 +454,15 @@ describe("ApeKeyController", () => {
       expect(sendForgotPasswordEmailMock).toHaveBeenCalledWith(
         "meowdec@example.com"
       );
+    });
+    it("should be rate limited", async () => {
+      //WHEN
+      await expect(
+        mockApp
+          .post("/admin/sendForgotPasswordEmail")
+          .send({ email: "meowdec@example.com" })
+          .set("Authorization", `Bearer ${uid}`)
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
 

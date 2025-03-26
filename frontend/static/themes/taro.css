@@ -16,22 +16,22 @@
   border-bottom: dotted 2px var(--text-color);
 }
 
-nav .textButton:nth-child(1) {
+nav > .textButton:nth-child(1) {
   background: var(--caret-color);
   border-radius: 50%;
 }
 
-nav .textButton:nth-child(2) {
+nav > .textButton:nth-child(2) {
   background: var(--error-color);
   border-radius: 50%;
 }
 
-body.crtmode nav .textButton:nth-child(1) {
+body.crtmode nav > .textButton:nth-child(1) {
   box-shadow: 3px 0 1px var(--crt-caret-color-glow),
     -3px 0 var(--crt-caret-color-glow);
 }
 
-body.crtmode nav .textButton:nth-child(2) {
+body.crtmode nav > .textButton:nth-child(2) {
   box-shadow: 3px 0 1px var(--crt-error-color-glow),
     -3px 0 var(--crt-error-color-glow);
 }

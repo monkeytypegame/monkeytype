@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import * as Notifications from "../elements/notifications";
 import * as AdController from "../controllers/ad-controller";
 import * as Skeleton from "../utils/skeleton";

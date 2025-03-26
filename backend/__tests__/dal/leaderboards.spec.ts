@@ -9,6 +9,7 @@ import type { PersonalBest } from "@monkeytype/contracts/schemas/shared";
 const configuration = Configuration.getCachedConfiguration();
 
 import * as DB from "../../src/init/db";
+import { LbPersonalBests } from "../../src/utils/pb";
 
 describe("LeaderboardsDal", () => {
   describe("update", () => {
@@ -27,7 +28,7 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
-      const result = await LeaderboardsDal.get("time", "15", "english", 0);
+      const result = await LeaderboardsDal.get("time", "15", "english", 0, 50);
 
       //THEN
       expect(result).toHaveLength(1);
@@ -49,7 +50,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -75,7 +77,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "60",
         "english",
-        0
+        0,
+        50
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
@@ -101,7 +104,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "60",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -124,7 +128,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -186,7 +191,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -222,7 +228,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -254,7 +261,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -289,14 +297,14 @@ function expectedLbEntry(
 }
 
 async function createUser(
-  lbPersonalBests?: MonkeyTypes.LbPersonalBests,
-  userProperties?: Partial<MonkeyTypes.DBUser>
-): Promise<MonkeyTypes.DBUser> {
+  lbPersonalBests?: LbPersonalBests,
+  userProperties?: Partial<UserDal.DBUser>
+): Promise<UserDal.DBUser> {
   const uid = new ObjectId().toHexString();
   await UserDal.addUser("User " + uid, uid + "@example.com", uid);
 
   await DB.getDb()
-    ?.collection<MonkeyTypes.DBUser>("users")
+    ?.collection<UserDal.DBUser>("users")
     .updateOne(
       { uid },
       {
@@ -313,17 +321,14 @@ async function createUser(
   return await UserDal.getUser(uid, "test");
 }
 
-function lbBests(
-  pb15?: PersonalBest,
-  pb60?: PersonalBest
-): MonkeyTypes.LbPersonalBests {
-  const result: MonkeyTypes.LbPersonalBests = { time: {} };
+function lbBests(pb15?: PersonalBest, pb60?: PersonalBest): LbPersonalBests {
+  const result: LbPersonalBests = { time: {} };
   if (pb15) result.time["15"] = { english: pb15 };
   if (pb60) result.time["60"] = { english: pb60 };
   return result;
 }
 
-function pb(
+export function pb(
   wpm: number,
   acc: number = 90,
   timestamp: number = 1
@@ -355,7 +360,7 @@ function premium(expirationDeltaSeconds: number) {
 
 interface ExpectedLbEntry {
   rank: number;
-  user: MonkeyTypes.DBUser;
+  user: UserDal.DBUser;
   badgeId?: number;
   isPremium?: boolean;
 }

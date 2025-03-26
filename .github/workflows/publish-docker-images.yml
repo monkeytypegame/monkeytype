@@ -1,5 +1,9 @@
 name: Publish Docker image
 
+
+permissions:
+  contents: read
+
 on:
   release:
     types: [published]
@@ -44,6 +48,8 @@ jobs:
           push: true
           tags: ${{ env.BE_REPO }}:latest,${{ steps.bemeta.outputs.tags }}
           labels: ${{ steps.bemeta.outputs.labels }}
+          build-args: |
+            server_version: ${{ github.event.release.tag_name }}
 
       - name: Backend publish description
         uses: peter-evans/dockerhub-description@e98e4d1628a5f3be2be7c231e50981aee98723ae

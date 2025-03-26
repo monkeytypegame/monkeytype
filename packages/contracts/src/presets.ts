@@ -3,11 +3,11 @@ import { z } from "zod";
 
 import {
   CommonResponses,
-  EndpointMetadata,
+  meta,
   MonkeyResponseSchema,
   responseWithData,
 } from "./schemas/api";
-import { PresetSchema } from "./schemas/presets";
+import { EditPresetRequestSchema, PresetSchema } from "./schemas/presets";
 import { IdSchema } from "./schemas/util";
 
 export const GetPresetResponseSchema = responseWithData(z.array(PresetSchema));
@@ -38,6 +38,9 @@ export const presetsContract = c.router(
       responses: {
         200: GetPresetResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "presetsGet",
+      }),
     },
     add: {
       summary: "add preset",
@@ -48,18 +51,26 @@ export const presetsContract = c.router(
       responses: {
         200: AddPresetResponseSchemna,
       },
+      metadata: meta({
+        rateLimit: "presetsAdd",
+      }),
     },
     save: {
       summary: "update preset",
       description: "Update an existing preset for the current user.",
       method: "PATCH",
       path: "",
-      body: PresetSchema.strict(),
+      body: EditPresetRequestSchema.strict(),
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "presetsEdit",
+      }),
     },
     delete: {
+      summary: "delete preset",
+      description: "Delete preset by id.",
       method: "DELETE",
       path: "/:presetId",
       pathParams: DeletePresetsParamsSchema,
@@ -67,16 +78,17 @@ export const presetsContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      summary: "delete preset",
-      description: "Delete preset by id.",
+      metadata: meta({
+        rateLimit: "presetsRemove",
+      }),
     },
   },
   {
     pathPrefix: "/presets",
     strictStatusCodes: true,
-    metadata: {
+    metadata: meta({
       openApiTags: "presets",
-    } as EndpointMetadata,
+    }),
 
     commonResponses: CommonResponses,
   }

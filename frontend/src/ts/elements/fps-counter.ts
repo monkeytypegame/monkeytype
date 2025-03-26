@@ -1,4 +1,4 @@
-import { roundTo2 } from "../utils/numbers";
+import { roundTo2 } from "@monkeytype/util/numbers";
 
 let frameCount = 0;
 let fpsInterval: number;
@@ -25,7 +25,8 @@ export function start(): void {
   stopLoop = false;
   frameCount = 0;
   startTime = performance.now();
-  fpsInterval = window.requestAnimationFrame(loop);
+
+  if (!fpsInterval) fpsInterval = window.requestAnimationFrame(loop);
   el.classList.remove("hidden");
 }
 

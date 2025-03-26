@@ -9,10 +9,6 @@
     "target": "ES6",
     "noEmit": true
   },
-  "include": [
-    "./src/**/*.ts",
-    "./scripts/**/*.ts",
-    "./src/ts/ape/types/*.d.ts"
-  ],
+  "include": ["./src/**/*.ts", "./scripts/**/*.ts"],
   "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]
 }

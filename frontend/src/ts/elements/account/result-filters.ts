@@ -6,7 +6,6 @@ import Config from "../../config";
 import * as Notifications from "../notifications";
 import Ape from "../../ape/index";
 import * as Loader from "../loader";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 import {
@@ -17,6 +16,8 @@ import {
 } from "@monkeytype/contracts/schemas/users";
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
+import { getAllFunboxes } from "@monkeytype/funbox";
+import { SnapshotUserTag } from "../../constants/default-snapshot";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>
@@ -24,7 +25,13 @@ export function mergeWithDefaultFilters(
   try {
     const merged = {} as ResultFilters;
     for (const groupKey of Misc.typedKeys(defaultResultFilters)) {
-      if (groupKey === "_id" || groupKey === "name") {
+      if (groupKey === "_id") {
+        let id = filters[groupKey] ?? defaultResultFilters[groupKey];
+        if (id === "default-result-filters-id" || id === "") {
+          id = "default";
+        }
+        merged[groupKey] = id;
+      } else if (groupKey === "name") {
         merged[groupKey] = filters[groupKey] ?? defaultResultFilters[groupKey];
       } else {
         // @ts-expect-error i cant figure this out
@@ -81,7 +88,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    const filters = resultFiltersLS.get();
+    filters = resultFiltersLS.get();
 
     const newTags: Record<string, boolean> = { none: false };
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
@@ -111,18 +118,16 @@ async function updateFilterPresets(): Promise<void> {
 
   buttons.innerHTML = "";
 
-  const filterPresets =
-    DB.getSnapshot()?.filterPresets.map((filter) => {
-      filter.name = filter.name.replace(/_/g, " ");
-      return filter;
-    }) ?? [];
+  const filterPresets = DB.getSnapshot()?.filterPresets ?? [];
 
   if (filterPresets.length > 0) {
     let html = "";
 
     for (const filter of filterPresets) {
       html += `<div class="filterPresets">
-      <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
+      <div class="select-filter-preset button" data-id="${
+        filter._id
+      }">${filter.name.replace(/_/g, " ")}</div>
       <div class="button delete-filter-preset" data-id="${filter._id}">
         <i class="fas fa-fw fa-trash"></i>
       </div>
@@ -160,16 +165,12 @@ export async function setFilterPreset(id: string): Promise<void> {
   ).addClass("active");
 }
 
-function deepCopyFilter(filter: ResultFilters): ResultFilters {
-  return JSON.parse(JSON.stringify(filter)) as ResultFilters;
-}
-
 function addFilterPresetToSnapshot(filter: ResultFilters): void {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   DB.setSnapshot({
     ...snapshot,
-    filterPresets: [...snapshot.filterPresets, deepCopyFilter(filter)],
+    filterPresets: [...snapshot.filterPresets, Misc.deepClone(filter)],
   });
 }
 
@@ -177,15 +178,20 @@ function addFilterPresetToSnapshot(filter: ResultFilters): void {
 export async function createFilterPreset(name: string): Promise<void> {
   name = name.replace(/ /g, "_");
   Loader.show();
-  const result = await Ape.users.addResultFilterPreset({ ...filters, name });
+  const result = await Ape.users.addResultFilterPreset({
+    body: { ...filters, name },
+  });
   Loader.hide();
   if (result.status === 200) {
-    addFilterPresetToSnapshot({ ...filters, name, _id: result.data as string });
+    addFilterPresetToSnapshot({ ...filters, name, _id: result.body.data });
     void updateFilterPresets();
     Notifications.add("Filter preset created", 1);
   } else {
-    Notifications.add("Error creating filter preset: " + result.message, -1);
-    console.log("error creating filter preset: " + result.message);
+    Notifications.add(
+      "Error creating filter preset: " + result.body.message,
+      -1
+    );
+    console.log("error creating filter preset: " + result.body.message);
   }
 }
 
@@ -204,7 +210,9 @@ function removeFilterPresetFromSnapshot(id: string): void {
 // deletes the currently selected filter preset
 async function deleteFilterPreset(id: string): Promise<void> {
   Loader.show();
-  const result = await Ape.users.removeResultFilterPreset(id);
+  const result = await Ape.users.removeResultFilterPreset({
+    params: { presetId: id },
+  });
   Loader.hide();
   if (result.status === 200) {
     removeFilterPresetFromSnapshot(id);
@@ -212,8 +220,11 @@ async function deleteFilterPreset(id: string): Promise<void> {
     reset();
     Notifications.add("Filter preset deleted", 1);
   } else {
-    Notifications.add("Error deleting filter preset: " + result.message, -1);
-    console.log("error deleting filter preset", result.message);
+    Notifications.add(
+      "Error deleting filter preset: " + result.body.message,
+      -1
+    );
+    console.log("error deleting filter preset", result.body.message);
   }
 }
 
@@ -248,17 +259,17 @@ function setFilter<G extends ResultFiltersGroup>(
   filter: ResultFiltersGroupItem<G>,
   value: boolean
 ): void {
-  filters[group][filter] = value as typeof filters[G][typeof filter];
+  filters[group][filter] = value as (typeof filters)[G][typeof filter];
 }
 
 function setAllFilters(group: ResultFiltersGroup, value: boolean): void {
   Object.keys(getGroup(group)).forEach((filter) => {
-    filters[group][filter as keyof typeof filters[typeof group]] =
+    filters[group][filter as keyof (typeof filters)[typeof group]] =
       value as never;
   });
 }
 
-export function loadTags(tags: MonkeyTypes.UserTag[]): void {
+export function loadTags(tags: SnapshotUserTag[]): void {
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
@@ -590,14 +601,14 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
   filters.mode[Config.mode] = true;
   if (Config.mode === "time") {
     if ([15, 30, 60, 120].includes(Config.time)) {
-      const configTime = Config.time as MonkeyTypes.DefaultTimeModes;
+      const configTime = `${Config.time}` as keyof typeof filters.time;
       filters.time[configTime] = true;
     } else {
       filters.time.custom = true;
     }
   } else if (Config.mode === "words") {
     if ([10, 25, 50, 100, 200].includes(Config.words)) {
-      const configWords = Config.words as MonkeyTypes.DefaultWordsModes;
+      const configWords = `${Config.words}` as keyof typeof filters.words;
       filters.words[configWords] = true;
     } else {
       filters.words.custom = true;
@@ -773,9 +784,7 @@ export async function appendButtons(
         },
         events: {
           beforeChange: (
-            // @ts-expect-error TODO: update slim-select
             selectedOptions,
-            // @ts-expect-error TODO: update slim-select
             oldSelectedOptions
           ): void | boolean => {
             return selectBeforeChangeFn(
@@ -792,63 +801,48 @@ export async function appendButtons(
     }
   }
 
-  let funboxList;
-  try {
-    funboxList = await JSONData.getFunboxList();
-  } catch (e) {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to append funbox buttons")
-    );
+  let html = "";
+
+  html +=
+    "<select class='funboxSelect' group='funbox' placeholder='select a funbox' multiple>";
+
+  html += "<option value='all'>all</option>";
+  html += "<option value='none'>no funbox</option>";
+
+  for (const funbox of getAllFunboxes()) {
+    html += `<option value="${funbox.name}" filter="${
+      funbox.name
+    }">${funbox.name.replace(/_/g, " ")}</option>`;
   }
-  if (funboxList) {
-    let html = "";
 
-    html +=
-      "<select class='funboxSelect' group='funbox' placeholder='select a funbox' multiple>";
+  html += "</select>";
 
-    html += "<option value='all'>all</option>";
-    html += "<option value='none'>no funbox</option>";
-
-    for (const funbox of funboxList) {
-      html += `<option value="${funbox.name}" filter="${
-        funbox.name
-      }">${funbox.name.replace(/_/g, " ")}</option>`;
-    }
-
-    html += "</select>";
-
-    const el = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .select"
-    );
-    if (el) {
-      el.innerHTML = html;
-      groupSelects["funbox"] = new SlimSelect({
-        select: el.querySelector(".funboxSelect") as HTMLSelectElement,
-        settings: {
-          showSearch: true,
-          placeholderText: "select a funbox",
-          allowDeselect: true,
-          closeOnSelect: false,
-        },
-        events: {
-          beforeChange: (
-            // @ts-expect-error TODO: update slim-select
+  const el = document.querySelector(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .select"
+  );
+  if (el) {
+    el.innerHTML = html;
+    groupSelects["funbox"] = new SlimSelect({
+      select: el.querySelector(".funboxSelect") as HTMLSelectElement,
+      settings: {
+        showSearch: true,
+        placeholderText: "select a funbox",
+        allowDeselect: true,
+        closeOnSelect: false,
+      },
+      events: {
+        beforeChange: (selectedOptions, oldSelectedOptions): void | boolean => {
+          return selectBeforeChangeFn(
+            "funbox",
             selectedOptions,
-            // @ts-expect-error TODO: update slim-select
             oldSelectedOptions
-          ): void | boolean => {
-            return selectBeforeChangeFn(
-              "funbox",
-              selectedOptions,
-              oldSelectedOptions
-            );
-          },
-          beforeOpen: (): void => {
-            adjustScrollposition("funbox");
-          },
+          );
         },
-      });
-    }
+        beforeOpen: (): void => {
+          adjustScrollposition("funbox");
+        },
+      },
+    });
   }
 
   const snapshot = DB.getSnapshot();
@@ -887,9 +881,7 @@ export async function appendButtons(
         },
         events: {
           beforeChange: (
-            // @ts-expect-error TODO: update slim-select
             selectedOptions,
-            // @ts-expect-error TODO: update slim-select
             oldSelectedOptions
           ): void | boolean => {
             return selectBeforeChangeFn(
@@ -929,12 +921,12 @@ $(".group.presetFilterButtons .filterBtns").on(
   "click",
   ".filterPresets .delete-filter-preset",
   (e) => {
-    void deleteFilterPreset($(e.currentTarget).data("id"));
+    void deleteFilterPreset($(e.currentTarget).data("id") as string);
   }
 );
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
-  const filter = deepCopyFilter(filterIn);
+  const filter = Misc.deepClone(filterIn);
   Object.entries(defaultResultFilters).forEach((entry) => {
     const key = entry[0] as ResultFiltersGroup;
     const value = entry[1];

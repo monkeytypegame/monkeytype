@@ -1,15 +1,17 @@
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
-// @ts-expect-error TODO: update slim-select
-import type { DataObjectPartial } from "slim-select/dist/store";
+import { DataObjectPartial } from "slim-select/store";
 import { getTestActivityCalendar } from "../db";
 import * as ServerConfiguration from "../ape/server-configuration";
 import * as DB from "../db";
+import {
+  TestActivityCalendar,
+  TestActivityMonth,
+} from "./test-activity-calendar";
 
 let yearSelector: SlimSelect | undefined = undefined;
 
 export function init(
-  calendar?: MonkeyTypes.TestActivityCalendar,
+  calendar?: TestActivityCalendar,
   userSignUpDate?: Date
 ): void {
   if (calendar === undefined) {
@@ -20,10 +22,11 @@ export function init(
 
   yearSelector = getYearSelector();
   initYearSelector("current", userSignUpDate?.getFullYear() || 2022);
+  updateLabels(calendar.firstDayOfWeek);
   update(calendar);
 }
 
-function update(calendar?: MonkeyTypes.TestActivityCalendar): void {
+function update(calendar?: TestActivityCalendar): void {
   const container = document.querySelector("#testActivity .activity");
 
   if (container === null) {
@@ -85,11 +88,13 @@ export function initYearSelector(
   }
 
   const yearSelect = getYearSelector();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   yearSelect.setData(years);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   years.length > 1 ? yearSelect.enable() : yearSelect.disable();
 }
 
-function updateMonths(months: MonkeyTypes.TestActivityMonth[]): void {
+function updateMonths(months: TestActivityMonth[]): void {
   const element = document.querySelector("#testActivity .months") as Element;
 
   element.innerHTML = months
@@ -108,17 +113,56 @@ function getYearSelector(): SlimSelect {
       showSearch: false,
     },
     events: {
-      // @ts-expect-error TODO: update slim-select
       afterChange: async (newVal): Promise<void> => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         yearSelector?.disable();
         const selected = newVal[0]?.value as string;
         const activity = await getTestActivityCalendar(selected);
         update(activity);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         if ((yearSelector?.getData() ?? []).length > 1) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           yearSelector?.enable();
         }
       },
     },
   });
   return yearSelector;
+}
+
+const daysDisplay = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+];
+function updateLabels(firstDayOfWeek: number): void {
+  const days: (string | undefined)[] = [];
+  for (let i = 0; i < 7; i++) {
+    days.push(
+      i % 2 != firstDayOfWeek % 2
+        ? daysDisplay[(firstDayOfWeek + i) % 7]
+        : undefined
+    );
+  }
+
+  const buildHtml = (maxLength?: number): string => {
+    const shorten =
+      maxLength !== undefined
+        ? (it: string) => it.substring(0, maxLength)
+        : (it: string) => it;
+    return days
+      .map((it) =>
+        it !== undefined
+          ? `<div><div class="text">${shorten(it)}</div></div>`
+          : "<div></div>"
+      )
+      .join("");
+  };
+
+  $("#testActivity .daysFull").html(buildHtml());
+  $("#testActivity .days").html(buildHtml(3));
 }

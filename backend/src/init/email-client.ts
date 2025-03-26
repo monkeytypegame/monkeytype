@@ -7,6 +7,7 @@ import mustache from "mustache";
 import { recordEmail } from "../utils/prometheus";
 import type { EmailTaskContexts, EmailType } from "../queues/email-queue";
 import { isDevEnvironment } from "../utils/misc";
+import { getErrorMessage } from "../utils/error";
 
 type EmailMetadata = {
   subject: string;
@@ -43,9 +44,12 @@ export async function init(): Promise<void> {
       Logger.warning(
         "No email client configuration provided. Running without email."
       );
-      return;
+    } else if (process.env["BYPASS_EMAILCLIENT"] === "true") {
+      Logger.warning("BYPASS_EMAILCLIENT is enabled! Running without email.");
+    } else {
+      throw new Error("No email client configuration provided");
     }
-    throw new Error("No email client configuration provided");
+    return;
   }
 
   try {
@@ -72,7 +76,7 @@ export async function init(): Promise<void> {
     Logger.success("Email client configuration verified");
   } catch (error) {
     transportInitialized = false;
-    Logger.error(error.message);
+    Logger.error(getErrorMessage(error) ?? "Unknown error");
     Logger.error("Failed to verify email client configuration.");
   }
 }
@@ -103,14 +107,16 @@ export async function sendEmail(
     html: template,
   };
 
-  let result;
+  type Result = { response: string; accepted: string[] };
+
+  let result: Result;
   try {
-    result = await transporter.sendMail(mailOptions);
+    result = (await transporter.sendMail(mailOptions)) as Result;
   } catch (e) {
     recordEmail(templateName, "fail");
     return {
       success: false,
-      message: e.message,
+      message: getErrorMessage(e) ?? "Unknown error",
     };
   }
 

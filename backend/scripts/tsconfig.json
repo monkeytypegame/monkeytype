@@ -1,0 +1,7 @@
+{
+  "extends": "@monkeytype/typescript-config/base.json",
+  "compilerOptions": {
+    "target": "ES6"
+  },
+  "include": ["./**/*"]
+}
