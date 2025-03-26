@@ -590,12 +590,6 @@
       "length": 136
     },
     {
-      "text": "What I am trying to say is the love is ours to make so we should make it.",
-      "source": "Bed Peace",
-      "id": 105,
-      "length": 73
-    },
-    {
       "text": "I know just how to whisper and I know just how to cry. I know just where to find the answers and I know just how to lie. I know just how to fake it and I know just how to scheme. I know just when to face the truth and then I know just when to dream.",
       "source": "Making Love Out of Nothing At All",
       "id": 106,
@@ -2276,10 +2270,10 @@
       "length": 139
     },
     {
-      "text": "Everyone is afraid of something. We fear things because we value them. We fear losing people because we love them. We fear dying because we value being alive. Don't wish you didn't fear anything. All that would mean is that you didn't feel anything.",
+      "text": "Everyone is afraid of something. We fear things because we value them. We fear losing people, because we love them. We fear dying because we value being alive. Don't wish you didn't fear anything. All that would mean is that you didn't feel anything.",
       "source": "Lord of Shadows",
       "id": 396,
-      "length": 249
+      "length": 250
     },
     {
       "text": "You remind me that I am a mere mortal and you are a prince of Faerie. Well, let me remind you that means you have much to lose and I have nothing.",
@@ -6320,10 +6314,10 @@
       "length": 155
     },
     {
-      "text": "Never forget what you are, for surely the world will not. Make it your strength. Then it can never be your weakness. Armour yourself in it, and it will never be used to hurt you.",
+      "text": "Never forget what you are, for surely the world will not. Make it your strength. Then it can never be your weakness. Armor yourself in it, and it will never be used to hurt you.",
       "source": "A Game of Thrones",
       "id": 1105,
-      "length": 178
+      "length": 177
     },
     {
       "text": "If you really want to hear about it, the first thing you'll probably want to know is where I was born, and what my lousy childhood was like, and how my parents were occupied and all before they had me, and all that David Copperfield kind of crap, but I don't feel like going into it, if you want to know the truth.",
@@ -12255,7 +12249,7 @@
     },
     {
       "text": "Of all men's creations, books are the nearest to us, for they contain our very thoughts, our ambitions, our indignations, our illusions, our fidelity to truth, and our persistent leaning toward error.",
-      "source": "Books",
+      "source": "Books by Joseph Conrad",
       "id": 2161,
       "length": 200
     },
@@ -13735,12 +13729,6 @@
       "source": "Mrs. Dorriman, Volume 3 of 3",
       "id": 2427,
       "length": 545
-    },
-    {
-      "text": "The bully who oppressed your youth isn't at the table with us, perhaps he's long dead.",
-      "source": "Deadwood",
-      "id": 2428,
-      "length": 86
     },
     {
       "text": "Every craft and every investigation, and likewise every action and decision, seems to aim at some good; hence the good has been well described as that at which everything aims. However, there is an apparent difference among the ends aimed at. For the end is sometimes an activity, sometimes a product beyond the activity; and when there is an end beyond the action, the product is by nature better than the activity.",
@@ -15601,12 +15589,6 @@
       "source": "The Dark Knight",
       "id": 2776,
       "length": 521
-    },
-    {
-      "text": "I saw a strange thing today. Some rebels were being arrested. One of them pulled the pin on a grenade. He took himself and the captain of the command with him. Now, soldiers are paid to fight; the rebels aren't.",
-      "source": "The Godfather: Part II",
-      "id": 2777,
-      "length": 211
     },
     {
       "text": "You know, for fifteen years I've been looking for these damn silly lights in the night sky. I've never found any. I'd like to because I believe in life elsewhere.",
@@ -18033,12 +18015,6 @@
       "length": 450
     },
     {
-      "text": "You know, you're very beautiful. You're also very quiet. And I'm not used to girls being that quiet unless they're medicated. Normally I go out with girls who talk so much you could hook them up to a wind turbine and they could power a small New Hampshire town.",
-      "source": "Good Morning, Vietnam",
-      "id": 3216,
-      "length": 261
-    },
-    {
       "text": "After removal from the oven, the pizza is sliced and plated quickly in a flat cardboard box, which is immediately closed and often taped shut. There is no physical separation after the slicing, so that edge can be ignored and we can treat the pizza, for thermal purposes, as an infinite plane. The procedure reduces the heat-transfer problem to one dimension represented by a vector normal to the pizza surface.",
       "source": "The Thermodynamics of Pizza",
       "id": 3218,
@@ -18505,12 +18481,6 @@
       "source": "Who Cut the Cheese: A Cultural History of the Fart",
       "id": 3300,
       "length": 244
-    },
-    {
-      "text": "When I was a prisoner in Pretoria they used to keep us awake at night with fireworks after news such as that of Colenso and Magersfontein, but, except amongst the young boys, they were not given to exultation over what they had done or to any boasting. Then they talked about lyddite, and it was quite clear that it had been a terrible bogy in their minds, and that they had imagined it was to have an effect like throwing earthquakes at them, and it was equally evident that the result of actual experience had fallen short of their apprehensions.",
-      "source": "Impressions of a War Correspondent",
-      "id": 3301,
-      "length": 548
     },
     {
       "text": "I been slumping all season but now I found a reason. I struck on a love that is true. I used to play the field, I used to be a roamer, but the season's turning 'round for me now. I finally bagged me a Homer. That's right, I finally bagged me a Homer.",
@@ -27509,10 +27479,10 @@
       "length": 298
     },
     {
-      "text": "By humbly and frankly acknowledging yourself to be in the wrong, there is no knowing, my son, what good you may do. I knew once a gentleman and very worthy practitioner in Vanity Fair, who used to do little wrongs to his neighbours on purpose, and in order to apologise for them in an open and manly way afterwards - and what ensued? My friend Crocky Doyle was liked everywhere, and deemed to be rather impetuous - but the honestest fellow.",
+      "text": "By humbly and frankly acknowledging yourself to be in the wrong, there is no knowing, my son, what good you may do. I knew once a gentleman and very worthy practitioner in Vanity Fair, who used to do little wrongs to his neighbors on purpose, and in order to apologise for them in an open and manly way afterwards - and what ensued? My friend Crocky Doyle was liked everywhere, and deemed to be rather impetuous - but the honestest fellow.",
       "source": "Vanity Fair",
       "id": 4949,
-      "length": 440
+      "length": 439
     },
     {
       "text": "To some, the rules of etiquette may seem outdated, stuffy and unnecessary, but the fact remains that they serve as a sort of social weed-whacker eliminating unsavory growths from popping up in the world's finer gardens. The truth is that first impressions are usually lasting ones, and a bad first impression can sometimes be insurmountable.",
@@ -27827,12 +27797,6 @@
       "length": 56
     },
     {
-      "text": "What's the use of stories that aren't even true?",
-      "source": "Haroun and the Sea of Stories",
-      "id": 5006,
-      "length": 48
-    },
-    {
       "text": "It is all for love. Which is a wonderful and dashing matter. But which can also be a very foolish thing.",
       "source": "Haroun and the Sea of Stories",
       "id": 5007,
@@ -28089,12 +28053,6 @@
       "source": "Harry Potter and the Deathly Hallows",
       "id": 5052,
       "length": 109
-    },
-    {
-      "text": "Harry was left to ponder in silence the depths to which girls would sink to get revenge.",
-      "source": "Harry Potter and the Half-Blood Prince",
-      "id": 5053,
-      "length": 88
     },
     {
       "text": "'That wand's more trouble than it's worth,' said Harry. 'And quite honestly,' he turned away from the painted portraits, thinking now only of the four-poster bed lying waiting for him in Gryffindor Tower, and wondering whether Kreacher might bring him a sandwich there, 'I've had enough trouble for a lifetime.'",
@@ -30354,12 +30312,6 @@
       "id": 5508
     },
     {
-      "text": "Mental? Well, let me tell you something, Mr. 100% Tip-Top Mental. My daughter may be no spring chicken, and her jaw may crack when she chews, and she may have noticeable trouble digesting raw vegetables. But one thing she is not, is mental!",
-      "source": "The Golden Girls",
-      "length": 240,
-      "id": 5509
-    },
-    {
       "text": "Picture this. Two young girls, best friends, who share three things: a pizza recipe, some dough and a dream. Everything is going great, until one day, a fast-talking pepperoni salesman gallops into town. Of course, both girls are impressed. He dates one one night, and the other the next night. Pretty soon, he drives a wedge between them. Before you know it, the pizza suffers, the business suffers, the friendship suffers. The girls part company and head for America, never to see one another again. Rose, one of those girls was me. The other one, you probably know as Mama Celeste.",
       "source": "The Golden Girls",
       "length": 584,
@@ -30757,7 +30709,7 @@
     },
     {
       "text": "Here's to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in the square holes. The ones who see things differently. They're not fond of rules. And they have no respect for the status quo. You can quote them, disagree with them, glorify or vilify them. About the only thing you can't do is ignore them. Because they change things. They push the human race forward. And while some may see them as the crazy ones, we see genius. Because the people who are crazy enough to think they can change the world, are the ones who do.",
-      "source": "Rob Siltanen",
+      "source": "Steve Jobs",
       "length": 549,
       "id": 5598
     },
@@ -31084,12 +31036,6 @@
       "source": "Zuhair Ibn Abi Sulma, Hanging Odes",
       "length": 270,
       "id": 5657
-    },
-    {
-      "text": "To forget the dead would be akin to killing them a second time.",
-      "source": "Night, Elie Wiesel",
-      "length": 63,
-      "id": 5658
     },
     {
       "text": "There are those who give with joy, and that joy is their reward.",
@@ -36035,9 +35981,9 @@
       "id": 6645
     },
     {
-      "text": "You always make each day such a special day, you know how: By just your being you. Only one person in the whole world like you, that's you yourself!",
+      "text": "You always make each day such a special day, you know how: By just you being you. Only one person in the whole world like you, that's you yourself!",
       "source": "Mr. Roger's Neighborhood ",
-      "length": 148,
+      "length": 147,
       "approvedBy": "Smithster",
       "id": 6646
     },
@@ -37110,7 +37056,7 @@
     },
     {
       "text": "It is not easy to find happiness in ourselves, and it is not possible to find it elsewhere. The only way to true happiness is to learn to accept and love ourselves for who we are, flaws and all. This means embracing our strengths as well as our weaknesses, and finding joy in the journey of self-discovery and self-improvement. It may not be an easy path, but it is one that is worth taking.",
-      "source": "Unknown",
+      "source": "Agnes Repplier",
       "length": 391,
       "id": 6837
     },
@@ -38022,7 +37968,7 @@
     },
     {
       "text": "Do not be dismayed by the brokenness of the world. All things break. And all things can be mended. Not with time, as they say, but with intention. So go. Love intentionally, extravagantly, unconditionally. The broken world waits in darkness for the light that is you.",
-      "source": "L.R. Knos",
+      "source": "L.R. Knost",
       "length": 267,
       "id": 6999
     },
@@ -38447,9 +38393,9 @@
       "id": 7611
     },
     {
-      "text": "You are one of my most valued officers and you are my friend. It is vital that you understand me here. I need you, but I also need to know that I can count on you. You are my counsel, the one I turn to when I need my moral compass checked. We have forged this relationship for years and I depend on it. I realize you made a sacrifice for me, but it's not one I would have allowed you to make. You can use logic to justify almost anything. That's it's power, and it's flaw. From now on, bring your logic to me. Don't act on it behind my back.",
+      "text": "You are one of my most valued officers and you are my friend. It is vital that you understand me here. I need you, but I also need to know that I can count on you. You are my counsel, the one I turn to when I need my moral compass checked. We have forged this relationship for years and I depend on it. I realize you made a sacrifice for me, but it's not one I would have allowed you to make. You can use logic to justify almost anything. That's its power, and its flaw. From now on, bring your logic to me. Don't act on it behind my back.",
       "source": "Captain Kathryn Janeway, Star Trek: Voyager",
-      "length": 541,
+      "length": 539,
       "id": 7612
     },
     {
@@ -38550,7 +38496,7 @@
     },
     {
       "text": "If you want to know what a man's like, take a good look at how he treats his inferiors, not his equals.",
-      "source": "DanMachi",
+      "source": "Harry Potter and the Goblet of Fire",
       "length": 103,
       "id": 7629
     },
@@ -38567,9 +38513,9 @@
       "id": 7631
     },
     {
-      "text": "While you're just starting out, put all your energy into surviving. No matter how pathetic you feel, or how people laugh at you, if you win come back alive, you win.",
+      "text": "While you're just starting out, put all your energy into surviving. No matter how pathetic you feel, or how people laugh at you, if you come back alive, you win.",
       "source": "DanMachi",
-      "length": 165,
+      "length": 161,
       "id": 7632
     },
     {
