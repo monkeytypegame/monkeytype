@@ -1917,6 +1917,7 @@ describe("user controller test", () => {
       tags: {
         none: false,
       },
+      tagsFilterMode: "or",
       language: {
         english: true,
       },
@@ -1981,6 +1982,7 @@ describe("user controller test", () => {
           '"numbers" Required',
           '"date" Required',
           '"tags" Required',
+          '"tagsFilterMode" Required',
           '"language" Required',
           '"funbox" Required',
         ],
