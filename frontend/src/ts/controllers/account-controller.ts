@@ -492,7 +492,7 @@ async function signUp(): Promise<void> {
     });
     return;
   }
-  RegisterCaptchaModal.show();
+  await RegisterCaptchaModal.show();
   const captchaToken = await RegisterCaptchaModal.promise;
   if (captchaToken === undefined || captchaToken === "") {
     Notifications.add("Please complete the captcha", -1);

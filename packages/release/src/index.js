@@ -56,7 +56,9 @@ const runProjectRootCommand = (command, force) => {
 
 const checkBranchSync = () => {
   console.log("Checking if local branch is master...");
-  const currentBranch = runProjectRootCommand("git branch --show-current");
+  const currentBranch = runProjectRootCommand(
+    "git branch --show-current"
+  ).trim();
   if (currentBranch !== "master") {
     console.error(
       "Local branch is not master. Please checkout the master branch."

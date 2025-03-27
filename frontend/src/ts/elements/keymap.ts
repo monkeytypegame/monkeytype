@@ -9,6 +9,10 @@ import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
 import * as TestWords from "../test/test-words";
+import { capsState } from "../test/caps-warning";
+import * as ShiftTracker from "../test/shift-tracker";
+import * as AltTracker from "../test/alt-tracker";
+import * as KeyConverter from "../utils/key-converter";
 import { getCustomKeymapSyle } from "../utils/custom-keymap";
 import { KeymapCustom, Layout } from "@monkeytype/contracts/schemas/configs";
 
@@ -412,6 +416,112 @@ export async function refresh(
   }
 }
 
+const isMacLike = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+const symbolsPattern = /^[^\p{L}\p{N}]{1}$/u;
+type KeymapLegendStates = [letters: 0 | 1 | 2 | 3, symbols: 0 | 1 | 2 | 3];
+let keymapLegendStates: KeymapLegendStates = [0, 0];
+
+function getLegendStates(): KeymapLegendStates | undefined {
+  // MacOS has different CapsLock and Shift logic than other operating systems
+  // Windows and Linux only capitalize letters if either Shift OR CapsLock are
+  // pressed, but not both at once.
+  // MacOS instead capitalizes when either or both are pressed,
+  // so we have to check for that.
+  const shiftState = ShiftTracker.leftState || ShiftTracker.rightState;
+  const altState = AltTracker.leftState || AltTracker.rightState;
+
+  const osDependentLettersState = isMacLike
+    ? shiftState || capsState
+    : shiftState !== capsState;
+
+  const lettersState = (osDependentLettersState ? 1 : 0) + (altState ? 2 : 0);
+  const symbolsState = (shiftState ? 1 : 0) + (altState ? 2 : 0);
+
+  const [previousLettersState, previousSymbolsState] = keymapLegendStates;
+
+  if (
+    previousLettersState === lettersState &&
+    previousSymbolsState === symbolsState
+  ) {
+    return;
+  }
+
+  keymapLegendStates = [
+    lettersState as 0 | 1 | 2 | 3,
+    symbolsState as 0 | 1 | 2 | 3,
+  ];
+  return keymapLegendStates;
+}
+
+async function updateLegends(): Promise<void> {
+  const states = getLegendStates();
+  if (states === undefined) return;
+
+  const keymapKeys = [...document.getElementsByClassName("keymapKey")].filter(
+    (el) => {
+      const isKeymapKey = el.classList.contains("keymapKey");
+      const isNotSpace = !el.classList.contains("keySpace");
+
+      return isKeymapKey && isNotSpace;
+    }
+  ) as HTMLElement[];
+
+  const layoutKeys = keymapKeys.map((el) => el.dataset["key"]);
+  if (layoutKeys.includes(undefined)) return;
+
+  const keys = keymapKeys.map((el) => el.childNodes[1]);
+
+  const [lettersState, symbolsState] = states;
+
+  const layoutName =
+    Config.keymapLayout === "overrideSync"
+      ? Config.layout === "default"
+        ? "qwerty"
+        : Config.layout
+      : Config.keymapLayout;
+
+  const layout = await JSONData.getLayout(layoutName).catch(() => undefined);
+  if (layout === undefined) {
+    Notifications.add("Failed to load keymap layout", -1);
+
+    return;
+  }
+
+  for (let i = 0; i < layoutKeys.length; i++) {
+    const layoutKey = layoutKeys[i] as string;
+    const key = keys[i];
+    const lowerCaseCharacter = layoutKey[0];
+    const upperCaseCharacter = layoutKey[1];
+
+    if (
+      key === undefined ||
+      layoutKey === undefined ||
+      lowerCaseCharacter === undefined ||
+      upperCaseCharacter === undefined
+    )
+      continue;
+
+    const keyIsSymbol = [lowerCaseCharacter, upperCaseCharacter].some(
+      (character) => symbolsPattern.test(character ?? "")
+    );
+
+    const keycode = KeyConverter.layoutKeyToKeycode(lowerCaseCharacter, layout);
+    if (keycode === undefined) {
+      return;
+    }
+    const oppositeShift = ShiftTracker.isUsingOppositeShift(keycode);
+
+    const state = keyIsSymbol ? symbolsState : lettersState;
+    const characterIndex = oppositeShift ? state : 0;
+
+    //if the character at the index is undefined, try without alt
+    const character =
+      layoutKey[characterIndex] ?? layoutKey[characterIndex - 2];
+
+    key.textContent = character ?? "";
+  }
+}
+
 ConfigEvent.subscribe((eventKey, newValue) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync") {
     void refresh(Config.keymapLayout);
@@ -435,5 +545,29 @@ KeymapEvent.subscribe((mode, key, correct) => {
   }
   if (mode === "flash") {
     void flashKey(key, correct);
+  }
+});
+
+$(document).on("keydown", (e) => {
+  if (
+    Config.keymapLegendStyle === "dynamic" &&
+    (e.code === "ShiftLeft" ||
+      e.code === "ShiftRight" ||
+      e.code === "AltRight" ||
+      e.code === "AltLeft")
+  ) {
+    void updateLegends();
+  }
+});
+
+$(document).on("keyup", (e) => {
+  if (
+    Config.keymapLegendStyle === "dynamic" &&
+    (e.code === "ShiftLeft" ||
+      e.code === "ShiftRight" ||
+      e.code === "AltRight" ||
+      e.code === "AltLeft")
+  ) {
+    void updateLegends();
   }
 });
