@@ -294,7 +294,7 @@ function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
     TestWords.words.get(TestState.activeWordIndex - 1);
   const inputIsEmpty = inputValue === "";
 
-  if (inputIsEmpty && !previousWordCorrect && confidence === "on") {
+  if (confidence === "on" && inputIsEmpty && !previousWordCorrect) {
     event.preventDefault();
   }
 
