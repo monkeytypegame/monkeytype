@@ -595,7 +595,8 @@ wordsInput.addEventListener("input", async (event) => {
 });
 
 wordsInput.addEventListener("focus", (event) => {
-  wordsInput.selectionStart = wordsInput.selectionEnd = wordsInput.value.length;
+  wordsInput.selectionStart = wordsInput.value.length;
+  wordsInput.selectionEnd = wordsInput.value.length;
 });
 
 wordsInput.addEventListener("copy paste", (event) => {
