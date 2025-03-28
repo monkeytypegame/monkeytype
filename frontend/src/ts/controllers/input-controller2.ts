@@ -607,15 +607,18 @@ wordsInput.addEventListener("select selectstart", (event) => {
   event.preventDefault();
 });
 
+wordsInput.addEventListener("selectionchange", (event) => {
+  event.preventDefault();
+  wordsInput.selectionStart = wordsInput.value.length;
+  wordsInput.selectionEnd = wordsInput.value.length;
+});
+
 wordsInput.addEventListener("keydown", async (event) => {
   console.debug("wordsInput event keydown", {
     key: event.key,
     code: event.code,
   });
-  if (
-    ((event.metaKey || event.ctrlKey) && event.key === "a") ||
-    event.key.startsWith("Arrow")
-  ) {
+  if (event.key.startsWith("Arrow")) {
     event.preventDefault();
     return;
   }
