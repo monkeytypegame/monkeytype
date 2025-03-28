@@ -276,7 +276,7 @@ type OnInsertTextParams = InputEventHandler & {
   data: string;
 };
 
-function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
+function onBeforeDelete({ inputValue, event }: InputEventHandler): void {
   if (!TestState.isActive) {
     event.preventDefault();
     return;
@@ -462,10 +462,7 @@ async function onInsertText({
   TestUI.afterTestTextInput(correct, movingToNextWord, inputOverride);
 }
 
-function onContentDelete({
-  inputType,
-  realInputValue,
-}: InputEventHandler): void {
+function onDelete({ inputType, realInputValue }: InputEventHandler): void {
   if (realInputValue === "") {
     goToPreviousWord(inputType);
   }
@@ -535,7 +532,7 @@ wordsInput.addEventListener("beforeinput", (event) => {
     inputType === "deleteWordBackward" ||
     inputType === "deleteContentBackward"
   ) {
-    onBeforeContentDelete({
+    onBeforeDelete({
       inputType,
       inputValue,
       realInputValue,
@@ -588,7 +585,7 @@ wordsInput.addEventListener("input", async (event) => {
     inputType === "deleteContentBackward"
   ) {
     TestInput.input.current = wordsInput.value.slice(1);
-    onContentDelete({
+    onDelete({
       inputType,
       inputValue,
       realInputValue,
