@@ -1615,10 +1615,10 @@ export function afterTestDelete(): void {
   afterAnyTestInput(null);
 }
 
-export function afterTestWordChange(direction: "next" | "previous"): void {
+export function afterTestWordChange(direction: "forward" | "back"): void {
   updateActiveElement();
   if (
-    direction === "next" &&
+    direction === "forward" &&
     (!Config.showAllLines ||
       Config.mode === "time" ||
       (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||

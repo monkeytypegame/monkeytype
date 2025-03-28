@@ -184,7 +184,7 @@ async function goToNextWord({
   }
 
   setInputValue("");
-  TestUI.afterTestWordChange("next");
+  TestUI.afterTestWordChange("forward");
 }
 
 function goToPreviousWord(inputType: SupportedInputType): void {
@@ -213,7 +213,7 @@ function goToPreviousWord(inputType: SupportedInputType): void {
       setInputValue(word);
     }
   }
-  TestUI.afterTestWordChange("previous");
+  TestUI.afterTestWordChange("back");
 }
 
 type FailOrFinishParams = {
