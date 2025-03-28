@@ -618,7 +618,13 @@ wordsInput.addEventListener("keydown", async (event) => {
     key: event.key,
     code: event.code,
   });
-  if (event.key.startsWith("Arrow")) {
+  if (
+    event.key.startsWith("Arrow") ||
+    event.key === "Home" ||
+    event.key === "End" ||
+    event.key === "PageUp" ||
+    event.key === "PageDown"
+  ) {
     event.preventDefault();
     return;
   }
