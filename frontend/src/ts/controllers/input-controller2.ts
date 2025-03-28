@@ -307,20 +307,22 @@ function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
   }
 }
 
-function onBeforeInsertText({
-  data,
-  inputValue,
-  event,
-}: OnInsertTextParams): void {
+function onBeforeInsertText({ data, inputValue }: OnInsertTextParams): boolean {
+  let preventDefault = false;
+
+  //prevent space from being inserted if input is empty
+  //allow if strict space is enabled
   if (
     data === " " &&
     inputValue === "" &&
     Config.difficulty === "normal" &&
     !Config.strictSpace
   ) {
-    event?.preventDefault();
+    preventDefault = true;
   }
 
+  //prevent the word from jumping to the next line if the word is too long
+  //this will not work for the first word of each line, but that has a low chance of happening
   if (
     data !== null &&
     data !== "" &&
@@ -328,17 +330,18 @@ function onBeforeInsertText({
     TestUI.getActiveWordTopAfterAppend(data) > TestUI.activeWordTop &&
     Config.mode !== "zen"
   ) {
-    event.preventDefault();
-    return;
+    return true;
   }
 
+  // block input if the word is too long
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
-
   if (TestInput.input.current.length >= inputLimit && data !== " ") {
     console.error("Hitting word limit");
-    event.preventDefault();
+    preventDefault = true;
   }
+
+  return preventDefault;
 }
 
 async function onInsertText({
@@ -517,7 +520,7 @@ wordsInput.addEventListener("beforeinput", (event) => {
   // }
 
   if (inputType === "insertText" && event.data !== null) {
-    onBeforeInsertText({
+    const preventDefault = onBeforeInsertText({
       inputType,
       data: event.data,
       inputValue,
@@ -525,6 +528,9 @@ wordsInput.addEventListener("beforeinput", (event) => {
       event,
       now,
     });
+    if (preventDefault) {
+      event.preventDefault();
+    }
   } else if (
     inputType === "deleteWordBackward" ||
     inputType === "deleteContentBackward"
