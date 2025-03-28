@@ -106,4 +106,6 @@ const obj = {
   deleteOnError: "off",
 } as Config;
 
-export default deepClone(obj);
+export function getDefaultConfig(): Config {
+  return deepClone(obj);
+}

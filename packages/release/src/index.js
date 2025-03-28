@@ -30,7 +30,7 @@ const runCommand = (command, force) => {
       return output;
     } catch (error) {
       console.error(`Error executing command ${command}`);
-      console.error(error);
+      console.error(error.output.toString());
       process.exit(1);
     }
   }
@@ -55,6 +55,17 @@ const runProjectRootCommand = (command, force) => {
 };
 
 const checkBranchSync = () => {
+  console.log("Checking if local branch is master...");
+  const currentBranch = runProjectRootCommand(
+    "git branch --show-current"
+  ).trim();
+  if (currentBranch !== "master") {
+    console.error(
+      "Local branch is not master. Please checkout the master branch."
+    );
+    process.exit(1);
+  }
+
   console.log("Checking if local master branch is in sync with origin...");
 
   if (noSyncCheck) {

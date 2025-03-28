@@ -23,7 +23,7 @@ jobs:
 
       - name: Read json file
         id: json_reader
-        uses: juliangruber/read-file-action@v1.1.7
+        uses: juliangruber/read-file-action@v1
         with:
           path: ./labels/write-labels.json
 

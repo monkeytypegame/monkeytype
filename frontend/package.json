@@ -58,7 +58,8 @@
     "sass": "1.70.0",
     "subset-font": "2.3.0",
     "typescript": "5.5.4",
-    "vite": "6.0.11",
+    "unplugin-inject-preload": "3.0.0",
+    "vite": "6.0.12",
     "vite-bundle-visualizer": "1.0.1",
     "vite-plugin-checker": "0.7.2",
     "vite-plugin-filter-replace": "0.1.13",
@@ -95,6 +96,7 @@
     "slim-select": "2.9.2",
     "stemmer": "2.0.1",
     "throttle-debounce": "5.0.2",
-    "zod": "3.23.8"
+    "zod": "3.23.8",
+    "zod-urlsearchparams": "0.0.16"
   }
 }

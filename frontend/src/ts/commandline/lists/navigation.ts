@@ -19,7 +19,7 @@ const commands: Command[] = [
     alias: "navigate go to",
     icon: "fa-crown",
     exec: (): void => {
-      $("header nav .textButton.view-leaderboards").trigger("click");
+      navigate("/leaderboards");
     },
   },
   {

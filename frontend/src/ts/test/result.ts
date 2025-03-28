@@ -37,8 +37,13 @@ import type {
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
-import { getActiveFunboxes, getFromString } from "./funbox/list";
+import {
+  getActiveFunboxes,
+  getFromString,
+  isFunboxActiveWithProperty,
+} from "./funbox/list";
 import { getFunboxesFromString } from "@monkeytype/funbox";
+import { SnapshotUserTag } from "../constants/default-snapshot";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -548,7 +553,7 @@ export function showConfetti(): void {
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: DB.SnapshotUserTag[] = [];
+  const activeTags: SnapshotUserTag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
     DB.getSnapshot()?.tags?.forEach((tag) => {
@@ -678,10 +683,7 @@ function updateTestType(randomQuote: Quote | null): void {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
   }
-  const ignoresLanguage =
-    getActiveFunboxes().find((f) =>
-      f.properties?.includes("ignoresLanguage")
-    ) !== undefined;
+  const ignoresLanguage = isFunboxActiveWithProperty("ignoresLanguage");
   if (Config.mode !== "custom" && !ignoresLanguage) {
     testType += "<br>" + Strings.getLanguageDisplayString(result.language);
   }

@@ -8,6 +8,9 @@ import { splitVendorChunkPlugin } from "vite";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
 import { writeFileSync } from "fs";
+// eslint-disable-next-line import/no-unresolved
+import UnpluginInjectPreload from "unplugin-inject-preload/vite";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -32,9 +35,9 @@ function buildClientVersion() {
       .execSync("git rev-parse --short HEAD")
       .toString();
 
-    return `${version}.${commitHash}`.replace(/\n/g, "");
+    return `${version}_${commitHash}`.replace(/\n/g, "");
   } catch (e) {
-    return `${version}.unknown-hash`;
+    return `${version}_unknown-hash`;
   }
 }
 
@@ -84,6 +87,7 @@ export default {
     splitVendorChunkPlugin(),
     VitePWA({
       // injectRegister: "networkfirst",
+      injectRegister: "script-defer",
       registerType: "autoUpdate",
       manifest: {
         short_name: "Monkeytype",
@@ -143,6 +147,92 @@ export default {
         },
       },
     ]),
+    UnpluginInjectPreload({
+      files: [
+        {
+          outputMatch: /css\/vendor.*\.css$/,
+          attributes: {
+            as: "style",
+            type: "text/css",
+            rel: "preload",
+            crossorigin: true,
+          },
+        },
+        {
+          outputMatch: /.*\.woff2$/,
+          attributes: {
+            as: "font",
+            type: "font/woff2",
+            rel: "preload",
+            crossorigin: true,
+          },
+        },
+      ],
+      injectTo: "head-prepend",
+    }),
+    {
+      name: "minify-json",
+      apply: "build",
+      generateBundle() {
+        let totalOriginalSize = 0;
+        let totalMinifiedSize = 0;
+
+        const minifyJsonFiles = (dir) => {
+          readdirSync(dir).forEach((file) => {
+            const sourcePath = path.join(dir, file);
+            const stat = statSync(sourcePath);
+
+            if (stat.isDirectory()) {
+              minifyJsonFiles(sourcePath);
+            } else if (path.extname(file) === ".json") {
+              const originalContent = readFileSync(sourcePath, "utf8");
+              const originalSize = Buffer.byteLength(originalContent, "utf8");
+              const minifiedContent = JSON.stringify(
+                JSON.parse(originalContent)
+              );
+              const minifiedSize = Buffer.byteLength(minifiedContent, "utf8");
+
+              totalOriginalSize += originalSize;
+              totalMinifiedSize += minifiedSize;
+
+              const savings =
+                ((originalSize - minifiedSize) / originalSize) * 100;
+
+              writeFileSync(sourcePath, minifiedContent);
+
+              console.log(
+                `\x1b[0m \x1b[36m${sourcePath}\x1b[0m | ` +
+                  `\x1b[90mOriginal: ${originalSize} bytes\x1b[0m | ` +
+                  `\x1b[90mMinified: ${minifiedSize} bytes\x1b[0m | ` +
+                  `\x1b[32mSavings: ${savings.toFixed(2)}%\x1b[0m`
+              );
+            }
+          });
+        };
+
+        console.log("\n\x1b[1mMinifying JSON files...\x1b[0m\n");
+
+        minifyJsonFiles("./dist");
+
+        const totalSavings =
+          ((totalOriginalSize - totalMinifiedSize) / totalOriginalSize) * 100;
+
+        console.log(
+          `\n\x1b[1mMinification Summary:\x1b[0m\n` +
+            `  \x1b[90mTotal original size: ${(
+              totalOriginalSize /
+              1024 /
+              1024
+            ).toFixed(2)} mB\x1b[0m\n` +
+            `  \x1b[90mTotal minified size: ${(
+              totalMinifiedSize /
+              1024 /
+              1024
+            ).toFixed(2)} mB\x1b[0m\n` +
+            `  \x1b[32mTotal savings: ${totalSavings.toFixed(2)}%\x1b[0m\n`
+        );
+      },
+    },
   ],
   build: {
     emptyOutDir: true,

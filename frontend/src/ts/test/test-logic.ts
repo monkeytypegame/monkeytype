@@ -13,6 +13,7 @@ import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
+import * as AltTracker from "./alt-tracker";
 import * as Focus from "./focus";
 import * as Funbox from "./funbox/funbox";
 import * as Keymap from "../elements/keymap";
@@ -64,9 +65,14 @@ import {
   CustomTextDataWithTextLen,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
-import { getActiveFunboxes } from "./funbox/list";
+import {
+  findSingleActiveFunboxWithFunction,
+  getActiveFunboxes,
+  getActiveFunboxesWithFunction,
+} from "./funbox/list";
 import { getFunboxesFromString } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
+import { SnapshotResult } from "../constants/default-snapshot";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -109,8 +115,8 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.start?.();
+  for (const fb of getActiveFunboxesWithFunction("start")) {
+    fb.functions.start();
   }
 
   try {
@@ -251,6 +257,7 @@ export function restart(options = {} as RestartOptions): void {
   TestInput.restart();
   TestInput.corrected.reset();
   ShiftTracker.reset();
+  AltTracker.reset();
   Caret.hide();
   TestState.setActive(false);
   Replay.stopReplayRecording();
@@ -332,8 +339,8 @@ export function restart(options = {} as RestartOptions): void {
       await init();
       await PaceCaret.init();
 
-      for (const fb of getActiveFunboxes()) {
-        fb.functions?.restart?.();
+      for (const fb of getActiveFunboxesWithFunction("restart")) {
+        fb.functions.restart();
       }
 
       if (Config.showAverage !== "off") {
@@ -567,12 +574,8 @@ export async function addWord(): Promise<void> {
     console.debug("Not adding word, all words generated");
     return;
   }
-
-  const sectionFunbox = getActiveFunboxes().find(
-    (f) => f.functions?.pullSection
-  );
-
-  if (sectionFunbox?.functions?.pullSection) {
+  const sectionFunbox = findSingleActiveFunboxWithFunction("pullSection");
+  if (sectionFunbox) {
     if (TestWords.words.length - TestState.activeWordIndex < 20) {
       const section = await sectionFunbox.functions.pullSection(
         Config.language
@@ -1208,7 +1211,7 @@ async function saveResult(
     // into a snapshot result - might not cuase issues but worth investigating
     const result = Misc.deepClone(
       completedEvent
-    ) as unknown as DB.SnapshotResult<Mode>;
+    ) as unknown as SnapshotResult<Mode>;
     result._id = data.insertedId;
     if (data.isPb !== undefined && data.isPb) {
       result.isPb = true;

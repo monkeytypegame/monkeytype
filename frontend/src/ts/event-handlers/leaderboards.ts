@@ -2,8 +2,10 @@ import { showPopup } from "../modals/simple-modals";
 
 const lb = document.getElementById("pageLeaderboards");
 
-lb?.querySelector(
+for (const button of lb?.querySelectorAll(
   ".jumpButtons button[data-action='goToPage']"
-)?.addEventListener("click", () => {
-  showPopup("lbGoToPage");
-});
+) ?? []) {
+  button?.addEventListener("click", () => {
+    showPopup("lbGoToPage");
+  });
+}
