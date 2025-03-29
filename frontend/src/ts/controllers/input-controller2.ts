@@ -481,16 +481,19 @@ wordsInput.addEventListener("beforeinput", (event) => {
   });
 
   for (const ignoredInputType of ignoredInputTypes) {
+    let prevent = false;
     if (ignoredInputType.endsWith("*")) {
       if (event.inputType.startsWith(ignoredInputType.slice(0, -1))) {
-        event.preventDefault();
-        return;
+        prevent = true;
       }
     } else {
       if (event.inputType === ignoredInputType) {
-        event.preventDefault();
-        return;
+        prevent = true;
       }
+    }
+    if (prevent) {
+      event.preventDefault();
+      return;
     }
   }
 
