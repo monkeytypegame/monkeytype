@@ -112,7 +112,6 @@
     "to_lowercase()",
     "to_uppercase()",
     "replace(\"a\", \"b\")",
-    "box",
     "lazy_static",
     "iter()",
     "into_iter()",

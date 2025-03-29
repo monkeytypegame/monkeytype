@@ -34,6 +34,7 @@ import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxesWithFunction,
 } from "./funbox/list";
+import * as TestState from "./test-state";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -200,7 +201,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
-export let activeWordElementIndex = 0;
+export let activeWordElementOffset = 0;
 export let resultVisible = false;
 export let activeWordTop = 0;
 export let testRestarting = false;
@@ -213,8 +214,8 @@ export function setResultVisible(val: boolean): void {
   resultVisible = val;
 }
 
-export function setActiveWordElementIndex(val: number): void {
-  activeWordElementIndex = val;
+export function setActiveWordElementOffset(val: number): void {
+  activeWordElementOffset = val;
 }
 
 export function setActiveWordTop(val: number): void {
@@ -240,7 +241,7 @@ export function setResultCalculating(val: boolean): void {
 
 export function reset(): void {
   currentTestLine = 0;
-  activeWordElementIndex = 0;
+  activeWordElementOffset = 0;
 }
 
 export function focusWords(): void {
@@ -265,7 +266,7 @@ export function updateActiveElement(
     active.classList.remove("active");
   }
   const newActiveWord = document.querySelectorAll("#words .word")[
-    activeWordElementIndex
+    TestState.activeWordIndex - activeWordElementOffset
   ] as HTMLElement | undefined;
 
   if (newActiveWord == undefined) {
@@ -447,7 +448,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord =
     document.querySelectorAll<HTMLElement>("#words .word")[
-      activeWordElementIndex
+      TestState.activeWordIndex - activeWordElementOffset
     ];
 
   if (!activeWord) {
@@ -485,12 +486,17 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
 export function updateTestLine(): void {
   const wordElements = document.querySelectorAll<HTMLElement>("#words .word");
-  const activeWordEl = wordElements[activeWordElementIndex];
+  const activeWordEl =
+    wordElements[TestState.activeWordIndex - activeWordElementOffset];
   if (!activeWordEl || Config.showAllLines) return;
   const currentTop = activeWordEl.offsetTop;
 
   let firstLine = currentTop;
-  for (let i = activeWordElementIndex - 1; i >= 0; i--) {
+  for (
+    let i = TestState.activeWordIndex - activeWordElementOffset - 1;
+    i >= 0;
+    i--
+  ) {
     firstLine = wordElements[i]?.offsetTop ?? currentTop;
     if (firstLine < currentTop - 10) break;
   }
@@ -502,7 +508,8 @@ export function updateWordsWrapperHeight(force = false): void {
   if (!force && Config.mode !== "custom" && Config.mode !== "zen") return;
   const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
   const wordElements = wrapperEl.querySelectorAll<HTMLElement>("#words .word");
-  const activeWordEl = wordElements[activeWordElementIndex];
+  const activeWordEl =
+    wordElements[TestState.activeWordIndex - activeWordElementOffset];
   if (!activeWordEl) return;
 
   wrapperEl.classList.remove("hidden");
@@ -777,7 +784,7 @@ export async function updateActiveWordLetters(
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
   const activeWord = document.querySelectorAll("#words .word")?.[
-    activeWordElementIndex
+    TestState.activeWordIndex - activeWordElementOffset
   ] as HTMLElement | undefined;
   if (!activeWord) return;
   const hintIndices: number[][] = [];
@@ -937,15 +944,14 @@ export function scrollTape(noRemove = false): void {
   const waitForLineJumpAnimation = lineTransition && !allowWordRemoval;
   if (waitForLineJumpAnimation) noRemove = true;
 
+  const wordIndex = TestState.activeWordIndex - activeWordElementOffset;
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
   const wordsEl = document.getElementById("words") as HTMLElement;
   const wordsChildrenArr = [...wordsEl.children] as HTMLElement[];
   const wordElements = wordsEl.getElementsByClassName("word");
-  const activeWordEl = wordElements[activeWordElementIndex] as
-    | HTMLElement
-    | undefined;
+  const activeWordEl = wordElements[wordIndex] as HTMLElement | undefined;
   if (!activeWordEl) return;
   const afterNewLineEls = wordsEl.getElementsByClassName("afterNewline");
 
@@ -1027,7 +1033,7 @@ export function scrollTape(noRemove = false): void {
     }
   }
   if (toRemove.length > 0) {
-    activeWordElementIndex -= wordsToRemoveCount;
+    activeWordElementOffset += wordsToRemoveCount;
     toRemove.forEach((el) => el.remove());
     for (let i = 0; i < linesWidths.length; i++) {
       const element = afterNewLineEls[i] as HTMLElement;
@@ -1139,10 +1145,11 @@ export function lineJump(currentTop: number, force = false): void {
   if (currentTestLine > 0 || force) {
     const hideBound = currentTop - 10;
 
+    const wordIndex = TestState.activeWordIndex - activeWordElementOffset;
     const wordsEl = document.getElementById("words") as HTMLElement;
     const wordsChildrenArr = [...wordsEl.children];
     const wordElements = wordsEl.querySelectorAll(".word");
-    const activeWordEl = wordElements[activeWordElementIndex];
+    const activeWordEl = wordElements[wordIndex];
     if (!activeWordEl) return;
     const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
     let lastElementToRemove = undefined;
@@ -1212,10 +1219,10 @@ export function lineJump(currentTop: number, force = false): void {
           currentLinesAnimating = 0;
           activeWordTop = (
             document.querySelectorAll("#words .word")?.[
-              activeWordElementIndex
+              wordIndex
             ] as HTMLElement
           )?.offsetTop;
-          activeWordElementIndex -=
+          activeWordElementOffset +=
             removeElementsBeforeWord(lastElementToRemove);
           wordsEl.style.marginTop = "0";
           lineTransition = false;
@@ -1224,7 +1231,7 @@ export function lineJump(currentTop: number, force = false): void {
       });
       jqWords.dequeue("topMargin");
     } else if (lastElementToRemove) {
-      activeWordElementIndex -= removeElementsBeforeWord(lastElementToRemove);
+      activeWordElementOffset += removeElementsBeforeWord(lastElementToRemove);
       paceCaretElement.style.top = `${
         paceCaretElement.offsetTop - wordHeight
       }px`;

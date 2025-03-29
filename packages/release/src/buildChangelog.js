@@ -352,7 +352,7 @@ async function main() {
     log.push({
       hashes: quoteAddCommits.map((item) => item.hashes).flat(),
       type: "impr",
-      scope: "quote",
+      scope: "quotes",
       message: "add quotes in various languages",
       usernames: quoteAddCommits.map((item) => item.usernames).flat(),
       prs: quoteAddCommits.map((item) => item.prs).flat(),
@@ -364,7 +364,7 @@ async function main() {
     log.push({
       hashes: quoteReportCommits.map((item) => item.hashes).flat(),
       type: "fix",
-      scope: "quote",
+      scope: "quotes",
       message: "update or remove quotes reported by users",
       usernames: quoteReportCommits.map((item) => item.usernames).flat(),
       prs: quoteReportCommits.map((item) => item.prs).flat(),
