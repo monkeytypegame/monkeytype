@@ -1426,7 +1426,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       restart();
     }
     if (eventKey === "difficulty" && !nosave) restart();
-    if (eventKey === "showAllLines" && !nosave) restart();
     if (
       eventKey === "customLayoutFluid" &&
       Config.funbox.includes("layoutfluid")
