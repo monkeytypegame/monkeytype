@@ -67,14 +67,31 @@ const subgroup: CommandsSubgroup = {
     {
       id: "setKeymapStyleCustom",
       display: "custom...",
-      configValue: "custom",
-      input: true,
-      exec: ({ input }): void => {
-        if (input === undefined || input === "") return;
-        const keymap: KeymapCustom = stringToKeymap(input);
-        UpdateConfig.setKeymapCustom(keymap);
-        UpdateConfig.setKeymapStyle("custom");
-        TestLogic.restart();
+      subgroup: {
+        title: "Set custom keymap?",
+        configKey: "keymapCustom",
+        list: [
+          {
+            id: "setKeymapStyleCustomDefault",
+            display: "yes",
+            input: true,
+            exec: ({ input }) => {
+              if (input === undefined || input === "") return;
+              const keymap: KeymapCustom = stringToKeymap(input);
+              UpdateConfig.setKeymapCustom(keymap);
+              UpdateConfig.setKeymapStyle("custom");
+              TestLogic.restart();
+            },
+          },
+          {
+            id: "setKeymapStyleCustomDefault",
+            display: "no",
+            configValue: false,
+            exec: () => {
+              UpdateConfig.setKeymapStyle("custom");
+            },
+          },
+        ],
       },
     },
   ],
