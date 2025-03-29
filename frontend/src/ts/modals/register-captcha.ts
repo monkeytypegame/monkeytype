@@ -7,8 +7,8 @@ export let promise = new Promise<string | undefined>((resolve) => {
   resolvePromise = resolve;
 });
 
-export function show(): void {
-  void modal.show({
+export async function show(): Promise<void> {
+  await modal.show({
     mode: "dialog",
     beforeAnimation: async (modal) => {
       promise = new Promise((resolve) => {

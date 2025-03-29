@@ -120,7 +120,7 @@ function backspaceToPrevious(): void {
 
   if (
     TestInput.input.getHistory().length === 0 ||
-    TestUI.activeWordElementIndex === 0
+    TestState.activeWordIndex - TestUI.activeWordElementOffset === 0
   ) {
     return;
   }
@@ -154,7 +154,6 @@ function backspaceToPrevious(): void {
     setWordsInput(" " + TestInput.input.current + " ");
   }
   TestState.decreaseActiveWordIndex();
-  TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex - 1);
   TestUI.updateActiveElement(true);
   Funbox.toggleScript(TestWords.words.getCurrent());
   void TestUI.updateActiveWordLetters();
@@ -267,10 +266,14 @@ async function handleSpace(): Promise<void> {
     PaceCaret.handleSpace(false, currentWord);
     if (Config.blindMode) {
       if (Config.highlightMode !== "off") {
-        TestUI.highlightAllLettersAsCorrect(TestUI.activeWordElementIndex);
+        TestUI.highlightAllLettersAsCorrect(
+          TestState.activeWordIndex - TestUI.activeWordElementOffset
+        );
       }
     } else {
-      TestUI.highlightBadWord(TestUI.activeWordElementIndex);
+      TestUI.highlightBadWord(
+        TestState.activeWordIndex - TestUI.activeWordElementOffset
+      );
     }
     TestInput.input.pushHistory();
     TestState.increaseActiveWordIndex();
@@ -334,7 +337,6 @@ async function handleSpace(): Promise<void> {
       void TestLogic.addWord();
     }
   }
-  TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex + 1);
   TestUI.updateActiveElement();
   void Caret.updatePosition();
 
@@ -345,14 +347,14 @@ async function handleSpace(): Promise<void> {
 
   const currentTop: number = Math.floor(
     document.querySelectorAll<HTMLElement>("#words .word")[
-      TestUI.activeWordElementIndex - 1
+      TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
     ]?.offsetTop ?? 0
   );
   let nextTop: number;
   try {
     nextTop = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
-        TestUI.activeWordElementIndex
+        TestState.activeWordIndex - TestUI.activeWordElementOffset
       ]?.offsetTop ?? 0
     );
   } catch (e) {
@@ -676,7 +678,7 @@ function handleChar(
   );
 
   const activeWord = document.querySelectorAll("#words .word")?.[
-    TestUI.activeWordElementIndex
+    TestState.activeWordIndex - TestUI.activeWordElementOffset
   ] as HTMLElement;
 
   const testInputLength: number = !isCharKorean
@@ -1119,7 +1121,9 @@ $(document).on("keydown", async (event) => {
     void Sound.playClick();
     const activeWord: HTMLElement | null = document.querySelectorAll(
       "#words .word"
-    )?.[TestUI.activeWordElementIndex] as HTMLElement;
+    )?.[
+      TestState.activeWordIndex - TestUI.activeWordElementOffset
+    ] as HTMLElement;
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead

@@ -168,7 +168,7 @@ export function setCustomText(
   name: string,
   text: string | string[],
   long = false
-): void {
+): boolean {
   if (long) {
     const customText = getLocalStorageLong();
 
@@ -188,7 +188,7 @@ export function setCustomText(
       textByName.text = text.join(" ");
     }
 
-    setLocalStorageLong(customText);
+    return setLocalStorageLong(customText);
   } else {
     const customText = getLocalStorage();
 
@@ -198,7 +198,7 @@ export function setCustomText(
       customText[name] = text.join(" ");
     }
 
-    setLocalStorage(customText);
+    return setLocalStorage(customText);
   }
 }
 
@@ -242,12 +242,12 @@ function getLocalStorageLong(): CustomTextLongObject {
   return customTextLongLS.get();
 }
 
-function setLocalStorage(data: CustomTextObject): void {
-  customTextLS.set(data);
+function setLocalStorage(data: CustomTextObject): boolean {
+  return customTextLS.set(data);
 }
 
-function setLocalStorageLong(data: CustomTextLongObject): void {
-  customTextLongLS.set(data);
+function setLocalStorageLong(data: CustomTextLongObject): boolean {
+  return customTextLongLS.set(data);
 }
 
 export function getCustomTextNames(long = false): string[] {

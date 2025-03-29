@@ -1,5 +1,6 @@
 import { roundTo2 } from "@monkeytype/util/numbers";
-
+import { Day } from "date-fns";
+import * as Locales from "date-fns/locale";
 /**
  * Converts seconds to a human-readable string representation of time.
  * @param sec The number of seconds to convert.
@@ -103,4 +104,45 @@ export function secondsToString(
     ret = "less than 1 minute";
   }
   return ret.trim();
+}
+
+export function getFirstDayOfTheWeek(): Day {
+  if (navigator.language === undefined || navigator.language === null) {
+    return 0;
+  }
+
+  const locale = new Intl.Locale(navigator.language);
+  if (locale === undefined || locale === null) {
+    return 0; //sunday
+  }
+
+  //modern browsers support `weekInfo` or `getWeekInfo()`
+  if ("weekInfo" in locale) {
+    // @ts-ignore
+    return (locale.weekInfo.firstDay as number) % 7;
+  }
+
+  if ("getWeekInfo" in locale) {
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    return (locale.getWeekInfo().firstDay as number) % 7;
+  }
+
+  //use date-fns for browsers like firefox
+  // @ts-ignore
+  let dateFnsLocale = Locales[
+    navigator.language.replaceAll("-", "")
+  ] as Locales.Locale;
+
+  if (dateFnsLocale === undefined || dateFnsLocale === null) {
+    //retry with language only
+    // @ts-ignore
+    dateFnsLocale = Locales[navigator.language.split("-")[0]] as Locales.Locale;
+  }
+
+  if (dateFnsLocale !== undefined && dateFnsLocale !== null) {
+    return ((dateFnsLocale.options?.weekStartsOn ?? 0) % 7) as Day;
+  }
+
+  return 0; //start on sunday
 }
