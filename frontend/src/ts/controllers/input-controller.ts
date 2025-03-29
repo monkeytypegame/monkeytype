@@ -115,7 +115,7 @@ function updateUI(): void {
   }
 }
 
-function backspaceToPrevious(): void {
+async function backspaceToPrevious(): Promise<void> {
   if (!TestState.isActive) return;
 
   if (
@@ -154,7 +154,7 @@ function backspaceToPrevious(): void {
     setWordsInput(" " + TestInput.input.current + " ");
   }
   TestState.decreaseActiveWordIndex();
-  TestUI.updateActiveElement(true);
+  await TestUI.updateActiveElement(true);
   Funbox.toggleScript(TestWords.words.getCurrent());
   void TestUI.updateActiveWordLetters();
 
@@ -337,33 +337,36 @@ async function handleSpace(): Promise<void> {
       void TestLogic.addWord();
     }
   }
-  TestUI.updateActiveElement();
+  await TestUI.updateActiveElement();
   void Caret.updatePosition();
 
-  if (
-    !Config.showAllLines ||
+  const shouldLimitToThreeLines =
     Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
-  ) {
-    const currentTop: number = Math.floor(
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+    (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+
+  const currentTop: number = Math.floor(
+    document.querySelectorAll<HTMLElement>("#words .word")[
+      TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
+    ]?.offsetTop ?? 0
+  );
+  let nextTop: number;
+  try {
+    nextTop = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
-        TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
+        TestState.activeWordIndex - TestUI.activeWordElementOffset
       ]?.offsetTop ?? 0
     );
-    let nextTop: number;
-    try {
-      nextTop = Math.floor(
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestState.activeWordIndex - TestUI.activeWordElementOffset
-        ]?.offsetTop ?? 0
-      );
-    } catch (e) {
-      nextTop = 0;
-    }
+  } catch (e) {
+    nextTop = 0;
+  }
 
-    if (nextTop > currentTop) {
+  if (nextTop > currentTop) {
+    if (!Config.showAllLines || shouldLimitToThreeLines) {
       TestUI.lineJump(currentTop);
+    } else if (Config.mode === "zen") {
+      // this makes wrapper height changes less jumpy in zen+showAllLines
+      TestUI.updateWordsWrapperHeight();
     }
   } //end of line wrap
 
@@ -1069,7 +1072,7 @@ $(document).on("keydown", async (event) => {
   }
 
   if (event.key === "Backspace" && TestInput.input.current.length === 0) {
-    backspaceToPrevious();
+    await backspaceToPrevious();
     if (TestInput.input.current) {
       setWordsInput(" " + TestInput.input.current + " ");
     }
@@ -1270,7 +1273,7 @@ $("#wordsInput").on("beforeinput", (event) => {
   }
 });
 
-$("#wordsInput").on("input", (event) => {
+$("#wordsInput").on("input", async (event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     (event.target as HTMLInputElement).value = " ";
     return;
@@ -1339,7 +1342,7 @@ $("#wordsInput").on("input", (event) => {
 
   if (realInputValue.length === 0 && currTestInput.length === 0) {
     // fallback for when no Backspace keydown event (mobile)
-    backspaceToPrevious();
+    await backspaceToPrevious();
   } else if (inputValue.length < currTestInput.length) {
     if (containsChinese) {
       if (
