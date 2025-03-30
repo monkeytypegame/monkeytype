@@ -20,6 +20,7 @@ import * as Funbox from "../test/funbox/funbox";
 import * as Loader from "../elements/loader";
 import * as CompositionState from "../states/composition";
 import { getCharFromEvent } from "../test/layout-emulator";
+import * as Monkey from "../test/monkey";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -666,6 +667,14 @@ wordsInput.addEventListener("keydown", async (event) => {
     }
   }
 
+  if (!event.repeat) {
+    //delaying because type() is called before show()
+    // meaning the first keypress of the test is not animated
+    setTimeout(() => {
+      Monkey.type(event);
+    }, 0);
+  }
+
   if (Config.layout !== "default") {
     const emulatedChar = await getCharFromEvent(event);
 
@@ -689,6 +698,30 @@ wordsInput.addEventListener("keydown", async (event) => {
       });
     }
   }
+});
+
+wordsInput.addEventListener("keyup", (event) => {
+  console.debug("wordsInput event keyup", {
+    key: event.key,
+    code: event.code,
+  });
+
+  // const now = performance.now();
+
+  if (
+    event.key.startsWith("Arrow") ||
+    event.key === "Home" ||
+    event.key === "End" ||
+    event.key === "PageUp" ||
+    event.key === "PageDown"
+  ) {
+    event.preventDefault();
+    return;
+  }
+
+  setTimeout(() => {
+    Monkey.stop(event);
+  }, 0);
 });
 
 wordsInput.addEventListener("compositionstart", (event) => {
