@@ -266,8 +266,6 @@ function failOrFinish({
 }
 
 type InputEventHandler = {
-  inputValue: string;
-  realInputValue: string;
   event: Event;
   now: number;
   inputType: SupportedInputType;
@@ -277,7 +275,7 @@ type OnInsertTextParams = InputEventHandler & {
   data: string;
 };
 
-function onBeforeDelete({ inputValue, event }: InputEventHandler): void {
+function onBeforeDelete({ event }: InputEventHandler): void {
   if (!TestState.isActive) {
     event.preventDefault();
     return;
@@ -288,6 +286,8 @@ function onBeforeDelete({ inputValue, event }: InputEventHandler): void {
     //allow anything in freedom mode
     return;
   }
+
+  const { inputValue } = getInputValue();
 
   const confidence = Config.confidenceMode;
   const previousWordCorrect =
@@ -308,8 +308,10 @@ function onBeforeDelete({ inputValue, event }: InputEventHandler): void {
   }
 }
 
-function onBeforeInsertText({ data, inputValue }: OnInsertTextParams): boolean {
+function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   let preventDefault = false;
+
+  const { inputValue } = getInputValue();
 
   //prevent space from being inserted if input is empty
   //allow if strict space is enabled
@@ -347,8 +349,6 @@ function onBeforeInsertText({ data, inputValue }: OnInsertTextParams): boolean {
 
 async function onInsertText({
   inputType,
-  inputValue,
-  realInputValue,
   data,
   event,
   now,
@@ -358,8 +358,6 @@ async function onInsertText({
       await onInsertText({
         inputType,
         event,
-        inputValue,
-        realInputValue,
         data: char,
         now,
       });
@@ -472,7 +470,9 @@ async function onInsertText({
   TestUI.afterTestTextInput(correct, movingToNextWord, inputOverride);
 }
 
-function onDelete({ inputType, realInputValue }: InputEventHandler): void {
+function onDelete({ inputType }: InputEventHandler): void {
+  const { realInputValue } = getInputValue();
+
   setTestInputToDOMValue();
   if (realInputValue === "") {
     goToPreviousWord(inputType);
@@ -488,6 +488,13 @@ function setInputValue(value: string): void {
 function setTestInputToDOMValue(): void {
   //remove leading space
   TestInput.input.current = wordsInput.value.slice(1);
+}
+
+function getInputValue(): { inputValue: string; realInputValue: string } {
+  return {
+    inputValue: wordsInput.value.slice(1),
+    realInputValue: wordsInput.value,
+  };
 }
 
 wordsInput.addEventListener("beforeinput", (event) => {
@@ -525,9 +532,6 @@ wordsInput.addEventListener("beforeinput", (event) => {
   }
 
   const inputType = event.inputType as SupportedInputType;
-
-  const realInputValue = wordsInput.value;
-  const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
 
   // beforeinput is always typed as inputevent but input is not?
@@ -540,8 +544,6 @@ wordsInput.addEventListener("beforeinput", (event) => {
     const preventDefault = onBeforeInsertText({
       inputType,
       data: event.data,
-      inputValue,
-      realInputValue,
       event,
       now,
     });
@@ -554,8 +556,6 @@ wordsInput.addEventListener("beforeinput", (event) => {
   ) {
     onBeforeDelete({
       inputType,
-      inputValue,
-      realInputValue,
       event,
       now,
     });
@@ -576,8 +576,6 @@ wordsInput.addEventListener("input", async (event) => {
     value: (event.target as HTMLInputElement).value,
   });
 
-  const realInputValue = wordsInput.value;
-  const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
 
   //this is ok to cast because we are preventing default from anything else
@@ -586,8 +584,6 @@ wordsInput.addEventListener("input", async (event) => {
   if (inputType === "insertText" && event.data !== null) {
     await onInsertText({
       inputType,
-      inputValue,
-      realInputValue,
       event,
       data: event.data,
       now,
@@ -598,8 +594,6 @@ wordsInput.addEventListener("input", async (event) => {
   ) {
     onDelete({
       inputType,
-      inputValue,
-      realInputValue,
       event,
       now,
     });
@@ -681,13 +675,8 @@ wordsInput.addEventListener("keydown", async (event) => {
 
     setInputValue(wordsInput.value.slice(1) + emulatedChar);
 
-    const inputValue = wordsInput.value.slice(1);
-    const realInputValue = wordsInput.value;
-
     onBeforeInsertText({
       data: emulatedChar,
-      inputValue,
-      realInputValue,
       now,
       event,
       inputType: "insertText",
@@ -695,8 +684,6 @@ wordsInput.addEventListener("keydown", async (event) => {
 
     await onInsertText({
       data: emulatedChar,
-      inputValue,
-      realInputValue,
       now,
       event,
       inputType: "insertText",
@@ -719,15 +706,11 @@ wordsInput.addEventListener("compositionend", async (event) => {
   CompositionState.setComposing(false);
   CompositionState.setData("");
 
-  const realInputValue = wordsInput.value;
-  const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
 
   await onInsertText({
     event,
     inputType: "insertText",
-    realInputValue,
-    inputValue,
     data: event.data,
     now,
   });
