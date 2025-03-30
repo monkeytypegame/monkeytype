@@ -1,6 +1,7 @@
 {
   "name": "@monkeytype/contracts",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "tsup-node --watch",
     "build": "npm run madge && tsup-node",
