@@ -106,7 +106,7 @@ const debouncedEvent = debounce(250, () => {
     } else {
       const word =
         document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.activeWordElementIndex - 1
+          TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
         ];
       if (word) {
         const currentTop: number = Math.floor(word.offsetTop);
