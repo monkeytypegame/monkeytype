@@ -19,6 +19,7 @@ import * as LiveBurst from "../test/live-burst";
 import * as Funbox from "../test/funbox/funbox";
 import * as Loader from "../elements/loader";
 import * as CompositionState from "../states/composition";
+import { getCharFromEvent } from "../test/layout-emulator";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -631,6 +632,9 @@ wordsInput.addEventListener("keydown", async (event) => {
     key: event.key,
     code: event.code,
   });
+
+  const now = performance.now();
+
   if (
     event.key.startsWith("Arrow") ||
     event.key === "Home" ||
@@ -666,6 +670,37 @@ wordsInput.addEventListener("keydown", async (event) => {
         event.code as KeyConverter.Keycode
       );
     }
+  }
+
+  //if emulator call on and onbefore insert text and prevent default here
+
+  const emulatedChar = await getCharFromEvent(event);
+
+  if (emulatedChar !== null) {
+    event.preventDefault();
+
+    setInputValue(wordsInput.value.slice(1) + emulatedChar);
+
+    const inputValue = wordsInput.value.slice(1);
+    const realInputValue = wordsInput.value;
+
+    onBeforeInsertText({
+      data: emulatedChar,
+      inputValue,
+      realInputValue,
+      now,
+      event,
+      inputType: "insertText",
+    });
+
+    await onInsertText({
+      data: emulatedChar,
+      inputValue,
+      realInputValue,
+      now,
+      event,
+      inputType: "insertText",
+    });
   }
 });
 
