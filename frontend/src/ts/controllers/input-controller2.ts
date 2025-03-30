@@ -485,6 +485,7 @@ function setInputValue(value: string): void {
 }
 
 function setTestInputToDOMValue(): void {
+  //remove leading space
   TestInput.input.current = wordsInput.value.slice(1);
 }
 
