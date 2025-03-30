@@ -367,6 +367,15 @@ async function onInsertText({
     return;
   }
 
+  setTestInputToDOMValue();
+
+  if (!TestState.isActive) {
+    TestUI.setActiveWordTop();
+    TestLogic.startTest(now);
+  }
+
+  TestInput.setCurrentNotAfk();
+
   for (const fb of getActiveFunboxes()) {
     if (fb.functions?.handleChar) {
       data = fb.functions.handleChar(data);
@@ -463,14 +472,20 @@ async function onInsertText({
 }
 
 function onDelete({ inputType, realInputValue }: InputEventHandler): void {
+  setTestInputToDOMValue();
   if (realInputValue === "") {
     goToPreviousWord(inputType);
   }
   TestUI.afterTestDelete();
+  TestInput.setCurrentNotAfk();
 }
 
 function setInputValue(value: string): void {
   wordsInput.value = " " + value;
+}
+
+function setTestInputToDOMValue(): void {
+  TestInput.input.current = wordsInput.value.slice(1);
 }
 
 wordsInput.addEventListener("beforeinput", (event) => {
@@ -566,15 +581,7 @@ wordsInput.addEventListener("input", async (event) => {
   //this is ok to cast because we are preventing default from anything else
   const inputType = event.inputType as SupportedInputType;
 
-  if (!TestState.isActive) {
-    TestUI.setActiveWordTop();
-    TestLogic.startTest(now);
-  }
-
-  TestInput.setCurrentNotAfk();
-
   if (inputType === "insertText" && event.data !== null) {
-    TestInput.input.current = wordsInput.value.slice(1);
     await onInsertText({
       inputType,
       inputValue,
@@ -587,7 +594,6 @@ wordsInput.addEventListener("input", async (event) => {
     inputType === "deleteWordBackward" ||
     inputType === "deleteContentBackward"
   ) {
-    TestInput.input.current = wordsInput.value.slice(1);
     onDelete({
       inputType,
       inputValue,
@@ -681,7 +687,6 @@ wordsInput.addEventListener("compositionend", async (event) => {
   const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
 
-  TestInput.input.current = wordsInput.value.slice(1);
   await onInsertText({
     event,
     inputType: "insertText",
