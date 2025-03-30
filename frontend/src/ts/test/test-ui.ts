@@ -483,7 +483,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
 export function updateWordsWrapperHeight(force = false): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
-  if (!force && Config.mode !== "custom" && Config.mode !== "zen") return;
+  if (!force && Config.mode !== "custom") return;
   const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
   const wordElements = wrapperEl.querySelectorAll<HTMLElement>("#words .word");
   const activeWordEl =
@@ -506,7 +506,6 @@ export function updateWordsWrapperHeight(force = false): void {
     parseInt(wordComputedStyle.marginBottom);
   const wordHeight = activeWordEl.offsetHeight + wordMargin;
 
-  //let wrapperHeight = 0;
   let wrapperHeightStr: string;
   let outOfFocusMargin: string | undefined = undefined;
 
