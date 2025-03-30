@@ -506,8 +506,8 @@ export function updateWordsWrapperHeight(force = false): void {
     parseInt(wordComputedStyle.marginBottom);
   const wordHeight = activeWordEl.offsetHeight + wordMargin;
 
-  let wrapperHeight = 0;
-  let maxWrapperHeight: string;
+  //let wrapperHeight = 0;
+  let wrapperHeightStr: string;
   let outOfFocusMargin: string | undefined = undefined;
 
   const shouldLimitToThreeLines =
@@ -516,15 +516,17 @@ export function updateWordsWrapperHeight(force = false): void {
     (Config.mode === "custom" && CustomText.getLimitValue() === 0);
 
   if (Config.showAllLines && !shouldLimitToThreeLines) {
-    maxWrapperHeight = "unset";
+    wrapperHeightStr = "auto";
     outOfFocusMargin = wordHeight + convertRemToPixels(1) / 2 + "px";
   } else if (Config.tapeMode !== "off") {
-    wrapperHeight = wordHeight * 1;
-    maxWrapperHeight = wrapperHeight + "px";
+    wrapperHeightStr = TestWords.hasNewline
+      ? wordHeight * 3 + "px"
+      : wordHeight * 1 + "px";
   } else {
     let lines = 0;
     let lastTop = 0;
     let wordIndex = 0;
+    let wrapperHeight = 0;
 
     while (lines < 3) {
       const word = wordElements[wordIndex] as HTMLElement | null;
@@ -539,13 +541,10 @@ export function updateWordsWrapperHeight(force = false): void {
     }
     if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
 
-    maxWrapperHeight = wrapperHeight + "px";
+    wrapperHeightStr = wrapperHeight + "px";
   }
 
-  wrapperEl.style.minHeight = "unset";
-  wrapperEl.style.maxHeight = maxWrapperHeight;
-  wrapperHeight = parseInt(window.getComputedStyle(wrapperEl).height);
-  wrapperEl.style.minHeight = wrapperHeight + "px";
+  wrapperEl.style.height = wrapperHeightStr;
   if (outOfFocusMargin !== undefined) {
     $(".outOfFocusWarning").css({ height: 0, "margin-top": outOfFocusMargin });
   }
