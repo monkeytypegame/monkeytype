@@ -666,28 +666,28 @@ wordsInput.addEventListener("keydown", async (event) => {
     }
   }
 
-  //if emulator call on and onbefore insert text and prevent default here
+  if (Config.layout !== "default") {
+    const emulatedChar = await getCharFromEvent(event);
 
-  const emulatedChar = await getCharFromEvent(event);
+    if (emulatedChar !== null) {
+      event.preventDefault();
 
-  if (emulatedChar !== null) {
-    event.preventDefault();
+      setInputValue(wordsInput.value.slice(1) + emulatedChar);
 
-    setInputValue(wordsInput.value.slice(1) + emulatedChar);
+      onBeforeInsertText({
+        data: emulatedChar,
+        now,
+        event,
+        inputType: "insertText",
+      });
 
-    onBeforeInsertText({
-      data: emulatedChar,
-      now,
-      event,
-      inputType: "insertText",
-    });
-
-    await onInsertText({
-      data: emulatedChar,
-      now,
-      event,
-      inputType: "insertText",
-    });
+      await onInsertText({
+        data: emulatedChar,
+        now,
+        event,
+        inputType: "insertText",
+      });
+    }
   }
 });
 
