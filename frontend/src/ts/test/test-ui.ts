@@ -414,16 +414,15 @@ function updateWordWrapperClasses(): void {
 export function showWords(): void {
   $("#words").empty();
 
-  let wordsHTML = "";
-  if (Config.mode !== "zen") {
+  if (Config.mode === "zen") {
+    appendEmptyWordElement();
+  } else {
+    let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
       wordsHTML += getWordHTML(TestWords.words.get(i));
     }
-  } else {
-    wordsHTML = '<div class="word active"></div>';
+    $("#words").html(wordsHTML);
   }
-
-  $("#words").html(wordsHTML);
 
   updateActiveElement(undefined, true);
   setTimeout(() => {
@@ -431,6 +430,10 @@ export function showWords(): void {
   }, 125);
 
   updateWordWrapperClasses();
+}
+
+export function appendEmptyWordElement(): void {
+  $("#words").append("<div class='word'><letter>ㅤ</letter></div>");
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -799,6 +802,9 @@ export async function updateActiveWordLetters(
       } else {
         ret += `<letter class="correct">${char}</letter>`;
       }
+    }
+    if (TestInput.input.current === "") {
+      ret += `<letter>ㅤ</letter>`;
     }
   } else {
     let correctSoFar = false;

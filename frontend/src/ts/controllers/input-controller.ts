@@ -190,11 +190,6 @@ async function handleSpace(): Promise<void> {
     return;
   }
 
-  if (Config.mode === "zen") {
-    $("#words .word.active").removeClass("active");
-    $("#words").append("<div class='word active'></div>");
-  }
-
   const currentWord: string = TestWords.words.getCurrent();
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
@@ -321,21 +316,14 @@ async function handleSpace(): Promise<void> {
   ) {
     TimerProgress.update();
   }
-  if (
-    Config.mode === "time" ||
-    Config.mode === "words" ||
-    Config.mode === "custom" ||
-    Config.mode === "quote"
-  ) {
-    if (isLastWord) {
-      awaitingNextWord = true;
-      Loader.show();
-      await TestLogic.addWord();
-      Loader.hide();
-      awaitingNextWord = false;
-    } else {
-      void TestLogic.addWord();
-    }
+  if (isLastWord) {
+    awaitingNextWord = true;
+    Loader.show();
+    await TestLogic.addWord();
+    Loader.hide();
+    awaitingNextWord = false;
+  } else {
+    void TestLogic.addWord();
   }
   TestUI.updateActiveElement();
   void Caret.updatePosition();
@@ -345,30 +333,27 @@ async function handleSpace(): Promise<void> {
     (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
     (Config.mode === "custom" && CustomText.getLimitValue() === 0);
 
-  const currentTop: number = Math.floor(
-    document.querySelectorAll<HTMLElement>("#words .word")[
-      TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
-    ]?.offsetTop ?? 0
-  );
-  let nextTop: number;
-  try {
-    nextTop = Math.floor(
+  if (!Config.showAllLines || shouldLimitToThreeLines) {
+    const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
-        TestState.activeWordIndex - TestUI.activeWordElementOffset
+        TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
       ]?.offsetTop ?? 0
     );
-  } catch (e) {
-    nextTop = 0;
-  }
-
-  if (nextTop > currentTop) {
-    if (!Config.showAllLines || shouldLimitToThreeLines) {
-      TestUI.lineJump(currentTop);
-    } else if (Config.mode === "zen") {
-      // this makes wrapper height changes less jumpy in zen+showAllLines
-      TestUI.updateWordsWrapperHeight();
+    let nextTop: number;
+    try {
+      nextTop = Math.floor(
+        document.querySelectorAll<HTMLElement>("#words .word")[
+          TestState.activeWordIndex - TestUI.activeWordElementOffset
+        ]?.offsetTop ?? 0
+      );
+    } catch (e) {
+      nextTop = 0;
     }
-  } //end of line wrap
+
+    if (nextTop > currentTop) {
+      TestUI.lineJump(currentTop);
+    } //end of line wrap
+  }
 
   // enable if i decide that auto tab should also work after a space
   // if (
