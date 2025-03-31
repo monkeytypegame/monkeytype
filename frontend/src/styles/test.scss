@@ -465,14 +465,6 @@
     display: inline-block;
   }
 
-  //&.lastbeforenewline::after {
-  //  font-family: "Font Awesome";
-  //  font-weight: 600;
-  //  content: "\f107";
-  //  margin-left: 0.5rem;
-  //  opacity: 0.25;
-  //}
-
   .wordInputHighlight {
     opacity: 1;
     white-space: nowrap;
@@ -566,10 +558,6 @@
   z-index: 999;
   pointer-events: none;
   top: -2.5rem;
-
-  //&.focus {
-  //  top: 0rem;
-  //}
 
   i {
     margin-right: 0.5rem;
