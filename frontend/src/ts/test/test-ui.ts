@@ -774,6 +774,9 @@ export async function updateActiveWordLetters(
         ret += `<letter class="correct">${char}</letter>`;
       }
     }
+    if (TestInput.input.current === "") {
+      ret += `<letter>ㅤ</letter>`;
+    }
   } else {
     let correctSoFar = false;
 
