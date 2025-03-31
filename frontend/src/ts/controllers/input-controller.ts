@@ -190,11 +190,6 @@ async function handleSpace(): Promise<void> {
     return;
   }
 
-  if (Config.mode === "zen") {
-    $("#words .word.active").removeClass("active");
-    $("#words").append("<div class='word active'></div>");
-  }
-
   const currentWord: string = TestWords.words.getCurrent();
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
@@ -321,21 +316,14 @@ async function handleSpace(): Promise<void> {
   ) {
     TimerProgress.update();
   }
-  if (
-    Config.mode === "time" ||
-    Config.mode === "words" ||
-    Config.mode === "custom" ||
-    Config.mode === "quote"
-  ) {
-    if (isLastWord) {
-      awaitingNextWord = true;
-      Loader.show();
-      await TestLogic.addWord();
-      Loader.hide();
-      awaitingNextWord = false;
-    } else {
-      void TestLogic.addWord();
-    }
+  if (isLastWord) {
+    awaitingNextWord = true;
+    Loader.show();
+    await TestLogic.addWord();
+    Loader.hide();
+    awaitingNextWord = false;
+  } else {
+    void TestLogic.addWord();
   }
   TestUI.updateActiveElement();
   void Caret.updatePosition();
