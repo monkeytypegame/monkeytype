@@ -488,6 +488,9 @@ export function updateWordsWrapperHeight(force = false): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
+  const outOfFocusEl = document.querySelector(
+    ".outOfFocusWarning"
+  ) as HTMLElement;
   const wordElements = wrapperEl.querySelectorAll<HTMLElement>("#words .word");
   const activeWordEl =
     wordElements[TestState.activeWordIndex - activeWordElementOffset];
@@ -495,65 +498,53 @@ export function updateWordsWrapperHeight(force = false): void {
 
   wrapperEl.classList.remove("hidden");
 
-  //insert temporary character for zen mode
-  const activeWordEmpty = activeWordEl?.children.length === 0;
-  if (activeWordEmpty) {
-    activeWordEl.insertAdjacentHTML(
-      "beforeend",
-      '<letter style="opacity: 0;">_</letter>'
-    );
-  }
   const wordComputedStyle = window.getComputedStyle(activeWordEl);
   const wordMargin =
     parseInt(wordComputedStyle.marginTop) +
     parseInt(wordComputedStyle.marginBottom);
   const wordHeight = activeWordEl.offsetHeight + wordMargin;
 
-  let wrapperHeightStr: string;
-  let outOfFocusMargin: string | undefined = undefined;
-
-  const shouldLimitToThreeLines =
+  const timedTest =
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
     (Config.mode === "custom" && CustomText.getLimitValue() === 0);
 
-  if (Config.showAllLines && !shouldLimitToThreeLines) {
-    wrapperHeightStr = "auto";
-    outOfFocusMargin = wordHeight + convertRemToPixels(1) / 2 + "px";
-  } else if (Config.tapeMode !== "off") {
-    wrapperHeightStr = TestWords.hasNewline
+  const showAllLines = Config.showAllLines && !timedTest;
+
+  if (Config.tapeMode === "off") {
+    if (showAllLines) {
+      //allow the wrapper to grow and shink with the words
+      wrapperEl.style.height = "";
+    } else {
+      let lines = 0;
+      let lastTop = 0;
+      let wordIndex = 0;
+      let wrapperHeight = 0;
+
+      while (lines < 3) {
+        const word = wordElements[wordIndex] as HTMLElement | null;
+        if (!word) break;
+        const top = word.offsetTop;
+        if (top > lastTop) {
+          lines++;
+          wrapperHeight += word.offsetHeight + wordMargin;
+          lastTop = top;
+        }
+        wordIndex++;
+      }
+      if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
+
+      //limit to 3 lines
+      wrapperEl.style.height = wrapperHeight + "px";
+    }
+  } else {
+    //tape mode
+    wrapperEl.style.height = TestWords.hasNewline
       ? wordHeight * 3 + "px"
       : wordHeight * 1 + "px";
-  } else {
-    let lines = 0;
-    let lastTop = 0;
-    let wordIndex = 0;
-    let wrapperHeight = 0;
-
-    while (lines < 3) {
-      const word = wordElements[wordIndex] as HTMLElement | null;
-      if (!word) break;
-      const top = word.offsetTop;
-      if (top > lastTop) {
-        lines++;
-        wrapperHeight += word.offsetHeight + wordMargin;
-        lastTop = top;
-      }
-      wordIndex++;
-    }
-    if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
-
-    wrapperHeightStr = wrapperHeight + "px";
   }
 
-  wrapperEl.style.height = wrapperHeightStr;
-  if (outOfFocusMargin !== undefined) {
-    $(".outOfFocusWarning").css({ height: 0, "margin-top": outOfFocusMargin });
-  }
-
-  if (activeWordEmpty) {
-    activeWordEl?.replaceChildren();
-  }
+  outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
 }
 
 function updateWordsMargin(): void {
