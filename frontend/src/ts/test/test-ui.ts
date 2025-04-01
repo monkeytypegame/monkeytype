@@ -928,7 +928,7 @@ export function scrollTape(): void {
     return;
   }
 
-  const wordIndex = TestState.activeWordIndex - activeWordElementOffset;
+  let wordIndex = TestState.activeWordIndex - activeWordElementOffset;
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
@@ -951,6 +951,8 @@ export function scrollTape(): void {
       activeWordElementOffset += toHide.length;
       toHide.forEach((e) => e.remove());
       fullWordsWidth -= widthToHide;
+      //need to redefine wordIndex after removing words
+      wordIndex = TestState.activeWordIndex - activeWordElementOffset;
       const currentMargin = parseInt($("#words").css("margin-left"), 10);
       $("#words").css("margin-left", `${currentMargin + widthToHide}px`);
     }
