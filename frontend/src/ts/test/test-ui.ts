@@ -423,7 +423,9 @@ export function showWords(): void {
 }
 
 export function appendEmptyWordElement(): void {
-  $("#words").append("<div class='word'><letter>ㅤ</letter></div>");
+  $("#words").append(
+    "<div class='word'><letter class='invisible'>_</letter></div>"
+  );
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -766,7 +768,7 @@ export async function updateActiveWordLetters(
       }
     }
     if (TestInput.input.current === "") {
-      ret += `<letter>ㅤ</letter>`;
+      ret += `<letter class='invisible'>_</letter>`;
     }
   } else {
     let correctSoFar = false;
