@@ -194,7 +194,6 @@ function goToPreviousWord(inputType: SupportedInputType): void {
   TestInput.corrected.popHistory();
 
   if (inputType === "deleteWordBackward") {
-    TestInput.input.current = "";
     setInputValue("");
   } else if (inputType === "deleteContentBackward") {
     const nospace =
@@ -202,13 +201,12 @@ function goToPreviousWord(inputType: SupportedInputType): void {
       undefined;
 
     if (nospace) {
-      TestInput.input.current = word.slice(0, -1);
       setInputValue(word.slice(0, -1));
     } else {
-      TestInput.input.current = word;
       setInputValue(word);
     }
   }
+  setTestInputToDOMValue();
   TestUI.afterTestWordChange("back");
 }
 
