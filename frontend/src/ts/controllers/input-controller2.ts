@@ -135,17 +135,11 @@ function isCharCorrect(
 }
 
 type GoToNextWordParams = {
-  forceNextWord: boolean;
   correctInsert: boolean;
 };
 async function goToNextWord({
-  forceNextWord,
   correctInsert,
 }: GoToNextWordParams): Promise<void> {
-  if (forceNextWord) {
-    void TestUI.updateActiveWordLetters();
-  }
-
   if (!correctInsert) {
     TestUI.highlightBadWord(
       TestState.activeWordIndex - TestUI.activeWordElementOffset
@@ -461,8 +455,12 @@ async function onInsertText({
     (forceNextWord && !stopOnWordBlock)
   ) {
     movingToNextWord = true;
+
+    if (noSpaceForce) {
+      void TestUI.updateActiveWordLetters();
+    }
+
     await goToNextWord({
-      forceNextWord,
       correctInsert: correct,
     });
   }
