@@ -60,17 +60,18 @@ let correctShiftUsed = true;
 let incorrectShiftsInARow = 0;
 let awaitingNextWord = false;
 
-function isCharCorrect(
-  inputWord: string,
-  targetWord: string,
-  index: number
-): boolean {
+function isCharCorrect(): boolean {
   if (Config.mode === "zen") return true;
 
-  const input = inputWord[index];
+  const { inputValue } = getInputValue();
+  const index = inputValue.length - 1;
+
+  const targetWord = TestWords.words.get(TestState.activeWordIndex);
+
+  const input = inputValue[index];
   const target = targetWord[index];
 
-  if (inputWord === targetWord + " ") {
+  if (inputValue === targetWord + " ") {
     return true;
   }
 
@@ -351,7 +352,7 @@ async function onInsertText({
     return;
   }
 
-  setTestInputToDOMValue();
+  const correct = isCharCorrect();
 
   if (!TestState.isActive) {
     TestUI.setActiveWordTop();
@@ -367,12 +368,6 @@ async function onInsertText({
       setTestInputToDOMValue();
     }
   }
-
-  const correct = isCharCorrect(
-    TestInput.input.current,
-    TestWords.words.get(TestState.activeWordIndex),
-    TestInput.input.current.length - 1
-  );
 
   Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
 
