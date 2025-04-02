@@ -820,8 +820,12 @@ export async function updateActiveWordLetters(
         ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
       } else if (currentLetter === undefined) {
         let letter = inputChars[i];
-        if (letter === " " || letter === "\t" || letter === "\n") {
+        if (letter === " ") {
           letter = "_";
+        } else if (letter === "\t") {
+          letter = "<i class='fas fa-long-arrow-alt-right fa-fw'></i>";
+        } else if (letter === "\n") {
+          letter = "<i class='fas fa-level-down-alt fa-rotate-90 fa-fw'></i>";
         }
         ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
       } else {
