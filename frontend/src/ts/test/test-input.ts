@@ -169,7 +169,7 @@ class Corrected {
     } else {
       const currCorrectedTestInputLength = this.current.length;
 
-      const charIndex = input.current.trimEnd().length - 1;
+      const charIndex = input.current.length - 1;
 
       if (charIndex >= currCorrectedTestInputLength) {
         this.current += char;

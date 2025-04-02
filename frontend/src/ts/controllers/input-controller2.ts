@@ -169,8 +169,6 @@ async function goToNextWord({
   } else {
     await TestLogic.addWord();
   }
-  const inputTrimmed = TestInput.input.current.slice(0, -1);
-  TestInput.input.current = inputTrimmed;
   TestInput.input.pushHistory();
   TestInput.corrected.pushHistory();
   if (
@@ -353,6 +351,13 @@ async function onInsertText({
   }
 
   const correct = isCharCorrect();
+
+  const shouldInsertSpace =
+    data === " " && Config.stopOnError === "word" && !correct;
+  const charIsNotSpace = data !== " ";
+  if (charIsNotSpace || shouldInsertSpace) {
+    setTestInputToDOMValue();
+  }
 
   if (!TestState.isActive) {
     TestUI.setActiveWordTop();
