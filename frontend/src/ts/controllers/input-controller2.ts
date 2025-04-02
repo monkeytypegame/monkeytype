@@ -627,7 +627,6 @@ wordsInput.addEventListener("keydown", async (event) => {
   const now = performance.now();
 
   if (
-    event.key.startsWith("Arrow") ||
     event.key === "Home" ||
     event.key === "End" ||
     event.key === "PageUp" ||
@@ -671,6 +670,43 @@ wordsInput.addEventListener("keydown", async (event) => {
     }, 0);
   }
 
+  const arrowsActive = Config.funbox.includes("arrows");
+  if (event.key.startsWith("Arrow")) {
+    if (arrowsActive) {
+      const map: Record<string, string> = {
+        ArrowUp: "w",
+        ArrowDown: "s",
+        ArrowLeft: "a",
+        ArrowRight: "d",
+      };
+
+      const char = map[event.key];
+
+      if (char !== undefined) {
+        setInputValue(wordsInput.value.slice(1) + char);
+
+        onBeforeInsertText({
+          data: char,
+          now,
+          event,
+          inputType: "insertText",
+        });
+
+        await onInsertText({
+          data: char,
+          now,
+          event,
+          inputType: "insertText",
+        });
+
+        event.preventDefault();
+        return;
+      }
+    } else {
+      event.preventDefault();
+    }
+  }
+
   if (
     (TestWords.hasTab && event.key === "Tab") ||
     (TestWords.hasNewline && event.key === "Enter")
@@ -704,8 +740,6 @@ wordsInput.addEventListener("keydown", async (event) => {
     const emulatedChar = await getCharFromEvent(event);
 
     if (emulatedChar !== null) {
-      event.preventDefault();
-
       setInputValue(wordsInput.value.slice(1) + emulatedChar);
 
       onBeforeInsertText({
@@ -721,6 +755,9 @@ wordsInput.addEventListener("keydown", async (event) => {
         event,
         inputType: "insertText",
       });
+
+      event.preventDefault();
+      return;
     }
   }
 });
@@ -734,7 +771,6 @@ wordsInput.addEventListener("keyup", (event) => {
   // const now = performance.now();
 
   if (
-    event.key.startsWith("Arrow") ||
     event.key === "Home" ||
     event.key === "End" ||
     event.key === "PageUp" ||
@@ -747,6 +783,11 @@ wordsInput.addEventListener("keyup", (event) => {
   setTimeout(() => {
     Monkey.stop(event);
   }, 0);
+
+  const arrowsActive = Config.funbox.includes("arrows");
+  if (event.key.startsWith("Arrow") && !arrowsActive) {
+    event.preventDefault();
+  }
 });
 
 wordsInput.addEventListener("compositionstart", (event) => {
