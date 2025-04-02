@@ -478,6 +478,11 @@ function replaceLastInputValueChar(char: string): void {
   setInputValue(inputValue.slice(0, -1) + char);
 }
 
+function appendToInputValue(char: string): void {
+  const { inputValue } = getInputValue();
+  setInputValue(inputValue + char);
+}
+
 function setInputValue(value: string): void {
   wordsInput.value = " " + value;
 }
@@ -492,6 +497,26 @@ function getInputValue(): { inputValue: string; realInputValue: string } {
     inputValue: wordsInput.value.slice(1),
     realInputValue: wordsInput.value,
   };
+}
+
+async function emulateInsertText(
+  data: string,
+  event: KeyboardEvent,
+  now: number
+): Promise<void> {
+  appendToInputValue(data);
+  onBeforeInsertText({
+    data,
+    now,
+    event,
+    inputType: "insertText",
+  });
+  await onInsertText({
+    data,
+    now,
+    event,
+    inputType: "insertText",
+  });
 }
 
 wordsInput.addEventListener("beforeinput", (event) => {
@@ -675,22 +700,7 @@ wordsInput.addEventListener("keydown", async (event) => {
       const char = map[event.key];
 
       if (char !== undefined) {
-        setInputValue(wordsInput.value.slice(1) + char);
-
-        onBeforeInsertText({
-          data: char,
-          now,
-          event,
-          inputType: "insertText",
-        });
-
-        await onInsertText({
-          data: char,
-          now,
-          event,
-          inputType: "insertText",
-        });
-
+        await emulateInsertText(char, event, now);
         event.preventDefault();
         return;
       }
@@ -716,22 +726,7 @@ wordsInput.addEventListener("keydown", async (event) => {
       event.key === "Tab" ? "\t" : event.key === "Enter" ? "\n" : undefined;
 
     if (char !== undefined) {
-      setInputValue(wordsInput.value.slice(1) + char);
-
-      onBeforeInsertText({
-        data: char,
-        now,
-        event,
-        inputType: "insertText",
-      });
-
-      await onInsertText({
-        data: char,
-        now,
-        event,
-        inputType: "insertText",
-      });
-
+      await emulateInsertText(char, event, now);
       event.preventDefault();
       return;
     }
@@ -741,22 +736,7 @@ wordsInput.addEventListener("keydown", async (event) => {
     const emulatedChar = await getCharFromEvent(event);
 
     if (emulatedChar !== null) {
-      setInputValue(wordsInput.value.slice(1) + emulatedChar);
-
-      onBeforeInsertText({
-        data: emulatedChar,
-        now,
-        event,
-        inputType: "insertText",
-      });
-
-      await onInsertText({
-        data: emulatedChar,
-        now,
-        event,
-        inputType: "insertText",
-      });
-
+      await emulateInsertText(emulatedChar, event, now);
       event.preventDefault();
       return;
     }
