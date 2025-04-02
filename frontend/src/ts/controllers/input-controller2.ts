@@ -363,8 +363,8 @@ async function onInsertText({
   for (const fb of getActiveFunboxes()) {
     if (fb.functions?.handleChar) {
       data = fb.functions.handleChar(data);
-      TestInput.input.replaceCurrentLastChar(data);
-      setInputValue(TestInput.input.current);
+      replaceLastInputValueChar(data);
+      setTestInputToDOMValue();
     }
   }
 
@@ -399,8 +399,8 @@ async function onInsertText({
 
   if (data !== " " && Config.oppositeShiftMode !== "off") {
     if (!correctShiftUsed) {
-      TestInput.input.replaceCurrentLastChar("");
-      setInputValue(TestInput.input.current);
+      replaceLastInputValueChar("");
+      setTestInputToDOMValue();
       incorrectShiftsInARow++;
       if (incorrectShiftsInARow >= 5) {
         Notifications.add("Opposite shift mode is on.", 0, {
@@ -418,8 +418,8 @@ async function onInsertText({
   if (Config.stopOnError === "letter" && !correct) {
     dataStoppedByStopOnLetter = data;
     inputOverride = TestInput.input.current;
-    TestInput.input.replaceCurrentLastChar("");
-    setInputValue(TestInput.input.current);
+    replaceLastInputValueChar("");
+    setTestInputToDOMValue();
   }
 
   if (!CompositionState.getComposing()) {
@@ -471,6 +471,11 @@ function onDelete({ inputType }: InputEventHandler): void {
   }
   TestUI.afterTestDelete();
   TestInput.setCurrentNotAfk();
+}
+
+function replaceLastInputValueChar(char: string): void {
+  const { inputValue } = getInputValue();
+  setInputValue(inputValue.slice(0, -1) + char);
 }
 
 function setInputValue(value: string): void {

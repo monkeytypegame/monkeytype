@@ -104,10 +104,6 @@ class Input {
     this.koreanStatus = false;
   }
 
-  replaceCurrentLastChar(char: string): void {
-    this.current = this.current.slice(0, -1) + char;
-  }
-
   reset(): void {
     this.current = "";
     this.history = [];
