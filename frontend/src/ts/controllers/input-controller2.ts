@@ -196,15 +196,7 @@ function goToPreviousWord(inputType: SupportedInputType): void {
   if (inputType === "deleteWordBackward") {
     setInputValue("");
   } else if (inputType === "deleteContentBackward") {
-    const nospace =
-      getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-      undefined;
-
-    if (nospace) {
-      setInputValue(word.slice(0, -1));
-    } else {
-      setInputValue(word);
-    }
+    setInputValue(word);
   }
   setTestInputToDOMValue();
   TestUI.afterTestWordChange("back");
