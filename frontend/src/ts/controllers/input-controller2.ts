@@ -662,14 +662,6 @@ wordsInput.addEventListener("keydown", async (event) => {
     }
   }
 
-  if (!event.repeat) {
-    //delaying because type() is called before show()
-    // meaning the first keypress of the test is not animated
-    setTimeout(() => {
-      Monkey.type(event);
-    }, 0);
-  }
-
   const arrowsActive = Config.funbox.includes("arrows");
   if (event.key.startsWith("Arrow")) {
     if (arrowsActive) {
@@ -704,7 +696,16 @@ wordsInput.addEventListener("keydown", async (event) => {
       }
     } else {
       event.preventDefault();
+      return;
     }
+  }
+
+  if (!event.repeat) {
+    //delaying because type() is called before show()
+    // meaning the first keypress of the test is not animated
+    setTimeout(() => {
+      Monkey.type(event);
+    }, 0);
   }
 
   if (
@@ -780,14 +781,15 @@ wordsInput.addEventListener("keyup", (event) => {
     return;
   }
 
-  setTimeout(() => {
-    Monkey.stop(event);
-  }, 0);
-
   const arrowsActive = Config.funbox.includes("arrows");
   if (event.key.startsWith("Arrow") && !arrowsActive) {
     event.preventDefault();
+    return;
   }
+
+  setTimeout(() => {
+    Monkey.stop(event);
+  }, 0);
 });
 
 wordsInput.addEventListener("compositionstart", (event) => {
