@@ -60,10 +60,15 @@ let correctShiftUsed = true;
 let incorrectShiftsInARow = 0;
 let awaitingNextWord = false;
 
-function isCharCorrect(): boolean {
+function isCharCorrect(data: string): boolean {
   if (Config.mode === "zen") return true;
 
-  const { inputValue } = getInputValue();
+  let { inputValue } = getInputValue();
+
+  if (data === "\n") {
+    inputValue += "\n";
+  }
+
   const index = inputValue.length - 1;
 
   const targetWord = TestWords.words.get(TestState.activeWordIndex);
@@ -350,7 +355,7 @@ async function onInsertText({
     return;
   }
 
-  const correct = isCharCorrect();
+  const correct = isCharCorrect(data);
 
   const shouldInsertSpace =
     data === " " && Config.stopOnError === "word" && !correct;
