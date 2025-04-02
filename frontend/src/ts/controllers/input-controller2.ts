@@ -405,6 +405,7 @@ async function onInsertText({
   }
   TestInput.incrementKeypressCount();
   TestInput.pushKeypressWord(TestState.activeWordIndex);
+  TestInput.corrected.update(data, correct);
 
   if (Config.keymapMode === "react") {
     void KeymapEvent.flash(data, correct);
@@ -427,8 +428,6 @@ async function onInsertText({
       incorrectShiftsInARow = 0;
     }
   }
-
-  TestInput.corrected.update(data, correct);
 
   let dataStoppedByStopOnLetter: string | null = null;
   let inputOverride: string | undefined;
