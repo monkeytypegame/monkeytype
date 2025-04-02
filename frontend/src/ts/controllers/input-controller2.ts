@@ -414,10 +414,10 @@ async function onInsertText({
   }
 
   let dataStoppedByStopOnLetter: string | null = null;
-  let inputOverride: string | undefined;
+  let visualInputOverride: string | undefined;
   if (Config.stopOnError === "letter" && !correct) {
     dataStoppedByStopOnLetter = data;
-    inputOverride = TestInput.input.current;
+    visualInputOverride = TestInput.input.current;
     replaceLastInputValueChar("");
     setTestInputToDOMValue();
   }
@@ -459,7 +459,7 @@ async function onInsertText({
     });
   }
 
-  TestUI.afterTestTextInput(correct, movingToNextWord, inputOverride);
+  TestUI.afterTestTextInput(correct, movingToNextWord, visualInputOverride);
 }
 
 function onDelete({ inputType }: InputEventHandler): void {
