@@ -723,18 +723,40 @@ wordsInput.addEventListener("keydown", async (event) => {
     }, 0);
   }
 
-  if (
-    (TestWords.hasTab && event.key === "Tab") ||
-    (TestWords.hasNewline && event.key === "Enter")
-  ) {
-    const char =
-      event.key === "Tab" ? "\t" : event.key === "Enter" ? "\n" : undefined;
-
-    if (char !== undefined) {
-      await emulateInsertText(char, event, now);
+  if (event.key === "Tab") {
+    if (Config.quickRestart === "tab") {
+      event.preventDefault();
+      if ((TestWords.hasTab && event.shiftKey) || !TestWords.hasTab) {
+        TestLogic.restart();
+        return;
+      }
+    }
+    if (TestWords.hasTab) {
+      await emulateInsertText("\t", event, now);
       event.preventDefault();
       return;
     }
+  }
+
+  if (event.key === "Enter") {
+    if (Config.quickRestart === "enter") {
+      event.preventDefault();
+      if ((TestWords.hasNewline && event.shiftKey) || !TestWords.hasNewline) {
+        TestLogic.restart();
+        return;
+      }
+    }
+    if (TestWords.hasNewline) {
+      await emulateInsertText("\n", event, now);
+      event.preventDefault();
+      return;
+    }
+  }
+
+  if (event.key === "Escape" && Config.quickRestart === "esc") {
+    event.preventDefault();
+    TestLogic.restart();
+    return;
   }
 
   if (Config.layout !== "default") {
