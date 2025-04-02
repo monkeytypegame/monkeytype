@@ -676,6 +676,35 @@ wordsInput.addEventListener("keydown", async (event) => {
     }, 0);
   }
 
+  if (
+    (TestWords.hasTab && event.key === "Tab") ||
+    (TestWords.hasNewline && event.key === "Enter")
+  ) {
+    const char =
+      event.key === "Tab" ? "\t" : event.key === "Enter" ? "\n" : undefined;
+
+    if (char !== undefined) {
+      setInputValue(wordsInput.value.slice(1) + char);
+
+      onBeforeInsertText({
+        data: char,
+        now,
+        event,
+        inputType: "insertText",
+      });
+
+      await onInsertText({
+        data: char,
+        now,
+        event,
+        inputType: "insertText",
+      });
+
+      event.preventDefault();
+      return;
+    }
+  }
+
   if (Config.layout !== "default") {
     const emulatedChar = await getCharFromEvent(event);
 
