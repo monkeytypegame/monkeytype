@@ -168,7 +168,7 @@ async function goToNextWord({
   } else {
     await TestLogic.addWord();
   }
-  const inputTrimmed = TestInput.input.current.trimEnd();
+  const inputTrimmed = TestInput.input.current.slice(0, -1);
   TestInput.input.current = inputTrimmed;
   TestInput.input.pushHistory();
   TestInput.corrected.pushHistory();
