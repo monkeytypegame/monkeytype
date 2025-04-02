@@ -444,16 +444,20 @@ async function onInsertText({
   const nospace =
     getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
     undefined;
-  const forceNextWord =
+  const noSpaceForce =
     nospace &&
     TestInput.input.current.length === TestWords.words.getCurrent().length;
-  const stopOnWordBlock = Config.stopOnError === "word" && !correct;
+  const stopOnErrorBlock =
+    (Config.stopOnError === "word" || Config.stopOnError === "letter") &&
+    !correct;
+
+  const shouldMoveToNextWord =
+    (data === " " && TestInput.input.current.length > 1) ||
+    (data === "\n" && TestInput.input.current.length > 1) ||
+    noSpaceForce;
 
   let movingToNextWord = false;
-  if (
-    (data === " " && TestInput.input.current.length > 1 && !stopOnWordBlock) ||
-    (forceNextWord && !stopOnWordBlock)
-  ) {
+  if (!stopOnErrorBlock && shouldMoveToNextWord) {
     movingToNextWord = true;
 
     if (noSpaceForce) {
