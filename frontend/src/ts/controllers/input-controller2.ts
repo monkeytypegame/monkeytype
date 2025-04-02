@@ -421,8 +421,10 @@ async function onInsertText({
   let dataStoppedByStopOnLetter: string | null = null;
   let visualInputOverride: string | undefined;
   if (Config.stopOnError === "letter" && !correct) {
+    if (!Config.blindMode) {
+      visualInputOverride = TestInput.input.current;
+    }
     dataStoppedByStopOnLetter = data;
-    visualInputOverride = TestInput.input.current;
     replaceLastInputValueChar("");
     setTestInputToDOMValue();
   }
