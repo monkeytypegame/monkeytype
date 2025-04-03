@@ -273,6 +273,9 @@
       display: inline-block;
       vertical-align: top;
       margin: 0.25em 0;
+      box-sizing: content-box;
+      height: 1.05em; //.word line-height + letter border
+      border-bottom: 2px solid transparent; //.word border
     }
     .afterNewline {
       display: inline-block;

@@ -527,7 +527,6 @@ export function updateWordsWrapperHeight(force = false): void {
     parseInt(wordComputedStyle.marginTop) +
     parseInt(wordComputedStyle.marginBottom);
   const wordHeight = activeWordEl.offsetHeight + wordMargin;
-  let beforeNewlineHeight = "unset";
 
   const timedTest =
     Config.mode === "time" ||
@@ -540,6 +539,7 @@ export function updateWordsWrapperHeight(force = false): void {
     //allow the wrapper to grow and shink with the words
     wrapperEl.style.height = "";
   } else if (Config.mode === "zen") {
+    //zen mode, showAllLines off
     wrapperEl.style.height = wordHeight * 2 + "px";
   } else {
     if (Config.tapeMode === "off") {
@@ -569,14 +569,10 @@ export function updateWordsWrapperHeight(force = false): void {
       wrapperEl.style.height = TestWords.hasNewline
         ? wordHeight * 3 + "px"
         : wordHeight * 1 + "px";
-      beforeNewlineHeight = activeWordEl.offsetHeight + "px";
     }
   }
 
   outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
-  for (const el of wrapperEl.querySelectorAll<HTMLElement>(".beforeNewline")) {
-    el.style.height = beforeNewlineHeight;
-  }
 }
 
 function updateWordsMargin(): void {
