@@ -652,6 +652,7 @@ export async function linkDiscord(
   const userInfo = await UserDAL.getPartialUser(uid, "link discord", [
     "banned",
     "discordId",
+    "lbOptOut",
   ]);
   if (userInfo.banned) {
     throw new MonkeyError(403, "Banned accounts cannot link with Discord");
@@ -690,7 +691,7 @@ export async function linkDiscord(
 
   await UserDAL.linkDiscord(uid, discordId, discordAvatar);
 
-  await GeorgeQueue.linkDiscord(discordId, uid);
+  await GeorgeQueue.linkDiscord(discordId, uid, userInfo.lbOptOut ?? false);
   void addImportantLog("user_discord_link", `linked to ${discordId}`, uid);
 
   return new MonkeyResponse("Discord account linked", {

@@ -190,11 +190,6 @@ async function handleSpace(): Promise<void> {
     return;
   }
 
-  if (Config.mode === "zen") {
-    $("#words .word.active").removeClass("active");
-    $("#words").append("<div class='word active'></div>");
-  }
-
   const currentWord: string = TestWords.words.getCurrent();
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
@@ -321,31 +316,24 @@ async function handleSpace(): Promise<void> {
   ) {
     TimerProgress.update();
   }
-  if (
-    Config.mode === "time" ||
-    Config.mode === "words" ||
-    Config.mode === "custom" ||
-    Config.mode === "quote"
-  ) {
-    if (isLastWord) {
-      awaitingNextWord = true;
-      Loader.show();
-      await TestLogic.addWord();
-      Loader.hide();
-      awaitingNextWord = false;
-    } else {
-      void TestLogic.addWord();
-    }
+  if (isLastWord) {
+    awaitingNextWord = true;
+    Loader.show();
+    await TestLogic.addWord();
+    Loader.hide();
+    awaitingNextWord = false;
+  } else {
+    void TestLogic.addWord();
   }
   TestUI.updateActiveElement();
   void Caret.updatePosition();
 
-  if (
-    !Config.showAllLines ||
+  const shouldLimitToThreeLines =
     Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
-  ) {
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+    (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+
+  if (!Config.showAllLines || shouldLimitToThreeLines) {
     const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
         TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
@@ -364,8 +352,8 @@ async function handleSpace(): Promise<void> {
 
     if (nextTop > currentTop) {
       TestUI.lineJump(currentTop);
-    }
-  } //end of line wrap
+    } //end of line wrap
+  }
 
   // enable if i decide that auto tab should also work after a space
   // if (

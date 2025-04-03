@@ -1604,7 +1604,11 @@ describe("user controller test", () => {
         "discordUserId",
         "discordUserAvatar"
       );
-      expect(georgeLinkDiscordMock).toHaveBeenCalledWith("discordUserId", uid);
+      expect(georgeLinkDiscordMock).toHaveBeenCalledWith(
+        "discordUserId",
+        uid,
+        false
+      );
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_discord_link",
         "linked to discordUserId",

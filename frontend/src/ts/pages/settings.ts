@@ -1376,7 +1376,7 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
 });
 
 export const page = new Page({
-  name: "settings",
+  id: "settings",
   element: $(".page.pageSettings"),
   path: "/settings",
   afterHide: async (): Promise<void> => {
