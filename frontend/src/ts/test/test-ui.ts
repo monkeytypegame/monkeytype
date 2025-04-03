@@ -423,7 +423,9 @@ export function showWords(): void {
 }
 
 export function appendEmptyWordElement(): void {
-  $("#words").append("<div class='word'><letter>ㅤ</letter></div>");
+  $("#words").append(
+    "<div class='word'><letter class='invisible'>_</letter></div>"
+  );
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -488,6 +490,9 @@ export function updateWordsWrapperHeight(force = false): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
+  const outOfFocusEl = document.querySelector(
+    ".outOfFocusWarning"
+  ) as HTMLElement;
   const wordElements = wrapperEl.querySelectorAll<HTMLElement>("#words .word");
   const activeWordEl =
     wordElements[TestState.activeWordIndex - activeWordElementOffset];
@@ -495,65 +500,53 @@ export function updateWordsWrapperHeight(force = false): void {
 
   wrapperEl.classList.remove("hidden");
 
-  //insert temporary character for zen mode
-  const activeWordEmpty = activeWordEl?.children.length === 0;
-  if (activeWordEmpty) {
-    activeWordEl.insertAdjacentHTML(
-      "beforeend",
-      '<letter style="opacity: 0;">_</letter>'
-    );
-  }
   const wordComputedStyle = window.getComputedStyle(activeWordEl);
   const wordMargin =
     parseInt(wordComputedStyle.marginTop) +
     parseInt(wordComputedStyle.marginBottom);
   const wordHeight = activeWordEl.offsetHeight + wordMargin;
 
-  let wrapperHeightStr: string;
-  let outOfFocusMargin: string | undefined = undefined;
-
-  const shouldLimitToThreeLines =
+  const timedTest =
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
     (Config.mode === "custom" && CustomText.getLimitValue() === 0);
 
-  if (Config.showAllLines && !shouldLimitToThreeLines) {
-    wrapperHeightStr = "auto";
-    outOfFocusMargin = wordHeight + convertRemToPixels(1) / 2 + "px";
-  } else if (Config.tapeMode !== "off") {
-    wrapperHeightStr = TestWords.hasNewline
+  const showAllLines = Config.showAllLines && !timedTest;
+
+  if (Config.tapeMode === "off") {
+    if (showAllLines) {
+      //allow the wrapper to grow and shink with the words
+      wrapperEl.style.height = "";
+    } else {
+      let lines = 0;
+      let lastTop = 0;
+      let wordIndex = 0;
+      let wrapperHeight = 0;
+
+      while (lines < 3) {
+        const word = wordElements[wordIndex] as HTMLElement | null;
+        if (!word) break;
+        const top = word.offsetTop;
+        if (top > lastTop) {
+          lines++;
+          wrapperHeight += word.offsetHeight + wordMargin;
+          lastTop = top;
+        }
+        wordIndex++;
+      }
+      if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
+
+      //limit to 3 lines
+      wrapperEl.style.height = wrapperHeight + "px";
+    }
+  } else {
+    //tape mode
+    wrapperEl.style.height = TestWords.hasNewline
       ? wordHeight * 3 + "px"
       : wordHeight * 1 + "px";
-  } else {
-    let lines = 0;
-    let lastTop = 0;
-    let wordIndex = 0;
-    let wrapperHeight = 0;
-
-    while (lines < 3) {
-      const word = wordElements[wordIndex] as HTMLElement | null;
-      if (!word) break;
-      const top = word.offsetTop;
-      if (top > lastTop) {
-        lines++;
-        wrapperHeight += word.offsetHeight + wordMargin;
-        lastTop = top;
-      }
-      wordIndex++;
-    }
-    if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
-
-    wrapperHeightStr = wrapperHeight + "px";
   }
 
-  wrapperEl.style.height = wrapperHeightStr;
-  if (outOfFocusMargin !== undefined) {
-    $(".outOfFocusWarning").css({ height: 0, "margin-top": outOfFocusMargin });
-  }
-
-  if (activeWordEmpty) {
-    activeWordEl?.replaceChildren();
-  }
+  outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
 }
 
 function updateWordsMargin(): void {
@@ -774,6 +767,9 @@ export async function updateActiveWordLetters(
         ret += `<letter class="correct">${char}</letter>`;
       }
     }
+    if (TestInput.input.current === "") {
+      ret += `<letter class='invisible'>_</letter>`;
+    }
   } else {
     let correctSoFar = false;
 
@@ -925,7 +921,7 @@ export function scrollTape(): void {
     return;
   }
 
-  const wordIndex = TestState.activeWordIndex - activeWordElementOffset;
+  let wordIndex = TestState.activeWordIndex - activeWordElementOffset;
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
@@ -948,6 +944,8 @@ export function scrollTape(): void {
       activeWordElementOffset += toHide.length;
       toHide.forEach((e) => e.remove());
       fullWordsWidth -= widthToHide;
+      //need to redefine wordIndex after removing words
+      wordIndex = TestState.activeWordIndex - activeWordElementOffset;
       const currentMargin = parseInt($("#words").css("margin-left"), 10);
       $("#words").css("margin-left", `${currentMargin + widthToHide}px`);
     }

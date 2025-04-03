@@ -40,7 +40,7 @@ export async function showBar(): Promise<void> {
 }
 
 export const page = new Page({
-  name: "loading",
+  id: "loading",
   element: $(".page.pageLoading"),
   path: "/",
   afterHide: async (): Promise<void> => {

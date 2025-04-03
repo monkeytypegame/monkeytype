@@ -1269,7 +1269,7 @@ ConfigEvent.subscribe((eventKey) => {
 });
 
 export const page = new Page({
-  name: "account",
+  id: "account",
   element: $(".page.pageAccount"),
   path: "/account",
   afterHide: async (): Promise<void> => {
