@@ -536,11 +536,14 @@ export function updateWordsWrapperHeight(force = false): void {
 
   const showAllLines = Config.showAllLines && !timedTest;
 
-  if (Config.tapeMode === "off") {
-    if (showAllLines) {
-      //allow the wrapper to grow and shink with the words
-      wrapperEl.style.height = "";
-    } else {
+  if (showAllLines) {
+    //allow the wrapper to grow and shink with the words
+    wrapperEl.style.height = "";
+  } else if (Config.mode === "zen") {
+    wrapperEl.style.height = wordHeight * 2 + "px";
+  } else {
+    if (Config.tapeMode === "off") {
+      //tape off, showAllLines off, non-zen mode
       let lines = 0;
       let lastTop = 0;
       let wordIndex = 0;
@@ -561,13 +564,13 @@ export function updateWordsWrapperHeight(force = false): void {
 
       //limit to 3 lines
       wrapperEl.style.height = wrapperHeight + "px";
+    } else {
+      //tape mode in non-zen mode
+      wrapperEl.style.height = TestWords.hasNewline
+        ? wordHeight * 3 + "px"
+        : wordHeight * 1 + "px";
+      beforeNewlineHeight = activeWordEl.offsetHeight + "px";
     }
-  } else {
-    //tape mode
-    wrapperEl.style.height = TestWords.hasNewline
-      ? wordHeight * 3 + "px"
-      : wordHeight * 1 + "px";
-    beforeNewlineHeight = activeWordEl.offsetHeight + "px";
   }
 
   outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
