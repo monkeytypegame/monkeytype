@@ -583,7 +583,10 @@ function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
     scrollTape(true);
   } else {
-    setTimeout(() => $("#words").css("margin-left", "unset"), 0);
+    setTimeout(() => {
+      $("#words").css("margin-left", "unset");
+      $("#words .afterNewline").css("margin-left", "");
+    }, 0);
   }
 }
 
