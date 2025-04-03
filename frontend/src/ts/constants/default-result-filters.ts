@@ -58,6 +58,7 @@ const object: ResultFilters = {
   tags: {
     none: true,
   },
+  tagsFilterMode: "or",
   language: {},
   funbox: {
     none: true,

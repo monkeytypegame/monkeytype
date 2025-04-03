@@ -375,6 +375,26 @@
           margin-right: 0.5em;
         }
       }
+
+      &.tags {
+        .title {
+          align-items: baseline;
+
+          .tagsFilterModeToggle {
+            margin-left: 0.5rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: 0.125s;
+            display: flex;
+            align-items: center;
+            font-size: 0.8em;
+
+            &:hover {
+              opacity: 1;
+            }
+          }
+        }
+      }
     }
 
     &.presetFilterButtons {
