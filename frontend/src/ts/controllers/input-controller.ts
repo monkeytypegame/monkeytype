@@ -118,10 +118,10 @@ function updateUI(): void {
 function backspaceToPrevious(): void {
   if (!TestState.isActive) return;
 
-  if (
-    TestInput.input.getHistory().length === 0 ||
-    TestState.activeWordIndex - TestUI.activeWordElementOffset === 0
-  ) {
+  const wordElementIndex =
+    TestState.activeWordIndex - TestUI.activeWordElementOffset;
+
+  if (TestInput.input.getHistory().length === 0 || wordElementIndex === 0) {
     return;
   }
 
@@ -130,7 +130,7 @@ function backspaceToPrevious(): void {
     (TestInput.input.getHistory(TestState.activeWordIndex - 1) ==
       TestWords.words.get(TestState.activeWordIndex - 1) &&
       !Config.freedomMode) ||
-    wordElements[TestState.activeWordIndex - 1]?.classList.contains("hidden")
+    wordElements[wordElementIndex - 1]?.classList.contains("hidden")
   ) {
     return;
   }
@@ -140,7 +140,7 @@ function backspaceToPrevious(): void {
   }
 
   const incorrectLetterBackspaced =
-    wordElements[TestState.activeWordIndex]?.children[0]?.classList.contains(
+    wordElements[wordElementIndex]?.children[0]?.classList.contains(
       "incorrect"
     );
   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
@@ -166,7 +166,11 @@ function backspaceToPrevious(): void {
 
     for (let i = els.length - 1; i >= 0; i--) {
       const el = els[i] as HTMLElement;
-      if (el.classList.contains("newline")) {
+      if (
+        el.classList.contains("newline") ||
+        el.classList.contains("beforeNewline") ||
+        el.classList.contains("afterNewline")
+      ) {
         el.remove();
       } else {
         break;
