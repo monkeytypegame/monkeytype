@@ -581,7 +581,7 @@ function updateWordsMargin(): void {
   } else {
     setTimeout(() => {
       $("#words").css("margin-left", "unset");
-      $("#words .afterNewline").css("margin-left", "");
+      $("#words .afterNewline").css("width", "");
     }, 0);
   }
 }
@@ -960,11 +960,11 @@ export function scrollTape(noRemove = false): void {
 
   let wordsWidthBeforeActive = 0;
   let fullLinesWidth = 0;
-  let widthToRemove = 0;
+  let widthRemoved = 0;
   let wordsToRemoveCount = 0;
   let leadingNewLine = false;
   let lastAfterNewLineElement = undefined;
-  const linesWidths: number[] = [];
+  const afterNewlinesWidths: number[] = [];
   const toRemove: HTMLElement[] = [];
 
   // remove leading `.afterNewline` elements
@@ -972,7 +972,7 @@ export function scrollTape(noRemove = false): void {
     if (child.classList.contains("word")) {
       // only last leading `.afterNewline` element pushes `.word`s to right
       if (lastAfterNewLineElement) {
-        widthToRemove += parseInt(lastAfterNewLineElement.style.marginLeft);
+        widthRemoved += parseInt(lastAfterNewLineElement.style.width);
       }
       break;
     } else if (child.classList.contains("afterNewline")) {
@@ -984,6 +984,7 @@ export function scrollTape(noRemove = false): void {
   // get last element to loop over
   const activeWordIndexBetweenWordsChildren =
     wordsChildrenArr.indexOf(activeWordEl);
+  // this will be 0 or 1
   const newLinesBeforeActiveWord = wordsChildrenArr
     .slice(0, activeWordIndexBetweenWordsChildren)
     .filter((child) => child.classList.contains("afterNewline")).length;
@@ -1018,7 +1019,7 @@ export function scrollTape(noRemove = false): void {
       const forWordWidth = Math.floor(child.offsetWidth);
       if (!noRemove && forWordLeft < 0 - forWordWidth) {
         toRemove.push(child);
-        widthToRemove += wordOuterWidth;
+        widthRemoved += wordOuterWidth;
         wordsToRemoveCount++;
       } else {
         fullLinesWidth += wordOuterWidth;
@@ -1031,23 +1032,24 @@ export function scrollTape(noRemove = false): void {
         if (i < activeWordIndexBetweenWordsChildren)
           wordsWidthBeforeActive = fullLinesWidth;
         if (fullLinesWidth > wordsEl.offsetWidth) {
-          linesWidths.push(wordsEl.offsetWidth);
-          if (i < lastElementIndex) linesWidths.push(wordsEl.offsetWidth);
+          afterNewlinesWidths.push(wordsEl.offsetWidth);
+          if (i < lastElementIndex)
+            afterNewlinesWidths.push(wordsEl.offsetWidth);
           break;
-        } else linesWidths.push(fullLinesWidth);
+        } else afterNewlinesWidths.push(fullLinesWidth);
       }
     }
   }
   if (toRemove.length > 0) {
     activeWordElementOffset += wordsToRemoveCount;
     toRemove.forEach((el) => el.remove());
-    for (let i = 0; i < linesWidths.length; i++) {
+    for (let i = 0; i < afterNewlinesWidths.length; i++) {
       const element = afterNewLineEls[i] as HTMLElement;
-      const currentChildMargin = parseInt(element.style.marginLeft) || 0;
-      element.style.marginLeft = `${currentChildMargin - widthToRemove}px`;
+      const currentChildMargin = parseInt(element.style.width) || 0;
+      element.style.width = `${currentChildMargin - widthRemoved}px`;
     }
     const currentWordsMargin = parseInt(wordsEl.style.marginLeft) || 0;
-    wordsEl.style.marginLeft = `${currentWordsMargin + widthToRemove}px`;
+    wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
   }
 
   let currentWordWidth = 0;
@@ -1089,7 +1091,7 @@ export function scrollTape(noRemove = false): void {
       }
     );
     jqWords.dequeue("leftMargin");
-    linesWidths.forEach((width, index) => {
+    afterNewlinesWidths.forEach((width, index) => {
       $(afterNewLineEls[index] as Element)
         .stop(true, false)
         .animate(
@@ -1101,8 +1103,8 @@ export function scrollTape(noRemove = false): void {
     });
   } else {
     wordsEl.style.marginLeft = `${newMargin}px`;
-    linesWidths.forEach((width, index) => {
-      (afterNewLineEls[index] as HTMLElement).style.marginLeft = `${width}px`;
+    afterNewlinesWidths.forEach((width, index) => {
+      (afterNewLineEls[index] as HTMLElement).style.width = `${width}px`;
     });
     if (noRemove) scrollTape();
   }
