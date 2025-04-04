@@ -945,14 +945,16 @@ export function scrollTape(noRemove = false): void {
   const waitForLineJumpAnimation = lineTransition && !allowWordRemoval;
   if (waitForLineJumpAnimation) noRemove = true;
 
-  const wordIndex = TestState.activeWordIndex - activeWordElementOffset;
+  const wordElementIndex = TestState.activeWordIndex - activeWordElementOffset;
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
   const wordsEl = document.getElementById("words") as HTMLElement;
   const wordsChildrenArr = [...wordsEl.children] as HTMLElement[];
   const wordElements = wordsEl.getElementsByClassName("word");
-  const activeWordEl = wordElements[wordIndex] as HTMLElement | undefined;
+  const activeWordEl = wordElements[wordElementIndex] as
+    | HTMLElement
+    | undefined;
   if (!activeWordEl) return;
   const afterNewLineEls = wordsEl.getElementsByClassName("afterNewline");
 
@@ -980,9 +982,10 @@ export function scrollTape(noRemove = false): void {
     }
   }
   // get last element to loop over
-  const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
+  const activeWordIndexBetweenWordsChildren =
+    wordsChildrenArr.indexOf(activeWordEl);
   const newLinesBeforeActiveWord = wordsChildrenArr
-    .slice(0, activeWordIndex)
+    .slice(0, activeWordIndexBetweenWordsChildren)
     .filter((child) => child.classList.contains("afterNewline")).length;
   // the second `.afterNewline` after active word is visible during line jump
   let lastVisibleAfterNewline = afterNewLineEls[
@@ -998,7 +1001,7 @@ export function scrollTape(noRemove = false): void {
     if (lastVisibleAfterNewline) {
       lastElementIndex = wordsChildrenArr.indexOf(lastVisibleAfterNewline);
     } else {
-      lastElementIndex = activeWordIndex - 1;
+      lastElementIndex = activeWordIndexBetweenWordsChildren - 1;
     }
   }
 
@@ -1019,12 +1022,14 @@ export function scrollTape(noRemove = false): void {
         wordsToRemoveCount++;
       } else {
         fullLinesWidth += wordOuterWidth;
-        if (i < activeWordIndex) wordsWidthBeforeActive = fullLinesWidth;
+        if (i < activeWordIndexBetweenWordsChildren)
+          wordsWidthBeforeActive = fullLinesWidth;
       }
     } else if (child.classList.contains("afterNewline")) {
       if (!leadingNewLine) {
         fullLinesWidth -= wordRightMargin;
-        if (i < activeWordIndex) wordsWidthBeforeActive = fullLinesWidth;
+        if (i < activeWordIndexBetweenWordsChildren)
+          wordsWidthBeforeActive = fullLinesWidth;
         if (fullLinesWidth > wordsEl.offsetWidth) {
           linesWidths.push(wordsEl.offsetWidth);
           if (i < lastElementIndex) linesWidths.push(wordsEl.offsetWidth);
@@ -1152,9 +1157,10 @@ export function lineJump(currentTop: number, force = false): void {
     const wordElements = wordsEl.querySelectorAll(".word");
     const activeWordEl = wordElements[wordIndex];
     if (!activeWordEl) return;
-    const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
+    const activeWordIndexBetweenWordsChildren =
+      wordsChildrenArr.indexOf(activeWordEl);
     let lastElementToRemove = undefined;
-    for (let i = 0; i < activeWordIndex; i++) {
+    for (let i = 0; i < activeWordIndexBetweenWordsChildren; i++) {
       const child = wordsChildrenArr[i] as HTMLElement;
       if (child.classList.contains("hidden")) continue;
       if (Math.floor(child.offsetTop) < hideBound) {
