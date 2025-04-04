@@ -141,7 +141,7 @@
     },
     {
       "text": "I have waited lifetimes to find you. Now that you're here I can remind you of the things you've been dreaming, times two.",
-      "source": "Stay Ready (What a Life)",
+      "source": "Stay Ready (What A Life)",
       "id": 24,
       "length": 121
     },
@@ -177,7 +177,7 @@
     },
     {
       "text": "I am the wisest man alive, for I know one thing, and that is that I know nothing.",
-      "source": "The Republic",
+      "source": "Socrates via Plato’s Apology.",
       "id": 30,
       "length": 81
     },
@@ -201,13 +201,13 @@
     },
     {
       "text": "Now is the time for resting. Some things are ill to hear when the world's in shadow.",
-      "source": "The Lord of The Rings",
+      "source": "The Lord of the Rings",
       "id": 35,
       "length": 84
     },
     {
       "text": "Courage is resistance to fear, mastery of fear - not absence of fear.",
-      "source": "Strangers",
+      "source": "Mark Twain",
       "id": 36,
       "length": 69
     },
@@ -362,10 +362,10 @@
       "length": 93
     },
     {
-      "text": "This is not the end, this is not even the beginning of the end, this is just perhaps the end of the beginning.",
+      "text": "Now this is not the end. It is not even the beginning of the end. But it is, perhaps, the end of the beginning.",
       "source": "Winston Churchill",
       "id": 63,
-      "length": 110
+      "length": 111
     },
     {
       "text": "You are the most important thing to me now. The most important thing to me ever.",
