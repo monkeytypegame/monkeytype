@@ -781,9 +781,10 @@ export async function updateActiveWordLetters(
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
-  const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex - activeWordElementOffset
-  ] as HTMLElement | undefined;
+  const activeWord =
+    document.querySelectorAll<HTMLElement>("#words .word")?.[
+      TestState.activeWordIndex - activeWordElementOffset
+    ];
   if (!activeWord) return;
   const hintIndices: number[][] = [];
 
