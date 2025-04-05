@@ -102,19 +102,13 @@ const debouncedEvent = debounce(250, () => {
   void Caret.updatePosition();
   if (getActivePage() === "test" && !TestUI.resultVisible) {
     if (Config.tapeMode !== "off") {
-      TestUI.scrollTape();
+      void TestUI.scrollTape();
     } else {
-      const word =
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
-        ];
-      if (word) {
-        const currentTop: number = Math.floor(word.offsetTop);
-        TestUI.lineJump(currentTop);
-      }
+      TestUI.updateTestLine();
     }
   }
   setTimeout(() => {
+    void TestUI.updateWordsInputPosition();
     if ($("#wordsInput").is(":focus")) {
       Caret.show();
     }

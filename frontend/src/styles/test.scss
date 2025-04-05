@@ -261,10 +261,24 @@
   }
 
   &.tape {
+    display: block;
+    white-space: nowrap;
     width: 200vw;
     .word {
-      margin: 0.25em 0.6em 0.75em 0;
-      white-space: nowrap;
+      margin: 0.25em 0.6em 0.25em 0;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .beforeNewline {
+      display: inline-block;
+      vertical-align: top;
+      margin: 0.25em 0;
+      box-sizing: content-box;
+      height: 1.05em; //.word line-height + letter border
+      border-bottom: 2px solid transparent; //.word border
+    }
+    .afterNewline {
+      display: inline-block;
     }
   }
 
@@ -278,8 +292,17 @@
     }
   }
   &.withLigatures {
-    letter {
-      display: inline;
+    .word {
+      overflow-wrap: anywhere;
+      padding-bottom: 0.05em; // compensate for letter border
+
+      .hints {
+        overflow-wrap: initial;
+      }
+
+      letter {
+        display: inline;
+      }
     }
   }
   &.blurred {
@@ -707,8 +730,17 @@
           }
         }
         &.withLigatures {
-          letter {
-            display: inline;
+          .word {
+            overflow-wrap: anywhere;
+            padding-bottom: 2px; // compensate for letter border
+
+            .hints {
+              overflow-wrap: initial;
+            }
+
+            letter {
+              display: inline;
+            }
           }
         }
       }
