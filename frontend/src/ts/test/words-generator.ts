@@ -657,10 +657,12 @@ export async function generateWords(
     ret.sectionIndexes.push(nextWord.sectionIndex);
 
     if (Config.mode === "custom" && CustomText.getPipeDelimiter()) {
+      //generate a given number of sections, make sure to not cut a section off
       const sectionFinishedAndOverLimit =
-        currentSection.length === 0 &&
-        sectionIndex >= CustomText.getLimitValue();
-      if (sectionFinishedAndOverLimit || ret.words.length >= limit) {
+        currentSection.length === 0 && sectionIndex >= limit;
+      //make sure we dont go over a hard limit, in cases where the sections are very large
+      const upperWordLimit = ret.words.length >= 100;
+      if (sectionFinishedAndOverLimit || upperWordLimit) {
         stop = true;
       }
     } else if (ret.words.length >= limit) {
