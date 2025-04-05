@@ -398,7 +398,7 @@ export function getWordOrder(): FunboxWordOrder {
   }
 }
 
-export function getWordsLimit(): number {
+export function getLimit(): number {
   if (Config.mode === "zen") {
     return 0;
   }
@@ -624,8 +624,13 @@ export async function generateWords(
     wordList = [];
   }
 
-  const limit = getWordsLimit();
-  console.debug("Words limit", limit);
+  const customAndUsingPipeDelimiter =
+    Config.mode === "custom" && CustomText.getPipeDelimiter();
+
+  const limit = getLimit();
+  console.debug(
+    `${customAndUsingPipeDelimiter ? "Section" : "Word"} limit ${limit}`
+  );
 
   if (wordOrder === "reverse") {
     wordList = wordList.reverse();
@@ -656,7 +661,7 @@ export async function generateWords(
     ret.words.push(nextWord.word);
     ret.sectionIndexes.push(nextWord.sectionIndex);
 
-    if (Config.mode === "custom" && CustomText.getPipeDelimiter()) {
+    if (customAndUsingPipeDelimiter) {
       //generate a given number of sections, make sure to not cut a section off
       const sectionFinishedAndOverLimit =
         currentSection.length === 0 && sectionIndex >= limit;
