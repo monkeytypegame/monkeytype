@@ -1226,7 +1226,7 @@ export function lineJump(currentTop: number, force = false): void {
       "#paceCaret"
     ) as HTMLElement;
 
-    if (Config.smoothLineScroll && lastElementToRemoveIndex) {
+    if (Config.smoothLineScroll && lastElementToRemoveIndex !== undefined) {
       lineTransition = true;
       const smoothScroller = $("#words .smoothScroller");
       if (smoothScroller.length === 0) {
@@ -1286,7 +1286,7 @@ export function lineJump(currentTop: number, force = false): void {
         },
       });
       jqWords.dequeue("topMargin");
-    } else if (lastElementToRemoveIndex) {
+    } else if (lastElementToRemoveIndex !== undefined) {
       activeWordElementOffset += removeElementsBeforeWord(
         lastElementToRemoveIndex,
         wordsChildrenArr
