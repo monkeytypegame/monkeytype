@@ -108,7 +108,7 @@ export const resultsContract = c.router(
       summary: "get result by id",
       description: "Get result by id",
       method: "GET",
-      path: "/:resultId",
+      path: "/id/:resultId",
       pathParams: GetResultByIdPathSchema,
       responses: {
         200: GetResultByIdResponseSchema,

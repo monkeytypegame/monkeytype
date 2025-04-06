@@ -139,16 +139,16 @@ export async function getResultById(
   const { uid } = req.ctx.decodedToken;
   const { resultId } = req.params;
 
-  const results = await ResultDAL.getResult(uid, resultId);
-  return new MonkeyResponse("Result retrieved", convertResult(results));
+  const result = await ResultDAL.getResult(uid, resultId);
+  return new MonkeyResponse("Result retrieved", convertResult(result));
 }
 
 export async function getLastResult(
   req: MonkeyRequest
 ): Promise<GetLastResultResponse> {
   const { uid } = req.ctx.decodedToken;
-  const results = await ResultDAL.getLastResult(uid);
-  return new MonkeyResponse("Result retrieved", convertResult(results));
+  const result = await ResultDAL.getLastResult(uid);
+  return new MonkeyResponse("Result retrieved", convertResult(result));
 }
 
 export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
