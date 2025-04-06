@@ -1163,23 +1163,25 @@ export function updatePremid(): void {
   $(".pageTest #premidSecondsLeft").text(Config.time);
 }
 
-function removeElementsBeforeWord(lastElementToRemove: Element): number {
+function removeElementsBeforeWord(
+  lastElementToRemoveIndex: number,
+  wordsChildren?: Element[] | HTMLCollection
+): number {
   // remove all elements before lastElementToRemove (included)
   // and return removed `.word`s count
-  let elementToRemove = lastElementToRemove;
-  let sibling = elementToRemove.previousElementSibling;
-  let removedWords = elementToRemove.classList.contains("word")
-    ? Number(elementToRemove.isConnected)
-    : 0;
-  elementToRemove.remove();
-  while (sibling) {
-    elementToRemove = sibling;
-    sibling = elementToRemove.previousElementSibling;
-    if (elementToRemove.classList.contains("word")) {
-      removedWords += Number(elementToRemove.isConnected);
+  if (!wordsChildren)
+    wordsChildren = document.getElementById("words")?.children;
+  if (!wordsChildren) return 0;
+
+  let removedWords = 0;
+  for (let i = 0; i <= lastElementToRemoveIndex; i++) {
+    const child = wordsChildren[i];
+    if (!child || !child.isConnected) continue;
+    if (child.classList.contains("word")) {
+      removedWords++;
     }
-    if (!elementToRemove.classList.contains("smoothScroller")) {
-      elementToRemove.remove();
+    if (!child.classList.contains("smoothScroller")) {
+      child.remove();
     }
   }
   return removedWords;
@@ -1205,17 +1207,17 @@ export function lineJump(currentTop: number, force = false): void {
     // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
     const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
 
-    let lastElementToRemove = undefined;
+    let lastElementToRemoveIndex: number | undefined = undefined;
     for (let i = activeWordIndex - 1; i >= 0; i--) {
       const child = wordsChildrenArr[i] as HTMLElement;
       if (child.classList.contains("hidden")) continue;
       if (Math.floor(child.offsetTop) < hideBound) {
         if (child.classList.contains("word")) {
-          lastElementToRemove = child;
+          lastElementToRemoveIndex = i;
         } else if (child.classList.contains("beforeNewline")) {
           // set it to .newline but check .beforeNewline.offsetTop
           // because it's more reliable
-          lastElementToRemove = child.nextElementSibling;
+          lastElementToRemoveIndex = i + 1;
         }
         break;
       }
@@ -1226,7 +1228,7 @@ export function lineJump(currentTop: number, force = false): void {
       "#paceCaret"
     ) as HTMLElement;
 
-    if (Config.smoothLineScroll && lastElementToRemove) {
+    if (Config.smoothLineScroll && lastElementToRemoveIndex) {
       lineTransition = true;
       const smoothScroller = $("#words .smoothScroller");
       if (smoothScroller.length === 0) {
@@ -1276,16 +1278,21 @@ export function lineJump(currentTop: number, force = false): void {
               wordElementIndex
             ] as HTMLElement
           )?.offsetTop;
-          activeWordElementOffset +=
-            removeElementsBeforeWord(lastElementToRemove);
+          activeWordElementOffset += removeElementsBeforeWord(
+            lastElementToRemoveIndex,
+            wordsChildrenArr
+          );
           wordsEl.style.marginTop = "0";
           lineTransition = false;
           allowWordRemoval = true;
         },
       });
       jqWords.dequeue("topMargin");
-    } else if (lastElementToRemove) {
-      activeWordElementOffset += removeElementsBeforeWord(lastElementToRemove);
+    } else if (lastElementToRemoveIndex) {
+      activeWordElementOffset += removeElementsBeforeWord(
+        lastElementToRemoveIndex,
+        wordsChildrenArr
+      );
       paceCaretElement.style.top = `${
         paceCaretElement.offsetTop - wordHeight
       }px`;
