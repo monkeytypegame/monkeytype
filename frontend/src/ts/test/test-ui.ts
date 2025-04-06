@@ -1206,7 +1206,7 @@ export function lineJump(currentTop: number, force = false): void {
     const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
 
     let lastElementToRemove = undefined;
-    for (let i = 0; i < activeWordIndex; i++) {
+    for (let i = activeWordIndex - 1; i >= 0; i--) {
       const child = wordsChildrenArr[i] as HTMLElement;
       if (child.classList.contains("hidden")) continue;
       if (Math.floor(child.offsetTop) < hideBound) {
@@ -1217,6 +1217,7 @@ export function lineJump(currentTop: number, force = false): void {
           // because it's more reliable
           lastElementToRemove = child.nextElementSibling;
         }
+        break;
       }
     }
 
