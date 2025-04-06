@@ -1169,20 +1169,17 @@ function removeElementsBeforeWord(
 ): number {
   // remove all elements before lastElementToRemove (included)
   // and return removed `.word`s count
-  if (!wordsChildren)
+  if (!wordsChildren) {
     wordsChildren = document.getElementById("words")?.children;
-  if (!wordsChildren) return 0;
+    if (!wordsChildren) return 0;
+  }
 
   let removedWords = 0;
   for (let i = 0; i <= lastElementToRemoveIndex; i++) {
     const child = wordsChildren[i];
     if (!child || !child.isConnected) continue;
-    if (child.classList.contains("word")) {
-      removedWords++;
-    }
-    if (!child.classList.contains("smoothScroller")) {
-      child.remove();
-    }
+    if (child.classList.contains("word")) removedWords++;
+    if (!child.classList.contains("smoothScroller")) child.remove();
   }
   return removedWords;
 }
