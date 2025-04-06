@@ -267,14 +267,15 @@
     .word {
       margin: 0.25em 0.6em 0.25em 0;
       display: inline-block;
-      //vertical-align: top;
+      vertical-align: top;
     }
     .beforeNewline {
       display: inline-block;
-      //vertical-align: top; //this is probably not needed anymore now that .beforeNewline has the same height as .word
+      vertical-align: top;
       margin: 0.25em 0;
       box-sizing: content-box;
-      height: 1.05em; //.word line-height + letter border
+      height: 1em; //.word line-height
+      border-top: 0.05em solid transparent; // letter border-bottom
       border-bottom: 2px solid transparent; //.word border
     }
     .afterNewline {
