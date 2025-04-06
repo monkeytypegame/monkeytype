@@ -1211,12 +1211,13 @@ export function lineJump(currentTop: number, force = false): void {
       if (Math.floor(child.offsetTop) < hideBound) {
         if (child.classList.contains("word")) {
           lastElementToRemoveIndex = i;
+          break;
         } else if (child.classList.contains("beforeNewline")) {
           // set it to .newline but check .beforeNewline.offsetTop
           // because it's more reliable
           lastElementToRemoveIndex = i + 1;
+          break;
         }
-        break;
       }
     }
 
