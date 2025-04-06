@@ -37,6 +37,8 @@ import {
   AddResultRequest,
   AddResultResponse,
   GetLastResultResponse,
+  GetResultByIdPath,
+  GetResultByIdResponse,
   GetResultsQuery,
   GetResultsResponse,
   UpdateResultTagsRequest,
@@ -129,6 +131,16 @@ export async function getResults(
     uid
   );
   return new MonkeyResponse("Results retrieved", results.map(convertResult));
+}
+
+export async function getResultById(
+  req: MonkeyRequest<undefined, undefined, GetResultByIdPath>
+): Promise<GetResultByIdResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { resultId } = req.params;
+
+  const results = await ResultDAL.getResult(uid, resultId);
+  return new MonkeyResponse("Result retrieved", convertResult(results));
 }
 
 export async function getLastResult(

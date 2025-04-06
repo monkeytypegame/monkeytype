@@ -9,6 +9,7 @@ import {
 import {
   CompletedEventSchema,
   PostResultResponseSchema,
+  ResultMinifiedSchema,
   ResultSchema,
 } from "./schemas/results";
 import { IdSchema } from "./schemas/util";
@@ -38,8 +39,19 @@ export const GetResultsQuerySchema = z.object({
 });
 export type GetResultsQuery = z.infer<typeof GetResultsQuerySchema>;
 
-export const GetResultsResponseSchema = responseWithData(z.array(ResultSchema));
+export const GetResultsResponseSchema = responseWithData(
+  z.array(ResultMinifiedSchema)
+);
 export type GetResultsResponse = z.infer<typeof GetResultsResponseSchema>;
+
+export const GetResultByIdPathSchema = z.object({
+  resultId: IdSchema,
+});
+export type GetResultByIdPath = z.infer<typeof GetResultByIdPathSchema>;
+
+export const GetResultByIdResponseSchema = responseWithData(ResultSchema);
+
+export type GetResultByIdResponse = z.infer<typeof GetResultByIdResponseSchema>;
 
 export const AddResultRequestSchema = z.object({
   result: CompletedEventSchema,
@@ -89,6 +101,25 @@ export const resultsContract = c.router(
         rateLimit: {
           normal: "resultsGet",
           apeKey: "resultsGetApe",
+        },
+      }),
+    },
+    getById: {
+      summary: "get result by id",
+      description: "Get result by id",
+      method: "GET",
+      path: "/:resultId",
+      pathParams: GetResultByIdPathSchema,
+      responses: {
+        200: GetResultByIdResponseSchema,
+      },
+      metadata: meta({
+        authenticationOptions: {
+          acceptApeKeys: true,
+        },
+        rateLimit: {
+          normal: "resultByIdGet",
+          apeKey: "resultByIdGetApe",
         },
       }),
     },

@@ -38,6 +38,7 @@ import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
+import Ape from "../ape";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -105,9 +106,7 @@ function loadMoreLines(lineIndex?: number): void {
         )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
     }
 
-    if (result.chartData === undefined) {
-      icons += `<span class="miniResultChartButton" aria-label="No chart data found" data-balloon-pos="up"><i class="fas fa-chart-line"></i></span>`;
-    } else if (result.chartData === "toolong") {
+    if (result.chartData === "toolong") {
       icons += `<span class="miniResultChartButton" aria-label="Chart history is not available for long tests" data-balloon-pos="up"><i class="fas fa-chart-line"></i></span>`;
     } else {
       icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}" style="opacity: 1"><i class="fas fa-chart-line"></i></span>`;
@@ -1152,13 +1151,46 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   $(`#result-${index}`).addClass("active");
 });
 
-$(".pageAccount").on("click", ".miniResultChartButton", (event) => {
+$(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
   console.log("updating");
-  const filteredId = $(event.currentTarget).attr("filteredResultsId");
+
+  const target = $(event.currentTarget);
+  if (target.hasClass("loading")) return;
+
+  const filteredId = target.attr("filteredResultsId");
   if (filteredId === undefined) return;
-  MiniResultChartModal.show(
-    filteredResults[parseInt(filteredId)]?.chartData as ChartData
-  );
+
+  const result = filteredResults[parseInt(filteredId)];
+  if (result === undefined) return;
+
+  let chartData = result.chartData as ChartData;
+
+  if (chartData === undefined) {
+    //need to load full result
+    target.addClass("loading");
+    target.html('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
+
+    const response = await Ape.results.getById({
+      params: { resultId: result._id },
+    });
+
+    target.html('<i class="fas fa-chart-line"></i>');
+    target.removeClass("loading");
+
+    if (response.status === 200) {
+      chartData = response.body.data.chartData as ChartData;
+
+      //update local cache
+      result.chartData = chartData;
+      const dbResult = DB.getSnapshot()?.results?.find(
+        (it) => it._id === result._id
+      );
+      if (dbResult !== undefined) {
+        dbResult["chartData"] = result.chartData;
+      }
+    }
+  }
+  MiniResultChartModal.show(chartData);
 });
 
 $(".pageAccount .group.history").on("click", ".history-wpm-header", () => {

@@ -95,6 +95,14 @@ export type Result<M extends Mode> = Omit<
   mode2: Mode2<M>;
 };
 
+export const ResultMinifiedSchema = ResultSchema.omit({
+  name: true,
+  keySpacingStats: true,
+  keyDurationStats: true,
+  chartData: true,
+});
+export type ResultMinified = z.infer<typeof ResultMinifiedSchema>;
+
 export const CompletedEventSchema = ResultBaseSchema.required({
   restartCount: true,
   incompleteTestSeconds: true,
