@@ -40,6 +40,7 @@ import {
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
 } from "../test/funbox/list";
+import * as TestEvents from "../test/test-events";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -190,6 +191,8 @@ async function handleSpace(): Promise<void> {
     return;
   }
 
+  const now = performance.now();
+
   const currentWord: string = TestWords.words.getCurrent();
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
@@ -209,6 +212,16 @@ async function handleSpace(): Promise<void> {
     currentWord === TestInput.input.current || Config.mode === "zen";
   void MonkeyPower.addPower(isWordCorrect, true);
   TestInput.incrementAccuracy(isWordCorrect);
+
+  TestEvents.log({
+    type: "input",
+    ms: now,
+    char: " ",
+    correct: isWordCorrect,
+    input: TestInput.input.current,
+    targetWord: TestWords.words.getCurrent(),
+  });
+
   if (isWordCorrect) {
     if (Config.stopOnError === "letter") {
       void TestUI.updateActiveWordLetters();
@@ -529,6 +542,15 @@ function handleChar(
 
   const thisCharCorrect: boolean = isCharCorrect(char, charIndex);
   let resultingWord: string;
+
+  TestEvents.log({
+    type: "input",
+    ms: now,
+    char,
+    correct: thisCharCorrect,
+    input: TestInput.input.current,
+    targetWord: TestWords.words.getCurrent(),
+  });
 
   if (thisCharCorrect && Config.mode !== "zen") {
     char = !isCharKorean
@@ -1206,6 +1228,16 @@ $("#wordsInput").on("keydown", (event) => {
     const eventCode =
       event.code === "" || event.which === 231 ? "NoCode" : event.code;
     TestInput.recordKeydownTime(now, eventCode);
+    TestEvents.log({
+      type: "keydown",
+      code: eventCode,
+      alt: event.altKey,
+      ctrl: event.ctrlKey,
+      meta: event.metaKey,
+      shift: event.shiftKey,
+      ms: now,
+      repeat: event.originalEvent?.repeat ?? false,
+    });
   }, 0);
 });
 
@@ -1235,6 +1267,15 @@ $("#wordsInput").on("keyup", (event) => {
     const eventCode =
       event.code === "" || event.which === 231 ? "NoCode" : event.code;
     TestInput.recordKeyupTime(now, eventCode);
+    TestEvents.log({
+      type: "keyup",
+      code: eventCode,
+      alt: event.altKey,
+      ctrl: event.ctrlKey,
+      meta: event.metaKey,
+      shift: event.shiftKey,
+      ms: now,
+    });
   }, 0);
 });
 

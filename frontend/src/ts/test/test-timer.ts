@@ -16,6 +16,7 @@ import * as TestState from "./test-state";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
+import * as TestEvents from "./test-events";
 
 type TimerStats = {
   dateNow: number;
@@ -211,12 +212,20 @@ export async function start(): Promise<void> {
   timerStats = [];
   expected = TestStats.start + interval;
   (function loop(): void {
-    const delay = expected - performance.now();
+    const now = performance.now();
+    const delay = expected - now;
     timerStats.push({
       dateNow: Date.now(),
-      now: performance.now(),
+      now,
       expected: expected,
       nextDelay: delay,
+    });
+    TestEvents.log({
+      type: "timer",
+      ms: now,
+      time: Time.get(),
+      nextDelay: delay,
+      slowTimer: SlowTimer.get(),
     });
     if (
       (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||

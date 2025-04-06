@@ -73,6 +73,7 @@ import {
 import { getFunboxesFromString } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
+import * as TestEvents from "./test-events";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -250,6 +251,7 @@ export function restart(options = {} as RestartOptions): void {
     PractiseWords.resetBefore();
   }
 
+  TestEvents.reset();
   ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
@@ -855,6 +857,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
+  TestEvents.forceKeyup();
 
   const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
   if ((Config.mode === "zen" || TestState.bailedOut) && endAfkSeconds < 7) {
@@ -888,6 +891,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const ce = buildCompletedEvent(difficultyFailed);
 
   console.debug("Completed event object", ce);
+
+  // console.debug("Test events", );
+  console.table(TestEvents.getAll());
 
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
