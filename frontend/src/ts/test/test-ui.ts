@@ -491,21 +491,19 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
 export function updateTestLine(): void {
   const wordElements = document.querySelectorAll<HTMLElement>("#words .word");
-  const activeWordEl =
-    wordElements[TestState.activeWordIndex - activeWordElementOffset];
+  const activeWordIndex = TestState.activeWordIndex - activeWordElementOffset;
+  const activeWordEl = wordElements[activeWordIndex];
   if (!activeWordEl || Config.showAllLines) return;
   const currentTop = activeWordEl.offsetTop;
 
-  let firstLine = currentTop;
-  for (
-    let i = TestState.activeWordIndex - activeWordElementOffset - 1;
-    i >= 0;
-    i--
-  ) {
-    firstLine = wordElements[i]?.offsetTop ?? currentTop;
-    if (firstLine < currentTop - 10) break;
+  let previousLineTop = currentTop;
+  for (let i = activeWordIndex - 1; i >= 0; i--) {
+    previousLineTop = wordElements[i]?.offsetTop ?? currentTop;
+    if (previousLineTop < currentTop) {
+      lineJump(previousLineTop, true);
+      return;
+    }
   }
-  if (firstLine < currentTop - 10) lineJump(firstLine, true);
 }
 
 export function updateWordsWrapperHeight(force = false): void {
