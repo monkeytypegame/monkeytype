@@ -82,16 +82,16 @@ export async function change(
           void AdController.reinstate();
         },
         async () => {
-          if (nextPage.name === "test") {
+          if (nextPage.id === "test") {
             Misc.updateTitle();
           } else {
-            Misc.updateTitle(
-              Strings.capitalizeFirstLetterOfEachWord(nextPage.name) +
-                " | Monkeytype"
-            );
+            const titleString =
+              nextPage.display ??
+              Strings.capitalizeFirstLetterOfEachWord(nextPage.id);
+            Misc.updateTitle(`${titleString} | Monkeytype`);
           }
           Focus.set(false);
-          ActivePage.set(nextPage.name);
+          ActivePage.set(nextPage.id);
           await previousPage?.afterHide();
           await nextPage?.beforeShow({
             params: options.params,

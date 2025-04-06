@@ -13,6 +13,7 @@ import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
+import * as AltTracker from "./alt-tracker";
 import * as Focus from "./focus";
 import * as Funbox from "./funbox/funbox";
 import * as Keymap from "../elements/keymap";
@@ -255,6 +256,7 @@ export function restart(options = {} as RestartOptions): void {
   TestInput.restart();
   TestInput.corrected.reset();
   ShiftTracker.reset();
+  AltTracker.reset();
   Caret.hide();
   TestState.setActive(false);
   Replay.stopReplayRecording();
@@ -399,7 +401,7 @@ export async function init(): Promise<void> {
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
-  TestUI.setActiveWordElementIndex(0);
+  TestUI.setActiveWordElementOffset(0);
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
@@ -548,6 +550,11 @@ export function areAllTestWordsGenerated(): boolean {
 
 //add word during the test
 export async function addWord(): Promise<void> {
+  if (Config.mode === "zen") {
+    TestUI.appendEmptyWordElement();
+    return;
+  }
+
   let bound = 100; // how many extra words to aim for AFTER the current word
   const funboxToPush = getActiveFunboxes()
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))

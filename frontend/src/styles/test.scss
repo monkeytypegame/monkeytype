@@ -179,7 +179,6 @@
   align-content: flex-start;
   -webkit-user-select: none;
   user-select: none;
-  padding-bottom: 1em;
 
   .newline {
     width: inherit;
@@ -261,9 +260,12 @@
     }
   }
 
-  &.tape .word {
-    margin: 0.25em 0.6em 0.75em 0;
-    white-space: nowrap;
+  &.tape {
+    width: 200vw;
+    .word {
+      margin: 0.25em 0.6em 0.75em 0;
+      white-space: nowrap;
+    }
   }
 
   /* a little hack for right-to-left languages */
@@ -462,14 +464,6 @@
     display: inline-block;
   }
 
-  &.lastbeforenewline::after {
-    font-family: "Font Awesome";
-    font-weight: 600;
-    content: "\f107";
-    margin-left: 0.5rem;
-    opacity: 0.25;
-  }
-
   .wordInputHighlight {
     opacity: 1;
     white-space: nowrap;
@@ -563,10 +557,6 @@
   z-index: 999;
   pointer-events: none;
   top: -2.5rem;
-
-  &.focus {
-    // top: 0rem;
-  }
 
   i {
     margin-right: 0.5rem;
@@ -1181,7 +1171,9 @@
 .pageTest {
   #wordsWrapper {
     position: relative;
+    overflow: visible clip;
     &.tape {
+      overflow: hidden;
       -webkit-mask-image: linear-gradient(
         90deg,
         rgba(0, 0, 0, 0) 1%,
@@ -1220,7 +1212,8 @@
   }
   .outOfFocusWarning {
     text-align: center;
-    height: 0;
+    height: 100%;
+    align-content: center;
     font-size: 1rem;
     z-index: 999;
     position: absolute;

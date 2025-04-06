@@ -36,7 +36,7 @@ const throttledHandleState = debounce(5000, () => {
         customTitle: "Connection",
       });
       $(
-        `#bannerCenter .banner[id="${noInternetBannerId}"] .closeButton`
+        `#bannerCenter .psa.notice[id="${noInternetBannerId}"] .closeButton`
       ).trigger("click");
     }
     bannerAlreadyClosed = false;

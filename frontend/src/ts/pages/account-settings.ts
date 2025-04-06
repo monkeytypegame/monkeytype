@@ -208,7 +208,8 @@ $(".page.pageAccountSettings #setStreakHourOffset").on("click", () => {
 });
 
 export const page = new Page({
-  name: "accountSettings",
+  id: "accountSettings",
+  display: "Account Settings",
   element: pageElement,
   path: "/account-settings",
   afterHide: async (): Promise<void> => {
