@@ -63,7 +63,6 @@ export async function updateTags(
 }
 
 export async function getResult(uid: string, id: string): Promise<DBResult> {
-  console.log("getResult", id);
   const result = await getResultCollection().findOne({
     _id: new ObjectId(id),
     uid,
