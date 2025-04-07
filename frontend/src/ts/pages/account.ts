@@ -39,7 +39,6 @@ import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
-import * as Loader from "../elements/loader";
 
 let filterDebug = false;
 //toggle filterdebug
