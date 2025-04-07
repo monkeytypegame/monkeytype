@@ -1168,6 +1168,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
   if (chartData === undefined) {
     //need to load full result
     target.addClass("loading");
+    target.attr("aria-label", null);
     target.html('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
     Loader.show();
 
@@ -1206,6 +1207,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
       return;
     }
   }
+  target.attr("aria-label", "View graph");
   MiniResultChartModal.show(chartData);
 });
 
