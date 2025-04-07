@@ -564,9 +564,9 @@ export function updateWordsWrapperHeight(force = false): void {
       wrapperEl.style.height = wrapperHeight + "px";
     } else {
       //tape mode in non-zen mode
-      wrapperEl.style.height = TestWords.hasNewline
-        ? wordHeight * 3 + "px"
-        : wordHeight * 1 + "px";
+      const wordsHeight =
+        document.getElementById("words")?.offsetHeight ?? wordHeight * 3;
+      wrapperEl.style.height = Math.min(wordsHeight, wordHeight * 3) + "px";
     }
   }
 

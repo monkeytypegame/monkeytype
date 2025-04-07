@@ -173,6 +173,7 @@
 #words {
   height: fit-content;
   height: -moz-fit-content;
+  padding-bottom: 0.5em; // to account for hints of the bottom line
   display: flex;
   flex-wrap: wrap;
   width: 100%;
