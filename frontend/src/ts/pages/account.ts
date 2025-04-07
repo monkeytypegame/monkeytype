@@ -1177,17 +1177,31 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
     target.html('<i class="fas fa-chart-line"></i>');
     target.removeClass("loading");
 
-    if (response.status === 200) {
-      chartData = response.body.data.chartData as ChartData;
+    if (response.status !== 200) {
+      Notifications.add("Error fetching result: " + response.body.message, -1);
+      return;
+    }
 
-      //update local cache
-      result.chartData = chartData;
-      const dbResult = DB.getSnapshot()?.results?.find(
-        (it) => it._id === result._id
+    chartData = response.body.data.chartData as ChartData;
+
+    //update local cache
+    result.chartData = chartData;
+    const dbResult = DB.getSnapshot()?.results?.find(
+      (it) => it._id === result._id
+    );
+    if (dbResult !== undefined) {
+      dbResult["chartData"] = result.chartData;
+    }
+
+    if (response.body.data.chartData === "toolong") {
+      target.attr(
+        "aria-label",
+        "Chart history is not available for long tests"
       );
-      if (dbResult !== undefined) {
-        dbResult["chartData"] = result.chartData;
-      }
+      target.attr("data-baloon-pos", "up");
+
+      Notifications.add("Chart history is not available for long tests", 0);
+      return;
     }
   }
   MiniResultChartModal.show(chartData);
