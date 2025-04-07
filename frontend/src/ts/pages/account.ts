@@ -106,7 +106,7 @@ function loadMoreLines(lineIndex?: number): void {
         )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
     }
 
-    if (result.chartData === "toolong") {
+    if (result.chartData === "toolong" || result.testDuration > 122) {
       icons += `<span class="miniResultChartButton disabled" aria-label="Graph history is not available for long tests" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
     } else {
       icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}"><i class="fas fa-fw fa-chart-line"></i></span>`;
