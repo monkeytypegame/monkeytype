@@ -109,7 +109,7 @@ function loadMoreLines(lineIndex?: number): void {
     if (result.chartData === "toolong") {
       icons += `<span class="miniResultChartButton disabled" aria-label="Graph history is not available for long tests" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
     } else {
-      icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}" style="opacity: 1"><i class="fas fa-fw fa-chart-line"></i></span>`;
+      icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}"><i class="fas fa-fw fa-chart-line"></i></span>`;
     }
 
     let tagNames = "no tags";
@@ -1156,6 +1156,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
 
   const target = $(event.currentTarget);
   if (target.hasClass("loading")) return;
+  if (target.hasClass("disabled")) return;
 
   const filteredId = target.attr("filteredResultsId");
   if (filteredId === undefined) return;
@@ -1202,6 +1203,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
         "Graph history is not available for long tests"
       );
       target.attr("data-baloon-pos", "up");
+      target.addClass("disabled");
 
       Notifications.add("Graph history is not available for long tests", 0);
       return;
