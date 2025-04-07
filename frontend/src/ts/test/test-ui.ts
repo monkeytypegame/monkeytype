@@ -937,30 +937,25 @@ export async function updateActiveWordLetters(
   }
 }
 
-function getNlCharWidthFromPreviousWord(
-  element: Element | HTMLElement,
-  checkIfIncorrect: boolean
+function getNlCharWidth(
+  lastWordInLine?: Element | HTMLElement,
+  checkIfIncorrect = true
 ): number {
-  let lastWordBeforeNewline: Element | null = element;
-  while (lastWordBeforeNewline) {
-    if (lastWordBeforeNewline.classList.contains("word")) break;
-    lastWordBeforeNewline = lastWordBeforeNewline.previousElementSibling;
+  let nlChar: HTMLElement | null;
+  if (lastWordInLine) {
+    nlChar = lastWordInLine.querySelector<HTMLElement>("letter.nlChar");
+  } else {
+    nlChar = document.querySelector<HTMLElement>(
+      "#words > .word > letter.nlChar"
+    );
   }
-  if (!lastWordBeforeNewline) return 0;
-
-  const letters = lastWordBeforeNewline.querySelectorAll<HTMLElement>("letter");
-  for (const letter of letters) {
-    if (letter.classList.contains("nlChar")) {
-      if (checkIfIncorrect && letter.classList.contains("incorrect")) return 0;
-      const letterComputedStyle = window.getComputedStyle(letter);
-      const letterMargin =
-        parseFloat(letterComputedStyle.marginLeft) +
-        parseFloat(letterComputedStyle.marginRight);
-      return letter.offsetWidth + letterMargin;
-    }
-  }
-
-  return 0;
+  if (!nlChar) return 0;
+  if (checkIfIncorrect && nlChar.classList.contains("incorrect")) return 0;
+  const letterComputedStyle = window.getComputedStyle(nlChar);
+  const letterMargin =
+    parseFloat(letterComputedStyle.marginLeft) +
+    parseFloat(letterComputedStyle.marginRight);
+  return nlChar.offsetWidth + letterMargin;
 }
 
 let allowWordRemoval = true;
@@ -1060,7 +1055,7 @@ export function scrollTape(noRemove = false): void {
       }
     } else if (child.classList.contains("afterNewline")) {
       if (leadingNewLine) continue;
-      const nlCharWidth = getNlCharWidthFromPreviousWord(child, true);
+      const nlCharWidth = getNlCharWidth(wordsChildrenArr[i - 3]);
       fullLineWidths -= nlCharWidth + wordRightMargin;
       if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
 
