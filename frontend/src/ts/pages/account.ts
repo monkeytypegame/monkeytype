@@ -108,9 +108,9 @@ function loadMoreLines(lineIndex?: number): void {
     }
 
     if (result.chartData === "toolong") {
-      icons += `<span class="miniResultChartButton" aria-label="Chart history is not available for long tests" data-balloon-pos="up"><i class="fas fa-chart-line"></i></span>`;
+      icons += `<span class="miniResultChartButton disabled" aria-label="Chart history is not available for long tests" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
     } else {
-      icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}" style="opacity: 1"><i class="fas fa-chart-line"></i></span>`;
+      icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}" style="opacity: 1"><i class="fas fa-fw fa-chart-line"></i></span>`;
     }
 
     let tagNames = "no tags";
@@ -1177,7 +1177,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
     });
     Loader.hide();
 
-    target.html('<i class="fas fa-chart-line"></i>');
+    target.html('<i class="fas fa-fw fa-chart-line"></i>');
     target.removeClass("loading");
 
     if (response.status !== 200) {
