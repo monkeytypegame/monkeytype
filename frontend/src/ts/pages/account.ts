@@ -107,7 +107,7 @@ function loadMoreLines(lineIndex?: number): void {
     }
 
     if (result.chartData === "toolong") {
-      icons += `<span class="miniResultChartButton disabled" aria-label="Chart history is not available for long tests" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
+      icons += `<span class="miniResultChartButton disabled" aria-label="Graph history is not available for long tests" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
     } else {
       icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}" style="opacity: 1"><i class="fas fa-fw fa-chart-line"></i></span>`;
     }
@@ -1198,11 +1198,11 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
     if (response.body.data.chartData === "toolong") {
       target.attr(
         "aria-label",
-        "Chart history is not available for long tests"
+        "Graph history is not available for long tests"
       );
       target.attr("data-baloon-pos", "up");
 
-      Notifications.add("Chart history is not available for long tests", 0);
+      Notifications.add("Graph history is not available for long tests", 0);
       return;
     }
   }
