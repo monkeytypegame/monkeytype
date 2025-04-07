@@ -39,6 +39,7 @@ import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
+import * as Loader from "../elements/loader";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1169,10 +1170,12 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
     //need to load full result
     target.addClass("loading");
     target.html('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
+    Loader.show();
 
     const response = await Ape.results.getById({
       params: { resultId: result._id },
     });
+    Loader.hide();
 
     target.html('<i class="fas fa-chart-line"></i>');
     target.removeClass("loading");
