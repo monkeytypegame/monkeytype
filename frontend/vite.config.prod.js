@@ -11,6 +11,7 @@ import { writeFileSync } from "fs";
 // eslint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { readdirSync, readFileSync, statSync } from "node:fs";
+import { ViteMinifyPlugin } from "vite-plugin-minify";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -85,6 +86,7 @@ export default {
       },
     }),
     splitVendorChunkPlugin(),
+    ViteMinifyPlugin({}),
     VitePWA({
       // injectRegister: "networkfirst",
       injectRegister: "script-defer",

@@ -348,7 +348,7 @@ $(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
 });
 
 export const page = new Page({
-  name: "login",
+  id: "login",
   element: $(".page.pageLogin"),
   path: "/login",
   afterHide: async (): Promise<void> => {
