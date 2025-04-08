@@ -1152,8 +1152,6 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
 });
 
 $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
-  console.log("updating");
-
   const target = $(event.currentTarget);
   if (target.hasClass("loading")) return;
   if (target.hasClass("disabled")) return;
