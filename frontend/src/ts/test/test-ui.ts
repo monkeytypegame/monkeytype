@@ -190,8 +190,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "showAllLines") {
     updateWordsWrapperHeight(true);
     if (eventValue === false) {
-      allowWordRemoval = false;
-      updateTestLine();
+      void updateTestLine();
     }
   }
 
@@ -283,7 +282,7 @@ export function updateActiveElement(
     void updateWordsInputPosition();
   }
   if (!initial && Config.tapeMode !== "off") {
-    scrollTape();
+    void scrollTape();
   }
 }
 
@@ -489,21 +488,32 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   }
 }
 
-export function updateTestLine(): void {
+let testLineUpdating: Promise<void> = Promise.resolve();
+
+export async function updateTestLine(): Promise<void> {
+  const { resolve, promise } = Misc.promiseWithResolvers<void>();
+  testLineUpdating = promise;
+
   const wordElements = document.querySelectorAll<HTMLElement>("#words .word");
   const activeWordIndex = TestState.activeWordIndex - activeWordElementOffset;
   const activeWordEl = wordElements[activeWordIndex];
-  if (!activeWordEl || Config.showAllLines) return;
+  if (!activeWordEl || Config.showAllLines) {
+    resolve();
+    return;
+  }
   const currentTop = activeWordEl.offsetTop;
 
   let previousLineTop = currentTop;
   for (let i = activeWordIndex - 1; i >= 0; i--) {
     previousLineTop = wordElements[i]?.offsetTop ?? currentTop;
     if (previousLineTop < currentTop) {
-      lineJump(previousLineTop, true);
+      await lineJump(previousLineTop, true);
+      resolve();
       return;
     }
   }
+
+  resolve();
 }
 
 export function updateWordsWrapperHeight(force = false): void {
@@ -575,7 +585,7 @@ export function updateWordsWrapperHeight(force = false): void {
 
 function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
-    scrollTape(true);
+    void scrollTape();
   } else {
     setTimeout(() => {
       $("#words").css("margin-left", "unset");
@@ -933,7 +943,7 @@ export async function updateActiveWordLetters(
       "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>"
     );
   if (Config.tapeMode !== "off") {
-    scrollTape();
+    void scrollTape();
   }
 }
 
@@ -958,15 +968,10 @@ function getNlCharWidth(
   return nlChar.offsetWidth + letterMargin;
 }
 
-let allowWordRemoval = true;
-export function scrollTape(noRemove = false): void {
+export async function scrollTape(): Promise<void> {
   if (ActivePage.get() !== "test" || resultVisible) return;
 
-  const waitForLineJumpAnimation = lineTransition && !allowWordRemoval;
-  if (waitForLineJumpAnimation) {
-    setTimeout(() => scrollTape(true), 50);
-    return;
-  }
+  await testLineUpdating;
 
   // index of the active word in the collection of .word elements
   const wordElementIndex = TestState.activeWordIndex - activeWordElementOffset;
@@ -1045,7 +1050,7 @@ export function scrollTape(noRemove = false): void {
       const wordOuterWidth = $(child).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
-      if (!noRemove && forWordLeft < 0 - forWordWidth) {
+      if (forWordLeft < 0 - forWordWidth) {
         toRemove.push(child);
         widthRemoved += wordOuterWidth;
         wordsToRemoveCount++;
@@ -1121,9 +1126,6 @@ export function scrollTape(noRemove = false): void {
       {
         duration: SlowTimer.get() ? 0 : 125,
         queue: "leftMargin",
-        complete: () => {
-          if (noRemove) scrollTape();
-        },
       }
     );
     jqWords.dequeue("leftMargin");
@@ -1139,7 +1141,6 @@ export function scrollTape(noRemove = false): void {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
     }
-    if (noRemove) scrollTape();
   }
 }
 
@@ -1180,7 +1181,12 @@ function removeElementsBeforeWord(
 
 let currentLinesAnimating = 0;
 
-export function lineJump(currentTop: number, force = false): void {
+export async function lineJump(
+  currentTop: number,
+  force = false
+): Promise<void> {
+  const { resolve, promise } = Misc.promiseWithResolvers<void>();
+
   //last word of the line
   if (currentTestLine > 0 || force) {
     const hideBound = currentTop - 10;
@@ -1192,7 +1198,10 @@ export function lineJump(currentTop: number, force = false): void {
     const wordsChildrenArr = [...wordsEl.children];
     const wordElements = wordsEl.querySelectorAll(".word");
     const activeWordEl = wordElements[wordElementIndex];
-    if (!activeWordEl) return;
+    if (!activeWordEl) {
+      resolve();
+      return;
+    }
 
     // index of the active word in all #words.children
     // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
@@ -1276,7 +1285,7 @@ export function lineJump(currentTop: number, force = false): void {
           );
           wordsEl.style.marginTop = "0";
           lineTransition = false;
-          allowWordRemoval = true;
+          resolve();
         },
       });
       jqWords.dequeue("topMargin");
@@ -1288,10 +1297,13 @@ export function lineJump(currentTop: number, force = false): void {
       paceCaretElement.style.top = `${
         paceCaretElement.offsetTop - wordHeight
       }px`;
+      resolve();
     }
   }
   currentTestLine++;
   updateWordsWrapperHeight();
+
+  return promise;
 }
 
 export function setRightToLeft(isEnabled: boolean): void {
