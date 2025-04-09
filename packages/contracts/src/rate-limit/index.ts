@@ -138,6 +138,18 @@ export const limits = {
     max: 30,
   },
 
+  // Result by id
+  resultByIdGet: {
+    window: "hour",
+    max: 300,
+  },
+
+  // Result by id
+  resultByIdGetApe: {
+    window: "hour",
+    max: 60,
+  },
+
   resultsAdd: {
     window: "hour",
     max: 300,

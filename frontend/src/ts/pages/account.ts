@@ -38,6 +38,7 @@ import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
+import Ape from "../ape";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -105,12 +106,10 @@ function loadMoreLines(lineIndex?: number): void {
         )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
     }
 
-    if (result.chartData === undefined) {
-      icons += `<span class="miniResultChartButton" aria-label="No chart data found" data-balloon-pos="up"><i class="fas fa-chart-line"></i></span>`;
-    } else if (result.chartData === "toolong") {
-      icons += `<span class="miniResultChartButton" aria-label="Chart history is not available for long tests" data-balloon-pos="up"><i class="fas fa-chart-line"></i></span>`;
+    if (result.chartData === "toolong" || result.testDuration > 122) {
+      icons += `<span class="miniResultChartButton disabled" aria-label="Graph history is not available for long tests" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
     } else {
-      icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}" style="opacity: 1"><i class="fas fa-chart-line"></i></span>`;
+      icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}"><i class="fas fa-fw fa-chart-line"></i></span>`;
     }
 
     let tagNames = "no tags";
@@ -1152,13 +1151,64 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   $(`#result-${index}`).addClass("active");
 });
 
-$(".pageAccount").on("click", ".miniResultChartButton", (event) => {
-  console.log("updating");
-  const filteredId = $(event.currentTarget).attr("filteredResultsId");
+$(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
+  const target = $(event.currentTarget);
+  if (target.hasClass("loading")) return;
+  if (target.hasClass("disabled")) return;
+
+  const filteredId = target.attr("filteredResultsId");
   if (filteredId === undefined) return;
-  MiniResultChartModal.show(
-    filteredResults[parseInt(filteredId)]?.chartData as ChartData
-  );
+
+  const result = filteredResults[parseInt(filteredId)];
+  if (result === undefined) return;
+
+  let chartData = result.chartData as ChartData;
+
+  if (chartData === undefined) {
+    //need to load full result
+    target.addClass("loading");
+    target.attr("aria-label", null);
+    target.html('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
+    Loader.show();
+
+    const response = await Ape.results.getById({
+      params: { resultId: result._id },
+    });
+    Loader.hide();
+
+    target.html('<i class="fas fa-fw fa-chart-line"></i>');
+    target.removeClass("loading");
+
+    if (response.status !== 200) {
+      Notifications.add("Error fetching result: " + response.body.message, -1);
+      return;
+    }
+
+    chartData = response.body.data.chartData as ChartData;
+
+    //update local cache
+    result.chartData = chartData;
+    const dbResult = DB.getSnapshot()?.results?.find(
+      (it) => it._id === result._id
+    );
+    if (dbResult !== undefined) {
+      dbResult["chartData"] = result.chartData;
+    }
+
+    if (response.body.data.chartData === "toolong") {
+      target.attr(
+        "aria-label",
+        "Graph history is not available for long tests"
+      );
+      target.attr("data-baloon-pos", "up");
+      target.addClass("disabled");
+
+      Notifications.add("Graph history is not available for long tests", 0);
+      return;
+    }
+  }
+  target.attr("aria-label", "View graph");
+  MiniResultChartModal.show(chartData);
 });
 
 $(".pageAccount .group.history").on("click", ".history-wpm-header", () => {
