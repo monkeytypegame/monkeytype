@@ -355,7 +355,7 @@ async function handleSpace(): Promise<void> {
     }
 
     if (nextTop > currentTop) {
-      TestUI.lineJump(currentTop);
+      void TestUI.lineJump(currentTop);
     } //end of line wrap
   }
 
@@ -734,7 +734,7 @@ function handleChar(
     TestInput.input.current.length > 1
   ) {
     if (Config.mode === "zen") {
-      if (!Config.showAllLines) TestUI.lineJump(activeWordTopBeforeJump);
+      if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
       void TestUI.updateActiveWordLetters();
