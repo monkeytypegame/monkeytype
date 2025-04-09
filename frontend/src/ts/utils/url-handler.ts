@@ -135,7 +135,20 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 const TestSettingsSchema = z.tuple([
   ModeSchema.nullable(),
   Mode2Schema.nullable(),
-  CustomText.CustomTextSettingsSchema.nullable(),
+  CustomText.CustomTextSettingsSchema.partial({
+    pipeDelimiter: true,
+    limit: true,
+    mode: true,
+  })
+    //legacy values
+    .extend({
+      isTimeRandom: z.boolean().optional(),
+      isWordRandom: z.boolean().optional(),
+      word: z.number().int().optional(),
+      time: z.number().int().optional(),
+      delimiter: z.string().optional(),
+    })
+    .nullable(),
   z.boolean().nullable(), //punctuation
   z.boolean().nullable(), //numbers
   z.string().nullable(), //language
@@ -186,9 +199,34 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (de[2] !== null) {
     const customTextSettings = de[2];
     CustomText.setText(customTextSettings.text);
-    CustomText.setLimitMode(customTextSettings.limit.mode);
-    CustomText.setLimitValue(customTextSettings.limit.value);
-    CustomText.setPipeDelimiter(customTextSettings.pipeDelimiter);
+
+    if (customTextSettings.limit !== undefined) {
+      CustomText.setLimitMode(customTextSettings.limit.mode);
+      CustomText.setLimitValue(customTextSettings.limit.value);
+    }
+    //convert legacy values
+    else {
+      if (customTextSettings.isWordRandom) {
+        CustomText.setLimitMode("word");
+      } else if (customTextSettings.isTimeRandom) {
+        CustomText.setLimitMode("time");
+      }
+      if (customTextSettings.word !== undefined) {
+        CustomText.setLimitValue(customTextSettings.word);
+      } else if (customTextSettings.time !== undefined) {
+        CustomText.setLimitValue(customTextSettings.time);
+      }
+    }
+
+    if (customTextSettings.pipeDelimiter) {
+      CustomText.setPipeDelimiter(customTextSettings.pipeDelimiter);
+    }
+    //convert legacy values
+    else if (customTextSettings.delimiter === "|") {
+      CustomText.setPipeDelimiter(true);
+    }
+
+    CustomText.setMode(customTextSettings.mode ?? "repeat");
 
     applied["custom text settings"] = "";
   }

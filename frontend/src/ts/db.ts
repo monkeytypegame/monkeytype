@@ -1,7 +1,6 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
 import * as LoadingPage from "./pages/loading";
-import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
@@ -13,14 +12,7 @@ import {
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
-import {
-  Badge,
-  CustomTheme,
-  ResultFilters,
-  User,
-  UserProfileDetails,
-  UserTag,
-} from "@monkeytype/contracts/schemas/users";
+import { Badge, CustomTheme } from "@monkeytype/contracts/schemas/users";
 import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -28,87 +20,19 @@ import {
   PersonalBest,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
-import { Preset } from "@monkeytype/contracts/schemas/presets";
-import defaultSnapshot from "./constants/default-snapshot";
-import { Result } from "@monkeytype/contracts/schemas/results";
+import {
+  getDefaultSnapshot,
+  Snapshot,
+  SnapshotPreset,
+  SnapshotResult,
+  SnapshotUserTag,
+} from "./constants/default-snapshot";
+import { getDefaultConfig } from "./constants/default-config";
 import { FunboxMetadata } from "../../../packages/funbox/src/types";
-
-export type SnapshotUserTag = UserTag & {
-  active?: boolean;
-  display: string;
-};
-
-export type SnapshotResult<M extends Mode> = Omit<
-  Result<M>,
-  | "_id"
-  | "bailedOut"
-  | "blindMode"
-  | "lazyMode"
-  | "difficulty"
-  | "funbox"
-  | "language"
-  | "numbers"
-  | "punctuation"
-  | "quoteLength"
-  | "restartCount"
-  | "incompleteTestSeconds"
-  | "afkDuration"
-  | "tags"
-> & {
-  _id: string;
-  bailedOut: boolean;
-  blindMode: boolean;
-  lazyMode: boolean;
-  difficulty: string;
-  funbox: string;
-  language: string;
-  numbers: boolean;
-  punctuation: boolean;
-  quoteLength: number;
-  restartCount: number;
-  incompleteTestSeconds: number;
-  afkDuration: number;
-  tags: string[];
-};
-
-export type Snapshot = Omit<
-  User,
-  | "timeTyping"
-  | "startedTests"
-  | "completedTests"
-  | "profileDetails"
-  | "streak"
-  | "resultFilterPresets"
-  | "tags"
-  | "xp"
-  | "testActivity"
-> & {
-  typingStats: {
-    timeTyping: number;
-    startedTests: number;
-    completedTests: number;
-  };
-  details?: UserProfileDetails;
-  inboxUnreadSize: number;
-  streak: number;
-  maxStreak: number;
-  filterPresets: ResultFilters[];
-  isPremium: boolean;
-  streakHourOffset?: number;
-  config: Config;
-  tags: SnapshotUserTag[];
-  presets: SnapshotPreset[];
-  results?: SnapshotResult<Mode>[];
-  xp: number;
-  testActivity?: ModifiableTestActivityCalendar;
-  testActivityByYear?: { [key: string]: TestActivityCalendar };
-};
-
-export type SnapshotPreset = Preset & {
-  display: string;
-};
+import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 
 let dbSnapshot: Snapshot | undefined;
+const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
 export class SnapshotInitError extends Error {
   constructor(message: string, public responseCode: number) {
@@ -147,7 +71,7 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
 
 export async function initSnapshot(): Promise<Snapshot | number | boolean> {
   //send api request with token that returns tags, presets, and data needed for snap
-  const snap = defaultSnapshot as Snapshot;
+  const snap = getDefaultSnapshot();
   try {
     if (!isAuthenticated()) return false;
     // if (ActivePage.get() === "loading") {
@@ -241,7 +165,8 @@ export async function initSnapshot(): Promise<Snapshot | number | boolean> {
     if (userData.testActivity !== undefined) {
       snap.testActivity = new ModifiableTestActivityCalendar(
         userData.testActivity.testsByDays,
-        new Date(userData.testActivity.lastDay)
+        new Date(userData.testActivity.lastDay),
+        firstDayOfTheWeek
       );
     }
 
@@ -260,7 +185,7 @@ export async function initSnapshot(): Promise<Snapshot | number | boolean> {
     // LoadingPage.updateText("Downloading config...");
     if (configData === undefined || configData === null) {
       snap.config = {
-        ...DefaultConfig,
+        ...getDefaultConfig(),
       };
     } else {
       snap.config = migrateConfig(configData);
@@ -340,7 +265,7 @@ export async function initSnapshot(): Promise<Snapshot | number | boolean> {
     dbSnapshot = snap;
     return dbSnapshot;
   } catch (e) {
-    dbSnapshot = defaultSnapshot;
+    dbSnapshot = getDefaultSnapshot();
     throw e;
   }
 }
@@ -1133,6 +1058,7 @@ export async function getTestActivityCalendar(
       dbSnapshot.testActivityByYear[year] = new TestActivityCalendar(
         testsByDays,
         lastDay,
+        firstDayOfTheWeek,
         true
       );
     }

@@ -48,10 +48,15 @@ function save(): boolean {
     return false;
   }
 
-  CustomText.setCustomText(name, state.textToSave, checkbox);
-  CustomTextState.setCustomTextName(name, checkbox);
-  Notifications.add("Custom text saved", 1);
-  return true;
+  const saved = CustomText.setCustomText(name, state.textToSave, checkbox);
+  if (saved) {
+    CustomTextState.setCustomTextName(name, checkbox);
+    Notifications.add("Custom text saved", 1);
+    return true;
+  } else {
+    Notifications.add("Error saving custom text", -1);
+    return false;
+  }
 }
 
 function updateIndicatorAndButton(): void {

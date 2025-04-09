@@ -330,11 +330,18 @@
       margin: 0 0.1rem;
     }
     .miniResultChartButton {
-      opacity: 0.25;
       transition: 0.25s;
       cursor: pointer;
+      color: var(--text-color);
       &:hover {
         opacity: 1;
+      }
+      &.loading {
+        pointer-events: none;
+      }
+      &.disabled .fas {
+        opacity: 0.5;
+        color: var(--sub-color);
       }
     }
   }
@@ -522,10 +529,6 @@
     font-size: var(--font-size);
   }
 
-  .days {
-    display: none;
-  }
-
   .daysFull {
     margin-right: 2rem;
   }
@@ -549,6 +552,10 @@
       // height: 0px;
       font-size: var(--font-size);
     }
+  }
+
+  .days {
+    display: none;
   }
 
   .nodata {

@@ -202,7 +202,7 @@ function getHistogramDataBucketed(data: Record<string, number>): {
 }
 
 export const page = new Page({
-  name: "about",
+  id: "about",
   element: $(".page.pageAbout"),
   path: "/about",
   afterHide: async (): Promise<void> => {

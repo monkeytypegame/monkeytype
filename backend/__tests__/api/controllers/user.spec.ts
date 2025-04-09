@@ -3,7 +3,6 @@ import app from "../../../src/app";
 import * as Configuration from "../../../src/init/configuration";
 import { generateCurrentTestActivity } from "../../../src/api/controllers/user";
 import * as UserDal from "../../../src/dal/user";
-import { DecodedIdToken } from "firebase-admin/auth";
 import * as AuthUtils from "../../../src/utils/auth";
 import * as BlocklistDal from "../../../src/dal/blocklist";
 import * as ApeKeys from "../../../src/dal/ape-keys";
@@ -23,26 +22,25 @@ import * as LogDal from "../../../src/dal/logs";
 import { ObjectId } from "mongodb";
 import { PersonalBest } from "@monkeytype/contracts/schemas/shared";
 import { pb } from "../../dal/leaderboards.spec";
-import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
+import {
+  mockAuthenticateWithApeKey,
+  mockBearerAuthentication,
+} from "../../__testData__/auth";
 import { randomUUID } from "node:crypto";
 import _ from "lodash";
 import { MonkeyMail, UserStreak } from "@monkeytype/contracts/schemas/users";
-import { isFirebaseError } from "../../../src/utils/error";
+import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
 import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
-const uid = "123456789";
-
-const mockDecodedToken: DecodedIdToken = {
-  uid,
-  email: "newuser@mail.com",
-  iat: Date.now(),
-} as DecodedIdToken;
+const uid = new ObjectId().toHexString();
+const mockAuth = mockBearerAuthentication(uid);
 
 describe("user controller test", () => {
   beforeEach(() => {
-    vi.spyOn(AuthUtils, "verifyIdToken").mockResolvedValue(mockDecodedToken);
+    mockAuth.beforeEach();
   });
   describe("user creation flow", () => {
     beforeEach(async () => {
@@ -53,20 +51,20 @@ describe("user controller test", () => {
 
       const newUser = {
         name: "NewUser",
-        uid: "123456789",
+        uid,
         email: "newuser@mail.com",
         captcha: "captcha",
       };
 
       await mockApp
         .post("/users/signup")
-        .set("authorization", "Uid 123456789|newuser@mail.com")
+        .set("Authorization", `Bearer ${uid}`)
         .send(newUser)
         .expect(200);
 
       const response = await mockApp
         .get("/users")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .send()
         .expect(200);
 
@@ -105,7 +103,7 @@ describe("user controller test", () => {
 
       const newUser = {
         name: "NewUser",
-        uid: "123456789",
+        uid: uid,
         email: "newuser@mail.com",
         captcha: "captcha",
       };
@@ -113,7 +111,7 @@ describe("user controller test", () => {
       //WHEN
       const result = await mockApp
         .post("/users/signup")
-        .set("authorization", "Uid 123456789|newuser@mail.com")
+        .set("Authorization", `Bearer ${uid}`)
         .send(newUser)
         .expect(409);
 
@@ -125,7 +123,7 @@ describe("user controller test", () => {
       });
 
       //user will be created in firebase from the frontend, make sure we remove it
-      expect(firebaseDeleteUserMock).toHaveBeenCalledWith("123456789");
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
       expect(verifyCaptchaMock).toHaveBeenCalledWith("captcha");
     });
 
@@ -133,10 +131,13 @@ describe("user controller test", () => {
       for (const domain of ["tidal.lol", "selfbot.cc"]) {
         //GIVEN
         firebaseDeleteUserMock.mockResolvedValue();
+        mockAuth.modifyToken({
+          email: `newuser@${domain}`,
+        });
 
         const newUser = {
           name: "NewUser",
-          uid: "123456789",
+          uid: uid,
           email: `newuser@${domain}`,
           captcha: "captcha",
         };
@@ -144,7 +145,7 @@ describe("user controller test", () => {
         //WHEN
         const result = await mockApp
           .post("/users/signup")
-          .set("authorization", `Uid 123456789|newuser@${domain}`)
+          .set("Authorization", `Bearer ${uid}`)
           .send(newUser)
           .set({
             Accept: "application/json",
@@ -155,7 +156,7 @@ describe("user controller test", () => {
         expect(result.body.message).toEqual("Invalid domain");
 
         //user will be created in firebase from the frontend, make sure we remove it
-        expect(firebaseDeleteUserMock).toHaveBeenCalledWith("123456789");
+        expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
       }
     });
 
@@ -166,7 +167,7 @@ describe("user controller test", () => {
 
       const newUser = {
         name: "NewUser",
-        uid: "123456789",
+        uid: uid,
         email: "newuser@mail.com",
         captcha: "captcha",
       };
@@ -174,19 +175,16 @@ describe("user controller test", () => {
       //WHEN
       const result = await mockApp
         .post("/users/signup")
-        .set("authorization", "Uid 123456789|newuser@mail.com")
+        .set("Authorization", `Bearer ${uid}`)
         .send(newUser)
         .expect(409);
 
       //THEN
       expect(result.body.message).toEqual("Username unavailable");
-      expect(usernameAvailableMock).toHaveBeenCalledWith(
-        "NewUser",
-        "123456789"
-      );
+      expect(usernameAvailableMock).toHaveBeenCalledWith("NewUser", uid);
 
       //user will be created in firebase from the frontend, make sure we remove it
-      expect(firebaseDeleteUserMock).toHaveBeenCalledWith("123456789");
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
     });
     it("should fail if capture is invalid", async () => {
       //GIVEN
@@ -194,7 +192,7 @@ describe("user controller test", () => {
 
       const newUser = {
         name: "NewUser",
-        uid: "123456789",
+        uid: uid,
         email: "newuser@mail.com",
         captcha: "captcha",
       };
@@ -202,7 +200,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/signup")
-        .set("authorization", "Uid 123456789|newuser@mail.com")
+        .set("Authorization", `Bearer ${uid}`)
         .send(newUser)
         .expect(422);
 
@@ -212,7 +210,7 @@ describe("user controller test", () => {
     it("should fail if username too long", async () => {
       //GIVEN
       const newUser = {
-        uid: "123456789",
+        uid: uid,
         email: "newuser@mail.com",
         captcha: "captcha",
       };
@@ -220,7 +218,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/signup")
-        .set("authorization", "Uid 123456789|newuser@mail.com")
+        .set("Authorization", `Bearer ${uid}`)
         .send({ ...newUser, name: new Array(17).fill("x").join("") })
         .expect(422);
 
@@ -235,7 +233,7 @@ describe("user controller test", () => {
     it("should fail if username contains profanity", async () => {
       //GIVEN
       const newUser = {
-        uid: "123456789",
+        uid: uid,
         email: "newuser@mail.com",
         captcha: "captcha",
       };
@@ -243,7 +241,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/signup")
-        .set("authorization", "Uid 123456789|newuser@mail.com")
+        .set("Authorization", `Bearer ${uid}`)
         .send({ ...newUser, name: "miodec" })
         .expect(422);
 
@@ -288,7 +286,7 @@ describe("user controller test", () => {
       //"HEN
       const { body } = await mockApp
         .get("/users/verificationEmail")
-        .set("authorization", `Uid ${uid}|newuser@mail.com`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -315,7 +313,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/verificationEmail")
-        .set("authorization", `Uid ${uid}|newuser@mail.com`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(500);
 
       //THEN
@@ -330,7 +328,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/verificationEmail")
-        .set("authorization", `Uid ${uid}|newuser@mail.com`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(400);
 
       //THEN
@@ -345,7 +343,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/verificationEmail")
-        .set("authorization", `Uid ${uid}|newuser@mail.com`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(400);
 
       //THEN
@@ -370,7 +368,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/verificationEmail")
-        .set("authorization", `Uid ${uid}|newuser@mail.com`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(429);
 
       //THEN
@@ -392,7 +390,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/verificationEmail")
-        .set("authorization", `Uid ${uid}|newuser@mail.com`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(500);
 
       //THEN
@@ -412,12 +410,12 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/verificationEmail")
-        .set("authorization", `Uid ${uid}|newuser@mail.com`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(500);
 
       //THEN
       expect(body.message).toEqual(
-        "Firebase failed to generate an email verification link: Internal server error"
+        "Failed to generate an email verification link: Internal server error"
       );
     });
   });
@@ -495,7 +493,7 @@ describe("user controller test", () => {
       //when
       await mockApp
         .get("/users/testActivity")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .send()
         .expect(503);
     });
@@ -510,7 +508,7 @@ describe("user controller test", () => {
       //when
       const response = await mockApp
         .get("/users/testActivity")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .send()
         .expect(200);
 
@@ -600,9 +598,14 @@ describe("user controller test", () => {
       DailyLeaderboards,
       "purgeUserFromDailyLeaderboards"
     );
+    const purgeUserFromXpLeaderboardsMock = vi.spyOn(
+      WeeklyXpLeaderboard,
+      "purgeUserFromXpLeaderboards"
+    );
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
 
     beforeEach(() => {
+      mockAuth.beforeEach();
       [
         firebaseDeleteUserMock,
         deleteUserMock,
@@ -611,6 +614,7 @@ describe("user controller test", () => {
         deleteAllPresetsMock,
         deleteConfigMock,
         purgeUserFromDailyLeaderboardsMock,
+        purgeUserFromXpLeaderboardsMock,
       ].forEach((it) => it.mockResolvedValue(undefined));
 
       deleteAllResultMock.mockResolvedValue({} as any);
@@ -627,12 +631,12 @@ describe("user controller test", () => {
         deleteAllApeKeysMock,
         deleteAllPresetsMock,
         purgeUserFromDailyLeaderboardsMock,
+        purgeUserFromXpLeaderboardsMock,
       ].forEach((it) => it.mockReset());
     });
 
     it("should add user to blocklist if banned", async () => {
       //GIVEN
-      const uid = mockDecodedToken.uid;
       const user = {
         uid,
         name: "name",
@@ -645,7 +649,7 @@ describe("user controller test", () => {
       //WHEN
       await mockApp
         .delete("/users/")
-        .set("Authorization", "Bearer 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -661,10 +665,13 @@ describe("user controller test", () => {
         uid,
         (await configuration).dailyLeaderboards
       );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
     });
     it("should delete user without adding to blocklist if not banned", async () => {
       //GIVEN
-      const uid = mockDecodedToken.uid;
       const user = {
         uid,
         name: "name",
@@ -676,7 +683,7 @@ describe("user controller test", () => {
       //WHEN
       await mockApp
         .delete("/users/")
-        .set("Authorization", "Bearer 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -692,6 +699,145 @@ describe("user controller test", () => {
         uid,
         (await configuration).dailyLeaderboards
       );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
+    });
+
+    it("should not fail if userInfo cannot be found", async () => {
+      //GIVEN
+      getUserMock.mockRejectedValue(new MonkeyError(404, "user not found"));
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(blocklistAddMock).not.toHaveBeenCalled();
+
+      expect(deleteUserMock).toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards
+      );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
+    });
+
+    it("should fail for unknown error from UserDal", async () => {
+      //GIVEN
+      getUserMock.mockRejectedValue(new Error("oops"));
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(500);
+
+      //THEN
+      expect(blocklistAddMock).not.toHaveBeenCalled();
+      expect(deleteUserMock).not.toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).not.toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).not.toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).not.toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).not.toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).not.toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).not.toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards
+      );
+      expect(purgeUserFromXpLeaderboardsMock).not.toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
+    });
+    it("should not fail if firebase user cannot be found", async () => {
+      //GIVEN
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+        discordId: "discordId",
+      } as Partial<UserDal.DBUser> as UserDal.DBUser;
+      getUserMock.mockResolvedValue(user);
+      firebaseDeleteUserMock.mockRejectedValue({
+        code: "user-not-found",
+        codePrefix: "auth",
+        errorInfo: { code: "auth/user-not-found", message: "user not found" },
+      });
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(blocklistAddMock).not.toHaveBeenCalled();
+
+      expect(deleteUserMock).toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards
+      );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
+    });
+
+    it("should fail for unknown error from firebase", async () => {
+      //GIVEN
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+        discordId: "discordId",
+      } as Partial<UserDal.DBUser> as UserDal.DBUser;
+      getUserMock.mockResolvedValue(user);
+      firebaseDeleteUserMock.mockRejectedValue({
+        code: "unknown",
+        codePrefix: "auth",
+        errorInfo: { code: "auth/unknown", message: "unknown" },
+      });
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(500);
+
+      //THEN
+      expect(blocklistAddMock).not.toHaveBeenCalled();
+      expect(deleteUserMock).toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards
+      );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
     });
   });
   describe("resetUser", () => {
@@ -704,6 +850,10 @@ describe("user controller test", () => {
     const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
       DailyLeaderboards,
       "purgeUserFromDailyLeaderboards"
+    );
+    const purgeUserFromXpLeaderboardsMock = vi.spyOn(
+      WeeklyXpLeaderboard,
+      "purgeUserFromXpLeaderboards"
     );
 
     const unlinkDiscordMock = vi.spyOn(GeorgeQueue, "unlinkDiscord");
@@ -723,6 +873,7 @@ describe("user controller test", () => {
         deleteAllResultsMock,
         deleteConfigMock,
         purgeUserFromDailyLeaderboardsMock,
+        purgeUserFromXpLeaderboardsMock,
         unlinkDiscordMock,
         addImportantLogMock,
       ].forEach((it) => it.mockReset());
@@ -734,7 +885,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/reset")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -754,6 +905,10 @@ describe("user controller test", () => {
         uid,
         (await Configuration.getLiveConfiguration()).dailyLeaderboards
       );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
       expect(unlinkDiscordMock).not.toHaveBeenCalled();
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_reset",
@@ -768,7 +923,7 @@ describe("user controller test", () => {
       //WHEN
       await mockApp
         .patch("/users/reset")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -781,7 +936,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/reset")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(403);
 
       //THEN
@@ -810,7 +965,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/name")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ name: "newName" })
         .expect(200);
 
@@ -835,7 +990,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/name")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ name: "newName" })
         .expect(409);
 
@@ -851,7 +1006,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/name")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ name: "newName" })
         .expect(403);
 
@@ -868,7 +1023,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/name")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ name: "newName" })
         .expect(409);
 
@@ -888,7 +1043,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/name")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ name: "newName" })
         .expect(200);
 
@@ -904,7 +1059,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/name")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -917,7 +1072,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/name")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ name: "newName", extra: "value" })
         .expect(422);
 
@@ -931,7 +1086,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/name")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ name: "miodec" })
         .expect(422);
 
@@ -964,7 +1119,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .delete("/users/personalBests")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -1003,7 +1158,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/optOutOfLeaderboards")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -1027,7 +1182,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/optOutOfLeaderboards")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ extra: "value" });
       //TODO.expect(422);
 
@@ -1054,7 +1209,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/email")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ newEmail, previousEmail: "previousEmail@example.com" })
         .expect(200);
 
@@ -1094,7 +1249,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/email")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           newEmail: "newEmail@example.com",
           previousEmail: "previousEmail@example.com",
@@ -1124,7 +1279,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/email")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           newEmail: "newEmail@example.com",
           previousEmail: "previousEmail@example.com",
@@ -1151,7 +1306,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/email")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           newEmail: "newEmail@example.com",
           previousEmail: "previousEmail@example.com",
@@ -1178,7 +1333,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/email")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           newEmail: "newEmail@example.com",
           previousEmail: "previousEmail@example.com",
@@ -1205,7 +1360,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/email")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           newEmail: "newEmail@example.com",
           previousEmail: "previousEmail@example.com",
@@ -1223,7 +1378,7 @@ describe("user controller test", () => {
       //WHEN
       await mockApp
         .patch("/users/email")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           newEmail: "newEmail@example.com",
           previousEmail: "previousEmail@example.com",
@@ -1234,7 +1389,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/email")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -1246,7 +1401,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/email")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           newEmail: "newEmail@example.com",
           previousEmail: "previousEmail@example.com",
@@ -1271,7 +1426,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/password")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ newPassword: "sw0rdf1sh" })
         .expect(200);
 
@@ -1286,7 +1441,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/password")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -1299,7 +1454,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/password")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ newPassword: "sw0rdf1sh", extra: "value" })
         .expect(422);
 
@@ -1313,7 +1468,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/password")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ newPassword: "test" })
         .expect(422);
 
@@ -1338,7 +1493,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/discord/oauth")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -1355,7 +1510,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/discord/oauth")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(503);
 
       //THEN
@@ -1411,7 +1566,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/discord/link")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           tokenType: "tokenType",
           accessToken: "accessToken",
@@ -1449,7 +1604,11 @@ describe("user controller test", () => {
         "discordUserId",
         "discordUserAvatar"
       );
-      expect(georgeLinkDiscordMock).toHaveBeenCalledWith("discordUserId", uid);
+      expect(georgeLinkDiscordMock).toHaveBeenCalledWith(
+        "discordUserId",
+        uid,
+        false
+      );
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_discord_link",
         "linked to discordUserId",
@@ -1464,7 +1623,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/discord/link")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           tokenType: "tokenType",
           accessToken: "accessToken",
@@ -1497,7 +1656,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/discord/link")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           tokenType: "tokenType",
           accessToken: "accessToken",
@@ -1515,7 +1674,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/discord/link")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           tokenType: "tokenType",
           accessToken: "accessToken",
@@ -1533,7 +1692,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/discord/link")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           tokenType: "tokenType",
           accessToken: "accessToken",
@@ -1556,7 +1715,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/discord/link")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           tokenType: "tokenType",
           accessToken: "accessToken",
@@ -1575,7 +1734,6 @@ describe("user controller test", () => {
 
     it("should fail if discordId is blocked", async () => {
       //GIVEN
-      const uid = mockDecodedToken.uid;
       const user = {
         uid,
         name: "name",
@@ -1587,7 +1745,7 @@ describe("user controller test", () => {
       //WHEN
       const result = await mockApp
         .post("/users/discord/link")
-        .set("Authorization", "Bearer 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           tokenType: "tokenType",
           accessToken: "accessToken",
@@ -1606,7 +1764,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/discord/link")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -1623,7 +1781,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/discord/link")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           tokenType: "tokenType",
           accessToken: "accessToken",
@@ -1660,7 +1818,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/discord/unlink")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -1685,7 +1843,7 @@ describe("user controller test", () => {
 
       const { body } = await mockApp
         .post("/users/discord/unlink")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(403);
 
       //THEN
@@ -1701,7 +1859,7 @@ describe("user controller test", () => {
 
       const { body } = await mockApp
         .post("/users/discord/unlink")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(404);
 
       //THEN
@@ -1787,7 +1945,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/resultFilterPresets")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send(validPreset)
         .expect(200);
 
@@ -1808,7 +1966,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/resultFilterPresets")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -1836,7 +1994,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/resultFilterPresets")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ ...validPreset, extra: "value" })
         .expect(422);
 
@@ -1852,7 +2010,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/resultFilterPresets")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ validPreset })
         .expect(503);
 
@@ -1877,7 +2035,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .delete("/users/resultFilterPresets/myId")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -1894,7 +2052,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .delete("/users/resultFilterPresets/myId")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(503);
 
       //THEN
@@ -1928,7 +2086,7 @@ describe("user controller test", () => {
       const { body } = await mockApp
         .post("/users/tags")
         .send({ tagName: "tagName" })
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -1944,7 +2102,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/tags")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -1959,7 +2117,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/tags")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ tagName: "tagName", extra: "value" })
         .expect(422);
 
@@ -1983,7 +2141,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .delete(`/users/tags/${tagId}/personalBest`)
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -2008,7 +2166,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch(`/users/tags`)
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ tagId, newName: "newName" })
         .expect(200);
 
@@ -2023,7 +2181,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch(`/users/tags`)
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -2036,7 +2194,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch(`/users/tags`)
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           tagId: new ObjectId().toHexString(),
           newName: "newName",
@@ -2065,7 +2223,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .delete(`/users/tags/${tagId}`)
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -2102,7 +2260,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/tags")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -2132,7 +2290,7 @@ describe("user controller test", () => {
           language: "english",
           rank: 7,
         })
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -2154,7 +2312,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/leaderboardMemory")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -2172,7 +2330,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/leaderboardMemory")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           mode: "time",
           mode2: "60",
@@ -2211,7 +2369,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/customThemes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -2242,7 +2400,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/customThemes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           name: "customTheme",
           colors: new Array(10).fill("#000000") as any,
@@ -2263,7 +2421,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/customThemes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -2276,7 +2434,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/customThemes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           name: "customTheme",
           colors: new Array(10).fill("#000000") as any,
@@ -2294,7 +2452,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/customThemes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           name: "customThemecustomThemecustomThemecustomTheme",
           colors: new Array(9).fill("#000") as any,
@@ -2325,7 +2483,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .delete("/users/customThemes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ themeId })
         .expect(200);
 
@@ -2340,7 +2498,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .delete("/users/customThemes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -2353,7 +2511,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .delete("/users/customThemes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ themeId: new ObjectId().toHexString(), extra: "value" })
         .expect(422);
 
@@ -2381,7 +2539,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/customThemes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           themeId,
           theme,
@@ -2399,7 +2557,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/customThemes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -2412,7 +2570,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/customThemes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           themeId: new ObjectId().toHexString(),
           theme: {
@@ -2448,7 +2606,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/personalBests")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .query({ mode: "time", mode2: "15" })
         .expect(200);
 
@@ -2475,7 +2633,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/personalBests")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -2488,7 +2646,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/personalBests")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .query({ mode: "time", mode2: "15", extra: "value" })
         .expect(422);
 
@@ -2502,7 +2660,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/personalBests")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .query({ mode: "mood", mode2: "happy" })
 
         .expect(422);
@@ -2538,7 +2696,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/stats")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -2578,7 +2736,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/favoriteQuotes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -2598,7 +2756,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/favoriteQuotes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ language: "english", quoteId: "7" })
         .expect(200);
 
@@ -2618,7 +2776,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/favoriteQuotes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -2631,7 +2789,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/favoriteQuotes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ language: "english", quoteId: "7", extra: "value" })
         .expect(422);
 
@@ -2652,7 +2810,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .delete("/users/favoriteQuotes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ language: "english", quoteId: "7" })
         .expect(200);
 
@@ -2667,7 +2825,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .delete("/users/favoriteQuotes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -2680,7 +2838,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .delete("/users/favoriteQuotes")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ language: "english", quoteId: "7", extra: "value" })
         .expect(422);
 
@@ -2930,7 +3088,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/profile")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           ...newProfile,
           selectedBadgeId: 2,
@@ -2974,7 +3132,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/profile")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           ...newProfile,
           selectedBadgeId: -1,
@@ -3006,7 +3164,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/profile")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           extra: "value",
           socialProfiles: {
@@ -3028,7 +3186,7 @@ describe("user controller test", () => {
       //WHEN
       await mockApp
         .patch("/users/profile")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           bio: "Line1\n\n\nLine2\n\n\n\nLine3",
           keyboard: "  string     with      many      spaces      ",
@@ -3050,7 +3208,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/profile")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           bio: "miodec",
           keyboard: "miodec",
@@ -3078,7 +3236,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/profile")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           bio: new Array(251).fill("x").join(""),
           keyboard: new Array(76).fill("x").join(""),
@@ -3108,7 +3266,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/profile")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           socialProfiles: {
             website: "http://monkeytype.com",
@@ -3131,7 +3289,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/profile")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({})
         .expect(503);
 
@@ -3170,7 +3328,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/inbox")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -3191,7 +3349,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .get("/users/inbox")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(503);
 
       //THEN
@@ -3211,7 +3369,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/inbox")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           mailIdsToDelete: [mailIdOne],
           mailIdsToMarkRead: [mailIdOne, mailIdTwo],
@@ -3234,7 +3392,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/inbox")
-        .set("Authorization", `Uid ${uid}`);
+        .set("Authorization", `Bearer ${uid}`);
       //.expect(200);
       console.log(body);
 
@@ -3250,7 +3408,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/inbox")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           mailIdsToDelete: [],
           mailIdsToMarkRead: [],
@@ -3273,7 +3431,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/inbox")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(503);
 
       //THEN
@@ -3303,7 +3461,7 @@ describe("user controller test", () => {
 
       const { body } = await mockApp
         .post("/users/report")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           uid: uidToReport,
           reason: "Suspected cheating",
@@ -3337,7 +3495,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/report")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -3354,7 +3512,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/report")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           uid: new ObjectId().toHexString(),
           reason: "Suspected cheating",
@@ -3377,7 +3535,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/report")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           uid: new ObjectId().toHexString(),
           reason: "Suspected cheating",
@@ -3396,7 +3554,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/report")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           uid: new Array(51).fill("x").join(""),
           reason: "unfriendly",
@@ -3421,7 +3579,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/report")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           uid: new ObjectId().toHexString(),
           reason: "Suspected cheating",
@@ -3440,7 +3598,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/report")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           uid: new ObjectId().toHexString(),
           reason: "Suspected cheating",
@@ -3468,7 +3626,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/setStreakHourOffset")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ hourOffset: -2 })
         .expect(200);
 
@@ -3494,7 +3652,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/setStreakHourOffset")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ hourOffset: -2 })
         .expect(403);
 
@@ -3507,7 +3665,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/setStreakHourOffset")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -3519,19 +3677,19 @@ describe("user controller test", () => {
     it("should fail with invalid offset", async () => {
       await mockApp
         .post("/users/setStreakHourOffset")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ hourOffset: -12 })
         .expect(422);
 
       await mockApp
         .post("/users/setStreakHourOffset")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ hourOffset: 13 })
         .expect(422);
 
       await mockApp
         .post("/users/setStreakHourOffset")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ hourOffset: "UTC-8" })
         .expect(422);
     });
@@ -3548,7 +3706,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/revokeAllTokens")
-        .set("Authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -3574,7 +3732,7 @@ describe("user controller test", () => {
       //GIVEN
       vi.useFakeTimers().setSystemTime(1712102400000);
       const user = {
-        uid: mockDecodedToken.uid,
+        uid: uid,
         testActivity: {
           "2024": fillYearWithDay(94),
         },
@@ -3584,7 +3742,7 @@ describe("user controller test", () => {
       //WHEN
       const result = await mockApp
         .get("/users/currentTestActivity")
-        .set("Authorization", "Bearer 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .send()
         .expect(200);
 
@@ -3607,7 +3765,7 @@ describe("user controller test", () => {
     it("gets", async () => {
       //GIVEN
       const user = {
-        uid: mockDecodedToken.uid,
+        uid: uid,
         streak: {
           lastResultTimestamp: 1712102400000,
           length: 42,
@@ -3620,7 +3778,7 @@ describe("user controller test", () => {
       //WHEN
       const result = await mockApp
         .get("/users/streak")
-        .set("Authorization", "Bearer 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .send()
         .expect(200);
 

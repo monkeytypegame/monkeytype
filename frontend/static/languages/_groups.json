@@ -27,7 +27,8 @@
       "french_1k",
       "french_2k",
       "french_10k",
-      "french_600k"
+      "french_600k",
+      "french_bitoduc"
     ]
   },
   {
@@ -53,6 +54,10 @@
   {
     "name": "arabic",
     "languages": ["arabic", "arabic_10k"]
+  },
+  {
+    "name": "arabic_egypt",
+    "languages": ["arabic_egypt", "arabic_egypt_1k"]
   },
   {
     "name": "italian",
@@ -87,6 +92,10 @@
   {
     "name": "khmer",
     "languages": ["khmer"]
+  },
+  {
+    "name": "marathi",
+    "languages": ["marathi"]
   },
   {
     "name": "chinese",
@@ -180,7 +189,6 @@
       "greeklish_25k"
     ]
   },
-
   {
     "name": "turkish",
     "languages": ["turkish", "turkish_1k", "turkish_5k"]
@@ -195,7 +203,7 @@
   },
   {
     "name": "thai",
-    "languages": ["thai"]
+    "languages": ["thai", "thai_20k"]
   },
   {
     "name": "tamil",
@@ -368,6 +376,10 @@
     "languages": ["bulgarian", "bulgarian_latin"]
   },
   {
+    "name": "bosnian",
+    "languages": ["bosnian"]
+  },
+  {
     "name": "esperanto",
     "languages": [
       "esperanto",
@@ -479,6 +491,21 @@
     "languages": ["tatar", "tatar_1k", "tatar_5k", "tatar_9k"]
   },
   {
+    "name": "tatar_crimean",
+    "languages": [
+      "tatar_crimean",
+      "tatar_crimean_1k",
+      "tatar_crimean_5k",
+      "tatar_crimean_10k",
+      "tatar_crimean_15k",
+      "tatar_crimean_cyrillic",
+      "tatar_crimean_cyrillic_1k",
+      "tatar_crimean_cyrillic_5k",
+      "tatar_crimean_cyrillic_10k",
+      "tatar_crimean_cyrillic_15k"
+    ]
+  },
+  {
     "name": "azerbaijani",
     "languages": ["azerbaijani", "azerbaijani_1k"]
   },
@@ -548,8 +575,8 @@
     "languages": ["yiddish"]
   },
   {
-    "name": "frysk",
-    "languages": ["frysk", "frysk_1k"]
+    "name": "frisian",
+    "languages": ["frisian", "frisian_1k"]
   },
   {
     "name": "pashto",
@@ -582,6 +609,10 @@
     ]
   },
   {
+    "name": "kabyle",
+    "languages": ["kabyle", "kabyle_1k", "kabyle_2k", "kabyle_5k", "kabyle_10k"]
+  },
+  {
     "name": "zulu",
     "languages": ["zulu"]
   },
@@ -601,6 +632,7 @@
       "code_javascript",
       "code_javascript_1k",
       "code_javascript_react",
+      "code_jule",
       "code_julia",
       "code_haskell",
       "code_html",

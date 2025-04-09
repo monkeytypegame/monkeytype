@@ -35,7 +35,11 @@ import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
 import * as Loader from "../elements/loader";
 import * as KeyConverter from "../utils/key-converter";
-import { getActiveFunboxes } from "../test/funbox/list";
+import {
+  findSingleActiveFunboxWithFunction,
+  getActiveFunboxesWithFunction,
+  isFunboxActiveWithProperty,
+} from "../test/funbox/list";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -116,7 +120,7 @@ function backspaceToPrevious(): void {
 
   if (
     TestInput.input.getHistory().length === 0 ||
-    TestUI.activeWordElementIndex === 0
+    TestState.activeWordIndex - TestUI.activeWordElementOffset === 0
   ) {
     return;
   }
@@ -145,12 +149,11 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (getActiveFunboxes().find((f) => f.properties?.includes("nospace"))) {
+  if (isFunboxActiveWithProperty("nospace")) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
   TestState.decreaseActiveWordIndex();
-  TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex - 1);
   TestUI.updateActiveElement(true);
   Funbox.toggleScript(TestWords.words.getCurrent());
   void TestUI.updateActiveWordLetters();
@@ -187,15 +190,10 @@ async function handleSpace(): Promise<void> {
     return;
   }
 
-  if (Config.mode === "zen") {
-    $("#words .word.active").removeClass("active");
-    $("#words").append("<div class='word active'></div>");
-  }
-
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.handleSpace?.();
+  for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
+    fb.functions.handleSpace();
   }
 
   dontInsertSpace = true;
@@ -204,9 +202,7 @@ async function handleSpace(): Promise<void> {
   void LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
-  const nospace =
-    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
+  const nospace = isFunboxActiveWithProperty("nospace");
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -265,10 +261,14 @@ async function handleSpace(): Promise<void> {
     PaceCaret.handleSpace(false, currentWord);
     if (Config.blindMode) {
       if (Config.highlightMode !== "off") {
-        TestUI.highlightAllLettersAsCorrect(TestUI.activeWordElementIndex);
+        TestUI.highlightAllLettersAsCorrect(
+          TestState.activeWordIndex - TestUI.activeWordElementOffset
+        );
       }
     } else {
-      TestUI.highlightBadWord(TestUI.activeWordElementIndex);
+      TestUI.highlightBadWord(
+        TestState.activeWordIndex - TestUI.activeWordElementOffset
+      );
     }
     TestInput.input.pushHistory();
     TestState.increaseActiveWordIndex();
@@ -316,42 +316,34 @@ async function handleSpace(): Promise<void> {
   ) {
     TimerProgress.update();
   }
-  if (
-    Config.mode === "time" ||
-    Config.mode === "words" ||
-    Config.mode === "custom" ||
-    Config.mode === "quote"
-  ) {
-    if (isLastWord) {
-      awaitingNextWord = true;
-      Loader.show();
-      await TestLogic.addWord();
-      Loader.hide();
-      awaitingNextWord = false;
-    } else {
-      void TestLogic.addWord();
-    }
+  if (isLastWord) {
+    awaitingNextWord = true;
+    Loader.show();
+    await TestLogic.addWord();
+    Loader.hide();
+    awaitingNextWord = false;
+  } else {
+    void TestLogic.addWord();
   }
-  TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex + 1);
   TestUI.updateActiveElement();
   void Caret.updatePosition();
 
-  if (
-    !Config.showAllLines ||
+  const shouldLimitToThreeLines =
     Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
-  ) {
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+    (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+
+  if (!Config.showAllLines || shouldLimitToThreeLines) {
     const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
-        TestUI.activeWordElementIndex - 1
+        TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
       ]?.offsetTop ?? 0
     );
     let nextTop: number;
     try {
       nextTop = Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.activeWordElementIndex
+          TestState.activeWordIndex - TestUI.activeWordElementOffset
         ]?.offsetTop ?? 0
       );
     } catch (e) {
@@ -360,8 +352,8 @@ async function handleSpace(): Promise<void> {
 
     if (nextTop > currentTop) {
       TestUI.lineJump(currentTop);
-    }
-  } //end of line wrap
+    } //end of line wrap
+  }
 
   // enable if i decide that auto tab should also work after a space
   // if (
@@ -406,8 +398,8 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  const funbox = getActiveFunboxes().find((fb) => fb.functions?.isCharCorrect);
-  if (funbox?.functions?.isCharCorrect) {
+  const funbox = findSingleActiveFunboxWithFunction("isCharCorrect");
+  if (funbox) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
 
@@ -492,15 +484,11 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const fb of getActiveFunboxes()) {
-    if (fb.functions?.handleChar) {
-      char = fb.functions.handleChar(char);
-    }
+  for (const fb of getActiveFunboxesWithFunction("handleChar")) {
+    char = fb.functions.handleChar(char);
   }
 
-  const nospace =
-    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
+  const nospace = isFunboxActiveWithProperty("nospace");
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
@@ -675,7 +663,7 @@ function handleChar(
   );
 
   const activeWord = document.querySelectorAll("#words .word")?.[
-    TestUI.activeWordElementIndex
+    TestState.activeWordIndex - TestUI.activeWordElementOffset
   ] as HTMLElement;
 
   const testInputLength: number = !isCharKorean
@@ -904,10 +892,8 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  for (const fb of getActiveFunboxes()) {
-    if (fb.functions?.handleKeydown) {
-      void fb.functions.handleKeydown(event);
-    }
+  for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
+    void fb.functions.handleKeydown(event);
   }
 
   //autofocus
@@ -1120,7 +1106,9 @@ $(document).on("keydown", async (event) => {
     void Sound.playClick();
     const activeWord: HTMLElement | null = document.querySelectorAll(
       "#words .word"
-    )?.[TestUI.activeWordElementIndex] as HTMLElement;
+    )?.[
+      TestState.activeWordIndex - TestUI.activeWordElementOffset
+    ] as HTMLElement;
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead
@@ -1157,20 +1145,18 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  for (const fb of getActiveFunboxes()) {
-    if (fb.functions?.preventDefaultEvent) {
-      if (
-        await fb.functions.preventDefaultEvent(
-          //i cant figure this type out, but it works fine
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          event as JQuery.KeyDownEvent
-        )
-      ) {
-        event.preventDefault();
-        handleChar(event.key, TestInput.input.current.length);
-        updateUI();
-        setWordsInput(" " + TestInput.input.current);
-      }
+  for (const fb of getActiveFunboxesWithFunction("preventDefaultEvent")) {
+    if (
+      await fb.functions.preventDefaultEvent(
+        //i cant figure this type out, but it works fine
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        event as JQuery.KeyDownEvent
+      )
+    ) {
+      event.preventDefault();
+      handleChar(event.key, TestInput.input.current.length);
+      updateUI();
+      setWordsInput(" " + TestInput.input.current);
     }
   }
 

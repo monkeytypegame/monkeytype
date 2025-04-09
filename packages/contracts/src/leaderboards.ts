@@ -13,8 +13,6 @@ import { LanguageSchema } from "./schemas/util";
 import { Mode2Schema, ModeSchema } from "./schemas/shared";
 import { initContract } from "@ts-rest/core";
 
-//TODO NOTIFY USERS ON OLD CLINT THAT SCHEMA CHNAGED
-
 const LanguageAndModeQuerySchema = z.object({
   language: LanguageSchema,
   mode: ModeSchema,
@@ -22,13 +20,15 @@ const LanguageAndModeQuerySchema = z.object({
 });
 
 const PaginationQuerySchema = z.object({
-  page: z.number().int().nonnegative().default(0),
-  pageSize: z.number().int().nonnegative().max(200).default(50),
+  page: z.number().int().safe().nonnegative().default(0),
+  pageSize: z.number().int().safe().positive().min(10).max(200).default(50),
 });
+
+export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;
 
 const LeaderboardResponseSchema = z.object({
   count: z.number().int().nonnegative(),
-  pageSize: z.number().int().nonnegative(),
+  pageSize: z.number().int().positive(),
 });
 
 //--------------------------------------------------------------------------
@@ -62,11 +62,14 @@ export type GetLeaderboardRankResponse = z.infer<
 
 //--------------------------------------------------------------------------
 
-export const GetDailyLeaderboardQuerySchema = LanguageAndModeQuerySchema.merge(
-  PaginationQuerySchema
-).extend({
+export const DailyLeaderboardQuerySchema = LanguageAndModeQuerySchema.extend({
   daysBefore: z.literal(1).optional(),
 });
+export type DailyLeaderboardQuery = z.infer<typeof DailyLeaderboardQuerySchema>;
+
+export const GetDailyLeaderboardQuerySchema = DailyLeaderboardQuerySchema.merge(
+  PaginationQuerySchema
+);
 export type GetDailyLeaderboardQuery = z.infer<
   typeof GetDailyLeaderboardQuerySchema
 >;
@@ -82,10 +85,8 @@ export type GetDailyLeaderboardResponse = z.infer<
 
 //--------------------------------------------------------------------------
 
-export const GetDailyLeaderboardRankQuerySchema =
-  LanguageAndModeQuerySchema.merge(PaginationQuerySchema).extend({
-    daysBefore: z.literal(1).optional(),
-  });
+export const GetDailyLeaderboardRankQuerySchema = DailyLeaderboardQuerySchema;
+
 export type GetDailyLeaderboardRankQuery = z.infer<
   typeof GetDailyLeaderboardRankQuerySchema
 >;
@@ -98,9 +99,13 @@ export type GetLeaderboardDailyRankResponse = z.infer<
 
 //--------------------------------------------------------------------------
 
-export const GetWeeklyXpLeaderboardQuerySchema = PaginationQuerySchema.extend({
+const WeeklyXpLeaderboardQuerySchema = z.object({
   weeksBefore: z.literal(1).optional(),
 });
+
+export const GetWeeklyXpLeaderboardQuerySchema =
+  WeeklyXpLeaderboardQuerySchema.merge(PaginationQuerySchema);
+
 export type GetWeeklyXpLeaderboardQuery = z.infer<
   typeof GetWeeklyXpLeaderboardQuerySchema
 >;
@@ -114,6 +119,12 @@ export type GetWeeklyXpLeaderboardResponse = z.infer<
 >;
 
 //--------------------------------------------------------------------------
+
+export const GetWeeklyXpLeaderboardRankQuerySchema =
+  WeeklyXpLeaderboardQuerySchema;
+export type GetWeeklyXpLeaderboardRankQuery = z.infer<
+  typeof GetWeeklyXpLeaderboardRankQuerySchema
+>;
 
 export const GetWeeklyXpLeaderboardRankResponseSchema =
   responseWithNullableData(XpLeaderboardEntrySchema);
@@ -210,6 +221,7 @@ export const leaderboardsContract = c.router(
         "Get the rank of the current user on the weekly xp leaderboard",
       method: "GET",
       path: "/xp/weekly/rank",
+      query: GetWeeklyXpLeaderboardRankQuerySchema.strict(),
       responses: {
         200: GetWeeklyXpLeaderboardRankResponseSchema,
       },

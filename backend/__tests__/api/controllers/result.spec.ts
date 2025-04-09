@@ -5,31 +5,23 @@ import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
 import * as LogsDal from "../../../src/dal/logs";
-import * as AuthUtils from "../../../src/utils/auth";
-import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { ObjectId } from "mongodb";
-import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
+import {
+  mockAuthenticateWithApeKey,
+  mockBearerAuthentication,
+} from "../../__testData__/auth";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import { DBResult } from "../../../src/utils/result";
-const uid = "123456";
-
-const mockDecodedToken: DecodedIdToken = {
-  uid,
-  email: "newuser@mail.com",
-  iat: 0,
-} as DecodedIdToken;
 
 const mockApp = request(app);
-
 const configuration = Configuration.getCachedConfiguration();
 enableRateLimitExpects();
+const uid = new ObjectId().toHexString();
+const mockAuth = mockBearerAuthentication(uid);
 
 describe("result controller test", () => {
-  const verifyIdTokenMock = vi.spyOn(AuthUtils, "verifyIdToken");
-
   beforeEach(() => {
-    verifyIdTokenMock.mockReset();
-    verifyIdTokenMock.mockResolvedValue(mockDecodedToken);
+    mockAuth.beforeEach();
   });
 
   describe("getResults", () => {
@@ -87,7 +79,7 @@ describe("result controller test", () => {
         .expect(200);
 
       //THEN
-      expect(resultMock).toHaveBeenCalledWith(mockDecodedToken.uid, {
+      expect(resultMock).toHaveBeenCalledWith(uid, {
         limit: 1000,
         offset: 0,
         onOrAfterTimestamp: NaN,
@@ -106,7 +98,7 @@ describe("result controller test", () => {
 
       //THEN
 
-      expect(resultMock).toHaveBeenCalledWith(mockDecodedToken.uid, {
+      expect(resultMock).toHaveBeenCalledWith(uid, {
         limit: 1000,
         offset: 0,
         onOrAfterTimestamp: now,
@@ -122,7 +114,7 @@ describe("result controller test", () => {
         .expect(200);
 
       //THEN
-      expect(resultMock).toHaveBeenCalledWith(mockDecodedToken.uid, {
+      expect(resultMock).toHaveBeenCalledWith(uid, {
         limit: 250,
         offset: 500,
         onOrAfterTimestamp: NaN,
@@ -158,7 +150,7 @@ describe("result controller test", () => {
 
       //THEN
 
-      expect(resultMock).toHaveBeenCalledWith(mockDecodedToken.uid, {
+      expect(resultMock).toHaveBeenCalledWith(uid, {
         limit: 800,
         offset: 600,
         onOrAfterTimestamp: NaN,
@@ -175,7 +167,7 @@ describe("result controller test", () => {
 
       //THEN
 
-      expect(resultMock).toHaveBeenCalledWith(mockDecodedToken.uid, {
+      expect(resultMock).toHaveBeenCalledWith(uid, {
         limit: 10, //limit is reduced to stay within max limit
         offset: 990,
         onOrAfterTimestamp: NaN,
@@ -231,7 +223,7 @@ describe("result controller test", () => {
         .expect(200);
 
       //THEN
-      expect(resultMock).toHaveBeenCalledWith(mockDecodedToken.uid, {
+      expect(resultMock).toHaveBeenCalledWith(uid, {
         limit: 100,
         offset: 900,
         onOrAfterTimestamp: NaN,
@@ -266,7 +258,7 @@ describe("result controller test", () => {
         .expect(200);
 
       //THEN
-      expect(resultMock).toHaveBeenCalledWith(mockDecodedToken.uid, {
+      expect(resultMock).toHaveBeenCalledWith(uid, {
         limit: 1000, //the default limit for regular users
         offset: 0,
         onOrAfterTimestamp: NaN,
@@ -339,6 +331,87 @@ describe("result controller test", () => {
       await expect(
         mockApp.get("/results").set("Authorization", `ApeKey ${apeKey}`)
       ).toBeRateLimited({ max: 30, windowMs: 24 * 60 * 60 * 1000 });
+    });
+  });
+  describe("getResultById", () => {
+    const getResultMock = vi.spyOn(ResultDal, "getResult");
+
+    afterEach(() => {
+      getResultMock.mockReset();
+    });
+
+    it("should get result", async () => {
+      //GIVEN
+      const result = givenDbResult(uid);
+      getResultMock.mockResolvedValue(result);
+
+      //WHEN
+      const { body } = await mockApp
+        .get(`/results/id/${result._id}`)
+        .set("Authorization", `Bearer ${uid}`)
+        .send()
+        .expect(200);
+
+      //THEN
+      expect(body.message).toEqual("Result retrieved");
+      expect(body.data).toEqual({ ...result, _id: result._id.toHexString() });
+    });
+    it("should get last result with ape key", async () => {
+      //GIVEN
+      await acceptApeKeys(true);
+      const apeKey = await mockAuthenticateWithApeKey(uid, await configuration);
+      const result = givenDbResult(uid);
+      getResultMock.mockResolvedValue(result);
+
+      //WHEN
+      await mockApp
+        .get(`/results/id/${result._id}`)
+        .set("Authorization", `ApeKey ${apeKey}`)
+        .send()
+        .expect(200);
+    });
+    it("should get last result with legacy values", async () => {
+      //GIVEN
+      const result = givenDbResult(uid, {
+        charStats: undefined,
+        incorrectChars: 5,
+        correctChars: 12,
+      });
+      getResultMock.mockResolvedValue(result);
+
+      //WHEN
+      const { body } = await mockApp
+        .get(`/results/id/${result._id}`)
+        .set("Authorization", `Bearer ${uid}`)
+        .send()
+        .expect(200);
+
+      //THEN
+      expect(body.message).toEqual("Result retrieved");
+      expect(body.data).toMatchObject({
+        _id: result._id.toHexString(),
+        charStats: [12, 5, 0, 0],
+      });
+      expect(body.data).not.toHaveProperty("correctChars");
+      expect(body.data).not.toHaveProperty("incorrectChars");
+    });
+    it("should rate limit get  result with ape key", async () => {
+      //GIVEN
+      const result = givenDbResult(uid, {
+        charStats: undefined,
+        incorrectChars: 5,
+        correctChars: 12,
+      });
+      getResultMock.mockResolvedValue(result);
+      await acceptApeKeys(true);
+      const apeKey = await mockAuthenticateWithApeKey(uid, await configuration);
+
+      //WHEN
+      await expect(
+        mockApp
+          .get(`/results/id/${result._id}`)
+          .set("Authorization", `ApeKey ${apeKey}`)
+      ).toBeRateLimited({ max: 60, windowMs: 60 * 60 * 1000 });
     });
   });
   describe("getLastResult", () => {
@@ -430,10 +503,8 @@ describe("result controller test", () => {
 
     it("should delete", async () => {
       //GIVEN
-      verifyIdTokenMock.mockResolvedValue({
-        ...mockDecodedToken,
-        iat: Date.now() - 1000,
-      });
+      mockAuth.modifyToken({ iat: Date.now() - 1000 });
+
       //WHEN
       const { body } = await mockApp
         .delete("/results")
@@ -449,6 +520,10 @@ describe("result controller test", () => {
       expect(logToDbMock).toHaveBeenCalledWith("user_results_deleted", "", uid);
     });
     it("should fail to delete with non-fresh token", async () => {
+      //GIVEN
+      mockAuth.modifyToken({ iat: 0 });
+
+      //WHEN/THEN
       await mockApp
         .delete("/results")
         .set("Authorization", `Bearer ${uid}`)
@@ -704,7 +779,7 @@ describe("result controller test", () => {
           restartCount: 4,
           tags: ["tagOneId", "tagTwoId"],
           testDuration: 15.1,
-          uid: "123456",
+          uid: uid,
           wpm: 80,
         })
       );

@@ -51,7 +51,7 @@ function getTargetPositionLeft(
   fullWidthCaret: boolean,
   isLanguageRightToLeft: boolean,
   activeWordElement: HTMLElement,
-  underscoreAdded: boolean,
+  activeWordEmpty: boolean,
   currentWordNodeList: NodeListOf<Element>,
   fullWidthCaretWidth: number,
   wordLen: number,
@@ -101,7 +101,7 @@ function getTargetPositionLeft(
       }
     }
     result = activeWordElement.offsetLeft + positionOffsetToWord;
-    if (underscoreAdded && isLanguageRightToLeft)
+    if (activeWordEmpty && isLanguageRightToLeft)
       result += activeWordElement.offsetWidth;
   } else {
     const wordsWrapperWidth =
@@ -140,13 +140,10 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const inputLen = splitIntoCharacters(TestInput.input.current).length;
   if (Config.mode === "zen") wordLen = inputLen;
   const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
-  //insert temporary character so the caret will work in zen mode
-  const activeWordEmpty = activeWordEl?.children.length === 0;
-  if (activeWordEmpty) {
-    activeWordEl.insertAdjacentHTML(
-      "beforeend",
-      '<letter style="opacity: 0;">_</letter>'
-    );
+  let activeWordEmpty = false;
+  if (Config.mode === "zen") {
+    wordLen = inputLen;
+    if (inputLen === 0) activeWordEmpty = true;
   }
 
   const currentWordNodeList = activeWordEl?.querySelectorAll("letter");
@@ -253,9 +250,6 @@ export async function updatePosition(noAnim = false): Promise<void> {
         behavior: prefersReducedMotion() ? "instant" : "smooth",
       });
     }
-  }
-  if (activeWordEmpty) {
-    activeWordEl?.replaceChildren();
   }
 }
 

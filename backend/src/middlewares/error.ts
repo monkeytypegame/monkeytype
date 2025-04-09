@@ -11,13 +11,12 @@ import {
   recordServerErrorByVersion,
 } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
-import { ObjectId } from "mongodb";
 import { version } from "../version";
 import { addLog } from "../dal/logs";
 import { ExpressRequestWithContext } from "../api/types";
 
 type DBError = {
-  _id: ObjectId;
+  _id: string; //we are using uuid here, not objectIds
   timestamp: number;
   status: number;
   uid: string;
@@ -81,7 +80,7 @@ async function errorHandlingMiddleware(
           uid
         );
         await db.collection<DBError>("errors").insertOne({
-          _id: new ObjectId(errorId),
+          _id: errorId,
           timestamp: Date.now(),
           status: status,
           uid,

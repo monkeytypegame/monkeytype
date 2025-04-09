@@ -100,13 +100,23 @@ export async function getResults(
 ): Promise<DBResult[]> {
   const { onOrAfterTimestamp, offset, limit } = opts ?? {};
   let query = getResultCollection()
-    .find({
-      uid,
-      ...(!_.isNil(onOrAfterTimestamp) &&
-        !_.isNaN(onOrAfterTimestamp) && {
-          timestamp: { $gte: onOrAfterTimestamp },
-        }),
-    })
+    .find(
+      {
+        uid,
+        ...(!_.isNil(onOrAfterTimestamp) &&
+          !_.isNaN(onOrAfterTimestamp) && {
+            timestamp: { $gte: onOrAfterTimestamp },
+          }),
+      },
+      {
+        projection: {
+          chartData: 0,
+          keySpacingStats: 0,
+          keyDurationStats: 0,
+          name: 0,
+        },
+      }
+    )
     .sort({ timestamp: -1 });
 
   if (limit !== undefined) {

@@ -41,16 +41,63 @@ async function getLatest(): Promise<PSA[] | null> {
         false
       );
     } else {
-      Notifications.addPSA(
-        "Looks like the server is experiencing maintenance or some unexpected down time.<br>Check the <a target= '_blank' href='https://monkeytype.instatus.com/'>status page</a> or <a target= '_blank' href='https://x.com/monkeytype'>Twitter</a> for more information.",
-        -1,
-        "exclamation-triangle",
-        false,
-        undefined,
-        true
-      );
-    }
+      type InstatusSummary = {
+        page: {
+          name: string;
+          url: string;
+          status: string;
+        };
+        activeIncidents: {
+          id: string;
+          name: string;
+          started: string;
+          status: string;
+          impact: string;
+          url: string;
+          updatedAt: string;
+        }[];
+        activeMaintenances: {
+          id: string;
+          name: string;
+          start: string;
+          status: "NOTSTARTEDYET" | "INPROGRESS" | "COMPLETED";
+          duration: number;
+          url: string;
+          updatedAt: string;
+        }[];
+      };
 
+      const instatus = await fetch(
+        "https://monkeytype.instatus.com/summary.json"
+      );
+      const instatusData =
+        (await instatus.json()) as unknown as InstatusSummary;
+
+      const maintenanceData = instatusData.activeMaintenances[0];
+
+      if (
+        maintenanceData !== undefined &&
+        maintenanceData.status === "INPROGRESS"
+      ) {
+        Notifications.addPSA(
+          `Server is currently offline for scheduled maintenance. <a target= '_blank' href='${maintenanceData.url}'>Check the status page</a> for more info.`,
+          -1,
+          "bullhorn",
+          true,
+          undefined,
+          true
+        );
+      } else {
+        Notifications.addPSA(
+          "Looks like the server is experiencing unexpected down time.<br>Check the <a target= '_blank' href='https://monkeytype.instatus.com/'>status page</a> for more information.",
+          -1,
+          "exclamation-triangle",
+          false,
+          undefined,
+          true
+        );
+      }
+    }
     return null;
   } else if (response.status === 503) {
     Notifications.addPSA(
