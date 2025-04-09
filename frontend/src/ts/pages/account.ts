@@ -268,6 +268,8 @@ async function fillContent(): Promise<void> {
       amount: number;
       time: number;
       totalWpm: number;
+      totalAcc: number;
+      totalCon: number;
     }
   >;
 
@@ -529,6 +531,8 @@ async function fillContent(): Promise<void> {
         (result.incompleteTestSeconds ?? 0) -
         (result.afkDuration ?? 0);
       dataForTimestamp.totalWpm += result.wpm;
+      dataForTimestamp.totalAcc += result.acc;
+      dataForTimestamp.totalCon += result.consistency ?? 0;
     } else {
       activityChartData[resultTimestamp] = {
         amount: 1,
@@ -537,6 +541,8 @@ async function fillContent(): Promise<void> {
           (result.incompleteTestSeconds ?? 0) -
           (result.afkDuration ?? 0),
         totalWpm: result.wpm,
+        totalAcc: result.acc,
+        totalCon: result.consistency ?? 0,
       };
     }
 
@@ -682,6 +688,9 @@ async function fillContent(): Promise<void> {
       x: dateInt,
       y: dataPoint.time / 60,
       amount: dataPoint.amount,
+      avgWpm: Numbers.roundTo2(dataPoint.totalWpm / dataPoint.amount),
+      avgAcc: Numbers.roundTo2(dataPoint.totalAcc / dataPoint.amount),
+      avgCon: Numbers.roundTo2(dataPoint.totalCon / dataPoint.amount),
     });
     activityChartData_avgWpm.push({
       x: dateInt,
@@ -689,7 +698,6 @@ async function fillContent(): Promise<void> {
         typingSpeedUnit.fromWpm(dataPoint.totalWpm) / dataPoint.amount
       ),
     });
-    // lastTimestamp = date;
   }
 
   const accountActivityScaleOptions = (
