@@ -1078,13 +1078,15 @@ export function scrollTape(noRemove = false): void {
   /* remove overflown elements */
   if (toRemove.length > 0) {
     activeWordElementOffset += wordsToRemoveCount;
-    toRemove.forEach((el) => el.remove());
-    widthRemovedFromLine.forEach((width, index) => {
-      const afterNewlineEl = afterNewLineEls[index] as HTMLElement;
+    for (const el of toRemove) el.remove();
+    for (let i = 0; i < widthRemovedFromLine.length; i++) {
+      const afterNewlineEl = afterNewLineEls[i] as HTMLElement;
       const currentLineIndent =
         parseFloat(afterNewlineEl.style.marginLeft) || 0;
-      afterNewlineEl.style.marginLeft = `${currentLineIndent - width}px`;
-    });
+      afterNewlineEl.style.marginLeft = `${
+        currentLineIndent - (widthRemovedFromLine[i] ?? 0)
+      }px`;
+    }
     const currentWordsMargin = parseFloat(wordsEl.style.marginLeft) || 0;
     wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
   }
@@ -1125,21 +1127,18 @@ export function scrollTape(noRemove = false): void {
       }
     );
     jqWords.dequeue("leftMargin");
-    afterNewlinesNewMargins.forEach((margin, index) => {
-      $(afterNewLineEls[index] as Element)
+    for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
+      const newMargin = afterNewlinesNewMargins[i] ?? 0;
+      $(afterNewLineEls[i] as Element)
         .stop(true, false)
-        .animate(
-          {
-            marginLeft: margin,
-          },
-          SlowTimer.get() ? 0 : 125
-        );
-    });
+        .animate({ marginLeft: newMargin }, SlowTimer.get() ? 0 : 125);
+    }
   } else {
     wordsEl.style.marginLeft = `${newMargin}px`;
-    afterNewlinesNewMargins.forEach((margin, index) => {
-      (afterNewLineEls[index] as HTMLElement).style.marginLeft = `${margin}px`;
-    });
+    for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
+      const newMargin = afterNewlinesNewMargins[i] ?? 0;
+      (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
+    }
     if (noRemove) scrollTape();
   }
 }
