@@ -930,11 +930,7 @@ export function setTapeMargin(
   }
 
   if (
-    !isConfigValueValid(
-      "tape mode margin",
-      value,
-      ConfigSchemas.TapeMarginSchema
-    )
+    !isConfigValueValid("tape margin", value, ConfigSchemas.TapeMarginSchema)
   ) {
     return false;
   }
