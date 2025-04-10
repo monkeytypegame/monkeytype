@@ -106,7 +106,10 @@ import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
 import { migrateConfig } from "../utils/config";
-import { PartialConfigSchema } from "@monkeytype/contracts/schemas/configs";
+import {
+  CustomBackgroundSchema,
+  PartialConfigSchema,
+} from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
@@ -307,6 +310,14 @@ export const commands: CommandsSubgroup = {
       },
       input: true,
       exec: ({ input }): void => {
+        const parsed = CustomBackgroundSchema.safeParse(input);
+        if (!parsed.success) {
+          Notifications.add(
+            `Invalid custom background URL (${parsed.error.issues[0]?.message})`,
+            0
+          );
+          return;
+        }
         UpdateConfig.setCustomBackground(input ?? "");
       },
     },
