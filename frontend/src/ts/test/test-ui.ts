@@ -1229,8 +1229,9 @@ export async function lineJump(
       "#paceCaret"
     ) as HTMLElement;
 
-    if (lastElementToRemoveIndex === undefined) resolve();
-    else if (Config.smoothLineScroll) {
+    if (lastElementToRemoveIndex === undefined) {
+      resolve();
+    } else if (Config.smoothLineScroll) {
       lineTransition = true;
       const smoothScroller = $("#words .smoothScroller");
       if (smoothScroller.length === 0) {
