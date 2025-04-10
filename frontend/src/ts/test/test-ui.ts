@@ -190,7 +190,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "showAllLines") {
     updateWordsWrapperHeight(true);
     if (eventValue === false) {
-      void updateTestLine();
+      void centerActiveLine();
     }
   }
 
@@ -490,7 +490,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
 let testLineUpdating: Promise<void> = Promise.resolve();
 
-export async function updateTestLine(): Promise<void> {
+export async function centerActiveLine(): Promise<void> {
   const { resolve, promise } = Misc.promiseWithResolvers<void>();
   testLineUpdating = promise;
 

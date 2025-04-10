@@ -104,7 +104,7 @@ const debouncedEvent = debounce(250, () => {
     if (Config.tapeMode !== "off") {
       void TestUI.scrollTape();
     } else {
-      void TestUI.updateTestLine();
+      void TestUI.centerActiveLine();
     }
   }
   setTimeout(() => {
