@@ -491,13 +491,17 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 let testLineUpdating: Promise<void> = Promise.resolve();
 
 export async function centerActiveLine(): Promise<void> {
+  if (Config.showAllLines) {
+    return;
+  }
+
   const { resolve, promise } = Misc.promiseWithResolvers<void>();
   testLineUpdating = promise;
 
   const wordElements = document.querySelectorAll<HTMLElement>("#words .word");
   const activeWordIndex = TestState.activeWordIndex - activeWordElementOffset;
   const activeWordEl = wordElements[activeWordIndex];
-  if (!activeWordEl || Config.showAllLines) {
+  if (!activeWordEl) {
     resolve();
     return;
   }
