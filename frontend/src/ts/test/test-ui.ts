@@ -488,7 +488,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   }
 }
 
-let testLineUpdating: Promise<void> = Promise.resolve();
+let centeringActiveLine: Promise<void> = Promise.resolve();
 
 export async function centerActiveLine(): Promise<void> {
   if (Config.showAllLines) {
@@ -496,7 +496,7 @@ export async function centerActiveLine(): Promise<void> {
   }
 
   const { resolve, promise } = Misc.promiseWithResolvers<void>();
-  testLineUpdating = promise;
+  centeringActiveLine = promise;
 
   const wordElements = document.querySelectorAll<HTMLElement>("#words .word");
   const activeWordIndex = TestState.activeWordIndex - activeWordElementOffset;
@@ -975,7 +975,7 @@ function getNlCharWidth(
 export async function scrollTape(): Promise<void> {
   if (ActivePage.get() !== "test" || resultVisible) return;
 
-  await testLineUpdating;
+  await centeringActiveLine;
 
   // index of the active word in the collection of .word elements
   const wordElementIndex = TestState.activeWordIndex - activeWordElementOffset;
