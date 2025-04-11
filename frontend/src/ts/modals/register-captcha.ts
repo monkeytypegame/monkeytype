@@ -1,26 +1,23 @@
 import * as CaptchaController from "../controllers/captcha-controller";
 import AnimatedModal from "../utils/animated-modal";
+import { promiseWithResolvers } from "../utils/misc";
 
-let resolvePromise: (token?: string) => void;
+let { promise, resolve } = promiseWithResolvers<string | undefined>();
 
-export let promise = new Promise<string | undefined>((resolve) => {
-  resolvePromise = resolve;
-});
+export { promise };
 
 export async function show(): Promise<void> {
   await modal.show({
     mode: "dialog",
     beforeAnimation: async (modal) => {
-      promise = new Promise((resolve) => {
-        resolvePromise = resolve;
-      });
+      ({ promise, resolve } = promiseWithResolvers<string | undefined>());
       CaptchaController.reset("register");
 
       CaptchaController.render(
         modal.querySelector(".g-recaptcha") as HTMLElement,
         "register",
         (token) => {
-          resolvePromise(token);
+          resolve(token);
           hide();
         }
       );
@@ -29,7 +26,7 @@ export async function show(): Promise<void> {
 }
 
 function hide(resolveToUndefined = false): void {
-  if (resolveToUndefined) resolvePromise();
+  if (resolveToUndefined) resolve(undefined);
   void modal.hide();
 }
 

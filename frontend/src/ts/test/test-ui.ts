@@ -197,7 +197,6 @@ export let activeWordElementOffset = 0;
 export let resultVisible = false;
 export let activeWordTop = 0;
 export let testRestarting = false;
-export let testRestartingPromise: Promise<unknown>;
 export let lineTransition = false;
 export let currentTestLine = 0;
 export let resultCalculating = false;
@@ -214,16 +213,18 @@ export function setActiveWordTop(val: number): void {
   activeWordTop = val;
 }
 
-let restartingResolve: null | ((value?: unknown) => void);
+let { promise: testRestartingPromise, resolve: restartingResolve } =
+  Misc.promiseWithResolvers();
+
+export { testRestartingPromise };
+
 export function setTestRestarting(val: boolean): void {
   testRestarting = val;
   if (val) {
-    testRestartingPromise = new Promise((resolve) => {
-      restartingResolve = resolve;
-    });
+    ({ promise: testRestartingPromise, resolve: restartingResolve } =
+      Misc.promiseWithResolvers());
   } else {
-    if (restartingResolve) restartingResolve();
-    restartingResolve = null;
+    restartingResolve();
   }
 }
 
