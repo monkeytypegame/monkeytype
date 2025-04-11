@@ -166,7 +166,11 @@ function backspaceToPrevious(): void {
 
     for (let i = els.length - 1; i >= 0; i--) {
       const el = els[i] as HTMLElement;
-      if (el.classList.contains("newline")) {
+      if (
+        el.classList.contains("newline") ||
+        el.classList.contains("beforeNewline") ||
+        el.classList.contains("afterNewline")
+      ) {
         el.remove();
       } else {
         break;
@@ -351,7 +355,7 @@ async function handleSpace(): Promise<void> {
     }
 
     if (nextTop > currentTop) {
-      TestUI.lineJump(currentTop);
+      void TestUI.lineJump(currentTop);
     } //end of line wrap
   }
 
@@ -730,7 +734,7 @@ function handleChar(
     TestInput.input.current.length > 1
   ) {
     if (Config.mode === "zen") {
-      if (!Config.showAllLines) TestUI.lineJump(activeWordTopBeforeJump);
+      if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
       void TestUI.updateActiveWordLetters();
