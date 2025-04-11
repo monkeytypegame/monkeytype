@@ -930,7 +930,7 @@ export function setTapeMargin(
   }
 
   if (
-    !isConfigValueValid("max line width", value, ConfigSchemas.TapeMarginSchema)
+    !isConfigValueValid("tape margin", value, ConfigSchemas.TapeMarginSchema)
   ) {
     return false;
   }
