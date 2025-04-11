@@ -22,6 +22,7 @@ import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
   ConfigValue,
+  CustomBackgroundSchema,
   CustomLayoutFluid,
 } from "@monkeytype/contracts/schemas/configs";
 import {
@@ -1108,11 +1109,21 @@ $(".pageSettings .sectionGroupTitle").on("click", (e) => {
 $(
   ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.save"
 ).on("click", () => {
-  UpdateConfig.setCustomBackground(
-    $(
-      ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
-    ).val() as string
-  );
+  const newVal = $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
+  ).val() as string;
+
+  const parsed = CustomBackgroundSchema.safeParse(newVal);
+
+  if (!parsed.success) {
+    Notifications.add(
+      `Invalid custom background URL (${parsed.error.issues[0]?.message})`,
+      0
+    );
+    return;
+  }
+
+  UpdateConfig.setCustomBackground(newVal);
 });
 
 $(
@@ -1125,11 +1136,21 @@ $(
   ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
 ).on("keypress", (e) => {
   if (e.key === "Enter") {
-    UpdateConfig.setCustomBackground(
-      $(
-        ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
-      ).val() as string
-    );
+    const newVal = $(
+      ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
+    ).val() as string;
+
+    const parsed = CustomBackgroundSchema.safeParse(newVal);
+
+    if (!parsed.success) {
+      Notifications.add(
+        `Invalid custom background URL (${parsed.error.issues[0]?.message})`,
+        0
+      );
+      return;
+    }
+
+    UpdateConfig.setCustomBackground(newVal);
   }
 });
 

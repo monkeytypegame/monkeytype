@@ -697,7 +697,7 @@ export function applyReducedMotion(animationTime: number): number {
  * Creates a promise with resolvers.
  * This is useful for creating a promise that can be resolved or rejected from outside the promise itself.
  */
-export function promiseWithResolvers<T>(): {
+export function promiseWithResolvers<T = void>(): {
   resolve: (value: T) => void;
   reject: (reason?: unknown) => void;
   promise: Promise<T>;

@@ -377,7 +377,7 @@
   },
   {
     "name": "bosnian",
-    "languages": ["bosnian"]
+    "languages": ["bosnian", "bosnian_4k"]
   },
   {
     "name": "esperanto",
