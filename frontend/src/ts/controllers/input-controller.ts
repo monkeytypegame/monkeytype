@@ -166,7 +166,11 @@ function backspaceToPrevious(): void {
 
     for (let i = els.length - 1; i >= 0; i--) {
       const el = els[i] as HTMLElement;
-      if (el.classList.contains("newline")) {
+      if (
+        el.classList.contains("newline") ||
+        el.classList.contains("beforeNewline") ||
+        el.classList.contains("afterNewline")
+      ) {
         el.remove();
       } else {
         break;
