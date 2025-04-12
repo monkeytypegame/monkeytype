@@ -1272,5 +1272,12 @@
     "mainColor": "#41ce5c",
     "subColor": "#788386",
     "textColor": "#ccdae6"
-  }
+  },
+  {
+    "name": "purpink",
+    "bgColor": "#181122",
+    "mainColor": "#9881c1",
+    "subColor": "#5c4b86",
+    "textColor": "#ee8bb6"
+  },
 ]
