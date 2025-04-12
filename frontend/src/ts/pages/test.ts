@@ -10,7 +10,7 @@ import * as TestConfig from "../test/test-config";
 import * as ScrollToTop from "../elements/scroll-to-top";
 
 export const page = new Page({
-  name: "test",
+  id: "test",
   element: $(".page.pageTest"),
   path: "/",
   beforeHide: async (): Promise<void> => {

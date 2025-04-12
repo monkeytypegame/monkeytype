@@ -18,6 +18,7 @@ import {
 import {
   isDevEnvironment,
   isObject,
+  promiseWithResolvers,
   reloadAfter,
   typedKeys,
 } from "./utils/misc";
@@ -43,8 +44,6 @@ const configLS = new LocalStorageWithSchema({
     return migrateConfig(value);
   },
 });
-
-let loadDone: (value?: unknown) => void;
 
 const config = {
   ...getDefaultConfig(),
@@ -930,7 +929,7 @@ export function setTapeMargin(
   }
 
   if (
-    !isConfigValueValid("max line width", value, ConfigSchemas.TapeMarginSchema)
+    !isConfigValueValid("tape margin", value, ConfigSchemas.TapeMarginSchema)
   ) {
     return false;
   }
@@ -2137,8 +2136,7 @@ export function getConfigChanges(): Partial<Config> {
   return configChanges;
 }
 
-export const loadPromise = new Promise((v) => {
-  loadDone = v;
-});
+const { promise: loadPromise, resolve: loadDone } = promiseWithResolvers();
 
+export { loadPromise };
 export default config;

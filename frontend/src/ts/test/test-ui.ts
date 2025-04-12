@@ -152,8 +152,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   }
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
-    updateWordsHeight(true);
-    void updateWordsInputPosition(true);
+    updateWordWrapperClasses();
   }
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
@@ -184,16 +183,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     updateWordWrapperClasses();
   }
 
-  if (eventKey === "tapeMode" && !nosave) {
-    if (eventValue === "off") {
-      $("#words").css("margin-left", "unset");
-    } else {
-      scrollTape();
-    }
-    updateLiveStatsMargin();
-  }
-
-  if (eventKey === "tapeMargin") {
+  if (["tapeMode", "tapeMargin"].includes(eventKey)) {
     updateLiveStatsMargin();
   }
 
@@ -203,11 +193,10 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
-export let activeWordElementIndex = 0;
+export let activeWordElementOffset = 0;
 export let resultVisible = false;
 export let activeWordTop = 0;
 export let testRestarting = false;
-export let testRestartingPromise: Promise<unknown>;
 export let lineTransition = false;
 export let currentTestLine = 0;
 export let resultCalculating = false;
@@ -216,24 +205,26 @@ export function setResultVisible(val: boolean): void {
   resultVisible = val;
 }
 
-export function setActiveWordElementIndex(val: number): void {
-  activeWordElementIndex = val;
+export function setActiveWordElementOffset(val: number): void {
+  activeWordElementOffset = val;
 }
 
 export function setActiveWordTop(val: number): void {
   activeWordTop = val;
 }
 
-let restartingResolve: null | ((value?: unknown) => void);
+let { promise: testRestartingPromise, resolve: restartingResolve } =
+  Misc.promiseWithResolvers();
+
+export { testRestartingPromise };
+
 export function setTestRestarting(val: boolean): void {
   testRestarting = val;
   if (val) {
-    testRestartingPromise = new Promise((resolve) => {
-      restartingResolve = resolve;
-    });
+    ({ promise: testRestartingPromise, resolve: restartingResolve } =
+      Misc.promiseWithResolvers());
   } else {
-    if (restartingResolve) restartingResolve();
-    restartingResolve = null;
+    restartingResolve();
   }
 }
 
@@ -243,7 +234,7 @@ export function setResultCalculating(val: boolean): void {
 
 export function reset(): void {
   currentTestLine = 0;
-  activeWordElementIndex = 0;
+  activeWordElementOffset = 0;
 }
 
 export function focusWords(): void {
@@ -268,7 +259,7 @@ export function updateActiveElement(
     active.classList.remove("active");
   }
   const newActiveWord = document.querySelectorAll("#words .word")[
-    activeWordElementIndex
+    TestState.activeWordIndex - activeWordElementOffset
   ] as HTMLElement | undefined;
 
   if (newActiveWord == undefined) {
@@ -404,7 +395,8 @@ function updateWordWrapperClasses(): void {
   $("#words").attr("class", existing.join(" "));
 
   updateWordsWidth();
-  updateWordsHeight(true);
+  updateWordsWrapperHeight(true);
+  updateWordsMargin();
   setTimeout(() => {
     void updateWordsInputPosition(true);
   }, 250);
@@ -413,17 +405,15 @@ function updateWordWrapperClasses(): void {
 export function showWords(): void {
   $("#words").empty();
 
-  let wordsHTML = "";
-  if (Config.mode !== "zen") {
+  if (Config.mode === "zen") {
+    appendEmptyWordElement();
+  } else {
+    let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
       wordsHTML += getWordHTML(TestWords.words.get(i));
     }
-  } else {
-    wordsHTML =
-      '<div class="word">word height</div><div class="word active"></div>';
+    $("#words").html(wordsHTML);
   }
-
-  $("#words").html(wordsHTML);
 
   updateActiveElement(undefined, true);
   setTimeout(() => {
@@ -431,10 +421,12 @@ export function showWords(): void {
   }, 125);
 
   updateWordWrapperClasses();
+}
 
-  if (Config.mode === "zen") {
-    $(document.querySelector(".word") as Element).remove();
-  }
+export function appendEmptyWordElement(): void {
+  $("#words").append(
+    "<div class='word'><letter class='invisible'>_</letter></div>"
+  );
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -453,7 +445,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord =
     document.querySelectorAll<HTMLElement>("#words .word")[
-      activeWordElementIndex
+      TestState.activeWordIndex - activeWordElementOffset
     ];
 
   if (!activeWord) {
@@ -495,107 +487,74 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   }
 }
 
-function updateWordsHeight(force = false): void {
+export function updateWordsWrapperHeight(force = false): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom") return;
-  $("#wordsWrapper").removeClass("hidden");
-  const wordHeight = $(document.querySelector(".word") as Element).outerHeight(
-    true
-  ) as number;
-  const wordsHeight = $(
-    document.querySelector("#words") as Element
-  ).outerHeight(true) as number;
+  const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
+  const outOfFocusEl = document.querySelector(
+    ".outOfFocusWarning"
+  ) as HTMLElement;
+  const wordElements = wrapperEl.querySelectorAll<HTMLElement>("#words .word");
+  const activeWordEl =
+    wordElements[TestState.activeWordIndex - activeWordElementOffset];
+  if (!activeWordEl) return;
 
-  const shouldLimitToThreeLines =
+  wrapperEl.classList.remove("hidden");
+
+  const wordComputedStyle = window.getComputedStyle(activeWordEl);
+  const wordMargin =
+    parseInt(wordComputedStyle.marginTop) +
+    parseInt(wordComputedStyle.marginBottom);
+  const wordHeight = activeWordEl.offsetHeight + wordMargin;
+
+  const timedTest =
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "word" &&
-      CustomText.getLimitValue() === 0) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "section" &&
-      CustomText.getLimitValue() === 0);
+    (Config.mode === "custom" && CustomText.getLimitValue() === 0);
 
-  if (Config.showAllLines && !shouldLimitToThreeLines) {
-    // overflow-x should not be visible in tape mode, but since showAllLines can't
-    // be enabled simultaneously with tape mode we don't need to check it's off
-    $("#words")
-      .css("height", "auto")
-      .css("overflow", "visible clip")
-      .css("width", "100%")
-      .css("margin-left", "unset");
-    $("#wordsWrapper").css("height", "auto").css("overflow", "visible clip");
+  const showAllLines = Config.showAllLines && !timedTest;
 
-    let nh = wordHeight * 3;
-
-    if (nh > wordsHeight) {
-      nh = wordsHeight;
-    }
-    $(".outOfFocusWarning").css(
-      "margin-top",
-      wordHeight + convertRemToPixels(1) / 2 + "px"
-    );
-  } else {
-    let finalWordsHeight: number, finalWrapperHeight: number;
-
-    if (Config.tapeMode !== "off") {
-      finalWordsHeight = wordHeight * 2;
-      finalWrapperHeight = wordHeight;
+  if (Config.tapeMode === "off") {
+    if (showAllLines) {
+      //allow the wrapper to grow and shink with the words
+      wrapperEl.style.height = "";
     } else {
       let lines = 0;
-      let lastHeight = 0;
+      let lastTop = 0;
       let wordIndex = 0;
-      const words = document.querySelectorAll("#words .word");
       let wrapperHeight = 0;
 
-      const wordComputedStyle = window.getComputedStyle(words[0] as Element);
-      const wordTopMargin = parseInt(wordComputedStyle.marginTop);
-      const wordBottomMargin = parseInt(wordComputedStyle.marginBottom);
-
       while (lines < 3) {
-        const word = words[wordIndex] as HTMLElement | null;
+        const word = wordElements[wordIndex] as HTMLElement | null;
         if (!word) break;
-        const height = word.offsetTop;
-        if (height > lastHeight) {
+        const top = word.offsetTop;
+        if (top > lastTop) {
           lines++;
-          wrapperHeight += word.offsetHeight + wordTopMargin + wordBottomMargin;
-          lastHeight = height;
+          wrapperHeight += word.offsetHeight + wordMargin;
+          lastTop = top;
         }
         wordIndex++;
       }
-
       if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
 
-      const wordsHeight = (wrapperHeight / 3) * 4;
-
-      finalWordsHeight = wordsHeight;
-      finalWrapperHeight = wrapperHeight;
+      //limit to 3 lines
+      wrapperEl.style.height = wrapperHeight + "px";
     }
+  } else {
+    //tape mode
+    wrapperEl.style.height = TestWords.hasNewline
+      ? wordHeight * 3 + "px"
+      : wordHeight * 1 + "px";
+  }
 
-    // $("#words").css("height", "0px");
-    // not sure why this was here, wonder if removing it will break anything
+  outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
+}
 
-    if (Config.tapeMode !== "off") {
-      $("#words").css({ overflow: "hidden", width: "200vw" });
-      $("#wordsWrapper").css({ overflow: "hidden" });
-      scrollTape();
-    } else {
-      $("#words").css({
-        overflow: "visible clip",
-        marginLeft: "unset",
-        width: "",
-      });
-      $("#wordsWrapper").css({ overflow: "visible clip" });
-    }
-
-    setTimeout(() => {
-      $("#words").css("height", finalWordsHeight + "px");
-      $("#wordsWrapper").css("height", finalWrapperHeight + "px");
-      $(".outOfFocusWarning").css(
-        "margin-top",
-        finalWrapperHeight / 2 - convertRemToPixels(1) / 2 + "px"
-      );
-    }, 0);
+function updateWordsMargin(): void {
+  if (Config.tapeMode !== "off") {
+    scrollTape();
+  } else {
+    setTimeout(() => $("#words").css("margin-left", "unset"), 0);
   }
 }
 
@@ -809,6 +768,9 @@ export async function updateActiveWordLetters(
         ret += `<letter class="correct">${char}</letter>`;
       }
     }
+    if (TestInput.input.current === "") {
+      ret += `<letter class='invisible'>_</letter>`;
+    }
   } else {
     let correctSoFar = false;
 
@@ -926,7 +888,7 @@ export async function updateActiveWordLetters(
   }
 
   const activeWord = document.querySelectorAll("#words .word")?.[
-    activeWordElementIndex
+    TestState.activeWordIndex - activeWordElementOffset
   ] as HTMLElement;
 
   activeWord.innerHTML = ret;
@@ -960,14 +922,15 @@ export function scrollTape(): void {
     return;
   }
 
+  let wordIndex = TestState.activeWordIndex - activeWordElementOffset;
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
   let fullWordsWidth = 0;
   const toHide: JQuery[] = [];
   let widthToHide = 0;
-  if (activeWordElementIndex > 0) {
-    for (let i = 0; i < activeWordElementIndex; i++) {
+  if (wordIndex > 0) {
+    for (let i = 0; i < wordIndex; i++) {
       const word = document.querySelectorAll("#words .word")[i] as HTMLElement;
       fullWordsWidth += $(word).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(word.offsetLeft);
@@ -979,9 +942,11 @@ export function scrollTape(): void {
       }
     }
     if (toHide.length > 0) {
-      activeWordElementIndex -= toHide.length;
+      activeWordElementOffset += toHide.length;
       toHide.forEach((e) => e.remove());
       fullWordsWidth -= widthToHide;
+      //need to redefine wordIndex after removing words
+      wordIndex = TestState.activeWordIndex - activeWordElementOffset;
       const currentMargin = parseInt($("#words").css("margin-left"), 10);
       $("#words").css("margin-left", `${currentMargin + widthToHide}px`);
     }
@@ -990,7 +955,7 @@ export function scrollTape(): void {
   if (Config.tapeMode === "letter") {
     if (TestInput.input.current.length > 0) {
       const words = document.querySelectorAll("#words .word");
-      const letters = words[activeWordElementIndex]?.querySelectorAll("letter");
+      const letters = words[wordIndex]?.querySelectorAll("letter");
       if (!letters) return;
       for (let i = 0; i < TestInput.input.current.length; i++) {
         const letter = letters[i] as HTMLElement;
@@ -1045,9 +1010,10 @@ export function lineJump(currentTop: number): void {
   ) {
     const hideBound = currentTop;
 
+    const wordIndex = TestState.activeWordIndex - activeWordElementOffset;
     const toHide: JQuery[] = [];
     const wordElements = $("#words .word");
-    for (let i = 0; i < activeWordElementIndex; i++) {
+    for (let i = 0; i < wordIndex; i++) {
       const el = $(wordElements[i] as HTMLElement);
       if (el.hasClass("hidden")) continue;
       const forWordTop = Math.floor((el[0] as HTMLElement).offsetTop);
@@ -1104,7 +1070,7 @@ export function lineJump(currentTop: number): void {
         const wordsWrapperWidth = (
           document.querySelector("#wordsWrapper") as HTMLElement
         ).offsetWidth;
-        const newMargin = wordsWrapperWidth / 2;
+        const newMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
         newCss["marginLeft"] = `${newMargin}px`;
       }
       currentLinesAnimating++;
@@ -1114,18 +1080,18 @@ export function lineJump(currentTop: number): void {
           currentLinesAnimating = 0;
           activeWordTop = (
             document.querySelectorAll("#words .word")?.[
-              activeWordElementIndex
+              wordIndex
             ] as HTMLElement
           )?.offsetTop;
 
-          activeWordElementIndex -= toHide.length;
+          activeWordElementOffset += toHide.length;
           lineTransition = false;
           toHide.forEach((el) => el.remove());
           $("#words").css("marginTop", "0");
         });
     } else {
       toHide.forEach((el) => el.remove());
-      activeWordElementIndex -= toHide.length;
+      activeWordElementOffset += toHide.length;
       $("#paceCaret").css({
         top:
           (document.querySelector("#paceCaret") as HTMLElement).offsetTop -
@@ -1134,7 +1100,7 @@ export function lineJump(currentTop: number): void {
     }
   }
   currentTestLine++;
-  updateWordsHeight();
+  updateWordsWrapperHeight();
 }
 
 export function setRightToLeft(isEnabled: boolean): void {

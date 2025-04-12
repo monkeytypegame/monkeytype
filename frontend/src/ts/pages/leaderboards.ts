@@ -1280,7 +1280,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
 );
 
 export const page = new Page({
-  name: "leaderboards",
+  id: "leaderboards",
   element: $(".page.pageLeaderboards"),
   path: "/leaderboards",
   afterHide: async (): Promise<void> => {

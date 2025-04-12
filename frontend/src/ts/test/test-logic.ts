@@ -401,7 +401,7 @@ export async function init(): Promise<void> {
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
-  TestUI.setActiveWordElementIndex(0);
+  TestUI.setActiveWordElementOffset(0);
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
@@ -550,6 +550,11 @@ export function areAllTestWordsGenerated(): boolean {
 
 //add word during the test
 export async function addWord(): Promise<void> {
+  if (Config.mode === "zen") {
+    TestUI.appendEmptyWordElement();
+    return;
+  }
+
   let bound = 100; // how many extra words to aim for AFTER the current word
   const funboxToPush = getActiveFunboxes()
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
