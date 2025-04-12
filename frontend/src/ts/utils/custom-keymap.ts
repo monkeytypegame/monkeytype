@@ -31,7 +31,11 @@ function sanitizeKeymap(keymap: KeymapCustom): KeymapCustom {
 
 export function stringToKeymap(keymap: string): KeymapCustom {
   try {
-    const processedKeymap = keymap.replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":');
+    const isMatrix = /^\s*\[\s*\[[\s\S]*?\]\s*(,\s*\[[\s\S]*?\]\s*)*\]\s*$/;
+    const quoteKeymap = keymap.replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":');
+    const processedKeymap = isMatrix.test(keymap)
+      ? quoteKeymap
+      : `[${quoteKeymap}]`;
     const jsonKeymap: KeymapCustom = parseWithSchema(
       processedKeymap,
       KeymapCustomSchema
