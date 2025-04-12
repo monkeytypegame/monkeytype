@@ -67,13 +67,15 @@ const subgroup: CommandsSubgroup = {
     {
       id: "setKeymapStyleCustom",
       display: "custom...",
+      configValue: "custom",
+      icon: "fa-keyboard",
       subgroup: {
         title: "Set custom keymap?",
         configKey: "keymapCustom",
         list: [
           {
-            id: "setKeymapStyleCustomDefault",
-            display: "yes",
+            id: "setKeymapStyleCustomNew",
+            display: "new keymap",
             input: true,
             exec: ({ input }) => {
               if (input === undefined || input === "") return;
@@ -84,9 +86,8 @@ const subgroup: CommandsSubgroup = {
             },
           },
           {
-            id: "setKeymapStyleCustomDefault",
-            display: "no",
-            configValue: false,
+            id: "setKeymapStyleCustomLoad",
+            display: "load keymap",
             exec: () => {
               UpdateConfig.setKeymapStyle("custom");
             },
