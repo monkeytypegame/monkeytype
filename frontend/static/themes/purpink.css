@@ -1,7 +1,7 @@
 :root {
     --bg-color: #181122;
     --main-color: #9881c1;
-    --caret-color: #82f2c7;
+    --caret-color: #8d99f7;
     --sub-color: #5c4b86;
     --sub-alt-color: #0b0410;
     --text-color: #ee8bb6;
@@ -15,7 +15,7 @@ nav > .textButton:nth-child(1),
 nav > .textButton:nth-child(2),
 nav > .textButton:nth-child(3),
 nav > .textButton:nth-child(4) {
-  color: #82f2c7;
+  color: #8d99f7;
 }
 
 nav > .textButton:nth-child(5),
