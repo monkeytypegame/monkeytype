@@ -1196,7 +1196,7 @@ export async function lineJump(
 
   //last word of the line
   if (currentTestLine > 0 || force) {
-    const hideBound = currentTop - 10;
+    const hideBound = currentTop;
 
     // index of the active word in the collection of .word elements
     const wordElementIndex =
