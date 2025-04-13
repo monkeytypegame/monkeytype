@@ -578,10 +578,9 @@ export function updateWordsWrapperHeight(force = false): void {
       //limit to 3 lines
       wrapperEl.style.height = wrapperHeight + "px";
     } else {
-      //tape mode in non-zen mode
-      const wordsHeight =
-        document.getElementById("words")?.offsetHeight ?? wordHeight * 3;
-      wrapperEl.style.height = Math.min(wordsHeight, wordHeight * 3) + "px";
+      //show 3 lines if tape mode is on and has newlines
+      const linesToShow = TestWords.hasNewline ? 3 : 1;
+      wrapperEl.style.height = wordHeight * linesToShow + "px";
     }
   }
 
