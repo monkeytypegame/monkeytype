@@ -185,6 +185,20 @@
     width: inherit;
   }
 
+  .beforeNewline {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0.25em 0;
+    box-sizing: content-box;
+    height: 1em; //.word line-height
+    border-top: 0.05em solid transparent; // letter border-bottom
+    border-bottom: 2px solid transparent; //.word border
+  }
+
+  .afterNewline {
+    display: inline-block;
+  }
+
   --correct-letter-color: var(--text-color);
   --correct-letter-animation: none;
   --untyped-letter-color: var(--sub-color);
@@ -269,18 +283,6 @@
       margin: 0.25em 0.6em 0.25em 0;
       display: inline-block;
       vertical-align: top;
-    }
-    .beforeNewline {
-      display: inline-block;
-      vertical-align: top;
-      margin: 0.25em 0;
-      box-sizing: content-box;
-      height: 1em; //.word line-height
-      border-top: 0.05em solid transparent; // letter border-bottom
-      border-bottom: 2px solid transparent; //.word border
-    }
-    .afterNewline {
-      display: inline-block;
     }
   }
 
