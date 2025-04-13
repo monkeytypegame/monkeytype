@@ -358,6 +358,9 @@ importers:
       '@monkeytype/eslint-config':
         specifier: workspace:*
         version: link:../packages/eslint-config
+      '@monkeytype/oxlint-config':
+        specifier: workspace:*
+        version: link:../packages/oxlint-config
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../packages/typescript-config
@@ -527,6 +530,9 @@ importers:
       eslint-plugin-json:
         specifier: 3.1.0
         version: 3.1.0
+      eslint-plugin-oxlint:
+        specifier: 0.16.5
+        version: 0.16.5
       eslint-plugin-require-path-exists:
         specifier: 1.1.9
         version: 1.1.9
@@ -564,6 +570,8 @@ importers:
       vitest:
         specifier: 2.1.9
         version: 2.1.9(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3)
+
+  packages/oxlint-config: {}
 
   packages/release:
     dependencies:
@@ -4633,6 +4641,9 @@ packages:
   eslint-plugin-json@3.1.0:
     resolution: {integrity: sha512-MrlG2ynFEHe7wDGwbUuFPsaT2b1uhuEFhJ+W1f1u+1C2EkXmTYJp4B1aAdQQ8M+CC3t//N/oRKiIVw14L2HR1g==}
     engines: {node: '>=12.0'}
+
+  eslint-plugin-oxlint@0.16.5:
+    resolution: {integrity: sha512-Hzj4jpPw+eESux/r9bC8qozc4PVh25S2JGLXit1BrlghfAHQJWNU1Yhz56p0Tj4Zd+xLA79NimpwbOmLI2isgg==}
 
   eslint-plugin-require-path-exists@1.1.9:
     resolution: {integrity: sha512-moZRfrPr4GFyT/W8PHzjzC7D4Hnj7Us+GYj0fbVKQoPvP4xIF8VG702L1jzyhqE8eIYkcs8p1CoqSfjk9WkxBg==}
@@ -14369,6 +14380,10 @@ snapshots:
     dependencies:
       lodash: 4.17.21
       vscode-json-languageservice: 4.2.1
+
+  eslint-plugin-oxlint@0.16.5:
+    dependencies:
+      jsonc-parser: 3.3.1
 
   eslint-plugin-require-path-exists@1.1.9:
     dependencies:

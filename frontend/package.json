@@ -31,6 +31,7 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
     "@monkeytype/eslint-config": "workspace:*",
+    "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "@types/canvas-confetti": "1.4.3",
     "@types/chartjs-plugin-trendline": "1.0.1",

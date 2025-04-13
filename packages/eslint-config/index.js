@@ -17,6 +17,7 @@ module.exports = {
     "plugin:import/recommended",
     "plugin:import/typescript",
     "prettier",
+    "plugin:oxlint/recommended",
   ],
   plugins: ["json", "require-path-exists", "@typescript-eslint"],
   parserOptions: {
@@ -65,6 +66,7 @@ module.exports = {
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/strict",
         "plugin:@typescript-eslint/strict-type-checked",
+        "plugin:oxlint/recommended",
       ],
       rules: {
         //strict type checked
