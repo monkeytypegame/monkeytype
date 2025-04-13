@@ -1,15 +1,15 @@
 :root {
-    --bg-color: #181122;
-    --main-color: #9881c1;
-    --caret-color: #8d99f7;
-    --sub-color: #5c4b86;
-    --sub-alt-color: #0b0410;
-    --text-color: #f0b7d0;
-    --error-color: #f55666;
-    --error-extra-color: #c74350;
-    --colorful-error-color: #f55666;
-    --colorful-error-extra-color: #c74350;
-  }
+  --bg-color: #181122;
+  --main-color: #9881c1;
+  --caret-color: #8d99f7;
+  --sub-color: #5c4b86;
+  --sub-alt-color: #0b0410;
+  --text-color: #f0b7d0;
+  --error-color: #f55666;
+  --error-extra-color: #c74350;
+  --colorful-error-color: #f55666;
+  --colorful-error-extra-color: #c74350;
+}
 
 nav > .textButton:nth-child(1),
 nav > .textButton:nth-child(2),
