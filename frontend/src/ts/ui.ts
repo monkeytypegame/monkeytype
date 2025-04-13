@@ -106,13 +106,13 @@ const debouncedEvent = debounce(250, () => {
     } else {
       void TestUI.centerActiveLine();
     }
+    setTimeout(() => {
+      void TestUI.updateWordsInputPosition();
+      if ($("#wordsInput").is(":focus")) {
+        Caret.show();
+      }
+    }, 250);
   }
-  setTimeout(() => {
-    void TestUI.updateWordsInputPosition();
-    if ($("#wordsInput").is(":focus")) {
-      Caret.show();
-    }
-  }, 250);
 });
 
 const throttledEvent = throttle(250, () => {
