@@ -173,6 +173,7 @@
 #words {
   height: fit-content;
   height: -moz-fit-content;
+  padding-bottom: 0.5em; // to account for hints of the bottom line
   display: flex;
   flex-wrap: wrap;
   width: 100%;
@@ -182,6 +183,20 @@
 
   .newline {
     width: inherit;
+  }
+
+  .beforeNewline {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0.25em 0;
+    box-sizing: content-box;
+    height: 1em; //.word line-height
+    border-top: 0.05em solid transparent; // letter border-bottom
+    border-bottom: 2px solid transparent; //.word border
+  }
+
+  .afterNewline {
+    display: inline-block;
   }
 
   --correct-letter-color: var(--text-color);
@@ -261,10 +276,13 @@
   }
 
   &.tape {
+    display: block;
+    white-space: nowrap;
     width: 200vw;
     .word {
-      margin: 0.25em 0.6em 0.75em 0;
-      white-space: nowrap;
+      margin: 0.25em 0.6em 0.25em 0;
+      display: inline-block;
+      vertical-align: top;
     }
   }
 
