@@ -4,7 +4,7 @@
     --caret-color: #8d99f7;
     --sub-color: #5c4b86;
     --sub-alt-color: #0b0410;
-    --text-color: #ee8bb6;
+    --text-color: #f0b7d0;
     --error-color: #f55666;
     --error-extra-color: #c74350;
     --colorful-error-color: #f55666;
@@ -16,9 +16,4 @@ nav > .textButton:nth-child(2),
 nav > .textButton:nth-child(3),
 nav > .textButton:nth-child(4) {
   color: #8d99f7;
-}
-
-nav > .textButton:nth-child(5),
-nav > .textButton:nth-child(6) {
-  color: #9881c1;
 }
