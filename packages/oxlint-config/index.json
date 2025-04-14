@@ -1,12 +1,14 @@
 {
+  "ignorePatterns": ["node_modules", "dist", "coverage", "build"],
   "categories": {
     "correctness": "error",
     "suspicious": "error",
     "perf": "error"
   },
+  "plugins": ["typescript", "unicorn", "oxc", "import", "node", "promise"],
   "rules": {
     "no-unused-vars": [
-      "warn",
+      "error",
       {
         "argsIgnorePattern": "^(_|e|event)",
         "caughtErrorsIgnorePattern": "^(_|e|error)",
@@ -16,6 +18,12 @@
     "no-await-in-loop": "allow",
     "consistent-function-scoping": "off",
     "prefer-add-event-listener": "off",
-    "no-unsafe-optional-chaining": "off"
+    "no-unsafe-optional-chaining": "off",
+    "no-new": "off",
+    "no-new-array": "off",
+    "no-useless-spread": "off",
+    "no-unneeded-ternary": "off",
+    "no-async-endpoint-handlers": "off",
+    "no-this-alias": "off"
   }
 }

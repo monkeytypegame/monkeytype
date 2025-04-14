@@ -76,7 +76,7 @@ type Option = {
   mandatory: boolean;
 };
 
-const groupsUsingSelect = ["language", "funbox", "tags"];
+const groupsUsingSelect = new Set(["language", "funbox", "tags"]);
 const groupSelects: Partial<Record<keyof ResultFilters, SlimSelect>> = {};
 
 // current activated filter
@@ -315,7 +315,7 @@ export function updateActive(): void {
         }
       }
 
-      if (groupsUsingSelect.includes(group)) {
+      if (groupsUsingSelect.has(group)) {
         const option = $(
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[value="${filter}"]`
         );

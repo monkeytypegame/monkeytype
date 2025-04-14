@@ -1023,6 +1023,9 @@ export async function updateInbox(
               //flatMap rewards
               const rewards: AllRewards[] = [...toBeRead, ...toBeDeleted]
                 .filter((it) => !it.read)
+
+                // TODO INVESTIGATE
+                // oxlint-disable-next-line
                 .reduce((arr, current) => {
                   return [...arr, ...current.rewards];
                 }, []);

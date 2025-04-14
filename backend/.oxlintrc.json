@@ -1,0 +1,12 @@
+{
+  "extends": ["../packages/oxlint-config/index.json"],
+  "plugins": ["jest"],
+  "overrides": [
+    {
+      "files": ["__tests__/**"],
+      "rules": {
+        "no-unused-vars": "off"
+      }
+    }
+  ]
+}

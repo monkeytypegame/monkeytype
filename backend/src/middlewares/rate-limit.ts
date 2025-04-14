@@ -71,7 +71,9 @@ function initialiseLimiters(): Record<RateLimiterId, RateLimitRequestHandler> {
     });
   };
 
+  // TODO INVESTIGATE
   return keys.reduce(
+    // oxlint-disable-line no-accumulating-spread
     (output, key) => ({ ...output, [key]: convert(limits[key]) }),
     {}
   ) as Record<RateLimiterId, RateLimitRequestHandler>;
@@ -198,7 +200,7 @@ export async function incrementBadAuth(
   try {
     const key = getKey(req, res);
     await badAuthRateLimiter.penalty(key, penalty);
-  } catch (error) {}
+  } catch {}
 }
 
 export const webhookLimit = rateLimit({

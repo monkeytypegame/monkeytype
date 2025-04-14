@@ -1,0 +1,15 @@
+{
+  "extends": [
+    "../../packages/oxlint-config/index.json"
+    // "@monkeytype/oxlint-config"
+  ],
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "import",
+    "node",
+    "promise",
+    "vitest"
+  ]
+}

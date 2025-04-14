@@ -11,12 +11,12 @@ const __dirname = dirname(__filename);
 
 dotenv.config();
 
-const args = process.argv.slice(2);
-const isFrontend = args.includes("--fe");
-const noDeploy = args.includes("--no-deploy");
-const isBackend = args.includes("--be");
-const isDryRun = args.includes("--dry");
-const noSyncCheck = args.includes("--no-sync-check");
+const args = new Set(process.argv.slice(2));
+const isFrontend = args.has("--fe");
+const noDeploy = args.has("--no-deploy");
+const isBackend = args.has("--be");
+const isDryRun = args.has("--dry");
+const noSyncCheck = args.has("--no-sync-check");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../../../");
 

@@ -33,7 +33,7 @@ module.exports = {
     "no-constant-condition": ["error"],
     "no-constant-binary-expression": "error",
     "no-unused-vars": [
-      "error",
+      "off",
       {
         argsIgnorePattern: "^(_|e|event)",
         caughtErrorsIgnorePattern: "^(_|e|error)",
@@ -75,7 +75,6 @@ module.exports = {
         "@typescript-eslint/await-thenable": "off",
         "@typescript-eslint/no-unnecessary-template-expression": "off",
         "@typescript-eslint/prefer-promise-reject-errors": "off",
-        "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/no-unnecessary-type-arguments": "off",
         "@typescript-eslint/restrict-template-expressions": "off",
         "@typescript-eslint/no-redundant-type-constituents": "off",
@@ -98,14 +97,6 @@ module.exports = {
         ],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "error",
-        "@typescript-eslint/no-unused-vars": [
-          "error",
-          {
-            argsIgnorePattern: "^(_|e|event)",
-            caughtErrorsIgnorePattern: "^(_|e|error)",
-            varsIgnorePattern: "^_",
-          },
-        ],
         "@typescript-eslint/no-unused-expressions": [
           "error",
           {
