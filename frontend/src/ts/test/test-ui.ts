@@ -578,9 +578,14 @@ export function updateWordsWrapperHeight(force = false): void {
       //limit to 3 lines
       wrapperEl.style.height = wrapperHeight + "px";
     } else {
-      //show 3 lines if tape mode is on and has newlines, otherwise 1
-      const linesToShow = TestWords.hasNewline ? 3 : 1;
-      wrapperEl.style.height = wordHeight * linesToShow + "px";
+      //show 3 lines if tape mode is on and has newlines, otherwise use words height (because of indicate typos: below)
+      if (TestWords.hasNewline) {
+        wrapperEl.style.height = wordHeight * 3 + "px";
+      } else {
+        const wordsHeight =
+          document.getElementById("words")?.offsetHeight ?? wordHeight;
+        wrapperEl.style.height = wordsHeight + "px";
+      }
     }
   }
 
