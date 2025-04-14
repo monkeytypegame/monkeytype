@@ -23,6 +23,9 @@ importers:
       conventional-changelog:
         specifier: 6.0.0
         version: 6.0.0(conventional-commits-filter@5.0.0)
+      eslint:
+        specifier: 8.57.1
+        version: 8.57.1
       husky:
         specifier: 8.0.1
         version: 8.0.1
@@ -35,6 +38,9 @@ importers:
       only-allow:
         specifier: 1.2.1
         version: 1.2.1
+      oxlint:
+        specifier: 0.16.6
+        version: 0.16.6
       prettier:
         specifier: 2.8.8
         version: 2.8.8
