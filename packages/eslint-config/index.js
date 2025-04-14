@@ -65,6 +65,7 @@ module.exports = {
     "no-inner-declarations": "off",
     "no-prototype-builtins": "off",
     "no-regex-spaces": "off",
+    "no-redeclare": "off",
   },
   overrides: [
     {
@@ -163,6 +164,7 @@ module.exports = {
         "no-inner-declarations": "off",
         "no-prototype-builtins": "off",
         "no-regex-spaces": "off",
+        "no-redeclare": "off",
       },
       settings: {
         "import/resolver": {

@@ -54,6 +54,7 @@
     "no-extraneous-class": "error",
     "no-require-imports": "error",
     "no-empty-function": "error",
+    "no-redeclare": "error",
     "no-empty": [
       "error",
       {
