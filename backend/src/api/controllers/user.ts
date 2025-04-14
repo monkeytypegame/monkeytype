@@ -78,7 +78,7 @@ import {
   ReportUserRequest,
   SetStreakHourOffsetRequest,
   TagIdPathParams,
-  UpdateEmailRequestSchema,
+  UpdateEmailRequest,
   UpdateLeaderboardMemoryRequest,
   UpdatePasswordRequest,
   UpdateUserInboxRequest,
@@ -444,7 +444,7 @@ export async function checkName(
 }
 
 export async function updateEmail(
-  req: MonkeyRequest<undefined, UpdateEmailRequestSchema>
+  req: MonkeyRequest<undefined, UpdateEmailRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   let { newEmail, previousEmail } = req.body;
