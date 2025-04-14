@@ -58,6 +58,8 @@
     ],
     "no-self-compare": "error",
     "no-throw-literal": "error",
+    "no-constant-condition": "error",
+    "no-constant-binary-expression": "error",
 
     "todo-lowerthis": "off",
     "max-depth": [
