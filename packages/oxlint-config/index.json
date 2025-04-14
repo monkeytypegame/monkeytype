@@ -77,6 +77,7 @@
     "no-inner-declarations": "error",
     "no-prototype-builtins": "error",
     "no-regex-spaces": "error",
+    "typescript/no-namespace": "error",
 
     "todo-lowerthis": "off",
     "max-depth": [

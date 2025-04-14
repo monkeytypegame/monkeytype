@@ -165,6 +165,7 @@ module.exports = {
         "no-prototype-builtins": "off",
         "no-regex-spaces": "off",
         "no-redeclare": "off",
+        "@typescript-eslint/no-namespace": "off",
       },
       settings: {
         "import/resolver": {
