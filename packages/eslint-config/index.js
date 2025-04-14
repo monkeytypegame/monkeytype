@@ -27,7 +27,6 @@ module.exports = {
   rules: {
     "json/*": ["error"],
     indent: ["off"],
-    "no-var": 2,
     "no-constant-condition": ["error"],
     "no-constant-binary-expression": "error",
     "no-unused-vars": [
@@ -53,8 +52,21 @@ module.exports = {
 
     //handled by oxlint
     "no-duplicates": "off",
+    "no-var": "off",
     "no-empty": "off",
     "no-named-as-default": "off",
+    "prefer-const": "off",
+    "prefer-rest-params": "off",
+    "prefer-spread": "off",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off",
+    "import/no-duplicates": "off",
+    "import/export": "off",
+    "no-case-declarations": "off",
+    "no-fallthrough": "off",
+    "no-inner-declarations": "off",
+    "no-prototype-builtins": "off",
+    "no-regex-spaces": "off",
   },
   overrides: [
     {
@@ -124,6 +136,27 @@ module.exports = {
         "@typescript-eslint/no-var-requires": "off",
         "no-named-as-default": "off",
         "no-duplicates": "off",
+        "@typescript-eslint/no-array-constructor": "off",
+        "@typescript-eslint/no-extraneous-class": "off",
+        "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "off",
+        "@typescript-eslint/no-require-imports": "off",
+        "@typescript-eslint/no-unnecessary-type-constraint": "off",
+        "@typescript-eslint/no-useless-constructor": "off",
+        "@typescript-eslint/prefer-literal-enum-member": "off",
+        "@typescript-eslint/prefer-namespace-keyword": "off",
+        "no-var": "off",
+        "prefer-const": "off",
+        "prefer-rest-params": "off",
+        "prefer-spread": "off",
+        "import/no-named-as-default": "off",
+        "import/no-named-as-default-member": "off",
+        "import/no-duplicates": "off",
+        "import/export": "off",
+        "no-case-declarations": "off",
+        "no-fallthrough": "off",
+        "no-inner-declarations": "off",
+        "no-prototype-builtins": "off",
+        "no-regex-spaces": "off",
       },
       settings: {
         "import/resolver": {

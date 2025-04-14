@@ -87,7 +87,7 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
     }
   }
 
-  const usedClasses = new Array(...usedClassesSet).sort();
+  const usedClasses = [...usedClassesSet].sort();
   const allModuleClasses = new Set(Object.values(modules2).flatMap((it) => it));
   const icons = usedClasses.filter((it) => !allModuleClasses.has(it));
 
