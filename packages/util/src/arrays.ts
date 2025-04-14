@@ -1,4 +1,3 @@
-//eslint-disable @typescript-eslint/no-unsafe-assignment
 /**
  * Returns the intersection of two arrays, i.e., the elements that are present in both arrays.
  * @param a First array.
