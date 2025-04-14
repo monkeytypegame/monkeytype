@@ -24,6 +24,39 @@
     "no-useless-spread": "off",
     "no-unneeded-ternary": "off",
     "no-async-endpoint-handlers": "off",
-    "no-this-alias": "off"
+    "no-this-alias": "off",
+    "no-var": "error",
+
+    "no-non-null-assertion": "error",
+    "no-non-null-asserted-nullish-coalescing": "error",
+    "no-explicit-any": "error",
+    "no-empty-object-type": "error",
+    "explicit-function-return-type": [
+      "error",
+      {
+        "allowExpressions": true
+      }
+    ],
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowTernary": true
+      }
+    ],
+
+    "no-cycles": "error",
+    "no-empty-function": "error",
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ],
+
+    "todo": "off",
+    "no-array-for-each": "off",
+
+    "consider": "off",
+    "no-nested-ternary": "off"
   }
 }

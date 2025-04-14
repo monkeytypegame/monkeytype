@@ -8,7 +8,8 @@
       "files": ["__tests__/**"],
       "plugins": ["jest", "vitest"],
       "rules": {
-        // "no-unused-vars": "off"
+        "no-explicit-any": "allow",
+        "explicit-function-return-type": "off"
       }
     }
   ]

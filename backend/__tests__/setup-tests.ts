@@ -28,7 +28,9 @@ beforeAll(async () => {
     getDb: (): Db => db,
     collection: <T>(name: string): Collection<WithId<T>> =>
       db.collection<WithId<T>>(name),
-    close: () => {},
+    close: () => {
+      //
+    },
   }));
 
   vi.mock("../src/utils/logger", () => ({

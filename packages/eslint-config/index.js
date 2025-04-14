@@ -27,20 +27,17 @@ module.exports = {
   rules: {
     "json/*": ["error"],
     indent: ["off"],
-    "no-empty": ["error", { allowEmptyCatch: true }],
     "no-var": 2,
-    "no-duplicate-imports": ["error"],
     "no-constant-condition": ["error"],
     "no-constant-binary-expression": "error",
     "no-unused-vars": [
-      "off",
+      "error",
       {
         argsIgnorePattern: "^(_|e|event)",
         caughtErrorsIgnorePattern: "^(_|e|error)",
         varsIgnorePattern: "^_",
       },
     ],
-    "import/no-duplicates": "off",
     "import/no-unresolved": [
       "error",
       {
@@ -53,6 +50,10 @@ module.exports = {
         groups: [["+", "??"]],
       },
     ],
+
+    //handled by oxlint
+    "no-duplicates": "off",
+    "no-empty": "off",
   },
   overrides: [
     {
@@ -89,20 +90,7 @@ module.exports = {
           "error",
           { ignoreArrowShorthand: true },
         ],
-        "@typescript-eslint/explicit-function-return-type": [
-          "error",
-          {
-            allowExpressions: true,
-          },
-        ],
         "@typescript-eslint/ban-ts-comment": "off",
-        "@typescript-eslint/no-empty-function": "error",
-        "@typescript-eslint/no-unused-expressions": [
-          "error",
-          {
-            allowTernary: true,
-          },
-        ],
         "@typescript-eslint/no-var-requires": "error",
         "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/no-misused-promises": [
@@ -122,6 +110,16 @@ module.exports = {
         "@typescript-eslint/consistent-type-definitions": ["error", "type"],
         "@typescript-eslint/no-invalid-void-type": "off",
         "import/namespace": "off",
+
+        //handled by oxlint
+        "no-duplicates": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-empty-object-type": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-unused-expressions": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "no-empty": "off",
       },
       settings: {
         "import/resolver": {

@@ -51,7 +51,9 @@ describe("url-handler", () => {
 
       findGetParameterMock.mockImplementation((override) => override);
     });
-    afterEach(() => {});
+    afterEach(() => {
+      //
+    });
 
     it("handles null", () => {
       //GIVEN

@@ -2,5 +2,14 @@
   "extends": [
     "../packages/oxlint-config/index.json"
     // "@monkeytype/oxlint-config"
+  ],
+  "overrides": [
+    {
+      "files": ["__tests__/**/*.ts"],
+      "rules": {
+        "no-explicit-any": "allow",
+        "explicit-function-return-type": "off"
+      }
+    }
   ]
 }
