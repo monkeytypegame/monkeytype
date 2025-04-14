@@ -875,7 +875,6 @@ describe("result controller test", () => {
     });
 
     it("should fail invalid properties ", async () => {
-      const a = 1;
       //GIVEN
       //WHEN
       // const { body } = await mockApp
