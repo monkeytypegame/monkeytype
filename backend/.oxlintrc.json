@@ -1,11 +1,14 @@
 {
-  "extends": ["../packages/oxlint-config/index.json"],
-  "plugins": ["jest"],
+  "extends": [
+    "../packages/oxlint-config/index.json"
+    // "@monkeytype/oxlint-config"
+  ],
   "overrides": [
     {
       "files": ["__tests__/**"],
+      "plugins": ["jest", "vitest"],
       "rules": {
-        "no-unused-vars": "off"
+        // "no-unused-vars": "off"
       }
     }
   ]
