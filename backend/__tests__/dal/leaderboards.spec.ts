@@ -358,12 +358,12 @@ function premium(expirationDeltaSeconds: number) {
   };
 }
 
-interface ExpectedLbEntry {
+type ExpectedLbEntry = {
   rank: number;
   user: UserDal.DBUser;
   badgeId?: number;
   isPremium?: boolean;
-}
+};
 
 async function enablePremiumFeatures(premium: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {
