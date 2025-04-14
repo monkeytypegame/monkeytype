@@ -54,6 +54,7 @@ module.exports = {
     //handled by oxlint
     "no-duplicates": "off",
     "no-empty": "off",
+    "no-named-as-default": "off",
   },
   overrides: [
     {
@@ -109,7 +110,6 @@ module.exports = {
         "import/namespace": "off",
 
         //handled by oxlint
-        "no-duplicates": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-empty-object-type": "off",
@@ -122,6 +122,8 @@ module.exports = {
         "@typescript-eslint/no-unsafe-function-type": "off",
         "@typescript-eslint/consistent-type-definitions": "off",
         "@typescript-eslint/no-var-requires": "off",
+        "no-named-as-default": "off",
+        "no-duplicates": "off",
       },
       settings: {
         "import/resolver": {

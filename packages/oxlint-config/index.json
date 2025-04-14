@@ -47,6 +47,7 @@
     "prefer-for-of": "error",
     "consistent-type-definitions": ["error", "type"],
     "no-var-requires": "error",
+    "no-named-as-default": "error",
 
     "no-empty-function": "error",
     "no-empty": [
