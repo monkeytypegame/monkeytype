@@ -44,7 +44,6 @@
       }
     ],
 
-    "no-cycles": "error",
     "no-empty-function": "error",
     "no-empty": [
       "error",
@@ -52,11 +51,19 @@
         "allowEmptyCatch": true
       }
     ],
+    "max-depth": [
+      "error",
+      {
+        "max": 9
+      }
+    ],
 
     "todo": "off",
     "no-array-for-each": "off",
+    "eqeqeq": "off",
 
     "consider": "off",
+    "no-cycle": "off",
     "no-nested-ternary": "off"
   }
 }
