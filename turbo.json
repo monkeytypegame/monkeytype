@@ -6,7 +6,7 @@
       "dependsOn": ["^parallel"]
     },
     "lint": {
-      "dependsOn": ["^parallel", "^build"]
+      "dependsOn": ["^parallel", "^build", "oxlint"]
     },
     "oxlint": {
       "dependsOn": ["^parallel", "^build"]
