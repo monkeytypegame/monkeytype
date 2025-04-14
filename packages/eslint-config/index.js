@@ -13,19 +13,17 @@ module.exports = {
   ],
   extends: [
     "eslint:recommended",
-    "plugin:json/recommended",
     "plugin:import/recommended",
     "plugin:import/typescript",
     "prettier",
     "plugin:oxlint/recommended",
   ],
-  plugins: ["json", "require-path-exists", "@typescript-eslint"],
+  plugins: ["require-path-exists", "@typescript-eslint"],
   parserOptions: {
     sourceType: "module",
     ecmaVersion: 2020,
   },
   rules: {
-    "json/*": ["error"],
     indent: ["off"],
     "no-constant-condition": ["error"],
     "no-constant-binary-expression": "error",
@@ -69,6 +67,14 @@ module.exports = {
     "no-regex-spaces": "off",
   },
   overrides: [
+    {
+      files: ["*.json"],
+      extends: ["plugin:json/recommended"],
+      plugins: ["json"],
+      rules: {
+        "json/*": ["error"],
+      },
+    },
     {
       // enable the rule specifically for TypeScript files
       files: ["*.ts", "*.tsx"],
