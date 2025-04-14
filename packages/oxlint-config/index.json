@@ -43,6 +43,10 @@
         "allowTernary": true
       }
     ],
+    "no-unsafe-function-type": "error",
+    "prefer-for-of": "error",
+    "consistent-type-definitions": ["error", "type"],
+    "no-var-requires": "error",
 
     "no-empty-function": "error",
     "no-empty": [
@@ -51,6 +55,10 @@
         "allowEmptyCatch": true
       }
     ],
+    "no-self-compare": "error",
+    "no-throw-literal": "error",
+
+    "todo-lowerthis": "off",
     "max-depth": [
       "error",
       {
@@ -59,8 +67,10 @@
     ],
 
     "todo": "off",
+    "ban-ts-comment": "off",
     "no-array-for-each": "off",
     "eqeqeq": "off",
+    "prefer-ts-expect-error": "off",
 
     "consider": "off",
     "no-cycle": "off",

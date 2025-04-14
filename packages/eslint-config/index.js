@@ -90,8 +90,6 @@ module.exports = {
           "error",
           { ignoreArrowShorthand: true },
         ],
-        "@typescript-eslint/ban-ts-comment": "off",
-        "@typescript-eslint/no-var-requires": "error",
         "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/no-misused-promises": [
           "error",
@@ -107,7 +105,6 @@ module.exports = {
         ],
         "@typescript-eslint/non-nullable-type-assertion-style": "off",
         "@typescript-eslint/no-unnecessary-condition": "off",
-        "@typescript-eslint/consistent-type-definitions": ["error", "type"],
         "@typescript-eslint/no-invalid-void-type": "off",
         "import/namespace": "off",
 
@@ -120,6 +117,11 @@ module.exports = {
         "@typescript-eslint/no-unused-expressions": "off",
         "@typescript-eslint/no-empty-function": "off",
         "no-empty": "off",
+        "@typescript-eslint/only-throw-error": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-unsafe-function-type": "off",
+        "@typescript-eslint/consistent-type-definitions": "off",
+        "@typescript-eslint/no-var-requires": "off",
       },
       settings: {
         "import/resolver": {
