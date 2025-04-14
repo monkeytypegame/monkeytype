@@ -80,6 +80,7 @@
     ],
     "*.{ts,js}": [
       "prettier --write",
+      "oxlint",
       "eslint"
     ]
   },
