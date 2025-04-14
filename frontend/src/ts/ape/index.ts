@@ -2,7 +2,6 @@ import { envConfig } from "../constants/env-config";
 import { buildClient } from "./adapters/ts-rest-adapter";
 import { contract } from "@monkeytype/contracts";
 import { devContract } from "@monkeytype/contracts/dev";
-import * as _DB from "../db";
 
 const BASE_URL = envConfig.backendUrl;
 
