@@ -242,6 +242,7 @@ export function setResultCalculating(val: boolean): void {
 export function reset(): void {
   currentTestLine = 0;
   activeWordElementOffset = 0;
+  updateWordsMargin(true);
 }
 
 export function focusWords(): void {
@@ -425,11 +426,10 @@ export function showWords(): void {
   }
 
   updateActiveElement(undefined, true);
+  updateWordWrapperClasses();
   setTimeout(() => {
     void Caret.updatePosition();
   }, 125);
-
-  updateWordWrapperClasses();
 }
 
 export function appendEmptyWordElement(): void {
@@ -592,14 +592,36 @@ export function updateWordsWrapperHeight(force = false): void {
   outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
 }
 
-function updateWordsMargin(): void {
-  if (Config.tapeMode !== "off") {
+function updateWordsMargin(reset = false): void {
+  if (Config.tapeMode !== "off" && !reset) {
     void scrollTape();
   } else {
-    setTimeout(() => {
-      $("#words").css("margin-left", "unset");
-      $("#words .afterNewline").css("margin-left", "unset");
-    }, 0);
+    const wordsEl = document.getElementById("words") as HTMLElement;
+    const afterNewlineEls =
+      wordsEl.querySelectorAll<HTMLElement>(".afterNewline");
+    if (Config.smoothLineScroll && !reset) {
+      const jqWords = $(wordsEl);
+      jqWords.stop("leftMargin", true, false).animate(
+        {
+          marginLeft: 0,
+        },
+        {
+          duration: SlowTimer.get() ? 0 : 125,
+          queue: "leftMargin",
+        }
+      );
+      jqWords.dequeue("leftMargin");
+      $(afterNewlineEls)
+        .stop(true, false)
+        .animate({ marginLeft: 0 }, SlowTimer.get() ? 0 : 125);
+    } else {
+      setTimeout(() => {
+        wordsEl.style.marginLeft = `0`;
+        for (const afterNewline of afterNewlineEls) {
+          afterNewline.style.marginLeft = `0`;
+        }
+      }, 0);
+    }
   }
 }
 
@@ -985,6 +1007,9 @@ export async function scrollTape(): Promise<void> {
 
   await centeringActiveLine;
 
+  const currentLang = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLang.rightToLeft;
+
   // index of the active word in the collection of .word elements
   const wordElementIndex = TestState.activeWordIndex - activeWordElementOffset;
   const wordsWrapperWidth = (
@@ -1062,7 +1087,10 @@ export async function scrollTape(): Promise<void> {
       const wordOuterWidth = $(child).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
-      if (forWordLeft < 0 - forWordWidth) {
+      if (
+        (!isLanguageRTL && forWordLeft < 0 - forWordWidth) ||
+        (isLanguageRTL && forWordLeft > wordsWrapperWidth)
+      ) {
         toRemove.push(child);
         widthRemoved += wordOuterWidth;
         wordsToRemoveCount++;
@@ -1076,15 +1104,20 @@ export async function scrollTape(): Promise<void> {
       fullLineWidths -= nlCharWidth + wordRightMargin;
       if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
 
-      if (fullLineWidths < wordsEl.offsetWidth) {
+      /** words that are wider than limit can cause a barely visible bottom line shifting,
+       * increase limit if that ever happens, but keep the limit because browsers hate
+       * ridiculously wide margins which may cause the words to not be displayed
+       */
+      const limit = 3 * wordsEl.offsetWidth;
+      if (fullLineWidths < limit) {
         afterNewlinesNewMargins.push(fullLineWidths);
         widthRemovedFromLine.push(widthRemoved);
       } else {
-        afterNewlinesNewMargins.push(wordsEl.offsetWidth);
+        afterNewlinesNewMargins.push(limit);
         widthRemovedFromLine.push(widthRemoved);
         if (i < lastElementIndex) {
           // for the second .afterNewline after active word
-          afterNewlinesNewMargins.push(wordsEl.offsetWidth);
+          afterNewlinesNewMargins.push(limit);
           widthRemovedFromLine.push(widthRemoved);
         }
         break;
@@ -1104,30 +1137,40 @@ export async function scrollTape(): Promise<void> {
         currentLineIndent - (widthRemovedFromLine[i] ?? 0)
       }px`;
     }
+    if (isLanguageRTL) widthRemoved *= -1;
     const currentWordsMargin = parseFloat(wordsEl.style.marginLeft) || 0;
     wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
   }
 
   /* calculate current word width to add to #words margin */
   let currentWordWidth = 0;
-  if (Config.tapeMode === "letter") {
-    if (TestInput.input.current.length > 0) {
-      const letters = activeWordEl.querySelectorAll("letter");
-      for (let i = 0; i < TestInput.input.current.length; i++) {
-        const letter = letters[i] as HTMLElement;
-        if (
-          (Config.blindMode || Config.hideExtraLetters) &&
-          letter.classList.contains("extra")
-        ) {
-          continue;
-        }
-        currentWordWidth += $(letter).outerWidth(true) ?? 0;
+  const inputLength = TestInput.input.current.length;
+  if (Config.tapeMode === "letter" && inputLength > 0) {
+    const letters = activeWordEl.querySelectorAll("letter");
+    let lastPositiveLetterWidth = 0;
+    for (let i = 0; i < inputLength; i++) {
+      const letter = letters[i] as HTMLElement;
+      if (
+        (Config.blindMode || Config.hideExtraLetters) &&
+        letter.classList.contains("extra")
+      ) {
+        continue;
       }
+      const letterOuterWidth = $(letter).outerWidth(true) ?? 0;
+      currentWordWidth += letterOuterWidth;
+      if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
     }
+    // if current letter has zero width move the tape to previous positive width letter
+    if ($(letters[inputLength] as Element).outerWidth(true) === 0)
+      currentWordWidth -= lastPositiveLetterWidth;
   }
+
   /* change to new #words & .afterNewline margins */
-  const tapeMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
-  const newMargin = tapeMargin - (wordsWidthBeforeActive + currentWordWidth);
+  let newMargin =
+    wordsWrapperWidth * (Config.tapeMargin / 100) -
+    wordsWidthBeforeActive -
+    currentWordWidth;
+  if (isLanguageRTL) newMargin = wordRightMargin - newMargin;
 
   const jqWords = $(wordsEl);
   if (Config.smoothLineScroll) {

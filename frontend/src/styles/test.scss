@@ -278,7 +278,6 @@
   &.tape {
     display: block;
     white-space: nowrap;
-    width: 200vw;
     .word {
       margin: 0.25em 0.6em 0.25em 0;
       display: inline-block;
@@ -296,8 +295,17 @@
     }
   }
   &.withLigatures {
-    letter {
-      display: inline;
+    .word {
+      overflow-wrap: anywhere;
+      padding-bottom: 0.05em; // compensate for letter border
+
+      .hints {
+        overflow-wrap: initial;
+      }
+
+      letter {
+        display: inline;
+      }
     }
   }
   &.blurred {
@@ -725,8 +733,17 @@
           }
         }
         &.withLigatures {
-          letter {
-            display: inline;
+          .word {
+            overflow-wrap: anywhere;
+            padding-bottom: 2px; // compensate for letter border
+
+            .hints {
+              overflow-wrap: initial;
+            }
+
+            letter {
+              display: inline;
+            }
           }
         }
       }
