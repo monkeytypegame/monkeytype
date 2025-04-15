@@ -18,7 +18,7 @@ const subgroup: CommandsSubgroup = {
   },
   ...LayoutsList.map(layout=> ({
     id: "changeLayout" + capitalizeFirstLetterOfEachWord(layout),
-    display: layout === "default" ? "off" : layout.replace(/_/g, " "),
+    display: layout.replace(/_/g, " "),
     configValue: layout,
     exec: (): void => {
       // UpdateConfig.setSavedLayout(layout);

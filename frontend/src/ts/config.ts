@@ -4,6 +4,7 @@ import * as Notifications from "./elements/notifications";
 import {
   isConfigValueValidBoolean,
   isConfigValueValid,
+  invalid as notifyInvalid,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { isAuthenticated } from "./firebase";
@@ -1881,11 +1882,23 @@ export async function setCustomLayoutfluid(
 ): Promise<boolean> {
   const trimmed = value.trim();
 
-  if (trimmed.split("#").map((it) => !LayoutsList.includes(it)).length !== 0)
+  const invalidLayouts = trimmed
+    .split(/[# ]+/) //can be space or hash
+    .filter((it) => !LayoutsList.includes(it));
+
+  if (invalidLayouts.length !== 0) {
+    notifyInvalid(
+      "layoutfluid",
+      trimmed,
+      `The following inputted layouts do not exist: ${invalidLayouts.join(
+        ", "
+      )}`
+    );
+
     return false;
+  }
 
   const customLayoutfluid = trimmed.replace(/ /g, "#");
-
   config.customLayoutfluid = customLayoutfluid;
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);

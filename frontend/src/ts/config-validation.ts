@@ -7,7 +7,11 @@ import { ZodSchema, z } from "zod";
 //   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
 // }
 
-function invalid(key: string, val: unknown, customMessage?: string): void {
+export function invalid(
+  key: string,
+  val: unknown,
+  customMessage?: string
+): void {
   if (customMessage === undefined) {
     Notifications.add(
       `Invalid value for ${key} (${val}). Please try to change this setting again.`,
