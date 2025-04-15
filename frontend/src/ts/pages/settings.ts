@@ -32,6 +32,7 @@ import {
 } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
+import { Layouts } from "../constants/layouts";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -497,13 +498,6 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
-  let layoutsList;
-  try {
-    layoutsList = await JSONData.getLayoutsList();
-  } catch (e) {
-    console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
-  }
-
   const layoutSelectElement = document.querySelector(
     ".pageSettings .section[data-config-name='layout'] select"
   ) as Element;
@@ -514,18 +508,16 @@ async function fillSettingsPage(): Promise<void> {
   let layoutHtml = '<option value="default">off</option>';
   let keymapLayoutHtml = '<option value="overrideSync">emulator sync</option>';
 
-  if (layoutsList) {
-    for (const layout of Object.keys(layoutsList)) {
-      const optionHtml = `<option value="${layout}">${layout.replace(
-        /_/g,
-        " "
-      )}</option>`;
-      if (layout.toString() !== "korean") {
-        layoutHtml += optionHtml;
-      }
-      if (layout.toString() !== "default") {
-        keymapLayoutHtml += optionHtml;
-      }
+  for (const layout of Layouts) {
+    const optionHtml = `<option value="${layout}">${layout.replace(
+      /_/g,
+      " "
+    )}</option>`;
+    if (layout.toString() !== "korean") {
+      layoutHtml += optionHtml;
+    }
+    if (layout.toString() !== "default") {
+      keymapLayoutHtml += optionHtml;
     }
   }
 

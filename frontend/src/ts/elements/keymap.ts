@@ -120,38 +120,33 @@ export async function refresh(
   let r5_grid = "";
   let hasAlphas = false;
   try {
-    let layouts;
+    let layoutString = layoutName;
+    let lts;
     try {
-      layouts = await JSONData.getLayoutsList();
+      if (Config.keymapLayout === "overrideSync") {
+        if (Config.layout === "default") {
+          lts = await JSONData.getLayout("qwerty");
+          layoutString = "default";
+        } else {
+          lts = await JSONData.getLayout(Config.layout);
+          layoutString = Config.layout;
+        }
+      } else {
+        lts = await JSONData.getLayout(Config.keymapLayout);
+        layoutString = Config.keymapLayout;
+      }
     } catch (e) {
       Notifications.add(
-        Misc.createErrorMessage(e, "Failed to refresh keymap"),
+        Misc.createErrorMessage(e, `Failed to load keymap ${layoutName}`),
         -1
       );
       return;
     }
 
-    let lts = layouts[layoutName]; //layout to show
-
-    let layoutString = layoutName;
-    if (Config.keymapLayout === "overrideSync") {
-      if (Config.layout === "default") {
-        lts = layouts["qwerty"];
-        layoutString = "default";
-      } else {
-        lts = layouts[Config.layout];
-        layoutString = Config.layout;
-      }
-    } else {
-      lts = layouts[Config.keymapLayout];
-      layoutString = Config.keymapLayout;
-    }
-
     const showTopRow =
       (TestWords.hasNumbers && Config.keymapMode === "next") ||
       Config.keymapShowTopRow === "always" ||
-      ((lts as (typeof layouts)["qwerty"]).keymapShowTopRow &&
-        Config.keymapShowTopRow !== "never");
+      (lts.keymapShowTopRow && Config.keymapShowTopRow !== "never");
 
     const isMatrix =
       Config.keymapStyle === "matrix" || Config.keymapStyle === "split_matrix";
@@ -163,10 +158,6 @@ export async function refresh(
 
     if (isSteno) {
       lts = stenoKeys;
-    }
-
-    if (lts === undefined) {
-      throw new Error("Failed to refresh keymap: layout not found");
     }
 
     const isISO = lts.type === "iso";

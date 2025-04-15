@@ -7,6 +7,7 @@ import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
+import { Layouts } from "../constants/layouts";
 
 type FilterPreset = {
   display: string;
@@ -103,7 +104,6 @@ async function initSelectOptions(): Promise<void> {
   $("wordFilterModal .presetInput").empty();
 
   let LanguageList;
-  let LayoutList;
 
   try {
     LanguageList = await JSONData.getLanguageList();
@@ -117,18 +117,6 @@ async function initSelectOptions(): Promise<void> {
     return;
   }
 
-  try {
-    LayoutList = await JSONData.getLayoutsList();
-  } catch (e) {
-    console.error(
-      Misc.createErrorMessage(
-        e,
-        "Failed to initialise word filter popup preset list"
-      )
-    );
-    return;
-  }
-
   LanguageList.forEach((language) => {
     const prettyLang = language.replace(/_/gi, " ");
     $("#wordFilterModal .languageInput").append(`
@@ -136,7 +124,7 @@ async function initSelectOptions(): Promise<void> {
       `);
   });
 
-  for (const layout in LayoutList) {
+  for (const layout of Layouts) {
     const prettyLayout = layout.replace(/_/gi, " ");
     $("#wordFilterModal .layoutInput").append(`
       <option value=${layout}>${prettyLayout}</option>

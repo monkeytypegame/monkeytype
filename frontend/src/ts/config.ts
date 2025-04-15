@@ -2,7 +2,6 @@ import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import {
-  isConfigValueValidAsync,
   isConfigValueValidBoolean,
   isConfigValueValid,
 } from "./config-validation";
@@ -30,6 +29,7 @@ import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
+import { Layouts } from "./constants/layouts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -1881,11 +1881,8 @@ export async function setCustomLayoutfluid(
 ): Promise<boolean> {
   const trimmed = value.trim();
 
-  if (
-    !(await isConfigValueValidAsync("layoutfluid", trimmed, ["layoutfluid"]))
-  ) {
+  if (trimmed.split("#").map((it) => !Layouts.includes(it)).length !== 0)
     return false;
-  }
 
   const customLayoutfluid = trimmed.replace(/ /g, "#");
 
