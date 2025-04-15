@@ -7,7 +7,7 @@ import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
-import { Layouts } from "../constants/layouts";
+import { LayoutsList } from "../constants/layouts";
 
 type FilterPreset = {
   display: string;
@@ -124,7 +124,7 @@ async function initSelectOptions(): Promise<void> {
       `);
   });
 
-  for (const layout of Layouts) {
+  for (const layout of LayoutsList) {
     const prettyLayout = layout.replace(/_/gi, " ");
     $("#wordFilterModal .layoutInput").append(`
       <option value=${layout}>${prettyLayout}</option>

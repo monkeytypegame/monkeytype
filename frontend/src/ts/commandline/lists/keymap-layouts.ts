@@ -1,5 +1,5 @@
 import * as UpdateConfig from "../../config";
-import { Layouts } from "../../constants/layouts";
+import { LayoutsList } from "../../constants/layouts";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import { Command, CommandsSubgroup } from "../types";
@@ -18,7 +18,7 @@ const subgroup: CommandsSubgroup = {
         TestLogic.restart();
       },
     },
-    ...Layouts.map((layout) => ({
+    ...LayoutsList.map((layout) => ({
       id: "changeKeymapLayout" + capitalizeFirstLetterOfEachWord(layout),
       display: layout.replace(/_/g, " "),
       configValue: layout,

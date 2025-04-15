@@ -29,7 +29,7 @@ import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
-import { Layouts } from "./constants/layouts";
+import { LayoutsList } from "./constants/layouts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -1881,7 +1881,7 @@ export async function setCustomLayoutfluid(
 ): Promise<boolean> {
   const trimmed = value.trim();
 
-  if (trimmed.split("#").map((it) => !Layouts.includes(it)).length !== 0)
+  if (trimmed.split("#").map((it) => !LayoutsList.includes(it)).length !== 0)
     return false;
 
   const customLayoutfluid = trimmed.replace(/ /g, "#");

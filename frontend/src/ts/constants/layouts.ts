@@ -1,4 +1,4 @@
-export const Layouts:string[] = [
+export const LayoutsList:string[] = [
   "qwerty",
   "dvorak",
   "colemak",

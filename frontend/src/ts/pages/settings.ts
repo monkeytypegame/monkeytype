@@ -32,7 +32,7 @@ import {
 } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
-import { Layouts } from "../constants/layouts";
+import { LayoutsList } from "../constants/layouts";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -508,7 +508,7 @@ async function fillSettingsPage(): Promise<void> {
   let layoutHtml = '<option value="default">off</option>';
   let keymapLayoutHtml = '<option value="overrideSync">emulator sync</option>';
 
-  for (const layout of Layouts) {
+  for (const layout of LayoutsList) {
     const optionHtml = `<option value="${layout}">${layout.replace(
       /_/g,
       " "

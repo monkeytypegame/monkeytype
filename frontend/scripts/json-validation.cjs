@@ -1,7 +1,6 @@
 const fs = require("fs");
 const Ajv = require("ajv");
 const ajv = new Ajv();
-//const layouts = require("../src/ts/constants/layouts.js").layouts;
 
 function findDuplicates(words) {
   const wordFrequencies = {};
@@ -267,21 +266,9 @@ function validateOthers() {
 
     let layoutsErrors = [];
 
-    //todo read from layouts.ts file
     const layouts = fs
       .readdirSync("./static/layouts")
       .map((it) => it.substring(0, it.length - 5));
-
-    /**
-    fs.readdirSync("./static/layouts")
-      .map((it) => it.substring(0, it.length - 5))
-      .filter((it) => !layouts.includes(it))
-      .forEach((it) =>
-        layoutsErrors.push(
-          `Layouts file ./src/ts/constants/layouts.cjs is missing entry for "${it}"`
-        )
-      );
-      **/
 
     for (let layoutName of layouts) {
       let layoutData = "";
