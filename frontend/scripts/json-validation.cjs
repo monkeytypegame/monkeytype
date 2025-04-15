@@ -1,6 +1,30 @@
 const fs = require("fs");
 const Ajv = require("ajv");
 const ajv = new Ajv();
+const Graphemer = require("graphemer").default;
+const graphemeSplitter = new Graphemer();
+
+/* unicode max length works with combined characters */
+ajv.addKeyword({
+  keyword: "uMaxLength",
+  type: "string",
+  validate: (maxLength, value) =>
+    graphemeSplitter.countGraphemes(value) <= maxLength,
+  error: {
+    message: (ctx) => `must NOT have more then  ${ctx.schemValue} characters`,
+  },
+});
+
+/* unicode min length works with combined characters */
+ajv.addKeyword({
+  keyword: "uMinLength",
+  type: "string",
+  validate: (minLength, value) =>
+    graphemeSplitter.countGraphemes(value) >= minLength,
+  error: {
+    message: (ctx) => `must NOT have less then  ${ctx.schemValue} characters`,
+  },
+});
 
 function findDuplicates(words) {
   const wordFrequencies = {};
@@ -184,31 +208,31 @@ function validateOthers() {
             properties: {
               row1: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: { type: "string", uMinLength: 1, uMaxLength: 4 },
                 minItems: 13,
                 maxItems: 13,
               },
               row2: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: { type: "string", uMinLength: 1, uMaxLength: 4 },
                 minItems: 13,
                 maxItems: 13,
               },
               row3: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: { type: "string", uMinLength: 1, uMaxLength: 4 },
                 minItems: 11,
                 maxItems: 11,
               },
               row4: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: { type: "string", uMinLength: 1, uMaxLength: 4 },
                 minItems: 10,
                 maxItems: 10,
               },
               row5: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", uMinLength: 1, uMaxLength: 2 },
                 minItems: 1,
                 maxItems: 2,
               },
@@ -228,31 +252,31 @@ function validateOthers() {
             properties: {
               row1: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: { type: "string", uMinLength: 1, uMaxLength: 4 },
                 minItems: 13,
                 maxItems: 13,
               },
               row2: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: { type: "string", uMinLength: 1, uMaxLength: 4 },
                 minItems: 12,
                 maxItems: 12,
               },
               row3: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: { type: "string", uMinLength: 1, uMaxLength: 4 },
                 minItems: 12,
                 maxItems: 12,
               },
               row4: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: { type: "string", uMinLength: 1, uMaxLength: 4 },
                 minItems: 11,
                 maxItems: 11,
               },
               row5: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", uMinLength: 1, uMaxLength: 2 },
                 minItems: 1,
                 maxItems: 2,
               },
@@ -288,6 +312,7 @@ function validateOthers() {
           );
           layoutsAllGood = false;
           layoutsErrors = layoutsValidator.errors[0].message;
+          console.log(layoutsValidator.errors);
         }
       }
     });
