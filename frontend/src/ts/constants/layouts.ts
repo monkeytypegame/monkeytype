@@ -14,7 +14,7 @@ export const LayoutsList:string[] = [
   "qwertz",
   "swiss_german",
   "swiss_french",
-  "workman",
+  "workman", 
   "prog_workman",
   "turkish_q",
   "turkish_f",
