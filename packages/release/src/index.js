@@ -11,12 +11,12 @@ const __dirname = dirname(__filename);
 
 dotenv.config();
 
-const args = process.argv.slice(2);
-const isFrontend = args.includes("--fe");
-const noDeploy = args.includes("--no-deploy");
-const isBackend = args.includes("--be");
-const isDryRun = args.includes("--dry");
-const noSyncCheck = args.includes("--no-sync-check");
+const args = new Set(process.argv.slice(2));
+const isFrontend = args.has("--fe");
+const noDeploy = args.has("--no-deploy");
+const isBackend = args.has("--be");
+const isDryRun = args.has("--dry");
+const noSyncCheck = args.has("--no-sync-check");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../../../");
 
@@ -110,13 +110,13 @@ const getCurrentVersion = () => {
 const incrementVersion = (currentVersion) => {
   console.log("Incrementing version...");
   const now = new Date();
-  const year = now.getFullYear().toString().slice(-2);
+  const year = Number(now.getFullYear().toString().slice(-2));
   const start = new Date(now.getFullYear(), 0, 1);
   const week = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
   const [prevYear, prevWeek, minor] = currentVersion.split(".").map(Number);
 
   let newMinor = minor + 1;
-  if (year != prevYear || week != prevWeek) {
+  if (year !== prevYear || week !== prevWeek) {
     newMinor = 0;
   }
 

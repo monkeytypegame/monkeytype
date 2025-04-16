@@ -72,7 +72,8 @@
       "esbenp.prettier-vscode",
       "vitest.explorer",
       "huntertran.auto-markdown-toc",
-      "dbaeumer.vscode-eslint"
+      "dbaeumer.vscode-eslint",
+      "oxc.oxc-vscode"
     ]
   }
 }

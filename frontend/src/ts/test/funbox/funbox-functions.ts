@@ -60,15 +60,15 @@ async function readAheadHandleKeydown(
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
   if (
-    event.key == "Backspace" &&
+    event.key === "Backspace" &&
     !isCorrect &&
-    (TestInput.input.current != "" ||
-      TestInput.input.getHistory(TestState.activeWordIndex - 1) !=
+    (TestInput.input.current !== "" ||
+      TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
         TestWords.words.get(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
   ) {
     $("#words").addClass("read_ahead_disabled");
-  } else if (event.key == " ") {
+  } else if (event.key === " ") {
     $("#words").removeClass("read_ahead_disabled");
   }
 }

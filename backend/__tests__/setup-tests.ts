@@ -2,7 +2,6 @@ import { Collection, Db, MongoClient, WithId } from "mongodb";
 import { afterAll, beforeAll, afterEach } from "vitest";
 import * as MongoDbMock from "vitest-mongodb";
 import { MongoDbMockConfig } from "./global-setup";
-import { enableRateLimitExpects } from "./__testData__/rate-limit";
 
 process.env["MODE"] = "dev";
 //process.env["MONGOMS_DISTRO"] = "ubuntu-22.04";
@@ -29,7 +28,9 @@ beforeAll(async () => {
     getDb: (): Db => db,
     collection: <T>(name: string): Collection<WithId<T>> =>
       db.collection<WithId<T>>(name),
-    close: () => {},
+    close: () => {
+      //
+    },
   }));
 
   vi.mock("../src/utils/logger", () => ({

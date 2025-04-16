@@ -1,3 +1,4 @@
+// eslint-disable no-require-imports
 const fs = require("fs");
 const Ajv = require("ajv");
 const ajv = new Ajv();
@@ -263,39 +264,44 @@ function validateOthers() {
         required: ["keymapShowTopRow", "type", "keys"],
       },
     };
-    const layoutsData = JSON.parse(
-      fs.readFileSync("./static/layouts/_list.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
 
-    let layoutsAllGood = true;
-    let layoutsErrors;
-    Object.keys(layoutsData).forEach((layoutName) => {
-      const layoutData = layoutsData[layoutName];
+    let layoutsErrors = [];
+
+    const layouts = fs
+      .readdirSync("./static/layouts")
+      .map((it) => it.substring(0, it.length - 5));
+
+    for (let layoutName of layouts) {
+      let layoutData = "";
+      try {
+        layoutData = JSON.parse(
+          fs.readFileSync(`./static/layouts/${layoutName}.json`, "utf-8")
+        );
+      } catch (e) {
+        layoutsErrors.push(`Layout ${layoutName} has error: ${e.message}`);
+        continue;
+      }
 
       if (!layoutsSchema[layoutData.type]) {
         const msg = `Layout ${layoutName} has an invalid type: ${layoutData.type}`;
         console.log(msg);
-        layoutsAllGood = false;
-        layoutsErrors = [msg];
+        layoutsErrors.push(msg);
       } else {
         const layoutsValidator = ajv.compile(layoutsSchema[layoutData.type]);
         if (!layoutsValidator(layoutData)) {
           console.log(
             `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`
           );
-          layoutsAllGood = false;
-          layoutsErrors = layoutsValidator.errors[0].message;
+          layoutsErrors.push(layoutsValidator.errors[0].message);
         }
       }
-    });
-    if (layoutsAllGood) {
+    }
+
+    if (layoutsErrors.length === 0) {
       console.log(`Layout JSON schemas are \u001b[32mvalid\u001b[0m`);
     } else {
       console.log(`Layout JSON schemas are \u001b[31minvalid\u001b[0m`);
-      return reject(new Error(layoutsErrors));
+      return reject(new Error(layoutsErrors.join("\n")));
     }
     resolve();
   });

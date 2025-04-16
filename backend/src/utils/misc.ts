@@ -198,9 +198,13 @@ export function isDevEnvironment(): boolean {
  * @param data  database object with `_id: ObjectId`
  * @returns api object with `id: string`
  */
+
+// oxlint doesnt understand ts overloading
+// eslint-disable-next-line no-redeclare
 export function replaceObjectId<T extends { _id: ObjectId }>(
   data: T
 ): T & { _id: string };
+// eslint-disable-next-line no-redeclare
 export function replaceObjectId<T extends { _id: ObjectId }>(
   data: T | null
 ): (T & { _id: string }) | null;

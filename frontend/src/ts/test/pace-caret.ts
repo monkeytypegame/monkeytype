@@ -294,7 +294,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
 }
 
 export function reset(): void {
-  if (settings?.timeout != null) {
+  if (settings?.timeout !== null && settings?.timeout !== undefined) {
     clearTimeout(settings.timeout);
   }
   settings = null;

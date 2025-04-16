@@ -1023,8 +1023,9 @@ export async function updateInbox(
               //flatMap rewards
               const rewards: AllRewards[] = [...toBeRead, ...toBeDeleted]
                 .filter((it) => !it.read)
-                .reduce((arr, current) => {
-                  return [...arr, ...current.rewards];
+
+                .reduce((arr: AllRewards[], current) => {
+                  return arr.concat(current.rewards);
                 }, []);
 
               const xpGain = rewards

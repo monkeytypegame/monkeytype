@@ -425,7 +425,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   )) {
     button.addEventListener("click", (e) => {
       state.removeFancyTypographyEnabled =
-        (e.target as HTMLButtonElement).value === "true" ? true : false;
+        (e.target as HTMLButtonElement).value === "true";
       updateUI();
     });
   }
@@ -435,7 +435,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   )) {
     button.addEventListener("click", (e) => {
       state.replaceControlCharactersEnabled =
-        (e.target as HTMLButtonElement).value === "true" ? true : false;
+        (e.target as HTMLButtonElement).value === "true";
       updateUI();
     });
   }
@@ -445,7 +445,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   )) {
     button.addEventListener("click", (e) => {
       state.removeZeroWidthCharactersEnabled =
-        (e.target as HTMLButtonElement).value === "true" ? true : false;
+        (e.target as HTMLButtonElement).value === "true";
       updateUI();
     });
   }
@@ -455,7 +455,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   )) {
     button.addEventListener("click", (e) => {
       state.customTextPipeDelimiter =
-        (e.target as HTMLButtonElement).value === "true" ? true : false;
+        (e.target as HTMLButtonElement).value === "true";
       if (state.customTextPipeDelimiter && state.customTextLimits.word !== "") {
         state.customTextLimits.word = "";
       }

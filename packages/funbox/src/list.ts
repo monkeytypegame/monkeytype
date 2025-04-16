@@ -439,7 +439,10 @@ const list: Record<FunboxName, FunboxMetadata> = {
   },
 };
 
+// oxlint doesnt understand ts overloading
+// eslint-disable-next-line no-redeclare
 export function getFunbox(name: FunboxName): FunboxMetadata;
+// eslint-disable-next-line no-redeclare
 export function getFunbox(names: FunboxName[]): FunboxMetadata[];
 export function getFunbox(
   nameOrNames: FunboxName | FunboxName[]
@@ -447,7 +450,7 @@ export function getFunbox(
   if (Array.isArray(nameOrNames)) {
     const out = nameOrNames.map((name) => getObject()[name]);
 
-    //@ts-expect-error
+    //@ts-expect-error sanity check
     if (out.includes(undefined)) {
       throw new Error("One of the funboxes is invalid: " + nameOrNames);
     }
