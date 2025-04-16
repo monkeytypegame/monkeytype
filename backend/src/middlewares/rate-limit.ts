@@ -71,12 +71,10 @@ function initialiseLimiters(): Record<RateLimiterId, RateLimitRequestHandler> {
     });
   };
 
-  // TODO INVESTIGATE
-  return keys.reduce(
-    // oxlint-disable-line no-accumulating-spread
-    (output, key) => ({ ...output, [key]: convert(limits[key]) }),
-    {}
-  ) as Record<RateLimiterId, RateLimitRequestHandler>;
+  return keys.reduce((output, key) => {
+    output[key] = convert(limits[key]);
+    return output;
+  }, {}) as Record<RateLimiterId, RateLimitRequestHandler>;
 }
 
 function convertWindowToMs(window: Window): number {

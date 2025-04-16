@@ -1024,10 +1024,8 @@ export async function updateInbox(
               const rewards: AllRewards[] = [...toBeRead, ...toBeDeleted]
                 .filter((it) => !it.read)
 
-                // TODO INVESTIGATE
-                // oxlint-disable-next-line
-                .reduce((arr, current) => {
-                  return [...arr, ...current.rewards];
+                .reduce((arr: AllRewards[], current) => {
+                  return arr.concat(current.rewards);
                 }, []);
 
               const xpGain = rewards
