@@ -78,23 +78,6 @@ export type Layout = {
   keys: Keys;
 };
 
-export type LayoutsList = Record<string, Layout>;
-
-/**
- * Fetches the layouts list from the server.
- * @returns A promise that resolves to the layouts list.
- */
-export async function getLayoutsList(): Promise<LayoutsList> {
-  try {
-    const layoutsList = await cachedFetchJson<LayoutsList>(
-      "/layouts/_list.json"
-    );
-    return layoutsList;
-  } catch (e) {
-    throw new Error("Layouts JSON fetch failed");
-  }
-}
-
 /**
  * Fetches a layout by name from the server.
  * @param layoutName The name of the layout to fetch.
@@ -102,12 +85,11 @@ export async function getLayoutsList(): Promise<LayoutsList> {
  * @throws {Error} If the layout list or layout doesn't exist.
  */
 export async function getLayout(layoutName: string): Promise<Layout> {
-  const layouts = await getLayoutsList();
-  const layout = layouts[layoutName];
-  if (layout === undefined) {
-    throw new Error(`Layout ${layoutName} is undefined`);
+  try {
+    return await cachedFetchJson<Layout>(`/layouts/${layoutName}.json`);
+  } catch (e) {
+    throw new Error(`Layout ${layoutName} JSON fetch failed`);
   }
-  return layout;
 }
 
 export type Theme = {
