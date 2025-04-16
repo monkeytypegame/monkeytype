@@ -32,6 +32,7 @@ import {
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
+import { DataArrayPartial, Optgroup } from "slim-select/store";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -473,15 +474,12 @@ async function fillSettingsPage(): Promise<void> {
     ".pageSettings .section[data-config-name='language'] select"
   ) as Element;
 
-  if (languageGroups) {
-    element.innerHTML = buildLanguageDropdown(
-      languageGroups,
-      (language) => language == Config.language
-    );
-  }
-
   new SlimSelect({
     select: element,
+    data: getLanguageDropdownData(
+      languageGroups ?? [],
+      (language) => language == Config.language
+    ),
     settings: {
       searchPlaceholder: "search",
     },
@@ -709,15 +707,11 @@ async function fillSettingsPage(): Promise<void> {
   const customLanguageFluidElement = document.querySelector(
     ".pageSettings .section[data-config-name='customLanguageFluid'] select"
   ) as Element;
-  if (languageGroups) {
-    customLanguageFluidElement.innerHTML = buildLanguageDropdown(
-      languageGroups,
-      (language) => Config.customLanguagefluid.includes(language)
-    );
-  }
-
   new SlimSelect({
     select: customLanguageFluidElement,
+    data: getLanguageDropdownData(languageGroups ?? [], (language) =>
+      Config.customLanguagefluid.includes(language)
+    ),
     events: {
       afterChange: (newVal): void => {
         void UpdateConfig.setCustomLanguagefluid(newVal.map((it) => it.value));
@@ -1371,22 +1365,21 @@ export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
 }
 
-function buildLanguageDropdown(
+function getLanguageDropdownData(
   languageGroups: JSONData.LanguageGroup[],
   isActive: (val: string) => boolean
-): string {
-  let html = "";
-  for (const group of languageGroups) {
-    html += `<optgroup label="${group.name}">`;
-    for (const language of group.languages) {
-      const selected = isActive(language) ? "selected" : "";
-      const text = Strings.getLanguageDisplayString(language);
-      html += `<option value="${language}" ${selected}>${text}</option>`;
-    }
-    html += `</optgroup>`;
-  }
-
-  return html;
+): DataArrayPartial {
+  return languageGroups.map(
+    (group) =>
+      ({
+        label: group.name,
+        options: group.languages.map((language) => ({
+          text: Strings.getLanguageDisplayString(language),
+          value: language,
+          selected: isActive(language),
+        })),
+      } as Optgroup)
+  );
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

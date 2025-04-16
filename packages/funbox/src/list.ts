@@ -438,7 +438,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "ALL_CAPS",
   },
   polyglot: {
-    description: "Switch between languages in a single test.",
+    description: "Use words from multiple languages in a single test.",
     canGetPb: false,
     difficultyLevel: 1,
     properties: ["ignoresLanguage"],

@@ -230,7 +230,7 @@ export const commands: CommandsSubgroup = {
       id: "changeCustomLanguagefluid",
       display: "Custom languagefluid...",
       defaultValue: (): string => {
-        return Config.customLanguagefluid.join(" "); //TODO better handling of arrays
+        return Config.customLanguagefluid.join(" ");
       },
       input: true,
       icon: "fa-language",
