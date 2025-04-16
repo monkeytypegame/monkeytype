@@ -10,7 +10,8 @@
         "no-explicit-any": "allow",
         "explicit-function-return-type": "off",
         "no-array-for-each": "off",
-        "eqeqeq": "off"
+        "eqeqeq": "off",
+        "ban-ts-comment": "off"
       }
     }
   ]

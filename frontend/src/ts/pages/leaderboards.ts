@@ -316,7 +316,7 @@ async function requestData(update = false): Promise<void> {
     state.pageSize = dataResponse.body.data.pageSize;
 
     if (state.type === "daily") {
-      //@ts-ignore not sure why this is causing errors when it's clearly defined in the schema
+      //@ts-expect-error not sure why this is causing errors when it's clearly defined in the schema
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       state.minWpm = dataResponse.body.data.minWpm;
     }

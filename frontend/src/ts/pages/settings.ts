@@ -441,7 +441,7 @@ function reset(): void {
   $(".pageSettings .section[data-config-name='funbox'] .buttons").empty();
   $(".pageSettings .section[data-config-name='fontFamily'] .buttons").empty();
   for (const select of document.querySelectorAll(".pageSettings select")) {
-    //@ts-expect-error
+    //@ts-expect-error slim gets added to the html element but ts doesnt know about it
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     select?.slim?.destroy?.();
   }

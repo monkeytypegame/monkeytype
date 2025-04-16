@@ -76,6 +76,8 @@
     "no-prototype-builtins": "error",
     "no-regex-spaces": "error",
     "typescript/no-namespace": "error",
+    "eqeqeq": "error",
+    "ban-ts-comment": "error",
 
     "todo-lowerthis": "off",
     "max-depth": [
@@ -86,10 +88,7 @@
     ],
 
     "todo": "off",
-    "ban-ts-comment": "off",
     "no-array-for-each": "off",
-    "eqeqeq": "error",
-    "prefer-ts-expect-error": "off",
 
     "consider": "off",
     "no-cycle": "off",

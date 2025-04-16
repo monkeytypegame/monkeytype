@@ -94,11 +94,11 @@ function updateUI(): void {
 
           //@ts-expect-error really cant be bothered fixing all these issues - its gonna get caught anyway
           const koChar: string =
-            //@ts-expect-error
+            //@ts-expect-error ---
             koCurrWord[inputGroupLength][inputCharLength] ??
-            //@ts-expect-error
+            //@ts-expect-error ---
             koCurrWord[koCurrInput.length][
-              //@ts-expect-error
+              //@ts-expect-error ---
               inputCharLength - koCurrWord[inputGroupLength].length
             ];
 

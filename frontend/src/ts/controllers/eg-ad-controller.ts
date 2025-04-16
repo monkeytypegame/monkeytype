@@ -15,7 +15,7 @@ export function init(): void {
 
 export function renderResult(widerThanBreakpoint: boolean): void {
   if (widerThanBreakpoint) {
-    //@ts-expect-error
+    //@ts-expect-error 3rd party ad code
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     window.egAps.render([
       "ad-result",
@@ -24,7 +24,7 @@ export function renderResult(widerThanBreakpoint: boolean): void {
       "ad-footer",
     ]);
   } else {
-    //@ts-expect-error
+    //@ts-expect-error 3rd party ad code
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     window.egAps.render([
       "ad-result-small",
@@ -37,7 +37,7 @@ export function renderResult(widerThanBreakpoint: boolean): void {
 
 export function reinstate(): boolean {
   try {
-    //@ts-expect-error
+    //@ts-expect-error 3rd party ad code
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     window.egAps.reinstate();
     return true;
@@ -48,7 +48,7 @@ export function reinstate(): boolean {
 }
 
 export async function refreshVisible(): Promise<void> {
-  ////@ts-expect-error
+  ////@ts-expect-error 3rd party ad code
   // const adDivs = Object.keys(window.egAdPack.gptAdSlots);
   // const visibleAdDivs = [];
   // for (let i = 0; i < adDivs.length; i++) {
@@ -63,6 +63,6 @@ export async function refreshVisible(): Promise<void> {
   //     visibleAdDivs.push(adDivs[i]);
   //   }
   // }
-  // //@ts-ignore
+  // //@ts-expect-error 3rd party ad code
   // window.egAps.refreshAds(visibleAdDivs);
 }

@@ -1453,7 +1453,7 @@ function setThemes(
   if (!isConfigValueValid("themes", theme, ConfigSchemas.ThemeNameSchema))
     return false;
 
-  //@ts-expect-error
+  //@ts-expect-error config used to have 9
   if (customThemeColors.length === 9) {
     //color missing
     if (customState) {
@@ -1539,7 +1539,7 @@ export function setCustomThemeColors(
   nosave?: boolean
 ): boolean {
   // migrate existing configs missing sub alt color
-  // @ts-expect-error
+  // @ts-expect-error legacy configs
   if (colors.length === 9) {
     //color missing
     Notifications.add(
@@ -1931,8 +1931,8 @@ export function setCustomBackgroundFilter(
   array: ConfigSchemas.CustomBackgroundFilter,
   nosave?: boolean
 ): boolean {
-  //convert existing configs using five values down to four
-  //@ts-expect-error
+  // @ts-expect-error this used to be 5
+  // need to convert existing configs using five values down to four
   if (array.length === 5) {
     array = [array[0], array[1], array[2], array[3]];
   }

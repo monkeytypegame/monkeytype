@@ -87,14 +87,14 @@ class ChartWithUpdateColors<
   }
 
   getDataset(id: DatasetIds): ChartDataset<TType, TData> {
-    //@ts-expect-error
+    //@ts-expect-error its too difficult to figure out these types, but this works
     return this.data.datasets?.find((x) => x.yAxisID === id);
   }
 
   getScale(
     id: DatasetIds extends never ? never : "x" | DatasetIds
   ): DatasetIds extends never ? never : CartesianScaleOptions {
-    //@ts-expect-error
+    //@ts-expect-error its too difficult to figure out these types, but this works
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
     return this.options.scales[id];
   }
@@ -1155,7 +1155,7 @@ async function updateColors<
 
   const gridcolor = blendTwoHexColors(bgcolor, subaltcolor, 0.75);
 
-  //@ts-expect-error
+  //@ts-expect-error its too difficult to figure out these types, but this works
   chart.data.datasets[0].borderColor = (ctx): string => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const isPb = ctx.raw?.isPb as boolean;
@@ -1177,7 +1177,7 @@ async function updateColors<
   if (chart?.data?.datasets[0]?.type === undefined) {
     if (chart.config.type === "line") {
       dataset0.pointBackgroundColor = (ctx): string => {
-        //@ts-expect-error
+        //@ts-expect-error not sure why raw comes out to unknown, but this works
         const isPb = ctx.raw?.isPb as boolean;
         const color = isPb ? textcolor : maincolor;
         return color;
