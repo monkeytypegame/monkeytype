@@ -32,6 +32,7 @@ import {
 } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
+import { LayoutsList } from "../constants/layouts";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -497,13 +498,6 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
-  let layoutsList;
-  try {
-    layoutsList = await JSONData.getLayoutsList();
-  } catch (e) {
-    console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
-  }
-
   const layoutSelectElement = document.querySelector(
     ".pageSettings .section[data-config-name='layout'] select"
   ) as Element;
@@ -514,18 +508,16 @@ async function fillSettingsPage(): Promise<void> {
   let layoutHtml = '<option value="default">off</option>';
   let keymapLayoutHtml = '<option value="overrideSync">emulator sync</option>';
 
-  if (layoutsList) {
-    for (const layout of Object.keys(layoutsList)) {
-      const optionHtml = `<option value="${layout}">${layout.replace(
-        /_/g,
-        " "
-      )}</option>`;
-      if (layout.toString() !== "korean") {
-        layoutHtml += optionHtml;
-      }
-      if (layout.toString() !== "default") {
-        keymapLayoutHtml += optionHtml;
-      }
+  for (const layout of LayoutsList) {
+    const optionHtml = `<option value="${layout}">${layout.replace(
+      /_/g,
+      " "
+    )}</option>`;
+    if (layout.toString() !== "korean") {
+      layoutHtml += optionHtml;
+    }
+    if (layout.toString() !== "default") {
+      keymapLayoutHtml += optionHtml;
     }
   }
 
@@ -1332,33 +1324,26 @@ $(
   }
 });
 
+const handleLayoutfluid = (): void => {
+  if (
+    UpdateConfig.setCustomLayoutfluid(
+      $(
+        ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
+      ).val() as CustomLayoutFluid
+    )
+  ) {
+    Notifications.add("Custom layoutfluid saved", 1);
+  }
+};
 $(
   ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton button.save"
-).on("click", () => {
-  void UpdateConfig.setCustomLayoutfluid(
-    $(
-      ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
-    ).val() as CustomLayoutFluid
-  ).then((bool) => {
-    if (bool) {
-      Notifications.add("Custom layoutfluid saved", 1);
-    }
-  });
-});
+).on("click", handleLayoutfluid);
 
 $(
   ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton .input"
 ).on("keypress", (e) => {
   if (e.key === "Enter") {
-    void UpdateConfig.setCustomLayoutfluid(
-      $(
-        ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
-      ).val() as CustomLayoutFluid
-    ).then((bool) => {
-      if (bool) {
-        Notifications.add("Custom layoutfluid saved", 1);
-      }
-    });
+    handleLayoutfluid();
   }
 });
 
