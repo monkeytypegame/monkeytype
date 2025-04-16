@@ -111,6 +111,7 @@ export async function update(previous: Mode, current: Mode): Promise<void> {
     );
 
     puncAndNumEl
+      .stop(true, false)
       .css({
         width: puncAndNumVisible[previous] ? width : 0,
         opacity: puncAndNumVisible[previous] ? 1 : 0,
@@ -162,6 +163,7 @@ export async function update(previous: Mode, current: Mode): Promise<void> {
   const widthStep = widthDifference / 2;
 
   previousEl
+    .stop(true, false)
     .css({
       opacity: 1,
       width: previousWidth,
@@ -186,6 +188,7 @@ export async function update(previous: Mode, current: Mode): Promise<void> {
             width: previousWidth + widthStep,
           })
           .removeClass("hidden")
+          .stop(true, false)
           .animate(
             {
               opacity: 1,
