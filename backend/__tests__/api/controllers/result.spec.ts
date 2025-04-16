@@ -873,25 +873,6 @@ describe("result controller test", () => {
         ],
       });
     });
-
-    it("should fail invalid properties ", async () => {
-      //GIVEN
-      //WHEN
-      // const { body } = await mockApp
-      //   .post("/results")
-      //   .set("Authorization", `Bearer ${uid}`)
-      //   //TODO add all properties
-      //   .send({ result: { acc: 25 } })
-      //   .expect(422);
-      //THEN
-      /*
-      expect(body).toEqual({
-        message: "Invalid request data schema",
-        validationErrors: [
-        ],
-      });
-      */
-    });
   });
 });
 
