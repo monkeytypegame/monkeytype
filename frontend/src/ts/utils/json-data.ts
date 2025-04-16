@@ -12,6 +12,8 @@ async function fetchJson<T>(url: string): Promise<T> {
     if (!url) throw new Error("No URL");
     const res = await fetch(url);
     if (res.ok) {
+      if (res.headers.get("content-type") !== "application/json")
+        throw new Error(`404 No JSON document found at URL`);
       return (await res.json()) as T;
     } else {
       throw new Error(`${res.status} ${res.statusText}`);
