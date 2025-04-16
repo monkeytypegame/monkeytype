@@ -1324,33 +1324,26 @@ $(
   }
 });
 
+const handleLayoutfluid = (): void => {
+  if (
+    UpdateConfig.setCustomLayoutfluid(
+      $(
+        ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
+      ).val() as CustomLayoutFluid
+    )
+  ) {
+    Notifications.add("Custom layoutfluid saved", 1);
+  }
+};
 $(
   ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton button.save"
-).on("click", () => {
-  void UpdateConfig.setCustomLayoutfluid(
-    $(
-      ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
-    ).val() as CustomLayoutFluid
-  ).then((bool) => {
-    if (bool) {
-      Notifications.add("Custom layoutfluid saved", 1);
-    }
-  });
-});
+).on("click", handleLayoutfluid);
 
 $(
   ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton .input"
 ).on("keypress", (e) => {
   if (e.key === "Enter") {
-    void UpdateConfig.setCustomLayoutfluid(
-      $(
-        ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
-      ).val() as CustomLayoutFluid
-    ).then((bool) => {
-      if (bool) {
-        Notifications.add("Custom layoutfluid saved", 1);
-      }
-    });
+    handleLayoutfluid();
   }
 });
 

@@ -223,7 +223,7 @@ export const commands: CommandsSubgroup = {
       icon: "fa-tint",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        void UpdateConfig.setCustomLayoutfluid(input);
+        UpdateConfig.setCustomLayoutfluid(input);
       },
     },
 

@@ -1876,10 +1876,10 @@ export function setCustomBackground(
   return true;
 }
 
-export async function setCustomLayoutfluid(
+export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
-): Promise<boolean> {
+): boolean {
   const trimmed = value.trim();
 
   const invalidLayouts = trimmed
@@ -2011,7 +2011,7 @@ export async function apply(
       configObj.autoSwitchTheme,
       true
     );
-    await setCustomLayoutfluid(configObj.customLayoutfluid, true);
+    setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
