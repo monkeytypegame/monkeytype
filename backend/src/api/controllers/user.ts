@@ -66,7 +66,7 @@ import {
   GetProfileQuery,
   GetProfileResponse,
   GetStatsResponse,
-  GetStreakResponseSchema,
+  GetStreakResponse,
   GetTagsResponse,
   GetTestActivityResponse,
   GetUserInboxResponse,
@@ -1246,7 +1246,7 @@ export async function getCurrentTestActivity(
 
 export async function getStreak(
   req: MonkeyRequest
-): Promise<GetStreakResponseSchema> {
+): Promise<GetStreakResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const user = await UserDAL.getPartialUser(uid, "streak", ["streak"]);
