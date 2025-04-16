@@ -21,7 +21,6 @@
     "no-new": "off",
     "no-new-array": "off",
     "no-useless-spread": "off",
-    "no-unneeded-ternary": "off",
     "no-async-endpoint-handlers": "off",
     "no-this-alias": "off",
     "no-var": "error",

@@ -293,7 +293,7 @@ export async function refresh(
             continue;
           }
           const key = rowKeys[i] as string;
-          const bump = row === "row3" && (i === 3 || i === 6) ? true : false;
+          const bump = row === "row3" && (i === 3 || i === 6);
           let keyDisplay = key[0] as string;
           let letterStyle = "";
           if (Config.keymapLegendStyle === "blank") {
