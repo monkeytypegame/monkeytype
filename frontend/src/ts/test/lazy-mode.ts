@@ -65,7 +65,7 @@ export function replaceAccents(
 ): string {
   if (!word) return word;
   const uppercased = word.toUpperCase();
-  const cases = [...word].map((it, i) => it == uppercased[i]);
+  const cases = [...word].map((it, i) => it === uppercased[i]);
   const newWordArray: string[] = [];
 
   for (let i = 0; i < word.length; i++) {

@@ -83,8 +83,8 @@ export function findSingleActiveFunboxWithProperty(
   property: FunboxProperty
 ): FunboxMetadataWithFunctions | undefined {
   const matching = getActiveFunboxesWithProperty(property);
-  if (matching.length == 0) return undefined;
-  if (matching.length == 1) return matching[0];
+  if (matching.length === 0) return undefined;
+  if (matching.length === 1) return matching[0];
   throw new Error(
     `Expecting exactly one funbox with property "${property} but found ${matching.length}`
   );
@@ -142,8 +142,8 @@ export function findSingleActiveFunboxWithFunction<
   F extends keyof FunboxFunctions
 >(functionName: F): FunboxWithFunction<F> | undefined {
   const matching = getActiveFunboxesWithFunction(functionName);
-  if (matching.length == 0) return undefined;
-  if (matching.length == 1) return matching[0] as FunboxWithFunction<F>;
+  if (matching.length === 0) return undefined;
+  if (matching.length === 1) return matching[0] as FunboxWithFunction<F>;
   throw new Error(
     `Expecting exactly one funbox implementing "${functionName} but found ${matching.length}`
   );

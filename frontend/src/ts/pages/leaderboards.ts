@@ -1140,7 +1140,7 @@ function updateGetParameters(): void {
 function readGetParameters(): void {
   const urlParams = new URLSearchParams(window.location.search);
 
-  if (urlParams.size == 0) {
+  if (urlParams.size === 0) {
     Object.assign(state, selectorLS.get());
     return;
   }

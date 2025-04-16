@@ -88,7 +88,7 @@
     "todo": "off",
     "ban-ts-comment": "off",
     "no-array-for-each": "off",
-    "eqeqeq": "off",
+    "eqeqeq": "error",
     "prefer-ts-expect-error": "off",
 
     "consider": "off",

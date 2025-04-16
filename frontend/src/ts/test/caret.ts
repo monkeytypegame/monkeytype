@@ -219,13 +219,13 @@ export async function updatePosition(noAnim = false): Promise<void> {
   }
 
   const smoothCaretSpeed =
-    Config.smoothCaret == "off"
+    Config.smoothCaret === "off"
       ? 0
-      : Config.smoothCaret == "slow"
+      : Config.smoothCaret === "slow"
       ? 150
-      : Config.smoothCaret == "medium"
+      : Config.smoothCaret === "medium"
       ? 100
-      : Config.smoothCaret == "fast"
+      : Config.smoothCaret === "fast"
       ? 85
       : 0;
 
