@@ -23,6 +23,9 @@ importers:
       conventional-changelog:
         specifier: 6.0.0
         version: 6.0.0(conventional-commits-filter@5.0.0)
+      eslint:
+        specifier: 8.57.1
+        version: 8.57.1
       husky:
         specifier: 8.0.1
         version: 8.0.1
@@ -35,6 +38,9 @@ importers:
       only-allow:
         specifier: 1.2.1
         version: 1.2.1
+      oxlint:
+        specifier: 0.16.6
+        version: 0.16.6
       prettier:
         specifier: 2.8.8
         version: 2.8.8
@@ -165,6 +171,9 @@ importers:
       '@monkeytype/eslint-config':
         specifier: workspace:*
         version: link:../packages/eslint-config
+      '@monkeytype/oxlint-config':
+        specifier: workspace:*
+        version: link:../packages/oxlint-config
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../packages/typescript-config
@@ -243,6 +252,9 @@ importers:
       openapi3-ts:
         specifier: 2.0.2
         version: 2.0.2
+      oxlint:
+        specifier: 0.16.6
+        version: 0.16.6
       readline-sync:
         specifier: 1.4.10
         version: 1.4.10
@@ -358,6 +370,9 @@ importers:
       '@monkeytype/eslint-config':
         specifier: workspace:*
         version: link:../packages/eslint-config
+      '@monkeytype/oxlint-config':
+        specifier: workspace:*
+        version: link:../packages/oxlint-config
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../packages/typescript-config
@@ -427,6 +442,9 @@ importers:
       normalize.css:
         specifier: 8.0.1
         version: 8.0.1
+      oxlint:
+        specifier: 0.16.6
+        version: 0.16.6
       postcss:
         specifier: 8.4.31
         version: 8.4.31
@@ -463,6 +481,9 @@ importers:
       vite-plugin-minify:
         specifier: 2.1.0
         version: 2.1.0(vite@6.0.14(@types/node@20.14.11)(sass@1.70.0)(terser@5.31.3)(tsx@4.16.2)(yaml@2.5.0))
+      vite-plugin-oxlint:
+        specifier: 1.3.1
+        version: 1.3.1(vite@6.0.14(@types/node@20.14.11)(sass@1.70.0)(terser@5.31.3)(tsx@4.16.2)(yaml@2.5.0))
       vite-plugin-pwa:
         specifier: 0.20.0
         version: 0.20.0(vite@6.0.14(@types/node@20.14.11)(sass@1.70.0)(terser@5.31.3)(tsx@4.16.2)(yaml@2.5.0))(workbox-build@7.1.1)(workbox-window@7.1.0)
@@ -497,6 +518,9 @@ importers:
       madge:
         specifier: 8.0.0
         version: 8.0.0(typescript@5.5.4)
+      oxlint:
+        specifier: 0.16.6
+        version: 0.16.6
       tsup:
         specifier: 8.4.0
         version: 8.4.0(postcss@8.5.1)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.5.0)
@@ -527,6 +551,9 @@ importers:
       eslint-plugin-json:
         specifier: 3.1.0
         version: 3.1.0
+      eslint-plugin-oxlint:
+        specifier: 0.16.5
+        version: 0.16.5
       eslint-plugin-require-path-exists:
         specifier: 1.1.9
         version: 1.1.9
@@ -555,6 +582,9 @@ importers:
       madge:
         specifier: 8.0.0
         version: 8.0.0(typescript@5.5.4)
+      oxlint:
+        specifier: 0.16.6
+        version: 0.16.6
       tsup:
         specifier: 8.4.0
         version: 8.4.0(postcss@8.5.1)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.5.0)
@@ -564,6 +594,8 @@ importers:
       vitest:
         specifier: 2.1.9
         version: 2.1.9(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3)
+
+  packages/oxlint-config: {}
 
   packages/release:
     dependencies:
@@ -586,6 +618,9 @@ importers:
       nodemon:
         specifier: 3.1.4
         version: 3.1.4
+      oxlint:
+        specifier: 0.16.6
+        version: 0.16.6
 
   packages/tsup-config:
     dependencies:
@@ -599,6 +634,9 @@ importers:
       eslint:
         specifier: 8.57.1
         version: 8.57.1
+      oxlint:
+        specifier: 0.16.6
+        version: 0.16.6
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -625,6 +663,9 @@ importers:
       madge:
         specifier: 8.0.0
         version: 8.0.0(typescript@5.5.4)
+      oxlint:
+        specifier: 0.16.6
+        version: 0.16.6
       tsup:
         specifier: 8.4.0
         version: 8.4.0(postcss@8.5.1)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.5.0)
@@ -2367,6 +2408,46 @@ packages:
   '@opentelemetry/semantic-conventions@1.21.0':
     resolution: {integrity: sha512-lkC8kZYntxVKr7b8xmjCVUgE0a8xgDakPyDo9uSWavXPyYqLgYYGdEd2j8NxihRyb6UwpX3G/hFUF4/9q2V+/g==}
     engines: {node: '>=14'}
+
+  '@oxlint/darwin-arm64@0.16.6':
+    resolution: {integrity: sha512-wvW55Br6o08JEmiezMqvo0byZNH9eunCkbouV8rM2gQP6ROv8lbeQdPZLpAeFz0QA4Ca2b2pVo5S3N2fS78d+Q==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@oxlint/darwin-x64@0.16.6':
+    resolution: {integrity: sha512-VezC8yep+1TxVtBsTQz2OHJs9aTuIQ7ISyl5rn1QVQXeG7wdFIIFln3ilu2TtaMjnswEdEsCDqBjyoF1euqQow==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@oxlint/linux-arm64-gnu@0.16.6':
+    resolution: {integrity: sha512-hvpBsP5/bERq8ft4KidszGifWV4ZcXeaJrfNI8CqIbfd4AqGJmnc5d6M2Op/sYdEMjRGdpPqftfzw4D6jDHPIQ==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxlint/linux-arm64-musl@0.16.6':
+    resolution: {integrity: sha512-PolYYEhYELXaQ0ht0g6Z827rRVDgbi/PQcHFpctiDHbSruW3udIOy9nEOAUt0agSHYrdZcC0NWzISE+CPrM0Yw==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxlint/linux-x64-gnu@0.16.6':
+    resolution: {integrity: sha512-y4Lq4mcheXYzyLiS2TG1CaNDfgK+yVmmyJlms010Gs6nd1ejF6cObMuY5g6GLPGRJMJxG4fhbE955I2y50+Ltg==}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxlint/linux-x64-musl@0.16.6':
+    resolution: {integrity: sha512-p3Njn7MzBsIJr+23HtxItA86UP01xhcWfwU35RGWVyTNbXIdNoAkaD+DjXQj2KSEauO7rRDAZbrTA+40NWNNkQ==}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxlint/win32-arm64@0.16.6':
+    resolution: {integrity: sha512-IdySuXzslSnZEk9F2mRx1cjyPsHM8ny2xQd+FEbWhDhfwxVZCK+m9hXoEnqVQ6FLXQsOjWVutGtYb+EpDiZxlQ==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@oxlint/win32-x64@0.16.6':
+    resolution: {integrity: sha512-DqkFdDX1ULoizFBg21TMIe6B5L2a59KljqpN1S7H4+IXhxmRcc71bpZ7FRwrxjrlRhtCD4SAPTZadBI9qRhViw==}
+    cpu: [x64]
+    os: [win32]
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -4633,6 +4714,9 @@ packages:
   eslint-plugin-json@3.1.0:
     resolution: {integrity: sha512-MrlG2ynFEHe7wDGwbUuFPsaT2b1uhuEFhJ+W1f1u+1C2EkXmTYJp4B1aAdQQ8M+CC3t//N/oRKiIVw14L2HR1g==}
     engines: {node: '>=12.0'}
+
+  eslint-plugin-oxlint@0.16.5:
+    resolution: {integrity: sha512-Hzj4jpPw+eESux/r9bC8qozc4PVh25S2JGLXit1BrlghfAHQJWNU1Yhz56p0Tj4Zd+xLA79NimpwbOmLI2isgg==}
 
   eslint-plugin-require-path-exists@1.1.9:
     resolution: {integrity: sha512-moZRfrPr4GFyT/W8PHzjzC7D4Hnj7Us+GYj0fbVKQoPvP4xIF8VG702L1jzyhqE8eIYkcs8p1CoqSfjk9WkxBg==}
@@ -7207,6 +7291,11 @@ packages:
     resolution: {integrity: sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==}
     engines: {node: '>=0.10.0'}
 
+  oxlint@0.16.6:
+    resolution: {integrity: sha512-pesehI0loV2h2k95mFRsUg6uNgGw2RPs1pcuAfPRJUwGehkfraMVCQofwqsMUeufmXygweH734vhKzQ24r3djA==}
+    engines: {node: '>=8.*'}
+    hasBin: true
+
   p-defer@3.0.0:
     resolution: {integrity: sha512-ugZxsxmtTln604yeYd29EGrNhazN2lywetzpKhfmQjW/VJmhpDmWbiX+h0zL8V91R0UXkhb3KtPmyq9PZw3aYw==}
     engines: {node: '>=8'}
@@ -7253,6 +7342,9 @@ packages:
 
   package-json-from-dist@1.0.0:
     resolution: {integrity: sha512-dATvCeZN/8wQsGywez1mzHtTlP22H8OEfPrVMLNr4/eGa+ijtLn/6M5f0dY8UKNrC2O9UCU6SSoG3qRKnt7STw==}
+
+  package-manager-detector@1.1.0:
+    resolution: {integrity: sha512-Y8f9qUlBzW8qauJjd/eu6jlpJZsuPJm2ZAV0cDVd420o4EdpH5RPdoCv+60/TdJflGatr4sDfpAL6ArWZbM5tA==}
 
   pako@1.0.11:
     resolution: {integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==}
@@ -9316,6 +9408,11 @@ packages:
     resolution: {integrity: sha512-h+Ae0WX0mvrWM4GhE6JX2NmxlDuZRv4AgcTHFqfbSyPwS+OdlOM692AQrK0eO8lDEh7gYLjG3EHovKvtrNQDvA==}
     peerDependencies:
       vite: '>=5'
+
+  vite-plugin-oxlint@1.3.1:
+    resolution: {integrity: sha512-WqPadqqjHVGjs/rTg3E2h2Ad9AgTlRD5X+YA0WlEke+uC6/P24RmLLucmDatBqi59ccV4xAWzchqIdRZ5Z0CHA==}
+    peerDependencies:
+      vite: ^6.0.7
 
   vite-plugin-pwa@0.20.0:
     resolution: {integrity: sha512-/kDZyqF8KqoXRpMUQtR5Atri/7BWayW8Gp7Kz/4bfstsV6zSFTxjREbXZYL7zSuRL40HGA+o2hvUAFRmC+bL7g==}
@@ -11777,6 +11874,30 @@ snapshots:
   '@opentelemetry/api@1.8.0': {}
 
   '@opentelemetry/semantic-conventions@1.21.0': {}
+
+  '@oxlint/darwin-arm64@0.16.6':
+    optional: true
+
+  '@oxlint/darwin-x64@0.16.6':
+    optional: true
+
+  '@oxlint/linux-arm64-gnu@0.16.6':
+    optional: true
+
+  '@oxlint/linux-arm64-musl@0.16.6':
+    optional: true
+
+  '@oxlint/linux-x64-gnu@0.16.6':
+    optional: true
+
+  '@oxlint/linux-x64-musl@0.16.6':
+    optional: true
+
+  '@oxlint/win32-arm64@0.16.6':
+    optional: true
+
+  '@oxlint/win32-x64@0.16.6':
+    optional: true
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
@@ -14369,6 +14490,10 @@ snapshots:
     dependencies:
       lodash: 4.17.21
       vscode-json-languageservice: 4.2.1
+
+  eslint-plugin-oxlint@0.16.5:
+    dependencies:
+      jsonc-parser: 3.3.1
 
   eslint-plugin-require-path-exists@1.1.9:
     dependencies:
@@ -17703,6 +17828,17 @@ snapshots:
 
   os-tmpdir@1.0.2: {}
 
+  oxlint@0.16.6:
+    optionalDependencies:
+      '@oxlint/darwin-arm64': 0.16.6
+      '@oxlint/darwin-x64': 0.16.6
+      '@oxlint/linux-arm64-gnu': 0.16.6
+      '@oxlint/linux-arm64-musl': 0.16.6
+      '@oxlint/linux-x64-gnu': 0.16.6
+      '@oxlint/linux-x64-musl': 0.16.6
+      '@oxlint/win32-arm64': 0.16.6
+      '@oxlint/win32-x64': 0.16.6
+
   p-defer@3.0.0: {}
 
   p-limit@2.3.0:
@@ -17750,6 +17886,8 @@ snapshots:
       netmask: 2.0.2
 
   package-json-from-dist@1.0.0: {}
+
+  package-manager-detector@1.1.0: {}
 
   pako@1.0.11: {}
 
@@ -18641,7 +18779,7 @@ snapshots:
     dependencies:
       chokidar: 3.6.0
       immutable: 4.3.7
-      source-map-js: 1.2.0
+      source-map-js: 1.2.1
 
   scheduler@0.23.2:
     dependencies:
@@ -20079,6 +20217,12 @@ snapshots:
     dependencies:
       '@types/html-minifier-terser': 7.0.2
       html-minifier-terser: 7.2.0
+      vite: 6.0.14(@types/node@20.14.11)(sass@1.70.0)(terser@5.31.3)(tsx@4.16.2)(yaml@2.5.0)
+
+  vite-plugin-oxlint@1.3.1(vite@6.0.14(@types/node@20.14.11)(sass@1.70.0)(terser@5.31.3)(tsx@4.16.2)(yaml@2.5.0)):
+    dependencies:
+      oxlint: 0.16.6
+      package-manager-detector: 1.1.0
       vite: 6.0.14(@types/node@20.14.11)(sass@1.70.0)(terser@5.31.3)(tsx@4.16.2)(yaml@2.5.0)
 
   vite-plugin-pwa@0.20.0(vite@6.0.14(@types/node@20.14.11)(sass@1.70.0)(terser@5.31.3)(tsx@4.16.2)(yaml@2.5.0))(workbox-build@7.1.1)(workbox-window@7.1.0):

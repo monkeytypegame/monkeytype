@@ -66,7 +66,7 @@ import {
   GetProfileQuery,
   GetProfileResponse,
   GetStatsResponse,
-  GetStreakResponseSchema,
+  GetStreakResponse,
   GetTagsResponse,
   GetTestActivityResponse,
   GetUserInboxResponse,
@@ -78,7 +78,7 @@ import {
   ReportUserRequest,
   SetStreakHourOffsetRequest,
   TagIdPathParams,
-  UpdateEmailRequestSchema,
+  UpdateEmailRequest,
   UpdateLeaderboardMemoryRequest,
   UpdatePasswordRequest,
   UpdateUserInboxRequest,
@@ -444,7 +444,7 @@ export async function checkName(
 }
 
 export async function updateEmail(
-  req: MonkeyRequest<undefined, UpdateEmailRequestSchema>
+  req: MonkeyRequest<undefined, UpdateEmailRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   let { newEmail, previousEmail } = req.body;
@@ -1246,7 +1246,7 @@ export async function getCurrentTestActivity(
 
 export async function getStreak(
   req: MonkeyRequest
-): Promise<GetStreakResponseSchema> {
+): Promise<GetStreakResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const user = await UserDAL.getPartialUser(uid, "streak", ["streak"]);

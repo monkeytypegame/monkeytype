@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import eslint, { format, failAfterError } from "gulp-eslint-new";
 import gulp from "gulp";
 import {

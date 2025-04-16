@@ -93,7 +93,7 @@ describe("LeaderboardsDal", () => {
     });
     it("should not include discord properties for users without discord connection", async () => {
       //GIVEN
-      const rank1 = await createUser(lbBests(pb(90), pb(100, 90, 2)), {
+      await createUser(lbBests(pb(90), pb(100, 90, 2)), {
         discordId: undefined,
         discordAvatar: undefined,
       });
@@ -138,10 +138,10 @@ describe("LeaderboardsDal", () => {
 
     it("should update public speedHistogram for time english 15", async () => {
       //GIVEN
-      const rank1 = await createUser(lbBests(pb(10), pb(60)));
-      const rank2 = await createUser(lbBests(pb(24)));
-      const rank3 = await createUser(lbBests(pb(28)));
-      const rank4 = await createUser(lbBests(pb(31)));
+      await createUser(lbBests(pb(10), pb(60)));
+      await createUser(lbBests(pb(24)));
+      await createUser(lbBests(pb(28)));
+      await createUser(lbBests(pb(31)));
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
@@ -153,10 +153,10 @@ describe("LeaderboardsDal", () => {
 
     it("should update public speedHistogram for time english 60", async () => {
       //GIVEN
-      const rank1 = await createUser(lbBests(pb(60), pb(20)));
-      const rank2 = await createUser(lbBests(undefined, pb(21)));
-      const rank3 = await createUser(lbBests(undefined, pb(110)));
-      const rank4 = await createUser(lbBests(undefined, pb(115)));
+      await createUser(lbBests(pb(60), pb(20)));
+      await createUser(lbBests(undefined, pb(21)));
+      await createUser(lbBests(undefined, pb(110)));
+      await createUser(lbBests(undefined, pb(115)));
 
       //WHEN
       await LeaderboardsDal.update("time", "60", "english");
@@ -253,7 +253,7 @@ describe("LeaderboardsDal", () => {
     it("should create leaderboard without premium if feature disabled", async () => {
       await enablePremiumFeatures(false);
       //GIVEN
-      const lifetime = await createUser(lbBests(pb(3)), premium(-1));
+      // const lifetime = await createUser(lbBests(pb(3)), premium(-1));
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
@@ -358,12 +358,12 @@ function premium(expirationDeltaSeconds: number) {
   };
 }
 
-interface ExpectedLbEntry {
+type ExpectedLbEntry = {
   rank: number;
   user: UserDal.DBUser;
   badgeId?: number;
   isPremium?: boolean;
-}
+};
 
 async function enablePremiumFeatures(premium: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {

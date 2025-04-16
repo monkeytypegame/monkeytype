@@ -267,7 +267,7 @@ export function setFunbox(
     }
   }
 
-  const val = funbox ? funbox : "none";
+  const val = funbox || "none";
   config.funbox = val;
   saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);

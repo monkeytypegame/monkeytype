@@ -487,7 +487,7 @@ export async function init(): Promise<void> {
     return;
   }
 
-  const beforeHasNumbers = TestWords.hasNumbers ? true : false;
+  const beforeHasNumbers = TestWords.hasNumbers;
 
   let hasNumbers = false;
 

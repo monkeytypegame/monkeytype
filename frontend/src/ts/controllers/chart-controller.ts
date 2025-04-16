@@ -560,7 +560,7 @@ export const accountHistory = new ChartWithUpdateColors<
               if (diff === undefined) {
                 diff = "normal";
               }
-              label += "\n" + `difficulty: ${diff}`;
+              label += `\ndifficulty: ${diff}`;
 
               label +=
                 "\n" +
