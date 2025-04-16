@@ -15,7 +15,7 @@
         "varsIgnorePattern": "^_"
       }
     ],
-    "no-await-in-loop": "allow",
+    "no-await-in-loop": "off",
     "consistent-function-scoping": "off",
     "prefer-add-event-listener": "off",
     "no-new": "off",
