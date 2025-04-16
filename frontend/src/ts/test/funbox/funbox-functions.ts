@@ -631,6 +631,16 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return word.toUpperCase();
     },
   },
+  polyglot: {
+    async withWords(_words) {
+      const promises = Config.customLanguagefluid.map(JSONData.getLanguage);
+
+      const languages = await Promise.all(promises);
+      const wordSet = languages.flatMap((it) => it.words);
+      Arrays.shuffle(wordSet);
+      return new Wordset(wordSet);
+    },
+  },
 };
 
 export function getFunboxFunctions(): Record<FunboxName, FunboxFunctions> {

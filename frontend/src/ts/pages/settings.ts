@@ -473,19 +473,13 @@ async function fillSettingsPage(): Promise<void> {
     ".pageSettings .section[data-config-name='language'] select"
   ) as Element;
 
-  let html = "";
   if (languageGroups) {
-    for (const group of languageGroups) {
-      html += `<optgroup label="${group.name}">`;
-      for (const language of group.languages) {
-        const selected = language === Config.language ? "selected" : "";
-        const text = Strings.getLanguageDisplayString(language);
-        html += `<option value="${language}" ${selected}>${text}</option>`;
-      }
-      html += `</optgroup>`;
-    }
+    element.innerHTML = buildLanguageDropdown(
+      languageGroups,
+      (language) => language == Config.language
+    );
   }
-  element.innerHTML = html;
+
   new SlimSelect({
     select: element,
     settings: {
@@ -687,7 +681,6 @@ async function fillSettingsPage(): Promise<void> {
   $(".pageSettings .section[data-config-name='customLayoutfluid'] input").val(
     Config.customLayoutfluid.replace(/#/g, " ")
   );
-
   const customLayoutfluidActive = Config.customLayoutfluid.split("#");
   const customLayoutfluidElement = document.querySelector(
     ".pageSettings .section[data-config-name='customLayoutfluid'] select"
@@ -709,6 +702,25 @@ async function fillSettingsPage(): Promise<void> {
         void UpdateConfig.setCustomLayoutfluid(
           newVal.map((it) => it.value).join("#")
         );
+      },
+    },
+  });
+
+  const customLanguageFluidElement = document.querySelector(
+    ".pageSettings .section[data-config-name='customLanguageFluid'] select"
+  ) as Element;
+  if (languageGroups) {
+    customLanguageFluidElement.innerHTML = buildLanguageDropdown(
+      languageGroups,
+      (language) => Config.customLanguagefluid.includes(language)
+    );
+  }
+
+  new SlimSelect({
+    select: customLanguageFluidElement,
+    events: {
+      afterChange: (newVal): void => {
+        void UpdateConfig.setCustomLanguagefluid(newVal.map((it) => it.value));
       },
     },
   });
@@ -1357,6 +1369,24 @@ $(".pageSettings .quickNav .links a").on("click", (e) => {
 let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
+}
+
+function buildLanguageDropdown(
+  languageGroups: JSONData.LanguageGroup[],
+  isActive: (val: string) => boolean
+): string {
+  let html = "";
+  for (const group of languageGroups) {
+    html += `<optgroup label="${group.name}">`;
+    for (const language of group.languages) {
+      const selected = isActive(language) ? "selected" : "";
+      const text = Strings.getLanguageDisplayString(language);
+      html += `<option value="${language}" ${selected}>${text}</option>`;
+    }
+    html += `</optgroup>`;
+  }
+
+  return html;
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

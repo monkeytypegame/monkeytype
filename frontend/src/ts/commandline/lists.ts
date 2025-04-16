@@ -226,6 +226,19 @@ export const commands: CommandsSubgroup = {
         UpdateConfig.setCustomLayoutfluid(input);
       },
     },
+    {
+      id: "changeCustomLanguagefluid",
+      display: "Custom languagefluid...",
+      defaultValue: (): string => {
+        return Config.customLanguagefluid.join(" "); //TODO better handling of arrays
+      },
+      input: true,
+      icon: "fa-language",
+      exec: ({ input }): void => {
+        if (input === undefined) return;
+        void UpdateConfig.setCustomLanguagefluid(input.split(" "));
+      },
+    },
 
     //input
     ...FreedomModeCommands,

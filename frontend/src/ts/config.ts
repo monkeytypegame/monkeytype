@@ -1906,6 +1906,26 @@ export function setCustomLayoutfluid(
   return true;
 }
 
+export function setCustomLanguagefluid(
+  value: ConfigSchemas.CustomLanguageFluid,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid(
+      "customLanguagefluid",
+      value,
+      ConfigSchemas.CustomLanguageFluidSchema
+    )
+  )
+    return false;
+
+  config.customLanguagefluid = value;
+  saveToLocalStorage("customLanguagefluid", nosave);
+  ConfigEvent.dispatch("customLanguagefluid", config.language);
+
+  return true;
+}
+
 export function setCustomBackgroundSize(
   value: ConfigSchemas.CustomBackgroundSize,
   nosave?: boolean
@@ -2012,6 +2032,7 @@ export async function apply(
       true
     );
     setCustomLayoutfluid(configObj.customLayoutfluid, true);
+    setCustomLanguagefluid(configObj.customLanguagefluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
