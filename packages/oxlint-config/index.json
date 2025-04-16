@@ -18,7 +18,6 @@
     "no-await-in-loop": "allow",
     "consistent-function-scoping": "off",
     "prefer-add-event-listener": "off",
-    "no-unsafe-optional-chaining": "off",
     "no-new": "off",
     "no-new-array": "off",
     "no-useless-spread": "off",
