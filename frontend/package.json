@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint": "eslint \"./**/*.ts\"",
+    "eslint": "eslint \"./**/*.ts\"",
     "oxlint": "oxlint .",
+    "lint": "npm run oxlint && npm run eslint",
     "validate-json": "npx gulp validate-json-schema",
     "audit": "vite-bundle-visualizer",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",

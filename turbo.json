@@ -6,9 +6,6 @@
       "dependsOn": ["^parallel"]
     },
     "lint": {
-      "dependsOn": ["^parallel", "^build", "oxlint"]
-    },
-    "oxlint": {
       "dependsOn": ["^parallel", "^build"]
     },
     "ts-check": {

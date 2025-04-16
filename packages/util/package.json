@@ -6,8 +6,9 @@
     "test": "vitest run",
     "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
-    "lint": "eslint \"./**/*.ts\"",
-    "oxlint": "oxlint ."
+    "eslint": "eslint \"./src/**/*.ts\"",
+    "oxlint": "oxlint .",
+    "lint": "npm run oxlint && npm run eslint"
   },
   "devDependencies": {
     "@monkeytype/eslint-config": "workspace:*",
