@@ -81,7 +81,7 @@
     "max-depth": [
       "error",
       {
-        "max": 9
+        "max": 6
       }
     ],
 
