@@ -2,9 +2,9 @@ import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import {
-  isConfigValueValidAsync,
   isConfigValueValidBoolean,
   isConfigValueValid,
+  invalid as notifyInvalid,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { isAuthenticated } from "./firebase";
@@ -30,6 +30,7 @@ import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
+import { LayoutsList } from "./constants/layouts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -1875,20 +1876,29 @@ export function setCustomBackground(
   return true;
 }
 
-export async function setCustomLayoutfluid(
+export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
-): Promise<boolean> {
+): boolean {
   const trimmed = value.trim();
 
-  if (
-    !(await isConfigValueValidAsync("layoutfluid", trimmed, ["layoutfluid"]))
-  ) {
+  const invalidLayouts = trimmed
+    .split(/[# ]+/) //can be space or hash
+    .filter((it) => !LayoutsList.includes(it));
+
+  if (invalidLayouts.length !== 0) {
+    notifyInvalid(
+      "layoutfluid",
+      trimmed,
+      `The following inputted layouts do not exist: ${invalidLayouts.join(
+        ", "
+      )}`
+    );
+
     return false;
   }
 
   const customLayoutfluid = trimmed.replace(/ /g, "#");
-
   config.customLayoutfluid = customLayoutfluid;
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
@@ -2001,7 +2011,7 @@ export async function apply(
       configObj.autoSwitchTheme,
       true
     );
-    await setCustomLayoutfluid(configObj.customLayoutfluid, true);
+    setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
