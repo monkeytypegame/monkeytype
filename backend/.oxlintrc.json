@@ -1,0 +1,17 @@
+{
+  "extends": [
+    "../packages/oxlint-config/index.json"
+    // "@monkeytype/oxlint-config"
+  ],
+  "overrides": [
+    {
+      "files": ["__tests__/**"],
+      "plugins": ["jest", "vitest"],
+      "rules": {
+        "no-explicit-any": "allow",
+        "explicit-function-return-type": "off",
+        "ban-ts-comment": "off"
+      }
+    }
+  ]
+}

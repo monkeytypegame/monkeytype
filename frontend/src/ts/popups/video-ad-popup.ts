@@ -39,7 +39,7 @@ export async function show(): Promise<void> {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
-        //@ts-expect-error
+        //@ts-expect-error 3rd party ad code
         window.dataLayer.push({ event: "EG_Video" });
       });
   }

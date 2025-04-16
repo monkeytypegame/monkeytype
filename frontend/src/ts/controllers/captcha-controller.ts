@@ -15,7 +15,7 @@ export function render(
     return;
   }
 
-  //@ts-expect-error
+  //@ts-expect-error 3rd party code, no types
   const widgetId = grecaptcha.render(element, {
     sitekey: siteKey,
     callback,
@@ -29,7 +29,7 @@ export function reset(id: string): void {
     return;
   }
 
-  //@ts-expect-error
+  //@ts-expect-error 3rd party code, no types
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   grecaptcha.reset(captchas[id]);
 }
@@ -39,7 +39,7 @@ export function getResponse(id: string): string {
     return "";
   }
 
-  //@ts-expect-error
+  //@ts-expect-error 3rd party code, no types
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
   return grecaptcha.getResponse(captchas[id]);
 }

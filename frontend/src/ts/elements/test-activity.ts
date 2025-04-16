@@ -143,7 +143,7 @@ function updateLabels(firstDayOfWeek: number): void {
   const days: (string | undefined)[] = [];
   for (let i = 0; i < 7; i++) {
     days.push(
-      i % 2 != firstDayOfWeek % 2
+      i % 2 !== firstDayOfWeek % 2
         ? daysDisplay[(firstDayOfWeek + i) % 7]
         : undefined
     );

@@ -196,8 +196,6 @@ export class WeeklyXpLeaderboard {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     connection.set;
 
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
-    // @ts-ignore
     const [[, rank], [, totalXp], [, _count], [, result]] = (await connection
       .multi()
       .zrevrank(weeklyXpLeaderboardScoresKey, uid)
@@ -207,7 +205,8 @@ export class WeeklyXpLeaderboard {
       .exec()) as [
       [null, number | null],
       [null, string | null],
-      [null, number | null]
+      [null, number | null],
+      [null, string | null]
     ];
 
     if (rank === null) {

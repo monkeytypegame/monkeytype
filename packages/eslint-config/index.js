@@ -13,22 +13,18 @@ module.exports = {
   ],
   extends: [
     "eslint:recommended",
-    "plugin:json/recommended",
     "plugin:import/recommended",
     "plugin:import/typescript",
     "prettier",
+    "plugin:oxlint/recommended",
   ],
-  plugins: ["json", "require-path-exists", "@typescript-eslint"],
+  plugins: ["require-path-exists", "@typescript-eslint"],
   parserOptions: {
     sourceType: "module",
     ecmaVersion: 2020,
   },
   rules: {
-    "json/*": ["error"],
     indent: ["off"],
-    "no-empty": ["error", { allowEmptyCatch: true }],
-    "no-var": 2,
-    "no-duplicate-imports": ["error"],
     "no-constant-condition": ["error"],
     "no-constant-binary-expression": "error",
     "no-unused-vars": [
@@ -39,7 +35,6 @@ module.exports = {
         varsIgnorePattern: "^_",
       },
     ],
-    "import/no-duplicates": "off",
     "import/no-unresolved": [
       "error",
       {
@@ -52,8 +47,35 @@ module.exports = {
         groups: [["+", "??"]],
       },
     ],
+
+    //handled by oxlint
+    "no-duplicates": "off",
+    "no-var": "off",
+    "no-empty": "off",
+    "no-named-as-default": "off",
+    "prefer-const": "off",
+    "prefer-rest-params": "off",
+    "prefer-spread": "off",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off",
+    "import/no-duplicates": "off",
+    "import/export": "off",
+    "no-case-declarations": "off",
+    "no-fallthrough": "off",
+    "no-inner-declarations": "off",
+    "no-prototype-builtins": "off",
+    "no-regex-spaces": "off",
+    "no-redeclare": "off",
   },
   overrides: [
+    {
+      files: ["*.json"],
+      extends: ["plugin:json/recommended"],
+      plugins: ["json"],
+      rules: {
+        "json/*": ["error"],
+      },
+    },
     {
       // enable the rule specifically for TypeScript files
       files: ["*.ts", "*.tsx"],
@@ -65,6 +87,7 @@ module.exports = {
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/strict",
         "plugin:@typescript-eslint/strict-type-checked",
+        "plugin:oxlint/recommended",
       ],
       rules: {
         //strict type checked
@@ -73,7 +96,6 @@ module.exports = {
         "@typescript-eslint/await-thenable": "off",
         "@typescript-eslint/no-unnecessary-template-expression": "off",
         "@typescript-eslint/prefer-promise-reject-errors": "off",
-        "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/no-unnecessary-type-arguments": "off",
         "@typescript-eslint/restrict-template-expressions": "off",
         "@typescript-eslint/no-redundant-type-constituents": "off",
@@ -88,29 +110,6 @@ module.exports = {
           "error",
           { ignoreArrowShorthand: true },
         ],
-        "@typescript-eslint/explicit-function-return-type": [
-          "error",
-          {
-            allowExpressions: true,
-          },
-        ],
-        "@typescript-eslint/ban-ts-comment": "off",
-        "@typescript-eslint/no-empty-function": "error",
-        "@typescript-eslint/no-unused-vars": [
-          "error",
-          {
-            argsIgnorePattern: "^(_|e|event)",
-            caughtErrorsIgnorePattern: "^(_|e|error)",
-            varsIgnorePattern: "^_",
-          },
-        ],
-        "@typescript-eslint/no-unused-expressions": [
-          "error",
-          {
-            allowTernary: true,
-          },
-        ],
-        "@typescript-eslint/no-var-requires": "error",
         "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/no-misused-promises": [
           "error",
@@ -126,9 +125,47 @@ module.exports = {
         ],
         "@typescript-eslint/non-nullable-type-assertion-style": "off",
         "@typescript-eslint/no-unnecessary-condition": "off",
-        "@typescript-eslint/consistent-type-definitions": ["error", "type"],
         "@typescript-eslint/no-invalid-void-type": "off",
         "import/namespace": "off",
+
+        //handled by oxlint
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-empty-object-type": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-unused-expressions": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "no-empty": "off",
+        "@typescript-eslint/only-throw-error": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-unsafe-function-type": "off",
+        "@typescript-eslint/consistent-type-definitions": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "no-named-as-default": "off",
+        "no-duplicates": "off",
+        "@typescript-eslint/no-array-constructor": "off",
+        "@typescript-eslint/no-extraneous-class": "off",
+        "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "off",
+        "@typescript-eslint/no-require-imports": "off",
+        "@typescript-eslint/no-unnecessary-type-constraint": "off",
+        "@typescript-eslint/no-useless-constructor": "off",
+        "@typescript-eslint/prefer-literal-enum-member": "off",
+        "@typescript-eslint/prefer-namespace-keyword": "off",
+        "no-var": "off",
+        "prefer-const": "off",
+        "prefer-rest-params": "off",
+        "prefer-spread": "off",
+        "import/no-named-as-default": "off",
+        "import/no-named-as-default-member": "off",
+        "import/no-duplicates": "off",
+        "import/export": "off",
+        "no-case-declarations": "off",
+        "no-fallthrough": "off",
+        "no-inner-declarations": "off",
+        "no-prototype-builtins": "off",
+        "no-regex-spaces": "off",
+        "no-redeclare": "off",
+        "@typescript-eslint/no-namespace": "off",
       },
       settings: {
         "import/resolver": {

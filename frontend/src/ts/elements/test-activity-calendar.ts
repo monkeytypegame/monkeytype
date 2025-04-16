@@ -111,7 +111,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
           text: format(month, "MMM").toLowerCase(),
           weeks: weeks,
         });
-      } else if (i == 0) {
+      } else if (i === 0) {
         results.push({ text: "", weeks: weeks });
       }
     }
@@ -148,7 +148,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
         level: getValue(count),
         label:
           count !== undefined && count !== null
-            ? `${count} ${count == 1 ? "test" : "tests"} on ${day}`
+            ? `${count} ${count === 1 ? "test" : "tests"} on ${day}`
             : `no activity on ${day}`,
       });
       currentDate = addDays(currentDate, 1);
