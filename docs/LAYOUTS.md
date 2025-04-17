@@ -66,9 +66,9 @@ It is recommended that you familiarize yourselves with JSON before adding a layo
 
 In `keys` you need to specify `row1` to  `row5`. Add the keys within the row as string. The string can have up to four letters. The letters define unshifted, shifted, alt-gr and shifted alt-gr letter in this order. For example `eE€` defines `e` on regular key press, `E` if `shift` is held and `€` if `alt-gr` is held.
 
-For `type=ansi` the number of keys need to be exactly thirteen for `row1` and `row2`, eleven for `row3`, ten for `row4` and one or two for `row5`.
+For ansi layouts the number of keys need to be exactly thirteen for `row1` and `row2`, eleven for `row3`, ten for `row4` and one or two for `row5`.
 
-For `type=iso` the number of keys need to be exactly thirteen for `row1`, twelve for `row2` and  `row3`, eleven for `row4` and one or two for `row5`.
+For iso layouts the number of keys need to be exactly thirteen for `row1`, twelve for `row2` and  `row3`, eleven for `row4` and one or two for `row5`.
 
 
 
