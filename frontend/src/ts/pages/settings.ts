@@ -478,7 +478,7 @@ async function fillSettingsPage(): Promise<void> {
     select: element,
     data: getLanguageDropdownData(
       languageGroups ?? [],
-      (language) => language == Config.language
+      (language) => language === Config.language
     ),
     settings: {
       searchPlaceholder: "search",
