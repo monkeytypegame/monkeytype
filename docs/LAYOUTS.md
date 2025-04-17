@@ -21,36 +21,8 @@ The contents of the file should be as follows:
   "keymapShowTopRow": false,
   "type": "ansi",
   "keys": {
-    "row1": [
-      "`~",
-      "1!",
-      "2@",
-      "3#",
-      "4$",
-      "5%",
-      "6^",
-      "7&",
-      "8*",
-      "9(",
-      "0)",
-      "-_",
-      "=+"
-    ],
-    "row2": [
-      "qQ",
-      "wW",
-      "eE",
-      "rR",
-      "tT",
-      "yY",
-      "uU",
-      "iI",
-      "oO",
-      "pP",
-      "[{",
-      "]}",
-      "\\|"
-    ],
+    "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+    "row2": ["qQ", "wW", "eE", "rR", "tT", "yY", "uU", "iI", "oO", "pP", "[{", "]}", "\\|"],
     "row3": ["aA", "sS", "dD", "fF", "gG", "hH", "jJ", "kK", "lL", ";:", "'\""],
     "row4": ["zZ", "xX", "cC", "vV", "bB", "nN", "mM", ",<", ".>", "/?"],
     "row5": [" "]
@@ -68,7 +40,7 @@ In `keys` you need to specify `row1` to  `row5`. Add the keys within the row as 
 
 For ansi layouts the number of keys need to be exactly thirteen for `row1` and `row2`, eleven for `row3`, ten for `row4` and one or two for `row5`.
 
-For iso layouts the number of keys need to be exactly thirteen for `row1`, twelve for `row2` and  `row3`, eleven for `row4` and one or two for `row5`.
+For iso the number of keys need to be exactly thirteen for `row1`, twelve for `row2` and  `row3`, eleven for `row4` and one or two for `row5`.
 
 
 
