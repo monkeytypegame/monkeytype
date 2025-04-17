@@ -38,5 +38,5 @@ Create a pull request:
 
 ## Quote Guidelines
 
-Make sure your quote(s) follows the quote guidelines.
-[Quote guidelines](./CONTRIBUTING.md#quote-guidelines)
+Make sure your quote(s) follows the [Quote guidelines](./CONTRIBUTING.md#quote-guidelines).
+

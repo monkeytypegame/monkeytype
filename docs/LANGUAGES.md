@@ -74,5 +74,5 @@ Create a pull request:
 
 ## Language Guidelines
 
-Make sure your language follows the language guidelines.
-[Language guidelines](./CONTRIBUTING.md#language-guidelines)
+Make sure your language follows the [Language guidelines](./CONTRIBUTING.md#language-guidelines).
+
