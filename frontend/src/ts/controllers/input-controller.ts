@@ -94,11 +94,11 @@ function updateUI(): void {
 
           //@ts-expect-error really cant be bothered fixing all these issues - its gonna get caught anyway
           const koChar: string =
-            //@ts-expect-error
+            //@ts-expect-error ---
             koCurrWord[inputGroupLength][inputCharLength] ??
-            //@ts-expect-error
+            //@ts-expect-error ---
             koCurrWord[koCurrInput.length][
-              //@ts-expect-error
+              //@ts-expect-error ---
               inputCharLength - koCurrWord[inputGroupLength].length
             ];
 
@@ -127,7 +127,7 @@ function backspaceToPrevious(): void {
 
   const wordElements = document.querySelectorAll("#words > .word");
   if (
-    (TestInput.input.getHistory(TestState.activeWordIndex - 1) ==
+    (TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
       TestWords.words.get(TestState.activeWordIndex - 1) &&
       !Config.freedomMode) ||
     wordElements[wordElementIndex - 1]?.classList.contains("hidden")
@@ -716,7 +716,7 @@ function handleChar(
       (wordIsTheSame || shouldQuickEnd) &&
       (!isChinese ||
         (realInputValue !== undefined &&
-          charIndex + 2 == realInputValue.length))
+          charIndex + 2 === realInputValue.length))
     ) {
       void TestLogic.finish();
       return;
@@ -1051,7 +1051,7 @@ $(document).on("keydown", async (event) => {
         TestInput.input.current.slice(-1),
         TestInput.input.current.length - 1
       ) &&
-      (TestInput.input.getHistory(TestState.activeWordIndex - 1) !=
+      (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
         TestWords.words.get(TestState.activeWordIndex - 1) ||
         Config.freedomMode)
     ) {

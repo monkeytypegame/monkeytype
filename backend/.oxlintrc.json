@@ -9,7 +9,8 @@
       "plugins": ["jest", "vitest"],
       "rules": {
         "no-explicit-any": "allow",
-        "explicit-function-return-type": "off"
+        "explicit-function-return-type": "off",
+        "ban-ts-comment": "off"
       }
     }
   ]

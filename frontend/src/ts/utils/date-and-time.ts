@@ -227,12 +227,12 @@ export function getFirstDayOfTheWeek(): Day {
 
   //modern browsers support `weekInfo` or `getWeekInfo()`
   if ("weekInfo" in locale) {
-    // @ts-ignore
+    // @ts-expect-error weekInfo is not in the type definition
     return (locale.weekInfo.firstDay as number) % 7;
   }
 
   if ("getWeekInfo" in locale) {
-    // @ts-ignore
+    // @ts-expect-error getWeekInfo is not in the type definition
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return (locale.getWeekInfo().firstDay as number) % 7;
   }

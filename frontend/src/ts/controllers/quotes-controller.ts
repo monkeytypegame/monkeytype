@@ -65,7 +65,11 @@ class QuotesController {
           `quotes/${normalizedLanguage}.json`
         );
       } catch (e) {
-        if (e instanceof Error && e?.message?.includes("404")) {
+        if (
+          e instanceof Error &&
+          (e?.message?.includes("404") ||
+            e?.message?.includes("Content is not JSON"))
+        ) {
           return defaultQuoteCollection;
         } else {
           throw e;

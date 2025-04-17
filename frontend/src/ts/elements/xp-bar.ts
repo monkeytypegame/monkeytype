@@ -215,7 +215,7 @@ async function addBreakdownListItem(
       </div>`
     );
   } else {
-    const positive = amount == undefined ? undefined : amount >= 0;
+    const positive = amount === undefined ? undefined : amount >= 0;
 
     xpBreakdownListEl.append(`
       <div class="line" data-string='${string}'>

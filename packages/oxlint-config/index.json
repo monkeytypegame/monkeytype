@@ -76,20 +76,19 @@
     "no-prototype-builtins": "error",
     "no-regex-spaces": "error",
     "typescript/no-namespace": "error",
+    "eqeqeq": "error",
+    "ban-ts-comment": "error",
 
     "todo-lowerthis": "off",
     "max-depth": [
       "error",
       {
-        "max": 9
+        "max": 6
       }
     ],
 
     "todo": "off",
-    "ban-ts-comment": "off",
     "no-array-for-each": "off",
-    "eqeqeq": "off",
-    "prefer-ts-expect-error": "off",
 
     "consider": "off",
     "no-cycle": "off",

@@ -1103,7 +1103,7 @@ function sortAndRefreshHistory(
       }
     }
 
-    //@ts-expect-error
+    // @ts-expect-error temp
     temp.push(filteredResults[idx]);
     parsedIndexes.push(idx);
   }
@@ -1289,7 +1289,7 @@ $(".pageAccount .group.presetFilterButtons").on(
 );
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
-  //@ts-expect-error
+  //@ts-expect-error dont really wanna figure out the types here but it works
   void Misc.downloadResultsCSV(filteredResults);
 });
 
