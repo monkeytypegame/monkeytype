@@ -66,6 +66,8 @@ header .config .group .buttons .textButton.active,
 nav .textButton:hover,
 nav button.text:hover,
 header .config .group .buttons .textButton:hover,
+footer .textButton:hover,
+footer button.text:hover,
 a:not(.button):hover {
   animation: pastel 5s linear infinite;
 }
