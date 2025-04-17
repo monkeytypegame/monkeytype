@@ -64,11 +64,15 @@ It is recommended that you familiarize yourselves with JSON before adding a layo
 `keymapShowTopRow` indicates whether to always show the first row of the layout.
 `type` can be `ansi` or  `iso`.
 
-In `keys` you need to specify `row1` to  `row5`, but rows can be empty. Add the keys within the row as string. The string can have up to four letters. The letters define unshifted, shifted, alt-gr and shifted alt-gr letter in this order. For example `eE€` defines `e` on regular key press, `E` if `shift` is held and `€` if `alt-gr` is held.
+In `keys` you need to specify `row1` to  `row5`. Add the keys within the row as string. The string can have up to four letters. The letters define unshifted, shifted, alt-gr and shifted alt-gr letter in this order. For example `eE€` defines `e` on regular key press, `E` if `shift` is held and `€` if `alt-gr` is held.
+
+For `type=ansi` the number of keys need to be exactly thirteen for `row1` and `row2`, eleven for `row3`, ten for `row4` and one or two for `row5`.
+
+For `type=iso` the number of keys need to be exactly thirteen for `row1`, twelve for `row2` and  `row3`, eleven for `row4` and one or two for `row5`.
 
 
 
-In addition to the layout file, you need to add your layout to the `frontend/src/ts/constants/layouts.ts` file. Just append your layout name (without the `.json`) at the __end__ of the array. Remember to add a comma like this:
+In addition to the layout file you need to add your layout to the `frontend/src/ts/constants/layouts.ts` file. Just append your layout name (without the `.json`) at the __end__ of the array. Remember to add a comma like this:
 
 ```ts
   "ergopti",
