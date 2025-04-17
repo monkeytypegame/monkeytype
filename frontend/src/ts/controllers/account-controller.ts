@@ -226,7 +226,7 @@ async function readyFunction(
   console.debug(`account controller ready`);
   if (authInitialisedAndConnected) {
     void PSA.show();
-    console.debug(`auth state changed, user ${user ? true : false}`);
+    console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     console.debug(user);
     if (user) {
       await loadUser(user);

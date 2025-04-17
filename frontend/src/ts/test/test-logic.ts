@@ -86,7 +86,7 @@ export function clearNotSignedInResult(): void {
 export function setNotSignedInUidAndHash(uid: string): void {
   if (notSignedInLastResult === null) return;
   notSignedInLastResult.uid = uid;
-  //@ts-expect-error
+  //@ts-expect-error really need to delete this
   delete notSignedInLastResult.hash;
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
 }
@@ -487,7 +487,7 @@ export async function init(): Promise<void> {
     return;
   }
 
-  const beforeHasNumbers = TestWords.hasNumbers ? true : false;
+  const beforeHasNumbers = TestWords.hasNumbers;
 
   let hasNumbers = false;
 

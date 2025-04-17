@@ -398,10 +398,8 @@ export async function previewClick(val: string): Promise<void> {
   const clickSoundIds = Object.keys(safeClickSounds);
   if (!clickSoundIds.includes(val)) return;
 
-  //@ts-expect-error
-  safeClickSounds[val][0].sounds[0].seek(0);
-  //@ts-expect-error
-  safeClickSounds[val][0].sounds[0].play();
+  safeClickSounds?.[val]?.[0]?.sounds[0]?.seek(0);
+  safeClickSounds?.[val]?.[0]?.sounds[0]?.play();
 }
 
 export async function previewError(val: string): Promise<void> {

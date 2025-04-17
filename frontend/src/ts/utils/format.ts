@@ -21,7 +21,9 @@ export type FallbackOptions = {
 };
 
 export class Formatting {
-  constructor(private config: ConfigType) {}
+  constructor(private config: ConfigType) {
+    //
+  }
 
   typingSpeed(
     wpm: number | null | undefined,

@@ -1,10 +1,14 @@
 import { checker } from "vite-plugin-checker";
+import oxlintPlugin from "vite-plugin-oxlint";
 import Inspect from "vite-plugin-inspect";
 import path from "node:path";
 
 /** @type {import("vite").UserConfig} */
 export default {
   plugins: [
+    oxlintPlugin({
+      configFile: path.resolve(__dirname, "./.oxlintrc.json"),
+    }),
     checker({
       typescript: {
         tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),

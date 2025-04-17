@@ -48,10 +48,10 @@ export async function updateTags(
   });
   if (!result) throw new MonkeyError(404, "Result not found");
   const userTags = await getTags(uid);
-  const userTagIds = userTags.map((tag) => tag._id.toString());
+  const userTagIds = new Set(userTags.map((tag) => tag._id.toString()));
   let validTags = true;
   tags.forEach((tagId) => {
-    if (!userTagIds.includes(tagId)) validTags = false;
+    if (!userTagIds.has(tagId)) validTags = false;
   });
   if (!validTags) {
     throw new MonkeyError(422, "One of the tag id's is not valid");
