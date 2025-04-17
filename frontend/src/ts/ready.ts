@@ -4,7 +4,7 @@ import * as MerchBanner from "./elements/merch-banner";
 import * as CookiesModal from "./modals/cookies";
 import * as ConnectionState from "./states/connection";
 import * as AccountButton from "./elements/account-button";
-//@ts-expect-error
+//@ts-expect-error no types for this package
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
 import { getActiveFunboxesWithFunction } from "./test/funbox/list";

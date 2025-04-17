@@ -1116,7 +1116,7 @@ describe("test-activity-calendar.ts", () => {
 
         expect(days[366]).toHaveLevel(0);
         expect(days[367]).toBeDate("2024-06-12").toHaveTests(1);
-        expect(days[368]).toBeFiller;
+        expect(days[368]).toBeFiller();
       });
       it("increments in new year", () => {
         //GIVEN

@@ -73,7 +73,7 @@ export async function getQuoteStats(
 }
 
 function refreshStars(force?: number): void {
-  const limit = force ? force : rating;
+  const limit = force ?? rating;
   $(`#quoteRateModal .star`).removeClass("active");
   for (let i = 1; i <= limit; i++) {
     $(`#quoteRateModal .star[data-rating=${i}]`).addClass("active");

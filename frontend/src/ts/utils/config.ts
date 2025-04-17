@@ -30,7 +30,7 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
 export function replaceLegacyValues(
   configObj: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
-  //@ts-expect-error
+  //@ts-expect-error legacy configs
   if (configObj.quickTab === true && configObj.quickRestart === undefined) {
     configObj.quickRestart = "tab";
   }
@@ -40,7 +40,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.swapEscAndTab === true &&
     configObj.quickRestart === undefined
   ) {
@@ -48,14 +48,14 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.alwaysShowCPM === true &&
     configObj.typingSpeedUnit === undefined
   ) {
     configObj.typingSpeedUnit = "cpm";
   }
 
-  //@ts-expect-error
+  //@ts-expect-error legacy configs
   if (configObj.showAverage === "wpm") {
     configObj.showAverage = "speed";
   }
@@ -65,7 +65,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showTimerProgress === false &&
     configObj.timerStyle === undefined
   ) {
@@ -73,7 +73,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showLiveWpm === true &&
     configObj.liveSpeedStyle === undefined
   ) {
@@ -85,7 +85,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showLiveBurst === true &&
     configObj.liveBurstStyle === undefined
   ) {
@@ -97,7 +97,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showLiveAcc === true &&
     configObj.liveAccStyle === undefined
   ) {
