@@ -7,6 +7,8 @@ import * as SupportPopup from "../modals/support";
 import * as ContactModal from "../modals/contact";
 import * as VersionHistoryModal from "../modals/version-history";
 import { envConfig } from "../constants/env-config";
+import * as ThemeController from "../controllers/theme-controller";
+import * as ConfigEvent from "../observables/config-event";
 
 document
   .querySelector("footer #commandLineMobileButton")
@@ -34,6 +36,59 @@ document
     }
   });
 
+// update the favorite icon in the current theme button
+function updateCurrentThemeFavIcon(): void {
+  const favIconEl = document.querySelector(
+    "footer .right .current-theme .favIcon"
+  );
+  if (!favIconEl) return;
+  const currentTheme = Config.customTheme
+    ? "custom"
+    : ThemeController.randomTheme ?? Config.theme;
+  if (!Config.customTheme && Config.favThemes.includes(currentTheme)) {
+    favIconEl.innerHTML = '<i class="fas fa-heart"></i>';
+    favIconEl.classList.add("active");
+  } else {
+    favIconEl.innerHTML = '<i class="far fa-heart"></i>';
+    favIconEl.classList.remove("active");
+  }
+}
+
+// add favorite icon to the current theme button
+const currentThemeButton = document.querySelector(
+  "footer .right .current-theme"
+);
+if (currentThemeButton) {
+  const favIconDiv = document.createElement("div");
+  favIconDiv.className = "favIcon";
+  favIconDiv.innerHTML = '<i class="far fa-heart"></i>';
+  currentThemeButton.appendChild(favIconDiv);
+  updateCurrentThemeFavIcon();
+}
+document
+  .querySelector("footer .right .current-theme .favIcon")
+  ?.addEventListener("click", (event) => {
+    event.stopPropagation();
+    if (Config.customTheme) {
+      Notifications.add("Cannot favorite custom themes", 0);
+      return;
+    }
+    const currentTheme = ThemeController.randomTheme ?? Config.theme;
+    if (Config.favThemes.includes(currentTheme)) {
+      // remove from favorites
+      UpdateConfig.setFavThemes(
+        Config.favThemes.filter((t) => t !== currentTheme)
+      );
+      Notifications.add("Removed from favorites", 1);
+    } else {
+      // add
+      UpdateConfig.setFavThemes([...Config.favThemes, currentTheme]);
+      Notifications.add("Added to favorites", 1);
+    }
+
+    updateCurrentThemeFavIcon();
+  });
+
 document
   .querySelector("footer .right .current-theme")
   ?.addEventListener("click", async (event) => {
@@ -59,6 +114,13 @@ document
       });
     }
   });
+
+// subscribe to theme-related config events to update the favorite icon
+ConfigEvent.subscribe((eventKey, _eventValue) => {
+  if (["theme", "customTheme", "favThemes"].includes(eventKey)) {
+    updateCurrentThemeFavIcon();
+  }
+});
 
 document
   .querySelector("footer #supportMeButton")

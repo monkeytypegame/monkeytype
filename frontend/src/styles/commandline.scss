@@ -88,6 +88,7 @@
 
         &.withThemeBubbles {
           grid-template-columns: auto 1fr auto;
+          position: relative;
           .themeBubbles {
             display: grid;
             grid-auto-flow: column;
@@ -99,6 +100,34 @@
               border-radius: 100%;
             }
           }
+        }
+
+        .themeFavIcon {
+          position: absolute;
+          right: 5rem;
+          //top: 0.5rem;
+          color: var(--sub-color);
+          opacity: 0;
+          transition: opacity 0.125s;
+          cursor: pointer;
+          z-index: 999;
+          padding: 0.5rem;
+          pointer-events: auto;
+
+          &.active {
+            .fas.fa-star {
+              margin-right: 0;
+            }
+            opacity: 1;
+            color: var(--text-color);
+          }
+        }
+
+        &:hover .themeFavIcon {
+          .fas.fa-star {
+            margin-right: 0;
+          }
+          opacity: 1;
         }
       }
     }
