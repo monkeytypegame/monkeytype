@@ -4,6 +4,8 @@ import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
+import { findSingleActiveFunboxWithFunction } from "./funbox/list";
+
 let isAltGrPressed = false;
 const isPunctuationPattern = /\p{P}/u;
 
@@ -39,6 +41,11 @@ export async function getCharFromEvent(
       -1
     );
     return null;
+  }
+
+  const funbox = findSingleActiveFunboxWithFunction("layoutMirror");
+  if (funbox) {
+    layout = funbox.functions.layoutMirror(layout);
   }
 
   let keyEventCodes: string[] = [];

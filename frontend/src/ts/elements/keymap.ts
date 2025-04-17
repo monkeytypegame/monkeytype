@@ -13,6 +13,7 @@ import { capsState } from "../test/caps-warning";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as AltTracker from "../test/alt-tracker";
 import * as KeyConverter from "../utils/key-converter";
+import { findSingleActiveFunboxWithFunction } from "../test/funbox/list";
 
 const stenoKeys: JSONData.Layout = {
   keymapShowTopRow: true,
@@ -167,6 +168,11 @@ export async function refresh(
 
     if (lts === undefined) {
       throw new Error("Failed to refresh keymap: layout not found");
+    }
+
+    const funbox = findSingleActiveFunboxWithFunction("layoutMirror");
+    if (funbox) {
+      lts = funbox.functions.layoutMirror(lts);
     }
 
     const isISO = lts.type === "iso";
