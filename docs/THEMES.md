@@ -18,7 +18,7 @@ After you have forked the repository you can now add your theme. Create a CSS fi
 
 Then add this code to your file:
 
-```
+```css
 :root {
     --bg-color: #ffffff;
     --main-color: #ffffff;
@@ -38,7 +38,7 @@ Here is an image showing what all the properties correspond to:
 
 Change the corresponding hex codes to create your theme. Then, go to `./frontend/static/themes/_list.json` and add the following code to the very end of the file (inside the square brackets):
 
-```
+```json
   {
     "name": "theme_name",
     "bgColor": "#ffffff",
@@ -64,5 +64,5 @@ Add some screenshots of your theme to the pull request. Click "create pull reque
 
 ## Theme Guidelines
 
-Make sure your theme follows the theme guidelines.
-[Theme guidelines](./CONTRIBUTING.md#theme-guidelines)
+Make sure your theme follows the [Theme guidelines](./CONTRIBUTING.md#theme-guidelines).
+
