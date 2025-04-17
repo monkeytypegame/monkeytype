@@ -37,6 +37,7 @@ import { DataArrayPartial, Optgroup } from "slim-select/store";
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
 let customLayoutFluidSelect: SlimSelect | undefined;
+let customLanguageFluidSelect: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
 
@@ -678,11 +679,11 @@ async function fillSettingsPage(): Promise<void> {
     Config.keymapSize
   );
 
-  const customLayoutfluidElement = document.querySelector(
-    ".pageSettings .section[data-config-name='customLayoutfluid'] select"
-  ) as Element;
-
   if (customLayoutFluidSelect === undefined) {
+    const customLayoutfluidElement = document.querySelector(
+      ".pageSettings .section[data-config-name='customLayoutfluid'] select"
+    ) as Element;
+
     customLayoutFluidSelect = new SlimSelect({
       select: customLayoutfluidElement,
       settings: { keepOrder: true },
@@ -697,20 +698,29 @@ async function fillSettingsPage(): Promise<void> {
     });
   }
 
-  const customLanguageFluidElement = document.querySelector(
-    ".pageSettings .section[data-config-name='customLanguageFluid'] select"
-  ) as Element;
-  new SlimSelect({
-    select: customLanguageFluidElement,
-    data: getLanguageDropdownData(languageGroups ?? [], (language) =>
-      Config.customLanguagefluid.includes(language)
-    ),
-    events: {
-      afterChange: (newVal): void => {
-        void UpdateConfig.setCustomLanguagefluid(newVal.map((it) => it.value));
+  if (customLanguageFluidSelect === undefined) {
+    const customLanguageFluidElement = document.querySelector(
+      ".pageSettings .section[data-config-name='customLanguageFluid'] select"
+    ) as Element;
+
+    customLanguageFluidSelect = new SlimSelect({
+      select: customLanguageFluidElement,
+      data: getLanguageDropdownData(languageGroups ?? [], (language) =>
+        Config.customLanguagefluid.includes(language)
+      ),
+      events: {
+        afterChange: (newVal): void => {
+          const customLanguagefluid = newVal.map((it) => it.value);
+          if (
+            customLanguagefluid.toSorted() !==
+            Config.customLanguagefluid.toSorted()
+          ) {
+            void UpdateConfig.setCustomLanguagefluid(customLanguagefluid);
+          }
+        },
       },
-    },
-  });
+    });
+  }
 
   $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
     Config.tapeMargin
@@ -916,6 +926,13 @@ export async function update(groupUpdate = true): Promise<void> {
     customLayoutFluidSelect.getSelected().join("#") !== Config.customLayoutfluid
   ) {
     customLayoutFluidSelect.setData(getLayoutfluidDropdownData());
+  }
+
+  if (
+    customLanguageFluidSelect !== undefined &&
+    customLanguageFluidSelect.getSelected() !== Config.customLanguagefluid
+  ) {
+    customLanguageFluidSelect.setSelected(Config.customLanguagefluid);
   }
 }
 function toggleSettingsGroup(groupName: string): void {
