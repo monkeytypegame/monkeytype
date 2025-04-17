@@ -281,7 +281,12 @@ export function keycodeToKeyboardSide(keycode: Keycode): {
   return { leftSide: left, rightSide: right };
 }
 
-export function layoutMirror(layout: JSONData.Layout): JSONData.Layout {
+/**
+ * Returns a copy of the given layout with the rows mirrored
+ * @param layout Layout object from our JSON data (e.g., `layouts["qwerty"]`)
+ * @returns layout Layout object from our JSON data (e.g., `layouts["qwerty"]`)
+ */
+export function mirrorLayoutKeys(layout: JSONData.Layout): JSONData.Layout {
   const reverse_index = [11, 10, 10, 10, 10];
   const mirror_keys: JSONData.Keys = {
     row1: [

@@ -396,7 +396,7 @@ export async function refresh(
 
     const funbox = getActiveFunboxNames().includes("layout_mirror");
     if (funbox) {
-      layoutData = KeyConverter.layoutMirror(layoutData);
+      layoutData = KeyConverter.mirrorLayoutKeys(layoutData);
     }
 
     const isISO = layoutData.type === "iso";

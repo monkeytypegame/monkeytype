@@ -1141,7 +1141,7 @@ $(document).on("keydown", async (event) => {
 
       const funbox = getActiveFunboxNames().includes("layout_mirror");
       if (funbox) {
-        keymapLayout = KeyConverter.layoutMirror(keymapLayout);
+        keymapLayout = KeyConverter.mirrorLayoutKeys(keymapLayout);
       }
 
       const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
