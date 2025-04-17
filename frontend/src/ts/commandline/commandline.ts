@@ -352,9 +352,14 @@ async function showCommands(): Promise<void> {
         configIcon = `<i class="fas fa-fw"></i>`;
       }
     } else if (configKey !== undefined) {
-      const valueIsIncluded =
-        command.configValueMode === "include" &&
-        (
+      let isActive;
+
+      if (command.configValueMode === "funbox") {
+        isActive = (Config[configKey] as string)
+          .split("#")
+          .includes(command.configValue as string);
+      } else if (command.configValueMode === "include") {
+        isActive = (
           Config[configKey] as (
             | string
             | number
@@ -363,8 +368,11 @@ async function showCommands(): Promise<void> {
             | undefined
           )[]
         ).includes(command.configValue);
-      const valueIsTheSame = Config[configKey] === command.configValue;
-      if (valueIsIncluded || valueIsTheSame) {
+      } else {
+        isActive = Config[configKey] === command.configValue;
+      }
+
+      if (isActive) {
         firstActive = firstActive ?? index;
         configIcon = `<i class="fas fa-fw fa-check"></i>`;
       } else {

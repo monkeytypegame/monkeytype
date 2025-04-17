@@ -326,6 +326,20 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return Strings.capitalizeFirstLetterOfEachWord(word);
     },
   },
+  layout_mirror: {
+    applyConfig(): void {
+      let layout = Config.layout;
+      if (Config.layout === "default") {
+        layout = "qwerty";
+      }
+      UpdateConfig.setLayout(layout, true);
+      UpdateConfig.setKeymapLayout("overrideSync", true);
+    },
+    rememberSettings(): void {
+      save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+      save("layout", Config.layout, UpdateConfig.setLayout);
+    },
+  },
   layoutfluid: {
     applyConfig(): void {
       const layout = Config.customLayoutfluid.split("#")[0] ?? "qwerty";
