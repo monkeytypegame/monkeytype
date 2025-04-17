@@ -39,6 +39,7 @@ import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
+  getActiveFunboxNames,
 } from "../test/funbox/list";
 
 let dontInsertSpace = false;
@@ -1138,9 +1139,9 @@ $(document).on("keydown", async (event) => {
         return;
       }
 
-      const funbox = findSingleActiveFunboxWithFunction("layoutMirror");
+      const funbox = getActiveFunboxNames().includes("layout_mirror");
       if (funbox) {
-        keymapLayout = funbox.functions.layoutMirror(keymapLayout);
+        keymapLayout = KeyConverter.layoutMirror(keymapLayout);
       }
 
       const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);

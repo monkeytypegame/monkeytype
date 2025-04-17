@@ -3,8 +3,9 @@ import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
+import * as KeyConverter from "../utils/key-converter";
 
-import { findSingleActiveFunboxWithFunction } from "./funbox/list";
+import { getActiveFunboxNames } from "./funbox/list";
 
 let isAltGrPressed = false;
 const isPunctuationPattern = /\p{P}/u;
@@ -43,9 +44,9 @@ export async function getCharFromEvent(
     return null;
   }
 
-  const funbox = findSingleActiveFunboxWithFunction("layoutMirror");
+  const funbox = getActiveFunboxNames().includes("layout_mirror");
   if (funbox) {
-    layout = funbox.functions.layoutMirror(layout);
+    layout = KeyConverter.layoutMirror(layout);
   }
 
   let keyEventCodes: string[] = [];
