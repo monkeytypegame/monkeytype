@@ -36,7 +36,9 @@ It is recommended that you familiarize yourselves with JSON before adding a layo
 `keymapShowTopRow` indicates whether to always show the first row of the layout.
 `type` can be `ansi` or  `iso`.
 
-In `keys` you need to specify `row1` to  `row5`. Add the keys within the row as string. The string can have up to four letters. The letters define unshifted, shifted, alt-gr and shifted alt-gr letter in this order. For example `eE€` defines `e` on regular key press, `E` if `shift` is held and `€` if `alt-gr` is held.
+In `keys` you need to specify `row1` to  `row5`. Add the keys within the row as string. The string can have up to four character. The character define unshifted, shifted, alt-gr and shifted alt-gr character in this order. For example `eE€` defines `e` on regular key press, `E` if `shift` is held and `€` if `alt-gr` is held.
+
+**Note:**  Quote and backslash characters need to be escaped: `\"` and `\\`.
 
 For ansi layouts the number of keys need to be exactly thirteen for `row1` and `row2`, eleven for `row3`, ten for `row4` and one or two for `row5`.
 
