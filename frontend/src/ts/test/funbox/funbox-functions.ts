@@ -328,15 +328,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   layout_mirror: {
     applyConfig(): void {
-      let layout = Config.keymapLayout;
-      if (Config.keymapLayout === "overrideSync") {
-        layout = Config.layout;
-      }
+      let layout = Config.layout;
       if (Config.layout === "default") {
         layout = "qwerty";
       }
       UpdateConfig.setLayout(layout, true);
-      UpdateConfig.setKeymapLayout(layout, true);
+      UpdateConfig.setKeymapLayout("overrideSync", true);
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
