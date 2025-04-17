@@ -17,7 +17,7 @@ Once you have forked the repository you can now add your language. Create a new 
 
 The contents of the file should be as follows:
 
-```
+```json
 {
   "name": string,
   "rightToLeft": boolean,
@@ -33,7 +33,7 @@ It is recommended that you familiarize yourselves with JSON before adding a lang
 
 In addition to the language file, you need to add your language to the `_groups.json` and `_list.json` files in the same directory. Add the name of the language to the `_groups.json` file like so:
 
-```
+```json
 {
   "name": "spanish",
   "languages": ["spanish", "spanish_1k", "spanish_10k"]
@@ -52,7 +52,7 @@ The `languages` field is the list of files that you have created for your langua
 
 Add your language lists to the `_list.json` file like so:
 
-```
+```json
 ,"spanish"
 ,"spanish_1k"
 ,"spanish_10k"
