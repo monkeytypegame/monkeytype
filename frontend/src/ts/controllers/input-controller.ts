@@ -39,6 +39,7 @@ import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
+  getActiveFunboxNames,
 } from "../test/funbox/list";
 
 let dontInsertSpace = false;
@@ -1128,14 +1129,21 @@ $(document).on("keydown", async (event) => {
       Config.oppositeShiftMode === "keymap" &&
       Config.keymapLayout !== "overrideSync"
     ) {
-      const keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
+      let keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
         () => undefined
       );
+
       if (keymapLayout === undefined) {
         Notifications.add("Failed to load keymap layout", -1);
 
         return;
       }
+
+      const funbox = getActiveFunboxNames().includes("layout_mirror");
+      if (funbox) {
+        keymapLayout = KeyConverter.mirrorLayoutKeys(keymapLayout);
+      }
+
       const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
 
       correctShiftUsed =

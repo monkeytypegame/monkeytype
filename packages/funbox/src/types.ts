@@ -10,6 +10,7 @@ export type FunboxName =
   | "arrows"
   | "rAnDoMcAsE"
   | "capitals"
+  | "layout_mirror"
   | "layoutfluid"
   | "earthquake"
   | "space_balls"

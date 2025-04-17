@@ -62,7 +62,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
     },
     frontendFunctions: ["applyConfig", "rememberSettings"],
   },
-
   tts: {
     canGetPb: true,
     difficultyLevel: 1,
@@ -129,6 +128,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     properties: ["changesCapitalisation"],
     frontendFunctions: ["alterText"],
     name: "capitals",
+  },
+  layout_mirror: {
+    description: "Mirror the keyboard layout",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["changesLayout"],
+    frontendFunctions: ["applyConfig", "rememberSettings"],
+    name: "layout_mirror",
   },
   layoutfluid: {
     description:
