@@ -46,7 +46,7 @@ export async function getCharFromEvent(
 
   const funbox = getActiveFunboxNames().includes("layout_mirror");
   if (funbox) {
-    layout = KeyConverter.layoutMirror(layout);
+    layout = KeyConverter.mirrorLayoutKeys(layout);
   }
 
   let keyEventCodes: string[] = [];
