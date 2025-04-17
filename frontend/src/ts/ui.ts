@@ -48,7 +48,7 @@ function updateKeytips(): void {
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $("footer .keyTips").html(`
     ${
-      Config.quickRestart == "off"
+      Config.quickRestart === "off"
         ? "<key>tab</key> + <key>enter</key>"
         : `<key>${Config.quickRestart}</key>`
     } - restart test<br>
@@ -102,23 +102,17 @@ const debouncedEvent = debounce(250, () => {
   void Caret.updatePosition();
   if (getActivePage() === "test" && !TestUI.resultVisible) {
     if (Config.tapeMode !== "off") {
-      TestUI.scrollTape();
+      void TestUI.scrollTape();
     } else {
-      const word =
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
-        ];
-      if (word) {
-        const currentTop: number = Math.floor(word.offsetTop);
-        TestUI.lineJump(currentTop);
+      void TestUI.centerActiveLine();
+    }
+    setTimeout(() => {
+      void TestUI.updateWordsInputPosition();
+      if ($("#wordsInput").is(":focus")) {
+        Caret.show();
       }
-    }
+    }, 250);
   }
-  setTimeout(() => {
-    if ($("#wordsInput").is(":focus")) {
-      Caret.show();
-    }
-  }, 250);
 });
 
 const throttledEvent = throttle(250, () => {

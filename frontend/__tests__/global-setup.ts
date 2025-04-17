@@ -1,3 +1,3 @@
-export const setup = () => {
+export const setup = (): void => {
   process.env.TZ = "UTC";
 };

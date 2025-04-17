@@ -104,10 +104,7 @@ input[type="submit"]:hover {
   color: var(--bg-color);
 }
 
-#caret,
-.pageSettings .section .buttons .button.active,
-.pageSettings .section.languages .buttons .language.active,
-.pageAccount .group.filterButtons .buttons .button.active {
+#caret {
   animation: tokyo-bg 3s linear infinite;
 }
 
@@ -117,13 +114,12 @@ header .config .group .buttons .textButton.active,
 nav .textButton:hover,
 nav button.text:hover,
 header .config .group .buttons .textButton:hover,
+footer .textButton:hover,
+footer button.text:hover,
 a:not(.button):hover {
   animation: tokyo-glow 3s linear infinite;
 }
 
-.textButton.active {
-  animation: tokyo-glow 3s linear infinite;
-}
 .afk,
 .timeToday,
 #words .word letter.correct,

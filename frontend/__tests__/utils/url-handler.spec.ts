@@ -1,3 +1,4 @@
+// eslint-disable no-useless-escape
 import { Difficulty, Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 import { compressToURI } from "lz-ts";
 import * as UpdateConfig from "../../src/ts/config";
@@ -50,7 +51,9 @@ describe("url-handler", () => {
 
       findGetParameterMock.mockImplementation((override) => override);
     });
-    afterEach(() => {});
+    afterEach(() => {
+      //
+    });
 
     it("handles null", () => {
       //GIVEN

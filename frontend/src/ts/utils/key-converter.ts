@@ -135,7 +135,7 @@ const qwertyKeycodeKeymap: Keycode[][] = [
   ["Space"],
 ];
 
-const leftSideKeys: Keycode[] = [
+const leftSideKeys: Set<Keycode> = new Set([
   "Backquote",
   "Digit1",
   "Digit2",
@@ -166,9 +166,9 @@ const leftSideKeys: Keycode[] = [
   "KeyB",
 
   "Space",
-];
+]);
 
-const rightSideKeys: Keycode[] = [
+const rightSideKeys: Set<Keycode> = new Set([
   "Digit6",
   "Digit7",
   "Digit8",
@@ -227,7 +227,7 @@ const rightSideKeys: Keycode[] = [
   "NumpadEnter",
 
   "Space",
-];
+]);
 
 /**
  * Converts a key to a keycode based on a layout
@@ -275,8 +275,8 @@ export function keycodeToKeyboardSide(keycode: Keycode): {
   leftSide: boolean;
   rightSide: boolean;
 } {
-  const left = leftSideKeys.includes(keycode);
-  const right = rightSideKeys.includes(keycode);
+  const left = leftSideKeys.has(keycode);
+  const right = rightSideKeys.has(keycode);
 
   return { leftSide: left, rightSide: right };
 }

@@ -309,7 +309,7 @@ function updateInboxSize(): void {
 function deleteAlert(id: string): void {
   mailToDelete.push(id);
   $(`#alertsPopup .accountAlerts .list .item[data-id="${id}"]`).remove();
-  if ($("#alertsPopup .accountAlerts .list .item").length == 0) {
+  if ($("#alertsPopup .accountAlerts .list .item").length === 0) {
     $("#alertsPopup .accountAlerts .list").html(`
     <div class="nothing">
     Nothing to show

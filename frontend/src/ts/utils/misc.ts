@@ -151,7 +151,7 @@ export function toggleFullscreen(): void {
     } else if (elem.mozRequestFullScreen) {
       void elem.mozRequestFullScreen();
     } else if (elem.webkitRequestFullscreen) {
-      // @ts-expect-error
+      // @ts-expect-error some code i found online
       void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
@@ -248,6 +248,8 @@ type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
 } & string;
 
+// TODO INVESTIGATE IF THIS IS NEEDED
+// eslint-disable-next-line no-extend-native
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp
 ): number {
@@ -654,8 +656,12 @@ export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && !Array.isArray(obj) && obj !== null;
 }
 
+// oxlint doesnt understand ts overloading
+// eslint-disable-next-line no-redeclare
 export function deepClone<T>(obj: T[]): T[];
+// eslint-disable-next-line no-redeclare
 export function deepClone<T extends object>(obj: T): T;
+// eslint-disable-next-line no-redeclare
 export function deepClone<T>(obj: T): T;
 export function deepClone<T>(obj: T | T[]): T | T[] {
   // Check if the value is a primitive (not an object or array)
@@ -691,6 +697,24 @@ export function prefersReducedMotion(): boolean {
  */
 export function applyReducedMotion(animationTime: number): number {
   return prefersReducedMotion() ? 0 : animationTime;
+}
+
+/**
+ * Creates a promise with resolvers.
+ * This is useful for creating a promise that can be resolved or rejected from outside the promise itself.
+ */
+export function promiseWithResolvers<T = void>(): {
+  resolve: (value: T) => void;
+  reject: (reason?: unknown) => void;
+  promise: Promise<T>;
+} {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { resolve, reject, promise };
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
