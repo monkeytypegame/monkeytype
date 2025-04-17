@@ -228,7 +228,7 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "changeCustomLanguagefluid",
-      display: "Custom languagefluid...",
+      display: "Polyglot languages...",
       defaultValue: (): string => {
         return Config.customLanguagefluid.join(" ");
       },
