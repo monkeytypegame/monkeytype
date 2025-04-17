@@ -91,7 +91,6 @@ export function canSetConfigWithCurrentFunboxes(
             f.frontendFunctions?.includes("pullSection") ??
             f.frontendFunctions?.includes("alterText") ??
             f.frontendFunctions?.includes("withWords") ??
-            f.frontendFunctions?.includes("layoutMirror") ??
             f.properties?.includes("changesCapitalisation") ??
             f.properties?.includes("nospace") ??
             f.properties?.find((fp) => fp.startsWith("toPush:")) ??

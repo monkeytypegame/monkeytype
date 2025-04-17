@@ -23,8 +23,6 @@ import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 import * as TestState from "../test-state";
 
-import * as KeyConverter from "../../utils/key-converter";
-
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
@@ -36,7 +34,6 @@ export type FunboxFunctions = {
   rememberSettings?: () => void;
   toggleScript?: (params: string[]) => void;
   pullSection?: (language?: string) => Promise<Section | false>;
-  layoutMirror?: (layout: JSONData.Layout) => JSONData.Layout;
   handleSpace?: () => void;
   handleChar?: (char: string) => string;
   isCharCorrect?: (char: string, originalChar: string) => boolean;
@@ -344,9 +341,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
       save("layout", Config.layout, UpdateConfig.setLayout);
-    },
-    layoutMirror(layout: JSONData.Layout): JSONData.Layout {
-      return KeyConverter.layoutMirror(layout);
     },
   },
   layoutfluid: {

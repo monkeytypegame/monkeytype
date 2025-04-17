@@ -134,7 +134,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 1,
     properties: ["changesLayout"],
-    frontendFunctions: ["applyConfig", "rememberSettings", "layoutMirror"],
+    frontendFunctions: ["applyConfig", "rememberSettings"],
     name: "layout_mirror",
   },
   layoutfluid: {
