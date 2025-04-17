@@ -33,7 +33,7 @@ for (const funbox of getAllFunboxes()) {
     sticky: true,
     alias: funbox.alias,
     configValue: funbox.name,
-    configValueMode: "include",
+    configValueMode: "funbox",
     exec: (): void => {
       Funbox.toggleFunbox(funbox.name);
       ManualRestart.set();
