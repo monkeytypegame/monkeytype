@@ -1,10 +1,10 @@
-import { getList, getFunbox, getObject } from "./list";
+import { getList, getFunbox, getObject, getFunboxNames } from "./list";
 import { FunboxMetadata, FunboxName, FunboxProperty } from "./types";
 import { stringToFunboxNames } from "./util";
 import { checkCompatibility } from "./validation";
 
 export type { FunboxName, FunboxMetadata, FunboxProperty };
-export { checkCompatibility, stringToFunboxNames, getFunbox };
+export { checkCompatibility, stringToFunboxNames, getFunbox, getFunboxNames };
 
 export function getFunboxesFromString(names: string): FunboxMetadata[] {
   return getFunbox(stringToFunboxNames(names));

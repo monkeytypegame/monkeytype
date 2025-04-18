@@ -31,11 +31,6 @@
       "types": "./src/index.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
-    },
-    "./*": {
-      "types": "./src/*.ts",
-      "import": "./dist/*.mjs",
-      "require": "./dist/*.js"
     }
   }
 }
