@@ -3,7 +3,6 @@ import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";
 import { Theme } from "../../utils/json-data";
-import * as Notifications from "../../elements/notifications";
 
 const subgroup: CommandsSubgroup = {
   title: "Theme...",
@@ -58,10 +57,8 @@ function createThemeCommand(theme: Theme, isFavorite: boolean): Command {
           UpdateConfig.setFavThemes(
             Config.favThemes.filter((t) => t !== themeName)
           );
-          Notifications.add("Removed from favorites", 1);
         } else {
           UpdateConfig.setFavThemes([...Config.favThemes, themeName]);
-          Notifications.add("Added to favorites", 1);
         }
 
         // update the star icon immediately

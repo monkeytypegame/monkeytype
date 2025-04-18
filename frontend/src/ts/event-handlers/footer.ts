@@ -79,11 +79,9 @@ document
       UpdateConfig.setFavThemes(
         Config.favThemes.filter((t) => t !== currentTheme)
       );
-      Notifications.add("Removed from favorites", 1);
     } else {
       // add
       UpdateConfig.setFavThemes([...Config.favThemes, currentTheme]);
-      Notifications.add("Added to favorites", 1);
     }
 
     updateCurrentThemeFavIcon();
