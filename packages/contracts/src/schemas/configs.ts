@@ -236,7 +236,7 @@ const funboxNames = getFunboxNames();
 export const FunboxNameSchema = z.enum(zodEnum(funboxNames));
 export type FunboxName = z.infer<typeof FunboxNameSchema>;
 
-export const FunboxSchema = z.array(FunboxNameSchema).max(15).optional();
+export const FunboxSchema = z.array(FunboxNameSchema).max(15);
 export type Funbox = z.infer<typeof FunboxSchema>;
 
 export const PaceCaretCustomSpeedSchema = z.number().nonnegative();

@@ -198,11 +198,11 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.funbox !== "none") {
+  if (Config.funbox.length > 0) {
     $(".pageTest #testModesNotice").append(
       `<button class="textButton" commands="funbox"><i class="fas fa-gamepad"></i>${Config.funbox
-        .replace(/_/g, " ")
-        .replace(/#/g, ", ")}</button>`
+        .map((it) => it.replace(/_/g, " "))
+        .join(", ")}</button>`
     );
   }
 

@@ -116,11 +116,11 @@ const modal = new AnimatedModal({
   setup: async (modalEl): Promise<void> => {
     modalEl
       .querySelector("button.save")
-      ?.addEventListener("click", async (_e) => {
+      ?.addEventListener("click", async () => {
         void syncNotSignedInLastResult(Auth?.currentUser?.uid as string);
         hide();
       });
-    modalEl.querySelector("button.discard")?.addEventListener("click", (_e) => {
+    modalEl.querySelector("button.discard")?.addEventListener("click", () => {
       TestLogic.clearNotSignedInResult();
       Notifications.add("Last test result discarded", 0);
       hide();

@@ -1,12 +1,7 @@
 import * as Notifications from "../../elements/notifications";
 import * as Strings from "../../utils/strings";
 import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
-import {
-  FunboxMetadata,
-  FunboxName,
-  getFunbox,
-  getFunboxesFromString,
-} from "@monkeytype/funbox";
+import { FunboxMetadata, FunboxName, getFunbox } from "@monkeytype/funbox";
 import { intersect } from "@monkeytype/util/arrays";
 
 export function checkForcedConfig(
@@ -157,16 +152,12 @@ export function canSetConfigWithCurrentFunboxes(
 }
 
 export function canSetFunboxWithConfig(
-  funbox: string,
+  funbox: FunboxName,
   config: Config
 ): boolean {
   console.log("cansetfunboxwithconfig", funbox, config.mode);
-  let funboxToCheck = config.funbox;
-  if (funboxToCheck === "none") {
-    funboxToCheck = funbox;
-  } else {
-    funboxToCheck += "#" + funbox;
-  }
+  let funboxToCheck = [...config.funbox, funbox];
+
   const errors = [];
   for (const [configKey, configValue] of Object.entries(config)) {
     if (

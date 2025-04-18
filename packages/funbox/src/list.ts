@@ -454,6 +454,7 @@ export function getFunbox(names: FunboxName[]): FunboxMetadata[];
 export function getFunbox(
   nameOrNames: FunboxName | FunboxName[]
 ): FunboxMetadata | FunboxMetadata[] {
+  if (nameOrNames === undefined) return [];
   if (Array.isArray(nameOrNames)) {
     const out = nameOrNames.map((name) => getObject()[name]);
 

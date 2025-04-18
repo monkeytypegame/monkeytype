@@ -746,14 +746,14 @@ function setActiveFunboxButton(): void {
   getAllFunboxes().forEach((funbox) => {
     if (
       !checkCompatibility(getActiveFunboxNames(), funbox.name) &&
-      !Config.funbox.split("#").includes(funbox.name)
+      !Config.funbox.includes(funbox.name)
     ) {
       $(
         `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox.name}']`
       ).addClass("disabled");
     }
   });
-  Config.funbox.split("#").forEach((funbox) => {
+  Config.funbox.forEach((funbox) => {
     $(
       `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox}']`
     ).addClass("active");
