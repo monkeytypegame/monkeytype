@@ -16,7 +16,7 @@ const badges: Record<number, UserBadge> = {
     icon: "fa-laptop",
     color: "white",
     customStyle:
-      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg, hsl(120, 39%, 49%) 0%, hsl(192, 48%, 48%) 20%, hsl(264, 90%, 58%) 40%, hsl(357, 89%, 50%) 60%, hsl(46, 100%, 51%) 80%, hsl(120, 39%, 49%) 100%);",
+      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
   },
   2: {
     id: 2,
@@ -25,7 +25,7 @@ const badges: Record<number, UserBadge> = {
     icon: "fa-code",
     color: "white",
     customStyle:
-      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg, hsl(120, 39%, 49%) 0%, hsl(192, 48%, 48%) 20%, hsl(264, 90%, 58%) 40%, hsl(357, 89%, 50%) 60%, hsl(46, 100%, 51%) 80%, hsl(120, 39%, 49%) 100%);",
+      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
   },
   3: {
     id: 3,
@@ -34,7 +34,7 @@ const badges: Record<number, UserBadge> = {
     icon: "fa-hammer",
     color: "white",
     customStyle:
-      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg, hsl(120, 39%, 49%) 0%, hsl(192, 48%, 48%) 20%, hsl(264, 90%, 58%) 40%, hsl(357, 89%, 50%) 60%, hsl(46, 100%, 51%) 80%, hsl(120, 39%, 49%) 100%);",
+      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
   },
   4: {
     id: 4,
@@ -115,7 +115,7 @@ const badges: Record<number, UserBadge> = {
     icon: "fa-rocket",
     color: "white",
     customStyle:
-      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg, hsl(120, 39%, 49%) 0%, hsl(192, 48%, 48%) 20%, hsl(264, 90%, 58%) 40%, hsl(357, 89%, 50%) 60%, hsl(46, 100%, 51%) 80%, hsl(120, 39%, 49%) 100%);",
+      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
   },
   14: {
     id: 14,
