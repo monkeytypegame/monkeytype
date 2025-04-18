@@ -227,16 +227,16 @@ export const commands: CommandsSubgroup = {
       },
     },
     {
-      id: "changeCustomLanguagefluid",
+      id: "changeCustomPolyglot",
       display: "Polyglot languages...",
       defaultValue: (): string => {
-        return Config.customLanguagefluid.join(" ");
+        return Config.customPolyglot.join(" ");
       },
       input: true,
       icon: "fa-language",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        void UpdateConfig.setCustomLanguagefluid(input.split(" "));
+        void UpdateConfig.setCustomPolyglot(input.split(" "));
       },
     },
 

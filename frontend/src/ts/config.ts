@@ -1906,22 +1906,22 @@ export function setCustomLayoutfluid(
   return true;
 }
 
-export function setCustomLanguagefluid(
-  value: ConfigSchemas.CustomLanguageFluid,
+export function setCustomPolyglot(
+  value: ConfigSchemas.CustomPolyglot,
   nosave?: boolean
 ): boolean {
   if (
     !isConfigValueValid(
-      "customLanguagefluid",
+      "customPolyglot",
       value,
-      ConfigSchemas.CustomLanguageFluidSchema
+      ConfigSchemas.CustomPolyglotSchema
     )
   )
     return false;
 
-  config.customLanguagefluid = value;
-  saveToLocalStorage("customLanguagefluid", nosave);
-  ConfigEvent.dispatch("customLanguagefluid", config.language);
+  config.customPolyglot = value;
+  saveToLocalStorage("customPolyglot", nosave);
+  ConfigEvent.dispatch("customPolyglot", config.customPolyglot);
 
   return true;
 }
@@ -2032,7 +2032,7 @@ export async function apply(
       true
     );
     setCustomLayoutfluid(configObj.customLayoutfluid, true);
-    setCustomLanguagefluid(configObj.customLanguagefluid, true);
+    setCustomPolyglot(configObj.customPolyglot, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);

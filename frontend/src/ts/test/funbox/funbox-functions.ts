@@ -647,7 +647,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   polyglot: {
     async withWords(_words) {
-      const promises = Config.customLanguagefluid.map(JSONData.getLanguage);
+      const promises = Config.customPolyglot.map(JSONData.getLanguage);
 
       const languages = await Promise.all(promises);
       const wordSet = languages.flatMap((it) => it.words);

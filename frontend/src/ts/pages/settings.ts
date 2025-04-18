@@ -37,7 +37,7 @@ import { DataArrayPartial, Optgroup } from "slim-select/store";
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
 let customLayoutFluidSelect: SlimSelect | undefined;
-let customLanguageFluidSelect: SlimSelect | undefined;
+let customPolyglotSelect: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
 
@@ -698,24 +698,21 @@ async function fillSettingsPage(): Promise<void> {
     });
   }
 
-  if (customLanguageFluidSelect === undefined) {
-    const customLanguageFluidElement = document.querySelector(
-      ".pageSettings .section[data-config-name='customLanguageFluid'] select"
+  if (customPolyglotSelect === undefined) {
+    const customPolyglotElement = document.querySelector(
+      ".pageSettings .section[data-config-name='customPolyglot'] select"
     ) as Element;
 
-    customLanguageFluidSelect = new SlimSelect({
-      select: customLanguageFluidElement,
+    customPolyglotSelect = new SlimSelect({
+      select: customPolyglotElement,
       data: getLanguageDropdownData(languageGroups ?? [], (language) =>
-        Config.customLanguagefluid.includes(language)
+        Config.customPolyglot.includes(language)
       ),
       events: {
         afterChange: (newVal): void => {
-          const customLanguagefluid = newVal.map((it) => it.value);
-          if (
-            customLanguagefluid.toSorted() !==
-            Config.customLanguagefluid.toSorted()
-          ) {
-            void UpdateConfig.setCustomLanguagefluid(customLanguagefluid);
+          const customPolyglot = newVal.map((it) => it.value);
+          if (customPolyglot.toSorted() !== Config.customPolyglot.toSorted()) {
+            void UpdateConfig.setCustomPolyglot(customPolyglot);
           }
         },
       },
@@ -929,10 +926,10 @@ export async function update(groupUpdate = true): Promise<void> {
   }
 
   if (
-    customLanguageFluidSelect !== undefined &&
-    customLanguageFluidSelect.getSelected() !== Config.customLanguagefluid
+    customPolyglotSelect !== undefined &&
+    customPolyglotSelect.getSelected() !== Config.customPolyglot
   ) {
-    customLanguageFluidSelect.setSelected(Config.customLanguagefluid);
+    customPolyglotSelect.setSelected(Config.customPolyglot);
   }
 }
 function toggleSettingsGroup(groupName: string): void {

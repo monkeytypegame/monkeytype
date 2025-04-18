@@ -198,8 +198,8 @@ export type CustomBackgroundFilter = z.infer<
 export const CustomLayoutFluidSchema = z.string().regex(/^[0-9a-zA-Z_#]+$/); //TODO better regex
 export type CustomLayoutFluid = z.infer<typeof CustomLayoutFluidSchema>;
 
-export const CustomLanguageFluidSchema = z.array(LanguageSchema).min(1);
-export type CustomLanguageFluid = z.infer<typeof CustomLanguageFluidSchema>;
+export const CustomPolyglotSchema = z.array(LanguageSchema).min(1);
+export type CustomPolyglot = z.infer<typeof CustomPolyglotSchema>;
 
 export const MonkeyPowerLevelSchema = z.enum(["off", "1", "2", "3", "4"]);
 export type MonkeyPowerLevel = z.infer<typeof MonkeyPowerLevelSchema>;
@@ -386,7 +386,7 @@ export const ConfigSchema = z
     lazyMode: z.boolean(),
     showAverage: ShowAverageSchema,
     maxLineWidth: MaxLineWidthSchema,
-    customLanguagefluid: CustomLanguageFluidSchema,
+    customPolyglot: CustomPolyglotSchema,
   } satisfies Record<string, ZodSchema>)
   .strict();
 
@@ -500,7 +500,7 @@ export const ConfigGroupsLiteral = {
   lazyMode: "input",
   showAverage: "hideElements",
   maxLineWidth: "appearance",
-  customLanguagefluid: "behavior",
+  customPolyglot: "behavior",
 } as const satisfies Record<ConfigKey, ConfigGroupName>;
 
 export type ConfigGroups = typeof ConfigGroupsLiteral;
