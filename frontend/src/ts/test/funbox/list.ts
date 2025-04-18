@@ -63,7 +63,7 @@ export function getActiveFunboxes(): FunboxMetadataWithFunctions[] {
 }
 
 export function getActiveFunboxNames(): FunboxName[] {
-  return Config.funbox as FunboxName[]; //TODO typ
+  return Config.funbox ?? [];
 }
 
 /**

@@ -64,7 +64,9 @@ describe("config schema", () => {
       },
       {
         name: "long url",
-        input: `https://example.com/path/image.jpeg?q=${new Array(2048)
+        input: `https://example.com/path/image.jpeg?q=${Array.from({
+          length: 2048,
+        })
           .fill("x")
           .join()}`,
         expectedError: "URL is too long.",
