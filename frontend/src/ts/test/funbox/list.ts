@@ -49,17 +49,21 @@ export function getAllFunboxes(): FunboxMetadataWithFunctions[] {
 }
 
 export function getFromString(
-  hashSeparatedFunboxes: string
+  namesWithHashOrArray: string | string[]
 ): FunboxMetadataWithFunctions[] {
-  return get(stringToFunboxNames(hashSeparatedFunboxes));
+  if (Array.isArray(namesWithHashOrArray)) {
+    return get(namesWithHashOrArray as FunboxName[]);
+  } else {
+    return get(stringToFunboxNames(namesWithHashOrArray));
+  }
 }
 
 export function getActiveFunboxes(): FunboxMetadataWithFunctions[] {
-  return get(stringToFunboxNames(Config.funbox));
+  return get(getActiveFunboxNames());
 }
 
 export function getActiveFunboxNames(): FunboxName[] {
-  return stringToFunboxNames(Config.funbox);
+  return Config.funbox as FunboxName[]; //TODO typ
 }
 
 /**

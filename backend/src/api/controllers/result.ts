@@ -174,8 +174,8 @@ export async function updateTags(
   if (!(result.language ?? "")) {
     result.language = "english";
   }
-  if (!(result.funbox ?? "")) {
-    result.funbox = "none";
+  if (result.funbox === undefined) {
+    result.funbox = [];
   }
   if (!result.lazyMode) {
     result.lazyMode = false;

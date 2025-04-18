@@ -230,10 +230,7 @@ export type CustomThemeColors = z.infer<typeof CustomThemeColorsSchema>;
 export const FavThemesSchema = z.array(token().max(50));
 export type FavThemes = z.infer<typeof FavThemesSchema>;
 
-export const FunboxSchema = z
-  .string()
-  .max(100)
-  .regex(/[\w#]+/);
+export const FunboxSchema = z.array(token().max(20)).max(15);
 export type Funbox = z.infer<typeof FunboxSchema>;
 
 export const PaceCaretCustomSpeedSchema = z.number().nonnegative();

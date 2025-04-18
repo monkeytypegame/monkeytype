@@ -112,5 +112,9 @@ export function replaceLegacyValues(
     configObj.soundVolume = parseFloat(configObj.soundVolume);
   }
 
+  if (typeof configObj.funbox === "string") {
+    configObj.funbox = (configObj.funbox as string).split("#");
+  }
+
   return configObj;
 }
