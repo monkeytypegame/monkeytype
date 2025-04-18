@@ -1901,7 +1901,7 @@ export function setCustomLayoutfluid(
   const customLayoutfluid = trimmed.replace(/ /g, "#");
   config.customLayoutfluid = customLayoutfluid;
   saveToLocalStorage("customLayoutfluid", nosave);
-  ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
+  ConfigEvent.dispatch("customLayoutfluid", config.customLayoutfluid);
 
   return true;
 }

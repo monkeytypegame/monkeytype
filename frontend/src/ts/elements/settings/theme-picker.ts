@@ -479,7 +479,6 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
 });
 
 ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "customThemeId") void refreshButtons();
   if (eventKey === "theme" && ActivePage.get() === "settings") {
     updateActiveButton();
   }

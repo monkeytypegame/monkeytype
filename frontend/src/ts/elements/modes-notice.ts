@@ -12,23 +12,22 @@ import Format from "../utils/format";
 import { getActiveFunboxNames } from "../test/funbox/list";
 
 ConfigEvent.subscribe((eventKey) => {
-  if (
-    [
-      "difficulty",
-      "blindMode",
-      "stopOnError",
-      "paceCaret",
-      "minWpm",
-      "minAcc",
-      "minBurst",
-      "confidenceMode",
-      "layout",
-      "showAverage",
-      "typingSpeedUnit",
-      "quickRestart",
-      "changeCustomPolyglot",
-    ].includes(eventKey)
-  ) {
+  const configKeys: ConfigEvent.ConfigEventKey[] = [
+    "difficulty",
+    "blindMode",
+    "stopOnError",
+    "paceCaret",
+    "minWpm",
+    "minAcc",
+    "minBurst",
+    "confidenceMode",
+    "layout",
+    "showAverage",
+    "typingSpeedUnit",
+    "quickRestart",
+    "customPolyglot",
+  ];
+  if (configKeys.includes(eventKey)) {
     void update();
   }
 });
