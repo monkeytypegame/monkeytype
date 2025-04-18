@@ -1,6 +1,7 @@
 import { z, ZodSchema } from "zod";
 import { LanguageSchema, token } from "./util";
 import * as Shared from "./shared";
+import { getFunboxNames } from "@monkeytype/funbox/list";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -230,7 +231,12 @@ export type CustomThemeColors = z.infer<typeof CustomThemeColorsSchema>;
 export const FavThemesSchema = z.array(token().max(50));
 export type FavThemes = z.infer<typeof FavThemesSchema>;
 
-export const FunboxSchema = z.array(token().max(20)).max(15);
+const zodEnum = <T>(arr: T[]): [T, ...T[]] => arr as [T, ...T[]];
+const funboxNames = getFunboxNames();
+export const FunboxNameSchema = z.enum(zodEnum(funboxNames));
+export type FunboxName = z.infer<typeof FunboxNameSchema>;
+
+export const FunboxSchema = z.array(FunboxNameSchema).max(15);
 export type Funbox = z.infer<typeof FunboxSchema>;
 
 export const PaceCaretCustomSpeedSchema = z.number().nonnegative();

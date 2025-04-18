@@ -5,7 +5,7 @@
     "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
-    "moduleResolution": "Bundler",
+    "moduleResolution": "Node",
     "module": "ES6",
     "target": "ES2015",
     "lib": ["es2019"]
