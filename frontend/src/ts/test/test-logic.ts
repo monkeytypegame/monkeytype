@@ -73,6 +73,7 @@ import {
 import { getFunboxesFromString } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
+import { WordGenError } from "../utils/word-gen-error";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -86,7 +87,7 @@ export function clearNotSignedInResult(): void {
 export function setNotSignedInUidAndHash(uid: string): void {
   if (notSignedInLastResult === null) return;
   notSignedInLastResult.uid = uid;
-  //@ts-expect-error
+  //@ts-expect-error really need to delete this
   delete notSignedInLastResult.hash;
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
 }
@@ -469,10 +470,12 @@ export async function init(): Promise<void> {
     wordsHaveNewline = gen.hasNewline;
   } catch (e) {
     console.error(e);
-    if (e instanceof WordsGenerator.WordGenError) {
-      Notifications.add(e.message, 0, {
-        important: true,
-      });
+    if (e instanceof WordGenError) {
+      if (e.message.length > 0) {
+        Notifications.add(e.message, 0, {
+          important: true,
+        });
+      }
     } else {
       Notifications.add(
         Misc.createErrorMessage(e, "Failed to generate words"),
@@ -487,7 +490,7 @@ export async function init(): Promise<void> {
     return;
   }
 
-  const beforeHasNumbers = TestWords.hasNumbers ? true : false;
+  const beforeHasNumbers = TestWords.hasNumbers;
 
   let hasNumbers = false;
 
@@ -1432,7 +1435,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     }
     if (eventKey === "difficulty" && !nosave) restart();
     if (
-      eventKey === "customLayoutFluid" &&
+      eventKey === "customLayoutfluid" &&
       Config.funbox.includes("layoutfluid")
     ) {
       restart();

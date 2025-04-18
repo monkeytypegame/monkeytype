@@ -2,9 +2,9 @@ import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import {
-  isConfigValueValidAsync,
   isConfigValueValidBoolean,
   isConfigValueValid,
+  invalid as notifyInvalid,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { isAuthenticated } from "./firebase";
@@ -30,6 +30,7 @@ import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
+import { LayoutsList } from "./constants/layouts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -266,7 +267,7 @@ export function setFunbox(
     }
   }
 
-  const val = funbox ? funbox : "none";
+  const val = funbox || "none";
   config.funbox = val;
   saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);
@@ -1452,7 +1453,7 @@ function setThemes(
   if (!isConfigValueValid("themes", theme, ConfigSchemas.ThemeNameSchema))
     return false;
 
-  //@ts-expect-error
+  //@ts-expect-error config used to have 9
   if (customThemeColors.length === 9) {
     //color missing
     if (customState) {
@@ -1538,7 +1539,7 @@ export function setCustomThemeColors(
   nosave?: boolean
 ): boolean {
   // migrate existing configs missing sub alt color
-  // @ts-expect-error
+  // @ts-expect-error legacy configs
   if (colors.length === 9) {
     //color missing
     Notifications.add(
@@ -1875,23 +1876,52 @@ export function setCustomBackground(
   return true;
 }
 
-export async function setCustomLayoutfluid(
+export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
-): Promise<boolean> {
+): boolean {
   const trimmed = value.trim();
 
-  if (
-    !(await isConfigValueValidAsync("layoutfluid", trimmed, ["layoutfluid"]))
-  ) {
+  const invalidLayouts = trimmed
+    .split(/[# ]+/) //can be space or hash
+    .filter((it) => !LayoutsList.includes(it));
+
+  if (invalidLayouts.length !== 0) {
+    notifyInvalid(
+      "layoutfluid",
+      trimmed,
+      `The following inputted layouts do not exist: ${invalidLayouts.join(
+        ", "
+      )}`
+    );
+
     return false;
   }
 
   const customLayoutfluid = trimmed.replace(/ /g, "#");
-
   config.customLayoutfluid = customLayoutfluid;
   saveToLocalStorage("customLayoutfluid", nosave);
-  ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
+  ConfigEvent.dispatch("customLayoutfluid", config.customLayoutfluid);
+
+  return true;
+}
+
+export function setCustomPolyglot(
+  value: ConfigSchemas.CustomPolyglot,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid(
+      "customPolyglot",
+      value,
+      ConfigSchemas.CustomPolyglotSchema
+    )
+  )
+    return false;
+
+  config.customPolyglot = value;
+  saveToLocalStorage("customPolyglot", nosave);
+  ConfigEvent.dispatch("customPolyglot", config.customPolyglot);
 
   return true;
 }
@@ -1921,8 +1951,8 @@ export function setCustomBackgroundFilter(
   array: ConfigSchemas.CustomBackgroundFilter,
   nosave?: boolean
 ): boolean {
-  //convert existing configs using five values down to four
-  //@ts-expect-error
+  // @ts-expect-error this used to be 5
+  // need to convert existing configs using five values down to four
   if (array.length === 5) {
     array = [array[0], array[1], array[2], array[3]];
   }
@@ -2001,7 +2031,8 @@ export async function apply(
       configObj.autoSwitchTheme,
       true
     );
-    await setCustomLayoutfluid(configObj.customLayoutfluid, true);
+    setCustomLayoutfluid(configObj.customLayoutfluid, true);
+    setCustomPolyglot(configObj.customPolyglot, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);

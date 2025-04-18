@@ -75,9 +75,7 @@ import CodeUnindentOnBackspace from "./lists/code-unindent-on-backspace";
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
-import LayoutsCommands, {
-  update as updateLayoutsCommands,
-} from "./lists/layouts";
+import LayoutsCommands from "./lists/layouts";
 import FunboxCommands from "./lists/funbox";
 import ThemesCommands, { update as updateThemesCommands } from "./lists/themes";
 export { updateThemesCommands };
@@ -90,9 +88,7 @@ import FontFamilyCommands, {
 import LanguagesCommands, {
   update as updateLanguagesCommands,
 } from "./lists/languages";
-import KeymapLayoutsCommands, {
-  update as updateKeymapLayoutsCommands,
-} from "./lists/keymap-layouts";
+import KeymapLayoutsCommands from "./lists/keymap-layouts";
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
@@ -113,18 +109,8 @@ import {
 } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-
-const layoutsPromise = JSONData.getLayoutsList();
-layoutsPromise
-  .then((layouts) => {
-    updateLayoutsCommands(layouts);
-    updateKeymapLayoutsCommands(layouts);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update layouts commands")
-    );
-  });
+import * as TestLogic from "../test/test-logic";
+import * as ActivePage from "../states/active-page";
 
 const languagesPromise = JSONData.getLanguageList();
 languagesPromise
@@ -240,7 +226,23 @@ export const commands: CommandsSubgroup = {
       icon: "fa-tint",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        void UpdateConfig.setCustomLayoutfluid(input);
+        UpdateConfig.setCustomLayoutfluid(input);
+      },
+    },
+    {
+      id: "changeCustomPolyglot",
+      display: "Polyglot languages...",
+      defaultValue: (): string => {
+        return Config.customPolyglot.join(" ");
+      },
+      input: true,
+      icon: "fa-language",
+      exec: ({ input }): void => {
+        if (input === undefined) return;
+        void UpdateConfig.setCustomPolyglot(input.split(" "));
+        if (ActivePage.get() === "test") {
+          TestLogic.restart();
+        }
       },
     },
 
@@ -516,7 +518,6 @@ export async function getList(
   listName: ListsObjectKeys
 ): Promise<CommandsSubgroup> {
   await Promise.allSettled([
-    layoutsPromise,
     languagesPromise,
     fontsPromise,
     themesPromise,
@@ -563,7 +564,6 @@ export function getTopOfStack(): CommandsSubgroup {
 let singleList: CommandsSubgroup | undefined;
 export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
   await Promise.allSettled([
-    layoutsPromise,
     languagesPromise,
     fontsPromise,
     themesPromise,

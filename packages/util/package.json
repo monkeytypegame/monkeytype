@@ -6,7 +6,9 @@
     "test": "vitest run",
     "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
-    "lint": "eslint \"./**/*.ts\""
+    "eslint": "eslint \"./src/**/*.ts\"",
+    "oxlint": "oxlint .",
+    "lint": "npm run oxlint && npm run eslint"
   },
   "devDependencies": {
     "@monkeytype/eslint-config": "workspace:*",
@@ -15,6 +17,7 @@
     "chokidar": "3.6.0",
     "eslint": "8.57.1",
     "madge": "8.0.0",
+    "oxlint": "0.16.6",
     "tsup": "8.4.0",
     "typescript": "5.5.4",
     "vitest": "2.1.9",

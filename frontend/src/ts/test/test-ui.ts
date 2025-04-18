@@ -269,7 +269,7 @@ export function updateActiveElement(
     TestState.activeWordIndex - activeWordElementOffset
   ] as HTMLElement | undefined;
 
-  if (newActiveWord == undefined) {
+  if (newActiveWord === undefined) {
     throw new Error("activeWord is undefined - can't update active element");
   }
 
@@ -319,15 +319,16 @@ export async function updateHintsPosition(): Promise<void> {
     const leftmostIndx = isLanguageRTL
       ? parseInt(hintEl.dataset["length"] ?? "1") - 1
       : 0;
-    let newLeft = (
-      letterElements?.[letterIndices?.[leftmostIndx] ?? 0] as HTMLElement
-    ).offsetLeft;
+
+    const el = letterElements?.[
+      letterIndices?.[leftmostIndx] ?? 0
+    ] as HTMLElement;
+    let newLeft = el.offsetLeft;
     const lettersWidth =
-      letterIndices?.reduce(
-        (accum, curr) =>
-          accum + (letterElements?.[curr] as HTMLElement).offsetWidth,
-        0
-      ) ?? 0;
+      letterIndices?.reduce((accum, curr) => {
+        const el = letterElements?.[curr] as HTMLElement;
+        return accum + el.offsetWidth;
+      }, 0) ?? 0;
     newLeft += lettersWidth / 2;
 
     hintEl.style.left = newLeft.toString() + "px";
@@ -397,7 +398,7 @@ function updateWordWrapperClasses(): void {
       ?.attr("class")
       ?.split(/\s+/)
       ?.filter((it) => !it.startsWith("highlight-")) ?? [];
-  if (Config.highlightMode != null) {
+  if (Config.highlightMode !== null) {
     existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
   }
 
@@ -1583,7 +1584,7 @@ export async function applyBurstHeatmap(): Promise<void> {
       } else if (index === 4) {
         string = `${Math.round(step.val)}+`;
       } else if (nextStep) {
-        if (step.val != nextStep.val) {
+        if (step.val !== nextStep.val) {
           string = `${Math.round(step.val)}-${Math.round(nextStep.val) - 1}`;
         } else {
           string = `${Math.round(step.val)}-${Math.round(step.val)}`;

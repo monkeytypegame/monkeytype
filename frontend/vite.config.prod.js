@@ -197,22 +197,21 @@ export default {
               totalOriginalSize += originalSize;
               totalMinifiedSize += minifiedSize;
 
-              const savings =
-                ((originalSize - minifiedSize) / originalSize) * 100;
-
               writeFileSync(sourcePath, minifiedContent);
 
-              console.log(
-                `\x1b[0m \x1b[36m${sourcePath}\x1b[0m | ` +
-                  `\x1b[90mOriginal: ${originalSize} bytes\x1b[0m | ` +
-                  `\x1b[90mMinified: ${minifiedSize} bytes\x1b[0m | ` +
-                  `\x1b[32mSavings: ${savings.toFixed(2)}%\x1b[0m`
-              );
+              // const savings =
+              //   ((originalSize - minifiedSize) / originalSize) * 100;
+              // console.log(
+              //   `\x1b[0m \x1b[36m${sourcePath}\x1b[0m | ` +
+              //     `\x1b[90mOriginal: ${originalSize} bytes\x1b[0m | ` +
+              //     `\x1b[90mMinified: ${minifiedSize} bytes\x1b[0m | ` +
+              //     `\x1b[32mSavings: ${savings.toFixed(2)}%\x1b[0m`
+              // );
             }
           });
         };
 
-        console.log("\n\x1b[1mMinifying JSON files...\x1b[0m\n");
+        // console.log("\n\x1b[1mMinifying JSON files...\x1b[0m\n");
 
         minifyJsonFiles("./dist");
 
@@ -220,7 +219,7 @@ export default {
           ((totalOriginalSize - totalMinifiedSize) / totalOriginalSize) * 100;
 
         console.log(
-          `\n\x1b[1mMinification Summary:\x1b[0m\n` +
+          `\n\n\x1b[1mJSON Minification Summary:\x1b[0m\n` +
             `  \x1b[90mTotal original size: ${(
               totalOriginalSize /
               1024 /

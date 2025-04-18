@@ -48,7 +48,7 @@ function updateKeytips(): void {
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $("footer .keyTips").html(`
     ${
-      Config.quickRestart == "off"
+      Config.quickRestart === "off"
         ? "<key>tab</key> + <key>enter</key>"
         : `<key>${Config.quickRestart}</key>`
     } - restart test<br>

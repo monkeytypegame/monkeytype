@@ -69,11 +69,11 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
     return quotes;
   }
 
-  const quoteLengthFilter = quoteLengthFilterValue.map((filterValue) =>
-    parseInt(filterValue, 10)
+  const quoteLengthFilter = new Set(
+    quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10))
   );
   const filteredQuotes = quotes.filter((quote) =>
-    quoteLengthFilter.includes(quote.group)
+    quoteLengthFilter.has(quote.group)
   );
 
   return filteredQuotes;

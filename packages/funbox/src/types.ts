@@ -10,6 +10,7 @@ export type FunboxName =
   | "arrows"
   | "rAnDoMcAsE"
   | "capitals"
+  | "layout_mirror"
   | "layoutfluid"
   | "earthquake"
   | "space_balls"
@@ -40,7 +41,8 @@ export type FunboxName =
   | "ddoouubblleedd"
   | "instant_messaging"
   | "underscore_spaces"
-  | "ALL_CAPS";
+  | "ALL_CAPS"
+  | "polyglot";
 
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
 

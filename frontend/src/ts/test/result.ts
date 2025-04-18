@@ -249,7 +249,7 @@ function updateWpmAndAcc(): void {
   );
 
   if (Config.alwaysShowDecimalPlaces) {
-    if (Config.typingSpeedUnit != "wpm") {
+    if (Config.typingSpeedUnit !== "wpm") {
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
         result.wpm.toFixed(2) + " wpm"
@@ -283,7 +283,7 @@ function updateWpmAndAcc(): void {
     let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
     let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
 
-    if (Config.typingSpeedUnit != "wpm") {
+    if (Config.typingSpeedUnit !== "wpm") {
       wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
     }

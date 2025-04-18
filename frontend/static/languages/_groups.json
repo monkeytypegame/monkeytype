@@ -531,7 +531,7 @@
   },
   {
     "name": "xhosa",
-    "languages": ["xhosa"]
+    "languages": ["xhosa", "xhosa_3k"]
   },
   {
     "name": "tibetan",
