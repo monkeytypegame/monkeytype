@@ -8,6 +8,7 @@
   - [Theme Guidelines](#theme-guidelines)
   - [Language Guidelines](#language-guidelines)
   - [Quote Guidelines](#quote-guidelines)
+  - [Layout Guidelines](#layout-guidelines)
 - [Questions](#questions)
 
 ## Getting Started
@@ -54,7 +55,7 @@ Before submitting a theme make sure...
 - your theme has been added to the `_list` file and the `textColor` property is the theme's main color
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
 
-(If you want to contribute themes but don't know how, check [THEMES.md](./THEMES.md))
+If you want to contribute themes but don't know how, check [THEMES.md](./THEMES.md) 
 
 ### Language Guidelines
 
@@ -63,7 +64,7 @@ Before submitting a theme make sure...
 - Be sure to add your language to the `_list` and `_groups` files
 - Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
 
-(If you want to contribute languages but don't know how, check [LANGUAGES.md](./LANGUAGES.md))
+If you want to contribute languages but don't know how, check [LANGUAGES.md](./LANGUAGES.md)
 
 ### Quote Guidelines
 
@@ -77,7 +78,11 @@ Before submitting a theme make sure...
 - Remember to name your pull request properly. For example, if you are adding new quotes for the language `French`, your pull request should be named `impr(quotes): add French quotes`.
 
 
-(If you want to contribute quotes but don't know how, check [QUOTES.md](./QUOTES.md))
+If you want to contribute quotes but don't know how, check [QUOTES.md](./QUOTES.md)
+
+### Layout Guidelines
+
+If you want to contribute layouts but don't know how, check [LAYOUTS.md](./LAYOUTS.md)
 
 ## Questions
 

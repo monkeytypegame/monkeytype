@@ -32,8 +32,11 @@ import {
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
+import { DataArrayPartial } from "slim-select/store";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
+
+let customLayoutFluidSelect: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
 
@@ -684,34 +687,24 @@ async function fillSettingsPage(): Promise<void> {
     Config.keymapSize
   );
 
-  $(".pageSettings .section[data-config-name='customLayoutfluid'] input").val(
-    Config.customLayoutfluid.replace(/#/g, " ")
-  );
-
-  const customLayoutfluidActive = Config.customLayoutfluid.split("#");
   const customLayoutfluidElement = document.querySelector(
     ".pageSettings .section[data-config-name='customLayoutfluid'] select"
   ) as Element;
 
-  new SlimSelect({
-    select: customLayoutfluidElement,
-    data: [
-      ...customLayoutfluidActive,
-      ...LayoutsList.filter((it) => !customLayoutfluidActive.includes(it)),
-    ].map((layout) => ({
-      text: layout.replace(/_/g, " "),
-      value: layout,
-      selected: customLayoutfluidActive.includes(layout),
-    })),
-    settings: { keepOrder: true },
-    events: {
-      afterChange: (newVal): void => {
-        void UpdateConfig.setCustomLayoutfluid(
-          newVal.map((it) => it.value).join("#")
-        );
+  if (customLayoutFluidSelect === undefined) {
+    customLayoutFluidSelect = new SlimSelect({
+      select: customLayoutfluidElement,
+      settings: { keepOrder: true },
+      events: {
+        afterChange: (newVal): void => {
+          const customLayoutfluid = newVal.map((it) => it.value).join("#");
+          if (customLayoutfluid !== Config.customLayoutfluid) {
+            void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
+          }
+        },
       },
-    },
-  });
+    });
+  }
 
   $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
     Config.tapeMargin
@@ -911,6 +904,13 @@ export async function update(groupUpdate = true): Promise<void> {
   $(".pageSettings .tip").html(`
     tip: You can also change all these settings quickly using the
     command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+
+  if (
+    customLayoutFluidSelect !== undefined &&
+    customLayoutFluidSelect.getSelected().join("#") !== Config.customLayoutfluid
+  ) {
+    customLayoutFluidSelect.setData(getLayoutfluidDropdownData());
+  }
 }
 function toggleSettingsGroup(groupName: string): void {
   const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
@@ -1357,6 +1357,18 @@ $(".pageSettings .quickNav .links a").on("click", (e) => {
 let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
+}
+
+function getLayoutfluidDropdownData(): DataArrayPartial {
+  const customLayoutfluidActive = Config.customLayoutfluid.split("#");
+  return [
+    ...customLayoutfluidActive,
+    ...LayoutsList.filter((it) => !customLayoutfluidActive.includes(it)),
+  ].map((layout) => ({
+    text: layout.replace(/_/g, " "),
+    value: layout,
+    selected: customLayoutfluidActive.includes(layout),
+  }));
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
