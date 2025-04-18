@@ -114,7 +114,7 @@ const badges: Record<number, UserBadge> = {
     description: "Yes, I'm actually this fast",
     icon: "fa-rocket",
     color: "white",
-    customStyle: "animation: rgb-bg 10s linear infinite;",
+    customStyle: "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg, hsl(120, 39%, 49%) 0%, hsl(192, 48%, 48%) 20%, hsl(264, 90%, 58%) 40%, hsl(357, 89%, 50%) 60%, hsl(46, 100%, 51%) 80%, hsl(120, 39%, 49%) 100%);",
   },
   14: {
     id: 14,
