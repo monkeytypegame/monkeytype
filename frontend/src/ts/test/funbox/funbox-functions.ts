@@ -22,6 +22,7 @@ import { getSection } from "../wikipedia";
 import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 import * as TestState from "../test-state";
+import { WordGenError } from "../words-generator";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -647,9 +648,45 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   polyglot: {
     async withWords(_words) {
-      const promises = Config.customPolyglot.map(JSONData.getLanguage);
+      const promises = Config.customPolyglot.map(async (language) =>
+        JSONData.getLanguage(language).catch(() => {
+          Notifications.add(
+            `Failed to load language: ${language}. It will be ignored.`,
+            0
+          );
+          return null; // Return null for failed languages
+        })
+      );
 
-      const languages = await Promise.all(promises);
+      const languages = (await Promise.all(promises)).filter(
+        (lang) => lang !== null
+      );
+
+      if (languages.length === 0) {
+        UpdateConfig.toggleFunbox("polyglot");
+        throw new Error(
+          `No valid languages found. Please check your polyglot languages config (${Config.customPolyglot.join(
+            ", "
+          )}).`
+        );
+      }
+
+      if (languages.length === 1) {
+        const lang = languages[0] as JSONData.LanguageObject;
+        UpdateConfig.setLanguage(lang.name, true);
+        UpdateConfig.toggleFunbox("polyglot", true);
+        Notifications.add(
+          `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${Config.customPolyglot.join(
+            ", "
+          )}).`,
+          0,
+          {
+            duration: 7,
+          }
+        );
+        throw new WordGenError("");
+      }
+
       const wordSet = languages.flatMap((it) => it.words);
       Arrays.shuffle(wordSet);
       return new Wordset(wordSet);

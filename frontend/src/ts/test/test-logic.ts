@@ -470,9 +470,11 @@ export async function init(): Promise<void> {
   } catch (e) {
     console.error(e);
     if (e instanceof WordsGenerator.WordGenError) {
-      Notifications.add(e.message, 0, {
-        important: true,
-      });
+      if (e.message.length > 0) {
+        Notifications.add(e.message, 0, {
+          important: true,
+        });
+      }
     } else {
       Notifications.add(
         Misc.createErrorMessage(e, "Failed to generate words"),

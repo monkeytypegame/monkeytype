@@ -108,6 +108,8 @@ import {
 } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import * as TestLogic from "../test/test-logic";
+import * as ActivePage from "../states/active-page";
 
 const languagesPromise = JSONData.getLanguageList();
 languagesPromise
@@ -237,6 +239,9 @@ export const commands: CommandsSubgroup = {
       exec: ({ input }): void => {
         if (input === undefined) return;
         void UpdateConfig.setCustomPolyglot(input.split(" "));
+        if (ActivePage.get() === "test") {
+          TestLogic.restart();
+        }
       },
     },
 
