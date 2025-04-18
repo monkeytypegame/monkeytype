@@ -22,6 +22,7 @@ import {
   getActiveFunboxesWithFunction,
   isFunboxActiveWithFunction,
 } from "./funbox/list";
+import { WordGenError } from "../utils/word-gen-error";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -473,13 +474,6 @@ export function getLimit(): number {
   }
 
   return limit;
-}
-
-export class WordGenError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "WordGenError";
-  }
 }
 
 async function getQuoteWordList(

@@ -73,6 +73,7 @@ import {
 import { getFunboxesFromString } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
+import { WordGenError } from "../utils/word-gen-error";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -469,7 +470,7 @@ export async function init(): Promise<void> {
     wordsHaveNewline = gen.hasNewline;
   } catch (e) {
     console.error(e);
-    if (e instanceof WordsGenerator.WordGenError) {
+    if (e instanceof WordGenError) {
       if (e.message.length > 0) {
         Notifications.add(e.message, 0, {
           important: true,
