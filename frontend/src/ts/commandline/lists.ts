@@ -226,6 +226,19 @@ export const commands: CommandsSubgroup = {
         UpdateConfig.setCustomLayoutfluid(input);
       },
     },
+    {
+      id: "changeCustomPolyglot",
+      display: "Polyglot languages...",
+      defaultValue: (): string => {
+        return Config.customPolyglot.join(" ");
+      },
+      input: true,
+      icon: "fa-language",
+      exec: ({ input }): void => {
+        if (input === undefined) return;
+        void UpdateConfig.setCustomPolyglot(input.split(" "));
+      },
+    },
 
     //input
     ...FreedomModeCommands,

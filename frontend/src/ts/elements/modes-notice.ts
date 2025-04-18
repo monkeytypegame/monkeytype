@@ -9,6 +9,7 @@ import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
 import Format from "../utils/format";
+import { getActiveFunboxNames } from "../test/funbox/list";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -25,6 +26,7 @@ ConfigEvent.subscribe((eventKey) => {
       "showAverage",
       "typingSpeedUnit",
       "quickRestart",
+      "changeCustomPolyglot",
     ].includes(eventKey)
   ) {
     void update();
@@ -91,12 +93,27 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.mode !== "zen") {
+  const usingPolyglot = getActiveFunboxNames().includes("polyglot");
+
+  if (Config.mode !== "zen" && !usingPolyglot) {
     $(".pageTest #testModesNotice").append(
       `<button class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
         Config.language,
         Config.mode === "quote"
       )}</button>`
+    );
+  }
+
+  if (usingPolyglot) {
+    const languages = Config.customPolyglot
+      .map((lang) => {
+        const langDisplay = getLanguageDisplayString(lang, true);
+        return langDisplay;
+      })
+      .join(", ");
+
+    $(".pageTest #testModesNotice").append(
+      `<button class="textButton" commandId="changeCustomPolyglot"><i class="fas fa-globe-americas"></i>${languages}</button>`
     );
   }
 

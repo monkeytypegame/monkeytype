@@ -32,11 +32,12 @@ import {
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
-import { DataArrayPartial } from "slim-select/store";
+import { DataArrayPartial, Optgroup } from "slim-select/store";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
 let customLayoutFluidSelect: SlimSelect | undefined;
+let customPolyglotSelect: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
 
@@ -476,21 +477,12 @@ async function fillSettingsPage(): Promise<void> {
     ".pageSettings .section[data-config-name='language'] select"
   ) as Element;
 
-  let html = "";
-  if (languageGroups) {
-    for (const group of languageGroups) {
-      html += `<optgroup label="${group.name}">`;
-      for (const language of group.languages) {
-        const selected = language === Config.language ? "selected" : "";
-        const text = Strings.getLanguageDisplayString(language);
-        html += `<option value="${language}" ${selected}>${text}</option>`;
-      }
-      html += `</optgroup>`;
-    }
-  }
-  element.innerHTML = html;
   new SlimSelect({
     select: element,
+    data: getLanguageDropdownData(
+      languageGroups ?? [],
+      (language) => language === Config.language
+    ),
     settings: {
       searchPlaceholder: "search",
     },
@@ -687,11 +679,11 @@ async function fillSettingsPage(): Promise<void> {
     Config.keymapSize
   );
 
-  const customLayoutfluidElement = document.querySelector(
-    ".pageSettings .section[data-config-name='customLayoutfluid'] select"
-  ) as Element;
-
   if (customLayoutFluidSelect === undefined) {
+    const customLayoutfluidElement = document.querySelector(
+      ".pageSettings .section[data-config-name='customLayoutfluid'] select"
+    ) as Element;
+
     customLayoutFluidSelect = new SlimSelect({
       select: customLayoutfluidElement,
       settings: { keepOrder: true },
@@ -700,6 +692,27 @@ async function fillSettingsPage(): Promise<void> {
           const customLayoutfluid = newVal.map((it) => it.value).join("#");
           if (customLayoutfluid !== Config.customLayoutfluid) {
             void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
+          }
+        },
+      },
+    });
+  }
+
+  if (customPolyglotSelect === undefined) {
+    const customPolyglotElement = document.querySelector(
+      ".pageSettings .section[data-config-name='customPolyglot'] select"
+    ) as Element;
+
+    customPolyglotSelect = new SlimSelect({
+      select: customPolyglotElement,
+      data: getLanguageDropdownData(languageGroups ?? [], (language) =>
+        Config.customPolyglot.includes(language)
+      ),
+      events: {
+        afterChange: (newVal): void => {
+          const customPolyglot = newVal.map((it) => it.value);
+          if (customPolyglot.toSorted() !== Config.customPolyglot.toSorted()) {
+            void UpdateConfig.setCustomPolyglot(customPolyglot);
           }
         },
       },
@@ -910,6 +923,13 @@ export async function update(groupUpdate = true): Promise<void> {
     customLayoutFluidSelect.getSelected().join("#") !== Config.customLayoutfluid
   ) {
     customLayoutFluidSelect.setData(getLayoutfluidDropdownData());
+  }
+
+  if (
+    customPolyglotSelect !== undefined &&
+    customPolyglotSelect.getSelected() !== Config.customPolyglot
+  ) {
+    customPolyglotSelect.setSelected(Config.customPolyglot);
   }
 }
 function toggleSettingsGroup(groupName: string): void {
@@ -1357,6 +1377,23 @@ $(".pageSettings .quickNav .links a").on("click", (e) => {
 let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
+}
+
+function getLanguageDropdownData(
+  languageGroups: JSONData.LanguageGroup[],
+  isActive: (val: string) => boolean
+): DataArrayPartial {
+  return languageGroups.map(
+    (group) =>
+      ({
+        label: group.name,
+        options: group.languages.map((language) => ({
+          text: Strings.getLanguageDisplayString(language),
+          value: language,
+          selected: isActive(language),
+        })),
+      } as Optgroup)
+  );
 }
 
 function getLayoutfluidDropdownData(): DataArrayPartial {

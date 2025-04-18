@@ -444,6 +444,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["alterText"],
     name: "ALL_CAPS",
   },
+  polyglot: {
+    description: "Use words from multiple languages in a single test.",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage"],
+    frontendFunctions: ["withWords"],
+    name: "polyglot",
+  },
 };
 
 // oxlint doesnt understand ts overloading
