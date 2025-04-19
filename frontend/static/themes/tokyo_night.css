@@ -1,0 +1,52 @@
+:root {
+  --bg-color: #101014; /* custom */
+  --main-color: #2ac3de;
+  --caret-color: #ff9e64;
+  --sub-color: #717a9c; /* custom */
+  --sub-alt-color: #1a1b26;
+  --text-color: #c0caf5;
+  --error-color: #f7768e;
+  --error-extra-color: #8c4351;
+  --colorful-error-color: #73daca;
+  --colorful-error-extra-color: #73daca;
+}
+
+/* background and text colors */
+#notificationCenter .notif.bad {
+  --notif-border-color: #f7768e;
+  --notif-background-color: #f7768e;
+}
+
+#notificationCenter .notif.good {
+  --notif-border-color: #73daca;
+  --notif-background-color: #73daca;
+}
+
+#notificationCenter .notif.notice {
+  --notif-border-color: #7dcfff;
+  --notif-background-color: #7dcfff;
+}
+
+/* hover styles  */
+#notificationCenter .notif:hover.good {
+  --notif-background-color: #6ea395;
+}
+#notificationCenter .notif:hover.bad {
+  --notif-background-color: #915e68;
+}
+#notificationCenter .notif:hover.notice {
+  --notif-background-color: #659db9;
+}
+
+/* content colors  */
+#notificationCenter .notif .message {
+  color: var(--bg-color);
+}
+
+#notificationCenter .notif .message .title {
+  color: var(--bg-color);
+}
+
+#notificationCenter .notif .icon {
+  color: var(--bg-color);
+}
