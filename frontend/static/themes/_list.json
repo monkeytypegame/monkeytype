@@ -63,6 +63,13 @@
     "textColor": "#ffffff"
   },
   {
+    "name": "tokyo_night",
+    "bgColor": "#101014",
+    "mainColor": "#2ac3de",
+    "subColor": "#717a9c",
+    "textColor": "#c0caf5"
+  },
+  {
     "name": "our_theme",
     "bgColor": "#ce1226",
     "mainColor": "#fcd116",
