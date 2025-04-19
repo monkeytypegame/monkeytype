@@ -87,16 +87,16 @@ export function canSetConfigWithCurrentFunboxes(
       fb = fb.concat(
         getFunboxesFromString(funbox).filter((f) => {
           return (
-            f.frontendFunctions?.includes("getWord") ??
-            f.frontendFunctions?.includes("pullSection") ??
-            f.frontendFunctions?.includes("alterText") ??
-            f.frontendFunctions?.includes("withWords") ??
-            f.properties?.includes("changesCapitalisation") ??
-            f.properties?.includes("nospace") ??
-            f.properties?.find((fp) => fp.startsWith("toPush:")) ??
-            f.properties?.includes("changesWordsVisibility") ??
-            f.properties?.includes("speaks") ??
-            f.properties?.includes("changesLayout") ??
+            f.frontendFunctions?.includes("getWord") ||
+            f.frontendFunctions?.includes("pullSection") ||
+            f.frontendFunctions?.includes("alterText") ||
+            f.frontendFunctions?.includes("withWords") ||
+            f.properties?.includes("changesCapitalisation") ||
+            f.properties?.includes("nospace") ||
+            f.properties?.some((fp) => fp.startsWith("toPush:")) ||
+            f.properties?.includes("changesWordsVisibility") ||
+            f.properties?.includes("speaks") ||
+            f.properties?.includes("changesLayout") ||
             f.properties?.includes("changesWordsFrequency")
           );
         })
@@ -106,9 +106,9 @@ export function canSetConfigWithCurrentFunboxes(
       fb = fb.concat(
         getFunboxesFromString(funbox).filter((f) => {
           return (
-            f.frontendFunctions?.includes("getWord") ??
-            f.frontendFunctions?.includes("pullSection") ??
-            f.frontendFunctions?.includes("withWords") ??
+            f.frontendFunctions?.includes("getWord") ||
+            f.frontendFunctions?.includes("pullSection") ||
+            f.frontendFunctions?.includes("withWords") ||
             f.properties?.includes("changesWordsFrequency")
           );
         })

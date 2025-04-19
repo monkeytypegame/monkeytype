@@ -108,6 +108,8 @@ import {
 } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import * as TestLogic from "../test/test-logic";
+import * as ActivePage from "../states/active-page";
 
 const languagesPromise = JSONData.getLanguageList();
 languagesPromise
@@ -217,13 +219,29 @@ export const commands: CommandsSubgroup = {
       id: "changeCustomLayoutfluid",
       display: "Custom layoutfluid...",
       defaultValue: (): string => {
-        return Config.customLayoutfluid;
+        return Config.customLayoutfluid.replace(/#/g, " ");
       },
       input: true,
       icon: "fa-tint",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(input);
+        UpdateConfig.setCustomLayoutfluid(input.replace(/ /g, "#"));
+      },
+    },
+    {
+      id: "changeCustomPolyglot",
+      display: "Polyglot languages...",
+      defaultValue: (): string => {
+        return Config.customPolyglot.join(" ");
+      },
+      input: true,
+      icon: "fa-language",
+      exec: ({ input }): void => {
+        if (input === undefined) return;
+        void UpdateConfig.setCustomPolyglot(input.split(" "));
+        if (ActivePage.get() === "test") {
+          TestLogic.restart();
+        }
       },
     },
 
