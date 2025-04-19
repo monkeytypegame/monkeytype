@@ -93,8 +93,7 @@ export function canSetConfigWithCurrentFunboxes(
             f.frontendFunctions?.includes("withWords") ||
             f.properties?.includes("changesCapitalisation") ||
             f.properties?.includes("nospace") ||
-            f.properties?.find((fp) => fp.startsWith("toPush:")) !==
-              undefined ||
+            f.properties?.some((fp) => fp.startsWith("toPush:")) ||
             f.properties?.includes("changesWordsVisibility") ||
             f.properties?.includes("speaks") ||
             f.properties?.includes("changesLayout") ||
