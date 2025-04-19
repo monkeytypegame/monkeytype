@@ -679,12 +679,9 @@ async function fillSettingsPage(): Promise<void> {
     Config.keymapSize
   );
 
-  const customLayoutfluidElement = document.querySelector(
-    ".pageSettings .section[data-config-name='customLayoutfluid'] select"
-  ) as Element;
-
   customLayoutFluidSelect = new SlimSelect({
-    select: customLayoutfluidElement,
+    select:
+      ".pageSettings .section[data-config-name='customLayoutfluid'] select",
     settings: { keepOrder: true },
     events: {
       afterChange: (newVal): void => {
@@ -696,12 +693,8 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
-  const customPolyglotElement = document.querySelector(
-    ".pageSettings .section[data-config-name='customPolyglot'] select"
-  ) as Element;
-
   customPolyglotSelect = new SlimSelect({
-    select: customPolyglotElement,
+    select: ".pageSettings .section[data-config-name='customPolyglot'] select",
     data: getLanguageDropdownData(languageGroups ?? [], (language) =>
       Config.customPolyglot.includes(language)
     ),
