@@ -679,45 +679,41 @@ async function fillSettingsPage(): Promise<void> {
     Config.keymapSize
   );
 
-  if (customLayoutFluidSelect === undefined) {
-    const customLayoutfluidElement = document.querySelector(
-      ".pageSettings .section[data-config-name='customLayoutfluid'] select"
-    ) as Element;
+  const customLayoutfluidElement = document.querySelector(
+    ".pageSettings .section[data-config-name='customLayoutfluid'] select"
+  ) as Element;
 
-    customLayoutFluidSelect = new SlimSelect({
-      select: customLayoutfluidElement,
-      settings: { keepOrder: true },
-      events: {
-        afterChange: (newVal): void => {
-          const customLayoutfluid = newVal.map((it) => it.value).join("#");
-          if (customLayoutfluid !== Config.customLayoutfluid) {
-            void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
-          }
-        },
+  customLayoutFluidSelect = new SlimSelect({
+    select: customLayoutfluidElement,
+    settings: { keepOrder: true },
+    events: {
+      afterChange: (newVal): void => {
+        const customLayoutfluid = newVal.map((it) => it.value).join("#");
+        if (customLayoutfluid !== Config.customLayoutfluid) {
+          void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
+        }
       },
-    });
-  }
+    },
+  });
 
-  if (customPolyglotSelect === undefined) {
-    const customPolyglotElement = document.querySelector(
-      ".pageSettings .section[data-config-name='customPolyglot'] select"
-    ) as Element;
+  const customPolyglotElement = document.querySelector(
+    ".pageSettings .section[data-config-name='customPolyglot'] select"
+  ) as Element;
 
-    customPolyglotSelect = new SlimSelect({
-      select: customPolyglotElement,
-      data: getLanguageDropdownData(languageGroups ?? [], (language) =>
-        Config.customPolyglot.includes(language)
-      ),
-      events: {
-        afterChange: (newVal): void => {
-          const customPolyglot = newVal.map((it) => it.value);
-          if (customPolyglot.toSorted() !== Config.customPolyglot.toSorted()) {
-            void UpdateConfig.setCustomPolyglot(customPolyglot);
-          }
-        },
+  customPolyglotSelect = new SlimSelect({
+    select: customPolyglotElement,
+    data: getLanguageDropdownData(languageGroups ?? [], (language) =>
+      Config.customPolyglot.includes(language)
+    ),
+    events: {
+      afterChange: (newVal): void => {
+        const customPolyglot = newVal.map((it) => it.value);
+        if (customPolyglot.toSorted() !== Config.customPolyglot.toSorted()) {
+          void UpdateConfig.setCustomPolyglot(customPolyglot);
+        }
       },
-    });
-  }
+    },
+  });
 
   $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
     Config.tapeMargin
