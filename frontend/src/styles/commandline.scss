@@ -114,6 +114,13 @@
           padding: 0.5rem;
           pointer-events: auto;
 
+          &:focus-visible {
+            outline: 2px solid var(--sub-color);
+            border-radius: var(--roundness);
+            box-shadow: 0 0 0 0.1rem var(--text-color);
+            opacity: 1;
+          }
+
           &.active {
             .fas.fa-star {
               margin-right: 0;

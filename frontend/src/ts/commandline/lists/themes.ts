@@ -40,14 +40,27 @@ function createThemeCommand(theme: Theme, isFavorite: boolean): Command {
       UpdateConfig.setTheme(theme.name);
     },
     // custom HTML element for the favorite star
-    html: `<div class="themeFavIcon ${isFavorite ? "active" : ""}">
+    html: `<div class="themeFavIcon ${
+      isFavorite ? "active" : ""
+    }" tabindex="-1">
             <i class="${isFavorite ? "fas" : "far"} fa-star"></i>
           </div>`,
     // click handler for the favorite star
-    customHandler: (e: MouseEvent, command: Command): boolean => {
-      // click was on the favorite star?
+    customHandler: (
+      e: MouseEvent | KeyboardEvent,
+      command: Command
+    ): boolean => {
+      // handle both mouse clicks and keyboard events
       const target = e.target as HTMLElement;
-      if (target.closest(".themeFavIcon")) {
+      const starIcon = target.closest(".themeFavIcon");
+
+      // check if interaction is with the favorite star
+      if (
+        starIcon ||
+        (e instanceof KeyboardEvent &&
+          e.key === "Enter" &&
+          target.classList.contains("themeFavIcon"))
+      ) {
         e.stopPropagation();
 
         const themeName = command.configValue as string;
@@ -62,16 +75,22 @@ function createThemeCommand(theme: Theme, isFavorite: boolean): Command {
         }
 
         // update the star icon immediately
-        const starIcon = target.closest(".themeFavIcon");
-        if (starIcon) {
+        const iconElement = target.classList.contains("themeFavIcon")
+          ? target.querySelector("i")
+          : starIcon?.querySelector("i");
+
+        const iconContainer = target.classList.contains("themeFavIcon")
+          ? target
+          : starIcon;
+
+        if (iconContainer) {
           const isFavorite = Config.favThemes.includes(themeName);
           if (isFavorite) {
-            starIcon.classList.add("active");
+            iconContainer.classList.add("active");
           } else {
-            starIcon.classList.remove("active");
+            iconContainer.classList.remove("active");
           }
           // update icon based on current state
-          const iconElement = starIcon.querySelector("i");
           if (iconElement) {
             iconElement.className = isFavorite ? "fas fa-star" : "far fa-star";
           }
