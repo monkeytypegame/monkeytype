@@ -219,13 +219,13 @@ export const commands: CommandsSubgroup = {
       id: "changeCustomLayoutfluid",
       display: "Custom layoutfluid...",
       defaultValue: (): string => {
-        return Config.customLayoutfluid;
+        return Config.customLayoutfluid.replace(/#/g, " ");
       },
       input: true,
       icon: "fa-tint",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(input);
+        UpdateConfig.setCustomLayoutfluid(input.replace(/ /g, "#"));
       },
     },
     {
