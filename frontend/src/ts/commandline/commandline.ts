@@ -11,6 +11,8 @@ import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup } from "./types";
+import * as JSONData from "../utils/json-data";
+import * as Misc from "../utils/misc";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -128,6 +130,19 @@ export function show(
       activeCommand = null;
       Focus.set(false);
       CommandlineLists.setStackToDefault();
+
+      // Update themes list with current favorites status when commandline is opened
+      const themesPromise = JSONData.getThemesList();
+      themesPromise
+        .then((themes) => {
+          CommandlineLists.updateThemesCommands(themes);
+        })
+        .catch((e: unknown) => {
+          console.error(
+            Misc.createErrorMessage(e, "Failed to update themes commands")
+          );
+        });
+
       updateInput();
       await filterSubgroup();
       await showCommands();
@@ -432,13 +447,24 @@ async function showCommands(): Promise<void> {
 
     if (command.customData !== undefined) {
       if (command.id.startsWith("changeTheme")) {
-        html += `<div class="command withThemeBubbles" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">
+        html += `<div class="command withThemeBubbles" data-command-id="${
+          command.id
+        }" data-index="${index}" style="${customStyle}">
       ${iconHTML}<div>${display}</div>
-      <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
-        <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
-        <div class="themeBubble" style="background: ${command.customData["subColor"]}"></div>
-        <div class="themeBubble" style="background: ${command.customData["textColor"]}"></div>
+      <div class="themeBubbles" style="background: ${
+        command.customData["bgColor"]
+      };outline: 0.25rem solid ${command.customData["bgColor"]};">
+        <div class="themeBubble" style="background: ${
+          command.customData["mainColor"]
+        }"></div>
+        <div class="themeBubble" style="background: ${
+          command.customData["subColor"]
+        }"></div>
+        <div class="themeBubble" style="background: ${
+          command.customData["textColor"]
+        }"></div>
       </div>
+      ${command.html ?? ""}
       </div>`;
       }
       if (command.id.startsWith("changeFont")) {
@@ -475,11 +501,19 @@ async function showCommands(): Promise<void> {
       activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
       await updateActiveCommand();
     });
-    command.addEventListener("click", async () => {
+    command.addEventListener("click", async (e) => {
       const previous = activeIndex;
       activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
       if (previous !== activeIndex) {
         await updateActiveCommand();
+      }
+      const commandObj = (await getList()).filter((c) => c.found)[activeIndex];
+      if (commandObj && commandObj.customHandler) {
+        const shouldProceed = commandObj.customHandler(
+          e as MouseEvent,
+          commandObj
+        );
+        if (!shouldProceed) return;
       }
       await runActiveCommand();
     });
@@ -715,6 +749,53 @@ const modal = new AnimatedModal({
       ) {
         e.preventDefault();
         await incrementActiveIndex();
+      }
+      // accesibility for the star icon
+      if (e.key === "ArrowRight") {
+        // check if cursor is at the end of the input field
+        if (input.selectionStart === input.value.length) {
+          e.preventDefault();
+          // find the active command's star icon
+          const activeCommand = document.querySelector(
+            "#commandLine .suggestions .command.active"
+          );
+          if (activeCommand) {
+            const starIcon = activeCommand.querySelector(".themeFavIcon");
+            if (starIcon) {
+              // focus
+              (starIcon as HTMLElement).tabIndex = 0;
+              (starIcon as HTMLElement).focus();
+              // remove any existing event listeners to prevent duplicates
+              const existingListener = (starIcon as HTMLElement).getAttribute(
+                "data-has-keydown"
+              );
+              if (existingListener !== "true") {
+                // using enter
+                (starIcon as HTMLElement).addEventListener(
+                  "keydown",
+                  (starEvent) => {
+                    if (starEvent.key === "Enter") {
+                      starEvent.preventDefault();
+                      (starIcon as HTMLElement).click();
+                      // return focus to input field after clicking
+                      setTimeout(() => input.focus(), 50);
+                    } else if (
+                      starEvent.key === "Escape" ||
+                      starEvent.key === "ArrowLeft"
+                    ) {
+                      starEvent.preventDefault();
+                      input.focus();
+                    }
+                  }
+                );
+                (starIcon as HTMLElement).setAttribute(
+                  "data-has-keydown",
+                  "true"
+                );
+              }
+            }
+          }
+        }
       }
       if (e.key === "Tab") {
         e.preventDefault();
