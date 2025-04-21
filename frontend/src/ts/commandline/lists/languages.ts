@@ -28,7 +28,7 @@ const commands: Command[] = [
 ];
 
 /**
- * Intelligently maps a language to the most appropriate keyboard layout
+ * Maps a language to the most appropriate keyboard layout
  */
 function findLayoutForLanguage(language: string): string {
   // Strip word count suffix (e.g., "english_1k" -> "english")
@@ -73,7 +73,7 @@ function findLayoutForLanguage(language: string): string {
     return "qwerty";
   }
 
-  // Regional fall-backs based on common orthographic patterns
+  // Regional fall-backs based on common keyboard patterns
   if (
     baseLanguage.includes("cyrillic") ||
     baseLanguage.includes("bulgarian") ||
