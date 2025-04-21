@@ -1,7 +1,6 @@
 import Config from "../../config";
 import {
   FunboxName,
-  stringToFunboxNames,
   FunboxMetadata,
   getFunboxObject,
   FunboxProperty,
@@ -46,16 +45,6 @@ export function get(
 
 export function getAllFunboxes(): FunboxMetadataWithFunctions[] {
   return Object.values(metadataWithFunctions);
-}
-
-export function getFromString(
-  namesWithHashOrArray: string | string[]
-): FunboxMetadataWithFunctions[] {
-  if (Array.isArray(namesWithHashOrArray)) {
-    return get(namesWithHashOrArray as FunboxName[]);
-  } else {
-    return get(stringToFunboxNames(namesWithHashOrArray));
-  }
 }
 
 export function getActiveFunboxes(): FunboxMetadataWithFunctions[] {

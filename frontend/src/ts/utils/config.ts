@@ -6,6 +6,7 @@ import {
 import { typedKeys } from "./misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
+import { FunboxName } from "@monkeytype/funbox";
 
 /**
  * migrates possible outdated config and merges with the default config values
@@ -113,7 +114,13 @@ export function replaceLegacyValues(
   }
 
   if (typeof configObj.funbox === "string") {
-    configObj.funbox = (configObj.funbox as string).split("#");
+    if (configObj.funbox === "none") {
+      configObj.funbox = [];
+    } else {
+      configObj.funbox = (configObj.funbox as string).split(
+        "#"
+      ) as FunboxName[];
+    }
   }
 
   return configObj;

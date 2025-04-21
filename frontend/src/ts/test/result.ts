@@ -37,11 +37,7 @@ import type {
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
-import {
-  getActiveFunboxes,
-  getFromString,
-  isFunboxActiveWithProperty,
-} from "./funbox/list";
+import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
 
@@ -476,7 +472,7 @@ type CanGetPbObject = {
 
 async function resultCanGetPb(): Promise<CanGetPbObject> {
   const funboxes = result.funbox;
-  const funboxObjects = getFromString(result.funbox);
+  const funboxObjects = getFunbox(result.funbox);
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
 
   const funboxesOk = funboxes.length === 0 || allFunboxesCanGetPb;

@@ -2,24 +2,25 @@ import _ from "lodash";
 import * as pb from "../../src/utils/pb";
 import { Mode, PersonalBests } from "@monkeytype/contracts/schemas/shared";
 import { Result } from "@monkeytype/contracts/schemas/results";
+import { FunboxName } from "@monkeytype/funbox";
 
 describe("Pb Utils", () => {
   it("funboxCatGetPb", () => {
-    const testCases = [
+    const testCases: { funbox: FunboxName[]; expected: boolean }[] = [
       {
-        funbox: "plus_one",
+        funbox: ["plus_one"],
         expected: true,
       },
       {
-        funbox: "none",
+        funbox: [],
         expected: true,
       },
       {
-        funbox: "nausea#plus_one",
+        funbox: ["nausea", "plus_one"],
         expected: true,
       },
       {
-        funbox: "arrows",
+        funbox: ["arrows"],
         expected: false,
       },
     ];
