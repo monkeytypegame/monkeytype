@@ -16,10 +16,10 @@ import {
 import {
   Config as ConfigType,
   Difficulty,
-  Funbox as FunboxType,
 } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { FunboxName } from "@monkeytype/funbox";
 
 let challengeLoading = false;
 
@@ -282,7 +282,9 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
       if (challenge.parameters[2] !== null) {
-        void Funbox.activate(challenge.parameters[2] as string);
+        void Funbox.activate(
+          (challenge.parameters[2] as string).split("#") as FunboxName[]
+        );
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);
@@ -290,7 +292,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setDifficulty("master", true);
     } else if (challenge.type === "funbox") {
       UpdateConfig.setFunbox(
-        (challenge.parameters[0] as string).split("#") as FunboxType,
+        (challenge.parameters[0] as string).split("#") as FunboxName[],
         true
       );
       UpdateConfig.setDifficulty("normal", true);
