@@ -4,6 +4,8 @@ import { readFileSync, existsSync } from "fs";
 import MonkeyError from "../utils/error";
 import path from "path";
 import { isDevEnvironment } from "../utils/misc";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { z } from "zod";
 
 const SERVICE_ACCOUNT_PATH = path.join(
   __dirname,
@@ -24,11 +26,25 @@ export function init(): void {
       );
     }
   } else {
-    const serviceAccount = JSON.parse(
+    const serviceAccountSchema = z.object({
+      type: z.string(),
+      project_id: z.string(),
+      private_key_id: z.string(),
+      private_key: z.string(),
+      client_email: z.string().email(),
+      client_id: z.string(),
+      auth_uri: z.string().url(),
+      token_uri: z.string().url(),
+      auth_provider_x509_cert_url: z.string().url(),
+      client_x509_cert_url: z.string().url(),
+    });
+
+    const serviceAccount = parseJsonWithSchema(
       readFileSync(SERVICE_ACCOUNT_PATH, {
         encoding: "utf8",
         flag: "r",
-      })
+      }),
+      serviceAccountSchema
     ) as ServiceAccount;
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),

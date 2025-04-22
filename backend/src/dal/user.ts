@@ -1103,11 +1103,7 @@ export async function updateStreak(
   if (isYesterday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
-    void addImportantLog(
-      "streak_lost",
-      JSON.parse(JSON.stringify(streak)) as Record<string, unknown>,
-      uid
-    );
+    void addImportantLog("streak_lost", streak, uid);
     streak.length = 1;
   }
 

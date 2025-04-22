@@ -1,10 +1,42 @@
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
-import { XpLeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import {
+  XpLeaderboardEntry,
+  XpLeaderboardEntrySchema,
+} from "@monkeytype/contracts/schemas/leaderboards";
 import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
 import MonkeyError from "../utils/error";
 import { omit } from "lodash";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { z } from "zod";
+import { Redis } from "ioredis";
+
+// Redis connection with custom methods for type safety
+type RedisConnectionWithCustomMethods = Redis & {
+  addResultIncrement: (
+    keyCount: number,
+    scoresKey: string,
+    resultsKey: string,
+    expirationTime: number,
+    uid: string,
+    score: number,
+    data: string
+  ) => Promise<number>;
+  getResults: (
+    keyCount: number,
+    scoresKey: string,
+    resultsKey: string,
+    minRank: number,
+    maxRank: number,
+    withScores: string
+  ) => Promise<[string[], string[]]>;
+  purgeResults: (
+    keyCount: number,
+    uid: string,
+    namespace: string
+  ) => Promise<void>;
+};
 
 type AddResultOpts = {
   entry: Pick<
@@ -61,7 +93,8 @@ export class WeeklyXpLeaderboard {
   ): Promise<number> {
     const { entry, xpGained, timeTypedSeconds } = opts;
 
-    const connection = RedisClient.getConnection();
+    const connection =
+      RedisClient.getConnection() as RedisConnectionWithCustomMethods | null;
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       return -1;
     }
@@ -87,9 +120,21 @@ export class WeeklyXpLeaderboard {
       entry.uid
     );
 
+    // Define a schema for parsing the current entry
+    const CurrentEntrySchema = z.object({
+      uid: z.string(),
+      name: z.string(),
+      discordId: z.string().optional(),
+      discordAvatar: z.string().optional(),
+      badgeId: z.number().int().optional(),
+      lastActivityTimestamp: z.number().int().nonnegative().optional(),
+      timeTypedSeconds: z.number().nonnegative().optional(),
+      isPremium: z.boolean().optional(),
+    });
+
     const currentEntryTimeTypedSeconds =
       currentEntry !== null
-        ? (JSON.parse(currentEntry) as { timeTypedSeconds: number | undefined })
+        ? parseJsonWithSchema(currentEntry, CurrentEntrySchema)
             ?.timeTypedSeconds
         : undefined;
 
@@ -97,8 +142,6 @@ export class WeeklyXpLeaderboard {
       timeTypedSeconds + (currentEntryTimeTypedSeconds ?? 0);
 
     const [rank] = await Promise.all([
-      // @ts-expect-error we are doing some weird file to function mapping, thats why its any
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       connection.addResultIncrement(
         2,
         weeklyXpLeaderboardScoresKey,
@@ -106,8 +149,14 @@ export class WeeklyXpLeaderboard {
         weeklyXpLeaderboardExpirationTimeInSeconds,
         entry.uid,
         xpGained,
-        JSON.stringify({ ...entry, timeTypedSeconds: totalTimeTypedSeconds })
-      ) as Promise<number>,
+        JSON.stringify(
+          XpLeaderboardEntrySchema.omit({ rank: true, totalXp: true }).parse({
+            ...entry,
+            timeTypedSeconds: totalTimeTypedSeconds,
+            lastActivityTimestamp: Math.floor(Date.now() / 1000),
+          })
+        )
+      ),
       LaterQueue.scheduleForNextWeek(
         "weekly-xp-leaderboard-results",
         "weekly-xp"
@@ -123,7 +172,8 @@ export class WeeklyXpLeaderboard {
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
     premiumFeaturesEnabled: boolean
   ): Promise<XpLeaderboardEntry[]> {
-    const connection = RedisClient.getConnection();
+    const connection =
+      RedisClient.getConnection() as RedisConnectionWithCustomMethods | null;
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       return [];
     }
@@ -138,8 +188,6 @@ export class WeeklyXpLeaderboard {
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
       this.getThisWeeksXpLeaderboardKeys();
 
-    // @ts-expect-error we are doing some weird file to function mapping, thats why its any
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const [results, scores] = (await connection.getResults(
       2, // How many of the arguments are redis keys (https://redis.io/docs/manual/programmability/lua-api/)
       weeklyXpLeaderboardScoresKey,
@@ -163,14 +211,30 @@ export class WeeklyXpLeaderboard {
 
     const resultsWithRanks: XpLeaderboardEntry[] = results.map(
       (resultJSON: string, index: number) => {
-        //TODO parse with zod?
-        const parsed = JSON.parse(resultJSON) as XpLeaderboardEntry;
+        try {
+          const parsed = parseJsonWithSchema(
+            resultJSON,
+            XpLeaderboardEntrySchema
+          );
+          const scoreValue = scores[index];
 
-        return {
-          ...parsed,
-          rank: minRank + index + 1,
-          totalXp: parseInt(scores[index] as string, 10),
-        };
+          if (typeof scoreValue !== "string") {
+            throw new Error(`Invalid score value at index ${index}`);
+          }
+
+          return {
+            ...parsed,
+            rank: minRank + index + 1,
+            totalXp: parseInt(scoreValue, 10),
+          };
+        } catch (error) {
+          throw new MonkeyError(
+            500,
+            `Failed to parse leaderboard entry at index ${index}: ${
+              error instanceof Error ? error.message : String(error)
+            }`
+          );
+        }
       }
     );
 
@@ -185,16 +249,14 @@ export class WeeklyXpLeaderboard {
     uid: string,
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
   ): Promise<XpLeaderboardEntry | null> {
-    const connection = RedisClient.getConnection();
+    const connection =
+      RedisClient.getConnection() as RedisConnectionWithCustomMethods | null;
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       throw new MonkeyError(500, "Redis connnection is unavailable");
     }
 
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
       this.getThisWeeksXpLeaderboardKeys();
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    connection.set;
 
     const [[, rank], [, totalXp], [, _count], [, result]] = (await connection
       .multi()
@@ -213,11 +275,21 @@ export class WeeklyXpLeaderboard {
       return null;
     }
 
-    //TODO parse with zod?
-    const parsed = JSON.parse((result as string) ?? "null") as Omit<
-      XpLeaderboardEntry,
-      "rank" | "count" | "totalXp"
-    >;
+    // safely parse the result error handling
+    let parsed: Omit<XpLeaderboardEntry, "rank" | "totalXp">;
+    try {
+      parsed = parseJsonWithSchema(
+        (result as string) ?? "null",
+        XpLeaderboardEntrySchema.omit({ rank: true, totalXp: true })
+      );
+    } catch (error) {
+      throw new MonkeyError(
+        500,
+        `Failed to parse leaderboard entry: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
 
     return {
       ...parsed,
@@ -227,7 +299,8 @@ export class WeeklyXpLeaderboard {
   }
 
   public async getCount(): Promise<number> {
-    const connection = RedisClient.getConnection();
+    const connection =
+      RedisClient.getConnection() as RedisConnectionWithCustomMethods | null;
     if (!connection) {
       throw new Error("Redis connection is unavailable");
     }
@@ -261,11 +334,14 @@ export async function purgeUserFromXpLeaderboards(
     return;
   }
 
-  // @ts-expect-error we are doing some weird file to function mapping, thats why its any
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  await connection.purgeResults(
-    0,
-    uid,
-    weeklyXpLeaderboardLeaderboardNamespace
-  );
+  // using type assertion for Redis custom command
+  await (
+    connection as unknown as {
+      purgeResults: (
+        keyCount: number,
+        uid: string,
+        namespace: string
+      ) => Promise<void>;
+    }
+  ).purgeResults(0, uid, weeklyXpLeaderboardLeaderboardNamespace);
 }

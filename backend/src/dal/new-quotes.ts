@@ -8,20 +8,26 @@ import MonkeyError from "../utils/error";
 import { compareTwoStrings } from "string-similarity";
 import { ApproveQuote, Quote } from "@monkeytype/contracts/schemas/quotes";
 import { WithObjectId } from "../utils/misc";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { z } from "zod";
 
-type JsonQuote = {
-  text: string;
-  britishText?: string;
-  source: string;
-  length: number;
-  id: number;
-};
+const JsonQuoteSchema = z.object({
+  text: z.string(),
+  britishText: z.string().optional(),
+  source: z.string(),
+  length: z.number(),
+  id: z.number(),
+});
 
-type QuoteData = {
-  language: string;
-  quotes: JsonQuote[];
-  groups: [number, number][];
-};
+const QuoteDataSchema = z.object({
+  language: z.string(),
+  quotes: z.array(JsonQuoteSchema),
+  groups: z.array(z.tuple([z.number(), z.number()])),
+});
+
+// derive TS types from Zod schemas
+type JsonQuote = z.infer<typeof JsonQuoteSchema>;
+// type QuoteData = z.infer<typeof QuoteDataSchema>;
 
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 
@@ -86,7 +92,10 @@ export async function add(
   let similarityScore = -1;
   if (existsSync(fileDir)) {
     const quoteFile = await readFile(fileDir);
-    const quoteFileJSON = JSON.parse(quoteFile.toString()) as QuoteData;
+    const quoteFileJSON = parseJsonWithSchema(
+      quoteFile.toString(),
+      QuoteDataSchema
+    );
     quoteFileJSON.quotes.every((old) => {
       if (compareTwoStrings(old.text, quote.text) > 0.9) {
         duplicateId = old.id;
@@ -170,7 +179,10 @@ export async function approve(
   await git.pull("upstream", "master");
   if (existsSync(fileDir)) {
     const quoteFile = await readFile(fileDir);
-    const quoteObject = JSON.parse(quoteFile.toString()) as QuoteData;
+    const quoteObject = parseJsonWithSchema(
+      quoteFile.toString(),
+      QuoteDataSchema
+    );
     quoteObject.quotes.every((old) => {
       if (compareTwoStrings(old.text, quote.text) > 0.8) {
         throw new MonkeyError(409, "Duplicate quote");
