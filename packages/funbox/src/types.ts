@@ -42,7 +42,8 @@ export type FunboxName =
   | "instant_messaging"
   | "underscore_spaces"
   | "ALL_CAPS"
-  | "polyglot";
+  | "polyglot"
+  | "asl";
 
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
 
