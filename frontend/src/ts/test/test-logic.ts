@@ -895,6 +895,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   console.debug("Completed event object", ce);
 
+  TestEvents.log({
+    type: "timer",
+    mode: "end",
+    ms: now,
+    time: ce.testDuration,
+  });
+
   // console.debug("Test events", );
   console.table(TestEvents.getAll());
 
