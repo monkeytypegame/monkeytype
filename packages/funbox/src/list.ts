@@ -462,10 +462,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   },
 };
 
-// oxlint doesnt understand ts overloading
-// eslint-disable-next-line no-redeclare
 export function getFunbox(name: FunboxName): FunboxMetadata;
-// eslint-disable-next-line no-redeclare
 export function getFunbox(names: FunboxName[]): FunboxMetadata[];
 export function getFunbox(
   nameOrNames: FunboxName | FunboxName[]
