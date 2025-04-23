@@ -452,6 +452,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["withWords"],
     name: "polyglot",
   },
+  asl: {
+    description: "Practice american sign language.",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["hasCssFile", "noLigatures"],
+    name: "asl",
+    cssModifications: ["words"],
+  },
 };
 
 // oxlint doesnt understand ts overloading
