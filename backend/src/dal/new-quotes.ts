@@ -165,6 +165,7 @@ export async function approve(
     source: editSource ?? targetQuote.source,
     length: targetQuote.text.length,
     approvedBy: name,
+    id: -1,
   };
   let message = "";
 
@@ -195,7 +196,12 @@ export async function approve(
       }
     });
     quote.id = maxid + 1;
-    quoteObject.quotes.push(quote as JsonQuote);
+
+    if (quote.id === -1) {
+      throw new MonkeyError(500, "Failed to get max id");
+    }
+
+    quoteObject.quotes.push(quote);
     writeFileSync(fileDir, JSON.stringify(quoteObject, null, 2));
     message = `Added quote to ${language}.json.`;
   } else {
