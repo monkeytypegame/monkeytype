@@ -157,5 +157,6 @@ export function getAll(): (
   ].sort((a, b) => a.ms - b.ms);
 }
 
+// oxlint-disable-next-line ban-ts-comment
 //@ts-ignore
 window["testEvents"] = getAll;
