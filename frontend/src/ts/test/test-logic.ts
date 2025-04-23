@@ -949,6 +949,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.setInvalid();
     dontSave = true;
   } else if (difficultyFailed) {
+    if (TestState.savingEnabled) {
+      let time = Numbers.roundTo2(
+        completedEvent.testDuration - completedEvent.afkDuration
+      );
+      if (time < 0) time = 0;
+      TestStats.incrementIncompleteSeconds(time);
+      TestStats.incrementRestartCount();
+      TestStats.pushIncompleteTest(completedEvent.acc, time);
+    }
     Notifications.add(`Test failed - ${failReason}`, 0, {
       duration: 1,
     });
@@ -1313,15 +1322,6 @@ export function fail(reason: string): void {
   TestInput.pushErrorToHistory();
   TestInput.pushAfkToHistory();
   void finish(true);
-  if (!TestState.savingEnabled) return;
-  const testSeconds = TestStats.calculateTestSeconds(performance.now());
-  const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-  let tt = Numbers.roundTo2(testSeconds - afkseconds);
-  if (tt < 0) tt = 0;
-  TestStats.incrementIncompleteSeconds(tt);
-  TestStats.incrementRestartCount();
-  const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
-  TestStats.pushIncompleteTest(acc, tt);
 }
 
 $(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
