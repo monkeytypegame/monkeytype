@@ -39,6 +39,7 @@ import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
+  getActiveFunboxNames,
 } from "../test/funbox/list";
 import * as TestEvents from "../test/test-events";
 
@@ -95,11 +96,11 @@ function updateUI(): void {
 
           //@ts-expect-error really cant be bothered fixing all these issues - its gonna get caught anyway
           const koChar: string =
-            //@ts-expect-error
+            //@ts-expect-error ---
             koCurrWord[inputGroupLength][inputCharLength] ??
-            //@ts-expect-error
+            //@ts-expect-error ---
             koCurrWord[koCurrInput.length][
-              //@ts-expect-error
+              //@ts-expect-error ---
               inputCharLength - koCurrWord[inputGroupLength].length
             ];
 
@@ -119,19 +120,19 @@ function updateUI(): void {
 function backspaceToPrevious(): void {
   if (!TestState.isActive) return;
 
-  if (
-    TestInput.input.getHistory().length === 0 ||
-    TestState.activeWordIndex - TestUI.activeWordElementOffset === 0
-  ) {
+  const wordElementIndex =
+    TestState.activeWordIndex - TestUI.activeWordElementOffset;
+
+  if (TestInput.input.getHistory().length === 0 || wordElementIndex === 0) {
     return;
   }
 
   const wordElements = document.querySelectorAll("#words > .word");
   if (
-    (TestInput.input.getHistory(TestState.activeWordIndex - 1) ==
+    (TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
       TestWords.words.get(TestState.activeWordIndex - 1) &&
       !Config.freedomMode) ||
-    wordElements[TestState.activeWordIndex - 1]?.classList.contains("hidden")
+    wordElements[wordElementIndex - 1]?.classList.contains("hidden")
   ) {
     return;
   }
@@ -141,7 +142,7 @@ function backspaceToPrevious(): void {
   }
 
   const incorrectLetterBackspaced =
-    wordElements[TestState.activeWordIndex]?.children[0]?.classList.contains(
+    wordElements[wordElementIndex]?.children[0]?.classList.contains(
       "incorrect"
     );
   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
@@ -167,7 +168,11 @@ function backspaceToPrevious(): void {
 
     for (let i = els.length - 1; i >= 0; i--) {
       const el = els[i] as HTMLElement;
-      if (el.classList.contains("newline")) {
+      if (
+        el.classList.contains("newline") ||
+        el.classList.contains("beforeNewline") ||
+        el.classList.contains("afterNewline")
+      ) {
         el.remove();
       } else {
         break;
@@ -364,7 +369,7 @@ async function handleSpace(): Promise<void> {
     }
 
     if (nextTop > currentTop) {
-      TestUI.lineJump(currentTop);
+      void TestUI.lineJump(currentTop);
     } //end of line wrap
   }
 
@@ -734,7 +739,7 @@ function handleChar(
       (wordIsTheSame || shouldQuickEnd) &&
       (!isChinese ||
         (realInputValue !== undefined &&
-          charIndex + 2 == realInputValue.length))
+          charIndex + 2 === realInputValue.length))
     ) {
       void TestLogic.finish();
       return;
@@ -752,7 +757,7 @@ function handleChar(
     TestInput.input.current.length > 1
   ) {
     if (Config.mode === "zen") {
-      if (!Config.showAllLines) TestUI.lineJump(activeWordTopBeforeJump);
+      if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
       void TestUI.updateActiveWordLetters();
@@ -1069,7 +1074,7 @@ $(document).on("keydown", async (event) => {
         TestInput.input.current.slice(-1),
         TestInput.input.current.length - 1
       ) &&
-      (TestInput.input.getHistory(TestState.activeWordIndex - 1) !=
+      (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
         TestWords.words.get(TestState.activeWordIndex - 1) ||
         Config.freedomMode)
     ) {
@@ -1146,14 +1151,21 @@ $(document).on("keydown", async (event) => {
       Config.oppositeShiftMode === "keymap" &&
       Config.keymapLayout !== "overrideSync"
     ) {
-      const keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
+      let keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
         () => undefined
       );
+
       if (keymapLayout === undefined) {
         Notifications.add("Failed to load keymap layout", -1);
 
         return;
       }
+
+      const funbox = getActiveFunboxNames().includes("layout_mirror");
+      if (funbox) {
+        keymapLayout = KeyConverter.mirrorLayoutKeys(keymapLayout);
+      }
+
       const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
 
       correctShiftUsed =

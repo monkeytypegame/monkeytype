@@ -21,6 +21,12 @@ $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   (await getCommandline()).show({ subgroupOverride: attr });
 });
 
+$(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
+  const attr = $(event.currentTarget).attr("commandId");
+  if (attr === undefined) return;
+  (await getCommandline()).show({ commandOverride: attr });
+});
+
 $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
   if (wrd === "custom") {

@@ -377,7 +377,7 @@
   },
   {
     "name": "bosnian",
-    "languages": ["bosnian"]
+    "languages": ["bosnian", "bosnian_4k"]
   },
   {
     "name": "esperanto",
@@ -531,7 +531,7 @@
   },
   {
     "name": "xhosa",
-    "languages": ["xhosa"]
+    "languages": ["xhosa", "xhosa_3k"]
   },
   {
     "name": "tibetan",

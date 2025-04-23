@@ -13,6 +13,10 @@
     "lint-be": "turbo run lint --filter @monkeytype/backend",
     "lint-fe": "turbo run lint --filter @monkeytype/frontend",
     "lint-pkg": "turbo run lint --filter=\"./packages/*\"",
+    "oxlint": "turbo run oxlint",
+    "oxlint-be": "turbo run oxlint --filter @monkeytype/backend",
+    "oxlint-fe": "turbo run oxlint --filter @monkeytype/frontend",
+    "oxlint-pkg": "turbo run oxlint --filter=\"./packages/*\"",
     "build": "turbo run build",
     "build-be": "turbo run build --filter @monkeytype/backend",
     "build-fe": "turbo run build --filter @monkeytype/frontend",
@@ -62,10 +66,12 @@
     "@monkeytype/release": "workspace:*",
     "@vitest/coverage-v8": "2.1.9",
     "conventional-changelog": "6.0.0",
+    "eslint": "8.57.1",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
+    "oxlint": "0.16.7",
     "prettier": "2.8.8",
     "turbo": "2.3.3",
     "vitest": "2.1.9"
@@ -76,9 +82,10 @@
     ],
     "*.{ts,js}": [
       "prettier --write",
+      "oxlint",
       "eslint"
     ]
   },
-  "version": "25.13.0",
+  "version": "25.16.1",
   "packageManager": "pnpm@9.6.0"
 }

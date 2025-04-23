@@ -31,7 +31,7 @@ import chartAnnotation, {
   type LabelOptions,
 } from "chartjs-plugin-annotation";
 import chartTrendline from "chartjs-plugin-trendline";
-
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as ActivePage from "../states/active-page";
 
 Chart.register(
@@ -87,14 +87,14 @@ class ChartWithUpdateColors<
   }
 
   getDataset(id: DatasetIds): ChartDataset<TType, TData> {
-    //@ts-expect-error
+    //@ts-expect-error its too difficult to figure out these types, but this works
     return this.data.datasets?.find((x) => x.yAxisID === id);
   }
 
   getScale(
     id: DatasetIds extends never ? never : "x" | DatasetIds
   ): DatasetIds extends never ? never : CartesianScaleOptions {
-    //@ts-expect-error
+    //@ts-expect-error its too difficult to figure out these types, but this works
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
     return this.options.scales[id];
   }
@@ -299,6 +299,9 @@ export type ActivityChartDataPoint = {
   x: number;
   y: number;
   amount?: number;
+  avgWpm?: number;
+  avgAcc?: number;
+  avgCon?: number;
 };
 
 export const accountHistory = new ChartWithUpdateColors<
@@ -557,7 +560,7 @@ export const accountHistory = new ChartWithUpdateColors<
               if (diff === undefined) {
                 diff = "normal";
               }
-              label += "\n" + `difficulty: ${diff}`;
+              label += `\ndifficulty: ${diff}`;
 
               label +=
                 "\n" +
@@ -695,6 +698,9 @@ export const accountActivity = new ChartWithUpdateColors<
           animation: { duration: 250 },
           intersect: false,
           mode: "index",
+          filter: (tooltipItem): boolean => {
+            return tooltipItem.datasetIndex === 0;
+          },
           callbacks: {
             title: function (tooltipItem): string {
               const firstItem = tooltipItem[0] as TooltipItem<"bar" | "line">;
@@ -707,20 +713,22 @@ export const accountActivity = new ChartWithUpdateColors<
               const resultData = tooltipItem.dataset.data[
                 tooltipItem.dataIndex
               ] as ActivityChartDataPoint;
-              switch (tooltipItem.datasetIndex) {
-                case 0:
-                  return `Time Typing: ${DateTime.secondsToString(
-                    Math.round(resultData.y * 60),
-                    true,
-                    true
-                  )}\nTests Completed: ${resultData.amount}`;
-                case 1:
-                  return `Average ${Config.typingSpeedUnit}: ${Numbers.roundTo2(
-                    resultData.y
-                  )}`;
-                default:
-                  return "";
-              }
+              const typingSpeedUnit = getTypingSpeedUnit(
+                Config.typingSpeedUnit
+              );
+              return `Time Typing: ${DateTime.secondsToString(
+                Math.round(resultData.y * 60),
+                true,
+                true
+              )}\nTests Completed: ${
+                resultData.amount
+              }\nAverage ${Config.typingSpeedUnit.toUpperCase()}: ${Numbers.roundTo2(
+                typingSpeedUnit.fromWpm(resultData.avgWpm ?? 0)
+              )}\nAverage Accuracy: ${Numbers.roundTo2(
+                resultData.avgAcc ?? 0
+              )}%\nAverage Consistency: ${Numbers.roundTo2(
+                resultData.avgCon ?? 0
+              )}%`;
             },
             label: function (): string {
               return "";
@@ -1147,7 +1155,7 @@ async function updateColors<
 
   const gridcolor = blendTwoHexColors(bgcolor, subaltcolor, 0.75);
 
-  //@ts-expect-error
+  //@ts-expect-error its too difficult to figure out these types, but this works
   chart.data.datasets[0].borderColor = (ctx): string => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const isPb = ctx.raw?.isPb as boolean;
@@ -1169,7 +1177,7 @@ async function updateColors<
   if (chart?.data?.datasets[0]?.type === undefined) {
     if (chart.config.type === "line") {
       dataset0.pointBackgroundColor = (ctx): string => {
-        //@ts-expect-error
+        //@ts-expect-error not sure why raw comes out to unknown, but this works
         const isPb = ctx.raw?.isPb as boolean;
         const color = isPb ? textcolor : maincolor;
         return color;

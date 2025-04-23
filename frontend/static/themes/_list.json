@@ -56,6 +56,13 @@
     "textColor": "#f5e6c8"
   },
   {
+    "name": "vesper",
+    "bgColor": "#101010",
+    "mainColor": "#ffc799",
+    "subColor": "#99ffe4",
+    "textColor": "#ffffff"
+  },
+  {
     "name": "our_theme",
     "bgColor": "#ce1226",
     "mainColor": "#fcd116",
@@ -1272,5 +1279,12 @@
     "mainColor": "#41ce5c",
     "subColor": "#788386",
     "textColor": "#ccdae6"
+  },
+  {
+    "name": "sunset",
+    "bgColor": "#211e24",
+    "mainColor": "#f79777",
+    "subColor": "#5b578e",
+    "textColor": "#f4e0c9"
   }
 ]

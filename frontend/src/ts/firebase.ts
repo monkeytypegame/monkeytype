@@ -2,7 +2,8 @@
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { getAuth, Auth as AuthType, User } from "firebase/auth";
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
-//@ts-ignore
+// oxlint-disable ban-ts-comment
+// @ts-ignore as far as i remember this is for CI
 // eslint-disable-next-line import/no-unresolved
 import { firebaseConfig } from "./constants/firebase-config";
 import * as Notifications from "./elements/notifications";

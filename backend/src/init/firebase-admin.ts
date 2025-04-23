@@ -1,6 +1,6 @@
-import admin, { type ServiceAccount } from "firebase-admin";
+import admin from "firebase-admin";
 import Logger from "../utils/logger";
-import { readFileSync, existsSync } from "fs";
+import { existsSync } from "fs";
 import MonkeyError from "../utils/error";
 import path from "path";
 import { isDevEnvironment } from "../utils/misc";
@@ -24,14 +24,8 @@ export function init(): void {
       );
     }
   } else {
-    const serviceAccount = JSON.parse(
-      readFileSync(SERVICE_ACCOUNT_PATH, {
-        encoding: "utf8",
-        flag: "r",
-      })
-    ) as ServiceAccount;
     admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
+      credential: admin.credential.cert(SERVICE_ACCOUNT_PATH),
     });
     Logger.success("Firebase app initialized");
   }

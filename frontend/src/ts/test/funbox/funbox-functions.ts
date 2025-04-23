@@ -22,6 +22,7 @@ import { getSection } from "../wikipedia";
 import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 import * as TestState from "../test-state";
+import { WordGenError } from "../../utils/word-gen-error";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -60,15 +61,15 @@ async function readAheadHandleKeydown(
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
   if (
-    event.key == "Backspace" &&
+    event.key === "Backspace" &&
     !isCorrect &&
-    (TestInput.input.current != "" ||
-      TestInput.input.getHistory(TestState.activeWordIndex - 1) !=
+    (TestInput.input.current !== "" ||
+      TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
         TestWords.words.get(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
   ) {
     $("#words").addClass("read_ahead_disabled");
-  } else if (event.key == " ") {
+  } else if (event.key === " ") {
     $("#words").removeClass("read_ahead_disabled");
   }
 }
@@ -324,6 +325,20 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   capitals: {
     alterText(word: string): string {
       return Strings.capitalizeFirstLetterOfEachWord(word);
+    },
+  },
+  layout_mirror: {
+    applyConfig(): void {
+      let layout = Config.layout;
+      if (Config.layout === "default") {
+        layout = "qwerty";
+      }
+      UpdateConfig.setLayout(layout, true);
+      UpdateConfig.setKeymapLayout("overrideSync", true);
+    },
+    rememberSettings(): void {
+      save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+      save("layout", Config.layout, UpdateConfig.setLayout);
     },
   },
   layoutfluid: {
@@ -629,6 +644,52 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   ALL_CAPS: {
     alterText(word: string): string {
       return word.toUpperCase();
+    },
+  },
+  polyglot: {
+    async withWords(_words) {
+      const promises = Config.customPolyglot.map(async (language) =>
+        JSONData.getLanguage(language).catch(() => {
+          Notifications.add(
+            `Failed to load language: ${language}. It will be ignored.`,
+            0
+          );
+          return null; // Return null for failed languages
+        })
+      );
+
+      const languages = (await Promise.all(promises)).filter(
+        (lang) => lang !== null
+      );
+
+      if (languages.length === 0) {
+        UpdateConfig.toggleFunbox("polyglot");
+        throw new Error(
+          `No valid languages found. Please check your polyglot languages config (${Config.customPolyglot.join(
+            ", "
+          )}).`
+        );
+      }
+
+      if (languages.length === 1) {
+        const lang = languages[0] as JSONData.LanguageObject;
+        UpdateConfig.setLanguage(lang.name, true);
+        UpdateConfig.toggleFunbox("polyglot", true);
+        Notifications.add(
+          `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${Config.customPolyglot.join(
+            ", "
+          )}).`,
+          0,
+          {
+            duration: 7,
+          }
+        );
+        throw new WordGenError("");
+      }
+
+      const wordSet = languages.flatMap((it) => it.words);
+      Arrays.shuffle(wordSet);
+      return new Wordset(wordSet);
     },
   },
 };

@@ -1,4 +1,4 @@
-import { replace as replace } from "../../src/ts/test/british-english";
+import { replace } from "../../src/ts/test/british-english";
 import Config from "../../src/ts/config";
 
 describe("british-english", () => {
