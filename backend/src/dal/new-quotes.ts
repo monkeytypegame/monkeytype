@@ -25,10 +25,6 @@ const QuoteDataSchema = z.object({
   groups: z.array(z.tuple([z.number(), z.number()])),
 });
 
-// derive TS types from Zod schemas
-type JsonQuote = z.infer<typeof JsonQuoteSchema>;
-// type QuoteData = z.infer<typeof QuoteDataSchema>;
-
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 
 let git: SimpleGit | undefined;
