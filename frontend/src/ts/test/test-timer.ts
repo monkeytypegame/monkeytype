@@ -206,11 +206,18 @@ async function timerStep(): Promise<void> {
   if (timerDebug) console.timeEnd("timer step -----------------------------");
 }
 
-export async function start(): Promise<void> {
+export async function start(now: number): Promise<void> {
   SlowTimer.clear();
   slowTimerCount = 0;
   timerStats = [];
   expected = TestStats.start + interval;
+
+  TestEvents.log({
+    type: "timer",
+    mode: "start",
+    ms: now,
+  });
+
   (function loop(): void {
     const now = performance.now();
     const delay = expected - now;
