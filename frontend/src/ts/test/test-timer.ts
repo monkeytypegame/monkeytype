@@ -192,7 +192,7 @@ export function getTimerStats(): TimerStats[] {
   return timerStats;
 }
 
-async function timerStep(): Promise<void> {
+async function timerStep(now: number): Promise<void> {
   if (timerDebug) console.time("timer step -----------------------------");
   Time.increment();
   premid();
@@ -203,6 +203,13 @@ async function timerStep(): Promise<void> {
   layoutfluid();
   const failed = checkIfFailed(wpmAndRaw, acc);
   if (!failed) checkIfTimeIsUp();
+  TestEvents.log({
+    type: "timer",
+    mode: "step",
+    ms: now,
+    time: Time.get(),
+    slowTimer: SlowTimer.get(),
+  });
   if (timerDebug) console.timeEnd("timer step -----------------------------");
 }
 
@@ -226,13 +233,6 @@ export async function start(now: number): Promise<void> {
       now,
       expected: expected,
       nextDelay: delay,
-    });
-    TestEvents.log({
-      type: "timer",
-      ms: now,
-      time: Time.get(),
-      nextDelay: delay,
-      slowTimer: SlowTimer.get(),
     });
     if (
       (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
@@ -270,7 +270,7 @@ export async function start(now: number): Promise<void> {
         return;
       }
 
-      void timerStep();
+      void timerStep(now + delay);
 
       expected += interval;
       loop();
