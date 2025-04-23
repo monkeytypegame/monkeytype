@@ -471,17 +471,17 @@ function handleChar(
     return;
   }
 
-  if (char === "œ" && TestWords.words.getCurrent()[charIndex] !== "œ") {
-    handleChar("o", charIndex);
-    handleChar("e", charIndex + 1);
-    return;
-  }
+  // if (char === "œ" && TestWords.words.getCurrent()[charIndex] !== "œ") {
+  //  handleChar("o", charIndex);
+  //  handleChar("e", charIndex + 1);
+  //  return;
+  // }
 
-  if (char === "æ" && TestWords.words.getCurrent()[charIndex] !== "æ") {
-    handleChar("a", charIndex);
-    handleChar("e", charIndex + 1);
-    return;
-  }
+  // if (char === "æ" && TestWords.words.getCurrent()[charIndex] !== "æ") {
+  //   handleChar("a", charIndex);
+  //   handleChar("e", charIndex + 1);
+  //   return;
+  // }
 
   console.debug("Handling char", char, charIndex, realInputValue);
 
