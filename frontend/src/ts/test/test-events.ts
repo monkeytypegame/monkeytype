@@ -19,7 +19,7 @@ type KeyupEvent = {
   ctrl: boolean;
   alt: boolean;
   meta: boolean;
-  estimated: boolean;
+  estimated?: true;
 };
 
 let keydownEvents: KeydownEvent[] = [];
@@ -51,7 +51,7 @@ let noCodeId = 0;
 let pressedKeys: Map<string, boolean> = new Map<string, boolean>();
 
 export function log(
-  event: KeydownEvent | Omit<KeyupEvent, "estimated"> | TimerEvent | InputEvent
+  event: KeydownEvent | KeyupEvent | TimerEvent | InputEvent
 ): void {
   event.ms = event.ms - TestStats.start;
 
@@ -63,13 +63,13 @@ export function log(
     pressedKeys.set(event.code, true);
     keydownEvents.push(event);
   } else if (event.type === "keyup") {
-    (event as KeyupEvent).estimated = false;
+    delete event.estimated;
     if (event.code === "NoCode") {
       event.code = `NoCode${noCodeId}`;
       noCodeId--;
     }
     pressedKeys.delete(event.code);
-    keyupEvents.push(event as KeyupEvent);
+    keyupEvents.push(event);
   } else if (event.type === "timer") {
     timerEvents.push(event);
   } else if (event.type === "input") {
@@ -155,6 +155,19 @@ export function getAll(): (
     ...timerEvents,
     ...inputEvents,
   ].sort((a, b) => a.ms - b.ms);
+}
+
+export function calculateAccuracy(): number {
+  let correct = 0;
+  let incorrect = 0;
+  for (const event of inputEvents) {
+    if (event.correct) {
+      correct++;
+    } else {
+      incorrect++;
+    }
+  }
+  return (correct / (correct + incorrect)) * 100;
 }
 
 // oxlint-disable-next-line ban-ts-comment
