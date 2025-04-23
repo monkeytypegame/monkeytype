@@ -14,38 +14,10 @@ import {
 import MonkeyError from "./error";
 import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 import { getCurrentDayTimestamp } from "@monkeytype/util/date-and-time";
-import { Redis } from "ioredis";
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
 const resultsNamespace = `${dailyLeaderboardNamespace}:results`;
-
-// Define Redis connection with custom methods for type safety
-type RedisConnectionWithCustomMethods = Redis & {
-  addResult: (
-    keyCount: number,
-    scoresKey: string,
-    resultsKey: string,
-    maxResults: number,
-    expirationTime: number,
-    uid: string,
-    score: number,
-    data: string
-  ) => Promise<number>;
-  getResults: (
-    keyCount: number,
-    scoresKey: string,
-    resultsKey: string,
-    minRank: number,
-    maxRank: number,
-    withScores: string
-  ) => Promise<[string[], string[]]>;
-  purgeResults: (
-    keyCount: number,
-    uid: string,
-    namespace: string
-  ) => Promise<void>;
-};
 
 export class DailyLeaderboard {
   private leaderboardResultsKeyName: string;
@@ -85,8 +57,7 @@ export class DailyLeaderboard {
     entry: Omit<LeaderboardEntry, "rank">,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
   ): Promise<number> {
-    const connection =
-      RedisClient.getConnection() as RedisConnectionWithCustomMethods | null;
+    const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return -1;
     }
@@ -142,8 +113,7 @@ export class DailyLeaderboard {
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
     premiumFeaturesEnabled: boolean
   ): Promise<LeaderboardEntry[]> {
-    const connection =
-      RedisClient.getConnection() as RedisConnectionWithCustomMethods | null;
+    const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return [];
     }
@@ -206,7 +176,7 @@ export class DailyLeaderboard {
   public async getMinWpm(
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
   ): Promise<number> {
-    const connection = RedisClient.getConnection() as Redis | null;
+    const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return 0;
     }
@@ -230,9 +200,9 @@ export class DailyLeaderboard {
     uid: string,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
   ): Promise<LeaderboardEntry | null> {
-    const connection = RedisClient.getConnection() as Redis | null;
+    const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      throw new MonkeyError(500, "Redis connnection is unavailable");
+      throw new MonkeyError(500, "Redis connection is unavailable");
     }
 
     const { leaderboardScoresKey, leaderboardResultsKey } =
@@ -271,9 +241,9 @@ export class DailyLeaderboard {
   }
 
   public async getCount(): Promise<number> {
-    const connection = RedisClient.getConnection() as Redis | null;
+    const connection = RedisClient.getConnection();
     if (!connection) {
-      throw new MonkeyError(500, "Redis connnection is unavailable");
+      throw new MonkeyError(500, "Redis connection is unavailable");
     }
 
     const { leaderboardScoresKey } = this.getTodaysLeaderboardKeys();
@@ -286,8 +256,7 @@ export async function purgeUserFromDailyLeaderboards(
   uid: string,
   configuration: Configuration["dailyLeaderboards"]
 ): Promise<void> {
-  const connection =
-    RedisClient.getConnection() as RedisConnectionWithCustomMethods | null;
+  const connection = RedisClient.getConnection();
   if (!connection || !configuration.enabled) {
     return;
   }

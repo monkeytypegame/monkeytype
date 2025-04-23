@@ -9,34 +9,6 @@ import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
 import MonkeyError from "../utils/error";
 import { omit } from "lodash";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-import { z } from "zod";
-import { Redis } from "ioredis";
-
-// Redis connection with custom methods for type safety
-type RedisConnectionWithCustomMethods = Redis & {
-  addResultIncrement: (
-    keyCount: number,
-    scoresKey: string,
-    resultsKey: string,
-    expirationTime: number,
-    uid: string,
-    score: number,
-    data: string
-  ) => Promise<number>;
-  getResults: (
-    keyCount: number,
-    scoresKey: string,
-    resultsKey: string,
-    minRank: number,
-    maxRank: number,
-    withScores: string
-  ) => Promise<[string[], string[]]>;
-  purgeResults: (
-    keyCount: number,
-    uid: string,
-    namespace: string
-  ) => Promise<void>;
-};
 
 type AddResultOpts = {
   entry: Pick<
@@ -93,8 +65,7 @@ export class WeeklyXpLeaderboard {
   ): Promise<number> {
     const { entry, xpGained, timeTypedSeconds } = opts;
 
-    const connection =
-      RedisClient.getConnection() as RedisConnectionWithCustomMethods | null;
+    const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       return -1;
     }
@@ -120,16 +91,10 @@ export class WeeklyXpLeaderboard {
       entry.uid
     );
 
-    // Define a schema for parsing the current entry
-    const CurrentEntrySchema = z.object({
-      uid: z.string(),
-      name: z.string(),
-      discordId: z.string().optional(),
-      discordAvatar: z.string().optional(),
-      badgeId: z.number().int().optional(),
-      lastActivityTimestamp: z.number().int().nonnegative().optional(),
-      timeTypedSeconds: z.number().nonnegative().optional(),
-      isPremium: z.boolean().optional(),
+    // Derive schema from XpLeaderboardEntrySchema
+    const CurrentEntrySchema = XpLeaderboardEntrySchema.omit({
+      rank: true,
+      totalXp: true,
     });
 
     const currentEntryTimeTypedSeconds =
@@ -172,8 +137,7 @@ export class WeeklyXpLeaderboard {
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
     premiumFeaturesEnabled: boolean
   ): Promise<XpLeaderboardEntry[]> {
-    const connection =
-      RedisClient.getConnection() as RedisConnectionWithCustomMethods | null;
+    const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       return [];
     }
@@ -189,7 +153,7 @@ export class WeeklyXpLeaderboard {
       this.getThisWeeksXpLeaderboardKeys();
 
     const [results, scores] = (await connection.getResults(
-      2, // How many of the arguments are redis keys (https://redis.io/docs/manual/programmability/lua-api/)
+      2,
       weeklyXpLeaderboardScoresKey,
       weeklyXpLeaderboardResultsKey,
       minRank,
@@ -249,10 +213,9 @@ export class WeeklyXpLeaderboard {
     uid: string,
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
   ): Promise<XpLeaderboardEntry | null> {
-    const connection =
-      RedisClient.getConnection() as RedisConnectionWithCustomMethods | null;
+    const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
-      throw new MonkeyError(500, "Redis connnection is unavailable");
+      throw new MonkeyError(500, "Redis connection is unavailable");
     }
 
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
@@ -275,11 +238,11 @@ export class WeeklyXpLeaderboard {
       return null;
     }
 
-    // safely parse the result error handling
+    // safely parse the result with error handling
     let parsed: Omit<XpLeaderboardEntry, "rank" | "totalXp">;
     try {
       parsed = parseJsonWithSchema(
-        (result as string) ?? "null",
+        result ?? "null",
         XpLeaderboardEntrySchema.omit({ rank: true, totalXp: true })
       );
     } catch (error) {
@@ -299,8 +262,7 @@ export class WeeklyXpLeaderboard {
   }
 
   public async getCount(): Promise<number> {
-    const connection =
-      RedisClient.getConnection() as RedisConnectionWithCustomMethods | null;
+    const connection = RedisClient.getConnection();
     if (!connection) {
       throw new Error("Redis connection is unavailable");
     }
@@ -334,14 +296,9 @@ export async function purgeUserFromXpLeaderboards(
     return;
   }
 
-  // using type assertion for Redis custom command
-  await (
-    connection as unknown as {
-      purgeResults: (
-        keyCount: number,
-        uid: string,
-        namespace: string
-      ) => Promise<void>;
-    }
-  ).purgeResults(0, uid, weeklyXpLeaderboardLeaderboardNamespace);
+  await connection.purgeResults(
+    0,
+    uid,
+    weeklyXpLeaderboardLeaderboardNamespace
+  );
 }
