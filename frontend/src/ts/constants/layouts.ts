@@ -210,4 +210,5 @@ export const LayoutsList:string[] = [
   "panini_wide",
   "ergopti",
   "sword",
+  "opy",
 ];
