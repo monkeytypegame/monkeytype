@@ -16,6 +16,13 @@ export const LeaderboardEntrySchema = z.object({
 });
 export type LeaderboardEntry = z.infer<typeof LeaderboardEntrySchema>;
 
+export const RedisDailyLeaderboardEntrySchema = LeaderboardEntrySchema.omit({
+  rank: true,
+});
+export type RedisDailyLeaderboardEntry = z.infer<
+  typeof RedisDailyLeaderboardEntrySchema
+>;
+
 export const DailyLeaderboardRankSchema = LeaderboardEntrySchema;
 export type DailyLeaderboardRank = z.infer<typeof DailyLeaderboardRankSchema>;
 

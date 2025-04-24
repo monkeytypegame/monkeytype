@@ -9,7 +9,7 @@ import {
 } from "@monkeytype/contracts/schemas/configuration";
 import {
   LeaderboardEntry,
-  LeaderboardEntrySchema,
+  RedisDailyLeaderboardEntrySchema,
 } from "@monkeytype/contracts/schemas/leaderboards";
 import MonkeyError from "./error";
 import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
@@ -148,7 +148,7 @@ export class DailyLeaderboard {
         try {
           const parsed = parseJsonWithSchema(
             resultJSON,
-            LeaderboardEntrySchema
+            RedisDailyLeaderboardEntrySchema
           );
 
           return {
@@ -227,7 +227,10 @@ export class DailyLeaderboard {
 
     try {
       return {
-        ...parseJsonWithSchema(result ?? "null", LeaderboardEntrySchema),
+        ...parseJsonWithSchema(
+          result ?? "null",
+          RedisDailyLeaderboardEntrySchema
+        ),
         rank: rank + 1,
       };
     } catch (error) {
