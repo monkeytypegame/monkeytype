@@ -14,6 +14,7 @@ import { z } from "zod";
 const JsonQuoteSchema = z.object({
   text: z.string(),
   britishText: z.string().optional(),
+  approvedBy: z.string().optional(),
   source: z.string(),
   length: z.number(),
   id: z.number(),
