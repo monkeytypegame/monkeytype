@@ -11,6 +11,7 @@ import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup } from "./types";
+import { FunboxName } from "@monkeytype/funbox";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -389,9 +390,9 @@ async function showCommands(): Promise<void> {
       let isActive;
 
       if (command.configValueMode === "funbox") {
-        isActive = (Config[configKey] as string)
-          .split("#")
-          .includes(command.configValue as string);
+        isActive = (Config[configKey] as FunboxName[]).includes(
+          command.configValue as FunboxName
+        );
       } else if (command.configValueMode === "include") {
         isActive = (
           Config[configKey] as (
@@ -741,7 +742,7 @@ const modal = new AnimatedModal({
       }
     });
 
-    modalEl.addEventListener("mousemove", (e) => {
+    modalEl.addEventListener("mousemove", (_e) => {
       mouseMode = true;
     });
   },
