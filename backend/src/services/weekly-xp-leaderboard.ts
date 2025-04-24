@@ -4,6 +4,7 @@ import LaterQueue from "../queues/later-queue";
 import {
   RedisXpLeaderboardEntry,
   RedisXpLeaderboardEntrySchema,
+  RedisXpLeaderboardScore,
   XpLeaderboardEntry,
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
@@ -13,7 +14,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 type AddResultOpts = {
   entry: RedisXpLeaderboardEntry;
-  xpGained: number;
+  xpGained: RedisXpLeaderboardScore;
 };
 
 const weeklyXpLeaderboardLeaderboardNamespace =
