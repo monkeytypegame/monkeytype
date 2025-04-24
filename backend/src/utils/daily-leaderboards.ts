@@ -9,6 +9,7 @@ import {
 } from "@monkeytype/contracts/schemas/configuration";
 import {
   LeaderboardEntry,
+  RedisDailyLeaderboardEntry,
   RedisDailyLeaderboardEntrySchema,
 } from "@monkeytype/contracts/schemas/leaderboards";
 import MonkeyError from "./error";
@@ -54,7 +55,7 @@ export class DailyLeaderboard {
   }
 
   public async addResult(
-    entry: Omit<LeaderboardEntry, "rank">,
+    entry: RedisDailyLeaderboardEntry,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
   ): Promise<number> {
     const connection = RedisClient.getConnection();
