@@ -33,6 +33,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup } from "slim-select/store";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -461,13 +462,13 @@ async function fillSettingsPage(): Promise<void> {
 
   // Language Selection Combobox
 
-  let languageGroups;
-  try {
-    languageGroups = await JSONData.getLanguageGroups();
-  } catch (e) {
+  const { data: languageGroups, error: getLanguageGroupsError } =
+    await tryCatch(JSONData.getLanguageGroups());
+
+  if (getLanguageGroupsError) {
     console.error(
       Misc.createErrorMessage(
-        e,
+        getLanguageGroupsError,
         "Failed to initialize settings language picker"
       )
     );
@@ -522,12 +523,15 @@ async function fillSettingsPage(): Promise<void> {
     select: keymapLayoutSelectElement,
   });
 
-  let themes;
-  try {
-    themes = await JSONData.getThemesList();
-  } catch (e) {
+  const { data: themes, error: getThemesListError } = await tryCatch(
+    JSONData.getThemesList()
+  );
+  if (getThemesListError) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to load themes into dropdown boxes")
+      Misc.createErrorMessage(
+        getThemesListError,
+        "Failed to load themes into dropdown boxes"
+      )
     );
   }
 
@@ -625,12 +629,15 @@ async function fillSettingsPage(): Promise<void> {
 
   let fontsElHTML = "";
 
-  let fontsList;
-  try {
-    fontsList = await JSONData.getFontsList();
-  } catch (e) {
+  const { data: fontsList, error: getFontsListError } = await tryCatch(
+    JSONData.getFontsList()
+  );
+  if (getFontsListError) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update fonts settings buttons")
+      Misc.createErrorMessage(
+        getFontsListError,
+        "Failed to update fonts settings buttons"
+      )
     );
   }
 

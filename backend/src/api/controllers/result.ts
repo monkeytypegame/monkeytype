@@ -63,6 +63,7 @@ import {
   checkCompatibility,
   stringToFunboxNames,
 } from "@monkeytype/funbox";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -318,13 +319,9 @@ export async function addResult(
   //   );
   //   return res.status(400).json({ message: "Time traveler detected" });
 
-  //get latest result ordered by timestamp
-  let lastResultTimestamp: null | number = null;
-  try {
-    lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
-  } catch (e) {
-    //
-  }
+  const { data: lastResultTimestamp } = await tryCatch(
+    async () => (await ResultDAL.getLastResult(uid)).timestamp
+  );
 
   //convert result test duration to miliseconds
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
@@ -786,13 +783,11 @@ async function calculateXp(
   const accuracyModifier = (acc - 50) / 50;
 
   let dailyBonus = 0;
-  let lastResultTimestamp: number | undefined;
+  const { data: lastResultTimestamp, error: getLastResultError } =
+    await tryCatch(async () => (await ResultDAL.getLastResult(uid)).timestamp);
 
-  try {
-    const { timestamp } = await ResultDAL.getLastResult(uid);
-    lastResultTimestamp = timestamp;
-  } catch (err) {
-    Logger.error(`Could not fetch last result: ${err}`);
+  if (getLastResultError) {
+    Logger.error(`Could not fetch last result: ${getLastResultError}`);
   }
 
   if (lastResultTimestamp) {

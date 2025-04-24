@@ -3,13 +3,17 @@ import { getMiddleware as getSwaggerMiddleware } from "swagger-stats";
 import { isDevEnvironment } from "../../utils/misc";
 import { readFileSync } from "fs";
 import Logger from "../../utils/logger";
+import { tryCatchSync } from "@monkeytype/util/trycatch";
 
 function addSwaggerMiddlewares(app: Application): void {
   const openApiSpec = __dirname + "/../../../dist/static/api/openapi.json";
-  let spec = {};
-  try {
-    spec = JSON.parse(readFileSync(openApiSpec, "utf8")) as string;
-  } catch (err) {
+
+  const { data: spec, error } = tryCatchSync(
+    () =>
+      JSON.parse(readFileSync(openApiSpec, "utf8")) as Record<string, unknown>
+  );
+
+  if (error) {
     Logger.warning(
       `Cannot read openApi specification from ${openApiSpec}. Swagger stats will not fully work.`
     );
@@ -21,7 +25,7 @@ function addSwaggerMiddlewares(app: Application): void {
       uriPath: "/stats",
       authentication: !isDevEnvironment(),
       apdexThreshold: 100,
-      swaggerSpec: spec,
+      swaggerSpec: spec ?? {},
       onAuthenticate: (_req, username, password) => {
         return (
           username === process.env["STATS_USERNAME"] &&

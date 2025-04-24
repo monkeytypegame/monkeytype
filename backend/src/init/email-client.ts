@@ -8,6 +8,7 @@ import { recordEmail } from "../utils/prometheus";
 import type { EmailTaskContexts, EmailType } from "../queues/email-queue";
 import { isDevEnvironment } from "../utils/misc";
 import { getErrorMessage } from "../utils/error";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 type EmailMetadata = {
   subject: string;
@@ -109,14 +110,15 @@ export async function sendEmail(
 
   type Result = { response: string; accepted: string[] };
 
-  let result: Result;
-  try {
-    result = (await transporter.sendMail(mailOptions)) as Result;
-  } catch (e) {
+  const { data: result, error } = await tryCatch<Result>(
+    transporter.sendMail(mailOptions)
+  );
+
+  if (error) {
     recordEmail(templateName, "fail");
     return {
       success: false,
-      message: getErrorMessage(e) ?? "Unknown error",
+      message: getErrorMessage(error) ?? "Unknown error",
     };
   }
 

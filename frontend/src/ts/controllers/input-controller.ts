@@ -41,6 +41,7 @@ import {
   isFunboxActiveWithProperty,
   getActiveFunboxNames,
 } from "../test/funbox/list";
+import { tryCatchSync } from "@monkeytype/util/trycatch";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -344,18 +345,16 @@ async function handleSpace(): Promise<void> {
         TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
       ]?.offsetTop ?? 0
     );
-    let nextTop: number;
-    try {
-      nextTop = Math.floor(
+
+    const { data: nextTop } = tryCatchSync(() =>
+      Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
           TestState.activeWordIndex - TestUI.activeWordElementOffset
         ]?.offsetTop ?? 0
-      );
-    } catch (e) {
-      nextTop = 0;
-    }
+      )
+    );
 
-    if (nextTop > currentTop) {
+    if ((nextTop ?? 0) > currentTop) {
       void TestUI.lineJump(currentTop);
     } //end of line wrap
   }

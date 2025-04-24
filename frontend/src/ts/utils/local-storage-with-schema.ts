@@ -2,6 +2,7 @@ import { ZodIssue } from "zod";
 import { deepClone } from "./misc";
 import { isZodError } from "@monkeytype/util/zod";
 import * as Notifications from "../elements/notifications";
+import { tryCatchSync } from "@monkeytype/util/trycatch";
 
 export class LocalStorageWithSchema<T> {
   private key: string;
@@ -28,13 +29,13 @@ export class LocalStorageWithSchema<T> {
       return this.fallback;
     }
 
-    let jsonParsed: unknown;
-    try {
-      jsonParsed = JSON.parse(value);
-    } catch (e) {
+    const { data: jsonParsed, error } = tryCatchSync(
+      () => JSON.parse(value) as unknown
+    );
+    if (error) {
       console.log(
         `Value from localStorage ${this.key} was not a valid JSON, using fallback`,
-        e
+        error
       );
       window.localStorage.removeItem(this.key);
       return this.fallback;

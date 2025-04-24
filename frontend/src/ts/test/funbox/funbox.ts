@@ -18,6 +18,7 @@ import {
   getActiveFunboxesWithProperty,
 } from "./list";
 import { checkForcedConfig } from "./funbox-validation";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
@@ -118,12 +119,12 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   $("#wordsWrapper").removeClass("hidden");
 
-  let language;
-  try {
-    language = await JSONData.getCurrentLanguage(Config.language);
-  } catch (e) {
+  const { data: language, error } = await tryCatch(
+    JSONData.getCurrentLanguage(Config.language)
+  );
+  if (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to activate funbox"),
+      Misc.createErrorMessage(error, "Failed to activate funbox"),
       -1
     );
     UpdateConfig.setFunbox("none", true);
