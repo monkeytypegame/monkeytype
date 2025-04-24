@@ -320,7 +320,7 @@ export async function addResult(
   //   return res.status(400).json({ message: "Time traveler detected" });
 
   const { data: lastResultTimestamp } = await tryCatch(
-    async () => (await ResultDAL.getLastResult(uid)).timestamp
+    (async () => (await ResultDAL.getLastResult(uid)).timestamp)()
   );
 
   //convert result test duration to miliseconds
@@ -784,7 +784,9 @@ async function calculateXp(
 
   let dailyBonus = 0;
   const { data: lastResultTimestamp, error: getLastResultError } =
-    await tryCatch(async () => (await ResultDAL.getLastResult(uid)).timestamp);
+    await tryCatch(
+      (async () => (await ResultDAL.getLastResult(uid)).timestamp)()
+    );
 
   if (getLastResultError) {
     Logger.error(`Could not fetch last result: ${getLastResultError}`);
