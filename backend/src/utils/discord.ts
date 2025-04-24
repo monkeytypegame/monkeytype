@@ -3,7 +3,6 @@ import { isDevEnvironment } from "./misc";
 import * as RedisClient from "../init/redis";
 import { randomBytes } from "crypto";
 import MonkeyError from "./error";
-import { Redis } from "ioredis";
 
 const BASE_URL = "https://discord.com/api";
 
@@ -39,7 +38,7 @@ export async function getDiscordUser(
 }
 
 export async function getOauthLink(uid: string): Promise<string> {
-  const connection = RedisClient.getConnection() as Redis | null;
+  const connection = RedisClient.getConnection();
   if (!connection) {
     throw new MonkeyError(500, "Redis connection not found");
   }
@@ -59,7 +58,7 @@ export async function iStateValidForUser(
   state: string,
   uid: string
 ): Promise<boolean> {
-  const connection = RedisClient.getConnection() as Redis | null;
+  const connection = RedisClient.getConnection();
   if (!connection) {
     throw new MonkeyError(500, "Redis connection not found");
   }
