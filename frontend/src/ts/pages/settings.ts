@@ -23,12 +23,9 @@ import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
   ConfigValue,
   CustomBackgroundSchema,
-} from "@monkeytype/contracts/schemas/configs";
-import {
-  getAllFunboxes,
   FunboxName,
-  checkCompatibility,
-} from "@monkeytype/funbox";
+} from "@monkeytype/contracts/schemas/configs";
+import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
@@ -755,11 +752,11 @@ function setActiveFunboxButton(): void {
       ).addClass("disabled");
     }
   });
-  Config.funbox.forEach((funbox) => {
+  for (const funbox of Config.funbox) {
     $(
       `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox}']`
     ).addClass("active");
-  });
+  }
 }
 
 function refreshTagsSettingsSection(): void {

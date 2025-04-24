@@ -1,12 +1,12 @@
 import Config from "../../config";
 import {
-  FunboxName,
   FunboxMetadata,
   getFunboxObject,
   FunboxProperty,
 } from "@monkeytype/funbox";
 
 import { FunboxFunctions, getFunboxFunctions } from "./funbox-functions";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 
 type FunboxMetadataWithFunctions = FunboxMetadata & {
   functions?: FunboxFunctions;
