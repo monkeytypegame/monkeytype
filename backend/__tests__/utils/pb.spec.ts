@@ -2,7 +2,7 @@ import _ from "lodash";
 import * as pb from "../../src/utils/pb";
 import { Mode, PersonalBests } from "@monkeytype/contracts/schemas/shared";
 import { Result } from "@monkeytype/contracts/schemas/results";
-import { FunboxName } from "@monkeytype/funbox";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 
 describe("Pb Utils", () => {
   it("funboxCatGetPb", () => {
