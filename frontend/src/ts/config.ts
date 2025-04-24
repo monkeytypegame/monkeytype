@@ -1891,7 +1891,27 @@ export function setCustomLayoutfluid(
   const customLayoutfluid = trimmed.replace(/ /g, "#");
   config.customLayoutfluid = customLayoutfluid;
   saveToLocalStorage("customLayoutfluid", nosave);
-  ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
+  ConfigEvent.dispatch("customLayoutfluid", config.customLayoutfluid);
+
+  return true;
+}
+
+export function setCustomPolyglot(
+  value: ConfigSchemas.CustomPolyglot,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid(
+      "customPolyglot",
+      value,
+      ConfigSchemas.CustomPolyglotSchema
+    )
+  )
+    return false;
+
+  config.customPolyglot = value;
+  saveToLocalStorage("customPolyglot", nosave);
+  ConfigEvent.dispatch("customPolyglot", config.customPolyglot);
 
   return true;
 }
@@ -2002,6 +2022,7 @@ export async function apply(
       true
     );
     setCustomLayoutfluid(configObj.customLayoutfluid, true);
+    setCustomPolyglot(configObj.customPolyglot, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);

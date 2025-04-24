@@ -92,7 +92,7 @@
     "eslint-watch": "8.0.0",
     "ioredis-mock": "7.4.0",
     "openapi3-ts": "2.0.2",
-    "oxlint": "0.16.6",
+    "oxlint": "0.16.7",
     "readline-sync": "1.4.10",
     "supertest": "6.2.3",
     "tsx": "4.16.2",

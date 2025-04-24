@@ -53,6 +53,7 @@ function addCommandlineBackground(): void {
 
 type ShowSettings = {
   subgroupOverride?: CommandsSubgroup | string;
+  commandOverride?: string;
   singleListOverride?: boolean;
 };
 
@@ -102,6 +103,25 @@ export function show(
         subgroupOverride = null;
         usingSingleList = Config.singleListCommandLine === "on";
       }
+
+      let showInputCommand: Command | undefined = undefined;
+
+      if (settings?.commandOverride !== undefined) {
+        const command = (await getList()).filter(
+          (c) => c.id === settings.commandOverride
+        )[0];
+        if (command === undefined) {
+          Notifications.add(`Command ${settings.commandOverride} not found`, 0);
+        } else if (command?.input !== true) {
+          Notifications.add(
+            `Command ${settings.commandOverride} is not an input command`,
+            0
+          );
+        } else {
+          showInputCommand = command;
+        }
+      }
+
       if (settings?.singleListOverride) {
         usingSingleList = settings.singleListOverride;
       }
@@ -114,6 +134,20 @@ export function show(
       await updateActiveCommand();
       setTimeout(() => {
         keepActiveCommandInView();
+        if (showInputCommand) {
+          const escaped =
+            showInputCommand.display.split("</i>")[1] ??
+            showInputCommand.display;
+          mode = "input";
+          inputModeParams = {
+            command: showInputCommand,
+            placeholder: escaped,
+            value: showInputCommand.defaultValue?.() ?? "",
+            icon: showInputCommand.icon ?? "fa-chevron-right",
+          };
+          updateInput(inputModeParams.value as string);
+          hideCommands();
+        }
       }, 1);
     },
   });

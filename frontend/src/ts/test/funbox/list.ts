@@ -27,10 +27,7 @@ for (const [name, data] of Object.entries(metadata)) {
   };
 }
 
-// oxlint doesnt understand ts overloading
-// eslint-disable-next-line no-redeclare
 export function get(funboxName: FunboxName): FunboxMetadataWithFunctions;
-// eslint-disable-next-line no-redeclare
 export function get(funboxNames: FunboxName[]): FunboxMetadataWithFunctions[];
 export function get(
   funboxNameOrNames: FunboxName | FunboxName[]

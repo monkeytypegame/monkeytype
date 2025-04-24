@@ -87,18 +87,20 @@ export function canSetConfigWithCurrentFunboxes(
     if (value === "zen") {
       fb = fb.concat(
         funboxes.filter((f) => {
+          const funcs = f.frontendFunctions ?? [];
+          const props = f.properties ?? [];
           return (
-            f.frontendFunctions?.includes("getWord") ??
-            f.frontendFunctions?.includes("pullSection") ??
-            f.frontendFunctions?.includes("alterText") ??
-            f.frontendFunctions?.includes("withWords") ??
-            f.properties?.includes("changesCapitalisation") ??
-            f.properties?.includes("nospace") ??
-            f.properties?.find((fp) => fp.startsWith("toPush:")) ??
-            f.properties?.includes("changesWordsVisibility") ??
-            f.properties?.includes("speaks") ??
-            f.properties?.includes("changesLayout") ??
-            f.properties?.includes("changesWordsFrequency")
+            funcs.includes("getWord") ||
+            funcs.includes("pullSection") ||
+            funcs.includes("alterText") ||
+            funcs.includes("withWords") ||
+            props.includes("changesCapitalisation") ||
+            props.includes("nospace") ||
+            props.some((fp) => fp.startsWith("toPush:")) ||
+            props.includes("changesWordsVisibility") ||
+            props.includes("speaks") ||
+            props.includes("changesLayout") ||
+            props.includes("changesWordsFrequency")
           );
         })
       );
@@ -106,11 +108,13 @@ export function canSetConfigWithCurrentFunboxes(
     if (value === "quote" || value === "custom") {
       fb = fb.concat(
         funboxes.filter((f) => {
+          const funcs = f.frontendFunctions ?? [];
+          const props = f.properties ?? [];
           return (
-            f.frontendFunctions?.includes("getWord") ??
-            f.frontendFunctions?.includes("pullSection") ??
-            f.frontendFunctions?.includes("withWords") ??
-            f.properties?.includes("changesWordsFrequency")
+            funcs.includes("getWord") ||
+            funcs.includes("pullSection") ||
+            funcs.includes("withWords") ||
+            props.includes("changesWordsFrequency")
           );
         })
       );
