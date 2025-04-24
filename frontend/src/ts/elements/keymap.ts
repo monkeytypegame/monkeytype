@@ -489,7 +489,7 @@ async function updateLegends(): Promise<void> {
   const layoutKeys = keymapKeys.map((el) => el.dataset["key"]);
   if (layoutKeys.includes(undefined)) return;
 
-  const keys = keymapKeys.map((el) => el.childNodes[1]);
+  const keys = keymapKeys.map((el) => el.childNodes[0]);
 
   const [lettersState, symbolsState] = states;
 
