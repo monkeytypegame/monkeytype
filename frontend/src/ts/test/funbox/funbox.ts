@@ -6,9 +6,12 @@ import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
-import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
+import {
+  HighlightMode,
+  FunboxName,
+} from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { FunboxName, checkCompatibility } from "@monkeytype/funbox";
+import { checkCompatibility } from "@monkeytype/funbox";
 import {
   getActiveFunboxes,
   getActiveFunboxNames,

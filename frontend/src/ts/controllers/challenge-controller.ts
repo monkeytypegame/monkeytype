@@ -16,10 +16,10 @@ import {
 import {
   Config as ConfigType,
   Difficulty,
+  FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
-import { FunboxName } from "@monkeytype/funbox";
 
 let challengeLoading = false;
 

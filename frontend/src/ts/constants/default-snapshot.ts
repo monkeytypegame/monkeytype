@@ -8,13 +8,12 @@ import { deepClone } from "../utils/misc";
 import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { Result } from "@monkeytype/contracts/schemas/results";
-import { Config } from "@monkeytype/contracts/schemas/configs";
+import { Config, FunboxName } from "@monkeytype/contracts/schemas/configs";
 import {
   ModifiableTestActivityCalendar,
   TestActivityCalendar,
 } from "../elements/test-activity-calendar";
 import { Preset } from "@monkeytype/contracts/schemas/presets";
-import { FunboxName } from "@monkeytype/funbox";
 
 export type SnapshotUserTag = UserTag & {
   active?: boolean;

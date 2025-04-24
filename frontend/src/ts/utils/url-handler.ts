@@ -24,10 +24,10 @@ import {
   CustomThemeColors,
   CustomThemeColorsSchema,
   FunboxSchema,
+  FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
 import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-import { FunboxName } from "@monkeytype/funbox";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;

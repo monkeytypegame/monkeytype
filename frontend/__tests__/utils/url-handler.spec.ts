@@ -8,7 +8,7 @@ import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TestState from "../../src/ts/test/test-state";
 import * as Misc from "../../src/ts/utils/misc";
 import { loadTestSettingsFromUrl } from "../../src/ts/utils/url-handler";
-import { FunboxName } from "@monkeytype/funbox";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 
 //mock modules to avoid dependencies
 vi.mock("../../src/ts/test/test-logic", () => ({

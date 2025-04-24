@@ -1,7 +1,9 @@
 import * as Config from "../../src/ts/config";
 
-import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
-import { FunboxName } from "@monkeytype/funbox";
+import {
+  CustomThemeColors,
+  FunboxName,
+} from "@monkeytype/contracts/schemas/configs";
 import { randomBytes } from "crypto";
 
 describe("Config", () => {
@@ -524,7 +526,7 @@ describe("Config", () => {
 });
 
 function customThemeColors(n: number): CustomThemeColors {
-  return new Array(n).fill("#000") as CustomThemeColors;
+  return Array.from({ length: n }).fill("#000") as CustomThemeColors;
 }
 
 function testBoolean(fn: (val: boolean) => boolean): void {

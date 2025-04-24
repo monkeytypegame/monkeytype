@@ -11,7 +11,7 @@ import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup } from "./types";
-import { FunboxName } from "@monkeytype/funbox";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {

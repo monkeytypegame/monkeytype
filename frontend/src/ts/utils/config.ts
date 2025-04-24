@@ -2,11 +2,11 @@ import {
   Config,
   ConfigValue,
   PartialConfig,
+  FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
 import { typedKeys } from "./misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
-import { FunboxName } from "@monkeytype/funbox";
 
 /**
  * migrates possible outdated config and merges with the default config values
