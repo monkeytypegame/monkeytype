@@ -93,7 +93,10 @@ function verifyRequirement(
       }
     }
   } else if (requirementType === "funbox") {
-    const funboxMode = requirementValue["exact"]?.toString().split("#").sort();
+    const funboxMode = requirementValue["exact"]
+      ?.toString()
+      .split("#")
+      .sort() as FunboxName[];
     if (funboxMode === undefined) {
       throw new Error("Funbox mode is undefined");
     }
@@ -101,13 +104,13 @@ function verifyRequirement(
     if (funboxMode !== result.funbox) {
       requirementsMet = false;
       for (const f of funboxMode) {
-        if (result.funbox?.find((rf: string) => rf === f) === undefined) {
+        if (!result.funbox?.includes(f)) {
           failReasons.push(`${f} funbox not active`);
         }
       }
       if (result.funbox !== undefined && result.funbox.length > 0) {
         for (const f of result.funbox) {
-          if (funboxMode.find((rf) => rf === f) === undefined) {
+          if (!funboxMode.includes(f)) {
             failReasons.push(`${f} funbox active`);
           }
         }

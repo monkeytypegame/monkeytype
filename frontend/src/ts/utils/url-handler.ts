@@ -23,9 +23,11 @@ import {
   CustomBackgroundSizeSchema,
   CustomThemeColors,
   CustomThemeColorsSchema,
+  FunboxSchema,
 } from "@monkeytype/contracts/schemas/configs";
 import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { FunboxName } from "@monkeytype/funbox";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -153,7 +155,7 @@ const TestSettingsSchema = z.tuple([
   z.boolean().nullable(), //numbers
   z.string().nullable(), //language
   DifficultySchema.nullable(),
-  z.string().nullable(), //funbox
+  FunboxSchema.or(z.string().nullable()), //funbox as array or legacy string as hash separated values
 ]);
 
 type SharedTestSettings = z.infer<typeof TestSettingsSchema>;
@@ -252,8 +254,15 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 
   if (de[7] !== null) {
-    UpdateConfig.setFunbox(de[7], true);
-    applied["funbox"] = de[7];
+    let val: FunboxName[] = [];
+    //convert legacy values
+    if (typeof de[7] === "string") {
+      val = de[7].split("#") as FunboxName[];
+    } else {
+      val = de[7];
+    }
+    UpdateConfig.setFunbox(val, true);
+    applied["funbox"] = val.join(", ");
   }
 
   restartTest({

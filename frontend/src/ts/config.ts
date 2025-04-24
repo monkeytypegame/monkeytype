@@ -268,8 +268,7 @@ export function setFunbox(
     }
   }
 
-  const val = [...funbox];
-  config.funbox = val;
+  config.funbox = funbox;
   saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);
 
@@ -277,11 +276,11 @@ export function setFunbox(
 }
 
 export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
-  let newConfig: FunboxName[] = [...config.funbox];
-
   if (!canSetFunboxWithConfig(funbox, config)) {
     return false;
   }
+
+  let newConfig: FunboxName[] = config.funbox;
 
   if (newConfig.includes(funbox)) {
     newConfig = newConfig.filter((it) => it !== funbox);
@@ -290,8 +289,10 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     newConfig.sort();
   }
 
-  if (!isConfigValueValid("funbox", newConfig, ConfigSchemas.FunboxSchema))
+  if (!isConfigValueValid("funbox", newConfig, ConfigSchemas.FunboxSchema)) {
     return false;
+  }
+
   config.funbox = newConfig;
   saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);

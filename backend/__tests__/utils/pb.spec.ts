@@ -6,24 +6,29 @@ import { FunboxName } from "@monkeytype/funbox";
 
 describe("Pb Utils", () => {
   it("funboxCatGetPb", () => {
-    const testCases: { funbox: FunboxName[]; expected: boolean }[] = [
-      {
-        funbox: ["plus_one"],
-        expected: true,
-      },
-      {
-        funbox: [],
-        expected: true,
-      },
-      {
-        funbox: ["nausea", "plus_one"],
-        expected: true,
-      },
-      {
-        funbox: ["arrows"],
-        expected: false,
-      },
-    ];
+    const testCases: { funbox: FunboxName[] | undefined; expected: boolean }[] =
+      [
+        {
+          funbox: ["plus_one"],
+          expected: true,
+        },
+        {
+          funbox: [],
+          expected: true,
+        },
+        {
+          funbox: undefined,
+          expected: true,
+        },
+        {
+          funbox: ["nausea", "plus_one"],
+          expected: true,
+        },
+        {
+          funbox: ["arrows"],
+          expected: false,
+        },
+      ];
 
     _.each(testCases, (testCase) => {
       const { funbox, expected } = testCase;

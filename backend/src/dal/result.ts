@@ -69,7 +69,7 @@ export async function getResult(uid: string, id: string): Promise<DBResult> {
     uid,
   });
   if (!result) throw new MonkeyError(404, "Result not found");
-  return softMigrate(result);
+  return convert(result);
 }
 
 export async function getLastResult(uid: string): Promise<DBResult> {
@@ -79,7 +79,7 @@ export async function getLastResult(uid: string): Promise<DBResult> {
     .limit(1)
     .toArray();
   if (!lastResult) throw new MonkeyError(404, "No results found");
-  return softMigrate(lastResult);
+  return convert(lastResult);
 }
 
 export async function getResultByTimestamp(
@@ -87,7 +87,7 @@ export async function getResultByTimestamp(
   timestamp: number
 ): Promise<DBResult | null> {
   const result = await getResultCollection().findOne({ uid, timestamp });
-  return softMigrate(result);
+  return convert(result);
 }
 
 type GetResultsOpts = {
@@ -130,10 +130,10 @@ export async function getResults(
 
   const results = await query.toArray();
   if (results === undefined) throw new MonkeyError(404, "Result not found");
-  return softMigrate(results);
+  return convert(results);
 }
 
-function softMigrate<T extends DBResult | DBResult[] | null>(results: T): T {
+function convert<T extends DBResult | DBResult[] | null>(results: T): T {
   if (results === null) return results;
 
   const migrate = (result: DBResult): DBResult => {
