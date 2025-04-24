@@ -842,7 +842,7 @@ export async function getNextWord(
 
     randomWord = getFunboxWord(randomWord, wordIndex, currentWordset);
 
-    currentSection = randomWord.split(" ");
+    currentSection = [...randomWord.split(" ")];
     sectionHistory.push(randomWord);
     randomWord = currentSection.shift() as string;
     sectionIndex++;

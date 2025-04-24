@@ -1,3 +1,4 @@
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 import { Accents } from "../test/lazy-mode";
 import { hexToHSL } from "./colors";
 
@@ -306,7 +307,7 @@ export type Challenge = {
   display: string;
   autoRole: boolean;
   type: string;
-  parameters: (string | number | boolean)[];
+  parameters: (string | number | boolean | FunboxName[])[];
   message: string;
   requirements: Record<string, Record<string, string | number | boolean>>;
 };

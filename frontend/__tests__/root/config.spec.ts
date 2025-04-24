@@ -526,7 +526,7 @@ describe("Config", () => {
 });
 
 function customThemeColors(n: number): CustomThemeColors {
-  return Array.from({ length: n }).fill("#000") as CustomThemeColors;
+  return new Array(n).fill("#000") as CustomThemeColors;
 }
 
 function testBoolean(fn: (val: boolean) => boolean): void {

@@ -26,7 +26,7 @@ type SharedTestSettings = [
 
 function updateURL(): void {
   const baseUrl = location.origin + "?testSettings=";
-  const settings: SharedTestSettings = Array.from({ length: 8 }).fill(
+  const settings: SharedTestSettings = new Array(8).fill(
     null
   ) as SharedTestSettings;
 

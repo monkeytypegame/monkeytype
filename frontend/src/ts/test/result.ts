@@ -71,14 +71,18 @@ async function updateGraph(): Promise<void> {
   ChartController.result.getScale("wpm").title.text =
     typingSpeedUnit.fullUnitString;
 
-  const chartData1 = TestInput.wpmHistory.map((a) =>
-    Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
-  );
+  const chartData1 = [
+    ...TestInput.wpmHistory.map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
+  ];
   if (result.chartData === "toolong") return;
 
-  const chartData2 = result.chartData.raw.map((a) =>
-    Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
-  );
+  const chartData2 = [
+    ...result.chartData.raw.map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
+  ];
 
   if (
     Config.mode !== "time" &&
@@ -101,12 +105,13 @@ async function updateGraph(): Promise<void> {
   ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
   ChartController.result.getDataset("raw").data = smoothedRawData;
 
-  maxChartVal = Math.max(Math.max(...smoothedRawData), Math.max(...chartData1));
+  maxChartVal = Math.max(
+    ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
+  );
 
   if (!Config.startGraphsAtZero) {
     const minChartVal = Math.min(
-      Math.min(...smoothedRawData),
-      Math.min(...chartData1)
+      ...[Math.min(...smoothedRawData), Math.min(...chartData1)]
     );
 
     ChartController.result.getScale("wpm").min = minChartVal;

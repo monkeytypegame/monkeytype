@@ -36,7 +36,10 @@ export function clearActive(): void {
 
 function verifyRequirement(
   result: CompletedEvent,
-  requirements: Record<string, Record<string, string | number | boolean>>,
+  requirements: Record<
+    string,
+    Record<string, string | number | boolean | FunboxName[]>
+  >,
   requirementType: string
 ): [boolean, string[]] {
   let requirementsMet = true;
@@ -93,15 +96,12 @@ function verifyRequirement(
       }
     }
   } else if (requirementType === "funbox") {
-    const funboxMode = requirementValue["exact"]
-      ?.toString()
-      .split("#")
-      .sort() as FunboxName[];
+    const funboxMode = requirementValue["exact"] as FunboxName[];
     if (funboxMode === undefined) {
       throw new Error("Funbox mode is undefined");
     }
 
-    if (funboxMode !== result.funbox) {
+    if (funboxMode.toSorted() !== result.funbox.toSorted()) {
       requirementsMet = false;
       for (const f of funboxMode) {
         if (!result.funbox?.includes(f)) {
@@ -285,19 +285,14 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
       if (challenge.parameters[2] !== null) {
-        void Funbox.activate(
-          (challenge.parameters[2] as string).split("#") as FunboxName[]
-        );
+        void Funbox.activate(challenge.parameters[2] as FunboxName[]);
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);
       UpdateConfig.setMode("time", true);
       UpdateConfig.setDifficulty("master", true);
     } else if (challenge.type === "funbox") {
-      UpdateConfig.setFunbox(
-        (challenge.parameters[0] as string).split("#") as FunboxName[],
-        true
-      );
+      UpdateConfig.setFunbox(challenge.parameters[0] as FunboxName[], true);
       UpdateConfig.setDifficulty("normal", true);
       if (challenge.parameters[1] === "words") {
         UpdateConfig.setWordCount(challenge.parameters[2] as number, true);
