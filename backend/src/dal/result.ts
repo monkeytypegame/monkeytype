@@ -149,5 +149,7 @@ function convert<T extends DBResult | DBResult[] | null>(results: T): T {
 
   if (Array.isArray(results)) {
     return results.map(migrate) as T;
-  } else return migrate(results) as T;
+  } else {
+    return migrate(results) as T;
+  }
 }
