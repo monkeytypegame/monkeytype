@@ -1,6 +1,7 @@
 import { intersect } from "@monkeytype/util/arrays";
-import { FunboxForcedConfig, FunboxName } from "./types";
+import { FunboxForcedConfig } from "./types";
 import { getFunbox } from "./list";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 
 export function checkCompatibility(
   funboxNames: FunboxName[],

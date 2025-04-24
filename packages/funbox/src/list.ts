@@ -1,4 +1,5 @@
-import { FunboxMetadata, FunboxName } from "./types";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxMetadata } from "./types";
 
 const list: Record<FunboxName, FunboxMetadata> = {
   "58008": {

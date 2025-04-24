@@ -1,7 +1,6 @@
 import { z, ZodSchema } from "zod";
 import { LanguageSchema, token } from "./util";
 import * as Shared from "./shared";
-import { getFunboxNames } from "@monkeytype/funbox";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -234,9 +233,53 @@ export type CustomThemeColors = z.infer<typeof CustomThemeColorsSchema>;
 export const FavThemesSchema = z.array(token().max(50));
 export type FavThemes = z.infer<typeof FavThemesSchema>;
 
-const zodEnum = <T>(arr: T[]): [T, ...T[]] => arr as [T, ...T[]];
-const funboxNames = getFunboxNames();
-export const FunboxNameSchema = z.enum(zodEnum(funboxNames));
+export const FunboxNameSchema = z.enum([
+  "58008",
+  "mirror",
+  "upside_down",
+  "nausea",
+  "round_round_baby",
+  "simon_says",
+  "tts",
+  "choo_choo",
+  "arrows",
+  "rAnDoMcAsE",
+  "capitals",
+  "layout_mirror",
+  "layoutfluid",
+  "earthquake",
+  "space_balls",
+  "gibberish",
+  "ascii",
+  "specials",
+  "plus_one",
+  "plus_zero",
+  "plus_two",
+  "plus_three",
+  "read_ahead_easy",
+  "read_ahead",
+  "read_ahead_hard",
+  "memory",
+  "nospace",
+  "poetry",
+  "wikipedia",
+  "weakspot",
+  "pseudolang",
+  "IPv4",
+  "IPv6",
+  "binary",
+  "hexadecimal",
+  "zipf",
+  "morse",
+  "crt",
+  "backwards",
+  "ddoouubblleedd",
+  "instant_messaging",
+  "underscore_spaces",
+  "ALL_CAPS",
+  "polyglot",
+  "asl",
+]);
 export type FunboxName = z.infer<typeof FunboxNameSchema>;
 
 export const FunboxSchema = z.array(FunboxNameSchema).max(15);
