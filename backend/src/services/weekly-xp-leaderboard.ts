@@ -2,8 +2,9 @@ import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import {
+  RedisXpLeaderboardEntry,
+  RedisXpLeaderboardEntrySchema,
   XpLeaderboardEntry,
-  XpLeaderboardEntrySchema,
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
 import MonkeyError from "../utils/error";
@@ -11,18 +12,8 @@ import { omit } from "lodash";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 type AddResultOpts = {
-  entry: Pick<
-    XpLeaderboardEntry,
-    | "uid"
-    | "name"
-    | "discordId"
-    | "discordAvatar"
-    | "badgeId"
-    | "lastActivityTimestamp"
-    | "isPremium"
-  >;
+  entry: RedisXpLeaderboardEntry;
   xpGained: number;
-  timeTypedSeconds: number;
 };
 
 const weeklyXpLeaderboardLeaderboardNamespace =
@@ -63,7 +54,7 @@ export class WeeklyXpLeaderboard {
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
     opts: AddResultOpts
   ): Promise<number> {
-    const { entry, xpGained, timeTypedSeconds } = opts;
+    const { entry, xpGained } = opts;
 
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
@@ -91,20 +82,14 @@ export class WeeklyXpLeaderboard {
       entry.uid
     );
 
-    // Derive schema from XpLeaderboardEntrySchema
-    const CurrentEntrySchema = XpLeaderboardEntrySchema.omit({
-      rank: true,
-      totalXp: true,
-    });
-
     const currentEntryTimeTypedSeconds =
       currentEntry !== null
-        ? parseJsonWithSchema(currentEntry, CurrentEntrySchema)
+        ? parseJsonWithSchema(currentEntry, RedisXpLeaderboardEntrySchema)
             ?.timeTypedSeconds
         : undefined;
 
     const totalTimeTypedSeconds =
-      timeTypedSeconds + (currentEntryTimeTypedSeconds ?? 0);
+      entry.timeTypedSeconds + (currentEntryTimeTypedSeconds ?? 0);
 
     const [rank] = await Promise.all([
       connection.addResultIncrement(
@@ -115,10 +100,9 @@ export class WeeklyXpLeaderboard {
         entry.uid,
         xpGained,
         JSON.stringify(
-          XpLeaderboardEntrySchema.omit({ rank: true, totalXp: true }).parse({
+          RedisXpLeaderboardEntrySchema.parse({
             ...entry,
             timeTypedSeconds: totalTimeTypedSeconds,
-            lastActivityTimestamp: Math.floor(Date.now() / 1000),
           })
         )
       ),
@@ -178,12 +162,14 @@ export class WeeklyXpLeaderboard {
         try {
           const parsed = parseJsonWithSchema(
             resultJSON,
-            XpLeaderboardEntrySchema
+            RedisXpLeaderboardEntrySchema
           );
           const scoreValue = scores[index];
 
           if (typeof scoreValue !== "string") {
-            throw new Error(`Invalid score value at index ${index}`);
+            throw new Error(
+              `Invalid score value at index ${index}: ${scoreValue}`
+            );
           }
 
           return {
@@ -239,11 +225,11 @@ export class WeeklyXpLeaderboard {
     }
 
     // safely parse the result with error handling
-    let parsed: Omit<XpLeaderboardEntry, "rank" | "totalXp">;
+    let parsed: RedisXpLeaderboardEntry;
     try {
       parsed = parseJsonWithSchema(
         result ?? "null",
-        XpLeaderboardEntrySchema.omit({ rank: true, totalXp: true })
+        RedisXpLeaderboardEntrySchema
       );
     } catch (error) {
       throw new MonkeyError(

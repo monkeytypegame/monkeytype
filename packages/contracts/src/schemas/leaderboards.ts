@@ -19,16 +19,30 @@ export type LeaderboardEntry = z.infer<typeof LeaderboardEntrySchema>;
 export const DailyLeaderboardRankSchema = LeaderboardEntrySchema;
 export type DailyLeaderboardRank = z.infer<typeof DailyLeaderboardRankSchema>;
 
-export const XpLeaderboardEntrySchema = z.object({
+export const RedisXpLeaderboardEntrySchema = z.object({
   uid: z.string(),
   name: z.string(),
+  lastActivityTimestamp: z.number().int().nonnegative(),
+  timeTypedSeconds: z.number().nonnegative(),
+  // optionals
   discordId: z.string().optional(),
   discordAvatar: z.string().optional(),
   badgeId: z.number().int().optional(),
-  lastActivityTimestamp: z.number().int().nonnegative(),
-  timeTypedSeconds: z.number().nonnegative(),
-  rank: z.number().nonnegative().int(),
-  totalXp: z.number().nonnegative().int(),
   isPremium: z.boolean().optional(),
+});
+export type RedisXpLeaderboardEntry = z.infer<
+  typeof RedisXpLeaderboardEntrySchema
+>;
+
+export const RedisXpLeaderboardScoreSchema = z.number().int().nonnegative();
+export type RedisXpLeaderboardScore = z.infer<
+  typeof RedisXpLeaderboardScoreSchema
+>;
+
+export const XpLeaderboardEntrySchema = RedisXpLeaderboardEntrySchema.extend({
+  //based on another redis collection
+  totalXp: RedisXpLeaderboardScoreSchema,
+  // dynamically added when generating response on the backend
+  rank: z.number().nonnegative().int(),
 });
 export type XpLeaderboardEntry = z.infer<typeof XpLeaderboardEntrySchema>;
