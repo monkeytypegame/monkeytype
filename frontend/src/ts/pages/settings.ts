@@ -23,6 +23,7 @@ import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
   ConfigValue,
   CustomBackgroundSchema,
+  ThemeName,
 } from "@monkeytype/contracts/schemas/configs";
 import {
   getAllFunboxes,
@@ -33,6 +34,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup } from "slim-select/store";
+import { ThemesList } from "../constants/themes";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -522,15 +524,6 @@ async function fillSettingsPage(): Promise<void> {
     select: keymapLayoutSelectElement,
   });
 
-  let themes;
-  try {
-    themes = await JSONData.getThemesList();
-  } catch (e) {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to load themes into dropdown boxes")
-    );
-  }
-
   const themeSelectLightElement = document.querySelector(
     ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light"
   ) as Element;
@@ -541,18 +534,16 @@ async function fillSettingsPage(): Promise<void> {
   let themeSelectLightHtml = "";
   let themeSelectDarkHtml = "";
 
-  if (themes) {
-    for (const theme of themes) {
-      const optionHtml = `<option value="${theme.name}" ${
-        theme.name === Config.themeLight ? "selected" : ""
-      }>${theme.name.replace(/_/g, " ")}</option>`;
-      themeSelectLightHtml += optionHtml;
+  for (const theme of ThemesList) {
+    const optionHtml = `<option value="${theme.name}" ${
+      theme.name === Config.themeLight ? "selected" : ""
+    }>${theme.name.replace(/_/g, " ")}</option>`;
+    themeSelectLightHtml += optionHtml;
 
-      const optionDarkHtml = `<option value="${theme.name}" ${
-        theme.name === Config.themeDark ? "selected" : ""
-      }>${theme.name.replace(/_/g, " ")}</option>`;
-      themeSelectDarkHtml += optionDarkHtml;
-    }
+    const optionDarkHtml = `<option value="${theme.name}" ${
+      theme.name === Config.themeDark ? "selected" : ""
+    }>${theme.name.replace(/_/g, " ")}</option>`;
+    themeSelectDarkHtml += optionDarkHtml;
   }
 
   themeSelectLightElement.innerHTML = themeSelectLightHtml;
@@ -562,7 +553,7 @@ async function fillSettingsPage(): Promise<void> {
     select: themeSelectLightElement,
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setThemeLight(newVal[0]?.value as string);
+        UpdateConfig.setThemeLight(newVal[0]?.value as ThemeName);
       },
     },
   });
@@ -571,7 +562,7 @@ async function fillSettingsPage(): Promise<void> {
     select: themeSelectDarkElement,
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setThemeDark(newVal[0]?.value as string);
+        UpdateConfig.setThemeDark(newVal[0]?.value as ThemeName);
       },
     },
   });

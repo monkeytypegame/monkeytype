@@ -36,16 +36,18 @@ Then add this code to your file:
 Here is an image showing what all the properties correspond to:
 <img width="1552" alt="Screenshot showing the page elements controlled by each color property" src="https://user-images.githubusercontent.com/83455454/149196967-abb69795-0d38-466b-a867-5aaa46452976.png">
 
-Change the corresponding hex codes to create your theme. Then, go to `./frontend/static/themes/_list.json` and add the following code to the very end of the file (inside the square brackets):
+Change the corresponding hex codes to create your theme. Then, go to `./frontend/src/ts/constants/themes.ts` and add the following code to the _end_ of the `themes` object near to the very end of the file:
 
-```json
-  {
-    "name": "theme_name",
-    "bgColor": "#ffffff",
-    "mainColor": "#ffffff",
-    "subColor": "#ffffff",
-    "textColor": "#ffffff"
+```typescript
+export const themes: Record<ThemeName, Omit<Theme, "name">> = {
+  ...
+  theme_name: {
+    bgColor "#ffffff",
+    mainColor "#ffffff",
+    subColor "#ffffff",
+    textColor "#ffffff"
   },
+}
 ```
 
 Make sure the name you put matches the name of the file you created (without the `.css` file extension). Add the text color and background color of your theme to their respective fields.
