@@ -173,7 +173,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: false,
     difficultyLevel: 1,
     properties: ["ignoresLanguage", "unspeakable"],
-    frontendFunctions: ["getWord"],
+    frontendFunctions: ["withWords"],
     name: "gibberish",
   },
   ascii: {
