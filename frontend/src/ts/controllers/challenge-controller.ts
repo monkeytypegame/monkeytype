@@ -20,6 +20,7 @@ import {
 } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { areUnsortedArraysEqual } from "../utils/arrays";
 
 let challengeLoading = false;
 
@@ -101,7 +102,7 @@ function verifyRequirement(
       throw new Error("Funbox mode is undefined");
     }
 
-    if (funboxMode.toSorted() !== result.funbox.toSorted()) {
+    if (!areUnsortedArraysEqual(funboxMode, result.funbox)) {
       requirementsMet = false;
       for (const f of funboxMode) {
         if (!result.funbox?.includes(f)) {

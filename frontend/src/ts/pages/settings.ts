@@ -30,6 +30,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup } from "slim-select/store";
+import { areUnsortedArraysEqual } from "../utils/arrays";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -698,7 +699,7 @@ async function fillSettingsPage(): Promise<void> {
     events: {
       afterChange: (newVal): void => {
         const customPolyglot = newVal.map((it) => it.value);
-        if (customPolyglot.toSorted() !== Config.customPolyglot.toSorted()) {
+        if (!areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
           void UpdateConfig.setCustomPolyglot(customPolyglot);
         }
       },
