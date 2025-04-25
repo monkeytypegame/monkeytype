@@ -597,9 +597,9 @@ export async function addResult(
           badgeId: selectedBadgeId,
           lastActivityTimestamp: Date.now(),
           isPremium,
+          timeTypedSeconds: totalDurationTypedSeconds,
         },
         xpGained: xpGained.xp,
-        timeTypedSeconds: totalDurationTypedSeconds,
       }
     );
   }
