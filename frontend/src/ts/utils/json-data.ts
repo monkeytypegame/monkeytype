@@ -190,12 +190,28 @@ export async function getLanguageGroups(): Promise<LanguageGroup[]> {
   }
 }
 
+// Charset ranges for different languages
+type Range = {
+  start: number;
+  end: number;
+};
+export type CharsetRanges = {
+  arabic: Range;
+  latin: Range;
+  cyrillic: Range;
+  devanagari: Range;
+};
+
+// Charset type
+export type Charset = keyof CharsetRanges;
+
 export type LanguageObject = {
   name: string;
   rightToLeft: boolean;
   noLazyMode?: boolean;
   ligatures?: boolean;
   orderedByFrequency?: boolean;
+  charset?: Charset;
   words: string[];
   additionalAccents: Accents;
   bcp47?: string;
@@ -210,7 +226,6 @@ let currentLanguage: LanguageObject;
  * @returns A promise that resolves to the language object.
  */
 export async function getLanguage(lang: string): Promise<LanguageObject> {
-  // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
     currentLanguage = await cachedFetchJson<LanguageObject>(
       `/languages/${lang}.json`
