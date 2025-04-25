@@ -4,7 +4,7 @@ import { Db } from "mongodb";
 import readlineSync from "readline-sync";
 import { funboxResult } from "./funboxResult";
 
-const batchSize = 50;
+const batchSize = 250_000;
 let appRunning = true;
 let db: Db | undefined;
 const migration = new funboxResult();
@@ -54,10 +54,6 @@ async function main(): Promise<void> {
 export async function migrate(): Promise<void> {
   await migration.setup(db as Db);
 
-  await migrateResults();
-}
-
-async function migrateResults(): Promise<void> {
   const remainingCount = await migration.getRemainingCount();
   if (remainingCount === 0) {
     console.log("No documents to migrate.");
@@ -83,9 +79,16 @@ async function migrateResults(): Promise<void> {
     updateProgress(remainingCount, count, start, Date.now() - t0);
   } while (remainingCount - count > 0 && appRunning);
 
-  if (appRunning) updateProgress(100, 100, start, 0);
+  if (appRunning) {
+    updateProgress(100, 100, start, 0);
+    const left = await migration.getRemainingCount();
+    if (left !== 0) {
+      console.log(
+        `After migration there are ${left} unmigrated documents left. You might want to run the migration again.`
+      );
+    }
+  }
 }
-
 function updateProgress(
   all: number,
   current: number,

@@ -4,8 +4,10 @@ import type { DBConfig } from "../src/dal/config";
 
 export class FunboxConfig implements Migration {
   private configCollection!: Collection<DBConfig>;
-  private filter = { "config.funbox": { $exists: true, $type: "string" } };
-  private collectionName = "configs2"; //TODO rename
+  private filter = {
+    "config.funbox": { $exists: true, $not: { $type: "array" } },
+  };
+  private collectionName = "config";
 
   name: string = "FunboxConfig";
 

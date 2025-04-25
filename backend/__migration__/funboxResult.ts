@@ -5,7 +5,7 @@ import type { DBResult } from "../src/utils/result";
 export class funboxResult implements Migration {
   private resultCollection!: Collection<DBResult>;
   private filter = { funbox: { $exists: true, $not: { $type: "array" } } };
-  private collectionName = "results2"; //TODO rename
+  private collectionName = "results";
   name: string = "FunboxResult";
 
   async setup(db: Db): Promise<void> {
