@@ -45,14 +45,23 @@ let keyupEvents: KeyupEvent[] = [];
 let timerEvents: TimerEvent[] = [];
 let inputEvents: InputEvent[] = [];
 
+type TimerStepEvents = {
+  keydown: KeydownEvent[];
+  keyup: KeyupEvent[];
+  input: InputEvent[];
+};
+
 let eventsByTime: {
-  [key: string]: (KeydownEvent | KeyupEvent | TimerEvent | InputEvent)[];
+  [key: string]: TimerStepEvents;
 } = {};
 
 let noCodeId = 0;
 let pressedKeys: Map<string, boolean> = new Map<string, boolean>();
-let timerStepEvents: (KeydownEvent | KeyupEvent | TimerEvent | InputEvent)[] =
-  [];
+let timerStepEvents: TimerStepEvents = {
+  keydown: [],
+  keyup: [],
+  input: [],
+};
 
 export function log(
   event: KeydownEvent | KeyupEvent | TimerEvent | InputEvent
@@ -81,13 +90,24 @@ export function log(
   }
 
   if (event.type !== "timer") {
-    timerStepEvents.push(event);
+    if (event.type === "keydown") {
+      timerStepEvents.keydown.push(event);
+    } else if (event.type === "keyup") {
+      timerStepEvents.keyup.push(event);
+    } else if (event.type === "input") {
+      timerStepEvents.input.push(event);
+    }
   } else {
     if (event.mode === "step" || event.mode === "end") {
-      eventsByTime[event.time as number] = timerStepEvents.sort(
-        (a, b) => a.ms - b.ms
-      );
-      timerStepEvents = [];
+      // eventsByTime[event.time as number] = timerStepEvents.sort(
+      //   (a, b) => a.ms - b.ms
+      // );
+      eventsByTime[event.time as number] = timerStepEvents;
+      timerStepEvents = {
+        keydown: [],
+        keyup: [],
+        input: [],
+      };
     }
   }
 }
@@ -103,7 +123,6 @@ export function forceKeyup(): void {
     );
 
     if (nextEvent) {
-      console.log("forcekeyup", nextEvent.ms - event.ms);
       total += nextEvent.ms - event.ms;
       count++;
     } else {
@@ -138,7 +157,12 @@ export function reset(): void {
   keyupEvents = [];
   timerEvents = [];
   inputEvents = [];
-  timerStepEvents = [];
+  eventsByTime = {};
+  timerStepEvents = {
+    keydown: [],
+    keyup: [],
+    input: [],
+  };
   noCodeId = 0;
   pressedKeys = new Map<string, boolean>();
 }
@@ -186,6 +210,12 @@ export function calculateAccuracy(): number {
   return (correct / (correct + incorrect)) * 100;
 }
 
+export function getEventsByTime(): {
+  [key: string]: TimerStepEvents;
+} {
+  return eventsByTime;
+}
+
 export function groupInputEventsByTimer(): {
   [key: number]: InputEvent[];
 } {
@@ -221,4 +251,4 @@ window["groupInputEventsByTimer"] = groupInputEventsByTimer;
 
 // oxlint-disable-next-line ban-ts-comment
 //@ts-ignore
-window["eventsByTime"] = eventsByTime;
+window["eventsByTime"] = getEventsByTime;

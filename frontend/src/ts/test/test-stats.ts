@@ -10,6 +10,7 @@ import {
   IncompleteTest,
 } from "@monkeytype/contracts/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
+import { getEventsByTime } from "./test-events";
 
 type CharCount = {
   spaces: number;
@@ -54,7 +55,6 @@ export function getStats(): unknown {
     end,
     start3,
     end3,
-    afkHistory: TestInput.afkHistory,
     errorHistory: TestInput.errorHistory,
     wpmHistory: TestInput.wpmHistory,
     rawHistory: TestInput.rawHistory,
@@ -184,25 +184,9 @@ export function setStart(s: number): void {
   start3 = new Date().getTime();
 }
 
-export function calculateAfkSeconds(testSeconds: number): number {
-  let extraAfk = 0;
-  if (testSeconds !== undefined) {
-    if (Config.mode === "time") {
-      extraAfk =
-        Math.round(testSeconds) - TestInput.keypressCountHistory.length;
-    } else {
-      extraAfk = Math.ceil(testSeconds) - TestInput.keypressCountHistory.length;
-    }
-    if (extraAfk < 0) extraAfk = 0;
-    // console.log("-- extra afk debug");
-    // console.log("should be " + Math.ceil(testSeconds));
-    // console.log(keypressPerSecond.length);
-    // console.log(
-    //   `gonna add extra ${extraAfk} seconds of afk because of no keypress data`
-    // );
-  }
-  const ret = TestInput.afkHistory.filter((afk) => afk).length;
-  return ret + extraAfk;
+export function calculateAfkSeconds(): number {
+  return Object.values(getEventsByTime()).filter((e) => e.input.length === 0)
+    .length;
 }
 
 export function setLastSecondNotRound(): void {

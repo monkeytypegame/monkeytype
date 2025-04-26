@@ -1043,8 +1043,6 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  TestInput.setCurrentNotAfk();
-
   //blocking firefox from going back in history with backspace
   if (event.key === "Backspace") {
     void Sound.playClick();
@@ -1322,8 +1320,6 @@ $("#wordsInput").on("input", (event) => {
     event.preventDefault();
     return;
   }
-
-  TestInput.setCurrentNotAfk();
 
   if (
     (Config.layout === "default" || Config.layout === "korean") &&

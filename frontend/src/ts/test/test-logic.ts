@@ -75,6 +75,7 @@ import * as CompositionState from "../states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
 import * as TestEvents from "./test-events";
 import { WordGenError } from "../utils/word-gen-error";
+import * as Time from "../states/time";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -204,9 +205,8 @@ export function restart(options = {} as RestartOptions): void {
     if (TestState.savingEnabled) {
       TestInput.pushKeypressesToHistory();
       TestInput.pushErrorToHistory();
-      TestInput.pushAfkToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
-      const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
+      const afkseconds = TestStats.calculateAfkSeconds();
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       TestStats.incrementIncompleteSeconds(tt);
@@ -701,7 +701,6 @@ function buildCompletedEvent(
     TestInput.pushToRawHistory(wpmAndRaw.raw);
     TestInput.pushKeypressesToHistory();
     TestInput.pushErrorToHistory();
-    TestInput.pushAfkToHistory();
   }
 
   //consistency
@@ -783,7 +782,7 @@ function buildCompletedEvent(
   }
 
   const duration = parseFloat(stats.time.toString());
-  const afkDuration = TestStats.calculateAfkSeconds(duration);
+  const afkDuration = TestStats.calculateAfkSeconds();
   let language = Config.language;
   if (Config.mode === "quote") {
     language = Strings.removeLanguageSize(Config.language);
@@ -895,11 +894,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   console.debug("Completed event object", ce);
 
+  const timedTest =
+    Config.mode === "time" ||
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+    (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+
   TestEvents.log({
     type: "timer",
     mode: "end",
     ms: now,
-    time: ce.testDuration,
+    time: timedTest ? Time.get() : ce.testDuration,
   });
 
   // console.debug("Test events", );
@@ -936,9 +940,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ///////// completed event ready
 
   //afk check
-  const kps = TestInput.afkHistory.slice(-5);
-  let afkDetected = kps.every((afk) => afk);
-  if (TestState.bailedOut) afkDetected = false;
+  const afkDetected =
+    !TestState.bailedOut &&
+    Object.values(TestEvents.getEventsByTime())
+      .map((e) => e.input.length)
+      .slice(-5)
+      .every((n) => n === 0);
 
   const mode2Number = parseInt(completedEvent.mode2);
 
@@ -1327,7 +1334,6 @@ export function fail(reason: string): void {
   // corrected.pushHistory();
   TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
-  TestInput.pushAfkToHistory();
   void finish(true);
 }
 

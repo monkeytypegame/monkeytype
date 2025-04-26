@@ -209,15 +209,8 @@ let currentErrorHistory: ErrorHistoryObject = {
   words: [],
 };
 
-export let afkHistory: boolean[] = [];
-let currentAfk = true;
-
 export function incrementKeypressCount(): void {
   currentKeypressCount++;
-}
-
-export function setCurrentNotAfk(): void {
-  currentAfk = false;
 }
 
 export function incrementKeypressErrors(): void {
@@ -235,11 +228,6 @@ export function setBurstStart(time: number): void {
 export function pushKeypressesToHistory(): void {
   keypressCountHistory.push(currentKeypressCount);
   currentKeypressCount = 0;
-}
-
-export function pushAfkToHistory(): void {
-  afkHistory.push(currentAfk);
-  currentAfk = true;
 }
 
 export function pushErrorToHistory(): void {
@@ -400,8 +388,6 @@ export function restart(): void {
   burstHistory = [];
   keypressCountHistory = [];
   currentKeypressCount = 0;
-  afkHistory = [];
-  currentAfk = true;
   errorHistory = [];
   currentErrorHistory = {
     count: 0,
