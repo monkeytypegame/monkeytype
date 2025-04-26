@@ -3,6 +3,7 @@
   "noLazyMode": true,
   "bcp47": "te-IN",
   "ligatures": true,
+  "charset": "telugu",
   "words": [
     "గా",
     "నేను",

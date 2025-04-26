@@ -2,6 +2,7 @@
   "name": "kyrgyz",
   "ligatures": false,
   "bcp47": "ky-KY",
+  "charset": "cyrillic",
   "words": [
     "мен",
     "сен",

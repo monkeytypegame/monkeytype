@@ -2,6 +2,7 @@
   "name": "thai",
   "noLazyMode": true,
   "bcp47": "th-TH",
+  "charset": "thai",
   "words": [
     "ที่",
     "การ",

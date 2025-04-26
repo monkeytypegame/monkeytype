@@ -1,6 +1,7 @@
 {
   "name": "ukrainian_endings",
   "noLazyMode": true,
+  "charset": "cyrillic",
   "words": [
     "я",
     "ь",

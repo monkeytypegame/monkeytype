@@ -1,4 +1,5 @@
 import { Accents } from "../test/lazy-mode";
+import { Charset } from "./charsetRange";
 import { hexToHSL } from "./colors";
 
 /**
@@ -196,6 +197,7 @@ export type LanguageObject = {
   noLazyMode?: boolean;
   ligatures?: boolean;
   orderedByFrequency?: boolean;
+  charset?: Charset;
   words: string[];
   additionalAccents: Accents;
   bcp47?: string;
@@ -210,7 +212,6 @@ let currentLanguage: LanguageObject;
  * @returns A promise that resolves to the language object.
  */
 export async function getLanguage(lang: string): Promise<LanguageObject> {
-  // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
     currentLanguage = await cachedFetchJson<LanguageObject>(
       `/languages/${lang}.json`

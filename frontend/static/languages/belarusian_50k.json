@@ -1,6 +1,7 @@
 {
   "name": "belarusian_50k",
   "bcp47": "be-BY",
+  "charset": "cyrillic",
   "words": [
     "а",
     "аагамія",
