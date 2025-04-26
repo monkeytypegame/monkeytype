@@ -23,11 +23,9 @@ export async function tryCatch<T, E = Error>(
   }
 }
 
-export function tryCatchSync<T, E = Error>(
-  functionOrValue: () => T
-): Result<T, E> {
+export function tryCatchSync<T, E = Error>(fn: () => T): Result<T, E> {
   try {
-    let data = functionOrValue();
+    let data = fn();
     return { data, error: null };
   } catch (error) {
     return { data: null, error: error as E };
