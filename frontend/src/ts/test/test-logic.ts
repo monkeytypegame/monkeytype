@@ -745,10 +745,9 @@ function buildCompletedEvent(
     keyConsistency = 0;
   }
 
-  const chartErr = [];
-  for (const error of TestInput.errorHistory) {
-    chartErr.push(error.count ?? 0);
-  }
+  const chartErr = Object.values(TestEvents.getEventsByTime()).map(
+    (events) => events.input.filter((e) => !e.correct).length
+  );
 
   const chartData = {
     wpm: TestInput.wpmHistory,

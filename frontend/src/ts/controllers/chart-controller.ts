@@ -62,11 +62,11 @@ import { format } from "date-fns/format";
 import Config from "../config";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ConfigEvent from "../observables/config-event";
-import * as TestInput from "../test/test-input";
 import * as DateTime from "../utils/date-and-time";
 import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
+import { getEventsByTime } from "../test/test-events";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -241,8 +241,9 @@ export const result = new ChartWithUpdateColors<
             prevTi = ti;
             try {
               const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
-              const wordsToHighlight =
-                TestInput.errorHistory[keypressIndex]?.words;
+              const wordsToHighlight = Object.values(getEventsByTime())[
+                keypressIndex
+              ]?.input.map((event) => event.wordIndex);
 
               const unique = [...new Set(wordsToHighlight)];
               const firstHighlightWordIndex = unique[0];

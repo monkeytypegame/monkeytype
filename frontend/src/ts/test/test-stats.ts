@@ -55,7 +55,6 @@ export function getStats(): unknown {
     end,
     start3,
     end3,
-    errorHistory: TestInput.errorHistory,
     wpmHistory: TestInput.wpmHistory,
     rawHistory: TestInput.rawHistory,
     burstHistory: TestInput.burstHistory,
