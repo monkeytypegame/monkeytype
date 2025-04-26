@@ -1043,7 +1043,7 @@
     "textColor": "#414141"
   },
   {
-    "name": "catppuccin",
+    "name": "catppuccin_mocha",
     "bgColor": "#1e1e2e",
     "mainColor": "#cba6f7",
     "subColor": "#7f849c",
@@ -1286,5 +1286,26 @@
     "mainColor": "#f79777",
     "subColor": "#5b578e",
     "textColor": "#f4e0c9"
+  },
+  {
+    "name": "catppuccin_macchiato",
+    "bgColor": "#24273a",
+    "mainColor": "#c6a0f6",
+    "subColor": "#8087a2",
+    "textColor": "#cad3f5"
+  },
+  {
+    "name": "catppuccin_frappe",
+    "bgColor": "#303446",
+    "mainColor": "#ca9ee6",
+    "subColor": "#838ba7",
+    "textColor": "#c6d0f5"
+  },
+  {
+    "name": "catppuccin_latte",
+    "bgColor": "#eff1f5",
+    "mainColor": "#8839ef",
+    "subColor": "#8c8fa1",
+    "textColor": "#4c4f69"
   }
 ]

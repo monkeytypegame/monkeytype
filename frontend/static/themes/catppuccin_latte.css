@@ -1,0 +1,40 @@
+:root {
+  --bg-color: #eff1f5;
+  --caret-color: #dd7878;
+  --main-color: #8839ef;
+  --sub-color: #8c8fa1;
+  --sub-alt-color: #e6e9ef;
+  --text-color: #4c4f69;
+  --error-color: #d20f39;
+  --error-extra-color: #e64553;
+  --colorful-error-color: #d20f39;
+  --colorful-error-extra-color: #e64553;
+}
+
+nav .view-start {
+  color: #d20f39;
+}
+
+nav .view-leaderboards {
+  color: #fe640b;
+}
+
+nav .view-about {
+  color: #df8e1d;
+}
+
+nav .view-settings {
+  color: #40a02b;
+}
+
+nav .view-account {
+  color: #04a5e5;
+}
+
+nav .showAlerts {
+  color: #1e66f5;
+}
+
+nav .signInOut {
+  color: #7287fd;
+}
