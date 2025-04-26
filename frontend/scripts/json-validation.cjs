@@ -25,7 +25,7 @@ function validateOthers() {
       fs.readFileSync("./static/fonts/_list.json", {
         encoding: "utf8",
         flag: "r",
-      }),
+      })
     );
     const fontsSchema = {
       type: "array",
@@ -52,7 +52,7 @@ function validateOthers() {
       fs.readFileSync("./static/themes/_list.json", {
         encoding: "utf8",
         flag: "r",
-      }),
+      })
     );
     const themesSchema = {
       type: "array",
@@ -82,7 +82,7 @@ function validateOthers() {
         console.log(`File ${fileName} was \u001b[31mnot found\u001b[0m`);
         // return reject(new Error(`File for theme ${themeName} does not exist`));
         return reject(
-          `Could not find file ${fileName} for theme ${themeName} - make sure the file exists and is named correctly`,
+          `Could not find file ${fileName} for theme ${themeName} - make sure the file exists and is named correctly`
         );
       }
     }
@@ -163,7 +163,7 @@ function validateOthers() {
       fs.readFileSync("./static/challenges/_list.json", {
         encoding: "utf8",
         flag: "r",
-      }),
+      })
     );
     const challengesValidator = ajv.compile(challengesSchema);
     if (challengesValidator(challengesData)) {
@@ -275,7 +275,7 @@ function validateOthers() {
       let layoutData = "";
       try {
         layoutData = JSON.parse(
-          fs.readFileSync(`./static/layouts/${layoutName}.json`, "utf-8"),
+          fs.readFileSync(`./static/layouts/${layoutName}.json`, "utf-8")
         );
       } catch (e) {
         layoutsErrors.push(`Layout ${layoutName} has error: ${e.message}`);
@@ -290,7 +290,7 @@ function validateOthers() {
         const layoutsValidator = ajv.compile(layoutsSchema[layoutData.type]);
         if (!layoutsValidator(layoutData)) {
           console.log(
-            `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`,
+            `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`
           );
           layoutsErrors.push(layoutsValidator.errors[0].message);
         }
@@ -361,7 +361,7 @@ function validateQuotes() {
         fs.readFileSync(`./static/quotes/${quotefilename}.json`, {
           encoding: "utf8",
           flag: "r",
-        }),
+        })
       );
       if (quoteData.language !== quotefilename) {
         quoteFilesAllGood = false;
@@ -370,7 +370,7 @@ function validateQuotes() {
       const quoteValidator = ajv.compile(quoteSchema);
       if (!quoteValidator(quoteData)) {
         console.log(
-          `Quote ${quotefilename} JSON schema is \u001b[31minvalid\u001b[0m`,
+          `Quote ${quotefilename} JSON schema is \u001b[31minvalid\u001b[0m`
         );
         quoteFilesAllGood = false;
         quoteFilesErrors =
@@ -382,7 +382,7 @@ function validateQuotes() {
       const quoteIdsValidator = ajv.compile(quoteIdsSchema);
       if (!quoteIdsValidator(quoteIds)) {
         console.log(
-          `Quote ${quotefilename} IDs are \u001b[31mnot unique\u001b[0m`,
+          `Quote ${quotefilename} IDs are \u001b[31mnot unique\u001b[0m`
         );
         quoteIdsAllGood = false;
         quoteIdsErrors =
@@ -390,19 +390,19 @@ function validateQuotes() {
           ` (at static/quotes/${quotefilename}.json)`;
       }
       const incorrectQuoteLength = quoteData.quotes.filter(
-        (quote) => quote.text.length !== quote.length,
+        (quote) => quote.text.length !== quote.length
       );
       if (incorrectQuoteLength.length !== 0) {
         console.log("Some length fields are \u001b[31mincorrect\u001b[0m");
         incorrectQuoteLength.map((quote) => {
           console.log(
-            `Quote ${quotefilename} ID ${quote.id}: expected length ${quote.text.length}`,
+            `Quote ${quotefilename} ID ${quote.id}: expected length ${quote.text.length}`
           );
         });
         quoteFilesAllGood = false;
         incorrectQuoteLength.map((quote) => {
           quoteLengthErrors.push(
-            `${quotefilename} ${quote.id} length field is incorrect`,
+            `${quotefilename} ${quote.id} length field is incorrect`
           );
         });
       }
@@ -436,7 +436,7 @@ function validateLanguages() {
       fs.readFileSync("./static/languages/_list.json", {
         encoding: "utf8",
         flag: "r",
-      }),
+      })
     );
     const languagesSchema = {
       type: "array",
@@ -457,7 +457,7 @@ function validateLanguages() {
       fs.readFileSync("./static/languages/_groups.json", {
         encoding: "utf8",
         flag: "r",
-      }),
+      })
     );
     const languagesGroupSchema = {
       type: "array",
@@ -520,12 +520,12 @@ function validateLanguages() {
         fs.readFileSync(`./static/languages/${language}.json`, {
           encoding: "utf8",
           flag: "r",
-        }),
+        })
       );
       const languageFileValidator = ajv.compile(languageFileSchema);
       if (!languageFileValidator(languageFileData)) {
         console.log(
-          `Language ${language} JSON schema is \u001b[31minvalid\u001b[0m`,
+          `Language ${language} JSON schema is \u001b[31minvalid\u001b[0m`
         );
         languageFilesAllGood = false;
         languageFilesErrors =
@@ -552,22 +552,22 @@ function validateLanguages() {
     });
     if (languageFilesAllGood) {
       console.log(
-        `Language word list JSON schemas are \u001b[32mvalid\u001b[0m`,
+        `Language word list JSON schemas are \u001b[32mvalid\u001b[0m`
       );
     } else {
       console.log(
-        `Language word list JSON schemas are \u001b[31minvalid\u001b[0m`,
+        `Language word list JSON schemas are \u001b[31minvalid\u001b[0m`
       );
       return reject(new Error(languageFilesErrors));
     }
 
     if (languageWordListsAllGood) {
       console.log(
-        `Language word lists duplicate check is \u001b[32mvalid\u001b[0m`,
+        `Language word lists duplicate check is \u001b[32mvalid\u001b[0m`
       );
     } else {
       console.log(
-        `Language word lists duplicate check is \u001b[31minvalid\u001b[0m (${langsWithDuplicates} languages contain duplicates)`,
+        `Language word lists duplicate check is \u001b[31minvalid\u001b[0m (${langsWithDuplicates} languages contain duplicates)`
       );
       return reject(new Error(languageFilesErrors));
     }
