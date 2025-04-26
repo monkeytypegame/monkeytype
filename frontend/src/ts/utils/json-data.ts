@@ -1,4 +1,5 @@
 import { Accents } from "../test/lazy-mode";
+import { Charset } from "./charsetRange";
 import { hexToHSL } from "./colors";
 
 /**
@@ -189,21 +190,6 @@ export async function getLanguageGroups(): Promise<LanguageGroup[]> {
     throw new Error("Language groups JSON fetch failed");
   }
 }
-
-// Charset ranges for different languages
-type Range = {
-  start: number;
-  end: number;
-};
-export type CharsetRanges = {
-  arabic: Range;
-  latin: Range;
-  cyrillic: Range;
-  devanagari: Range;
-};
-
-// Charset type
-export type Charset = keyof CharsetRanges;
 
 export type LanguageObject = {
   name: string;
