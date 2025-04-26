@@ -8,8 +8,9 @@ import {
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 
-import { getUser, getTags, DBUser } from "./user";
+import { getUser, getTags } from "./user";
 import { DBResult } from "../utils/result";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export const getResultCollection = (): Collection<DBResult> =>
   db.collection<DBResult>("results");
@@ -18,12 +19,8 @@ export async function addResult(
   uid: string,
   result: DBResult
 ): Promise<{ insertedId: ObjectId }> {
-  let user: DBUser | null = null;
-  try {
-    user = await getUser(uid, "add result");
-  } catch (e) {
-    user = null;
-  }
+  const { data: user } = await tryCatch(getUser(uid, "add result"));
+
   if (!user) throw new MonkeyError(404, "User not found", "add result");
   if (result.uid === undefined) result.uid = uid;
   // result.ir = true;

@@ -19,6 +19,7 @@ import {
 } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 let challengeLoading = false;
 
@@ -219,11 +220,9 @@ export async function setup(challengeName: string): Promise<boolean> {
 
   UpdateConfig.setFunbox("none");
 
-  let list;
-  try {
-    list = await JSONData.getChallengeList();
-  } catch (e) {
-    const message = Misc.createErrorMessage(e, "Failed to setup challenge");
+  const { data: list, error } = await tryCatch(JSONData.getChallengeList());
+  if (error) {
+    const message = Misc.createErrorMessage(error, "Failed to setup challenge");
     Notifications.add(message, -1);
     ManualRestart.set();
     setTimeout(() => {
