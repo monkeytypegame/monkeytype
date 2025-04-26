@@ -180,8 +180,7 @@ export class WeeklyXpLeaderboard {
             totalXp: parseInt(scoreValue, 10),
           };
         } catch (error) {
-          throw new MonkeyError(
-            500,
+          throw new Error(
             `Failed to parse leaderboard entry at index ${index}: ${
               error instanceof Error ? error.message : String(error)
             }`
@@ -203,7 +202,7 @@ export class WeeklyXpLeaderboard {
   ): Promise<XpLeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
-      throw new MonkeyError(500, "Redis connection is unavailable");
+      throw new Error("Redis connection is unavailable");
     }
 
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
@@ -231,8 +230,7 @@ export class WeeklyXpLeaderboard {
     );
 
     if (error) {
-      throw new MonkeyError(
-        500,
+      throw new Error(
         `Failed to parse leaderboard entry: ${
           error instanceof Error ? error.message : String(error)
         }`
