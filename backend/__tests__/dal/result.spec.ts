@@ -145,6 +145,43 @@ describe("ResultDal", () => {
       expect(results[0]?.funbox).toEqual(["58008", "read_ahead"]);
     });
   });
+  describe("getResult", () => {
+    it("should convert legacy values", async () => {
+      //GIVEN
+      await createDummyData(uid, 1, { funbox: "58008#read_ahead" as any });
+      const resultId = (await ResultDal.getLastResult(uid))._id.toHexString();
+
+      //WHEN
+      const result = await ResultDal.getResult(uid, resultId);
+
+      //THEN
+      expect(result?.funbox).toEqual(["58008", "read_ahead"]);
+    });
+  });
+  describe("getLastResult", () => {
+    it("should convert legacy values", async () => {
+      //GIVEN
+      await createDummyData(uid, 1, { funbox: "58008#read_ahead" as any });
+
+      //WHEN
+      const result = await ResultDal.getLastResult(uid);
+
+      //THEN
+      expect(result?.funbox).toEqual(["58008", "read_ahead"]);
+    });
+  });
+  describe("getResultByTimestamp", () => {
+    it("should convert legacy values", async () => {
+      //GIVEN
+      await createDummyData(uid, 1, { funbox: "58008#read_ahead" as any });
+
+      //WHEN
+      const result = await ResultDal.getResultByTimestamp(uid, timestamp);
+
+      //THEN
+      expect(result?.funbox).toEqual(["58008", "read_ahead"]);
+    });
+  });
   describe("converts legacy values", () => {
     it("should convert funbox as string", async () => {
       //GIVEN
