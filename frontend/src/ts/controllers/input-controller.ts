@@ -225,6 +225,7 @@ async function handleSpace(): Promise<void> {
     correct: isWordCorrect,
     input: TestInput.input.current,
     targetWord: TestWords.words.getCurrent(),
+    wordIndex: TestState.activeWordIndex,
   });
 
   if (isWordCorrect) {
@@ -555,6 +556,7 @@ function handleChar(
     correct: thisCharCorrect,
     input: TestInput.input.current,
     targetWord: TestWords.words.getCurrent(),
+    wordIndex: TestState.activeWordIndex,
   });
 
   if (thisCharCorrect && Config.mode !== "zen") {

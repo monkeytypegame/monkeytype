@@ -38,6 +38,7 @@ type InputEvent = {
   correct: boolean;
   input: string;
   targetWord: string;
+  wordIndex: number;
 };
 
 let keydownEvents: KeydownEvent[] = [];
