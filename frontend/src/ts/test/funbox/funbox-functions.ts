@@ -435,24 +435,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return GetText.getASCII();
     },
   },
-  arabic: {
-    getWord(): string {
-      return GetText.getArabic();
-    },
-    rememberSettings(): void {
-      UpdateConfig.setLanguage("arabic", true);
-      save("language", Config.language, UpdateConfig.setLanguage);
-    },
-  },
-  russian: {
-    getWord(): string {
-      return GetText.getRussian();
-    },
-    rememberSettings(): void {
-      UpdateConfig.setLanguage("russian", true);
-      save("language", Config.language, UpdateConfig.setLanguage);
-    },
-  },
   specials: {
     getWord(): string {
       return GetText.getSpecials();

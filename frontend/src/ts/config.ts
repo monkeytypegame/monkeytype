@@ -31,7 +31,6 @@ import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
 import { LayoutsList } from "./constants/layouts";
-import { stringToFunboxNames } from "@monkeytype/funbox";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -1575,13 +1574,6 @@ export function setCustomThemeColors(
 }
 
 export function setLanguage(language: Language, nosave?: boolean): boolean {
-  // Forcing `Arabic Language`, If the Active Funbox is set to `Arabic`
-  const funboxesNames = stringToFunboxNames(config.funbox);
-  if (funboxesNames.includes("arabic") && !language.startsWith("arabic")) {
-    Notifications.add(`${language} will not work with Arabic Funbox.`, 0);
-    language = "arabic";
-  }
-
   if (!isConfigValueValid("language", language, LanguageSchema)) return false;
 
   config.language = language;
