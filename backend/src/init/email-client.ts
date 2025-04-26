@@ -110,8 +110,8 @@ export async function sendEmail(
 
   type Result = { response: string; accepted: string[] };
 
-  const { data: result, error } = await tryCatch<Result>(
-    transporter.sendMail(mailOptions)
+  const { data: result, error } = await tryCatch(
+    transporter.sendMail(mailOptions) as Promise<Result>
   );
 
   if (error) {
