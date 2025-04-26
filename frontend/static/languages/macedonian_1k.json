@@ -1,6 +1,7 @@
 {
   "name": "macedonian_1k",
   "noLazyMode": true,
+  "charset": "cyrillic",
   "words": [
     "јас",
     "неговата",

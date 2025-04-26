@@ -4,6 +4,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "he-IL",
+  "charset": "hebrew",
   "words": [
     "של",
     "את",

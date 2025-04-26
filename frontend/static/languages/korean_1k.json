@@ -3,6 +3,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "ko-KR",
+  "charset": "hangul",
   "words": [
     "너희",
     "대형",

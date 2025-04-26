@@ -3,6 +3,7 @@
   "rightToLeft": true,
   "ligatures": true,
   "bcp47": "he-IL",
+  "charset": "hebrew",
   "words": [
     "של",
     "את",

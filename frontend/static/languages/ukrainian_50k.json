@@ -1,6 +1,7 @@
 {
   "name": "ukrainian_50k",
   "noLazyMode": true,
+  "charset": "cyrillic",
   "words": [
     "і",
     "на",

@@ -2,6 +2,7 @@
   "name": "sinhala",
   "ligatures": true,
   "bcp47": "si",
+  "charset": "sinhala",
   "words": [
     "අක්ෂර",
     "අඩු",

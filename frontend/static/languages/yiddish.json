@@ -4,6 +4,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "yi",
+  "charset": "hebrew",
   "words": [
     "קאַווע",
     "אויפּס",
