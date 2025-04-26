@@ -221,17 +221,14 @@ export class WeeklyXpLeaderboard {
       [null, string | null]
     ];
 
-    if (rank === null) {
+    if (rank === null || result === null) {
       return null;
     }
 
     // safely parse the result with error handling
     let parsed: RedisXpLeaderboardEntry;
     try {
-      parsed = parseJsonWithSchema(
-        result ?? "null",
-        RedisXpLeaderboardEntrySchema
-      );
+      parsed = parseJsonWithSchema(result, RedisXpLeaderboardEntrySchema);
     } catch (error) {
       throw new MonkeyError(
         500,
