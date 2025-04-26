@@ -222,12 +222,12 @@ export class WeeklyXpLeaderboard {
       [null, string | null]
     ];
 
-    if (rank === null) {
+    if (rank === null || result === null) {
       return null;
     }
 
     const { data: parsed, error } = tryCatchSync(() =>
-      parseJsonWithSchema(result ?? "null", RedisXpLeaderboardEntrySchema)
+      parseJsonWithSchema(result, RedisXpLeaderboardEntrySchema)
     );
 
     if (error) {
