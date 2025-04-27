@@ -10872,20 +10872,6 @@ a:hover,
   --colorful-error-extra-color: #ff6f69;
 }
 
-==> ./monkeytype/static/themes/item.css <==
-:root {
-  --bg-color: #1a1025;
-  --caret-color: #e4c2ff;
-  --main-color: #e4c2ff;
-  --sub-color: #8a7ca3;
-  --sub-alt-color: #251a36;
-  --text-color: #ffffff;
-  --error-color: #ff5e94;
-  --error-extra-color: #8c2950;
-  --colorful-error-color: #ff5e94;
-  --colorful-error-extra-color: #8c2950;
-}
-
 ==> ./monkeytype/static/themes/dualshot.css <==
 :root {
   --bg-color: #737373;
