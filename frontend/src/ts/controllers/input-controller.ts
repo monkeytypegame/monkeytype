@@ -236,7 +236,6 @@ async function handleSpace(): Promise<void> {
     TestInput.input.pushHistory();
     TestState.increaseActiveWordIndex();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    TestInput.pushKeypressWord(TestState.activeWordIndex);
     if (!nospace) {
       void Sound.playClick();
     }
@@ -249,7 +248,6 @@ async function handleSpace(): Promise<void> {
         void Sound.playError();
       }
     }
-    TestInput.incrementKeypressErrors();
     const cil: number = TestInput.input.current.length;
     if (cil <= TestWords.words.getCurrent().length) {
       if (cil >= TestInput.corrected.current.length) {
@@ -290,7 +288,6 @@ async function handleSpace(): Promise<void> {
     TestInput.input.pushHistory();
     TestState.increaseActiveWordIndex();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    TestInput.pushKeypressWord(TestState.activeWordIndex);
     Replay.addReplayEvent("submitErrorWord");
     if (Config.difficulty === "expert" || Config.difficulty === "master") {
       TestLogic.fail("difficulty");
@@ -605,10 +602,6 @@ function handleChar(
   void MonkeyPower.addPower(thisCharCorrect);
   TestInput.incrementAccuracy(thisCharCorrect);
 
-  if (!thisCharCorrect) {
-    TestInput.incrementKeypressErrors();
-  }
-
   WeakSpot.updateScore(
     Config.mode === "zen"
       ? char
@@ -667,8 +660,6 @@ function handleChar(
         TestInput.corrected.current.substring(charIndex + 1);
     }
   }
-
-  TestInput.pushKeypressWord(TestState.activeWordIndex);
 
   if (
     Config.difficulty !== "master" &&

@@ -89,11 +89,6 @@ type Keydata = {
   index: number;
 };
 
-type ErrorHistoryObject = {
-  count: number;
-  words: number[];
-};
-
 class Input {
   current: string;
   private history: string[];
@@ -200,30 +195,9 @@ export let keyOverlap = {
 export let wpmHistory: number[] = [];
 export let rawHistory: number[] = [];
 export let burstHistory: number[] = [];
-export let errorHistory: ErrorHistoryObject[] = [];
-let currentErrorHistory: ErrorHistoryObject = {
-  count: 0,
-  words: [],
-};
-
-export function incrementKeypressErrors(): void {
-  currentErrorHistory.count++;
-}
-
-export function pushKeypressWord(wordIndex: number): void {
-  currentErrorHistory.words.push(wordIndex);
-}
 
 export function setBurstStart(time: number): void {
   currentBurstStart = time;
-}
-
-export function pushErrorToHistory(): void {
-  errorHistory.push(currentErrorHistory);
-  currentErrorHistory = {
-    count: 0,
-    words: [],
-  };
 }
 
 export function incrementAccuracy(correctincorrect: boolean): void {
@@ -366,11 +340,6 @@ export function restart(): void {
   wpmHistory = [];
   rawHistory = [];
   burstHistory = [];
-  errorHistory = [];
-  currentErrorHistory = {
-    count: 0,
-    words: [],
-  };
   currentBurstStart = 0;
   accuracy = {
     correct: 0,
