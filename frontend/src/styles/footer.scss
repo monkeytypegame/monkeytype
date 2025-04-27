@@ -91,23 +91,23 @@ footer {
     .favIcon {
       position: absolute;
       //right: -10px;
-      top: -5px;
+      top: -8px;
       font-size: 0.7rem;
       color: var(--sub-color);
-      cursor: pointer;
+      pointer-events: none;
       transition: 0.125s;
+    }
 
-      &:hover {
-        color: var(--text-color);
-        transform: scale(1.2);
-      }
+    &:hover .favIcon.active {
+      color: var(--text-color);
+    }
 
-      &.active {
-        color: var(--sub-color);
-      }
-      &.active:hover {
-        color: var(--text-color);
-      }
+    .favIcon.active {
+      color: var(--sub-color);
+    }
+
+    &:hover .favIcon.active {
+      color: var(--text-color);
     }
   }
 
