@@ -204,7 +204,7 @@ export function restart(options = {} as RestartOptions): void {
 
     if (TestState.savingEnabled) {
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
-      const afkseconds = TestStats.calculateAfkSeconds();
+      const afkseconds = TestEvents.calculateAfkSeconds();
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       TestStats.incrementIncompleteSeconds(tt);
@@ -700,9 +700,7 @@ function buildCompletedEvent(
   }
 
   //consistency
-  const rawPerSecond = Object.values(TestEvents.getEventsByTime()).map(
-    (events) => Math.round((events.input.length / 5) * 60)
-  );
+  const rawPerSecond = TestEvents.getRawHistory();
 
   //adjust last second if last second is not round
   // if (TestStats.lastSecondNotRound && stats.time % 1 >= 0.1) {
@@ -741,9 +739,7 @@ function buildCompletedEvent(
     keyConsistency = 0;
   }
 
-  const chartErr = Object.values(TestEvents.getEventsByTime()).map(
-    (events) => events.input.filter((e) => !e.correct).length
-  );
+  const chartErr = TestEvents.getErrorHistory();
 
   const chartData = {
     wpm: TestInput.wpmHistory,
@@ -777,7 +773,7 @@ function buildCompletedEvent(
   }
 
   const duration = parseFloat(stats.time.toString());
-  const afkDuration = TestStats.calculateAfkSeconds();
+  const afkDuration = TestEvents.calculateAfkSeconds();
   let language = Config.language;
   if (Config.mode === "quote") {
     language = Strings.removeLanguageSize(Config.language);
@@ -932,12 +928,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ///////// completed event ready
 
   //afk check
-  const afkDetected =
-    !TestState.bailedOut &&
-    Object.values(TestEvents.getEventsByTime())
-      .map((e) => e.input.length)
-      .slice(-5)
-      .every((n) => n === 0);
+  const afkDetected = !TestState.bailedOut && TestEvents.isAfkInLast5Seconds();
 
   const mode2Number = parseInt(completedEvent.mode2);
 

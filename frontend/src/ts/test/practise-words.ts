@@ -5,7 +5,7 @@ import * as CustomText from "./custom-text";
 import * as ConfigEvent from "../observables/config-event";
 import { setCustomTextName } from "../states/custom-text-name";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { calculateBurstHistory, getInputEvents } from "./test-events";
+import { calculateBurstHistory, getMissedWords } from "./test-events";
 
 type Before = {
   mode: Mode | null;
@@ -34,16 +34,7 @@ export function init(
     limit = 10;
   }
 
-  const missedWords = getInputEvents().reduce<Record<string, number>>(
-    (acc, event) => {
-      if (!event.correct) {
-        const word = event.targetWord;
-        acc[word] = (acc[word] || 0) + 1;
-      }
-      return acc;
-    },
-    {}
-  );
+  const missedWords = getMissedWords();
 
   // missed word, previous word, count
   let sortableMissedWords: [string, number][] = [];

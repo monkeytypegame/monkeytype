@@ -35,7 +35,7 @@ import {
   getActiveFunboxesWithFunction,
 } from "./funbox/list";
 import * as TestState from "./test-state";
-import { calculateBurstHistory, getInputEvents } from "./test-events";
+import { calculateBurstHistory, getUniqueMissedWords } from "./test-events";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -1748,14 +1748,7 @@ $(".pageTest #copyMissedWordsListButton").on("click", async () => {
   if (Config.mode === "zen") {
     words = TestInput.input.getHistory().join(" ");
   } else {
-    words = Array.from(
-      getInputEvents().reduce<Set<string>>((acc, event) => {
-        if (!event.correct) {
-          acc.add(event.targetWord);
-        }
-        return acc;
-      }, new Set<string>())
-    ).join(" ");
+    words = getUniqueMissedWords().join(" ");
   }
   await copyToClipboard(words);
 });

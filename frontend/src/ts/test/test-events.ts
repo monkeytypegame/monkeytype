@@ -196,7 +196,7 @@ export function getTimerEvents(): TimerEvent[] {
   return timerEvents;
 }
 
-export function getInputEvents(): InputEvent[] {
+function getInputEvents(): InputEvent[] {
   return inputEvents;
 }
 
@@ -329,6 +329,52 @@ export function calculateBurstForWord(wordIndex: number): number {
     }
   }
   return 0;
+}
+
+export function getWordIndexesForTime(time: number): number[] {
+  return (
+    Object.values(getEventsByTime())[time]?.input.map(
+      (event) => event.wordIndex
+    ) ?? []
+  );
+}
+
+export function getMissedWords(): Record<string, number> {
+  return getInputEvents().reduce<Record<string, number>>((acc, event) => {
+    if (!event.correct) {
+      const word = event.targetWord;
+      acc[word] = (acc[word] || 0) + 1;
+    }
+    return acc;
+  }, {});
+}
+
+export function getRawHistory(): number[] {
+  return Object.values(getEventsByTime()).map((events) =>
+    Math.round((events.input.length / 5) * 60)
+  );
+}
+
+export function getErrorHistory(): number[] {
+  return Object.values(getEventsByTime()).map(
+    (events) => events.input.filter((e) => !e.correct).length
+  );
+}
+
+export function isAfkInLast5Seconds(): boolean {
+  return Object.values(getEventsByTime())
+    .map((e) => e.input.length)
+    .slice(-5)
+    .every((n) => n === 0);
+}
+
+export function calculateAfkSeconds(): number {
+  return Object.values(getEventsByTime()).filter((e) => e.input.length === 0)
+    .length;
+}
+
+export function getUniqueMissedWords(): string[] {
+  return Object.keys(getMissedWords());
 }
 
 // oxlint-disable-next-line ban-ts-comment

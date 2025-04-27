@@ -10,7 +10,7 @@ import {
   IncompleteTest,
 } from "@monkeytype/contracts/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
-import { calculateAccuracy, getEventsByTime } from "./test-events";
+import { calculateAccuracy } from "./test-events";
 
 type CharCount = {
   spaces: number;
@@ -176,11 +176,6 @@ export function setStart(s: number): void {
   start = s;
   start2 = Date.now();
   start3 = new Date().getTime();
-}
-
-export function calculateAfkSeconds(): number {
-  return Object.values(getEventsByTime()).filter((e) => e.input.length === 0)
-    .length;
 }
 
 export function setLastSecondNotRound(): void {

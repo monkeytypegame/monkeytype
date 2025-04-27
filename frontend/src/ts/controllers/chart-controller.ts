@@ -66,7 +66,7 @@ import * as DateTime from "../utils/date-and-time";
 import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
-import { getEventsByTime } from "../test/test-events";
+import { getWordIndexesForTime } from "../test/test-events";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -240,10 +240,8 @@ export const result = new ChartWithUpdateColors<
             if (prevTi === ti) return "";
             prevTi = ti;
             try {
-              const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
-              const wordsToHighlight = Object.values(getEventsByTime())[
-                keypressIndex
-              ]?.input.map((event) => event.wordIndex);
+              const index = Math.round(parseFloat(ti.label)) - 1;
+              const wordsToHighlight = getWordIndexesForTime(index);
 
               const unique = [...new Set(wordsToHighlight)];
               const firstHighlightWordIndex = unique[0];
