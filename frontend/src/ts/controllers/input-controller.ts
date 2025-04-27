@@ -236,7 +236,6 @@ async function handleSpace(): Promise<void> {
     TestInput.input.pushHistory();
     TestState.increaseActiveWordIndex();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestState.activeWordIndex);
     if (!nospace) {
       void Sound.playClick();
@@ -292,7 +291,6 @@ async function handleSpace(): Promise<void> {
     TestInput.input.pushHistory();
     TestState.increaseActiveWordIndex();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestState.activeWordIndex);
     Replay.addReplayEvent("submitErrorWord");
     if (Config.difficulty === "expert" || Config.difficulty === "master") {
@@ -672,7 +670,6 @@ function handleChar(
     }
   }
 
-  TestInput.incrementKeypressCount();
   TestInput.pushKeypressWord(TestState.activeWordIndex);
 
   if (
