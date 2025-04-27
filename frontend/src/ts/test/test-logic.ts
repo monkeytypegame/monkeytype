@@ -907,6 +907,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // console.debug("Test events", );
   console.table(TestEvents.getAll());
+  console.log(TestEvents.getEventsByTime());
 
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
