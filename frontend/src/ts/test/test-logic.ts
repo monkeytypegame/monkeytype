@@ -846,6 +846,20 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const now = performance.now();
   TestStats.setEnd(now);
 
+  const timedTest =
+    Config.mode === "time" ||
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+    (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+
+  const time = Numbers.roundTo2(TestStats.calculateTestSeconds());
+
+  TestEvents.log({
+    type: "timer",
+    mode: "end",
+    ms: now,
+    time: timedTest ? Time.get() : time,
+  });
+
   if (TestState.isRepeated && Config.mode === "quote") {
     TestState.setRepeated(false);
   }
@@ -892,18 +906,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const ce = buildCompletedEvent(difficultyFailed);
 
   console.debug("Completed event object", ce);
-
-  const timedTest =
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-    (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-
-  TestEvents.log({
-    type: "timer",
-    mode: "end",
-    ms: now,
-    time: timedTest ? Time.get() : ce.testDuration,
-  });
 
   // console.debug("Test events", );
   console.table(TestEvents.getAll());
