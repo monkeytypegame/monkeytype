@@ -35,7 +35,7 @@ import {
   getActiveFunboxesWithFunction,
 } from "./funbox/list";
 import * as TestState from "./test-state";
-import { getInputEvents } from "./test-events";
+import { calculateBurstHistory, getInputEvents } from "./test-events";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -1367,19 +1367,20 @@ async function loadWordsHistory(): Promise<boolean> {
       }
 
       const errorClass = input !== word ? "error" : "";
+      const burstHistory = calculateBurstHistory();
 
       if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean
           ? corrected
           : Hangul.assemble(corrected.split(""));
         wordEl = `<div class='word nocursor ${errorClass}' burst="${
-          TestInput.burstHistory[i]
+          burstHistory[i]
         }" input="${correctedChar
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
       } else {
         wordEl = `<div class='word nocursor ${errorClass}' burst="${
-          TestInput.burstHistory[i]
+          burstHistory[i]
         }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
 
@@ -1519,7 +1520,7 @@ export async function applyBurstHeatmap(): Promise<void> {
   if (Config.burstHeatmap) {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
 
-    let burstlist = [...TestInput.burstHistory];
+    let burstlist = [...calculateBurstHistory()];
 
     burstlist = burstlist.filter((x) => x !== Infinity);
     burstlist = burstlist.filter((x) => x < 350);

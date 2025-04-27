@@ -1,3 +1,4 @@
+import { roundTo2 } from "@monkeytype/util/numbers";
 import * as TestStats from "./test-stats";
 
 type KeydownEvent = {
@@ -257,6 +258,71 @@ export function groupInputEventsByTimer(): {
   return grouped;
 }
 
+//todo probably memorize this
+export function calculateBurstHistory(): number[] {
+  const burst: number[] = [];
+  let start;
+  for (const event of inputEvents) {
+    if (event.input.length === 0) {
+      start = event.ms;
+    }
+    if (event.char === " ") {
+      if (start !== undefined) {
+        const burstTimeMs = event.ms - start;
+        const wpm = roundTo2(
+          (event.input.length * (60 / (burstTimeMs / 1000))) / 5
+        );
+        if (burst[event.wordIndex] !== undefined) {
+          burst[event.wordIndex] = wpm;
+        } else {
+          burst.push(wpm);
+        }
+        start = undefined;
+      } else {
+        throw new Error("Found space but no word start time");
+      }
+    }
+  }
+  if (start !== undefined) {
+    const lastInputEvent = inputEvents.slice(-1)[0];
+    if (lastInputEvent === undefined) {
+      throw new Error("No last input event found");
+    }
+    const burstTimeMs = lastInputEvent.ms - start;
+    console.log(burstTimeMs);
+    const wpm = roundTo2(
+      ((lastInputEvent.input.length + lastInputEvent.char.length) *
+        (60 / (burstTimeMs / 1000))) /
+        5
+    );
+    burst.push(wpm);
+    start = undefined;
+  }
+  return burst;
+}
+
+export function calculateBurstForWord(wordIndex: number): number {
+  let startMs;
+  for (const event of inputEvents) {
+    if (event.wordIndex !== wordIndex) continue;
+    if (event.input.length === 0) {
+      startMs = event.ms;
+    }
+    if (event.char === " ") {
+      if (startMs !== undefined) {
+        const burstTimeMs = event.ms - startMs;
+        const wpm = roundTo2(
+          (event.input.length * (60 / (burstTimeMs / 1000))) / 5
+        );
+        return wpm;
+      } else {
+        throw new Error("Found space but no word start time");
+      }
+    }
+  }
+  return 0;
+}
+
 // oxlint-disable-next-line ban-ts-comment
 //@ts-ignore
 window["testEvents"] = getAll;
@@ -268,3 +334,7 @@ window["groupInputEventsByTimer"] = groupInputEventsByTimer;
 // oxlint-disable-next-line ban-ts-comment
 //@ts-ignore
 window["eventsByTime"] = getEventsByTime;
+
+// oxlint-disable-next-line ban-ts-comment
+//@ts-ignore
+window["burst"] = calculateBurstHistory;

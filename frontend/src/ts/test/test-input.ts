@@ -1,6 +1,5 @@
 import { lastElementFromArray } from "../utils/arrays";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
-import * as TestState from "./test-state";
 
 const keysToTrack = new Set([
   "NumpadMultiply",
@@ -173,7 +172,6 @@ let keyDownData: Record<string, Keydata> = {};
 export const input = new Input();
 export const corrected = new Corrected();
 
-export let currentBurstStart = 0;
 export let accuracy = {
   correct: 0,
   incorrect: 0,
@@ -194,11 +192,6 @@ export let keyOverlap = {
 };
 export let wpmHistory: number[] = [];
 export let rawHistory: number[] = [];
-export let burstHistory: number[] = [];
-
-export function setBurstStart(time: number): void {
-  currentBurstStart = time;
-}
 
 export function incrementAccuracy(correctincorrect: boolean): void {
   if (correctincorrect) {
@@ -327,20 +320,9 @@ export function pushToRawHistory(raw: number): void {
   rawHistory.push(raw);
 }
 
-export function pushBurstToHistory(speed: number): void {
-  if (burstHistory[TestState.activeWordIndex] === undefined) {
-    burstHistory.push(speed);
-  } else {
-    //repeated word - override
-    burstHistory[TestState.activeWordIndex] = speed;
-  }
-}
-
 export function restart(): void {
   wpmHistory = [];
   rawHistory = [];
-  burstHistory = [];
-  currentBurstStart = 0;
   accuracy = {
     correct: 0,
     incorrect: 0,

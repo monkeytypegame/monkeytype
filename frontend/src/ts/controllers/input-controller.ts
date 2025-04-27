@@ -206,10 +206,6 @@ async function handleSpace(): Promise<void> {
 
   dontInsertSpace = true;
 
-  const burst: number = TestStats.calculateBurst();
-  void LiveBurst.update(Math.round(burst));
-  TestInput.pushBurstToHistory(burst);
-
   const nospace = isFunboxActiveWithProperty("nospace");
 
   //correct word or in zen mode
@@ -227,6 +223,9 @@ async function handleSpace(): Promise<void> {
     targetWord: TestWords.words.getCurrent(),
     wordIndex: TestState.activeWordIndex,
   });
+
+  const burst = TestEvents.calculateBurstForWord(TestState.activeWordIndex);
+  void LiveBurst.update(Math.round(burst));
 
   if (isWordCorrect) {
     if (Config.stopOnError === "letter") {
@@ -562,10 +561,6 @@ function handleChar(
   if (!thisCharCorrect && char === "\n") {
     if (TestInput.input.current === "") return;
     char = " ";
-  }
-
-  if (TestInput.input.current === "") {
-    TestInput.setBurstStart(now);
   }
 
   if (isCharKorean || Config.language.startsWith("korean")) {

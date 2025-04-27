@@ -2,11 +2,10 @@ import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
-import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
 import { setCustomTextName } from "../states/custom-text-name";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { getInputEvents } from "./test-events";
+import { calculateBurstHistory, getInputEvents } from "./test-events";
 
 type Before = {
   mode: Mode | null;
@@ -86,11 +85,13 @@ export function init(
     return false;
   }
 
+  const burstHistory = calculateBurstHistory();
+
   let sortableSlowWords: [string, number][] = [];
   if (slow) {
     sortableSlowWords = TestWords.words
       .get()
-      .map((e, i) => [e, TestInput.burstHistory[i] ?? 0]);
+      .map((e, i) => [e, burstHistory[i] ?? 0]);
     sortableSlowWords.sort((a, b) => {
       return a[1] - b[1];
     });
