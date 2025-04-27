@@ -23,7 +23,7 @@ type KeyupEvent = {
   estimated?: true;
 };
 
-type TimerEvent = {
+export type TimerEvent = {
   type: "timer";
   mode: "start" | "step" | "end";
   ms: number;
@@ -47,7 +47,7 @@ let keyupEvents: KeyupEvent[] = [];
 let timerEvents: TimerEvent[] = [];
 let inputEvents: InputEvent[] = [];
 
-export type TimerStepEvents = {
+type TimerStepEvents = {
   keydown: KeydownEvent[];
   keyup: KeyupEvent[];
   input: InputEvent[];
@@ -404,8 +404,12 @@ export function getWpmForTimeIndex(timeIndex: number): number {
   }
   if (lastInputEvent.char !== " ") {
     //partial last word
-    if (lastInputEvent.targetWord.startsWith(lastInputEvent.input)) {
-      totalChars += lastInputEvent.input.length;
+    if (
+      lastInputEvent.targetWord.startsWith(
+        lastInputEvent.input + lastInputEvent.char
+      )
+    ) {
+      totalChars += lastInputEvent.input.length + lastInputEvent.char.length;
     }
   }
 
