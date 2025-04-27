@@ -34,6 +34,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup } from "slim-select/store";
+import { tryCatch } from "@monkeytype/util/trycatch";
 import { ThemesList } from "../constants/themes";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
