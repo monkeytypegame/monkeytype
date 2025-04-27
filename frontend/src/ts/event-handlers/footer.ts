@@ -46,46 +46,25 @@ function updateCurrentThemeFavIcon(): void {
     ? "custom"
     : ThemeController.randomTheme ?? Config.theme;
   if (!Config.customTheme && Config.favThemes.includes(currentTheme)) {
-    favIconEl.innerHTML = '<i class="fas fa-heart"></i>';
+    favIconEl.innerHTML = '<i class="fas fa-star"></i>';
     favIconEl.classList.add("active");
   } else {
-    favIconEl.innerHTML = '<i class="far fa-heart"></i>';
+    favIconEl.innerHTML = '<i class="far fa-star"></i>';
     favIconEl.classList.remove("active");
   }
 }
 
-// add favorite icon to the current theme button
+// favorite icon to the current theme button
 const currentThemeButton = document.querySelector(
   "footer .right .current-theme"
 );
 if (currentThemeButton) {
   const favIconDiv = document.createElement("div");
   favIconDiv.className = "favIcon";
-  favIconDiv.innerHTML = '<i class="far fa-heart"></i>';
+  favIconDiv.innerHTML = '<i class="far fa-star"></i>';
   currentThemeButton.appendChild(favIconDiv);
   updateCurrentThemeFavIcon();
 }
-document
-  .querySelector("footer .right .current-theme .favIcon")
-  ?.addEventListener("click", (event) => {
-    event.stopPropagation();
-    if (Config.customTheme) {
-      Notifications.add("Cannot favorite custom themes", 0);
-      return;
-    }
-    const currentTheme = ThemeController.randomTheme ?? Config.theme;
-    if (Config.favThemes.includes(currentTheme)) {
-      // remove from favorites
-      UpdateConfig.setFavThemes(
-        Config.favThemes.filter((t) => t !== currentTheme)
-      );
-    } else {
-      // add
-      UpdateConfig.setFavThemes([...Config.favThemes, currentTheme]);
-    }
-
-    updateCurrentThemeFavIcon();
-  });
 
 document
   .querySelector("footer .right .current-theme")
