@@ -70,7 +70,6 @@ function calculateWpmRaw(): { wpm: number; raw: number } {
   if (timerDebug) console.timeEnd("update live wpm");
   if (timerDebug) console.time("push to history");
   TestInput.pushToWpmHistory(wpmAndRaw.wpm);
-  TestInput.pushToRawHistory(wpmAndRaw.raw);
   if (timerDebug) console.timeEnd("push to history");
   return wpmAndRaw;
 }

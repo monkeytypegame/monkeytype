@@ -187,7 +187,6 @@ export let keyOverlap = {
   lastStartTime: -1,
 };
 export let wpmHistory: number[] = [];
-export let rawHistory: number[] = [];
 
 export function forceKeyup(now: number): void {
   //using mean here because for words mode, the last keypress ends the test.
@@ -304,13 +303,8 @@ export function pushToWpmHistory(wpm: number): void {
   wpmHistory.push(wpm);
 }
 
-export function pushToRawHistory(raw: number): void {
-  rawHistory.push(raw);
-}
-
 export function restart(): void {
   wpmHistory = [];
-  rawHistory = [];
   keypressTimings = {
     spacing: {
       first: -1,

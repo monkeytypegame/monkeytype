@@ -56,7 +56,6 @@ export function getStats(): unknown {
     start3,
     end3,
     wpmHistory: TestInput.wpmHistory,
-    rawHistory: TestInput.rawHistory,
     lastSecondNotRound,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
@@ -204,7 +203,6 @@ export function setLastSecondNotRound(): void {
 export function removeAfkData(): void {
   const testSeconds = calculateTestSeconds();
   TestInput.wpmHistory.splice(testSeconds);
-  TestInput.rawHistory.splice(testSeconds);
 }
 
 function getInputWords(): string[] {

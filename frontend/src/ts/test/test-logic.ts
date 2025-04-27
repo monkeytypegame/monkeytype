@@ -696,7 +696,6 @@ function buildCompletedEvent(
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
     const wpmAndRaw = TestStats.calculateWpmAndRaw();
     TestInput.pushToWpmHistory(wpmAndRaw.wpm);
-    TestInput.pushToRawHistory(wpmAndRaw.raw);
   }
 
   //consistency
