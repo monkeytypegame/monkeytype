@@ -12,6 +12,7 @@ import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { debounce } from "throttle-debounce";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export let randomTheme: string | null = null;
 let isPreviewingTheme = false;
@@ -248,12 +249,10 @@ export async function clearPreview(applyTheme = true): Promise<void> {
 let themesList: string[] = [];
 
 async function changeThemeList(): Promise<void> {
-  let themes;
-  try {
-    themes = await JSONData.getThemesList();
-  } catch (e) {
+  const { data: themes, error } = await tryCatch(JSONData.getThemesList());
+  if (error) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update random theme list")
+      Misc.createErrorMessage(error, "Failed to update random theme list")
     );
     return;
   }

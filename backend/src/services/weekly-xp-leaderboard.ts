@@ -11,6 +11,7 @@ import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
 import MonkeyError from "../utils/error";
 import { omit } from "lodash";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { tryCatchSync } from "@monkeytype/util/trycatch";
 
 type AddResultOpts = {
   entry: RedisXpLeaderboardEntry;
@@ -179,8 +180,7 @@ export class WeeklyXpLeaderboard {
             totalXp: parseInt(scoreValue, 10),
           };
         } catch (error) {
-          throw new MonkeyError(
-            500,
+          throw new Error(
             `Failed to parse leaderboard entry at index ${index}: ${
               error instanceof Error ? error.message : String(error)
             }`
@@ -202,7 +202,7 @@ export class WeeklyXpLeaderboard {
   ): Promise<XpLeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
-      throw new MonkeyError(500, "Redis connection is unavailable");
+      throw new Error("Redis connection is unavailable");
     }
 
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
@@ -221,20 +221,16 @@ export class WeeklyXpLeaderboard {
       [null, string | null]
     ];
 
-    if (rank === null) {
+    if (rank === null || result === null) {
       return null;
     }
 
-    // safely parse the result with error handling
-    let parsed: RedisXpLeaderboardEntry;
-    try {
-      parsed = parseJsonWithSchema(
-        result ?? "null",
-        RedisXpLeaderboardEntrySchema
-      );
-    } catch (error) {
-      throw new MonkeyError(
-        500,
+    const { data: parsed, error } = tryCatchSync(() =>
+      parseJsonWithSchema(result, RedisXpLeaderboardEntrySchema)
+    );
+
+    if (error) {
+      throw new Error(
         `Failed to parse leaderboard entry: ${
           error instanceof Error ? error.message : String(error)
         }`
