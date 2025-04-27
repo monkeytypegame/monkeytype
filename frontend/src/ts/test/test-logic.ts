@@ -203,7 +203,6 @@ export function restart(options = {} as RestartOptions): void {
     }
 
     if (TestState.savingEnabled) {
-      TestInput.pushErrorToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
       const afkseconds = TestStats.calculateAfkSeconds();
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
@@ -1331,7 +1330,6 @@ export function fail(reason: string): void {
   failReason = reason;
   // input.pushHistory();
   // corrected.pushHistory();
-  TestInput.pushErrorToHistory();
   void finish(true);
 }
 
