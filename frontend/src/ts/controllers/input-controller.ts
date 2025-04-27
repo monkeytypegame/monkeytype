@@ -249,7 +249,6 @@ async function handleSpace(): Promise<void> {
         void Sound.playError();
       }
     }
-    TestInput.pushMissedWord(TestWords.words.getCurrent());
     TestInput.incrementKeypressErrors();
     const cil: number = TestInput.input.current.length;
     if (cil <= TestWords.words.getCurrent().length) {
@@ -608,7 +607,6 @@ function handleChar(
 
   if (!thisCharCorrect) {
     TestInput.incrementKeypressErrors();
-    TestInput.pushMissedWord(TestWords.words.getCurrent());
   }
 
   WeakSpot.updateScore(

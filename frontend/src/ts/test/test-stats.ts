@@ -60,7 +60,6 @@ export function getStats(): unknown {
     burstHistory: TestInput.burstHistory,
     currentBurstStart: TestInput.currentBurstStart,
     lastSecondNotRound,
-    missedWords: TestInput.missedWords,
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,

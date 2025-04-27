@@ -6,6 +6,7 @@ import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
 import { setCustomTextName } from "../states/custom-text-name";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { getInputEvents } from "./test-events";
 
 type Before = {
   mode: Mode | null;
@@ -34,26 +35,30 @@ export function init(
     limit = 10;
   }
 
+  const missedWords = getInputEvents().reduce<Record<string, number>>(
+    (acc, event) => {
+      if (!event.correct) {
+        const word = event.targetWord;
+        acc[word] = (acc[word] || 0) + 1;
+      }
+      return acc;
+    },
+    {}
+  );
+
   // missed word, previous word, count
   let sortableMissedWords: [string, number][] = [];
   if (missed === "words") {
-    Object.keys(TestInput.missedWords).forEach((missedWord) => {
-      const missedWordCount = TestInput.missedWords[missedWord];
-      if (missedWordCount !== undefined) {
-        sortableMissedWords.push([missedWord, missedWordCount]);
-      }
-    });
-    sortableMissedWords.sort((a, b) => {
-      return b[1] - a[1];
-    });
-    sortableMissedWords = sortableMissedWords.slice(0, limit);
+    sortableMissedWords = Object.entries(missedWords)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit);
   }
 
   let sortableMissedBiwords: [string, string, number][] = [];
   if (missed === "biwords") {
     for (let i = 0; i < TestWords.words.length; i++) {
       const missedWord = TestWords.words.get(i);
-      const missedWordCount = TestInput.missedWords[missedWord];
+      const missedWordCount = missedWords[missedWord];
       if (missedWordCount !== undefined) {
         if (i === 0) {
           sortableMissedBiwords.push([missedWord, "", missedWordCount]);

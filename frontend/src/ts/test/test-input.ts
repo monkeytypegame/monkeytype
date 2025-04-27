@@ -179,7 +179,6 @@ export const input = new Input();
 export const corrected = new Corrected();
 
 export let currentBurstStart = 0;
-export let missedWords: Record<string, number> = {};
 export let accuracy = {
   correct: 0,
   incorrect: 0,
@@ -346,14 +345,6 @@ export function resetKeypressTimings(): void {
   console.debug("Keypress timings reset");
 }
 
-export function pushMissedWord(word: string): void {
-  if (!Object.keys(missedWords).includes(word)) {
-    missedWords[word] = 1;
-  } else {
-    (missedWords[word] as number)++;
-  }
-}
-
 export function pushToWpmHistory(wpm: number): void {
   wpmHistory.push(wpm);
 }
@@ -381,7 +372,6 @@ export function restart(): void {
     words: [],
   };
   currentBurstStart = 0;
-  missedWords = {};
   accuracy = {
     correct: 0,
     incorrect: 0,
