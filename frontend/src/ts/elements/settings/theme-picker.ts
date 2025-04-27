@@ -176,7 +176,7 @@ export async function refreshButtons(): Promise<void> {
     }
 
     const themes = getSortedThemesList();
-
+    
     //first show favourites
     if (Config.favThemes.length > 0) {
       favThemesEl.style.marginBottom = "1rem";

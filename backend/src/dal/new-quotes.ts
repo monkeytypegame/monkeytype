@@ -1,4 +1,4 @@
-import { SimpleGit, simpleGit } from "simple-git";
+import { simpleGit } from "simple-git";
 import { Collection, ObjectId } from "mongodb";
 import path from "path";
 import { existsSync, writeFileSync } from "fs";
@@ -10,6 +10,7 @@ import { ApproveQuote, Quote } from "@monkeytype/contracts/schemas/quotes";
 import { WithObjectId } from "../utils/misc";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { z } from "zod";
+import { tryCatchSync } from "@monkeytype/util/trycatch";
 
 const JsonQuoteSchema = z.object({
   text: z.string(),
@@ -28,12 +29,12 @@ const QuoteDataSchema = z.object({
 
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 
-let git: SimpleGit | undefined;
-try {
-  git = simpleGit(path.join(__dirname, PATH_TO_REPO));
-} catch (e) {
-  console.error(`Failed to initialize git: ${e}`);
-  git = undefined;
+const { data: git, error } = tryCatchSync(() =>
+  simpleGit(path.join(__dirname, PATH_TO_REPO))
+);
+
+if (error) {
+  console.error(`Failed to initialize git: ${error}`);
 }
 
 type AddQuoteReturn = {
@@ -145,7 +146,7 @@ export async function approve(
   editSource: string | undefined,
   name: string
 ): Promise<ApproveReturn> {
-  if (git === undefined) throw new MonkeyError(500, "Git not available.");
+  if (git === null) throw new MonkeyError(500, "Git not available.");
   //check mod status
   const targetQuote = await getNewQuoteCollection().findOne({
     _id: new ObjectId(quoteId),

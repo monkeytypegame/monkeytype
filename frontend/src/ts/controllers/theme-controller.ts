@@ -250,7 +250,6 @@ let themesList: (ThemeName | string)[] = [];
 
 async function changeThemeList(): Promise<void> {
   const themes = ThemesList;
-
   if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
     themesList = Config.favThemes;
   } else if (Config.randomTheme === "light") {

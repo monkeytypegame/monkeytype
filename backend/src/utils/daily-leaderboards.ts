@@ -157,8 +157,7 @@ export class DailyLeaderboard {
             rank: minRank + index + 1,
           };
         } catch (error) {
-          throw new MonkeyError(
-            500,
+          throw new Error(
             `Failed to parse leaderboard entry at index ${index}: ${
               error instanceof Error ? error.message : String(error)
             }`
@@ -203,7 +202,7 @@ export class DailyLeaderboard {
   ): Promise<LeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      throw new MonkeyError(500, "Redis connection is unavailable");
+      throw new Error("Redis connection is unavailable");
     }
 
     const { leaderboardScoresKey, leaderboardResultsKey } =
@@ -235,8 +234,7 @@ export class DailyLeaderboard {
         rank: rank + 1,
       };
     } catch (error) {
-      throw new MonkeyError(
-        500,
+      throw new Error(
         `Failed to parse leaderboard entry: ${
           error instanceof Error ? error.message : String(error)
         }`
@@ -247,7 +245,7 @@ export class DailyLeaderboard {
   public async getCount(): Promise<number> {
     const connection = RedisClient.getConnection();
     if (!connection) {
-      throw new MonkeyError(500, "Redis connection is unavailable");
+      throw new Error("Redis connection is unavailable");
     }
 
     const { leaderboardScoresKey } = this.getTodaysLeaderboardKeys();

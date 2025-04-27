@@ -18,6 +18,7 @@ import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../../constants/default-snapshot";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>
@@ -745,14 +746,16 @@ export async function appendButtons(
 ): Promise<void> {
   selectChangeCallbackFn = selectChangeCallback;
 
-  let languageList;
-  try {
-    languageList = await JSONData.getLanguageList();
-  } catch (e) {
+  const { data: languageList, error } = await tryCatch(
+    JSONData.getLanguageList()
+  );
+
+  if (error) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to append language buttons")
+      Misc.createErrorMessage(error, "Failed to append language buttons")
     );
   }
+
   if (languageList) {
     let html = "";
 

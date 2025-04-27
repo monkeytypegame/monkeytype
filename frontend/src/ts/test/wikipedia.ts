@@ -4,6 +4,7 @@ import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export async function getTLD(
   languageGroup: JSONData.LanguageGroup
@@ -262,16 +263,16 @@ export async function getSection(language: string): Promise<JSONData.Section> {
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
 
-  let currentLanguageGroup: JSONData.LanguageGroup | undefined;
-  try {
-    currentLanguageGroup = await JSONData.getCurrentGroup(language);
-  } catch (e) {
+  const { data: currentLanguageGroup, error } = await tryCatch(
+    JSONData.getCurrentGroup(language)
+  );
+  if (error) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to find current language group")
+      Misc.createErrorMessage(error, "Failed to find current language group")
     );
   }
 
-  if (currentLanguageGroup !== undefined) {
+  if (currentLanguageGroup !== null && currentLanguageGroup !== undefined) {
     urlTLD = await getTLD(currentLanguageGroup);
   }
 
