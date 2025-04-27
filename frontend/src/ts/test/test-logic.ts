@@ -203,7 +203,6 @@ export function restart(options = {} as RestartOptions): void {
     }
 
     if (TestState.savingEnabled) {
-      TestInput.pushKeypressesToHistory();
       TestInput.pushErrorToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
       const afkseconds = TestStats.calculateAfkSeconds();
@@ -699,13 +698,11 @@ function buildCompletedEvent(
     const wpmAndRaw = TestStats.calculateWpmAndRaw();
     TestInput.pushToWpmHistory(wpmAndRaw.wpm);
     TestInput.pushToRawHistory(wpmAndRaw.raw);
-    TestInput.pushKeypressesToHistory();
-    TestInput.pushErrorToHistory();
   }
 
   //consistency
-  const rawPerSecond = TestInput.keypressCountHistory.map((count) =>
-    Math.round((count / 5) * 60)
+  const rawPerSecond = Object.values(TestEvents.getEventsByTime()).map(
+    (events) => Math.round((events.input.length / 5) * 60)
   );
 
   //adjust last second if last second is not round
@@ -1334,7 +1331,6 @@ export function fail(reason: string): void {
   failReason = reason;
   // input.pushHistory();
   // corrected.pushHistory();
-  TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
   void finish(true);
 }

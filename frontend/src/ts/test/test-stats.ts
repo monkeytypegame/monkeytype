@@ -58,7 +58,6 @@ export function getStats(): unknown {
     wpmHistory: TestInput.wpmHistory,
     rawHistory: TestInput.rawHistory,
     burstHistory: TestInput.burstHistory,
-    keypressCountHistory: TestInput.keypressCountHistory,
     currentBurstStart: TestInput.currentBurstStart,
     lastSecondNotRound,
     missedWords: TestInput.missedWords,
@@ -220,7 +219,6 @@ export function calculateAccuracy(): number {
 
 export function removeAfkData(): void {
   const testSeconds = calculateTestSeconds();
-  TestInput.keypressCountHistory.splice(testSeconds);
   TestInput.wpmHistory.splice(testSeconds);
   TestInput.burstHistory.splice(testSeconds);
   TestInput.rawHistory.splice(testSeconds);

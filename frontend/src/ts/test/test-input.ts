@@ -178,8 +178,6 @@ let keyDownData: Record<string, Keydata> = {};
 export const input = new Input();
 export const corrected = new Corrected();
 
-export let keypressCountHistory: number[] = [];
-let currentKeypressCount = 0;
 export let currentBurstStart = 0;
 export let missedWords: Record<string, number> = {};
 export let accuracy = {
@@ -209,10 +207,6 @@ let currentErrorHistory: ErrorHistoryObject = {
   words: [],
 };
 
-export function incrementKeypressCount(): void {
-  currentKeypressCount++;
-}
-
 export function incrementKeypressErrors(): void {
   currentErrorHistory.count++;
 }
@@ -223,11 +217,6 @@ export function pushKeypressWord(wordIndex: number): void {
 
 export function setBurstStart(time: number): void {
   currentBurstStart = time;
-}
-
-export function pushKeypressesToHistory(): void {
-  keypressCountHistory.push(currentKeypressCount);
-  currentKeypressCount = 0;
 }
 
 export function pushErrorToHistory(): void {
@@ -386,8 +375,6 @@ export function restart(): void {
   wpmHistory = [];
   rawHistory = [];
   burstHistory = [];
-  keypressCountHistory = [];
-  currentKeypressCount = 0;
   errorHistory = [];
   currentErrorHistory = {
     count: 0,
