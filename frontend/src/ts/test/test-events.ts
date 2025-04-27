@@ -32,7 +32,7 @@ type TimerEvent = {
   slowTimer?: boolean;
 };
 
-type InputEvent = {
+export type InputEvent = {
   type: "input";
   ms: number;
   char: string;
@@ -47,7 +47,7 @@ let keyupEvents: KeyupEvent[] = [];
 let timerEvents: TimerEvent[] = [];
 let inputEvents: InputEvent[] = [];
 
-type TimerStepEvents = {
+export type TimerStepEvents = {
   keydown: KeydownEvent[];
   keyup: KeyupEvent[];
   input: InputEvent[];
@@ -377,6 +377,42 @@ export function getUniqueMissedWords(): string[] {
   return Object.keys(getMissedWords());
 }
 
+export function getWpmHistory(): number[] {
+  const history: number[] = [];
+  for (let i = 0; i < Object.keys(eventsByTime).length; i++) {
+    const wpm = getWpmForTimeIndex(i);
+    history.push(wpm);
+  }
+  return history;
+}
+
+export function getWpmForTimeIndex(timeIndex: number): number {
+  const previousWpm = timeIndex > 0 ? getWpmForTimeIndex(timeIndex - 1) : 0;
+  console.log(getEventsByTime());
+  const events = Object.values(getEventsByTime())[timeIndex];
+  if (!events) return previousWpm;
+  if (events.input.length === 0) return previousWpm;
+
+  const everySpaceEvent = events.input.filter((e) => e.char === " ") ?? [];
+  const lastInputEvent = events.input.slice(-1)[0] as InputEvent;
+
+  let totalChars = 0;
+  for (const event of everySpaceEvent) {
+    if (event.correct) {
+      totalChars += event.input.length + 1;
+    }
+  }
+  if (lastInputEvent.char !== " ") {
+    //partial last word
+    if (lastInputEvent.targetWord.startsWith(lastInputEvent.input)) {
+      totalChars += lastInputEvent.input.length;
+    }
+  }
+
+  const wpm = Math.round((totalChars / 5) * (60 / (timeIndex + 1)));
+  return wpm;
+}
+
 // oxlint-disable-next-line ban-ts-comment
 //@ts-ignore
 window["testEvents"] = getAll;
@@ -392,3 +428,11 @@ window["eventsByTime"] = getEventsByTime;
 // oxlint-disable-next-line ban-ts-comment
 //@ts-ignore
 window["burst"] = calculateBurstHistory;
+
+// oxlint-disable-next-line ban-ts-comment
+//@ts-ignore
+window["wpmHistory"] = getWpmHistory;
+
+// oxlint-disable-next-line ban-ts-comment
+//@ts-ignore
+window["getWpmForTimeIndex"] = getWpmForTimeIndex;

@@ -44,7 +44,7 @@ import {
 } from "./funbox/list";
 import { getFunboxesFromString } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
-import { calculateAccuracy } from "./test-events";
+import { calculateAccuracy, getWpmHistory } from "./test-events";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -75,6 +75,9 @@ async function updateGraph(): Promise<void> {
 
   ChartController.result.getScale("wpm").title.text =
     typingSpeedUnit.fullUnitString;
+
+  console.log("wpmHistory", TestInput.wpmHistory);
+  console.log("newhistory", getWpmHistory());
 
   const chartData1 = [
     ...TestInput.wpmHistory.map((a) =>
