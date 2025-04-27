@@ -19,3 +19,5 @@ dist/
 build/
 frontend/coverage
 pnpm*.yaml
+/frontend/static/webfonts/*.woff
+/frontend/static/webfonts/*.woff2
