@@ -10872,7 +10872,7 @@ a:hover,
   --colorful-error-extra-color: #ff6f69;
 }
 
-==> ./monkeytype/static/themes/purple_haze.css <==
+==> ./monkeytype/static/themes/item.css <==
 :root {
   --bg-color: #1a1025;
   --caret-color: #e4c2ff;
