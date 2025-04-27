@@ -1281,6 +1281,13 @@
     "textColor": "#ccdae6"
   },
   {
+    "name": "Purple Haze",
+    "bgColor": "#1a1025",
+    "mainColor": "#e4c2ff",
+    "subColor": "#8a7ca3",
+    "textColor": "#ffffff"
+  },
+  {
     "name": "sunset",
     "bgColor": "#211e24",
     "mainColor": "#f79777",
