@@ -131,7 +131,6 @@ function checkIfFailed(
   acc: number
 ): boolean {
   if (timerDebug) console.time("fail conditions");
-  TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
   if (
     Config.minWpm === "custom" &&
