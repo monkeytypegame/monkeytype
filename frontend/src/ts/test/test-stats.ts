@@ -10,7 +10,7 @@ import {
   IncompleteTest,
 } from "@monkeytype/contracts/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
-import { getEventsByTime } from "./test-events";
+import { calculateAccuracy, getEventsByTime } from "./test-events";
 
 type CharCount = {
   spaces: number;
@@ -58,7 +58,6 @@ export function getStats(): unknown {
     wpmHistory: TestInput.wpmHistory,
     rawHistory: TestInput.rawHistory,
     lastSecondNotRound,
-    accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
     wordsHistory: TestWords.words.list.slice(
@@ -206,14 +205,6 @@ export function setLastSecondNotRound(): void {
 //   return Math.round(speed);
 // }
 
-export function calculateAccuracy(): number {
-  const acc =
-    (TestInput.accuracy.correct /
-      (TestInput.accuracy.correct + TestInput.accuracy.incorrect)) *
-    100;
-  return isNaN(acc) ? 100 : acc;
-}
-
 //todo figure out what it does and if i need to handle it in new system
 export function removeAfkData(): void {
   const testSeconds = calculateTestSeconds();
@@ -344,7 +335,7 @@ function countChars(): CharCount {
     correctWordChars: correctWordChars,
     allCorrectChars: correctChars,
     incorrectChars:
-      Config.mode === "zen" ? TestInput.accuracy.incorrect : incorrectChars,
+      Config.mode === "zen" ? calculateAccuracy().incorrect : incorrectChars,
     extraChars: extraChars,
     missedChars: missedChars,
     correctSpaces: correctspaces,
@@ -381,7 +372,7 @@ export function calculateStats(): Stats {
   }
   const chars = countChars();
   const { wpm, raw } = calculateWpmAndRaw(true);
-  const acc = Numbers.roundTo2(calculateAccuracy());
+  const acc = Numbers.roundTo2(calculateAccuracy().accuracy);
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(raw) ? 0 : raw,

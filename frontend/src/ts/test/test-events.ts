@@ -214,7 +214,11 @@ export function getAll(): (
   ].sort((a, b) => a.ms - b.ms);
 }
 
-export function calculateAccuracy(): number {
+export function calculateAccuracy(): {
+  correct: number;
+  incorrect: number;
+  accuracy: number;
+} {
   let correct = 0;
   let incorrect = 0;
   for (const event of inputEvents) {
@@ -224,7 +228,11 @@ export function calculateAccuracy(): number {
       incorrect++;
     }
   }
-  return (correct / (correct + incorrect)) * 100;
+  return {
+    correct,
+    incorrect,
+    accuracy: roundTo2((correct / (correct + incorrect)) * 100),
+  };
 }
 
 export function getEventsByTime(): {

@@ -209,7 +209,7 @@ export function restart(options = {} as RestartOptions): void {
       if (tt < 0) tt = 0;
       TestStats.incrementIncompleteSeconds(tt);
       TestStats.incrementRestartCount();
-      const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
+      const acc = Numbers.roundTo2(TestEvents.calculateAccuracy().accuracy);
       TestStats.pushIncompleteTest(acc, tt);
     }
   }

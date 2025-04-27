@@ -44,6 +44,7 @@ import {
 } from "./funbox/list";
 import { getFunboxesFromString } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
+import { calculateAccuracy } from "./test-events";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -248,6 +249,8 @@ function updateWpmAndAcc(): void {
     result.acc === 100 ? "100%" : Format.accuracy(result.acc)
   );
 
+  const accuracyStats = calculateAccuracy();
+
   if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit !== "wpm") {
       $("#result .stats .wpm .bottom").attr(
@@ -272,7 +275,7 @@ function updateWpmAndAcc(): void {
 
     $("#result .stats .acc .bottom").attr(
       "aria-label",
-      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`
+      `${accuracyStats.correct} correct\n${accuracyStats.incorrect} incorrect`
     );
   } else {
     //not showing decimal places
@@ -298,8 +301,8 @@ function updateWpmAndAcc(): void {
           result.acc === 100
             ? "100%"
             : Format.percentage(result.acc, { showDecimalPlaces: true })
-        }\n${TestInput.accuracy.correct} correct\n${
-          TestInput.accuracy.incorrect
+        }\n${accuracyStats.correct} correct\n${
+          accuracyStats.incorrect
         } incorrect`
       )
       .attr("data-balloon-break", "");

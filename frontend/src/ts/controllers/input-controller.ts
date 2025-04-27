@@ -1,6 +1,5 @@
 import * as TestLogic from "../test/test-logic";
 import * as TestUI from "../test/test-ui";
-import * as TestStats from "../test/test-stats";
 import * as Monkey from "../test/monkey";
 import Config from "../config";
 import * as Misc from "../utils/misc";
@@ -64,7 +63,7 @@ function setWordsInput(value: string): void {
 }
 
 function updateUI(): void {
-  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
+  const acc: number = Numbers.roundTo2(TestEvents.calculateAccuracy().accuracy);
   if (!isNaN(acc)) LiveAcc.update(acc);
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -212,7 +211,6 @@ async function handleSpace(): Promise<void> {
   const isWordCorrect: boolean =
     currentWord === TestInput.input.current || Config.mode === "zen";
   void MonkeyPower.addPower(isWordCorrect, true);
-  TestInput.incrementAccuracy(isWordCorrect);
 
   TestEvents.log({
     type: "input",
@@ -595,7 +593,6 @@ function handleChar(
   }
 
   void MonkeyPower.addPower(thisCharCorrect);
-  TestInput.incrementAccuracy(thisCharCorrect);
 
   WeakSpot.updateScore(
     Config.mode === "zen"

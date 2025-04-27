@@ -172,10 +172,6 @@ let keyDownData: Record<string, Keydata> = {};
 export const input = new Input();
 export const corrected = new Corrected();
 
-export let accuracy = {
-  correct: 0,
-  incorrect: 0,
-};
 export let keypressTimings: KeypressTimings = {
   spacing: {
     first: -1,
@@ -192,14 +188,6 @@ export let keyOverlap = {
 };
 export let wpmHistory: number[] = [];
 export let rawHistory: number[] = [];
-
-export function incrementAccuracy(correctincorrect: boolean): void {
-  if (correctincorrect) {
-    accuracy.correct++;
-  } else {
-    accuracy.incorrect++;
-  }
-}
 
 export function forceKeyup(now: number): void {
   //using mean here because for words mode, the last keypress ends the test.
@@ -323,10 +311,6 @@ export function pushToRawHistory(raw: number): void {
 export function restart(): void {
   wpmHistory = [];
   rawHistory = [];
-  accuracy = {
-    correct: 0,
-    incorrect: 0,
-  };
   keypressTimings = {
     spacing: {
       first: -1,

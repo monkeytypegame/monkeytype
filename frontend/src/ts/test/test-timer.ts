@@ -84,7 +84,7 @@ function monkey(wpmAndRaw: { wpm: number; raw: number }): void {
 
 function calculateAcc(): number {
   if (timerDebug) console.time("calculate acc");
-  const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
+  const acc = Numbers.roundTo2(TestEvents.calculateAccuracy().accuracy);
   if (timerDebug) console.timeEnd("calculate acc");
   return acc;
 }
