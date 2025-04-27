@@ -103,7 +103,22 @@ export function log(
       // eventsByTime[event.time as number] = timerStepEvents.sort(
       //   (a, b) => a.ms - b.ms
       // );
-      eventsByTime[event.time as number] = timerStepEvents;
+
+      const alreadyExists = eventsByTime[event.time as number];
+      if (alreadyExists) {
+        eventsByTime[event.time as number]?.keydown.push(
+          ...timerStepEvents.keydown
+        );
+        eventsByTime[event.time as number]?.keyup.push(
+          ...timerStepEvents.keyup
+        );
+        eventsByTime[event.time as number]?.input.push(
+          ...timerStepEvents.input
+        );
+      } else {
+        eventsByTime[event.time as number] = timerStepEvents;
+      }
+
       timerStepEvents = {
         keydown: [],
         keyup: [],
