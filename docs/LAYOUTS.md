@@ -46,13 +46,15 @@ For iso the number of keys need to be exactly thirteen for `row1`, twelve for `r
 
 
 
-In addition to the layout file you need to add your layout to the `frontend/src/ts/constants/layouts.ts` file. Just append your layout name (without the `.json`) at the __end__ of the array. Remember to add a comma like this:
+In addition to the layout file you need to add your layout to the `packages/contracts/src/lists/layouts.ts` file. Just append your layout name (without the `.json`) at the __end__ of the `LayoutNameSchema`. Remember to add a comma like this:
 
 ```ts
-  "ergopti",
-  "sword",
-  "YOUR_LAYOUT",
-];
+  export const LayoutNameSchema = z.enum([
+    ...
+    "sword",
+    "opy",
+    "your_layout_name",
+]);
 ``` 
 
 ### Committing Layouts
