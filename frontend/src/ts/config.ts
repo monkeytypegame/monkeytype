@@ -31,6 +31,7 @@ import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
 import { LayoutsList } from "./constants/layouts";
+import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -1884,7 +1885,7 @@ export function setCustomLayoutfluid(
 
   const invalidLayouts = trimmed
     .split(/[# ]+/) //can be space or hash
-    .filter((it) => !LayoutsList.includes(it));
+    .filter((it) => !LayoutsList.includes(it as LayoutName));
 
   if (invalidLayouts.length !== 0) {
     notifyInvalid(
