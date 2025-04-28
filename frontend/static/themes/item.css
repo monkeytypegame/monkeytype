@@ -26,13 +26,13 @@ nav > .textButton {
   color: #1a1025;
 }
 
-/* nav:before {
-     content: "";
-     background: #ff6bcf;
-     width: 1.25rem;
-     height: 1.25rem;
-     padding: .5rem;
-     border-radius: 10rem;
+/* nav:before{
+    content: "";
+    background: #f94348;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: .5rem;
+    border-radius: 10rem;
 } */
 
 nav > .textButton:nth-child(1) {
@@ -71,9 +71,13 @@ nav > .textButton:nth-child(8) {
   background: #ff6bcf;
 }
 
+nav > .textButton:nth-child(8) {
+  background: #f94348;
+}
+
 nav:after {
   content: "";
-  background: #ff9cd8;
+  background: #ff9349;
   width: 1.25rem;
   height: 1.25rem;
   padding: 0.5rem;
@@ -87,8 +91,6 @@ header.focus nav > .textButton.discord::after {
 nav > .textButton.view-account .xpBar {
   bottom: -0.75rem !important;
 }
-
-/* CRT mode glows */
 
 body.crtmode nav > .textButton:nth-child(1) {
   box-shadow:
