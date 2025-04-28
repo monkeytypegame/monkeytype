@@ -2,12 +2,17 @@ import "dotenv/config";
 import * as DB from "../src/init/db";
 import { Db } from "mongodb";
 import readlineSync from "readline-sync";
-import { funboxResult } from "./funboxResult";
+import { FunboxResult } from "./funboxResult";
 
-const batchSize = 250_000;
+const batchSize = 100_000;
 let appRunning = true;
 let db: Db | undefined;
-const migration = new funboxResult();
+const migration = new FunboxResult();
+const delay = 1_000;
+
+const sleep = (durationMs): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, durationMs));
+};
 
 process.on("SIGINT", () => {
   console.log("\nshutting down...");
@@ -77,6 +82,9 @@ export async function migrate(): Promise<void> {
     //progress tracker
     count += migratedCount;
     updateProgress(remainingCount, count, start, Date.now() - t0);
+    if (delay) {
+      await sleep(delay);
+    }
   } while (remainingCount - count > 0 && appRunning);
 
   if (appRunning) {

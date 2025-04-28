@@ -5,9 +5,12 @@ import type { DBConfig } from "../src/dal/config";
 export class FunboxConfig implements Migration {
   private configCollection!: Collection<DBConfig>;
   private filter = {
-    "config.funbox": { $exists: true, $not: { $type: "array" } },
+    $or: [
+      { "config.funbox": { $type: 2, $not: { $type: 4 } } },
+      { "config.customLayoutfluid": { $type: 2, $not: { $type: 4 } } },
+    ],
   };
-  private collectionName = "config";
+  private collectionName = "configs";
 
   name: string = "FunboxConfig";
 
@@ -23,14 +26,40 @@ export class FunboxConfig implements Migration {
       .aggregate([
         { $match: this.filter },
         { $limit: batchSize },
+        //don't use projection
         {
           $addFields: {
             "config.funbox": {
               $cond: {
-                if: { $eq: ["$config.funbox", "none"] },
+                if: {
+                  $and: [
+                    { $ne: ["$config.funbox", null] },
+                    { $ne: [{ $type: "$config.funbox" }, "array"] },
+                  ],
+                },
                 // eslint-disable-next-line no-thenable
-                then: undefined,
-                else: { $split: ["$config.funbox", "#"] },
+                then: {
+                  $cond: {
+                    if: { $eq: ["$config.funbox", "none"] },
+                    // eslint-disable-next-line no-thenable
+                    then: [],
+                    else: { $split: ["$config.funbox", "#"] },
+                  },
+                },
+                else: "$config.funbox",
+              },
+            },
+            "config.customLayoutfluid": {
+              $cond: {
+                if: {
+                  $and: [
+                    { $ne: ["$config.customLayoutfluid", null] },
+                    { $ne: [{ $type: "$config.customLayoutfluid" }, "array"] },
+                  ],
+                },
+                // eslint-disable-next-line no-thenable
+                then: { $split: ["$config.customLayoutfluid", "#"] },
+                else: "$config.customLayoutfluid",
               },
             },
           },
