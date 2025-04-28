@@ -356,7 +356,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     handleSpace(): void {
       if (Config.mode !== "time") {
-        const layouts: string[] = Config.customLayoutfluid;
+        const layouts = Config.customLayoutfluid;
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
         const index = Math.floor(

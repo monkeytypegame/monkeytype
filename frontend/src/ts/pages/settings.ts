@@ -23,6 +23,7 @@ import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
   ConfigValue,
   CustomBackgroundSchema,
+  CustomLayoutFluid,
 } from "@monkeytype/contracts/schemas/configs";
 import {
   getAllFunboxes,
@@ -693,7 +694,9 @@ async function fillSettingsPage(): Promise<void> {
     settings: { keepOrder: true },
     events: {
       afterChange: (newVal): void => {
-        const customLayoutfluid = newVal.map((it) => it.value);
+        const customLayoutfluid = newVal.map(
+          (it) => it.value
+        ) as CustomLayoutFluid;
 
         //checking equal with order, because customLayoutfluid is ordered
         if (areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)) {

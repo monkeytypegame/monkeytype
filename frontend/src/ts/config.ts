@@ -4,7 +4,6 @@ import * as Notifications from "./elements/notifications";
 import {
   isConfigValueValidBoolean,
   isConfigValueValid,
-  invalid as notifyInvalid,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { isAuthenticated } from "./firebase";
@@ -30,8 +29,6 @@ import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
-import { LayoutsList } from "./constants/layouts";
-import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",

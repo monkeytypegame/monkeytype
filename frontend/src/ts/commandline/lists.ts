@@ -104,6 +104,7 @@ import * as FPSCounter from "../elements/fps-counter";
 import { migrateConfig } from "../utils/config";
 import {
   CustomBackgroundSchema,
+  CustomLayoutFluid,
   PartialConfigSchema,
 } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
@@ -225,7 +226,9 @@ export const commands: CommandsSubgroup = {
       icon: "fa-tint",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(input.split(" "));
+        UpdateConfig.setCustomLayoutfluid(
+          input.split(" ") as CustomLayoutFluid
+        );
       },
     },
     {
