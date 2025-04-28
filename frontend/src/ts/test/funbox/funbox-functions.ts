@@ -23,6 +23,7 @@ import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
+import { KeymapLayout, Layout } from "@monkeytype/contracts/schemas/configs";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -345,8 +346,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     applyConfig(): void {
       const layout = Config.customLayoutfluid.split("#")[0] ?? "qwerty";
 
-      UpdateConfig.setLayout(layout, true);
-      UpdateConfig.setKeymapLayout(layout, true);
+      UpdateConfig.setLayout(layout as Layout, true);
+      UpdateConfig.setKeymapLayout(layout as KeymapLayout, true);
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
@@ -357,8 +358,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       if (Config.mode !== "time") {
         // here I need to check if Config.customLayoutFluid exists because of my
         // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
-        const layouts: string[] = Config.customLayoutfluid
-          ? Config.customLayoutfluid.split("#")
+        const layouts: Layout[] = Config.customLayoutfluid
+          ? (Config.customLayoutfluid.split("#") as Layout[])
           : ["qwerty", "dvorak", "colemak"];
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
@@ -379,8 +380,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             LayoutfluidFunboxTimer.hide();
           }
           if (mod === wordsPerLayout) {
-            UpdateConfig.setLayout(layouts[index] as string);
-            UpdateConfig.setKeymapLayout(layouts[index] as string);
+            UpdateConfig.setLayout(layouts[index] as Layout);
+            UpdateConfig.setKeymapLayout(layouts[index] as KeymapLayout);
             if (mod > 3) {
               LayoutfluidFunboxTimer.hide();
             }

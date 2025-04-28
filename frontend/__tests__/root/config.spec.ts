@@ -431,21 +431,15 @@ describe("Config", () => {
   });
   it("setKeymapLayout", () => {
     expect(Config.setKeymapLayout("overrideSync")).toBe(true);
-    expect(Config.setKeymapLayout("override_sync")).toBe(true);
-    expect(Config.setKeymapLayout("override sync")).toBe(false);
-    expect(Config.setKeymapLayout("override-sync!")).toBe(false);
-    expect(Config.setKeymapLayout(stringOfLength(50))).toBe(true);
-
-    expect(Config.setKeymapLayout(stringOfLength(51))).toBe(false);
+    expect(Config.setKeymapLayout("override_sync" as any)).toBe(false);
+    expect(Config.setKeymapLayout("override sync" as any)).toBe(false);
+    expect(Config.setKeymapLayout("override-sync!" as any)).toBe(false);
   });
   it("setLayout", () => {
     expect(Config.setLayout("semimak")).toBe(true);
-    expect(Config.setLayout("semi_mak")).toBe(true);
-    expect(Config.setLayout(stringOfLength(50))).toBe(true);
-
-    expect(Config.setLayout("semi mak")).toBe(false);
-    expect(Config.setLayout("semi-mak")).toBe(true);
-    expect(Config.setLayout(stringOfLength(51))).toBe(false);
+    expect(Config.setLayout("default")).toBe(true);
+    expect(Config.setLayout("semi_mak" as any)).toBe(false);
+    expect(Config.setLayout("overrideSync" as any)).toBe(false);
   });
   it("setFontSize", () => {
     expect(Config.setFontSize(1)).toBe(true);
