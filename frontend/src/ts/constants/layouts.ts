@@ -1,4 +1,3 @@
-import { LayoutNameSchema } from "@monkeytype/contracts/schemas/layouts";
-import { Layout } from "@monkeytype/contracts/schemas/configs";
+import { LayoutName, LayoutNameSchema } from "@monkeytype/contracts/schemas/layouts";
 
-export const LayoutsList:Layout[] = LayoutNameSchema._def.values;
+export const LayoutsList:LayoutName[] = LayoutNameSchema._def.values;

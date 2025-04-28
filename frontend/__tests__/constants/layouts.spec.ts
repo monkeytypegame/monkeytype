@@ -1,6 +1,6 @@
 import { readdirSync } from "fs";
 import { LayoutsList } from "../../src/ts/constants/layouts";
-import { Layout } from "@monkeytype/contracts/schemas/configs";
+import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 
 describe("layouts", () => {
   it("should not have duplicates", () => {
@@ -34,6 +34,6 @@ describe("layouts", () => {
 
 function listLayoutFiles() {
   return readdirSync(import.meta.dirname + "/../../static/layouts").map(
-    (it) => it.substring(0, it.length - 5) as Layout
+    (it) => it.substring(0, it.length - 5) as LayoutName
   );
 }
