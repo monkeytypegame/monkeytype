@@ -1,0 +1,143 @@
+:root {
+  --bg-color: #1a1025;
+  --caret-color: #e4c2ff;
+  --main-color: #e4c2ff;
+  --sub-color: #8a7ca3;
+  --sub-alt-color: #251a36;
+  --text-color: #ffffff;
+  --error-color: #ff5e94;
+  --error-extra-color: #8c2950;
+  --colorful-error-color: #ff5e94;
+  --colorful-error-extra-color: #8c2950;
+}
+
+nav {
+  gap: 0.5rem;
+}
+
+header.focus nav > .textButton,
+header.focus nav:before,
+header.focus nav:after {
+  background: var(--sub-color);
+}
+
+nav > .textButton {
+  border-radius: 10rem !important;
+  color: #1a1025;
+}
+
+nav:before {
+     content: "";
+     background: #ff6bcf;
+     width: 1.25rem;
+     height: 1.25rem;
+     padding: .5rem;
+     border-radius: 10rem;
+}
+
+nav > .textButton:nth-child(1) {
+  background: #ff6bcf;
+}
+
+nav > .textButton:nth-child(2) {
+  background: #b278ff;
+}
+
+nav > .textButton:nth-child(3) {
+  background: #78c9ff;
+}
+
+nav > .textButton:nth-child(4) {
+  background: #78ffb9;
+}
+
+header.focus nav > .textButton:nth-child(6) {
+  background: transparent !important;
+}
+
+nav > .textButton:nth-child(6) {
+  color: var(--sub-color);
+}
+
+nav > .textButton:nth-child(6):hover {
+  color: var(--text-color);
+}
+
+nav > .textButton:nth-child(7) {
+  background: #ffcf78;
+}
+
+nav > .textButton:nth-child(8) {
+  background: #ff6bcf;
+}
+
+nav:after {
+  content: "";
+  background: #ff9cd8;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0.5rem;
+  border-radius: 10rem;
+}
+
+header.focus nav > .textButton.discord::after {
+  border-color: transparent;
+}
+
+nav > .textButton.view-account .xpBar {
+  bottom: -0.75rem !important;
+}
+
+/* CRT mode glows */
+
+body.crtmode nav > .textButton:nth-child(1) {
+  box-shadow:
+    3px 0 1px color-mix(in srgb, #ff6bcf 20%, transparent),
+    -3px 0 color-mix(in srgb, #ff6bcf 30%, transparent),
+    0 0 3px;
+}
+
+body.crtmode nav > .textButton:nth-child(2) {
+  box-shadow:
+    3px 0 1px color-mix(in srgb, #b278ff 20%, transparent),
+    -3px 0 color-mix(in srgb, #b278ff 30%, transparent),
+    0 0 3px;
+}
+
+body.crtmode nav > .textButton:nth-child(3) {
+  box-shadow:
+    3px 0 1px color-mix(in srgb, #78c9ff 20%, transparent),
+    -3px 0 color-mix(in srgb, #78c9ff 30%, transparent),
+    0 0 3px;
+}
+
+body.crtmode nav > .textButton:nth-child(4) {
+  box-shadow:
+    3px 0 1px color-mix(in srgb, #78ffb9 20%, transparent),
+    -3px 0 color-mix(in srgb, #78ffb9 30%, transparent),
+    0 0 3px;
+}
+
+body.crtmode nav > .textButton:nth-child(7) {
+  box-shadow:
+    3px 0 1px color-mix(in srgb, #ffcf78 20%, transparent),
+    -3px 0 color-mix(in srgb, #ffcf78 30%, transparent),
+    0 0 3px;
+}
+
+body.crtmode nav > .textButton:nth-child(8) {
+  box-shadow:
+    3px 0 1px color-mix(in srgb, #ff9cd8 20%, transparent),
+    -3px 0 color-mix(in srgb, #ff9cd8 30%, transparent),
+    0 0 3px;
+}
+
+body.crtmode header.focus nav > .textButton {
+  box-shadow:
+    3px 0 1px var(--crt-sub-color-glow),
+    -3px 0 var(--crt-sub-color-glow);
+}
+
+body.crtmode header.focus nav > .textButton.view-account {
+  box-shadow: none;
+}
