@@ -34,6 +34,8 @@ import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup } from "slim-select/store";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -461,29 +463,9 @@ async function fillSettingsPage(): Promise<void> {
   }
 
   // Language Selection Combobox
-
-  const { data: languageGroups, error: getLanguageGroupsError } =
-    await tryCatch(JSONData.getLanguageGroups());
-
-  if (getLanguageGroupsError) {
-    console.error(
-      Misc.createErrorMessage(
-        getLanguageGroupsError,
-        "Failed to initialize settings language picker"
-      )
-    );
-  }
-
-  const element = document.querySelector(
-    ".pageSettings .section[data-config-name='language'] select"
-  ) as Element;
-
   new SlimSelect({
-    select: element,
-    data: getLanguageDropdownData(
-      languageGroups ?? [],
-      (language) => language === Config.language
-    ),
+    select: ".pageSettings .section[data-config-name='language'] select",
+    data: getLanguageDropdownData((language) => language === Config.language),
     settings: {
       searchPlaceholder: "search",
     },
@@ -702,12 +684,12 @@ async function fillSettingsPage(): Promise<void> {
 
   customPolyglotSelect = new SlimSelect({
     select: ".pageSettings .section[data-config-name='customPolyglot'] select",
-    data: getLanguageDropdownData(languageGroups ?? [], (language) =>
+    data: getLanguageDropdownData((language) =>
       Config.customPolyglot.includes(language)
     ),
     events: {
       afterChange: (newVal): void => {
-        const customPolyglot = newVal.map((it) => it.value);
+        const customPolyglot = newVal.map((it) => it.value) as Language[];
         if (customPolyglot.toSorted() !== Config.customPolyglot.toSorted()) {
           void UpdateConfig.setCustomPolyglot(customPolyglot);
         }
@@ -1376,14 +1358,13 @@ export function setEventDisabled(value: boolean): void {
 }
 
 function getLanguageDropdownData(
-  languageGroups: JSONData.LanguageGroup[],
-  isActive: (val: string) => boolean
+  isActive: (val: Language) => boolean
 ): DataArrayPartial {
-  return languageGroups.map(
+  return LanguageGroupNames.map(
     (group) =>
       ({
-        label: group.name,
-        options: group.languages.map((language) => ({
+        label: group,
+        options: LanguageGroups[group]?.map((language) => ({
           text: Strings.getLanguageDisplayString(language),
           value: language,
           selected: isActive(language),

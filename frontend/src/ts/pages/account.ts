@@ -374,13 +374,11 @@ async function fillContent(): Promise<void> {
         }
       }
 
-      let langFilter = ResultFilters.getFilter(
-        "language",
-        result.language ?? "english"
-      );
+      let langFilter = ResultFilters.getFilter("language", result.language);
 
       if (
-        result.language === "english_expanded" &&
+        //legacy valze for english_1k
+        (result.language as string) === "english_expanded" &&
         ResultFilters.getFilter("language", "english_1k")
       ) {
         langFilter = true;
@@ -505,9 +503,9 @@ async function fillContent(): Promise<void> {
       );
       console.log(result);
       console.error(e);
-      ResultFilters.reset();
-      ResultFilters.updateActive();
-      void update();
+      //ResultFilters.reset();
+      //ResultFilters.updateActive();
+      //void update();
       return;
     }
     //filters done

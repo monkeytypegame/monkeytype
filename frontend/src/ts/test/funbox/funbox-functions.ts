@@ -24,6 +24,7 @@ import * as IPAddresses from "../../utils/ip-addresses";
 import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
 import { KeymapLayout, Layout } from "@monkeytype/contracts/schemas/configs";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -35,7 +36,7 @@ export type FunboxFunctions = {
   clearGlobal?: () => void;
   rememberSettings?: () => void;
   toggleScript?: (params: string[]) => void;
-  pullSection?: (language?: string) => Promise<Section | false>;
+  pullSection?: (language?: Language) => Promise<Section | false>;
   handleSpace?: () => void;
   handleChar?: (char: string) => string;
   isCharCorrect?: (char: string, originalChar: string) => boolean;
@@ -510,7 +511,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   wikipedia: {
-    async pullSection(lang?: string): Promise<JSONData.Section | false> {
+    async pullSection(lang?: Language): Promise<JSONData.Section | false> {
       return getSection((lang ?? "") || "english");
     },
   },

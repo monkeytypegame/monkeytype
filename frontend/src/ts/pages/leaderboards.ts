@@ -42,6 +42,10 @@ import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { PaginationQuery } from "@monkeytype/contracts/leaderboards";
+import {
+  Language,
+  LanguageSchema,
+} from "@monkeytype/contracts/schemas/languages";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -71,7 +75,7 @@ type DailyState = {
   mode2: "15" | "60";
   yesterday: boolean;
   minWpm: number;
-  language: string;
+  language: Language;
   data: LeaderboardEntry[] | null;
   count: number;
   userData: LeaderboardEntry | null;
@@ -108,7 +112,7 @@ const state = {
 const SelectorSchema = z.object({
   type: LeaderboardTypeSchema,
   mode2: z.enum(["15", "60"]).optional(),
-  language: z.string().optional(),
+  language: LanguageSchema.optional(),
   yesterday: z.boolean().optional(),
   lastWeek: z.boolean().optional(),
 });
@@ -1255,7 +1259,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
   "button",
   function () {
     const mode = $(this).attr("data-mode") as "15" | "60" | undefined;
-    const language = $(this).data("language") as string;
+    const language = $(this).data("language") as Language;
     if (
       mode !== undefined &&
       (state.type === "allTime" || state.type === "daily")

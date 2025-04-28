@@ -30,6 +30,7 @@ import {
 import { getDefaultConfig } from "./constants/default-config";
 import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -659,7 +660,7 @@ export async function saveLocalPB<M extends Mode>(
   mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
-  language: string,
+  language: Language,
   difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
@@ -788,7 +789,7 @@ export async function saveLocalTagPB<M extends Mode>(
   mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
-  language: string,
+  language: Language,
   difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
@@ -893,7 +894,7 @@ export async function saveLocalTagPB<M extends Mode>(
 export async function updateLbMemory<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
-  language: string,
+  language: Language,
   rank: number,
   api = false
 ): Promise<void> {

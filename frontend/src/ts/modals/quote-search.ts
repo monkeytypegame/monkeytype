@@ -260,9 +260,8 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
       }
 
       const isQuoteMod =
-        DB.getSnapshot()?.quoteMod !== undefined &&
-        (DB.getSnapshot()?.quoteMod === true ||
-          DB.getSnapshot()?.quoteMod !== "");
+        DB.getSnapshot()?.quoteMod !== undefined ||
+        DB.getSnapshot()?.quoteMod === true;
 
       if (isQuoteMod) {
         $("#quoteSearchModal .goToQuoteApprove").removeClass("hidden");
@@ -343,7 +342,7 @@ const searchForQuotes = debounce(250, (): void => {
 async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
   const quoteLang = Config.language;
 
-  if (quoteLang === "" || quoteId === "") {
+  if (quoteLang === undefined || quoteId === "") {
     Notifications.add("Could not get quote stats!", -1);
     return;
   }

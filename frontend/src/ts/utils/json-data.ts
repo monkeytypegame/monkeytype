@@ -1,3 +1,4 @@
+import { Language } from "@monkeytype/contracts/schemas/languages";
 import { Accents } from "../test/lazy-mode";
 import { hexToHSL } from "./colors";
 
@@ -155,43 +156,8 @@ export async function getSortedThemesList(): Promise<Theme[]> {
   }
 }
 
-/**
- * Fetches the list of languages from the server.
- * @returns A promise that resolves to the list of languages.
- */
-export async function getLanguageList(): Promise<string[]> {
-  try {
-    const languageList = await cachedFetchJson<string[]>(
-      "/languages/_list.json"
-    );
-    return languageList;
-  } catch (e) {
-    throw new Error("Language list JSON fetch failed");
-  }
-}
-
-export type LanguageGroup = {
-  name: string;
-  languages: string[];
-};
-
-/**
- * Fetches the list of language groups from the server.
- * @returns A promise that resolves to the list of language groups.
- */
-export async function getLanguageGroups(): Promise<LanguageGroup[]> {
-  try {
-    const languageGroupList = await cachedFetchJson<LanguageGroup[]>(
-      "/languages/_groups.json"
-    );
-    return languageGroupList;
-  } catch (e) {
-    throw new Error("Language groups JSON fetch failed");
-  }
-}
-
 export type LanguageObject = {
-  name: string;
+  name: Language;
   rightToLeft: boolean;
   noLazyMode?: boolean;
   ligatures?: boolean;
@@ -209,7 +175,7 @@ let currentLanguage: LanguageObject;
  * @param lang The language code.
  * @returns A promise that resolves to the language object.
  */
-export async function getLanguage(lang: string): Promise<LanguageObject> {
+export async function getLanguage(lang: Language): Promise<LanguageObject> {
   // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
     currentLanguage = await cachedFetchJson<LanguageObject>(
@@ -220,7 +186,7 @@ export async function getLanguage(lang: string): Promise<LanguageObject> {
 }
 
 export async function checkIfLanguageSupportsZipf(
-  language: string
+  language: Language
 ): Promise<"yes" | "no" | "unknown"> {
   const lang = await getLanguage(language);
   if (lang.orderedByFrequency === true) return "yes";
@@ -234,29 +200,9 @@ export async function checkIfLanguageSupportsZipf(
  * @returns A promise that resolves to the current language object.
  */
 export async function getCurrentLanguage(
-  languageName: string
+  languageName: Language
 ): Promise<LanguageObject> {
   return await getLanguage(languageName);
-}
-
-/**
- * Fetches the language group for a given language.
- * @param language The language code.
- * @returns A promise that resolves to the language group.
- */
-export async function getCurrentGroup(
-  language: string
-): Promise<LanguageGroup | undefined> {
-  let retgroup: LanguageGroup | undefined;
-  const groups = await getLanguageGroups();
-  groups.forEach((group) => {
-    if (retgroup === undefined) {
-      if (group.languages.includes(language)) {
-        retgroup = group;
-      }
-    }
-  });
-  return retgroup;
 }
 
 export class Section {

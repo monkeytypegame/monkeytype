@@ -84,9 +84,7 @@ import LoadChallengeCommands, {
 import FontFamilyCommands, {
   update as updateFontFamilyCommands,
 } from "./lists/font-family";
-import LanguagesCommands, {
-  update as updateLanguagesCommands,
-} from "./lists/languages";
+import LanguagesCommands from "./lists/languages";
 import KeymapLayoutsCommands from "./lists/keymap-layouts";
 
 import Config, * as UpdateConfig from "../config";
@@ -110,17 +108,7 @@ import { Command, CommandsSubgroup } from "./types";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";
-
-const languagesPromise = JSONData.getLanguageList();
-languagesPromise
-  .then((languages) => {
-    updateLanguagesCommands(languages);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update language commands")
-    );
-  });
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 const fontsPromise = JSONData.getFontsList();
 fontsPromise
@@ -238,7 +226,7 @@ export const commands: CommandsSubgroup = {
       icon: "fa-language",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        void UpdateConfig.setCustomPolyglot(input.split(" "));
+        void UpdateConfig.setCustomPolyglot(input.split(" ") as Language[]);
         if (ActivePage.get() === "test") {
           TestLogic.restart();
         }
@@ -516,12 +504,7 @@ export function doesListExist(listName: string): boolean {
 export async function getList(
   listName: ListsObjectKeys
 ): Promise<CommandsSubgroup> {
-  await Promise.allSettled([
-    languagesPromise,
-    fontsPromise,
-    themesPromise,
-    challengesPromise,
-  ]);
+  await Promise.allSettled([fontsPromise, themesPromise, challengesPromise]);
   const list = lists[listName];
   if (!list) {
     Notifications.add(`List not found: ${listName}`, -1);
@@ -562,12 +545,7 @@ export function getTopOfStack(): CommandsSubgroup {
 
 let singleList: CommandsSubgroup | undefined;
 export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
-  await Promise.allSettled([
-    languagesPromise,
-    fontsPromise,
-    themesPromise,
-    challengesPromise,
-  ]);
+  await Promise.allSettled([fontsPromise, themesPromise, challengesPromise]);
 
   const singleCommands: Command[] = [];
   for (const command of commands.list) {

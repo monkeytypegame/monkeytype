@@ -17,12 +17,6 @@ export type Id = z.infer<typeof IdSchema>;
 export const TagSchema = token().max(50);
 export type Tag = z.infer<typeof TagSchema>;
 
-export const LanguageSchema = z
-  .string()
-  .max(50)
-  .regex(/^[a-zA-Z0-9_+]+$/, "Can only contain letters [a-zA-Z0-9_+]");
-export type Language = z.infer<typeof LanguageSchema>;
-
 export const NullableStringSchema = z
   .string()
   .nullable()
