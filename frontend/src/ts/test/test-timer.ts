@@ -95,9 +95,7 @@ function layoutfluid(): void {
     Config.funbox.split("#").includes("layoutfluid") &&
     Config.mode === "time"
   ) {
-    const layouts = Config.customLayoutfluid
-      ? Config.customLayoutfluid.split("#")
-      : ["qwerty", "dvorak", "colemak"];
+    const layouts = Config.customLayoutfluid;
     const switchTime = Config.time / layouts.length;
     const time = Time.get();
     const index = Math.floor(time / switchTime);

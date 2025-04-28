@@ -1881,26 +1881,17 @@ export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
 ): boolean {
-  const trimmed = value.trim();
-
-  const invalidLayouts = trimmed
-    .split(/[# ]+/) //can be space or hash
-    .filter((it) => !LayoutsList.includes(it as LayoutName));
-
-  if (invalidLayouts.length !== 0) {
-    notifyInvalid(
+  if (
+    !isConfigValueValid(
       "layoutfluid",
-      trimmed,
-      `The following inputted layouts do not exist: ${invalidLayouts.join(
-        ", "
-      )}`
-    );
-
+      value,
+      ConfigSchemas.CustomLayoutFluidSchema
+    )
+  ) {
     return false;
   }
 
-  const customLayoutfluid = trimmed.replace(/ /g, "#");
-  config.customLayoutfluid = customLayoutfluid;
+  config.customLayoutfluid = value;
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutfluid", config.customLayoutfluid);
 

@@ -34,6 +34,7 @@ import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup } from "slim-select/store";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -692,8 +693,10 @@ async function fillSettingsPage(): Promise<void> {
     settings: { keepOrder: true },
     events: {
       afterChange: (newVal): void => {
-        const customLayoutfluid = newVal.map((it) => it.value).join("#");
-        if (customLayoutfluid !== Config.customLayoutfluid) {
+        const customLayoutfluid = newVal.map((it) => it.value);
+
+        //checking equal with order, because customLayoutfluid is ordered
+        if (areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)) {
           void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
         }
       },
@@ -708,7 +711,8 @@ async function fillSettingsPage(): Promise<void> {
     events: {
       afterChange: (newVal): void => {
         const customPolyglot = newVal.map((it) => it.value);
-        if (customPolyglot.toSorted() !== Config.customPolyglot.toSorted()) {
+        //checking equal without order, because customPolyglot is not ordered
+        if (areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
           void UpdateConfig.setCustomPolyglot(customPolyglot);
         }
       },
@@ -916,14 +920,23 @@ export async function update(groupUpdate = true): Promise<void> {
 
   if (
     customLayoutFluidSelect !== undefined &&
-    customLayoutFluidSelect.getSelected().join("#") !== Config.customLayoutfluid
+    //checking equal with order, because customLayoutFluid is ordered
+    !areSortedArraysEqual(
+      customLayoutFluidSelect.getSelected(),
+      Config.customLayoutfluid
+    )
   ) {
+    //replace the data because the data is ordered. do not use setSelected
     customLayoutFluidSelect.setData(getLayoutfluidDropdownData());
   }
 
   if (
     customPolyglotSelect !== undefined &&
-    customPolyglotSelect.getSelected() !== Config.customPolyglot
+    //checking equal without order, because customPolyglot is not ordered
+    !areUnsortedArraysEqual(
+      customPolyglotSelect.getSelected(),
+      Config.customPolyglot
+    )
   ) {
     customPolyglotSelect.setSelected(Config.customPolyglot);
   }
@@ -1393,7 +1406,7 @@ function getLanguageDropdownData(
 }
 
 function getLayoutfluidDropdownData(): DataArrayPartial {
-  const customLayoutfluidActive = Config.customLayoutfluid.split("#");
+  const customLayoutfluidActive = Config.customLayoutfluid;
   return [
     ...customLayoutfluidActive,
     ...LayoutsList.filter((it) => !customLayoutfluidActive.includes(it)),
