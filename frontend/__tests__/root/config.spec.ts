@@ -445,6 +445,7 @@ describe("Config", () => {
   });
   it("setLayout", () => {
     expect(Config.setLayout("semimak")).toBe(true);
+    expect(Config.setLayout("default")).toBe(true);
     expect(Config.setLayout("semi_mak" as any)).toBe(false);
     expect(Config.setLayout("overrideSync" as any)).toBe(false);
   });

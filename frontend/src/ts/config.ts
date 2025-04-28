@@ -1884,7 +1884,7 @@ export function setCustomLayoutfluid(
 
   const invalidLayouts = trimmed
     .split(/[# ]+/) //can be space or hash
-    .filter((it) => !LayoutsList.includes(it));
+    .filter((it) => !LayoutsList.includes(it as ConfigSchemas.Layout));
 
   if (invalidLayouts.length !== 0) {
     notifyInvalid(
