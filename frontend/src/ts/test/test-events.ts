@@ -32,15 +32,25 @@ export type TimerEvent = {
   slowTimer?: boolean;
 };
 
-export type InputEvent = {
-  type: "input";
-  ms: number;
-  char: string;
-  correct: boolean;
-  input: string;
-  targetWord: string;
-  wordIndex: number;
-};
+export type InputEvent =
+  | {
+      type: "input";
+      mode: "insert";
+      ms: number;
+      char: string;
+      correct: boolean;
+      input: string;
+      targetWord: string;
+      wordIndex: number;
+    }
+  | {
+      type: "input";
+      mode: "remove";
+      ms: number;
+      input: string;
+      targetWord: string;
+      wordIndex: number;
+    };
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -68,7 +78,8 @@ let timerStepEvents: TimerStepEvents = {
 export function log(
   event: KeydownEvent | KeyupEvent | TimerEvent | InputEvent
 ): void {
-  event.ms = event.ms - TestStats.start;
+  const start = TestStats.start ?? 0;
+  event.ms = event.ms - start;
 
   if (event.type === "keydown") {
     if (event.code === "NoCode") {
@@ -222,6 +233,7 @@ export function calculateAccuracy(): {
   let correct = 0;
   let incorrect = 0;
   for (const event of inputEvents) {
+    if (event.mode !== "insert") continue;
     if (event.correct) {
       correct++;
     } else {
@@ -270,7 +282,10 @@ export function groupInputEventsByTimer(): {
 export function calculateBurstHistory(): number[] {
   const burst: number[] = [];
   let start;
+  let lastInsertEvent: InputEvent | undefined = undefined;
   for (const event of inputEvents) {
+    if (event.mode !== "insert") continue;
+    lastInsertEvent = event;
     if (event.input.length === 0) {
       start = event.ms;
     }
@@ -291,15 +306,11 @@ export function calculateBurstHistory(): number[] {
       }
     }
   }
-  if (start !== undefined) {
-    const lastInputEvent = inputEvents.slice(-1)[0];
-    if (lastInputEvent === undefined) {
-      throw new Error("No last input event found");
-    }
-    const burstTimeMs = lastInputEvent.ms - start;
+  if (start !== undefined && lastInsertEvent) {
+    const burstTimeMs = lastInsertEvent.ms - start;
     console.log(burstTimeMs);
     const wpm = roundTo2(
-      ((lastInputEvent.input.length + lastInputEvent.char.length) *
+      ((lastInsertEvent.input.length + lastInsertEvent.char.length) *
         (60 / (burstTimeMs / 1000))) /
         5
     );
@@ -312,6 +323,7 @@ export function calculateBurstHistory(): number[] {
 export function calculateBurstForWord(wordIndex: number): number {
   let startMs;
   for (const event of inputEvents) {
+    if (event.mode !== "insert") continue;
     if (event.wordIndex !== wordIndex) continue;
     if (event.input.length === 0) {
       startMs = event.ms;
@@ -341,6 +353,7 @@ export function getWordIndexesForTime(time: number): number[] {
 
 export function getMissedWords(): Record<string, number> {
   return getInputEvents().reduce<Record<string, number>>((acc, event) => {
+    if (event.mode !== "insert") return acc;
     if (!event.correct) {
       const word = event.targetWord;
       acc[word] = (acc[word] || 0) + 1;
@@ -357,7 +370,8 @@ export function getRawHistory(): number[] {
 
 export function getErrorHistory(): number[] {
   return Object.values(getEventsByTime()).map(
-    (events) => events.input.filter((e) => !e.correct).length
+    (events) =>
+      events.input.filter((e) => e.mode === "insert" && !e.correct).length
   );
 }
 
@@ -387,33 +401,40 @@ export function getWpmHistory(): number[] {
 }
 
 export function getWpmForTimeIndex(timeIndex: number): number {
-  const previousWpm = timeIndex > 0 ? getWpmForTimeIndex(timeIndex - 1) : 0;
-  console.log(getEventsByTime());
   const events = Object.values(getEventsByTime())[timeIndex];
-  if (!events) return previousWpm;
-  if (events.input.length === 0) return previousWpm;
+  if (!events) throw new Error("No events for this time index");
+  let chars = 0;
+  let currentWordIndex = 0;
+  let lastEvent: InputEvent | undefined = undefined;
+  for (const event of events.input) {
+    if (event.mode === "insert") {
+      if (event.wordIndex > currentWordIndex) {
+        if (lastEvent && lastEvent.targetWord.startsWith(lastEvent.input)) {
+          chars += lastEvent.input.length;
+        }
+        currentWordIndex = event.wordIndex;
+      }
 
-  const everySpaceEvent = events.input.filter((e) => e.char === " ") ?? [];
-  const lastInputEvent = events.input.slice(-1)[0] as InputEvent;
-
-  let totalChars = 0;
-  for (const event of everySpaceEvent) {
-    if (event.correct) {
-      totalChars += event.input.length + 1;
-    }
-  }
-  if (lastInputEvent.char !== " ") {
-    //partial last word
-    if (
-      lastInputEvent.targetWord.startsWith(
-        lastInputEvent.input + lastInputEvent.char
-      )
-    ) {
-      totalChars += lastInputEvent.input.length + lastInputEvent.char.length;
+      lastEvent = event;
     }
   }
 
-  const wpm = Math.round((totalChars / 5) * (60 / (timeIndex + 1)));
+  if (lastEvent) {
+    if (lastEvent.targetWord.startsWith(lastEvent.input)) {
+      chars += lastEvent.input.length;
+    }
+    chars += lastEvent.char.length;
+  }
+
+  const time = Object.keys(getEventsByTime())[timeIndex];
+
+  if (time === undefined) {
+    throw new Error("No time for this time index");
+  }
+
+  const timeFloat = parseFloat(time);
+
+  const wpm = Math.round((chars / 5) * (60 / timeFloat));
   return wpm;
 }
 

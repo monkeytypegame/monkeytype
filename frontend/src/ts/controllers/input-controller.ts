@@ -117,6 +117,7 @@ function updateUI(): void {
 }
 
 function backspaceToPrevious(): void {
+  const now = performance.now();
   if (!TestState.isActive) return;
 
   const wordElementIndex =
@@ -139,6 +140,15 @@ function backspaceToPrevious(): void {
   if (Config.confidenceMode === "on" || Config.confidenceMode === "max") {
     return;
   }
+
+  TestEvents.log({
+    type: "input",
+    mode: "remove",
+    ms: now,
+    input: TestInput.input.current,
+    targetWord: TestWords.words.getCurrent(),
+    wordIndex: TestState.activeWordIndex,
+  });
 
   const incorrectLetterBackspaced =
     wordElements[wordElementIndex]?.children[0]?.classList.contains(
@@ -214,6 +224,7 @@ async function handleSpace(): Promise<void> {
 
   TestEvents.log({
     type: "input",
+    mode: "insert",
     ms: now,
     char: " ",
     correct: isWordCorrect,
@@ -542,6 +553,7 @@ function handleChar(
 
   TestEvents.log({
     type: "input",
+    mode: "insert",
     ms: now,
     char,
     correct: thisCharCorrect,
@@ -886,6 +898,7 @@ $("#wordsInput").on("keydown", (event) => {
 let lastBailoutAttempt = -1;
 
 $(document).on("keydown", async (event) => {
+  const now = performance.now();
   if (ActivePage.get() === "loading") {
     console.debug("Ignoring keydown event on loading page.");
     return;
@@ -1040,6 +1053,15 @@ $(document).on("keydown", async (event) => {
       event.preventDefault();
       return;
     }
+
+    TestEvents.log({
+      type: "input",
+      mode: "remove",
+      ms: now,
+      input: TestInput.input.current,
+      targetWord: TestWords.words.getCurrent(),
+      wordIndex: TestState.activeWordIndex,
+    });
 
     // if the user backspaces the indentation in a code language we need to empty
     // the current word so the user is set back to the end of the last line
