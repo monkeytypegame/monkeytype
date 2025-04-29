@@ -4,7 +4,6 @@ import * as Notifications from "./elements/notifications";
 import {
   isConfigValueValidBoolean,
   isConfigValueValid,
-  invalid as notifyInvalid,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { isAuthenticated } from "./firebase";
@@ -30,8 +29,6 @@ import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
-import { LayoutsList } from "./constants/layouts";
-import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -1871,26 +1868,17 @@ export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
 ): boolean {
-  const trimmed = value.trim();
-
-  const invalidLayouts = trimmed
-    .split(/[# ]+/) //can be space or hash
-    .filter((it) => !LayoutsList.includes(it as LayoutName));
-
-  if (invalidLayouts.length !== 0) {
-    notifyInvalid(
+  if (
+    !isConfigValueValid(
       "layoutfluid",
-      trimmed,
-      `The following inputted layouts do not exist: ${invalidLayouts.join(
-        ", "
-      )}`
-    );
-
+      value,
+      ConfigSchemas.CustomLayoutFluidSchema
+    )
+  ) {
     return false;
   }
 
-  const customLayoutfluid = trimmed.replace(/ /g, "#");
-  config.customLayoutfluid = customLayoutfluid;
+  config.customLayoutfluid = value;
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutfluid", config.customLayoutfluid);
 

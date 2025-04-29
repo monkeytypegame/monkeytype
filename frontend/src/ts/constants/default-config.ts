@@ -92,7 +92,7 @@ const obj = {
   customBackground: "",
   customBackgroundSize: "cover",
   customBackgroundFilter: [0, 1, 1, 1],
-  customLayoutfluid: "qwerty#dvorak#colemak",
+  customLayoutfluid: ["qwerty", "dvorak", "colemak"],
   customPolyglot: ["english", "spanish", "french", "german"],
   monkeyPowerLevel: "off",
   minBurst: "off",

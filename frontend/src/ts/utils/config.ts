@@ -123,5 +123,11 @@ export function replaceLegacyValues(
     }
   }
 
+  if (typeof configObj.customLayoutfluid === "string") {
+    configObj.customLayoutfluid = (configObj.customLayoutfluid as string).split(
+      "#"
+    ) as ConfigSchemas.CustomLayoutFluid;
+  }
+
   return configObj;
 }

@@ -196,7 +196,10 @@ export type CustomBackgroundFilter = z.infer<
   typeof CustomBackgroundFilterSchema
 >;
 
-export const CustomLayoutFluidSchema = z.string().regex(/^[0-9a-zA-Z_#]+$/); //TODO better regex
+export const CustomLayoutFluidSchema = z
+  .array(Layouts.LayoutNameSchema)
+  .min(1)
+  .max(15);
 export type CustomLayoutFluid = z.infer<typeof CustomLayoutFluidSchema>;
 
 export const CustomPolyglotSchema = z.array(LanguageSchema).min(1);
