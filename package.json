@@ -86,6 +86,6 @@
       "eslint"
     ]
   },
-  "version": "25.16.1",
+  "version": "25.18.0",
   "packageManager": "pnpm@9.6.0"
 }

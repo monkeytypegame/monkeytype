@@ -146,7 +146,7 @@ const debouncedZipfCheck = debounce(250, async () => {
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (
     (eventKey === "language" || eventKey === "funbox") &&
-    Config.funbox.split("#").includes("zipf")
+    Config.funbox.includes("zipf")
   ) {
     void debouncedZipfCheck();
   }
@@ -1160,8 +1160,8 @@ export async function scrollTape(): Promise<void> {
 export function updatePremid(): void {
   const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
   let fbtext = "";
-  if (Config.funbox !== "none") {
-    fbtext = " " + Config.funbox.split("#").join(" ");
+  if (Config.funbox.length > 0) {
+    fbtext = " " + Config.funbox.join(" ");
   }
   $(".pageTest #premidTestMode").text(
     `${Config.mode} ${mode2} ${Strings.getLanguageDisplayString(

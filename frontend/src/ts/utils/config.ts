@@ -2,6 +2,7 @@ import {
   Config,
   ConfigValue,
   PartialConfig,
+  FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
 import { typedKeys } from "./misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
@@ -110,6 +111,22 @@ export function replaceLegacyValues(
 
   if (typeof configObj.soundVolume === "string") {
     configObj.soundVolume = parseFloat(configObj.soundVolume);
+  }
+
+  if (typeof configObj.funbox === "string") {
+    if (configObj.funbox === "none") {
+      configObj.funbox = [];
+    } else {
+      configObj.funbox = (configObj.funbox as string).split(
+        "#"
+      ) as FunboxName[];
+    }
+  }
+
+  if (typeof configObj.customLayoutfluid === "string") {
+    configObj.customLayoutfluid = (configObj.customLayoutfluid as string).split(
+      "#"
+    ) as ConfigSchemas.CustomLayoutFluid;
   }
 
   return configObj;
