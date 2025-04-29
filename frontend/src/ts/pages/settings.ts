@@ -694,9 +694,10 @@ async function fillSettingsPage(): Promise<void> {
         const customLayoutfluid = newVal.map(
           (it) => it.value
         ) as CustomLayoutFluid;
-
         //checking equal with order, because customLayoutfluid is ordered
-        if (areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)) {
+        if (
+          !areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)
+        ) {
           void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
         }
       },
@@ -712,7 +713,7 @@ async function fillSettingsPage(): Promise<void> {
       afterChange: (newVal): void => {
         const customPolyglot = newVal.map((it) => it.value);
         //checking equal without order, because customPolyglot is not ordered
-        if (areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
+        if (!areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
           void UpdateConfig.setCustomPolyglot(customPolyglot);
         }
       },
