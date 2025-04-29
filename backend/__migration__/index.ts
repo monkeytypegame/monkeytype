@@ -77,7 +77,7 @@ async function main(): Promise<void> {
 
       console.log(`Running migration ${migration.name}`);
 
-      await migrate();
+      await migrate(migration);
     }
 
     console.log(`\nMigration ${appRunning ? "done" : "aborted"}.`);
@@ -88,7 +88,7 @@ async function main(): Promise<void> {
   }
 }
 
-export async function migrate(): Promise<void> {
+export async function migrate(migration: Migration): Promise<void> {
   await migration.setup(db as Db);
 
   const remainingCount = await migration.getRemainingCount();
