@@ -162,7 +162,7 @@ const checkUncommittedChanges = () => {
   }
 };
 
-const buildProject = () => {
+const buildProject = (newVersion) => {
   console.log("Building project...");
   let filter = "";
 
@@ -172,7 +172,9 @@ const buildProject = () => {
     filter = "--filter @monkeytype/backend";
   }
 
-  runProjectRootCommand("npx turbo lint test validate-json build " + filter);
+  runProjectRootCommand(
+    `VITE_TARGET_RELEASE_VERSION=${newVersion} npx turbo lint test validate-json build ${filter}`
+  );
 };
 
 const deployBackend = () => {
@@ -253,7 +255,7 @@ const main = async () => {
   const currentVersion = getCurrentVersion();
   const newVersion = incrementVersion(currentVersion);
 
-  buildProject();
+  buildProject(newVersion);
 
   if (!readlineSync.keyInYN(`Ready to release ${newVersion}?`)) {
     console.log("Exiting.");
