@@ -28,7 +28,7 @@ export default class FunboxResult implements Migration {
             $cond: {
               if: { $eq: ["$funbox", "none"] },
               // eslint-disable-next-line no-thenable
-              then: undefined,
+              then: [],
               else: { $split: ["$funbox", "#"] },
             },
           },
