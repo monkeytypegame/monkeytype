@@ -1,6 +1,7 @@
 import { z, ZodSchema } from "zod";
 import { LanguageSchema, token } from "./util";
 import * as Shared from "./shared";
+import * as Layouts from "./layouts";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -315,15 +316,11 @@ export const ThemeNameSchema = token().max(50);
 export type ThemeName = z.infer<typeof ThemeNameSchema>;
 
 export const KeymapLayoutSchema = z
-  .string()
-  .max(50)
-  .regex(/^[a-zA-Z0-9\-_]+$/gi);
+  .literal("overrideSync")
+  .or(Layouts.LayoutNameSchema);
 export type KeymapLayout = z.infer<typeof KeymapLayoutSchema>;
 
-export const LayoutSchema = z
-  .string()
-  .max(50)
-  .regex(/^[a-zA-Z0-9\-_]+$/gi);
+export const LayoutSchema = z.literal("default").or(Layouts.LayoutNameSchema);
 export type Layout = z.infer<typeof LayoutSchema>;
 
 export const FontSizeSchema = z.number().positive();
