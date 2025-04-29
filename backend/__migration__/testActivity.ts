@@ -4,7 +4,7 @@ import { DBResult } from "../src/utils/result";
 
 import { Migration } from "./types";
 
-export class TestActivityMigration implements Migration {
+export default class TestActivityMigration implements Migration {
   private userCollection!: Collection<DBUser>;
   private resultCollection!: Collection<DBResult>;
   private filter = { testActivity: { $exists: false } };

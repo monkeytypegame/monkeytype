@@ -1,8 +1,8 @@
-import { Collection, Db } from "mongodb";
+// import { Collection, Db } from "mongodb";
 import { Migration } from "./types";
 import type { DBConfig } from "../src/dal/config";
 
-export class FunboxConfig implements Migration {
+export default class FunboxConfig implements Migration {
   private configCollection!: Collection<DBConfig>;
   private filter = {
     $or: [

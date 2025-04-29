@@ -2,7 +2,7 @@ import { Collection, Db } from "mongodb";
 import { Migration } from "./types";
 import type { DBResult } from "../src/utils/result";
 
-export class FunboxResult implements Migration {
+export default class FunboxResult implements Migration {
   private resultCollection!: Collection<DBResult>;
   private filter = { funbox: { $type: 2, $not: { $type: 4 } } }; //string, not array of strings
   private collectionName = "results";

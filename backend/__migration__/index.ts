@@ -2,12 +2,20 @@ import "dotenv/config";
 import * as DB from "../src/init/db";
 import { Db } from "mongodb";
 import readlineSync from "readline-sync";
-import { FunboxResult } from "./funboxResult";
+import funboxResult from "./funboxResult";
+import funboxConfig from "./funboxConfig";
+import testActivity from "./testActivity";
+import { Migration } from "./types";
 
 const batchSize = 100_000;
 let appRunning = true;
 let db: Db | undefined;
-const migration = new FunboxResult();
+const migrations = {
+  funboxConfig,
+  funboxResult,
+  testActivity,
+};
+
 const delay = 1_000;
 
 const sleep = (durationMs): Promise<void> => {
@@ -23,11 +31,35 @@ if (require.main === module) {
   void main();
 }
 
+function getMigrationToRun(): Migration {
+  //read all files in files directory, then use readlint sync keyInSelect to select a migration to run
+  const migrationNames = Object.keys(migrations);
+  const selectedMigration = readlineSync.keyInSelect(
+    migrationNames,
+    "Select migration to run"
+  );
+  if (selectedMigration === -1) {
+    console.log("No migration selected");
+    process.exit(0);
+  }
+  const migrationName = migrationNames[selectedMigration];
+  console.log("Selected migration:", migrationName);
+
+  const migration = migrations[migrationName];
+  if (migration === undefined) {
+    throw new Error("Migration not found");
+  }
+  console.log("Migration found:", migration.name);
+  return migration;
+}
+
 async function main(): Promise<void> {
   try {
     console.log(
       `Connecting to database ${process.env["DB_NAME"]} on ${process.env["DB_URI"]}...`
     );
+
+    const migration = getMigrationToRun();
 
     if (
       !readlineSync.keyInYN(`Ready to start migration  ${migration.name} ?`)
