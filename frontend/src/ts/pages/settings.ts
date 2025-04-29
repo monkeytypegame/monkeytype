@@ -30,10 +30,11 @@ import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
-import { DataArrayPartial, Optgroup } from "slim-select/store";
+import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { ThemesList } from "../constants/themes";
+import { Theme, ThemesList } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
+import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -474,12 +475,8 @@ async function fillSettingsPage(): Promise<void> {
     );
   }
 
-  const element = document.querySelector(
-    ".pageSettings .section[data-config-name='language'] select"
-  ) as Element;
-
   new SlimSelect({
-    select: element,
+    select: ".pageSettings .section[data-config-name='language'] select",
     data: getLanguageDropdownData(
       languageGroups ?? [],
       (language) => language === Config.language
@@ -489,67 +486,33 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
-  const layoutSelectElement = document.querySelector(
-    ".pageSettings .section[data-config-name='layout'] select"
-  ) as Element;
-  const keymapLayoutSelectElement = document.querySelector(
-    ".pageSettings .section[data-config-name='keymapLayout'] select"
-  ) as Element;
-
-  let layoutHtml = '<option value="default">off</option>';
-  let keymapLayoutHtml = '<option value="overrideSync">emulator sync</option>';
-
-  for (const layout of LayoutsList) {
-    const optionHtml = `<option value="${layout}">${layout.replace(
-      /_/g,
-      " "
-    )}</option>`;
-    if (layout.toString() !== "korean") {
-      layoutHtml += optionHtml;
-    }
-    if (layout.toString() !== "default") {
-      keymapLayoutHtml += optionHtml;
-    }
-  }
-
-  layoutSelectElement.innerHTML = layoutHtml;
-  keymapLayoutSelectElement.innerHTML = keymapLayoutHtml;
-
-  new SlimSelect({
-    select: layoutSelectElement,
+  const layoutToOption: (layout: LayoutName) => OptionOptional = (layout) => ({
+    value: layout,
+    text: layout.replace(/_/g, " "),
   });
 
   new SlimSelect({
-    select: keymapLayoutSelectElement,
+    select: ".pageSettings .section[data-config-name='layout'] select",
+    data: [
+      { text: "off", value: "default" },
+      ...LayoutsList.filter((layout) => layout !== "korean").map(
+        layoutToOption
+      ),
+    ],
   });
 
-  const themeSelectLightElement = document.querySelector(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light"
-  ) as Element;
-  const themeSelectDarkElement = document.querySelector(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark"
-  ) as Element;
-
-  let themeSelectLightHtml = "";
-  let themeSelectDarkHtml = "";
-
-  for (const theme of ThemesList) {
-    const optionHtml = `<option value="${theme.name}" ${
-      theme.name === Config.themeLight ? "selected" : ""
-    }>${theme.name.replace(/_/g, " ")}</option>`;
-    themeSelectLightHtml += optionHtml;
-
-    const optionDarkHtml = `<option value="${theme.name}" ${
-      theme.name === Config.themeDark ? "selected" : ""
-    }>${theme.name.replace(/_/g, " ")}</option>`;
-    themeSelectDarkHtml += optionDarkHtml;
-  }
-
-  themeSelectLightElement.innerHTML = themeSelectLightHtml;
-  themeSelectDarkElement.innerHTML = themeSelectDarkHtml;
+  new SlimSelect({
+    select: ".pageSettings .section[data-config-name='keymapLayout'] select",
+    data: [
+      { text: "emulator sync", value: "overrideSync" },
+      ...LayoutsList.map(layoutToOption),
+    ],
+  });
 
   new SlimSelect({
-    select: themeSelectLightElement,
+    select:
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light",
+    data: getThemeDropdownData((theme) => theme.name === Config.themeLight),
     events: {
       afterChange: (newVal): void => {
         UpdateConfig.setThemeLight(newVal[0]?.value as ThemeName);
@@ -558,7 +521,9 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   new SlimSelect({
-    select: themeSelectDarkElement,
+    select:
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark",
+    data: getThemeDropdownData((theme) => theme.name === Config.themeDark),
     events: {
       afterChange: (newVal): void => {
         UpdateConfig.setThemeDark(newVal[0]?.value as ThemeName);
@@ -1402,6 +1367,16 @@ function getLayoutfluidDropdownData(): DataArrayPartial {
     text: layout.replace(/_/g, " "),
     value: layout,
     selected: customLayoutfluidActive.includes(layout),
+  }));
+}
+
+function getThemeDropdownData(
+  isActive: (theme: Theme) => boolean
+): DataArrayPartial {
+  return ThemesList.map((theme) => ({
+    value: theme.name,
+    text: theme.name.replace(/_/g, " "),
+    selected: isActive(theme),
   }));
 }
 

@@ -95,14 +95,6 @@ export async function getLayout(layoutName: string): Promise<Layout> {
   }
 }
 
-export type Theme = {
-  name: string;
-  bgColor: string;
-  mainColor: string;
-  subColor: string;
-  textColor: string;
-};
-
 /**
  * Fetches the list of languages from the server.
  * @returns A promise that resolves to the list of languages.
