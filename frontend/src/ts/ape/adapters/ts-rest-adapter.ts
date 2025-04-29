@@ -59,14 +59,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
             backendCheck > COMPATIBILITY_CHECK
               ? `Looks like the client and server versions are mismatched (backend is newer). Please <a onClick="location.reload(true)">refresh</a> the page.`
               : `Looks like our monkeys didn't deploy the new server version correctly. If this message persists contact support.`;
-          Notifications.addBanner(
-            message,
-            1,
-            undefined,
-            false,
-            undefined,
-            true
-          );
+          Notifications.addPSA(message, 1, undefined, false, undefined, true);
           bannerShownThisSession = true;
         }
       }
