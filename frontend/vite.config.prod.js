@@ -148,6 +148,7 @@ export default {
       release: {
         name: buildClientVersion(),
       },
+      applicationKey: "monkeytype-frontend",
     }),
     replace([
       {
