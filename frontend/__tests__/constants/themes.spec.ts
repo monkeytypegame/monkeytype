@@ -17,7 +17,7 @@ describe("themes", () => {
 
     expect(missingThemeFiles, "missing theme css files").toEqual([]);
   });
-  it("should not have additional related json files", () => {
+  it("should not have additional css files", () => {
     const themeFiles = listThemeFiles();
 
     const additionalThemeFiles = themeFiles
