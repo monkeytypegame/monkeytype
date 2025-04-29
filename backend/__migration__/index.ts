@@ -11,9 +11,9 @@ const batchSize = 100_000;
 let appRunning = true;
 let db: Db | undefined;
 const migrations = {
-  funboxConfig,
-  funboxResult,
-  testActivity,
+  funboxConfig: new funboxConfig(),
+  funboxResult: new funboxResult(),
+  testActivity: new testActivity(),
 };
 
 const delay = 1_000;
