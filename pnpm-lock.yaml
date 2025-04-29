@@ -346,8 +346,8 @@ importers:
         specifier: 1.4.1
         version: 1.4.1
       konami:
-        specifier: 1.6.3
-        version: 1.6.3
+        specifier: 1.7.0
+        version: 1.7.0
       lz-ts:
         specifier: 1.1.2
         version: 1.1.2
@@ -5240,6 +5240,7 @@ packages:
 
   formidable@2.1.2:
     resolution: {integrity: sha512-CM3GuJ57US06mlpQ47YcunuUZ9jpm8Vx+P2CGt2j7HpgkKZO/DJYQ0Bobim8G6PFQmK5lOqOOdUXboU+h73A4g==}
+    deprecated: 'ACTION REQUIRED: SWITCH TO v3 - v1 and v2 are VULNERABLE! v1 is DEPRECATED FOR OVER 2 YEARS! Use formidable@latest or try formidable-mini for fresh projects'
 
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
@@ -6476,8 +6477,8 @@ packages:
     engines: {node: '>=16.17.0 <17 || >=18.6.0'}
     hasBin: true
 
-  konami@1.6.3:
-    resolution: {integrity: sha512-QRr/cWcS4Mm9XswKyLXT9w/ygf9f6gTdFw/gExd0komDbFOdgME/M0pjD59hgh2uNJWpDT/+89l80/xQiK5niA==}
+  konami@1.7.0:
+    resolution: {integrity: sha512-lfw/bXyPcOYVP0Vt05PKVYWp/Rx92eUIg48Kb2jkY2Ko00jWMTzk6jt5bRdkVRfvPr9RLTl1DM6vVrjWLXnQyg==}
 
   kuler@2.0.0:
     resolution: {integrity: sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==}
@@ -17271,7 +17272,7 @@ snapshots:
       zod: 3.23.8
       zod-validation-error: 1.3.1(zod@3.23.8)
 
-  konami@1.6.3: {}
+  konami@1.7.0: {}
 
   kuler@2.0.0: {}
 
