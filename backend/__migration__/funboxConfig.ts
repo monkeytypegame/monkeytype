@@ -1,4 +1,4 @@
-// import { Collection, Db } from "mongodb";
+import { Collection, Db } from "mongodb";
 import { Migration } from "./types";
 import type { DBConfig } from "../src/dal/config";
 
