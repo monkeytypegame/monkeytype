@@ -56,8 +56,4 @@ window.onunhandledrejection = function (e): void {
     });
     console.error(e);
   }
-  void log("error", {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    error: (e.reason?.stack ?? "") as string,
-  });
 };

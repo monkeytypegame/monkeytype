@@ -7,7 +7,6 @@ import {
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { isAuthenticated } from "./firebase";
-import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 import {
@@ -1565,7 +1564,6 @@ export function setLanguage(language: Language, nosave?: boolean): boolean {
   if (!isConfigValueValid("language", language, LanguageSchema)) return false;
 
   config.language = language;
-  void AnalyticsController.log("changedLanguage", { language });
   saveToLocalStorage("language", nosave);
   ConfigEvent.dispatch("language", config.language);
 
