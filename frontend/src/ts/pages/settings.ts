@@ -23,16 +23,14 @@ import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
   ConfigValue,
   CustomBackgroundSchema,
-} from "@monkeytype/contracts/schemas/configs";
-import {
-  getAllFunboxes,
   FunboxName,
-  checkCompatibility,
-} from "@monkeytype/funbox";
+} from "@monkeytype/contracts/schemas/configs";
+import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup } from "slim-select/store";
+import { areUnsortedArraysEqual } from "../utils/arrays";
 import { tryCatch } from "@monkeytype/util/trycatch";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
@@ -708,7 +706,7 @@ async function fillSettingsPage(): Promise<void> {
     events: {
       afterChange: (newVal): void => {
         const customPolyglot = newVal.map((it) => it.value);
-        if (customPolyglot.toSorted() !== Config.customPolyglot.toSorted()) {
+        if (!areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
           void UpdateConfig.setCustomPolyglot(customPolyglot);
         }
       },
@@ -755,18 +753,18 @@ function setActiveFunboxButton(): void {
   getAllFunboxes().forEach((funbox) => {
     if (
       !checkCompatibility(getActiveFunboxNames(), funbox.name) &&
-      !Config.funbox.split("#").includes(funbox.name)
+      !Config.funbox.includes(funbox.name)
     ) {
       $(
         `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox.name}']`
       ).addClass("disabled");
     }
   });
-  Config.funbox.split("#").forEach((funbox) => {
+  for (const funbox of Config.funbox) {
     $(
       `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox}']`
     ).addClass("active");
-  });
+  }
 }
 
 function refreshTagsSettingsSection(): void {

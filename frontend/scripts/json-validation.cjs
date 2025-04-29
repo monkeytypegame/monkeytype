@@ -150,7 +150,7 @@ function validateOthers() {
               funbox: {
                 type: "object",
                 properties: {
-                  exact: { type: "string" },
+                  exact: { type: "array" },
                 },
               },
             },
