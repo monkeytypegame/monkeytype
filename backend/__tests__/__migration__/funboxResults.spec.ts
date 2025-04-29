@@ -15,7 +15,7 @@ describe("FunboxResults migration", () => {
   it("migrates results with funbox", async () => {
     //GIVEN
     const { uid, resultId } = await createResult({
-      funbox: "58008#read_ahead",
+      funbox: "58008#read_ahead" as any,
       acc: 95,
     });
 
@@ -36,7 +36,7 @@ describe("FunboxResults migration", () => {
   it("migrates results with funbox none", async () => {
     //GIVEN
     const { uid, resultId } = await createResult({
-      funbox: "none",
+      funbox: "none" as any,
       acc: 95,
     });
 
@@ -45,9 +45,12 @@ describe("FunboxResults migration", () => {
 
     //THEN
     const migratedResult = await ResultDal.getResult(uid, resultId);
-    console.log(migratedResult);
-
-    expect(migratedResult.funbox).toEqual([]);
+    expect(migratedResult).toEqual(
+      expect.objectContaining({
+        acc: 95,
+        funbox: [],
+      })
+    );
   });
 
   it("migrates results without funbox", async () => {

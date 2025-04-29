@@ -3,7 +3,6 @@ import * as DB from "../src/init/db";
 import { Db } from "mongodb";
 import readlineSync from "readline-sync";
 import funboxResult from "./funboxResult";
-import funboxConfig from "./funboxConfig";
 import testActivity from "./testActivity";
 import { Migration } from "./types";
 
@@ -11,7 +10,7 @@ const batchSize = 100_000;
 let appRunning = true;
 let db: Db | undefined;
 const migrations = {
-  funboxConfig: new funboxConfig(),
+  //funboxConfig: new funboxConfig(), // not ready yet
   funboxResult: new funboxResult(),
   testActivity: new testActivity(),
 };
