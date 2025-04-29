@@ -12,6 +12,7 @@ import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
 import * as ActivePage from "../../states/active-page";
 import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 function updateActiveButton(): void {
   let activeThemeName = Config.theme;
@@ -172,12 +173,13 @@ export async function refreshButtons(): Promise<void> {
       activeThemeName = ThemeController.randomTheme;
     }
 
-    let themes;
-    try {
-      themes = await JSONData.getSortedThemesList();
-    } catch (e) {
+    const { data: themes, error } = await tryCatch(
+      JSONData.getSortedThemesList()
+    );
+
+    if (error) {
       Notifications.add(
-        Misc.createErrorMessage(e, "Failed to refresh theme buttons"),
+        Misc.createErrorMessage(error, "Failed to refresh theme buttons"),
         -1
       );
       return;

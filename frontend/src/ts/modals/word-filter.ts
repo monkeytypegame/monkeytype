@@ -8,6 +8,7 @@ import AnimatedModal, {
   ShowOptions,
 } from "../utils/animated-modal";
 import { LayoutsList } from "../constants/layouts";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 type FilterPreset = {
   display: string;
@@ -98,19 +99,17 @@ const presets: Record<string, FilterPreset> = {
 
 async function initSelectOptions(): Promise<void> {
   $("#wordFilterModal .languageInput").empty();
-
   $("#wordFilterModal .layoutInput").empty();
-
   $("wordFilterModal .presetInput").empty();
 
-  let LanguageList;
+  const { data: LanguageList, error } = await tryCatch(
+    JSONData.getLanguageList()
+  );
 
-  try {
-    LanguageList = await JSONData.getLanguageList();
-  } catch (e) {
+  if (error) {
     console.error(
       Misc.createErrorMessage(
-        e,
+        error,
         "Failed to initialise word filter popup language list"
       )
     );
@@ -187,12 +186,12 @@ async function filter(language: string): Promise<string[]> {
   const regexcl = new RegExp(filterout, "i");
   const filteredWords = [];
 
-  let languageWordList;
-  try {
-    languageWordList = await JSONData.getLanguage(language);
-  } catch (e) {
+  const { data: languageWordList, error } = await tryCatch(
+    JSONData.getLanguage(language)
+  );
+  if (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to filter language words"),
+      Misc.createErrorMessage(error, "Failed to filter language words"),
       -1
     );
     return [];

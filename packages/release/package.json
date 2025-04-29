@@ -13,7 +13,7 @@
     "@monkeytype/eslint-config": "workspace:*",
     "eslint": "8.57.1",
     "nodemon": "3.1.4",
-    "oxlint": "0.16.6"
+    "oxlint": "0.16.7"
   },
   "bin": {
     "monkeytype-release": "./src/index.js",
@@ -21,7 +21,7 @@
     "monkeytype-deploy-be": "./bin/deployBackend.sh"
   },
   "dependencies": {
-    "@octokit/rest": "20.1.1",
+    "@octokit/rest": "21.1.1",
     "dotenv": "16.4.5",
     "readline-sync": "1.4.10"
   }

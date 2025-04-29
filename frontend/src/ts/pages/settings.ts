@@ -23,16 +23,16 @@ import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
   ConfigValue,
   CustomBackgroundSchema,
-} from "@monkeytype/contracts/schemas/configs";
-import {
-  getAllFunboxes,
+  CustomLayoutFluid,
   FunboxName,
-  checkCompatibility,
-} from "@monkeytype/funbox";
+} from "@monkeytype/contracts/schemas/configs";
+import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup } from "slim-select/store";
+import { tryCatch } from "@monkeytype/util/trycatch";
+import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -461,13 +461,13 @@ async function fillSettingsPage(): Promise<void> {
 
   // Language Selection Combobox
 
-  let languageGroups;
-  try {
-    languageGroups = await JSONData.getLanguageGroups();
-  } catch (e) {
+  const { data: languageGroups, error: getLanguageGroupsError } =
+    await tryCatch(JSONData.getLanguageGroups());
+
+  if (getLanguageGroupsError) {
     console.error(
       Misc.createErrorMessage(
-        e,
+        getLanguageGroupsError,
         "Failed to initialize settings language picker"
       )
     );
@@ -522,12 +522,15 @@ async function fillSettingsPage(): Promise<void> {
     select: keymapLayoutSelectElement,
   });
 
-  let themes;
-  try {
-    themes = await JSONData.getThemesList();
-  } catch (e) {
+  const { data: themes, error: getThemesListError } = await tryCatch(
+    JSONData.getThemesList()
+  );
+  if (getThemesListError) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to load themes into dropdown boxes")
+      Misc.createErrorMessage(
+        getThemesListError,
+        "Failed to load themes into dropdown boxes"
+      )
     );
   }
 
@@ -625,12 +628,15 @@ async function fillSettingsPage(): Promise<void> {
 
   let fontsElHTML = "";
 
-  let fontsList;
-  try {
-    fontsList = await JSONData.getFontsList();
-  } catch (e) {
+  const { data: fontsList, error: getFontsListError } = await tryCatch(
+    JSONData.getFontsList()
+  );
+  if (getFontsListError) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update fonts settings buttons")
+      Misc.createErrorMessage(
+        getFontsListError,
+        "Failed to update fonts settings buttons"
+      )
     );
   }
 
@@ -685,8 +691,13 @@ async function fillSettingsPage(): Promise<void> {
     settings: { keepOrder: true },
     events: {
       afterChange: (newVal): void => {
-        const customLayoutfluid = newVal.map((it) => it.value).join("#");
-        if (customLayoutfluid !== Config.customLayoutfluid) {
+        const customLayoutfluid = newVal.map(
+          (it) => it.value
+        ) as CustomLayoutFluid;
+        //checking equal with order, because customLayoutfluid is ordered
+        if (
+          !areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)
+        ) {
           void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
         }
       },
@@ -701,7 +712,8 @@ async function fillSettingsPage(): Promise<void> {
     events: {
       afterChange: (newVal): void => {
         const customPolyglot = newVal.map((it) => it.value);
-        if (customPolyglot.toSorted() !== Config.customPolyglot.toSorted()) {
+        //checking equal without order, because customPolyglot is not ordered
+        if (!areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
           void UpdateConfig.setCustomPolyglot(customPolyglot);
         }
       },
@@ -748,18 +760,18 @@ function setActiveFunboxButton(): void {
   getAllFunboxes().forEach((funbox) => {
     if (
       !checkCompatibility(getActiveFunboxNames(), funbox.name) &&
-      !Config.funbox.split("#").includes(funbox.name)
+      !Config.funbox.includes(funbox.name)
     ) {
       $(
         `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox.name}']`
       ).addClass("disabled");
     }
   });
-  Config.funbox.split("#").forEach((funbox) => {
+  for (const funbox of Config.funbox) {
     $(
       `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox}']`
     ).addClass("active");
-  });
+  }
 }
 
 function refreshTagsSettingsSection(): void {
@@ -909,14 +921,23 @@ export async function update(groupUpdate = true): Promise<void> {
 
   if (
     customLayoutFluidSelect !== undefined &&
-    customLayoutFluidSelect.getSelected().join("#") !== Config.customLayoutfluid
+    //checking equal with order, because customLayoutFluid is ordered
+    !areSortedArraysEqual(
+      customLayoutFluidSelect.getSelected(),
+      Config.customLayoutfluid
+    )
   ) {
+    //replace the data because the data is ordered. do not use setSelected
     customLayoutFluidSelect.setData(getLayoutfluidDropdownData());
   }
 
   if (
     customPolyglotSelect !== undefined &&
-    customPolyglotSelect.getSelected() !== Config.customPolyglot
+    //checking equal without order, because customPolyglot is not ordered
+    !areUnsortedArraysEqual(
+      customPolyglotSelect.getSelected(),
+      Config.customPolyglot
+    )
   ) {
     customPolyglotSelect.setSelected(Config.customPolyglot);
   }
@@ -1386,7 +1407,7 @@ function getLanguageDropdownData(
 }
 
 function getLayoutfluidDropdownData(): DataArrayPartial {
-  const customLayoutfluidActive = Config.customLayoutfluid.split("#");
+  const customLayoutfluidActive = Config.customLayoutfluid;
   return [
     ...customLayoutfluidActive,
     ...LayoutsList.filter((it) => !customLayoutfluidActive.includes(it)),

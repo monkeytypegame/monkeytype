@@ -1,3 +1,4 @@
+import { KeymapLayout } from "@monkeytype/contracts/schemas/configs";
 import * as UpdateConfig from "../../config";
 import { LayoutsList } from "../../constants/layouts";
 import * as TestLogic from "../../test/test-logic";
@@ -23,7 +24,7 @@ const subgroup: CommandsSubgroup = {
       display: layout.replace(/_/g, " "),
       configValue: layout,
       exec: (): void => {
-        UpdateConfig.setKeymapLayout(layout);
+        UpdateConfig.setKeymapLayout(layout as KeymapLayout);
         TestLogic.restart();
       },
     })),

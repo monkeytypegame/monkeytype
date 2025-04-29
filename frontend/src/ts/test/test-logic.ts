@@ -70,10 +70,11 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
 } from "./funbox/list";
-import { getFunboxesFromString } from "@monkeytype/funbox";
+import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -406,12 +407,12 @@ export async function init(): Promise<void> {
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
-  let language;
-  try {
-    language = await JSONData.getLanguage(Config.language);
-  } catch (e) {
+  const { data: language, error } = await tryCatch(
+    JSONData.getLanguage(Config.language)
+  );
+  if (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to load language"),
+      Misc.createErrorMessage(error, "Failed to load language"),
       -1
     );
   }
@@ -1236,7 +1237,7 @@ async function saveResult(
       completedEvent.language,
       completedEvent.difficulty,
       completedEvent.lazyMode,
-      getFunboxesFromString(completedEvent.funbox)
+      getFunbox(completedEvent.funbox)
     );
 
     if (localPb !== undefined) {

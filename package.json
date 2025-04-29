@@ -71,7 +71,7 @@
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "oxlint": "0.16.6",
+    "oxlint": "0.16.7",
     "prettier": "2.8.8",
     "turbo": "2.3.3",
     "vitest": "2.1.9"
@@ -86,6 +86,6 @@
       "eslint"
     ]
   },
-  "version": "25.16.1",
+  "version": "25.18.0",
   "packageManager": "pnpm@9.6.0"
 }

@@ -16,9 +16,12 @@ import {
 import {
   Config as ConfigType,
   Difficulty,
+  FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { areUnsortedArraysEqual } from "../utils/arrays";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 let challengeLoading = false;
 
@@ -35,7 +38,10 @@ export function clearActive(): void {
 
 function verifyRequirement(
   result: CompletedEvent,
-  requirements: Record<string, Record<string, string | number | boolean>>,
+  requirements: Record<
+    string,
+    Record<string, string | number | boolean | FunboxName[]>
+  >,
   requirementType: string
 ): [boolean, string[]] {
   let requirementsMet = true;
@@ -92,29 +98,21 @@ function verifyRequirement(
       }
     }
   } else if (requirementType === "funbox") {
-    const funboxMode = requirementValue["exact"]
-      ?.toString()
-      .split("#")
-      .sort()
-      .join("#");
-
+    const funboxMode = requirementValue["exact"] as FunboxName[];
     if (funboxMode === undefined) {
       throw new Error("Funbox mode is undefined");
     }
 
-    if (funboxMode !== result.funbox) {
+    if (!areUnsortedArraysEqual(funboxMode, result.funbox)) {
       requirementsMet = false;
-      for (const f of funboxMode.split("#")) {
-        if (
-          result.funbox?.split("#").find((rf: string) => rf === f) === undefined
-        ) {
+      for (const f of funboxMode) {
+        if (!result.funbox?.includes(f)) {
           failReasons.push(`${f} funbox not active`);
         }
       }
-      const funboxSplit = result.funbox?.split("#");
-      if (funboxSplit !== undefined && funboxSplit.length > 0) {
-        for (const f of funboxSplit) {
-          if (funboxMode.split("#").find((rf) => rf === f) === undefined) {
+      if (result.funbox !== undefined && result.funbox.length > 0) {
+        for (const f of result.funbox) {
+          if (!funboxMode.includes(f)) {
             failReasons.push(`${f} funbox active`);
           }
         }
@@ -217,13 +215,11 @@ export function verify(result: CompletedEvent): string | null {
 export async function setup(challengeName: string): Promise<boolean> {
   challengeLoading = true;
 
-  UpdateConfig.setFunbox("none");
+  UpdateConfig.setFunbox([]);
 
-  let list;
-  try {
-    list = await JSONData.getChallengeList();
-  } catch (e) {
-    const message = Misc.createErrorMessage(e, "Failed to setup challenge");
+  const { data: list, error } = await tryCatch(JSONData.getChallengeList());
+  if (error) {
+    const message = Misc.createErrorMessage(error, "Failed to setup challenge");
     Notifications.add(message, -1);
     ManualRestart.set();
     setTimeout(() => {
@@ -289,14 +285,14 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
       if (challenge.parameters[2] !== null) {
-        void Funbox.activate(challenge.parameters[2] as string);
+        void Funbox.activate(challenge.parameters[2] as FunboxName[]);
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);
       UpdateConfig.setMode("time", true);
       UpdateConfig.setDifficulty("master", true);
     } else if (challenge.type === "funbox") {
-      UpdateConfig.setFunbox(challenge.parameters[0] as string, true);
+      UpdateConfig.setFunbox(challenge.parameters[0] as FunboxName[], true);
       UpdateConfig.setDifficulty("normal", true);
       if (challenge.parameters[1] === "words") {
         UpdateConfig.setWordCount(challenge.parameters[2] as number, true);
