@@ -560,6 +560,9 @@ importers:
 
   packages/funbox:
     dependencies:
+      '@monkeytype/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       '@monkeytype/util':
         specifier: workspace:*
         version: link:../util
@@ -668,7 +671,7 @@ importers:
         version: 0.16.7
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(postcss@8.5.1)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.5.0)
+        version: 8.4.0(postcss@8.5.3)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.5.0)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -18064,14 +18067,6 @@ snapshots:
 
   possible-typed-array-names@1.0.0: {}
 
-  postcss-load-config@6.0.1(postcss@8.5.1)(tsx@4.16.2)(yaml@2.5.0):
-    dependencies:
-      lilconfig: 3.1.3
-    optionalDependencies:
-      postcss: 8.5.1
-      tsx: 4.16.2
-      yaml: 2.5.0
-
   postcss-load-config@6.0.1(postcss@8.5.3)(tsx@4.16.2)(yaml@2.5.0):
     dependencies:
       lilconfig: 3.1.3
@@ -19702,33 +19697,6 @@ snapshots:
   tslib@2.6.3: {}
 
   tsscmp@1.0.6: {}
-
-  tsup@8.4.0(postcss@8.5.1)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.5.0):
-    dependencies:
-      bundle-require: 5.1.0(esbuild@0.25.0)
-      cac: 6.7.14
-      chokidar: 4.0.3
-      consola: 3.4.0
-      debug: 4.4.0
-      esbuild: 0.25.0
-      joycon: 3.1.1
-      picocolors: 1.1.1
-      postcss-load-config: 6.0.1(postcss@8.5.1)(tsx@4.16.2)(yaml@2.5.0)
-      resolve-from: 5.0.0
-      rollup: 4.34.8
-      source-map: 0.8.0-beta.0
-      sucrase: 3.35.0
-      tinyexec: 0.3.2
-      tinyglobby: 0.2.12
-      tree-kill: 1.2.2
-    optionalDependencies:
-      postcss: 8.5.1
-      typescript: 5.5.4
-    transitivePeerDependencies:
-      - jiti
-      - supports-color
-      - tsx
-      - yaml
 
   tsup@8.4.0(postcss@8.5.3)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.5.0):
     dependencies:

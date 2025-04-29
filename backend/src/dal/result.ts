@@ -10,6 +10,7 @@ import * as db from "../init/db";
 
 import { getUser, getTags } from "./user";
 import { DBResult } from "../utils/result";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 import { tryCatch } from "@monkeytype/util/trycatch";
 
 export const getResultCollection = (): Collection<DBResult> =>
@@ -65,7 +66,7 @@ export async function getResult(uid: string, id: string): Promise<DBResult> {
     uid,
   });
   if (!result) throw new MonkeyError(404, "Result not found");
-  return result;
+  return convert(result);
 }
 
 export async function getLastResult(uid: string): Promise<DBResult> {
@@ -75,14 +76,15 @@ export async function getLastResult(uid: string): Promise<DBResult> {
     .limit(1)
     .toArray();
   if (!lastResult) throw new MonkeyError(404, "No results found");
-  return lastResult;
+  return convert(lastResult);
 }
 
 export async function getResultByTimestamp(
   uid: string,
   timestamp: number
 ): Promise<DBResult | null> {
-  return await getResultCollection().findOne({ uid, timestamp });
+  const result = await getResultCollection().findOne({ uid, timestamp });
+  return convert(result);
 }
 
 type GetResultsOpts = {
@@ -125,5 +127,26 @@ export async function getResults(
 
   const results = await query.toArray();
   if (results === undefined) throw new MonkeyError(404, "Result not found");
-  return results;
+  return convert(results);
+}
+
+function convert<T extends DBResult | DBResult[] | null>(results: T): T {
+  if (results === null) return results;
+
+  const migrate = (result: DBResult): DBResult => {
+    if (typeof result.funbox === "string") {
+      if (result.funbox === "none") {
+        result.funbox = [];
+      } else {
+        result.funbox = (result.funbox as string).split("#") as FunboxName[];
+      }
+    }
+    return result;
+  };
+
+  if (Array.isArray(results)) {
+    return results.map(migrate) as T;
+  } else {
+    return migrate(results) as T;
+  }
 }

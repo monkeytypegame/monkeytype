@@ -7,7 +7,6 @@ import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
-import { type FunboxName } from "@monkeytype/funbox";
 import * as TTSEvent from "../../observables/tts-event";
 import * as Notifications from "../../elements/notifications";
 import * as DDR from "../../utils/ddr";
@@ -23,7 +22,11 @@ import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
-import { KeymapLayout, Layout } from "@monkeytype/contracts/schemas/configs";
+import {
+  FunboxName,
+  KeymapLayout,
+  Layout,
+} from "@monkeytype/contracts/schemas/configs";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;

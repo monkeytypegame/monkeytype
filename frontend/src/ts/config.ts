@@ -22,7 +22,7 @@ import {
   typedKeys,
 } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
-import { Config } from "@monkeytype/contracts/schemas/configs";
+import { Config, FunboxName } from "@monkeytype/contracts/schemas/configs";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
@@ -259,52 +259,42 @@ export function setFunbox(
   if (!isConfigValueValid("funbox", funbox, ConfigSchemas.FunboxSchema))
     return false;
 
-  for (const funbox of config.funbox.split("#")) {
+  for (const funbox of config.funbox) {
     if (!canSetFunboxWithConfig(funbox, config)) {
       return false;
     }
   }
 
-  const val = funbox || "none";
-  config.funbox = val;
+  config.funbox = funbox;
   saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);
 
   return true;
 }
 
-export function toggleFunbox(
-  funbox: ConfigSchemas.Funbox,
-  nosave?: boolean
-): number | boolean {
-  if (!isConfigValueValid("funbox", funbox, ConfigSchemas.FunboxSchema))
+export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
+  if (!canSetFunboxWithConfig(funbox, config)) {
     return false;
-
-  let r;
-
-  const funboxArray = config.funbox.split("#");
-  if (funboxArray[0] === "none") funboxArray.splice(0, 1);
-  if (!funboxArray.includes(funbox)) {
-    if (!canSetFunboxWithConfig(funbox, config)) {
-      return false;
-    }
-    funboxArray.push(funbox);
-    config.funbox = funboxArray.sort().join("#");
-    r = funboxArray.indexOf(funbox);
-  } else {
-    r = funboxArray.indexOf(funbox);
-    funboxArray.splice(r, 1);
-    if (funboxArray.length === 0) {
-      config.funbox = "none";
-    } else {
-      config.funbox = funboxArray.join("#");
-    }
-    r = -r - 1;
   }
+
+  let newConfig: FunboxName[] = config.funbox;
+
+  if (newConfig.includes(funbox)) {
+    newConfig = newConfig.filter((it) => it !== funbox);
+  } else {
+    newConfig.push(funbox);
+    newConfig.sort();
+  }
+
+  if (!isConfigValueValid("funbox", newConfig, ConfigSchemas.FunboxSchema)) {
+    return false;
+  }
+
+  config.funbox = newConfig;
   saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);
 
-  return r;
+  return true;
 }
 
 export function setBlindMode(blind: boolean, nosave?: boolean): boolean {

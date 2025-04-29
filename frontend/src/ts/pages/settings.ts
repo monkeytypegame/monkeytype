@@ -24,12 +24,9 @@ import {
   ConfigValue,
   CustomBackgroundSchema,
   CustomLayoutFluid,
-} from "@monkeytype/contracts/schemas/configs";
-import {
-  getAllFunboxes,
   FunboxName,
-  checkCompatibility,
-} from "@monkeytype/funbox";
+} from "@monkeytype/contracts/schemas/configs";
+import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
@@ -762,18 +759,18 @@ function setActiveFunboxButton(): void {
   getAllFunboxes().forEach((funbox) => {
     if (
       !checkCompatibility(getActiveFunboxNames(), funbox.name) &&
-      !Config.funbox.split("#").includes(funbox.name)
+      !Config.funbox.includes(funbox.name)
     ) {
       $(
         `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox.name}']`
       ).addClass("disabled");
     }
   });
-  Config.funbox.split("#").forEach((funbox) => {
+  for (const funbox of Config.funbox) {
     $(
       `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox}']`
     ).addClass("active");
-  });
+  }
 }
 
 function refreshTagsSettingsSection(): void {

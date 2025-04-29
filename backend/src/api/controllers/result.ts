@@ -58,11 +58,7 @@ import {
   getStartOfDayTimestamp,
 } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
-import {
-  getFunbox,
-  checkCompatibility,
-  stringToFunboxNames,
-} from "@monkeytype/funbox";
+import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
 import { tryCatch } from "@monkeytype/util/trycatch";
 
 try {
@@ -175,8 +171,8 @@ export async function updateTags(
   if (!(result.language ?? "")) {
     result.language = "english";
   }
-  if (!(result.funbox ?? "")) {
-    result.funbox = "none";
+  if (result.funbox === undefined) {
+    result.funbox = [];
   }
   if (!result.lazyMode) {
     result.lazyMode = false;
@@ -242,16 +238,11 @@ export async function addResult(
     Logger.warning("Object hash check is disabled, skipping hash check");
   }
 
-  if (completedEvent.funbox) {
-    const funboxes = completedEvent.funbox.split("#");
-    if (funboxes.length !== _.uniq(funboxes).length) {
-      throw new MonkeyError(400, "Duplicate funboxes");
-    }
+  if (completedEvent.funbox.length !== _.uniq(completedEvent.funbox).length) {
+    throw new MonkeyError(400, "Duplicate funboxes");
   }
 
-  const funboxNames = stringToFunboxNames(completedEvent.funbox ?? "");
-
-  if (!checkCompatibility(funboxNames)) {
+  if (!checkCompatibility(completedEvent.funbox)) {
     throw new MonkeyError(400, "Impossible funbox combination");
   }
 
@@ -732,15 +723,12 @@ async function calculateXp(
     }
   }
 
-  if (funboxBonusConfiguration > 0 && resultFunboxes !== "none") {
-    const funboxModifier = _.sumBy(
-      stringToFunboxNames(resultFunboxes),
-      (funboxName) => {
-        const funbox = getFunbox(funboxName);
-        const difficultyLevel = funbox?.difficultyLevel ?? 0;
-        return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
-      }
-    );
+  if (funboxBonusConfiguration > 0 && resultFunboxes.length !== 0) {
+    const funboxModifier = _.sumBy(resultFunboxes, (funboxName) => {
+      const funbox = getFunbox(funboxName);
+      const difficultyLevel = funbox?.difficultyLevel ?? 0;
+      return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
+    });
     if (funboxModifier > 0) {
       modifier += funboxModifier;
       breakdown.funbox = Math.round(baseXp * funboxModifier);

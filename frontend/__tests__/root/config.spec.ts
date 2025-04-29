@@ -1,6 +1,9 @@
 import * as Config from "../../src/ts/config";
 
-import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
+import {
+  CustomThemeColors,
+  FunboxName,
+} from "@monkeytype/contracts/schemas/configs";
 import { randomBytes } from "crypto";
 
 describe("Config", () => {
@@ -332,10 +335,10 @@ describe("Config", () => {
     expect(Config.setFavThemes([stringOfLength(51)])).toBe(false);
   });
   it("setFunbox", () => {
-    expect(Config.setFunbox("mirror")).toBe(true);
-    expect(Config.setFunbox("mirror#58008")).toBe(true);
+    expect(Config.setFunbox(["mirror"])).toBe(true);
+    expect(Config.setFunbox(["mirror", "58008"])).toBe(true);
 
-    expect(Config.setFunbox(stringOfLength(101))).toBe(false);
+    expect(Config.setFunbox([stringOfLength(101) as FunboxName])).toBe(false);
   });
   it("setPaceCaretCustomSpeed", () => {
     expect(Config.setPaceCaretCustomSpeed(0)).toBe(true);
