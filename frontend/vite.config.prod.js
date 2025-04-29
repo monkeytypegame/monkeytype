@@ -145,6 +145,7 @@ export default {
       authToken: process.env.SENTRY_AUTH_TOKEN,
       org: "monkeytype",
       project: "frontend",
+      release: buildClientVersion(),
     }),
     replace([
       {
