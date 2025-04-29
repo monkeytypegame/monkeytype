@@ -12,6 +12,7 @@ import { writeFileSync } from "fs";
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -140,6 +141,11 @@ export default {
         ],
       },
     }),
+    sentryVitePlugin({
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      org: "monkeytype",
+      project: "frontend",
+    }),
     replace([
       {
         filter: /firebase\.ts$/,
@@ -236,6 +242,7 @@ export default {
     },
   ],
   build: {
+    sourcemap: true,
     emptyOutDir: true,
     outDir: "../dist",
     assetsInlineLimit: 0, //dont inline small files as data
