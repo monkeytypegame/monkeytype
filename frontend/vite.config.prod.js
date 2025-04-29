@@ -42,6 +42,21 @@ function buildClientVersion() {
   }
 }
 
+export async function getLatestReleaseFromGitHub() {
+  const res = await fetch(
+    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1"
+  );
+  if (!res.ok) {
+    throw new Error("Failed to fetch releases from github");
+  }
+  const releases = await res.json();
+  if (releases[0] === undefined || releases[0].name === undefined) {
+    throw new Error("No release found");
+  }
+
+  return releases[0].name;
+}
+
 /** Enable for font awesome v6 */
 /*
 function sassList(values) {
@@ -273,6 +288,7 @@ export default {
     RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),
     QUICK_LOGIN_EMAIL: undefined,
     QUICK_LOGIN_PASSWORD: undefined,
+    RELEASE_VERSION: JSON.stringify(await getLatestReleaseFromGitHub()),
   },
   /** Enable for font awesome v6 */
   /*preprocessorOptions: {

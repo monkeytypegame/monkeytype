@@ -6,6 +6,7 @@ type Config = {
   recaptchaSiteKey: string;
   quickLoginEmail: string | undefined;
   quickLoginPassword: string | undefined;
+  releaseVersion: string | undefined;
 };
 
 //@ts-expect-error these get replaced by vite
@@ -20,6 +21,8 @@ const recaptchaSiteKey = RECAPTCHA_SITE_KEY;
 const quickLoginEmail = QUICK_LOGIN_EMAIL;
 // @ts-expect-error ---
 const quickLoginPassword = QUICK_LOGIN_PASSWORD;
+// @ts-expect-error ---
+const releaseVersion = RELEASE_VERSION;
 
 export const envConfig: Config = {
   backendUrl,
@@ -28,4 +31,5 @@ export const envConfig: Config = {
   recaptchaSiteKey,
   quickLoginEmail,
   quickLoginPassword,
+  releaseVersion,
 };

@@ -397,21 +397,6 @@ type GithubRelease = {
 };
 
 /**
- * Fetches the latest release name from GitHub.
- * @returns A promise that resolves to the latest release name.
- */
-export async function getLatestReleaseFromGitHub(): Promise<string> {
-  type releaseType = { name: string };
-  const releases = await cachedFetchJson<releaseType[]>(
-    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1"
-  );
-  if (releases[0] === undefined || releases[0].name === undefined) {
-    throw new Error("No release found");
-  }
-  return releases[0].name;
-}
-
-/**
  * Fetches the list of releases from GitHub.
  * @returns A promise that resolves to the list of releases.
  */

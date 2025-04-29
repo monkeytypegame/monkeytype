@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { getLatestReleaseFromGitHub } from "../utils/json-data";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { envConfig } from "../constants/env-config";
 
 const memoryLS = new LocalStorageWithSchema({
   key: "lastSeenVersion",
@@ -20,7 +20,7 @@ function getMemory(): string {
 }
 
 async function check(): Promise<void> {
-  const currentVersion = await getLatestReleaseFromGitHub();
+  const currentVersion = envConfig.releaseVersion ?? "unknown";
   const memoryVersion = getMemory();
 
   version = currentVersion;
