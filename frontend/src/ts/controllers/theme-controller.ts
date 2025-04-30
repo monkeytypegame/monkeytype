@@ -10,7 +10,6 @@ import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
-import * as AnalyticsController from "../controllers/analytics-controller";
 import { debounce } from "throttle-debounce";
 import { tryCatch } from "@monkeytype/util/trycatch";
 
@@ -173,7 +172,6 @@ async function apply(
     }
   }
 
-  void AnalyticsController.log("changedTheme", { theme: name });
   // if (!isPreview) {
   const colors = await ThemeColors.getAll();
   $(".keymapKey").attr("style", "");
