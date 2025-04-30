@@ -36,6 +36,12 @@ export default class SettingsGroup<T extends ConfigValue> {
         `.pageSettings .section[data-config-name=${this.configName}] select`
       );
 
+      if (this.element?.hasAttribute("multiple")) {
+        throw new Error(
+          "multi-select dropdowns not supported. Config: " + this.configName
+        );
+      }
+
       //@ts-expect-error this is fine, slimselect adds slim to the element
       const ss = this.element?.slim as SlimSelect | undefined;
 
@@ -115,12 +121,14 @@ export default class SettingsGroup<T extends ConfigValue> {
   setValue(value: T): void {
     if (this.configValue === value) return;
 
+    this.configValue = value;
     this.configFunction(value);
     this.updateUI();
     if (this.setCallback) this.setCallback();
   }
 
   updateUI(valueOverride?: T): void {
+    const start = performance.now();
     const newValue =
       valueOverride ?? (Config[this.configName as keyof typeof Config] as T);
     $(
@@ -132,16 +140,21 @@ export default class SettingsGroup<T extends ConfigValue> {
         return;
       }
 
-      select.value = newValue as string;
-
       //@ts-expect-error this is fine, slimselect adds slim to the element
       const ss = select.slim as SlimSelect | undefined;
-      ss?.setSelected(this.configValue as string | string[]);
+      if (ss !== undefined) {
+        const currentSelected = ss.getSelected()[0] ?? null;
+        if (newValue !== currentSelected) {
+          ss.setSelected(newValue as string);
+        }
+      } else {
+        if (select.value !== newValue) select.value = newValue as string;
+      }
     } else if (this.mode === "button") {
       $(
         // this cant be an object?
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        `.pageSettings .section[data-config-name='${this.configName}'] button[data-config-value='${this.configValue}']`
+        `.pageSettings .section[data-config-name='${this.configName}'] button[data-config-value='${newValue}']`
       ).addClass("active");
     } else if (this.mode === "range") {
       const range = this.element as HTMLInputElement | null | undefined;
@@ -157,6 +170,14 @@ export default class SettingsGroup<T extends ConfigValue> {
       range.value = newValue as unknown as string;
       rangeValue.textContent = `${(newValue as number).toFixed(1)}`;
     }
-    if (this.updateCallback) this.updateCallback();
+    const time = performance.now() - start;
+    if (time > 0) {
+      if (this.updateCallback) this.updateCallback();
+      console.log("### updateUI ", {
+        config: this.configName,
+        mode: this.mode,
+        time: time.toFixed(2) + "ms",
+      });
+    }
   }
 }
