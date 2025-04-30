@@ -90,7 +90,7 @@ export default {
     ViteMinifyPlugin({}),
     VitePWA({
       // injectRegister: "networkfirst",
-      injectRegister: "script-defer",
+      injectRegister: null,
       registerType: "autoUpdate",
       manifest: {
         short_name: "Monkeytype",
