@@ -14,10 +14,6 @@ const debugLogsLS = new LocalStorageWithSchema({
 
 let debugLogs = debugLogsLS.get();
 
-export function isDebugEnabled(): boolean {
-  return debugLogs;
-}
-
 if (isDevEnvironment()) {
   debugLogs = true;
   debug("Debug logs automatically enabled on localhost");
