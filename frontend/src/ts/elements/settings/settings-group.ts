@@ -42,26 +42,14 @@ export default class SettingsGroup<T extends ConfigValue> {
         );
       }
 
-      //@ts-expect-error this is fine, slimselect adds slim to the element
-      const ss = this.element?.slim as SlimSelect | undefined;
+      this.element?.addEventListener("change", (e) => {
+        const target = $(e.target as HTMLSelectElement);
+        if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
+          return;
+        }
 
-      if (ss !== undefined) {
-        ss.render.callbacks.afterChange = (newval) => {
-          this.setValue(newval[0]?.value as T);
-        };
-      } else {
-        this.element?.addEventListener("change", (e) => {
-          const target = $(e.target as HTMLSelectElement);
-          if (
-            target.hasClass("disabled") ||
-            target.hasClass("no-auto-handle")
-          ) {
-            return;
-          }
-
-          this.setValue(target.val() as T);
-        });
-      }
+        this.setValue(target.val() as T);
+      });
     } else if (this.mode === "button") {
       $(".pageSettings").on(
         "click",
