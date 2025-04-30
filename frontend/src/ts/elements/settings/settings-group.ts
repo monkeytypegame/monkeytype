@@ -96,6 +96,8 @@ export default class SettingsGroup<T extends ConfigValue> {
   }
 
   setValue(value: T): void {
+    if (this.configValue === value) return;
+
     this.configFunction(value);
     this.updateUI();
     if (this.setCallback) this.setCallback();
@@ -120,9 +122,7 @@ export default class SettingsGroup<T extends ConfigValue> {
 
       //@ts-expect-error this is fine, slimselect adds slim to the element
       const ss = select.slim as SlimSelect | undefined;
-      ss?.store.setSelectedBy("value", [this.configValue as string]);
-      ss?.render.renderValues();
-      ss?.render.renderOptions(ss.store.getData());
+      ss?.setSelected(this.configValue as string | string[]);
     } else if (this.mode === "button") {
       $(
         // this cant be an object?
