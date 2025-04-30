@@ -2,7 +2,7 @@ import * as Misc from "../utils/misc";
 import * as PageTransition from "../states/page-transition";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
-import { getCommandline } from "../utils/async-modules";
+import * as Commandline from "../commandline/commandline";
 import { log } from "../controllers/analytics-controller";
 import * as Notifications from "../elements/notifications";
 
@@ -25,7 +25,7 @@ document.addEventListener("keydown", async (e) => {
     e.preventDefault();
     const popupVisible = Misc.isAnyPopupVisible();
     if (!popupVisible) {
-      (await getCommandline()).show();
+      Commandline.show();
     }
   }
 });
