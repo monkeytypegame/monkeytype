@@ -10,7 +10,9 @@ export function init(): void {
     sendDefaultPii: true,
     integrations: [
       Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration(),
+      Sentry.replayIntegration({
+        unmask: ["#notificationCenter"],
+      }),
       Sentry.thirdPartyErrorFilterIntegration({
         filterKeys: ["monkeytype-frontend"],
         // Defines how to handle errors that contain third party stack frames.
