@@ -173,7 +173,9 @@ const buildProject = () => {
     filter = "--filter @monkeytype/backend";
   }
 
-  runProjectRootCommand("npx turbo lint test validate-json build " + filter);
+  runProjectRootCommand(
+    "npx turbo lint test validate-json build " + filter + " --force"
+  );
 };
 
 const deployBackend = () => {
