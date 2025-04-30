@@ -44,6 +44,12 @@ export function init(): void {
       "NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which the new node is to be inserted is not a child of this node.",
       "Error: There is no clipping info for given tab",
     ],
+    beforeBreadcrumb(breadcrumb, _hint) {
+      if (breadcrumb.category === "console" && breadcrumb.level === "debug") {
+        return null;
+      }
+      return breadcrumb;
+    },
   });
 }
 
