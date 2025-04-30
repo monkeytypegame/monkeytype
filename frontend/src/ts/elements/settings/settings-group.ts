@@ -127,9 +127,9 @@ export default class SettingsGroup<T extends ConfigValue> {
   }
 
   updateUI(valueOverride?: T): void {
-    const start = performance.now();
     const newValue =
       valueOverride ?? (Config[this.configName as keyof typeof Config] as T);
+
     $(
       `.pageSettings .section[data-config-name='${this.configName}'] button`
     ).removeClass("active");
@@ -169,14 +169,6 @@ export default class SettingsGroup<T extends ConfigValue> {
       range.value = newValue as unknown as string;
       rangeValue.textContent = `${(newValue as number).toFixed(1)}`;
     }
-    const time = performance.now() - start;
-    if (time > 4) {
-      if (this.updateCallback) this.updateCallback();
-      console.log("### updateUI ", {
-        config: this.configName,
-        mode: this.mode,
-        time: time.toFixed(2) + "ms",
-      });
-    }
+    this.configValue = newValue;
   }
 }
