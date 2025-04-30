@@ -13,6 +13,8 @@ export default class SettingsGroup<T extends ConfigValue> {
   public mode: Mode;
   public setCallback?: () => void;
   public updateCallback?: () => void;
+  private element?: Element | null;
+
   constructor(
     configName: string,
     configFunction: (param: T, nosave?: boolean) => boolean,
@@ -30,19 +32,19 @@ export default class SettingsGroup<T extends ConfigValue> {
     this.updateUI();
 
     if (this.mode === "select") {
-      const selectElement = document.querySelector(
+      this.element = document.querySelector(
         `.pageSettings .section[data-config-name=${this.configName}] select`
       );
 
       //@ts-expect-error this is fine, slimselect adds slim to the element
-      const ss = selectElement.slim as SlimSelect | undefined;
+      const ss = this.element?.slim as SlimSelect | undefined;
 
       if (ss !== undefined) {
         ss.render.callbacks.afterChange = (newval) => {
           this.setValue(newval[0]?.value as T);
         };
       } else {
-        selectElement?.addEventListener("change", (e) => {
+        this.element?.addEventListener("change", (e) => {
           const target = $(e.target as HTMLSelectElement);
           if (
             target.hasClass("disabled") ||
@@ -84,11 +86,11 @@ export default class SettingsGroup<T extends ConfigValue> {
         }
       );
     } else if (this.mode === "range") {
-      const rangeElement = document.querySelector(
+      this.element = document.querySelector(
         `.pageSettings .section[data-config-name=${this.configName}] input[type=range]`
       );
 
-      if (!rangeElement) {
+      if (!this.element) {
         Notifications.add(`Failed to find range element for ${configName}`, -1);
         return;
       }
@@ -97,12 +99,13 @@ export default class SettingsGroup<T extends ConfigValue> {
         this.setValue(val);
       });
 
-      rangeElement.addEventListener("input", (e) => {
+      this.element.addEventListener("input", (e) => {
         const target = $(e.target as HTMLInputElement);
         if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
           return;
         }
         const val = parseFloat(target.val() as string) as unknown as T;
+
         this.updateUI(val);
         debounced(val);
       });
@@ -118,21 +121,18 @@ export default class SettingsGroup<T extends ConfigValue> {
   }
 
   updateUI(valueOverride?: T): void {
-    this.configValue =
+    const newValue =
       valueOverride ?? (Config[this.configName as keyof typeof Config] as T);
     $(
       `.pageSettings .section[data-config-name='${this.configName}'] button`
     ).removeClass("active");
     if (this.mode === "select") {
-      const select = document.querySelector<HTMLSelectElement>(
-        `.pageSettings .section[data-config-name='${this.configName}'] select`
-      );
-
-      if (select === null) {
+      const select = this.element as HTMLSelectElement | null;
+      if (!select) {
         return;
       }
 
-      select.value = this.configValue as string;
+      select.value = newValue as string;
 
       //@ts-expect-error this is fine, slimselect adds slim to the element
       const ss = select.slim as SlimSelect | undefined;
@@ -144,19 +144,18 @@ export default class SettingsGroup<T extends ConfigValue> {
         `.pageSettings .section[data-config-name='${this.configName}'] button[data-config-value='${this.configValue}']`
       ).addClass("active");
     } else if (this.mode === "range") {
-      const range = document.querySelector<HTMLInputElement>(
-        `.pageSettings .section[data-config-name='${this.configName}'] input[type=range]`
-      );
+      const range = this.element as HTMLInputElement | null | undefined;
+
       const rangeValue = document.querySelector(
         `.pageSettings .section[data-config-name='${this.configName}'] .value`
       );
 
-      if (range === null || rangeValue === null) {
+      if (range === undefined || range === null || rangeValue === null) {
         return;
       }
 
-      range.value = this.configValue as unknown as string;
-      rangeValue.textContent = `${(this.configValue as number).toFixed(1)}`;
+      range.value = newValue as unknown as string;
+      rangeValue.textContent = `${(newValue as number).toFixed(1)}`;
     }
     if (this.updateCallback) this.updateCallback();
   }
