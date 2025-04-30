@@ -65,3 +65,7 @@ export function setUser(uid: string, name: string): void {
 export function clearUser(): void {
   Sentry.setUser(null);
 }
+
+export function captureException(error: Error): void {
+  Sentry.captureException(error);
+}
