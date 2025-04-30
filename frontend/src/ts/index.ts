@@ -45,6 +45,7 @@ import { isDevEnvironment } from "./utils/misc";
 import * as VersionButton from "./elements/version-button";
 import * as Focus from "./test/focus";
 import { getDevOptionsModal } from "./utils/async-modules";
+import * as Sentry from "./sentry";
 
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {
@@ -78,4 +79,6 @@ if (isDevEnvironment()) {
   void getDevOptionsModal().then((module) => {
     module.appendButton();
   });
+} else {
+  Sentry.init();
 }
