@@ -33,13 +33,27 @@ export default class SettingsGroup<T extends ConfigValue> {
       const selectElement = document.querySelector(
         `.pageSettings .section[data-config-name=${this.configName}] select`
       );
-      selectElement?.addEventListener("change", (e) => {
-        const target = $(e.target as HTMLSelectElement);
-        if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
-          return;
-        }
-        this.setValue(target.val() as T);
-      });
+
+      //@ts-expect-error this is fine, slimselect adds slim to the element
+      const ss = selectElement.slim as SlimSelect | undefined;
+
+      if (ss !== undefined) {
+        ss.render.callbacks.afterChange = (newval) => {
+          this.setValue(newval[0]?.value as T);
+        };
+      } else {
+        selectElement?.addEventListener("change", (e) => {
+          const target = $(e.target as HTMLSelectElement);
+          if (
+            target.hasClass("disabled") ||
+            target.hasClass("no-auto-handle")
+          ) {
+            return;
+          }
+
+          this.setValue(target.val() as T);
+        });
+      }
     } else if (this.mode === "button") {
       $(".pageSettings").on(
         "click",
