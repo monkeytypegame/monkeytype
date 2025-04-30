@@ -121,7 +121,6 @@ export default class SettingsGroup<T extends ConfigValue> {
   setValue(value: T): void {
     if (this.configValue === value) return;
 
-    this.configValue = value;
     this.configFunction(value);
     this.updateUI();
     if (this.setCallback) this.setCallback();
@@ -171,7 +170,7 @@ export default class SettingsGroup<T extends ConfigValue> {
       rangeValue.textContent = `${(newValue as number).toFixed(1)}`;
     }
     const time = performance.now() - start;
-    if (time > 0) {
+    if (time > 4) {
       if (this.updateCallback) this.updateCallback();
       console.log("### updateUI ", {
         config: this.configName,
