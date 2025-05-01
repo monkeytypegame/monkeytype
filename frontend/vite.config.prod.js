@@ -151,7 +151,7 @@ export default {
             setCommits: {
               commit: "HEAD",
               previousCommit: "HEAD^",
-              repo: "github.com/monkeytypegame/monkeytype",
+              repo: "monkeytypegame",
             },
           },
           applicationKey: "monkeytype-frontend",
