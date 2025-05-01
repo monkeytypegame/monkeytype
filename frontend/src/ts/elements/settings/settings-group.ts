@@ -99,6 +99,7 @@ export default class SettingsGroup<T extends ConfigValue> {
       }
 
       const debounced = debounce<(val: T) => void>(250, (val) => {
+        console.log("setting value to ", val);
         this.setValue(val);
       });
 
@@ -110,6 +111,8 @@ export default class SettingsGroup<T extends ConfigValue> {
           return;
         }
         const val = parseFloat((el as HTMLInputElement).value) as unknown as T;
+
+        console.log(val);
 
         this.updateUI(val);
         debounced(val);
@@ -130,8 +133,9 @@ export default class SettingsGroup<T extends ConfigValue> {
   }
 
   setValue(value: T): void {
-    if (this.configValue === value) return;
-
+    if (Config[this.configName as keyof typeof Config] === value) {
+      return;
+    }
     this.configFunction(value);
     this.updateUI();
     if (this.setCallback) this.setCallback();
@@ -185,6 +189,5 @@ export default class SettingsGroup<T extends ConfigValue> {
       range.value = newValue as unknown as string;
       rangeValue.textContent = `${(newValue as number).toFixed(1)}`;
     }
-    this.configValue = newValue;
   }
 }
