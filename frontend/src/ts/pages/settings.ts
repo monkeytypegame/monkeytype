@@ -668,23 +668,6 @@ async function fillSettingsPage(): Promise<void> {
     fontsEl.innerHTML = fontsElHTML;
   }
 
-  $(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
-  ).val(Config.customBackground);
-  updateCustomBackgroundRemoveButtonVisibility();
-
-  $(".pageSettings .section[data-config-name='fontSize'] input").val(
-    Config.fontSize
-  );
-
-  $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
-    Config.maxLineWidth
-  );
-
-  $(".pageSettings .section[data-config-name='keymapSize'] input").val(
-    Config.keymapSize
-  );
-
   customLayoutFluidSelect = new SlimSelect({
     select:
       ".pageSettings .section[data-config-name='customLayoutfluid'] select",
@@ -719,10 +702,6 @@ async function fillSettingsPage(): Promise<void> {
       },
     },
   });
-
-  $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
-    Config.tapeMargin
-  );
 
   setEventDisabled(true);
   if (!groupsInitialized) {
@@ -895,6 +874,22 @@ export async function update(groupUpdate = true): Promise<void> {
     ).addClass("hidden");
   }
   updateCustomBackgroundRemoveButtonVisibility();
+
+  $(".pageSettings .section[data-config-name='fontSize'] input").val(
+    Config.fontSize
+  );
+
+  $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
+    Config.maxLineWidth
+  );
+
+  $(".pageSettings .section[data-config-name='keymapSize'] input").val(
+    Config.keymapSize
+  );
+
+  $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
+    Config.tapeMargin
+  );
 
   $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] input"
