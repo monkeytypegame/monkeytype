@@ -158,10 +158,14 @@ export default class SettingsGroup<T extends ConfigValue> {
         if (select.value !== newValue) select.value = newValue as string;
       }
     } else if (this.mode === "button") {
-      for (const button of this.elements ?? []) {
-        const value = button.getAttribute("data-config-value");
+      for (const button of this.elements) {
+        let value = button.getAttribute("data-config-value");
 
-        if (value !== newValue) {
+        let typed = value as T;
+        if (typed === "true") typed = true as T;
+        if (typed === "false") typed = false as T;
+
+        if (typed !== newValue) {
           button.classList.remove("active");
         } else {
           button.classList.add("active");
