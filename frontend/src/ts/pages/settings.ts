@@ -582,40 +582,40 @@ async function fillSettingsPage(): Promise<void> {
   const funboxEl = document.querySelector(
     ".pageSettings .section[data-config-name='funbox'] .buttons"
   ) as HTMLDivElement;
-  funboxEl.innerHTML = `<div class="funbox button" data-config-value='none'>none</div>`;
+  // funboxEl.innerHTML = `<button class="funbox" data-config-value='none'>none</button>`;
   let funboxElHTML = "";
 
   for (const funbox of getAllFunboxes()) {
     if (funbox.name === "mirror") {
-      funboxElHTML += `<div class="funbox button" data-config-value='${
+      funboxElHTML += `<button class="funbox" data-funbox-name="mirror" data-config-value='${
         funbox.name
       }' aria-label="${
         funbox.description
       }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
         /_/g,
         " "
-      )}</div>`;
+      )}</button>`;
     } else if (funbox.name === "upside_down") {
-      funboxElHTML += `<div class="funbox button" data-config-value='${
+      funboxElHTML += `<button class="funbox" data-funbox-name="upside_down" data-config-value='${
         funbox.name
       }' aria-label="${
         funbox.description
       }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1); z-index:1;">${funbox.name.replace(
         /_/g,
         " "
-      )}</div>`;
+      )}</button>`;
     } else if (funbox.name === "underscore_spaces") {
       // Display as "underscore_spaces". Does not replace underscores with spaces.
-      funboxElHTML += `<div class="funbox button" data-config-value='${funbox.name}' aria-label="${funbox.description}" data-balloon-pos="up" data-balloon-length="fit">${funbox.name}</div>`;
+      funboxElHTML += `<button class="funbox" data-funbox-name="underscore_spaces" data-config-value='${funbox.name}' aria-label="${funbox.description}" data-balloon-pos="up" data-balloon-length="fit">${funbox.name}</button>`;
     } else {
-      funboxElHTML += `<div class="funbox button" data-config-value='${
+      funboxElHTML += `<button class="funbox" data-funbox-name="${
         funbox.name
-      }' aria-label="${
+      }" data-config-value='${funbox.name}' aria-label="${
         funbox.description
       }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
         /_/g,
         " "
-      )}</div>`;
+      )}</button>`;
     }
   }
   funboxEl.innerHTML = funboxElHTML;
@@ -730,26 +730,28 @@ function showAccountSection(): void {
 }
 
 function setActiveFunboxButton(): void {
-  $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
-    "active"
+  const buttons = document.querySelectorAll(
+    `.pageSettings .section[data-config-name='funbox'] button`
   );
-  $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
-    "disabled"
-  );
-  getAllFunboxes().forEach((funbox) => {
-    if (
-      !checkCompatibility(getActiveFunboxNames(), funbox.name) &&
-      !Config.funbox.includes(funbox.name)
-    ) {
-      $(
-        `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox.name}']`
-      ).addClass("disabled");
+
+  for (const button of buttons) {
+    button.classList.remove("active");
+    button.classList.remove("disabled");
+
+    const configValue = button.getAttribute("data-config-value");
+    const funboxName = button.getAttribute("data-funbox-name");
+
+    if (configValue === null || funboxName === null) {
+      continue;
     }
-  });
-  for (const funbox of Config.funbox) {
-    $(
-      `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox}']`
-    ).addClass("active");
+
+    if (Config.funbox.includes(funboxName as FunboxName)) {
+      button.classList.add("active");
+    } else if (
+      !checkCompatibility(getActiveFunboxNames(), funboxName as FunboxName)
+    ) {
+      button.classList.add("disabled");
+    }
   }
 }
 
@@ -1092,7 +1094,7 @@ $(".pageSettings .section[data-config-name='minBurst']").on(
 //funbox
 $(".pageSettings .section[data-config-name='funbox']").on(
   "click",
-  ".button",
+  "button",
   (e) => {
     const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
