@@ -13,7 +13,7 @@ export default class SettingsGroup<T extends ConfigValue> {
   public mode: Mode;
   public setCallback?: () => void;
   public updateCallback?: () => void;
-  private element?: Element | null;
+  private elements: Element[];
 
   constructor(
     configName: string,
@@ -29,20 +29,22 @@ export default class SettingsGroup<T extends ConfigValue> {
     this.setCallback = setCallback;
     this.updateCallback = updateCallback;
 
-    this.updateUI();
-
     if (this.mode === "select") {
-      this.element = document.querySelector(
+      const el = document.querySelector(
         `.pageSettings .section[data-config-name=${this.configName}] select`
       );
 
-      if (this.element?.hasAttribute("multiple")) {
+      if (el === null) {
+        throw new Error(`Failed to find select element for ${configName}`);
+      }
+
+      if (el.hasAttribute("multiple")) {
         throw new Error(
           "multi-select dropdowns not supported. Config: " + this.configName
         );
       }
 
-      this.element?.addEventListener("change", (e) => {
+      el.addEventListener("change", (e) => {
         const target = $(e.target as HTMLSelectElement);
         if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
           return;
@@ -50,19 +52,25 @@ export default class SettingsGroup<T extends ConfigValue> {
 
         this.setValue(target.val() as T);
       });
+
+      this.elements = [el];
     } else if (this.mode === "button") {
-      $(".pageSettings").on(
-        "click",
-        `.section[data-config-name='${this.configName}'] button`,
-        (e) => {
-          const target = $(e.currentTarget);
+      const els = document.querySelectorAll(`
+        .pageSettings .section[data-config-name=${this.configName}] button`);
+
+      if (els.length === 0) {
+        throw new Error(`Failed to find a button element for ${configName}`);
+      }
+
+      for (const button of els) {
+        button.addEventListener("click", (e) => {
           if (
-            target.hasClass("disabled") ||
-            target.hasClass("no-auto-handle")
+            button.classList.contains("disabled") ||
+            button.classList.contains("no-auto-handle")
           ) {
             return;
           }
-          const value = target.attr(`data-config-value`);
+          const value = button.getAttribute("data-config-value");
           if (value === undefined || value === "") {
             console.error(
               `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`
@@ -77,33 +85,48 @@ export default class SettingsGroup<T extends ConfigValue> {
           if (typed === "true") typed = true as T;
           if (typed === "false") typed = false as T;
           this.setValue(typed);
-        }
-      );
+        });
+      }
+
+      this.elements = Array.from(els);
     } else if (this.mode === "range") {
-      this.element = document.querySelector(
+      const el = document.querySelector(
         `.pageSettings .section[data-config-name=${this.configName}] input[type=range]`
       );
 
-      if (!this.element) {
-        Notifications.add(`Failed to find range element for ${configName}`, -1);
-        return;
+      if (el === null) {
+        throw new Error(`Failed to find range element for ${configName}`);
       }
 
       const debounced = debounce<(val: T) => void>(250, (val) => {
         this.setValue(val);
       });
 
-      this.element.addEventListener("input", (e) => {
-        const target = $(e.target as HTMLInputElement);
-        if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
+      el.addEventListener("input", (e) => {
+        if (
+          el.classList.contains("disabled") ||
+          el.classList.contains("no-auto-handle")
+        ) {
           return;
         }
-        const val = parseFloat(target.val() as string) as unknown as T;
+        const val = parseFloat((el as HTMLInputElement).value) as unknown as T;
 
         this.updateUI(val);
         debounced(val);
       });
+
+      this.elements = [el];
+    } else {
+      this.elements = [];
     }
+
+    if (this.elements.length === 0 || this.elements === undefined) {
+      throw new Error(
+        `Failed to find elements for ${configName} with mode ${mode}`
+      );
+    }
+
+    this.updateUI();
   }
 
   setValue(value: T): void {
@@ -118,11 +141,8 @@ export default class SettingsGroup<T extends ConfigValue> {
     const newValue =
       valueOverride ?? (Config[this.configName as keyof typeof Config] as T);
 
-    $(
-      `.pageSettings .section[data-config-name='${this.configName}'] button`
-    ).removeClass("active");
     if (this.mode === "select") {
-      const select = this.element as HTMLSelectElement | null;
+      const select = this.elements?.[0] as HTMLSelectElement | null | undefined;
       if (!select) {
         return;
       }
@@ -138,13 +158,17 @@ export default class SettingsGroup<T extends ConfigValue> {
         if (select.value !== newValue) select.value = newValue as string;
       }
     } else if (this.mode === "button") {
-      $(
-        // this cant be an object?
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        `.pageSettings .section[data-config-name='${this.configName}'] button[data-config-value='${newValue}']`
-      ).addClass("active");
+      for (const button of this.elements ?? []) {
+        const value = button.getAttribute("data-config-value");
+
+        if (value !== newValue) {
+          button.classList.remove("active");
+        } else {
+          button.classList.add("active");
+        }
+      }
     } else if (this.mode === "range") {
-      const range = this.element as HTMLInputElement | null | undefined;
+      const range = this.elements?.[0] as HTMLInputElement | null | undefined;
 
       const rangeValue = document.querySelector(
         `.pageSettings .section[data-config-name='${this.configName}'] .value`
