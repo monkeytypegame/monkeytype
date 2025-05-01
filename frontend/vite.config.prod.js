@@ -141,15 +141,17 @@ export default {
         ],
       },
     }),
-    sentryVitePlugin({
-      authToken: process.env.SENTRY_AUTH_TOKEN,
-      org: "monkeytype",
-      project: "frontend",
-      release: {
-        name: buildClientVersion(),
-      },
-      applicationKey: "monkeytype-frontend",
-    }),
+    process.env.SENTRY
+      ? sentryVitePlugin({
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          org: "monkeytype",
+          project: "frontend",
+          release: {
+            name: buildClientVersion(),
+          },
+          applicationKey: "monkeytype-frontend",
+        })
+      : null,
     replace([
       {
         filter: /firebase\.ts$/,
@@ -246,7 +248,7 @@ export default {
     },
   ],
   build: {
-    sourcemap: true,
+    sourcemap: process.env.SENTRY,
     emptyOutDir: true,
     outDir: "../dist",
     assetsInlineLimit: 0, //dont inline small files as data
