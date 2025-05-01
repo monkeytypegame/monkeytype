@@ -25,7 +25,7 @@ export function init(): void {
       }),
     ],
     // Tracing
-    tracesSampleRate: 1.0, //  Capture 100% of the transactions
+    tracesSampleRate: 0.25, //  Capture 100% of the transactions
     // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
     tracePropagationTargets: ["localhost", /^https:\/\/api\.monkeytype\.com/],
     // Session Replay
