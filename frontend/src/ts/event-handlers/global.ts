@@ -3,7 +3,6 @@ import * as PageTransition from "../states/page-transition";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Commandline from "../commandline/commandline";
-import { log } from "../controllers/analytics-controller";
 import * as Notifications from "../elements/notifications";
 
 document.addEventListener("keydown", async (e) => {
