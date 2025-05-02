@@ -1,7 +1,7 @@
-import { getCommandline } from "../utils/async-modules";
+import * as Commandline from "../commandline/commandline";
 
 $("#keymap").on("click", ".r5 .layoutIndicator", async () => {
-  (await getCommandline()).show({
+  Commandline.show({
     subgroupOverride: "keymapLayouts",
   });
 });
