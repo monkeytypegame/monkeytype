@@ -5,6 +5,7 @@ import { tryCatchSync } from "./trycatch";
  * Parse a JSON string into an object and validate it against a schema
  * @param json  JSON string
  * @param schema  Zod schema to validate the JSON against
+ * @param migrate Optional function to migrate the JSON if it doesn't match the schema
  * @returns  The parsed JSON object
  */
 export function parseWithSchema<T>(
