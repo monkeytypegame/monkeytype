@@ -24,7 +24,7 @@ export function init(): void {
         // - 'drop-error-if-exclusively-contains-third-party-frames'
         // - 'apply-tag-if-contains-third-party-frames'
         // - 'apply-tag-if-exclusively-contains-third-party-frames'
-        behaviour: "apply-tag-if-contains-third-party-frames",
+        behaviour: "drop-error-if-contains-third-party-frames",
       }),
     ],
     // Tracing
