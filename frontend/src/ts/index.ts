@@ -57,6 +57,7 @@ function addToGlobal(items: Record<string, unknown>): void {
 void loadFromLocalStorage();
 void VersionButton.update();
 Focus.set(true, true);
+Sentry.init();
 
 addToGlobal({
   snapshot: DB.getSnapshot,
@@ -70,6 +71,7 @@ addToGlobal({
   toggleUnsmoothedRaw: Result.toggleUnsmoothedRaw,
   egVideoListener: egVideoListener,
   toggleDebugLogs: Logger.toggleDebugLogs,
+  toggleSentryDebug: Sentry.toggleDebug,
 });
 
 if (isDevEnvironment()) {
@@ -79,6 +81,4 @@ if (isDevEnvironment()) {
   void getDevOptionsModal().then((module) => {
     module.appendButton();
   });
-} else {
-  Sentry.init();
 }
