@@ -20,7 +20,7 @@ function pad(numbers, maxLength, fillString) {
   );
 }
 
-function buildClientVersion() {
+const CLIENT_VERSION = (() => {
   const date = new Date();
   const versionPrefix = pad(
     [date.getFullYear(), date.getMonth() + 1, date.getDate()],
@@ -41,7 +41,7 @@ function buildClientVersion() {
   } catch (e) {
     return `${version}_unknown-hash`;
   }
-}
+})();
 
 /** Enable for font awesome v6 */
 /*
@@ -68,7 +68,7 @@ export default {
       apply: "build",
 
       closeBundle() {
-        const version = buildClientVersion();
+        const version = CLIENT_VERSION;
         const versionJson = JSON.stringify({ version });
         const versionPath = path.resolve(__dirname, "dist/version.json");
         writeFileSync(versionPath, versionJson);
@@ -141,15 +141,22 @@ export default {
         ],
       },
     }),
-    sentryVitePlugin({
-      authToken: process.env.SENTRY_AUTH_TOKEN,
-      org: "monkeytype",
-      project: "frontend",
-      release: {
-        name: buildClientVersion(),
-      },
-      applicationKey: "monkeytype-frontend",
-    }),
+    process.env.SENTRY
+      ? sentryVitePlugin({
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          org: "monkeytype",
+          project: "frontend",
+          release: {
+            name: CLIENT_VERSION,
+            setCommits: {
+              commit: "HEAD",
+              previousCommit: "HEAD^",
+              repo: "monkeytypegame",
+            },
+          },
+          applicationKey: "monkeytype-frontend",
+        })
+      : null,
     replace([
       {
         filter: /firebase\.ts$/,
@@ -246,7 +253,7 @@ export default {
     },
   ],
   build: {
-    sourcemap: true,
+    sourcemap: process.env.SENTRY,
     emptyOutDir: true,
     outDir: "../dist",
     assetsInlineLimit: 0, //dont inline small files as data
@@ -280,7 +287,7 @@ export default {
       process.env.BACKEND_URL || "https://api.monkeytype.com"
     ),
     IS_DEVELOPMENT: JSON.stringify(false),
-    CLIENT_VERSION: JSON.stringify(buildClientVersion()),
+    CLIENT_VERSION: JSON.stringify(CLIENT_VERSION),
     RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),
     QUICK_LOGIN_EMAIL: undefined,
     QUICK_LOGIN_PASSWORD: undefined,

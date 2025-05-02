@@ -32,28 +32,24 @@ document.addEventListener("keydown", async (e) => {
 
 window.onerror = function (message, url, line, column, error): void {
   if (Misc.isDevEnvironment()) {
-    //this is causing errors when using chrome responsive design dev tools
-    if (error?.message.includes("x_magnitude")) return;
     Notifications.add(error?.message ?? "Undefined message", -1, {
       customTitle: "DEV: Unhandled error",
       duration: 5,
       important: true,
     });
   }
-  void log("error", {
-    error: error?.stack ?? "",
-  });
 };
 
 window.onunhandledrejection = function (e): void {
   if (Misc.isDevEnvironment()) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const message = (e.reason.message ?? e.reason) as string;
-    Notifications.add(`${message}`, -1, {
-      customTitle: "DEV: Unhandled rejection",
-      duration: 5,
-      important: true,
-    });
-    console.error(e);
+    Notifications.add(
+      (e.reason as Error).message ?? e.reason ?? "Undefined message",
+      -1,
+      {
+        customTitle: "DEV: Unhandled rejection",
+        duration: 5,
+        important: true,
+      }
+    );
   }
 };
