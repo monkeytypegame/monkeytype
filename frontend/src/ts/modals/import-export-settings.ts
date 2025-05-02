@@ -4,6 +4,7 @@ import * as Notifications from "../elements/notifications";
 import AnimatedModal from "../utils/animated-modal";
 import { migrateConfig } from "../utils/config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { createErrorMessage, isObject } from "../utils/misc";
 
 type State = {
   mode: "import" | "export";
@@ -47,23 +48,27 @@ const modal = new AnimatedModal({
         void modal.hide();
         return;
       }
+
       try {
         const parsedConfig = parseJsonWithSchema(
           state.value,
-          PartialConfigSchema.strip()
+          PartialConfigSchema.strip(),
+          (value) => {
+            if (!isObject(value)) {
+              throw new Error("Invalid JSON");
+            }
+            return migrateConfig(value);
+          }
         );
-        await UpdateConfig.apply(migrateConfig(parsedConfig));
+        await UpdateConfig.apply(parsedConfig);
+        UpdateConfig.saveFullConfigToLocalStorage();
+        Notifications.add("Done", 1);
       } catch (e) {
-        Notifications.add(
-          "Failed to import settings: incorrect data schema",
-          0
-        );
-        console.error(e);
-        void modal.hide();
-        return;
+        const msg = createErrorMessage(e, "Failed to import settings");
+        console.error(msg);
+        Notifications.add(msg, -1);
       }
-      Notifications.add("Settings imported", 1);
-      UpdateConfig.saveFullConfigToLocalStorage();
+
       void modal.hide();
     });
   },
