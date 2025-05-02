@@ -182,15 +182,15 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   const mode = de[0] ?? Config.mode;
   if (de[1] !== null) {
     if (mode === "time") {
-      UpdateConfig.setTimeConfig(parseInt(de[1] as string, 10), true);
+      UpdateConfig.setTimeConfig(parseInt(de[1], 10), true);
     } else if (mode === "words") {
-      UpdateConfig.setWordCount(parseInt(de[1] as string, 10), true);
+      UpdateConfig.setWordCount(parseInt(de[1], 10), true);
     } else if (mode === "quote") {
       UpdateConfig.setQuoteLength(-2, false);
-      TestState.setSelectedQuoteId(parseInt(de[1] as string, 10));
+      TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();
     }
-    applied["mode2"] = de[1] as string;
+    applied["mode2"] = de[1];
   }
 
   if (de[2] !== null) {
