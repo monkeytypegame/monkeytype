@@ -40,9 +40,6 @@ window.onerror = function (message, url, line, column, error): void {
       important: true,
     });
   }
-  void log("error", {
-    error: error?.stack ?? "",
-  });
 };
 
 window.onunhandledrejection = function (e): void {
