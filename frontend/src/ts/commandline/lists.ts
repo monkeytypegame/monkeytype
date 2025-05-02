@@ -100,14 +100,11 @@ import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
-import { migrateConfig } from "../utils/config";
 import {
   CustomBackgroundSchema,
   CustomLayoutFluid,
-  PartialConfigSchema,
 } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";
 
@@ -377,25 +374,7 @@ export const commands: CommandsSubgroup = {
       input: true,
       exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
-        try {
-          const parsedConfig = parseJsonWithSchema(
-            input,
-            PartialConfigSchema.strip(),
-            (value) => {
-              if (!Misc.isObject(value)) {
-                throw new Error("Invalid JSON");
-              }
-              return migrateConfig(value);
-            }
-          );
-          await UpdateConfig.apply(parsedConfig);
-          UpdateConfig.saveFullConfigToLocalStorage();
-          Notifications.add("Done", 1);
-        } catch (e) {
-          const msg = Misc.createErrorMessage(e, "Failed to import settings");
-          console.error(msg);
-          Notifications.add(msg, -1);
-        }
+        await UpdateConfig.applyFromJson(input);
       },
     },
     {
