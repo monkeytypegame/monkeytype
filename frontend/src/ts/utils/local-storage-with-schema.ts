@@ -55,9 +55,10 @@ export class LocalStorageWithSchema<T> {
       return this.fallback;
     }
 
-    if (migrated) {
+    if (migrated || parsed === this.fallback) {
       window.localStorage.setItem(this.key, JSON.stringify(parsed));
     }
+
     return parsed;
   }
 
