@@ -1,32 +1,43 @@
-import { ZodIssue } from "zod";
+import { z, ZodIssue } from "zod";
 import { tryCatchSync } from "./trycatch";
 
 /**
  * Parse a JSON string into an object and validate it against a schema
  * @param json  JSON string
  * @param schema  Zod schema to validate the JSON against
+ * @param fallback Optional fallback value if the JSON is invalid
  * @param migrate Optional function to migrate the JSON if it doesn't match the schema
  * @returns  The parsed JSON object
  */
-export function parseWithSchema<T>(
+export function parseWithSchema<T extends z.ZodTypeAny>(
   json: string,
-  schema: Zod.Schema<T>,
-  migrate?: (value: unknown, zodIssues?: ZodIssue[]) => T
-): T {
+  schema: T,
+  fallbackAndMigrate?: {
+    fallback?: z.infer<T>;
+    migrate?: (
+      value: Record<string, unknown> | unknown[],
+      zodIssues?: ZodIssue[]
+    ) => z.infer<T>;
+  }
+): z.infer<T> {
+  const { fallback, migrate } = fallbackAndMigrate ?? {};
+
   const { data: jsonParsed, error } = tryCatchSync(
-    () => JSON.parse(json) as unknown
+    () => JSON.parse(json) as Record<string, unknown>
   );
 
   if (error) {
-    if (migrate === undefined) {
+    if (fallback === undefined) {
       throw new Error(`Invalid JSON: ` + error.message);
     }
-    return migrateAndRevalidate(jsonParsed, schema, migrate);
+    // todo fix me
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return fallback as z.infer<T>;
   }
 
   const safeParse = schema.safeParse(jsonParsed);
   if (safeParse.success) {
-    return safeParse.data;
+    return safeParse.data as T;
   }
 
   if (migrate === undefined) {
@@ -37,32 +48,23 @@ export function parseWithSchema<T>(
     );
   }
 
-  return migrateAndRevalidate(
-    jsonParsed,
-    schema,
-    migrate,
-    safeParse.error.issues
-  );
-}
-
-function migrateAndRevalidate<T>(
-  value: unknown,
-  schema: Zod.Schema<T>,
-  migrate: (value: unknown, zodIssues?: ZodIssue[]) => T,
-  zodIssues?: ZodIssue[]
-): T {
-  const migrated = migrate(value, zodIssues);
+  const migrated = migrate(jsonParsed, safeParse.error.issues);
   const safeParseMigrated = schema.safeParse(migrated);
 
   if (!safeParseMigrated.success) {
-    throw new Error(
-      `Migrated value does not match schema: ${safeParseMigrated.error.issues
-        .map(prettyErrorMessage)
-        .join(", ")}`
-    );
+    if (fallback === undefined) {
+      throw new Error(
+        `Migrated value does not match schema: ${safeParseMigrated.error.issues
+          .map(prettyErrorMessage)
+          .join(", ")}`
+      );
+    }
+    // todo fix me
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return fallback as z.infer<T>;
   }
 
-  return safeParseMigrated.data;
+  return safeParseMigrated.data as T;
 }
 
 function prettyErrorMessage(issue: ZodIssue | undefined): string {

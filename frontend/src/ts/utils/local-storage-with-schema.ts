@@ -8,13 +8,19 @@ export class LocalStorageWithSchema<T> {
   private key: string;
   private schema: Zod.Schema<T>;
   private fallback: T;
-  private migrate?: (value: unknown, zodIssues?: ZodIssue[]) => T;
+  private migrate?: (
+    value: Record<string, unknown> | unknown[],
+    zodIssues?: ZodIssue[]
+  ) => T;
 
   constructor(options: {
     key: string;
     schema: Zod.Schema<T>;
     fallback: T;
-    migrate?: (value: unknown, zodIssues?: ZodIssue[]) => T;
+    migrate?: (
+      value: Record<string, unknown> | unknown[],
+      zodIssues?: ZodIssue[]
+    ) => T;
   }) {
     this.key = options.key;
     this.schema = options.schema;
@@ -31,13 +37,16 @@ export class LocalStorageWithSchema<T> {
 
     let migrated = false;
     const { data: parsed, error } = tryCatchSync(() =>
-      parseJsonWithSchema(value, this.schema, (oldData, zodIssues) => {
-        migrated = true;
-        if (this.migrate) {
-          return this.migrate(oldData, zodIssues);
-        } else {
-          return this.fallback;
-        }
+      parseJsonWithSchema(value, this.schema, {
+        fallback: this.fallback,
+        migrate: (oldData, zodIssues) => {
+          migrated = true;
+          if (this.migrate) {
+            return this.migrate(oldData, zodIssues);
+          } else {
+            return this.fallback;
+          }
+        },
       })
     );
 

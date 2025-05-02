@@ -47,14 +47,16 @@ describe("json", () => {
     });
     it("should migrate if valid json", () => {
       const json = `{
-          "name": 1,
+          "name": 1
           }`;
 
-      const result = parseWithSchema(json, schema, () => {
-        return {
-          name: "migrated",
-          test: false,
-        };
+      const result = parseWithSchema(json, schema, {
+        migrate: () => {
+          return {
+            name: "migrated",
+            test: false,
+          };
+        },
       });
 
       expect(result).toStrictEqual({
@@ -62,14 +64,14 @@ describe("json", () => {
         test: false,
       });
     });
-    it("should migrate if invalid json", () => {
+    it("should revert to fallback if invalid json", () => {
       const json = `blah`;
 
-      const result = parseWithSchema(json, schema, () => {
-        return {
+      const result = parseWithSchema(json, schema, {
+        fallback: {
           name: "migrated",
           test: false,
-        };
+        },
       });
 
       expect(result).toStrictEqual({
@@ -77,18 +79,20 @@ describe("json", () => {
         test: false,
       });
     });
-    it("should throw if migration fials", () => {
+    it("should throw if migration fails", () => {
       const json = `{
-          "name": 1,
+          "name": 1
           }`;
 
       expect(() => {
-        //@ts-expect-error need to test migration failure
-        parseWithSchema(json, schema, () => {
-          return {
-            name: null,
-            test: "Hi",
-          };
+        parseWithSchema(json, schema, {
+          //@ts-expect-error need to test migration failure
+          migrate: () => {
+            return {
+              name: null,
+              test: "Hi",
+            };
+          },
         });
       }).toThrowError(
         new Error(
@@ -96,33 +100,45 @@ describe("json", () => {
         )
       );
     });
-    it("migrate function should receive value", () => {
-      const json = "invalid";
+    it("should revert to fallback if migration fails", () => {
+      const json = `{
+          "name": 1
+          }`;
 
-      const result = parseWithSchema(json, schema, (value) => {
-        expect(value).toEqual(null);
-        return {
-          name: "migrated",
+      const result = parseWithSchema(json, schema, {
+        fallback: {
+          name: "fallback",
           test: false,
-        };
+        },
+        //@ts-expect-error need to test migration failure
+        migrate: () => {
+          return {
+            name: null,
+            test: "Hi",
+          };
+        },
       });
+
       expect(result).toStrictEqual({
-        name: "migrated",
+        name: "fallback",
         test: false,
       });
-
-      const json2 = `{
+    });
+    it("migrate function should receive value", () => {
+      const json = `{
         "test":"test"
       }`;
 
-      const result2 = parseWithSchema(json2, schema, (value) => {
-        expect(value).toEqual({ test: "test" });
-        return {
-          name: "valid",
-        };
+      const result = parseWithSchema(json, schema, {
+        migrate: (value) => {
+          expect(value).toEqual({ test: "test" });
+          return {
+            name: "valid",
+          };
+        },
       });
 
-      expect(result2).toStrictEqual({
+      expect(result).toStrictEqual({
         name: "valid",
       });
     });

@@ -63,7 +63,7 @@ const customTextSettings = new LocalStorageWithSchema({
       "text" in oldData &&
       z.array(z.string()).safeParse(migratedData.text).success
     ) {
-      migratedData.text = oldData.text as string[];
+      migratedData.text = oldData["text"] as string[];
     }
     return migratedData;
   },

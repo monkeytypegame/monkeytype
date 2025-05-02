@@ -2139,11 +2139,13 @@ export async function applyFromJson(json: string): Promise<void> {
     const parsedConfig = parseJsonWithSchema(
       json,
       ConfigSchemas.PartialConfigSchema.strip(),
-      (value) => {
-        if (!isObject(value)) {
-          throw new Error("Invalid JSON");
-        }
-        return migrateConfig(value);
+      {
+        migrate: (value) => {
+          if (Array.isArray(value)) {
+            throw new Error("Invalid config");
+          }
+          return migrateConfig(value);
+        },
       }
     );
     await apply(parsedConfig);
