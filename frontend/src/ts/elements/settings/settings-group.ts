@@ -189,5 +189,6 @@ export default class SettingsGroup<T extends ConfigValue> {
       range.value = newValue as unknown as string;
       rangeValue.textContent = `${(newValue as number).toFixed(1)}`;
     }
+    if (this.updateCallback) this.updateCallback();
   }
 }
