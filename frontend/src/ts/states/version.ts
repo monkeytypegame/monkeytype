@@ -48,6 +48,7 @@ async function check(): Promise<void> {
 }
 
 function purgeCaches(): void {
+  if (!("caches" in window)) return;
   void caches.keys().then(function (names) {
     for (const name of names) void caches.delete(name);
   });
