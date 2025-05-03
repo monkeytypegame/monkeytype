@@ -31,7 +31,7 @@ const customTextLongLS = new LocalStorageWithSchema({
 });
 
 export const CustomTextSettingsSchema = z.object({
-  text: z.array(z.string()),
+  text: z.array(z.string()).min(1),
   mode: CustomTextModeSchema,
   limit: z.object({ value: z.number(), mode: CustomTextLimitModeSchema }),
   pipeDelimiter: z.boolean(),
