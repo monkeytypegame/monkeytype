@@ -464,6 +464,21 @@ export async function init(): Promise<void> {
     console.debug("Custom text", CustomText.getData());
   }
 
+  console.log("Inializing test", {
+    language: {
+      ...language,
+      words: `${language.words.length} words`,
+    },
+    customText: {
+      ...CustomText.getData(),
+      text: `${CustomText.getText().length} words`,
+    },
+    mode: Config.mode,
+    mode2: Misc.getMode2(Config, null),
+    funbox: Config.funbox,
+    currentQuote: TestWords.currentQuote,
+  });
+
   let generatedWords: string[];
   let generatedSectionIndexes: number[];
   let wordsHaveTab = false;
