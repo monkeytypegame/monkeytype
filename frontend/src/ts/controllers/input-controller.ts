@@ -1434,10 +1434,10 @@ $("#wordsInput").on("input", (event) => {
   }, 0);
 });
 
-$("#wordsInput").on("focus", (event) => {
-  (event.target as HTMLInputElement).selectionStart = (
-    event.target as HTMLInputElement
-  ).selectionEnd = (event.target as HTMLInputElement).value.length;
+document.querySelector("#wordsInput")?.addEventListener("focus", (event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+  target.setSelectionRange(value.length, value.length);
 });
 
 $("#wordsInput").on("copy paste", (event) => {

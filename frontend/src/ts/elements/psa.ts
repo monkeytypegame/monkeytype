@@ -8,6 +8,7 @@ import { PSA } from "@monkeytype/contracts/schemas/psas";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/contracts/schemas/util";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 const confirmedPSAs = new LocalStorageWithSchema({
   key: "confirmedPSAs",
@@ -56,31 +57,42 @@ async function getLatest(): Promise<PSA[] | null> {
           url: string;
           updatedAt: string;
         }[];
-        activeMaintenances: {
-          id: string;
-          name: string;
-          start: string;
-          status: "NOTSTARTEDYET" | "INPROGRESS" | "COMPLETED";
-          duration: number;
-          url: string;
-          updatedAt: string;
-        }[];
+        activeMaintenances:
+          | {
+              id: string;
+              name: string;
+              start: string;
+              status: "NOTSTARTEDYET" | "INPROGRESS" | "COMPLETED";
+              duration: number;
+              url: string;
+              updatedAt: string;
+            }[]
+          | undefined;
       };
 
-      const instatus = await fetch(
-        "https://monkeytype.instatus.com/summary.json"
+      const { data: instatus, error } = await tryCatch(
+        fetch("https://monkeytype.instatus.com/summary.json")
       );
-      const instatusData =
-        (await instatus.json()) as unknown as InstatusSummary;
 
-      const maintenanceData = instatusData.activeMaintenances[0];
+      let maintenanceData: undefined | InstatusSummary["activeMaintenances"];
+
+      if (error) {
+        console.log("Failed to fetch Instatus summary", error);
+      } else {
+        const instatusData =
+          (await instatus.json()) as unknown as InstatusSummary;
+
+        maintenanceData = instatusData.activeMaintenances;
+      }
 
       if (
         maintenanceData !== undefined &&
-        maintenanceData.status === "INPROGRESS"
+        maintenanceData.length > 0 &&
+        maintenanceData[0] !== undefined &&
+        maintenanceData[0].status === "INPROGRESS"
       ) {
         Notifications.addPSA(
-          `Server is currently offline for scheduled maintenance. <a target= '_blank' href='${maintenanceData.url}'>Check the status page</a> for more info.`,
+          `Server is currently offline for scheduled maintenance. <a target= '_blank' href='${maintenanceData[0].url}'>Check the status page</a> for more info.`,
           -1,
           "bullhorn",
           true,

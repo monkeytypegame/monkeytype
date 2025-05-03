@@ -70,11 +70,12 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
 } from "./funbox/list";
-import { getFunboxesFromString } from "@monkeytype/funbox";
+import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { captureException } from "../sentry";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -382,12 +383,16 @@ export function restart(options = {} as RestartOptions): void {
   ResultWordHighlight.destroy();
 }
 
+let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
 export async function init(): Promise<void> {
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount >= 4) {
+    if (lastInitError) {
+      captureException(lastInitError);
+    }
     TestUI.setTestRestarting(false);
     Notifications.add(
       "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
@@ -459,6 +464,21 @@ export async function init(): Promise<void> {
     console.debug("Custom text", CustomText.getData());
   }
 
+  console.log("Inializing test", {
+    language: {
+      ...language,
+      words: `${language.words.length} words`,
+    },
+    customText: {
+      ...CustomText.getData(),
+      text: `${CustomText.getText().length} words`,
+    },
+    mode: Config.mode,
+    mode2: Misc.getMode2(Config, null),
+    funbox: Config.funbox,
+    currentQuote: TestWords.currentQuote,
+  });
+
   let generatedWords: string[];
   let generatedSectionIndexes: number[];
   let wordsHaveTab = false;
@@ -470,6 +490,9 @@ export async function init(): Promise<void> {
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
   } catch (e) {
+    if (e instanceof WordGenError || e instanceof Error) {
+      lastInitError = e;
+    }
     console.error(e);
     if (e instanceof WordGenError) {
       if (e.message.length > 0) {
@@ -1237,7 +1260,7 @@ async function saveResult(
       completedEvent.language,
       completedEvent.difficulty,
       completedEvent.lazyMode,
-      getFunboxesFromString(completedEvent.funbox)
+      getFunbox(completedEvent.funbox)
     );
 
     if (localPb !== undefined) {

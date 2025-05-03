@@ -91,13 +91,8 @@ function calculateAcc(): number {
 
 function layoutfluid(): void {
   if (timerDebug) console.time("layoutfluid");
-  if (
-    Config.funbox.split("#").includes("layoutfluid") &&
-    Config.mode === "time"
-  ) {
-    const layouts = Config.customLayoutfluid
-      ? Config.customLayoutfluid.split("#")
-      : ["qwerty", "dvorak", "colemak"];
+  if (Config.funbox.includes("layoutfluid") && Config.mode === "time") {
+    const layouts = Config.customLayoutfluid;
     const switchTime = Config.time / layouts.length;
     const time = Time.get();
     const index = Math.floor(time / switchTime);
