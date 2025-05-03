@@ -23,6 +23,15 @@ function show(credential: UserCredential): void {
     mode: "dialog",
     focusFirstInput: true,
     beforeAnimation: async () => {
+      signedInUser = credential;
+
+      if (!CaptchaController.isCaptchaAvailable()) {
+        Notifications.add(
+          "Could not show google sign up popup: Captcha is not avilable. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
+          -1
+        );
+        return;
+      }
       CaptchaController.reset("googleSignUpModal");
       CaptchaController.render(
         $("#googleSignUpModal .captcha")[0] as HTMLElement,
@@ -30,7 +39,11 @@ function show(credential: UserCredential): void {
       );
       enableInput();
       disableButton();
-      signedInUser = credential;
+    },
+    afterAnimation: async () => {
+      if (!CaptchaController.isCaptchaAvailable()) {
+        void hide();
+      }
     },
   });
 }
