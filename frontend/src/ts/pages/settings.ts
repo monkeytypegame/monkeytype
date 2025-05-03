@@ -409,12 +409,12 @@ async function initGroups(): Promise<void> {
       const customButton = $(
         ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']"
       );
-      const hasActive =
+
+      if (
         $(
           ".pageSettings .section[data-config-name='fontFamily'] .buttons .active"
-        ).length > 0;
-      console.log("###   after update", { customButton, hasActive });
-      if (!hasActive) {
+        ).length === 0
+      ) {
         customButton.addClass("active");
         customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
       } else {
