@@ -470,14 +470,14 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       vite:
-        specifier: 6.3.0
-        version: 6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
+        specifier: 6.3.4
+        version: 6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
       vite-bundle-visualizer:
         specifier: 1.0.1
         version: 1.0.1(rollup@2.79.2)
       vite-plugin-checker:
         specifier: 0.7.2
-        version: 0.7.2(eslint@8.57.1)(optionator@0.9.4)(typescript@5.5.4)(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
+        version: 0.7.2(eslint@8.57.1)(optionator@0.9.4)(typescript@5.5.4)(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
       vite-plugin-filter-replace:
         specifier: 0.1.14
         version: 0.1.14
@@ -486,16 +486,16 @@ importers:
         version: 1.1.2
       vite-plugin-inspect:
         specifier: 11.0.0
-        version: 11.0.0(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
+        version: 11.0.0(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
       vite-plugin-minify:
         specifier: 2.1.0
-        version: 2.1.0(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
+        version: 2.1.0(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
       vite-plugin-oxlint:
         specifier: 1.3.1
-        version: 1.3.1(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
+        version: 1.3.1(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
       vite-plugin-pwa:
         specifier: 1.0.0
-        version: 1.0.0(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))(workbox-build@7.1.1)(workbox-window@7.1.0)
+        version: 1.0.0(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))(workbox-build@7.1.1)(workbox-window@7.1.0)
       vitest:
         specifier: 2.1.9
         version: 2.1.9(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.39.0)
@@ -532,7 +532,7 @@ importers:
         version: 0.16.7
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(postcss@8.5.1)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.5.0)
+        version: 8.4.0(postcss@8.5.3)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.5.0)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -5052,6 +5052,14 @@ packages:
       picomatch:
         optional: true
 
+  fdir@6.4.4:
+    resolution: {integrity: sha512-1NZP+GK4GfuAv3PqKvxQRDMjdSRZjnkq7KfhlNrCNNlZ0ygQFpebfrnfnq/W7fpUnAv9aGWmY1zKx7FYL3gwhg==}
+    peerDependencies:
+      picomatch: ^3 || ^4
+    peerDependenciesMeta:
+      picomatch:
+        optional: true
+
   fecha@4.2.3:
     resolution: {integrity: sha512-OP2IUU6HeYKJi3i0z4A19kHMQoLVs4Hc+DPqqxI2h/DPZHTm/vjsfC6P0b4jCMy14XizLBqvndQ+UilD7707Jw==}
 
@@ -9187,6 +9195,10 @@ packages:
     resolution: {integrity: sha512-qkf4trmKSIiMTs/E63cxH+ojC2unam7rJ0WrauAzpT3ECNTxGRMlaXxVbfxMUC/w0LaYk6jQ4y/nGR9uBO3tww==}
     engines: {node: '>=12.0.0'}
 
+  tinyglobby@0.2.13:
+    resolution: {integrity: sha512-mEwzpUgrLySlveBwEVDMKk5B57bhLPYovRfPAXD5gA/98Opn0rCDj3GtLwFvCvH5RK9uPCExUROW5NjDwvqkxw==}
+    engines: {node: '>=12.0.0'}
+
   tinypool@1.0.2:
     resolution: {integrity: sha512-al6n+QEANGFOMf/dmUMsuS5/r9B06uwlyNjZZql/zv8J7ybHCgoihBNORZCY2mzUuAnomQa2JdhyHKzZxPCrFA==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -9853,8 +9865,8 @@ packages:
       terser:
         optional: true
 
-  vite@6.3.0:
-    resolution: {integrity: sha512-9aC0n4pr6hIbvi1YOpFjwQ+QOTGssvbJKoeYkuHHGWwlXfdxQlI8L2qNMo9awEEcCPSiS+5mJZk5jH1PAqoDeQ==}
+  vite@6.3.4:
+    resolution: {integrity: sha512-BiReIiMS2fyFqbqNT/Qqt4CVITDU9M9vE+DKcVAsB+ZV0wvTKd+3hMbkpxz1b+NmEDMegpVbisKiAZOnvO92Sw==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
@@ -12692,7 +12704,7 @@ snapshots:
 
   '@types/eslint@8.56.11':
     dependencies:
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
       '@types/json-schema': 7.0.15
 
   '@types/estree@0.0.39': {}
@@ -13095,7 +13107,7 @@ snapshots:
       '@vue/shared': 3.4.37
       estree-walker: 2.0.2
       magic-string: 0.30.17
-      postcss: 8.5.1
+      postcss: 8.5.3
       source-map-js: 1.2.1
 
   '@vue/compiler-ssr@3.4.37':
@@ -14567,11 +14579,11 @@ snapshots:
     dependencies:
       node-source-walk: 7.0.0
 
-  detective-postcss@7.0.0(postcss@8.5.1):
+  detective-postcss@7.0.0(postcss@8.5.3):
     dependencies:
       is-url: 1.2.4
-      postcss: 8.5.1
-      postcss-values-parser: 6.0.2(postcss@8.5.1)
+      postcss: 8.5.3
+      postcss-values-parser: 6.0.2(postcss@8.5.3)
 
   detective-sass@6.0.0:
     dependencies:
@@ -15210,7 +15222,7 @@ snapshots:
 
   estree-walker@3.0.3:
     dependencies:
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
 
   esutils@2.0.3: {}
 
@@ -15497,6 +15509,10 @@ snapshots:
       websocket-driver: 0.7.4
 
   fdir@6.4.3(picomatch@4.0.2):
+    optionalDependencies:
+      picomatch: 4.0.2
+
+  fdir@6.4.4(picomatch@4.0.2):
     optionalDependencies:
       picomatch: 4.0.2
 
@@ -18922,14 +18938,6 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-load-config@6.0.1(postcss@8.5.1)(tsx@4.16.2)(yaml@2.5.0):
-    dependencies:
-      lilconfig: 3.1.3
-    optionalDependencies:
-      postcss: 8.5.1
-      tsx: 4.16.2
-      yaml: 2.5.0
-
   postcss-load-config@6.0.1(postcss@8.5.3)(tsx@4.16.2)(yaml@2.5.0):
     dependencies:
       lilconfig: 3.1.3
@@ -18940,11 +18948,11 @@ snapshots:
 
   postcss-value-parser@4.2.0: {}
 
-  postcss-values-parser@6.0.2(postcss@8.5.1):
+  postcss-values-parser@6.0.2(postcss@8.5.3):
     dependencies:
       color-name: 1.1.4
       is-url-superb: 4.0.0
-      postcss: 8.5.1
+      postcss: 8.5.3
       quote-unquote: 1.0.0
 
   postcss@8.4.31:
@@ -18988,7 +18996,7 @@ snapshots:
       detective-amd: 6.0.0
       detective-cjs: 6.0.0
       detective-es6: 5.0.0
-      detective-postcss: 7.0.0(postcss@8.5.1)
+      detective-postcss: 7.0.0(postcss@8.5.3)
       detective-sass: 6.0.0
       detective-scss: 5.0.0
       detective-stylus: 5.0.0
@@ -18996,7 +19004,7 @@ snapshots:
       detective-vue2: 2.0.3(typescript@5.5.4)
       module-definition: 6.0.0
       node-source-walk: 7.0.0
-      postcss: 8.5.1
+      postcss: 8.5.3
       typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
@@ -20530,6 +20538,11 @@ snapshots:
       fdir: 6.4.3(picomatch@4.0.2)
       picomatch: 4.0.2
 
+  tinyglobby@0.2.13:
+    dependencies:
+      fdir: 6.4.4(picomatch@4.0.2)
+      picomatch: 4.0.2
+
   tinypool@1.0.2: {}
 
   tinyrainbow@1.2.0: {}
@@ -20666,33 +20679,6 @@ snapshots:
   tslib@2.6.3: {}
 
   tsscmp@1.0.6: {}
-
-  tsup@8.4.0(postcss@8.5.1)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.5.0):
-    dependencies:
-      bundle-require: 5.1.0(esbuild@0.25.0)
-      cac: 6.7.14
-      chokidar: 4.0.3
-      consola: 3.4.0
-      debug: 4.4.0
-      esbuild: 0.25.0
-      joycon: 3.1.1
-      picocolors: 1.1.1
-      postcss-load-config: 6.0.1(postcss@8.5.1)(tsx@4.16.2)(yaml@2.5.0)
-      resolve-from: 5.0.0
-      rollup: 4.34.8
-      source-map: 0.8.0-beta.0
-      sucrase: 3.35.0
-      tinyexec: 0.3.2
-      tinyglobby: 0.2.12
-      tree-kill: 1.2.2
-    optionalDependencies:
-      postcss: 8.5.1
-      typescript: 5.5.4
-    transitivePeerDependencies:
-      - jiti
-      - supports-color
-      - tsx
-      - yaml
 
   tsup@8.4.0(postcss@8.5.3)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.5.0):
     dependencies:
@@ -21170,15 +21156,15 @@ snapshots:
       - rollup
       - supports-color
 
-  vite-dev-rpc@1.0.7(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
+  vite-dev-rpc@1.0.7(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
     dependencies:
       birpc: 2.3.0
-      vite: 6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
-      vite-hot-client: 2.0.4(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
+      vite: 6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
+      vite-hot-client: 2.0.4(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
 
-  vite-hot-client@2.0.4(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
+  vite-hot-client@2.0.4(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
     dependencies:
-      vite: 6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
+      vite: 6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
 
   vite-node@2.1.9(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0):
     dependencies:
@@ -21216,7 +21202,7 @@ snapshots:
       - supports-color
       - terser
 
-  vite-plugin-checker@0.7.2(eslint@8.57.1)(optionator@0.9.4)(typescript@5.5.4)(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
+  vite-plugin-checker@0.7.2(eslint@8.57.1)(optionator@0.9.4)(typescript@5.5.4)(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
     dependencies:
       '@babel/code-frame': 7.24.7
       ansi-escapes: 4.3.2
@@ -21228,7 +21214,7 @@ snapshots:
       npm-run-path: 4.0.1
       strip-ansi: 6.0.1
       tiny-invariant: 1.3.3
-      vite: 6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
+      vite: 6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
       vscode-languageclient: 7.0.0
       vscode-languageserver: 7.0.0
       vscode-languageserver-textdocument: 1.0.11
@@ -21244,7 +21230,7 @@ snapshots:
 
   vite-plugin-html-inject@1.1.2: {}
 
-  vite-plugin-inspect@11.0.0(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
+  vite-plugin-inspect@11.0.0(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
     dependencies:
       ansis: 3.17.0
       debug: 4.4.0
@@ -21254,29 +21240,29 @@ snapshots:
       perfect-debounce: 1.0.0
       sirv: 3.0.1
       unplugin-utils: 0.2.4
-      vite: 6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
-      vite-dev-rpc: 1.0.7(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
+      vite: 6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
+      vite-dev-rpc: 1.0.7(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))
     transitivePeerDependencies:
       - supports-color
 
-  vite-plugin-minify@2.1.0(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
+  vite-plugin-minify@2.1.0(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
     dependencies:
       '@types/html-minifier-terser': 7.0.2
       html-minifier-terser: 7.2.0
-      vite: 6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
+      vite: 6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
 
-  vite-plugin-oxlint@1.3.1(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
+  vite-plugin-oxlint@1.3.1(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)):
     dependencies:
       oxlint: 0.16.7
       package-manager-detector: 1.1.0
-      vite: 6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
+      vite: 6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
 
-  vite-plugin-pwa@1.0.0(vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))(workbox-build@7.1.1)(workbox-window@7.1.0):
+  vite-plugin-pwa@1.0.0(vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0))(workbox-build@7.1.1)(workbox-window@7.1.0):
     dependencies:
       debug: 4.4.0
       pretty-bytes: 6.1.1
       tinyglobby: 0.2.12
-      vite: 6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
+      vite: 6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0)
       workbox-build: 7.1.1
       workbox-window: 7.1.0
     transitivePeerDependencies:
@@ -21304,14 +21290,14 @@ snapshots:
       sass: 1.70.0
       terser: 5.39.0
 
-  vite@6.3.0(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0):
+  vite@6.3.4(@types/node@20.14.11)(sass@1.70.0)(terser@5.39.0)(tsx@4.16.2)(yaml@2.5.0):
     dependencies:
       esbuild: 0.25.0
-      fdir: 6.4.3(picomatch@4.0.2)
+      fdir: 6.4.4(picomatch@4.0.2)
       picomatch: 4.0.2
       postcss: 8.5.3
       rollup: 4.40.0
-      tinyglobby: 0.2.12
+      tinyglobby: 0.2.13
     optionalDependencies:
       '@types/node': 20.14.11
       fsevents: 2.3.3

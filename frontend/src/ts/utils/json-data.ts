@@ -88,11 +88,7 @@ export type Layout = {
  * @throws {Error} If the layout list or layout doesn't exist.
  */
 export async function getLayout(layoutName: string): Promise<Layout> {
-  try {
-    return await cachedFetchJson<Layout>(`/layouts/${layoutName}.json`);
-  } catch (e) {
-    throw new Error(`Layout ${layoutName} JSON fetch failed`);
-  }
+  return await cachedFetchJson<Layout>(`/layouts/${layoutName}.json`);
 }
 
 /**
@@ -100,14 +96,8 @@ export async function getLayout(layoutName: string): Promise<Layout> {
  * @returns A promise that resolves to the list of languages.
  */
 export async function getLanguageList(): Promise<string[]> {
-  try {
-    const languageList = await cachedFetchJson<string[]>(
-      "/languages/_list.json"
-    );
-    return languageList;
-  } catch (e) {
-    throw new Error("Language list JSON fetch failed");
-  }
+  const languageList = await cachedFetchJson<string[]>("/languages/_list.json");
+  return languageList;
 }
 
 export type LanguageGroup = {
@@ -120,14 +110,10 @@ export type LanguageGroup = {
  * @returns A promise that resolves to the list of language groups.
  */
 export async function getLanguageGroups(): Promise<LanguageGroup[]> {
-  try {
-    const languageGroupList = await cachedFetchJson<LanguageGroup[]>(
-      "/languages/_groups.json"
-    );
-    return languageGroupList;
-  } catch (e) {
-    throw new Error("Language groups JSON fetch failed");
-  }
+  const languageGroupList = await cachedFetchJson<LanguageGroup[]>(
+    "/languages/_groups.json"
+  );
+  return languageGroupList;
 }
 
 export type LanguageObject = {
@@ -150,7 +136,6 @@ let currentLanguage: LanguageObject;
  * @returns A promise that resolves to the language object.
  */
 export async function getLanguage(lang: string): Promise<LanguageObject> {
-  // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
     currentLanguage = await cachedFetchJson<LanguageObject>(
       `/languages/${lang}.json`
@@ -256,12 +241,8 @@ export type Challenge = {
  * @returns A promise that resolves to the list of challenges.
  */
 export async function getChallengeList(): Promise<Challenge[]> {
-  try {
-    const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
-    return data;
-  } catch (e) {
-    throw new Error("Challenge list JSON fetch failed");
-  }
+  const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
+  return data;
 }
 
 /**
@@ -269,12 +250,8 @@ export async function getChallengeList(): Promise<Challenge[]> {
  * @returns A promise that resolves to the list of supporters.
  */
 export async function getSupportersList(): Promise<string[]> {
-  try {
-    const data = await cachedFetchJson<string[]>("/about/supporters.json");
-    return data;
-  } catch (e) {
-    throw new Error("Supporters list JSON fetch failed");
-  }
+  const data = await cachedFetchJson<string[]>("/about/supporters.json");
+  return data;
 }
 
 /**
@@ -282,12 +259,8 @@ export async function getSupportersList(): Promise<string[]> {
  * @returns A promise that resolves to the list of contributors.
  */
 export async function getContributorsList(): Promise<string[]> {
-  try {
-    const data = await cachedFetchJson<string[]>("/about/contributors.json");
-    return data;
-  } catch (e) {
-    throw new Error("Contributors list JSON fetch failed");
-  }
+  const data = await cachedFetchJson<string[]>("/about/contributors.json");
+  return data;
 }
 
 type GithubRelease = {

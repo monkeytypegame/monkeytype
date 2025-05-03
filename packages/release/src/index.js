@@ -1,5 +1,7 @@
-import { execSync } from "child_process";
+// idk why its failing to resolve
+// eslint-disable-next-line import/no-unresolved
 import { Octokit } from "@octokit/rest";
+import { execSync } from "child_process";
 import dotenv from "dotenv";
 import fs, { readFileSync } from "fs";
 import readlineSync from "readline-sync";
@@ -174,7 +176,7 @@ const buildProject = () => {
   }
 
   runProjectRootCommand(
-    "npx turbo lint test validate-json build " + filter + " --force"
+    "SENTRY=1 npx turbo lint test validate-json build " + filter + " --force"
   );
 };
 

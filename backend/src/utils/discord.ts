@@ -10,7 +10,10 @@ const BASE_URL = "https://discord.com/api";
 
 const DiscordIdAndAvatarSchema = z.object({
   id: z.string(),
-  avatar: z.string().optional(),
+  avatar: z
+    .string()
+    .optional()
+    .or(z.null().transform(() => undefined)),
 });
 type DiscordIdAndAvatar = z.infer<typeof DiscordIdAndAvatarSchema>;
 
