@@ -26,15 +26,6 @@ nav > .textButton {
   color: #1a1025;
 }
 
-/* nav:before{
-    content: "";
-    background: #f94348;
-    width: 1.25rem;
-    height: 1.25rem;
-    padding: .5rem;
-    border-radius: 10rem;
-} */
-
 nav > .textButton:nth-child(1) {
   background: #ff6bcf;
 }
