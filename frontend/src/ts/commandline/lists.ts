@@ -94,20 +94,17 @@ import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import * as CustomTextPopup from "../modals/custom-text";
-import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
-import { migrateConfig } from "../utils/config";
 import {
   CustomBackgroundSchema,
-  PartialConfigSchema,
+  CustomLayoutFluid,
 } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";
 
@@ -219,13 +216,15 @@ export const commands: CommandsSubgroup = {
       id: "changeCustomLayoutfluid",
       display: "Custom layoutfluid...",
       defaultValue: (): string => {
-        return Config.customLayoutfluid.replace(/#/g, " ");
+        return Config.customLayoutfluid.join(" ");
       },
       input: true,
       icon: "fa-tint",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(input.replace(/ /g, "#"));
+        UpdateConfig.setCustomLayoutfluid(
+          input.split(" ") as CustomLayoutFluid
+        );
       },
     },
     {
@@ -375,21 +374,7 @@ export const commands: CommandsSubgroup = {
       input: true,
       exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
-        try {
-          const parsedConfig = parseJsonWithSchema(
-            input,
-            PartialConfigSchema.strip()
-          );
-          await UpdateConfig.apply(migrateConfig(parsedConfig));
-          UpdateConfig.saveFullConfigToLocalStorage();
-          void Settings.update();
-          Notifications.add("Done", 1);
-        } catch (e) {
-          Notifications.add(
-            "An error occured while importing settings: " + e,
-            -1
-          );
-        }
+        await UpdateConfig.applyFromJson(input);
       },
     },
     {

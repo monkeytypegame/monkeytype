@@ -7,7 +7,6 @@ import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
-import { type FunboxName } from "@monkeytype/funbox";
 import * as TTSEvent from "../../observables/tts-event";
 import * as Notifications from "../../elements/notifications";
 import * as DDR from "../../utils/ddr";
@@ -23,7 +22,11 @@ import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
-import { KeymapLayout, Layout } from "@monkeytype/contracts/schemas/configs";
+import {
+  FunboxName,
+  KeymapLayout,
+  Layout,
+} from "@monkeytype/contracts/schemas/configs";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -344,7 +347,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   layoutfluid: {
     applyConfig(): void {
-      const layout = Config.customLayoutfluid.split("#")[0] ?? "qwerty";
+      const layout = Config.customLayoutfluid[0] ?? "qwerty";
 
       UpdateConfig.setLayout(layout as Layout, true);
       UpdateConfig.setKeymapLayout(layout as KeymapLayout, true);
@@ -356,11 +359,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     handleSpace(): void {
       if (Config.mode !== "time") {
-        // here I need to check if Config.customLayoutFluid exists because of my
-        // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
-        const layouts: Layout[] = Config.customLayoutfluid
-          ? (Config.customLayoutfluid.split("#") as Layout[])
-          : ["qwerty", "dvorak", "colemak"];
+        const layouts = Config.customLayoutfluid;
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
         const index = Math.floor(
@@ -400,7 +399,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
     },
     getResultContent(): string {
-      return Config.customLayoutfluid.replace(/#/g, " ");
+      return Config.customLayoutfluid.join(" ");
     },
     restart(): void {
       if (this.applyConfig) this.applyConfig();

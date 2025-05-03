@@ -1,5 +1,7 @@
-import { execSync } from "child_process";
+// idk why its failing to resolve
+// eslint-disable-next-line import/no-unresolved
 import { Octokit } from "@octokit/rest";
+import { execSync } from "child_process";
 import dotenv from "dotenv";
 import fs, { readFileSync } from "fs";
 import readlineSync from "readline-sync";
@@ -17,6 +19,7 @@ const noDeploy = args.has("--no-deploy");
 const isBackend = args.has("--be");
 const isDryRun = args.has("--dry");
 const noSyncCheck = args.has("--no-sync-check");
+const hotfix = args.has("--hotfix");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../../../");
 
@@ -172,7 +175,9 @@ const buildProject = () => {
     filter = "--filter @monkeytype/backend";
   }
 
-  runProjectRootCommand("npx turbo lint test validate-json build " + filter);
+  runProjectRootCommand(
+    "SENTRY=1 npx turbo lint test validate-json build " + filter + " --force"
+  );
 };
 
 const deployBackend = () => {
@@ -235,27 +240,31 @@ const createGithubRelease = async (version, changelogContent) => {
 };
 
 const main = async () => {
-  console.log("Starting release process...");
+  console.log(`Starting ${hotfix ? "hotfix" : "release"} process...`);
 
-  checkBranchSync();
+  if (!hotfix) checkBranchSync();
 
   checkUncommittedChanges();
 
-  const changelogContent = await generateChangelog();
+  let changelogContent;
+  let newVersion;
+  if (!hotfix) {
+    changelogContent = await generateChangelog();
 
-  console.log(changelogContent);
+    console.log(changelogContent);
 
-  if (!readlineSync.keyInYN("Changelog looks good?")) {
-    console.log("Exiting.");
-    process.exit(1);
+    if (!readlineSync.keyInYN("Changelog looks good?")) {
+      console.log("Exiting.");
+      process.exit(1);
+    }
+
+    const currentVersion = getCurrentVersion();
+    newVersion = incrementVersion(currentVersion);
+    console.log(`New version: ${newVersion}`);
   }
-
-  const currentVersion = getCurrentVersion();
-  const newVersion = incrementVersion(currentVersion);
-
   buildProject();
 
-  if (!readlineSync.keyInYN(`Ready to release ${newVersion}?`)) {
+  if (!hotfix && !readlineSync.keyInYN(`Ready to release ${newVersion}?`)) {
     console.log("Exiting.");
     process.exit(1);
   }
@@ -269,16 +278,22 @@ const main = async () => {
   }
 
   if (!noDeploy) purgeCache();
-  updatePackage(newVersion);
-  createCommitAndTag(newVersion);
-  try {
-    await createGithubRelease(newVersion, changelogContent);
-  } catch (e) {
-    console.error(`Failed to create release on GitHub: ${e}`);
-    console.log("Please create the release manually.");
+  if (!hotfix) {
+    updatePackage(newVersion);
+    createCommitAndTag(newVersion);
+    try {
+      await createGithubRelease(newVersion, changelogContent);
+    } catch (e) {
+      console.error(`Failed to create release on GitHub: ${e}`);
+      console.log("Please create the release manually.");
+    }
   }
 
-  console.log(`Release ${newVersion} completed successfully.`);
+  if (hotfix) {
+    console.log("Hotfix completed successfully.");
+  } else {
+    console.log(`Release ${newVersion} completed successfully.`);
+  }
   process.exit(0);
 };
 
