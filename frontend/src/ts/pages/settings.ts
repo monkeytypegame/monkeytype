@@ -708,7 +708,8 @@ async function fillSettingsPage(): Promise<void> {
     }
   }
   setEventDisabled(false);
-  await ThemePicker.refreshButtons();
+  await ThemePicker.refreshCustomButtons();
+  await ThemePicker.refreshPresetButtons();
   await UpdateConfig.loadPromise;
 }
 
@@ -823,7 +824,7 @@ export async function update(groupUpdate = true): Promise<void> {
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
   await Misc.sleep(0);
-  ThemePicker.updateActiveTab(true);
+  ThemePicker.updateActiveTab();
   ThemePicker.setCustomInputs(true);
   // ThemePicker.updateActiveButton();
 
