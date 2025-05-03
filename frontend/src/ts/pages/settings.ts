@@ -409,11 +409,12 @@ async function initGroups(): Promise<void> {
       const customButton = $(
         ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']"
       );
-      if (
+      const hasActive =
         $(
           ".pageSettings .section[data-config-name='fontFamily'] .buttons .active"
-        ).length === 0
-      ) {
+        ).length > 0;
+      console.log("###   after update", { customButton, hasActive });
+      if (!hasActive) {
         customButton.addClass("active");
         customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
       } else {
@@ -619,7 +620,6 @@ async function fillSettingsPage(): Promise<void> {
   }
   funboxEl.innerHTML = funboxElHTML;
 
-  let isCustomFont = true;
   const fontsEl = document.querySelector(
     ".pageSettings .section[data-config-name='fontFamily'] .buttons"
   ) as HTMLDivElement;
@@ -650,19 +650,15 @@ async function fillSettingsPage(): Promise<void> {
         }
         const activeClass = Config.fontFamily === font.name ? " active" : "";
         const display = font.display !== undefined ? font.display : font.name;
-        if (Config.fontFamily === font.name) isCustomFont = false;
+
         fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${font.name.replace(
           / /g,
           "_"
         )}">${display}</button>`;
       }
 
-      fontsElHTML += isCustomFont
-        ? `<button class="no-auto-handle active" data-config-value="custom">Custom (${Config.fontFamily.replace(
-            /_/g,
-            " "
-          )})</button>`
-        : '<button class="no-auto-handle" data-config-value="custom"">Custom</button>';
+      fontsElHTML +=
+        '<button class="no-auto-handle" data-config-value="custom"">Custom</button>';
 
       fontsEl.innerHTML = fontsElHTML;
     }
