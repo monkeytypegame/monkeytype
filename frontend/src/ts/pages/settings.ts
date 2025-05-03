@@ -582,7 +582,6 @@ async function fillSettingsPage(): Promise<void> {
   const funboxEl = document.querySelector(
     ".pageSettings .section[data-config-name='funbox'] .buttons"
   ) as HTMLDivElement;
-  // funboxEl.innerHTML = `<button class="funbox" data-config-value='none'>none</button>`;
   let funboxElHTML = "";
 
   for (const funbox of getAllFunboxes()) {
