@@ -118,7 +118,9 @@ async function apply(): Promise<void> {
     LoginPage.enableSignUpButton();
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
-      await signedInUser.user.delete();
+      await signedInUser?.user.delete().catch(() => {
+        //user might be deleted already by the server
+      });
     }
     AccountController.signOut();
     signedInUser = undefined;
