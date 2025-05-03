@@ -110,9 +110,6 @@ export default class SettingsGroup<T extends ConfigValue> {
           return;
         }
         const val = parseFloat((el as HTMLInputElement).value) as unknown as T;
-
-        console.log(val);
-
         this.updateUI(val);
         debounced(val);
       });
