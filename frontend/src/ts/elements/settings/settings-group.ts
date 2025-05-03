@@ -99,7 +99,6 @@ export default class SettingsGroup<T extends ConfigValue> {
       }
 
       const debounced = debounce<(val: T) => void>(250, (val) => {
-        console.log("setting value to ", val);
         this.setValue(val);
       });
 
