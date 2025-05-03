@@ -62,6 +62,7 @@ function highlightMatches(text: string, matchedText: string[]): string {
 }
 
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
+  if (!modal.isOpen()) return [];
   const quoteLengthFilterValue = $(
     "#quoteSearchModal .quoteLengthFilter"
   ).val() as string[];
@@ -80,6 +81,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
 }
 
 function applyQuoteFavFilter(quotes: Quote[]): Quote[] {
+  if (!modal.isOpen()) return [];
   const showFavOnly = (
     document.querySelector(".toggleFavorites") as HTMLDivElement
   ).classList.contains("active");
@@ -154,6 +156,8 @@ function buildQuoteSearchResult(
 }
 
 async function updateResults(searchText: string): Promise<void> {
+  if (!modal.isOpen()) return;
+
   const { quotes } = await QuotesController.getQuotes(Config.language);
 
   const quoteSearchService = getSearchService<Quote>(
@@ -334,6 +338,7 @@ function apply(val: number): void {
 }
 
 const searchForQuotes = debounce(250, (): void => {
+  if (!modal.isOpen()) return;
   const searchText = (document.getElementById("searchBox") as HTMLInputElement)
     .value;
   currentPageNumber = 1;
