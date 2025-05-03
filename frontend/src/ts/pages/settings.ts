@@ -443,7 +443,6 @@ function reset(): void {
   $(".pageSettings .section.themes .allThemes.buttons").empty();
   $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
   $(".pageSettings .section[data-config-name='funbox'] .buttons").empty();
-  $(".pageSettings .section[data-config-name='fontFamily'] .buttons").empty();
   for (const select of document.querySelectorAll(".pageSettings select")) {
     //@ts-expect-error slim gets added to the html element but ts doesnt know about it
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -624,48 +623,49 @@ async function fillSettingsPage(): Promise<void> {
   const fontsEl = document.querySelector(
     ".pageSettings .section[data-config-name='fontFamily'] .buttons"
   ) as HTMLDivElement;
-  fontsEl.innerHTML = "";
 
-  let fontsElHTML = "";
+  if (fontsEl.innerHTML === "") {
+    let fontsElHTML = "";
 
-  const { data: fontsList, error: getFontsListError } = await tryCatch(
-    JSONData.getFontsList()
-  );
-  if (getFontsListError) {
-    console.error(
-      Misc.createErrorMessage(
-        getFontsListError,
-        "Failed to update fonts settings buttons"
-      )
+    const { data: fontsList, error: getFontsListError } = await tryCatch(
+      JSONData.getFontsList()
     );
-  }
-
-  if (fontsList) {
-    for (const font of fontsList) {
-      let fontFamily = font.name;
-      if (fontFamily === "Helvetica") {
-        fontFamily = "Comic Sans MS";
-      }
-      if ((font.systemFont ?? false) === false) {
-        fontFamily += " Preview";
-      }
-      const activeClass = Config.fontFamily === font.name ? " active" : "";
-      const display = font.display !== undefined ? font.display : font.name;
-      if (Config.fontFamily === font.name) isCustomFont = false;
-      fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${font.name.replace(
-        / /g,
-        "_"
-      )}">${display}</button>`;
+    if (getFontsListError) {
+      console.error(
+        Misc.createErrorMessage(
+          getFontsListError,
+          "Failed to update fonts settings buttons"
+        )
+      );
     }
 
-    fontsElHTML += isCustomFont
-      ? `<button class="no-auto-handle active" data-config-value="custom">Custom (${Config.fontFamily.replace(
-          /_/g,
-          " "
-        )})</button>`
-      : '<button class="no-auto-handle" data-config-value="custom"">Custom</button>';
+    if (fontsList) {
+      for (const font of fontsList) {
+        let fontFamily = font.name;
+        if (fontFamily === "Helvetica") {
+          fontFamily = "Comic Sans MS";
+        }
+        if ((font.systemFont ?? false) === false) {
+          fontFamily += " Preview";
+        }
+        const activeClass = Config.fontFamily === font.name ? " active" : "";
+        const display = font.display !== undefined ? font.display : font.name;
+        if (Config.fontFamily === font.name) isCustomFont = false;
+        fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${font.name.replace(
+          / /g,
+          "_"
+        )}">${display}</button>`;
+      }
 
-    fontsEl.innerHTML = fontsElHTML;
+      fontsElHTML += isCustomFont
+        ? `<button class="no-auto-handle active" data-config-value="custom">Custom (${Config.fontFamily.replace(
+            /_/g,
+            " "
+          )})</button>`
+        : '<button class="no-auto-handle" data-config-value="custom"">Custom</button>';
+
+      fontsEl.innerHTML = fontsElHTML;
+    }
   }
 
   customLayoutFluidSelect = new SlimSelect({
