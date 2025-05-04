@@ -76,6 +76,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { captureException } from "../sentry";
+import * as Loader from "../elements/loader";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -410,9 +411,12 @@ export async function init(): Promise<void> {
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
+  Loader.show();
   const { data: language, error } = await tryCatch(
     JSONData.getLanguage(Config.language)
   );
+  Loader.hide();
+
   if (error) {
     Notifications.add(
       Misc.createErrorMessage(error, "Failed to load language"),
