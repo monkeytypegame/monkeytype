@@ -24,6 +24,14 @@ export async function show(
   quoteId: number,
   showOptions?: ShowOptions
 ): Promise<void> {
+  if (!CaptchaController.isCaptchaAvailable()) {
+    Notifications.add(
+      "Could not show quote report popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
+      -1
+    );
+    return;
+  }
+
   void modal.show({
     mode: "dialog",
     ...showOptions,

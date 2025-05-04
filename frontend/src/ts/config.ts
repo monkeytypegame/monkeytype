@@ -14,6 +14,7 @@ import {
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
 import {
+  createErrorMessage,
   isDevEnvironment,
   isObject,
   promiseWithResolvers,
@@ -28,6 +29,7 @@ import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -2130,6 +2132,30 @@ export function getConfigChanges(): Partial<Config> {
       configChanges[key] = config[key];
     });
   return configChanges;
+}
+
+export async function applyFromJson(json: string): Promise<void> {
+  try {
+    const parsedConfig = parseJsonWithSchema(
+      json,
+      ConfigSchemas.PartialConfigSchema.strip(),
+      {
+        migrate: (value) => {
+          if (Array.isArray(value)) {
+            throw new Error("Invalid config");
+          }
+          return migrateConfig(value);
+        },
+      }
+    );
+    await apply(parsedConfig);
+    saveFullConfigToLocalStorage();
+    Notifications.add("Done", 1);
+  } catch (e) {
+    const msg = createErrorMessage(e, "Failed to import settings");
+    console.error(msg);
+    Notifications.add(msg, -1);
+  }
 }
 
 const { promise: loadPromise, resolve: loadDone } = promiseWithResolvers();

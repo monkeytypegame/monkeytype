@@ -53,6 +53,14 @@ async function submitQuote(): Promise<void> {
 }
 
 export async function show(showOptions: ShowOptions): Promise<void> {
+  if (!CaptchaController.isCaptchaAvailable()) {
+    Notifications.add(
+      "Could not show quote submit popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
+      -1
+    );
+    return;
+  }
+
   void modal.show({
     ...showOptions,
     mode: "dialog",

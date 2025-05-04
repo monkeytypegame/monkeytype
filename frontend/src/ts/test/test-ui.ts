@@ -451,7 +451,10 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRTL = currentLanguage.rightToLeft;
 
-  const el = document.querySelector("#wordsInput") as HTMLElement;
+  const el = document.querySelector<HTMLElement>("#wordsInput");
+
+  if (!el) return;
+
   const activeWord =
     document.querySelectorAll<HTMLElement>("#words .word")[
       TestState.activeWordIndex - activeWordElementOffset
