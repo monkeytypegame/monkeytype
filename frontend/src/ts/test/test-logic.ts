@@ -298,7 +298,6 @@ export function restart(options = {} as RestartOptions): void {
     el = $("#typingTest");
   }
   TestUI.setResultVisible(false);
-  PageTransition.set(true);
   TestUI.setTestRestarting(true);
   el.stop(true, true).animate(
     {
@@ -371,10 +370,9 @@ export function restart(options = {} as RestartOptions): void {
             LiveSpeed.reset();
             LiveAcc.reset();
             LiveBurst.reset();
-            TestUI.setTestRestarting(false);
             TestUI.updatePremid();
             ManualRestart.reset();
-            PageTransition.set(false);
+            TestUI.setTestRestarting(false);
           }
         );
     }
