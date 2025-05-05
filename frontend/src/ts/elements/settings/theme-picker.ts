@@ -15,7 +15,7 @@ import {
   ThemeName,
 } from "@monkeytype/contracts/schemas/configs";
 import { captureException } from "../../sentry";
-import { getSortedThemesList } from "../../constants/themes";
+import { ThemesListSorted } from "../../constants/themes";
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
@@ -149,7 +149,7 @@ export async function refreshPresetButtons(): Promise<void> {
     activeThemeName = ThemeController.randomTheme;
   }
 
-  const themes = getSortedThemesList();
+  const themes = ThemesListSorted;
 
   //first show favourites
   if (Config.favThemes.length > 0) {
