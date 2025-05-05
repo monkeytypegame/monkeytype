@@ -2,7 +2,7 @@ import Config, * as UpdateConfig from "../config";
 import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
-import { getCommandline } from "../utils/async-modules";
+import * as Commandline from "../commandline/commandline";
 import * as SupportPopup from "../modals/support";
 import * as ContactModal from "../modals/contact";
 import * as VersionHistoryModal from "../modals/version-history";
@@ -11,7 +11,7 @@ import { envConfig } from "../constants/env-config";
 document
   .querySelector("footer #commandLineMobileButton")
   ?.addEventListener("click", async () => {
-    (await getCommandline()).show({
+    Commandline.show({
       singleListOverride: false,
     });
   });
@@ -54,7 +54,7 @@ document
       UpdateConfig.setCustomTheme(true);
     } else {
       const subgroup = Config.customTheme ? "customThemesList" : "themes";
-      (await getCommandline()).show({
+      Commandline.show({
         subgroupOverride: subgroup,
       });
     }

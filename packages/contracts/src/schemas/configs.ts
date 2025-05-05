@@ -1,6 +1,7 @@
 import { z, ZodSchema } from "zod";
 import { LanguageSchema, token } from "./util";
 import * as Shared from "./shared";
+import * as Layouts from "./layouts";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -195,8 +196,14 @@ export type CustomBackgroundFilter = z.infer<
   typeof CustomBackgroundFilterSchema
 >;
 
-export const CustomLayoutFluidSchema = z.string().regex(/^[0-9a-zA-Z_#]+$/); //TODO better regex
+export const CustomLayoutFluidSchema = z
+  .array(Layouts.LayoutNameSchema)
+  .min(1)
+  .max(15);
 export type CustomLayoutFluid = z.infer<typeof CustomLayoutFluidSchema>;
+
+export const CustomPolyglotSchema = z.array(LanguageSchema).min(1);
+export type CustomPolyglot = z.infer<typeof CustomPolyglotSchema>;
 
 export const MonkeyPowerLevelSchema = z.enum(["off", "1", "2", "3", "4"]);
 export type MonkeyPowerLevel = z.infer<typeof MonkeyPowerLevelSchema>;
@@ -230,10 +237,56 @@ export type CustomThemeColors = z.infer<typeof CustomThemeColorsSchema>;
 export const FavThemesSchema = z.array(token().max(50));
 export type FavThemes = z.infer<typeof FavThemesSchema>;
 
-export const FunboxSchema = z
-  .string()
-  .max(100)
-  .regex(/[\w#]+/);
+export const FunboxNameSchema = z.enum([
+  "58008",
+  "mirror",
+  "upside_down",
+  "nausea",
+  "round_round_baby",
+  "simon_says",
+  "tts",
+  "choo_choo",
+  "arrows",
+  "rAnDoMcAsE",
+  "capitals",
+  "layout_mirror",
+  "layoutfluid",
+  "earthquake",
+  "space_balls",
+  "gibberish",
+  "ascii",
+  "specials",
+  "plus_one",
+  "plus_zero",
+  "plus_two",
+  "plus_three",
+  "read_ahead_easy",
+  "read_ahead",
+  "read_ahead_hard",
+  "memory",
+  "nospace",
+  "poetry",
+  "wikipedia",
+  "weakspot",
+  "pseudolang",
+  "IPv4",
+  "IPv6",
+  "binary",
+  "hexadecimal",
+  "zipf",
+  "morse",
+  "crt",
+  "backwards",
+  "ddoouubblleedd",
+  "instant_messaging",
+  "underscore_spaces",
+  "ALL_CAPS",
+  "polyglot",
+  "asl",
+]);
+export type FunboxName = z.infer<typeof FunboxNameSchema>;
+
+export const FunboxSchema = z.array(FunboxNameSchema).max(15);
 export type Funbox = z.infer<typeof FunboxSchema>;
 
 export const PaceCaretCustomSpeedSchema = z.number().nonnegative();
@@ -266,15 +319,11 @@ export const ThemeNameSchema = token().max(50);
 export type ThemeName = z.infer<typeof ThemeNameSchema>;
 
 export const KeymapLayoutSchema = z
-  .string()
-  .max(50)
-  .regex(/^[a-zA-Z0-9\-_]+$/gi);
+  .literal("overrideSync")
+  .or(Layouts.LayoutNameSchema);
 export type KeymapLayout = z.infer<typeof KeymapLayoutSchema>;
 
-export const LayoutSchema = z
-  .string()
-  .max(50)
-  .regex(/^[a-zA-Z0-9\-_]+$/gi);
+export const LayoutSchema = z.literal("default").or(Layouts.LayoutNameSchema);
 export type Layout = z.infer<typeof LayoutSchema>;
 
 export const FontSizeSchema = z.number().positive();
@@ -285,7 +334,11 @@ export type MaxLineWidth = z.infer<typeof MaxLineWidthSchema>;
 
 export const CustomBackgroundSchema = z
   .string()
-  .regex(/(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi)
+  .url("Needs to be an URI.")
+  .regex(/^(https|http):\/\/.*/, "Unsupported protocol.")
+  .regex(/^[^`'"]*$/, "May not contain quotes.")
+  .regex(/.+(\.png|\.gif|\.jpeg|\.jpg)/gi, "Unsupported image format.")
+  .max(2048, "URL is too long.")
   .or(z.literal(""));
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
@@ -385,6 +438,7 @@ export const ConfigSchema = z
     lazyMode: z.boolean(),
     showAverage: ShowAverageSchema,
     maxLineWidth: MaxLineWidthSchema,
+    customPolyglot: CustomPolyglotSchema,
     tribeDelta: TribeDeltaSchema,
     tribeCarets: TribeCaretsSchema,
   } satisfies Record<string, ZodSchema>)
@@ -501,6 +555,7 @@ export const ConfigGroupsLiteral = {
   lazyMode: "input",
   showAverage: "hideElements",
   maxLineWidth: "appearance",
+  customPolyglot: "behavior",
   tribeDelta: "tribe",
   tribeCarets: "tribe",
 } as const satisfies Record<ConfigKey, ConfigGroupName>;

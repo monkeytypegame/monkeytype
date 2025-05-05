@@ -5,6 +5,7 @@ import MonkeyError from "../../utils/error";
 import * as DailyLeaderboards from "../../utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import {
+  DailyLeaderboardQuery,
   GetDailyLeaderboardQuery,
   GetDailyLeaderboardRankQuery,
   GetDailyLeaderboardResponse,
@@ -12,8 +13,9 @@ import {
   GetLeaderboardQuery,
   GetLeaderboardRankQuery,
   GetLeaderboardRankResponse,
-  GetLeaderboardResponse as GetLeaderboardResponse,
+  GetLeaderboardResponse,
   GetWeeklyXpLeaderboardQuery,
+  GetWeeklyXpLeaderboardRankQuery,
   GetWeeklyXpLeaderboardRankResponse,
   GetWeeklyXpLeaderboardResponse,
 } from "@monkeytype/contracts/leaderboards";
@@ -73,7 +75,7 @@ export async function getRankFromLeaderboard(
 }
 
 function getDailyLeaderboardWithError(
-  { language, mode, mode2, daysBefore }: GetDailyLeaderboardRankQuery,
+  { language, mode, mode2, daysBefore }: DailyLeaderboardQuery,
   config: Configuration["dailyLeaderboards"]
 ): DailyLeaderboards.DailyLeaderboard {
   const customTimestamp =
@@ -187,12 +189,13 @@ export async function getWeeklyXpLeaderboardResults(
 }
 
 export async function getWeeklyXpLeaderboardRank(
-  req: MonkeyRequest
+  req: MonkeyRequest<GetWeeklyXpLeaderboardRankQuery>
 ): Promise<GetWeeklyXpLeaderboardRankResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
-    req.ctx.configuration.leaderboards.weeklyXp
+    req.ctx.configuration.leaderboards.weeklyXp,
+    req.query.weeksBefore
   );
   const rankEntry = await weeklyXpLeaderboard.getRank(
     uid,

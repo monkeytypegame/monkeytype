@@ -6,12 +6,16 @@ import * as LeaderboardDal from "../../../src/dal/leaderboards";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as Configuration from "../../../src/init/configuration";
-import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
+import {
+  mockAuthenticateWithApeKey,
+  mockBearerAuthentication,
+} from "../../__testData__/auth";
 import { XpLeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
 const uid = new ObjectId().toHexString();
+const mockAuth = mockBearerAuthentication(uid);
 
 const allModes = [
   "10",
@@ -27,6 +31,9 @@ const allModes = [
 ];
 
 describe("Loaderboard Controller", () => {
+  beforeEach(() => {
+    mockAuth.beforeEach();
+  });
   describe("get leaderboard", () => {
     const getLeaderboardMock = vi.spyOn(LeaderboardDal, "get");
 
@@ -260,7 +267,7 @@ describe("Loaderboard Controller", () => {
       const { body } = await mockApp
         .get("/leaderboards/rank")
         .query({ language: "english", mode: "time", mode2: "60" })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -291,7 +298,7 @@ describe("Loaderboard Controller", () => {
       for (const mode of ["time", "words", "quote", "zen", "custom"]) {
         const response = await mockApp
           .get("/leaderboards/rank")
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
           .query({ language: "english", mode, mode2: "custom" });
         expect(response.status, "for mode " + mode).toEqual(200);
       }
@@ -302,7 +309,7 @@ describe("Loaderboard Controller", () => {
       for (const mode2 of allModes) {
         const response = await mockApp
           .get("/leaderboards/rank")
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
           .query({ language: "english", mode: "words", mode2 });
 
         expect(response.status, "for mode2 " + mode2).toEqual(200);
@@ -311,7 +318,7 @@ describe("Loaderboard Controller", () => {
     it("fails for missing query", async () => {
       const { body } = await mockApp
         .get("/leaderboards/rank")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -331,7 +338,7 @@ describe("Loaderboard Controller", () => {
           mode: "unknownMode",
           mode2: "unknownMode2",
         })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -352,7 +359,7 @@ describe("Loaderboard Controller", () => {
           mode2: "60",
           extra: "value",
         })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -372,7 +379,7 @@ describe("Loaderboard Controller", () => {
           mode: "time",
           mode2: "60",
         })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(503);
 
       expect(body.message).toEqual(
@@ -743,7 +750,7 @@ describe("Loaderboard Controller", () => {
       //WHEN
       const { body } = await mockApp
         .get("/leaderboards/daily/rank")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .query({ language: "english", mode: "time", mode2: "60" })
         .expect(200);
 
@@ -768,7 +775,7 @@ describe("Loaderboard Controller", () => {
 
       const { body } = await mockApp
         .get("/leaderboards/daily/rank")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(503);
 
       expect(body.message).toEqual(
@@ -779,7 +786,7 @@ describe("Loaderboard Controller", () => {
       for (const mode of ["time", "words", "quote", "zen", "custom"]) {
         const response = await mockApp
           .get("/leaderboards/daily/rank")
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
           .query({ language: "english", mode, mode2: "custom" });
         expect(response.status, "for mode " + mode).toEqual(200);
       }
@@ -788,7 +795,7 @@ describe("Loaderboard Controller", () => {
       for (const mode2 of allModes) {
         const response = await mockApp
           .get("/leaderboards/daily/rank")
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
           .query({ language: "english", mode: "words", mode2 });
 
         expect(response.status, "for mode2 " + mode2).toEqual(200);
@@ -797,7 +804,7 @@ describe("Loaderboard Controller", () => {
     it("fails for missing query", async () => {
       const { body } = await mockApp
         .get("/leaderboards/daily/rank")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -817,7 +824,7 @@ describe("Loaderboard Controller", () => {
           mode: "unknownMode",
           mode2: "unknownMode2",
         })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -838,7 +845,7 @@ describe("Loaderboard Controller", () => {
           mode2: "60",
           extra: "value",
         })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -853,7 +860,7 @@ describe("Loaderboard Controller", () => {
       //WHEN
       const { body } = await mockApp
         .get("/leaderboards/daily/rank")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .query({
           language: "english",
           mode: "time",
@@ -1067,6 +1074,8 @@ describe("Loaderboard Controller", () => {
     beforeEach(async () => {
       getXpWeeklyLeaderboardMock.mockReset();
       await weeklyLeaderboardEnabled(true);
+      vi.useFakeTimers();
+      vi.setSystemTime(1722606812000);
     });
 
     it("fails withouth authentication", async () => {
@@ -1096,7 +1105,7 @@ describe("Loaderboard Controller", () => {
       //WHEN
       const { body } = await mockApp
         .get("/leaderboards/xp/weekly/rank")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -1109,17 +1118,88 @@ describe("Loaderboard Controller", () => {
 
       expect(getRankMock).toHaveBeenCalledWith(uid, lbConf);
     });
+
+    it("should get for last week", async () => {
+      //GIVEN
+      const lbConf = (await configuration).leaderboards.weeklyXp;
+
+      const resultData: XpLeaderboardEntry = {
+        totalXp: 100,
+        rank: 1,
+        timeTypedSeconds: 100,
+        uid: "user1",
+        name: "user1",
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+        lastActivityTimestamp: 1000,
+      };
+      const getRankMock = vi.fn();
+      getRankMock.mockResolvedValue(resultData);
+      getXpWeeklyLeaderboardMock.mockReturnValue({
+        getRank: getRankMock,
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly/rank")
+        .query({ weeksBefore: 1 })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Weekly xp leaderboard rank retrieved",
+        data: resultData,
+      });
+
+      expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(
+        lbConf,
+        1721606400000
+      );
+
+      expect(getRankMock).toHaveBeenCalledWith(uid, lbConf);
+    });
     it("fails if daily leaderboards are disabled", async () => {
       await weeklyLeaderboardEnabled(false);
 
       const { body } = await mockApp
         .get("/leaderboards/xp/weekly/rank")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(503);
 
       expect(body.message).toEqual(
         "Weekly XP leaderboards are not available at this time."
       );
+    });
+
+    it("fails for weeksBefore not one", async () => {
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly/rank")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({
+          weeksBefore: 2,
+        })
+        .expect(422);
+
+      expect(body).toEqual({
+        message: "Invalid query schema",
+        validationErrors: ['"weeksBefore" Invalid literal value, expected 1'],
+      });
+    });
+
+    it("fails for unknown query", async () => {
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly/rank")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({
+          extra: "value",
+        })
+        .expect(422);
+
+      expect(body).toEqual({
+        message: "Invalid query schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
 
     it("fails while leaderboard is missing", async () => {
@@ -1129,12 +1209,7 @@ describe("Loaderboard Controller", () => {
       //WHEN
       const { body } = await mockApp
         .get("/leaderboards/xp/weekly/rank")
-        .set("authorization", `Uid ${uid}`)
-        .query({
-          language: "english",
-          mode: "time",
-          mode2: "60",
-        })
+        .set("Authorization", `Bearer ${uid}`)
         .expect(404);
 
       expect(body.message).toEqual("XP leaderboard for this week not found.");

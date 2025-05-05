@@ -8,6 +8,11 @@ import { splitVendorChunkPlugin } from "vite";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
 import { writeFileSync } from "fs";
+// eslint-disable-next-line import/no-unresolved
+import UnpluginInjectPreload from "unplugin-inject-preload/vite";
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { ViteMinifyPlugin } from "vite-plugin-minify";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -15,7 +20,7 @@ function pad(numbers, maxLength, fillString) {
   );
 }
 
-function buildClientVersion() {
+const CLIENT_VERSION = (() => {
   const date = new Date();
   const versionPrefix = pad(
     [date.getFullYear(), date.getMonth() + 1, date.getDate()],
@@ -32,11 +37,11 @@ function buildClientVersion() {
       .execSync("git rev-parse --short HEAD")
       .toString();
 
-    return `${version}.${commitHash}`.replace(/\n/g, "");
+    return `${version}_${commitHash}`.replace(/\n/g, "");
   } catch (e) {
-    return `${version}.unknown-hash`;
+    return `${version}_unknown-hash`;
   }
-}
+})();
 
 /** Enable for font awesome v6 */
 /*
@@ -63,7 +68,7 @@ export default {
       apply: "build",
 
       closeBundle() {
-        const version = buildClientVersion();
+        const version = CLIENT_VERSION;
         const versionJson = JSON.stringify({ version });
         const versionPath = path.resolve(__dirname, "dist/version.json");
         writeFileSync(versionPath, versionJson);
@@ -82,8 +87,10 @@ export default {
       },
     }),
     splitVendorChunkPlugin(),
+    ViteMinifyPlugin({}),
     VitePWA({
       // injectRegister: "networkfirst",
+      injectRegister: null,
       registerType: "autoUpdate",
       manifest: {
         short_name: "Monkeytype",
@@ -134,6 +141,17 @@ export default {
         ],
       },
     }),
+    process.env.SENTRY
+      ? sentryVitePlugin({
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          org: "monkeytype",
+          project: "frontend",
+          release: {
+            name: CLIENT_VERSION,
+          },
+          applicationKey: "monkeytype-frontend",
+        })
+      : null,
     replace([
       {
         filter: /firebase\.ts$/,
@@ -143,8 +161,94 @@ export default {
         },
       },
     ]),
+    UnpluginInjectPreload({
+      files: [
+        {
+          outputMatch: /css\/vendor.*\.css$/,
+          attributes: {
+            as: "style",
+            type: "text/css",
+            rel: "preload",
+            crossorigin: true,
+          },
+        },
+        {
+          outputMatch: /.*\.woff2$/,
+          attributes: {
+            as: "font",
+            type: "font/woff2",
+            rel: "preload",
+            crossorigin: true,
+          },
+        },
+      ],
+      injectTo: "head-prepend",
+    }),
+    {
+      name: "minify-json",
+      apply: "build",
+      generateBundle() {
+        let totalOriginalSize = 0;
+        let totalMinifiedSize = 0;
+
+        const minifyJsonFiles = (dir) => {
+          readdirSync(dir).forEach((file) => {
+            const sourcePath = path.join(dir, file);
+            const stat = statSync(sourcePath);
+
+            if (stat.isDirectory()) {
+              minifyJsonFiles(sourcePath);
+            } else if (path.extname(file) === ".json") {
+              const originalContent = readFileSync(sourcePath, "utf8");
+              const originalSize = Buffer.byteLength(originalContent, "utf8");
+              const minifiedContent = JSON.stringify(
+                JSON.parse(originalContent)
+              );
+              const minifiedSize = Buffer.byteLength(minifiedContent, "utf8");
+
+              totalOriginalSize += originalSize;
+              totalMinifiedSize += minifiedSize;
+
+              writeFileSync(sourcePath, minifiedContent);
+
+              // const savings =
+              //   ((originalSize - minifiedSize) / originalSize) * 100;
+              // console.log(
+              //   `\x1b[0m \x1b[36m${sourcePath}\x1b[0m | ` +
+              //     `\x1b[90mOriginal: ${originalSize} bytes\x1b[0m | ` +
+              //     `\x1b[90mMinified: ${minifiedSize} bytes\x1b[0m | ` +
+              //     `\x1b[32mSavings: ${savings.toFixed(2)}%\x1b[0m`
+              // );
+            }
+          });
+        };
+
+        // console.log("\n\x1b[1mMinifying JSON files...\x1b[0m\n");
+
+        minifyJsonFiles("./dist");
+
+        const totalSavings =
+          ((totalOriginalSize - totalMinifiedSize) / totalOriginalSize) * 100;
+
+        console.log(
+          `\n\n\x1b[1mJSON Minification Summary:\x1b[0m\n` +
+            `  \x1b[90mTotal original size: ${(
+              totalOriginalSize /
+              1024 /
+              1024
+            ).toFixed(2)} mB\x1b[0m\n` +
+            `  \x1b[90mTotal minified size: ${(
+              totalMinifiedSize /
+              1024 /
+              1024
+            ).toFixed(2)} mB\x1b[0m\n` +
+            `  \x1b[32mTotal savings: ${totalSavings.toFixed(2)}%\x1b[0m\n`
+        );
+      },
+    },
   ],
   build: {
+    sourcemap: process.env.SENTRY,
     emptyOutDir: true,
     outDir: "../dist",
     assetsInlineLimit: 0, //dont inline small files as data
@@ -178,7 +282,7 @@ export default {
       process.env.BACKEND_URL || "https://api.monkeytype.com"
     ),
     IS_DEVELOPMENT: JSON.stringify(false),
-    CLIENT_VERSION: JSON.stringify(buildClientVersion()),
+    CLIENT_VERSION: JSON.stringify(CLIENT_VERSION),
     RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),
     QUICK_LOGIN_EMAIL: undefined,
     QUICK_LOGIN_PASSWORD: undefined,

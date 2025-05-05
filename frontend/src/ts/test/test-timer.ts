@@ -16,6 +16,7 @@ import * as TestState from "./test-state";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
+import { KeymapLayout, Layout } from "@monkeytype/contracts/schemas/configs";
 
 type TimerStats = {
   dateNow: number;
@@ -90,13 +91,8 @@ function calculateAcc(): number {
 
 function layoutfluid(): void {
   if (timerDebug) console.time("layoutfluid");
-  if (
-    Config.funbox.split("#").includes("layoutfluid") &&
-    Config.mode === "time"
-  ) {
-    const layouts = Config.customLayoutfluid
-      ? Config.customLayoutfluid.split("#")
-      : ["qwerty", "dvorak", "colemak"];
+  if (Config.funbox.includes("layoutfluid") && Config.mode === "time") {
+    const layouts = Config.customLayoutfluid;
     const switchTime = Config.time / layouts.length;
     const time = Time.get();
     const index = Math.floor(time / switchTime);
@@ -118,8 +114,8 @@ function layoutfluid(): void {
 
     if (Config.layout !== layout && layout !== undefined) {
       LayoutfluidFunboxTimer.hide();
-      UpdateConfig.setLayout(layout, true);
-      UpdateConfig.setKeymapLayout(layout, true);
+      UpdateConfig.setLayout(layout as Layout, true);
+      UpdateConfig.setKeymapLayout(layout as KeymapLayout, true);
     }
   }
   if (timerDebug) console.timeEnd("layoutfluid");

@@ -8,21 +8,23 @@ import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
 import * as TribeState from "../tribe/tribe-state";
+import * as ScrollToTop from "../elements/scroll-to-top";
 
 export const page = new Page({
-  name: "test",
+  id: "test",
   element: $(".page.pageTest"),
   path: "/",
-  beforeHide: async (options): Promise<void> => {
+  beforeHide: async (): Promise<void> => {
+    $("#wordsInput").trigger("focusout");
+  },
+  afterHide: async (options): Promise<void> => {
     ManualRestart.set();
     TestLogic.restart({
+      noAnim: true,
       tribeOverride: options.tribeOverride ?? false,
     });
     void Funbox.clear();
     void ModesNotice.update();
-    $("#wordsInput").trigger("focusout");
-  },
-  afterHide: async (): Promise<void> => {
     updateFooterAndVerticalAds(true);
   },
   beforeShow: async (options): Promise<void> => {
@@ -41,5 +43,6 @@ export const page = new Page({
     void TestConfig.instantUpdate();
     void Funbox.activate();
     void Keymap.refresh();
+    ScrollToTop.hide();
   },
 });

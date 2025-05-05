@@ -33,8 +33,15 @@ async function jobHandler(job: Job<EmailTask<EmailType>>): Promise<void> {
   Logger.success(`Job: ${type} - completed in ${elapsed}ms`);
 }
 
-export default (redisConnection?: IORedis.Redis): Worker =>
-  new Worker(EmailQueue.queueName, jobHandler, {
+export default (redisConnection?: IORedis.Redis): Worker => {
+  const worker = new Worker(EmailQueue.queueName, jobHandler, {
     autorun: false,
     connection: redisConnection as ConnectionOptions,
   });
+  worker.on("failed", (job, error) => {
+    Logger.error(
+      `Job: ${job.data.type} - failed with error "${error.message}"`
+    );
+  });
+  return worker;
+};

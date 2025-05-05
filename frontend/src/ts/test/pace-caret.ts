@@ -201,8 +201,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
     let newLeft;
     try {
       const newIndex =
-        settings.currentWordIndex -
-        (TestState.activeWordIndex - TestUI.activeWordElementIndex);
+        settings.currentWordIndex - TestUI.activeWordElementOffset;
       const word = document.querySelectorAll("#words .word")[
         newIndex
       ] as HTMLElement;
@@ -295,7 +294,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
 }
 
 export function reset(): void {
-  if (settings?.timeout != null) {
+  if (settings?.timeout !== null && settings?.timeout !== undefined) {
     clearTimeout(settings.timeout);
   }
   settings = null;

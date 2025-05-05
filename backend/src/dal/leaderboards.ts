@@ -3,13 +3,16 @@ import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
-import { getCachedConfiguration } from "../init/configuration";
+import {
+  getCachedConfiguration,
+  getLiveConfiguration,
+} from "../init/configuration";
 
 import { addLog } from "./logs";
 import { Collection, ObjectId } from "mongodb";
 import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import { omit } from "lodash";
-import { DBUser } from "./user";
+import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";
 
 export type DBLeaderboardEntry = LeaderboardEntry & {
@@ -65,12 +68,25 @@ export async function get(
   }
 }
 
+const cachedCounts = new Map<string, number>();
+
 export async function getCount(
   mode: string,
   mode2: string,
   language: string
 ): Promise<number> {
-  return getCollection({ language, mode, mode2 }).estimatedDocumentCount();
+  const key = `${language}_${mode}_${mode2}`;
+  if (cachedCounts.has(key)) {
+    return cachedCounts.get(key) as number;
+  } else {
+    const count = await getCollection({
+      language,
+      mode,
+      mode2,
+    }).estimatedDocumentCount();
+    cachedCounts.set(key, count);
+    return count;
+  }
 }
 
 export async function getRank(
@@ -205,6 +221,8 @@ export async function update(
   await db.collection(lbCollectionName).createIndex({ rank: 1 });
   const end2 = performance.now();
 
+  cachedCounts.delete(`${language}_${mode}_${mode2}`);
+
   //update speedStats
   const boundaries = [...Array(32).keys()].map((it) => it * 10);
   const statsKey = `${language}_${mode}_${mode2}`;
@@ -269,7 +287,11 @@ export async function update(
   };
 }
 
-async function createIndex(key: string): Promise<void> {
+async function createIndex(
+  key: string,
+  minTimeTyping: number,
+  dropIfMismatch = true
+): Promise<void> {
   const index = {
     [`${key}.wpm`]: -1,
     [`${key}.acc`]: -1,
@@ -293,16 +315,41 @@ async function createIndex(key: string): Promise<void> {
         $gt: 0,
       },
       timeTyping: {
-        $gt: isDevEnvironment() ? 0 : 7200,
+        $gt: minTimeTyping,
       },
     },
   };
-  await db.collection("users").createIndex(index, partial);
+  try {
+    await getUsersCollection().createIndex(index, partial);
+  } catch (e) {
+    if (!dropIfMismatch) throw e;
+    if (
+      (e as Error).message.startsWith(
+        "An existing index has the same name as the requested index"
+      )
+    ) {
+      Logger.warning(`Index ${key} not matching, dropping and recreating...`);
+
+      const existingIndex = (await getUsersCollection().listIndexes().toArray())
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        .map((it) => it.name as string)
+        .find((it) => it.startsWith(key));
+
+      if (existingIndex !== undefined && existingIndex !== null) {
+        await getUsersCollection().dropIndex(existingIndex);
+        return createIndex(key, minTimeTyping, false);
+      } else {
+        throw e;
+      }
+    }
+  }
 }
 
 export async function createIndicies(): Promise<void> {
-  await createIndex("lbPersonalBests.time.15.english");
-  await createIndex("lbPersonalBests.time.60.english");
+  const minTimeTyping = (await getLiveConfiguration()).leaderboards
+    .minTimeTyping;
+  await createIndex("lbPersonalBests.time.15.english", minTimeTyping);
+  await createIndex("lbPersonalBests.time.60.english", minTimeTyping);
 
   if (isDevEnvironment()) {
     Logger.info("Updating leaderboards in dev mode...");

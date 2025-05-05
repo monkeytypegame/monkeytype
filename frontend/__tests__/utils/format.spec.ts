@@ -1,5 +1,5 @@
+import { getDefaultConfig } from "../../src/ts/constants/default-config";
 import { Formatting } from "../../src/ts/utils/format";
-import DefaultConfig from "../../src/ts/constants/default-config";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 
 describe("format.ts", () => {
@@ -274,6 +274,6 @@ describe("format.ts", () => {
 });
 
 function getInstance(config?: Partial<Config>): Formatting {
-  const target: Config = { ...DefaultConfig, ...config };
+  const target: Config = { ...getDefaultConfig(), ...config };
   return new Formatting(target);
 }

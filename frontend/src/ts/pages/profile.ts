@@ -225,7 +225,7 @@ $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
 });
 
 export const page = new Page<undefined | UserProfile>({
-  name: "profile",
+  id: "profile",
   element: $(".page.pageProfile"),
   path: "/profile",
   afterHide: async (): Promise<void> => {

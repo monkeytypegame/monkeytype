@@ -13,6 +13,10 @@
     "lint-be": "turbo run lint --filter @monkeytype/backend",
     "lint-fe": "turbo run lint --filter @monkeytype/frontend",
     "lint-pkg": "turbo run lint --filter=\"./packages/*\"",
+    "oxlint": "turbo run oxlint",
+    "oxlint-be": "turbo run oxlint --filter @monkeytype/backend",
+    "oxlint-fe": "turbo run oxlint --filter @monkeytype/frontend",
+    "oxlint-pkg": "turbo run oxlint --filter=\"./packages/*\"",
     "build": "turbo run build",
     "build-be": "turbo run build --filter @monkeytype/backend",
     "build-fe": "turbo run build --filter @monkeytype/frontend",
@@ -35,9 +39,10 @@
     "release-be": "monkeytype-release --be",
     "release-no-deploy": "monkeytype-release --no-deploy",
     "release-dry": "monkeytype-release --dry",
-    "hotfix-fe": "npm run build-fe && cd frontend && npm run deploy-live && monkeytype-purge",
-    "hotfix-be": "monkeytype-deploy-be",
-    "hotfix": "npm run hotfix-be && npm run hotfix-fe",
+    "hotfix": "monkeytype-release --hotfix",
+    "hotfix-fe": "monkeytype-release --hotfix --fe",
+    "hotfix-be": "monkeytype-release --hotfix --be",
+    "hotfix-dry": "monkeytype-release --hotfix --dry",
     "deploy-dev": "cd frontend && npm run deploy-dev && cd .. && sh ./bin/purgeCfCache.sh",
     "pretty-check": "prettier --check .",
     "pretty-check-be": "prettier --check ./backend",
@@ -63,10 +68,12 @@
     "@monkeytype/release": "workspace:*",
     "@vitest/coverage-v8": "2.1.9",
     "conventional-changelog": "6.0.0",
+    "eslint": "8.57.1",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
+    "oxlint": "0.16.7",
     "prettier": "2.8.8",
     "turbo": "2.3.3",
     "vitest": "2.1.9"
@@ -77,9 +84,10 @@
     ],
     "*.{ts,js}": [
       "prettier --write",
+      "oxlint",
       "eslint"
     ]
   },
-  "version": "25.7.0",
+  "version": "25.18.0",
   "packageManager": "pnpm@9.6.0"
 }

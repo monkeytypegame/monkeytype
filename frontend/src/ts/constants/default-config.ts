@@ -43,7 +43,7 @@ const obj = {
   paceCaretStyle: "default",
   flipTestColors: false,
   layout: "default",
-  funbox: "none",
+  funbox: [],
   confidenceMode: "off",
   indicateTypos: "off",
   timerStyle: "mini",
@@ -92,7 +92,8 @@ const obj = {
   customBackground: "",
   customBackgroundSize: "cover",
   customBackgroundFilter: [0, 1, 1, 1],
-  customLayoutfluid: "qwerty#dvorak#colemak",
+  customLayoutfluid: ["qwerty", "dvorak", "colemak"],
+  customPolyglot: ["english", "spanish", "french", "german"],
   monkeyPowerLevel: "off",
   minBurst: "off",
   minBurstCustomSpeed: 100,
@@ -107,4 +108,6 @@ const obj = {
   tribeCarets: "on",
 } as Config;
 
-export default deepClone(obj);
+export function getDefaultConfig(): Config {
+  return deepClone(obj);
+}

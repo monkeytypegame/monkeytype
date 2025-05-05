@@ -1,6 +1,7 @@
 import type { Assertion, AsymmetricMatchersContaining } from "vitest";
+import { TestActivityDay } from "../src/ts/elements/test-activity-calendar";
 
-interface ActivityDayMatchers<R = MonkeyTypes.TestActivityDay> {
+interface ActivityDayMatchers<R = TestActivityDay> {
   toBeDate: (date: string) => ActivityDayMatchers<R>;
   toHaveTests: (tests: number) => ActivityDayMatchers<R>;
   toHaveLevel: (level?: string | number) => ActivityDayMatchers<R>;

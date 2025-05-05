@@ -1,9 +1,6 @@
+import { getDefaultConfig } from "../../src/ts/constants/default-config";
 import { migrateConfig } from "../../src/ts/utils/config";
-import DefaultConfig from "../../src/ts/constants/default-config";
-import {
-  PartialConfig,
-  ShowAverageSchema,
-} from "@monkeytype/contracts/schemas/configs";
+import { PartialConfig } from "@monkeytype/contracts/schemas/configs";
 
 describe("config.ts", () => {
   describe("migrateConfig", () => {
@@ -11,8 +8,8 @@ describe("config.ts", () => {
       const partialConfig = {} as PartialConfig;
 
       const result = migrateConfig(partialConfig);
-      expect(result).toEqual(expect.objectContaining(DefaultConfig));
-      for (const [key, value] of Object.entries(DefaultConfig)) {
+      expect(result).toEqual(expect.objectContaining(getDefaultConfig()));
+      for (const [key, value] of Object.entries(getDefaultConfig())) {
         expect(result).toHaveProperty(key, value);
       }
     });
@@ -22,7 +19,7 @@ describe("config.ts", () => {
       } as PartialConfig;
 
       const result = migrateConfig(partialConfig);
-      expect(result).toEqual(expect.objectContaining(DefaultConfig));
+      expect(result).toEqual(expect.objectContaining(getDefaultConfig()));
       expect(result).not.toHaveProperty("legacy");
     });
     it("should correctly merge properties of various types", () => {

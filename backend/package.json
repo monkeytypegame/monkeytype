@@ -4,7 +4,9 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "lint": "eslint \"./src/**/*.ts\"",
+    "eslint": "eslint \"./src/**/*.ts\"",
+    "oxlint": "oxlint .",
+    "lint": "npm run oxlint && npm run eslint",
     "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
@@ -63,6 +65,7 @@
   },
   "devDependencies": {
     "@monkeytype/eslint-config": "workspace:*",
+    "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "@redocly/cli": "1.28.5",
     "@types/bcrypt": "5.0.2",
@@ -89,6 +92,7 @@
     "eslint-watch": "8.0.0",
     "ioredis-mock": "7.4.0",
     "openapi3-ts": "2.0.2",
+    "oxlint": "0.16.7",
     "readline-sync": "1.4.10",
     "supertest": "6.2.3",
     "tsx": "4.16.2",

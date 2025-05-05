@@ -1,7 +1,10 @@
 import "dotenv/config";
 import * as db from "./init/db";
 import jobs from "./jobs";
-import { getLiveConfiguration } from "./init/configuration";
+import {
+  getLiveConfiguration,
+  updateFromConfigurationFile,
+} from "./init/configuration";
 import app from "./app";
 import { Server } from "http";
 import { version } from "./version";
@@ -30,6 +33,7 @@ async function bootServer(port: number): Promise<Server> {
     Logger.info("Fetching live configuration...");
     await getLiveConfiguration();
     Logger.success("Live configuration fetched");
+    await updateFromConfigurationFile();
 
     Logger.info("Initializing email client...");
     await EmailClient.init();
@@ -43,7 +47,7 @@ async function bootServer(port: number): Promise<Server> {
 
       Logger.info("Initializing queues...");
       queues.forEach((queue) => {
-        queue.init(connection);
+        queue.init(connection ?? undefined);
       });
       Logger.success(
         `Queues initialized: ${queues
@@ -53,11 +57,11 @@ async function bootServer(port: number): Promise<Server> {
 
       Logger.info("Initializing workers...");
       workers.forEach(async (worker) => {
-        await worker(connection).run();
+        await worker(connection ?? undefined).run();
       });
       Logger.success(
         `Workers initialized: ${workers
-          .map((worker) => worker(connection).name)
+          .map((worker) => worker(connection ?? undefined).name)
           .join(", ")}`
       );
     }

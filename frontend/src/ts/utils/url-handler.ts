@@ -24,9 +24,12 @@ import {
   CustomBackgroundSizeSchema,
   CustomThemeColors,
   CustomThemeColorsSchema,
+  FunboxSchema,
+  FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
 import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { tryCatchSync } from "@monkeytype/util/trycatch";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -81,15 +84,12 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("customTheme", getOverride);
   if (getValue === null) return;
 
-  let decoded: z.infer<typeof customThemeUrlDataSchema>;
-  try {
-    decoded = parseJsonWithSchema(atob(getValue), customThemeUrlDataSchema);
-  } catch (e) {
-    console.log("Custom theme URL decoding failed", e);
-    Notifications.add(
-      "Failed to load theme from URL: " + (e as Error).message,
-      0
-    );
+  const { data: decoded, error } = tryCatchSync(() =>
+    parseJsonWithSchema(atob(getValue), customThemeUrlDataSchema)
+  );
+  if (error) {
+    console.log("Custom theme URL decoding failed", error);
+    Notifications.add("Failed to load theme from URL: " + error.message, 0);
     return;
   }
 
@@ -136,28 +136,38 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 const TestSettingsSchema = z.tuple([
   ModeSchema.nullable(),
   Mode2Schema.nullable(),
-  CustomText.CustomTextSettingsSchema.nullable(),
+  CustomText.CustomTextSettingsSchema.partial({
+    pipeDelimiter: true,
+    limit: true,
+    mode: true,
+  })
+    //legacy values
+    .extend({
+      isTimeRandom: z.boolean().optional(),
+      isWordRandom: z.boolean().optional(),
+      word: z.number().int().optional(),
+      time: z.number().int().optional(),
+      delimiter: z.string().optional(),
+    })
+    .nullable(),
   z.boolean().nullable(), //punctuation
   z.boolean().nullable(), //numbers
   z.string().nullable(), //language
   DifficultySchema.nullable(),
-  z.string().nullable(), //funbox
+  FunboxSchema.or(z.string().nullable()), //funbox as array or legacy string as hash separated values
 ]);
-
-type SharedTestSettings = z.infer<typeof TestSettingsSchema>;
 
 export function loadTestSettingsFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("testSettings", getOverride);
   if (getValue === null) return;
 
-  let de: SharedTestSettings;
-  try {
-    const decompressed = decompressFromURI(getValue) ?? "";
-    de = parseJsonWithSchema(decompressed, TestSettingsSchema);
-  } catch (e) {
-    console.error("Failed to parse test settings:", e);
+  const { data: de, error } = tryCatchSync(() =>
+    parseJsonWithSchema(decompressFromURI(getValue) ?? "", TestSettingsSchema)
+  );
+  if (error) {
+    console.error("Failed to parse test settings:", error);
     Notifications.add(
-      "Failed to load test settings from URL: " + (e as Error).message,
+      "Failed to load test settings from URL: " + error.message,
       0
     );
     return;
@@ -187,9 +197,34 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (de[2] !== null) {
     const customTextSettings = de[2];
     CustomText.setText(customTextSettings.text);
-    CustomText.setLimitMode(customTextSettings.limit.mode);
-    CustomText.setLimitValue(customTextSettings.limit.value);
-    CustomText.setPipeDelimiter(customTextSettings.pipeDelimiter);
+
+    if (customTextSettings.limit !== undefined) {
+      CustomText.setLimitMode(customTextSettings.limit.mode);
+      CustomText.setLimitValue(customTextSettings.limit.value);
+    }
+    //convert legacy values
+    else {
+      if (customTextSettings.isWordRandom) {
+        CustomText.setLimitMode("word");
+      } else if (customTextSettings.isTimeRandom) {
+        CustomText.setLimitMode("time");
+      }
+      if (customTextSettings.word !== undefined) {
+        CustomText.setLimitValue(customTextSettings.word);
+      } else if (customTextSettings.time !== undefined) {
+        CustomText.setLimitValue(customTextSettings.time);
+      }
+    }
+
+    if (customTextSettings.pipeDelimiter) {
+      CustomText.setPipeDelimiter(customTextSettings.pipeDelimiter);
+    }
+    //convert legacy values
+    else if (customTextSettings.delimiter === "|") {
+      CustomText.setPipeDelimiter(true);
+    }
+
+    CustomText.setMode(customTextSettings.mode ?? "repeat");
 
     applied["custom text settings"] = "";
   }
@@ -215,8 +250,15 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 
   if (de[7] !== null) {
-    UpdateConfig.setFunbox(de[7], true);
-    applied["funbox"] = de[7];
+    let val: FunboxName[] = [];
+    //convert legacy values
+    if (typeof de[7] === "string") {
+      val = de[7].split("#") as FunboxName[];
+    } else {
+      val = de[7];
+    }
+    UpdateConfig.setFunbox(val, true);
+    applied["funbox"] = val.join(", ");
   }
 
   restartTest({

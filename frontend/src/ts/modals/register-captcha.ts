@@ -1,26 +1,33 @@
 import * as CaptchaController from "../controllers/captcha-controller";
 import AnimatedModal from "../utils/animated-modal";
+import { promiseWithResolvers } from "../utils/misc";
+import * as Notifications from "../elements/notifications";
 
-let resolvePromise: (token?: string) => void;
+let { promise, resolve } = promiseWithResolvers<string | undefined>();
 
-export let promise = new Promise<string | undefined>((resolve) => {
-  resolvePromise = resolve;
-});
+export { promise };
 
-export function show(): void {
-  void modal.show({
+export async function show(): Promise<void> {
+  if (!CaptchaController.isCaptchaAvailable()) {
+    Notifications.add(
+      "Could not show register popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
+      -1
+    );
+    resolve(undefined);
+    return;
+  }
+
+  await modal.show({
     mode: "dialog",
     beforeAnimation: async (modal) => {
-      promise = new Promise((resolve) => {
-        resolvePromise = resolve;
-      });
+      ({ promise, resolve } = promiseWithResolvers<string | undefined>());
       CaptchaController.reset("register");
 
       CaptchaController.render(
         modal.querySelector(".g-recaptcha") as HTMLElement,
         "register",
         (token) => {
-          resolvePromise(token);
+          resolve(token);
           hide();
         }
       );
@@ -29,7 +36,7 @@ export function show(): void {
 }
 
 function hide(resolveToUndefined = false): void {
-  if (resolveToUndefined) resolvePromise();
+  if (resolveToUndefined) resolve(undefined);
   void modal.hide();
 }
 

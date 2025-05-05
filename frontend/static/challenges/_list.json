@@ -143,7 +143,7 @@
         "exact": 60
       },
       "config": {
-        "showLiveWpm": false,
+        "liveSpeedStyle": "off",
         "paceCaret": "off"
       }
     }
@@ -258,7 +258,7 @@
     "name": "inAGalaxyFarFarAway",
     "display": "In a galaxy far far away",
     "type": "script",
-    "parameters": ["episode4.txt",null,"space_balls"],
+    "parameters": ["episode4.txt",null,["space_balls"]],
     "requirements": {
       "config": {
         "tapeMode": "off"
@@ -269,7 +269,7 @@
     "name": "beepBoop",
     "display": "Beep Boop",
     "type": "script",
-    "parameters": ["beepboop.txt",null,"nospace"],
+    "parameters": ["beepboop.txt",null,["nospace"]],
     "message": "Mininum 45 WPM and 100% accuracy required.",
     "requirements": {
       "wpm": {
@@ -279,7 +279,7 @@
         "min": 100
       },
       "funbox": {
-        "exact": "nospace"
+        "exact": ["nospace"]
       }
     }
   }
@@ -287,7 +287,7 @@
     "name": "whosYourDaddy",
     "display": "Who's your daddy?",
     "type": "script",
-    "parameters": ["episode5.txt",null,"space_balls"],
+    "parameters": ["episode5.txt",null,["space_balls"]],
     "requirements": {
       "config": {
         "tapeMode": "off"
@@ -298,7 +298,7 @@
     "name": "itsATrap",
     "display": "It's a trap!",
     "type": "script",
-    "parameters": ["episode6.txt",null,"space_balls"],
+    "parameters": ["episode6.txt",null,["space_balls"]],
     "requirements": {
       "config": {
         "tapeMode": "off"
@@ -399,7 +399,7 @@
     "name": "beLikeWater",
     "display": "Be like water",
     "type": "funbox",
-    "parameters": ["layoutfluid","time",60],
+    "parameters": [["layoutfluid"],"time",60],
     "message": "Remember: You need to achieve at least 50 wpm in each layout."
   }
   ,{
@@ -407,13 +407,13 @@
     "display": "Rollercoaster",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["round_round_baby","time",3600],
+    "parameters": [["round_round_baby"],"time",3600],
     "requirements" : {
       "time": {
         "min": 3600
       },
       "funbox": {
-        "exact": "round_round_baby"
+        "exact": ["round_round_baby"]
       }
     }
   }
@@ -422,13 +422,13 @@
     "display": "ɿoɿɿim ɿυoʜ ɘno",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["mirror","time",3600],
+    "parameters": [["mirror"],"time",3600],
     "requirements" : {
       "time": {
         "min": 3600
       },
       "funbox": {
-        "exact": "mirror"
+        "exact": ["mirror"]
       }
     }
   }
@@ -437,13 +437,13 @@
     "display": "Choo choo",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["choo_choo","time",3600],
+    "parameters": [["choo_choo"],"time",3600],
     "requirements" : {
       "time": {
         "min": 3600
       },
       "funbox": {
-        "exact": "choo_choo"
+        "exact": ["choo_choo"]
       }
     }
   }
@@ -451,7 +451,7 @@
     "name": "mnemonist",
     "display": "Mnemonist",
     "type": "funbox",
-    "parameters": ["memory","words",25,"master"],
+    "parameters": [["memory"],"words",25,"master"],
     "requirements": {
       "config": {
         "tapeMode": "off"
@@ -463,13 +463,13 @@
     "display": "Earfquake",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["earthquake","time",3600],
+    "parameters": [["earthquake"],"time",3600],
     "requirements" : {
       "time": {
         "min": 3600
       },
       "funbox": {
-        "exact": "earthquake"
+        "exact": ["earthquake"]
       }
     }
   }
@@ -478,13 +478,13 @@
     "display": "Simon Sez",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["simon_says","time",3600],
+    "parameters": [["simon_says"],"time",3600],
     "requirements" : {
       "time": {
         "min": 3600
       },
       "funbox": {
-        "exact": "simon_says"
+        "exact": ["simon_says"]
       }
     }
   }
@@ -493,13 +493,13 @@
     "display": "Accountant",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["58008","time",3600],
+    "parameters": [["58008"],"time",3600],
     "requirements" : {
       "time": {
         "min": 3600
       },
       "funbox": {
-        "exact": "58008"
+        "exact": ["58008"]
       }
     }
   }
@@ -508,7 +508,7 @@
     "display": "Hidden",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["read_ahead","time",60],
+    "parameters": [["read_ahead"],"time",60],
     "requirements" : {
       "wpm": {
         "min": 100
@@ -517,7 +517,7 @@
         "min": 60
       },
       "funbox": {
-        "exact": "read_ahead"
+        "exact": ["read_ahead"]
       },
       "config": {
         "tapeMode": "off"
@@ -529,7 +529,7 @@
     "display": "I can see the future",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["read_ahead_hard","time",60],
+    "parameters": [["read_ahead_hard"],"time",60],
     "requirements" : {
       "wpm": {
         "min": 100
@@ -538,7 +538,7 @@
         "min": 60
       },
       "funbox": {
-        "exact": "read_ahead_hard"
+        "exact": ["read_ahead_hard"]
       },
       "config": {
         "tapeMode": "off"
@@ -550,7 +550,7 @@
     "display": "What are words at this point?",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["gibberish","time",3600],
+    "parameters": [["gibberish"],"time",3600],
     "requirements" : {
       "wpm": {
         "min": 100
@@ -559,7 +559,7 @@
         "min": 60
       },
       "funbox": {
-        "exact": "gibberish"
+        "exact": ["gibberish"]
       }
     }
   }
@@ -568,7 +568,7 @@
     "display": "Specials",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["specials","time",3600],
+    "parameters": [["specials"],"time",3600],
     "requirements" : {
       "wpm": {
         "min": 100
@@ -577,7 +577,7 @@
         "min": 60
       },
       "funbox": {
-        "exact": "specials"
+        "exact": ["specials"] 
       }
     }
     
@@ -587,7 +587,7 @@
     "display": "Aeiou.",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["tts","time",3600],
+    "parameters": [["tts"],"time",3600],
     "requirements" : {
       "wpm": {
         "min": 100
@@ -596,7 +596,7 @@
         "min": 60
       },
       "funbox": {
-        "exact": "tts"
+        "exact": ["tts"]
       }
     }
   }
@@ -605,7 +605,7 @@
     "display": "ASCII warrior",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["ascii","time",3600],
+    "parameters": [["ascii"],"time",3600],
     "requirements" : {
       "wpm": {
         "min": 100
@@ -614,7 +614,7 @@
         "min": 60
       },
       "funbox": {
-        "exact": "ascii"
+        "exact": ["ascii"]
       }
     }
   }
@@ -623,7 +623,7 @@
     "display": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["rAnDoMcAsE","time",3600],
+    "parameters": [["rAnDoMcAsE"],"time",3600],
     "requirements" : {
       "wpm": {
         "min": 100
@@ -632,7 +632,7 @@
         "min": 60
       },
       "funbox": {
-        "exact": "rAnDoMcAsE"
+        "exact": ["rAnDoMcAsE"]
       }
     }
   }
@@ -641,7 +641,7 @@
     "display": "One Nauseous Monkey",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["nausea","time",3600],
+    "parameters": [["nausea"],"time",3600],
     "requirements" : {
       "wpm": {
         "min": 100
@@ -650,7 +650,7 @@
         "min": 60
       },
       "funbox": {
-        "exact": "nausea"
+        "exact": ["nausea"]
       }
     }
   }

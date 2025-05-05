@@ -21,7 +21,7 @@ describe("BlocklistDal", () => {
       await BlacklistDal.add({ name, email });
 
       //THEN
-      expect(
+      await expect(
         BlacklistDal.getCollection().findOne({
           emailHash: BlacklistDal.hash(email),
         })
@@ -30,7 +30,7 @@ describe("BlocklistDal", () => {
         timestamp: now,
       });
 
-      expect(
+      await expect(
         BlacklistDal.getCollection().findOne({
           usernameHash: BlacklistDal.hash(name),
         })
@@ -52,7 +52,7 @@ describe("BlocklistDal", () => {
       await BlacklistDal.add({ name, email, discordId });
 
       //THEN
-      expect(
+      await expect(
         BlacklistDal.getCollection().findOne({
           discordIdHash: BlacklistDal.hash(discordId),
         })
@@ -75,21 +75,21 @@ describe("BlocklistDal", () => {
       await BlacklistDal.add({ name, email: email2 });
 
       //THEN
-      expect(
+      await expect(
         BlacklistDal.getCollection()
           .find({
             usernameHash: BlacklistDal.hash(name),
           })
           .toArray()
       ).resolves.toHaveLength(1);
-      expect(
+      await expect(
         BlacklistDal.getCollection()
           .find({
             emailHash: BlacklistDal.hash(email),
           })
           .toArray()
       ).resolves.toHaveLength(1);
-      expect(
+      await expect(
         BlacklistDal.getCollection()
           .find({
             emailHash: BlacklistDal.hash(email2),
@@ -111,7 +111,7 @@ describe("BlocklistDal", () => {
       await BlacklistDal.add({ name: name2, email });
 
       //THEN
-      expect(
+      await expect(
         BlacklistDal.getCollection()
           .find({
             emailHash: BlacklistDal.hash(email),
@@ -136,7 +136,7 @@ describe("BlocklistDal", () => {
 
       //THEN
 
-      expect(
+      await expect(
         BlacklistDal.getCollection()
           .find({
             discordIdHash: BlacklistDal.hash(discordId),
@@ -156,34 +156,34 @@ describe("BlocklistDal", () => {
 
       //WHEN / THEN
       //by name
-      expect(BlacklistDal.contains({ name })).resolves.toBeTruthy();
-      expect(
+      await expect(BlacklistDal.contains({ name })).resolves.toBeTruthy();
+      await expect(
         BlacklistDal.contains({ name: name.toUpperCase() })
       ).resolves.toBeTruthy();
-      expect(
+      await expect(
         BlacklistDal.contains({ name, email: "unknown", discordId: "unknown" })
       ).resolves.toBeTruthy();
 
       //by email
-      expect(BlacklistDal.contains({ email })).resolves.toBeTruthy();
-      expect(
+      await expect(BlacklistDal.contains({ email })).resolves.toBeTruthy();
+      await expect(
         BlacklistDal.contains({ email: email.toUpperCase() })
       ).resolves.toBeTruthy();
-      expect(
+      await expect(
         BlacklistDal.contains({ name: "unknown", email, discordId: "unknown" })
       ).resolves.toBeTruthy();
 
       //by discordId
-      expect(BlacklistDal.contains({ discordId })).resolves.toBeTruthy();
-      expect(
+      await expect(BlacklistDal.contains({ discordId })).resolves.toBeTruthy();
+      await expect(
         BlacklistDal.contains({ discordId: discordId.toUpperCase() })
       ).resolves.toBeTruthy();
-      expect(
+      await expect(
         BlacklistDal.contains({ name: "unknown", email: "unknown", discordId })
       ).resolves.toBeTruthy();
 
       //by name and email and discordId
-      expect(
+      await expect(
         BlacklistDal.contains({ name, email, discordId })
       ).resolves.toBeTruthy();
     });
@@ -193,12 +193,16 @@ describe("BlocklistDal", () => {
       await BlacklistDal.add({ name: "test2", email: "test2@example.com" });
 
       //WHEN / THEN
-      expect(BlacklistDal.contains({ name: "unknown" })).resolves.toBeFalsy();
-      expect(BlacklistDal.contains({ email: "unknown" })).resolves.toBeFalsy();
-      expect(
+      await expect(
+        BlacklistDal.contains({ name: "unknown" })
+      ).resolves.toBeFalsy();
+      await expect(
+        BlacklistDal.contains({ email: "unknown" })
+      ).resolves.toBeFalsy();
+      await expect(
         BlacklistDal.contains({ discordId: "unknown" })
       ).resolves.toBeFalsy();
-      expect(
+      await expect(
         BlacklistDal.contains({
           name: "unknown",
           email: "unknown",
@@ -206,7 +210,7 @@ describe("BlocklistDal", () => {
         })
       ).resolves.toBeFalsy();
 
-      expect(BlacklistDal.contains({})).resolves.toBeFalsy();
+      await expect(BlacklistDal.contains({})).resolves.toBeFalsy();
     });
   });
 
@@ -222,12 +226,14 @@ describe("BlocklistDal", () => {
       await BlacklistDal.remove({ name });
 
       //THEN
-      expect(BlacklistDal.contains({ name })).resolves.toBeFalsy();
-      expect(BlacklistDal.contains({ email })).resolves.toBeTruthy();
+      await expect(BlacklistDal.contains({ name })).resolves.toBeFalsy();
+      await expect(BlacklistDal.contains({ email })).resolves.toBeTruthy();
 
       //decoy still exists
-      expect(BlacklistDal.contains({ name: "test" })).resolves.toBeTruthy();
-      expect(
+      await expect(
+        BlacklistDal.contains({ name: "test" })
+      ).resolves.toBeTruthy();
+      await expect(
         BlacklistDal.contains({ email: "test@example.com" })
       ).resolves.toBeTruthy();
     });
@@ -242,12 +248,14 @@ describe("BlocklistDal", () => {
       await BlacklistDal.remove({ email });
 
       //THEN
-      expect(BlacklistDal.contains({ email })).resolves.toBeFalsy();
-      expect(BlacklistDal.contains({ name })).resolves.toBeTruthy();
+      await expect(BlacklistDal.contains({ email })).resolves.toBeFalsy();
+      await expect(BlacklistDal.contains({ name })).resolves.toBeTruthy();
 
       //decoy still exists
-      expect(BlacklistDal.contains({ name: "test" })).resolves.toBeTruthy();
-      expect(
+      await expect(
+        BlacklistDal.contains({ name: "test" })
+      ).resolves.toBeTruthy();
+      await expect(
         BlacklistDal.contains({ email: "test@example.com" })
       ).resolves.toBeTruthy();
     });
@@ -267,16 +275,18 @@ describe("BlocklistDal", () => {
       await BlacklistDal.remove({ discordId });
 
       //THEN
-      expect(BlacklistDal.contains({ discordId })).resolves.toBeFalsy();
-      expect(BlacklistDal.contains({ name })).resolves.toBeTruthy();
-      expect(BlacklistDal.contains({ email })).resolves.toBeTruthy();
+      await expect(BlacklistDal.contains({ discordId })).resolves.toBeFalsy();
+      await expect(BlacklistDal.contains({ name })).resolves.toBeTruthy();
+      await expect(BlacklistDal.contains({ email })).resolves.toBeTruthy();
 
       //decoy still exists
-      expect(BlacklistDal.contains({ name: "test" })).resolves.toBeTruthy();
-      expect(
+      await expect(
+        BlacklistDal.contains({ name: "test" })
+      ).resolves.toBeTruthy();
+      await expect(
         BlacklistDal.contains({ email: "test@example.com" })
       ).resolves.toBeTruthy();
-      expect(
+      await expect(
         BlacklistDal.contains({ discordId: "testDiscordId" })
       ).resolves.toBeTruthy();
     });
@@ -296,16 +306,18 @@ describe("BlocklistDal", () => {
       await BlacklistDal.remove({ name, email, discordId });
 
       //THEN
-      expect(BlacklistDal.contains({ email })).resolves.toBeFalsy();
-      expect(BlacklistDal.contains({ name })).resolves.toBeFalsy();
-      expect(BlacklistDal.contains({ discordId })).resolves.toBeFalsy();
+      await expect(BlacklistDal.contains({ email })).resolves.toBeFalsy();
+      await expect(BlacklistDal.contains({ name })).resolves.toBeFalsy();
+      await expect(BlacklistDal.contains({ discordId })).resolves.toBeFalsy();
 
       //decoy still exists
-      expect(BlacklistDal.contains({ name: "test" })).resolves.toBeTruthy();
-      expect(
+      await expect(
+        BlacklistDal.contains({ name: "test" })
+      ).resolves.toBeTruthy();
+      await expect(
         BlacklistDal.contains({ email: "test@example.com" })
       ).resolves.toBeTruthy();
-      expect(
+      await expect(
         BlacklistDal.contains({ discordId: "testDiscordId" })
       ).resolves.toBeTruthy();
     });
@@ -322,9 +334,9 @@ describe("BlocklistDal", () => {
       await BlacklistDal.remove({});
 
       //THEN
-      expect(BlacklistDal.contains({ email })).resolves.toBeTruthy();
-      expect(BlacklistDal.contains({ name })).resolves.toBeTruthy();
-      expect(BlacklistDal.contains({ discordId })).resolves.toBeTruthy();
+      await expect(BlacklistDal.contains({ email })).resolves.toBeTruthy();
+      await expect(BlacklistDal.contains({ name })).resolves.toBeTruthy();
+      await expect(BlacklistDal.contains({ discordId })).resolves.toBeTruthy();
     });
   });
   describe("hash", () => {

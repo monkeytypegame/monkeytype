@@ -66,5 +66,14 @@
       }
     ],
     "compounds": []
+  },
+  "extensions": {
+    "recommendations": [
+      "esbenp.prettier-vscode",
+      "vitest.explorer",
+      "huntertran.auto-markdown-toc",
+      "dbaeumer.vscode-eslint",
+      "oxc.oxc-vscode"
+    ]
   }
 }

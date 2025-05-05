@@ -10,8 +10,8 @@ import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
-import * as AnalyticsController from "../controllers/analytics-controller";
 import { debounce } from "throttle-debounce";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export let randomTheme: string | null = null;
 let isPreviewingTheme = false;
@@ -172,7 +172,6 @@ async function apply(
     }
   }
 
-  void AnalyticsController.log("changedTheme", { theme: name });
   // if (!isPreview) {
   const colors = await ThemeColors.getAll();
   $(".keymapKey").attr("style", "");
@@ -248,12 +247,10 @@ export async function clearPreview(applyTheme = true): Promise<void> {
 let themesList: string[] = [];
 
 async function changeThemeList(): Promise<void> {
-  let themes;
-  try {
-    themes = await JSONData.getThemesList();
-  } catch (e) {
+  const { data: themes, error } = await tryCatch(JSONData.getThemesList());
+  if (error) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update random theme list")
+      Misc.createErrorMessage(error, "Failed to update random theme list")
     );
     return;
   }
@@ -353,9 +350,17 @@ function applyCustomBackground(): void {
   } else {
     $("#words").addClass("noErrorBorder");
     $("#resultWordsHistory").addClass("noErrorBorder");
-    $(".customBackground").html(
-      `<img src="${Config.customBackground}" alt="" onerror="javascript:window.dispatchEvent(new Event('customBackgroundFailed'))" />`
+
+    //use setAttribute for possible unsafe customBackground value
+    const container = document.querySelector(".customBackground");
+    const img = document.createElement("img");
+    img.setAttribute("src", Config.customBackground);
+    img.setAttribute(
+      "onError",
+      "javascript:window.dispatchEvent(new Event('customBackgroundFailed'))"
     );
+    container?.replaceChildren(img);
+
     BackgroundFilter.apply();
     applyCustomBackgroundSize();
   }

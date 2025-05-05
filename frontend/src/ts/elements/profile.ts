@@ -15,9 +15,10 @@ import { UserProfile, RankAndCount } from "@monkeytype/contracts/schemas/users";
 import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
 import { secondsToString } from "../utils/date-and-time";
 import { Auth } from "../firebase";
+import { Snapshot } from "../constants/default-snapshot";
 
 type ProfileViewPaths = "profile" | "account";
-type UserProfileOrSnapshot = UserProfile | DB.Snapshot;
+type UserProfileOrSnapshot = UserProfile | Snapshot;
 
 //this is probably the dirtiest code ive ever written
 
@@ -130,7 +131,7 @@ export async function update(
     const results = DB.getSnapshot()?.results;
     const lastResult = results?.[0];
 
-    const streakOffset = (profile as DB.Snapshot).streakHourOffset;
+    const streakOffset = (profile as Snapshot).streakHourOffset;
 
     const dayInMilis = 1000 * 60 * 60 * 24;
 
@@ -242,10 +243,10 @@ export async function update(
   let socials = false;
 
   if (!banned) {
-    bio = profile.details?.bio ?? "" ? true : false;
+    bio = !!(profile.details?.bio ?? "");
     details.find(".bio .value").text(profile.details?.bio ?? "");
 
-    keyboard = profile.details?.keyboard ?? "" ? true : false;
+    keyboard = !!(profile.details?.keyboard ?? "");
     details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
     if (

@@ -7,6 +7,8 @@ import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
+import { LayoutsList } from "../constants/layouts";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 type FilterPreset = {
   display: string;
@@ -97,33 +99,18 @@ const presets: Record<string, FilterPreset> = {
 
 async function initSelectOptions(): Promise<void> {
   $("#wordFilterModal .languageInput").empty();
-
   $("#wordFilterModal .layoutInput").empty();
-
   $("wordFilterModal .presetInput").empty();
 
-  let LanguageList;
-  let LayoutList;
+  const { data: LanguageList, error } = await tryCatch(
+    JSONData.getLanguageList()
+  );
 
-  try {
-    LanguageList = await JSONData.getLanguageList();
-  } catch (e) {
+  if (error) {
     console.error(
       Misc.createErrorMessage(
-        e,
+        error,
         "Failed to initialise word filter popup language list"
-      )
-    );
-    return;
-  }
-
-  try {
-    LayoutList = await JSONData.getLayoutsList();
-  } catch (e) {
-    console.error(
-      Misc.createErrorMessage(
-        e,
-        "Failed to initialise word filter popup preset list"
       )
     );
     return;
@@ -136,7 +123,7 @@ async function initSelectOptions(): Promise<void> {
       `);
   });
 
-  for (const layout in LayoutList) {
+  for (const layout of LayoutsList) {
     const prettyLayout = layout.replace(/_/gi, " ");
     $("#wordFilterModal .layoutInput").append(`
       <option value=${layout}>${prettyLayout}</option>
@@ -199,12 +186,12 @@ async function filter(language: string): Promise<string[]> {
   const regexcl = new RegExp(filterout, "i");
   const filteredWords = [];
 
-  let languageWordList;
-  try {
-    languageWordList = await JSONData.getLanguage(language);
-  } catch (e) {
+  const { data: languageWordList, error } = await tryCatch(
+    JSONData.getLanguage(language)
+  );
+  if (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to filter language words"),
+      Misc.createErrorMessage(error, "Failed to filter language words"),
       -1
     );
     return [];

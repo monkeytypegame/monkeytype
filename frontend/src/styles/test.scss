@@ -173,16 +173,30 @@
 #words {
   height: fit-content;
   height: -moz-fit-content;
+  padding-bottom: 0.5em; // to account for hints of the bottom line
   display: flex;
   flex-wrap: wrap;
   width: 100%;
   align-content: flex-start;
   -webkit-user-select: none;
   user-select: none;
-  padding-bottom: 1em;
 
   .newline {
     width: inherit;
+  }
+
+  .beforeNewline {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0.25em 0;
+    box-sizing: content-box;
+    height: 1em; //.word line-height
+    border-top: 0.05em solid transparent; // letter border-bottom
+    border-bottom: 2px solid transparent; //.word border
+  }
+
+  .afterNewline {
+    display: inline-block;
   }
 
   --correct-letter-color: var(--text-color);
@@ -261,9 +275,15 @@
     }
   }
 
-  &.tape .word {
-    margin: 0.25em 0.6em 0.75em 0;
+  &.tape {
+    display: block;
     white-space: nowrap;
+    width: 200vw;
+    .word {
+      margin: 0.25em 0.6em 0.25em 0;
+      display: inline-block;
+      vertical-align: top;
+    }
   }
 
   /* a little hack for right-to-left languages */
@@ -462,14 +482,6 @@
     display: inline-block;
   }
 
-  &.lastbeforenewline::after {
-    font-family: "Font Awesome";
-    font-weight: 600;
-    content: "\f107";
-    margin-left: 0.5rem;
-    opacity: 0.25;
-  }
-
   .wordInputHighlight {
     opacity: 1;
     white-space: nowrap;
@@ -563,10 +575,6 @@
   z-index: 999;
   pointer-events: none;
   top: -2.5rem;
-
-  &.focus {
-    // top: 0rem;
-  }
 
   i {
     margin-right: 0.5rem;
@@ -1184,7 +1192,9 @@
 .pageTest {
   #wordsWrapper {
     position: relative;
+    overflow: visible clip;
     &.tape {
+      overflow: hidden;
       -webkit-mask-image: linear-gradient(
         90deg,
         rgba(0, 0, 0, 0) 1%,
@@ -1223,7 +1233,8 @@
   }
   .outOfFocusWarning {
     text-align: center;
-    height: 0;
+    height: 100%;
+    align-content: center;
     font-size: 1rem;
     z-index: 999;
     position: absolute;

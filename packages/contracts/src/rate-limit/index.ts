@@ -13,7 +13,7 @@ export const limits = {
   },
 
   adminLimit: {
-    window: 5000, //5 seconds
+    window: 5000,
     max: 1,
   },
 
@@ -136,6 +136,18 @@ export const limits = {
   resultsGetApe: {
     window: "day",
     max: 30,
+  },
+
+  // Result by id
+  resultByIdGet: {
+    window: "hour",
+    max: 300,
+  },
+
+  // Result by id
+  resultByIdGetApe: {
+    window: "hour",
+    max: 60,
   },
 
   resultsAdd: {

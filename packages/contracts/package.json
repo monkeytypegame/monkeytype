@@ -2,25 +2,28 @@
   "name": "@monkeytype/contracts",
   "private": true,
   "scripts": {
-    "dev": "rimraf ./dist && monkeytype-esbuild --watch",
-    "build": "rimraf ./dist && npm run madge && monkeytype-esbuild",
+    "dev": "tsup-node --watch",
+    "build": "npm run madge && tsup-node",
     "test": "vitest run",
     "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
-    "lint": "eslint \"./**/*.ts\""
+    "eslint": "eslint \"./src/**/*.ts\"",
+    "oxlint": "oxlint .",
+    "lint": "npm run oxlint && npm run eslint"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@ts-rest/core": "3.51.0",
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@monkeytype/esbuild": "workspace:*",
     "@monkeytype/eslint-config": "workspace:*",
+    "@monkeytype/tsup-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "chokidar": "3.6.0",
     "eslint": "8.57.1",
     "madge": "8.0.0",
-    "rimraf": "6.0.1",
+    "oxlint": "0.16.7",
+    "tsup": "8.4.0",
     "typescript": "5.5.4",
     "vitest": "2.1.9"
   },
@@ -28,12 +31,12 @@
     ".": {
       "types": "./src/index.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.js"
     },
     "./*": {
       "types": "./src/*.ts",
       "import": "./dist/*.mjs",
-      "require": "./dist/*.cjs"
+      "require": "./dist/*.js"
     }
   }
 }

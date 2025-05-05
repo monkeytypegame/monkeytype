@@ -4,10 +4,10 @@ import * as MerchBanner from "./elements/merch-banner";
 import * as CookiesModal from "./modals/cookies";
 import * as ConnectionState from "./states/connection";
 import * as AccountButton from "./elements/account-button";
-//@ts-expect-error
+//@ts-expect-error no types for this package
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
-import { getActiveFunboxes } from "./test/funbox/list";
+import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { loadPromise } from "./config";
 
 $(async (): Promise<void> => {
@@ -19,8 +19,8 @@ $(async (): Promise<void> => {
   $("body").css("transition", "background .25s, transform .05s");
   MerchBanner.showIfNotClosedBefore();
 
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.applyGlobalCSS?.();
+  for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
+    fb.functions.applyGlobalCSS();
   }
 
   $("#app")
@@ -52,5 +52,21 @@ $(async (): Promise<void> => {
           void registration.unregister();
         }
       });
+  } else {
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("/sw.js", { scope: "/" })
+          .then((registration) => {
+            console.log(
+              "ServiceWorker registration successful with scope: ",
+              registration.scope
+            );
+          })
+          .catch((error: unknown) => {
+            console.error("ServiceWorker registration failed: ", error);
+          });
+      });
+    }
   }
 });

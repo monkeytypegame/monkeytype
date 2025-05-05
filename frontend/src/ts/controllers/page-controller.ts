@@ -71,44 +71,42 @@ export async function change(
     const previousPage = pages[ActivePage.get()];
     const nextPage = pages[pageName];
 
-    void previousPage
-      ?.beforeHide({
-        tribeOverride: options.tribeOverride ?? false,
-      })
-      .then(() => {
-        PageTransition.set(true);
-        $(".page").removeClass("active");
-        void Misc.swapElements(
-          previousPage.element,
-          nextPage.element,
-          250,
-          async () => {
-            PageTransition.set(false);
-            nextPage.element.addClass("active");
-            resolve(true);
-            await nextPage?.afterShow();
-            void AdController.reinstate();
-          },
-          async () => {
-            if (nextPage.name === "test") {
-              Misc.updateTitle();
-            } else {
-              Misc.updateTitle(
-                Strings.capitalizeFirstLetterOfEachWord(nextPage.name) +
-                  " | Monkeytype"
-              );
-            }
-            Focus.set(false);
-            ActivePage.set(nextPage.name);
-            await previousPage?.afterHide();
-            await nextPage?.beforeShow({
-              params: options.params,
-              //@ts-expect-error
-              data: options.data,
-              tribeOverride: options.tribeOverride ?? false,
-            });
+    void previousPage?.beforeHide({
+      tribeOverride: options.tribeOverride ?? false,
+    }).then(() => {
+      PageTransition.set(true);
+      $(".page").removeClass("active");
+      void Misc.swapElements(
+        previousPage.element,
+        nextPage.element,
+        250,
+        async () => {
+          PageTransition.set(false);
+          nextPage.element.addClass("active");
+          resolve(true);
+          await nextPage?.afterShow();
+          void AdController.reinstate();
+        },
+        async () => {
+          if (nextPage.id === "test") {
+            Misc.updateTitle();
+          } else {
+            const titleString =
+              nextPage.display ??
+              Strings.capitalizeFirstLetterOfEachWord(nextPage.id);
+            Misc.updateTitle(`${titleString} | Monkeytype`);
           }
-        );
-      });
+          Focus.set(false);
+          ActivePage.set(nextPage.id);
+          await previousPage?.afterHide();
+          await nextPage?.beforeShow({
+            params: options.params,
+            // @ts-expect-error for the future (i think)
+            data: options.data,
+            tribeOverride: options.tribeOverride ?? false,
+          });
+        }
+      );
+    });
   });
 }

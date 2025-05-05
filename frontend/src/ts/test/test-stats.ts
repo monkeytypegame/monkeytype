@@ -9,7 +9,7 @@ import {
   CompletedEvent,
   IncompleteTest,
 } from "@monkeytype/contracts/schemas/results";
-import { getActiveFunboxes } from "./funbox/list";
+import { isFunboxActiveWithProperty } from "./funbox/list";
 
 type CharCount = {
   spaces: number;
@@ -66,18 +66,21 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
-    wordsHistory: TestWords.words.list.slice(0, TestInput.input.history.length),
-    inputHistory: TestInput.input.history,
+    wordsHistory: TestWords.words.list.slice(
+      0,
+      TestInput.input.getHistory().length
+    ),
+    inputHistory: TestInput.input.getHistory(),
   };
 
   try {
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.spacing.average =
       TestInput.keypressTimings.spacing.array.reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.spacing.array.length;
 
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.spacing.sd = Numbers.stdDev(
       TestInput.keypressTimings.spacing.array
     );
@@ -85,13 +88,13 @@ export function getStats(): unknown {
     //
   }
   try {
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.duration.average =
       TestInput.keypressTimings.duration.array.reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.duration.array.length;
 
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.duration.sd = Numbers.stdDev(
       TestInput.keypressTimings.duration.array
     );
@@ -243,7 +246,7 @@ export function removeAfkData(): void {
 function getInputWords(): string[] {
   const containsKorean = TestInput.input.getKoreanStatus();
 
-  let inputWords = [...TestInput.input.history];
+  let inputWords = [...TestInput.input.getHistory()];
 
   if (TestState.isActive) {
     inputWords.push(TestInput.input.current);
@@ -260,7 +263,9 @@ function getTargetWords(): string[] {
   const containsKorean = TestInput.input.getKoreanStatus();
 
   let targetWords = [
-    ...(Config.mode === "zen" ? TestInput.input.history : TestWords.words.list),
+    ...(Config.mode === "zen"
+      ? TestInput.input.getHistory()
+      : TestWords.words.list),
   ];
 
   if (TestState.isActive) {
@@ -352,7 +357,7 @@ function countChars(): CharCount {
       spaces++;
     }
   }
-  if (getActiveFunboxes().find((f) => f.properties?.includes("nospace"))) {
+  if (isFunboxActiveWithProperty("nospace")) {
     spaces = 0;
     correctspaces = 0;
   }

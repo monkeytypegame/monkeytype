@@ -222,7 +222,7 @@ async function init(): Promise<boolean> {
     const word = wordEls[i] as HTMLElement;
     const prevWord = wordEls[i - 1] as HTMLElement;
 
-    if (word.offsetTop != prevWord.offsetTop) {
+    if (word.offsetTop !== prevWord.offsetTop) {
       currLineIndex++;
       lineRect = Misc.getBoundingRectOfElements([
         wordEls[prevLineEndWordIndex + 1] as HTMLElement,
@@ -534,7 +534,7 @@ function getHighlightWidth(
   }
 
   // If highlight is just one line...
-  if (lineIndexOfWordStart == lineIndexOfWordEnd) {
+  if (lineIndexOfWordStart === lineIndexOfWordEnd) {
     const highlightRect = Misc.getBoundingRectOfElements([startWord, endWord]);
     const lastWordElRect = endWord.getBoundingClientRect();
 

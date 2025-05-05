@@ -24,7 +24,8 @@ type PageFunctionOptions = {
 };
 
 type PageProperties<T> = {
-  name: PageName;
+  id: PageName;
+  display?: string;
   element: JQuery;
   path: string;
   beforeHide?: (options: PageFunctionOptions) => Promise<void>;
@@ -38,7 +39,8 @@ async function empty(): Promise<void> {
 }
 
 export default class Page<T> {
-  public name: PageName;
+  public id: PageName;
+  public display: string | undefined;
   public element: JQuery;
   public pathname: string;
   public beforeHide: (options: PageFunctionOptions) => Promise<void>;
@@ -47,7 +49,8 @@ export default class Page<T> {
   public afterShow: () => Promise<void>;
 
   constructor(props: PageProperties<T>) {
-    this.name = props.name;
+    this.id = props.id;
+    this.display = props.display;
     this.element = props.element;
     this.pathname = props.path;
     this.beforeHide = props.beforeHide ?? empty;

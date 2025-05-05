@@ -5,6 +5,7 @@ import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
 import Ape from "../ape";
 import Config from "../config";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export type Quote = {
   text: string;
@@ -61,16 +62,19 @@ class QuotesController {
     const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage || reshuffle) {
-      let data: QuoteData;
-      try {
-        data = await cachedFetchJson<QuoteData>(
-          `quotes/${normalizedLanguage}.json`
-        );
-      } catch (e) {
-        if (e instanceof Error && e?.message?.includes("404")) {
+      const { data, error } = await tryCatch(
+        cachedFetchJson<QuoteData>(`quotes/${normalizedLanguage}.json`)
+      );
+
+      if (error) {
+        if (
+          error instanceof Error &&
+          (error?.message?.includes("404") ||
+            error?.message?.includes("Content is not JSON"))
+        ) {
           return defaultQuoteCollection;
         } else {
-          throw e;
+          throw error;
         }
       }
 

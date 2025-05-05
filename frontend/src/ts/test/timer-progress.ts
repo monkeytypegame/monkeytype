@@ -94,7 +94,7 @@ function getCurrentCount(): number {
       1
     );
   } else {
-    return TestInput.input.history.length;
+    return TestInput.input.getHistory().length;
   }
 }
 
@@ -162,19 +162,21 @@ export function update(): void {
     } else if (Config.timerStyle === "text") {
       if (outof === 0) {
         if (timerNumberElement !== null) {
-          timerNumberElement.innerHTML =
-            "<div>" + `${TestInput.input.history.length}` + "</div>";
+          timerNumberElement.innerHTML = `<div>${
+            TestInput.input.getHistory().length
+          }</div>`;
         }
       } else {
         if (timerNumberElement !== null) {
-          timerNumberElement.innerHTML =
-            "<div>" + `${getCurrentCount()}/${outof}` + "</div>";
+          timerNumberElement.innerHTML = `<div>${getCurrentCount()}/${outof}</div>`;
         }
       }
     } else if (Config.timerStyle === "mini") {
       if (outof === 0) {
         if (miniTimerNumberElement !== null) {
-          miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}`;
+          miniTimerNumberElement.innerHTML = `${
+            TestInput.input.getHistory().length
+          }`;
         }
       } else {
         if (miniTimerNumberElement !== null) {
@@ -185,12 +187,15 @@ export function update(): void {
   } else if (Config.mode === "zen") {
     if (Config.timerStyle === "text") {
       if (timerNumberElement !== null) {
-        timerNumberElement.innerHTML =
-          "<div>" + `${TestInput.input.history.length}` + "</div>";
+        timerNumberElement.innerHTML = `<div>${
+          TestInput.input.getHistory().length
+        }</div>`;
       }
     } else {
       if (miniTimerNumberElement !== null) {
-        miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}`;
+        miniTimerNumberElement.innerHTML = `${
+          TestInput.input.getHistory().length
+        }`;
       }
     }
   }

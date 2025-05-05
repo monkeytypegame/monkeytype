@@ -36,7 +36,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
       const usePolyfill = AbortSignal?.timeout === undefined;
 
       request.fetchOptions = {
-        ...(request.fetchOptions || {}),
+        ...request.fetchOptions,
         signal: usePolyfill
           ? timeoutSignal(timeout)
           : AbortSignal.timeout(timeout),

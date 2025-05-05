@@ -30,9 +30,17 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
     await this.add(taskName, updateDiscordRoleTask);
   }
 
-  async linkDiscord(discordId: string, uid: string): Promise<void> {
+  async linkDiscord(
+    discordId: string,
+    uid: string,
+    lbOptOut: boolean
+  ): Promise<void> {
     const taskName = "linkDiscord";
-    const linkDiscordTask = buildGeorgeTask(taskName, [discordId, uid]);
+    const linkDiscordTask = buildGeorgeTask(taskName, [
+      discordId,
+      uid,
+      lbOptOut,
+    ]);
     await this.add(taskName, linkDiscordTask);
   }
 

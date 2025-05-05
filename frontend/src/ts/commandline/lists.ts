@@ -77,9 +77,7 @@ import CodeUnindentOnBackspace from "./lists/code-unindent-on-backspace";
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
-import LayoutsCommands, {
-  update as updateLayoutsCommands,
-} from "./lists/layouts";
+import LayoutsCommands from "./lists/layouts";
 import FunboxCommands from "./lists/funbox";
 import ThemesCommands, { update as updateThemesCommands } from "./lists/themes";
 import LoadChallengeCommands, {
@@ -91,38 +89,26 @@ import FontFamilyCommands, {
 import LanguagesCommands, {
   update as updateLanguagesCommands,
 } from "./lists/languages";
-import KeymapLayoutsCommands, {
-  update as updateKeymapLayoutsCommands,
-} from "./lists/keymap-layouts";
+import KeymapLayoutsCommands from "./lists/keymap-layouts";
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import * as CustomTextPopup from "../modals/custom-text";
-import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
-import { migrateConfig } from "../utils/config";
-import { PartialConfigSchema } from "@monkeytype/contracts/schemas/configs";
+import {
+  CustomBackgroundSchema,
+  CustomLayoutFluid,
+} from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-
-const layoutsPromise = JSONData.getLayoutsList();
-layoutsPromise
-  .then((layouts) => {
-    updateLayoutsCommands(layouts);
-    updateKeymapLayoutsCommands(layouts);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update layouts commands")
-    );
-  });
+import * as TestLogic from "../test/test-logic";
+import * as ActivePage from "../states/active-page";
 
 const languagesPromise = JSONData.getLanguageList();
 languagesPromise
@@ -232,13 +218,31 @@ export const commands: CommandsSubgroup = {
       id: "changeCustomLayoutfluid",
       display: "Custom layoutfluid...",
       defaultValue: (): string => {
-        return Config.customLayoutfluid;
+        return Config.customLayoutfluid.join(" ");
       },
       input: true,
       icon: "fa-tint",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        void UpdateConfig.setCustomLayoutfluid(input);
+        UpdateConfig.setCustomLayoutfluid(
+          input.split(" ") as CustomLayoutFluid
+        );
+      },
+    },
+    {
+      id: "changeCustomPolyglot",
+      display: "Polyglot languages...",
+      defaultValue: (): string => {
+        return Config.customPolyglot.join(" ");
+      },
+      input: true,
+      icon: "fa-language",
+      exec: ({ input }): void => {
+        if (input === undefined) return;
+        void UpdateConfig.setCustomPolyglot(input.split(" "));
+        if (ActivePage.get() === "test") {
+          TestLogic.restart();
+        }
       },
     },
 
@@ -313,6 +317,14 @@ export const commands: CommandsSubgroup = {
       },
       input: true,
       exec: ({ input }): void => {
+        const parsed = CustomBackgroundSchema.safeParse(input);
+        if (!parsed.success) {
+          Notifications.add(
+            `Invalid custom background URL (${parsed.error.issues[0]?.message})`,
+            0
+          );
+          return;
+        }
         UpdateConfig.setCustomBackground(input ?? "");
       },
     },
@@ -368,21 +380,7 @@ export const commands: CommandsSubgroup = {
       input: true,
       exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
-        try {
-          const parsedConfig = parseJsonWithSchema(
-            input,
-            PartialConfigSchema.strip()
-          );
-          await UpdateConfig.apply(migrateConfig(parsedConfig));
-          UpdateConfig.saveFullConfigToLocalStorage();
-          void Settings.update();
-          Notifications.add("Done", 1);
-        } catch (e) {
-          Notifications.add(
-            "An error occured while importing settings: " + e,
-            -1
-          );
-        }
+        await UpdateConfig.applyFromJson(input);
       },
     },
     {
@@ -399,6 +397,7 @@ export const commands: CommandsSubgroup = {
       id: "clearNotifications",
       display: "Clear all notifications",
       icon: "fa-trash-alt",
+      alias: "dismiss",
       exec: async (): Promise<void> => {
         Notifications.clearAllNotifications();
       },
@@ -515,7 +514,6 @@ export async function getList(
   listName: ListsObjectKeys
 ): Promise<CommandsSubgroup> {
   await Promise.allSettled([
-    layoutsPromise,
     languagesPromise,
     fontsPromise,
     themesPromise,
@@ -562,7 +560,6 @@ export function getTopOfStack(): CommandsSubgroup {
 let singleList: CommandsSubgroup | undefined;
 export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
   await Promise.allSettled([
-    layoutsPromise,
     languagesPromise,
     fontsPromise,
     themesPromise,

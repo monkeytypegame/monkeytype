@@ -17,6 +17,8 @@ import {
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
+import { SnapshotUserTag } from "../../constants/default-snapshot";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>
@@ -75,7 +77,7 @@ type Option = {
   mandatory: boolean;
 };
 
-const groupsUsingSelect = ["language", "funbox", "tags"];
+const groupsUsingSelect = new Set(["language", "funbox", "tags"]);
 const groupSelects: Partial<Record<keyof ResultFilters, SlimSelect>> = {};
 
 // current activated filter
@@ -117,18 +119,16 @@ async function updateFilterPresets(): Promise<void> {
 
   buttons.innerHTML = "";
 
-  const filterPresets =
-    DB.getSnapshot()?.filterPresets.map((filter) => {
-      filter.name = filter.name.replace(/_/g, " ");
-      return filter;
-    }) ?? [];
+  const filterPresets = DB.getSnapshot()?.filterPresets ?? [];
 
   if (filterPresets.length > 0) {
     let html = "";
 
     for (const filter of filterPresets) {
       html += `<div class="filterPresets">
-      <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
+      <div class="select-filter-preset button" data-id="${
+        filter._id
+      }">${filter.name.replace(/_/g, " ")}</div>
       <div class="button delete-filter-preset" data-id="${filter._id}">
         <i class="fas fa-fw fa-trash"></i>
       </div>
@@ -270,7 +270,7 @@ function setAllFilters(group: ResultFiltersGroup, value: boolean): void {
   });
 }
 
-export function loadTags(tags: DB.SnapshotUserTag[]): void {
+export function loadTags(tags: SnapshotUserTag[]): void {
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
@@ -316,7 +316,7 @@ export function updateActive(): void {
         }
       }
 
-      if (groupsUsingSelect.includes(group)) {
+      if (groupsUsingSelect.has(group)) {
         const option = $(
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[value="${filter}"]`
         );
@@ -645,10 +645,10 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
     filters.language[Config.language] = true;
   }
 
-  if (Config.funbox === "none") {
+  if (Config.funbox.length === 0) {
     filters.funbox["none"] = true;
   } else {
-    for (const f of Config.funbox.split("#")) {
+    for (const f of Config.funbox) {
       filters.funbox[f] = true;
     }
   }
@@ -746,14 +746,16 @@ export async function appendButtons(
 ): Promise<void> {
   selectChangeCallbackFn = selectChangeCallback;
 
-  let languageList;
-  try {
-    languageList = await JSONData.getLanguageList();
-  } catch (e) {
+  const { data: languageList, error } = await tryCatch(
+    JSONData.getLanguageList()
+  );
+
+  if (error) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to append language buttons")
+      Misc.createErrorMessage(error, "Failed to append language buttons")
     );
   }
+
   if (languageList) {
     let html = "";
 

@@ -2,7 +2,7 @@ import { lastElementFromArray } from "../utils/arrays";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestState from "./test-state";
 
-const keysToTrack = [
+const keysToTrack = new Set([
   "NumpadMultiply",
   "NumpadSubtract",
   "NumpadAdd",
@@ -71,7 +71,7 @@ const keysToTrack = [
   "Enter",
   "Tab",
   "NoCode", //android (smells) and some keyboards might send no location data - need to use this as a fallback
-];
+]);
 
 type KeypressTimings = {
   spacing: {
@@ -96,7 +96,7 @@ type ErrorHistoryObject = {
 
 class Input {
   current: string;
-  history: string[];
+  private history: string[];
   koreanStatus: boolean;
   constructor() {
     this.current = "";
@@ -113,24 +113,8 @@ class Input {
     this.history = [];
   }
 
-  setCurrent(val: string): void {
-    this.current = val;
-  }
-
   setKoreanStatus(val: boolean): void {
     this.koreanStatus = val;
-  }
-
-  appendCurrent(val: string): void {
-    this.current += val;
-  }
-
-  resetCurrent(): void {
-    this.current = "";
-  }
-
-  getCurrent(): string {
-    return this.current;
   }
 
   getKoreanStatus(): boolean {
@@ -139,7 +123,7 @@ class Input {
 
   pushHistory(): void {
     this.history.push(this.current);
-    this.resetCurrent();
+    this.current = "";
   }
 
   popHistory(): string {
@@ -164,30 +148,15 @@ class Input {
 
 class Corrected {
   current: string;
-  history: string[];
+  private history: string[];
   constructor() {
     this.current = "";
     this.history = [];
   }
-  setCurrent(val: string): void {
-    this.current = val;
-  }
-
-  appendCurrent(val: string): void {
-    this.current += val;
-  }
-
-  resetCurrent(): void {
-    this.current = "";
-  }
-
-  resetHistory(): void {
-    this.history = [];
-  }
 
   reset(): void {
-    this.resetCurrent();
-    this.resetHistory();
+    this.history = [];
+    this.current = "";
   }
 
   getHistory(i: number): string | undefined {
@@ -309,7 +278,7 @@ export function forceKeyup(now: number): void {
 let noCodeIndex = 0;
 
 export function recordKeyupTime(now: number, key: string): void {
-  if (!keysToTrack.includes(key)) return;
+  if (!keysToTrack.has(key)) return;
 
   if (key === "NoCode") {
     noCodeIndex--;
@@ -331,7 +300,7 @@ export function recordKeyupTime(now: number, key: string): void {
 }
 
 export function recordKeydownTime(now: number, key: string): void {
-  if (!keysToTrack.includes(key)) {
+  if (!keysToTrack.has(key)) {
     console.debug("Key not tracked", key);
     return;
   }

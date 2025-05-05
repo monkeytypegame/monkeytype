@@ -2,7 +2,7 @@ import { Response, Router } from "express";
 
 const router = Router();
 
-const root = __dirname + "../../../static";
+const root = __dirname + "/../../../dist/static";
 
 router.use("/internal", (req, res) => {
   setCsp(res);
@@ -29,6 +29,6 @@ export default router;
 function setCsp(res: Response): void {
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' monkeytype.com cdn.redoc.ly data:;object-src 'none';script-src 'self' cdn.redoc.ly 'unsafe-inline'; worker-src blob: data;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+    "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' monkeytype.com cdn.redocly.com data:;object-src 'none';script-src 'self' cdn.redocly.com 'unsafe-inline'; worker-src blob: data;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
   );
 }

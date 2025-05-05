@@ -1,0 +1,145 @@
+:root {
+  --bg-color: #001;
+  --main-color: #7aa2f7;
+  --caret-color: #bb9af7;
+  --sub-color: #414868;
+  --sub-alt-color: #24283b;
+  --text-color: #c0caf5;
+  --error-color: #f7768e;
+  --error-extra-color: #db4b4b;
+  --colorful-error-color: #ff7a93;
+  --colorful-error-extra-color: #ff9e64;
+}
+
+@keyframes tokyo-glow {
+  0% {
+    color: #c0caf5;
+    text-shadow: 0 0 5px #7aa2f7, 0 0 10px #bb9af7;
+  }
+  50% {
+    color: #c0caf5;
+    text-shadow: 0 0 8px #7dcfff, 0 0 15px #bb9af7;
+  }
+  100% {
+    color: #c0caf5;
+    text-shadow: 0 0 5px #7aa2f7, 0 0 10px #bb9af7;
+  }
+}
+
+@keyframes tokyo-glow-incorrect {
+  0% {
+    text-shadow: 0 0 5px #f7768e, 0 0 10px #db4b4b;
+  }
+  50% {
+    text-shadow: 0 0 8px #ff7a93, 0 0 15px #ff9e64;
+  }
+  100% {
+    text-shadow: 0 0 5px #f7768e, 0 0 10px #db4b4b;
+  }
+}
+
+@keyframes tokyo-bg {
+  0% {
+    background: #7aa2f7;
+  }
+  50% {
+    background: #bb9af7;
+  }
+  100% {
+    background: #7aa2f7;
+  }
+}
+
+#words {
+  --correct-letter-color: var(--text-color);
+  --untyped-letter-color: #565f89;
+}
+
+header:not(.focus) #logo .text {
+  color: var(--text-color);
+  animation: tokyo-glow 3s infinite alternate;
+}
+
+header #logo .text .top {
+  color: inherit;
+  animation: none;
+}
+
+header #logo .icon {
+  color: var(--main-color) !important;
+}
+
+button.text:hover,
+.button.text:hover,
+.textButton:hover {
+  color: var(--caret-color);
+}
+
+button.text.active,
+.button.text.active,
+.textButton.active {
+  color: var(--main-color);
+}
+
+button.text:hover,
+.textButton:hover {
+  animation: tokyo-glow 5s linear infinite;
+}
+
+.word .active {
+  animation: tokyo-glow 5s linear infinite;
+}
+
+button:hover,
+.button:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover {
+  color: var(--bg-color);
+  background: var(--caret-color);
+}
+
+.scrollToTopButton:hover {
+  background: var(--caret-color);
+  color: var(--bg-color);
+}
+
+#caret {
+  animation: tokyo-bg 3s linear infinite;
+}
+
+#logo .bottom,
+header .config .group .buttons .textButton.active,
+#result .stats .group .bottom,
+nav .textButton:hover,
+nav button.text:hover,
+header .config .group .buttons .textButton:hover,
+footer .textButton:hover,
+footer button.text:hover,
+a:not(.button):hover {
+  animation: tokyo-glow 3s linear infinite;
+}
+
+.afk,
+.timeToday,
+#words .word letter.correct,
+#words .word.typed letter.correct,
+#words.highlight-word .word.typed letter,
+#words.highlight-next-word .word.typed letter,
+#words.highlight-next-two-words .word.typed letter,
+#words.highlight-next-three-words .word.typed letter {
+  animation: tokyo-glow 5s linear infinite;
+}
+
+#words.flipped .word.typed letter {
+  animation: none;
+}
+
+.incorrect {
+  animation: tokyo-glow-incorrect 5s linear infinite;
+}
+
+#words.highlight-off .word letter,
+#words.highlight-off .word.typed letter {
+  animation: tokyo-glow 5s linear infinite;
+}

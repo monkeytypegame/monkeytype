@@ -30,6 +30,8 @@ import { IdSchema, LanguageSchema, StringNumberSchema } from "./schemas/util";
 import { CustomThemeColorsSchema } from "./schemas/configs";
 import { doesNotContainProfanity } from "./validation/validation";
 
+export const UserEmailSchema = z.string().email();
+
 export const GetUserResponseSchema = responseWithData(
   UserSchema.extend({
     inboxUnreadSize: z.number().int().nonnegative(),
@@ -50,7 +52,7 @@ export const UserNameSchema = doesNotContainProfanity(
 );
 
 export const CreateUserRequestSchema = z.object({
-  email: z.string().email().optional(),
+  email: UserEmailSchema.optional(),
   name: UserNameSchema,
   uid: z.string().optional(), //defined by firebase, no validation should be applied
   captcha: z.string(), //defined by google recaptcha, no validation should be applied
@@ -80,10 +82,10 @@ export type UpdateLeaderboardMemoryRequest = z.infer<
 >;
 
 export const UpdateEmailRequestSchema = z.object({
-  newEmail: z.string().email(),
-  previousEmail: z.string().email(),
+  newEmail: UserEmailSchema,
+  previousEmail: UserEmailSchema,
 });
-export type UpdateEmailRequestSchema = z.infer<typeof UpdateEmailRequestSchema>;
+export type UpdateEmailRequest = z.infer<typeof UpdateEmailRequestSchema>;
 
 export const UpdatePasswordRequestSchema = z.object({
   newPassword: z.string().min(6),
@@ -303,7 +305,7 @@ export type ReportUserRequest = z.infer<typeof ReportUserRequestSchema>;
 
 export const ForgotPasswordEmailRequestSchema = z.object({
   captcha: z.string(),
-  email: z.string().email(),
+  email: UserEmailSchema,
 });
 export type ForgotPasswordEmailRequest = z.infer<
   typeof ForgotPasswordEmailRequestSchema
@@ -324,7 +326,7 @@ export type GetCurrentTestActivityResponse = z.infer<
 
 export const GetStreakResponseSchema =
   responseWithNullableData(UserStreakSchema);
-export type GetStreakResponseSchema = z.infer<typeof GetStreakResponseSchema>;
+export type GetStreakResponse = z.infer<typeof GetStreakResponseSchema>;
 
 const c = initContract();
 

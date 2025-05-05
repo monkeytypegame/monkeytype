@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-//@ts-nocheck
+// oxlint-disable ban-ts-comment
+//@ts-nocheck too many errors from 3rd party ad code
 
 import Config from "../config";
 import * as ActivePage from "../states/active-page";

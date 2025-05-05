@@ -74,9 +74,9 @@ export async function handleReports(
   const reportsFromDb = await ReportDAL.getReports(reportIds);
   const reportById = new Map(reportsFromDb.map((it) => [it.id, it]));
 
-  const existingReportIds = reportsFromDb.map((report) => report.id);
+  const existingReportIds = new Set(reportsFromDb.map((report) => report.id));
   const missingReportIds = reportIds.filter(
-    (reportId) => !existingReportIds.includes(reportId)
+    (reportId) => !existingReportIds.has(reportId)
   );
 
   if (missingReportIds.length > 0) {
