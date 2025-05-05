@@ -644,10 +644,10 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
     filters.language[Config.language] = true;
   }
 
-  if (Config.funbox === "none") {
+  if (Config.funbox.length === 0) {
     filters.funbox["none"] = true;
   } else {
-    for (const f of Config.funbox.split("#")) {
+    for (const f of Config.funbox) {
       filters.funbox[f] = true;
     }
   }

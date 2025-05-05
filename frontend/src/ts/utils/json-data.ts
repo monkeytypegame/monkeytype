@@ -1,6 +1,6 @@
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 import { Language } from "@monkeytype/contracts/schemas/languages";
 import { Accents } from "../test/lazy-mode";
-import { hexToHSL } from "./colors";
 
 /**
  * Fetches JSON data from the specified URL using the fetch API.
@@ -89,71 +89,7 @@ export type Layout = {
  * @throws {Error} If the layout list or layout doesn't exist.
  */
 export async function getLayout(layoutName: string): Promise<Layout> {
-  try {
-    return await cachedFetchJson<Layout>(`/layouts/${layoutName}.json`);
-  } catch (e) {
-    throw new Error(`Layout ${layoutName} JSON fetch failed`);
-  }
-}
-
-export type Theme = {
-  name: string;
-  bgColor: string;
-  mainColor: string;
-  subColor: string;
-  textColor: string;
-};
-
-let themesList: Theme[] | undefined;
-
-/**
- * Fetches the list of themes from the server, sorting them alphabetically by name.
- * If the list has already been fetched, returns the cached list.
- * @returns A promise that resolves to the sorted list of themes.
- */
-export async function getThemesList(): Promise<Theme[]> {
-  if (!themesList) {
-    let themes = await cachedFetchJson<Theme[]>("/themes/_list.json");
-
-    themes = themes.sort((a, b) => {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-    themesList = themes;
-    return themesList;
-  } else {
-    return themesList;
-  }
-}
-
-let sortedThemesList: Theme[] | undefined;
-
-/**
- * Fetches the sorted list of themes from the server.
- * @returns A promise that resolves to the sorted list of themes.
- */
-export async function getSortedThemesList(): Promise<Theme[]> {
-  if (!sortedThemesList) {
-    if (!themesList) {
-      await getThemesList();
-    }
-    if (!themesList) {
-      throw new Error("Themes list is undefined");
-    }
-    let sorted = [...themesList];
-    sorted = sorted.sort((a, b) => {
-      const b1 = hexToHSL(a.bgColor);
-      const b2 = hexToHSL(b.bgColor);
-      return b2.lgt - b1.lgt;
-    });
-    sortedThemesList = sorted;
-    return sortedThemesList;
-  } else {
-    return sortedThemesList;
-  }
+  return await cachedFetchJson<Layout>(`/layouts/${layoutName}.json`);
 }
 
 export type LanguageObject = {
@@ -252,7 +188,7 @@ export type Challenge = {
   display: string;
   autoRole: boolean;
   type: string;
-  parameters: (string | number | boolean)[];
+  parameters: (string | number | boolean | FunboxName[])[];
   message: string;
   requirements: Record<string, Record<string, string | number | boolean>>;
 };
@@ -262,12 +198,8 @@ export type Challenge = {
  * @returns A promise that resolves to the list of challenges.
  */
 export async function getChallengeList(): Promise<Challenge[]> {
-  try {
-    const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
-    return data;
-  } catch (e) {
-    throw new Error("Challenge list JSON fetch failed");
-  }
+  const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
+  return data;
 }
 
 /**
@@ -275,12 +207,8 @@ export async function getChallengeList(): Promise<Challenge[]> {
  * @returns A promise that resolves to the list of supporters.
  */
 export async function getSupportersList(): Promise<string[]> {
-  try {
-    const data = await cachedFetchJson<string[]>("/about/supporters.json");
-    return data;
-  } catch (e) {
-    throw new Error("Supporters list JSON fetch failed");
-  }
+  const data = await cachedFetchJson<string[]>("/about/supporters.json");
+  return data;
 }
 
 /**
@@ -288,12 +216,8 @@ export async function getSupportersList(): Promise<string[]> {
  * @returns A promise that resolves to the list of contributors.
  */
 export async function getContributorsList(): Promise<string[]> {
-  try {
-    const data = await cachedFetchJson<string[]>("/about/contributors.json");
-    return data;
-  } catch (e) {
-    throw new Error("Contributors list JSON fetch failed");
-  }
+  const data = await cachedFetchJson<string[]>("/about/contributors.json");
+  return data;
 }
 
 type GithubRelease = {

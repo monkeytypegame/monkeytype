@@ -8,7 +8,7 @@ import { deepClone } from "../utils/misc";
 import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { Result } from "@monkeytype/contracts/schemas/results";
-import { Config } from "@monkeytype/contracts/schemas/configs";
+import { Config, FunboxName } from "@monkeytype/contracts/schemas/configs";
 import {
   ModifiableTestActivityCalendar,
   TestActivityCalendar,
@@ -43,7 +43,7 @@ export type SnapshotResult<M extends Mode> = Omit<
   blindMode: boolean;
   lazyMode: boolean;
   difficulty: string;
-  funbox: string;
+  funbox: FunboxName[];
   language: Language;
   numbers: boolean;
   punctuation: boolean;

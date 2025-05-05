@@ -74,6 +74,24 @@
 .pageTest {
   position: relative;
 
+  #testInitFailed {
+    margin-top: 2rem;
+    font-size: 1rem;
+    text-align: center;
+    .message {
+      max-width: 800px;
+      grid-area: content;
+      justify-self: center;
+    }
+    .error {
+      margin-top: 2rem;
+    }
+    button {
+      padding: 1rem 2rem;
+      margin-top: 2rem;
+    }
+  }
+
   #typingTest {
     position: relative;
     width: 100%;

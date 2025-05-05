@@ -72,7 +72,7 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
   }
 }
 
-export async function initSnapshot(): Promise<Snapshot | number | boolean> {
+export async function initSnapshot(): Promise<Snapshot | false> {
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = getDefaultSnapshot();
   try {
@@ -308,7 +308,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     if (result.blindMode === undefined) result.blindMode = false;
     if (result.lazyMode === undefined) result.lazyMode = false;
     if (result.difficulty === undefined) result.difficulty = "normal";
-    if (result.funbox === undefined) result.funbox = "none";
+    if (result.funbox === undefined) result.funbox = [];
     if (result.language === undefined || result.language === null) {
       result.language = "english";
     }

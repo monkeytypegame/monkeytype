@@ -1,6 +1,6 @@
 import { z, ZodSchema } from "zod";
-import { token } from "./util";
 import * as Shared from "./shared";
+import * as Themes from "./themes";
 import * as Layouts from "./layouts";
 import { LanguageSchema } from "./languages";
 
@@ -197,7 +197,10 @@ export type CustomBackgroundFilter = z.infer<
   typeof CustomBackgroundFilterSchema
 >;
 
-export const CustomLayoutFluidSchema = z.string().regex(/^[0-9a-zA-Z_#]+$/); //TODO better regex
+export const CustomLayoutFluidSchema = z
+  .array(Layouts.LayoutNameSchema)
+  .min(1)
+  .max(15);
 export type CustomLayoutFluid = z.infer<typeof CustomLayoutFluidSchema>;
 
 export const CustomPolyglotSchema = z.array(LanguageSchema).min(1);
@@ -232,13 +235,62 @@ export const CustomThemeColorsSchema = z.tuple([
 ]);
 export type CustomThemeColors = z.infer<typeof CustomThemeColorsSchema>;
 
-export const FavThemesSchema = z.array(token().max(50));
+export const ThemeNameSchema = Themes.ThemeNameSchema;
+export type ThemeName = z.infer<typeof ThemeNameSchema>;
+
+export const FavThemesSchema = z.array(ThemeNameSchema);
 export type FavThemes = z.infer<typeof FavThemesSchema>;
 
-export const FunboxSchema = z
-  .string()
-  .max(100)
-  .regex(/[\w#]+/);
+export const FunboxNameSchema = z.enum([
+  "58008",
+  "mirror",
+  "upside_down",
+  "nausea",
+  "round_round_baby",
+  "simon_says",
+  "tts",
+  "choo_choo",
+  "arrows",
+  "rAnDoMcAsE",
+  "capitals",
+  "layout_mirror",
+  "layoutfluid",
+  "earthquake",
+  "space_balls",
+  "gibberish",
+  "ascii",
+  "specials",
+  "plus_one",
+  "plus_zero",
+  "plus_two",
+  "plus_three",
+  "read_ahead_easy",
+  "read_ahead",
+  "read_ahead_hard",
+  "memory",
+  "nospace",
+  "poetry",
+  "wikipedia",
+  "weakspot",
+  "pseudolang",
+  "IPv4",
+  "IPv6",
+  "binary",
+  "hexadecimal",
+  "zipf",
+  "morse",
+  "crt",
+  "backwards",
+  "ddoouubblleedd",
+  "instant_messaging",
+  "underscore_spaces",
+  "ALL_CAPS",
+  "polyglot",
+  "asl",
+]);
+export type FunboxName = z.infer<typeof FunboxNameSchema>;
+
+export const FunboxSchema = z.array(FunboxNameSchema).max(15);
 export type Funbox = z.infer<typeof FunboxSchema>;
 
 export const PaceCaretCustomSpeedSchema = z.number().nonnegative();
@@ -266,9 +318,6 @@ export const FontFamilySchema = z
   .max(50)
   .regex(/^[a-zA-Z0-9_\-+.]+$/);
 export type FontFamily = z.infer<typeof FontFamilySchema>;
-
-export const ThemeNameSchema = token().max(50);
-export type ThemeName = z.infer<typeof ThemeNameSchema>;
 
 export const KeymapLayoutSchema = z
   .literal("overrideSync")

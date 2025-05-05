@@ -4,11 +4,9 @@ import * as Notifications from "./elements/notifications";
 import {
   isConfigValueValidBoolean,
   isConfigValueValid,
-  invalid as notifyInvalid,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { isAuthenticated } from "./firebase";
-import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 import {
@@ -16,6 +14,7 @@ import {
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
 import {
+  createErrorMessage,
   isDevEnvironment,
   isObject,
   promiseWithResolvers,
@@ -23,7 +22,7 @@ import {
   typedKeys,
 } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
-import { Config } from "@monkeytype/contracts/schemas/configs";
+import { Config, FunboxName } from "@monkeytype/contracts/schemas/configs";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import {
   Language,
@@ -33,8 +32,7 @@ import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
-import { LayoutsList } from "./constants/layouts";
-import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -265,52 +263,42 @@ export function setFunbox(
   if (!isConfigValueValid("funbox", funbox, ConfigSchemas.FunboxSchema))
     return false;
 
-  for (const funbox of config.funbox.split("#")) {
+  for (const funbox of config.funbox) {
     if (!canSetFunboxWithConfig(funbox, config)) {
       return false;
     }
   }
 
-  const val = funbox || "none";
-  config.funbox = val;
+  config.funbox = funbox;
   saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);
 
   return true;
 }
 
-export function toggleFunbox(
-  funbox: ConfigSchemas.Funbox,
-  nosave?: boolean
-): number | boolean {
-  if (!isConfigValueValid("funbox", funbox, ConfigSchemas.FunboxSchema))
+export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
+  if (!canSetFunboxWithConfig(funbox, config)) {
     return false;
-
-  let r;
-
-  const funboxArray = config.funbox.split("#");
-  if (funboxArray[0] === "none") funboxArray.splice(0, 1);
-  if (!funboxArray.includes(funbox)) {
-    if (!canSetFunboxWithConfig(funbox, config)) {
-      return false;
-    }
-    funboxArray.push(funbox);
-    config.funbox = funboxArray.sort().join("#");
-    r = funboxArray.indexOf(funbox);
-  } else {
-    r = funboxArray.indexOf(funbox);
-    funboxArray.splice(r, 1);
-    if (funboxArray.length === 0) {
-      config.funbox = "none";
-    } else {
-      config.funbox = funboxArray.join("#");
-    }
-    r = -r - 1;
   }
+
+  let newConfig: FunboxName[] = config.funbox;
+
+  if (newConfig.includes(funbox)) {
+    newConfig = newConfig.filter((it) => it !== funbox);
+  } else {
+    newConfig.push(funbox);
+    newConfig.sort();
+  }
+
+  if (!isConfigValueValid("funbox", newConfig, ConfigSchemas.FunboxSchema)) {
+    return false;
+  }
+
+  config.funbox = newConfig;
   saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);
 
-  return r;
+  return true;
 }
 
 export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
@@ -1581,7 +1569,6 @@ export function setLanguage(language: Language, nosave?: boolean): boolean {
   if (!isConfigValueValid("language", language, LanguageSchema)) return false;
 
   config.language = language;
-  void AnalyticsController.log("changedLanguage", { language });
   saveToLocalStorage("language", nosave);
   ConfigEvent.dispatch("language", config.language);
 
@@ -1884,26 +1871,17 @@ export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
 ): boolean {
-  const trimmed = value.trim();
-
-  const invalidLayouts = trimmed
-    .split(/[# ]+/) //can be space or hash
-    .filter((it) => !LayoutsList.includes(it as LayoutName));
-
-  if (invalidLayouts.length !== 0) {
-    notifyInvalid(
+  if (
+    !isConfigValueValid(
       "layoutfluid",
-      trimmed,
-      `The following inputted layouts do not exist: ${invalidLayouts.join(
-        ", "
-      )}`
-    );
-
+      value,
+      ConfigSchemas.CustomLayoutFluidSchema
+    )
+  ) {
     return false;
   }
 
-  const customLayoutfluid = trimmed.replace(/ /g, "#");
-  config.customLayoutfluid = customLayoutfluid;
+  config.customLayoutfluid = value;
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutfluid", config.customLayoutfluid);
 
@@ -2157,6 +2135,30 @@ export function getConfigChanges(): Partial<Config> {
       configChanges[key] = config[key];
     });
   return configChanges;
+}
+
+export async function applyFromJson(json: string): Promise<void> {
+  try {
+    const parsedConfig = parseJsonWithSchema(
+      json,
+      ConfigSchemas.PartialConfigSchema.strip(),
+      {
+        migrate: (value) => {
+          if (Array.isArray(value)) {
+            throw new Error("Invalid config");
+          }
+          return migrateConfig(value);
+        },
+      }
+    );
+    await apply(parsedConfig);
+    saveFullConfigToLocalStorage();
+    Notifications.add("Done", 1);
+  } catch (e) {
+    const msg = createErrorMessage(e, "Failed to import settings");
+    console.error(msg);
+    Notifications.add(msg, -1);
+  }
 }
 
 const { promise: loadPromise, resolve: loadDone } = promiseWithResolvers();

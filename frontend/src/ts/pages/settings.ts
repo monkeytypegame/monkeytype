@@ -17,23 +17,24 @@ import Page from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import SlimSelect from "slim-select";
-
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
   ConfigValue,
   CustomBackgroundSchema,
-} from "@monkeytype/contracts/schemas/configs";
-import {
-  getAllFunboxes,
+  ThemeName,
+  CustomLayoutFluid,
   FunboxName,
-  checkCompatibility,
-} from "@monkeytype/funbox";
+} from "@monkeytype/contracts/schemas/configs";
+import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
-import { DataArrayPartial, Optgroup } from "slim-select/store";
+import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { Theme, ThemesList } from "../constants/themes";
+import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
+import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/contracts/schemas/languages";
 
@@ -412,6 +413,7 @@ async function initGroups(): Promise<void> {
       const customButton = $(
         ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']"
       );
+
       if (
         $(
           ".pageSettings .section[data-config-name='fontFamily'] .buttons .active"
@@ -446,7 +448,6 @@ function reset(): void {
   $(".pageSettings .section.themes .allThemes.buttons").empty();
   $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
   $(".pageSettings .section[data-config-name='funbox'] .buttons").empty();
-  $(".pageSettings .section[data-config-name='fontFamily'] .buttons").empty();
   for (const select of document.querySelectorAll(".pageSettings select")) {
     //@ts-expect-error slim gets added to the html element but ts doesnt know about it
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -471,93 +472,47 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
-  const layoutSelectElement = document.querySelector(
-    ".pageSettings .section[data-config-name='layout'] select"
-  ) as Element;
-  const keymapLayoutSelectElement = document.querySelector(
-    ".pageSettings .section[data-config-name='keymapLayout'] select"
-  ) as Element;
-
-  let layoutHtml = '<option value="default">off</option>';
-  let keymapLayoutHtml = '<option value="overrideSync">emulator sync</option>';
-
-  for (const layout of LayoutsList) {
-    const optionHtml = `<option value="${layout}">${layout.replace(
-      /_/g,
-      " "
-    )}</option>`;
-    if (layout.toString() !== "korean") {
-      layoutHtml += optionHtml;
-    }
-    if (layout.toString() !== "default") {
-      keymapLayoutHtml += optionHtml;
-    }
-  }
-
-  layoutSelectElement.innerHTML = layoutHtml;
-  keymapLayoutSelectElement.innerHTML = keymapLayoutHtml;
-
-  new SlimSelect({
-    select: layoutSelectElement,
+  const layoutToOption: (layout: LayoutName) => OptionOptional = (layout) => ({
+    value: layout,
+    text: layout.replace(/_/g, " "),
   });
 
   new SlimSelect({
-    select: keymapLayoutSelectElement,
+    select: ".pageSettings .section[data-config-name='layout'] select",
+    data: [
+      { text: "off", value: "default" },
+      ...LayoutsList.filter((layout) => layout !== "korean").map(
+        layoutToOption
+      ),
+    ],
   });
 
-  const { data: themes, error: getThemesListError } = await tryCatch(
-    JSONData.getThemesList()
-  );
-  if (getThemesListError) {
-    console.error(
-      Misc.createErrorMessage(
-        getThemesListError,
-        "Failed to load themes into dropdown boxes"
-      )
-    );
-  }
-
-  const themeSelectLightElement = document.querySelector(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light"
-  ) as Element;
-  const themeSelectDarkElement = document.querySelector(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark"
-  ) as Element;
-
-  let themeSelectLightHtml = "";
-  let themeSelectDarkHtml = "";
-
-  if (themes) {
-    for (const theme of themes) {
-      const optionHtml = `<option value="${theme.name}" ${
-        theme.name === Config.themeLight ? "selected" : ""
-      }>${theme.name.replace(/_/g, " ")}</option>`;
-      themeSelectLightHtml += optionHtml;
-
-      const optionDarkHtml = `<option value="${theme.name}" ${
-        theme.name === Config.themeDark ? "selected" : ""
-      }>${theme.name.replace(/_/g, " ")}</option>`;
-      themeSelectDarkHtml += optionDarkHtml;
-    }
-  }
-
-  themeSelectLightElement.innerHTML = themeSelectLightHtml;
-  themeSelectDarkElement.innerHTML = themeSelectDarkHtml;
+  new SlimSelect({
+    select: ".pageSettings .section[data-config-name='keymapLayout'] select",
+    data: [
+      { text: "emulator sync", value: "overrideSync" },
+      ...LayoutsList.map(layoutToOption),
+    ],
+  });
 
   new SlimSelect({
-    select: themeSelectLightElement,
+    select:
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light",
+    data: getThemeDropdownData((theme) => theme.name === Config.themeLight),
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setThemeLight(newVal[0]?.value as string);
+        UpdateConfig.setThemeLight(newVal[0]?.value as ThemeName);
       },
     },
   });
 
   new SlimSelect({
-    select: themeSelectDarkElement,
+    select:
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark",
+    data: getThemeDropdownData((theme) => theme.name === Config.themeDark),
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setThemeDark(newVal[0]?.value as string);
+        UpdateConfig.setThemeDark(newVal[0]?.value as ThemeName);
       },
     },
   });
@@ -565,108 +520,86 @@ async function fillSettingsPage(): Promise<void> {
   const funboxEl = document.querySelector(
     ".pageSettings .section[data-config-name='funbox'] .buttons"
   ) as HTMLDivElement;
-  funboxEl.innerHTML = `<div class="funbox button" data-config-value='none'>none</div>`;
   let funboxElHTML = "";
 
   for (const funbox of getAllFunboxes()) {
     if (funbox.name === "mirror") {
-      funboxElHTML += `<div class="funbox button" data-config-value='${
+      funboxElHTML += `<button class="funbox" data-funbox-name="mirror" data-config-value='${
         funbox.name
       }' aria-label="${
         funbox.description
       }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
         /_/g,
         " "
-      )}</div>`;
+      )}</button>`;
     } else if (funbox.name === "upside_down") {
-      funboxElHTML += `<div class="funbox button" data-config-value='${
+      funboxElHTML += `<button class="funbox" data-funbox-name="upside_down" data-config-value='${
         funbox.name
       }' aria-label="${
         funbox.description
       }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1); z-index:1;">${funbox.name.replace(
         /_/g,
         " "
-      )}</div>`;
+      )}</button>`;
     } else if (funbox.name === "underscore_spaces") {
       // Display as "underscore_spaces". Does not replace underscores with spaces.
-      funboxElHTML += `<div class="funbox button" data-config-value='${funbox.name}' aria-label="${funbox.description}" data-balloon-pos="up" data-balloon-length="fit">${funbox.name}</div>`;
+      funboxElHTML += `<button class="funbox" data-funbox-name="underscore_spaces" data-config-value='${funbox.name}' aria-label="${funbox.description}" data-balloon-pos="up" data-balloon-length="fit">${funbox.name}</button>`;
     } else {
-      funboxElHTML += `<div class="funbox button" data-config-value='${
+      funboxElHTML += `<button class="funbox" data-funbox-name="${
         funbox.name
-      }' aria-label="${
+      }" data-config-value='${funbox.name}' aria-label="${
         funbox.description
       }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
         /_/g,
         " "
-      )}</div>`;
+      )}</button>`;
     }
   }
   funboxEl.innerHTML = funboxElHTML;
 
-  let isCustomFont = true;
   const fontsEl = document.querySelector(
     ".pageSettings .section[data-config-name='fontFamily'] .buttons"
   ) as HTMLDivElement;
-  fontsEl.innerHTML = "";
 
-  let fontsElHTML = "";
+  if (fontsEl.innerHTML === "") {
+    let fontsElHTML = "";
 
-  const { data: fontsList, error: getFontsListError } = await tryCatch(
-    JSONData.getFontsList()
-  );
-  if (getFontsListError) {
-    console.error(
-      Misc.createErrorMessage(
-        getFontsListError,
-        "Failed to update fonts settings buttons"
-      )
+    const { data: fontsList, error: getFontsListError } = await tryCatch(
+      JSONData.getFontsList()
     );
-  }
-
-  if (fontsList) {
-    for (const font of fontsList) {
-      let fontFamily = font.name;
-      if (fontFamily === "Helvetica") {
-        fontFamily = "Comic Sans MS";
-      }
-      if ((font.systemFont ?? false) === false) {
-        fontFamily += " Preview";
-      }
-      const activeClass = Config.fontFamily === font.name ? " active" : "";
-      const display = font.display !== undefined ? font.display : font.name;
-      if (Config.fontFamily === font.name) isCustomFont = false;
-      fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${font.name.replace(
-        / /g,
-        "_"
-      )}">${display}</button>`;
+    if (getFontsListError) {
+      console.error(
+        Misc.createErrorMessage(
+          getFontsListError,
+          "Failed to update fonts settings buttons"
+        )
+      );
     }
 
-    fontsElHTML += isCustomFont
-      ? `<button class="no-auto-handle active" data-config-value="custom">Custom (${Config.fontFamily.replace(
-          /_/g,
-          " "
-        )})</button>`
-      : '<button class="no-auto-handle" data-config-value="custom"">Custom</button>';
+    if (fontsList) {
+      for (const font of fontsList) {
+        let fontFamily = font.name;
+        if (fontFamily === "Helvetica") {
+          fontFamily = "Comic Sans MS";
+        }
+        if ((font.systemFont ?? false) === false) {
+          fontFamily += " Preview";
+        }
+        const activeClass = Config.fontFamily === font.name ? " active" : "";
+        const display = font.display !== undefined ? font.display : font.name;
 
-    fontsEl.innerHTML = fontsElHTML;
+        fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${font.name.replace(
+          / /g,
+          "_"
+        )}">${display}</button>`;
+      }
+
+      fontsElHTML +=
+        '<button class="no-auto-handle" data-config-value="custom"">Custom</button>';
+
+      fontsEl.innerHTML = fontsElHTML;
+    }
   }
-
-  $(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
-  ).val(Config.customBackground);
-  updateCustomBackgroundRemoveButtonVisibility();
-
-  $(".pageSettings .section[data-config-name='fontSize'] input").val(
-    Config.fontSize
-  );
-
-  $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
-    Config.maxLineWidth
-  );
-
-  $(".pageSettings .section[data-config-name='keymapSize'] input").val(
-    Config.keymapSize
-  );
 
   customLayoutFluidSelect = new SlimSelect({
     select:
@@ -674,8 +607,13 @@ async function fillSettingsPage(): Promise<void> {
     settings: { keepOrder: true },
     events: {
       afterChange: (newVal): void => {
-        const customLayoutfluid = newVal.map((it) => it.value).join("#");
-        if (customLayoutfluid !== Config.customLayoutfluid) {
+        const customLayoutfluid = newVal.map(
+          (it) => it.value
+        ) as CustomLayoutFluid;
+        //checking equal with order, because customLayoutfluid is ordered
+        if (
+          !areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)
+        ) {
           void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
         }
       },
@@ -690,16 +628,13 @@ async function fillSettingsPage(): Promise<void> {
     events: {
       afterChange: (newVal): void => {
         const customPolyglot = newVal.map((it) => it.value) as Language[];
-        if (customPolyglot.toSorted() !== Config.customPolyglot.toSorted()) {
+        //checking equal without order, because customPolyglot is not ordered
+        if (!areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
           void UpdateConfig.setCustomPolyglot(customPolyglot);
         }
       },
     },
   });
-
-  $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
-    Config.tapeMargin
-  );
 
   setEventDisabled(true);
   if (!groupsInitialized) {
@@ -711,7 +646,8 @@ async function fillSettingsPage(): Promise<void> {
     }
   }
   setEventDisabled(false);
-  await ThemePicker.refreshButtons();
+  await ThemePicker.refreshCustomButtons();
+  await ThemePicker.refreshPresetButtons();
   await UpdateConfig.loadPromise;
 }
 
@@ -728,27 +664,29 @@ function showAccountSection(): void {
 }
 
 function setActiveFunboxButton(): void {
-  $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
-    "active"
+  const buttons = document.querySelectorAll(
+    `.pageSettings .section[data-config-name='funbox'] button`
   );
-  $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
-    "disabled"
-  );
-  getAllFunboxes().forEach((funbox) => {
-    if (
-      !checkCompatibility(getActiveFunboxNames(), funbox.name) &&
-      !Config.funbox.split("#").includes(funbox.name)
-    ) {
-      $(
-        `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox.name}']`
-      ).addClass("disabled");
+
+  for (const button of buttons) {
+    button.classList.remove("active");
+    button.classList.remove("disabled");
+
+    const configValue = button.getAttribute("data-config-value");
+    const funboxName = button.getAttribute("data-funbox-name");
+
+    if (configValue === null || funboxName === null) {
+      continue;
     }
-  });
-  Config.funbox.split("#").forEach((funbox) => {
-    $(
-      `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox}']`
-    ).addClass("active");
-  });
+
+    if (Config.funbox.includes(funboxName as FunboxName)) {
+      button.classList.add("active");
+    } else if (
+      !checkCompatibility(getActiveFunboxNames(), funboxName as FunboxName)
+    ) {
+      button.classList.add("disabled");
+    }
+  }
 }
 
 function refreshTagsSettingsSection(): void {
@@ -824,7 +762,7 @@ export async function update(groupUpdate = true): Promise<void> {
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
   await Misc.sleep(0);
-  ThemePicker.updateActiveTab(true);
+  ThemePicker.updateActiveTab();
   ThemePicker.setCustomInputs(true);
   // ThemePicker.updateActiveButton();
 
@@ -873,6 +811,22 @@ export async function update(groupUpdate = true): Promise<void> {
   }
   updateCustomBackgroundRemoveButtonVisibility();
 
+  $(".pageSettings .section[data-config-name='fontSize'] input").val(
+    Config.fontSize
+  );
+
+  $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
+    Config.maxLineWidth
+  );
+
+  $(".pageSettings .section[data-config-name='keymapSize'] input").val(
+    Config.keymapSize
+  );
+
+  $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
+    Config.tapeMargin
+  );
+
   $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] input"
   ).val(Config.customBackground);
@@ -898,14 +852,23 @@ export async function update(groupUpdate = true): Promise<void> {
 
   if (
     customLayoutFluidSelect !== undefined &&
-    customLayoutFluidSelect.getSelected().join("#") !== Config.customLayoutfluid
+    //checking equal with order, because customLayoutFluid is ordered
+    !areSortedArraysEqual(
+      customLayoutFluidSelect.getSelected(),
+      Config.customLayoutfluid
+    )
   ) {
+    //replace the data because the data is ordered. do not use setSelected
     customLayoutFluidSelect.setData(getLayoutfluidDropdownData());
   }
 
   if (
     customPolyglotSelect !== undefined &&
-    customPolyglotSelect.getSelected() !== Config.customPolyglot
+    //checking equal without order, because customPolyglot is not ordered
+    !areUnsortedArraysEqual(
+      customPolyglotSelect.getSelected(),
+      Config.customPolyglot
+    )
   ) {
     customPolyglotSelect.setSelected(Config.customPolyglot);
   }
@@ -1065,7 +1028,7 @@ $(".pageSettings .section[data-config-name='minBurst']").on(
 //funbox
 $(".pageSettings .section[data-config-name='funbox']").on(
   "click",
-  ".button",
+  "button",
   (e) => {
     const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
@@ -1374,7 +1337,7 @@ function getLanguageDropdownData(
 }
 
 function getLayoutfluidDropdownData(): DataArrayPartial {
-  const customLayoutfluidActive = Config.customLayoutfluid.split("#");
+  const customLayoutfluidActive = Config.customLayoutfluid;
   return [
     ...customLayoutfluidActive,
     ...LayoutsList.filter((it) => !customLayoutfluidActive.includes(it)),
@@ -1382,6 +1345,16 @@ function getLayoutfluidDropdownData(): DataArrayPartial {
     text: layout.replace(/_/g, " "),
     value: layout,
     selected: customLayoutfluidActive.includes(layout),
+  }));
+}
+
+function getThemeDropdownData(
+  isActive: (theme: Theme) => boolean
+): DataArrayPartial {
+  return ThemesList.map((theme) => ({
+    value: theme.name,
+    text: theme.name.replace(/_/g, " "),
+    selected: isActive(theme),
   }));
 }
 

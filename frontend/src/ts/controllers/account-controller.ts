@@ -50,6 +50,7 @@ import defaultResultFilters from "../constants/default-result-filters";
 import { getActiveFunboxesWithFunction } from "../test/funbox/list";
 import { Snapshot } from "../constants/default-snapshot";
 import { LanguageList } from "../constants/languages";
+import * as Sentry from "../sentry";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -88,7 +89,10 @@ async function getDataAndInit(): Promise<boolean> {
     }
     LoadingPage.updateText("Downloading user data...");
     await LoadingPage.showBar();
-    await DB.initSnapshot();
+    const snapshot = await DB.initSnapshot();
+    if (snapshot !== false) {
+      Sentry.setUser(snapshot.uid, snapshot.name);
+    }
   } catch (error) {
     console.error(error);
     AccountButton.loading(false);
@@ -222,6 +226,7 @@ async function readyFunction(
       if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
+      Sentry.clearUser();
       PageTransition.set(false);
       navigate();
     }
@@ -230,6 +235,7 @@ async function readyFunction(
     if (window.location.pathname === "/account") {
       window.history.replaceState("", "", "/login");
     }
+    Sentry.clearUser();
     PageTransition.set(false);
     navigate();
   }
@@ -453,6 +459,7 @@ export function signOut(): void {
       Notifications.add("Signed out", 0, {
         duration: 2,
       });
+      Sentry.clearUser();
       Settings.hideAccountSection();
       AccountButton.update(undefined);
       navigate("/login");
