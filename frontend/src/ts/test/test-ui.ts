@@ -726,13 +726,13 @@ async function generateScreenshotCanvas(): Promise<HTMLCanvasElement | null> {
   // --- Target Element Calculation ---
   const src = $("#result .wrapper");
   if (!src.length) {
-      console.error("Result wrapper not found for screenshot.");
-      Notifications.add("Screenshot target element not found.", -1);
-      revertScreenshot();
-      return null;
+    console.error("Result wrapper not found for screenshot.");
+    Notifications.add("Screenshot target element not found.", -1);
+    revertScreenshot();
+    return null;
   }
   // Ensure offset calculations happen *after* potential layout shifts from UI prep
-  await new Promise(resolve => setTimeout(resolve, 50)); // Small delay for render updates
+  await new Promise((resolve) => setTimeout(resolve, 50)); // Small delay for render updates
 
   const sourceX = src.offset()?.left ?? 0;
   const sourceY = src.offset()?.top ?? 0;
@@ -744,7 +744,9 @@ async function generateScreenshotCanvas(): Promise<HTMLCanvasElement | null> {
     const paddingX = convertRemToPixels(2);
     const paddingY = convertRemToPixels(2);
 
-    const canvas = await (await gethtml2canvas())(document.body, {
+    const canvas = await (
+      await gethtml2canvas()
+    )(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
       height: sourceHeight + paddingY * 2,
@@ -756,9 +758,11 @@ async function generateScreenshotCanvas(): Promise<HTMLCanvasElement | null> {
 
     revertScreenshot(); // Revert UI *after* canvas is successfully generated
     return canvas;
-
   } catch (e) {
-    Notifications.add(Misc.createErrorMessage(e, "Error creating screenshot canvas"), -1);
+    Notifications.add(
+      Misc.createErrorMessage(e, "Error creating screenshot canvas"),
+      -1
+    );
     revertScreenshot(); // Ensure UI is reverted on error
     return null;
   }
@@ -822,8 +826,8 @@ export async function screenshot(): Promise<void> {
         // No need to revoke URL immediately as the new tab needs it.
         // Browser usually handles cleanup when tab is closed or navigated away.
       } catch (openError) {
-         Notifications.add("Failed to open screenshot in new tab.", -1);
-         console.error("Error opening blob URL:", openError);
+        Notifications.add("Failed to open screenshot in new tab.", -1);
+        console.error("Error opening blob URL:", openError);
       }
     }
   });
@@ -835,22 +839,22 @@ export async function screenshot(): Promise<void> {
  * (This function is intended to be used by the 'download' command)
  */
 export async function getScreenshotBlob(): Promise<Blob | null> {
-    const canvas = await generateScreenshotCanvas();
-    if (!canvas) {
-        // Notification already handled by generateScreenshotCanvas
-        return null;
-    }
+  const canvas = await generateScreenshotCanvas();
+  if (!canvas) {
+    // Notification already handled by generateScreenshotCanvas
+    return null;
+  }
 
-    return new Promise((resolve) => {
-        canvas.toBlob((blob) => {
-            if (!blob) {
-                Notifications.add("Failed to convert canvas to Blob for download.", -1);
-                resolve(null);
-            } else {
-                resolve(blob); // Return the generated blob
-            }
-        }, "image/png"); // Explicitly request PNG format
-    });
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        Notifications.add("Failed to convert canvas to Blob for download.", -1);
+        resolve(null);
+      } else {
+        resolve(blob); // Return the generated blob
+      }
+    }, "image/png"); // Explicitly request PNG format
+  });
 }
 
 export async function updateActiveWordLetters(

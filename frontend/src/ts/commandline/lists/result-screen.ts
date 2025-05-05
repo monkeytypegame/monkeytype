@@ -135,7 +135,6 @@ const commands: Command[] = [
           URL.revokeObjectURL(url);
 
           Notifications.add("Screenshot download started.", 1);
-
         } catch (error) {
           console.error("Error downloading screenshot:", error);
           Notifications.add("Failed to download screenshot.", -1);
