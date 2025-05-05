@@ -77,6 +77,7 @@ import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { captureException } from "../sentry";
 import * as Loader from "../elements/loader";
+import * as TestInitFailed from "../elements/test-init-failed";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -338,7 +339,15 @@ export function restart(options = {} as RestartOptions): void {
 
       TestState.setRepeated(options.withSameWordset ?? false);
       TestState.setPaceRepeat(repeatWithPace);
-      await init();
+      TestInitFailed.hide();
+      TestState.setTestInitSuccess(true);
+      const initResult = await init();
+
+      if (initResult === null) {
+        TestUI.setTestRestarting(false);
+        return;
+      }
+
       await PaceCaret.init();
 
       for (const fb of getActiveFunboxesWithFunction("restart")) {
@@ -385,22 +394,28 @@ export function restart(options = {} as RestartOptions): void {
 let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
-export async function init(): Promise<void> {
+export async function init(): Promise<void | null> {
   console.debug("Initializing test");
   testReinitCount++;
-  if (testReinitCount >= 4) {
+  if (testReinitCount > 3) {
     if (lastInitError) {
       captureException(lastInitError);
+      TestInitFailed.showError(
+        `${lastInitError.name}: ${lastInitError.message}`
+      );
     }
+    TestInitFailed.show();
     TestUI.setTestRestarting(false);
-    Notifications.add(
-      "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
-      -1,
-      {
-        important: true,
-      }
-    );
-    return;
+    TestState.setTestInitSuccess(false);
+    Focus.set(false);
+    // Notifications.add(
+    //   "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
+    //   -1,
+    //   {
+    //     important: true,
+    //   }
+    // );
+    return null;
   }
 
   MonkeyPower.reset();
@@ -426,8 +441,7 @@ export async function init(): Promise<void> {
 
   if (!language || language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
-    await init();
-    return;
+    return await init();
   }
 
   if (ActivePage.get() === "test") {
@@ -492,6 +506,7 @@ export async function init(): Promise<void> {
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
   } catch (e) {
+    Loader.hide();
     if (e instanceof WordGenError || e instanceof Error) {
       lastInitError = e;
     }
@@ -512,8 +527,7 @@ export async function init(): Promise<void> {
       );
     }
 
-    await init();
-    return;
+    return await init();
   }
 
   const beforeHasNumbers = TestWords.hasNumbers;
@@ -1345,6 +1359,10 @@ export function fail(reason: string): void {
 }
 
 $(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
+  restart();
+});
+
+$(".pageTest").on("click", "#testInitFailed button.restart", () => {
   restart();
 });
 

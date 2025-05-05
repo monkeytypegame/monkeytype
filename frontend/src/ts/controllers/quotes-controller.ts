@@ -63,7 +63,6 @@ class QuotesController {
       const { data, error } = await tryCatch(
         cachedFetchJson<QuoteData>(`quotes/${normalizedLanguage}.json`)
       );
-
       if (error) {
         if (
           error instanceof Error &&

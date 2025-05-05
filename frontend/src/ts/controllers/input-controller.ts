@@ -873,7 +873,8 @@ $("#wordsInput").on("keydown", (event) => {
     !popupVisible &&
     !TestUI.resultVisible &&
     event.key !== "Enter" &&
-    !awaitingNextWord;
+    !awaitingNextWord &&
+    TestState.testInitSuccess;
 
   if (!allowTyping) {
     event.preventDefault();
