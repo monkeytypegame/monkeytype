@@ -258,7 +258,7 @@ function buildRow(options: {
         keysHtml += `<div class="keymapSplitSpacer"></div>`;
         r5Grid += "-";
       }
-      if (areSortedArraysEqual(keyVisualValue, [" "])) {
+      if (isRowEmpty(keyVisualValue)) {
         keysHtml += `<div class="keymapKey keySpace layoutIndicator ${side}">
               <div class="letter" ${letterStyle}>${layoutDisplay}</div>
             </div>`;
