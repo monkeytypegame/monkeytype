@@ -12,8 +12,8 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 
 type FilterPreset = {
   display: string;
-  getIncludeString: (layout: JSONData.Layout) => string[];
-  getExcludeString: (layout: JSONData.Layout) => string[];
+  getIncludeString: (layout: JSONData.Layout) => string[][];
+  getExcludeString: (layout: JSONData.Layout) => string[][];
 };
 
 const presets: Record<string, FilterPreset> = {
