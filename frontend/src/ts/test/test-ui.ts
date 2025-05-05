@@ -628,11 +628,21 @@ export function colorful(tc: boolean): void {
 }
 
 let firefoxClipboardNotificatoinShown = false;
-export async function screenshot(): Promise<void> {
+
+/**
+ * Prepares UI, generates screenshot canvas using html2canvas, and reverts UI changes.
+ * Returns the generated canvas element or null on failure.
+ * Handles its own loader and basic error notifications for canvas generation.
+ */
+async function generateScreenshotCanvas(): Promise<HTMLCanvasElement | null> {
   Loader.show();
   let revealReplay = false;
-
   let revertCookie = false;
+
+  if (!$("#resultReplay").hasClass("hidden")) {
+    revealReplay = true;
+    Replay.pauseReplay();
+  }
   if (
     Misc.isElementVisible("#cookiesModal") ||
     document.contains(document.querySelector("#cookiesModal"))
@@ -640,7 +650,8 @@ export async function screenshot(): Promise<void> {
     revertCookie = true;
   }
 
-  function revertScreenshot(): void {
+  // Define revert function locally or ensure it's accessible if defined elsewhere
+  const revertScreenshot = (): void => {
     Loader.hide();
     $("#ad-result-wrapper").removeClass("hidden");
     $("#ad-result-small-wrapper").removeClass("hidden");
@@ -649,7 +660,7 @@ export async function screenshot(): Promise<void> {
     $("#notificationCenter").removeClass("hidden");
     $("#commandLineMobileButton").removeClass("hidden");
     $(".pageTest .ssWatermark").addClass("hidden");
-    $(".pageTest .ssWatermark").text("monkeytype.com");
+    $(".pageTest .ssWatermark").text("monkeytype.com"); // Reset watermark text
     $(".pageTest .buttons").removeClass("hidden");
     $("noscript").removeClass("hidden");
     $("#nocss").removeClass("hidden");
@@ -667,12 +678,9 @@ export async function screenshot(): Promise<void> {
     for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
       fb.functions.applyGlobalCSS();
     }
-  }
+  };
 
-  if (!$("#resultReplay").hasClass("hidden")) {
-    revealReplay = true;
-    Replay.pauseReplay();
-  }
+  // --- UI Preparation ---
   const dateNow = new Date(Date.now());
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
@@ -699,6 +707,8 @@ export async function screenshot(): Promise<void> {
   $("#ad-result-wrapper").addClass("hidden");
   $("#ad-result-small-wrapper").addClass("hidden");
   $("#testConfig").addClass("hidden");
+  // Ensure spacer is removed before adding a new one if function is called rapidly
+  $(".pageTest .screenshotSpacer").remove();
   $(".page.pageTest").prepend("<div class='screenshotSpacer'></div>");
   $("header, footer").addClass("invisible");
   $("#result").addClass("noBalloons");
@@ -711,88 +721,136 @@ export async function screenshot(): Promise<void> {
   }
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
-  window.scrollTo({
-    top: 0,
-  });
+  window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior }); // Use instant scroll
+
+  // --- Target Element Calculation ---
   const src = $("#result .wrapper");
-  const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
-  const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
-  const sourceWidth = src.outerWidth(
-    true
-  ) as number; /*clientWidth/offsetWidth from div#target*/
-  const sourceHeight = src.outerHeight(
-    true
-  ) as number; /*clientHeight/offsetHeight from div#target*/
+  if (!src.length) {
+      console.error("Result wrapper not found for screenshot.");
+      Notifications.add("Screenshot target element not found.", -1);
+      revertScreenshot();
+      return null;
+  }
+  // Ensure offset calculations happen *after* potential layout shifts from UI prep
+  await new Promise(resolve => setTimeout(resolve, 50)); // Small delay for render updates
+
+  const sourceX = src.offset()?.left ?? 0;
+  const sourceY = src.offset()?.top ?? 0;
+  const sourceWidth = src.outerWidth(true) as number;
+  const sourceHeight = src.outerHeight(true) as number;
+
+  // --- Canvas Generation ---
   try {
     const paddingX = convertRemToPixels(2);
     const paddingY = convertRemToPixels(2);
 
-    const canvas = await (
-      await gethtml2canvas()
-    )(document.body, {
+    const canvas = await (await gethtml2canvas())(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
       height: sourceHeight + paddingY * 2,
       x: sourceX - paddingX,
       y: sourceY - paddingY,
+      logging: false, // Suppress html2canvas logs in console
+      useCORS: true, // May be needed if user flags/icons are external
     });
-    canvas.toBlob(async (blob) => {
-      try {
-        if (blob === null) {
-          throw new Error("Could not create image, blob is null");
-        }
-        const clipItem = new ClipboardItem(
-          Object.defineProperty({}, blob.type, {
-            value: blob,
-            enumerable: true,
-          })
-        );
-        await navigator.clipboard.write([clipItem]);
-        Notifications.add("Copied to clipboard", 1, {
-          duration: 2,
-        });
-      } catch (e) {
-        console.error("Error while saving image to clipboard", e);
-        if (blob) {
-          //check if on firefox
-          if (
-            navigator.userAgent.toLowerCase().includes("firefox") &&
-            !firefoxClipboardNotificatoinShown
-          ) {
-            firefoxClipboardNotificatoinShown = true;
-            Notifications.add(
-              "On Firefox you can enable the asyncClipboard.clipboardItem permission in about:config to enable copying straight to the clipboard",
-              0,
-              {
-                duration: 10,
-              }
-            );
-          }
 
-          Notifications.add(
-            "Could not save image to clipboard. Opening in new tab instead (make sure popups are allowed)",
-            0,
-            {
-              duration: 5,
-            }
-          );
-          open(URL.createObjectURL(blob));
-        } else {
-          Notifications.add(
-            Misc.createErrorMessage(e, "Error saving image to clipboard"),
-            -1
-          );
-        }
-      }
-      revertScreenshot();
-    });
+    revertScreenshot(); // Revert UI *after* canvas is successfully generated
+    return canvas;
+
   } catch (e) {
-    Notifications.add(Misc.createErrorMessage(e, "Error creating image"), -1);
-    revertScreenshot();
+    Notifications.add(Misc.createErrorMessage(e, "Error creating screenshot canvas"), -1);
+    revertScreenshot(); // Ensure UI is reverted on error
+    return null;
   }
-  setTimeout(() => {
-    revertScreenshot();
-  }, 3000);
+}
+
+/**
+ * Generates screenshot and attempts to copy it to the clipboard.
+ * Falls back to opening in a new tab if clipboard access fails.
+ * Handles notifications related to the copy action.
+ * (This function should be used by the 'copy' command or the original button)
+ */
+export async function screenshot(): Promise<void> {
+  const canvas = await generateScreenshotCanvas();
+  if (!canvas) {
+    // Error notification handled by generateScreenshotCanvas
+    return;
+  }
+
+  canvas.toBlob(async (blob) => {
+    if (!blob) {
+      Notifications.add("Failed to generate image data (blob is null).", -1);
+      return;
+    }
+    try {
+      // Attempt to copy using ClipboardItem API
+      const clipItem = new ClipboardItem(
+        Object.defineProperty({}, blob.type, {
+          value: blob,
+          enumerable: true,
+        })
+      );
+      await navigator.clipboard.write([clipItem]);
+      Notifications.add("Copied screenshot to clipboard", 1, { duration: 2 });
+    } catch (e) {
+      // Handle clipboard write error
+      console.error("Error saving image to clipboard", e);
+
+      // Firefox specific message (only show once)
+      if (
+        navigator.userAgent.toLowerCase().includes("firefox") &&
+        !firefoxClipboardNotificatoinShown
+      ) {
+        firefoxClipboardNotificatoinShown = true;
+        Notifications.add(
+          "On Firefox you can enable the asyncClipboard.clipboardItem permission in about:config to enable copying straight to the clipboard",
+          0,
+          { duration: 10 }
+        );
+      }
+
+      // General fallback notification and action
+      Notifications.add(
+        "Could not copy screenshot to clipboard. Opening in new tab instead (allow popups).",
+        0,
+        { duration: 5 }
+      );
+      try {
+        // Fallback: Open blob in a new tab
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl);
+        // No need to revoke URL immediately as the new tab needs it.
+        // Browser usually handles cleanup when tab is closed or navigated away.
+      } catch (openError) {
+         Notifications.add("Failed to open screenshot in new tab.", -1);
+         console.error("Error opening blob URL:", openError);
+      }
+    }
+  });
+}
+
+/**
+ * Generates screenshot canvas and returns the image data as a Blob.
+ * Handles notifications for canvas/blob generation errors.
+ * (This function is intended to be used by the 'download' command)
+ */
+export async function getScreenshotBlob(): Promise<Blob | null> {
+    const canvas = await generateScreenshotCanvas();
+    if (!canvas) {
+        // Notification already handled by generateScreenshotCanvas
+        return null;
+    }
+
+    return new Promise((resolve) => {
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                Notifications.add("Failed to convert canvas to Blob for download.", -1);
+                resolve(null);
+            } else {
+                resolve(blob); // Return the generated blob
+            }
+        }, "image/png"); // Explicitly request PNG format
+    });
 }
 
 export async function updateActiveWordLetters(
