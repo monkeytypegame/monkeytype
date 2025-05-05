@@ -263,9 +263,10 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         $("#quoteSearchModal .toggleFavorites").removeClass("hidden");
       }
 
+      const quoteMod = DB.getSnapshot()?.quoteMod;
       const isQuoteMod =
-        DB.getSnapshot()?.quoteMod !== undefined ||
-        DB.getSnapshot()?.quoteMod === true;
+        quoteMod !== undefined &&
+        (quoteMod === true || (quoteMod as string) !== "");
 
       if (isQuoteMod) {
         $("#quoteSearchModal .goToQuoteApprove").removeClass("hidden");

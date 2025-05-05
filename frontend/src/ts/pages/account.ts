@@ -502,9 +502,9 @@ async function fillContent(): Promise<void> {
       );
       console.log(result);
       console.error(e);
-      //ResultFilters.reset();
-      //ResultFilters.updateActive();
-      //void update();
+      ResultFilters.reset();
+      ResultFilters.updateActive();
+      void update();
       return;
     }
     //filters done
