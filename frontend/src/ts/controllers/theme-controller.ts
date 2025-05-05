@@ -444,7 +444,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
 
 window.addEventListener("customBackgroundFailed", () => {
   Notifications.add(
-    "Custom background link is either temporairly unavailable or expired. Please make sure the URL is correct or change it",
+    "Custom background link is either temporarily unavailable or expired. Please make sure the URL is correct or change it",
     0,
     { duration: 5 }
   );
