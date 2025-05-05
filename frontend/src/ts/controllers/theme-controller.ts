@@ -357,7 +357,7 @@ function applyCustomBackground(): void {
     img.setAttribute("src", Config.customBackground);
     img.setAttribute(
       "onError",
-      "javascript:window.dispatchEvent(new Event('customBackgroundFailed'))"
+      "javascript:this.style.display='none'; window.dispatchEvent(new Event('customBackgroundFailed'))"
     );
     container?.replaceChildren(img);
 
