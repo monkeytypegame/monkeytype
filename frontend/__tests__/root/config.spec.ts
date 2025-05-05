@@ -423,11 +423,8 @@ describe("Config", () => {
   it("setLanguage", () => {
     expect(Config.setLanguage("english")).toBe(true);
     expect(Config.setLanguage("english_1k")).toBe(true);
-    expect(Config.setLanguage(stringOfLength(50))).toBe(true);
 
-    expect(Config.setLanguage("english 1k")).toBe(false);
-    expect(Config.setLanguage("english-1k")).toBe(false);
-    expect(Config.setLanguage(stringOfLength(51))).toBe(false);
+    expect(Config.setLanguage("invalid" as any)).toBe(false);
   });
   it("setKeymapLayout", () => {
     expect(Config.setKeymapLayout("overrideSync")).toBe(true);

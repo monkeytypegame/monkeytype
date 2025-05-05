@@ -1,4 +1,4 @@
-import { z, ZodString } from "zod";
+import { z, ZodErrorMap, ZodString } from "zod";
 
 export const StringNumberSchema = z
   .string()
@@ -35,3 +35,12 @@ export type CustomTextMode = z.infer<typeof CustomTextModeSchema>;
 
 export const CustomTextLimitModeSchema = z.enum(["word", "time", "section"]);
 export type CustomTextLimitMode = z.infer<typeof CustomTextLimitModeSchema>;
+
+export function customEnumErrorHandler(message: string): ZodErrorMap {
+  return (issue, _ctx) => ({
+    message:
+      issue.code === "invalid_enum_value"
+        ? `Invalid enum value. ${message}`
+        : issue.message ?? "Required",
+  });
+}
