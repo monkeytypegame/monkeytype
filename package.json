@@ -56,7 +56,7 @@
     "pr-check-lint-json": "cd frontend && eslint './static/**/*.json'",
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
     "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json",
-    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json && npx vitest run constants/layouts constants/themes"
+    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json && turbo test -- constants/layouts constants/themes"
   },
   "engines": {
     "node": "20.16.0"
