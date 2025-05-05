@@ -33,12 +33,12 @@ function hide(): void {
 
 $("#tribeRoomCodePopup input").on("keydown", (e) => {
   if (
-    (e.key.length == 1 &&
+    (e.key.length === 1 &&
       !e.ctrlKey &&
       !e.metaKey &&
       !e.shiftKey &&
       !/[0-9a-fA-F]/.test(e.key)) ||
-    (e.key.length == 1 &&
+    (e.key.length === 1 &&
       !e.ctrlKey &&
       !e.metaKey &&
       !e.shiftKey &&

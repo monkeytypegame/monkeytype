@@ -15,7 +15,7 @@ export const page = new Page({
     TribeChat.reset("lobby");
   },
   beforeShow: async () => {
-    if (TribeState.getState() == 5) {
+    if (TribeState.getState() === 5) {
       TribeChat.fill("lobby");
       setTimeout(() => {
         TribeChat.scrollChat();

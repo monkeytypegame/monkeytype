@@ -273,27 +273,27 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
   const smoothedRawData = smooth(result.chartData.raw, 1);
 
   chart.data.labels = labels;
-  //@ts-expect-error
+  //@ts-expect-error tribe
   chart.data.datasets[0].data = result.chartData.wpm;
-  //@ts-expect-error
+  //@ts-expect-error tribe
   chart.data.datasets[1].data = smoothedRawData;
-  //@ts-expect-error
+  //@ts-expect-error tribe
   chart.data.datasets[2].data = result.chartData.err;
 
   // chart.options.scales["wpm"].ticks.max = Math.round(chartmaxval);
   // chart.options.scales["raw"].ticks.max = Math.round(chartmaxval);
 
-  if (userId == tribeSocket.getId()) {
-    //@ts-expect-error
+  if (userId === tribeSocket.getId()) {
+    //@ts-expect-error tribe
     chart.data.datasets[0].borderColor = await ThemeColors.get("main");
     // chart.data.datasets[0].backgroundColor = await ThemeColors.get("main");
   } else {
-    //@ts-expect-error
+    //@ts-expect-error tribe
 
     chart.data.datasets[0].borderColor = await ThemeColors.get("text");
     // chart.data.datasets[0].backgroundColor = await ThemeColors.get("text");
   }
-  //@ts-expect-error
+  //@ts-expect-error tribe
   chart.data.datasets[1].borderColor = await ThemeColors.get("sub");
   // chart.data.datasets[1].backgroundColor = await ThemeColors.get("sub");
 
@@ -334,8 +334,7 @@ export async function drawAllCharts(): Promise<void> {
   const room = TribeState.getRoom();
   if (!room) return;
   const list = Object.keys(room.users);
-  for (let i = 0; i < list.length; i++) {
-    const userId = list[i] as string;
+  for (const userId of list) {
     if (!charts[userId]) {
       await drawChart(userId);
     }
@@ -363,8 +362,7 @@ export async function updateChartMaxValues(): Promise<void> {
   const chartmaxval = Math.max(maxWpm, maxRaw);
 
   const list = Object.keys(room.users);
-  for (let i = 0; i < list.length; i++) {
-    const userId = list[i] as string;
+  for (const userId of list) {
     if (charts[userId]) {
       const scales = charts[userId].options.scales;
       if (scales?.["wpm"]) {

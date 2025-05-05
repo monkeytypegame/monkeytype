@@ -15,7 +15,7 @@ export async function send(result: TribeTypes.Result): Promise<void> {
 export function reset(page?: string): void {
   if (page === undefined) {
     reset("result");
-  } else if (page == "result") {
+  } else if (page === "result") {
     initialised[page] = {};
     $(".pageTest #result #tribeResults table tbody").empty();
     $(".pageTest #result #tribeResults").addClass("hidden");
@@ -229,7 +229,7 @@ export function showCrown(
 function updateUser(page: string, userId: string): void {
   const room = TribeState.getRoom();
   if (!room) return;
-  if (page == "result") {
+  if (page === "result") {
     const userEl = $(
       `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
     );
@@ -293,7 +293,7 @@ export function update(page: string, userId?: string): void {
 }
 
 export function fadeUser(page: string, userId: string): void {
-  if (page == "result") {
+  if (page === "result") {
     const userEl = $(
       `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
     );

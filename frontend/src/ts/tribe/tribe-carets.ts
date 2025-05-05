@@ -22,9 +22,13 @@ export class TribeCaret {
     private letterIndex: number,
     private name: string
   ) {
+    // oxlint-disable-next-line no-unnecessary-parameter-property-assignment
     this.socketId = socketId;
+    // oxlint-disable-next-line no-unnecessary-parameter-property-assignment
     this.wordIndex = wordIndex;
+    // oxlint-disable-next-line no-unnecessary-parameter-property-assignment
     this.letterIndex = letterIndex;
+    // oxlint-disable-next-line no-unnecessary-parameter-property-assignment
     this.name = name;
   }
 
@@ -110,7 +114,8 @@ export class TribeCaret {
       try {
         const newIndex =
           animationWordIndex -
-          (TestState.activeWordIndex - TestUI.activeWordElementIndex);
+          //todo this will break
+          (TestState.activeWordIndex - TestUI.activeWordElementOffset);
         currentWord = <HTMLElement>(
           document.querySelectorAll("#words .word")[newIndex]
         );
@@ -133,7 +138,9 @@ export class TribeCaret {
           currentLetterWidth === undefined ||
           caretWidth === undefined
         ) {
-          // eslint-disable-next-line @typescript-eslint/only-throw-error
+          //todo fix
+          // oxlint-disable-next-line @typescript-eslint/only-throw-error
+          // eslint-disable-next-line no-throw-literal
           throw ``;
         }
 

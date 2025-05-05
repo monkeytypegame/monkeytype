@@ -62,7 +62,7 @@ const routes: Route[] = [
       }
 
       if (TribeState.getState() >= 5) {
-        if (TribeState.getState() == 22 && TribeState.getSelf()?.isLeader) {
+        if (TribeState.getState() === 22 && TribeState.getSelf()?.isLeader) {
           tribeSocket.out.room.backToLobby();
         } else {
           navigate("/tribe", navigateOptions);
@@ -171,7 +171,7 @@ const routes: Route[] = [
         return;
       }
 
-      if (TribeState.getState() == 22 && TribeState.getSelf()?.isLeader) {
+      if (TribeState.getState() === 22 && TribeState.getSelf()?.isLeader) {
         tribeSocket.out.room.backToLobby();
       } else {
         void PageController.change("tribe", {

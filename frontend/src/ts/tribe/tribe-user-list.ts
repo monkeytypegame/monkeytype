@@ -45,10 +45,10 @@ export function update(page?: string): void {
       }"><i class="fas fa-fw fa-check"></i></div>`;
     }
     let pointsString;
-    if (user.points == undefined) {
+    if (user.points === undefined) {
       pointsString = "";
     } else {
-      pointsString = user.points + (user.points == 1 ? "pt" : "pts");
+      pointsString = user.points + (user.points === 1 ? "pt" : "pts");
     }
     const appendData = `
     <div class='user ${user.id === tribeSocket.getId() ? "me" : ""} ${

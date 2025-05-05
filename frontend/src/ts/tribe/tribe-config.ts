@@ -9,6 +9,7 @@ import tribeSocket from "./tribe-socket";
 import * as TribeTypes from "./types";
 import { Difficulty, Mode } from "@monkeytype/contracts/schemas/shared";
 import {
+  FunboxName,
   QuoteLength,
   StopOnError,
 } from "@monkeytype/contracts/schemas/configs";
@@ -19,17 +20,17 @@ export function getArray(config: TribeTypes.RoomConfig): string[] {
   if (config["mode"] === "quote") {
     const mode2 = config["mode2"] as number[];
     let quoteLengthString = "";
-    if (mode2.length == 4) {
+    if (mode2.length === 4) {
       quoteLengthString = "";
     } else {
       mode2.forEach((ql: number) => {
-        if (ql == 0) {
+        if (ql === 0) {
           quoteLengthString += "short,";
-        } else if (ql == 1) {
+        } else if (ql === 1) {
           quoteLengthString += "medium,";
-        } else if (ql == 2) {
+        } else if (ql === 2) {
           quoteLengthString += "long,";
-        } else if (ql == 3) {
+        } else if (ql === 3) {
           quoteLengthString += "thicc,";
         }
       });
@@ -50,10 +51,10 @@ export function getArray(config: TribeTypes.RoomConfig): string[] {
   ret.push(config["language"]);
   if (config["punctuation"]) ret.push("punctuation");
   if (config["numbers"]) ret.push("numbers");
-  if (config["funbox"] !== "none") ret.push(config["funbox"]);
+  if (config["funbox"].length > 0) ret.push(config["funbox"].join(","));
   if (config["lazyMode"]) ret.push("lazy mode");
   if (config["stopOnError"] !== "off") {
-    ret.push("stop on " + config["stopOnError"] == "word" ? "word" : "letter");
+    ret.push("stop on " + config["stopOnError"] === "word" ? "word" : "letter");
   }
   if (config["minWpm"] !== "off") ret.push(`min ${config["minWpm"]}wpm`);
   if (config["minAcc"] !== "off") ret.push(`min ${config["minAcc"]}% acc`);
@@ -84,7 +85,7 @@ export function apply(config: TribeTypes.RoomConfig): void {
   UpdateConfig.setLanguage(config.language, true, true);
   UpdateConfig.setPunctuation(config.punctuation, true, true);
   UpdateConfig.setNumbers(config.numbers, true, true);
-  Funbox.setFunbox(config.funbox, true);
+  Funbox.setFunbox(config.funbox as FunboxName[], true);
   UpdateConfig.setLazyMode(config.lazyMode, true, true);
   UpdateConfig.setStopOnError(config.stopOnError as StopOnError, true, true);
   if (config.minWpm !== "off") {
@@ -166,7 +167,7 @@ function sync(): void {
       // time: CustomText.time,
       // },
       isInfiniteTest:
-        (Config.mode == "time" || Config.mode == "words") && mode2 == "0",
+        (Config.mode === "time" || Config.mode === "words") && mode2 === "0",
     });
     clearTimeout(syncConfigTimeout as NodeJS.Timeout);
     syncConfigTimeout = null;

@@ -278,7 +278,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
   const roomId = TribeState.getRoom()?.id;
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add(
-      //@ts-ignore
+      //@ts-expect-error tribe
       `Disconnected: ${details?.["description"]} (${reason})`,
       -1,
       {
@@ -290,7 +290,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
   void TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText(`Disconnected`);
-  //@ts-ignore
+  //@ts-expect-error tribe
   TribePagePreloader.updateSubtext(`${details?.["description"]} (${reason})`);
   TribePagePreloader.showReconnectButton();
 
@@ -473,7 +473,7 @@ TribeSocket.in.room.chatMessage((data) => {
     data.from?.isLeader ? "|ready|&#64;everyone" : ""
   }`;
   const nameregex = new RegExp(regexString, "i");
-  if (!data.isSystem && data.from?.id != TribeSocket.getId()) {
+  if (!data.isSystem && data.from?.id !== TribeSocket.getId()) {
     if (nameregex.test(data.message)) {
       if (ActivePage.get() !== "tribe" && ActivePage.get() !== "test") {
         Notifications.add(data.message, 0, {
@@ -652,7 +652,7 @@ TribeSocket.in.room.progressUpdate((data) => {
   for (const [userId, userProgress] of Object.entries(data.users)) {
     if (room.users[userId] === undefined) continue;
     room.users[userId].progress = userProgress;
-    if (userId == TribeSocket.getId()) {
+    if (userId === TribeSocket.getId()) {
       TribeDelta.update();
     }
     //todo only update one
@@ -690,12 +690,12 @@ TribeSocket.in.room.userResult((data) => {
   ) {
     //todo only one
 
-    let color = undefined;
+    let color: ColorName | undefined = undefined;
     if (resolve?.failed === true) {
-      color = "colorfulError" as ColorName;
+      color = "colorfulError";
     }
 
-    if (color) TribeCarets.changeColor(data.userId, color);
+    if (color !== undefined) TribeCarets.changeColor(data.userId, color);
     TribeBars.fadeUser("test", data.userId, color);
     TribeBars.fadeUser("tribe", data.userId, color);
     if (!room.config.isInfiniteTest) {

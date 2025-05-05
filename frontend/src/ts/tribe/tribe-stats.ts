@@ -81,7 +81,7 @@ export async function refresh(): Promise<void> {
   if (
     $(".pageTribe").hasClass("active") &&
     !$(".pageTribe .menu").hasClass("hidden") &&
-    to == null
+    to === null
   ) {
     to = setTimeout(() => {
       to = null;

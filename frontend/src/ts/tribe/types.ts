@@ -74,7 +74,7 @@ export type RoomConfig = {
   language: string;
   punctuation: boolean;
   numbers: boolean;
-  funbox: string;
+  funbox: string[];
   lazyMode: boolean;
   stopOnError: string;
   minWpm: number | "off";

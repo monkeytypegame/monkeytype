@@ -190,7 +190,7 @@ export function updateIsTyping(): void {
         )}</span>`;
       }
     }
-    if (names.length == 1) {
+    if (names.length === 1) {
       string += " is typing...";
     } else {
       string += " are typing...";
@@ -212,7 +212,7 @@ async function insertImageEmoji(text: string): Promise<string> {
       const emoji = await getEmojiList();
       const result = emoji.filter(
         (e) =>
-          Misc.escapeHTML(e.from).toLowerCase() ==
+          Misc.escapeHTML(e.from).toLowerCase() ===
           textSplit[i]?.replace(/&#58;/g, "").toLowerCase()
       );
       if (result[0] !== undefined) {
@@ -263,7 +263,7 @@ export async function displayMessage(
     cls = "systemMessage";
   } else {
     let me = false;
-    if (socketId == tribeSocket.getId()) me = true;
+    if (socketId === tribeSocket.getId()) me = true;
     author = `<div class="author ${me ? "me" : ""}">${fromName}:</div>`;
   }
   message = await insertImageEmoji(message);
@@ -274,7 +274,7 @@ export async function displayMessage(
     .text();
   previousAuthor = previousAuthor.substring(0, previousAuthor.length - 1);
 
-  if (previousAuthor == fromName) {
+  if (previousAuthor === fromName) {
     // author = author.replace(`class="author`, `class="author invisible`);
   } else {
     cls += " newAuthor";

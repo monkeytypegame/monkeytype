@@ -114,13 +114,13 @@ export function updateRoomConfig(): void {
   } else if (room.config.mode === "quote") {
     let qstring = "all";
     const num = room.config.mode2;
-    if (num == 0) {
+    if (num === 0) {
       qstring = "short";
-    } else if (num == 1) {
+    } else if (num === 1) {
       qstring = "medium";
-    } else if (num == 2) {
+    } else if (num === 2) {
       qstring = "long";
-    } else if (num == 3) {
+    } else if (num === 3) {
       qstring = "thicc";
     }
 
