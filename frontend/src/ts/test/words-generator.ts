@@ -23,6 +23,7 @@ import {
   isFunboxActiveWithFunction,
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
+import * as Loader from "../elements/loader";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -499,10 +500,12 @@ async function getQuoteWordList(
     ? "german"
     : language.name;
 
+  Loader.show();
   const quotesCollection = await QuotesController.getQuotes(
     languageToGet,
     Config.quoteLength
   );
+  Loader.hide();
 
   if (quotesCollection.length === 0) {
     UpdateConfig.setMode("words");

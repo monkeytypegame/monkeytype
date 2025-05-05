@@ -7,6 +7,8 @@ import * as SupportPopup from "../modals/support";
 import * as ContactModal from "../modals/contact";
 import * as VersionHistoryModal from "../modals/version-history";
 import { envConfig } from "../constants/env-config";
+import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
+import { lastSeenServerCompatibility } from "../ape/adapters/ts-rest-adapter";
 
 document
   .querySelector("footer #commandLineMobileButton")
@@ -28,7 +30,17 @@ document
   ?.addEventListener("click", (e) => {
     const event = e as MouseEvent;
     if (event.shiftKey) {
-      alert(envConfig.clientVersion);
+      alert(
+        JSON.stringify(
+          {
+            clientVersion: envConfig.clientVersion,
+            clientCompatibility: COMPATIBILITY_CHECK,
+            lastSeenServerCompatibility,
+          },
+          null,
+          2
+        )
+      );
     } else {
       VersionHistoryModal.show();
     }
