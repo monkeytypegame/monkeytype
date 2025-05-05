@@ -2,7 +2,6 @@ import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
-import * as JSONData from "../utils/json-data";
 import { isColorDark, isColorLight } from "../utils/colors";
 import Config, { setAutoSwitchTheme, setCustomTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
@@ -11,9 +10,10 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import { debounce } from "throttle-debounce";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { ThemeName } from "@monkeytype/contracts/schemas/configs";
+import { ThemesList } from "../constants/themes";
 
-export let randomTheme: string | null = null;
+export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
 let randomThemeIndex = 0;
 
@@ -189,7 +189,7 @@ async function apply(
 }
 
 function updateFooterThemeName(nameOverride?: string): void {
-  let str = Config.theme;
+  let str: string = Config.theme;
   if (randomTheme !== null) str = randomTheme;
   if (Config.customTheme) str = "custom";
   if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
@@ -244,17 +244,10 @@ export async function clearPreview(applyTheme = true): Promise<void> {
   }
 }
 
-let themesList: string[] = [];
+let themesList: (ThemeName | string)[] = [];
 
 async function changeThemeList(): Promise<void> {
-  const { data: themes, error } = await tryCatch(JSONData.getThemesList());
-  if (error) {
-    console.error(
-      Misc.createErrorMessage(error, "Failed to update random theme list")
-    );
-    return;
-  }
-
+  const themes = ThemesList;
   if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
     themesList = Config.favThemes;
   } else if (Config.randomTheme === "light") {

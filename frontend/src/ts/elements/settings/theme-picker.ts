@@ -1,7 +1,6 @@
 import Config, * as UpdateConfig from "../../config";
 import * as ThemeController from "../../controllers/theme-controller";
 import * as Misc from "../../utils/misc";
-import * as JSONData from "../../utils/json-data";
 import * as Colors from "../../utils/colors";
 import * as Notifications from "../notifications";
 import * as ThemeColors from "../theme-colors";
@@ -11,12 +10,15 @@ import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
 import * as ActivePage from "../../states/active-page";
-import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import {
+  CustomThemeColors,
+  ThemeName,
+} from "@monkeytype/contracts/schemas/configs";
 import { captureException } from "../../sentry";
+import { getSortedThemesList } from "../../constants/themes";
 
 function updateActiveButton(): void {
-  let activeThemeName = Config.theme;
+  let activeThemeName: string = Config.theme;
   if (
     Config.randomTheme !== "off" &&
     Config.randomTheme !== "custom" &&
@@ -138,7 +140,7 @@ export async function refreshPresetButtons(): Promise<void> {
   let favThemesElHTML = "";
   let themesElHTML = "";
 
-  let activeThemeName = Config.theme;
+  let activeThemeName: string = Config.theme;
   if (
     Config.randomTheme !== "off" &&
     Config.randomTheme !== "custom" &&
@@ -147,17 +149,7 @@ export async function refreshPresetButtons(): Promise<void> {
     activeThemeName = ThemeController.randomTheme;
   }
 
-  const { data: themes, error } = await tryCatch(
-    JSONData.getSortedThemesList()
-  );
-
-  if (error) {
-    Notifications.add(
-      Misc.createErrorMessage(error, "Failed to fill preset theme buttons"),
-      -1
-    );
-    return;
-  }
+  const themes = getSortedThemesList();
 
   //first show favourites
   if (Config.favThemes.length > 0) {
@@ -276,13 +268,13 @@ export function setCustomInputs(noThemeUpdate = false): void {
   });
 }
 
-function toggleFavourite(themeName: string): void {
+function toggleFavourite(themeName: ThemeName): void {
   if (Config.favThemes.includes(themeName)) {
     // already favourite, remove
     UpdateConfig.setFavThemes(Config.favThemes.filter((t) => t !== themeName));
   } else {
     // add to favourites
-    const newList: string[] = Config.favThemes;
+    const newList: ThemeName[] = Config.favThemes;
     newList.push(themeName);
     UpdateConfig.setFavThemes(newList);
   }
@@ -367,7 +359,9 @@ $(".pageSettings").on("click", " .section.themes .customTheme.button", (e) => {
 
 // Handle click on favorite preset theme button
 $(".pageSettings").on("click", ".section.themes .theme .favButton", (e) => {
-  const theme = $(e.currentTarget).parents(".theme.button").attr("theme");
+  const theme = $(e.currentTarget)
+    .parents(".theme.button")
+    .attr("theme") as ThemeName;
   if (theme !== undefined) {
     toggleFavourite(theme);
     void refreshPresetButtons();
@@ -380,7 +374,7 @@ $(".pageSettings").on("click", ".section.themes .theme .favButton", (e) => {
 
 // Handle click on preset theme button
 $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
-  const theme = $(e.currentTarget).attr("theme");
+  const theme = $(e.currentTarget).attr("theme") as ThemeName;
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
     UpdateConfig.setTheme(theme);
   }
