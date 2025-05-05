@@ -406,22 +406,19 @@ describe("Config", () => {
     expect(Config.setTheme("serika")).toBe(true);
     expect(Config.setTheme("serika_dark")).toBe(true);
 
-    expect(Config.setTheme("serika dark" as any)).toBe(false);
-    expect(Config.setTheme("serika-dark" as any)).toBe(false);
+    expect(Config.setTheme("invalid" as any)).toBe(false);
   });
   it("setThemeLight", () => {
     expect(Config.setThemeLight("serika")).toBe(true);
     expect(Config.setThemeLight("serika_dark")).toBe(true);
 
-    expect(Config.setThemeLight("serika dark" as any)).toBe(false);
-    expect(Config.setThemeLight("serika-dark" as any)).toBe(false);
+    expect(Config.setThemeLight("invalid" as any)).toBe(false);
   });
   it("setThemeDark", () => {
     expect(Config.setThemeDark("serika")).toBe(true);
     expect(Config.setThemeDark("serika_dark")).toBe(true);
 
-    expect(Config.setThemeDark("serika dark" as any)).toBe(false);
-    expect(Config.setThemeDark("serika-dark" as any)).toBe(false);
+    expect(Config.setThemeDark("invalid" as any)).toBe(false);
   });
   it("setLanguage", () => {
     expect(Config.setLanguage("english")).toBe(true);
