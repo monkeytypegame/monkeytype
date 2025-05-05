@@ -76,6 +76,7 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { captureException } from "../sentry";
+import * as Loader from "../elements/loader";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -298,7 +299,6 @@ export function restart(options = {} as RestartOptions): void {
     el = $("#typingTest");
   }
   TestUI.setResultVisible(false);
-  PageTransition.set(true);
   TestUI.setTestRestarting(true);
   el.stop(true, true).animate(
     {
@@ -371,10 +371,9 @@ export function restart(options = {} as RestartOptions): void {
             LiveSpeed.reset();
             LiveAcc.reset();
             LiveBurst.reset();
-            TestUI.setTestRestarting(false);
             TestUI.updatePremid();
             ManualRestart.reset();
-            PageTransition.set(false);
+            TestUI.setTestRestarting(false);
           }
         );
     }
@@ -412,9 +411,12 @@ export async function init(): Promise<void> {
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
+  Loader.show();
   const { data: language, error } = await tryCatch(
     JSONData.getLanguage(Config.language)
   );
+  Loader.hide();
+
   if (error) {
     Notifications.add(
       Misc.createErrorMessage(error, "Failed to load language"),
@@ -463,6 +465,21 @@ export async function init(): Promise<void> {
   if (Config.mode === "custom") {
     console.debug("Custom text", CustomText.getData());
   }
+
+  console.log("Inializing test", {
+    language: {
+      ...language,
+      words: `${language.words.length} words`,
+    },
+    customText: {
+      ...CustomText.getData(),
+      text: `${CustomText.getText().length} words`,
+    },
+    mode: Config.mode,
+    mode2: Misc.getMode2(Config, null),
+    funbox: Config.funbox,
+    currentQuote: TestWords.currentQuote,
+  });
 
   let generatedWords: string[];
   let generatedSectionIndexes: number[];

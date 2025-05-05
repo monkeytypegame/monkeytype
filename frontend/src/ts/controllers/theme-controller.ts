@@ -350,7 +350,7 @@ function applyCustomBackground(): void {
     img.setAttribute("src", Config.customBackground);
     img.setAttribute(
       "onError",
-      "javascript:window.dispatchEvent(new Event('customBackgroundFailed'))"
+      "javascript:this.style.display='none'; window.dispatchEvent(new Event('customBackgroundFailed'))"
     );
     container?.replaceChildren(img);
 
@@ -437,7 +437,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
 
 window.addEventListener("customBackgroundFailed", () => {
   Notifications.add(
-    "Custom background link is either temporairly unavailable or expired. Please make sure the URL is correct or change it",
+    "Custom background link is either temporarily unavailable or expired. Please make sure the URL is correct or change it",
     0,
     { duration: 5 }
   );

@@ -148,11 +148,6 @@ export default {
           project: "frontend",
           release: {
             name: CLIENT_VERSION,
-            setCommits: {
-              commit: "HEAD",
-              previousCommit: "HEAD^",
-              repo: "monkeytypegame",
-            },
           },
           applicationKey: "monkeytype-frontend",
         })

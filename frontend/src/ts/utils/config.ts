@@ -14,6 +14,8 @@ import { getDefaultConfig } from "../constants/default-config";
  * @returns
  */
 export function migrateConfig(config: PartialConfig | object): Config {
+  //todo this assumes config is matching all schemas
+  //i think we should go through each value and validate
   return mergeWithDefaultConfig(replaceLegacyValues(config));
 }
 
