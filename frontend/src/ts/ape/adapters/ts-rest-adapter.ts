@@ -15,6 +15,8 @@ import * as Notifications from "../../elements/notifications";
 
 let bannerShownThisSession = false;
 
+export let lastSeenServerCompatibility: number | undefined;
+
 function timeoutSignal(ms: number): AbortSignal {
   const ctrl = new AbortController();
   setTimeout(() => ctrl.abort(new Error("request timed out")), ms);
@@ -52,6 +54,11 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
       const compatibilityCheckHeader = response.headers.get(
         COMPATIBILITY_CHECK_HEADER
       );
+
+      if (compatibilityCheckHeader !== null) {
+        lastSeenServerCompatibility = parseInt(compatibilityCheckHeader);
+      }
+
       if (compatibilityCheckHeader !== null && !bannerShownThisSession) {
         const backendCheck = parseInt(compatibilityCheckHeader);
         if (backendCheck !== COMPATIBILITY_CHECK) {
