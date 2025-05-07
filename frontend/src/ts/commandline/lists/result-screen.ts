@@ -7,7 +7,7 @@ import * as TestWords from "../../test/test-words";
 import Config from "../../config";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
-import * as Screenshot from "../../test/screenshot";
+import * as TestScreenshot from "../../test/test-screenshot";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -99,7 +99,7 @@ const commands: Command[] = [
     alias: "copy image clipboard",
     exec: (): void => {
       setTimeout(() => {
-        void Screenshot.copyToClipboard();
+        void TestScreenshot.copyToClipboard();
       }, 500);
     },
     available: (): boolean => {
@@ -113,7 +113,7 @@ const commands: Command[] = [
     alias: "save image download file",
     exec: (): void => {
       setTimeout(async () => {
-        void Screenshot.download();
+        void TestScreenshot.download();
       }, 500);
     },
     available: (): boolean => {

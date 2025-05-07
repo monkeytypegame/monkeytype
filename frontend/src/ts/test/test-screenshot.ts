@@ -226,7 +226,7 @@ export async function copyToClipboard(): Promise<void> {
  * Handles notifications for canvas/blob generation errors.
  * (This function is intended to be used by the 'download' command)
  */
-export async function getBlob(): Promise<Blob | null> {
+async function getBlob(): Promise<Blob | null> {
   const canvas = await generateCanvas();
   if (!canvas) {
     // Notification already handled by generateScreenshotCanvas
