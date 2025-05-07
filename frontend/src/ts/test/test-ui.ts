@@ -726,8 +726,8 @@ async function generateScreenshotCanvas(): Promise<HTMLCanvasElement | null> {
   // --- Target Element Calculation ---
   const src = $("#result .wrapper");
   if (!src.length) {
-    console.error("Result wrapper not found for screenshot.");
-    Notifications.add("Screenshot target element not found.", -1);
+    console.error("Result wrapper not found for screenshot");
+    Notifications.add("Screenshot target element not found", -1);
     revertScreenshot();
     return null;
   }
@@ -783,7 +783,7 @@ export async function screenshot(): Promise<void> {
 
   canvas.toBlob(async (blob) => {
     if (!blob) {
-      Notifications.add("Failed to generate image data (blob is null).", -1);
+      Notifications.add("Failed to generate image data (blob is null)", -1);
       return;
     }
     try {
@@ -815,7 +815,7 @@ export async function screenshot(): Promise<void> {
 
       // General fallback notification and action
       Notifications.add(
-        "Could not copy screenshot to clipboard. Opening in new tab instead (allow popups).",
+        "Could not copy screenshot to clipboard. Opening in new tab instead (make sure popups are allowed)",
         0,
         { duration: 5 }
       );
@@ -826,7 +826,7 @@ export async function screenshot(): Promise<void> {
         // No need to revoke URL immediately as the new tab needs it.
         // Browser usually handles cleanup when tab is closed or navigated away.
       } catch (openError) {
-        Notifications.add("Failed to open screenshot in new tab.", -1);
+        Notifications.add("Failed to open screenshot in new tab", -1);
         console.error("Error opening blob URL:", openError);
       }
     }
@@ -848,7 +848,7 @@ export async function getScreenshotBlob(): Promise<Blob | null> {
   return new Promise((resolve) => {
     canvas.toBlob((blob) => {
       if (!blob) {
-        Notifications.add("Failed to convert canvas to Blob for download.", -1);
+        Notifications.add("Failed to convert canvas to Blob for download", -1);
         resolve(null);
       } else {
         resolve(blob); // Return the generated blob
