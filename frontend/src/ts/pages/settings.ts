@@ -435,6 +435,9 @@ async function initGroups(): Promise<void> {
 }
 
 async function fillSettingsPage(): Promise<void> {
+  if (settingsInitialized) {
+    return;
+  }
   // Language Selection Combobox
 
   const { data: languageGroups, error: getLanguageGroupsError } =
@@ -625,14 +628,13 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   setEventDisabled(true);
-  await initGroups();
-  setEventDisabled(false);
-  await update();
 
+  await initGroups();
   await ThemePicker.refreshCustomButtons();
   await ThemePicker.refreshPresetButtons();
   await UpdateConfig.loadPromise;
 
+  setEventDisabled(false);
   settingsInitialized = true;
 }
 
@@ -1375,11 +1377,8 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageSettings", "main");
-    if (!settingsInitialized) {
-      await fillSettingsPage();
-    } else {
-      await update();
-    }
+    await fillSettingsPage();
+    await update();
   },
 });
 
