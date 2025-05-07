@@ -36,15 +36,11 @@ import { Theme, ThemesList } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 
-type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
+let settingsInitialized = false;
 
+type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 let customLayoutFluidSelect: SlimSelect | undefined;
 let customPolyglotSelect: SlimSelect | undefined;
-let keymapLayoutSelect: SlimSelect | undefined;
-let languageSelect: SlimSelect | undefined;
-let layoutSelect: SlimSelect | undefined;
-let autoSwitchThemeSelectLight: SlimSelect | undefined;
-let autoSwitchThemeSelectDark: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
 
@@ -146,15 +142,7 @@ async function initGroups(): Promise<void> {
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
-    "button",
-    undefined,
-    () => {
-      if (Config.showKeyTips) {
-        $(".pageSettings .tip").removeClass("hidden");
-      } else {
-        $(".pageSettings .tip").addClass("hidden");
-      }
-    }
+    "button"
   ) as SettingsGroup<ConfigValue>;
   groups["freedomMode"] = new SettingsGroup(
     "freedomMode",
@@ -446,27 +434,7 @@ async function initGroups(): Promise<void> {
   ) as SettingsGroup<ConfigValue>;
 }
 
-function reset(): void {
-  $(".pageSettings .section.themes .favThemes.buttons").empty();
-  $(".pageSettings .section.themes .allThemes.buttons").empty();
-  $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
-  $(".pageSettings .section[data-config-name='funbox'] .buttons").empty();
-  /*for (const select of document.querySelectorAll(".pageSettings select")) {
-    //@ts-expect-error slim gets added to the html element but ts doesnt know about it
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    select?.slim?.destroy?.();
-  }
-    */
-}
-
-let groupsInitialized = false;
 async function fillSettingsPage(): Promise<void> {
-  if (Config.showKeyTips) {
-    $(".pageSettings .tip").removeClass("hidden");
-  } else {
-    $(".pageSettings .tip").addClass("hidden");
-  }
-
   // Language Selection Combobox
 
   const { data: languageGroups, error: getLanguageGroupsError } =
@@ -481,70 +449,61 @@ async function fillSettingsPage(): Promise<void> {
     );
   }
 
-  if (languageSelect === undefined) {
-    languageSelect = new SlimSelect({
-      select: ".pageSettings .section[data-config-name='language'] select",
-      data: getLanguageDropdownData(
-        languageGroups ?? [],
-        (language) => language === Config.language
-      ),
-      settings: {
-        searchPlaceholder: "search",
-      },
-    });
-  }
+  new SlimSelect({
+    select: ".pageSettings .section[data-config-name='language'] select",
+    data: getLanguageDropdownData(
+      languageGroups ?? [],
+      (language) => language === Config.language
+    ),
+    settings: {
+      searchPlaceholder: "search",
+    },
+  });
 
   const layoutToOption: (layout: LayoutName) => OptionOptional = (layout) => ({
     value: layout,
     text: layout.replace(/_/g, " "),
   });
 
-  if (layoutSelect !== undefined) {
-    layoutSelect = new SlimSelect({
-      select: ".pageSettings .section[data-config-name='layout'] select",
-      data: [
-        { text: "off", value: "default" },
-        ...LayoutsList.filter((layout) => layout !== "korean").map(
-          layoutToOption
-        ),
-      ],
-    });
-  }
+  new SlimSelect({
+    select: ".pageSettings .section[data-config-name='layout'] select",
+    data: [
+      { text: "off", value: "default" },
+      ...LayoutsList.filter((layout) => layout !== "korean").map(
+        layoutToOption
+      ),
+    ],
+  });
 
-  if (keymapLayoutSelect === undefined) {
-    keymapLayoutSelect = new SlimSelect({
-      select: ".pageSettings .section[data-config-name='keymapLayout'] select",
-      data: [
-        { text: "emulator sync", value: "overrideSync" },
-        ...LayoutsList.map(layoutToOption),
-      ],
-    });
-  }
+  new SlimSelect({
+    select: ".pageSettings .section[data-config-name='keymapLayout'] select",
+    data: [
+      { text: "emulator sync", value: "overrideSync" },
+      ...LayoutsList.map(layoutToOption),
+    ],
+  });
 
-  if (autoSwitchThemeSelectLight === undefined) {
-    autoSwitchThemeSelectLight = new SlimSelect({
-      select:
-        ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light",
-      data: getThemeDropdownData((theme) => theme.name === Config.themeLight),
-      events: {
-        afterChange: (newVal): void => {
-          UpdateConfig.setThemeLight(newVal[0]?.value as ThemeName);
-        },
+  new SlimSelect({
+    select:
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light",
+    data: getThemeDropdownData((theme) => theme.name === Config.themeLight),
+    events: {
+      afterChange: (newVal): void => {
+        UpdateConfig.setThemeLight(newVal[0]?.value as ThemeName);
       },
-    });
-  }
-  if (autoSwitchThemeSelectDark === undefined) {
-    autoSwitchThemeSelectDark = new SlimSelect({
-      select:
-        ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark",
-      data: getThemeDropdownData((theme) => theme.name === Config.themeDark),
-      events: {
-        afterChange: (newVal): void => {
-          UpdateConfig.setThemeDark(newVal[0]?.value as ThemeName);
-        },
+    },
+  });
+
+  new SlimSelect({
+    select:
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark",
+    data: getThemeDropdownData((theme) => theme.name === Config.themeDark),
+    events: {
+      afterChange: (newVal): void => {
+        UpdateConfig.setThemeDark(newVal[0]?.value as ThemeName);
       },
-    });
-  }
+    },
+  });
 
   const funboxEl = document.querySelector(
     ".pageSettings .section[data-config-name='funbox'] .buttons"
@@ -630,59 +589,51 @@ async function fillSettingsPage(): Promise<void> {
     }
   }
 
-  if (customLayoutFluidSelect === undefined) {
-    customLayoutFluidSelect = new SlimSelect({
-      select:
-        ".pageSettings .section[data-config-name='customLayoutfluid'] select",
-      settings: { keepOrder: true },
-      events: {
-        afterChange: (newVal): void => {
-          const customLayoutfluid = newVal.map(
-            (it) => it.value
-          ) as CustomLayoutFluid;
-          //checking equal with order, because customLayoutfluid is ordered
-          if (
-            !areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)
-          ) {
-            void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
-          }
-        },
+  customLayoutFluidSelect = new SlimSelect({
+    select:
+      ".pageSettings .section[data-config-name='customLayoutfluid'] select",
+    settings: { keepOrder: true },
+    events: {
+      afterChange: (newVal): void => {
+        const customLayoutfluid = newVal.map(
+          (it) => it.value
+        ) as CustomLayoutFluid;
+        //checking equal with order, because customLayoutfluid is ordered
+        if (
+          !areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)
+        ) {
+          void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
+        }
       },
-    });
-  }
+    },
+  });
 
-  if (customPolyglotSelect === undefined) {
-    customPolyglotSelect = new SlimSelect({
-      select:
-        ".pageSettings .section[data-config-name='customPolyglot'] select",
-      data: getLanguageDropdownData(languageGroups ?? [], (language) =>
-        Config.customPolyglot.includes(language)
-      ),
-      events: {
-        afterChange: (newVal): void => {
-          const customPolyglot = newVal.map((it) => it.value);
-          //checking equal without order, because customPolyglot is not ordered
-          if (!areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
-            void UpdateConfig.setCustomPolyglot(customPolyglot);
-          }
-        },
+  customPolyglotSelect = new SlimSelect({
+    select: ".pageSettings .section[data-config-name='customPolyglot'] select",
+    data: getLanguageDropdownData(languageGroups ?? [], (language) =>
+      Config.customPolyglot.includes(language)
+    ),
+    events: {
+      afterChange: (newVal): void => {
+        const customPolyglot = newVal.map((it) => it.value);
+        //checking equal without order, because customPolyglot is not ordered
+        if (!areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
+          void UpdateConfig.setCustomPolyglot(customPolyglot);
+        }
       },
-    });
-  }
+    },
+  });
 
   setEventDisabled(true);
-  if (!groupsInitialized) {
-    await initGroups();
-    groupsInitialized = true;
-  } else {
-    for (const groupKey of Object.keys(groups)) {
-      groups[groupKey]?.updateUI();
-    }
-  }
+  await initGroups();
   setEventDisabled(false);
+  await update();
+
   await ThemePicker.refreshCustomButtons();
   await ThemePicker.refreshPresetButtons();
   await UpdateConfig.loadPromise;
+
+  settingsInitialized = true;
 }
 
 // export let settingsFillPromise = fillSettingsPage();
@@ -783,12 +734,15 @@ function refreshPresetsSettingsSection(): void {
   }
 }
 
-export async function update(groupUpdate = true): Promise<void> {
-  // Object.keys(groups).forEach((group) => {
-  if (groupUpdate) {
-    for (const group of Object.keys(groups)) {
-      groups[group]?.updateUI();
-    }
+export async function update(): Promise<void> {
+  if (Config.showKeyTips) {
+    $(".pageSettings .tip").removeClass("hidden");
+  } else {
+    $(".pageSettings .tip").addClass("hidden");
+  }
+
+  for (const group of Object.keys(groups)) {
+    groups[group]?.updateUI();
   }
 
   refreshTagsSettingsSection();
@@ -1417,13 +1371,15 @@ export const page = new Page({
   element: $(".page.pageSettings"),
   path: "/settings",
   afterHide: async (): Promise<void> => {
-    reset();
     Skeleton.remove("pageSettings");
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageSettings", "main");
-    await fillSettingsPage();
-    await update(false);
+    if (!settingsInitialized) {
+      await fillSettingsPage();
+    } else {
+      await update();
+    }
   },
 });
 
