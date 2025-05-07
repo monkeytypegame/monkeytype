@@ -34,11 +34,11 @@ export function hide(): void {
   caret.classList.add("hidden");
 }
 
-export function getSpaceWidth(wordElement?: HTMLElement): number {
+function getSpaceWidth(wordElement?: HTMLElement): number {
   if (!wordElement)
     wordElement = document
       .getElementById("words")
-      ?.querySelectorAll(".word")?.[0] as HTMLElement | undefined;
+      ?.querySelectorAll<HTMLElement>(".word")?.[0];
   if (!wordElement) return 0;
   const wordComputedStyle = window.getComputedStyle(wordElement);
   return (
@@ -51,8 +51,7 @@ function getTargetPositionLeft(
   fullWidthCaret: boolean,
   isLanguageRightToLeft: boolean,
   activeWordElement: HTMLElement,
-  activeWordEmpty: boolean,
-  currentWordNodeList: NodeListOf<Element>,
+  currentWordNodeList: NodeListOf<HTMLElement>,
   fullWidthCaretWidth: number,
   wordLen: number,
   inputLen: number
@@ -63,21 +62,15 @@ function getTargetPositionLeft(
   if (Config.tapeMode === "off") {
     let positionOffsetToWord = 0;
 
-    const currentLetter = currentWordNodeList[inputLen] as
-      | HTMLElement
-      | undefined;
-    const lastWordLetter = currentWordNodeList[wordLen - 1] as
-      | HTMLElement
-      | undefined;
-    const lastInputLetter = currentWordNodeList[inputLen - 1] as
-      | HTMLElement
-      | undefined;
+    const currentLetter = currentWordNodeList[inputLen];
+    const lastWordLetter = currentWordNodeList[wordLen - 1];
+    const lastInputLetter = currentWordNodeList[inputLen - 1];
 
     if (isLanguageRightToLeft) {
-      if (inputLen < wordLen && currentLetter) {
+      if (inputLen <= wordLen && currentLetter) {
+        // at word beginning in zen mode both lengths are 0, but currentLetter is defined "_"
         positionOffsetToWord =
-          currentLetter?.offsetLeft +
-          (fullWidthCaret ? 0 : fullWidthCaretWidth);
+          currentLetter.offsetLeft + (fullWidthCaret ? 0 : fullWidthCaretWidth);
       } else if (!invisibleExtraLetters) {
         positionOffsetToWord =
           (lastInputLetter?.offsetLeft ?? 0) -
@@ -89,7 +82,7 @@ function getTargetPositionLeft(
       }
     } else {
       if (inputLen < wordLen && currentLetter) {
-        positionOffsetToWord = currentLetter?.offsetLeft;
+        positionOffsetToWord = currentLetter.offsetLeft;
       } else if (!invisibleExtraLetters) {
         positionOffsetToWord =
           (lastInputLetter?.offsetLeft ?? 0) +
@@ -101,12 +94,14 @@ function getTargetPositionLeft(
       }
     }
     result = activeWordElement.offsetLeft + positionOffsetToWord;
-    if (activeWordEmpty && isLanguageRightToLeft)
-      result += activeWordElement.offsetWidth;
   } else {
     const wordsWrapperWidth =
       $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
-    const tapeMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
+    const tapeMargin =
+      wordsWrapperWidth *
+      (isLanguageRightToLeft
+        ? 1 - Config.tapeMargin / 100
+        : Config.tapeMargin / 100);
 
     result =
       tapeMargin -
@@ -114,11 +109,17 @@ function getTargetPositionLeft(
 
     if (Config.tapeMode === "word" && inputLen > 0) {
       let currentWordWidth = 0;
+      let lastPositiveLetterWidth = 0;
       for (let i = 0; i < inputLen; i++) {
         if (invisibleExtraLetters && i >= wordLen) break;
-        currentWordWidth +=
-          $(currentWordNodeList[i] as HTMLElement).outerWidth(true) ?? 0;
+        const letterOuterWidth =
+          $(currentWordNodeList[i] as Element).outerWidth(true) ?? 0;
+        currentWordWidth += letterOuterWidth;
+        if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
       }
+      // if current letter has zero width move the caret to previous positive width letter
+      if ($(currentWordNodeList[inputLen] as Element).outerWidth(true) === 0)
+        currentWordWidth -= lastPositiveLetterWidth;
       if (isLanguageRightToLeft) currentWordWidth *= -1;
       result += currentWordWidth;
     }
@@ -139,22 +140,18 @@ export async function updatePosition(noAnim = false): Promise<void> {
   let wordLen = splitIntoCharacters(TestWords.words.getCurrent()).length;
   const inputLen = splitIntoCharacters(TestInput.input.current).length;
   if (Config.mode === "zen") wordLen = inputLen;
-  const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
-  let activeWordEmpty = false;
-  if (Config.mode === "zen") {
-    wordLen = inputLen;
-    if (inputLen === 0) activeWordEmpty = true;
-  }
+  const activeWordEl =
+    document.querySelectorAll<HTMLElement>("#words .word")[
+      TestState.activeWordIndex + TestState.activeWordElementOffset
+    ];
+  if (!activeWordEl) return;
 
-  const currentWordNodeList = activeWordEl?.querySelectorAll("letter");
+  const currentWordNodeList =
+    activeWordEl.querySelectorAll<HTMLElement>("letter");
   if (!currentWordNodeList?.length) return;
 
-  const currentLetter = currentWordNodeList[inputLen] as
-    | HTMLElement
-    | undefined;
-  const lastWordLetter = currentWordNodeList[wordLen - 1] as
-    | HTMLElement
-    | undefined;
+  const currentLetter = currentWordNodeList[inputLen];
+  const lastWordLetter = currentWordNodeList[wordLen - 1];
 
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
@@ -176,7 +173,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   }
 
   let letterWidth = currentLetter?.offsetWidth;
-  if (letterWidth === undefined || activeWordEmpty) {
+  if (letterWidth === undefined || wordLen === 0) {
     letterWidth = getSpaceWidth(activeWordEl);
   } else if (letterWidth === 0) {
     // current letter is a zero-width character e.g, diacritics)
@@ -192,7 +189,6 @@ export async function updatePosition(noAnim = false): Promise<void> {
     fullWidthCaret,
     isLanguageRightToLeft,
     activeWordEl,
-    activeWordEmpty,
     currentWordNodeList,
     letterWidth,
     wordLen,
@@ -200,15 +196,12 @@ export async function updatePosition(noAnim = false): Promise<void> {
   );
   const newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
 
-  let smoothlinescroll = $("#words .smoothScroller").height();
-  if (smoothlinescroll === undefined) smoothlinescroll = 0;
-
   const jqcaret = $(caret);
 
   jqcaret.css("display", "block"); //for some goddamn reason adding width animation sets the display to none ????????
 
   const animation: { top: number; left: number; width?: string } = {
-    top: newTop - smoothlinescroll,
+    top: newTop - TestState.lineScrollDistance,
     left: newLeft,
   };
 
