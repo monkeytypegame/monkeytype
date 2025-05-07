@@ -159,11 +159,18 @@ export function cleanTypographySymbols(textToClean: string): string {
  * @param s string to be tokenized into characters
  * @returns array of characters
  */
-export function splitIntoCharacters(s: string): string[] {
-  const result: string[] = [];
-  for (const t of s) {
-    result.push(t);
+export function splitIntoCharacters(text: string): string[] {
+  if (typeof Intl !== "undefined" && typeof Intl.Segmenter === "function") {
+    const segmenter = new Intl.Segmenter(undefined, {
+      granularity: "grapheme",
+    });
+    const parts: string[] = [];
+    for (const { segment } of segmenter.segment(text)) {
+      parts.push(segment);
+    }
+    return parts;
   }
 
-  return result;
+  const graphemes = text.match(/\P{Mark}\p{Mark}*/gu);
+  return graphemes ?? [];
 }
