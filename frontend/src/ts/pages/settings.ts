@@ -36,15 +36,15 @@ import { Theme, ThemesList } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 
-type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
+let settingsInitialized = false;
 
+type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 let customLayoutFluidSelect: SlimSelect | undefined;
 let customPolyglotSelect: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
 
 async function initGroups(): Promise<void> {
-  await UpdateConfig.loadPromise;
   groups["smoothCaret"] = new SettingsGroup(
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
@@ -141,15 +141,7 @@ async function initGroups(): Promise<void> {
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
-    "button",
-    undefined,
-    () => {
-      if (Config.showKeyTips) {
-        $(".pageSettings .tip").removeClass("hidden");
-      } else {
-        $(".pageSettings .tip").addClass("hidden");
-      }
-    }
+    "button"
   ) as SettingsGroup<ConfigValue>;
   groups["freedomMode"] = new SettingsGroup(
     "freedomMode",
@@ -441,26 +433,10 @@ async function initGroups(): Promise<void> {
   ) as SettingsGroup<ConfigValue>;
 }
 
-function reset(): void {
-  $(".pageSettings .section.themes .favThemes.buttons").empty();
-  $(".pageSettings .section.themes .allThemes.buttons").empty();
-  $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
-  $(".pageSettings .section[data-config-name='funbox'] .buttons").empty();
-  for (const select of document.querySelectorAll(".pageSettings select")) {
-    //@ts-expect-error slim gets added to the html element but ts doesnt know about it
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    select?.slim?.destroy?.();
-  }
-}
-
-let groupsInitialized = false;
 async function fillSettingsPage(): Promise<void> {
-  if (Config.showKeyTips) {
-    $(".pageSettings .tip").removeClass("hidden");
-  } else {
-    $(".pageSettings .tip").addClass("hidden");
+  if (settingsInitialized) {
+    return;
   }
-
   // Language Selection Combobox
 
   const { data: languageGroups, error: getLanguageGroupsError } =
@@ -651,18 +627,13 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   setEventDisabled(true);
-  if (!groupsInitialized) {
-    await initGroups();
-    groupsInitialized = true;
-  } else {
-    for (const groupKey of Object.keys(groups)) {
-      groups[groupKey]?.updateUI();
-    }
-  }
-  setEventDisabled(false);
+
+  await initGroups();
   await ThemePicker.refreshCustomButtons();
   await ThemePicker.refreshPresetButtons();
-  await UpdateConfig.loadPromise;
+
+  setEventDisabled(false);
+  settingsInitialized = true;
 }
 
 // export let settingsFillPromise = fillSettingsPage();
@@ -763,12 +734,15 @@ function refreshPresetsSettingsSection(): void {
   }
 }
 
-export async function update(groupUpdate = true): Promise<void> {
-  // Object.keys(groups).forEach((group) => {
-  if (groupUpdate) {
-    for (const group of Object.keys(groups)) {
-      groups[group]?.updateUI();
-    }
+export async function update(): Promise<void> {
+  if (Config.showKeyTips) {
+    $(".pageSettings .tip").removeClass("hidden");
+  } else {
+    $(".pageSettings .tip").addClass("hidden");
+  }
+
+  for (const group of Object.keys(groups)) {
+    groups[group]?.updateUI();
   }
 
   refreshTagsSettingsSection();
@@ -1397,13 +1371,13 @@ export const page = new Page({
   element: $(".page.pageSettings"),
   path: "/settings",
   afterHide: async (): Promise<void> => {
-    reset();
     Skeleton.remove("pageSettings");
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageSettings", "main");
+    await UpdateConfig.loadPromise;
     await fillSettingsPage();
-    await update(false);
+    await update();
   },
 });
 
