@@ -9,9 +9,9 @@ import {
   LeaderboardEntrySchema,
   XpLeaderboardEntrySchema,
 } from "./schemas/leaderboards";
-import { LanguageSchema } from "./schemas/util";
 import { Mode2Schema, ModeSchema } from "./schemas/shared";
 import { initContract } from "@ts-rest/core";
+import { LanguageSchema } from "./schemas/languages";
 
 const LanguageAndModeQuerySchema = z.object({
   language: LanguageSchema,

@@ -14,6 +14,7 @@ import {
   TestActivityCalendar,
 } from "../elements/test-activity-calendar";
 import { Preset } from "@monkeytype/contracts/schemas/presets";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 export type SnapshotUserTag = UserTag & {
   active?: boolean;
@@ -43,7 +44,7 @@ export type SnapshotResult<M extends Mode> = Omit<
   lazyMode: boolean;
   difficulty: string;
   funbox: FunboxName[];
-  language: string;
+  language: Language;
   numbers: boolean;
   punctuation: boolean;
   quoteLength: number;

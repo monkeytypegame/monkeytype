@@ -40,13 +40,14 @@ import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 let result: CompletedEvent;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
 
-let quoteLang = "";
+let quoteLang: Language | undefined;
 let quoteId = "";
 
 export function toggleUnsmoothedRaw(): void {
@@ -816,7 +817,7 @@ function updateQuoteFavorite(randomQuote: Quote | null): void {
     return;
   }
 
-  quoteLang = Config.mode === "quote" ? randomQuote.language : "";
+  quoteLang = Config.mode === "quote" ? randomQuote.language : undefined;
   quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
 
   const userFav = QuotesController.isQuoteFavorite(randomQuote);
@@ -1041,7 +1042,7 @@ export function updateTagsAfterEdit(
 }
 
 $(".pageTest #favoriteQuoteButton").on("click", async () => {
-  if (quoteLang === "" || quoteId === "") {
+  if (quoteLang === undefined || quoteId === "") {
     Notifications.add("Could not get quote stats!", -1);
     return;
   }

@@ -9,6 +9,8 @@ import AnimatedModal, {
 } from "../utils/animated-modal";
 import { LayoutsList } from "../constants/layouts";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { LanguageList } from "../constants/languages";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 type FilterPreset = {
   display: string;
@@ -102,20 +104,6 @@ async function initSelectOptions(): Promise<void> {
   $("#wordFilterModal .layoutInput").empty();
   $("wordFilterModal .presetInput").empty();
 
-  const { data: LanguageList, error } = await tryCatch(
-    JSONData.getLanguageList()
-  );
-
-  if (error) {
-    console.error(
-      Misc.createErrorMessage(
-        error,
-        "Failed to initialise word filter popup language list"
-      )
-    );
-    return;
-  }
-
   LanguageList.forEach((language) => {
     const prettyLang = language.replace(/_/gi, " ");
     $("#wordFilterModal .languageInput").append(`
@@ -175,7 +163,7 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
   });
 }
 
-async function filter(language: string): Promise<string[]> {
+async function filter(language: Language): Promise<string[]> {
   let filterin = $("#wordFilterModal .wordIncludeInput").val() as string;
   filterin = Misc.escapeRegExp(filterin?.trim());
   filterin = filterin.replace(/\s+/gi, "|");
@@ -226,7 +214,7 @@ async function filter(language: string): Promise<string[]> {
 }
 
 async function apply(set: boolean): Promise<void> {
-  const language = $("#wordFilterModal .languageInput").val() as string;
+  const language = $("#wordFilterModal .languageInput").val() as Language;
   const filteredWords = await filter(language);
 
   if (filteredWords.length === 0) {
