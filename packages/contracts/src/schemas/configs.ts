@@ -1,8 +1,8 @@
 import { z, ZodSchema } from "zod";
-import { LanguageSchema } from "./util";
 import * as Shared from "./shared";
 import * as Themes from "./themes";
 import * as Layouts from "./layouts";
+import { LanguageSchema } from "./languages";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;

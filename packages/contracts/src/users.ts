@@ -26,7 +26,8 @@ import {
   UserTagSchema,
 } from "./schemas/users";
 import { Mode2Schema, ModeSchema, PersonalBestSchema } from "./schemas/shared";
-import { IdSchema, LanguageSchema, StringNumberSchema } from "./schemas/util";
+import { IdSchema, StringNumberSchema } from "./schemas/util";
+import { LanguageSchema } from "./schemas/languages";
 import { CustomThemeColorsSchema } from "./schemas/configs";
 import { doesNotContainProfanity } from "./validation/validation";
 

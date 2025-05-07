@@ -1,3 +1,4 @@
+import { Language } from "@monkeytype/contracts/schemas/languages";
 import Ape from "../ape";
 import { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
@@ -12,7 +13,7 @@ type QuoteStats = {
   ratings?: number;
   totalRating?: number;
   quoteId?: number;
-  language?: string;
+  language?: Language;
 };
 
 let quoteStats: QuoteStats | null | Record<string, never> = null;

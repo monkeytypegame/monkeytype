@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { IdSchema, LanguageSchema } from "./util";
+import { IdSchema } from "./util";
+import { LanguageSchema } from "./languages";
 
 export const QuoteIdSchema = z
   .number()
