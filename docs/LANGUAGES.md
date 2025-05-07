@@ -39,7 +39,7 @@ export const LanguageSchema = z.enum([
   "english_1k",
   ...
   "your_language_name",
-  "your_language_name_10k",,
+  "your_language_name_10k",
 ]);
 ```
 
