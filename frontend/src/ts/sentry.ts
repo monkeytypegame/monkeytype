@@ -15,6 +15,7 @@ export function init(): void {
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration({
         unmask: ["#notificationCenter"],
+        block: ["#commandLine .modal .suggestions"],
       }),
       Sentry.thirdPartyErrorFilterIntegration({
         filterKeys: ["monkeytype-frontend"],

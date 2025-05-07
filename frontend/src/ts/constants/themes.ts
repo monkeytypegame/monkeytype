@@ -1126,10 +1126,10 @@ export const ThemesList: Theme[] = Object.keys(themes)
       } as Theme)
   );
 
-export function getSortedThemesList(): Theme[] {
-  return ThemesList.toSorted((a, b) => {
+export const ThemesListSorted = [
+  ...ThemesList.sort((a, b) => {
     const b1 = hexToHSL(a.bgColor);
     const b2 = hexToHSL(b.bgColor);
     return b2.lgt - b1.lgt;
-  });
-}
+  }),
+];
