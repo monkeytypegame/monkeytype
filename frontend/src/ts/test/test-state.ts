@@ -60,6 +60,10 @@ export function setActiveWordElementOffset(val: number): void {
   activeWordElementOffset = val;
 }
 
+export function decrementActiveWordElementOffset(by: number = 1): void {
+  activeWordElementOffset -= by;
+}
+
 export function setLineScrollDistance(val: number): void {
   lineScrollDistance = val;
 }
