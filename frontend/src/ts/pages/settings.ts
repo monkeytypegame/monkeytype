@@ -45,7 +45,6 @@ let customPolyglotSelect: SlimSelect | undefined;
 export const groups: SettingsGroups<ConfigValue> = {};
 
 async function initGroups(): Promise<void> {
-  await UpdateConfig.loadPromise;
   groups["smoothCaret"] = new SettingsGroup(
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
@@ -632,7 +631,6 @@ async function fillSettingsPage(): Promise<void> {
   await initGroups();
   await ThemePicker.refreshCustomButtons();
   await ThemePicker.refreshPresetButtons();
-  await UpdateConfig.loadPromise;
 
   setEventDisabled(false);
   settingsInitialized = true;
@@ -1377,6 +1375,7 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageSettings", "main");
+    await UpdateConfig.loadPromise;
     await fillSettingsPage();
     await update();
   },
