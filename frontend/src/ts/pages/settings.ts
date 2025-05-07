@@ -40,10 +40,16 @@ type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
 let customLayoutFluidSelect: SlimSelect | undefined;
 let customPolyglotSelect: SlimSelect | undefined;
+let keymapLayoutSelect: SlimSelect | undefined;
+let languageSelect: SlimSelect | undefined;
+let layoutSelect: SlimSelect | undefined;
+let autoSwitchThemeSelectLight: SlimSelect | undefined;
+let autoSwitchThemeSelectDark: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
 
 async function initGroups(): Promise<void> {
+  console.log("### init groups");
   await UpdateConfig.loadPromise;
   groups["smoothCaret"] = new SettingsGroup(
     "smoothCaret",
@@ -446,11 +452,12 @@ function reset(): void {
   $(".pageSettings .section.themes .allThemes.buttons").empty();
   $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
   $(".pageSettings .section[data-config-name='funbox'] .buttons").empty();
-  for (const select of document.querySelectorAll(".pageSettings select")) {
+  /*for (const select of document.querySelectorAll(".pageSettings select")) {
     //@ts-expect-error slim gets added to the html element but ts doesnt know about it
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     select?.slim?.destroy?.();
   }
+    */
 }
 
 let groupsInitialized = false;
@@ -475,61 +482,70 @@ async function fillSettingsPage(): Promise<void> {
     );
   }
 
-  new SlimSelect({
-    select: ".pageSettings .section[data-config-name='language'] select",
-    data: getLanguageDropdownData(
-      languageGroups ?? [],
-      (language) => language === Config.language
-    ),
-    settings: {
-      searchPlaceholder: "search",
-    },
-  });
+  if (languageSelect === undefined) {
+    languageSelect = new SlimSelect({
+      select: ".pageSettings .section[data-config-name='language'] select",
+      data: getLanguageDropdownData(
+        languageGroups ?? [],
+        (language) => language === Config.language
+      ),
+      settings: {
+        searchPlaceholder: "search",
+      },
+    });
+  }
 
   const layoutToOption: (layout: LayoutName) => OptionOptional = (layout) => ({
     value: layout,
     text: layout.replace(/_/g, " "),
   });
 
-  new SlimSelect({
-    select: ".pageSettings .section[data-config-name='layout'] select",
-    data: [
-      { text: "off", value: "default" },
-      ...LayoutsList.filter((layout) => layout !== "korean").map(
-        layoutToOption
-      ),
-    ],
-  });
+  if (layoutSelect !== undefined) {
+    layoutSelect = new SlimSelect({
+      select: ".pageSettings .section[data-config-name='layout'] select",
+      data: [
+        { text: "off", value: "default" },
+        ...LayoutsList.filter((layout) => layout !== "korean").map(
+          layoutToOption
+        ),
+      ],
+    });
+  }
 
-  new SlimSelect({
-    select: ".pageSettings .section[data-config-name='keymapLayout'] select",
-    data: [
-      { text: "emulator sync", value: "overrideSync" },
-      ...LayoutsList.map(layoutToOption),
-    ],
-  });
+  if (keymapLayoutSelect === undefined) {
+    keymapLayoutSelect = new SlimSelect({
+      select: ".pageSettings .section[data-config-name='keymapLayout'] select",
+      data: [
+        { text: "emulator sync", value: "overrideSync" },
+        ...LayoutsList.map(layoutToOption),
+      ],
+    });
+  }
 
-  new SlimSelect({
-    select:
-      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light",
-    data: getThemeDropdownData((theme) => theme.name === Config.themeLight),
-    events: {
-      afterChange: (newVal): void => {
-        UpdateConfig.setThemeLight(newVal[0]?.value as ThemeName);
+  if (autoSwitchThemeSelectLight === undefined) {
+    autoSwitchThemeSelectLight = new SlimSelect({
+      select:
+        ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light",
+      data: getThemeDropdownData((theme) => theme.name === Config.themeLight),
+      events: {
+        afterChange: (newVal): void => {
+          UpdateConfig.setThemeLight(newVal[0]?.value as ThemeName);
+        },
       },
-    },
-  });
-
-  new SlimSelect({
-    select:
-      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark",
-    data: getThemeDropdownData((theme) => theme.name === Config.themeDark),
-    events: {
-      afterChange: (newVal): void => {
-        UpdateConfig.setThemeDark(newVal[0]?.value as ThemeName);
+    });
+  }
+  if (autoSwitchThemeSelectDark === undefined) {
+    autoSwitchThemeSelectDark = new SlimSelect({
+      select:
+        ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark",
+      data: getThemeDropdownData((theme) => theme.name === Config.themeDark),
+      events: {
+        afterChange: (newVal): void => {
+          UpdateConfig.setThemeDark(newVal[0]?.value as ThemeName);
+        },
       },
-    },
-  });
+    });
+  }
 
   const funboxEl = document.querySelector(
     ".pageSettings .section[data-config-name='funbox'] .buttons"
@@ -615,40 +631,45 @@ async function fillSettingsPage(): Promise<void> {
     }
   }
 
-  customLayoutFluidSelect = new SlimSelect({
-    select:
-      ".pageSettings .section[data-config-name='customLayoutfluid'] select",
-    settings: { keepOrder: true },
-    events: {
-      afterChange: (newVal): void => {
-        const customLayoutfluid = newVal.map(
-          (it) => it.value
-        ) as CustomLayoutFluid;
-        //checking equal with order, because customLayoutfluid is ordered
-        if (
-          !areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)
-        ) {
-          void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
-        }
+  if (customLayoutFluidSelect === undefined) {
+    customLayoutFluidSelect = new SlimSelect({
+      select:
+        ".pageSettings .section[data-config-name='customLayoutfluid'] select",
+      settings: { keepOrder: true },
+      events: {
+        afterChange: (newVal): void => {
+          const customLayoutfluid = newVal.map(
+            (it) => it.value
+          ) as CustomLayoutFluid;
+          //checking equal with order, because customLayoutfluid is ordered
+          if (
+            !areSortedArraysEqual(customLayoutfluid, Config.customLayoutfluid)
+          ) {
+            void UpdateConfig.setCustomLayoutfluid(customLayoutfluid);
+          }
+        },
       },
-    },
-  });
+    });
+  }
 
-  customPolyglotSelect = new SlimSelect({
-    select: ".pageSettings .section[data-config-name='customPolyglot'] select",
-    data: getLanguageDropdownData(languageGroups ?? [], (language) =>
-      Config.customPolyglot.includes(language)
-    ),
-    events: {
-      afterChange: (newVal): void => {
-        const customPolyglot = newVal.map((it) => it.value);
-        //checking equal without order, because customPolyglot is not ordered
-        if (!areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
-          void UpdateConfig.setCustomPolyglot(customPolyglot);
-        }
+  if (customPolyglotSelect === undefined) {
+    customPolyglotSelect = new SlimSelect({
+      select:
+        ".pageSettings .section[data-config-name='customPolyglot'] select",
+      data: getLanguageDropdownData(languageGroups ?? [], (language) =>
+        Config.customPolyglot.includes(language)
+      ),
+      events: {
+        afterChange: (newVal): void => {
+          const customPolyglot = newVal.map((it) => it.value);
+          //checking equal without order, because customPolyglot is not ordered
+          if (!areUnsortedArraysEqual(customPolyglot, Config.customPolyglot)) {
+            void UpdateConfig.setCustomPolyglot(customPolyglot);
+          }
+        },
       },
-    },
-  });
+    });
+  }
 
   setEventDisabled(true);
   if (!groupsInitialized) {
