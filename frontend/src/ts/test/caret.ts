@@ -106,7 +106,11 @@ function getTargetPositionLeft(
   } else {
     const wordsWrapperWidth =
       $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
-    const tapeMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
+    const tapeMargin =
+      wordsWrapperWidth *
+      (isLanguageRightToLeft
+        ? 1 - Config.tapeMargin / 100
+        : Config.tapeMargin / 100);
 
     result =
       tapeMargin -
