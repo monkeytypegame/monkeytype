@@ -49,7 +49,6 @@ let autoSwitchThemeSelectDark: SlimSelect | undefined;
 export const groups: SettingsGroups<ConfigValue> = {};
 
 async function initGroups(): Promise<void> {
-  console.log("### init groups");
   await UpdateConfig.loadPromise;
   groups["smoothCaret"] = new SettingsGroup(
     "smoothCaret",
