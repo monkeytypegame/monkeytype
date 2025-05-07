@@ -584,7 +584,7 @@ export function updateWordsWrapperHeight(force = false): void {
 
 function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
-    void scrollTape();
+    void scrollTape(true);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
     const afterNewlineEls =
@@ -822,7 +822,7 @@ function getNlCharWidth(
   return nlChar.offsetWidth + letterMargin;
 }
 
-export async function scrollTape(): Promise<void> {
+export async function scrollTape(noRemove = false): Promise<void> {
   if (ActivePage.get() !== "test" || resultVisible) return;
 
   await centeringActiveLine;
@@ -946,7 +946,7 @@ export async function scrollTape(): Promise<void> {
   }
 
   /* remove overflown elements */
-  if (toRemove.length > 0) {
+  if (toRemove.length > 0 && !noRemove) {
     activeWordElementOffset += wordsToRemoveCount;
     for (const el of toRemove) el.remove();
     for (let i = 0; i < widthRemovedFromLine.length; i++) {
