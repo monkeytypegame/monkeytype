@@ -391,58 +391,9 @@ function validateQuotes() {
 
 function validateLanguages() {
   return new Promise((resolve, reject) => {
-    //languages
-    const languagesData = JSON.parse(
-      fs.readFileSync("./static/languages/_list.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-    const languagesSchema = {
-      type: "array",
-      items: {
-        type: "string",
-      },
-    };
-    const languagesValidator = ajv.compile(languagesSchema);
-    if (languagesValidator(languagesData)) {
-      console.log("Languages list JSON schema is \u001b[32mvalid\u001b[0m");
-    } else {
-      console.log("Languages list JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(languagesValidator.errors[0].message));
-    }
-
-    //languages group
-    const languagesGroupData = JSON.parse(
-      fs.readFileSync("./static/languages/_groups.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-    const languagesGroupSchema = {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          name: { type: "string" },
-          languages: {
-            type: "array",
-            items: {
-              type: "string",
-            },
-          },
-        },
-        required: ["name", "languages"],
-      },
-    };
-    const languagesGroupValidator = ajv.compile(languagesGroupSchema);
-    if (languagesGroupValidator(languagesGroupData)) {
-      console.log("Languages groups JSON schema is \u001b[32mvalid\u001b[0m");
-    } else {
-      console.log("Languages groups JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(languagesGroupValidator.errors[0].message));
-    }
-
+    const languages = fs
+      .readdirSync("./static/languages")
+      .map((it) => it.substring(0, it.length - 5));
     //language files
     const languageFileSchema = {
       type: "object",
@@ -472,7 +423,7 @@ function validateLanguages() {
     let languageFilesErrors;
     const duplicatePercentageThreshold = 0.0001;
     let langsWithDuplicates = 0;
-    languagesData.forEach((language) => {
+    languages.forEach((language) => {
       const languageFileData = JSON.parse(
         fs.readFileSync(`./static/languages/${language}.json`, {
           encoding: "utf8",

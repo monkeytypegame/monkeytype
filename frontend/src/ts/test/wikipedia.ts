@@ -4,10 +4,11 @@ import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { getGroupForLanguage, LanguageGroupName } from "../constants/languages";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 export async function getTLD(
-  languageGroup: JSONData.LanguageGroup
+  languageGroup: LanguageGroupName
 ): Promise<
   | "en"
   | "es"
@@ -65,7 +66,7 @@ export async function getTLD(
   | "eu"
 > {
   // language group to tld
-  switch (languageGroup.name) {
+  switch (languageGroup) {
     case "english":
       return "en";
 
@@ -256,23 +257,17 @@ const SectionSchema = z.object({
   }),
 });
 
-export async function getSection(language: string): Promise<JSONData.Section> {
+export async function getSection(
+  language: Language
+): Promise<JSONData.Section> {
   // console.log("Getting section");
   Loader.show();
 
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
 
-  const { data: currentLanguageGroup, error } = await tryCatch(
-    JSONData.getCurrentGroup(language)
-  );
-  if (error) {
-    console.error(
-      Misc.createErrorMessage(error, "Failed to find current language group")
-    );
-  }
-
-  if (currentLanguageGroup !== null && currentLanguageGroup !== undefined) {
+  const currentLanguageGroup = getGroupForLanguage(language);
+  if (currentLanguageGroup !== undefined) {
     urlTLD = await getTLD(currentLanguageGroup);
   }
 
@@ -293,7 +288,6 @@ export async function getSection(language: string): Promise<JSONData.Section> {
       Loader.hide();
       rej(randomPostReq.status);
     }
-
     const sectionURL = `https://${urlTLD}.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&origin=*`;
 
     const sectionReq = new XMLHttpRequest();
