@@ -17,12 +17,12 @@ import Page from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import SlimSelect from "slim-select";
-
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
   ConfigValue,
   CustomBackgroundSchema,
+  ThemeName,
   CustomLayoutFluid,
   FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
@@ -30,19 +30,21 @@ import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
-import { DataArrayPartial, Optgroup } from "slim-select/store";
+import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { Theme, ThemesList } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
+import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
+
+let settingsInitialized = false;
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
-
 let customLayoutFluidSelect: SlimSelect | undefined;
 let customPolyglotSelect: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
 
 async function initGroups(): Promise<void> {
-  await UpdateConfig.loadPromise;
   groups["smoothCaret"] = new SettingsGroup(
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
@@ -139,15 +141,7 @@ async function initGroups(): Promise<void> {
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
-    "button",
-    undefined,
-    () => {
-      if (Config.showKeyTips) {
-        $(".pageSettings .tip").removeClass("hidden");
-      } else {
-        $(".pageSettings .tip").addClass("hidden");
-      }
-    }
+    "button"
   ) as SettingsGroup<ConfigValue>;
   groups["freedomMode"] = new SettingsGroup(
     "freedomMode",
@@ -439,26 +433,10 @@ async function initGroups(): Promise<void> {
   ) as SettingsGroup<ConfigValue>;
 }
 
-function reset(): void {
-  $(".pageSettings .section.themes .favThemes.buttons").empty();
-  $(".pageSettings .section.themes .allThemes.buttons").empty();
-  $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
-  $(".pageSettings .section[data-config-name='funbox'] .buttons").empty();
-  for (const select of document.querySelectorAll(".pageSettings select")) {
-    //@ts-expect-error slim gets added to the html element but ts doesnt know about it
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    select?.slim?.destroy?.();
-  }
-}
-
-let groupsInitialized = false;
 async function fillSettingsPage(): Promise<void> {
-  if (Config.showKeyTips) {
-    $(".pageSettings .tip").removeClass("hidden");
-  } else {
-    $(".pageSettings .tip").addClass("hidden");
+  if (settingsInitialized) {
+    return;
   }
-
   // Language Selection Combobox
 
   const { data: languageGroups, error: getLanguageGroupsError } =
@@ -473,12 +451,8 @@ async function fillSettingsPage(): Promise<void> {
     );
   }
 
-  const element = document.querySelector(
-    ".pageSettings .section[data-config-name='language'] select"
-  ) as Element;
-
   new SlimSelect({
-    select: element,
+    select: ".pageSettings .section[data-config-name='language'] select",
     data: getLanguageDropdownData(
       languageGroups ?? [],
       (language) => language === Config.language
@@ -488,93 +462,47 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
-  const layoutSelectElement = document.querySelector(
-    ".pageSettings .section[data-config-name='layout'] select"
-  ) as Element;
-  const keymapLayoutSelectElement = document.querySelector(
-    ".pageSettings .section[data-config-name='keymapLayout'] select"
-  ) as Element;
-
-  let layoutHtml = '<option value="default">off</option>';
-  let keymapLayoutHtml = '<option value="overrideSync">emulator sync</option>';
-
-  for (const layout of LayoutsList) {
-    const optionHtml = `<option value="${layout}">${layout.replace(
-      /_/g,
-      " "
-    )}</option>`;
-    if (layout.toString() !== "korean") {
-      layoutHtml += optionHtml;
-    }
-    if (layout.toString() !== "default") {
-      keymapLayoutHtml += optionHtml;
-    }
-  }
-
-  layoutSelectElement.innerHTML = layoutHtml;
-  keymapLayoutSelectElement.innerHTML = keymapLayoutHtml;
-
-  new SlimSelect({
-    select: layoutSelectElement,
+  const layoutToOption: (layout: LayoutName) => OptionOptional = (layout) => ({
+    value: layout,
+    text: layout.replace(/_/g, " "),
   });
 
   new SlimSelect({
-    select: keymapLayoutSelectElement,
+    select: ".pageSettings .section[data-config-name='layout'] select",
+    data: [
+      { text: "off", value: "default" },
+      ...LayoutsList.filter((layout) => layout !== "korean").map(
+        layoutToOption
+      ),
+    ],
   });
 
-  const { data: themes, error: getThemesListError } = await tryCatch(
-    JSONData.getThemesList()
-  );
-  if (getThemesListError) {
-    console.error(
-      Misc.createErrorMessage(
-        getThemesListError,
-        "Failed to load themes into dropdown boxes"
-      )
-    );
-  }
-
-  const themeSelectLightElement = document.querySelector(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light"
-  ) as Element;
-  const themeSelectDarkElement = document.querySelector(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark"
-  ) as Element;
-
-  let themeSelectLightHtml = "";
-  let themeSelectDarkHtml = "";
-
-  if (themes) {
-    for (const theme of themes) {
-      const optionHtml = `<option value="${theme.name}" ${
-        theme.name === Config.themeLight ? "selected" : ""
-      }>${theme.name.replace(/_/g, " ")}</option>`;
-      themeSelectLightHtml += optionHtml;
-
-      const optionDarkHtml = `<option value="${theme.name}" ${
-        theme.name === Config.themeDark ? "selected" : ""
-      }>${theme.name.replace(/_/g, " ")}</option>`;
-      themeSelectDarkHtml += optionDarkHtml;
-    }
-  }
-
-  themeSelectLightElement.innerHTML = themeSelectLightHtml;
-  themeSelectDarkElement.innerHTML = themeSelectDarkHtml;
+  new SlimSelect({
+    select: ".pageSettings .section[data-config-name='keymapLayout'] select",
+    data: [
+      { text: "emulator sync", value: "overrideSync" },
+      ...LayoutsList.map(layoutToOption),
+    ],
+  });
 
   new SlimSelect({
-    select: themeSelectLightElement,
+    select:
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light",
+    data: getThemeDropdownData((theme) => theme.name === Config.themeLight),
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setThemeLight(newVal[0]?.value as string);
+        UpdateConfig.setThemeLight(newVal[0]?.value as ThemeName);
       },
     },
   });
 
   new SlimSelect({
-    select: themeSelectDarkElement,
+    select:
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark",
+    data: getThemeDropdownData((theme) => theme.name === Config.themeDark),
     events: {
       afterChange: (newVal): void => {
-        UpdateConfig.setThemeDark(newVal[0]?.value as string);
+        UpdateConfig.setThemeDark(newVal[0]?.value as ThemeName);
       },
     },
   });
@@ -699,17 +627,13 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   setEventDisabled(true);
-  if (!groupsInitialized) {
-    await initGroups();
-    groupsInitialized = true;
-  } else {
-    for (const groupKey of Object.keys(groups)) {
-      groups[groupKey]?.updateUI();
-    }
-  }
+
+  await initGroups();
+  await ThemePicker.refreshCustomButtons();
+  await ThemePicker.refreshPresetButtons();
+
   setEventDisabled(false);
-  await ThemePicker.refreshButtons();
-  await UpdateConfig.loadPromise;
+  settingsInitialized = true;
 }
 
 // export let settingsFillPromise = fillSettingsPage();
@@ -810,12 +734,15 @@ function refreshPresetsSettingsSection(): void {
   }
 }
 
-export async function update(groupUpdate = true): Promise<void> {
-  // Object.keys(groups).forEach((group) => {
-  if (groupUpdate) {
-    for (const group of Object.keys(groups)) {
-      groups[group]?.updateUI();
-    }
+export async function update(): Promise<void> {
+  if (Config.showKeyTips) {
+    $(".pageSettings .tip").removeClass("hidden");
+  } else {
+    $(".pageSettings .tip").addClass("hidden");
+  }
+
+  for (const group of Object.keys(groups)) {
+    groups[group]?.updateUI();
   }
 
   refreshTagsSettingsSection();
@@ -823,7 +750,7 @@ export async function update(groupUpdate = true): Promise<void> {
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
   await Misc.sleep(0);
-  ThemePicker.updateActiveTab(true);
+  ThemePicker.updateActiveTab();
   ThemePicker.setCustomInputs(true);
   // ThemePicker.updateActiveButton();
 
@@ -1410,6 +1337,16 @@ function getLayoutfluidDropdownData(): DataArrayPartial {
   }));
 }
 
+function getThemeDropdownData(
+  isActive: (theme: Theme) => boolean
+): DataArrayPartial {
+  return ThemesList.map((theme) => ({
+    value: theme.name,
+    text: theme.name.replace(/_/g, " "),
+    selected: isActive(theme),
+  }));
+}
+
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChange") setEventDisabled(true);
   if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
@@ -1434,13 +1371,13 @@ export const page = new Page({
   element: $(".page.pageSettings"),
   path: "/settings",
   afterHide: async (): Promise<void> => {
-    reset();
     Skeleton.remove("pageSettings");
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageSettings", "main");
+    await UpdateConfig.loadPromise;
     await fillSettingsPage();
-    await update(false);
+    await update();
   },
 });
 

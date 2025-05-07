@@ -77,7 +77,7 @@ import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
 import LayoutsCommands from "./lists/layouts";
 import FunboxCommands from "./lists/funbox";
-import ThemesCommands, { update as updateThemesCommands } from "./lists/themes";
+import ThemesCommands from "./lists/themes";
 import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
@@ -127,17 +127,6 @@ fontsPromise
   .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update fonts commands")
-    );
-  });
-
-const themesPromise = JSONData.getThemesList();
-themesPromise
-  .then((themes) => {
-    updateThemesCommands(themes);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update themes commands")
     );
   });
 
@@ -501,12 +490,7 @@ export function doesListExist(listName: string): boolean {
 export async function getList(
   listName: ListsObjectKeys
 ): Promise<CommandsSubgroup> {
-  await Promise.allSettled([
-    languagesPromise,
-    fontsPromise,
-    themesPromise,
-    challengesPromise,
-  ]);
+  await Promise.allSettled([languagesPromise, fontsPromise, challengesPromise]);
   const list = lists[listName];
   if (!list) {
     Notifications.add(`List not found: ${listName}`, -1);
@@ -547,12 +531,7 @@ export function getTopOfStack(): CommandsSubgroup {
 
 let singleList: CommandsSubgroup | undefined;
 export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
-  await Promise.allSettled([
-    languagesPromise,
-    fontsPromise,
-    themesPromise,
-    challengesPromise,
-  ]);
+  await Promise.allSettled([languagesPromise, fontsPromise, challengesPromise]);
 
   const singleCommands: Command[] = [];
   for (const command of commands.list) {
