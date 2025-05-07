@@ -362,8 +362,5 @@ export const LanguageGroupNames: LanguageGroupName[] = Array.from(
 export function getGroupForLanguage(
   language: Language
 ): LanguageGroupName | undefined {
-  for (const group of LanguageGroupNames) {
-    if (LanguageGroups[group]?.includes(language)) return group;
-  }
-  return undefined;
+  return LanguageGroupNames.find((group) => group.includes(language));
 }

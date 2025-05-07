@@ -376,7 +376,7 @@ async function fillContent(): Promise<void> {
       let langFilter = ResultFilters.getFilter("language", result.language);
 
       if (
-        //legacy valze for english_1k
+        //legacy value for english_1k
         (result.language as string) === "english_expanded" &&
         ResultFilters.getFilter("language", "english_1k")
       ) {

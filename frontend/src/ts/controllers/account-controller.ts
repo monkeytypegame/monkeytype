@@ -136,12 +136,13 @@ async function getDataAndInit(): Promise<boolean> {
 
   ResultFilters.loadTags(snapshot.tags);
 
-  LanguageList.forEach((language) => {
+  for (const language of LanguageList) {
     defaultResultFilters.language[language] = true;
-  });
-  getAllFunboxes().forEach((funbox) => {
+  }
+
+  for (const funbox of getAllFunboxes()) {
     defaultResultFilters.funbox[funbox.name] = true;
-  });
+  }
   // filters = defaultResultFilters;
   void ResultFilters.load();
 
