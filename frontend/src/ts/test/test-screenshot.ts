@@ -275,6 +275,10 @@ export async function download(): Promise<void> {
   }
 }
 
-$(".pageTest").on("click", "#saveScreenshotButton", () => {
-  void copyToClipboard();
+$(".pageTest").on("click", "#saveScreenshotButton", (event) => {
+  if (event.shiftKey) {
+    void download();
+  } else {
+    void copyToClipboard();
+  }
 });
