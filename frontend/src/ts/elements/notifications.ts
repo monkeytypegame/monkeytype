@@ -75,7 +75,6 @@ class Notification {
       cls = "bad";
       icon = `<i class="fas fa-times-circle"></i>`;
       title = "Error";
-      console.error(this.message);
     }
 
     if (this.important) {

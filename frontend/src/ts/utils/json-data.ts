@@ -1,5 +1,6 @@
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 import { Accents } from "../test/lazy-mode";
-import { hexToHSL } from "./colors";
 
 /**
  * Fetches JSON data from the specified URL using the fetch API.
@@ -12,7 +13,7 @@ async function fetchJson<T>(url: string): Promise<T> {
     if (!url) throw new Error("No URL");
     const res = await fetch(url);
     if (res.ok) {
-      if (res.headers.get("content-type") !== "application/json") {
+      if (!res.headers.get("content-type")?.startsWith("application/json")) {
         throw new Error("Content is not JSON");
       }
       return (await res.json()) as T;
@@ -88,110 +89,11 @@ export type Layout = {
  * @throws {Error} If the layout list or layout doesn't exist.
  */
 export async function getLayout(layoutName: string): Promise<Layout> {
-  try {
-    return await cachedFetchJson<Layout>(`/layouts/${layoutName}.json`);
-  } catch (e) {
-    throw new Error(`Layout ${layoutName} JSON fetch failed`);
-  }
-}
-
-export type Theme = {
-  name: string;
-  bgColor: string;
-  mainColor: string;
-  subColor: string;
-  textColor: string;
-};
-
-let themesList: Theme[] | undefined;
-
-/**
- * Fetches the list of themes from the server, sorting them alphabetically by name.
- * If the list has already been fetched, returns the cached list.
- * @returns A promise that resolves to the sorted list of themes.
- */
-export async function getThemesList(): Promise<Theme[]> {
-  if (!themesList) {
-    let themes = await cachedFetchJson<Theme[]>("/themes/_list.json");
-
-    themes = themes.sort((a, b) => {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-    themesList = themes;
-    return themesList;
-  } else {
-    return themesList;
-  }
-}
-
-let sortedThemesList: Theme[] | undefined;
-
-/**
- * Fetches the sorted list of themes from the server.
- * @returns A promise that resolves to the sorted list of themes.
- */
-export async function getSortedThemesList(): Promise<Theme[]> {
-  if (!sortedThemesList) {
-    if (!themesList) {
-      await getThemesList();
-    }
-    if (!themesList) {
-      throw new Error("Themes list is undefined");
-    }
-    let sorted = [...themesList];
-    sorted = sorted.sort((a, b) => {
-      const b1 = hexToHSL(a.bgColor);
-      const b2 = hexToHSL(b.bgColor);
-      return b2.lgt - b1.lgt;
-    });
-    sortedThemesList = sorted;
-    return sortedThemesList;
-  } else {
-    return sortedThemesList;
-  }
-}
-
-/**
- * Fetches the list of languages from the server.
- * @returns A promise that resolves to the list of languages.
- */
-export async function getLanguageList(): Promise<string[]> {
-  try {
-    const languageList = await cachedFetchJson<string[]>(
-      "/languages/_list.json"
-    );
-    return languageList;
-  } catch (e) {
-    throw new Error("Language list JSON fetch failed");
-  }
-}
-
-export type LanguageGroup = {
-  name: string;
-  languages: string[];
-};
-
-/**
- * Fetches the list of language groups from the server.
- * @returns A promise that resolves to the list of language groups.
- */
-export async function getLanguageGroups(): Promise<LanguageGroup[]> {
-  try {
-    const languageGroupList = await cachedFetchJson<LanguageGroup[]>(
-      "/languages/_groups.json"
-    );
-    return languageGroupList;
-  } catch (e) {
-    throw new Error("Language groups JSON fetch failed");
-  }
+  return await cachedFetchJson<Layout>(`/layouts/${layoutName}.json`);
 }
 
 export type LanguageObject = {
-  name: string;
+  name: Language;
   rightToLeft: boolean;
   noLazyMode?: boolean;
   ligatures?: boolean;
@@ -209,7 +111,7 @@ let currentLanguage: LanguageObject;
  * @param lang The language code.
  * @returns A promise that resolves to the language object.
  */
-export async function getLanguage(lang: string): Promise<LanguageObject> {
+export async function getLanguage(lang: Language): Promise<LanguageObject> {
   // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
     currentLanguage = await cachedFetchJson<LanguageObject>(
@@ -220,7 +122,7 @@ export async function getLanguage(lang: string): Promise<LanguageObject> {
 }
 
 export async function checkIfLanguageSupportsZipf(
-  language: string
+  language: Language
 ): Promise<"yes" | "no" | "unknown"> {
   const lang = await getLanguage(language);
   if (lang.orderedByFrequency === true) return "yes";
@@ -234,29 +136,9 @@ export async function checkIfLanguageSupportsZipf(
  * @returns A promise that resolves to the current language object.
  */
 export async function getCurrentLanguage(
-  languageName: string
+  languageName: Language
 ): Promise<LanguageObject> {
   return await getLanguage(languageName);
-}
-
-/**
- * Fetches the language group for a given language.
- * @param language The language code.
- * @returns A promise that resolves to the language group.
- */
-export async function getCurrentGroup(
-  language: string
-): Promise<LanguageGroup | undefined> {
-  let retgroup: LanguageGroup | undefined;
-  const groups = await getLanguageGroups();
-  groups.forEach((group) => {
-    if (retgroup === undefined) {
-      if (group.languages.includes(language)) {
-        retgroup = group;
-      }
-    }
-  });
-  return retgroup;
 }
 
 export class Section {
@@ -306,7 +188,7 @@ export type Challenge = {
   display: string;
   autoRole: boolean;
   type: string;
-  parameters: (string | number | boolean)[];
+  parameters: (string | number | boolean | FunboxName[])[];
   message: string;
   requirements: Record<string, Record<string, string | number | boolean>>;
 };
@@ -316,12 +198,8 @@ export type Challenge = {
  * @returns A promise that resolves to the list of challenges.
  */
 export async function getChallengeList(): Promise<Challenge[]> {
-  try {
-    const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
-    return data;
-  } catch (e) {
-    throw new Error("Challenge list JSON fetch failed");
-  }
+  const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
+  return data;
 }
 
 /**
@@ -329,12 +207,8 @@ export async function getChallengeList(): Promise<Challenge[]> {
  * @returns A promise that resolves to the list of supporters.
  */
 export async function getSupportersList(): Promise<string[]> {
-  try {
-    const data = await cachedFetchJson<string[]>("/about/supporters.json");
-    return data;
-  } catch (e) {
-    throw new Error("Supporters list JSON fetch failed");
-  }
+  const data = await cachedFetchJson<string[]>("/about/supporters.json");
+  return data;
 }
 
 /**
@@ -342,12 +216,8 @@ export async function getSupportersList(): Promise<string[]> {
  * @returns A promise that resolves to the list of contributors.
  */
 export async function getContributorsList(): Promise<string[]> {
-  try {
-    const data = await cachedFetchJson<string[]>("/about/contributors.json");
-    return data;
-  } catch (e) {
-    throw new Error("Contributors list JSON fetch failed");
-  }
+  const data = await cachedFetchJson<string[]>("/about/contributors.json");
+  return data;
 }
 
 type GithubRelease = {

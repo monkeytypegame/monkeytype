@@ -351,6 +351,19 @@
       </div>
     </div>
     <div class="sectionSpacer"></div>
+    <div class="section" data-config-name="customPolyglot">
+      <div class="groupTitle">
+        <i class="fas fa-language"></i>
+        <span>polyglot languages</span>
+      </div>
+      <div class="text">
+        Select which languages you want the polyglot funbox to use.
+      </div>
+      <div class="inputs">
+        <select multiple></select>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
   </div>
   <button id="group_input" class="text sectionGroupTitle" group="input">
     <i class="fas fa-chevron-down"></i>
@@ -1240,11 +1253,10 @@
         <button tab="custom" class="tab">custom</button>
       </div> -->
 
-      <!-- Used to convert colors to hex  -->
-      <div class="colorConverter"></div>
-
       <div class="tabContainer">
         <div tabContent="custom" class="tabContent customTheme hidden">
+          <!-- Used to convert colors to hex  -->
+          <div class="colorConverter"></div>
           <div class="allCustomThemes buttons"></div>
           <div class="customThemeEdit">
             <div class="customThemeInputs">

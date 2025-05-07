@@ -1,13 +1,12 @@
 import Config from "../../config";
 import {
-  FunboxName,
-  stringToFunboxNames,
   FunboxMetadata,
   getFunboxObject,
   FunboxProperty,
 } from "@monkeytype/funbox";
 
 import { FunboxFunctions, getFunboxFunctions } from "./funbox-functions";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 
 type FunboxMetadataWithFunctions = FunboxMetadata & {
   functions?: FunboxFunctions;
@@ -28,10 +27,7 @@ for (const [name, data] of Object.entries(metadata)) {
   };
 }
 
-// oxlint doesnt understand ts overloading
-// eslint-disable-next-line no-redeclare
 export function get(funboxName: FunboxName): FunboxMetadataWithFunctions;
-// eslint-disable-next-line no-redeclare
 export function get(funboxNames: FunboxName[]): FunboxMetadataWithFunctions[];
 export function get(
   funboxNameOrNames: FunboxName | FunboxName[]
@@ -48,18 +44,12 @@ export function getAllFunboxes(): FunboxMetadataWithFunctions[] {
   return Object.values(metadataWithFunctions);
 }
 
-export function getFromString(
-  hashSeparatedFunboxes: string
-): FunboxMetadataWithFunctions[] {
-  return get(stringToFunboxNames(hashSeparatedFunboxes));
-}
-
 export function getActiveFunboxes(): FunboxMetadataWithFunctions[] {
-  return get(stringToFunboxNames(Config.funbox));
+  return get(getActiveFunboxNames());
 }
 
 export function getActiveFunboxNames(): FunboxName[] {
-  return stringToFunboxNames(Config.funbox);
+  return Config.funbox ?? [];
 }
 
 /**

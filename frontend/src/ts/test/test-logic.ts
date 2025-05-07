@@ -70,9 +70,14 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
 } from "./funbox/list";
-import { getFunboxesFromString } from "@monkeytype/funbox";
+import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
+import { WordGenError } from "../utils/word-gen-error";
+import { tryCatch } from "@monkeytype/util/trycatch";
+import { captureException } from "../sentry";
+import * as Loader from "../elements/loader";
+import * as TestInitFailed from "../elements/test-init-failed";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -295,7 +300,6 @@ export function restart(options = {} as RestartOptions): void {
     el = $("#typingTest");
   }
   TestUI.setResultVisible(false);
-  PageTransition.set(true);
   TestUI.setTestRestarting(true);
   el.stop(true, true).animate(
     {
@@ -335,7 +339,15 @@ export function restart(options = {} as RestartOptions): void {
 
       TestState.setRepeated(options.withSameWordset ?? false);
       TestState.setPaceRepeat(repeatWithPace);
-      await init();
+      TestInitFailed.hide();
+      TestState.setTestInitSuccess(true);
+      const initResult = await init();
+
+      if (initResult === null) {
+        TestUI.setTestRestarting(false);
+        return;
+      }
+
       await PaceCaret.init();
 
       for (const fb of getActiveFunboxesWithFunction("restart")) {
@@ -368,10 +380,9 @@ export function restart(options = {} as RestartOptions): void {
             LiveSpeed.reset();
             LiveAcc.reset();
             LiveBurst.reset();
-            TestUI.setTestRestarting(false);
             TestUI.updatePremid();
             ManualRestart.reset();
-            PageTransition.set(false);
+            TestUI.setTestRestarting(false);
           }
         );
     }
@@ -380,21 +391,31 @@ export function restart(options = {} as RestartOptions): void {
   ResultWordHighlight.destroy();
 }
 
+let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
-export async function init(): Promise<void> {
+export async function init(): Promise<void | null> {
   console.debug("Initializing test");
   testReinitCount++;
-  if (testReinitCount >= 4) {
+  if (testReinitCount > 3) {
+    if (lastInitError) {
+      captureException(lastInitError);
+      TestInitFailed.showError(
+        `${lastInitError.name}: ${lastInitError.message}`
+      );
+    }
+    TestInitFailed.show();
     TestUI.setTestRestarting(false);
-    Notifications.add(
-      "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
-      -1,
-      {
-        important: true,
-      }
-    );
-    return;
+    TestState.setTestInitSuccess(false);
+    Focus.set(false);
+    // Notifications.add(
+    //   "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
+    //   -1,
+    //   {
+    //     important: true,
+    //   }
+    // );
+    return null;
   }
 
   MonkeyPower.reset();
@@ -405,20 +426,22 @@ export async function init(): Promise<void> {
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
-  let language;
-  try {
-    language = await JSONData.getLanguage(Config.language);
-  } catch (e) {
+  Loader.show();
+  const { data: language, error } = await tryCatch(
+    JSONData.getLanguage(Config.language)
+  );
+  Loader.hide();
+
+  if (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to load language"),
+      Misc.createErrorMessage(error, "Failed to load language"),
       -1
     );
   }
 
   if (!language || language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
-    await init();
-    return;
+    return await init();
   }
 
   if (ActivePage.get() === "test") {
@@ -457,6 +480,21 @@ export async function init(): Promise<void> {
     console.debug("Custom text", CustomText.getData());
   }
 
+  console.log("Inializing test", {
+    language: {
+      ...language,
+      words: `${language.words.length} words`,
+    },
+    customText: {
+      ...CustomText.getData(),
+      text: `${CustomText.getText().length} words`,
+    },
+    mode: Config.mode,
+    mode2: Misc.getMode2(Config, null),
+    funbox: Config.funbox,
+    currentQuote: TestWords.currentQuote,
+  });
+
   let generatedWords: string[];
   let generatedSectionIndexes: number[];
   let wordsHaveTab = false;
@@ -468,11 +506,17 @@ export async function init(): Promise<void> {
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
   } catch (e) {
+    Loader.hide();
+    if (e instanceof WordGenError || e instanceof Error) {
+      lastInitError = e;
+    }
     console.error(e);
-    if (e instanceof WordsGenerator.WordGenError) {
-      Notifications.add(e.message, 0, {
-        important: true,
-      });
+    if (e instanceof WordGenError) {
+      if (e.message.length > 0) {
+        Notifications.add(e.message, 0, {
+          important: true,
+        });
+      }
     } else {
       Notifications.add(
         Misc.createErrorMessage(e, "Failed to generate words"),
@@ -483,8 +527,7 @@ export async function init(): Promise<void> {
       );
     }
 
-    await init();
-    return;
+    return await init();
   }
 
   const beforeHasNumbers = TestWords.hasNumbers;
@@ -1233,7 +1276,7 @@ async function saveResult(
       completedEvent.language,
       completedEvent.difficulty,
       completedEvent.lazyMode,
-      getFunboxesFromString(completedEvent.funbox)
+      getFunbox(completedEvent.funbox)
     );
 
     if (localPb !== undefined) {
@@ -1316,6 +1359,10 @@ export function fail(reason: string): void {
 }
 
 $(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
+  restart();
+});
+
+$(".pageTest").on("click", "#testInitFailed button.restart", () => {
   restart();
 });
 
@@ -1432,7 +1479,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     }
     if (eventKey === "difficulty" && !nosave) restart();
     if (
-      eventKey === "customLayoutFluid" &&
+      eventKey === "customLayoutfluid" &&
       Config.funbox.includes("layoutfluid")
     ) {
       restart();

@@ -39,9 +39,10 @@
     "release-be": "monkeytype-release --be",
     "release-no-deploy": "monkeytype-release --no-deploy",
     "release-dry": "monkeytype-release --dry",
-    "hotfix-fe": "npm run build-fe && cd frontend && npm run deploy-live && monkeytype-purge",
-    "hotfix-be": "monkeytype-deploy-be",
-    "hotfix": "npm run hotfix-be && npm run hotfix-fe",
+    "hotfix": "monkeytype-release --hotfix",
+    "hotfix-fe": "monkeytype-release --hotfix --fe",
+    "hotfix-be": "monkeytype-release --hotfix --be",
+    "hotfix-dry": "monkeytype-release --hotfix --dry",
     "pretty-check": "prettier --check .",
     "pretty-check-be": "prettier --check ./backend",
     "pretty-check-fe": "prettier --check ./frontend/src",
@@ -54,8 +55,8 @@
     "pretty-fix-pkg": "prettier --write ./packages",
     "pr-check-lint-json": "cd frontend && eslint './static/**/*.json'",
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
-    "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json",
-    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json"
+    "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json && turbo test -- constants/languages",
+    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json && turbo test -- constants/layouts constants/themes"
   },
   "engines": {
     "node": "20.16.0"
@@ -71,7 +72,7 @@
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "oxlint": "0.16.6",
+    "oxlint": "0.16.7",
     "prettier": "2.8.8",
     "turbo": "2.3.3",
     "vitest": "2.1.9"
@@ -86,6 +87,6 @@
       "eslint"
     ]
   },
-  "version": "25.16.0",
+  "version": "25.19.0",
   "packageManager": "pnpm@9.6.0"
 }

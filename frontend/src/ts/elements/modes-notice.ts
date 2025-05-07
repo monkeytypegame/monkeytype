@@ -9,24 +9,25 @@ import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
 import Format from "../utils/format";
+import { getActiveFunboxNames } from "../test/funbox/list";
 
 ConfigEvent.subscribe((eventKey) => {
-  if (
-    [
-      "difficulty",
-      "blindMode",
-      "stopOnError",
-      "paceCaret",
-      "minWpm",
-      "minAcc",
-      "minBurst",
-      "confidenceMode",
-      "layout",
-      "showAverage",
-      "typingSpeedUnit",
-      "quickRestart",
-    ].includes(eventKey)
-  ) {
+  const configKeys: ConfigEvent.ConfigEventKey[] = [
+    "difficulty",
+    "blindMode",
+    "stopOnError",
+    "paceCaret",
+    "minWpm",
+    "minAcc",
+    "minBurst",
+    "confidenceMode",
+    "layout",
+    "showAverage",
+    "typingSpeedUnit",
+    "quickRestart",
+    "customPolyglot",
+  ];
+  if (configKeys.includes(eventKey)) {
     void update();
   }
 });
@@ -91,12 +92,27 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.mode !== "zen") {
+  const usingPolyglot = getActiveFunboxNames().includes("polyglot");
+
+  if (Config.mode !== "zen" && !usingPolyglot) {
     $(".pageTest #testModesNotice").append(
       `<button class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
         Config.language,
         Config.mode === "quote"
       )}</button>`
+    );
+  }
+
+  if (usingPolyglot) {
+    const languages = Config.customPolyglot
+      .map((lang) => {
+        const langDisplay = getLanguageDisplayString(lang, true);
+        return langDisplay;
+      })
+      .join(", ");
+
+    $(".pageTest #testModesNotice").append(
+      `<button class="textButton" commandId="changeCustomPolyglot"><i class="fas fa-globe-americas"></i>${languages}</button>`
     );
   }
 
@@ -198,11 +214,11 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.funbox !== "none") {
+  if (Config.funbox.length > 0) {
     $(".pageTest #testModesNotice").append(
       `<button class="textButton" commands="funbox"><i class="fas fa-gamepad"></i>${Config.funbox
-        .replace(/_/g, " ")
-        .replace(/#/g, ", ")}</button>`
+        .map((it) => it.replace(/_/g, " "))
+        .join(", ")}</button>`
     );
   }
 
