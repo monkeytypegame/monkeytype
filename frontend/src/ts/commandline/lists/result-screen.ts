@@ -7,6 +7,7 @@ import * as TestWords from "../../test/test-words";
 import Config from "../../config";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
+import * as Screenshot from "../../test/screenshot";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -98,7 +99,7 @@ const commands: Command[] = [
     alias: "copy image clipboard",
     exec: (): void => {
       setTimeout(() => {
-        void TestUI.screenshot();
+        void Screenshot.copyToClipboard();
       }, 500);
     },
     available: (): boolean => {
@@ -112,33 +113,7 @@ const commands: Command[] = [
     alias: "save image download file",
     exec: (): void => {
       setTimeout(async () => {
-        try {
-          const blob = await TestUI.getScreenshotBlob();
-
-          if (!blob) {
-            Notifications.add("Failed to generate screenshot data", -1);
-            return;
-          }
-
-          const url = URL.createObjectURL(blob);
-
-          const link = document.createElement("a");
-          link.href = url;
-
-          const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-          link.download = `monkeytype-result-${timestamp}.png`;
-
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-
-          URL.revokeObjectURL(url);
-
-          Notifications.add("Screenshot download started", 1);
-        } catch (error) {
-          console.error("Error downloading screenshot:", error);
-          Notifications.add("Failed to download screenshot", -1);
-        }
+        void Screenshot.download();
       }, 500);
     },
     available: (): boolean => {
