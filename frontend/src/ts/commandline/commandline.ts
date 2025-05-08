@@ -11,6 +11,9 @@ import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup } from "./types";
+import * as JSONData from "../utils/json-data";
+import * as Misc from "../utils/misc";
+import * as ThemesModule from "./lists/themes";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -128,6 +131,19 @@ export function show(
       activeCommand = null;
       Focus.set(false);
       CommandlineLists.setStackToDefault();
+
+      // Update themes list with current favorites status when commandline is opened
+      const themesPromise = JSONData.getThemesList();
+      themesPromise
+        .then((themes) => {
+          ThemesModule.update(themes);
+        })
+        .catch((e: unknown) => {
+          console.error(
+            Misc.createErrorMessage(e, "Failed to update themes commands")
+          );
+        });
+
       updateInput();
       await filterSubgroup();
       await showCommands();
@@ -428,13 +444,24 @@ async function showCommands(): Promise<void> {
 
     if (command.customData !== undefined) {
       if (command.id.startsWith("changeTheme")) {
-        html += `<div class="command withThemeBubbles" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">
+        html += `<div class="command withThemeBubbles" data-command-id="${
+          command.id
+        }" data-index="${index}" style="${customStyle}">
       ${iconHTML}<div>${display}</div>
-      <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
-        <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
-        <div class="themeBubble" style="background: ${command.customData["subColor"]}"></div>
-        <div class="themeBubble" style="background: ${command.customData["textColor"]}"></div>
+      <div class="themeBubbles" style="background: ${
+        command.customData["bgColor"]
+      };outline: 0.25rem solid ${command.customData["bgColor"]};">
+        <div class="themeBubble" style="background: ${
+          command.customData["mainColor"]
+        }"></div>
+        <div class="themeBubble" style="background: ${
+          command.customData["subColor"]
+        }"></div>
+        <div class="themeBubble" style="background: ${
+          command.customData["textColor"]
+        }"></div>
       </div>
+      ${command.html ?? ""}
       </div>`;
       }
       if (command.id.startsWith("changeFont")) {
