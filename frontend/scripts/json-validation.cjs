@@ -137,13 +137,13 @@ function validateOthers() {
       type: "array",
       minItems: 1,
       maxItems: 4,
-      items: { type: "string", minLength: 1 },
+      items: { type: "string", minLength: 1, maxLength: 1 },
     };
     const charDefinitionSchemaRow5 = {
       type: "array",
       minItems: 1,
       maxItems: 2,
-      items: { type: "string", minLength: 1 },
+      items: { type: "string", minLength: 1, maxLength: 1 },
     };
     //layouts
     const layoutsSchema = {
