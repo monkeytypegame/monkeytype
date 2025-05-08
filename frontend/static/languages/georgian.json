@@ -1,6 +1,7 @@
 {
   "name": "georgian",
   "noLazyMode": true,
+  "charset": "georgian",
   "words": [
     "სახელი",
     "სურათის",

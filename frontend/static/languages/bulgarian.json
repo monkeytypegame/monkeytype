@@ -1,6 +1,7 @@
 {
   "name": "bulgarian",
   "noLazyMode": true,
+  "charset": "cyrillic",
   "words": [
     "а",
     "аз",

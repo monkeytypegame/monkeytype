@@ -1,6 +1,7 @@
 {
   "name": "mongolian",
   "noLazyMode": true,
+  "charset": "cyrillic",
   "words": [
     "аавын",
     "аан",

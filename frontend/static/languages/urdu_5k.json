@@ -3,6 +3,7 @@
   "rightToLeft": true,
   "ligatures": true,
   "noLazyMode": true,
+  "charset": "arabic",
   "words": [
     "کے",
     "میں",
