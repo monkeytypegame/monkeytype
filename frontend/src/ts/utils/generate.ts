@@ -105,12 +105,17 @@ export function getMorse(word: string): string {
 export function getGibberish(charset: Charset): string {
   const randLen = randomIntFromRange(1, 7);
   let ret = "";
+  const ranges = charsetRanges[charset];
 
-  const start = charsetRanges[charset].start;
-  const end = charsetRanges[charset].end;
+  const chars = [];
+  for (let range of ranges) {
+    for (let i = range.start; i < range.end; i++) {
+      chars.push(i);
+    }
+  }
 
   while (ret.length < randLen) {
-    const ch = String.fromCharCode(randomIntFromRange(start, end));
+    const ch = String.fromCharCode(Arrays.randomElementFromArray(chars));
 
     // Sanitizing the character
     // keeping letters and vowels, killing viramas
@@ -119,7 +124,6 @@ export function getGibberish(charset: Charset): string {
   }
   return ret;
 }
-
 /**
  * Generates a random ASCII string of printable characters.
  * @returns The generated ASCII string.
