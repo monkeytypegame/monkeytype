@@ -234,7 +234,7 @@ function buildRow(options: {
     if (
       rowKeys.length > 1 &&
       !isRowEmpty(rowKeys[0]) &&
-      rowKeys[0] === rowKeys[1]
+      areSortedArraysEqual(rowKeys[0] as string[], rowKeys[1] as string[])
     ) {
       rowKeys[0] = [" "];
     }
