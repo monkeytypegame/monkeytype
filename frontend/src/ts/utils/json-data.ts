@@ -1,6 +1,7 @@
 import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 import { Language } from "@monkeytype/contracts/schemas/languages";
 import { Accents } from "../test/lazy-mode";
+import { Theme, ThemesList } from "../constants/themes";
 
 /**
  * Fetches JSON data from the specified URL using the fetch API.
@@ -200,6 +201,14 @@ export type Challenge = {
 export async function getChallengeList(): Promise<Challenge[]> {
   const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
   return data;
+}
+
+/**
+ * Fetches the list of themes from the server.
+ * @returns A promise that resolves to the list of themes.
+ */
+export async function getThemesList(): Promise<Theme[]> {
+  return ThemesList;
 }
 
 /**
