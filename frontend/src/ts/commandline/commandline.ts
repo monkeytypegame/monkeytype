@@ -498,19 +498,11 @@ async function showCommands(): Promise<void> {
       activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
       await updateActiveCommand();
     });
-    command.addEventListener("click", async (e) => {
+    command.addEventListener("click", async () => {
       const previous = activeIndex;
       activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
       if (previous !== activeIndex) {
         await updateActiveCommand();
-      }
-      const commandObj = (await getList()).filter((c) => c.found)[activeIndex];
-      if (commandObj && commandObj.customHandler) {
-        const shouldProceed = commandObj.customHandler(
-          e as MouseEvent,
-          commandObj
-        );
-        if (!shouldProceed) return;
       }
       await runActiveCommand();
     });

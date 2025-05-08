@@ -71,9 +71,7 @@ export function update(themes: Theme[]): void {
       UpdateConfig.setTheme(theme.name);
     },
     // custom HTML element for the favorite star
-    html: `<div class="themeFavIcon ${
-      isFavorite(theme) ? "active" : ""
-    }" tabindex="-1">
+    html: `<div class="themeFavIcon ${isFavorite(theme) ? "active" : ""}">
             <i class="${isFavorite(theme) ? "fas" : "far"} fa-star"></i>
           </div>`,
   }));
