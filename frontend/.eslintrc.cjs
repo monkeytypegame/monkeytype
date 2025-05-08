@@ -1,7 +1,8 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
-  extends: ["@monkeytype/eslint-config"],
+  plugins: ["compat"],
+  extends: ["@monkeytype/eslint-config", "plugin:compat/recommended"],
   globals: {
     $: "readonly",
     jQuery: "readonly",
@@ -21,4 +22,7 @@ module.exports = {
     "__tests__/",
     "jest.config.ts",
   ],
+  settings: {
+    lintAllEsApis: true,
+  },
 };
