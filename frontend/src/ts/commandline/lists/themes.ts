@@ -8,13 +8,14 @@ import { not } from "@monkeytype/util/predicates";
 const isFavorite = (theme: Theme): boolean =>
   Config.favThemes.includes(theme.name);
 
-const subgroup: CommandsSubgroup = {
-  title: "Theme...",
-  configKey: "theme",
-  list: [
-    ...ThemesList.filter(isFavorite),
-    ...ThemesList.filter(not(isFavorite)),
-  ].map((theme: Theme) => ({
+/**
+ * creates a theme command object for the given theme
+ * @param theme the theme to create a command for
+ * @param includeHtml whether to include the HTML for the favorite star
+ * @returns a command object for the theme
+ */
+const createThemeCommand = (theme: Theme, includeHtml = false): Command => {
+  const command = {
     id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
     display: theme.name.replace(/_/g, " "),
     configValue: theme.name,
@@ -32,7 +33,37 @@ const subgroup: CommandsSubgroup = {
     exec: (): void => {
       UpdateConfig.setTheme(theme.name);
     },
-  })),
+  };
+
+  // add HTML for favorite star if requested
+  if (includeHtml) {
+    return {
+      ...command,
+      html: `<div class="themeFavIcon ${isFavorite(theme) ? "active" : ""}">
+              <i class="${isFavorite(theme) ? "fas" : "far"} fa-star"></i>
+            </div>`,
+    };
+  }
+
+  return command;
+};
+
+/**
+ * sorts themes with favorites first, then non-favorites
+ * @param themes the themes to sort
+ * @returns sorted array of themes
+ */
+const sortThemesByFavorite = (themes: Theme[]): Theme[] => [
+  ...themes.filter(isFavorite),
+  ...themes.filter(not(isFavorite)),
+];
+
+const subgroup: CommandsSubgroup = {
+  title: "Theme...",
+  configKey: "theme",
+  list: sortThemesByFavorite(ThemesList).map((theme) =>
+    createThemeCommand(theme, true)
+  ),
 };
 
 const commands: Command[] = [
@@ -49,31 +80,8 @@ export function update(themes: Theme[]): void {
   subgroup.list = [];
 
   // rebuild with favorites first, then non-favorites
-  subgroup.list = [
-    ...themes.filter(isFavorite),
-    ...themes.filter(not(isFavorite)),
-  ].map((theme: Theme) => ({
-    id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
-    display: theme.name.replace(/_/g, " "),
-    configValue: theme.name,
-    // customStyle: `color:${theme.mainColor};background:${theme.bgColor}`,
-    customData: {
-      mainColor: theme.mainColor,
-      bgColor: theme.bgColor,
-      subColor: theme.subColor,
-      textColor: theme.textColor,
-    },
-    hover: (): void => {
-      // previewTheme(theme.name);
-      ThemeController.preview(theme.name);
-    },
-    exec: (): void => {
-      UpdateConfig.setTheme(theme.name);
-    },
-    // custom HTML element for the favorite star
-    html: `<div class="themeFavIcon ${isFavorite(theme) ? "active" : ""}">
-            <i class="${isFavorite(theme) ? "fas" : "far"} fa-star"></i>
-          </div>`,
-  }));
+  subgroup.list = sortThemesByFavorite(themes).map((theme) =>
+    createThemeCommand(theme, true)
+  );
 }
 export default commands;
