@@ -448,18 +448,70 @@ async function fillContent(): Promise<void> {
 
         if (validTags === undefined) return;
 
-        result.tags.forEach((tag) => {
-          //check if i even need to check tags anymore
-          if (!tagHide) return;
-          //check if tag is valid
-          if (validTags?.includes(tag)) {
-            //tag valid, check if filter is on
-            if (ResultFilters.getFilter("tags", tag)) tagHide = false;
+        if (ResultFilters.getTagsFilterMode() === "or") {
+          result.tags.forEach((tag) => {
+            //check if i even need to check tags anymore
+            if (!tagHide) return;
+            //check if tag is valid
+            if (validTags?.includes(tag)) {
+              //tag valid, check if filter is on
+              if (ResultFilters.getFilter("tags", tag)) tagHide = false;
+            } else {
+              //tag not found in valid tags, meaning probably deleted
+              if (ResultFilters.getFilter("tags", "none")) tagHide = false;
+            }
+          });
+        } else if (ResultFilters.getTagsFilterMode() === "and") {
+          // AND mode - show results that match ALL selected tags
+          // First, identify all the enabled tags using validTags
+          const enabledTagIds: string[] = [];
+
+          // Loop through all valid tags to find which ones are enabled in the filter
+          validTags.forEach((tagId) => {
+            if (tagId !== "none" && ResultFilters.getFilter("tags", tagId)) {
+              enabledTagIds.push(tagId);
+            }
+          });
+
+          if (enabledTagIds.length === 0) {
+            // No tag filters enabled, show everything
+            tagHide = false;
           } else {
-            //tag not found in valid tags, meaning probably deleted
-            if (ResultFilters.getFilter("tags", "none")) tagHide = false;
+            // Check if result has ALL the enabled tag filters
+            const resultHasAllTags = enabledTagIds.every((tagId) =>
+              result.tags?.includes(tagId)
+            );
+
+            if (resultHasAllTags) {
+              tagHide = false;
+            }
           }
-        });
+        } else if (ResultFilters.getTagsFilterMode() === "exact") {
+          // EXACT mode - show results where tags exactly match the selected filters
+          // First, identify all the enabled tags
+          const enabledTagIds: string[] = [];
+
+          // Loop through all valid tags to find which ones are enabled in the filter
+          validTags.forEach((tagId) => {
+            if (tagId !== "none" && ResultFilters.getFilter("tags", tagId)) {
+              enabledTagIds.push(tagId);
+            }
+          });
+
+          if (enabledTagIds.length === 0) {
+            // No tag filters enabled, show everything
+            tagHide = false;
+          } else {
+            // Check if result tags exactly match the enabled filters (same number and same tags)
+            const resultHasExactTags =
+              result.tags.length === enabledTagIds.length &&
+              enabledTagIds.every((tagId) => result.tags?.includes(tagId));
+
+            if (resultHasExactTags) {
+              tagHide = false;
+            }
+          }
+        }
       }
 
       if (tagHide) {
