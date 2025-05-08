@@ -68,11 +68,11 @@ export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
 );
 
 export type Keys = {
-  row1: string[];
-  row2: string[];
-  row3: string[];
-  row4: string[];
-  row5: string[];
+  row1: string[][];
+  row2: string[][];
+  row3: string[][];
+  row4: string[][];
+  row5: string[][];
 };
 
 export type Layout = {
