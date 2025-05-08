@@ -77,8 +77,7 @@ import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
 import LayoutsCommands from "./lists/layouts";
 import FunboxCommands from "./lists/funbox";
-import ThemesCommands, { update as updateThemesCommands } from "./lists/themes";
-export { updateThemesCommands };
+import ThemesCommands from "./lists/themes";
 import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";

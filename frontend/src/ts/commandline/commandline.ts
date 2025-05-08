@@ -13,6 +13,7 @@ import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup } from "./types";
 import * as JSONData from "../utils/json-data";
 import * as Misc from "../utils/misc";
+import * as ThemesModule from "./lists/themes";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -135,7 +136,7 @@ export function show(
       const themesPromise = JSONData.getThemesList();
       themesPromise
         .then((themes) => {
-          CommandlineLists.updateThemesCommands(themes);
+          ThemesModule.update(themes);
         })
         .catch((e: unknown) => {
           console.error(
