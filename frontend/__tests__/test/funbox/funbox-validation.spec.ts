@@ -1,6 +1,7 @@
 import { canSetConfigWithCurrentFunboxes } from "../../../src/ts/test/funbox/funbox-validation";
 
 import * as Notifications from "../../../src/ts/elements/notifications";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 describe("funbox-validation", () => {
   describe("canSetConfigWithCurrentFunboxes", () => {
     const addNotificationMock = vi.spyOn(Notifications, "add");
@@ -60,7 +61,7 @@ describe("funbox-validation", () => {
       `check $funbox with $key=$value`,
       ({ key, value, funbox, error }) => {
         expect(
-          canSetConfigWithCurrentFunboxes(key, value, funbox.join("#"))
+          canSetConfigWithCurrentFunboxes(key, value, funbox as FunboxName[])
         ).toBe(error === undefined);
 
         if (error !== undefined) {

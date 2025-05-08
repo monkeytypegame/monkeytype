@@ -70,8 +70,8 @@ function fillData(): void {
   if (r.punctuation) tt += "<br>punctuation";
   if (r.blindMode) tt += "<br>blind";
   if (r.lazyMode) tt += "<br>lazy";
-  if (r.funbox !== "none") {
-    tt += "<br>" + r.funbox.replace(/_/g, " ").replace(/#/g, ", ");
+  if (r.funbox.length > 0) {
+    tt += "<br>" + r.funbox.map((it) => it.replace(/_/g, " ")).join(",");
   }
   if (r.difficulty !== "normal") tt += "<br>" + r.difficulty;
   if (r.tags.length > 0) tt += "<br>" + r.tags.length + " tags";
@@ -116,11 +116,11 @@ const modal = new AnimatedModal({
   setup: async (modalEl): Promise<void> => {
     modalEl
       .querySelector("button.save")
-      ?.addEventListener("click", async (e) => {
+      ?.addEventListener("click", async () => {
         void syncNotSignedInLastResult(Auth?.currentUser?.uid as string);
         hide();
       });
-    modalEl.querySelector("button.discard")?.addEventListener("click", (e) => {
+    modalEl.querySelector("button.discard")?.addEventListener("click", () => {
       TestLogic.clearNotSignedInResult();
       Notifications.add("Last test result discarded", 0);
       hide();

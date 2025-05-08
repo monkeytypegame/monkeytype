@@ -62,7 +62,7 @@ export function lastElementFromArray<T>(array: T[]): T | undefined {
  * @param b The second array.
  * @returns True if the arrays are equal, false otherwise.
  */
-export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
+export function areUnsortedArraysEqual<T>(a: T[], b: T[]): boolean {
   return a.length === b.length && a.every((v) => b.includes(v));
 }
 
@@ -72,7 +72,7 @@ export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
  * @param b The second array.
  * @returns True if the arrays are equal, false otherwise.
  */
-export function areSortedArraysEqual(a: unknown[], b: unknown[]): boolean {
+export function areSortedArraysEqual<T>(a: T[], b: T[]): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 

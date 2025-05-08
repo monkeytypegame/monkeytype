@@ -357,6 +357,11 @@ function apply(): void {
 
   const text = cleanUpText();
 
+  if (text.length === 0) {
+    Notifications.add("Text cannot be empty", 0);
+    return;
+  }
+
   if (state.customTextMode === "simple") {
     CustomText.setMode("repeat");
     state.customTextLimits.word = `${text.length}`;

@@ -32,7 +32,11 @@ export const RedisXpLeaderboardEntrySchema = z.object({
   lastActivityTimestamp: z.number().int().nonnegative(),
   timeTypedSeconds: z.number().nonnegative(),
   // optionals
-  discordId: z.string().optional(),
+  // discordId: z.string().optional(),
+  discordId: z //todo remove once weekly leaderboards reset twice and remove null values
+    .string()
+    .optional()
+    .or(z.null().transform((_val) => undefined)),
   discordAvatar: z.string().optional(),
   badgeId: z.number().int().optional(),
   isPremium: z.boolean().optional(),

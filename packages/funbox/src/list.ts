@@ -1,4 +1,5 @@
-import { FunboxMetadata, FunboxName } from "./types";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxMetadata } from "./types";
 
 const list: Record<FunboxName, FunboxMetadata> = {
   "58008": {
@@ -467,6 +468,7 @@ export function getFunbox(names: FunboxName[]): FunboxMetadata[];
 export function getFunbox(
   nameOrNames: FunboxName | FunboxName[]
 ): FunboxMetadata | FunboxMetadata[] {
+  if (nameOrNames === undefined) return [];
   if (Array.isArray(nameOrNames)) {
     const out = nameOrNames.map((name) => getObject()[name]);
 
@@ -499,6 +501,6 @@ export function getList(): FunboxMetadata[] {
   return out;
 }
 
-function getFunboxNames(): FunboxName[] {
+export function getFunboxNames(): FunboxName[] {
   return Object.keys(list) as FunboxName[];
 }

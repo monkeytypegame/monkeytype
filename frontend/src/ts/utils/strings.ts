@@ -1,3 +1,5 @@
+import { Language } from "@monkeytype/contracts/schemas/languages";
+
 /**
  * Removes accents from a string.
  * https://ricardometring.com/javascript-replace-special-characters
@@ -101,7 +103,7 @@ export function splitByAndKeep(text: string, delimiters: string[]): string[] {
  * @returns A display string for the language.
  */
 export function getLanguageDisplayString(
-  language: string,
+  language: Language,
   noSizeString = false
 ): string {
   let out = "";
@@ -118,8 +120,8 @@ export function getLanguageDisplayString(
  * @param language The language string.
  * @returns The language string with the size indicator removed.
  */
-export function removeLanguageSize(language: string): string {
-  return language.replace(/_\d*k$/g, "");
+export function removeLanguageSize(language: Language): Language {
+  return language.replace(/_\d*k$/g, "") as Language;
 }
 
 /**

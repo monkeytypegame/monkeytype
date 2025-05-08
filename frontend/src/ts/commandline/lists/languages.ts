@@ -1,4 +1,5 @@
 import * as UpdateConfig from "../../config";
+import { LanguageList } from "../../constants/languages";
 import {
   capitalizeFirstLetterOfEachWord,
   getLanguageDisplayString,
@@ -8,12 +9,14 @@ import { Command, CommandsSubgroup } from "../types";
 const subgroup: CommandsSubgroup = {
   title: "Language...",
   configKey: "language",
-  list: [
-    {
-      id: "couldnotload",
-      display: "Could not load the languages list :(",
+  list: LanguageList.map((language) => ({
+    id: "changeLanguage" + capitalizeFirstLetterOfEachWord(language),
+    display: getLanguageDisplayString(language),
+    configValue: language,
+    exec: (): void => {
+      UpdateConfig.setLanguage(language);
     },
-  ],
+  })),
 };
 
 const commands: Command[] = [
@@ -25,19 +28,4 @@ const commands: Command[] = [
   },
 ];
 
-function update(languages: string[]): void {
-  subgroup.list = [];
-  languages.forEach((language) => {
-    subgroup.list.push({
-      id: "changeLanguage" + capitalizeFirstLetterOfEachWord(language),
-      display: getLanguageDisplayString(language),
-      configValue: language,
-      exec: (): void => {
-        UpdateConfig.setLanguage(language);
-      },
-    });
-  });
-}
-
 export default commands;
-export { update };

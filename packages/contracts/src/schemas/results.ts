@@ -6,8 +6,8 @@ import {
   PercentageSchema,
   token,
   WpmSchema,
-  LanguageSchema,
 } from "./util";
+import { LanguageSchema } from "./languages";
 import { Mode, Mode2, Mode2Schema, ModeSchema } from "./shared";
 import { DifficultySchema, FunboxSchema } from "./configs";
 

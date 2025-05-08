@@ -6,6 +6,14 @@ import * as Loader from "../elements/loader";
 import { z } from "zod";
 
 export function show(): void {
+  if (!CaptchaController.isCaptchaAvailable()) {
+    Notifications.add(
+      "Could not show forgot password popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
+      -1
+    );
+    return;
+  }
+
   void modal.show({
     mode: "dialog",
     focusFirstInput: true,

@@ -68,14 +68,16 @@ describe("local-storage-with-schema.ts", () => {
       expect(res).toEqual(defaultObject);
     });
 
-    it("should revert to the fallback value and remove if localstorage json is malformed", () => {
+    it("should revert to the fallback value if localstorage json is malformed", () => {
       getItemMock.mockReturnValue("badjson");
 
       const res = ls.get();
 
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
-      expect(localStorage.removeItem).toHaveBeenCalledWith("config");
-      expect(localStorage.setItem).not.toHaveBeenCalled();
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "config",
+        JSON.stringify(defaultObject)
+      );
       expect(res).toEqual(defaultObject);
     });
 
@@ -132,8 +134,7 @@ describe("local-storage-with-schema.ts", () => {
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
       expect(migrateFnMock).toHaveBeenCalledWith(
         existingValue,
-        expect.any(Array),
-        defaultObject
+        expect.any(Array)
       );
       expect(localStorage.setItem).toHaveBeenCalledWith(
         "config",
@@ -167,8 +168,7 @@ describe("local-storage-with-schema.ts", () => {
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
       expect(migrateFnMock).toHaveBeenCalledWith(
         existingValue,
-        expect.any(Array),
-        defaultObject
+        expect.any(Array)
       );
       expect(localStorage.setItem).toHaveBeenCalledWith(
         "config",

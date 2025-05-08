@@ -381,7 +381,6 @@ const profanities = [
   "kuksuger",
   "kurac",
   "kurwa",
-  "kusi",
   "kyrpa",
   "lesbo",
   "mamhoon",

@@ -1,5 +1,6 @@
 import { literal, z } from "zod";
 import { StringNumberSchema } from "./util";
+import { LanguageSchema } from "./languages";
 
 //used by config and shared
 export const DifficultySchema = z.enum(["normal", "expert", "master"]);
@@ -11,10 +12,7 @@ export const PersonalBestSchema = z.object({
   consistency: z.number().nonnegative().max(100),
   difficulty: DifficultySchema,
   lazyMode: z.boolean().optional(),
-  language: z
-    .string()
-    .max(100)
-    .regex(/[\w+]+/),
+  language: LanguageSchema,
   punctuation: z.boolean().optional(),
   numbers: z.boolean().optional(),
   raw: z.number().nonnegative(),

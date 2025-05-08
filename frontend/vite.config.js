@@ -4,6 +4,7 @@ import autoprefixer from "autoprefixer";
 import "dotenv/config";
 import PROD_CONFIG from "./vite.config.prod";
 import DEV_CONFIG from "./vite.config.dev";
+import MagicString from "magic-string";
 
 /** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
@@ -14,15 +15,19 @@ const BASE_CONFIG = {
         if (id.endsWith(".ts")) {
           //check if file has a jQuery or $() call
           if (/(?:jQuery|\$)\([^)]*\)/.test(src)) {
+            const s = new MagicString(src);
+
             //if file has "use strict"; at the top, add it below that line, if not, add it at the very top
             if (src.startsWith(`"use strict";`)) {
-              return src.replace(
-                /("use strict";)/,
-                `$1import $ from "jquery";`
-              );
+              s.appendRight(12, `\nimport $ from "jquery";`);
             } else {
-              return `import $ from "jquery";${src}`;
+              s.prepend(`import $ from "jquery";`);
             }
+
+            return {
+              code: s.toString(),
+              map: s.generateMap({ hires: true, source: id }),
+            };
           }
         }
       },

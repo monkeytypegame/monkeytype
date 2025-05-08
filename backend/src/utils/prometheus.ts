@@ -130,7 +130,7 @@ export function incrementResult(res: CompletedEvent, isPb?: boolean): void {
   });
 
   resultFunbox.inc({
-    funbox: funbox || "none",
+    funbox: (funbox ?? ["none"]).join("#"),
   });
 
   resultWpm.observe(

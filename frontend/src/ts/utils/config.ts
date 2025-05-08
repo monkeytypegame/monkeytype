@@ -2,6 +2,7 @@ import {
   Config,
   ConfigValue,
   PartialConfig,
+  FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
 import { typedKeys } from "./misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
@@ -13,6 +14,8 @@ import { getDefaultConfig } from "../constants/default-config";
  * @returns
  */
 export function migrateConfig(config: PartialConfig | object): Config {
+  //todo this assumes config is matching all schemas
+  //i think we should go through each value and validate
   return mergeWithDefaultConfig(replaceLegacyValues(config));
 }
 
@@ -110,6 +113,22 @@ export function replaceLegacyValues(
 
   if (typeof configObj.soundVolume === "string") {
     configObj.soundVolume = parseFloat(configObj.soundVolume);
+  }
+
+  if (typeof configObj.funbox === "string") {
+    if (configObj.funbox === "none") {
+      configObj.funbox = [];
+    } else {
+      configObj.funbox = (configObj.funbox as string).split(
+        "#"
+      ) as FunboxName[];
+    }
+  }
+
+  if (typeof configObj.customLayoutfluid === "string") {
+    configObj.customLayoutfluid = (configObj.customLayoutfluid as string).split(
+      "#"
+    ) as ConfigSchemas.CustomLayoutFluid;
   }
 
   return configObj;

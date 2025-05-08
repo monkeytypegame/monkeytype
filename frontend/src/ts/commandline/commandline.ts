@@ -388,11 +388,7 @@ async function showCommands(): Promise<void> {
     } else if (configKey !== undefined) {
       let isActive;
 
-      if (command.configValueMode === "funbox") {
-        isActive = (Config[configKey] as string)
-          .split("#")
-          .includes(command.configValue as string);
-      } else if (command.configValueMode === "include") {
+      if (command.configValueMode === "include") {
         isActive = (
           Config[configKey] as (
             | string
@@ -741,7 +737,7 @@ const modal = new AnimatedModal({
       }
     });
 
-    modalEl.addEventListener("mousemove", (e) => {
+    modalEl.addEventListener("mousemove", (_e) => {
       mouseMode = true;
     });
   },

@@ -32,8 +32,8 @@ export async function getCharFromEvent(
 
     return altVersion || nonAltVersion || defaultVersion;
   }
-  let layout;
 
+  let layout;
   try {
     layout = await JSONData.getLayout(Config.layout);
   } catch (e) {

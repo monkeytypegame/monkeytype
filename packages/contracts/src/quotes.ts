@@ -15,7 +15,8 @@ import {
   QuoteReportReasonSchema,
   QuoteSchema,
 } from "./schemas/quotes";
-import { IdSchema, LanguageSchema, NullableStringSchema } from "./schemas/util";
+import { IdSchema, NullableStringSchema } from "./schemas/util";
+import { LanguageSchema } from "./schemas/languages";
 
 export const GetQuotesResponseSchema = responseWithData(z.array(QuoteSchema));
 export type GetQuotesResponse = z.infer<typeof GetQuotesResponseSchema>;

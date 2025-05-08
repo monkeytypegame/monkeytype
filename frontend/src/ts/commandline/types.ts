@@ -25,7 +25,7 @@ export type Command = {
   defaultValue?: () => string;
   configKey?: keyof Config;
   configValue?: string | number | boolean | number[];
-  configValueMode?: "include" | "funbox";
+  configValueMode?: "include";
   exec?: (options: CommandExecOptions) => void;
   hover?: () => void;
   available?: () => boolean;

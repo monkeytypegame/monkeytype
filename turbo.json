@@ -32,7 +32,7 @@
     },
     "@monkeytype/frontend#build": {
       "dependsOn": ["^build"],
-      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY"],
+      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY", "SENTRY"],
       "outputs": ["dist/**"]
     },
     "@monkeytype/frontend#dev": {

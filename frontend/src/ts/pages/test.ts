@@ -14,13 +14,15 @@ export const page = new Page({
   element: $(".page.pageTest"),
   path: "/",
   beforeHide: async (): Promise<void> => {
-    ManualRestart.set();
-    TestLogic.restart();
-    void Funbox.clear();
-    void ModesNotice.update();
     $("#wordsInput").trigger("focusout");
   },
   afterHide: async (): Promise<void> => {
+    ManualRestart.set();
+    TestLogic.restart({
+      noAnim: true,
+    });
+    void Funbox.clear();
+    void ModesNotice.update();
     updateFooterAndVerticalAds(true);
   },
   beforeShow: async (): Promise<void> => {

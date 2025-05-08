@@ -1,5 +1,6 @@
 import { z, ZodEffects, ZodOptional, ZodString } from "zod";
-import { IdSchema, LanguageSchema, StringNumberSchema } from "./util";
+import { IdSchema, StringNumberSchema } from "./util";
+import { LanguageSchema } from "./languages";
 import {
   ModeSchema,
   Mode2Schema,

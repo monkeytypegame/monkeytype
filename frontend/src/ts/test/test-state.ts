@@ -8,6 +8,7 @@ export let savingEnabled = true;
 export let bailedOut = false;
 export let selectedQuoteId = 1;
 export let activeWordIndex = 0;
+export let testInitSuccess = true;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -47,4 +48,8 @@ export function increaseActiveWordIndex(): void {
 
 export function decreaseActiveWordIndex(): void {
   activeWordIndex--;
+}
+
+export function setTestInitSuccess(tf: boolean): void {
+  testInitSuccess = tf;
 }

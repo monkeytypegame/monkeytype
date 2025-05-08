@@ -7,6 +7,7 @@ import {
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import { CustomTextDataWithTextLen } from "@monkeytype/contracts/schemas/results";
+import { deepClone } from "../utils/misc";
 
 const CustomTextObjectSchema = z.record(z.string(), z.string());
 type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
@@ -30,7 +31,7 @@ const customTextLongLS = new LocalStorageWithSchema({
 });
 
 export const CustomTextSettingsSchema = z.object({
-  text: z.array(z.string()),
+  text: z.array(z.string()).min(1),
   mode: CustomTextModeSchema,
   limit: z.object({ value: z.number(), mode: CustomTextLimitModeSchema }),
   pipeDelimiter: z.boolean(),
@@ -51,7 +52,9 @@ const customTextSettings = new LocalStorageWithSchema({
   key: "customTextSettings",
   schema: CustomTextSettingsSchema,
   fallback: defaultCustomTextSettings,
-  migrate: (oldData, _zodIssues, fallback) => {
+  migrate: (oldData, _zodIssues) => {
+    const fallback = deepClone(defaultCustomTextSettings);
+
     if (typeof oldData !== "object" || oldData === null) {
       return fallback;
     }
@@ -60,7 +63,7 @@ const customTextSettings = new LocalStorageWithSchema({
       "text" in oldData &&
       z.array(z.string()).safeParse(migratedData.text).success
     ) {
-      migratedData.text = oldData.text as string[];
+      migratedData.text = oldData["text"] as string[];
     }
     return migratedData;
   },

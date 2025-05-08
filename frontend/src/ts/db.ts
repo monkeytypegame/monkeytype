@@ -30,6 +30,7 @@ import {
 import { getDefaultConfig } from "./constants/default-config";
 import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -71,7 +72,7 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
   }
 }
 
-export async function initSnapshot(): Promise<Snapshot | number | boolean> {
+export async function initSnapshot(): Promise<Snapshot | false> {
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = getDefaultSnapshot();
   try {
@@ -307,7 +308,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     if (result.blindMode === undefined) result.blindMode = false;
     if (result.lazyMode === undefined) result.lazyMode = false;
     if (result.difficulty === undefined) result.difficulty = "normal";
-    if (result.funbox === undefined) result.funbox = "none";
+    if (result.funbox === undefined) result.funbox = [];
     if (result.language === undefined || result.language === null) {
       result.language = "english";
     }
@@ -659,7 +660,7 @@ export async function saveLocalPB<M extends Mode>(
   mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
-  language: string,
+  language: Language,
   difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
@@ -788,7 +789,7 @@ export async function saveLocalTagPB<M extends Mode>(
   mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
-  language: string,
+  language: Language,
   difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
@@ -893,7 +894,7 @@ export async function saveLocalTagPB<M extends Mode>(
 export async function updateLbMemory<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
-  language: string,
+  language: Language,
   rank: number,
   api = false
 ): Promise<void> {

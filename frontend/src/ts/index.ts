@@ -45,6 +45,7 @@ import { isDevEnvironment } from "./utils/misc";
 import * as VersionButton from "./elements/version-button";
 import * as Focus from "./test/focus";
 import { getDevOptionsModal } from "./utils/async-modules";
+import * as Sentry from "./sentry";
 
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {
@@ -56,6 +57,7 @@ function addToGlobal(items: Record<string, unknown>): void {
 void loadFromLocalStorage();
 void VersionButton.update();
 Focus.set(true, true);
+Sentry.init();
 
 addToGlobal({
   snapshot: DB.getSnapshot,
@@ -69,6 +71,7 @@ addToGlobal({
   toggleUnsmoothedRaw: Result.toggleUnsmoothedRaw,
   egVideoListener: egVideoListener,
   toggleDebugLogs: Logger.toggleDebugLogs,
+  toggleSentryDebug: Sentry.toggleDebug,
 });
 
 if (isDevEnvironment()) {
