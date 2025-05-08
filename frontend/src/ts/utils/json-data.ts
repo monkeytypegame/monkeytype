@@ -1,6 +1,7 @@
+import { Language } from "@monkeytype/contracts/schemas/languages";
 import { Accents } from "../test/lazy-mode";
 import { Charset } from "./charsetRange";
-import { hexToHSL } from "./colors";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 
 /**
  * Fetches JSON data from the specified URL using the fetch API.
