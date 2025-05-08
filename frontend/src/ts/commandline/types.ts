@@ -33,7 +33,6 @@ export type Command = {
   shouldFocusTestUI?: boolean;
   customData?: Record<string, string | boolean>;
   html?: string;
-  customHandler?: (e: MouseEvent, command: Command) => boolean;
 };
 
 export type CommandsSubgroup = {
