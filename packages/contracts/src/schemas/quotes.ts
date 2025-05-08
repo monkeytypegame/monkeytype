@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { IdSchema, LanguageSchema } from "./util";
+import { IdSchema } from "./util";
+import { LanguageSchema } from "./languages";
 
 export const QuoteIdSchema = z
   .number()
@@ -9,7 +10,7 @@ export const QuoteIdSchema = z
 export type QuoteId = z.infer<typeof QuoteIdSchema>;
 
 export const ApproveQuoteSchema = z.object({
-  id: QuoteIdSchema.optional(),
+  id: QuoteIdSchema,
   text: z.string(),
   source: z.string(),
   length: z.number().int().positive(),

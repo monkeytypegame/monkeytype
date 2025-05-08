@@ -85,9 +85,7 @@ import LoadChallengeCommands, {
 import FontFamilyCommands, {
   update as updateFontFamilyCommands,
 } from "./lists/font-family";
-import LanguagesCommands, {
-  update as updateLanguagesCommands,
-} from "./lists/languages";
+import LanguagesCommands from "./lists/languages";
 import KeymapLayoutsCommands from "./lists/keymap-layouts";
 
 import Config, * as UpdateConfig from "../config";
@@ -95,33 +93,20 @@ import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import * as CustomTextPopup from "../modals/custom-text";
-import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
-import { migrateConfig } from "../utils/config";
 import {
   CustomBackgroundSchema,
-  PartialConfigSchema,
+  CustomLayoutFluid,
 } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";
-
-const languagesPromise = JSONData.getLanguageList();
-languagesPromise
-  .then((languages) => {
-    updateLanguagesCommands(languages);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update language commands")
-    );
-  });
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 const fontsPromise = JSONData.getFontsList();
 fontsPromise
@@ -131,17 +116,6 @@ fontsPromise
   .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update fonts commands")
-    );
-  });
-
-const themesPromise = JSONData.getThemesList();
-themesPromise
-  .then((themes) => {
-    updateThemesCommands(themes);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update themes commands")
     );
   });
 
@@ -220,13 +194,15 @@ export const commands: CommandsSubgroup = {
       id: "changeCustomLayoutfluid",
       display: "Custom layoutfluid...",
       defaultValue: (): string => {
-        return Config.customLayoutfluid;
+        return Config.customLayoutfluid.join(" ");
       },
       input: true,
       icon: "fa-tint",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(input);
+        UpdateConfig.setCustomLayoutfluid(
+          input.split(" ") as CustomLayoutFluid
+        );
       },
     },
     {
@@ -239,7 +215,7 @@ export const commands: CommandsSubgroup = {
       icon: "fa-language",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        void UpdateConfig.setCustomPolyglot(input.split(" "));
+        void UpdateConfig.setCustomPolyglot(input.split(" ") as Language[]);
         if (ActivePage.get() === "test") {
           TestLogic.restart();
         }
@@ -376,21 +352,7 @@ export const commands: CommandsSubgroup = {
       input: true,
       exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
-        try {
-          const parsedConfig = parseJsonWithSchema(
-            input,
-            PartialConfigSchema.strip()
-          );
-          await UpdateConfig.apply(migrateConfig(parsedConfig));
-          UpdateConfig.saveFullConfigToLocalStorage();
-          void Settings.update();
-          Notifications.add("Done", 1);
-        } catch (e) {
-          Notifications.add(
-            "An error occured while importing settings: " + e,
-            -1
-          );
-        }
+        await UpdateConfig.applyFromJson(input);
       },
     },
     {
@@ -517,12 +479,8 @@ export function doesListExist(listName: string): boolean {
 export async function getList(
   listName: ListsObjectKeys
 ): Promise<CommandsSubgroup> {
-  await Promise.allSettled([
-    languagesPromise,
-    fontsPromise,
-    themesPromise,
-    challengesPromise,
-  ]);
+  await Promise.allSettled([fontsPromise, challengesPromise]);
+
   const list = lists[listName];
   if (!list) {
     Notifications.add(`List not found: ${listName}`, -1);
@@ -563,13 +521,7 @@ export function getTopOfStack(): CommandsSubgroup {
 
 let singleList: CommandsSubgroup | undefined;
 export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
-  await Promise.allSettled([
-    languagesPromise,
-    fontsPromise,
-    themesPromise,
-    challengesPromise,
-  ]);
-
+  await Promise.allSettled([fontsPromise, challengesPromise]);
   const singleCommands: Command[] = [];
   for (const command of commands.list) {
     const ret = buildSingleListCommands(command);

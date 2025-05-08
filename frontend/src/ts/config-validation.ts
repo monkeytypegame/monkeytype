@@ -1,5 +1,6 @@
 import * as Notifications from "./elements/notifications";
 import { ZodSchema, z } from "zod";
+import { captureException } from "./sentry";
 
 // function isConfigKeyValid(name: string): boolean {
 //   if (name === null || name === undefined || name === "") return false;
@@ -12,19 +13,15 @@ export function invalid(
   val: unknown,
   customMessage?: string
 ): void {
-  if (customMessage === undefined) {
-    Notifications.add(
-      `Invalid value for ${key} (${val}). Please try to change this setting again.`,
-      -1
-    );
-  } else {
-    Notifications.add(
-      `Invalid value for ${key} (${val}). ${customMessage}`,
-      -1
-    );
+  let message = `Invalid value for ${key} (${val}). Please try to change this setting again.`;
+
+  if (customMessage !== undefined) {
+    message = `Invalid value for ${key} (${val}). ${customMessage}`;
   }
 
-  console.error(`Invalid value key ${key} value ${val} type ${typeof val}`);
+  Notifications.add(message, -1);
+  console.error(message);
+  captureException(new Error(message));
 }
 
 export function isConfigValueValid<T>(
