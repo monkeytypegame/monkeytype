@@ -467,7 +467,11 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
     el.style.width = activeWord.offsetWidth + "px";
   }
 
-  if (initial && Config.tapeMode === "off") {
+  if (
+    initial &&
+    !shouldUpdateWordsInputPosition() &&
+    Config.tapeMode === "off"
+  ) {
     el.style.top = targetTop + letterHeight + activeWordMargin + 4 + "px";
   } else {
     el.style.top = targetTop + "px";
