@@ -95,10 +95,6 @@ footer {
       transition: 0.125s;
     }
 
-    &:hover .favIcon.active {
-      color: var(--text-color);
-    }
-
     .favIcon.active {
       color: var(--sub-color);
     }
