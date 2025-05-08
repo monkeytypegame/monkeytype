@@ -746,53 +746,6 @@ const modal = new AnimatedModal({
         e.preventDefault();
         await incrementActiveIndex();
       }
-      // accesibility for the star icon
-      if (e.key === "ArrowRight") {
-        // check if cursor is at the end of the input field
-        if (input.selectionStart === input.value.length) {
-          e.preventDefault();
-          // find the active command's star icon
-          const activeCommand = document.querySelector(
-            "#commandLine .suggestions .command.active"
-          );
-          if (activeCommand) {
-            const starIcon = activeCommand.querySelector(".themeFavIcon");
-            if (starIcon) {
-              // focus
-              (starIcon as HTMLElement).tabIndex = 0;
-              (starIcon as HTMLElement).focus();
-              // remove any existing event listeners to prevent duplicates
-              const existingListener = (starIcon as HTMLElement).getAttribute(
-                "data-has-keydown"
-              );
-              if (existingListener !== "true") {
-                // using enter
-                (starIcon as HTMLElement).addEventListener(
-                  "keydown",
-                  (starEvent) => {
-                    if (starEvent.key === "Enter") {
-                      starEvent.preventDefault();
-                      (starIcon as HTMLElement).click();
-                      // return focus to input field after clicking
-                      setTimeout(() => input.focus(), 50);
-                    } else if (
-                      starEvent.key === "Escape" ||
-                      starEvent.key === "ArrowLeft"
-                    ) {
-                      starEvent.preventDefault();
-                      input.focus();
-                    }
-                  }
-                );
-                (starIcon as HTMLElement).setAttribute(
-                  "data-has-keydown",
-                  "true"
-                );
-              }
-            }
-          }
-        }
-      }
       if (e.key === "Tab") {
         e.preventDefault();
         if (e.shiftKey) {
