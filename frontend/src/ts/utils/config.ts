@@ -131,5 +131,10 @@ export function replaceLegacyValues(
     ) as ConfigSchemas.CustomLayoutFluid;
   }
 
+  if (typeof configObj.indicateTypos === "boolean") {
+    configObj.indicateTypos =
+      configObj.indicateTypos === false ? "off" : "replace";
+  }
+
   return configObj;
 }
