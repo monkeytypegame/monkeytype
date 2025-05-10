@@ -80,8 +80,8 @@ describe("config.ts", () => {
         );
       });
     });
-    it("should convert legacy values", () => {
-      const testCases = [
+    describe("should convert legacy values", () => {
+      it.for([
         { given: { quickTab: true }, expected: { quickRestart: "tab" } },
         { given: { smoothCaret: true }, expected: { smoothCaret: "medium" } },
         { given: { smoothCaret: false }, expected: { smoothCaret: "off" } },
@@ -140,18 +140,27 @@ describe("config.ts", () => {
           expected: { liveAccStyle: "mini" },
         },
         { given: { soundVolume: "0.5" }, expected: { soundVolume: 0.5 } },
-      ];
-
-      //WHEN
-      testCases.forEach((test) => {
+        { given: { funbox: "none" }, expected: { funbox: [] } },
+        {
+          given: { funbox: "58008#read_ahead" },
+          expected: { funbox: ["58008", "read_ahead"] },
+        },
+        {
+          given: { customLayoutfluid: "qwerty#qwertz" },
+          expected: { customLayoutfluid: ["qwerty", "qwertz"] },
+        },
+        { given: { indicateTypos: false }, expected: { indicateTypos: "off" } },
+        {
+          given: { indicateTypos: true },
+          expected: { indicateTypos: "replace" },
+        },
+      ])(`$given`, ({ given, expected }) => {
         const description = `given: ${JSON.stringify(
-          test.given
-        )}, expected: ${JSON.stringify(test.expected)} `;
+          given
+        )}, expected: ${JSON.stringify(expected)} `;
 
-        const result = migrateConfig(test.given);
-        expect(result, description).toEqual(
-          expect.objectContaining(test.expected)
-        );
+        const result = migrateConfig(given);
+        expect(result, description).toEqual(expect.objectContaining(expected));
       });
     });
   });
