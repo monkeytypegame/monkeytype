@@ -7,7 +7,7 @@ import {
 import { typedKeys } from "./misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
-
+import { ThemeNameSchema } from "@monkeytype/contracts/schemas/themes";
 /**
  * migrates possible outdated config and merges with the default config values
  * @param config partial or possible outdated config
@@ -16,7 +16,7 @@ import { getDefaultConfig } from "../constants/default-config";
 export function migrateConfig(config: PartialConfig | object): Config {
   //todo this assumes config is matching all schemas
   //i think we should go through each value and validate
-  return mergeWithDefaultConfig(replaceLegacyValues(config));
+  return mergeWithDefaultConfig(sanitizeConfig(replaceLegacyValues(config)));
 }
 
 function mergeWithDefaultConfig(config: PartialConfig): Config {
@@ -30,6 +30,23 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
   return mergedConfig;
 }
 
+const sanitizeConfig = (
+  obj: ConfigSchemas.PartialConfig
+): ConfigSchemas.PartialConfig => {
+  const result = ConfigSchemas.PartialConfigSchema.safeParse(obj);
+
+  if (result.success) {
+    return obj;
+  }
+
+  const errorKeys = new Set(
+    result.error.errors.map((it) => it.path[0] as string)
+  );
+
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key]) => !errorKeys.has(key))
+  );
+};
 export function replaceLegacyValues(
   configObj: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
@@ -134,6 +151,15 @@ export function replaceLegacyValues(
   if (typeof configObj.indicateTypos === "boolean") {
     configObj.indicateTypos =
       configObj.indicateTypos === false ? "off" : "replace";
+  }
+
+  if (
+    configObj.favThemes &&
+    !ConfigSchemas.FavThemesSchema.safeParse(configObj.favThemes).success
+  ) {
+    configObj.favThemes = configObj.favThemes?.filter(
+      (it) => ThemeNameSchema.safeParse(it).success
+    );
   }
 
   return configObj;

@@ -36,8 +36,26 @@ describe("config.ts", () => {
       expect(result.time).toEqual(120);
       expect(result.accountChart).toEqual(["off", "off", "off", "off"]);
     });
-    it("should not convert legacy values if current values are already present", () => {
-      const testCases = [
+    it("should replace value with default config if invalid", () => {
+      const partialConfig = {
+        theme: "invalid" as any,
+        minWpm: "slow" as any,
+        customThemeColors: ["#ffffff"] as any,
+        accountChart: [true, false, false, true] as any,
+        maxLineWidth: 80,
+      } as PartialConfig;
+
+      const result = migrateConfig(partialConfig);
+
+      expect(result.theme).toEqual(getDefaultConfig().theme);
+      expect(result.minWpm).toEqual(getDefaultConfig().minWpm);
+      expect(result.customThemeColors).toEqual(
+        getDefaultConfig().customThemeColors
+      );
+      expect(result.accountChart).toEqual(getDefaultConfig().accountChart);
+    });
+    describe("should not convert legacy values if current values are already present", () => {
+      it.for([
         {
           given: { showLiveAcc: true, timerStyle: "mini", liveAccStyle: "off" },
           expected: { liveAccStyle: "off" },
@@ -66,18 +84,15 @@ describe("config.ts", () => {
           given: { showTimerProgress: true, timerStyle: "mini" },
           expected: { timerStyle: "mini" },
         },
-      ];
+      ])(`$given`, ({ given, expected }) => {
+        //WHEN
 
-      //WHEN
-      testCases.forEach((test) => {
         const description = `given: ${JSON.stringify(
-          test.given
-        )}, expected: ${JSON.stringify(test.expected)} `;
+          given
+        )}, expected: ${JSON.stringify(expected)} `;
 
-        const result = migrateConfig(test.given);
-        expect(result, description).toEqual(
-          expect.objectContaining(test.expected)
-        );
+        const result = migrateConfig(given);
+        expect(result, description).toEqual(expect.objectContaining(expected));
       });
     });
     describe("should convert legacy values", () => {
@@ -153,6 +168,14 @@ describe("config.ts", () => {
         {
           given: { indicateTypos: true },
           expected: { indicateTypos: "replace" },
+        },
+        {
+          given: {
+            favThemes: ["purpurite", "80s_after_dark", "luna", "pulse"],
+          },
+          expected: {
+            favThemes: ["80s_after_dark", "luna", "pulse"],
+          },
         },
       ])(`$given`, ({ given, expected }) => {
         const description = `given: ${JSON.stringify(
