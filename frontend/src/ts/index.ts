@@ -46,6 +46,7 @@ import * as VersionButton from "./elements/version-button";
 import * as Focus from "./test/focus";
 import { getDevOptionsModal } from "./utils/async-modules";
 import * as Sentry from "./sentry";
+import * as Cookies from "./cookies";
 
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {
@@ -57,7 +58,7 @@ function addToGlobal(items: Record<string, unknown>): void {
 void loadFromLocalStorage();
 void VersionButton.update();
 Focus.set(true, true);
-Sentry.init();
+Cookies.check();
 
 addToGlobal({
   snapshot: DB.getSnapshot,
