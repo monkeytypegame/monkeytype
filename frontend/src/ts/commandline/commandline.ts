@@ -243,7 +243,7 @@ async function filterSubgroup(): Promise<void> {
     }
 
     const displaySplit = (
-      usingSingleList
+      usingSingleList && !subgroup.excludeFromSingleList
         ? (command.singleListDisplayNoIcon ?? "") || command.display
         : command.display
     )
@@ -334,7 +334,9 @@ async function getSubgroup(): Promise<CommandsSubgroup> {
     return subgroupOverride;
   }
 
-  if (usingSingleList) {
+  const top = CommandlineLists.getTopOfStack();
+
+  if (usingSingleList && !top.excludeFromSingleList) {
     if (cachedSingleSubgroup === null) {
       cachedSingleSubgroup = await CommandlineLists.getSingleSubgroup();
     } else {
@@ -342,7 +344,7 @@ async function getSubgroup(): Promise<CommandsSubgroup> {
     }
   }
 
-  return CommandlineLists.getTopOfStack();
+  return top;
 }
 
 async function getList(): Promise<Command[]> {
@@ -355,7 +357,10 @@ async function showCommands(): Promise<void> {
     throw new Error("Commandline element not found");
   }
 
-  if (inputValue === "" && usingSingleList) {
+  const top = CommandlineLists.getTopOfStack();
+  const singleListMode = usingSingleList && !top.excludeFromSingleList;
+
+  if (inputValue === "" && singleListMode) {
     element.innerHTML = "";
     return;
   }
@@ -410,7 +415,7 @@ async function showCommands(): Promise<void> {
       }
     }
     const iconHTML = `<div class="icon">${
-      usingSingleList || configIcon === "" ? icon : configIcon
+      singleListMode || configIcon === "" ? icon : configIcon
     }</div>`;
     let customStyle = "";
     if (command.customStyle !== undefined && command.customStyle !== "") {
@@ -418,7 +423,7 @@ async function showCommands(): Promise<void> {
     }
 
     let display = command.display;
-    if (usingSingleList) {
+    if (singleListMode) {
       display = (command.singleListDisplay ?? "") || command.display;
       display = display.replace(
         `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>`,
@@ -455,7 +460,7 @@ async function showCommands(): Promise<void> {
     }
     index++;
   }
-  if (firstActive !== null && !usingSingleList) {
+  if (firstActive !== null && !singleListMode) {
     activeIndex = firstActive;
   }
   element.innerHTML = html;

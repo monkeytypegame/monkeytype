@@ -507,6 +507,9 @@ function buildSingleListCommands(
   command: Command,
   parentCommand?: Command
 ): Command[] {
+  if (command.subgroup?.excludeFromSingleList ?? false)
+    return [parentCommand ?? command];
+
   const commands: Command[] = [];
   if (command.subgroup) {
     if (command.subgroup.beforeList) {

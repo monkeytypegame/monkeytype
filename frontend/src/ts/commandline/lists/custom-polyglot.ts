@@ -8,6 +8,7 @@ import { Command, CommandsSubgroup } from "../types";
 const subgroup: CommandsSubgroup = {
   title: "Polyglot languages",
   configKey: "customPolyglot",
+  excludeFromSingleList: true,
   list: LanguageList.map((language) => ({
     id: "changeCustomPolyglot" + capitalizeFirstLetterOfEachWord(language),
     display: language.replace(/_/g, " "),

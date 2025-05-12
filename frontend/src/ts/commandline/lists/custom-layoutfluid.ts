@@ -7,6 +7,8 @@ import { Command, CommandsSubgroup } from "../types";
 const subgroup: CommandsSubgroup = {
   title: "Custom layoutfluid",
   configKey: "customLayoutfluid",
+  excludeFromSingleList: true,
+
   list: LayoutsList.map((layout) => ({
     id: "changeCustomLayoutfluid" + capitalizeFirstLetterOfEachWord(layout),
     display: layout.replace(/_/g, " "),
@@ -24,6 +26,7 @@ const commands: Command[] = [
   {
     id: "changeCustomLayoutfluid",
     display: "Custom layoutfluid...",
+    configKey: "customLayoutfluid",
     icon: "fa-tint",
     subgroup,
   },
