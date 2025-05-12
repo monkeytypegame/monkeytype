@@ -39,4 +39,5 @@ export type CommandsSubgroup = {
   configKey?: keyof Config;
   list: Command[];
   beforeList?: () => void;
+  excludeFromSingleList?: boolean;
 };
