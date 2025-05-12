@@ -33,6 +33,7 @@ import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -1888,6 +1889,21 @@ export function setCustomLayoutfluid(
   return true;
 }
 
+export function toggleCustomLayoutfluid(
+  value: LayoutName,
+  nosave?: boolean
+): boolean {
+  let newConfig = config.customLayoutfluid;
+
+  if (newConfig.includes(value)) {
+    newConfig = newConfig.filter((it) => it !== value);
+  } else {
+    newConfig.push(value);
+  }
+
+  return setCustomLayoutfluid(newConfig, nosave);
+}
+
 export function setCustomPolyglot(
   value: ConfigSchemas.CustomPolyglot,
   nosave?: boolean
@@ -1906,6 +1922,22 @@ export function setCustomPolyglot(
   ConfigEvent.dispatch("customPolyglot", config.customPolyglot);
 
   return true;
+}
+
+export function toggleCustomPolyglot(
+  value: Language,
+  nosave?: boolean
+): boolean {
+  let newConfig = config.customPolyglot;
+
+  if (newConfig.includes(value)) {
+    newConfig = newConfig.filter((it) => it !== value);
+  } else {
+    newConfig.push(value);
+    newConfig.sort();
+  }
+
+  return setCustomPolyglot(newConfig, nosave);
 }
 
 export function setCustomBackgroundSize(

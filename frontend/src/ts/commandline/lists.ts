@@ -77,6 +77,8 @@ import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
 import LayoutsCommands from "./lists/layouts";
 import FunboxCommands from "./lists/funbox";
+import CustomLayoutFluidCommands from "./lists/custom-layoutfluid";
+import CustomPolyglotCommands from "./lists/custom-polyglot";
 import ThemesCommands from "./lists/themes";
 import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
@@ -98,14 +100,8 @@ import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
-import {
-  CustomBackgroundSchema,
-  CustomLayoutFluid,
-} from "@monkeytype/contracts/schemas/configs";
+import { CustomBackgroundSchema } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
-import * as TestLogic from "../test/test-logic";
-import * as ActivePage from "../states/active-page";
-import { Language } from "@monkeytype/contracts/schemas/languages";
 
 const fontsPromise = JSONData.getFontsList();
 fontsPromise
@@ -189,37 +185,8 @@ export const commands: CommandsSubgroup = {
     ...LanguagesCommands,
     ...BritishEnglishCommands,
     ...FunboxCommands,
-    {
-      id: "changeCustomLayoutfluid",
-      display: "Custom layoutfluid...",
-      defaultValue: (): string => {
-        return Config.customLayoutfluid.join(" ");
-      },
-      input: true,
-      icon: "fa-tint",
-      exec: ({ input }): void => {
-        if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(
-          input.split(" ") as CustomLayoutFluid
-        );
-      },
-    },
-    {
-      id: "changeCustomPolyglot",
-      display: "Polyglot languages...",
-      defaultValue: (): string => {
-        return Config.customPolyglot.join(" ");
-      },
-      input: true,
-      icon: "fa-language",
-      exec: ({ input }): void => {
-        if (input === undefined) return;
-        void UpdateConfig.setCustomPolyglot(input.split(" ") as Language[]);
-        if (ActivePage.get() === "test") {
-          TestLogic.restart();
-        }
-      },
-    },
+    ...CustomLayoutFluidCommands,
+    ...CustomPolyglotCommands,
 
     //input
     ...FreedomModeCommands,
@@ -462,6 +429,8 @@ const lists = {
   minAcc: MinAccCommands[0]?.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
   funbox: FunboxCommands[0]?.subgroup,
+  customLayoutfluid: CustomLayoutFluidCommands[0]?.subgroup,
+  customPolyglot: CustomPolyglotCommands[0]?.subgroup,
   confidenceMode: ConfidenceModeCommands[0]?.subgroup,
   stopOnError: StopOnErrorCommands[0]?.subgroup,
   layouts: LayoutsCommands[0]?.subgroup,
