@@ -2011,4 +2011,23 @@ describe("UserDal", () => {
       });
     });
   });
+
+  describe("clearStreakHourOffset", () => {
+    it("should clear streak hour offset", async () => {
+      // given
+      const { uid } = await UserTestData.createUser({
+        //@ts-expect-error
+        streak: {
+          hourOffset: 1,
+        },
+      });
+
+      // when
+      await UserDAL.clearStreakHourOffset(uid);
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.streak?.hourOffset).toBeUndefined();
+    });
+  });
 });
