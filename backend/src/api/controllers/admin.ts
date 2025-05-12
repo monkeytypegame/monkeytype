@@ -6,6 +6,7 @@ import GeorgeQueue from "../../queues/george-queue";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 import {
   AcceptReportsRequest,
+  ClearStreakHourOffsetRequest,
   RejectReportsRequest,
   SendForgotPasswordEmailRequest,
   ToggleBanRequest,
@@ -40,6 +41,17 @@ export async function toggleBan(
   return new MonkeyResponse(`Ban toggled`, {
     banned: !user.banned,
   });
+}
+
+export async function clearStreakHourOffset(
+  req: MonkeyRequest<undefined, ClearStreakHourOffsetRequest>
+): Promise<MonkeyResponse> {
+  const { uid } = req.body;
+
+  await UserDAL.clearStreakHourOffset(uid);
+  void addImportantLog("admin_streak_hour_offset_cleared_by", {}, uid);
+
+  return new MonkeyResponse("Streak hour offset cleared", null);
 }
 
 export async function acceptReports(
