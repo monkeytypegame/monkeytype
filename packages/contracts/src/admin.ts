@@ -15,6 +15,15 @@ export const ToggleBanRequestSchema = z
   .strict();
 export type ToggleBanRequest = z.infer<typeof ToggleBanRequestSchema>;
 
+export const ClearStreakHourOffsetRequestSchema = z
+  .object({
+    uid: IdSchema,
+  })
+  .strict();
+export type ClearStreakHourOffsetRequest = z.infer<
+  typeof ClearStreakHourOffsetRequestSchema
+>;
+
 export const ToggleBanResponseSchema = responseWithData(
   z.object({
     banned: z.boolean(),
@@ -71,6 +80,16 @@ export const adminContract = c.router(
       body: ToggleBanRequestSchema,
       responses: {
         200: ToggleBanResponseSchema,
+      },
+    },
+    clearStreakHourOffset: {
+      summary: "clear streak hour offset",
+      description: "Clear the streak hour offset for a user",
+      method: "POST",
+      path: "/clearStreakHourOffset",
+      body: ClearStreakHourOffsetRequestSchema,
+      responses: {
+        200: MonkeyResponseSchema,
       },
     },
     acceptReports: {
