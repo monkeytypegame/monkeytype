@@ -29,6 +29,7 @@ import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
 import "./modals/simple-modals";
+import * as CookiesModal from "./modals/cookies";
 import "./controllers/input-controller";
 import "./ready";
 import "./controllers/route-controller";
@@ -58,7 +59,13 @@ function addToGlobal(items: Record<string, unknown>): void {
 void loadFromLocalStorage();
 void VersionButton.update();
 Focus.set(true, true);
-Cookies.check();
+
+const accepted = Cookies.getAcceptedCookies();
+if (accepted === null) {
+  CookiesModal.show();
+} else {
+  Cookies.activateWhatsAccepted();
+}
 
 addToGlobal({
   snapshot: DB.getSnapshot,

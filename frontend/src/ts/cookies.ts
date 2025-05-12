@@ -2,7 +2,6 @@ import { z } from "zod";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { activateAnalytics } from "./controllers/analytics-controller";
 import { activateSentry } from "./sentry";
-import * as CookiesModal from "./modals/cookies";
 
 const AcceptedCookiesSchema = z
   .object({
@@ -32,16 +31,7 @@ const cookies = new LocalStorageWithSchema({
   // no migration here, if cookies changed, we need to ask the user again
 });
 
-export function check(): void {
-  const accepted = getAcceptedCookies();
-  if (accepted === null) {
-    CookiesModal.show();
-  } else {
-    activateWhatsAccepted();
-  }
-}
-
-function activateWhatsAccepted(): void {
+export function activateWhatsAccepted(): void {
   const accepted = getAcceptedCookies();
   if (accepted?.analytics) {
     activateAnalytics();
