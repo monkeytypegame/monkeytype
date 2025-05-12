@@ -2,6 +2,8 @@ import { getDefaultConfig } from "../../src/ts/constants/default-config";
 import { migrateConfig } from "../../src/ts/utils/config";
 import { PartialConfig } from "@monkeytype/contracts/schemas/configs";
 
+const defaultConfig = getDefaultConfig();
+
 describe("config.ts", () => {
   describe("migrateConfig", () => {
     it("should carry over properties from the default config", () => {
@@ -36,23 +38,37 @@ describe("config.ts", () => {
       expect(result.time).toEqual(120);
       expect(result.accountChart).toEqual(["off", "off", "off", "off"]);
     });
-    it("should replace value with default config if invalid", () => {
-      const partialConfig = {
-        theme: "invalid" as any,
-        minWpm: "slow" as any,
-        customThemeColors: ["#ffffff"] as any,
-        accountChart: [true, false, false, true] as any,
-        maxLineWidth: 80,
-      } as PartialConfig;
-
-      const result = migrateConfig(partialConfig);
-
-      expect(result.theme).toEqual(getDefaultConfig().theme);
-      expect(result.minWpm).toEqual(getDefaultConfig().minWpm);
-      expect(result.customThemeColors).toEqual(
-        getDefaultConfig().customThemeColors
-      );
-      expect(result.accountChart).toEqual(getDefaultConfig().accountChart);
+    describe("should replace value with default config if invalid", () => {
+      it.for([
+        {
+          given: { theme: "invalid" },
+          expected: { theme: defaultConfig.theme },
+        },
+        {
+          given: { minWpm: "invalid" },
+          expected: { minWpm: defaultConfig.minWpm },
+        },
+        {
+          given: { customThemeColors: ["#ffffff"] },
+          expected: { customThemeColors: defaultConfig.customThemeColors },
+        },
+        {
+          given: { accountChart: [true, false, false, true] },
+          expected: { accountChart: defaultConfig.accountChart },
+        },
+        {
+          given: {
+            favThemes: ["nord", "invalid", "serika_dark", "invalid2", "8008"],
+          },
+          expected: { favThemes: ["nord", "serika_dark", "8008"] },
+        },
+      ])(`$given`, ({ given, expected }) => {
+        const description = `given: ${JSON.stringify(
+          given
+        )}, expected: ${JSON.stringify(expected)} `;
+        const result = migrateConfig(given);
+        expect(result, description).toEqual(expect.objectContaining(expected));
+      });
     });
     describe("should not convert legacy values if current values are already present", () => {
       it.for([

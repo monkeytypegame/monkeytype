@@ -7,15 +7,12 @@ import {
 import { typedKeys } from "./misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
-import { ThemeNameSchema } from "@monkeytype/contracts/schemas/themes";
 /**
  * migrates possible outdated config and merges with the default config values
  * @param config partial or possible outdated config
  * @returns
  */
 export function migrateConfig(config: PartialConfig | object): Config {
-  //todo this assumes config is matching all schemas
-  //i think we should go through each value and validate
   return mergeWithDefaultConfig(sanitizeConfig(replaceLegacyValues(config)));
 }
 
@@ -30,23 +27,46 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
   return mergedConfig;
 }
 
-const sanitizeConfig = (
-  obj: ConfigSchemas.PartialConfig
-): ConfigSchemas.PartialConfig => {
-  const result = ConfigSchemas.PartialConfigSchema.safeParse(obj);
+/**
+ * remove all values from the config which are not valid
+ */
+function sanitizeConfig(
+  config: ConfigSchemas.PartialConfig
+): ConfigSchemas.PartialConfig {
+  const validate = ConfigSchemas.PartialConfigSchema.safeParse(config);
 
-  if (result.success) {
-    return obj;
+  if (validate.success) {
+    return config;
   }
 
-  const errorKeys = new Set(
-    result.error.errors.map((it) => it.path[0] as string)
-  );
+  const errors: Map<string, number[] | null> = new Map();
+
+  for (const error of validate.error.errors) {
+    const element = error.path[0] as string;
+    let val = errors.get(element) ?? null;
+    if (typeof error.path[1] === "number") {
+      val = [...(val ?? []), error.path[1]];
+    }
+    errors.set(element, val);
+  }
 
   return Object.fromEntries(
-    Object.entries(obj).filter(([key]) => !errorKeys.has(key))
-  );
-};
+    Object.entries(config).map(([key, value]) => {
+      const error = errors.get(key);
+      if (error === undefined) return [key, value];
+
+      if (Array.isArray(value)) {
+        if (error === null || error.length === value.length) {
+          return [key, undefined];
+        }
+        return [key, value.filter((_element, index) => !error.includes(index))];
+      } else {
+        return [key, error === null ? undefined : value];
+      }
+    })
+  ) as ConfigSchemas.PartialConfig;
+}
+
 export function replaceLegacyValues(
   configObj: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
@@ -151,15 +171,6 @@ export function replaceLegacyValues(
   if (typeof configObj.indicateTypos === "boolean") {
     configObj.indicateTypos =
       configObj.indicateTypos === false ? "off" : "replace";
-  }
-
-  if (
-    configObj.favThemes &&
-    !ConfigSchemas.FavThemesSchema.safeParse(configObj.favThemes).success
-  ) {
-    configObj.favThemes = configObj.favThemes?.filter(
-      (it) => ThemeNameSchema.safeParse(it).success
-    );
   }
 
   return configObj;
