@@ -39,11 +39,10 @@ function sanitizeConfig(
     return config;
   }
 
-  const errors: Map<string, number[] | null> = new Map();
-
+  const errors: Map<string, number[] | undefined> = new Map();
   for (const error of validate.error.errors) {
     const element = error.path[0] as string;
-    let val = errors.get(element) ?? null;
+    let val = errors.get(element);
     if (typeof error.path[1] === "number") {
       val = [...(val ?? []), error.path[1]];
     }
@@ -52,16 +51,21 @@ function sanitizeConfig(
 
   return Object.fromEntries(
     Object.entries(config).map(([key, value]) => {
-      const error = errors.get(key);
-      if (error === undefined) return [key, value];
+      if (!errors.has(key)) {
+        return [key, value];
+      }
 
-      if (Array.isArray(value)) {
-        if (error === null || error.length === value.length) {
-          return [key, undefined];
-        }
+      const error = errors.get(key);
+
+      if (
+        Array.isArray(value) &&
+        error !== undefined && //error is not on the array itself
+        error.length < value.length //not all items in the array are invalid
+      ) {
+        //some items of the array are invalid
         return [key, value.filter((_element, index) => !error.includes(index))];
       } else {
-        return [key, error === null ? undefined : value];
+        return [key, undefined];
       }
     })
   ) as ConfigSchemas.PartialConfig;
