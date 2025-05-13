@@ -725,17 +725,25 @@ const modal = new AnimatedModal({
     });
 
     const suggestions = document.querySelector(".suggestions") as HTMLElement;
+    const isCommand = (event: MouseEvent): boolean =>
+      event.target !== null &&
+      (event.target as HTMLElement).hasAttribute("data-index");
 
-    let lastSelected: HTMLElement | undefined;
+    let lastHover: HTMLElement | undefined;
 
     suggestions.addEventListener("mousemove", async (e) => {
-      if (e.target !== lastSelected) {
-        lastSelected = e.target as HTMLElement;
-        activeIndex = parseInt(lastSelected.getAttribute("data-index") ?? "0");
+      if (!isCommand(e)) return;
+
+      if (e.target !== lastHover) {
+        lastHover = e.target as HTMLElement;
+
+        activeIndex = parseInt(lastHover.getAttribute("data-index") ?? "0");
         await updateActiveCommand();
       }
     });
     suggestions.addEventListener("click", async (e) => {
+      if (!isCommand(e)) return;
+
       const previous = activeIndex;
       activeIndex = parseInt(
         (e.target as HTMLElement).getAttribute("data-index") ?? "0"
