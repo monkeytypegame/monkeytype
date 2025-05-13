@@ -11,6 +11,7 @@ import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup } from "./types";
+import { areSortedArraysEqual } from "../utils/arrays";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -349,6 +350,7 @@ async function getList(): Promise<Command[]> {
   return (await getSubgroup()).list;
 }
 
+let lastList: Command[] | undefined;
 async function showCommands(): Promise<void> {
   const element = document.querySelector("#commandLine .suggestions");
   if (element === null) {
@@ -361,6 +363,10 @@ async function showCommands(): Promise<void> {
   }
 
   const list = (await getList()).filter((c) => c.found === true);
+  if (lastList && areSortedArraysEqual(list, lastList)) {
+    return;
+  }
+  lastList = list;
 
   let html = "";
   let index = 0;
@@ -458,6 +464,7 @@ async function showCommands(): Promise<void> {
   if (firstActive !== null && !usingSingleList) {
     activeIndex = firstActive;
   }
+
   element.innerHTML = html;
 }
 
@@ -564,7 +571,7 @@ function keepActiveCommandInView(): void {
     return;
   }
 
-  active?.scrollIntoView({ behavior: "auto", block: "center" });
+  active.scrollIntoView({ behavior: "auto", block: "center" });
   lastActiveIndex = active.dataset["index"];
 }
 
