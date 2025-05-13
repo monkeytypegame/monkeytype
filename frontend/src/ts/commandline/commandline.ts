@@ -328,6 +328,7 @@ function hideCommands(): void {
     throw new Error("Commandline element not found");
   }
   element.innerHTML = "";
+  lastList = undefined;
 }
 
 let cachedSingleSubgroup: CommandsSubgroup | null = null;
@@ -353,6 +354,7 @@ async function getList(): Promise<Command[]> {
 }
 
 let lastList: Command[] | undefined;
+
 async function showCommands(): Promise<void> {
   const element = document.querySelector("#commandLine .suggestions");
   if (element === null) {
@@ -360,16 +362,12 @@ async function showCommands(): Promise<void> {
   }
 
   if (inputValue === "" && usingSingleList) {
-    element.innerHTML = "";
+    hideCommands();
     return;
   }
 
   const list = (await getList()).filter((c) => c.found === true);
-  if (
-    lastList &&
-    element.innerHTML !== "" &&
-    areSortedArraysEqual(list, lastList)
-  ) {
+  if (lastList && areSortedArraysEqual(list, lastList)) {
     return;
   }
   lastList = list;
