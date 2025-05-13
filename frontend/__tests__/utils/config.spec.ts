@@ -2,6 +2,8 @@ import { getDefaultConfig } from "../../src/ts/constants/default-config";
 import { migrateConfig } from "../../src/ts/utils/config";
 import { PartialConfig } from "@monkeytype/contracts/schemas/configs";
 
+const defaultConfig = getDefaultConfig();
+
 describe("config.ts", () => {
   describe("migrateConfig", () => {
     it("should carry over properties from the default config", () => {
@@ -36,8 +38,40 @@ describe("config.ts", () => {
       expect(result.time).toEqual(120);
       expect(result.accountChart).toEqual(["off", "off", "off", "off"]);
     });
-    it("should not convert legacy values if current values are already present", () => {
-      const testCases = [
+    describe("should replace value with default config if invalid", () => {
+      it.for([
+        {
+          given: { theme: "invalid" },
+          expected: { theme: defaultConfig.theme },
+        },
+        {
+          given: { minWpm: "invalid" },
+          expected: { minWpm: defaultConfig.minWpm },
+        },
+        {
+          given: { customThemeColors: ["#ffffff"] },
+          expected: { customThemeColors: defaultConfig.customThemeColors },
+        },
+        {
+          given: { accountChart: [true, false, false, true] },
+          expected: { accountChart: defaultConfig.accountChart },
+        },
+        {
+          given: {
+            favThemes: ["nord", "invalid", "serika_dark", "invalid2", "8008"],
+          },
+          expected: { favThemes: ["nord", "serika_dark", "8008"] },
+        },
+      ])(`$given`, ({ given, expected }) => {
+        const description = `given: ${JSON.stringify(
+          given
+        )}, expected: ${JSON.stringify(expected)} `;
+        const result = migrateConfig(given);
+        expect(result, description).toEqual(expect.objectContaining(expected));
+      });
+    });
+    describe("should not convert legacy values if current values are already present", () => {
+      it.for([
         {
           given: { showLiveAcc: true, timerStyle: "mini", liveAccStyle: "off" },
           expected: { liveAccStyle: "off" },
@@ -66,18 +100,15 @@ describe("config.ts", () => {
           given: { showTimerProgress: true, timerStyle: "mini" },
           expected: { timerStyle: "mini" },
         },
-      ];
+      ])(`$given`, ({ given, expected }) => {
+        //WHEN
 
-      //WHEN
-      testCases.forEach((test) => {
         const description = `given: ${JSON.stringify(
-          test.given
-        )}, expected: ${JSON.stringify(test.expected)} `;
+          given
+        )}, expected: ${JSON.stringify(expected)} `;
 
-        const result = migrateConfig(test.given);
-        expect(result, description).toEqual(
-          expect.objectContaining(test.expected)
-        );
+        const result = migrateConfig(given);
+        expect(result, description).toEqual(expect.objectContaining(expected));
       });
     });
     describe("should convert legacy values", () => {
@@ -153,6 +184,14 @@ describe("config.ts", () => {
         {
           given: { indicateTypos: true },
           expected: { indicateTypos: "replace" },
+        },
+        {
+          given: {
+            favThemes: ["purpurite", "80s_after_dark", "luna", "pulse"],
+          },
+          expected: {
+            favThemes: ["80s_after_dark", "luna", "pulse"],
+          },
         },
       ])(`$given`, ({ given, expected }) => {
         const description = `given: ${JSON.stringify(
