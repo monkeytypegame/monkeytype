@@ -459,27 +459,6 @@ async function showCommands(): Promise<void> {
     activeIndex = firstActive;
   }
   element.innerHTML = html;
-
-  for (const command of element.querySelectorAll(".command")) {
-    command.addEventListener("mouseenter", async () => {
-      if (!mouseMode) return;
-      activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
-      await updateActiveCommand();
-    });
-    command.addEventListener("mouseleave", async () => {
-      if (!mouseMode) return;
-      activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
-      await updateActiveCommand();
-    });
-    command.addEventListener("click", async () => {
-      const previous = activeIndex;
-      activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
-      if (previous !== activeIndex) {
-        await updateActiveCommand();
-      }
-      await runActiveCommand();
-    });
-  }
 }
 
 async function updateActiveCommand(): Promise<void> {
@@ -573,23 +552,20 @@ async function runActiveCommand(): Promise<void> {
   }
 }
 
+let lastActiveIndex: string | undefined;
 function keepActiveCommandInView(): void {
   if (mouseMode) return;
-  try {
-    const scroll =
-      Math.abs(
-        ($(".suggestions").offset()?.top as number) -
-          ($(".command.active").offset()?.top as number) -
-          ($(".suggestions").scrollTop() as number)
-      ) -
-      ($(".suggestions").outerHeight() as number) / 2 +
-      ($($(".command")[0] as HTMLElement).outerHeight() as number);
-    $(".suggestions").scrollTop(scroll);
-  } catch (e) {
-    if (e instanceof Error) {
-      console.log("could not scroll suggestions: " + e.message);
-    }
+
+  const active: HTMLElement | null = document.querySelector(
+    ".suggestions .command.active"
+  );
+
+  if (active === null || active.dataset["index"] === lastActiveIndex) {
+    return;
   }
+
+  active?.scrollIntoView({ behavior: "auto", block: "center" });
+  lastActiveIndex = active.dataset["index"];
 }
 
 function updateInput(setInput?: string): void {
@@ -739,6 +715,28 @@ const modal = new AnimatedModal({
 
     modalEl.addEventListener("mousemove", (_e) => {
       mouseMode = true;
+    });
+
+    const suggestions = document.querySelector(".suggestions") as HTMLElement;
+
+    let lastSelected: HTMLElement | undefined;
+
+    suggestions.addEventListener("mousemove", async (e) => {
+      if (e.target !== lastSelected) {
+        lastSelected = e.target as HTMLElement;
+        activeIndex = parseInt(lastSelected.getAttribute("data-index") ?? "0");
+        await updateActiveCommand();
+      }
+    });
+    suggestions.addEventListener("click", async (e) => {
+      const previous = activeIndex;
+      activeIndex = parseInt(
+        (e.target as HTMLElement).getAttribute("data-index") ?? "0"
+      );
+      if (previous !== activeIndex) {
+        await updateActiveCommand();
+      }
+      await runActiveCommand();
     });
   },
 });
