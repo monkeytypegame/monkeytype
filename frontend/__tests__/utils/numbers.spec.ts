@@ -69,5 +69,10 @@ describe("numbers", () => {
     it("should handle leading and trailing spaces", () => {
       expect(Numbers.parseIntOptional(" 42 ")).toBe(42);
     });
+    it("should return a number when given a valid string and radix", () => {
+      expect(Numbers.parseIntOptional("1010", 2)).toBe(10);
+      expect(Numbers.parseIntOptional("CF", 16)).toBe(207);
+      expect(Numbers.parseIntOptional("C", 26)).toBe(12);
+    });
   });
 });
