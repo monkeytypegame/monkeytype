@@ -13,6 +13,7 @@ import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup } from "./types";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
+import { debounce } from "throttle-debounce";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -649,22 +650,26 @@ const modal = new AnimatedModal({
   setup: async (modalEl): Promise<void> => {
     const input = modalEl.querySelector("input") as HTMLInputElement;
 
-    input.addEventListener("input", async (e) => {
-      inputValue = (e.target as HTMLInputElement).value;
-      if (subgroupOverride === null) {
-        if (Config.singleListCommandLine === "on") {
-          usingSingleList = true;
-        } else {
-          usingSingleList = inputValue.startsWith(">");
+    input.addEventListener(
+      "input",
+      debounce(100, async (e) => {
+        inputValue = (e.target as HTMLInputElement).value;
+        console.log("update", { inputValue });
+        if (subgroupOverride === null) {
+          if (Config.singleListCommandLine === "on") {
+            usingSingleList = true;
+          } else {
+            usingSingleList = inputValue.startsWith(">");
+          }
         }
-      }
-      if (mode !== "search") return;
-      mouseMode = false;
-      activeIndex = 0;
-      await filterSubgroup();
-      await showCommands();
-      await updateActiveCommand();
-    });
+        if (mode !== "search") return;
+        mouseMode = false;
+        activeIndex = 0;
+        await filterSubgroup();
+        await showCommands();
+        await updateActiveCommand();
+      })
+    );
 
     input.addEventListener("keydown", async (e) => {
       mouseMode = false;
