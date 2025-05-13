@@ -12,6 +12,7 @@ import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup } from "./types";
 import { areSortedArraysEqual } from "../utils/arrays";
+import { parseIntOptional } from "../utils/numbers";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -725,29 +726,30 @@ const modal = new AnimatedModal({
     });
 
     const suggestions = document.querySelector(".suggestions") as HTMLElement;
-    const isCommand = (event: MouseEvent): boolean =>
-      event.target !== null &&
-      (event.target as HTMLElement).hasAttribute("data-index");
-
     let lastHover: HTMLElement | undefined;
 
     suggestions.addEventListener("mousemove", async (e) => {
-      if (!isCommand(e)) return;
+      const target = e.target as HTMLElement | null;
+      if (target === lastHover) return;
 
-      if (e.target !== lastHover) {
-        lastHover = e.target as HTMLElement;
+      const dataIndex = parseIntOptional(target?.getAttribute("data-index"));
 
-        activeIndex = parseInt(lastHover.getAttribute("data-index") ?? "0");
-        await updateActiveCommand();
-      }
+      if (!dataIndex) return;
+
+      lastHover = e.target as HTMLElement;
+      activeIndex = dataIndex;
+      await updateActiveCommand();
     });
+
     suggestions.addEventListener("click", async (e) => {
-      if (!isCommand(e)) return;
+      const target = e.target as HTMLElement | null;
+
+      const dataIndex = parseIntOptional(target?.getAttribute("data-index"));
+
+      if (!dataIndex) return;
 
       const previous = activeIndex;
-      activeIndex = parseInt(
-        (e.target as HTMLElement).getAttribute("data-index") ?? "0"
-      );
+      activeIndex = dataIndex;
       if (previous !== activeIndex) {
         await updateActiveCommand();
       }
