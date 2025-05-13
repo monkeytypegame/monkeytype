@@ -365,7 +365,11 @@ async function showCommands(): Promise<void> {
   }
 
   const list = (await getList()).filter((c) => c.found === true);
-  if (lastList && areSortedArraysEqual(list, lastList)) {
+  if (
+    lastList &&
+    element.innerHTML !== "" &&
+    areSortedArraysEqual(list, lastList)
+  ) {
     return;
   }
   lastList = list;
