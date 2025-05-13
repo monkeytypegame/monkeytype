@@ -652,9 +652,8 @@ const modal = new AnimatedModal({
 
     input.addEventListener(
       "input",
-      debounce(100, async (e) => {
+      debounce(50, async (e) => {
         inputValue = (e.target as HTMLInputElement).value;
-        console.log("update", { inputValue });
         if (subgroupOverride === null) {
           if (Config.singleListCommandLine === "on") {
             usingSingleList = true;
