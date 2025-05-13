@@ -94,6 +94,11 @@ header.focus #logo:after {
   direction: ltr;
 }
 
+footer .leftright .right .current-theme .fas.fa-fw.fa-palette {
+  transform: rotateY(0deg);
+  transition: 0.5s;
+}
+
 footer .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
   transform: rotateY(180deg);
   transition: 0.5s;
