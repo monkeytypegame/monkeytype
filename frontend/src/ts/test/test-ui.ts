@@ -1052,7 +1052,7 @@ function removeElementsBeforeWord(
     const child = wordsChildren[i];
     if (!child || !child.isConnected) continue;
     if (child.classList.contains("word")) removedWords++;
-    if (!child.classList.contains("smoothScroller")) child.remove();
+    child.remove();
   }
   return removedWords;
 }
@@ -1111,29 +1111,7 @@ export async function lineJump(
       resolve();
     } else if (Config.smoothLineScroll) {
       lineTransition = true;
-      const smoothScroller = $("#words .smoothScroller");
-      if (smoothScroller.length === 0) {
-        wordsEl.insertAdjacentHTML(
-          "afterbegin",
-          `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
-        );
-      } else {
-        smoothScroller.css(
-          "height",
-          `${(smoothScroller.outerHeight(true) ?? 0) + wordHeight}px`
-        );
-      }
-      $("#words .smoothScroller")
-        .stop(true, false)
-        .animate(
-          {
-            height: 0,
-          },
-          SlowTimer.get() ? 0 : 125,
-          () => {
-            $("#words .smoothScroller").remove();
-          }
-        );
+
       $(paceCaretElement)
         .stop(true, false)
         .animate(
@@ -1143,8 +1121,11 @@ export async function lineJump(
           SlowTimer.get() ? 0 : 125
         );
 
+      const scrollDistance = TestState.lineScrollDistance + wordHeight;
+      TestState.setLineScrollDistance(scrollDistance);
+      currentLinesAnimating++;
       const newCss: Record<string, string> = {
-        marginTop: `-${wordHeight * (currentLinesAnimating + 1)}px`,
+        marginTop: `-${wordHeight * currentLinesAnimating}px`,
       };
 
       currentLinesAnimating++;
@@ -1152,8 +1133,15 @@ export async function lineJump(
       jqWords.stop("topMargin", true, false).animate(newCss, {
         duration: SlowTimer.get() ? 0 : 125,
         queue: "topMargin",
+        step: (now, fx) => {
+          const completionRate = (now - fx.start) / (fx.end - fx.start);
+          TestState.setLineScrollDistance(
+            scrollDistance * (1 - completionRate)
+          );
+        },
         complete: () => {
           currentLinesAnimating = 0;
+          TestState.setLineScrollDistance(0);
           activeWordTop =
             document.querySelectorAll<HTMLElement>("#words .word")?.[
               wordElementIndex
