@@ -200,8 +200,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
     let newTop;
     let newLeft;
     try {
-      const newIndex =
-        settings.currentWordIndex - TestState.activeWordElementOffset;
+      const newIndex = settings.currentWordIndex - TestState.removedUIWordCount;
       const word = document.querySelectorAll("#words .word")[
         newIndex
       ] as HTMLElement;
