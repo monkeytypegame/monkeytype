@@ -1,7 +1,6 @@
 import * as Misc from "./utils/misc";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as MerchBanner from "./elements/merch-banner";
-import * as CookiesModal from "./modals/cookies";
 import * as ConnectionState from "./states/connection";
 import * as AccountButton from "./elements/account-button";
 //@ts-expect-error no types for this package
@@ -12,7 +11,6 @@ import { loadPromise } from "./config";
 
 $(async (): Promise<void> => {
   await loadPromise;
-  CookiesModal.check();
 
   //this line goes back to pretty much the beginning of the project and im pretty sure its here
   //to make sure the initial theme application doesnt animate the background color

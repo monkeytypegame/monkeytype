@@ -14,6 +14,9 @@ import { Command, CommandsSubgroup } from "./types";
 import * as JSONData from "../utils/json-data";
 import * as Misc from "../utils/misc";
 import * as ThemesModule from "./lists/themes";
+import { areSortedArraysEqual } from "../utils/arrays";
+import { parseIntOptional } from "../utils/numbers";
+import { debounce } from "throttle-debounce";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -341,6 +344,7 @@ function hideCommands(): void {
     throw new Error("Commandline element not found");
   }
   element.innerHTML = "";
+  lastList = undefined;
 }
 
 let cachedSingleSubgroup: CommandsSubgroup | null = null;
@@ -365,6 +369,8 @@ async function getList(): Promise<Command[]> {
   return (await getSubgroup()).list;
 }
 
+let lastList: Command[] | undefined;
+
 async function showCommands(): Promise<void> {
   const element = document.querySelector("#commandLine .suggestions");
   if (element === null) {
@@ -372,11 +378,15 @@ async function showCommands(): Promise<void> {
   }
 
   if (inputValue === "" && usingSingleList) {
-    element.innerHTML = "";
+    hideCommands();
     return;
   }
 
   const list = (await getList()).filter((c) => c.found === true);
+  if (lastList && areSortedArraysEqual(list, lastList)) {
+    return;
+  }
+  lastList = list;
 
   let html = "";
   let index = 0;
@@ -485,28 +495,8 @@ async function showCommands(): Promise<void> {
   if (firstActive !== null && !usingSingleList) {
     activeIndex = firstActive;
   }
-  element.innerHTML = html;
 
-  for (const command of element.querySelectorAll(".command")) {
-    command.addEventListener("mouseenter", async () => {
-      if (!mouseMode) return;
-      activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
-      await updateActiveCommand();
-    });
-    command.addEventListener("mouseleave", async () => {
-      if (!mouseMode) return;
-      activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
-      await updateActiveCommand();
-    });
-    command.addEventListener("click", async () => {
-      const previous = activeIndex;
-      activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
-      if (previous !== activeIndex) {
-        await updateActiveCommand();
-      }
-      await runActiveCommand();
-    });
-  }
+  element.innerHTML = html;
 }
 
 async function updateActiveCommand(): Promise<void> {
@@ -600,23 +590,20 @@ async function runActiveCommand(): Promise<void> {
   }
 }
 
+let lastActiveIndex: string | undefined;
 function keepActiveCommandInView(): void {
   if (mouseMode) return;
-  try {
-    const scroll =
-      Math.abs(
-        ($(".suggestions").offset()?.top as number) -
-          ($(".command.active").offset()?.top as number) -
-          ($(".suggestions").scrollTop() as number)
-      ) -
-      ($(".suggestions").outerHeight() as number) / 2 +
-      ($($(".command")[0] as HTMLElement).outerHeight() as number);
-    $(".suggestions").scrollTop(scroll);
-  } catch (e) {
-    if (e instanceof Error) {
-      console.log("could not scroll suggestions: " + e.message);
-    }
+
+  const active: HTMLElement | null = document.querySelector(
+    ".suggestions .command.active"
+  );
+
+  if (active === null || active.dataset["index"] === lastActiveIndex) {
+    return;
   }
+
+  active.scrollIntoView({ behavior: "auto", block: "center" });
+  lastActiveIndex = active.dataset["index"];
 }
 
 function updateInput(setInput?: string): void {
@@ -692,22 +679,25 @@ const modal = new AnimatedModal({
   setup: async (modalEl): Promise<void> => {
     const input = modalEl.querySelector("input") as HTMLInputElement;
 
-    input.addEventListener("input", async (e) => {
-      inputValue = (e.target as HTMLInputElement).value;
-      if (subgroupOverride === null) {
-        if (Config.singleListCommandLine === "on") {
-          usingSingleList = true;
-        } else {
-          usingSingleList = inputValue.startsWith(">");
+    input.addEventListener(
+      "input",
+      debounce(50, async (e) => {
+        inputValue = (e.target as HTMLInputElement).value;
+        if (subgroupOverride === null) {
+          if (Config.singleListCommandLine === "on") {
+            usingSingleList = true;
+          } else {
+            usingSingleList = inputValue.startsWith(">");
+          }
         }
-      }
-      if (mode !== "search") return;
-      mouseMode = false;
-      activeIndex = 0;
-      await filterSubgroup();
-      await showCommands();
-      await updateActiveCommand();
-    });
+        if (mode !== "search") return;
+        mouseMode = false;
+        activeIndex = 0;
+        await filterSubgroup();
+        await showCommands();
+        await updateActiveCommand();
+      })
+    );
 
     input.addEventListener("keydown", async (e) => {
       mouseMode = false;
@@ -766,6 +756,37 @@ const modal = new AnimatedModal({
 
     modalEl.addEventListener("mousemove", (_e) => {
       mouseMode = true;
+    });
+
+    const suggestions = document.querySelector(".suggestions") as HTMLElement;
+    let lastHover: HTMLElement | undefined;
+
+    suggestions.addEventListener("mousemove", async (e) => {
+      const target = e.target as HTMLElement | null;
+      if (target === lastHover) return;
+
+      const dataIndex = parseIntOptional(target?.getAttribute("data-index"));
+
+      if (dataIndex === undefined) return;
+
+      lastHover = e.target as HTMLElement;
+      activeIndex = dataIndex;
+      await updateActiveCommand();
+    });
+
+    suggestions.addEventListener("click", async (e) => {
+      const target = e.target as HTMLElement | null;
+
+      const dataIndex = parseIntOptional(target?.getAttribute("data-index"));
+
+      if (dataIndex === undefined) return;
+
+      const previous = activeIndex;
+      activeIndex = dataIndex;
+      if (previous !== activeIndex) {
+        await updateActiveCommand();
+      }
+      await runActiveCommand();
     });
   },
 });
