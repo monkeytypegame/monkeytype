@@ -209,8 +209,28 @@ const debouncedPreview = debounce<(t: string, c?: string[]) => void>(
   (themeIdenfitier, customColorsOverride) => {
     isPreviewingTheme = true;
     void apply(themeIdenfitier, customColorsOverride, true);
+    updateFooterThemeFavIcon(themeIdenfitier);
   }
 );
+
+// update the favorite icon in the current theme button based on the theme being previewed
+function updateFooterThemeFavIcon(themeName: string): void {
+  const favIconEl = document.querySelector(
+    "footer .right .current-theme .favIcon"
+  );
+  if (!favIconEl) return;
+
+  if (
+    !Config.customTheme &&
+    Config.favThemes.includes(themeName as ThemeName)
+  ) {
+    favIconEl.innerHTML = '<i class="fas fa-star"></i>';
+    favIconEl.classList.add("active");
+  } else {
+    favIconEl.innerHTML = '<i class="far fa-star"></i>';
+    favIconEl.classList.remove("active");
+  }
+}
 
 async function set(
   themeIdentifier: string,
@@ -235,10 +255,21 @@ export async function clearPreview(applyTheme = true): Promise<void> {
     if (applyTheme) {
       if (randomTheme !== null) {
         await apply(randomTheme);
+        // restore the correct favorite icon state for the current theme
+        updateFooterThemeFavIcon(randomTheme);
       } else if (Config.customTheme) {
         await apply("custom");
+        // custom themes don't have favorite status
+        const favIconEl = document.querySelector(
+          "footer .right .current-theme .favIcon"
+        );
+        if (favIconEl) {
+          favIconEl.innerHTML = '<i class="far fa-star"></i>';
+          favIconEl.classList.remove("active");
+        }
       } else {
         await apply(Config.theme);
+        updateFooterThemeFavIcon(Config.theme);
       }
     }
   }
