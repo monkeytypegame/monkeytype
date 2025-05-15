@@ -740,7 +740,7 @@ const modal = new AnimatedModal({
 
       const dataIndex = parseIntOptional(target?.getAttribute("data-index"));
 
-      if (!dataIndex) return;
+      if (dataIndex === undefined) return;
 
       lastHover = e.target as HTMLElement;
       activeIndex = dataIndex;
@@ -752,7 +752,7 @@ const modal = new AnimatedModal({
 
       const dataIndex = parseIntOptional(target?.getAttribute("data-index"));
 
-      if (!dataIndex) return;
+      if (dataIndex === undefined) return;
 
       const previous = activeIndex;
       activeIndex = dataIndex;
