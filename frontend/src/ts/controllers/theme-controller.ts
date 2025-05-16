@@ -143,23 +143,34 @@ export function updateFooterThemeFavIcon(
     "footer .right .current-theme .favIcon"
   );
   if (!favIconEl) return;
+  const iconEl = favIconEl.querySelector("i");
+  if (!iconEl) return;
 
-  if (themeName === "custom" || Config.customTheme) {
-    // custom themes don't have favorite status
-    favIconEl.innerHTML = '<i class="far fa-star"></i>';
-    favIconEl.classList.remove("active");
+  const isCustom = themeName === "custom" || Config.customTheme;
+  const currentTheme = isCustom
+    ? null
+    : themeName ?? randomTheme ?? Config.theme;
+  const isFavorite =
+    !isCustom &&
+    currentTheme !== null &&
+    Config.favThemes.includes(currentTheme as ThemeName);
+
+  iconEl.classList.remove(isFavorite ? "far" : "fas");
+  iconEl.classList.add(isFavorite ? "fas" : "far");
+  if (isFavorite) {
+    favIconEl.classList.add("active");
   } else {
-    // use provided theme name or get current theme
-    const currentTheme = themeName ?? randomTheme ?? Config.theme;
-    if (Config.favThemes.includes(currentTheme as ThemeName)) {
-      favIconEl.innerHTML = '<i class="fas fa-star"></i>';
-      favIconEl.classList.add("active");
-    } else {
-      favIconEl.innerHTML = '<i class="far fa-star"></i>';
-      favIconEl.classList.remove("active");
-    }
+    favIconEl.classList.remove("active");
   }
 }
+
+/****KEEPING FOR NOW AS REFRENCE AND THE PREVIEW!*****/
+// export function changeCustomTheme(themeId: string, nosave = false): void {
+//   const customThemes = DB.getSnapshot().customThemes;
+//   const colors = customThemes.find((e) => e._id === themeId)
+//     ?.colors as string[];
+//   UpdateConfig.setCustomThemeColors(colors, nosave);
+// }
 
 async function apply(
   themeName: string,

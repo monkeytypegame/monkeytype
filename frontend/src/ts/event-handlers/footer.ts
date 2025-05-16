@@ -48,21 +48,6 @@ document
     }
   });
 
-// initialize favorite icon for the current theme button
-const initializeFavIcon = (): void => {
-  const currentThemeButton = document.querySelector(
-    "footer .right .current-theme"
-  );
-  if (currentThemeButton && !currentThemeButton.querySelector(".favIcon")) {
-    const favIconDiv = document.createElement("div");
-    favIconDiv.className = "favIcon";
-    favIconDiv.innerHTML = '<i class="far fa-star"></i>';
-    currentThemeButton.appendChild(favIconDiv);
-    updateFooterThemeFavIcon();
-  }
-};
-initializeFavIcon();
-
 document
   .querySelector("footer .right .current-theme")
   ?.addEventListener("click", async (event) => {

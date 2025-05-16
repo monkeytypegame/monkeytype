@@ -11,11 +11,10 @@ const isFavorite = (theme: Theme): boolean =>
 /**
  * creates a theme command object for the given theme
  * @param theme the theme to create a command for
- * @param includeHtml whether to include the HTML for the favorite star
  * @returns a command object for the theme
  */
-const createThemeCommand = (theme: Theme, includeHtml = false): Command => {
-  const command = {
+const createThemeCommand = (theme: Theme): Command => {
+  return {
     id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
     display: theme.name.replace(/_/g, " "),
     configValue: theme.name,
@@ -25,6 +24,7 @@ const createThemeCommand = (theme: Theme, includeHtml = false): Command => {
       bgColor: theme.bgColor,
       subColor: theme.subColor,
       textColor: theme.textColor,
+      isFavorite: isFavorite(theme),
     },
     hover: (): void => {
       // previewTheme(theme.name);
@@ -33,19 +33,10 @@ const createThemeCommand = (theme: Theme, includeHtml = false): Command => {
     exec: (): void => {
       UpdateConfig.setTheme(theme.name);
     },
+    html: `<div class="themeFavIcon ${isFavorite(theme) ? "active" : ""}">
+            <i class="${isFavorite(theme) ? "fas" : "far"} fa-star"></i>
+          </div>`,
   };
-
-  // add HTML for favorite star if requested
-  if (includeHtml) {
-    return {
-      ...command,
-      html: `<div class="themeFavIcon ${isFavorite(theme) ? "active" : ""}">
-              <i class="${isFavorite(theme) ? "fas" : "far"} fa-star"></i>
-            </div>`,
-    };
-  }
-
-  return command;
 };
 
 /**
@@ -62,7 +53,7 @@ const subgroup: CommandsSubgroup = {
   title: "Theme...",
   configKey: "theme",
   list: sortThemesByFavorite(ThemesList).map((theme) =>
-    createThemeCommand(theme, true)
+    createThemeCommand(theme)
   ),
 };
 
@@ -81,7 +72,7 @@ export function update(themes: Theme[]): void {
 
   // rebuild with favorites first, then non-favorites
   subgroup.list = sortThemesByFavorite(themes).map((theme) =>
-    createThemeCommand(theme, true)
+    createThemeCommand(theme)
   );
 }
 export default commands;
