@@ -135,12 +135,31 @@ export async function loadStyle(name: string): Promise<void> {
   });
 }
 
-// export function changeCustomTheme(themeId: string, nosave = false): void {
-//   const customThemes = DB.getSnapshot().customThemes;
-//   const colors = customThemes.find((e) => e._id === themeId)
-//     ?.colors as string[];
-//   UpdateConfig.setCustomThemeColors(colors, nosave);
-// }
+// update the favorite icon in the current theme button
+export function updateFooterThemeFavIcon(
+  themeName: string | null = null
+): void {
+  const favIconEl = document.querySelector(
+    "footer .right .current-theme .favIcon"
+  );
+  if (!favIconEl) return;
+
+  if (themeName === "custom" || Config.customTheme) {
+    // custom themes don't have favorite status
+    favIconEl.innerHTML = '<i class="far fa-star"></i>';
+    favIconEl.classList.remove("active");
+  } else {
+    // use provided theme name or get current theme
+    const currentTheme = themeName ?? randomTheme ?? Config.theme;
+    if (Config.favThemes.includes(currentTheme as ThemeName)) {
+      favIconEl.innerHTML = '<i class="fas fa-star"></i>';
+      favIconEl.classList.add("active");
+    } else {
+      favIconEl.innerHTML = '<i class="far fa-star"></i>';
+      favIconEl.classList.remove("active");
+    }
+  }
+}
 
 async function apply(
   themeName: string,
@@ -213,25 +232,6 @@ const debouncedPreview = debounce<(t: string, c?: string[]) => void>(
   }
 );
 
-// update the favorite icon in the current theme button based on the theme being previewed
-function updateFooterThemeFavIcon(themeName: string): void {
-  const favIconEl = document.querySelector(
-    "footer .right .current-theme .favIcon"
-  );
-  if (!favIconEl) return;
-
-  if (
-    !Config.customTheme &&
-    Config.favThemes.includes(themeName as ThemeName)
-  ) {
-    favIconEl.innerHTML = '<i class="fas fa-star"></i>';
-    favIconEl.classList.add("active");
-  } else {
-    favIconEl.innerHTML = '<i class="far fa-star"></i>';
-    favIconEl.classList.remove("active");
-  }
-}
-
 async function set(
   themeIdentifier: string,
   isAutoSwitch = false
@@ -242,6 +242,7 @@ async function set(
     isAutoSwitch
   );
   await apply(themeIdentifier, undefined, isAutoSwitch);
+  updateFooterThemeFavIcon(themeIdentifier);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setAutoSwitchTheme(false);
@@ -259,14 +260,7 @@ export async function clearPreview(applyTheme = true): Promise<void> {
         updateFooterThemeFavIcon(randomTheme);
       } else if (Config.customTheme) {
         await apply("custom");
-        // custom themes don't have favorite status
-        const favIconEl = document.querySelector(
-          "footer .right .current-theme .favIcon"
-        );
-        if (favIconEl) {
-          favIconEl.innerHTML = '<i class="far fa-star"></i>';
-          favIconEl.classList.remove("active");
-        }
+        updateFooterThemeFavIcon("custom");
       } else {
         await apply(Config.theme);
         updateFooterThemeFavIcon(Config.theme);

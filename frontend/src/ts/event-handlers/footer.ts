@@ -7,11 +7,10 @@ import * as SupportPopup from "../modals/support";
 import * as ContactModal from "../modals/contact";
 import * as VersionHistoryModal from "../modals/version-history";
 import { envConfig } from "../constants/env-config";
-import * as ThemeController from "../controllers/theme-controller";
+import { updateFooterThemeFavIcon } from "../controllers/theme-controller";
 import * as ConfigEvent from "../observables/config-event";
 import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
 import { lastSeenServerCompatibility } from "../ape/adapters/ts-rest-adapter";
-import { ThemeName } from "@monkeytype/contracts/schemas/configs";
 
 document
   .querySelector("footer #commandLineMobileButton")
@@ -49,27 +48,6 @@ document
     }
   });
 
-// update the favorite icon in the current theme button
-function updateCurrentThemeFavIcon(): void {
-  const favIconEl = document.querySelector(
-    "footer .right .current-theme .favIcon"
-  );
-  if (!favIconEl) return;
-  const currentTheme = Config.customTheme
-    ? "custom"
-    : ThemeController.randomTheme ?? Config.theme;
-  if (
-    !Config.customTheme &&
-    Config.favThemes.includes(currentTheme as ThemeName)
-  ) {
-    favIconEl.innerHTML = '<i class="fas fa-star"></i>';
-    favIconEl.classList.add("active");
-  } else {
-    favIconEl.innerHTML = '<i class="far fa-star"></i>';
-    favIconEl.classList.remove("active");
-  }
-}
-
 // initialize favorite icon for the current theme button
 const initializeFavIcon = (): void => {
   const currentThemeButton = document.querySelector(
@@ -80,7 +58,7 @@ const initializeFavIcon = (): void => {
     favIconDiv.className = "favIcon";
     favIconDiv.innerHTML = '<i class="far fa-star"></i>';
     currentThemeButton.appendChild(favIconDiv);
-    updateCurrentThemeFavIcon();
+    updateFooterThemeFavIcon();
   }
 };
 initializeFavIcon();
@@ -113,8 +91,16 @@ document
 
 // subscribe to theme-related config events to update the favorite icon
 ConfigEvent.subscribe((eventKey, _eventValue) => {
-  if (["theme", "customTheme", "favThemes"].includes(eventKey)) {
-    updateCurrentThemeFavIcon();
+  if (
+    [
+      "theme",
+      "customTheme",
+      "customThemeColors",
+      "randomTheme",
+      "favThemes",
+    ].includes(eventKey)
+  ) {
+    updateFooterThemeFavIcon();
   }
 });
 
