@@ -131,7 +131,7 @@ export function mapRange(
  * @param value The value to check.
  * @returns True if the value is a safe number, false otherwise.
  */
-export function isNumberSafe(value: unknown): value is number {
+export function isSafeNumber(value: unknown): value is number {
   if (typeof value === "number") {
     return !isNaN(value) && isFinite(value);
   }
@@ -146,7 +146,7 @@ export function isNumberSafe(value: unknown): value is number {
 export function safeNumber(
   value: number | undefined | null
 ): number | undefined {
-  if (isNumberSafe(value)) {
+  if (isSafeNumber(value)) {
     return value;
   }
   return undefined;

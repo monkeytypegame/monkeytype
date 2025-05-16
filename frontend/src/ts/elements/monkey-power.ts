@@ -1,7 +1,7 @@
 import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import Config from "../config";
-import { isNumberSafe } from "@monkeytype/util/numbers";
+import { isSafeNumber } from "@monkeytype/util/numbers";
 
 type Particle = {
   x: number;
@@ -86,7 +86,7 @@ function createParticle(x: number, y: number, color: string): Particle {
  * @param {Particle} particle
  */
 function updateParticle(particle: Particle): void {
-  if (!ctx.canvas || !isNumberSafe(ctx.deltaTime)) return;
+  if (!ctx.canvas || !isSafeNumber(ctx.deltaTime)) return;
 
   particle.prev.x = particle.x;
   particle.prev.y = particle.y;
@@ -124,7 +124,7 @@ export function init(): void {
 }
 
 function render(): void {
-  if (!isNumberSafe(ctx.lastFrame) || !ctx.context2d || !ctx.canvas) return;
+  if (!isSafeNumber(ctx.lastFrame) || !ctx.context2d || !ctx.canvas) return;
   ctx.rendering = true;
   const time = Date.now();
   ctx.deltaTime = (time - ctx.lastFrame) / 1000;
@@ -164,7 +164,7 @@ function render(): void {
 }
 
 export function reset(immediate = false): void {
-  if (!isNumberSafe(ctx.resetTimeOut)) return;
+  if (!isSafeNumber(ctx.resetTimeOut)) return;
   delete ctx.resetTimeOut;
 
   clearTimeout(ctx.resetTimeOut);
@@ -214,7 +214,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
       "transform",
       `translate(${shake[0]}px, ${shake[1]}px)`
     );
-    if (isNumberSafe(ctx.resetTimeOut)) clearTimeout(ctx.resetTimeOut);
+    if (isSafeNumber(ctx.resetTimeOut)) clearTimeout(ctx.resetTimeOut);
     ctx.resetTimeOut = setTimeout(reset, 2000) as unknown as number;
   }
 

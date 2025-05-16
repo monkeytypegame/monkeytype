@@ -97,7 +97,7 @@ describe("numbers", () => {
       });
     });
   });
-  describe("isNumberSafe", () => {
+  describe("isSafeNumber", () => {
     describe("should correctly identify safe numbers", () => {
       const testCases = [
         //safe
@@ -120,7 +120,7 @@ describe("numbers", () => {
       it.for(testCases)(
         "should return $expected for $input",
         ({ input, expected }) => {
-          expect(Numbers.isNumberSafe(input)).toEqual(expected);
+          expect(Numbers.isSafeNumber(input)).toEqual(expected);
         }
       );
     });

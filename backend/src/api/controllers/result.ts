@@ -53,7 +53,7 @@ import {
 } from "@monkeytype/contracts/schemas/results";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import {
-  isNumberSafe,
+  isSafeNumber,
   mapRange,
   roundTo2,
   stdDev,
@@ -328,7 +328,7 @@ export async function addResult(
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
   if (
     lastResult &&
-    isNumberSafe(lastResult?.timestamp) &&
+    isSafeNumber(lastResult?.timestamp) &&
     nowNoMilis < earliestPossible - 1000
   ) {
     void addLog(
@@ -786,7 +786,7 @@ async function calculateXp(
     Logger.error(`Could not fetch last result: ${getLastResultError}`);
   }
 
-  if (isNumberSafe(lastResult?.timestamp)) {
+  if (isSafeNumber(lastResult?.timestamp)) {
     const lastResultDay = getStartOfDayTimestamp(lastResult.timestamp);
     const today = getCurrentDayTimestamp();
     if (lastResultDay !== today) {

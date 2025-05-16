@@ -5,7 +5,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { isNumberSafe } from "@monkeytype/util/numbers";
+import { isSafeNumber } from "@monkeytype/util/numbers";
 
 let rating = 0;
 
@@ -35,8 +35,8 @@ function reset(): void {
 
 function getRatingAverage(quoteStats: QuoteStats): number {
   if (
-    !isNumberSafe(quoteStats.totalRating) ||
-    !isNumberSafe(quoteStats.ratings)
+    !isSafeNumber(quoteStats.totalRating) ||
+    !isSafeNumber(quoteStats.ratings)
   ) {
     return 0;
   }
@@ -122,7 +122,7 @@ export function show(quote: Quote, showOptions?: ShowOptions): void {
       const snapshot = DB.getSnapshot();
       const alreadyRated =
         snapshot?.quoteRatings?.[currentQuote.language]?.[currentQuote.id];
-      if (isNumberSafe(alreadyRated)) {
+      if (isSafeNumber(alreadyRated)) {
         rating = alreadyRated;
       }
       refreshStars();
@@ -167,7 +167,7 @@ async function submit(): Promise<void> {
 
   const languageRatings = quoteRatings?.[currentQuote.language] ?? {};
 
-  if (isNumberSafe(languageRatings?.[currentQuote.id])) {
+  if (isSafeNumber(languageRatings?.[currentQuote.id])) {
     const oldRating = quoteRatings[currentQuote.language]?.[
       currentQuote.id
     ] as number;
@@ -185,8 +185,8 @@ async function submit(): Promise<void> {
   } else {
     languageRatings[currentQuote.id] = rating;
     if (
-      isNumberSafe(quoteStats?.ratings) &&
-      isNumberSafe(quoteStats.totalRating)
+      isSafeNumber(quoteStats?.ratings) &&
+      isSafeNumber(quoteStats.totalRating)
     ) {
       quoteStats.ratings++;
       quoteStats.totalRating += rating;
