@@ -125,3 +125,29 @@ export function mapRange(
 
   return result;
 }
+
+/**
+ * Checks if a value is a safe number. Safe numbers are finite and not NaN.
+ * @param value The value to check.
+ * @returns True if the value is a safe number, false otherwise.
+ */
+export function isNumberSafe(value: unknown): value is number {
+  if (typeof value === "number") {
+    return !isNaN(value) && isFinite(value);
+  }
+  return false;
+}
+
+/**
+ * Converts a number to a safe number or undefined. NaN, Infinity, and -Infinity are converted to undefined.
+ * @param value The value to convert.
+ * @returns The input number if it is safe, undefined otherwise.
+ */
+export function safeNumber(
+  value: number | undefined | null
+): number | undefined {
+  if (isNumberSafe(value)) {
+    return value;
+  }
+  return undefined;
+}
