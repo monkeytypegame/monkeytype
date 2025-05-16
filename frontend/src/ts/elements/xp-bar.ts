@@ -3,7 +3,7 @@ import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import { XpBreakdown } from "@monkeytype/contracts/schemas/results";
-import { mapRange } from "@monkeytype/util/numbers";
+import { isNumberSafe, mapRange } from "@monkeytype/util/numbers";
 
 let breakdownVisible = false;
 let skip = false;
@@ -268,12 +268,12 @@ async function animateXpBreakdown(
 
   await Misc.sleep(delay);
 
-  if (breakdown.fullAccuracy) {
+  if (isNumberSafe(breakdown.fullAccuracy)) {
     await Misc.sleep(delay);
     total += breakdown.fullAccuracy;
     void flashTotalXp(total);
     await addBreakdownListItem("perfect", breakdown.fullAccuracy);
-  } else if (breakdown.corrected) {
+  } else if (isNumberSafe(breakdown.corrected)) {
     await Misc.sleep(delay);
     total += breakdown.corrected;
     void flashTotalXp(total);
@@ -282,19 +282,19 @@ async function animateXpBreakdown(
 
   if (skip) return;
 
-  if (breakdown.quote) {
+  if (isNumberSafe(breakdown.quote)) {
     await Misc.sleep(delay);
     total += breakdown.quote;
     void flashTotalXp(total);
     await addBreakdownListItem("quote", breakdown.quote);
   } else {
-    if (breakdown.punctuation) {
+    if (isNumberSafe(breakdown.punctuation)) {
       await Misc.sleep(delay);
       total += breakdown.punctuation;
       void flashTotalXp(total);
       await addBreakdownListItem("punctuation", breakdown.punctuation);
     }
-    if (breakdown.numbers) {
+    if (isNumberSafe(breakdown.numbers)) {
       await Misc.sleep(delay);
       total += breakdown.numbers;
       void flashTotalXp(total);
@@ -304,7 +304,7 @@ async function animateXpBreakdown(
 
   if (skip) return;
 
-  if (breakdown.funbox) {
+  if (isNumberSafe(breakdown.funbox)) {
     await Misc.sleep(delay);
     total += breakdown.funbox;
     void flashTotalXp(total);
@@ -313,7 +313,7 @@ async function animateXpBreakdown(
 
   if (skip) return;
 
-  if (breakdown.streak) {
+  if (isNumberSafe(breakdown.streak)) {
     await Misc.sleep(delay);
     total += breakdown.streak;
     void flashTotalXp(total);
@@ -322,7 +322,7 @@ async function animateXpBreakdown(
 
   if (skip) return;
 
-  if (breakdown.accPenalty) {
+  if (isNumberSafe(breakdown.accPenalty)) {
     await Misc.sleep(delay);
     total -= breakdown.accPenalty;
     void flashTotalXp(total);
@@ -331,7 +331,7 @@ async function animateXpBreakdown(
 
   if (skip) return;
 
-  if (breakdown.incomplete) {
+  if (isNumberSafe(breakdown.incomplete)) {
     await Misc.sleep(delay);
     total += breakdown.incomplete;
     void flashTotalXp(total);
@@ -340,7 +340,7 @@ async function animateXpBreakdown(
 
   if (skip) return;
 
-  if (breakdown.configMultiplier) {
+  if (isNumberSafe(breakdown.configMultiplier)) {
     await Misc.sleep(delay);
     total *= breakdown.configMultiplier;
     void flashTotalXp(total);
@@ -352,7 +352,7 @@ async function animateXpBreakdown(
 
   if (skip) return;
 
-  if (breakdown.daily) {
+  if (isNumberSafe(breakdown.daily)) {
     await Misc.sleep(delay);
     total += breakdown.daily;
     void flashTotalXp(total);

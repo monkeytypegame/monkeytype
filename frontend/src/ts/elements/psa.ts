@@ -9,6 +9,7 @@ import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/contracts/schemas/util";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { isNumberSafe } from "@monkeytype/util/numbers";
 
 const confirmedPSAs = new LocalStorageWithSchema({
   key: "confirmedPSAs",
@@ -136,7 +137,7 @@ export async function show(): Promise<void> {
   }
   const localmemory = getMemory();
   latest.forEach((psa) => {
-    if (psa.date) {
+    if (isNumberSafe(psa.date)) {
       const dateObj = new Date(psa.date);
       const diff = psa.date - Date.now();
       const string = secondsToString(

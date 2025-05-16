@@ -780,7 +780,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
 
     const userqr =
       DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
-    if (userqr) {
+    if (Numbers.isNumberSafe(userqr)) {
       $(".pageTest #result #rateQuoteButton .icon")
         .removeClass("far")
         .addClass("fas");

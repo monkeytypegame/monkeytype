@@ -52,7 +52,12 @@ import {
   XpBreakdown,
 } from "@monkeytype/contracts/schemas/results";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { mapRange, roundTo2, stdDev } from "@monkeytype/util/numbers";
+import {
+  isNumberSafe,
+  mapRange,
+  roundTo2,
+  stdDev,
+} from "@monkeytype/util/numbers";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
@@ -321,7 +326,11 @@ export async function addResult(
   const earliestPossible =
     (lastResult?.timestamp ?? 0) + testDurationMilis + incompleteTestsMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
-  if (lastResult?.timestamp && nowNoMilis < earliestPossible - 1000) {
+  if (
+    lastResult &&
+    isNumberSafe(lastResult?.timestamp) &&
+    nowNoMilis < earliestPossible - 1000
+  ) {
     void addLog(
       "invalid_result_spacing",
       {
@@ -777,7 +786,7 @@ async function calculateXp(
     Logger.error(`Could not fetch last result: ${getLastResultError}`);
   }
 
-  if (lastResult?.timestamp) {
+  if (isNumberSafe(lastResult?.timestamp)) {
     const lastResultDay = getStartOfDayTimestamp(lastResult.timestamp);
     const today = getCurrentDayTimestamp();
     if (lastResultDay !== today) {
