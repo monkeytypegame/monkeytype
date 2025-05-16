@@ -35,13 +35,15 @@ function reset(): void {
 
 function getRatingAverage(quoteStats: QuoteStats): number {
   if (
-    !isSafeNumber(quoteStats.totalRating) ||
-    !isSafeNumber(quoteStats.ratings)
+    isSafeNumber(quoteStats.ratings) &&
+    isSafeNumber(quoteStats.totalRating) &&
+    quoteStats.ratings > 0 &&
+    quoteStats.totalRating > 0
   ) {
-    return 0;
+    return Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
   }
 
-  return Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
+  return 0;
 }
 
 export async function getQuoteStats(
