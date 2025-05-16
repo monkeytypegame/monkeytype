@@ -327,7 +327,6 @@ export async function addResult(
     (lastResult?.timestamp ?? 0) + testDurationMilis + incompleteTestsMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
   if (
-    lastResult &&
     isSafeNumber(lastResult?.timestamp) &&
     nowNoMilis < earliestPossible - 1000
   ) {
