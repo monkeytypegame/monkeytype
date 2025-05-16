@@ -7,6 +7,7 @@ import * as TestWords from "./test-words";
 import { prefersReducedMotion } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
 import { splitIntoCharacters } from "../utils/strings";
+import { safeNumber } from "@monkeytype/util/numbers";
 
 export let caretAnimating = true;
 const caret = document.querySelector("#caret") as HTMLElement;
@@ -163,8 +164,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
   // offsetHeight is the same for all visible letters
   // so is offsetTop (for same line letters)
   const letterHeight =
-    currentLetter?.offsetHeight ||
-    lastWordLetter?.offsetHeight ||
+    (safeNumber(currentLetter?.offsetHeight) ?? 0) ||
+    (safeNumber(lastWordLetter?.offsetHeight) ?? 0) ||
     Config.fontSize * convertRemToPixels(1);
 
   const letterPosTop =

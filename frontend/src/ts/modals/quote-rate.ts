@@ -5,6 +5,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { isSafeNumber } from "@monkeytype/util/numbers";
 
 let rating = 0;
 
@@ -33,11 +34,16 @@ function reset(): void {
 }
 
 function getRatingAverage(quoteStats: QuoteStats): number {
-  if (!quoteStats.totalRating || !quoteStats.ratings) {
-    return 0;
+  if (
+    isSafeNumber(quoteStats.ratings) &&
+    isSafeNumber(quoteStats.totalRating) &&
+    quoteStats.ratings > 0 &&
+    quoteStats.totalRating > 0
+  ) {
+    return Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
   }
 
-  return Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
+  return 0;
 }
 
 export async function getQuoteStats(
@@ -66,7 +72,7 @@ export async function getQuoteStats(
   }
 
   quoteStats = response.body.data as QuoteStats;
-  if (quoteStats !== undefined && !quoteStats.average) {
+  if (quoteStats !== undefined && quoteStats.average === undefined) {
     quoteStats.average = getRatingAverage(quoteStats);
   }
 
@@ -118,7 +124,7 @@ export function show(quote: Quote, showOptions?: ShowOptions): void {
       const snapshot = DB.getSnapshot();
       const alreadyRated =
         snapshot?.quoteRatings?.[currentQuote.language]?.[currentQuote.id];
-      if (alreadyRated) {
+      if (isSafeNumber(alreadyRated)) {
         rating = alreadyRated;
       }
       refreshStars();
@@ -163,7 +169,7 @@ async function submit(): Promise<void> {
 
   const languageRatings = quoteRatings?.[currentQuote.language] ?? {};
 
-  if (languageRatings?.[currentQuote.id]) {
+  if (isSafeNumber(languageRatings?.[currentQuote.id])) {
     const oldRating = quoteRatings[currentQuote.language]?.[
       currentQuote.id
     ] as number;
@@ -180,7 +186,10 @@ async function submit(): Promise<void> {
     Notifications.add("Rating updated", 1);
   } else {
     languageRatings[currentQuote.id] = rating;
-    if (quoteStats?.ratings && quoteStats.totalRating) {
+    if (
+      isSafeNumber(quoteStats?.ratings) &&
+      isSafeNumber(quoteStats.totalRating)
+    ) {
       quoteStats.ratings++;
       quoteStats.totalRating += rating;
     } else {

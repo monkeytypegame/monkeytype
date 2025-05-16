@@ -1,4 +1,5 @@
 import { UTCDateMini } from "@date-fns/utc/date/mini";
+import { safeNumber } from "@monkeytype/util/numbers";
 import {
   format,
   endOfMonth,
@@ -219,7 +220,7 @@ export class ModifiableTestActivityCalendar
     const lastDay = new UTCDateMini(this.lastDay);
     if (isSameDay(date, lastDay)) {
       const last = this.data.length - 1;
-      this.data[last] = (this.data[last] || 0) + 1;
+      this.data[last] = (safeNumber(this.data[last]) ?? 0) + 1;
     } else if (isBefore(date, lastDay)) {
       throw new Error("cannot alter data in the past.");
     } else {
