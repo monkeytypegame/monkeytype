@@ -121,7 +121,7 @@ module.exports = {
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/strict-boolean-expressions": [
           "error",
-          { allowNullableBoolean: true, allowNullableNumber: true },
+          { allowNullableBoolean: true },
         ],
         "@typescript-eslint/non-nullable-type-assertion-style": "off",
         "@typescript-eslint/no-unnecessary-condition": "off",

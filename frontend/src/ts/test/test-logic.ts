@@ -1461,6 +1461,7 @@ $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
 
 $("header").on("click", "nav #startTestButton, #logo", () => {
   if (ActivePage.get() === "test") restart();
+  Result.showConfetti();
 });
 
 // ===============================
