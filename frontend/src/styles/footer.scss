@@ -82,6 +82,28 @@ footer {
     }
   }
 
+  .current-theme {
+    position: relative;
+
+    .favIcon {
+      position: absolute;
+      //right: -10px;
+      top: -8px;
+      font-size: 0.7rem;
+      color: var(--sub-color);
+      pointer-events: none;
+      transition: 0.125s;
+    }
+
+    .favIcon.active {
+      color: var(--sub-color);
+    }
+
+    &:hover .favIcon.active {
+      color: var(--text-color);
+    }
+  }
+
   &.focus {
     .keyTips {
       opacity: 0 !important;

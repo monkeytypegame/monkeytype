@@ -135,6 +135,36 @@ export async function loadStyle(name: string): Promise<void> {
   });
 }
 
+// update the favorite icon in the current theme button
+export function updateFooterThemeFavIcon(
+  themeName: string | null = null
+): void {
+  const favIconEl = document.querySelector(
+    "footer .right .current-theme .favIcon"
+  );
+  if (!favIconEl) return;
+  const iconEl = favIconEl.querySelector("i");
+  if (!iconEl) return;
+
+  const isCustom = themeName === "custom" || Config.customTheme;
+  const currentTheme = isCustom
+    ? null
+    : themeName ?? randomTheme ?? Config.theme;
+  const isFavorite =
+    !isCustom &&
+    currentTheme !== null &&
+    Config.favThemes.includes(currentTheme as ThemeName);
+
+  iconEl.classList.remove(isFavorite ? "far" : "fas");
+  iconEl.classList.add(isFavorite ? "fas" : "far");
+  if (isFavorite) {
+    favIconEl.classList.add("active");
+  } else {
+    favIconEl.classList.remove("active");
+  }
+}
+
+/****KEEPING FOR NOW AS REFRENCE AND THE PREVIEW!*****/
 // export function changeCustomTheme(themeId: string, nosave = false): void {
 //   const customThemes = DB.getSnapshot().customThemes;
 //   const colors = customThemes.find((e) => e._id === themeId)
@@ -209,6 +239,7 @@ const debouncedPreview = debounce<(t: string, c?: string[]) => void>(
   (themeIdenfitier, customColorsOverride) => {
     isPreviewingTheme = true;
     void apply(themeIdenfitier, customColorsOverride, true);
+    updateFooterThemeFavIcon(themeIdenfitier);
   }
 );
 
@@ -222,6 +253,7 @@ async function set(
     isAutoSwitch
   );
   await apply(themeIdentifier, undefined, isAutoSwitch);
+  updateFooterThemeFavIcon(themeIdentifier);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setAutoSwitchTheme(false);
@@ -235,10 +267,14 @@ export async function clearPreview(applyTheme = true): Promise<void> {
     if (applyTheme) {
       if (randomTheme !== null) {
         await apply(randomTheme);
+        // restore the correct favorite icon state for the current theme
+        updateFooterThemeFavIcon(randomTheme);
       } else if (Config.customTheme) {
         await apply("custom");
+        updateFooterThemeFavIcon("custom");
       } else {
         await apply(Config.theme);
+        updateFooterThemeFavIcon(Config.theme);
       }
     }
   }
