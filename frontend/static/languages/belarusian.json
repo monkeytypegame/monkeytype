@@ -2,6 +2,7 @@
   "name": "belarusian",
   "noLazyMode": true,
   "bcp47": "be-BY",
+  "charset": "cyrillic",
   "words": [
     "ён",
     "і",

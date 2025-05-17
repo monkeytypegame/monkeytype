@@ -3,6 +3,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "ne-NP",
+  "charset": "devanagari",
   "words": [
     "अंक",
     "अवसर",

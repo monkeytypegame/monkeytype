@@ -2,6 +2,7 @@
   "name": "bashkir",
   "bcp-47": "ba",
   "orderedByFrequency": true,
+  "charset": "cyrillic",
   "words": [
     "бер",
     "һәм",

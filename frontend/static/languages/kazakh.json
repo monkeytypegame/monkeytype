@@ -1,6 +1,7 @@
 {
   "name": "kazakh",
   "noLazyMode": true,
+  "charset": "cyrillic",
   "words": [
     "сен",
     "қазақ",
