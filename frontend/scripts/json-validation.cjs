@@ -133,6 +133,18 @@ function validateOthers() {
       return reject(new Error(challengesValidator.errors[0].message));
     }
 
+    const charDefinitionSchema = {
+      type: "array",
+      minItems: 1,
+      maxItems: 4,
+      items: { type: "string", minLength: 1, maxLength: 1 },
+    };
+    const charDefinitionSchemaRow5 = {
+      type: "array",
+      minItems: 1,
+      maxItems: 2,
+      items: { type: "string", minLength: 1, maxLength: 1 },
+    };
     //layouts
     const layoutsSchema = {
       ansi: {
@@ -145,31 +157,31 @@ function validateOthers() {
             properties: {
               row1: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: charDefinitionSchema,
                 minItems: 13,
                 maxItems: 13,
               },
               row2: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: charDefinitionSchema,
                 minItems: 13,
                 maxItems: 13,
               },
               row3: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: charDefinitionSchema,
                 minItems: 11,
                 maxItems: 11,
               },
               row4: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: charDefinitionSchema,
                 minItems: 10,
                 maxItems: 10,
               },
               row5: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: charDefinitionSchemaRow5,
                 minItems: 1,
                 maxItems: 2,
               },
@@ -189,31 +201,31 @@ function validateOthers() {
             properties: {
               row1: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: charDefinitionSchema,
                 minItems: 13,
                 maxItems: 13,
               },
               row2: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: charDefinitionSchema,
                 minItems: 12,
                 maxItems: 12,
               },
               row3: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: charDefinitionSchema,
                 minItems: 12,
                 maxItems: 12,
               },
               row4: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 4 },
+                items: charDefinitionSchema,
                 minItems: 11,
                 maxItems: 11,
               },
               row5: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: charDefinitionSchemaRow5,
                 minItems: 1,
                 maxItems: 2,
               },
