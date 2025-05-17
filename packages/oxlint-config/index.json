@@ -24,7 +24,7 @@
     "no-async-endpoint-handlers": "off",
     "no-this-alias": "off",
     "no-var": "error",
-
+    "no-unassigned-import": "off",
     "no-non-null-assertion": "error",
     "no-non-null-asserted-nullish-coalescing": "error",
     "no-explicit-any": "error",
