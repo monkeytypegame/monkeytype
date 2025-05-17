@@ -29,9 +29,12 @@ export class LocalStorageWithSchema<T> {
   }
 
   public get(): T {
+    console.debug(`LS ${this.key} Getting value from localStorage`);
+
     const value = window.localStorage.getItem(this.key);
 
     if (value === null) {
+      console.debug(`LS ${this.key} No value found, returning fallback`);
       return this.fallback;
     }
 
@@ -40,10 +43,17 @@ export class LocalStorageWithSchema<T> {
       parseJsonWithSchema(value, this.schema, {
         fallback: this.fallback,
         migrate: (oldData, zodIssues) => {
+          console.debug(`LS ${this.key} Schema validation failed`);
           migrated = true;
           if (this.migrate) {
+            console.debug(
+              `LS ${this.key} Migrating from old format to new format`
+            );
             return this.migrate(oldData, zodIssues);
           } else {
+            console.debug(
+              `LS ${this.key} No migration function provided, returning fallback`
+            );
             return this.fallback;
           }
         },
@@ -51,20 +61,27 @@ export class LocalStorageWithSchema<T> {
     );
 
     if (error) {
+      console.error(
+        `LS ${this.key} Failed to parse from localStorage: ${error.message}`
+      );
       window.localStorage.setItem(this.key, JSON.stringify(this.fallback));
       return this.fallback;
     }
 
     if (migrated || parsed === this.fallback) {
+      console.debug(`LS ${this.key} Setting in localStorage`);
       window.localStorage.setItem(this.key, JSON.stringify(parsed));
     }
 
+    console.debug(`LS ${this.key} Got value:`, parsed);
     return parsed;
   }
 
   public set(data: T): boolean {
     try {
+      console.debug(`LS ${this.key} Parsing to set in localStorage`);
       const parsed = this.schema.parse(data);
+      console.debug(`LS ${this.key} Setting in localStorage`);
       window.localStorage.setItem(this.key, JSON.stringify(parsed));
       return true;
     } catch (e) {
