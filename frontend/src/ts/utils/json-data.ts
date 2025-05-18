@@ -207,7 +207,7 @@ export async function getChallengeList(): Promise<Challenge[]> {
  * Fetches the list of themes from the server.
  * @returns A promise that resolves to the list of themes.
  */
-export async function getThemesList(): Promise<Theme[]> {
+export function getThemesList(): Theme[] {
   return ThemesList;
 }
 

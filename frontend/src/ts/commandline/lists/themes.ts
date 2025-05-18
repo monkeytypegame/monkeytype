@@ -83,16 +83,14 @@ export function update(themes: Theme[]): void {
 ConfigEvent.subscribe((eventKey, _eventValue) => {
   if (eventKey === "favThemes") {
     // update themes list when favorites change
-    const themesPromise = JSONData.getThemesList();
-    themesPromise
-      .then((themes) => {
-        update(themes);
-      })
-      .catch((e: unknown) => {
-        console.error(
-          Misc.createErrorMessage(e, "Failed to update themes commands")
-        );
-      });
+    try {
+      const themes = JSONData.getThemesList();
+      update(themes);
+    } catch (e: unknown) {
+      console.error(
+        Misc.createErrorMessage(e, "Failed to update themes commands")
+      );
+    }
   }
 });
 
