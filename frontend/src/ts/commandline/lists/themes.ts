@@ -4,6 +4,9 @@ import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";
 import { Theme, ThemesList } from "../../constants/themes";
 import { not } from "@monkeytype/util/predicates";
+import * as ConfigEvent from "../../observables/config-event";
+import * as JSONData from "../../utils/json-data";
+import * as Misc from "../../utils/misc";
 
 const isFavorite = (theme: Theme): boolean =>
   Config.favThemes.includes(theme.name);
@@ -75,4 +78,22 @@ export function update(themes: Theme[]): void {
     createThemeCommand(theme)
   );
 }
+
+// subscribe to theme-related config events to update the theme command list
+ConfigEvent.subscribe((eventKey, _eventValue) => {
+  if (eventKey === "favThemes") {
+    // update themes list when favorites change
+    const themesPromise = JSONData.getThemesList();
+    themesPromise
+      .then((themes) => {
+        update(themes);
+      })
+      .catch((e: unknown) => {
+        console.error(
+          Misc.createErrorMessage(e, "Failed to update themes commands")
+        );
+      });
+  }
+});
+
 export default commands;

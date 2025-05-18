@@ -11,9 +11,6 @@ import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup } from "./types";
-import * as JSONData from "../utils/json-data";
-import * as Misc from "../utils/misc";
-import * as ThemesModule from "./lists/themes";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
@@ -134,18 +131,6 @@ export function show(
       activeCommand = null;
       Focus.set(false);
       CommandlineLists.setStackToDefault();
-
-      // Update themes list with current favorites status when commandline is opened
-      const themesPromise = JSONData.getThemesList();
-      themesPromise
-        .then((themes) => {
-          ThemesModule.update(themes);
-        })
-        .catch((e: unknown) => {
-          console.error(
-            Misc.createErrorMessage(e, "Failed to update themes commands")
-          );
-        });
 
       updateInput();
       await filterSubgroup();
