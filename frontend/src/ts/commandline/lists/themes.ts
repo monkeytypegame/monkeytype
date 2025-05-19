@@ -5,7 +5,6 @@ import { Command, CommandsSubgroup } from "../types";
 import { Theme, ThemesList } from "../../constants/themes";
 import { not } from "@monkeytype/util/predicates";
 import * as ConfigEvent from "../../observables/config-event";
-import * as JSONData from "../../utils/json-data";
 import * as Misc from "../../utils/misc";
 
 const isFavorite = (theme: Theme): boolean =>
@@ -84,8 +83,7 @@ ConfigEvent.subscribe((eventKey, _eventValue) => {
   if (eventKey === "favThemes") {
     // update themes list when favorites change
     try {
-      const themes = JSONData.getThemesList();
-      update(themes);
+      update(ThemesList);
     } catch (e: unknown) {
       console.error(
         Misc.createErrorMessage(e, "Failed to update themes commands")

@@ -131,7 +131,6 @@ export function show(
       activeCommand = null;
       Focus.set(false);
       CommandlineLists.setStackToDefault();
-
       updateInput();
       await filterSubgroup();
       await showCommands();
