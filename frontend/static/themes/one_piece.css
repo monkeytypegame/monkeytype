@@ -1,0 +1,98 @@
+:root {
+  --bg-color: #06142e;
+  --main-color: #f7d51d;
+  --caret-color: #e10d05; 
+  --sub-color: #5c677d; 
+  --sub-alt-color: #2e3a59; 
+  --text-color: #ffffff;
+  --error-color: #ff003c; 
+  --error-extra-color: #c70039;
+  --colorful-error-color: #ff003c;
+  --colorful-error-extra-color: #c70039;
+}
+
+
+@keyframes gold-glow {
+  0% {
+    color: #f7d51d;
+  }
+  25% {
+    color: #ffe25e;
+  }
+  50% {
+    color: #fff5a3;
+  }
+  75% {
+    color: #ffe25e;
+  }
+  100% {
+    color: #f7d51d;
+  }
+}
+
+
+@keyframes ocean-surge {
+  0% {
+    background: #006994;
+  }
+  25% {
+    background: #0099cc;
+  }
+  50% {
+    background: #00c8ff;
+  }
+  75% {
+    background: #0099cc;
+  }
+  100% {
+    background: #006994;
+  }
+}
+
+
+#logo .bottom,
+header .config .group .buttons .textButton.active,
+#result .stats .group .bottom,
+nav .textButton:hover,
+nav button.text:hover,
+header .config .group .buttons .textButton:hover,
+footer .textButton:hover,
+footer button.text:hover,
+a:not(.button):hover {
+  animation: gold-glow 4s linear infinite;
+}
+
+.button.discord::after,
+#caret,
+.pageSettings .section .buttons .button.active,
+.pageSettings .section.languages .buttons .language.active,
+.pageAccount .group.filterButtons .buttons .button.active {
+  animation: ocean-surge 6s linear infinite;
+}
+
+#words {
+  --correct-letter-animation: gold-glow 4s linear infinite;
+}
+
+#words.flipped {
+  --untyped-letter-color: var(--sub-color);
+  --correct-letter-animation: none;
+  --untyped-letter-animation: gold-glow 4s linear infinite;
+}
+
+#words .word.typed letter.correct,
+#words.highlight-word .word.typed letter,
+#words.highlight-next-word .word.typed letter,
+#words.highlight-next-two-words .word.typed letter,
+#words.highlight-next-three-words .word.typed letter {
+  animation: gold-glow 4s linear infinite;
+}
+
+#words.flipped .word.typed letter {
+  animation: none;
+}
+
+#words.highlight-off .word letter,
+#words.highlight-off .word.typed letter {
+  animation: gold-glow 4s linear infinite;
+}
