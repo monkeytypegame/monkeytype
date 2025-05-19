@@ -1347,17 +1347,8 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
-  if (ActivePage.get() === "settings") {
-    if (
-      eventKey === "theme" ||
-      eventKey === "customTheme" ||
-      eventKey === "randomTheme"
-    ) {
-      void ThemePicker.refreshPresetButtons();
-    }
-    if (eventKey !== "theme") {
-      void update();
-    }
+  if (ActivePage.get() === "settings" && eventKey !== "theme") {
+    void update();
   }
 });
 
