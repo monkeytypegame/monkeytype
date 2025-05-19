@@ -142,26 +142,25 @@ export function updateFooterThemeFavIcon(
   const favIconEl = document.querySelector(
     "footer .right .current-theme .favIcon"
   );
-  if (!favIconEl) return;
+  if (!(favIconEl instanceof HTMLElement)) return;
   const iconEl = favIconEl.querySelector("i");
-  if (!iconEl) return;
 
+  if (!(iconEl instanceof HTMLElement)) return;
   const isCustom = themeName === "custom" || Config.customTheme;
-  const currentTheme = isCustom
-    ? null
-    : themeName ?? randomTheme ?? Config.theme;
+  // hide the favorite icon completely for custom themes
+  if (isCustom) {
+    favIconEl.style.display = "none";
+    return;
+  }
+  favIconEl.style.display = "";
+  const currentTheme = themeName ?? randomTheme ?? Config.theme;
   const isFavorite =
-    !isCustom &&
     currentTheme !== null &&
     Config.favThemes.includes(currentTheme as ThemeName);
 
-  iconEl.classList.remove(isFavorite ? "far" : "fas");
-  iconEl.classList.add(isFavorite ? "fas" : "far");
-  if (isFavorite) {
-    favIconEl.classList.add("active");
-  } else {
-    favIconEl.classList.remove("active");
-  }
+  iconEl.classList.toggle("fas", isFavorite);
+  iconEl.classList.toggle("far", !isFavorite);
+  favIconEl.classList.toggle("active", isFavorite);
 }
 
 /****KEEPING FOR NOW AS REFRENCE AND THE PREVIEW!*****/
