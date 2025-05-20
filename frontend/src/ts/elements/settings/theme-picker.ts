@@ -39,6 +39,12 @@ function updateActiveButton(): void {
     ?.classList.add("active");
 }
 
+export async function refreshThemeUI(): Promise<void> {
+  await refreshPresetButtons();
+  updateActiveButton();
+  await refreshCustomButtons();
+}
+
 function updateColors(
   colorPicker: JQuery,
   color: string,
