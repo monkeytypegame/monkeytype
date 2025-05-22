@@ -14,6 +14,7 @@ import { Command, CommandsSubgroup } from "./types";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
+import * as ConfigEvent from "../observables/config-event";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -355,6 +356,13 @@ async function getList(): Promise<Command[]> {
 
 let lastList: Command[] | undefined;
 
+// cear the cached list when language changes to ensure UI updates correctly
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "language") {
+    lastList = undefined;
+  }
+});
+
 async function showCommands(): Promise<void> {
   const element = document.querySelector("#commandLine .suggestions");
   if (element === null) {
@@ -367,7 +375,17 @@ async function showCommands(): Promise<void> {
   }
 
   const list = (await getList()).filter((c) => c.found === true);
-  if (lastList && areSortedArraysEqual(list, lastList)) {
+
+  if (
+    lastList &&
+    areSortedArraysEqual(list, lastList) &&
+    list.every((cmd) => {
+      if (cmd.configKey === "language") {
+        return cmd.configValue === Config.language;
+      }
+      return true;
+    })
+  ) {
     return;
   }
   lastList = list;
