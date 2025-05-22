@@ -1,4 +1,10 @@
-import { deepClone, getErrorMessage, isObject } from "../../src/ts/utils/misc";
+import { z } from "zod";
+import {
+  deepClone,
+  getErrorMessage,
+  isObject,
+  sanitize,
+} from "../../src/ts/utils/misc";
 import {
   getLanguageDisplayString,
   removeLanguageSize,
@@ -221,6 +227,58 @@ describe("misc.ts", () => {
       tests.forEach((test) => {
         const result = getErrorMessage(test.input);
         expect(result).toBe(test.expected);
+      });
+    });
+  });
+  describe("sanitize function", () => {
+    const schema = z.object({
+      name: z.string(),
+      age: z.number().positive(),
+      tags: z.array(z.string()),
+    });
+
+    it("should return the same object if it is valid", () => {
+      const obj = { name: "Alice", age: 30, tags: ["developer", "coder"] };
+      expect(sanitize(schema, obj)).toEqual(obj);
+    });
+
+    it("should remove properties with invalid values", () => {
+      const obj = { name: "Alice", age: -5, tags: ["developer", "coder"] };
+      expect(sanitize(schema, obj)).toEqual({
+        name: "Alice",
+        tags: ["developer", "coder"],
+        age: undefined,
+      });
+    });
+
+    it("should remove invalid array elements", () => {
+      const obj = {
+        name: "Alice",
+        age: 30,
+        tags: ["developer", 123, "coder"] as any,
+      };
+      expect(sanitize(schema, obj)).toEqual({
+        name: "Alice",
+        age: 30,
+        tags: ["developer", "coder"],
+      });
+    });
+
+    it("should remove entire property if all array elements are invalid", () => {
+      const obj = { name: "Alice", age: 30, tags: [123, 456] as any };
+      expect(sanitize(schema, obj)).toEqual({
+        name: "Alice",
+        age: 30,
+        tags: undefined,
+      });
+    });
+
+    it("should remove object properties if they are invalid", () => {
+      const obj = { name: 123 as any, age: 30, tags: ["developer", "coder"] };
+      expect(sanitize(schema, obj)).toEqual({
+        age: 30,
+        tags: ["developer", "coder"],
+        name: undefined,
       });
     });
   });

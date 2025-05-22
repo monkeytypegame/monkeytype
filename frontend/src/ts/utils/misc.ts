@@ -11,6 +11,7 @@ import {
   CustomTextDataWithTextLen,
   Result,
 } from "@monkeytype/contracts/schemas/results";
+import { z } from "zod";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -711,6 +712,56 @@ export function promiseWithResolvers<T = void>(): {
     reject = rej;
   });
   return { resolve, reject, promise };
+}
+
+/**
+ * Sanitize object. Remove invalid values based on the schema.
+ * @param schema zod schema
+ * @param obj object
+ * @returns sanitized object
+ */
+export function sanitize<T extends z.ZodTypeAny>(
+  schema: T,
+  obj: z.infer<T>
+): z.infer<T> {
+  const validate = schema.safeParse(obj);
+
+  if (validate.success) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return obj;
+  }
+
+  const errors: Map<string, number[] | undefined> = new Map();
+  for (const error of validate.error.errors) {
+    const element = error.path[0] as string;
+    let val = errors.get(element);
+    if (typeof error.path[1] === "number") {
+      val = [...(val ?? []), error.path[1]];
+    }
+    errors.set(element, val);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => {
+      if (!errors.has(key)) {
+        return [key, value];
+      }
+
+      const error = errors.get(key);
+
+      if (
+        Array.isArray(value) &&
+        error !== undefined && //error is not on the array itself
+        error.length < value.length //not all items in the array are invalid
+      ) {
+        //some items of the array are invalid
+        return [key, value.filter((_element, index) => !error.includes(index))];
+      } else {
+        return [key, undefined];
+      }
+    })
+  ) as z.infer<T>;
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

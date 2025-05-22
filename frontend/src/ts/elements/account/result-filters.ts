@@ -55,7 +55,9 @@ const resultFiltersLS = new LocalStorageWithSchema({
     if (!Misc.isObject(unknown)) {
       return defaultResultFilters;
     }
-    return mergeWithDefaultFilters(unknown as ResultFilters);
+    return mergeWithDefaultFilters(
+      Misc.sanitize(ResultFiltersSchema, unknown as ResultFilters)
+    );
   },
 });
 
@@ -89,6 +91,7 @@ function save(): void {
 export async function load(): Promise<void> {
   try {
     filters = resultFiltersLS.get();
+    console.log("###", { filters });
 
     const newTags: Record<string, boolean> = { none: false };
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
@@ -889,7 +892,8 @@ $(".group.presetFilterButtons .filterBtns").on(
 );
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
-  const filter = Misc.deepClone(filterIn);
+  const filter = Misc.sanitize(ResultFiltersSchema, Misc.deepClone(filterIn));
+
   Object.entries(defaultResultFilters).forEach((entry) => {
     const key = entry[0] as ResultFiltersGroup;
     const value = entry[1];
