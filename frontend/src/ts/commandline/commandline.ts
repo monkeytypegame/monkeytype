@@ -438,13 +438,24 @@ async function showCommands(): Promise<void> {
 
     if (command.customData !== undefined) {
       if (command.id.startsWith("changeTheme")) {
-        html += `<div class="command withThemeBubbles" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">
+        html += `<div class="command withThemeBubbles" data-command-id="${
+          command.id
+        }" data-index="${index}" style="${customStyle}">
       ${iconHTML}<div>${display}</div>
-      <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
-        <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
-        <div class="themeBubble" style="background: ${command.customData["subColor"]}"></div>
-        <div class="themeBubble" style="background: ${command.customData["textColor"]}"></div>
+      <div class="themeBubbles" style="background: ${
+        command.customData["bgColor"]
+      };outline: 0.25rem solid ${command.customData["bgColor"]};">
+        <div class="themeBubble" style="background: ${
+          command.customData["mainColor"]
+        }"></div>
+        <div class="themeBubble" style="background: ${
+          command.customData["subColor"]
+        }"></div>
+        <div class="themeBubble" style="background: ${
+          command.customData["textColor"]
+        }"></div>
       </div>
+      ${command.html ?? ""}
       </div>`;
       }
       if (command.id.startsWith("changeFont")) {

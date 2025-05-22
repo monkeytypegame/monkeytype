@@ -3,6 +3,7 @@ import { isAuthenticated } from "../../firebase";
 import * as DB from "../../db";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";
+import * as ConfigEvent from "../../observables/config-event";
 
 const subgroup: CommandsSubgroup = {
   title: "Custom themes list...",
@@ -57,5 +58,12 @@ export function update(): void {
     });
   }
 }
+
+// subscribe to theme-related config events to update the custom theme command list
+ConfigEvent.subscribe((eventKey, _eventValue) => {
+  if (["customTheme", "customThemeColors"].includes(eventKey)) {
+    update();
+  }
+});
 
 export default commands;

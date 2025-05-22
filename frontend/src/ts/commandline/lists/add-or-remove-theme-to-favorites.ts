@@ -7,7 +7,7 @@ const commands: Command[] = [
   {
     id: "addThemeToFavorite",
     display: "Add current theme to favorite",
-    icon: "fa-heart",
+    icon: "fa-star",
     available: (): boolean => {
       return (
         !Config.customTheme &&
@@ -25,7 +25,7 @@ const commands: Command[] = [
   {
     id: "removeThemeFromFavorite",
     display: "Remove current theme from favorite",
-    icon: "fa-heart-broken",
+    icon: "fa-star-half",
     available: (): boolean => {
       return (
         !Config.customTheme &&

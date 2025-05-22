@@ -135,6 +135,35 @@ export async function loadStyle(name: string): Promise<void> {
   });
 }
 
+// update the favorite icon in the current theme button
+export function updateFooterThemeFavIcon(
+  themeName: string | null = null
+): void {
+  const favIconEl = document.querySelector(
+    "footer .right .current-theme .favIcon"
+  );
+  if (!(favIconEl instanceof HTMLElement)) return;
+  const iconEl = favIconEl.querySelector("i");
+
+  if (!(iconEl instanceof HTMLElement)) return;
+  const isCustom = themeName === "custom" || Config.customTheme;
+  // hide the favorite icon completely for custom themes
+  if (isCustom) {
+    favIconEl.style.display = "none";
+    return;
+  }
+  favIconEl.style.display = "";
+  const currentTheme = themeName ?? randomTheme ?? Config.theme;
+  const isFavorite =
+    currentTheme !== null &&
+    Config.favThemes.includes(currentTheme as ThemeName);
+
+  iconEl.classList.toggle("fas", isFavorite);
+  iconEl.classList.toggle("far", !isFavorite);
+  favIconEl.classList.toggle("active", isFavorite);
+}
+
+/****KEEPING FOR NOW AS REFRENCE AND THE PREVIEW!*****/
 // export function changeCustomTheme(themeId: string, nosave = false): void {
 //   const customThemes = DB.getSnapshot().customThemes;
 //   const colors = customThemes.find((e) => e._id === themeId)
@@ -209,6 +238,7 @@ const debouncedPreview = debounce<(t: string, c?: string[]) => void>(
   (themeIdenfitier, customColorsOverride) => {
     isPreviewingTheme = true;
     void apply(themeIdenfitier, customColorsOverride, true);
+    updateFooterThemeFavIcon(themeIdenfitier);
   }
 );
 
@@ -222,6 +252,7 @@ async function set(
     isAutoSwitch
   );
   await apply(themeIdentifier, undefined, isAutoSwitch);
+  updateFooterThemeFavIcon(themeIdentifier);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setAutoSwitchTheme(false);
@@ -235,10 +266,14 @@ export async function clearPreview(applyTheme = true): Promise<void> {
     if (applyTheme) {
       if (randomTheme !== null) {
         await apply(randomTheme);
+        // restore the correct favorite icon state for the current theme
+        updateFooterThemeFavIcon(randomTheme);
       } else if (Config.customTheme) {
         await apply("custom");
+        updateFooterThemeFavIcon("custom");
       } else {
         await apply(Config.theme);
+        updateFooterThemeFavIcon(Config.theme);
       }
     }
   }
