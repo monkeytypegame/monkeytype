@@ -14,7 +14,6 @@ import { Command, CommandsSubgroup } from "./types";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
-import * as ConfigEvent from "../observables/config-event";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -39,6 +38,15 @@ let inputModeParams: InputModeParams = {
 let subgroupOverride: CommandsSubgroup | null = null;
 let isAnimating = false;
 let lastSingleListModeInputValue = "";
+
+type CommandWithActiveState = Omit<Command, "active"> & { active: boolean };
+
+let lastState:
+  | {
+      list: CommandWithActiveState[];
+      usingSingleList: boolean;
+    }
+  | undefined;
 
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
@@ -194,6 +202,7 @@ async function goBackOrHide(): Promise<void> {
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
+    lastSingleListModeInputValue = "";
     return;
   }
 
@@ -329,7 +338,7 @@ function hideCommands(): void {
     throw new Error("Commandline element not found");
   }
   element.innerHTML = "";
-  lastList = undefined;
+  lastState = undefined;
 }
 
 let cachedSingleSubgroup: CommandsSubgroup | null = null;
@@ -354,14 +363,32 @@ async function getList(): Promise<Command[]> {
   return (await getSubgroup()).list;
 }
 
-let lastList: Command[] | undefined;
+function fillActiveState(command: Command): CommandWithActiveState {
+  let isActive = false;
 
-// cear the cached list when language changes to ensure UI updates correctly
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "language") {
-    lastList = undefined;
+  if (command.active !== undefined) {
+    isActive = command.active();
+  } else if (command.configKey !== undefined) {
+    if (command.configValueMode === "include") {
+      isActive = (
+        Config[command.configKey as keyof typeof Config] as (
+          | string
+          | number
+          | boolean
+          | number[]
+          | undefined
+        )[]
+      ).includes(command.configValue);
+    } else {
+      isActive =
+        Config[command.configKey as keyof typeof Config] ===
+        command.configValue;
+    }
   }
-});
+
+  const { active: _originalActive, ...restOfCommand } = command;
+  return { ...restOfCommand, active: isActive };
+}
 
 async function showCommands(): Promise<void> {
   const element = document.querySelector("#commandLine .suggestions");
@@ -376,19 +403,20 @@ async function showCommands(): Promise<void> {
 
   const list = (await getList()).filter((c) => c.found === true);
 
+  const listWithActiveState = list.map(fillActiveState);
+
   if (
-    lastList &&
-    areSortedArraysEqual(list, lastList) &&
-    list.every((cmd) => {
-      if (cmd.configKey === "language") {
-        return cmd.configValue === Config.language;
-      }
-      return true;
-    })
+    lastState &&
+    usingSingleList === lastState.usingSingleList &&
+    areSortedArraysEqual(listWithActiveState, lastState.list)
   ) {
     return;
   }
-  lastList = list;
+
+  lastState = {
+    list: listWithActiveState,
+    usingSingleList: usingSingleList,
+  };
 
   let html = "";
   let index = 0;
