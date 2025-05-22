@@ -1,6 +1,7 @@
 {
   "name": "greek_10k",
   "bcp47": "el-GR",
+  "charset": "greek",
   "words": [
     "άγρια",
     "άδεια",

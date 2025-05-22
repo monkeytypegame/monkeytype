@@ -1,6 +1,7 @@
 {
   "name": "greek",
   "bcp47": "el-GR",
+  "charset": "greek",
   "words": [
     "άρθρο",
     "στέψη",

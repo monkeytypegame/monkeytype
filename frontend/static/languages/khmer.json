@@ -3,6 +3,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "km-KH",
+  "charset": "khmer",
   "words": [
     "ខ្ញុំ",
     "អ្នក",

@@ -3,6 +3,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "ko-KR",
+  "charset": "hangul",
   "words": [
     "불가능하다",
     "인제",

@@ -4,6 +4,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "fa",
+  "charset": "arabic",
   "words": [
     "پیوند",
     "شگفت",

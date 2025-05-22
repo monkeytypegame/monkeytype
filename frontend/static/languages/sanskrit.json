@@ -3,6 +3,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "sa",
+  "charset": "devanagari",
   "words": [
     "अंहु",
     "अक्षि",

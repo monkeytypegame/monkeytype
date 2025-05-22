@@ -2,6 +2,7 @@
   "name": "amharic_1k",
   "ligatures": false,
   "bcp47": "am-ET",
+  "charset": "geez",
   "words": [
     "መለየት",
     "ማሰብ",

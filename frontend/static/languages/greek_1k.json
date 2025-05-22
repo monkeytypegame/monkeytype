@@ -1,6 +1,7 @@
 {
   "name": "greek_1k",
   "bcp47": "el-GR",
+  "charset": "greek",
   "words": [
     "άλλα",
     "άλλες",

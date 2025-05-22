@@ -2,6 +2,7 @@
   "name": "tatar",
   "bcp-47": "tt",
   "orderedByFrequency": true,
+  "charset": "cyrillic",
   "words": [
     "һәм",
     "белән",

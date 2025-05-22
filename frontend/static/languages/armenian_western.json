@@ -1,6 +1,7 @@
 {
   "name": "armenian_western",
   "bcp47": "hyw",
+  "charset": "armenian",
   "words": [
     "կանանց",
     "իրեն",
