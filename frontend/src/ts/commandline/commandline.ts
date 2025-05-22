@@ -202,7 +202,6 @@ async function goBackOrHide(): Promise<void> {
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
-    //lastSingleListModeInputValue = "";
     return;
   }
 
