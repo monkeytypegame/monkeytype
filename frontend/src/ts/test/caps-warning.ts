@@ -39,5 +39,5 @@ function update(event: JQuery.KeyDownEvent | JQuery.KeyUpEvent): void {
 $(document).on("keyup", update);
 
 $(document).on("keydown", (event) => {
-  if (isMacOs) update(event);
+  if (event.code === "CapsLock") update(event);
 });
