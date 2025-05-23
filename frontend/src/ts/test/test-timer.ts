@@ -153,29 +153,25 @@ function checkIfFailed(
 
 function checkIfTimeIsUp(): void {
   if (timerDebug) console.time("times up check");
-  if (
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
-  ) {
-    if (
-      (Time.get() >= Config.time &&
-        Config.time !== 0 &&
-        Config.mode === "time") ||
-      (Time.get() >= CustomText.getLimitValue() &&
-        CustomText.getLimitValue() !== 0 &&
-        Config.mode === "custom")
-    ) {
-      //times up
-      if (timer !== null) clearTimeout(timer);
-      Caret.hide();
-      TestInput.input.pushHistory();
-      TestInput.corrected.pushHistory();
-      SlowTimer.clear();
-      slowTimerCount = 0;
-      TimerEvent.dispatch("finish");
-      return;
-    }
+  let maxTime = undefined;
+
+  if (Config.mode === "time") {
+    maxTime = Config.time;
+  } else if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
+    maxTime = CustomText.getLimitValue();
   }
+  if (maxTime !== undefined && maxTime !== 0 && Time.get() >= maxTime) {
+    //times up
+    if (timer !== null) clearTimeout(timer);
+    Caret.hide();
+    TestInput.input.pushHistory();
+    TestInput.corrected.pushHistory();
+    SlowTimer.clear();
+    slowTimerCount = 0;
+    TimerEvent.dispatch("finish");
+    return;
+  }
+
   if (timerDebug) console.timeEnd("times up check");
 }
 
