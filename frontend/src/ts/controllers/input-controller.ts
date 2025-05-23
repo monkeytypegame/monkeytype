@@ -398,8 +398,14 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return false;
   }
 
-  if (originalChar === char) {
-    return true;
+  if (Config.capsLock) {
+    if (originalChar?.toLowerCase() === char.toLowerCase()) {
+      return true;
+    }
+  } else {
+    if (originalChar === char) {
+      return true;
+    }
   }
 
   const funbox = findSingleActiveFunboxWithFunction("isCharCorrect");

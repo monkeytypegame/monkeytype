@@ -104,6 +104,7 @@ const obj = {
   tapeMode: "off",
   tapeMargin: 50,
   maxLineWidth: 0,
+  capsLock: true,
 } as Config;
 
 export function getDefaultConfig(): Config {

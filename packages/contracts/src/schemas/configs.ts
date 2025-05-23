@@ -434,6 +434,7 @@ export const ConfigSchema = z
     showAverage: ShowAverageSchema,
     maxLineWidth: MaxLineWidthSchema,
     customPolyglot: CustomPolyglotSchema,
+    capsLock: z.boolean(),
   } satisfies Record<string, ZodSchema>)
   .strict();
 
@@ -548,6 +549,7 @@ export const ConfigGroupsLiteral = {
   showAverage: "hideElements",
   maxLineWidth: "appearance",
   customPolyglot: "behavior",
+  capsLock: "behavior",
 } as const satisfies Record<ConfigKey, ConfigGroupName>;
 
 export type ConfigGroups = typeof ConfigGroupsLiteral;
