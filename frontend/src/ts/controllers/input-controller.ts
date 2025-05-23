@@ -398,7 +398,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return false;
   }
 
-  if (Config.capsLock) {
+  if (Config.ignoreCapsLock) {
     if (originalChar?.toLowerCase() === char.toLowerCase()) {
       return true;
     }
