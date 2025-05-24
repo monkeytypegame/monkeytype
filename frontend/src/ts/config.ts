@@ -747,7 +747,7 @@ export function setIgnoreCapsLock(val: boolean, nosave?: boolean): boolean {
 
   config.ignoreCapsLock = val;
   saveToLocalStorage("ignoreCapsLock", nosave);
-  ConfigEvent.dispatch("ignoreCapsLock", config.ignoreCapsLock);
+  ConfigEvent.dispatch("ignoreCapsLock", true);
 
   return true;
 }
@@ -2092,6 +2092,7 @@ export async function apply(
     setHideExtraLetters(configObj.hideExtraLetters, true);
     setStartGraphsAtZero(configObj.startGraphsAtZero, true);
     setStrictSpace(configObj.strictSpace, true);
+    setIgnoreCapsLock(configObj.ignoreCapsLock, true);
     setOppositeShiftMode(configObj.oppositeShiftMode, true);
     setMode(configObj.mode, true);
     setNumbers(configObj.numbers, true);

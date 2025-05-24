@@ -6,6 +6,7 @@ import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Numbers from "@monkeytype/util/numbers";
+import { getCapsLockState } from "../controllers/caps-lock-controller";
 import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";
 import * as Funbox from "../test/funbox/funbox";
@@ -398,7 +399,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return false;
   }
 
-  if (Config.ignoreCapsLock) {
+  if (Config.ignoreCapsLock && getCapsLockState()) {
     if (originalChar?.toLowerCase() === char.toLowerCase()) {
       return true;
     }
