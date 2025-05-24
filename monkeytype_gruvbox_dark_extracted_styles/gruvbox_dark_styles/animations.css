@@ -1,0 +1,121 @@
+/* Defines a loading animation where an element expands from 0% to 100% width and then shrinks back to 0% while moving from left to right. */
+@keyframes loader {
+  0% {
+    width: 0;
+    left: 0;
+  }
+
+  50% {
+    width: 100%;
+    left: 0;
+  }
+
+  100% {
+    width: 0;
+    left: 100%;
+  }
+}
+
+/* Defines a smooth caret blinking animation where opacity changes from 0 to 1 and back to 0. */
+@keyframes caretFlashSmooth {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Defines a hard caret blinking animation where opacity is 1 for the first half and 0 for the second half. */
+@keyframes caretFlashHard {
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Defines an animation for a key flash, changing color, background-color, and border-color from one state to another. */
+@keyframes flashKey {
+  from {
+    color: var(--bg-color);
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+  }
+
+  to {
+    color: var(--sub-color);
+    background-color: var(--bg-color);
+    border-color: var(--sub-color);
+  }
+}
+
+/* Defines a shake animation where an element translates slightly left and right. */
+@keyframes shake {
+  0% {
+    transform: translate(2px, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-2px, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(2px, 0) rotate(0deg);
+  }
+}
+
+/* Defines an animation for a highlight flash, changing the background color briefly. */
+@keyframes flashHighlight {
+  0% {
+    background-color: var(--bg-color) !important;
+  }
+  10% {
+    background-color: var(--main-color) !important;
+  }
+  40% {
+    background-color: var(--main-color) !important;
+  }
+  100% {
+    background-color: var(--bg-color) !important;
+  }
+}
+
+/* Defines an RGB background animation that cycles through different HSL colors. */
+@keyframes rgb-bg {
+  0% {
+    background: #4cae4c; /* hsl(120, 39%, 49%) */
+  }
+  20% {
+    background: #409eb5; /* hsl(192, 48%, 48%) */
+  }
+  40% {
+    background: #8134f4; /* hsl(264, 90%, 58%) */
+  }
+  60% {
+    background: #f10e19; /* hsl(357, 89%, 50%) */
+  }
+  80% {
+    background: #ffc505; /* hsl(46, 100%, 51%) */
+  }
+  100% {
+    background: #4cae4c; /* hsl(120, 39%, 49%) */
+  }
+}
+
+/* Defines a scanline animation that moves an element from top to bottom. */
+@keyframes scanline {
+  0% {
+    bottom: 100%;
+  }
+  80% {
+    bottom: 100%;
+  }
+  100% {
+    bottom: 0%;
+  }
+}

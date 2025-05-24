@@ -1,0 +1,981 @@
+/*
+  This file contains styles specific to the typing test interface for the Gruvbox Dark theme.
+  It includes styles for words, letters, carets, results display, and other test-related UI elements,
+  adapted from test.scss and caret.scss.
+  It uses CSS variables defined in gruvbox_dark_colors.css.
+*/
+
+/* --- Typing Area Styles (from test.scss) --- */
+
+/* Wrapper for the words display area */
+/* Handles overflow and masking for tape mode. */
+#wordsWrapper {
+  position: relative;
+  overflow: visible clip; /* Clips content that overflows, 'visible clip' is a newer way to say 'overflow: hidden' essentially */
+}
+
+#wordsWrapper.tape {
+  overflow: hidden;
+  /* Masking for tape mode to fade out words at the edges */
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 1%,
+    rgb(0, 0, 0) 10%,
+    rgb(0, 0, 0) 90%,
+    rgba(0, 0, 0, 0) 99%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 1%,
+    rgb(0, 0, 0) 10%,
+    rgb(0, 0, 0) 90%,
+    rgba(0, 0, 0, 0) 99%
+  );
+}
+
+/* Container for all words in the test */
+/* Defines how words are laid out (flexbox). */
+#words {
+  height: fit-content; /* Adjusts height to content */
+  height: -moz-fit-content; /* Firefox specific */
+  padding-bottom: 0.5em; /* Space at the bottom, e.g., for hints */
+  display: flex; /* Enables flexbox layout for words */
+  flex-wrap: wrap; /* Allows words to wrap to the next line */
+  width: 100%;
+  align-content: flex-start; /* Aligns wrapped lines to the start */
+  -webkit-user-select: none; /* Prevents text selection */
+  user-select: none;
+
+  /* Default letter colors - these will be overridden by specific states or modes */
+  --untyped-letter-color: var(--sub-color);
+  --correct-letter-color: var(--text-color);
+  --incorrect-letter-color: var(--error-color);
+  --extra-letter-color: var(--error-extra-color);
+  --missing-letter-color: var(--sub-color); /* For letters skipped over */
+}
+
+/* Newline element styling within words container */
+#words .newline {
+  width: inherit; /* Ensures it takes full width to force a new line */
+}
+#words .beforeNewline {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0.25em 0;
+  box-sizing: content-box;
+  height: 1em; /* Matches .word line-height */
+  border-top: 0.05em solid transparent;
+  border-bottom: 2px solid transparent; /* Matches .word border */
+}
+#words .afterNewline {
+  display: inline-block;
+}
+
+
+/* Individual word styling */
+.word {
+  position: relative; /* For hint positioning */
+  font-size: 1em; /* Base font size for words */
+  line-height: 1em; /* Base line height */
+  margin: 0.25em 0.3em; /* Margin around each word */
+  font-variant: no-common-ligatures; /* Disables common ligatures */
+  border-bottom: 2px solid transparent; /* Placeholder for error indication */
+}
+
+/* Individual letter styling within a word */
+.word letter {
+  display: inline-block; /* Allows letters to have dimensions and spacing */
+  color: var(--untyped-letter-color); /* Default color for untyped letters */
+  border-bottom-style: solid;
+  border-bottom-width: 0.05em;
+  border-bottom-color: transparent; /* Subtle underline for all letters */
+}
+
+/* Dead letters (letters that were typed but then deleted, showing underlying text) */
+.word letter.dead {
+  border-bottom-width: 0.05em;
+  border-bottom-color: var(--untyped-letter-color); /* Shows the original letter color under caret */
+}
+
+/* Special characters like Tab or Newline icons */
+.word letter.tabChar,
+.word letter.nlChar {
+  margin: 0 0.25rem; /* Spacing for these characters */
+  opacity: 0.2; /* Make them less prominent */
+}
+.word letter.tabChar i,
+.word letter.nlChar i {
+  line-height: 0; /* Adjust icon alignment if needed */
+}
+
+/* Correctly typed letters */
+.word letter.correct {
+  color: var(--correct-letter-color);
+}
+
+/* Letters that were corrected after being typed incorrectly */
+.word letter.corrected {
+  color: var(--correct-letter-color);
+  border-bottom: 2px dotted var(--main-color); /* Dotted underline to indicate correction */
+}
+
+/* Extra letters that were corrected */
+.word letter.extraCorrected {
+  /* This was originally a border-right, but that might look strange.
+     A text decoration or different background might be better if distinct styling is needed.
+     For now, let's assume it might be similar to 'corrected' or rely on its 'extra' status. */
+  /* border-right: 2px dotted var(--main-color); */
+}
+
+/* Incorrectly typed letters */
+.word letter.incorrect {
+  color: var(--incorrect-letter-color);
+}
+
+/* Extra letters (typed beyond the actual word) that are incorrect */
+.word letter.incorrect.extra {
+  color: var(--extra-letter-color);
+}
+
+/* Missing letters (skipped over by the typist) */
+.word letter.missing {
+  opacity: 0.5; /* Make missing letters less prominent */
+  color: var(--missing-letter-color); /* Usually sub-color */
+}
+
+/* Hints for letters (e.g., for certain funbox modes) */
+.word .hints hint {
+  position: absolute;
+  bottom: -1.1em; /* Position below the letter */
+  color: var(--correct-letter-color); /* Hint color, usually like correct letters */
+  line-height: initial;
+  font-size: 0.75em; /* Smaller font size for hints */
+  text-shadow: none;
+  padding: 1px;
+  left: 0;
+  opacity: 0.5; /* Make hints subtle */
+  text-align: center;
+  display: grid; /* For centering if needed */
+  justify-content: center;
+  transform: translate(-50%); /* Center hint below the letter */
+}
+
+/* Word in error state (contains incorrect letters) */
+.word.error {
+  border-bottom: 2px solid var(--error-color); /* Underline word with error color */
+  /* Text shadow can be used to make text pop against bg, useful if bg is similar to text color */
+  /* text-shadow: 1px 0px 0px var(--bg-color), -1px 0px 0px var(--bg-color), 0px 1px 0px var(--bg-color); */
+}
+
+/* Tape mode: words are in a single line */
+#words.tape {
+  display: block; /* Override flex for a single line */
+  white-space: nowrap; /* Prevent wrapping */
+  width: 200vw; /* Very wide to simulate tape */
+}
+#words.tape .word {
+  margin: 0.25em 0.6em 0.25em 0; /* Adjusted margin for tape mode */
+  display: inline-block; /* Words displayed inline */
+  vertical-align: top;
+}
+
+/* Right-to-left language support */
+#words.rightToLeftTest {
+  direction: rtl; /* Sets text direction to right-to-left */
+}
+#words.rightToLeftTest .word {
+  direction: rtl; /* Ensures individual words also respect RTL */
+}
+
+/* Ligatures mode */
+#words.withLigatures letter {
+  display: inline; /* Default, but ensures ligatures can form */
+}
+
+/* Blurred words (e.g., when out of focus or specific modes) */
+#words.blurred {
+  opacity: 0.25;
+  filter: blur(4px);
+  -webkit-filter: blur(4px);
+}
+
+/* Blind mode: incorrect letters appear as correct */
+#words.blind .word letter.incorrect {
+  color: var(--correct-letter-color); /* Show incorrect as correct */
+}
+#words.blind .word letter.extra {
+  display: none; /* Hide extra letters in blind mode */
+}
+#words.blind .word .hints hint {
+  display: none; /* Hide hints in blind mode */
+}
+
+/* Hide extra letters mode */
+#words.hideExtraLetters .word letter.extra {
+  display: none;
+}
+
+/* Flipped mode: untyped letters are main text color, correct are sub-color */
+#words.flipped {
+  --untyped-letter-color: var(--text-color);
+  --correct-letter-color: var(--sub-color);
+  /* Incorrect and extra colors remain as defined by default or by colorfulMode */
+}
+
+/* Colorful mode: uses more vibrant theme colors */
+#words.colorfulMode {
+  --untyped-letter-color: var(--sub-color); /* Default untyped */
+  --correct-letter-color: var(--main-color); /* Correct letters use main accent color */
+  --incorrect-letter-color: var(--colorful-error-color); /* Use colorful error variables */
+  --extra-letter-color: var(--colorful-error-extra-color);
+}
+#words.colorfulMode .word.error { /* Error border in colorful mode */
+  border-bottom: 2px solid var(--colorful-error-color);
+}
+
+
+/* Flipped and Colorful mode combined */
+#words.flipped.colorfulMode {
+  --untyped-letter-color: var(--main-color); /* Untyped is main accent */
+  --correct-letter-color: var(--sub-color);  /* Correct is sub color */
+  /* Incorrect and extra colors from colorfulMode apply */
+}
+
+/* Highlight Modes */
+/* Highlight Off: Correctly typed letters look like untyped ones */
+#words.highlight-off .word letter.correct {
+  color: var(--untyped-letter-color);
+}
+#words.highlight-off.blind .word letter.incorrect { /* Blind mode with highlight off */
+  color: var(--untyped-letter-color);
+}
+
+/* Highlight Word: Only the active word's letters are colored as 'correct' */
+#words.highlight-word .word.typed letter { /* Previously typed words */
+  color: var(--untyped-letter-color);
+}
+#words.highlight-word .word.active letter { /* Current word */
+  color: var(--correct-letter-color);
+}
+#words.highlight-word:not(.blind) .word.typed.error letter,
+#words.highlight-word:not(.blind) .word.active letter.incorrect { /* Errors in non-blind mode */
+  color: var(--incorrect-letter-color);
+}
+
+/* Highlight Next Word: Active and next word are 'correct' color */
+#words.highlight-next-word .word.typed letter {
+  color: var(--untyped-letter-color);
+}
+#words.highlight-next-word .word.active letter,
+#words.highlight-next-word .word.active + .word letter {
+  color: var(--correct-letter-color);
+}
+#words.highlight-next-word:not(.blind) .word.typed.error letter,
+#words.highlight-next-word:not(.blind) .word.active letter.incorrect {
+  color: var(--incorrect-letter-color);
+}
+
+/* Highlight Next Two/Three Words (patterns are similar) */
+#words.highlight-next-two-words .word.typed letter { color: var(--untyped-letter-color); }
+#words.highlight-next-two-words .word.active letter,
+#words.highlight-next-two-words .word.active + .word letter,
+#words.highlight-next-two-words .word.active + .word + .word letter {
+  color: var(--correct-letter-color);
+}
+#words.highlight-next-two-words:not(.blind) .word.typed.error letter,
+#words.highlight-next-two-words:not(.blind) .word.active letter.incorrect {
+  color: var(--incorrect-letter-color);
+}
+
+#words.highlight-next-three-words .word.typed letter { color: var(--untyped-letter-color); }
+#words.highlight-next-three-words .word.active letter,
+#words.highlight-next-three-words .word.active + .word letter,
+#words.highlight-next-three-words .word.active + .word + .word letter,
+#words.highlight-next-three-words .word.active + .word + .word + .word letter {
+  color: var(--correct-letter-color);
+}
+#words.highlight-next-three-words:not(.blind) .word.typed.error letter,
+#words.highlight-next-three-words:not(.blind) .word.active letter.incorrect {
+  color: var(--incorrect-letter-color);
+}
+
+/* Word input highlight (popup showing typed word, e.g. for some modes) */
+.word .wordInputHighlight {
+  opacity: 1;
+  white-space: nowrap;
+  position: absolute;
+  background: var(--sub-color); /* Subdued background */
+  color: var(--bg-color); /* Contrasting text */
+  padding: 0.5rem;
+  margin-left: -0.5rem; /* Offset to align with word */
+  border-radius: 0.5rem; /* Use global --roundness if defined, else a fixed value */
+  transition: 0.25s;
+  text-shadow: none;
+  top: -0.5rem; /* Position above the word */
+  z-index: 10; /* Above other elements */
+}
+.word .wordInputHighlight.withSpeed .speed {
+  font-size: 0.75rem;
+  color: var(--sub-alt-color); /* Speed indicator text color */
+}
+
+/* Hidden input field (not visible, but functional) */
+#wordsInput {
+  opacity: 0; /* Hidden */
+  position: absolute;
+  z-index: -1; /* Behind other elements */
+  pointer-events: none; /* Not interactive */
+  /* Other properties ensure it doesn't affect layout */
+  width: 1ch;
+  font-size: 1em;
+  height: 1em;
+  padding: 0;
+  margin: 0 auto;
+  border: none;
+  outline: none;
+  display: block;
+  resize: none;
+  border-radius: 0;
+}
+
+/* Caps Lock Warning */
+#capsWarning {
+  font-size: 1rem;
+  background: var(--main-color); /* Prominent background */
+  color: var(--bg-color); /* Contrasting text */
+  display: table; /* Allows centering trick */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  padding: 1rem;
+  border-radius: 0.5rem; /* Use global --roundness */
+  transition: 0.125s;
+  z-index: 999; /* Above most elements */
+  pointer-events: none;
+  top: -2.5rem; /* Position above typing area */
+}
+#capsWarning i {
+  margin-right: 0.5rem; /* Space for icon */
+}
+
+/* Live Stats Mini (small stats display near typing area) */
+#liveStatsMini {
+  /* Initially hidden/zero-sized, shown by JS */
+  width: 0;
+  height: 0;
+  margin-left: 0.25em;
+  display: flex;
+  margin-top: -1.25em; /* Positioning relative to words */
+  color: var(--sub-color); /* Default color, can be overridden by timerX classes */
+}
+#liveStatsMini div {
+  font-size: 1em;
+  line-height: 1em;
+}
+#liveStatsMini .time,
+#liveStatsMini .speed,
+#liveStatsMini .acc {
+  margin-right: 0.5em;
+  opacity: 0; /* JS controls visibility */
+}
+#liveStatsMini .burst {
+  opacity: 0; /* JS controls visibility */
+}
+#liveStatsMini.timerMain { color: var(--main-color); }
+#liveStatsMini.timerSub { color: var(--sub-color); }
+#liveStatsMini.timerText { color: var(--text-color); }
+
+/* Different sizes for live stats */
+#liveStatsMini.size125 { margin-top: -1.75rem; font-size: 1.25rem; line-height: 1.25rem; }
+#liveStatsMini.size15  { margin-top: -2rem;   font-size: 1.5rem;  line-height: 1.5rem; }
+#liveStatsMini.size2   { margin-top: -2.5rem; font-size: 2rem;    line-height: 2rem; }
+#liveStatsMini.size3   { margin-top: -3.5rem; font-size: 3rem;    line-height: 3rem; }
+#liveStatsMini.size4   { margin-top: -4.5rem; font-size: 4rem;    line-height: 4rem; }
+
+
+/* Bar Timer Progress */
+#barTimerProgress .bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 0.5rem;
+  background: var(--sub-alt-color); /* Default bar color */
+  z-index: 99; /* High z-index to be visible */
+}
+#barTimerProgress.timerMain .bar { background: var(--main-color); }
+#barTimerProgress.timerSub .bar  { background: var(--sub-color); }
+#barTimerProgress.timerText .bar { background: var(--text-color); }
+
+
+/* Memory/Layout Fluid Timer (popup messages) */
+#memoryTimer,
+#layoutfluidTimer {
+  font-size: 1rem;
+  background: var(--main-color);
+  color: var(--bg-color);
+  padding: 1rem;
+  border-radius: 0.5rem; /* Use --roundness */
+  text-align: center;
+  width: max-content;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  top: -6rem; /* Position above test area */
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0; /* JS controls visibility */
+}
+
+/* Test Modes Notice (e.g. "Practice Mode", "Zen Mode") */
+#testModesNotice {
+  font-size: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  color: var(--sub-color);
+  text-align: center;
+  margin-bottom: 0.5rem;
+  transition: opacity 0.125s;
+  justify-content: center;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#testModesNotice .textButton { /* Assumes textButton style from general_ui.css */
+  padding: 0.5em 1em;
+}
+#testModesNotice .textButton.noInteraction {
+  pointer-events: none;
+}
+#testModesNotice .fas { /* Icon styling */
+  margin-right: 0.5rem;
+}
+
+/* Test Configuration Bar */
+/* Basic theming for elements within #testConfig. Detailed button styles come from general_ui.css */
+#testConfig {
+  display: grid;
+  font-size: 0.75rem; /* Smaller text for config bar */
+  gap: 0.5em;
+  grid-auto-flow: column;
+  height: max-content;
+  width: 100%;
+  transition: opacity 0.125s;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+}
+#testConfig .row {
+  display: flex;
+  background: var(--sub-alt-color); /* Background for grouped buttons */
+  border-radius: 0.5rem; /* Use --roundness */
+}
+#testConfig .spacer { /* Spacer between button groups */
+  height: auto;
+  width: 0.5em;
+  border-radius: 0.25rem; /* Use --roundness / 2 */
+  background: var(--bg-color);
+  margin: 0.75em 0;
+  transition: 250ms;
+}
+#testConfig .spacer.scrolled {
+  opacity: 0;
+  width: 0;
+}
+/* Specific mode/type buttons styling if different from generic .textButton */
+#testConfig .mode .textButton,
+#testConfig .time .textButton,
+#testConfig .wordCount .textButton,
+#testConfig .puncAndNum .textButton,
+#testConfig .quoteLength .textButton,
+#testConfig .customText .textButton,
+#testConfig .zen .textButton {
+  /* Assuming textButton styles from general_ui.css are sufficient */
+  /* Padding and margin are handled by SCSS logic, here we ensure colors are consistent if needed */
+  color: var(--sub-color); /* Default text color for config buttons */
+}
+#testConfig .mode .textButton.active, /* Active config button */
+#testConfig .time .textButton.active,
+#testConfig .wordCount .textButton.active,
+#testConfig .puncAndNum .textButton.active,
+#testConfig .quoteLength .textButton.active,
+#testConfig .customText .textButton.active,
+#testConfig .zen .textButton.active {
+  color: var(--text-color); /* Active config button text color */
+  background-color: var(--main-color); /* A subtle background or stronger color for active */
+}
+
+
+/* --- Caret Styles (from caret.scss) --- */
+
+/* Base Caret Style */
+#caret {
+  height: 1.2em; /* Relative to word font size */
+  background: var(--caret-color); /* Caret color from theme variables */
+  animation: caretFlashSmooth 1s infinite; /* Uses animation from animations.css */
+  position: absolute; /* Positioned relative to the current letter */
+  border-radius: 0.5rem; /* Use --roundness */
+  transform-origin: top left;
+  width: 0.1em; /* Default caret width (thin line) */
+}
+
+/* Pace Caret Style (shows target speed) */
+#paceCaret {
+  height: 1.2em;
+  background: var(--sub-color); /* Pace caret is less prominent */
+  opacity: 0.5;
+  position: absolute;
+  border-radius: 0.5rem; /* Use --roundness */
+  transform-origin: top left;
+  width: 0.1em; /* Default width */
+}
+
+/* Common states for both carets */
+#caret.off,
+#paceCaret.off {
+  width: 0; /* Hidden */
+}
+
+/* Caret Types */
+/* Default is already defined by #caret base */
+
+/* Carrot image caret */
+#caret.carrot,
+#paceCaret.carrot {
+  background-color: transparent;
+  background-image: url("/images/carrot.png"); /* Ensure this path is correct */
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 0.25em; /* Adjust width for image aspect ratio */
+}
+
+/* Banana image caret */
+#caret.banana,
+#paceCaret.banana {
+  background-color: transparent;
+  background-image: url("/images/banana.png"); /* Ensure this path is correct */
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 1em; /* Adjust width for image aspect ratio */
+}
+
+/* Block caret */
+#caret.block,
+#paceCaret.block {
+  width: 0.5em; /* Wider for block style */
+  z-index: -1; /* Can be set to appear behind text if desired, or adjust letter color */
+  border-radius: 0.125rem; /* Sharper edges for block, e.g. --roundness / 4 */
+}
+
+/* Outline caret */
+#caret.outline,
+#paceCaret.outline {
+  width: 0.5em;
+  animation-name: none; /* No blinking for outline caret */
+  background: transparent;
+  border: 0.05em solid var(--caret-color); /* Border using caret color */
+  border-radius: 0.125rem; /* Sharper edges */
+}
+#paceCaret.outline { /* Pace caret outline specific color */
+  border-color: var(--sub-color);
+}
+
+
+/* Underline caret */
+#caret.underline,
+#paceCaret.underline {
+  height: 0.1em; /* Thin underline */
+  width: 0.5em; /* Width of the underline */
+  margin-top: 1.2em; /* Positioned below the current letter */
+}
+
+
+/* --- Results Page Styles (from test.scss) --- */
+#result:focus-visible,
+#result:focus {
+  outline: none; /* Remove focus outline from result area */
+}
+
+/* Stats display in results */
+#result .stats .group .top {
+  color: var(--sub-color); /* Labels like "wpm", "acc" */
+  font-size: 1rem;
+  line-height: 1rem;
+  margin-bottom: 0.25rem;
+}
+#result .stats .group .bottom {
+  color: var(--main-color); /* Main value for stats */
+  font-size: 2rem;
+  line-height: 2rem;
+}
+
+/* Specific stat groups like WPM, ACC */
+#result .stats .wpm .top,
+#result .stats .acc .top,
+#result .stats .burst .top { /* Burst might be a stat */
+  font-size: 2rem;
+  line-height: 1.5rem;
+}
+#result .stats .wpm .bottom,
+#result .stats .acc .bottom,
+#result .stats .burst .bottom {
+  font-size: 4rem;
+  line-height: 4rem;
+}
+
+/* Crown icon for personal bests/leaderboards */
+#result .stats .wpm .top .crown {
+  --main: var(--main-color); /* Color for crown itself */
+  --alt: var(--bg-color);   /* Color for icon inside crown */
+  margin-left: 0.5rem;
+  margin-top: -0.2rem;
+  font-size: 0.7rem;
+  background: var(--main);
+  color: var(--alt);
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.5rem; /* Use --roundness */
+  display: grid;
+  grid-template-areas: "icon";
+  align-items: center;
+  justify-items: center;
+  transition: opacity 0.125s, background 0.125s, color 0.125s, outline 0.125s;
+}
+#result .stats .wpm .top .crown i { grid-area: icon; }
+#result .stats .wpm .top .crown .fa-slash { color: var(--main); font-size: 1.2rem; opacity: 0; }
+#result .stats .wpm .top .crown .fa-question,
+#result .stats .wpm .top .crown .fa-exclamation-triangle { color: var(--alt); opacity: 0; }
+
+#result .stats .wpm .top .crown.pending {
+  --main: var(--bg-color); --alt: var(--main-color); outline: 0.2em solid var(--main-color);
+}
+#result .stats .wpm .top .crown.ineligible {
+  --main: var(--sub-color); --alt: var(--bg-color);
+}
+#result .stats .wpm .top .crown.ineligible .fa-slash { opacity: 1; }
+#result .stats .wpm .top .crown.error {
+  --main: var(--error-color); --alt: var(--bg-color);
+}
+#result .stats .wpm .top .crown.error .fa-crown { opacity: 0; }
+#result .stats .wpm .top .crown.error .fa-question { opacity: 1; }
+#result .stats .wpm .top .crown.warning {
+  --main: var(--sub-color); --alt: var(--bg-color);
+}
+#result .stats .wpm .top .crown.warning .fa-crown { opacity: 0; }
+#result .stats .wpm .top .crown.warning .fa-exclamation-triangle { opacity: 1; }
+
+
+/* Time stat specific sub-elements */
+#result .stats .group.time .afk,
+#result .stats .group.time .timeToday {
+  color: var(--sub-color);
+  font-size: 0.75rem;
+  line-height: 0.75rem;
+  margin-left: 0.2rem;
+}
+
+/* Info, Tags, Source sections in stats */
+#result .stats .info .top,
+#result .stats .tags .top,
+#result .stats .source .top,
+#result .stats .testType .top, /* Assuming .testType is similar */
+#result .stats .leaderboards .top { /* Assuming .leaderboards is similar */
+  color: var(--sub-color);
+  font-size: 1rem;
+  line-height: 1rem;
+}
+#result .stats .info .bottom,
+#result .stats .tags .bottom,
+#result .stats .source .bottom,
+#result .stats .testType .bottom,
+#result .stats .leaderboards .bottom {
+  color: var(--text-color); /* Values are main text color */
+  font-size: 1rem;
+  line-height: 1rem;
+}
+#result .stats .tags .bottom .fas { /* Icon in tags */
+  margin-left: 0.5rem;
+}
+
+/* Chart area in results */
+#result .chart .title {
+  color: var(--sub-color); /* Chart title color */
+  margin-bottom: 1rem;
+}
+/* Canvas itself is styled by Chart.js, but container can be themed if needed */
+
+/* Word history in results */
+#resultWordsHistory {
+  color: var(--sub-color); /* Default text color for word history area */
+  margin-bottom: 1rem;
+}
+#resultWordsHistory .title {
+  user-select: none;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  color: var(--text-color); /* Title of word history more prominent */
+}
+#resultWordsHistory .words .word {
+  margin: 0.18rem 0.6rem 0.15rem 0; /* Margins for words in history */
+  /* Letter styling within history, similar to typing area but may not need all states */
+}
+#resultWordsHistory .words .word letter.corrected {
+  color: var(--text-color);
+  border-bottom: 2px dotted var(--main-color);
+}
+#resultWordsHistory .words .word letter.extraCorrected {
+  /* border-right: 2px dotted var(--main-color); */
+}
+#resultWordsHistory .words .word letter.correct {
+  color: var(--text-color);
+}
+#resultWordsHistory .words .word letter.incorrect {
+  color: var(--error-color);
+}
+#resultWordsHistory .words .word letter.incorrect.extra {
+  color: var(--error-extra-color);
+}
+#resultWordsHistory .words .word.heatmapInherit letter { /* For heatmap display */
+  color: inherit; /* Inherits color from parent word (set by JS for heatmap) */
+}
+#resultWordsHistory .words.rightToLeftTest { direction: rtl; }
+#resultWordsHistory .words.rightToLeftTest .word { direction: rtl; }
+#resultWordsHistory .words.withLigatures letter { display: inline; }
+
+/* Heatmap Legend in Word History */
+#resultWordsHistory .heatmapLegend {
+  margin-left: 0.5rem;
+  display: inline-grid;
+  grid-template-columns: auto auto auto;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: var(--sub-color);
+  width: min-content;
+}
+#resultWordsHistory .heatmapLegend .boxes {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 boxes for legend */
+}
+#resultWordsHistory .heatmapLegend .boxes .box {
+  height: 1rem;
+  color: var(--bg-color); /* Text color on legend boxes */
+  padding: 0.1rem 0.5rem;
+  white-space: nowrap;
+  line-height: 0.75rem; /* Align text in box */
+  display: grid;
+  place-content: center center;
+  /* Background for boxes will be set by JS or inline styles for heatmap */
+}
+#resultWordsHistory .heatmapLegend .boxes .box:first-child {
+  border-radius: 0.25rem 0 0 0.25rem; /* --roundness / 2 */
+}
+#resultWordsHistory .heatmapLegend .boxes .box:last-child {
+  border-radius: 0 0.25rem 0.25rem 0; /* --roundness / 2 */
+}
+
+
+/* Login tip in results */
+#result .loginTip {
+  grid-column: 1/3; /* Spans across columns */
+  text-align: center;
+  color: var(--sub-color);
+}
+#result .loginTip .link {
+  text-decoration: underline;
+  display: inline-block;
+  cursor: pointer;
+  color: var(--main-color); /* Link color for emphasis */
+}
+#result .loginTip .link:hover {
+  color: var(--text-color);
+}
+
+/* Screenshot watermark */
+.ssWatermark { /* Used in .pageTest and #result .wrapper */
+  font-size: 1.25rem;
+  color: var(--sub-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0 1em;
+  flex-wrap: wrap;
+}
+.ssWatermark .fas {
+  margin-left: 0.33em;
+}
+
+/* Buttons within results - assuming general_ui.css handles most button styling */
+#result .buttons button {
+  /* padding: 1em 2em; */ /* If different from general buttons */
+}
+
+/* Restart test button */
+#restartTestButton {
+  font-size: 1rem;
+  margin: 1rem auto 0 auto;
+  display: flex; /* For centering if needed */
+  /* padding: 1em 2em; */ /* If different from general buttons */
+}
+
+/* Funbox specific styles - minimal theming, mostly structure */
+body.fb-nospace #words .word,
+body.fb-underscore-spaces #words .word {
+  margin: 0.5em 0; /* Adjust margin for these modes */
+}
+body.fb-arrows #words .word {
+  margin: 0.5em 0;
+}
+body.fb-arrows #words .word letter {
+  margin: 0 0.25em; /* Space out letters in arrows mode */
+}
+
+/* Highlight container for input words (used in specific modes) */
+.highlightContainer {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+}
+.highlightContainer .highlight {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  position: absolute;
+  background-color: var(--sub-color); /* Highlight background */
+  border-radius: 0.5rem; /* --roundness */
+  opacity: 1;
+  transition: opacity 0.125s linear;
+  overflow: hidden;
+  z-index: 1; /* Above letters but below caret */
+}
+.highlightContainer .highlight.withAnimation {
+  transition: left 0.25s ease, right 0.25s ease, opacity 0.125s linear;
+}
+.highlightContainer .highlight.highlight-hidden {
+  opacity: 0;
+}
+.highlightContainer .inputWord { /* Text overlayed on highlight */
+  color: var(--bg-color); /* Text color on highlight */
+  position: absolute;
+  font-size: 1em;
+  line-height: 1em;
+  font-variant: no-common-ligatures;
+}
+.highlightContainer .inputWordsContainer {
+  position: relative;
+}
+.highlightContainer .inputWordsContainer.withAnimation {
+  transition: all 0.25s ease;
+}
+
+/* Styles for #koInputVisualContainer (Korean input specific) */
+#koInputVisualContainer {
+  position: relative;
+  padding-top: 1rem;
+  width: min-content;
+  height: 3rem;
+  margin: 0 auto;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--sub-color); /* Text color for this element */
+  cursor: default;
+  user-select: none;
+}
+#koInputVisualContainer.blurred {
+  opacity: 0.25;
+  filter: blur(4px);
+  -webkit-filter: blur(4px);
+}
+#replayStats {
+    color: var(--main-color);
+    display: inline-block;
+    margin: 0;
+    margin-left: 0.5em;
+}
+#mobileTestConfigButton button {
+    color: var(--sub-color);
+}
+#mobileTestConfigButton button:hover {
+    color: var(--bg-color);
+}
+
+/* Out of focus warning */
+.pageTest .outOfFocusWarning {
+    text-align: center;
+    height: 100%;
+    align-content: center;
+    font-size: 1rem;
+    z-index: 999;
+    position: absolute;
+    width: 100%;
+    user-select: none;
+    pointer-events: none;
+    color: var(--text-color); /* Make warning text visible */
+}
+
+/* Ensure noErrorBorder class properly removes text-shadow from .word.error */
+#words.noErrorBorder .word.error,
+#resultWordsHistory.noErrorBorder .word.error {
+  text-shadow: none;
+}
+
+/* Live stats text (large numbers behind the test) */
+#liveStatsTextTop, #liveStatsTextBottom {
+    pointer-events: none;
+    /* color: black; */ /* Will be themed by .timerMain, .timerSub, .timerText */
+    z-index: -1;
+    text-align: center;
+    width: 100%;
+    position: relative;
+    display: grid;
+    font-size: 10rem;
+    opacity: 0.1; /* Make it very subtle */
+}
+
+#liveStatsTextTop .wrapper {
+    position: absolute;
+    bottom: 1.25rem;
+    display: flex;
+    justify-self: center;
+    gap: 0.5ch;
+    line-height: 1;
+}
+
+#liveStatsTextBottom {
+    height: 0; /* Managed by JS or specific content */
+}
+
+#liveStatsTextBottom .wrapper {
+    position: absolute;
+    top: 1rem;
+    display: flex;
+    justify-self: center;
+    gap: 0.5ch;
+    line-height: 1;
+}
+
+#liveStatsTextBottom.timerMain, #liveStatsTextTop.timerMain { color: var(--main-color); opacity: 0.1; }
+#liveStatsTextBottom.timerSub,  #liveStatsTextTop.timerSub  { color: var(--sub-color); opacity: 0.1; }
+#liveStatsTextBottom.timerText, #liveStatsTextTop.timerText { color: var(--text-color); opacity: 0.1; }
+
+/* Ensure that the .pageTest container allows these large text elements to be behind content */
+.pageTest {
+    position: relative; /* Already set, good */
+}
+
+/* Typing test specific container */
+#typingTest {
+    position: relative; /* For z-indexing contexts if needed */
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* When main app area is in focus, hide some test elements */
+main.focus .pageTest #testModesNotice,
+main.focus .pageTest #testConfig,
+main.focus .pageTest #mobileTestConfigButton {
+  opacity: 0 !important; /* Force hide */
+  pointer-events: none !important; /* Prevent interaction */
+}
+
+```

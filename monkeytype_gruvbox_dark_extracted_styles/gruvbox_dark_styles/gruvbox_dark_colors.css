@@ -1,0 +1,12 @@
+:root {
+  --bg-color: #282828; /* Main background color */
+  --main-color: #d79921; /* Primary color used for accents, like the countdown timer and highlights */
+  --caret-color: #fabd2f; /* Color of the caret (text cursor) */
+  --sub-color: #665c54; /* Secondary color, often used for less important text or UI elements */
+  --sub-alt-color: #212121; /* An alternative secondary color, possibly for different states or elements */
+  --text-color: #ebdbb2; /* Main text color */
+  --error-color: #fb4934; /* Color used for error messages or incorrect input indications */
+  --error-extra-color: #cc241d; /* An additional color for errors, perhaps for borders or more emphasis */
+  --colorful-error-color: #cc241d; /* A more vibrant error color, for use in colorful themes or elements */
+  --colorful-error-extra-color: #9d0006; /* An extra vibrant error color, for highlights or specific error states */
+}

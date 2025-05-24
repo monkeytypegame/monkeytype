@@ -1,0 +1,414 @@
+/*
+  This file contains general UI styles for the Gruvbox Dark theme,
+  adapted from core.scss and buttons.scss.
+  It includes styles for basic elements, links, placeholders, selections,
+  and buttons, using CSS variables defined in gruvbox_dark_colors.css.
+*/
+
+/* Basic HTML and Body Styling */
+/* Sets base font properties, scroll behavior, and default text/background colors. */
+html {
+  scroll-behavior: smooth; /* Enables smooth scrolling for navigation */
+  line-height: 1.25; /* Default line height for text */
+  overflow-y: scroll; /* Ensures scrollbar is always visible, preventing layout shifts */
+  scrollbar-width: thin; /* For Firefox: use thin scrollbars */
+  scrollbar-color: var(--sub-color) transparent; /* For Firefox: scrollbar thumb and track colors */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh; /* Ensures body takes at least the full viewport height */
+  font-family: "Roboto Mono", "Vazirmatn", monospace; /* Default font stack */
+  color: var(--text-color); /* Default text color from theme variables */
+  overflow-x: hidden; /* Prevents horizontal scrolling */
+  background: var(--bg-color); /* Default background color from theme variables */
+}
+
+/* Link Styling */
+/* Defines appearance for hyperlinks, including hover and focus states. */
+a {
+  display: inline-block; /* Allows setting padding/margin and ensures it behaves like a block for text flow */
+  color: var(--sub-color); /* Default link color from theme variables */
+  transition: color 0.125s, opacity 0.125s, background 0.125s; /* Smooth transition for color and opacity changes */
+}
+
+a:hover {
+  color: var(--text-color); /* Link color on hover, from theme variables */
+}
+
+a:focus-visible {
+  outline: none; /* Removes default browser outline */
+  box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color); /* Custom focus outline using theme colors */
+  border-radius: 0.25rem; /* Slightly rounded corners for the focus outline, assuming --roundness/2 would be 0.25rem */
+}
+
+/* Placeholder Text Styling */
+/* Styles for placeholder text in input fields. */
+::placeholder {
+  color: var(--sub-color); /* Placeholder text color from theme variables */
+  opacity: 1; /* Ensures placeholder is fully visible (Needed for Firefox) */
+}
+
+/* Text Selection Styling */
+/* Defines the appearance of text when selected by the user. */
+::selection {
+  background-color: var(--main-color); /* Background color of selected text, from theme variables */
+  color: var(--sub-alt-color); /* Text color of selected text, from theme variables */
+}
+
+/* Keyboard Key Styling */
+/* Styles for visually representing keyboard keys. */
+key {
+  color: var(--bg-color); /* Text color for key, using background color for contrast */
+  background-color: var(--sub-color); /* Background color for key, from theme variables */
+  padding: 0.1rem 0.3rem; /* Padding around the key text */
+  margin: 0rem 0rem; /* Margin around the key */
+  border-radius: 0.1rem; /* Slightly rounded corners for the key */
+  display: inline-block; /* Allows setting padding/margin */
+  font-size: 0.7rem; /* Smaller font size for key text */
+  line-height: 0.7rem; /* Line height matching font size */
+}
+
+/* General Button Styling */
+/* Base styles for buttons, including inputs of type button, reset, and submit. */
+button,
+.button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  text-align: center; /* Centers text within the button */
+  color: var(--text-color); /* Default button text color from theme variables */
+  cursor: pointer; /* Changes cursor to indicate interactivity */
+  transition: background 0.125s, color 0.125s, opacity 0.125s; /* Smooth transitions for property changes */
+  padding: 0.5em; /* Padding within the button */
+  border-radius: 0.5rem; /* Rounded corners for buttons, assuming --roundness is 0.5rem */
+  background: var(--sub-alt-color); /* Default button background color from theme variables */
+  -webkit-user-select: none; /* Prevents text selection on button click (for Safari/Chrome) */
+  user-select: none; /* Prevents text selection on button click */
+  align-content: center; /* Aligns content in the center (for flex/grid containers) */
+  height: min-content; /* Sets button height to fit its content */
+  line-height: 1.25; /* Line height for button text */
+  appearance: none; /* Removes default browser styling for buttons */
+  border: none; /* Removes default browser border */
+  font-family: inherit; /* Uses the parent element's font family */
+  font-size: 1em; /* Default font size for buttons */
+  display: inline-flex; /* Allows button to sit inline and use flex properties for icon alignment */
+  gap: 0.5em; /* Space between text and icon if present */
+  align-items: baseline; /* Aligns items on their baseline */
+  justify-content: center; /* Centers content horizontally */
+}
+
+button .fas,
+button .far,
+button .fab,
+.button .fas,
+.button .far,
+.button .fab,
+input[type="button"] .fas,
+input[type="button"] .far,
+input[type="button"] .fab,
+input[type="reset"] .fas,
+input[type="reset"] .far,
+input[type="reset"] .fab,
+input[type="submit"] .fas,
+input[type="submit"] .far,
+input[type="submit"] .fab {
+  line-height: 1.25; /* Ensures icons align properly with text */
+  pointer-events: none; /* Prevents icons from capturing mouse events */
+}
+
+button.fullWidth,
+.button.fullWidth,
+input[type="button"].fullWidth,
+input[type="reset"].fullWidth,
+input[type="submit"].fullWidth {
+  width: 100%; /* Makes button take full width of its container */
+}
+
+button.circle,
+.button.circle,
+input[type="button"].circle,
+input[type="reset"].circle,
+input[type="submit"].circle {
+  border-radius: 100%; /* Makes button circular */
+}
+
+/* Danger Button Styling */
+/* For buttons indicating a potentially destructive action. */
+button.danger,
+.button.danger,
+input[type="button"].danger,
+input[type="reset"].danger,
+input[type="submit"].danger {
+  background: var(--error-color); /* Background color for danger buttons from theme variables */
+  color: var(--bg-color); /* Text color for danger buttons, using background for contrast */
+}
+
+/* Active Button Styling */
+/* For buttons that are currently active or selected. */
+button.active,
+.button.active,
+input[type="button"].active,
+input[type="reset"].active,
+input[type="submit"].active {
+  background: var(--main-color); /* Background for active buttons from theme variables */
+  color: var(--bg-color); /* Text color for active buttons, using background for contrast */
+}
+
+button.active:hover,
+.button.active:hover,
+input[type="button"].active:hover,
+input[type="reset"].active:hover,
+input[type="submit"].active:hover {
+  background: var(--text-color); /* Background for active buttons on hover */
+}
+
+button.active:active,
+.button.active:active,
+input[type="button"].active:active,
+input[type="reset"].active:active,
+input[type="submit"].active:active {
+  background: var(--sub-color); /* Background for active buttons when pressed */
+  color: var(--bg-color); /* Text color for active buttons when pressed */
+}
+
+/* Disabled Button Styling */
+/* For buttons that are not currently interactive. */
+button[disabled],
+button.disabled,
+.button[disabled],
+.button.disabled,
+input[type="button"][disabled],
+input[type="button"].disabled,
+input[type="reset"][disabled],
+input[type="reset"].disabled,
+input[type="submit"][disabled],
+input[type="submit"].disabled {
+  opacity: 0.33; /* Reduced opacity to indicate disabled state */
+  pointer-events: none; /* Prevents interaction with disabled buttons */
+}
+
+button[disabled]:hover,
+button.disabled:hover,
+.button[disabled]:hover,
+.button.disabled:hover,
+input[type="button"][disabled]:hover,
+input[type="button"].disabled:hover,
+input[type="reset"][disabled]:hover,
+input[type="reset"].disabled:hover,
+input[type="submit"][disabled]:hover,
+input[type="submit"].disabled:hover {
+  /* Default hover state for a normal button is --text-color, we keep it consistent here */
+  /* but the button is not interactive so it's mostly for visual consistency if ever shown */
+   background: var(--sub-alt-color); /* Keep original background on hover for disabled */
+   color: var(--text-color); /* Keep original text color */
+}
+
+
+/* General Button Hover, Focus, and Active States */
+button:hover,
+.button:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover {
+  color: var(--bg-color); /* Text color on hover, using background for contrast */
+  background: var(--text-color); /* Background on hover, using text color from theme */
+  outline: none; /* Removes outline on hover */
+}
+
+button:focus-visible,
+.button:focus-visible,
+input[type="button"]:focus-visible,
+input[type="reset"]:focus-visible,
+input[type="submit"]:focus-visible {
+  box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color); /* Custom focus outline using theme colors */
+  outline: none; /* Removes default browser outline */
+}
+
+button:active,
+.button:active,
+input[type="button"]:active,
+input[type="reset"]:active,
+input[type="submit"]:active {
+  background: var(--sub-color); /* Background when button is pressed, from theme variables */
+  color: var(--bg-color); /* Text color when button is pressed, using background for contrast */
+}
+
+
+/* Text Button Styling */
+/* For buttons that look like text but are clickable. */
+button.text,
+.button.text,
+.textButton {
+  color: var(--sub-color); /* Default text color for text buttons from theme variables */
+  background: none; /* No background for text buttons */
+  /* Other properties like cursor, transition, padding, etc. are inherited or reset if needed */
+}
+
+button.text .fas,
+button.text .far,
+button.text .fab,
+.button.text .fas,
+.button.text .far,
+.button.text .fab,
+.textButton .fas,
+.textButton .far,
+.textButton .fab {
+    line-height: 1.25; /* Ensures icons align properly with text */
+    pointer-events: none; /* Prevents icons from capturing mouse events */
+}
+
+
+/* Danger Text Button Styling */
+button.text.danger,
+.button.text.danger,
+.textButton.danger {
+  color: var(--error-color); /* Text color for danger text buttons from theme variables */
+  background: none; /* Ensure no background */
+}
+
+/* Active Text Button Styling */
+button.text.active,
+.button.text.active,
+.textButton.active {
+  color: var(--main-color); /* Text color for active text buttons from theme variables */
+  background: none; /* Ensure no background */
+}
+
+button.text.active:hover,
+.button.text.active:hover,
+.textButton.active:hover {
+  color: var(--text-color); /* Text color on hover for active text buttons */
+  background: none; /* Ensure no background */
+}
+
+button.text.active:active,
+.button.text.active:active,
+.textButton.active:active {
+  color: var(--sub-color); /* Text color when pressed for active text buttons */
+  background: none; /* Ensure no background */
+}
+
+/* Disabled Text Button Styling */
+button.text[disabled],
+button.text.disabled,
+.button.text[disabled],
+.button.text.disabled,
+.textButton[disabled],
+.textButton.disabled {
+  opacity: 0.33; /* Reduced opacity for disabled state */
+  pointer-events: none; /* No interactions */
+  /* Hover and active states are generally not applicable or visible for disabled text buttons */
+}
+
+button.text[disabled]:hover,
+button.text.disabled:hover,
+.button.text[disabled]:hover,
+.button.text.disabled:hover,
+.textButton[disabled]:hover,
+.textButton.disabled:hover {
+    color: var(--sub-color); /* Keep original color on hover for disabled */
+    background: none; /* Ensure no background */
+}
+
+
+/* Text Button Hover, Focus, and Active States */
+button.text:hover,
+.button.text:hover,
+.textButton:hover {
+  color: var(--text-color); /* Text color on hover */
+  background: none; /* Ensure no background */
+  outline: none; /* Remove outline on hover */
+}
+
+button.text:focus-visible,
+.button.text:focus-visible,
+.textButton:focus-visible {
+  /* For text buttons, the shadow might be too much, let's use a simpler outline or a subtle background change if needed */
+  /* Using text-color for the shadow to make it consistent with other focus styles but without the --bg-color part */
+  box-shadow: 0 0 0 0.1rem var(--text-color);
+  outline: none;
+  border-radius: 0.25rem; /* Consistent with link focus */
+}
+
+button.text:active,
+.button.text:active,
+.textButton:active {
+  color: var(--sub-color); /* Text color when pressed */
+  background: none; /* Ensure no background */
+}
+
+/* Ensure link-styled buttons also get appropriate focus style if they are actual <a> tags */
+a.button:focus-visible,
+a.textButton:focus-visible {
+    border-radius: 0.5rem; /* Matches button's border-radius */
+    /* box-shadow is inherited from a:focus-visible or button:focus-visible depending on specificity */
+}
+
+a.textButton:focus-visible,
+a.text:focus-visible { /* Assuming a.text could be used like a text button */
+    border-radius: 0.25rem; /* Matches link focus */
+}
+
+/* Ensure icon styles are also applied to .textButton if it's not a <button> element */
+.textButton .fas,
+.textButton .far,
+.textButton .fab {
+  line-height: 1.25;
+  pointer-events: none;
+}
+
+/* Ensure fullWidth and circle utility classes also apply to .textButton */
+.textButton.fullWidth {
+  width: 100%;
+}
+
+.textButton.circle {
+  border-radius: 100%;
+}
+
+/* Specificity for disabled text buttons hover (ensure they don't pick up non-disabled hover) */
+button.text[disabled]:hover,
+button.text.disabled:hover,
+.button.text[disabled]:hover,
+.button.text.disabled:hover,
+.textButton[disabled]:hover,
+.textButton.disabled:hover {
+  color: var(--sub-color) !important; /* Override more general hover styles */
+  opacity: 0.33 !important; /* Ensure opacity remains for disabled state */
+}
+
+/* Specificity for disabled normal buttons hover (ensure they don't pick up non-disabled hover) */
+button[disabled]:hover,
+button.disabled:hover,
+.button[disabled]:hover,
+.button.disabled:hover,
+input[type="button"][disabled]:hover,
+input[type="button"].disabled:hover,
+input[type="reset"][disabled]:hover,
+input[type="reset"].disabled:hover,
+input[type="submit"][disabled]:hover,
+input[type="submit"].disabled:hover {
+  background: var(--sub-alt-color) !important; /* Keep original background */
+  color: var(--text-color) !important; /* Keep original text color */
+  opacity: 0.33 !important; /* Ensure opacity remains for disabled state */
+}
+
+/* Ensure <a> tags styled as buttons or text buttons also respect disabled state */
+a.button[disabled], a.button.disabled,
+a.textButton[disabled], a.textButton.disabled {
+    opacity: 0.33 !important;
+    pointer-events: none !important;
+    cursor: default !important;
+}
+
+a.button[disabled]:hover, a.button.disabled:hover {
+    background: var(--sub-alt-color) !important;
+    color: var(--text-color) !important;
+}
+
+a.textButton[disabled]:hover, a.textButton.disabled:hover {
+    color: var(--sub-color) !important;
+    background: none !important;
+}
