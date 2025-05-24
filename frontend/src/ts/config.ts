@@ -741,6 +741,17 @@ export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
   return true;
 }
 
+//ignore caps lock
+export function setIgnoreCapsLock(val: boolean, nosave?: boolean): boolean {
+  if (!isConfigValueValidBoolean("ignore caps lock", val)) return false;
+
+  config.ignoreCapsLock = val;
+  saveToLocalStorage("ignoreCapsLock", nosave);
+  ConfigEvent.dispatch("ignoreCapsLock", config.ignoreCapsLock);
+
+  return true;
+}
+
 //opposite shift space
 export function setOppositeShiftMode(
   val: ConfigSchemas.OppositeShiftMode,

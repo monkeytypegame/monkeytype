@@ -158,6 +158,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setStrictSpace,
     "button"
   ) as SettingsGroup<ConfigValue>;
+  groups["ignoreCapsLock"] = new SettingsGroup(
+    "ignoreCapsLock",
+    UpdateConfig.setIgnoreCapsLock,
+    "button"
+  ) as SettingsGroup<ConfigValue>;
   groups["oppositeShiftMode"] = new SettingsGroup(
     "oppositeShiftMode",
     UpdateConfig.setOppositeShiftMode,
