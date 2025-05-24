@@ -16,6 +16,7 @@ import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
 import FreedomModeCommands from "./lists/freedom-mode";
 import StrictSpaceCommands from "./lists/strict-space";
+import IgnoreCapsLockCommands from "./lists/ignore-caps-lock";
 import BlindModeCommands from "./lists/blind-mode";
 import ShowWordsHistoryCommands from "./lists/show-words-history";
 import IndicateTyposCommands from "./lists/indicate-typos";
@@ -224,6 +225,7 @@ export const commands: CommandsSubgroup = {
     //input
     ...FreedomModeCommands,
     ...StrictSpaceCommands,
+    ...IgnoreCapsLockCommands,
     ...OppositeShiftModeCommands,
     ...StopOnErrorCommands,
     ...ConfidenceModeCommands,
