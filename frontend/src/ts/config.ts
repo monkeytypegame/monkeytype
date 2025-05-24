@@ -741,6 +741,17 @@ export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
   return true;
 }
 
+//ignore caps lock
+export function setIgnoreCapsLock(val: boolean, nosave?: boolean): boolean {
+  if (!isConfigValueValidBoolean("ignore caps lock", val)) return false;
+
+  config.ignoreCapsLock = val;
+  saveToLocalStorage("ignoreCapsLock", nosave);
+  ConfigEvent.dispatch("ignoreCapsLock", true);
+
+  return true;
+}
+
 //opposite shift space
 export function setOppositeShiftMode(
   val: ConfigSchemas.OppositeShiftMode,
@@ -2081,6 +2092,7 @@ export async function apply(
     setHideExtraLetters(configObj.hideExtraLetters, true);
     setStartGraphsAtZero(configObj.startGraphsAtZero, true);
     setStrictSpace(configObj.strictSpace, true);
+    setIgnoreCapsLock(configObj.ignoreCapsLock, true);
     setOppositeShiftMode(configObj.oppositeShiftMode, true);
     setMode(configObj.mode, true);
     setNumbers(configObj.numbers, true);
