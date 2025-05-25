@@ -400,7 +400,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   }
 
   if (Config.ignoreCapsLock && getCapsLockState()) {
-    if (originalChar?.toLowerCase() === char.toLowerCase()) {
+    if (originalChar === char.toLowerCase()) {
       return true;
     }
   } else {
