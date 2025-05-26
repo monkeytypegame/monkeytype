@@ -143,7 +143,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   if (Config.mode === "zen") wordLen = inputLen;
   const activeWordEl =
     document.querySelectorAll<HTMLElement>("#words .word")[
-      TestState.activeWordIndex - TestState.activeWordElementOffset
+      TestState.activeWordIndex - TestState.removedUIWordCount
     ];
   if (!activeWordEl) return;
 

@@ -423,7 +423,7 @@ export async function init(): Promise<void | null> {
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
-  TestState.setActiveWordElementOffset(0);
+  TestState.setRemovedUIWordCount(0);
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
