@@ -23,7 +23,6 @@ type ChangeOptions = {
   data?: unknown;
 };
 
-// New function to update or create the og:url meta tag
 function updateOpenGraphUrl(): void {
   const ogUrlTag = document.querySelector('meta[property="og:url"]');
   const currentUrl = window.location.href;
@@ -110,15 +109,14 @@ export async function change(
           Focus.set(false);
           ActivePage.set(nextPage.id);
 
-          // Call the new function to update the og:url after the page is set
-          updateOpenGraphUrl();
-
           await previousPage?.afterHide();
           await nextPage?.beforeShow({
             params: options.params,
             // @ts-expect-error for the future (i think)
             data: options.data,
           });
+
+          updateOpenGraphUrl();
         }
       );
     });
