@@ -257,11 +257,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     const duration = expectedStepEnd - performance.now();
 
     if (newTop !== undefined) {
-      let smoothlinescroll = $("#words .smoothScroller").height();
-      if (smoothlinescroll === undefined) smoothlinescroll = 0;
-
       $("#paceCaret").css({
-        top: newTop - smoothlinescroll,
+        top: newTop - TestState.lineScrollDistance,
       });
 
       if (Config.smoothCaret !== "off") {

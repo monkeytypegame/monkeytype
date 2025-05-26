@@ -215,15 +215,12 @@ export async function updatePosition(noAnim = false): Promise<void> {
   );
   const newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
 
-  let smoothlinescroll = $("#words .smoothScroller").height();
-  if (smoothlinescroll === undefined) smoothlinescroll = 0;
-
   const jqcaret = $(caret);
 
   jqcaret.css("display", "block"); //for some goddamn reason adding width animation sets the display to none ????????
 
   const animation: { top: number; left: number; width?: string } = {
-    top: newTop - smoothlinescroll,
+    top: newTop - TestState.lineScrollDistance,
     left: newLeft,
   };
 

@@ -10,6 +10,7 @@ export let selectedQuoteId = 1;
 export let activeWordIndex = 0;
 export let testInitSuccess = true;
 export let activeWordElementOffset = 0;
+export let lineScrollDistance = 0;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -57,4 +58,8 @@ export function setTestInitSuccess(tf: boolean): void {
 
 export function setActiveWordElementOffset(val: number): void {
   activeWordElementOffset = val;
+}
+
+export function setLineScrollDistance(val: number): void {
+  lineScrollDistance = val;
 }
