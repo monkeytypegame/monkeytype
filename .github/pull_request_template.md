@@ -15,13 +15,12 @@
   - Make sure to follow the [themes documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/THEMES.md)
   - [ ] Add theme to `packages/contracts/src/schemas/themes.ts`
   - [ ] Add theme to `frontend/src/ts/constants/themes.ts`
-  - [ ] Add theme css file to `frontend/static/themes` 
+  - [ ] Add theme css file to `frontend/static/themes`
+  - Also please add a screenshot of the theme, it would be extra awesome if you do so!
 - [ ] Adding a layout?
   - [ ] Make sure to follow the [layouts documentation](https://github.com/monkeytypegame/monkeytype/blob/master/docs/LAYOUTS.md)
   - [ ] Add layout to `packages/contracts/src/schemas/layouts.ts`
   - [ ] Add layout json file to `frontend/static/layouts` 
-  - Also please add a screenshot of the theme, it would be extra awesome if you do so!
-  
 - [ ] Check if any open issues are related to this PR; if so, be sure to tag them below.
 - [ ] Make sure the PR title follows the Conventional Commits standard. (https://www.conventionalcommits.org for more info)
 - [ ] Make sure to include your GitHub username prefixed with @ inside parentheses at the end of the PR title.
