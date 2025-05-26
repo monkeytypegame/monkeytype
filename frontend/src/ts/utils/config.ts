@@ -4,7 +4,7 @@ import {
   PartialConfig,
   FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
-import { typedKeys } from "./misc";
+import { sanitize, typedKeys } from "./misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 /**
@@ -33,42 +33,7 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
 function sanitizeConfig(
   config: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
-  const validate = ConfigSchemas.PartialConfigSchema.safeParse(config);
-
-  if (validate.success) {
-    return config;
-  }
-
-  const errors: Map<string, number[] | undefined> = new Map();
-  for (const error of validate.error.errors) {
-    const element = error.path[0] as string;
-    let val = errors.get(element);
-    if (typeof error.path[1] === "number") {
-      val = [...(val ?? []), error.path[1]];
-    }
-    errors.set(element, val);
-  }
-
-  return Object.fromEntries(
-    Object.entries(config).map(([key, value]) => {
-      if (!errors.has(key)) {
-        return [key, value];
-      }
-
-      const error = errors.get(key);
-
-      if (
-        Array.isArray(value) &&
-        error !== undefined && //error is not on the array itself
-        error.length < value.length //not all items in the array are invalid
-      ) {
-        //some items of the array are invalid
-        return [key, value.filter((_element, index) => !error.includes(index))];
-      } else {
-        return [key, undefined];
-      }
-    })
-  ) as ConfigSchemas.PartialConfig;
+  return sanitize(ConfigSchemas.PartialConfigSchema, config);
 }
 
 export function replaceLegacyValues(
