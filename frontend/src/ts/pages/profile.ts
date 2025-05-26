@@ -161,30 +161,6 @@ type UpdateOptions = {
   data?: undefined | UserProfile;
 };
 
-function updateOpenGraphTags(username: string): void {
-  const baseUrl = "https://monkeytype.com";
-  const profileUrl = `${baseUrl}/profile/${username}`;
-
-  // Remove existing Open Graph tags to prevent duplicates
-  document.querySelectorAll('meta[property^="og:"]').forEach(meta => meta.remove());
-
-  // Add new Open Graph tags
-  const ogTitle = document.createElement("meta");
-  ogTitle.setAttribute("property", "og:title");
-  ogTitle.content = `${username}'s Monkeytype Profile`;
-  document.head.appendChild(ogTitle);
-
-  const ogDescription = document.createElement("meta");
-  ogDescription.setAttribute("property", "og:description");
-  ogDescription.content = "Check out my typing stats on Monkeytype!";
-  document.head.appendChild(ogDescription);
-
-  const ogUrl = document.createElement("meta");
-  ogUrl.setAttribute("property", "og:url");
-  ogUrl.content = profileUrl;
-  document.head.appendChild(ogUrl);
-}
-
 async function update(options: UpdateOptions): Promise<void> {
   const getParamExists = checkIfGetParameterExists("isUid");
   if (options.data) {
@@ -222,7 +198,6 @@ async function update(options: UpdateOptions): Promise<void> {
         response.body.data.personalBests as unknown as PersonalBests,
         true
       );
-      updateOpenGraphTags(response.body.data.name);
     } else {
       // $(".page.pageProfile .failedToLoad").removeClass("hidden");
       Notifications.add("Failed to load profile: " + response.body.message, -1);
