@@ -908,15 +908,20 @@ export async function scrollTape(): Promise<void> {
       fullLineWidths -= nlCharWidth + wordRightMargin;
       if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
 
-      if (fullLineWidths < wordsEl.offsetWidth) {
+      /** words that are wider than limit can cause a barely visible bottom line shifting,
+       * increase limit if that ever happens, but keep the limit because browsers hate
+       * ridiculously wide margins which may cause the words to not be displayed
+       */
+      const limit = 3 * wordsEl.offsetWidth;
+      if (fullLineWidths < limit) {
         afterNewlinesNewMargins.push(fullLineWidths);
         widthRemovedFromLine.push(widthRemoved);
       } else {
-        afterNewlinesNewMargins.push(wordsEl.offsetWidth);
+        afterNewlinesNewMargins.push(limit);
         widthRemovedFromLine.push(widthRemoved);
         if (i < lastElementIndex) {
           // for the second .afterNewline after active word
-          afterNewlinesNewMargins.push(wordsEl.offsetWidth);
+          afterNewlinesNewMargins.push(limit);
           widthRemovedFromLine.push(widthRemoved);
         }
         break;
