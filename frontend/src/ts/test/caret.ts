@@ -119,11 +119,17 @@ function getTargetPositionLeft(
 
     if (Config.tapeMode === "word" && inputLen > 0) {
       let currentWordWidth = 0;
+      let lastPositiveLetterWidth = 0;
       for (let i = 0; i < inputLen; i++) {
         if (invisibleExtraLetters && i >= wordLen) break;
-        currentWordWidth +=
-          $(currentWordNodeList[i] as HTMLElement).outerWidth(true) ?? 0;
+        const letterOuterWidth =
+          $(currentWordNodeList[i] as Element).outerWidth(true) ?? 0;
+        currentWordWidth += letterOuterWidth;
+        if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
       }
+      // if current letter has zero width move the caret to previous positive width letter
+      if ($(currentWordNodeList[inputLen] as Element).outerWidth(true) === 0)
+        currentWordWidth -= lastPositiveLetterWidth;
       if (isLanguageRightToLeft) currentWordWidth *= -1;
       result += currentWordWidth;
     }
