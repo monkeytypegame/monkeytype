@@ -150,14 +150,18 @@ export async function updatePosition(noAnim = false): Promise<void> {
   let wordLen = splitIntoCharacters(TestWords.words.getCurrent()).length;
   const inputLen = splitIntoCharacters(TestInput.input.current).length;
   if (Config.mode === "zen") wordLen = inputLen;
-  const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
+  const activeWordEl =
+    document.querySelectorAll<HTMLElement>("#words .word")[
+      TestState.activeWordIndex - TestState.activeWordElementOffset
+    ];
+  if (!activeWordEl) return;
   let activeWordEmpty = false;
   if (Config.mode === "zen") {
     wordLen = inputLen;
     if (inputLen === 0) activeWordEmpty = true;
   }
 
-  const currentWordNodeList = activeWordEl?.querySelectorAll("letter");
+  const currentWordNodeList = activeWordEl.querySelectorAll("letter");
   if (!currentWordNodeList?.length) return;
 
   const currentLetter = currentWordNodeList[inputLen] as

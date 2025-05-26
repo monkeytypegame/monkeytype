@@ -122,7 +122,7 @@ function backspaceToPrevious(): void {
   if (!TestState.isActive) return;
 
   const wordElementIndex =
-    TestState.activeWordIndex - TestUI.activeWordElementOffset;
+    TestState.activeWordIndex - TestState.activeWordElementOffset;
 
   if (TestInput.input.getHistory().length === 0 || wordElementIndex === 0) {
     return;
@@ -269,12 +269,12 @@ async function handleSpace(): Promise<void> {
     if (Config.blindMode) {
       if (Config.highlightMode !== "off") {
         TestUI.highlightAllLettersAsCorrect(
-          TestState.activeWordIndex - TestUI.activeWordElementOffset
+          TestState.activeWordIndex - TestState.activeWordElementOffset
         );
       }
     } else {
       TestUI.highlightBadWord(
-        TestState.activeWordIndex - TestUI.activeWordElementOffset
+        TestState.activeWordIndex - TestState.activeWordElementOffset
       );
     }
     TestInput.input.pushHistory();
@@ -343,14 +343,14 @@ async function handleSpace(): Promise<void> {
   if (!Config.showAllLines || shouldLimitToThreeLines) {
     const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
-        TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
+        TestState.activeWordIndex - TestState.activeWordElementOffset - 1
       ]?.offsetTop ?? 0
     );
 
     const { data: nextTop } = tryCatchSync(() =>
       Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
-          TestState.activeWordIndex - TestUI.activeWordElementOffset
+          TestState.activeWordIndex - TestState.activeWordElementOffset
         ]?.offsetTop ?? 0
       )
     );
@@ -668,7 +668,7 @@ function handleChar(
   );
 
   const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex - TestUI.activeWordElementOffset
+    TestState.activeWordIndex - TestState.activeWordElementOffset
   ] as HTMLElement;
 
   const testInputLength: number = !isCharKorean
@@ -1113,7 +1113,7 @@ $(document).on("keydown", async (event) => {
     const activeWord: HTMLElement | null = document.querySelectorAll(
       "#words .word"
     )?.[
-      TestState.activeWordIndex - TestUI.activeWordElementOffset
+      TestState.activeWordIndex - TestState.activeWordElementOffset
     ] as HTMLElement;
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
