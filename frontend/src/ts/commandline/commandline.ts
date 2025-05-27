@@ -39,6 +39,15 @@ let subgroupOverride: CommandsSubgroup | null = null;
 let isAnimating = false;
 let lastSingleListModeInputValue = "";
 
+type CommandWithActiveState = Omit<Command, "active"> & { isActive: boolean };
+
+let lastState:
+  | {
+      list: CommandWithActiveState[];
+      usingSingleList: boolean;
+    }
+  | undefined;
+
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
@@ -328,7 +337,7 @@ function hideCommands(): void {
     throw new Error("Commandline element not found");
   }
   element.innerHTML = "";
-  lastList = undefined;
+  lastState = undefined;
 }
 
 let cachedSingleSubgroup: CommandsSubgroup | null = null;
@@ -353,8 +362,6 @@ async function getList(): Promise<Command[]> {
   return (await getSubgroup()).list;
 }
 
-let lastList: Command[] | undefined;
-
 async function showCommands(): Promise<void> {
   const element = document.querySelector("#commandLine .suggestions");
   if (element === null) {
@@ -366,11 +373,42 @@ async function showCommands(): Promise<void> {
     return;
   }
 
-  const list = (await getList()).filter((c) => c.found === true);
-  if (lastList && areSortedArraysEqual(list, lastList)) {
+  const subgroup = await getSubgroup();
+
+  const list = subgroup.list
+    .filter((c) => c.found === true)
+    .map((command) => {
+      let isActive = false;
+      if (command.active !== undefined) {
+        isActive = command.active();
+      } else {
+        const configKey = command.configKey ?? subgroup.configKey;
+        if (configKey !== undefined) {
+          if (command.configValueMode === "include") {
+            isActive = (Config[configKey] as unknown[]).includes(
+              command.configValue
+            );
+          } else {
+            isActive = Config[configKey] === command.configValue;
+          }
+        }
+      }
+      const { active: _active, ...restOfCommand } = command;
+      return { ...restOfCommand, isActive } as CommandWithActiveState;
+    });
+
+  if (
+    lastState &&
+    usingSingleList === lastState.usingSingleList &&
+    areSortedArraysEqual(list, lastState.list)
+  ) {
     return;
   }
-  lastList = list;
+
+  lastState = {
+    list: list,
+    usingSingleList: usingSingleList,
+  };
 
   let html = "";
   let index = 0;
@@ -387,38 +425,13 @@ async function showCommands(): Promise<void> {
       icon = `<i class="fas fa-fw ${icon}"></i>`;
     }
     let configIcon = "";
-    const configKey = command.configKey ?? (await getSubgroup()).configKey;
-    if (command.active !== undefined) {
-      if (command.active()) {
-        firstActive = firstActive ?? index;
-        configIcon = `<i class="fas fa-fw fa-check"></i>`;
-      } else {
-        configIcon = `<i class="fas fa-fw"></i>`;
-      }
-    } else if (configKey !== undefined) {
-      let isActive;
-
-      if (command.configValueMode === "include") {
-        isActive = (
-          Config[configKey] as (
-            | string
-            | number
-            | boolean
-            | number[]
-            | undefined
-          )[]
-        ).includes(command.configValue);
-      } else {
-        isActive = Config[configKey] === command.configValue;
-      }
-
-      if (isActive) {
-        firstActive = firstActive ?? index;
-        configIcon = `<i class="fas fa-fw fa-check"></i>`;
-      } else {
-        configIcon = `<i class="fas fa-fw"></i>`;
-      }
+    if (command.isActive) {
+      firstActive = firstActive ?? index;
+      configIcon = `<i class="fas fa-fw fa-check"></i>`;
+    } else {
+      configIcon = `<i class="fas fa-fw"></i>`;
     }
+
     const iconHTML = `<div class="icon">${
       usingSingleList || configIcon === "" ? icon : configIcon
     }</div>`;
