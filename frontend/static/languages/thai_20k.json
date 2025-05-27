@@ -2,6 +2,7 @@
   "name": "thai_20k",
   "noLazyMode": true,
   "bcp47": "th-TH",
+  "charset": "thai",
   "words": [
     "กก",
     "กกช้าง",

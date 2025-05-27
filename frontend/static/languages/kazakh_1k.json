@@ -1,6 +1,7 @@
 {
   "name": "kazakh_1k",
   "noLazyMode": true,
+  "charset": "cyrillic",
   "words": [
     "факт",
     "жанында",
