@@ -4,7 +4,7 @@ import {
 } from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import { CustomTextSchema } from "@monkeytype/contracts/schemas/results";
+import { CompletedEventCustomTextSchema } from "@monkeytype/contracts/schemas/results";
 import { deepClone } from "../utils/misc";
 
 const CustomTextObjectSchema = z.record(z.string(), z.string());
@@ -28,7 +28,7 @@ const customTextLongLS = new LocalStorageWithSchema({
   fallback: {},
 });
 
-export const CustomTextSettingsSchema = CustomTextSchema.omit({
+export const CustomTextSettingsSchema = CompletedEventCustomTextSchema.omit({
   textLen: true,
 }).extend({
   text: z.array(z.string()).min(1),

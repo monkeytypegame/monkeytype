@@ -30,7 +30,7 @@ export const KeyStatsSchema = z.object({
 });
 export type KeyStats = z.infer<typeof KeyStatsSchema>;
 
-export const CustomTextSchema = z.object({
+export const CompletedEventCustomTextSchema = z.object({
   textLen: z.number().int().nonnegative(),
   mode: CustomTextModeSchema,
   pipeDelimiter: z.boolean(),
@@ -39,7 +39,9 @@ export const CustomTextSchema = z.object({
     value: z.number().nonnegative(),
   }),
 });
-export type CustomText = z.infer<typeof CustomTextSchema>;
+export type CompletedEventCustomText = z.infer<
+  typeof CompletedEventCustomTextSchema
+>;
 
 export const CharStatsSchema = z.tuple([
   z.number().int().nonnegative(),
@@ -120,7 +122,7 @@ export const CompletedEventSchema = ResultBaseSchema.required({
   .extend({
     charTotal: z.number().int().nonnegative(),
     challenge: token().max(100).optional(),
-    customText: CustomTextSchema.optional(),
+    customText: CompletedEventCustomTextSchema.optional(),
     hash: token().max(100),
     keyDuration: z.array(z.number().nonnegative()).or(z.literal("toolong")),
     keySpacing: z.array(z.number().nonnegative()).or(z.literal("toolong")),
