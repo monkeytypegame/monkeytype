@@ -33,6 +33,8 @@ export function mergeWithDefaultFilters(
         merged[groupKey] = id;
       } else if (groupKey === "name") {
         merged[groupKey] = filters[groupKey] ?? defaultResultFilters[groupKey];
+      } else if (groupKey === "tagsFilterMode") {
+        merged[groupKey] = filters[groupKey] ?? defaultResultFilters[groupKey];
       } else {
         // @ts-expect-error i cant figure this out
         merged[groupKey] = {
@@ -291,7 +293,7 @@ export function updateActive(): void {
 
   for (const group of Misc.typedKeys(getFilters())) {
     // id and name field do not correspond to any ui elements, no need to update
-    if (group === "_id" || group === "name") {
+    if (group === "_id" || group === "name" || group === "tagsFilterMode") {
       continue;
     }
 
@@ -488,6 +490,19 @@ export function updateActive(): void {
   setTimeout(() => {
     $(".pageAccount .group.chart .above").html(chartString);
   }, 0);
+}
+
+function updateTagsFilterModeIcon(): void {
+  const toggleElement = $(".pageAccount .tagsFilterModeToggle");
+  const modeTextElement = toggleElement.find(".mode-text");
+
+  if (filters.tagsFilterMode === "and") {
+    modeTextElement.text("AND");
+  } else if (filters.tagsFilterMode === "exact") {
+    modeTextElement.text("EXACT");
+  } else {
+    modeTextElement.text("OR");
+  }
 }
 
 function toggle<G extends ResultFiltersGroup>(
@@ -822,7 +837,7 @@ export async function appendButtons(
     html +=
       "<select class='tagsSelect' group='tags' placeholder='select a tag' multiple>";
 
-    html += "<option value='all'>all</option>";
+    html += "<option value='all'>all (and no tag)</option>";
     html += "<option value='none'>no tag</option>";
 
     for (const tag of snapshot.tags) {
@@ -890,6 +905,20 @@ $(".group.presetFilterButtons .filterBtns").on(
   }
 );
 
+$(document).on("click", ".pageAccount .tagsFilterModeToggle", () => {
+  // Cycle between "or" -> "and" -> "exact" -> "or"
+  if (filters.tagsFilterMode === "or") {
+    filters.tagsFilterMode = "and";
+  } else if (filters.tagsFilterMode === "and") {
+    filters.tagsFilterMode = "exact";
+  } else {
+    filters.tagsFilterMode = "or";
+  }
+  save();
+  updateTagsFilterModeIcon();
+  selectChangeCallbackFn();
+});
+
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   const filter = Misc.sanitize(ResultFiltersSchema, Misc.deepClone(filterIn));
 
@@ -902,4 +931,8 @@ function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
     }
   });
   return filter;
+}
+
+export function getTagsFilterMode(): "and" | "or" | "exact" {
+  return filters.tagsFilterMode;
 }
