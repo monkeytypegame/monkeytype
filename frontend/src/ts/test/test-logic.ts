@@ -62,7 +62,7 @@ import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import {
   CompletedEvent,
-  CustomTextDataWithTextLen,
+  CustomText as CustomTextType,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
 import {
@@ -801,7 +801,7 @@ function buildCompletedEvent(
   const wpmCons = Numbers.roundTo2(Numbers.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
-  let customText: CustomTextDataWithTextLen | undefined = undefined;
+  let customText: CustomTextType | undefined = undefined;
   if (Config.mode === "custom") {
     const temp = CustomText.getData();
     customText = {

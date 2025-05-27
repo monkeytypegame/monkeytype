@@ -39,7 +39,7 @@ export const CustomTextSchema = z.object({
     value: z.number().nonnegative(),
   }),
 });
-export type CustomTextDataWithTextLen = z.infer<typeof CustomTextSchema>;
+export type CustomText = z.infer<typeof CustomTextSchema>;
 
 export const CharStatsSchema = z.tuple([
   z.number().int().nonnegative(),
