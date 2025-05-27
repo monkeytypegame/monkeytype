@@ -41,6 +41,7 @@ import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
 import { Language } from "@monkeytype/contracts/schemas/languages";
+import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -966,7 +967,7 @@ export async function update(
         Misc.applyReducedMotion(125)
       );
 
-      const canQuickRestart = Misc.canQuickRestart(
+      const canQuickRestart = canQuickRestartFn(
         Config.mode,
         Config.words,
         Config.time,

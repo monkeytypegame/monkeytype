@@ -6,8 +6,9 @@ import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
-import { canQuickRestart, isDevEnvironment } from "./utils/misc";
+import { isDevEnvironment } from "./utils/misc";
 import { isCustomTextLong } from "./states/custom-text-name";
+import { canQuickRestart } from "./utils/quick-restart";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: string): void {
