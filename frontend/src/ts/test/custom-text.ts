@@ -144,12 +144,7 @@ export type CustomTextData = Omit<CustomTextDataWithTextLen, "textLen"> & {
 };
 
 export function getData(): CustomTextData {
-  return {
-    text: getText(),
-    mode: getMode(),
-    limit: getLimit(),
-    pipeDelimiter: getPipeDelimiter(),
-  };
+  return customTextSettings.get();
 }
 
 export function getCustomText(name: string, long = false): string[] {
