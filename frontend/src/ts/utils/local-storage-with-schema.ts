@@ -30,13 +30,12 @@ export class LocalStorageWithSchema<T> {
   }
 
   public get(): T {
-    console.debug(`LS ${this.key} Getting value from localStorage`);
-
     if (this.cache !== undefined) {
       console.debug(`LS ${this.key} Got cached value:`, this.cache);
       return this.cache;
     }
 
+    console.debug(`LS ${this.key} Getting value from localStorage`);
     const value = window.localStorage.getItem(this.key);
 
     if (value === null) {
