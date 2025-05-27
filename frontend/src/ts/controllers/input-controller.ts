@@ -42,6 +42,7 @@ import {
   getActiveFunboxNames,
 } from "../test/funbox/list";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
+import { canQuickRestart } from "../utils/quick-restart";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -1073,7 +1074,7 @@ $(document).on("keydown", async (event) => {
       if (Config.mode === "zen") {
         void TestLogic.finish();
       } else if (
-        !Misc.canQuickRestart(
+        !canQuickRestart(
           Config.mode,
           Config.words,
           Config.time,
