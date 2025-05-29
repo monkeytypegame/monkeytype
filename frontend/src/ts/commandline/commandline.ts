@@ -119,9 +119,9 @@ export function show(
       let showInputCommand: Command | undefined = undefined;
 
       if (settings?.commandOverride !== undefined) {
-        const command = (await getList()).filter(
+        const command = (await getList()).find(
           (c) => c.id === settings.commandOverride
-        )[0];
+        );
         if (command === undefined) {
           Notifications.add(`Command ${settings.commandOverride} not found`, 0);
         } else if (command?.input !== true) {

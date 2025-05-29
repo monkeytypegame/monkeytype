@@ -425,9 +425,9 @@ export function updateActive(): void {
             if (id === "none") return id;
             const snapshot = DB.getSnapshot();
             if (snapshot === undefined) return id;
-            const name = snapshot.tags?.filter((t) => t._id === id)[0];
+            const name = snapshot.tags?.find((t) => t._id === id);
             if (name !== undefined) {
-              return snapshot.tags?.filter((t) => t._id === id)[0]?.display;
+              return snapshot.tags?.find((t) => t._id === id)?.display;
             }
             return name;
           })
