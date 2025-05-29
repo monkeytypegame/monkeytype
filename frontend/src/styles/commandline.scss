@@ -93,6 +93,7 @@
           .themeBubbles {
             display: grid;
             grid-auto-flow: column;
+            place-content: center;
             gap: 0.5em;
             border-radius: 1em;
             .themeBubble {
