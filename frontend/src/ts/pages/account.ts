@@ -1341,6 +1341,7 @@ export const page = new Page({
       $(".pageAccount .preloader").removeClass("hidden");
       await LoadingPage.showBar();
     }
+    ResultFilters.updateTagsDropdownOptions();
     await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
