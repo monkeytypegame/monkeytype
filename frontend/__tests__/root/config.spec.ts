@@ -328,11 +328,9 @@ describe("Config", () => {
   });
   it("setFavThemes", () => {
     expect(Config.setFavThemes([])).toBe(true);
-    expect(Config.setFavThemes(["test"])).toBe(true);
-    expect(Config.setFavThemes([stringOfLength(50)])).toBe(true);
-
+    expect(Config.setFavThemes(["8008", "80s_after_dark"])).toBe(true);
+    expect(Config.setFavThemes(["test"] as any)).toBe(false);
     expect(Config.setFavThemes("invalid" as any)).toBe(false);
-    expect(Config.setFavThemes([stringOfLength(51)])).toBe(false);
   });
   it("setFunbox", () => {
     expect(Config.setFunbox(["mirror"])).toBe(true);
@@ -407,38 +405,26 @@ describe("Config", () => {
   it("setTheme", () => {
     expect(Config.setTheme("serika")).toBe(true);
     expect(Config.setTheme("serika_dark")).toBe(true);
-    expect(Config.setTheme(stringOfLength(50))).toBe(true);
 
-    expect(Config.setTheme("serika dark")).toBe(false);
-    expect(Config.setTheme("serika-dark")).toBe(false);
-    expect(Config.setTheme(stringOfLength(51))).toBe(false);
+    expect(Config.setTheme("invalid" as any)).toBe(false);
   });
   it("setThemeLight", () => {
     expect(Config.setThemeLight("serika")).toBe(true);
     expect(Config.setThemeLight("serika_dark")).toBe(true);
-    expect(Config.setThemeLight(stringOfLength(50))).toBe(true);
 
-    expect(Config.setThemeLight("serika dark")).toBe(false);
-    expect(Config.setThemeLight("serika-dark")).toBe(false);
-    expect(Config.setThemeLight(stringOfLength(51))).toBe(false);
+    expect(Config.setThemeLight("invalid" as any)).toBe(false);
   });
   it("setThemeDark", () => {
     expect(Config.setThemeDark("serika")).toBe(true);
     expect(Config.setThemeDark("serika_dark")).toBe(true);
-    expect(Config.setThemeDark(stringOfLength(50))).toBe(true);
 
-    expect(Config.setThemeDark("serika dark")).toBe(false);
-    expect(Config.setThemeDark("serika-dark")).toBe(false);
-    expect(Config.setThemeDark(stringOfLength(51))).toBe(false);
+    expect(Config.setThemeDark("invalid" as any)).toBe(false);
   });
   it("setLanguage", () => {
     expect(Config.setLanguage("english")).toBe(true);
     expect(Config.setLanguage("english_1k")).toBe(true);
-    expect(Config.setLanguage(stringOfLength(50))).toBe(true);
 
-    expect(Config.setLanguage("english 1k")).toBe(false);
-    expect(Config.setLanguage("english-1k")).toBe(false);
-    expect(Config.setLanguage(stringOfLength(51))).toBe(false);
+    expect(Config.setLanguage("invalid" as any)).toBe(false);
   });
   it("setKeymapLayout", () => {
     expect(Config.setKeymapLayout("overrideSync")).toBe(true);

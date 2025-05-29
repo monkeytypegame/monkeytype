@@ -55,7 +55,7 @@ let visibleTableLines = 0;
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults === undefined || filteredResults.length === 0) return;
   let newVisibleLines;
-  if (lineIndex && lineIndex > visibleTableLines) {
+  if (Numbers.isSafeNumber(lineIndex) && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
   } else {
     newVisibleLines = visibleTableLines + 10;
@@ -373,13 +373,11 @@ async function fillContent(): Promise<void> {
         }
       }
 
-      let langFilter = ResultFilters.getFilter(
-        "language",
-        result.language ?? "english"
-      );
+      let langFilter = ResultFilters.getFilter("language", result.language);
 
       if (
-        result.language === "english_expanded" &&
+        //legacy value for english_1k
+        (result.language as string) === "english_expanded" &&
         ResultFilters.getFilter("language", "english_1k")
       ) {
         langFilter = true;
@@ -1343,6 +1341,7 @@ export const page = new Page({
       $(".pageAccount .preloader").removeClass("hidden");
       await LoadingPage.showBar();
     }
+    ResultFilters.updateTagsDropdownOptions();
     await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);

@@ -2,7 +2,6 @@ import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
-import * as JSONData from "../utils/json-data";
 import { isColorDark, isColorLight } from "../utils/colors";
 import Config, { setAutoSwitchTheme, setCustomTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
@@ -11,9 +10,10 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import { debounce } from "throttle-debounce";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { ThemeName } from "@monkeytype/contracts/schemas/configs";
+import { ThemesList } from "../constants/themes";
 
-export let randomTheme: string | null = null;
+export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
 let randomThemeIndex = 0;
 
@@ -179,7 +179,7 @@ async function apply(
   void updateFavicon();
   $("#metaThemeColor").attr("content", colors.bg);
   // }
-  updateFooterThemeName(isPreview ? themeName : undefined);
+  updateFooterIndicator(isPreview ? themeName : undefined);
 
   if (isColorDark(await ThemeColors.get("bg"))) {
     $("body").addClass("darkMode");
@@ -188,13 +188,47 @@ async function apply(
   }
 }
 
-function updateFooterThemeName(nameOverride?: string): void {
-  let str = Config.theme;
+function updateFooterIndicator(nameOverride?: string): void {
+  const indicator = document.querySelector<HTMLElement>(
+    "footer .right .current-theme"
+  );
+  const text = indicator?.querySelector<HTMLElement>(".text");
+  const favIcon = indicator?.querySelector<HTMLElement>(".favIndicator");
+
+  if (
+    !(indicator instanceof HTMLElement) ||
+    !(text instanceof HTMLElement) ||
+    !(favIcon instanceof HTMLElement)
+  ) {
+    return;
+  }
+
+  //text
+  let str: string = Config.theme;
   if (randomTheme !== null) str = randomTheme;
   if (Config.customTheme) str = "custom";
   if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
-  $(".current-theme .text").text(str);
+  text.innerText = str;
+
+  //fav icon
+  const isCustom = Config.customTheme;
+  // hide the favorite icon completely for custom themes
+  if (isCustom) {
+    favIcon.style.display = "none";
+    return;
+  }
+  favIcon.style.display = "";
+  const currentTheme = nameOverride ?? randomTheme ?? Config.theme;
+  const isFavorite =
+    currentTheme !== null &&
+    Config.favThemes.includes(currentTheme as ThemeName);
+
+  if (isFavorite) {
+    favIcon.style.display = "block";
+  } else {
+    favIcon.style.display = "none";
+  }
 }
 
 export function preview(
@@ -244,17 +278,10 @@ export async function clearPreview(applyTheme = true): Promise<void> {
   }
 }
 
-let themesList: string[] = [];
+let themesList: (ThemeName | string)[] = [];
 
 async function changeThemeList(): Promise<void> {
-  const { data: themes, error } = await tryCatch(JSONData.getThemesList());
-  if (error) {
-    console.error(
-      Misc.createErrorMessage(error, "Failed to update random theme list")
-    );
-    return;
-  }
-
+  const themes = ThemesList;
   if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
     themesList = Config.favThemes;
   } else if (Config.randomTheme === "light") {
@@ -357,7 +384,7 @@ function applyCustomBackground(): void {
     img.setAttribute("src", Config.customBackground);
     img.setAttribute(
       "onError",
-      "javascript:window.dispatchEvent(new Event('customBackgroundFailed'))"
+      "javascript:this.style.display='none'; window.dispatchEvent(new Event('customBackgroundFailed'))"
     );
     container?.replaceChildren(img);
 
@@ -440,11 +467,22 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   ) {
     await set(Config.themeDark, true);
   }
+  if (
+    [
+      "theme",
+      "customTheme",
+      "customThemeColors",
+      "randomTheme",
+      "favThemes",
+    ].includes(eventKey)
+  ) {
+    updateFooterIndicator();
+  }
 });
 
 window.addEventListener("customBackgroundFailed", () => {
   Notifications.add(
-    "Custom background link is either temporairly unavailable or expired. Please make sure the URL is correct or change it",
+    "Custom background link is either temporarily unavailable or expired. Please make sure the URL is correct or change it",
     0,
     { duration: 5 }
   );

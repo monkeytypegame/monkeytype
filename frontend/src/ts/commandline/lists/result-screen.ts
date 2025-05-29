@@ -7,6 +7,7 @@ import * as TestWords from "../../test/test-words";
 import Config from "../../config";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
+import * as TestScreenshot from "../../test/test-screenshot";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -92,13 +93,27 @@ const commands: Command[] = [
     },
   },
   {
-    id: "saveScreenshot",
+    id: "copyScreenshot",
     display: "Copy screenshot to clipboard",
-    icon: "fa-image",
-    alias: "save",
+    icon: "fa-copy",
+    alias: "copy image clipboard",
     exec: (): void => {
       setTimeout(() => {
-        void TestUI.screenshot();
+        void TestScreenshot.copyToClipboard();
+      }, 500);
+    },
+    available: (): boolean => {
+      return TestUI.resultVisible;
+    },
+  },
+  {
+    id: "downloadScreenshot",
+    display: "Download screenshot",
+    icon: "fa-download",
+    alias: "save image download file",
+    exec: (): void => {
+      setTimeout(async () => {
+        void TestScreenshot.download();
       }, 500);
     },
     available: (): boolean => {

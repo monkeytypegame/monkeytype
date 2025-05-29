@@ -30,6 +30,7 @@ import {
 import { getDefaultConfig } from "./constants/default-config";
 import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -659,7 +660,7 @@ export async function saveLocalPB<M extends Mode>(
   mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
-  language: string,
+  language: Language,
   difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
@@ -745,9 +746,7 @@ export async function getLocalTagPB<M extends Mode>(
 
   let ret = 0;
 
-  const filteredtag = (getSnapshot()?.tags ?? []).filter(
-    (t) => t._id === tagId
-  )[0];
+  const filteredtag = (getSnapshot()?.tags ?? []).find((t) => t._id === tagId);
 
   if (filteredtag === undefined) return ret;
 
@@ -788,7 +787,7 @@ export async function saveLocalTagPB<M extends Mode>(
   mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
-  language: string,
+  language: Language,
   difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
@@ -799,9 +798,9 @@ export async function saveLocalTagPB<M extends Mode>(
   if (!dbSnapshot) return;
   if (mode === "quote") return;
   function cont(): void {
-    const filteredtag = dbSnapshot?.tags?.filter(
+    const filteredtag = dbSnapshot?.tags?.find(
       (t) => t._id === tagId
-    )[0] as SnapshotUserTag;
+    ) as SnapshotUserTag;
 
     filteredtag.personalBests ??= {
       time: {},
@@ -893,7 +892,7 @@ export async function saveLocalTagPB<M extends Mode>(
 export async function updateLbMemory<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
-  language: string,
+  language: Language,
   rank: number,
   api = false
 ): Promise<void> {

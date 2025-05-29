@@ -13,6 +13,10 @@ export default s.router(adminContract, {
   toggleBan: {
     handler: async (r) => callController(AdminController.toggleBan)(r),
   },
+  clearStreakHourOffset: {
+    handler: async (r) =>
+      callController(AdminController.clearStreakHourOffset)(r),
+  },
   acceptReports: {
     handler: async (r) => callController(AdminController.acceptReports)(r),
   },

@@ -3,13 +3,11 @@ import * as TribeConfigSyncEvent from "../observables/tribe-config-sync-event";
 
 import {
   CustomTextLimitMode,
-  CustomTextLimitModeSchema,
   CustomTextMode,
-  CustomTextModeSchema,
 } from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import { CustomTextDataWithTextLen } from "@monkeytype/contracts/schemas/results";
+import { CompletedEventCustomTextSchema } from "@monkeytype/contracts/schemas/results";
 import { deepClone } from "../utils/misc";
 
 const CustomTextObjectSchema = z.record(z.string(), z.string());
@@ -33,11 +31,10 @@ const customTextLongLS = new LocalStorageWithSchema({
   fallback: {},
 });
 
-export const CustomTextSettingsSchema = z.object({
+export const CustomTextSettingsSchema = CompletedEventCustomTextSchema.omit({
+  textLen: true,
+}).extend({
   text: z.array(z.string()).min(1),
-  mode: CustomTextModeSchema,
-  limit: z.object({ value: z.number(), mode: CustomTextLimitModeSchema }),
-  pipeDelimiter: z.boolean(),
 });
 
 export type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
@@ -155,17 +152,8 @@ export function setPipeDelimiter(val: boolean, tribeOverride = false): void {
 
 }
 
-export type CustomTextData = Omit<CustomTextDataWithTextLen, "textLen"> & {
-  text: string[];
-};
-
-export function getData(): CustomTextData {
-  return {
-    text: getText(),
-    mode: getMode(),
-    limit: getLimit(),
-    pipeDelimiter: getPipeDelimiter(),
-  };
+export function getData(): CustomTextSettings {
+  return customTextSettings.get();
 }
 
 export function getCustomText(name: string, long = false): string[] {

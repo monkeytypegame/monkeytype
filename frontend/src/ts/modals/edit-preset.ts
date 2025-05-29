@@ -279,9 +279,9 @@ async function apply(): Promise<void> {
       } as SnapshotPreset);
     }
   } else if (action === "edit") {
-    const preset = snapshotPresets.filter(
+    const preset = snapshotPresets.find(
       (preset: SnapshotPreset) => preset._id === presetId
-    )[0] as SnapshotPreset;
+    ) as SnapshotPreset;
     if (preset === undefined) {
       Notifications.add("Preset not found", -1);
       return;

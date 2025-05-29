@@ -8,7 +8,6 @@ type Mode = "select" | "button" | "range";
 
 export default class SettingsGroup<T extends ConfigValue> {
   public configName: string;
-  public configValue: T;
   public configFunction: (param: T, nosave?: boolean) => boolean;
   public mode: Mode;
   public setCallback?: () => void;
@@ -23,7 +22,6 @@ export default class SettingsGroup<T extends ConfigValue> {
     updateCallback?: () => void
   ) {
     this.configName = configName;
-    this.configValue = Config[configName as keyof typeof Config] as T;
     this.mode = mode;
     this.configFunction = configFunction;
     this.setCallback = setCallback;

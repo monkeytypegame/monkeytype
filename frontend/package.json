@@ -29,7 +29,9 @@
     "node": "20.16.0"
   },
   "browserslist": [
-    "defaults"
+    "defaults",
+    "not op_mini all",
+    "not dead"
   ],
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
@@ -52,6 +54,7 @@
     "concurrently": "8.2.2",
     "dotenv": "16.4.5",
     "eslint": "8.57.1",
+    "eslint-plugin-compat": "6.0.2",
     "firebase-tools": "13.15.1",
     "fontawesome-subset": "4.4.0",
     "gulp": "4.0.2",
@@ -60,7 +63,7 @@
     "madge": "8.0.0",
     "magic-string": "0.30.17",
     "normalize.css": "8.0.1",
-    "oxlint": "0.16.7",
+    "oxlint": "0.16.12",
     "postcss": "8.4.31",
     "sass": "1.70.0",
     "subset-font": "2.3.0",

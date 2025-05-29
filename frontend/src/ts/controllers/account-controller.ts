@@ -3,7 +3,6 @@ import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
 import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
 import * as Settings from "../pages/settings";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
@@ -50,6 +49,7 @@ import * as PSA from "../elements/psa";
 import defaultResultFilters from "../constants/default-result-filters";
 import { getActiveFunboxesWithFunction } from "../test/funbox/list";
 import { Snapshot } from "../constants/default-snapshot";
+import { LanguageList } from "../constants/languages";
 import * as Sentry from "../sentry";
 
 export const gmailProvider = new GoogleAuthProvider();
@@ -136,26 +136,15 @@ async function getDataAndInit(): Promise<boolean> {
 
   ResultFilters.loadTags(snapshot.tags);
 
-  Promise.all([JSONData.getLanguageList(), getAllFunboxes()])
-    .then((values) => {
-      const [languages, funboxes] = values;
-      languages.forEach((language) => {
-        defaultResultFilters.language[language] = true;
-      });
-      funboxes.forEach((funbox) => {
-        defaultResultFilters.funbox[funbox.name] = true;
-      });
-      // filters = defaultResultFilters;
-      void ResultFilters.load();
-    })
-    .catch((e: unknown) => {
-      console.log(
-        Misc.createErrorMessage(
-          e,
-          "Something went wrong while loading the filters"
-        )
-      );
-    });
+  for (const language of LanguageList) {
+    defaultResultFilters.language[language] = true;
+  }
+
+  for (const funbox of getAllFunboxes()) {
+    defaultResultFilters.funbox[funbox.name] = true;
+  }
+  // filters = defaultResultFilters;
+  void ResultFilters.load();
 
   if (snapshot.needsToChangeName) {
     Notifications.addPSA(

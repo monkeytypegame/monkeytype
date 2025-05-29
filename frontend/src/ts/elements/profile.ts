@@ -172,7 +172,7 @@ export async function update(
       console.debug("isToday", isToday);
       console.debug("isYesterday", isYesterday);
 
-      const offsetString = streakOffset
+      const offsetString = Numbers.isSafeNumber(streakOffset)
         ? `(${streakOffset > 0 ? "+" : ""}${streakOffset} offset)`
         : "";
 

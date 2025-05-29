@@ -67,7 +67,8 @@
           color: var(--sub-color);
         }
 
-        .fas {
+        .fas,
+        .far {
           margin-right: 0.5rem;
           color: var(--sub-color);
         }
@@ -86,11 +87,13 @@
           }
         }
 
-        &.withThemeBubbles {
-          grid-template-columns: auto 1fr auto;
+        &.changeThemeCommand {
+          grid-template-columns: auto 1fr auto auto;
+          position: relative;
           .themeBubbles {
             display: grid;
             grid-auto-flow: column;
+            place-content: center;
             gap: 0.5em;
             border-radius: 1em;
             .themeBubble {
@@ -98,6 +101,9 @@
               height: 1em;
               border-radius: 100%;
             }
+          }
+          .themeFavIcon {
+            margin-right: 0.25rem;
           }
         }
       }

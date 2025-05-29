@@ -46,13 +46,15 @@ import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
+import { Language } from "@monkeytype/contracts/schemas/languages";
+import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 
 let result: CompletedEvent;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
 
-let quoteLang = "";
+let quoteLang: Language | undefined;
 let quoteId = "";
 
 export function toggleUnsmoothedRaw(): void {
@@ -785,7 +787,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
 
     const userqr =
       DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
-    if (userqr) {
+    if (Numbers.isSafeNumber(userqr)) {
       $(".pageTest #result #rateQuoteButton .icon")
         .removeClass("far")
         .addClass("fas");
@@ -822,7 +824,7 @@ function updateQuoteFavorite(randomQuote: Quote | null): void {
     return;
   }
 
-  quoteLang = Config.mode === "quote" ? randomQuote.language : "";
+  quoteLang = Config.mode === "quote" ? randomQuote.language : undefined;
   quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
 
   const userFav = QuotesController.isQuoteFavorite(randomQuote);
@@ -981,7 +983,7 @@ export async function update(
         Misc.applyReducedMotion(125)
       );
 
-      const canQuickRestart = Misc.canQuickRestart(
+      const canQuickRestart = canQuickRestartFn(
         Config.mode,
         Config.words,
         Config.time,
@@ -1081,7 +1083,7 @@ export function updateTagsAfterEdit(
 }
 
 $(".pageTest #favoriteQuoteButton").on("click", async () => {
-  if (quoteLang === "" || quoteId === "") {
+  if (quoteLang === undefined || quoteId === "") {
     Notifications.add("Could not get quote stats!", -1);
     return;
   }

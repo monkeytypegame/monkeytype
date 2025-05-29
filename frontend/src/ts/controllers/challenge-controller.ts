@@ -16,6 +16,7 @@ import {
 import {
   Config as ConfigType,
   Difficulty,
+  ThemeName,
   FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
@@ -229,9 +230,9 @@ export async function setup(challengeName: string): Promise<boolean> {
     return false;
   }
 
-  const challenge = list.filter(
+  const challenge = list.find(
     (c) => c.name.toLowerCase() === challengeName.toLowerCase()
-  )[0];
+  );
   let notitext;
   try {
     if (challenge === undefined) {
@@ -282,7 +283,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
       if (challenge.parameters[1] !== null) {
-        UpdateConfig.setTheme(challenge.parameters[1] as string);
+        UpdateConfig.setTheme(challenge.parameters[1] as ThemeName);
       }
       if (challenge.parameters[2] !== null) {
         void Funbox.activate(challenge.parameters[2] as FunboxName[]);

@@ -74,7 +74,7 @@ import { Mode } from "@monkeytype/contracts/schemas/shared";
 import {
   ChartData,
   CompletedEvent,
-  CustomTextDataWithTextLen,
+  CompletedEventCustomText,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
 import {
@@ -89,6 +89,8 @@ import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { captureException } from "../sentry";
 import * as Loader from "../elements/loader";
+import * as TestInitFailed from "../elements/test-init-failed";
+import { canQuickRestart } from "../utils/quick-restart";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -188,7 +190,7 @@ export function restart(options = {} as RestartOptions): void {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") event?.preventDefault();
       if (
-        !Misc.canQuickRestart(
+        !canQuickRestart(
           Config.mode,
           Config.words,
           Config.time,
@@ -368,7 +370,15 @@ export function restart(options = {} as RestartOptions): void {
 
       TestState.setRepeated(options.withSameWordset ?? false);
       TestState.setPaceRepeat(repeatWithPace);
-      await init();
+      TestInitFailed.hide();
+      TestState.setTestInitSuccess(true);
+      const initResult = await init();
+
+      if (initResult === null) {
+        TestUI.setTestRestarting(false);
+        return;
+      }
+
       await PaceCaret.init();
 
       for (const fb of getActiveFunboxesWithFunction("restart")) {
@@ -415,27 +425,33 @@ export function restart(options = {} as RestartOptions): void {
 let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
-export async function init(): Promise<void> {
+export async function init(): Promise<void | null> {
   console.debug("Initializing test");
   if (TribeState.getState() > 5 && TribeState.getRoom()) {
     Random.setSeed(TribeState.getRoom()?.seed.toString() ?? "");
   }
 
   testReinitCount++;
-  if (testReinitCount >= 4) {
+  if (testReinitCount > 3) {
     //todo figure out what to do if this happens in tribe
     if (lastInitError) {
       captureException(lastInitError);
+      TestInitFailed.showError(
+        `${lastInitError.name}: ${lastInitError.message}`
+      );
     }
+    TestInitFailed.show();
     TestUI.setTestRestarting(false);
-    Notifications.add(
-      "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
-      -1,
-      {
-        important: true,
-      }
-    );
-    return;
+    TestState.setTestInitSuccess(false);
+    Focus.set(false);
+    // Notifications.add(
+    //   "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
+    //   -1,
+    //   {
+    //     important: true,
+    //   }
+    // );
+    return null;
   }
 
   MonkeyPower.reset();
@@ -461,8 +477,7 @@ export async function init(): Promise<void> {
 
   if (!language || language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
-    await init();
-    return;
+    return await init();
   }
 
   if (ActivePage.get() === "test") {
@@ -527,6 +542,7 @@ export async function init(): Promise<void> {
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
   } catch (e) {
+    Loader.hide();
     if (e instanceof WordGenError || e instanceof Error) {
       lastInitError = e;
     }
@@ -547,8 +563,7 @@ export async function init(): Promise<void> {
       );
     }
 
-    await init();
-    return;
+    return await init();
   }
 
   const beforeHasNumbers = TestWords.hasNumbers;
@@ -828,7 +843,7 @@ function buildCompletedEvent(
   const wpmCons = Numbers.roundTo2(Numbers.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
-  let customText: CustomTextDataWithTextLen | undefined = undefined;
+  let customText: CompletedEventCustomText | undefined = undefined;
   if (Config.mode === "custom") {
     const temp = CustomText.getData();
     customText = {
@@ -1516,6 +1531,10 @@ $(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
   restart();
 });
 
+$(".pageTest").on("click", "#testInitFailed button.restart", () => {
+  restart();
+});
+
 $(".pageTest").on("click", "#restartTestButton", () => {
   if (TribeState.getState() >= 5) return;
   ManualRestart.set();
@@ -1636,6 +1655,7 @@ $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
 
 $("header").on("click", "nav #startTestButton, #logo", () => {
   if (ActivePage.get() === "test") restart();
+  // Result.showConfetti();
 });
 
 // ===============================

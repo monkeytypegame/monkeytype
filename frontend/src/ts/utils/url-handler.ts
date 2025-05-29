@@ -30,6 +30,7 @@ import {
 import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -240,7 +241,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 
   if (de[5] !== null) {
-    UpdateConfig.setLanguage(de[5], true);
+    UpdateConfig.setLanguage(de[5] as Language, true);
     applied["language"] = de[5];
   }
 

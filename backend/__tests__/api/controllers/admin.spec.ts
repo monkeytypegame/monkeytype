@@ -194,6 +194,95 @@ describe("AdminController", () => {
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
+
+  describe("clear streak hour offset", () => {
+    const clearStreakHourOffset = vi.spyOn(UserDal, "clearStreakHourOffset");
+
+    beforeEach(() => {
+      [clearStreakHourOffset].forEach((it) => it.mockReset());
+    });
+
+    it("should clear streak hour offset for user", async () => {
+      //GIVEN
+      const victimUid = new ObjectId().toHexString();
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/clearStreakHourOffset")
+        .send({ uid: victimUid })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Streak hour offset cleared",
+        data: null,
+      });
+      expect(clearStreakHourOffset).toHaveBeenCalledWith(victimUid);
+    });
+    it("should fail without mandatory properties", async () => {
+      //GIVEN
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/clearStreakHourOffset")
+        .send({})
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(422);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"uid" Required'],
+      });
+    });
+    it("should fail with unknown properties", async () => {
+      //GIVEN
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/clearStreakHourOffset")
+        .send({ uid: new ObjectId().toHexString(), extra: "value" })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(422);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
+    });
+    it("should fail if user is no admin", async () => {
+      await expectFailForNonAdmin(
+        mockApp
+          .post("/admin/clearStreakHourOffset")
+          .send({ uid: new ObjectId().toHexString() })
+          .set("Authorization", `Bearer ${uid}`)
+      );
+    });
+    it("should fail if admin endpoints are disabled", async () => {
+      //GIVEN
+      await expectFailForDisabledEndpoint(
+        mockApp
+          .post("/admin/clearStreakHourOffset")
+          .send({ uid: new ObjectId().toHexString() })
+          .set("Authorization", `Bearer ${uid}`)
+      );
+    });
+    it("should be rate limited", async () => {
+      //GIVEN
+      const victimUid = new ObjectId().toHexString();
+
+      //WHEN
+      await expect(
+        mockApp
+          .post("/admin/clearStreakHourOffset")
+          .send({ uid: victimUid })
+          .set("Authorization", `Bearer ${uid}`)
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
+    });
+  });
+
   describe("accept reports", () => {
     const getReportsMock = vi.spyOn(ReportDal, "getReports");
     const deleteReportsMock = vi.spyOn(ReportDal, "deleteReports");

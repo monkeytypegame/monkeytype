@@ -11,6 +11,7 @@ import { WithObjectId } from "../utils/misc";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { z } from "zod";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 const JsonQuoteSchema = z.object({
   text: z.string(),
@@ -112,11 +113,11 @@ export async function add(
   return undefined;
 }
 
-export async function get(language: string): Promise<DBNewQuote[]> {
+export async function get(language: Language | "all"): Promise<DBNewQuote[]> {
   if (git === undefined) throw new MonkeyError(500, "Git not available.");
   const where: {
     approved: boolean;
-    language?: string;
+    language?: Language;
   } = {
     approved: false,
   };

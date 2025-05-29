@@ -1,6 +1,6 @@
 import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 import { Accents } from "../test/lazy-mode";
-import { hexToHSL } from "./colors";
 
 /**
  * Fetches JSON data from the specified URL using the fetch API.
@@ -92,93 +92,8 @@ export async function getLayout(layoutName: string): Promise<Layout> {
   return await cachedFetchJson<Layout>(`/layouts/${layoutName}.json`);
 }
 
-export type Theme = {
-  name: string;
-  bgColor: string;
-  mainColor: string;
-  subColor: string;
-  textColor: string;
-};
-
-let themesList: Theme[] | undefined;
-
-/**
- * Fetches the list of themes from the server, sorting them alphabetically by name.
- * If the list has already been fetched, returns the cached list.
- * @returns A promise that resolves to the sorted list of themes.
- */
-export async function getThemesList(): Promise<Theme[]> {
-  if (!themesList) {
-    let themes = await cachedFetchJson<Theme[]>("/themes/_list.json");
-
-    themes = themes.sort((a, b) => {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-    themesList = themes;
-    return themesList;
-  } else {
-    return themesList;
-  }
-}
-
-let sortedThemesList: Theme[] | undefined;
-
-/**
- * Fetches the sorted list of themes from the server.
- * @returns A promise that resolves to the sorted list of themes.
- */
-export async function getSortedThemesList(): Promise<Theme[]> {
-  if (!sortedThemesList) {
-    if (!themesList) {
-      await getThemesList();
-    }
-    if (!themesList) {
-      throw new Error("Themes list is undefined");
-    }
-    let sorted = [...themesList];
-    sorted = sorted.sort((a, b) => {
-      const b1 = hexToHSL(a.bgColor);
-      const b2 = hexToHSL(b.bgColor);
-      return b2.lgt - b1.lgt;
-    });
-    sortedThemesList = sorted;
-    return sortedThemesList;
-  } else {
-    return sortedThemesList;
-  }
-}
-
-/**
- * Fetches the list of languages from the server.
- * @returns A promise that resolves to the list of languages.
- */
-export async function getLanguageList(): Promise<string[]> {
-  const languageList = await cachedFetchJson<string[]>("/languages/_list.json");
-  return languageList;
-}
-
-export type LanguageGroup = {
-  name: string;
-  languages: string[];
-};
-
-/**
- * Fetches the list of language groups from the server.
- * @returns A promise that resolves to the list of language groups.
- */
-export async function getLanguageGroups(): Promise<LanguageGroup[]> {
-  const languageGroupList = await cachedFetchJson<LanguageGroup[]>(
-    "/languages/_groups.json"
-  );
-  return languageGroupList;
-}
-
 export type LanguageObject = {
-  name: string;
+  name: Language;
   rightToLeft: boolean;
   noLazyMode?: boolean;
   ligatures?: boolean;
@@ -196,7 +111,8 @@ let currentLanguage: LanguageObject;
  * @param lang The language code.
  * @returns A promise that resolves to the language object.
  */
-export async function getLanguage(lang: string): Promise<LanguageObject> {
+export async function getLanguage(lang: Language): Promise<LanguageObject> {
+  // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
     currentLanguage = await cachedFetchJson<LanguageObject>(
       `/languages/${lang}.json`
@@ -206,7 +122,7 @@ export async function getLanguage(lang: string): Promise<LanguageObject> {
 }
 
 export async function checkIfLanguageSupportsZipf(
-  language: string
+  language: Language
 ): Promise<"yes" | "no" | "unknown"> {
   const lang = await getLanguage(language);
   if (lang.orderedByFrequency === true) return "yes";
@@ -220,29 +136,9 @@ export async function checkIfLanguageSupportsZipf(
  * @returns A promise that resolves to the current language object.
  */
 export async function getCurrentLanguage(
-  languageName: string
+  languageName: Language
 ): Promise<LanguageObject> {
   return await getLanguage(languageName);
-}
-
-/**
- * Fetches the language group for a given language.
- * @param language The language code.
- * @returns A promise that resolves to the language group.
- */
-export async function getCurrentGroup(
-  language: string
-): Promise<LanguageGroup | undefined> {
-  let retgroup: LanguageGroup | undefined;
-  const groups = await getLanguageGroups();
-  groups.forEach((group) => {
-    if (retgroup === undefined) {
-      if (group.languages.includes(language)) {
-        retgroup = group;
-      }
-    }
-  });
-  return retgroup;
 }
 
 export class Section {

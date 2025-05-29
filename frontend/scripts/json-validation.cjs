@@ -47,46 +47,6 @@ function validateOthers() {
       return reject(new Error(fontsValidator.errors[0].message));
     }
 
-    //themes
-    const themesData = JSON.parse(
-      fs.readFileSync("./static/themes/_list.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-    const themesSchema = {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          name: { type: "string" },
-          bgColor: { type: "string" },
-          mainColor: { type: "string" },
-        },
-        required: ["name", "bgColor", "mainColor"],
-      },
-    };
-    const themesValidator = ajv.compile(themesSchema);
-    if (themesValidator(themesData)) {
-      console.log("Themes list JSON schema is \u001b[32mvalid\u001b[0m");
-    } else {
-      console.log("Themes list JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(themesValidator.errors[0].message));
-    }
-    //check if files exist
-    for (const theme of themesData) {
-      const themeName = theme.name;
-      const fileName = `${themeName}.css`;
-      const themePath = `./static/themes/${fileName}`;
-      if (!fs.existsSync(themePath)) {
-        console.log(`File ${fileName} was \u001b[31mnot found\u001b[0m`);
-        // return reject(new Error(`File for theme ${themeName} does not exist`));
-        return reject(
-          `Could not find file ${fileName} for theme ${themeName} - make sure the file exists and is named correctly`
-        );
-      }
-    }
-
     //challenges
     const challengesSchema = {
       type: "array",
@@ -431,58 +391,9 @@ function validateQuotes() {
 
 function validateLanguages() {
   return new Promise((resolve, reject) => {
-    //languages
-    const languagesData = JSON.parse(
-      fs.readFileSync("./static/languages/_list.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-    const languagesSchema = {
-      type: "array",
-      items: {
-        type: "string",
-      },
-    };
-    const languagesValidator = ajv.compile(languagesSchema);
-    if (languagesValidator(languagesData)) {
-      console.log("Languages list JSON schema is \u001b[32mvalid\u001b[0m");
-    } else {
-      console.log("Languages list JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(languagesValidator.errors[0].message));
-    }
-
-    //languages group
-    const languagesGroupData = JSON.parse(
-      fs.readFileSync("./static/languages/_groups.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-    const languagesGroupSchema = {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          name: { type: "string" },
-          languages: {
-            type: "array",
-            items: {
-              type: "string",
-            },
-          },
-        },
-        required: ["name", "languages"],
-      },
-    };
-    const languagesGroupValidator = ajv.compile(languagesGroupSchema);
-    if (languagesGroupValidator(languagesGroupData)) {
-      console.log("Languages groups JSON schema is \u001b[32mvalid\u001b[0m");
-    } else {
-      console.log("Languages groups JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(languagesGroupValidator.errors[0].message));
-    }
-
+    const languages = fs
+      .readdirSync("./static/languages")
+      .map((it) => it.substring(0, it.length - 5));
     //language files
     const languageFileSchema = {
       type: "object",
@@ -512,7 +423,7 @@ function validateLanguages() {
     let languageFilesErrors;
     const duplicatePercentageThreshold = 0.0001;
     let langsWithDuplicates = 0;
-    languagesData.forEach((language) => {
+    languages.forEach((language) => {
       const languageFileData = JSON.parse(
         fs.readFileSync(`./static/languages/${language}.json`, {
           encoding: "utf8",

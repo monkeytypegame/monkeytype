@@ -1096,8 +1096,8 @@ function updateAccuracy(updateChart = true): void {
   } else {
     const minAccRoundedTo10 =
       Math.floor(
-        Math.min(...accountHistory.getDataset("acc").data.map((x) => x.y)) / 10
-      ) * 10;
+        Math.min(...accountHistory.getDataset("acc").data.map((x) => x.y)) / 5
+      ) * 5;
 
     accountHistory.getScale("acc").min = minAccRoundedTo10;
     accountHistory.getScale("accAvgTen").min = minAccRoundedTo10;
