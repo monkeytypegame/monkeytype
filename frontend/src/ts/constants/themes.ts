@@ -1114,6 +1114,12 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#5b578e",
     textColor: "#f4e0c9",
   },
+  whatsapp: {
+    bgColor: "#101D25",
+    mainColor: "#00B09C",
+    subColor: "#9FA2A7",
+    textColor: "#e7e8e9",
+  },
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
