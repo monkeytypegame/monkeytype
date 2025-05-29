@@ -83,24 +83,17 @@ footer {
   }
 
   .current-theme {
-    position: relative;
-
-    .favIcon {
-      position: absolute;
-      //right: -10px;
-      top: -8px;
-      font-size: 0.7rem;
-      color: var(--sub-color);
-      pointer-events: none;
-      transition: 0.125s;
-    }
-
-    .favIcon.active {
-      color: var(--sub-color);
-    }
-
-    &:hover .favIcon.active {
-      color: var(--text-color);
+    .icon {
+      position: relative;
+      .favIndicator {
+        font-size: 0.5em;
+        top: -0.5em;
+        right: -0.5em;
+        padding: 0.25em;
+        position: absolute;
+        background: var(--bg-color);
+        border-radius: 100%;
+      }
     }
   }
 

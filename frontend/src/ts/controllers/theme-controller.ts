@@ -140,12 +140,10 @@ export function updateFooterThemeFavIcon(
   themeName: string | null = null
 ): void {
   const favIconEl = document.querySelector(
-    "footer .right .current-theme .favIcon"
+    "footer .right .current-theme .icon .favIndicator"
   );
   if (!(favIconEl instanceof HTMLElement)) return;
-  const iconEl = favIconEl.querySelector("i");
 
-  if (!(iconEl instanceof HTMLElement)) return;
   const isCustom = themeName === "custom" || Config.customTheme;
   // hide the favorite icon completely for custom themes
   if (isCustom) {
@@ -158,9 +156,11 @@ export function updateFooterThemeFavIcon(
     currentTheme !== null &&
     Config.favThemes.includes(currentTheme as ThemeName);
 
-  iconEl.classList.toggle("fas", isFavorite);
-  iconEl.classList.toggle("far", !isFavorite);
-  favIconEl.classList.toggle("active", isFavorite);
+  if (isFavorite) {
+    favIconEl.style.display = "block";
+  } else {
+    favIconEl.style.display = "none";
+  }
 }
 
 /****KEEPING FOR NOW AS REFRENCE AND THE PREVIEW!*****/
