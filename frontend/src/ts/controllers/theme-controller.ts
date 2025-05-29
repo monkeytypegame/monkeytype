@@ -244,7 +244,6 @@ const debouncedPreview = debounce<(t: string, c?: string[]) => void>(
   (themeIdenfitier, customColorsOverride) => {
     isPreviewingTheme = true;
     void apply(themeIdenfitier, customColorsOverride, true);
-    updateFooterIndicator(themeIdenfitier);
   }
 );
 
@@ -258,7 +257,6 @@ async function set(
     isAutoSwitch
   );
   await apply(themeIdentifier, undefined, isAutoSwitch);
-  updateFooterIndicator(themeIdentifier);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setAutoSwitchTheme(false);
@@ -272,14 +270,10 @@ export async function clearPreview(applyTheme = true): Promise<void> {
     if (applyTheme) {
       if (randomTheme !== null) {
         await apply(randomTheme);
-        // restore the correct favorite icon state for the current theme
-        updateFooterIndicator(randomTheme);
       } else if (Config.customTheme) {
         await apply("custom");
-        updateFooterIndicator("custom");
       } else {
         await apply(Config.theme);
-        updateFooterIndicator(Config.theme);
       }
     }
   }
