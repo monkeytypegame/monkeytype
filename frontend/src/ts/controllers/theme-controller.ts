@@ -135,7 +135,6 @@ export async function loadStyle(name: string): Promise<void> {
   });
 }
 
-/****KEEPING FOR NOW AS REFRENCE AND THE PREVIEW!*****/
 // export function changeCustomTheme(themeId: string, nosave = false): void {
 //   const customThemes = DB.getSnapshot().customThemes;
 //   const colors = customThemes.find((e) => e._id === themeId)
