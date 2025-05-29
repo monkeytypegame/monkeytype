@@ -413,6 +413,7 @@ export const LanguageSchema = z.enum(
     "code_common_lisp",
     "docker_file",
     "code_fortran",
+    "viossa",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
