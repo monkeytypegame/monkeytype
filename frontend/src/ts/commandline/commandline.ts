@@ -381,10 +381,12 @@ async function showCommands(): Promise<void> {
     if (command.found !== true) continue;
     let icon = command.icon ?? "fa-chevron-right";
     const faIcon = icon.startsWith("fa-");
+    const iconType = command.iconType ?? "solid";
+    const iconTypeClass = iconType === "solid" ? "fas" : "far";
     if (!faIcon) {
       icon = `<div class="textIcon">${icon}</div>`;
     } else {
-      icon = `<i class="fas fa-fw ${icon}"></i>`;
+      icon = `<i class="${iconTypeClass} fa-fw ${icon}"></i>`;
     }
     let configIcon = "";
     const configKey = command.configKey ?? (await getSubgroup()).configKey;

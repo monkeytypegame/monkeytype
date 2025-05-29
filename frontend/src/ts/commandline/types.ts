@@ -16,6 +16,7 @@ export type Command = {
   subgroup?: CommandsSubgroup;
   found?: boolean;
   icon?: string;
+  iconType?: "regular" | "solid";
   sticky?: boolean;
   alias?: string;
   input?: boolean;
