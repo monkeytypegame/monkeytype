@@ -135,34 +135,6 @@ export async function loadStyle(name: string): Promise<void> {
   });
 }
 
-// update the favorite icon in the current theme button
-export function updateFooterThemeFavIcon(
-  themeName: string | null = null
-): void {
-  const favIconEl = document.querySelector(
-    "footer .right .current-theme .icon .favIndicator"
-  );
-  if (!(favIconEl instanceof HTMLElement)) return;
-
-  const isCustom = themeName === "custom" || Config.customTheme;
-  // hide the favorite icon completely for custom themes
-  if (isCustom) {
-    favIconEl.style.display = "none";
-    return;
-  }
-  favIconEl.style.display = "";
-  const currentTheme = themeName ?? randomTheme ?? Config.theme;
-  const isFavorite =
-    currentTheme !== null &&
-    Config.favThemes.includes(currentTheme as ThemeName);
-
-  if (isFavorite) {
-    favIconEl.style.display = "block";
-  } else {
-    favIconEl.style.display = "none";
-  }
-}
-
 /****KEEPING FOR NOW AS REFRENCE AND THE PREVIEW!*****/
 // export function changeCustomTheme(themeId: string, nosave = false): void {
 //   const customThemes = DB.getSnapshot().customThemes;
@@ -208,7 +180,7 @@ async function apply(
   void updateFavicon();
   $("#metaThemeColor").attr("content", colors.bg);
   // }
-  updateFooterThemeName(isPreview ? themeName : undefined);
+  updateFooterIndicator(isPreview ? themeName : undefined);
 
   if (isColorDark(await ThemeColors.get("bg"))) {
     $("body").addClass("darkMode");
@@ -217,13 +189,47 @@ async function apply(
   }
 }
 
-function updateFooterThemeName(nameOverride?: string): void {
+function updateFooterIndicator(nameOverride?: string): void {
+  const indicator = document.querySelector<HTMLElement>(
+    "footer .right .current-theme"
+  );
+  const text = indicator?.querySelector<HTMLElement>(".text");
+  const favIcon = indicator?.querySelector<HTMLElement>(".favIndicator");
+
+  if (
+    !(indicator instanceof HTMLElement) ||
+    !(text instanceof HTMLElement) ||
+    !(favIcon instanceof HTMLElement)
+  ) {
+    return;
+  }
+
+  //text
   let str: string = Config.theme;
   if (randomTheme !== null) str = randomTheme;
   if (Config.customTheme) str = "custom";
   if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
-  $(".current-theme .text").text(str);
+  text.innerText = str;
+
+  //fav icon
+  const isCustom = Config.customTheme;
+  // hide the favorite icon completely for custom themes
+  if (isCustom) {
+    favIcon.style.display = "none";
+    return;
+  }
+  favIcon.style.display = "";
+  const currentTheme = nameOverride ?? randomTheme ?? Config.theme;
+  const isFavorite =
+    currentTheme !== null &&
+    Config.favThemes.includes(currentTheme as ThemeName);
+
+  if (isFavorite) {
+    favIcon.style.display = "block";
+  } else {
+    favIcon.style.display = "none";
+  }
 }
 
 export function preview(
@@ -238,7 +244,7 @@ const debouncedPreview = debounce<(t: string, c?: string[]) => void>(
   (themeIdenfitier, customColorsOverride) => {
     isPreviewingTheme = true;
     void apply(themeIdenfitier, customColorsOverride, true);
-    updateFooterThemeFavIcon(themeIdenfitier);
+    updateFooterIndicator(themeIdenfitier);
   }
 );
 
@@ -252,7 +258,7 @@ async function set(
     isAutoSwitch
   );
   await apply(themeIdentifier, undefined, isAutoSwitch);
-  updateFooterThemeFavIcon(themeIdentifier);
+  updateFooterIndicator(themeIdentifier);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setAutoSwitchTheme(false);
@@ -267,13 +273,13 @@ export async function clearPreview(applyTheme = true): Promise<void> {
       if (randomTheme !== null) {
         await apply(randomTheme);
         // restore the correct favorite icon state for the current theme
-        updateFooterThemeFavIcon(randomTheme);
+        updateFooterIndicator(randomTheme);
       } else if (Config.customTheme) {
         await apply("custom");
-        updateFooterThemeFavIcon("custom");
+        updateFooterIndicator("custom");
       } else {
         await apply(Config.theme);
-        updateFooterThemeFavIcon(Config.theme);
+        updateFooterIndicator(Config.theme);
       }
     }
   }
@@ -467,6 +473,17 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     !nosave
   ) {
     await set(Config.themeDark, true);
+  }
+  if (
+    [
+      "theme",
+      "customTheme",
+      "customThemeColors",
+      "randomTheme",
+      "favThemes",
+    ].includes(eventKey)
+  ) {
+    updateFooterIndicator();
   }
 });
 

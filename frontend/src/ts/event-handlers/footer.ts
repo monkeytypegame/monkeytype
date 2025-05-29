@@ -7,8 +7,6 @@ import * as SupportPopup from "../modals/support";
 import * as ContactModal from "../modals/contact";
 import * as VersionHistoryModal from "../modals/version-history";
 import { envConfig } from "../constants/env-config";
-import { updateFooterThemeFavIcon } from "../controllers/theme-controller";
-import * as ConfigEvent from "../observables/config-event";
 import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
 import { lastSeenServerCompatibility } from "../ape/adapters/ts-rest-adapter";
 
@@ -73,21 +71,6 @@ document
       });
     }
   });
-
-// subscribe to theme-related config events to update the favorite icon
-ConfigEvent.subscribe((eventKey, _eventValue) => {
-  if (
-    [
-      "theme",
-      "customTheme",
-      "customThemeColors",
-      "randomTheme",
-      "favThemes",
-    ].includes(eventKey)
-  ) {
-    updateFooterThemeFavIcon();
-  }
-});
 
 document
   .querySelector("footer #supportMeButton")
