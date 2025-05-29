@@ -200,8 +200,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
     let newTop;
     let newLeft;
     try {
-      const newIndex =
-        settings.currentWordIndex - TestUI.activeWordElementOffset;
+      const newIndex = settings.currentWordIndex - TestState.removedUIWordCount;
       const word = document.querySelectorAll("#words .word")[
         newIndex
       ] as HTMLElement;
@@ -257,11 +256,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     const duration = expectedStepEnd - performance.now();
 
     if (newTop !== undefined) {
-      let smoothlinescroll = $("#words .smoothScroller").height();
-      if (smoothlinescroll === undefined) smoothlinescroll = 0;
-
       $("#paceCaret").css({
-        top: newTop - smoothlinescroll,
+        top: newTop - TestState.lineScrollDistance,
       });
 
       if (Config.smoothCaret !== "off") {
