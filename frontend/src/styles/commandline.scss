@@ -87,8 +87,8 @@
           }
         }
 
-        &.withThemeBubbles {
-          grid-template-columns: auto 1fr auto;
+        &.changeThemeCommand {
+          grid-template-columns: auto 1fr auto auto;
           position: relative;
           .themeBubbles {
             display: grid;
@@ -102,32 +102,9 @@
               border-radius: 100%;
             }
           }
-        }
-
-        .themeFavIcon {
-          position: absolute;
-          right: 5rem;
-          //top: 0.5rem;
-          color: var(--sub-color);
-          opacity: 0;
-          transition: opacity 0.125s;
-          z-index: 999;
-          padding: 0.5rem;
-
-          &.active {
-            .fas.fa-star {
-              margin-right: 0;
-            }
-            opacity: 1;
-            color: var(--text-color);
+          .themeFavIcon {
+            margin-right: 0.25rem;
           }
-        }
-
-        &:hover .themeFavIcon.active {
-          .fas.fa-star {
-            margin-right: 0;
-          }
-          opacity: 1;
         }
       }
     }

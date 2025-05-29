@@ -453,10 +453,15 @@ async function showCommands(): Promise<void> {
 
     if (command.customData !== undefined) {
       if (command.id.startsWith("changeTheme")) {
-        html += `<div class="command withThemeBubbles" data-command-id="${
+        html += `<div class="command changeThemeCommand" data-command-id="${
           command.id
         }" data-index="${index}" style="${customStyle}">
       ${iconHTML}<div>${display}</div>
+      <div class="themeFavIcon ${
+        command.customData["isFavorite"] === true ? "" : "hidden"
+      }">
+        <i class="fas fa-star"></i>
+      </div>
       <div class="themeBubbles" style="background: ${
         command.customData["bgColor"]
       };outline: 0.25rem solid ${command.customData["bgColor"]};">
@@ -470,7 +475,6 @@ async function showCommands(): Promise<void> {
           command.customData["textColor"]
         }"></div>
       </div>
-      ${command.html ?? ""}
       </div>`;
       }
       if (command.id.startsWith("changeFont")) {

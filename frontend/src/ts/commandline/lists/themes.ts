@@ -35,9 +35,6 @@ const createThemeCommand = (theme: Theme): Command => {
     exec: (): void => {
       UpdateConfig.setTheme(theme.name);
     },
-    html: `<div class="themeFavIcon ${isFavorite(theme) ? "active" : ""}">
-            <i class="${isFavorite(theme) ? "fas" : "far"} fa-star"></i>
-          </div>`,
   };
 };
 
