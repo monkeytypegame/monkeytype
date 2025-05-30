@@ -16,6 +16,7 @@ export type Command = {
   subgroup?: CommandsSubgroup;
   found?: boolean;
   icon?: string;
+  iconType?: "regular" | "solid";
   sticky?: boolean;
   alias?: string;
   input?: boolean;
@@ -25,7 +26,7 @@ export type Command = {
   defaultValue?: () => string;
   configKey?: keyof Config;
   configValue?: string | number | boolean | number[];
-  configValueMode?: "include" | "funbox";
+  configValueMode?: "include";
   exec?: (options: CommandExecOptions) => void;
   hover?: () => void;
   available?: () => boolean;

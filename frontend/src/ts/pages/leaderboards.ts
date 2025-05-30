@@ -42,6 +42,11 @@ import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { PaginationQuery } from "@monkeytype/contracts/leaderboards";
+import {
+  Language,
+  LanguageSchema,
+} from "@monkeytype/contracts/schemas/languages";
+import { isSafeNumber } from "@monkeytype/util/numbers";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -71,7 +76,7 @@ type DailyState = {
   mode2: "15" | "60";
   yesterday: boolean;
   minWpm: number;
-  language: string;
+  language: Language;
   data: LeaderboardEntry[] | null;
   count: number;
   userData: LeaderboardEntry | null;
@@ -108,7 +113,7 @@ const state = {
 const SelectorSchema = z.object({
   type: LeaderboardTypeSchema,
   mode2: z.enum(["15", "60"]).optional(),
-  language: z.string().optional(),
+  language: LanguageSchema.optional(),
   yesterday: z.boolean().optional(),
   lastWeek: z.boolean().optional(),
 });
@@ -475,7 +480,9 @@ function buildTableRow(entry: LeaderboardEntry, me = false): string {
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
             ${getHtmlByUserFlags(entry)}
-            ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
+            ${
+              isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
+            }
           </div>
         </div>
       </td>
@@ -526,7 +533,9 @@ function buildWeeklyTableRow(entry: XpLeaderboardEntry, me = false): string {
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
             ${getHtmlByUserFlags(entry)}
-            ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
+            ${
+              isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
+            }
           </div>
         </div>
       </td>
@@ -1067,7 +1076,7 @@ function handleJumpButton(action: Action, page?: number): void {
       const user = Auth?.currentUser;
       if (user) {
         const rank = state.userData?.rank;
-        if (rank) {
+        if (isSafeNumber(rank)) {
           // - 1 to make sure position 50 with page size 50 is on the first page (page 0)
           const page = Math.floor((rank - 1) / state.pageSize);
 
@@ -1255,7 +1264,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
   "button",
   function () {
     const mode = $(this).attr("data-mode") as "15" | "60" | undefined;
-    const language = $(this).data("language") as string;
+    const language = $(this).data("language") as Language;
     if (
       mode !== undefined &&
       (state.type === "allTime" || state.type === "daily")

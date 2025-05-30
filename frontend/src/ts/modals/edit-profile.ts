@@ -7,7 +7,14 @@ import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import * as Profile from "../elements/profile";
 import { CharacterCounter } from "../elements/character-counter";
-import { Badge, UserProfileDetails } from "@monkeytype/contracts/schemas/users";
+import {
+  Badge,
+  GithubProfileSchema,
+  TwitterProfileSchema,
+  UserProfileDetails,
+  WebsiteSchema,
+} from "@monkeytype/contracts/schemas/users";
+import { InputIndicator } from "../elements/input-indicator";
 
 export function show(): void {
   if (!ConnectionState.get()) {
@@ -43,6 +50,12 @@ const twitterInput = $("#editProfileModal .twitter");
 const githubInput = $("#editProfileModal .github");
 const websiteInput = $("#editProfileModal .website");
 const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
+
+const indicators = [
+  addValidation(twitterInput, TwitterProfileSchema),
+  addValidation(githubInput, GithubProfileSchema),
+  addValidation(websiteInput, WebsiteSchema),
+];
 
 let currentSelectedBadgeId = -1;
 
@@ -90,6 +103,8 @@ function hydrateInputs(): void {
     badgeIdsSelect.find(".badgeSelectionItem").removeClass("selected");
     $(currentTarget).addClass("selected");
   });
+
+  indicators.forEach((it) => it.hide());
 }
 
 function initializeCharacterCounters(): void {
@@ -173,6 +188,45 @@ async function updateProfile(): Promise<void> {
   Notifications.add("Profile updated", 1);
 
   hide();
+}
+
+function addValidation(
+  element: JQuery<HTMLElement>,
+  schema: Zod.Schema
+): InputIndicator {
+  const indicator = new InputIndicator(element, {
+    valid: {
+      icon: "fa-check",
+      level: 1,
+    },
+    invalid: {
+      icon: "fa-times",
+      level: -1,
+    },
+    checking: {
+      icon: "fa-circle-notch",
+      spinIcon: true,
+      level: 0,
+    },
+  });
+
+  element.on("input", (event) => {
+    const value = (event.target as HTMLInputElement).value;
+    if (value === undefined || value === "") {
+      indicator.hide();
+      return;
+    }
+    const validationResult = schema.safeParse(value);
+    if (!validationResult.success) {
+      indicator.show(
+        "invalid",
+        validationResult.error.errors.map((err) => err.message).join(", ")
+      );
+      return;
+    }
+    indicator.show("valid");
+  });
+  return indicator;
 }
 
 const modal = new AnimatedModal({

@@ -40,6 +40,8 @@ import {
   isFunboxActiveWithProperty,
   getActiveFunboxNames,
 } from "../test/funbox/list";
+import { tryCatchSync } from "@monkeytype/util/trycatch";
+import { canQuickRestart } from "../utils/quick-restart";
 import * as TestEvents from "../test/test-events";
 
 let dontInsertSpace = false;
@@ -360,18 +362,16 @@ async function handleSpace(): Promise<void> {
         TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
       ]?.offsetTop ?? 0
     );
-    let nextTop: number;
-    try {
-      nextTop = Math.floor(
+
+    const { data: nextTop } = tryCatchSync(() =>
+      Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
           TestState.activeWordIndex - TestUI.activeWordElementOffset
         ]?.offsetTop ?? 0
-      );
-    } catch (e) {
-      nextTop = 0;
-    }
+      )
+    );
 
-    if (nextTop > currentTop) {
+    if ((nextTop ?? 0) > currentTop) {
       void TestUI.lineJump(currentTop);
     } //end of line wrap
   }
@@ -888,7 +888,8 @@ $("#wordsInput").on("keydown", (event) => {
     !popupVisible &&
     !TestUI.resultVisible &&
     event.key !== "Enter" &&
-    !awaitingNextWord;
+    !awaitingNextWord &&
+    TestState.testInitSuccess;
 
   if (!allowTyping) {
     event.preventDefault();
@@ -1095,7 +1096,7 @@ $(document).on("keydown", async (event) => {
       if (Config.mode === "zen") {
         void TestLogic.finish();
       } else if (
-        !Misc.canQuickRestart(
+        !canQuickRestart(
           Config.mode,
           Config.words,
           Config.time,
@@ -1474,10 +1475,10 @@ $("#wordsInput").on("input", (event) => {
   }, 0);
 });
 
-$("#wordsInput").on("focus", (event) => {
-  (event.target as HTMLInputElement).selectionStart = (
-    event.target as HTMLInputElement
-  ).selectionEnd = (event.target as HTMLInputElement).value.length;
+document.querySelector("#wordsInput")?.addEventListener("focus", (event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+  target.setSelectionRange(value.length, value.length);
 });
 
 $("#wordsInput").on("copy paste", (event) => {

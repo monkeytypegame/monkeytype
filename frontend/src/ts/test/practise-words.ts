@@ -11,7 +11,7 @@ type Before = {
   mode: Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
-  customText: CustomText.CustomTextData | null;
+  customText: CustomText.CustomTextSettings | null;
 };
 
 export const before: Before = {

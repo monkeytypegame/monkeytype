@@ -55,7 +55,7 @@ let visibleTableLines = 0;
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults === undefined || filteredResults.length === 0) return;
   let newVisibleLines;
-  if (lineIndex && lineIndex > visibleTableLines) {
+  if (Numbers.isSafeNumber(lineIndex) && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
   } else {
     newVisibleLines = visibleTableLines + 10;
@@ -97,11 +97,10 @@ function loadMoreLines(lineIndex?: number): void {
       icons += `<span aria-label="lazy mode" data-balloon-pos="up"><i class="fas fa-fw fa-couch"></i></span>`;
     }
 
-    if (result.funbox !== "none" && result.funbox !== undefined) {
+    if (result.funbox !== undefined && result.funbox.length > 0) {
       icons += `<span aria-label="${result.funbox
-        .replace(/_/g, " ")
-        .replace(
-          /#/g,
+        .map((it) => it.replace(/_/g, " "))
+        .join(
           ", "
         )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
     }
@@ -374,13 +373,11 @@ async function fillContent(): Promise<void> {
         }
       }
 
-      let langFilter = ResultFilters.getFilter(
-        "language",
-        result.language ?? "english"
-      );
+      let langFilter = ResultFilters.getFilter("language", result.language);
 
       if (
-        result.language === "english_expanded" &&
+        //legacy value for english_1k
+        (result.language as string) === "english_expanded" &&
         ResultFilters.getFilter("language", "english_1k")
       ) {
         langFilter = true;
@@ -414,7 +411,7 @@ async function fillContent(): Promise<void> {
         return;
       }
 
-      if (result.funbox === "none" || result.funbox === undefined) {
+      if (result.funbox === undefined || result.funbox.length === 0) {
         if (!ResultFilters.getFilter("funbox", "none")) {
           if (filterDebug) {
             console.log(`skipping result due to funbox filter`, result);
@@ -423,7 +420,7 @@ async function fillContent(): Promise<void> {
         }
       } else {
         let counter = 0;
-        for (const f of result.funbox.split("#")) {
+        for (const f of result.funbox) {
           if (ResultFilters.getFilter("funbox", f)) {
             counter++;
             break;
@@ -1344,6 +1341,7 @@ export const page = new Page({
       $(".pageAccount .preloader").removeClass("hidden");
       await LoadingPage.showBar();
     }
+    ResultFilters.updateTagsDropdownOptions();
     await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
