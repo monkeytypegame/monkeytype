@@ -39,10 +39,24 @@ function updateActiveButton(): void {
     ?.classList.add("active");
 }
 
+// track if theme UI has been initialized
+let themeUIInitialized = false;
 export async function refreshThemeUI(): Promise<void> {
+  // if fillSettingsPage has already initialized the theme UI, just update the active button
+  if (themeUIInitialized) {
+    updateActiveButton();
+    return;
+  }
+  // first full initialization or subsequent refreshes when needed
   await refreshPresetButtons();
   updateActiveButton();
   await refreshCustomButtons();
+  // mark as initialized
+  themeUIInitialized = true;
+}
+// reset the initialization flag when settings are modified
+export function resetThemeUIInitialized(): void {
+  themeUIInitialized = false;
 }
 
 function updateColors(
@@ -487,6 +501,8 @@ ConfigEvent.subscribe((eventKey) => {
     updateActiveButton();
   }
   if (eventKey === "favThemes" && ActivePage.get() === "settings") {
+    // reset initialization flag when favorites change to ensure proper refresh
+    resetThemeUIInitialized();
     void refreshPresetButtons();
   }
 });

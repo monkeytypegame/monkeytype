@@ -616,8 +616,9 @@ async function fillSettingsPage(): Promise<void> {
   setEventDisabled(true);
 
   await initGroups();
-  await ThemePicker.refreshCustomButtons();
-  await ThemePicker.refreshPresetButtons();
+  // reset theme UI initialization state before refreshing
+  ThemePicker.resetThemeUIInitialized();
+  await ThemePicker.refreshThemeUI();
 
   setEventDisabled(false);
   settingsInitialized = true;
