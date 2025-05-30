@@ -7,7 +7,6 @@ import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
-import { type FunboxName } from "@monkeytype/funbox";
 import * as TTSEvent from "../../observables/tts-event";
 import * as Notifications from "../../elements/notifications";
 import * as DDR from "../../utils/ddr";
@@ -22,7 +21,13 @@ import { getSection } from "../wikipedia";
 import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 import * as TestState from "../test-state";
-
+import { WordGenError } from "../../utils/word-gen-error";
+import {
+  FunboxName,
+  KeymapLayout,
+  Layout,
+} from "@monkeytype/contracts/schemas/configs";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
@@ -33,7 +38,7 @@ export type FunboxFunctions = {
   clearGlobal?: () => void;
   rememberSettings?: () => void;
   toggleScript?: (params: string[]) => void;
-  pullSection?: (language?: string) => Promise<Section | false>;
+  pullSection?: (language?: Language) => Promise<Section | false>;
   handleSpace?: () => void;
   handleChar?: (char: string) => string;
   isCharCorrect?: (char: string, originalChar: string) => boolean;
@@ -60,15 +65,15 @@ async function readAheadHandleKeydown(
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
   if (
-    event.key == "Backspace" &&
+    event.key === "Backspace" &&
     !isCorrect &&
-    (TestInput.input.current != "" ||
-      TestInput.input.getHistory(TestState.activeWordIndex - 1) !=
+    (TestInput.input.current !== "" ||
+      TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
         TestWords.words.get(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
   ) {
     $("#words").addClass("read_ahead_disabled");
-  } else if (event.key == " ") {
+  } else if (event.key === " ") {
     $("#words").removeClass("read_ahead_disabled");
   }
 }
@@ -326,12 +331,26 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return Strings.capitalizeFirstLetterOfEachWord(word);
     },
   },
+  layout_mirror: {
+    applyConfig(): void {
+      let layout = Config.layout;
+      if (Config.layout === "default") {
+        layout = "qwerty";
+      }
+      UpdateConfig.setLayout(layout, true);
+      UpdateConfig.setKeymapLayout("overrideSync", true);
+    },
+    rememberSettings(): void {
+      save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+      save("layout", Config.layout, UpdateConfig.setLayout);
+    },
+  },
   layoutfluid: {
     applyConfig(): void {
-      const layout = Config.customLayoutfluid.split("#")[0] ?? "qwerty";
+      const layout = Config.customLayoutfluid[0] ?? "qwerty";
 
-      UpdateConfig.setLayout(layout, true);
-      UpdateConfig.setKeymapLayout(layout, true);
+      UpdateConfig.setLayout(layout as Layout, true);
+      UpdateConfig.setKeymapLayout(layout as KeymapLayout, true);
     },
     rememberSettings(): void {
       save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
@@ -340,11 +359,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     handleSpace(): void {
       if (Config.mode !== "time") {
-        // here I need to check if Config.customLayoutFluid exists because of my
-        // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
-        const layouts: string[] = Config.customLayoutfluid
-          ? Config.customLayoutfluid.split("#")
-          : ["qwerty", "dvorak", "colemak"];
+        const layouts = Config.customLayoutfluid;
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
         const index = Math.floor(
@@ -364,8 +379,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             LayoutfluidFunboxTimer.hide();
           }
           if (mod === wordsPerLayout) {
-            UpdateConfig.setLayout(layouts[index] as string);
-            UpdateConfig.setKeymapLayout(layouts[index] as string);
+            UpdateConfig.setLayout(layouts[index] as Layout);
+            UpdateConfig.setKeymapLayout(layouts[index] as KeymapLayout);
             if (mod > 3) {
               LayoutfluidFunboxTimer.hide();
             }
@@ -384,7 +399,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
     },
     getResultContent(): string {
-      return Config.customLayoutfluid.replace(/#/g, " ");
+      return Config.customLayoutfluid.join(" ");
     },
     restart(): void {
       if (this.applyConfig) this.applyConfig();
@@ -494,7 +509,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   wikipedia: {
-    async pullSection(lang?: string): Promise<JSONData.Section | false> {
+    async pullSection(lang?: Language): Promise<JSONData.Section | false> {
       return getSection((lang ?? "") || "english");
     },
   },
@@ -629,6 +644,52 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   ALL_CAPS: {
     alterText(word: string): string {
       return word.toUpperCase();
+    },
+  },
+  polyglot: {
+    async withWords(_words) {
+      const promises = Config.customPolyglot.map(async (language) =>
+        JSONData.getLanguage(language).catch(() => {
+          Notifications.add(
+            `Failed to load language: ${language}. It will be ignored.`,
+            0
+          );
+          return null; // Return null for failed languages
+        })
+      );
+
+      const languages = (await Promise.all(promises)).filter(
+        (lang) => lang !== null
+      );
+
+      if (languages.length === 0) {
+        UpdateConfig.toggleFunbox("polyglot");
+        throw new Error(
+          `No valid languages found. Please check your polyglot languages config (${Config.customPolyglot.join(
+            ", "
+          )}).`
+        );
+      }
+
+      if (languages.length === 1) {
+        const lang = languages[0] as JSONData.LanguageObject;
+        UpdateConfig.setLanguage(lang.name, true);
+        UpdateConfig.toggleFunbox("polyglot", true);
+        Notifications.add(
+          `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${Config.customPolyglot.join(
+            ", "
+          )}).`,
+          0,
+          {
+            duration: 7,
+          }
+        );
+        throw new WordGenError("");
+      }
+
+      const wordSet = languages.flatMap((it) => it.words);
+      Arrays.shuffle(wordSet);
+      return new Wordset(wordSet);
     },
   },
 };

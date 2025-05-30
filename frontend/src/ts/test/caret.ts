@@ -7,6 +7,7 @@ import * as TestWords from "./test-words";
 import { prefersReducedMotion } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
 import { splitIntoCharacters } from "../utils/strings";
+import { safeNumber } from "@monkeytype/util/numbers";
 import * as CompositionState from "../states/composition";
 
 export let caretAnimating = true;
@@ -52,7 +53,7 @@ function getTargetPositionLeft(
   fullWidthCaret: boolean,
   isLanguageRightToLeft: boolean,
   activeWordElement: HTMLElement,
-  underscoreAdded: boolean,
+  activeWordEmpty: boolean,
   currentWordNodeList: NodeListOf<Element>,
   fullWidthCaretWidth: number,
   wordLen: number,
@@ -102,7 +103,7 @@ function getTargetPositionLeft(
       }
     }
     result = activeWordElement.offsetLeft + positionOffsetToWord;
-    if (underscoreAdded && isLanguageRightToLeft)
+    if (activeWordEmpty && isLanguageRightToLeft)
       result += activeWordElement.offsetWidth;
   } else {
     const wordsWrapperWidth =
@@ -143,13 +144,10 @@ export async function updatePosition(noAnim = false): Promise<void> {
     splitIntoCharacters(TestInput.input.current).length + compositionLen;
   if (Config.mode === "zen") wordLen = inputLen;
   const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
-  //insert temporary character so the caret will work in zen mode
-  const activeWordEmpty = activeWordEl?.children.length === 0;
-  if (activeWordEmpty) {
-    activeWordEl.insertAdjacentHTML(
-      "beforeend",
-      '<letter style="opacity: 0;">_</letter>'
-    );
+  let activeWordEmpty = false;
+  if (Config.mode === "zen") {
+    wordLen = inputLen;
+    if (inputLen === 0) activeWordEmpty = true;
   }
 
   const currentWordNodeList = activeWordEl?.querySelectorAll("letter");
@@ -169,8 +167,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
   // offsetHeight is the same for all visible letters
   // so is offsetTop (for same line letters)
   const letterHeight =
-    currentLetter?.offsetHeight ||
-    lastWordLetter?.offsetHeight ||
+    (safeNumber(currentLetter?.offsetHeight) ?? 0) ||
+    (safeNumber(lastWordLetter?.offsetHeight) ?? 0) ||
     Config.fontSize * convertRemToPixels(1);
 
   const letterPosTop =
@@ -225,13 +223,13 @@ export async function updatePosition(noAnim = false): Promise<void> {
   }
 
   const smoothCaretSpeed =
-    Config.smoothCaret == "off"
+    Config.smoothCaret === "off"
       ? 0
-      : Config.smoothCaret == "slow"
+      : Config.smoothCaret === "slow"
       ? 150
-      : Config.smoothCaret == "medium"
+      : Config.smoothCaret === "medium"
       ? 100
-      : Config.smoothCaret == "fast"
+      : Config.smoothCaret === "fast"
       ? 85
       : 0;
 
@@ -256,9 +254,6 @@ export async function updatePosition(noAnim = false): Promise<void> {
         behavior: prefersReducedMotion() ? "instant" : "smooth",
       });
     }
-  }
-  if (activeWordEmpty) {
-    activeWordEl?.replaceChildren();
   }
 }
 

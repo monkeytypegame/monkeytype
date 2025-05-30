@@ -8,8 +8,10 @@ import {
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 
-import { getUser, getTags, DBUser } from "./user";
+import { getUser, getTags } from "./user";
 import { DBResult } from "../utils/result";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export const getResultCollection = (): Collection<DBResult> =>
   db.collection<DBResult>("results");
@@ -18,12 +20,8 @@ export async function addResult(
   uid: string,
   result: DBResult
 ): Promise<{ insertedId: ObjectId }> {
-  let user: DBUser | null = null;
-  try {
-    user = await getUser(uid, "add result");
-  } catch (e) {
-    user = null;
-  }
+  const { data: user } = await tryCatch(getUser(uid, "add result"));
+
   if (!user) throw new MonkeyError(404, "User not found", "add result");
   if (result.uid === undefined) result.uid = uid;
   // result.ir = true;
@@ -48,10 +46,10 @@ export async function updateTags(
   });
   if (!result) throw new MonkeyError(404, "Result not found");
   const userTags = await getTags(uid);
-  const userTagIds = userTags.map((tag) => tag._id.toString());
+  const userTagIds = new Set(userTags.map((tag) => tag._id.toString()));
   let validTags = true;
   tags.forEach((tagId) => {
-    if (!userTagIds.includes(tagId)) validTags = false;
+    if (!userTagIds.has(tagId)) validTags = false;
   });
   if (!validTags) {
     throw new MonkeyError(422, "One of the tag id's is not valid");
@@ -68,7 +66,7 @@ export async function getResult(uid: string, id: string): Promise<DBResult> {
     uid,
   });
   if (!result) throw new MonkeyError(404, "Result not found");
-  return result;
+  return convert(result);
 }
 
 export async function getLastResult(uid: string): Promise<DBResult> {
@@ -78,14 +76,15 @@ export async function getLastResult(uid: string): Promise<DBResult> {
     .limit(1)
     .toArray();
   if (!lastResult) throw new MonkeyError(404, "No results found");
-  return lastResult;
+  return convert(lastResult);
 }
 
 export async function getResultByTimestamp(
   uid: string,
   timestamp: number
 ): Promise<DBResult | null> {
-  return await getResultCollection().findOne({ uid, timestamp });
+  const result = await getResultCollection().findOne({ uid, timestamp });
+  return convert(result);
 }
 
 type GetResultsOpts = {
@@ -100,13 +99,23 @@ export async function getResults(
 ): Promise<DBResult[]> {
   const { onOrAfterTimestamp, offset, limit } = opts ?? {};
   let query = getResultCollection()
-    .find({
-      uid,
-      ...(!_.isNil(onOrAfterTimestamp) &&
-        !_.isNaN(onOrAfterTimestamp) && {
-          timestamp: { $gte: onOrAfterTimestamp },
-        }),
-    })
+    .find(
+      {
+        uid,
+        ...(!_.isNil(onOrAfterTimestamp) &&
+          !_.isNaN(onOrAfterTimestamp) && {
+            timestamp: { $gte: onOrAfterTimestamp },
+          }),
+      },
+      {
+        projection: {
+          chartData: 0,
+          keySpacingStats: 0,
+          keyDurationStats: 0,
+          name: 0,
+        },
+      }
+    )
     .sort({ timestamp: -1 });
 
   if (limit !== undefined) {
@@ -118,5 +127,26 @@ export async function getResults(
 
   const results = await query.toArray();
   if (results === undefined) throw new MonkeyError(404, "Result not found");
-  return results;
+  return convert(results);
+}
+
+function convert<T extends DBResult | DBResult[] | null>(results: T): T {
+  if (results === null) return results;
+
+  const migrate = (result: DBResult): DBResult => {
+    if (typeof result.funbox === "string") {
+      if (result.funbox === "none") {
+        result.funbox = [];
+      } else {
+        result.funbox = (result.funbox as string).split("#") as FunboxName[];
+      }
+    }
+    return result;
+  };
+
+  if (Array.isArray(results)) {
+    return results.map(migrate) as T;
+  } else {
+    return migrate(results) as T;
+  }
 }

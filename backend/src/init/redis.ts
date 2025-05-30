@@ -1,10 +1,46 @@
 import fs from "fs";
 import _ from "lodash";
 import { join } from "path";
-import IORedis from "ioredis";
+import IORedis, { Redis } from "ioredis";
 import Logger from "../utils/logger";
 import { isDevEnvironment } from "../utils/misc";
 import { getErrorMessage } from "../utils/error";
+
+// Define Redis connection with custom methods for type safety
+export type RedisConnectionWithCustomMethods = Redis & {
+  addResult: (
+    keyCount: number,
+    scoresKey: string,
+    resultsKey: string,
+    maxResults: number,
+    expirationTime: number,
+    uid: string,
+    score: number,
+    data: string
+  ) => Promise<number>;
+  addResultIncrement: (
+    keyCount: number,
+    scoresKey: string,
+    resultsKey: string,
+    expirationTime: number,
+    uid: string,
+    score: number,
+    data: string
+  ) => Promise<number>;
+  getResults: (
+    keyCount: number,
+    scoresKey: string,
+    resultsKey: string,
+    minRank: number,
+    maxRank: number,
+    withScores: string
+  ) => Promise<[string[], string[]]>;
+  purgeResults: (
+    keyCount: number,
+    uid: string,
+    namespace: string
+  ) => Promise<void>;
+};
 
 let connection: IORedis.Redis;
 let connected = false;
@@ -73,11 +109,11 @@ export function isConnected(): boolean {
   return connected;
 }
 
-export function getConnection(): IORedis.Redis | undefined {
+export function getConnection(): RedisConnectionWithCustomMethods | null {
   const status = connection?.status;
   if (connection === undefined || status !== "ready") {
-    return undefined;
+    return null;
   }
 
-  return connection;
+  return connection as RedisConnectionWithCustomMethods;
 }

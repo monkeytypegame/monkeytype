@@ -22,6 +22,7 @@ import { roundTo2 } from "@monkeytype/util/numbers";
 import { MonkeyRequest } from "../types";
 import { DBResult } from "../../utils/result";
 import { LbPersonalBests } from "../../utils/pb";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 
 const CREATE_RESULT_DEFAULT_OPTIONS = {
   firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),
@@ -207,7 +208,7 @@ async function updateUser(uid: string): Promise<void> {
   const modes = stats.map(
     (it) =>
       it["_id"] as {
-        language: string;
+        language: Language;
         mode: "time" | "custom" | "words" | "quote" | "zen";
         mode2: `${number}` | "custom" | "zen";
       }

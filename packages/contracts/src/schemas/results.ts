@@ -6,8 +6,8 @@ import {
   PercentageSchema,
   token,
   WpmSchema,
-  LanguageSchema,
 } from "./util";
+import { LanguageSchema } from "./languages";
 import { Mode, Mode2, Mode2Schema, ModeSchema } from "./shared";
 import { DifficultySchema, FunboxSchema } from "./configs";
 
@@ -30,7 +30,7 @@ export const KeyStatsSchema = z.object({
 });
 export type KeyStats = z.infer<typeof KeyStatsSchema>;
 
-export const CustomTextSchema = z.object({
+export const CompletedEventCustomTextSchema = z.object({
   textLen: z.number().int().nonnegative(),
   mode: CustomTextModeSchema,
   pipeDelimiter: z.boolean(),
@@ -39,7 +39,9 @@ export const CustomTextSchema = z.object({
     value: z.number().nonnegative(),
   }),
 });
-export type CustomTextDataWithTextLen = z.infer<typeof CustomTextSchema>;
+export type CompletedEventCustomText = z.infer<
+  typeof CompletedEventCustomTextSchema
+>;
 
 export const CharStatsSchema = z.tuple([
   z.number().int().nonnegative(),
@@ -95,6 +97,14 @@ export type Result<M extends Mode> = Omit<
   mode2: Mode2<M>;
 };
 
+export const ResultMinifiedSchema = ResultSchema.omit({
+  name: true,
+  keySpacingStats: true,
+  keyDurationStats: true,
+  chartData: true,
+});
+export type ResultMinified = z.infer<typeof ResultMinifiedSchema>;
+
 export const CompletedEventSchema = ResultBaseSchema.required({
   restartCount: true,
   incompleteTestSeconds: true,
@@ -112,7 +122,7 @@ export const CompletedEventSchema = ResultBaseSchema.required({
   .extend({
     charTotal: z.number().int().nonnegative(),
     challenge: token().max(100).optional(),
-    customText: CustomTextSchema.optional(),
+    customText: CompletedEventCustomTextSchema.optional(),
     hash: token().max(100),
     keyDuration: z.array(z.number().nonnegative()).or(z.literal("toolong")),
     keySpacing: z.array(z.number().nonnegative()).or(z.literal("toolong")),

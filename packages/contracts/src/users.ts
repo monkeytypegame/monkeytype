@@ -26,7 +26,8 @@ import {
   UserTagSchema,
 } from "./schemas/users";
 import { Mode2Schema, ModeSchema, PersonalBestSchema } from "./schemas/shared";
-import { IdSchema, LanguageSchema, StringNumberSchema } from "./schemas/util";
+import { IdSchema, StringNumberSchema } from "./schemas/util";
+import { LanguageSchema } from "./schemas/languages";
 import { CustomThemeColorsSchema } from "./schemas/configs";
 import { doesNotContainProfanity } from "./validation/validation";
 
@@ -85,7 +86,7 @@ export const UpdateEmailRequestSchema = z.object({
   newEmail: UserEmailSchema,
   previousEmail: UserEmailSchema,
 });
-export type UpdateEmailRequestSchema = z.infer<typeof UpdateEmailRequestSchema>;
+export type UpdateEmailRequest = z.infer<typeof UpdateEmailRequestSchema>;
 
 export const UpdatePasswordRequestSchema = z.object({
   newPassword: z.string().min(6),
@@ -326,7 +327,7 @@ export type GetCurrentTestActivityResponse = z.infer<
 
 export const GetStreakResponseSchema =
   responseWithNullableData(UserStreakSchema);
-export type GetStreakResponseSchema = z.infer<typeof GetStreakResponseSchema>;
+export type GetStreakResponse = z.infer<typeof GetStreakResponseSchema>;
 
 const c = initContract();
 

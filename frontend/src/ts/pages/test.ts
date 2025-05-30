@@ -10,17 +10,19 @@ import * as TestConfig from "../test/test-config";
 import * as ScrollToTop from "../elements/scroll-to-top";
 
 export const page = new Page({
-  name: "test",
+  id: "test",
   element: $(".page.pageTest"),
   path: "/",
   beforeHide: async (): Promise<void> => {
-    ManualRestart.set();
-    TestLogic.restart();
-    void Funbox.clear();
-    void ModesNotice.update();
     $("#wordsInput").trigger("focusout");
   },
   afterHide: async (): Promise<void> => {
+    ManualRestart.set();
+    TestLogic.restart({
+      noAnim: true,
+    });
+    void Funbox.clear();
+    void ModesNotice.update();
     updateFooterAndVerticalAds(true);
   },
   beforeShow: async (): Promise<void> => {

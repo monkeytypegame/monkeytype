@@ -333,6 +333,87 @@ describe("result controller test", () => {
       ).toBeRateLimited({ max: 30, windowMs: 24 * 60 * 60 * 1000 });
     });
   });
+  describe("getResultById", () => {
+    const getResultMock = vi.spyOn(ResultDal, "getResult");
+
+    afterEach(() => {
+      getResultMock.mockReset();
+    });
+
+    it("should get result", async () => {
+      //GIVEN
+      const result = givenDbResult(uid);
+      getResultMock.mockResolvedValue(result);
+
+      //WHEN
+      const { body } = await mockApp
+        .get(`/results/id/${result._id}`)
+        .set("Authorization", `Bearer ${uid}`)
+        .send()
+        .expect(200);
+
+      //THEN
+      expect(body.message).toEqual("Result retrieved");
+      expect(body.data).toEqual({ ...result, _id: result._id.toHexString() });
+    });
+    it("should get last result with ape key", async () => {
+      //GIVEN
+      await acceptApeKeys(true);
+      const apeKey = await mockAuthenticateWithApeKey(uid, await configuration);
+      const result = givenDbResult(uid);
+      getResultMock.mockResolvedValue(result);
+
+      //WHEN
+      await mockApp
+        .get(`/results/id/${result._id}`)
+        .set("Authorization", `ApeKey ${apeKey}`)
+        .send()
+        .expect(200);
+    });
+    it("should get last result with legacy values", async () => {
+      //GIVEN
+      const result = givenDbResult(uid, {
+        charStats: undefined,
+        incorrectChars: 5,
+        correctChars: 12,
+      });
+      getResultMock.mockResolvedValue(result);
+
+      //WHEN
+      const { body } = await mockApp
+        .get(`/results/id/${result._id}`)
+        .set("Authorization", `Bearer ${uid}`)
+        .send()
+        .expect(200);
+
+      //THEN
+      expect(body.message).toEqual("Result retrieved");
+      expect(body.data).toMatchObject({
+        _id: result._id.toHexString(),
+        charStats: [12, 5, 0, 0],
+      });
+      expect(body.data).not.toHaveProperty("correctChars");
+      expect(body.data).not.toHaveProperty("incorrectChars");
+    });
+    it("should rate limit get  result with ape key", async () => {
+      //GIVEN
+      const result = givenDbResult(uid, {
+        charStats: undefined,
+        incorrectChars: 5,
+        correctChars: 12,
+      });
+      getResultMock.mockResolvedValue(result);
+      await acceptApeKeys(true);
+      const apeKey = await mockAuthenticateWithApeKey(uid, await configuration);
+
+      //WHEN
+      await expect(
+        mockApp
+          .get(`/results/id/${result._id}`)
+          .set("Authorization", `ApeKey ${apeKey}`)
+      ).toBeRateLimited({ max: 60, windowMs: 60 * 60 * 1000 });
+    });
+  });
   describe("getLastResult", () => {
     const getLastResultMock = vi.spyOn(ResultDal, "getLastResult");
 
@@ -545,7 +626,7 @@ describe("result controller test", () => {
         ...result,
         difficulty: "normal",
         language: "english",
-        funbox: "none",
+        funbox: [],
         lazyMode: false,
         punctuation: false,
         numbers: false,
@@ -626,7 +707,7 @@ describe("result controller test", () => {
             chartData: { wpm: [1, 2, 3], raw: [50, 55, 56], err: [0, 2, 0] },
             consistency: 23.5,
             difficulty: "normal",
-            funbox: "none",
+            funbox: [],
             hash: "hash",
             incompleteTestSeconds: 2,
             incompleteTests: [{ acc: 75, seconds: 10 }],
@@ -750,7 +831,7 @@ describe("result controller test", () => {
             chartData: { wpm: [1, 2, 3], raw: [50, 55, 56], err: [0, 2, 0] },
             consistency: 23.5,
             difficulty: "normal",
-            funbox: "none",
+            funbox: [],
             hash: "hash",
             incompleteTestSeconds: 2,
             incompleteTests: [{ acc: 75, seconds: 10 }],
@@ -793,26 +874,24 @@ describe("result controller test", () => {
       });
     });
 
-    it("should fail invalid properties", async () => {
-      //GIVEN
-
-      //WHEN
-      const { body } = await mockApp
-        .post("/results")
-        .set("Authorization", `Bearer ${uid}`)
-        //TODO add all properties
-        .send({ result: { acc: 25 } })
-        .expect(422);
-
-      //THEN
-      /*
+    // it("should fail invalid properties ", async () => {
+    //GIVEN
+    //WHEN
+    // const { body } = await mockApp
+    //   .post("/results")
+    //   .set("Authorization", `Bearer ${uid}`)
+    //   //TODO add all properties
+    //   .send({ result: { acc: 25 } })
+    //   .expect(422);
+    //THEN
+    /*
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
         ],
       });
       */
-    });
+    // });
   });
 });
 

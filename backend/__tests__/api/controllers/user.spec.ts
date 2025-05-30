@@ -5,7 +5,6 @@ import { generateCurrentTestActivity } from "../../../src/api/controllers/user";
 import * as UserDal from "../../../src/dal/user";
 import * as AuthUtils from "../../../src/utils/auth";
 import * as BlocklistDal from "../../../src/dal/blocklist";
-import * as ApeKeys from "../../../src/dal/ape-keys";
 import * as PresetDal from "../../../src/dal/preset";
 import * as ConfigDal from "../../../src/dal/config";
 import * as ResultDal from "../../../src/dal/result";
@@ -586,11 +585,11 @@ describe("user controller test", () => {
       expect(testsByDays[371]).toEqual(2024094); //2024-01
     });
   });
-  describe("delete user", () => {
+  describe("delete user ", () => {
     const getUserMock = vi.spyOn(UserDal, "getPartialUser");
     const deleteUserMock = vi.spyOn(UserDal, "deleteUser");
     const firebaseDeleteUserMock = vi.spyOn(AuthUtils, "deleteUser");
-    const deleteAllApeKeysMock = vi.spyOn(ApeKeys, "deleteAllApeKeys");
+    const deleteAllApeKeysMock = vi.spyOn(ApeKeysDal, "deleteAllApeKeys");
     const deleteAllPresetsMock = vi.spyOn(PresetDal, "deleteAllPresets");
     const deleteConfigMock = vi.spyOn(ConfigDal, "deleteConfig");
     const deleteAllResultMock = vi.spyOn(ResultDal, "deleteAll");
@@ -894,13 +893,15 @@ describe("user controller test", () => {
         data: null,
       });
 
-      [
+      for (const it of [
         resetUserMock,
         deleteAllApeKeysMock,
         deleteAllPresetsMock,
         deleteAllResultsMock,
         deleteConfigMock,
-      ].forEach((it) => expect(it).toHaveBeenCalledWith(uid));
+      ]) {
+        expect(it).toHaveBeenCalledWith(uid);
+      }
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await Configuration.getLiveConfiguration()).dailyLeaderboards
@@ -1178,19 +1179,18 @@ describe("user controller test", () => {
         uid
       );
     });
-    it("should fail with unknown properties", async () => {
-      //WHEN
-      const { body } = await mockApp
-        .post("/users/optOutOfLeaderboards")
-        .set("Authorization", `Bearer ${uid}`)
-        .send({ extra: "value" });
-      //TODO.expect(422);
-
-      //THEN
-      /* TODO:
+    // it("should fail with unknown properties", async () => {
+    //WHEN
+    // const { body } = await mockApp
+    //   .post("/users/optOutOfLeaderboards")
+    //   .set("Authorization", `Bearer ${uid}`)
+    //   .send({ extra: "value" });
+    //TODO.expect(422);
+    //THEN
+    /* TODO:
         expect(body).toEqual({});
         */
-    });
+    // });
   });
   describe("update email", () => {
     const authUpdateEmailMock = vi.spyOn(AuthUtils, "updateUserEmail");
@@ -1604,7 +1604,11 @@ describe("user controller test", () => {
         "discordUserId",
         "discordUserAvatar"
       );
-      expect(georgeLinkDiscordMock).toHaveBeenCalledWith("discordUserId", uid);
+      expect(georgeLinkDiscordMock).toHaveBeenCalledWith(
+        "discordUserId",
+        uid,
+        false
+      );
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_discord_link",
         "linked to discordUserId",
@@ -2276,7 +2280,7 @@ describe("user controller test", () => {
       updateLbMemoryMock.mockReset();
     });
 
-    it("should update lb ", async () => {
+    it("should update lb", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/leaderboardMemory")
@@ -2384,7 +2388,7 @@ describe("user controller test", () => {
       addThemeMock.mockReset();
     });
 
-    it("should add ", async () => {
+    it("should add", async () => {
       //GIVEN
       const addedTheme: UserDal.DBCustomTheme = {
         _id: new ObjectId(),
@@ -3808,6 +3812,7 @@ async function enablePremiumFeatures(premium: boolean): Promise<void> {
   );
 }
 
+// eslint-disable-next-line no-unused-vars
 async function enableAdminFeatures(enabled: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {
     admin: { endpointsEnabled: enabled },

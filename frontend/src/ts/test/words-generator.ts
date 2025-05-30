@@ -22,6 +22,8 @@ import {
   getActiveFunboxesWithFunction,
   isFunboxActiveWithFunction,
 } from "./funbox/list";
+import { WordGenError } from "../utils/word-gen-error";
+import * as Loader from "../elements/loader";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -398,7 +400,7 @@ export function getWordOrder(): FunboxWordOrder {
   }
 }
 
-export function getWordsLimit(): number {
+export function getLimit(): number {
   if (Config.mode === "zen") {
     return 0;
   }
@@ -475,13 +477,6 @@ export function getWordsLimit(): number {
   return limit;
 }
 
-export class WordGenError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "WordGenError";
-  }
-}
-
 async function getQuoteWordList(
   language: LanguageObject,
   wordOrder?: FunboxWordOrder
@@ -505,10 +500,12 @@ async function getQuoteWordList(
     ? "german"
     : language.name;
 
+  Loader.show();
   const quotesCollection = await QuotesController.getQuotes(
     languageToGet,
     Config.quoteLength
   );
+  Loader.hide();
 
   if (quotesCollection.length === 0) {
     UpdateConfig.setMode("words");
@@ -624,8 +621,13 @@ export async function generateWords(
     wordList = [];
   }
 
-  const limit = getWordsLimit();
-  console.debug("Words limit", limit);
+  const customAndUsingPipeDelimiter =
+    Config.mode === "custom" && CustomText.getPipeDelimiter();
+
+  const limit = getLimit();
+  console.debug(
+    `${customAndUsingPipeDelimiter ? "Section" : "Word"} limit ${limit}`
+  );
 
   if (wordOrder === "reverse") {
     wordList = wordList.reverse();
@@ -656,11 +658,13 @@ export async function generateWords(
     ret.words.push(nextWord.word);
     ret.sectionIndexes.push(nextWord.sectionIndex);
 
-    if (Config.mode === "custom" && CustomText.getPipeDelimiter()) {
+    if (customAndUsingPipeDelimiter) {
+      //generate a given number of sections, make sure to not cut a section off
       const sectionFinishedAndOverLimit =
-        currentSection.length === 0 &&
-        sectionIndex >= CustomText.getLimitValue();
-      if (sectionFinishedAndOverLimit || ret.words.length >= limit) {
+        currentSection.length === 0 && sectionIndex >= limit;
+      //make sure we dont go over a hard limit, in cases where the sections are very large
+      const upperWordLimit = ret.words.length >= 100;
+      if (sectionFinishedAndOverLimit || upperWordLimit) {
         stop = true;
       }
     } else if (ret.words.length >= limit) {

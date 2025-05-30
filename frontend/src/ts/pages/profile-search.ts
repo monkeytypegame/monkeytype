@@ -2,7 +2,7 @@ import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
 
 export const page = new Page({
-  name: "profileSearch",
+  id: "profileSearch",
   element: $(".page.pageProfileSearch"),
   path: "/profile",
   afterHide: async (): Promise<void> => {

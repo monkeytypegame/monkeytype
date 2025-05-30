@@ -23,6 +23,22 @@ type ChangeOptions = {
   data?: unknown;
 };
 
+function updateOpenGraphUrl(): void {
+  const ogUrlTag = document.querySelector('meta[property="og:url"]');
+  const currentUrl = window.location.href;
+
+  if (ogUrlTag) {
+    // Update existing tag
+    ogUrlTag.setAttribute("content", currentUrl);
+  } else {
+    // Create and append new tag if it doesn't exist
+    const newOgUrlTag = document.createElement("meta");
+    newOgUrlTag.setAttribute("property", "og:url");
+    newOgUrlTag.content = currentUrl;
+    document.head.appendChild(newOgUrlTag);
+  }
+}
+
 export async function change(
   pageName: PageName,
   options = {} as ChangeOptions
@@ -82,22 +98,25 @@ export async function change(
           void AdController.reinstate();
         },
         async () => {
-          if (nextPage.name === "test") {
+          if (nextPage.id === "test") {
             Misc.updateTitle();
           } else {
-            Misc.updateTitle(
-              Strings.capitalizeFirstLetterOfEachWord(nextPage.name) +
-                " | Monkeytype"
-            );
+            const titleString =
+              nextPage.display ??
+              Strings.capitalizeFirstLetterOfEachWord(nextPage.id);
+            Misc.updateTitle(`${titleString} | Monkeytype`);
           }
           Focus.set(false);
-          ActivePage.set(nextPage.name);
+          ActivePage.set(nextPage.id);
+
           await previousPage?.afterHide();
           await nextPage?.beforeShow({
             params: options.params,
-            //@ts-expect-error
+            // @ts-expect-error for the future (i think)
             data: options.data,
           });
+
+          updateOpenGraphUrl();
         }
       );
     });

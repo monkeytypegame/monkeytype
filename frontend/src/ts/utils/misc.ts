@@ -7,10 +7,8 @@ import {
   Mode2,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
-import {
-  CustomTextDataWithTextLen,
-  Result,
-} from "@monkeytype/contracts/schemas/results";
+import { Result } from "@monkeytype/contracts/schemas/results";
+import { z } from "zod";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -151,7 +149,7 @@ export function toggleFullscreen(): void {
     } else if (elem.mozRequestFullScreen) {
       void elem.mozRequestFullScreen();
     } else if (elem.webkitRequestFullscreen) {
-      // @ts-expect-error
+      // @ts-expect-error some code i found online
       void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
@@ -194,39 +192,6 @@ export function isUsernameValid(name: string): boolean {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-export function canQuickRestart(
-  mode: string,
-  words: number,
-  time: number,
-  CustomText: Omit<CustomTextDataWithTextLen, "textLen">,
-  customTextIsLong: boolean
-): boolean {
-  const wordsLong = mode === "words" && (words >= 1000 || words === 0);
-  const timeLong = mode === "time" && (time >= 900 || time === 0);
-  const customTextLong = mode === "custom" && customTextIsLong;
-
-  const customTextRandomWordsLong =
-    mode === "custom" &&
-    (CustomText.limit.mode === "word" || CustomText.limit.mode === "section") &&
-    (CustomText.limit.value >= 1000 || CustomText.limit.value === 0);
-  const customTextRandomTimeLong =
-    mode === "custom" &&
-    CustomText.limit.mode === "time" &&
-    (CustomText.limit.value >= 900 || CustomText.limit.value === 0);
-
-  if (
-    wordsLong ||
-    timeLong ||
-    customTextLong ||
-    customTextRandomWordsLong ||
-    customTextRandomTimeLong
-  ) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
 export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
   timeouts.forEach((to) => {
     if (typeof to === "number") clearTimeout(to);
@@ -248,6 +213,8 @@ type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
 } & string;
 
+// TODO INVESTIGATE IF THIS IS NEEDED
+// eslint-disable-next-line no-extend-native
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp
 ): number {
@@ -691,6 +658,74 @@ export function prefersReducedMotion(): boolean {
  */
 export function applyReducedMotion(animationTime: number): number {
   return prefersReducedMotion() ? 0 : animationTime;
+}
+
+/**
+ * Creates a promise with resolvers.
+ * This is useful for creating a promise that can be resolved or rejected from outside the promise itself.
+ */
+export function promiseWithResolvers<T = void>(): {
+  resolve: (value: T) => void;
+  reject: (reason?: unknown) => void;
+  promise: Promise<T>;
+} {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { resolve, reject, promise };
+}
+
+/**
+ * Sanitize object. Remove invalid values based on the schema.
+ * @param schema zod schema
+ * @param obj object
+ * @returns sanitized object
+ */
+export function sanitize<T extends z.ZodTypeAny>(
+  schema: T,
+  obj: z.infer<T>
+): z.infer<T> {
+  const validate = schema.safeParse(obj);
+
+  if (validate.success) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return obj;
+  }
+
+  const errors: Map<string, number[] | undefined> = new Map();
+  for (const error of validate.error.errors) {
+    const element = error.path[0] as string;
+    let val = errors.get(element);
+    if (typeof error.path[1] === "number") {
+      val = [...(val ?? []), error.path[1]];
+    }
+    errors.set(element, val);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => {
+      if (!errors.has(key)) {
+        return [key, value];
+      }
+
+      const error = errors.get(key);
+
+      if (
+        Array.isArray(value) &&
+        error !== undefined && //error is not on the array itself
+        error.length < value.length //not all items in the array are invalid
+      ) {
+        //some items of the array are invalid
+        return [key, value.filter((_element, index) => !error.includes(index))];
+      } else {
+        return [key, undefined];
+      }
+    })
+  ) as z.infer<T>;
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

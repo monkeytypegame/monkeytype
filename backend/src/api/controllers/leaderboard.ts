@@ -13,7 +13,7 @@ import {
   GetLeaderboardQuery,
   GetLeaderboardRankQuery,
   GetLeaderboardRankResponse,
-  GetLeaderboardResponse as GetLeaderboardResponse,
+  GetLeaderboardResponse,
   GetWeeklyXpLeaderboardQuery,
   GetWeeklyXpLeaderboardRankQuery,
   GetWeeklyXpLeaderboardRankResponse,

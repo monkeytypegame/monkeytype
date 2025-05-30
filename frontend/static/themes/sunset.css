@@ -1,0 +1,26 @@
+:root {
+  --bg-color: #211e24;
+  --main-color: #f79777;
+  --caret-color: #ffca99;
+  --sub-color: #5b578e;
+  --sub-alt-color: #161319;
+  --text-color: #f4e0c9;
+  --error-color: #66a1ff;
+  --error-extra-color: #376ca4;
+  --colorful-error-color: #66a1ff;
+  --colorful-error-extra-color: #376ca4;
+}
+
+nav > .textButton:nth-child(1),
+nav > .textButton:nth-child(2),
+nav > .textButton:nth-child(3),
+nav > .textButton:nth-child(4) {
+  color: #f79777;
+}
+
+nav > .textButton:nth-child(1):hover,
+nav > .textButton:nth-child(2):hover,
+nav > .textButton:nth-child(3):hover,
+nav > .textButton:nth-child(4):hover {
+  color: #ffca99;
+}

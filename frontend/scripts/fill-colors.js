@@ -1,7 +1,8 @@
+// eslint-disable no-require-imports
 const fs = require("fs");
 
 function main() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const listFile = JSON.parse(
       fs.readFileSync("../static/themes/_list.json", {
         encoding: "utf8",
