@@ -1608,7 +1608,7 @@ export function afterTestTextInput(
       document.querySelectorAll("#words .word")?.[
         TestState.activeWordIndex - activeWordElementOffset
       ] as HTMLElement
-    ).offsetTop ?? 0;
+    )?.offsetTop ?? 0;
 
   if (newTop > activeWordTop) {
     //word jumped, go back
@@ -1648,7 +1648,7 @@ export function afterTestWordChange(direction: "forward" | "back"): void {
     );
 
     if (currentTop > previousTop) {
-      lineJump(previousTop);
+      void lineJump(previousTop);
     }
   }
 }
