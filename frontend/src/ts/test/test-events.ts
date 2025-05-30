@@ -1,4 +1,4 @@
-import { roundTo2 } from "@monkeytype/util/numbers";
+import { roundTo2, safeNumber } from "@monkeytype/util/numbers";
 import * as TestStats from "./test-stats";
 
 type KeydownEvent = {
@@ -356,7 +356,7 @@ export function getMissedWords(): Record<string, number> {
     if (event.mode !== "insert") return acc;
     if (!event.correct) {
       const word = event.targetWord;
-      acc[word] = (acc[word] || 0) + 1;
+      acc[word] = (safeNumber(acc[word]) ?? 0) + 1;
     }
     return acc;
   }, {});
