@@ -455,35 +455,31 @@ async function onInsertText({
     });
   }
 
+  TestUI.afterTestTextInput(correct, visualInputOverride);
+
+  // going to next word
+
   const nospace =
     getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
     undefined;
   const noSpaceForce =
     nospace &&
     TestInput.input.current.length === TestWords.words.getCurrent().length;
-  const stopOnErrorBlock =
-    (Config.stopOnError === "word" || Config.stopOnError === "letter") &&
-    !correct;
-
   const shouldMoveToNextWord =
     (data === " " && TestInput.input.current.length > 0) ||
     (data === "\n" && TestInput.input.current.length > 0) ||
     noSpaceForce;
 
-  let movingToNextWord = false;
+  // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
+  // like accuracy, keypress errors, and missed words
+  const stopOnErrorBlock =
+    (Config.stopOnError === "word" || Config.stopOnError === "letter") &&
+    !correct;
   if (!stopOnErrorBlock && shouldMoveToNextWord) {
-    movingToNextWord = true;
-
-    if (noSpaceForce) {
-      void TestUI.updateActiveWordLetters();
-    }
-
     await goToNextWord({
       correctInsert: correct,
     });
   }
-
-  TestUI.afterTestTextInput(correct, movingToNextWord, visualInputOverride);
 }
 
 function onDelete({ inputType }: InputEventHandler): void {

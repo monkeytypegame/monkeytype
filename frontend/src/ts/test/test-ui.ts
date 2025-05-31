@@ -1591,18 +1591,11 @@ function afterAnyTestInput(correctInput: boolean | null): void {
 
 export function afterTestTextInput(
   correct: boolean,
-  movingToNextWord: boolean,
   inputOverride?: string
 ): void {
   let override: string | undefined;
   if (inputOverride !== undefined) {
     override = inputOverride;
-  }
-  if (
-    movingToNextWord &&
-    Strings.getLastChar(TestInput.input.current) === " "
-  ) {
-    override = TestInput.input.current.slice(0, -1);
   }
   setActiveWordTop();
   void updateActiveWordLetters(override);
@@ -1637,6 +1630,7 @@ export function beforeTestWordChange(_direction: "forward" | "back"): void {
 
 export function afterTestWordChange(direction: "forward" | "back"): void {
   updateActiveElement();
+  void Caret.updatePosition();
   if (
     direction === "forward" &&
     (!Config.showAllLines ||
