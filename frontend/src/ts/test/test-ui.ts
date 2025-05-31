@@ -1541,6 +1541,10 @@ export function getActiveWordTopAfterAppend(data: string): number {
     TestState.activeWordIndex - activeWordElementOffset
   ] as HTMLElement;
 
+  if (data === " ") {
+    data = "_";
+  }
+
   activeWord.insertAdjacentHTML(
     "beforeend",
     `<letter class="temp">${data}</letter>`
