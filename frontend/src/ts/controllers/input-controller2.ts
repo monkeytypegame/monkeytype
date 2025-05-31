@@ -184,12 +184,14 @@ async function goToNextWord({
   }
 
   setInputValue("");
+  setTestInputToDOMValue();
   TestUI.afterTestWordChange("forward");
 }
 
 function goToPreviousWord(inputType: SupportedInputType): void {
   if (TestState.activeWordIndex === 0) {
     setInputValue("");
+    setTestInputToDOMValue();
     return;
   }
 
@@ -199,10 +201,11 @@ function goToPreviousWord(inputType: SupportedInputType): void {
 
   if (inputType === "deleteWordBackward") {
     setInputValue("");
+    setTestInputToDOMValue();
   } else if (inputType === "deleteContentBackward") {
     setInputValue(word);
+    setTestInputToDOMValue();
   }
-  setTestInputToDOMValue();
   TestUI.afterTestWordChange("back");
 }
 
