@@ -316,6 +316,15 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
     preventDefault = true;
   }
 
+  //prevent space in nospace funbox
+  if (
+    data === " " &&
+    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+      undefined
+  ) {
+    preventDefault = true;
+  }
+
   //prevent the word from jumping to the next line if the word is too long
   //this will not work for the first word of each line, but that has a low chance of happening
   if (
