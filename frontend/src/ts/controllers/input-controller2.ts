@@ -481,11 +481,9 @@ function replaceLastInputValueChar(char: string): void {
   setInputValue(inputValue.slice(0, -1) + char);
 }
 
-function setInputValue(value: string, doNotUpdateTestInput = false): void {
+function setInputValue(value: string): void {
   wordsInput.value = " " + value;
-  if (!doNotUpdateTestInput) {
-    setTestInputToDOMValue();
-  }
+  setTestInputToDOMValue();
 }
 
 function setTestInputToDOMValue(): void {
@@ -505,11 +503,11 @@ async function emulateInsertText(
   now: number
 ): Promise<void> {
   //default is prevented so we need to manually update the input value.
-  // REMEMBER TO NOT UPDATE THE TESTINPUT VALUE TO THE DOM VALUE
+  // remember to not call setInputValue or setTestInputToDOMValue in here
   // because onBeforeInsertText can also block the event
-  // testInput will later be updated in onInsertText
+  // setInputValue and setTestInputToDOMValue will be called later be updated in onInsertText
   const { inputValue } = getInputValue();
-  setInputValue(inputValue + data, true);
+  wordsInput.value = " " + inputValue + data;
 
   onBeforeInsertText({
     data,
