@@ -1625,6 +1625,12 @@ export function afterTestDelete(): void {
   afterAnyTestInput(null);
 }
 
+export function beforeTestWordChange(_direction: "forward" | "back"): void {
+  if (Config.stopOnError === "letter") {
+    void updateActiveWordLetters();
+  }
+}
+
 export function afterTestWordChange(direction: "forward" | "back"): void {
   updateActiveElement();
   if (

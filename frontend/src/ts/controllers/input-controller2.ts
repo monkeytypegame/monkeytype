@@ -146,6 +146,8 @@ type GoToNextWordParams = {
 async function goToNextWord({
   correctInsert,
 }: GoToNextWordParams): Promise<void> {
+  TestUI.beforeTestWordChange("forward");
+
   if (!correctInsert) {
     TestUI.highlightBadWord(
       TestState.activeWordIndex - TestUI.activeWordElementOffset
@@ -192,6 +194,8 @@ function goToPreviousWord(inputType: SupportedInputType): void {
     setInputValue("");
     return;
   }
+
+  TestUI.beforeTestWordChange("back");
 
   const word = TestInput.input.popHistory();
   TestState.decreaseActiveWordIndex();
@@ -502,7 +506,7 @@ async function emulateInsertText(
   event: KeyboardEvent,
   now: number
 ): Promise<void> {
-  //default is prevented so we need to manually update the input value.
+  // default is prevented so we need to manually update the input value.
   // remember to not call setInputValue or setTestInputToDOMValue in here
   // because onBeforeInsertText can also block the event
   // setInputValue and setTestInputToDOMValue will be called later be updated in onInsertText
