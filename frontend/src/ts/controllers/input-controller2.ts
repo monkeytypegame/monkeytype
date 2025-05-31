@@ -452,8 +452,8 @@ async function onInsertText({
     !correct;
 
   const shouldMoveToNextWord =
-    (data === " " && TestInput.input.current.length > 1) ||
-    (data === "\n" && TestInput.input.current.length > 1) ||
+    (data === " " && TestInput.input.current.length > 0) ||
+    (data === "\n" && TestInput.input.current.length > 0) ||
     noSpaceForce;
 
   let movingToNextWord = false;
