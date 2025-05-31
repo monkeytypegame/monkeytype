@@ -184,14 +184,12 @@ async function goToNextWord({
   }
 
   setInputValue("");
-  setTestInputToDOMValue();
   TestUI.afterTestWordChange("forward");
 }
 
 function goToPreviousWord(inputType: SupportedInputType): void {
   if (TestState.activeWordIndex === 0) {
     setInputValue("");
-    setTestInputToDOMValue();
     return;
   }
 
@@ -201,10 +199,8 @@ function goToPreviousWord(inputType: SupportedInputType): void {
 
   if (inputType === "deleteWordBackward") {
     setInputValue("");
-    setTestInputToDOMValue();
   } else if (inputType === "deleteContentBackward") {
     setInputValue(word);
-    setTestInputToDOMValue();
   }
   TestUI.afterTestWordChange("back");
 }
@@ -378,7 +374,6 @@ async function onInsertText({
     if (fb.functions?.handleChar) {
       data = fb.functions.handleChar(data);
       replaceLastInputValueChar(data);
-      setTestInputToDOMValue();
     }
   }
 
@@ -408,7 +403,6 @@ async function onInsertText({
   if (data !== " " && Config.oppositeShiftMode !== "off") {
     if (!correctShiftUsed) {
       replaceLastInputValueChar("");
-      setTestInputToDOMValue();
       incorrectShiftsInARow++;
       if (incorrectShiftsInARow >= 5) {
         Notifications.add("Opposite shift mode is on.", 0, {
@@ -429,7 +423,6 @@ async function onInsertText({
     }
     dataStoppedByStopOnLetter = data;
     replaceLastInputValueChar("");
-    setTestInputToDOMValue();
   }
 
   if (!CompositionState.getComposing()) {
@@ -488,17 +481,14 @@ function replaceLastInputValueChar(char: string): void {
   setInputValue(inputValue.slice(0, -1) + char);
 }
 
-function appendToInputValue(char: string): void {
-  const { inputValue } = getInputValue();
-  setInputValue(inputValue + char);
-}
-
-function setInputValue(value: string): void {
+function setInputValue(value: string, doNotUpdateTestInput = false): void {
   wordsInput.value = " " + value;
+  if (!doNotUpdateTestInput) {
+    setTestInputToDOMValue();
+  }
 }
 
 function setTestInputToDOMValue(): void {
-  //remove leading space
   TestInput.input.current = getInputValue().inputValue;
 }
 
@@ -514,7 +504,13 @@ async function emulateInsertText(
   event: KeyboardEvent,
   now: number
 ): Promise<void> {
-  appendToInputValue(data);
+  //default is prevented so we need to manually update the input value.
+  // REMEMBER TO NOT UPDATE THE TESTINPUT VALUE TO THE DOM VALUE
+  // because onBeforeInsertText can also block the event
+  // testInput will later be updated in onInsertText
+  const { inputValue } = getInputValue();
+  setInputValue(inputValue + data, true);
+
   onBeforeInsertText({
     data,
     now,
