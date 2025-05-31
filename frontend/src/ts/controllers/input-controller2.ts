@@ -201,10 +201,18 @@ function goToPreviousWord(inputType: SupportedInputType): void {
   TestState.decreaseActiveWordIndex();
   TestInput.corrected.popHistory();
 
+  const nospaceEnabled =
+    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
+
   if (inputType === "deleteWordBackward") {
     setInputValue("");
   } else if (inputType === "deleteContentBackward") {
-    setInputValue(word);
+    if (nospaceEnabled) {
+      setInputValue(word.slice(0, -1));
+    } else {
+      setInputValue(word);
+    }
   }
   TestUI.afterTestWordChange("back");
 }
