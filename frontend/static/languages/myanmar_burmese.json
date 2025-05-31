@@ -3,6 +3,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "my-MM",
+  "charset": "mayanmar",
   "words": [
     "အဆိုပါ",
     "ဖြစ်သည်",

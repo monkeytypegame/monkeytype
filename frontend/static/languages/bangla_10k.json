@@ -3,6 +3,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "bn_BD",
+  "charset": "bengali",
   "words": [
     "।",
     "আমি",

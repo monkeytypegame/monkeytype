@@ -1,6 +1,7 @@
 {
   "name": "macedonian_75k",
   "noLazyMode": true,
+  "charset": "cyrillic",
   "words": [
     "и",
     "да",

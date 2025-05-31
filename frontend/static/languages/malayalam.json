@@ -3,6 +3,7 @@
   "noLazyMode": true,
   "ligatures": true,
   "bcp47": "ml-IN",
+  "charset": "malayalam",
   "words": [
     "അടി",
     "അടിത്തറ",

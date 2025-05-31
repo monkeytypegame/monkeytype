@@ -402,6 +402,9 @@ function validateLanguages() {
         rightToLeft: { type: "boolean" },
         noLazyMode: { type: "boolean" },
         bcp47: { type: "string" },
+        charset: {
+          type: "string",
+        },
         words: {
           type: "array",
           items: { type: "string", minLength: 1 },

@@ -1,6 +1,7 @@
 {
   "name": "greek_5k",
   "bcp47": "el-GR",
+  "charset": "greek",
   "words": [
     "άδεια",
     "άδειας",

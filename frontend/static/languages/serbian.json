@@ -4,6 +4,7 @@
   "rightToLeft": false,
   "ligatures": false,
   "bcp47": "sr-Cyrl",
+  "charset": "cyrillic",
   "words": [
     "као",
     "ја",

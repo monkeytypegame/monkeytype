@@ -1,6 +1,7 @@
 {
   "name": "belarusian_10k",
   "bcp47": "be-BY",
+  "charset": "cyrillic",
   "words": [
     "а",
     "аазіс",
