@@ -500,9 +500,12 @@ ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "theme" && ActivePage.get() === "settings") {
     updateActiveButton();
   }
-  if (eventKey === "favThemes" && ActivePage.get() === "settings") {
-    // reset initialization flag when favorites change to ensure proper refresh
+  if (eventKey === "favThemes") {
+    // reset initialization flag when favorites change, regardless of current page
+    // to ensures proper refresh when navigating to settings after changing favorites
     resetThemeUIInitialized();
-    void refreshPresetButtons();
+    if (ActivePage.get() === "settings") {
+      void refreshPresetButtons();
+    }
   }
 });
