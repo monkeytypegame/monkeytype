@@ -6,7 +6,11 @@ import * as TestState from "../test/test-state";
 import * as TestLogic from "../test/test-logic";
 import * as TestWords from "../test/test-words";
 import * as MonkeyPower from "../elements/monkey-power";
-import { getActiveFunboxes } from "../test/funbox/list";
+import {
+  findSingleActiveFunboxWithFunction,
+  getActiveFunboxesWithFunction,
+  isFunboxActiveWithProperty,
+} from "../test/funbox/list";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as JSONData from "../utils/json-data";
 import * as Notifications from "../elements/notifications";
@@ -92,8 +96,8 @@ function isCharCorrect(data: string): boolean {
     return true;
   }
 
-  const funbox = getActiveFunboxes().find((fb) => fb.functions?.isCharCorrect);
-  if (funbox?.functions?.isCharCorrect) {
+  const funbox = findSingleActiveFunboxWithFunction("isCharCorrect");
+  if (funbox) {
     return funbox.functions.isCharCorrect(input, target);
   }
 
@@ -154,8 +158,8 @@ async function goToNextWord({
     );
   }
 
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.handleSpace?.();
+  for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
+    fb.functions.handleSpace();
   }
 
   PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
@@ -201,9 +205,7 @@ function goToPreviousWord(inputType: SupportedInputType): void {
   TestState.decreaseActiveWordIndex();
   TestInput.corrected.popHistory();
 
-  const nospaceEnabled =
-    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
+  const nospaceEnabled = isFunboxActiveWithProperty("nospace");
 
   if (inputType === "deleteWordBackward") {
     setInputValue("");
@@ -325,11 +327,7 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   }
 
   //prevent space in nospace funbox
-  if (
-    data === " " &&
-    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-      undefined
-  ) {
+  if (data === " " && isFunboxActiveWithProperty("nospace")) {
     preventDefault = true;
   }
 
@@ -391,11 +389,9 @@ async function onInsertText({
 
   TestInput.setCurrentNotAfk();
 
-  for (const fb of getActiveFunboxes()) {
-    if (fb.functions?.handleChar) {
-      data = fb.functions.handleChar(data);
-      replaceLastInputValueChar(data);
-    }
+  for (const fb of getActiveFunboxesWithFunction("handleChar")) {
+    data = fb.functions.handleChar(data);
+    replaceLastInputValueChar(data);
   }
 
   Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
@@ -459,9 +455,7 @@ async function onInsertText({
 
   // going to next word
 
-  const nospace =
-    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
+  const nospace = isFunboxActiveWithProperty("nospace");
   const noSpaceForce =
     nospace &&
     TestInput.input.current.length === TestWords.words.getCurrent().length;
@@ -641,7 +635,7 @@ wordsInput.addEventListener("input", async (event) => {
       now,
     });
   } else if (inputType === "insertCompositionText") {
-    TestUI.afterTestTextInput(true, false);
+    TestUI.afterTestTextInput(true);
   }
 });
 
