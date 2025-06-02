@@ -150,13 +150,7 @@ type GoToNextWordParams = {
 async function goToNextWord({
   correctInsert,
 }: GoToNextWordParams): Promise<void> {
-  TestUI.beforeTestWordChange("forward");
-
-  if (!correctInsert) {
-    TestUI.highlightBadWord(
-      TestState.activeWordIndex - TestUI.activeWordElementOffset
-    );
-  }
+  TestUI.beforeTestWordChange("forward", correctInsert);
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
     fb.functions.handleSpace();
@@ -199,7 +193,7 @@ function goToPreviousWord(inputType: SupportedInputType): void {
     return;
   }
 
-  TestUI.beforeTestWordChange("back");
+  TestUI.beforeTestWordChange("back", null);
 
   const word = TestInput.input.popHistory();
   TestState.decreaseActiveWordIndex();

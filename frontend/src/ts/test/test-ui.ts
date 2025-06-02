@@ -1622,9 +1622,17 @@ export function afterTestDelete(): void {
   afterAnyTestInput(null);
 }
 
-export function beforeTestWordChange(_direction: "forward" | "back"): void {
+export function beforeTestWordChange(
+  direction: "forward" | "back",
+  correct: boolean | null
+): void {
   if (Config.stopOnError === "letter") {
     void updateActiveWordLetters();
+  }
+  if (direction === "forward") {
+    if (correct === false) {
+      highlightBadWord(TestState.activeWordIndex - activeWordElementOffset);
+    }
   }
 }
 
