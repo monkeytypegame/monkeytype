@@ -25,6 +25,7 @@ import * as Loader from "../elements/loader";
 import * as CompositionState from "../states/composition";
 import { getCharFromEvent } from "../test/layout-emulator";
 import * as Monkey from "../test/monkey";
+import { whorf } from "../utils/misc";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -159,10 +160,6 @@ async function goToNextWord({
   PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
 
   Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex + 1));
-
-  const burst: number = TestStats.calculateBurst();
-  void LiveBurst.update(Math.round(burst));
-  TestInput.pushBurstToHistory(burst);
 
   const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
   if (lastWord) {
@@ -439,6 +436,29 @@ async function onInsertText({
     }
     dataStoppedByStopOnLetter = data;
     replaceLastInputValueChar("");
+  }
+
+  //burst calculation and fail
+  if (data === " ") {
+    const burst: number = TestStats.calculateBurst();
+    void LiveBurst.update(Math.round(burst));
+    TestInput.pushBurstToHistory(burst);
+
+    let wordLength: number;
+    if (Config.mode === "zen") {
+      wordLength = TestInput.input.current.length;
+    } else {
+      wordLength = TestWords.words.getCurrent().length;
+    }
+
+    const flex: number = whorf(Config.minBurstCustomSpeed, wordLength);
+    if (
+      (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
+      (Config.minBurst === "flex" && burst < flex)
+    ) {
+      TestLogic.fail("min burst");
+      return;
+    }
   }
 
   if (!CompositionState.getComposing()) {
