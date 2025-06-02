@@ -214,6 +214,8 @@ function goToPreviousWord(inputType: SupportedInputType): void {
   } else if (inputType === "deleteContentBackward") {
     if (nospaceEnabled) {
       setInputValue(word.slice(0, -1));
+    } else if (word.endsWith("\n")) {
+      setInputValue(word.slice(0, -1));
     } else {
       setInputValue(word);
     }
@@ -381,7 +383,7 @@ async function onInsertText({
     data === " " && Config.stopOnError === "word" && !correct;
   const charIsNotSpace = data !== " ";
   if (charIsNotSpace || shouldInsertSpace) {
-    setTestInputToDOMValue();
+    setTestInputToDOMValue(data === "\n");
   }
 
   if (!TestState.isActive) {
@@ -499,8 +501,9 @@ function setInputValue(value: string): void {
   setTestInputToDOMValue();
 }
 
-function setTestInputToDOMValue(): void {
-  TestInput.input.current = getInputValue().inputValue;
+function setTestInputToDOMValue(appendNewLine = false): void {
+  TestInput.input.current =
+    getInputValue().inputValue + (appendNewLine ? "\n" : "");
 }
 
 function getInputValue(): { inputValue: string; realInputValue: string } {
