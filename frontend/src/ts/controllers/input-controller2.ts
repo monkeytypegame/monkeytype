@@ -157,6 +157,27 @@ async function goToNextWord({
     fb.functions.handleSpace();
   }
 
+  //burst calculation and fail
+  const burst: number = TestStats.calculateBurst();
+  void LiveBurst.update(Math.round(burst));
+  TestInput.pushBurstToHistory(burst);
+
+  let wordLength: number;
+  if (Config.mode === "zen") {
+    wordLength = TestInput.input.current.length;
+  } else {
+    wordLength = TestWords.words.getCurrent().length;
+  }
+
+  const flex: number = whorf(Config.minBurstCustomSpeed, wordLength);
+  if (
+    (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
+    (Config.minBurst === "flex" && burst < flex)
+  ) {
+    TestLogic.fail("min burst");
+    return;
+  }
+
   PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
 
   Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex + 1));
@@ -436,29 +457,6 @@ async function onInsertText({
     }
     dataStoppedByStopOnLetter = data;
     replaceLastInputValueChar("");
-  }
-
-  //burst calculation and fail
-  if (data === " ") {
-    const burst: number = TestStats.calculateBurst();
-    void LiveBurst.update(Math.round(burst));
-    TestInput.pushBurstToHistory(burst);
-
-    let wordLength: number;
-    if (Config.mode === "zen") {
-      wordLength = TestInput.input.current.length;
-    } else {
-      wordLength = TestWords.words.getCurrent().length;
-    }
-
-    const flex: number = whorf(Config.minBurstCustomSpeed, wordLength);
-    if (
-      (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
-      (Config.minBurst === "flex" && burst < flex)
-    ) {
-      TestLogic.fail("min burst");
-      return;
-    }
   }
 
   if (!CompositionState.getComposing()) {
