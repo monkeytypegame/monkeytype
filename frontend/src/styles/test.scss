@@ -340,6 +340,10 @@
       & .hints hint {
         display: none;
       }
+
+      &.error {
+        border-bottom: 2px solid transparent;
+      }
     }
     // &.highlight-word {
     //   .word.typed.error,
@@ -372,6 +376,9 @@
     --untyped-letter-color: var(--sub-color);
     --incorrect-letter-color: var(--colorful-error-color);
     --extra-letter-color: var(--colorful-error-extra-color);
+    &.blind .word.error {
+      border-bottom: 2px solid transparent;
+    }
   }
 
   &.flipped.colorfulMode {
