@@ -485,7 +485,12 @@ function onDelete({ inputType }: InputEventHandler): void {
 
   setTestInputToDOMValue();
   if (realInputValue === "") {
-    goToPreviousWord(inputType);
+    const isFirstVisibleWord =
+      TestState.activeWordIndex - TestUI.activeWordElementOffset === 0;
+
+    if (!isFirstVisibleWord) {
+      goToPreviousWord(inputType);
+    }
   }
   TestUI.afterTestDelete();
   TestInput.setCurrentNotAfk();
