@@ -165,6 +165,15 @@ const checkUncommittedChanges = () => {
   }
 };
 
+const installDependencies = () => {
+  console.log("Installing dependencies...");
+  if (isDryRun) {
+    console.log("[Dry Run] Dependencies would be installed.");
+  } else {
+    runProjectRootCommand("pnpm i");
+  }
+};
+
 const buildProject = () => {
   console.log("Building project...");
   let filter = "";
@@ -245,6 +254,8 @@ const main = async () => {
   if (!hotfix) checkBranchSync();
 
   checkUncommittedChanges();
+
+  installDependencies();
 
   let changelogContent;
   let newVersion;

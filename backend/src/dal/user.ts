@@ -1146,6 +1146,17 @@ export async function setBanned(uid: string, banned: boolean): Promise<void> {
   }
 }
 
+export async function clearStreakHourOffset(uid: string): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $unset: {
+        "streak.hourOffset": "",
+      },
+    }
+  );
+}
+
 export async function checkIfUserIsPremium(
   uid: string,
   userInfoOverride?: Pick<DBUser, "premium">

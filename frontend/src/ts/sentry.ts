@@ -3,7 +3,15 @@ import { envConfig } from "./constants/env-config";
 
 let debug = false;
 
-export function init(): void {
+let activated = false;
+
+export function activateSentry(): void {
+  if (activated) {
+    console.warn("Sentry already activated");
+    return;
+  }
+  activated = true;
+  console.log("Activating Sentry");
   Sentry.init({
     release: envConfig.clientVersion,
     dsn: "https://f50c25dc9dd75304a63776063896a39b@o4509236448133120.ingest.us.sentry.io/4509237217394688",

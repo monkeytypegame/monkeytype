@@ -41,6 +41,7 @@ import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
 import { Language } from "@monkeytype/contracts/schemas/languages";
+import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -780,7 +781,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
 
     const userqr =
       DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
-    if (userqr) {
+    if (Numbers.isSafeNumber(userqr)) {
       $(".pageTest #result #rateQuoteButton .icon")
         .removeClass("far")
         .addClass("fas");
@@ -966,7 +967,7 @@ export async function update(
         Misc.applyReducedMotion(125)
       );
 
-      const canQuickRestart = Misc.canQuickRestart(
+      const canQuickRestart = canQuickRestartFn(
         Config.mode,
         Config.words,
         Config.time,

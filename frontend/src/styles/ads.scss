@@ -17,6 +17,7 @@
 .ad {
   background: var(--sub-alt-color);
   display: grid;
+  justify-content: center;
   grid-template-areas: "col";
   transition: opacity 0.125s;
 
