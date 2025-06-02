@@ -235,7 +235,7 @@ function failOrFinish({
     !correctInsert &&
     data === " " &&
     Config.difficulty === "expert" &&
-    input.length > 1;
+    input.length > 0;
   const shouldFailDueToMaster =
     !correctInsert && Config.difficulty === "master";
 
