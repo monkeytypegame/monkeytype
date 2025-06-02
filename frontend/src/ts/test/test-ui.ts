@@ -1626,13 +1626,16 @@ export function beforeTestWordChange(
   direction: "forward" | "back",
   correct: boolean | null
 ): void {
-  if (Config.stopOnError === "letter") {
-    void updateActiveWordLetters();
-  }
   if (direction === "forward") {
-    if (correct === false) {
+    if (Config.blindMode) {
+      highlightAllLettersAsCorrect(
+        TestState.activeWordIndex - activeWordElementOffset
+      );
+    } else if (correct === false) {
       highlightBadWord(TestState.activeWordIndex - activeWordElementOffset);
     }
+  } else if (direction === "back") {
+    void updateActiveWordLetters();
   }
 }
 
