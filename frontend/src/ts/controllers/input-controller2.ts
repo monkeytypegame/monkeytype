@@ -334,6 +334,7 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   if (
     data !== null &&
     data !== "" &&
+    data !== " " &&
     TestInput.input.current.length >= TestWords.words.getCurrent().length &&
     TestUI.getActiveWordTopAfterAppend(data) > TestUI.activeWordTop &&
     Config.mode !== "zen"
