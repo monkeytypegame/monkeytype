@@ -205,6 +205,8 @@ function goToPreviousWord(inputType: SupportedInputType): void {
   TestState.decreaseActiveWordIndex();
   TestInput.corrected.popHistory();
 
+  Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex));
+
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
 
   if (inputType === "deleteWordBackward") {
