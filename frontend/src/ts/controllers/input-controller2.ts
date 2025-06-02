@@ -371,6 +371,10 @@ async function onInsertText({
 
   const correct = isCharCorrect(data);
 
+  if (TestInput.input.current.length === 0) {
+    TestInput.setBurstStart(now);
+  }
+
   const shouldInsertSpace =
     data === " " && Config.stopOnError === "word" && !correct;
   const charIsNotSpace = data !== " ";
@@ -391,10 +395,6 @@ async function onInsertText({
   }
 
   Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
-
-  if (TestInput.input.current.length === 1) {
-    TestInput.setBurstStart(now);
-  }
 
   void MonkeyPower.addPower(correct);
   TestInput.incrementAccuracy(correct);
