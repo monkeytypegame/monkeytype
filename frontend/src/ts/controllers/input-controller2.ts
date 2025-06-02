@@ -758,7 +758,7 @@ wordsInput.addEventListener("keydown", async (event) => {
         return;
       }
     }
-    if (TestWords.hasNewline) {
+    if (TestWords.hasNewline || Config.mode === "zen") {
       await emulateInsertText("\n", event, now);
       event.preventDefault();
       return;
