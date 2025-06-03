@@ -551,9 +551,13 @@
     .r4,
     .r5,
     .r6 {
-      justify-content: center;
-      display: flex;
-      grid-template-columns: none;
+      display: grid;
+      justify-content: space-between;
+    }
+
+    .keymapKey {
+      width: 100%;
+      height: 100%;
     }
 
     .keymapSplitSpacer {

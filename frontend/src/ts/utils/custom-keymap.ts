@@ -18,6 +18,20 @@ function isKeyProperties(
   return typeof element === "object" && element !== null;
 }
 
+function isOnlyInvisibleKey(
+  element: KeyProperties | string
+): element is KeyProperties {
+  return (
+    typeof element === "object" &&
+    element !== null &&
+    element.x !== null &&
+    element.w === undefined &&
+    element.a === undefined &&
+    element.h === undefined &&
+    element.y === undefined
+  );
+}
+
 function sanitizeKeymap(keymap: KeymapCustom): KeymapCustom {
   return keymap.map((row: (KeyProperties | string)[]) => {
     return row.map((element: KeyProperties | string) => {
@@ -70,42 +84,77 @@ export function getCustomKeymapSyle(
 
   const keymapHtml = keymapCopy.map(
     (row: (KeyProperties | string)[], index: number) => {
+      let columns = 'style="grid-template-columns: ';
       const rowCopy = [...row];
       const rowHtml = rowCopy.map(
         (element: KeyProperties | string, index: number) => {
-          let size = `style= "width: 2rem"`,
-            keyHtml: string = "",
+          let keyHtml: string = "",
             keyString: string =
               typeof element === "string"
                 ? sanitizeString(element).toLowerCase()
-                : "";
-          if (isKeyProperties(element)) {
-            if (element.x && "x" in element) {
-              const pixels = 2 * element.x;
-              keyHtml += `<div class="keymapKey invisible" data-key="" style= "width: ${pixels}rem"></div>`;
+                : "",
+            basicSpan = "2rem";
+
+          if (isOnlyInvisibleKey(element) && rowCopy[index + 1] === undefined) {
+            if (element.x !== undefined && "x" in element) {
+              const size = 2 * element.x;
+              const space = `${size}rem `;
+              columns += `${space}`;
+              keyHtml += `<div class="keymapKey invisible" data-key=""></div>`;
             }
-            if (element.w && "w" in element) {
-              const pixels = 2 * element.w;
-              size = `style= "width: ${pixels}rem"`;
+          } else if (
+            isOnlyInvisibleKey(element) &&
+            rowCopy[index + 1] !== null
+          ) {
+            if (element.x !== undefined && "x" in element) {
+              const size = 2 * element.x;
+              const space = `${size}rem `;
+              columns += `${space}${basicSpan} `;
+              keyString = rowCopy[index + 1]?.toString() ?? "";
+              rowCopy.splice(index, 1);
+              keyHtml += `<div class="keymapKey invisible" data-key=""></div>`;
+              keyHtml += `
+              <div class="keymapKey" data-key="${keyToData(keyString)}">
+              <span class="letter">${keyToData(keyString) && keyString}</span>
+              </div>`;
             }
-            // we take the next one since is the content of the current key
-            keyString = rowCopy[index + 1]?.toString() ?? "";
-            rowCopy.splice(index, 1);
-          }
-          keyHtml += `
-        <div class="keymapKey" ${size} data-key="${keyToData(keyString)}">
-          <span class="letter">${keyToData(keyString) && keyString}</span>
-        </div>`;
-          if (keyString === "spc") {
-            keyHtml = `
-        <div class="keymapKey keySpace layoutIndicator" ${size}>
-          <span class="letter">${sanitizeString(layout)}</span>
-        </div>`;
+          } else if (isKeyProperties(element)) {
+            if (element.w !== undefined && "w" in element) {
+              const size = 2 * element.w;
+              const span = `${size}rem `;
+              columns += `${span}`;
+              keyString = rowCopy[index + 1]?.toString() ?? "";
+              rowCopy.splice(index, 1);
+              keyHtml += `
+              <div class="keymapKey" data-key="${keyToData(keyString)}">
+                <span class="letter">${keyToData(keyString) && keyString}</span>
+              </div>`;
+              if (keyString === "spc") {
+                keyHtml = `
+                <div class="keymapKey keySpace layoutIndicator">
+                <span class="letter">${sanitizeString(layout)}</span>
+                </div>`;
+              }
+            }
+          } else {
+            columns += `${basicSpan} `;
+            keyHtml += `
+            <div class="keymapKey" data-key="${keyToData(keyString)}">
+            <span class="letter">${keyToData(keyString) && keyString}</span>
+            </div>`;
+            if (keyString === "spc") {
+              keyHtml = `
+              <div class="keymapKey keySpace layoutIndicator">
+              <span class="letter">${sanitizeString(layout)}</span>
+              </div>`;
+            }
           }
           return keyHtml;
         }
       );
-      return `<div class="row r${index + 1}">${rowHtml.join("")}</div>`;
+      return `<div class="row r${index + 1}" ${columns}">${rowHtml.join(
+        ""
+      )}</div>`;
     }
   );
   return keymapHtml.join("");
