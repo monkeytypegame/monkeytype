@@ -551,13 +551,15 @@
     .r4,
     .r5,
     .r6 {
+      height: 2.25rem;
       display: grid;
       justify-content: space-between;
+      gap: 0;
     }
 
     .keymapKey {
+      margin: 0.125rem;
       width: 100%;
-      height: 100%;
     }
 
     .keymapSplitSpacer {

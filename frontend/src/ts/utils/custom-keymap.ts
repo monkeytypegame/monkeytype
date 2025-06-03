@@ -76,6 +76,14 @@ export function keymapToString(keymap: KeymapCustom): string {
   }
 }
 
+function createHtmlKey(keyString: string): string {
+  return `<div style="display: flex;">
+    <div class="keymapKey" data-key="${keyToData(keyString)}">
+    <span class="letter">${sanitizeString(keyString)}</span>
+    </div>
+  </div>`;
+}
+
 export function getCustomKeymapSyle(
   keymapStyle: KeymapCustom,
   layout: Layout
@@ -92,60 +100,65 @@ export function getCustomKeymapSyle(
             keyString: string =
               typeof element === "string"
                 ? sanitizeString(element).toLowerCase()
-                : "",
-            basicSpan = "2rem";
+                : "";
+          const keyInvisible = `
+            <div style="display: flex;">
+              <div class="keymapKey invisible" data-key=""></div>  
+            </div>`,
+            basicSpan = 2.25;
 
           if (isOnlyInvisibleKey(element) && rowCopy[index + 1] === undefined) {
             if (element.x !== undefined && "x" in element) {
-              const size = 2 * element.x;
+              const size = basicSpan * element.x;
               const space = `${size}rem `;
               columns += `${space}`;
-              keyHtml += `<div class="keymapKey invisible" data-key=""></div>`;
+              keyHtml += keyInvisible;
             }
           } else if (
             isOnlyInvisibleKey(element) &&
             rowCopy[index + 1] !== null
           ) {
             if (element.x !== undefined && "x" in element) {
-              const size = 2 * element.x;
+              const size = basicSpan * element.x;
               const space = `${size}rem `;
-              columns += `${space}${basicSpan} `;
+              columns += `${space}${basicSpan}rem `;
               keyString = rowCopy[index + 1]?.toString() ?? "";
               rowCopy.splice(index, 1);
-              keyHtml += `<div class="keymapKey invisible" data-key=""></div>`;
-              keyHtml += `
-              <div class="keymapKey" data-key="${keyToData(keyString)}">
-              <span class="letter">${keyToData(keyString) && keyString}</span>
-              </div>`;
+              keyHtml += keyInvisible;
+              keyHtml += createHtmlKey(keyString);
             }
           } else if (isKeyProperties(element)) {
             if (element.w !== undefined && "w" in element) {
-              const size = 2 * element.w;
+              const size = basicSpan * element.w;
               const span = `${size}rem `;
-              columns += `${span}`;
+              let space = "";
+              if (element.x !== undefined && "x" in element) {
+                const size = basicSpan * element.x;
+                space = `${size}rem `;
+                keyHtml += keyInvisible;
+              }
+              columns += `${space}${span}`;
               keyString = rowCopy[index + 1]?.toString() ?? "";
               rowCopy.splice(index, 1);
-              keyHtml += `
-              <div class="keymapKey" data-key="${keyToData(keyString)}">
-                <span class="letter">${keyToData(keyString) && keyString}</span>
-              </div>`;
+              keyHtml += createHtmlKey(keyString);
               if (keyString === "spc") {
                 keyHtml = `
-                <div class="keymapKey keySpace layoutIndicator">
-                <span class="letter">${sanitizeString(layout)}</span>
+                <div style="display: flex;">
+                  <div class="keymapKey keySpace layoutIndicator">
+                    <span class="letter">${sanitizeString(layout)}</span>
+                  </div>
                 </div>`;
               }
             }
           } else {
-            columns += `${basicSpan} `;
-            keyHtml += `
-            <div class="keymapKey" data-key="${keyToData(keyString)}">
-            <span class="letter">${keyToData(keyString) && keyString}</span>
-            </div>`;
+            columns += `${basicSpan}rem `;
+            keyHtml += createHtmlKey(keyString);
             if (keyString === "spc") {
               keyHtml = `
-              <div class="keymapKey keySpace layoutIndicator">
-              <span class="letter">${sanitizeString(layout)}</span>
+              <div style="display: flex;">
+                <div class="keymapKey keySpace layoutIndicator">
+                <span class="letter">${sanitizeString(layout)}</span>
+                </div>
               </div>`;
             }
           }
