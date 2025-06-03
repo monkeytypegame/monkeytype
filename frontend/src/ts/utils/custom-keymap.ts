@@ -140,26 +140,28 @@ export function getCustomKeymapSyle(
               columns += `${space}${span}`;
               keyString = rowCopy[index + 1]?.toString() ?? "";
               rowCopy.splice(index, 1);
-              keyHtml += createHtmlKey(keyString);
               if (keyString === "spc") {
-                keyHtml = `
+                keyHtml += `
                 <div style="display: flex;">
                   <div class="keymapKey keySpace layoutIndicator">
                     <span class="letter">${sanitizeString(layout)}</span>
                   </div>
                 </div>`;
+              } else {
+                keyHtml += createHtmlKey(keyString);
               }
             }
           } else {
             columns += `${basicSpan}rem `;
-            keyHtml += createHtmlKey(keyString);
             if (keyString === "spc") {
-              keyHtml = `
+              keyHtml += `
               <div style="display: flex;">
                 <div class="keymapKey keySpace layoutIndicator">
-                <span class="letter">${sanitizeString(layout)}</span>
+                  <span class="letter">${sanitizeString(layout)}</span>
                 </div>
               </div>`;
+            } else {
+              keyHtml += createHtmlKey(keyString);
             }
           }
           return keyHtml;
