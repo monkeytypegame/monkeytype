@@ -483,7 +483,10 @@ async function resultCanGetPb(): Promise<CanGetPbObject> {
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
 
   const funboxesOk = funboxes.length === 0 || allFunboxesCanGetPb;
-  const notUsingStopOnLetter = Config.stopOnError !== "letter";
+  // allow stopOnError:letter in master difficulty since it doesn't affect gameplay
+  // (master mode fails on any error anyway)
+  const notUsingStopOnLetter =
+    Config.stopOnError !== "letter" || Config.difficulty === "master";
   const notBailedOut = !result.bailedOut;
 
   if (funboxesOk && notUsingStopOnLetter && notBailedOut) {
