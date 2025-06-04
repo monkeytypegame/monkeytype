@@ -494,7 +494,7 @@ export async function addResult(
     user.banned !== true &&
     user.lbOptOut !== true &&
     (isDevEnvironment() || (user.timeTyping ?? 0) > 7200) &&
-    !completedEvent.stopOnLetter;
+    (!completedEvent.stopOnLetter || completedEvent.difficulty === "master"); // allow stopOnLetter in master difficulty since it doesn't affect gameplay
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
   const isPremium =
