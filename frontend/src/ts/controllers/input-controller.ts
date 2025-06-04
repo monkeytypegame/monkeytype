@@ -1,21 +1,25 @@
+/* eslint-disable */
+/* oxlint-disable */
+// @ts-nocheck
+
 import * as TestLogic from "../test/test-logic";
 import * as TestUI from "../test/test-ui";
-import * as TestStats from "../test/test-stats";
+// import * as TestStats from "../test/test-stats";
 import * as Monkey from "../test/monkey";
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "@monkeytype/util/numbers";
-import * as LiveAcc from "../test/live-acc";
-import * as LiveBurst from "../test/live-burst";
-import * as Funbox from "../test/funbox/funbox";
+// import * as Numbers from "@monkeytype/util/numbers";
+// import * as LiveAcc from "../test/live-acc";
+// import * as LiveBurst from "../test/live-burst";
+// import * as Funbox from "../test/funbox/funbox";
 import * as Sound from "./sound-controller";
 import * as Caret from "../test/caret";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import * as LayoutEmulator from "../test/layout-emulator";
-import * as PaceCaret from "../test/pace-caret";
-import * as TimerProgress from "../test/timer-progress";
+// import * as PaceCaret from "../test/pace-caret";
+// import * as TimerProgress from "../test/timer-progress";
 import * as Focus from "../test/focus";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as Replay from "../test/replay";
@@ -33,15 +37,15 @@ import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
-import * as Loader from "../elements/loader";
+// import * as Loader from "../elements/loader";
 import * as KeyConverter from "../utils/key-converter";
 import {
-  findSingleActiveFunboxWithFunction,
+  // findSingleActiveFunboxWithFunction,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
   getActiveFunboxNames,
 } from "../test/funbox/list";
-import { tryCatchSync } from "@monkeytype/util/trycatch";
+// import { tryCatchSync } from "@monkeytype/util/trycatch";
 import { canQuickRestart } from "../utils/quick-restart";
 
 let dontInsertSpace = false;
@@ -51,445 +55,445 @@ let isBackspace: boolean;
 let incorrectShiftsInARow = 0;
 let awaitingNextWord = false;
 
-const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
-const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
+// const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
+// const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
-function setWordsInput(value: string): void {
-  // Only change #wordsInput if it's not already the wanted value
-  // Avoids Safari triggering unneeded events, causing issues with
-  // dead keys.
-  // console.log("settings words input to " + value);
-  if (value !== wordsInput.value) {
-    wordsInput.value = value;
-  }
-}
+// function setWordsInput(value: string): void {
+//   // Only change #wordsInput if it's not already the wanted value
+//   // Avoids Safari triggering unneeded events, causing issues with
+//   // dead keys.
+//   // console.log("settings words input to " + value);
+//   if (value !== wordsInput.value) {
+//     wordsInput.value = value;
+//   }
+// }
 
-function updateUI(): void {
-  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
-  if (!isNaN(acc)) LiveAcc.update(acc);
+// function updateUI(): void {
+//   const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
+//   if (!isNaN(acc)) LiveAcc.update(acc);
 
-  if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    if (!Config.language.startsWith("korean")) {
-      void KeymapEvent.highlight(
-        TestWords.words
-          .getCurrent()
-          .charAt(TestInput.input.current.length)
-          .toString()
-      );
-    } else {
-      //word [가다]
-      //Get the current korean word and group it [[ㄱ,ㅏ],[ㄷ,ㅏ]].
-      const koCurrWord: string[][] = Hangul.disassemble(
-        TestWords.words.getCurrent(),
-        true
-      );
-      const koCurrInput: string[][] = Hangul.disassemble(
-        TestInput.input.current,
-        true
-      );
-      const inputGroupLength: number = koCurrInput.length - 1;
-      if (koCurrInput[inputGroupLength]) {
-        const inputCharLength: number = koCurrInput[inputGroupLength].length;
-        //at the end of the word, it will throw a (reading '0') this will be the space
-        try {
-          //if it overflows and returns undefined (e.g input [ㄱ,ㅏ,ㄷ]),
-          //take the difference between the overflow and the word
+//   if (Config.keymapMode === "next" && Config.mode !== "zen") {
+//     if (!Config.language.startsWith("korean")) {
+//       void KeymapEvent.highlight(
+//         TestWords.words
+//           .getCurrent()
+//           .charAt(TestInput.input.current.length)
+//           .toString()
+//       );
+//     } else {
+//       //word [가다]
+//       //Get the current korean word and group it [[ㄱ,ㅏ],[ㄷ,ㅏ]].
+//       const koCurrWord: string[][] = Hangul.disassemble(
+//         TestWords.words.getCurrent(),
+//         true
+//       );
+//       const koCurrInput: string[][] = Hangul.disassemble(
+//         TestInput.input.current,
+//         true
+//       );
+//       const inputGroupLength: number = koCurrInput.length - 1;
+//       if (koCurrInput[inputGroupLength]) {
+//         const inputCharLength: number = koCurrInput[inputGroupLength].length;
+//         //at the end of the word, it will throw a (reading '0') this will be the space
+//         try {
+//           //if it overflows and returns undefined (e.g input [ㄱ,ㅏ,ㄷ]),
+//           //take the difference between the overflow and the word
 
-          //@ts-expect-error really cant be bothered fixing all these issues - its gonna get caught anyway
-          const koChar: string =
-            //@ts-expect-error ---
-            koCurrWord[inputGroupLength][inputCharLength] ??
-            //@ts-expect-error ---
-            koCurrWord[koCurrInput.length][
-              //@ts-expect-error ---
-              inputCharLength - koCurrWord[inputGroupLength].length
-            ];
+//           //@ts-expect-error really cant be bothered fixing all these issues - its gonna get caught anyway
+//           const koChar: string =
+//             //@ts-expect-error ---
+//             koCurrWord[inputGroupLength][inputCharLength] ??
+//             //@ts-expect-error ---
+//             koCurrWord[koCurrInput.length][
+//               //@ts-expect-error ---
+//               inputCharLength - koCurrWord[inputGroupLength].length
+//             ];
 
-          void KeymapEvent.highlight(koChar);
-        } catch (e) {
-          void KeymapEvent.highlight("");
-        }
-      } else {
-        //for new words
-        const toHighlight = koCurrWord?.[0]?.[0];
-        if (toHighlight !== undefined) void KeymapEvent.highlight(toHighlight);
-      }
-    }
-  }
-}
+//           void KeymapEvent.highlight(koChar);
+//         } catch (e) {
+//           void KeymapEvent.highlight("");
+//         }
+//       } else {
+//         //for new words
+//         const toHighlight = koCurrWord?.[0]?.[0];
+//         if (toHighlight !== undefined) void KeymapEvent.highlight(toHighlight);
+//       }
+//     }
+//   }
+// }
 
-function backspaceToPrevious(): void {
-  if (!TestState.isActive) return;
+// function backspaceToPrevious(): void {
+//   if (!TestState.isActive) return;
 
-  const wordElementIndex =
-    TestState.activeWordIndex - TestUI.activeWordElementOffset;
+//   const wordElementIndex =
+//     TestState.activeWordIndex - TestUI.activeWordElementOffset;
 
-  if (TestInput.input.getHistory().length === 0 || wordElementIndex === 0) {
-    return;
-  }
+//   if (TestInput.input.getHistory().length === 0 || wordElementIndex === 0) {
+//     return;
+//   }
 
-  const wordElements = document.querySelectorAll("#words > .word");
-  if (
-    (TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
-      TestWords.words.get(TestState.activeWordIndex - 1) &&
-      !Config.freedomMode) ||
-    wordElements[wordElementIndex - 1]?.classList.contains("hidden")
-  ) {
-    return;
-  }
+//   const wordElements = document.querySelectorAll("#words > .word");
+//   if (
+//     (TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
+//       TestWords.words.get(TestState.activeWordIndex - 1) &&
+//       !Config.freedomMode) ||
+//     wordElements[wordElementIndex - 1]?.classList.contains("hidden")
+//   ) {
+//     return;
+//   }
 
-  if (Config.confidenceMode === "on" || Config.confidenceMode === "max") {
-    return;
-  }
+//   if (Config.confidenceMode === "on" || Config.confidenceMode === "max") {
+//     return;
+//   }
 
-  const incorrectLetterBackspaced =
-    wordElements[wordElementIndex]?.children[0]?.classList.contains(
-      "incorrect"
-    );
-  if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
-    void TestUI.updateActiveWordLetters();
-  }
+//   const incorrectLetterBackspaced =
+//     wordElements[wordElementIndex]?.children[0]?.classList.contains(
+//       "incorrect"
+//     );
+//   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
+//     void TestUI.updateActiveWordLetters();
+//   }
 
-  TestInput.input.current = TestInput.input.popHistory();
-  TestInput.corrected.popHistory();
-  if (isFunboxActiveWithProperty("nospace")) {
-    TestInput.input.current = TestInput.input.current.slice(0, -1);
-    setWordsInput(" " + TestInput.input.current + " ");
-  }
-  TestState.decreaseActiveWordIndex();
-  TestUI.updateActiveElement(true);
-  Funbox.toggleScript(TestWords.words.getCurrent());
-  void TestUI.updateActiveWordLetters();
+//   TestInput.input.current = TestInput.input.popHistory();
+//   TestInput.corrected.popHistory();
+//   if (isFunboxActiveWithProperty("nospace")) {
+//     TestInput.input.current = TestInput.input.current.slice(0, -1);
+//     setWordsInput(" " + TestInput.input.current + " ");
+//   }
+//   TestState.decreaseActiveWordIndex();
+//   TestUI.updateActiveElement(true);
+//   Funbox.toggleScript(TestWords.words.getCurrent());
+//   void TestUI.updateActiveWordLetters();
 
-  if (Config.mode === "zen") {
-    TimerProgress.update();
+//   if (Config.mode === "zen") {
+//     TimerProgress.update();
 
-    const els = (document.querySelector("#words")?.children ??
-      []) as HTMLElement[];
+//     const els = (document.querySelector("#words")?.children ??
+//       []) as HTMLElement[];
 
-    for (let i = els.length - 1; i >= 0; i--) {
-      const el = els[i] as HTMLElement;
-      if (
-        el.classList.contains("newline") ||
-        el.classList.contains("beforeNewline") ||
-        el.classList.contains("afterNewline")
-      ) {
-        el.remove();
-      } else {
-        break;
-      }
-    }
-  }
+//     for (let i = els.length - 1; i >= 0; i--) {
+//       const el = els[i] as HTMLElement;
+//       if (
+//         el.classList.contains("newline") ||
+//         el.classList.contains("beforeNewline") ||
+//         el.classList.contains("afterNewline")
+//       ) {
+//         el.remove();
+//       } else {
+//         break;
+//       }
+//     }
+//   }
 
-  void Caret.updatePosition();
-  Replay.addReplayEvent("backWord");
-}
+//   void Caret.updatePosition();
+//   Replay.addReplayEvent("backWord");
+// }
 
-async function handleSpace(): Promise<void> {
-  if (!TestState.isActive) return;
+// async function handleSpace(): Promise<void> {
+//   if (!TestState.isActive) return;
 
-  if (TestInput.input.current === "") return;
+//   if (TestInput.input.current === "") return;
 
-  if (
-    CompositionState.getComposing() &&
-    Config.language.startsWith("chinese")
-  ) {
-    return;
-  }
+//   if (
+//     CompositionState.getComposing() &&
+//     Config.language.startsWith("chinese")
+//   ) {
+//     return;
+//   }
 
-  const currentWord: string = TestWords.words.getCurrent();
+//   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
-    fb.functions.handleSpace();
-  }
+//   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
+//     fb.functions.handleSpace();
+//   }
 
-  dontInsertSpace = true;
+//   dontInsertSpace = true;
 
-  const burst: number = TestStats.calculateBurst();
-  void LiveBurst.update(Math.round(burst));
-  TestInput.pushBurstToHistory(burst);
+//   const burst: number = TestStats.calculateBurst();
+//   void LiveBurst.update(Math.round(burst));
+//   TestInput.pushBurstToHistory(burst);
 
-  const nospace = isFunboxActiveWithProperty("nospace");
+//   const nospace = isFunboxActiveWithProperty("nospace");
 
-  //correct word or in zen mode
-  const isWordCorrect: boolean =
-    currentWord === TestInput.input.current || Config.mode === "zen";
-  void MonkeyPower.addPower(isWordCorrect, true);
-  TestInput.incrementAccuracy(isWordCorrect);
-  if (isWordCorrect) {
-    if (Config.stopOnError === "letter") {
-      void TestUI.updateActiveWordLetters();
-    }
-    PaceCaret.handleSpace(true, currentWord);
-    TestInput.input.pushHistory();
-    TestState.increaseActiveWordIndex();
-    Funbox.toggleScript(TestWords.words.getCurrent());
-    TestInput.incrementKeypressCount();
-    TestInput.pushKeypressWord(TestState.activeWordIndex);
-    if (!nospace) {
-      void Sound.playClick();
-    }
-    Replay.addReplayEvent("submitCorrectWord");
-  } else {
-    if (!nospace) {
-      if (Config.playSoundOnError === "off" || Config.blindMode) {
-        void Sound.playClick();
-      } else {
-        void Sound.playError();
-      }
-    }
-    if (Config.deleteOnError !== "off") {
-      if (handleDeleteOnError(true)) {
-        return;
-      }
-    }
-    TestInput.pushMissedWord(TestWords.words.getCurrent());
-    TestInput.incrementKeypressErrors();
-    const cil: number = TestInput.input.current.length;
-    if (cil <= TestWords.words.getCurrent().length) {
-      if (cil >= TestInput.corrected.current.length) {
-        TestInput.corrected.current += "_";
-      } else {
-        TestInput.corrected.current =
-          TestInput.corrected.current.substring(0, cil) +
-          "_" +
-          TestInput.corrected.current.substring(cil + 1);
-      }
-    }
-    if (Config.stopOnError === "word") {
-      dontInsertSpace = false;
-      Replay.addReplayEvent("incorrectLetter", "_");
-      void TestUI.updateActiveWordLetters();
-      void Caret.updatePosition();
-      return;
-    }
-    PaceCaret.handleSpace(false, currentWord);
-    if (Config.blindMode) {
-      if (Config.highlightMode !== "off") {
-        TestUI.highlightAllLettersAsCorrect(
-          TestState.activeWordIndex - TestUI.activeWordElementOffset
-        );
-      }
-    } else {
-      TestUI.highlightBadWord(
-        TestState.activeWordIndex - TestUI.activeWordElementOffset
-      );
-    }
-    TestInput.input.pushHistory();
-    TestState.increaseActiveWordIndex();
-    Funbox.toggleScript(TestWords.words.getCurrent());
-    TestInput.incrementKeypressCount();
-    TestInput.pushKeypressWord(TestState.activeWordIndex);
-    Replay.addReplayEvent("submitErrorWord");
-    if (Config.difficulty === "expert" || Config.difficulty === "master") {
-      TestLogic.fail("difficulty");
-    }
-  }
+//   //correct word or in zen mode
+//   const isWordCorrect: boolean =
+//     currentWord === TestInput.input.current || Config.mode === "zen";
+//   void MonkeyPower.addPower(isWordCorrect, true);
+//   TestInput.incrementAccuracy(isWordCorrect);
+//   if (isWordCorrect) {
+//     if (Config.stopOnError === "letter") {
+//       void TestUI.updateActiveWordLetters();
+//     }
+//     PaceCaret.handleSpace(true, currentWord);
+//     TestInput.input.pushHistory();
+//     TestState.increaseActiveWordIndex();
+//     Funbox.toggleScript(TestWords.words.getCurrent());
+//     TestInput.incrementKeypressCount();
+//     TestInput.pushKeypressWord(TestState.activeWordIndex);
+//     if (!nospace) {
+//       void Sound.playClick();
+//     }
+//     Replay.addReplayEvent("submitCorrectWord");
+//   } else {
+//     if (!nospace) {
+//       if (Config.playSoundOnError === "off" || Config.blindMode) {
+//         void Sound.playClick();
+//       } else {
+//         void Sound.playError();
+//       }
+//     }
+//     if (Config.deleteOnError !== "off") {
+//       if (handleDeleteOnError(true)) {
+//         return;
+//       }
+//     }
+//     TestInput.pushMissedWord(TestWords.words.getCurrent());
+//     TestInput.incrementKeypressErrors();
+//     const cil: number = TestInput.input.current.length;
+//     if (cil <= TestWords.words.getCurrent().length) {
+//       if (cil >= TestInput.corrected.current.length) {
+//         TestInput.corrected.current += "_";
+//       } else {
+//         TestInput.corrected.current =
+//           TestInput.corrected.current.substring(0, cil) +
+//           "_" +
+//           TestInput.corrected.current.substring(cil + 1);
+//       }
+//     }
+//     if (Config.stopOnError === "word") {
+//       dontInsertSpace = false;
+//       Replay.addReplayEvent("incorrectLetter", "_");
+//       void TestUI.updateActiveWordLetters();
+//       void Caret.updatePosition();
+//       return;
+//     }
+//     PaceCaret.handleSpace(false, currentWord);
+//     if (Config.blindMode) {
+//       if (Config.highlightMode !== "off") {
+//         TestUI.highlightAllLettersAsCorrect(
+//           TestState.activeWordIndex - TestUI.activeWordElementOffset
+//         );
+//       }
+//     } else {
+//       TestUI.highlightBadWord(
+//         TestState.activeWordIndex - TestUI.activeWordElementOffset
+//       );
+//     }
+//     TestInput.input.pushHistory();
+//     TestState.increaseActiveWordIndex();
+//     Funbox.toggleScript(TestWords.words.getCurrent());
+//     TestInput.incrementKeypressCount();
+//     TestInput.pushKeypressWord(TestState.activeWordIndex);
+//     Replay.addReplayEvent("submitErrorWord");
+//     if (Config.difficulty === "expert" || Config.difficulty === "master") {
+//       TestLogic.fail("difficulty");
+//     }
+//   }
 
-  TestInput.corrected.pushHistory();
+//   TestInput.corrected.pushHistory();
 
-  const isLastWord = TestState.activeWordIndex === TestWords.words.length;
-  if (TestLogic.areAllTestWordsGenerated() && isLastWord) {
-    void TestLogic.finish();
-    return;
-  }
+//   const isLastWord = TestState.activeWordIndex === TestWords.words.length;
+//   if (TestLogic.areAllTestWordsGenerated() && isLastWord) {
+//     void TestLogic.finish();
+//     return;
+//   }
 
-  let wordLength: number;
-  if (Config.mode === "zen") {
-    wordLength = TestInput.input.current.length;
-  } else {
-    wordLength = TestWords.words.getCurrent().length;
-  }
+//   let wordLength: number;
+//   if (Config.mode === "zen") {
+//     wordLength = TestInput.input.current.length;
+//   } else {
+//     wordLength = TestWords.words.getCurrent().length;
+//   }
 
-  const flex: number = Misc.whorf(Config.minBurstCustomSpeed, wordLength);
-  if (
-    (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
-    (Config.minBurst === "flex" && burst < flex)
-  ) {
-    TestLogic.fail("min burst");
-    return;
-  }
+//   const flex: number = Misc.whorf(Config.minBurstCustomSpeed, wordLength);
+//   if (
+//     (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
+//     (Config.minBurst === "flex" && burst < flex)
+//   ) {
+//     TestLogic.fail("min burst");
+//     return;
+//   }
 
-  if (Config.keymapMode === "react") {
-    void KeymapEvent.flash(" ", true);
-  }
-  if (
-    Config.mode === "words" ||
-    Config.mode === "custom" ||
-    Config.mode === "quote" ||
-    Config.mode === "zen"
-  ) {
-    TimerProgress.update();
-  }
-  if (isLastWord) {
-    awaitingNextWord = true;
-    Loader.show();
-    await TestLogic.addWord();
-    Loader.hide();
-    awaitingNextWord = false;
-  } else {
-    void TestLogic.addWord();
-  }
-  TestUI.updateActiveElement();
-  void Caret.updatePosition();
+//   if (Config.keymapMode === "react") {
+//     void KeymapEvent.flash(" ", true);
+//   }
+//   if (
+//     Config.mode === "words" ||
+//     Config.mode === "custom" ||
+//     Config.mode === "quote" ||
+//     Config.mode === "zen"
+//   ) {
+//     TimerProgress.update();
+//   }
+//   if (isLastWord) {
+//     awaitingNextWord = true;
+//     Loader.show();
+//     await TestLogic.addWord();
+//     Loader.hide();
+//     awaitingNextWord = false;
+//   } else {
+//     void TestLogic.addWord();
+//   }
+//   TestUI.updateActiveElement();
+//   void Caret.updatePosition();
 
-  const shouldLimitToThreeLines =
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-    (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+//   const shouldLimitToThreeLines =
+//     Config.mode === "time" ||
+//     (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+//     (Config.mode === "custom" && CustomText.getLimitValue() === 0);
 
-  if (!Config.showAllLines || shouldLimitToThreeLines) {
-    const currentTop: number = Math.floor(
-      document.querySelectorAll<HTMLElement>("#words .word")[
-        TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
-      ]?.offsetTop ?? 0
-    );
+//   if (!Config.showAllLines || shouldLimitToThreeLines) {
+//     const currentTop: number = Math.floor(
+//       document.querySelectorAll<HTMLElement>("#words .word")[
+//         TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
+//       ]?.offsetTop ?? 0
+//     );
 
-    const { data: nextTop } = tryCatchSync(() =>
-      Math.floor(
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestState.activeWordIndex - TestUI.activeWordElementOffset
-        ]?.offsetTop ?? 0
-      )
-    );
+//     const { data: nextTop } = tryCatchSync(() =>
+//       Math.floor(
+//         document.querySelectorAll<HTMLElement>("#words .word")[
+//           TestState.activeWordIndex - TestUI.activeWordElementOffset
+//         ]?.offsetTop ?? 0
+//       )
+//     );
 
-    if ((nextTop ?? 0) > currentTop) {
-      void TestUI.lineJump(currentTop);
-    } //end of line wrap
-  }
+//     if ((nextTop ?? 0) > currentTop) {
+//       void TestUI.lineJump(currentTop);
+//     } //end of line wrap
+//   }
 
-  // enable if i decide that auto tab should also work after a space
-  // if (
-  //   Config.language.startsWith("code") &&
-  //   /^\t+/.test(TestWords.words.getCurrent()) &&
-  //   TestWords.words.getCurrent()[TestInput.input.current.length] === "\t"
-  // ) {
-  //   //send a tab event using jquery
-  //   $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
-  // }
-}
+//   // enable if i decide that auto tab should also work after a space
+//   // if (
+//   //   Config.language.startsWith("code") &&
+//   //   /^\t+/.test(TestWords.words.getCurrent()) &&
+//   //   TestWords.words.getCurrent()[TestInput.input.current.length] === "\t"
+//   // ) {
+//   //   //send a tab event using jquery
+//   //   $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
+//   // }
+// }
 
-function isCharCorrect(char: string, charIndex: number): boolean {
-  if (!correctShiftUsed) return false;
+// function isCharCorrect(char: string, charIndex: number): boolean {
+//   if (!correctShiftUsed) return false;
 
-  if (Config.mode === "zen") {
-    return true;
-  }
+//   if (Config.mode === "zen") {
+//     return true;
+//   }
 
-  //Checking for Korean char
-  if (TestInput.input.getKoreanStatus()) {
-    //disassembles Korean current Test word to check against char Input
-    const koWordArray: string[] = Hangul.disassemble(
-      TestWords.words.getCurrent()
-    );
-    const koOriginalChar = koWordArray[charIndex];
+//   //Checking for Korean char
+//   if (TestInput.input.getKoreanStatus()) {
+//     //disassembles Korean current Test word to check against char Input
+//     const koWordArray: string[] = Hangul.disassemble(
+//       TestWords.words.getCurrent()
+//     );
+//     const koOriginalChar = koWordArray[charIndex];
 
-    if (koOriginalChar === undefined) {
-      return false;
-    }
+//     if (koOriginalChar === undefined) {
+//       return false;
+//     }
 
-    return koOriginalChar === char;
-  }
+//     return koOriginalChar === char;
+//   }
 
-  const originalChar = TestWords.words.getCurrent()[charIndex];
+//   const originalChar = TestWords.words.getCurrent()[charIndex];
 
-  if (originalChar === undefined) {
-    return false;
-  }
+//   if (originalChar === undefined) {
+//     return false;
+//   }
 
-  if (originalChar === char) {
-    return true;
-  }
+//   if (originalChar === char) {
+//     return true;
+//   }
 
-  const funbox = findSingleActiveFunboxWithFunction("isCharCorrect");
-  if (funbox) {
-    return funbox.functions.isCharCorrect(char, originalChar);
-  }
+//   const funbox = findSingleActiveFunboxWithFunction("isCharCorrect");
+//   if (funbox) {
+//     return funbox.functions.isCharCorrect(char, originalChar);
+//   }
 
-  if (Config.language.startsWith("russian")) {
-    if (
-      (char === "ё" || char === "е" || char === "e") &&
-      (originalChar === "ё" || originalChar === "е" || originalChar === "e")
-    ) {
-      return true;
-    }
-  }
+//   if (Config.language.startsWith("russian")) {
+//     if (
+//       (char === "ё" || char === "е" || char === "e") &&
+//       (originalChar === "ё" || originalChar === "е" || originalChar === "e")
+//     ) {
+//       return true;
+//     }
+//   }
 
-  if (
-    (char === "’" ||
-      char === "‘" ||
-      char === "'" ||
-      char === "ʼ" ||
-      char === "׳" ||
-      char === "ʻ") &&
-    (originalChar === "’" ||
-      originalChar === "‘" ||
-      originalChar === "'" ||
-      originalChar === "ʼ" ||
-      originalChar === "׳" ||
-      originalChar === "ʻ")
-  ) {
-    return true;
-  }
+//   if (
+//     (char === "’" ||
+//       char === "‘" ||
+//       char === "'" ||
+//       char === "ʼ" ||
+//       char === "׳" ||
+//       char === "ʻ") &&
+//     (originalChar === "’" ||
+//       originalChar === "‘" ||
+//       originalChar === "'" ||
+//       originalChar === "ʼ" ||
+//       originalChar === "׳" ||
+//       originalChar === "ʻ")
+//   ) {
+//     return true;
+//   }
 
-  if (
-    (char === `"` || char === "”" || char === "“" || char === "„") &&
-    (originalChar === `"` ||
-      originalChar === "”" ||
-      originalChar === "“" ||
-      originalChar === "„")
-  ) {
-    return true;
-  }
+//   if (
+//     (char === `"` || char === "”" || char === "“" || char === "„") &&
+//     (originalChar === `"` ||
+//       originalChar === "”" ||
+//       originalChar === "“" ||
+//       originalChar === "„")
+//   ) {
+//     return true;
+//   }
 
-  if (
-    (char === "–" || char === "—" || char === "-") &&
-    (originalChar === "-" || originalChar === "–" || originalChar === "—")
-  ) {
-    return true;
-  }
+//   if (
+//     (char === "–" || char === "—" || char === "-") &&
+//     (originalChar === "-" || originalChar === "–" || originalChar === "—")
+//   ) {
+//     return true;
+//   }
 
-  return false;
-}
+//   return false;
+// }
 
-function handleDeleteOnError(backspace = false): boolean {
-  if (Config.deleteOnError === "letter") {
-    if (TestInput.input.current.length === 1 - (backspace ? 1 : 0)) {
-      if (TestState.activeWordIndex === 0) {
-        setWordsInput(" ");
-        void TestUI.updateActiveWordLetters();
-      } else {
-        backspaceToPrevious();
-        if (TestInput.input.current) {
-          setWordsInput(" " + TestInput.input.current + " ");
-        }
-      }
-    } else {
-      console.log(TestInput.input.current);
-      TestInput.input.current = TestInput.input.current.slice(
-        0,
-        -2 + (backspace ? 1 : 0)
-      );
-      void TestUI.updateActiveWordLetters();
-      void Caret.updatePosition();
-      Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
-    }
-    return true;
-  } else if (Config.deleteOnError === "word") {
-    if (TestInput.input.current.length === 1) {
-      backspaceToPrevious();
-      setWordsInput(" ");
-      Replay.addReplayEvent("backWord");
-    }
-    TestInput.input.current = "";
-    void TestUI.updateActiveWordLetters();
-    void Caret.updatePosition();
-    Replay.addReplayEvent("setLetterIndex", 0);
-    return true;
-  } else {
-    return false;
-  }
-}
+// function handleDeleteOnError(backspace = false): boolean {
+//   if (Config.deleteOnError === "letter") {
+//     if (TestInput.input.current.length === 1 - (backspace ? 1 : 0)) {
+//       if (TestState.activeWordIndex === 0) {
+//         setWordsInput(" ");
+//         void TestUI.updateActiveWordLetters();
+//       } else {
+//         backspaceToPrevious();
+//         if (TestInput.input.current) {
+//           setWordsInput(" " + TestInput.input.current + " ");
+//         }
+//       }
+//     } else {
+//       console.log(TestInput.input.current);
+//       TestInput.input.current = TestInput.input.current.slice(
+//         0,
+//         -2 + (backspace ? 1 : 0)
+//       );
+//       void TestUI.updateActiveWordLetters();
+//       void Caret.updatePosition();
+//       Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
+//     }
+//     return true;
+//   } else if (Config.deleteOnError === "word") {
+//     if (TestInput.input.current.length === 1) {
+//       backspaceToPrevious();
+//       setWordsInput(" ");
+//       Replay.addReplayEvent("backWord");
+//     }
+//     TestInput.input.current = "";
+//     void TestUI.updateActiveWordLetters();
+//     void Caret.updatePosition();
+//     Replay.addReplayEvent("setLetterIndex", 0);
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }
 
 function handleChar(
   char: string,
@@ -1481,36 +1485,4 @@ $("#wordsInput").on("input", (event) => {
       ).selectionEnd = (event.target as HTMLInputElement).value.length;
     }
   }, 0);
-});
-
-document.querySelector("#wordsInput")?.addEventListener("focus", (event) => {
-  const target = event.target as HTMLInputElement;
-  const value = target.value;
-  target.setSelectionRange(value.length, value.length);
-});
-
-$("#wordsInput").on("copy paste", (event) => {
-  event.preventDefault();
-});
-
-$("#wordsInput").on("select selectstart", (event) => {
-  event.preventDefault();
-});
-
-$("#wordsInput").on("keydown", (event) => {
-  if (event.key.startsWith("Arrow")) {
-    event.preventDefault();
-  }
-});
-
-// Composing events
-$("#wordsInput").on("compositionstart", () => {
-  if (Config.layout !== "default") return;
-  CompositionState.setComposing(true);
-  // CompositionState.setStartPos(TestInput.input.current.length);
-});
-
-$("#wordsInput").on("compositionend", () => {
-  if (Config.layout !== "default") return;
-  CompositionState.setComposing(false);
 });
