@@ -240,18 +240,19 @@ type FailOrFinishParams = {
   correctInsert: boolean;
   inputType: SupportedInputType;
   dataStoppedByStopOnLetter: string | null;
+  willGoToNextWord: boolean;
 };
 
 function failOrFinish({
-  data,
   correctInsert,
   dataStoppedByStopOnLetter,
+  willGoToNextWord,
 }: FailOrFinishParams): void {
   const input = TestInput.input.current + (dataStoppedByStopOnLetter ?? "");
 
   const shouldFailDueToExpert =
     !correctInsert &&
-    data === " " &&
+    willGoToNextWord &&
     Config.difficulty === "expert" &&
     input.length > 0;
   const shouldFailDueToMaster =
@@ -271,7 +272,7 @@ function failOrFinish({
       Config.quickEnd &&
       currentWord.length === TestInput.input.current.length &&
       Config.stopOnError === "off";
-    const shouldSpaceEnd = data === " " && Config.stopOnError === "off";
+    const shouldSpaceEnd = willGoToNextWord && Config.stopOnError === "off";
 
     if (
       lastWord &&
@@ -371,6 +372,15 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   return preventDefault;
 }
 
+function shouldInsertSpaceCharacter(correct: boolean): boolean {
+  const stopOnErrorWordAndIncorrect =
+    Config.stopOnError === "word" && !correct && Config.difficulty === "normal";
+  const strictSpace =
+    TestInput.input.current.length === 0 &&
+    (Config.strictSpace || Config.difficulty !== "normal");
+  return stopOnErrorWordAndIncorrect || strictSpace;
+}
+
 async function onInsertText({
   inputType,
   data,
@@ -396,8 +406,7 @@ async function onInsertText({
     TestInput.setBurstStart(now);
   }
 
-  const shouldInsertSpace =
-    data === " " && Config.stopOnError === "word" && !correct;
+  const shouldInsertSpace = shouldInsertSpaceCharacter(correct);
   const charIsNotSpace = data !== " ";
   if (charIsNotSpace || shouldInsertSpace) {
     setTestInputToDOMValue(data === "\n");
@@ -459,15 +468,6 @@ async function onInsertText({
     replaceLastInputValueChar("");
   }
 
-  if (!CompositionState.getComposing()) {
-    failOrFinish({
-      data: data ?? "",
-      correctInsert: correct,
-      dataStoppedByStopOnLetter,
-      inputType: "insertText",
-    });
-  }
-
   TestUI.afterTestTextInput(correct, visualInputOverride);
 
   // going to next word
@@ -476,7 +476,7 @@ async function onInsertText({
   const noSpaceForce =
     nospace &&
     TestInput.input.current.length === TestWords.words.getCurrent().length;
-  const shouldMoveToNextWord =
+  const spaceOrNewLine =
     (data === " " && TestInput.input.current.length > 0) ||
     (data === "\n" && TestInput.input.current.length > 0) ||
     noSpaceForce;
@@ -485,8 +485,23 @@ async function onInsertText({
   // like accuracy, keypress errors, and missed words
   const stopOnErrorBlock =
     (Config.stopOnError === "word" || Config.stopOnError === "letter") &&
+    Config.difficulty === "normal" &&
     !correct;
-  if (!stopOnErrorBlock && shouldMoveToNextWord) {
+
+  const shouldGoToNextWord =
+    !stopOnErrorBlock && spaceOrNewLine && !shouldInsertSpace;
+
+  if (!CompositionState.getComposing()) {
+    failOrFinish({
+      data: data ?? "",
+      correctInsert: correct,
+      dataStoppedByStopOnLetter,
+      inputType: "insertText",
+      willGoToNextWord: shouldGoToNextWord,
+    });
+  }
+
+  if (shouldGoToNextWord) {
     await goToNextWord({
       correctInsert: correct,
     });
