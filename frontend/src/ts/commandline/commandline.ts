@@ -763,8 +763,18 @@ const modal = new AnimatedModal({
 
     const suggestions = document.querySelector(".suggestions") as HTMLElement;
     let lastHover: HTMLElement | undefined;
+    let mouseEntered = false;
+
+    suggestions.addEventListener("mouseenter", () => {
+      mouseEntered = true;
+      mouseMode = true;
+    });
 
     suggestions.addEventListener("mousemove", async (e) => {
+      if (!mouseEntered) {
+        mouseEntered = true;
+        mouseMode = true;
+      }
       const target = e.target as HTMLElement | null;
       if (target === lastHover) return;
 
