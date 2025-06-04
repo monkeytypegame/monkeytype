@@ -8,6 +8,8 @@ import { dataKeys as keyToDataObject } from "../constants/data-keys";
 import { sanitizeString } from "@monkeytype/util/strings";
 import { parseWithSchema } from "@monkeytype/util/json";
 
+const basicSpan = 4;
+
 function keyToData(key: string): string {
   return (key && keyToDataObject[key]) ?? "";
 }
@@ -76,12 +78,43 @@ export function keymapToString(keymap: KeymapCustom): string {
   }
 }
 
-function createHtmlKey(keyString: string): string {
-  return `<div style="display: flex;">
-      <div class="keymapKey" data-key="${keyToData(keyString)}">
-        <span class="letter">${keyToData(keyString) && keyString}</span>
-      </div>
-    </div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
+function createHtmlKey(
+  keyString: string,
+  position: number,
+  size: number,
+  span: number
+): string {
+  return `<div class="keymapKey" style="grid-column: ${position} / span ${
+    size * basicSpan
+  }; grid-row: ${span + 1};" data-key="${keyToData(keyString)}">
+  <span class="letter">${keyToData(keyString) && keyString}</span>
+  </div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
+}
+
+function createInvisibleKey(
+  position: number,
+  size: number,
+  span: number
+): string {
+  return `<div class="keymapKey invisible" style="grid-column: ${position} / span ${
+    size * basicSpan
+  }; grid-row: ${span + 1};" data-key=""></div>`.replace(
+    /(\r\n|\r|\n|\s{2,})/g,
+    ""
+  );
+}
+
+function createSpaceKey(
+  layout: Layout,
+  position: number,
+  size: number,
+  span: number
+): string {
+  return `<div class="keymapKey keySpace layoutIndicator" style="grid-column: ${position} / span ${
+    size * basicSpan
+  }; grid-row: ${span + 1};">
+    <span class="letter">${sanitizeString(layout)}</span>
+  </div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
 }
 
 export function getCustomKeymapSyle(
@@ -91,86 +124,65 @@ export function getCustomKeymapSyle(
   const keymapCopy = [...keymapStyle];
 
   const keymapHtml = keymapCopy.map(
-    (row: (KeyProperties | string)[], index: number) => {
-      let columns = 'style="grid-template-columns: ';
+    (row: (KeyProperties | string)[], currentRow: number) => {
       const rowCopy = [...row];
+      let currentColumn = 1;
       const rowHtml = rowCopy.map(
         (element: KeyProperties | string, index: number) => {
           let keyHtml: string = "",
             keyString: string =
               typeof element === "string"
                 ? sanitizeString(element).toLowerCase()
-                : "";
-          const keyInvisible = `
-            <div style="display: flex;">
-              <div class="keymapKey invisible" data-key=""></div>  
-            </div>`,
-            basicSpan = 2.25;
+                : "",
+            currentSize = 1;
 
-          if (isOnlyInvisibleKey(element) && rowCopy[index + 1] === undefined) {
+          if (isOnlyInvisibleKey(element)) {
             if (element.x !== undefined && "x" in element) {
-              const size = basicSpan * element.x;
-              const space = `${size}rem `;
-              columns += `${space}`;
-              keyHtml += keyInvisible;
-            }
-          } else if (
-            isOnlyInvisibleKey(element) &&
-            rowCopy[index + 1] !== null
-          ) {
-            if (element.x !== undefined && "x" in element) {
-              const size = basicSpan * element.x;
-              const space = `${size}rem `;
-              columns += `${space}${basicSpan}rem `;
-              keyString = rowCopy[index + 1]?.toString() ?? "";
-              rowCopy.splice(index, 1);
-              keyHtml += keyInvisible;
-              keyHtml += createHtmlKey(keyString);
+              currentSize = element.x;
+              keyHtml += createInvisibleKey(index, currentSize, currentRow);
             }
           } else if (isKeyProperties(element)) {
             if (element.w !== undefined && "w" in element) {
-              const size = basicSpan * element.w;
-              const span = `${size}rem `;
-              let space = "";
+              currentSize = element.w;
               if (element.x !== undefined && "x" in element) {
-                const size = basicSpan * element.x;
-                space = `${size}rem `;
-                keyHtml += keyInvisible;
+                const size = element.x;
+                keyHtml += createInvisibleKey(currentColumn, size, currentRow);
+                currentColumn += size * basicSpan;
               }
-              columns += `${space}${span}`;
+              // TODO add rowspan
+              // if (element.h !== undefined && "h" in element) {
+              //   rowSpan = element.h;
+              // }
               keyString = rowCopy[index + 1]?.toString() ?? "";
               rowCopy.splice(index, 1);
               if (keyString === "spc") {
-                keyHtml += `
-                <div style="display: flex;">
-                  <div class="keymapKey keySpace layoutIndicator">
-                    <span class="letter">${sanitizeString(layout)}</span>
-                  </div>
-                </div>`;
+                keyHtml += createSpaceKey(
+                  layout,
+                  currentColumn,
+                  currentSize,
+                  currentRow
+                );
               } else {
-                keyHtml += createHtmlKey(keyString);
+                keyHtml += createHtmlKey(
+                  keyString,
+                  currentColumn,
+                  currentSize,
+                  currentRow
+                );
               }
             }
           } else {
-            columns += `${basicSpan}rem `;
-            if (keyString === "spc") {
-              keyHtml += `
-              <div style="display: flex;">
-                <div class="keymapKey keySpace layoutIndicator">
-                  <span class="letter">${sanitizeString(layout)}</span>
-                </div>
-              </div>`;
-            } else {
-              keyHtml += createHtmlKey(keyString);
-            }
+            keyHtml += createHtmlKey(keyString, currentColumn, 1, currentRow);
           }
+          currentColumn += currentSize * basicSpan;
           return keyHtml;
         }
       );
-      return `<div class="row r${index + 1}" ${columns}">${rowHtml.join(
-        ""
-      )}</div>`;
+      return rowHtml.join("");
     }
   );
-  return keymapHtml.join("");
+  // TODO modify this to adapt every keyboard
+  return `<div style="display: grid; grid-template-columns: repeat(52, 0.5rem);">${keymapHtml.join(
+    ""
+  )}</div>`;
 }
