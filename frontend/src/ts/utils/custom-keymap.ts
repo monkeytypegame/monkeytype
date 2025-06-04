@@ -79,7 +79,7 @@ export function keymapToString(keymap: KeymapCustom): string {
 function createHtmlKey(keyString: string): string {
   return `<div style="display: flex;">
       <div class="keymapKey" data-key="${keyToData(keyString)}">
-        <span class="letter">${sanitizeString(keyString)}</span>
+        <span class="letter">${keyToData(keyString) && keyString}</span>
       </div>
     </div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
 }
