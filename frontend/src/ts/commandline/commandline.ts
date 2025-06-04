@@ -595,13 +595,16 @@ async function runActiveCommand(): Promise<void> {
 
 let lastActiveIndex: string | undefined;
 function keepActiveCommandInView(): void {
-  if (mouseMode) return;
-
   const active: HTMLElement | null = document.querySelector(
     ".suggestions .command.active"
   );
 
   if (active === null || active.dataset["index"] === lastActiveIndex) {
+    return;
+  }
+
+  // check both mouseMode and hover state
+  if (mouseMode || active.matches(":hover")) {
     return;
   }
 
