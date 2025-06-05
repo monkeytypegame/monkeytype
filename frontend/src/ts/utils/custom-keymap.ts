@@ -8,7 +8,8 @@ import { dataKeys as keyToDataObject } from "../constants/data-keys";
 import { sanitizeString } from "@monkeytype/util/strings";
 import { parseWithSchema } from "@monkeytype/util/json";
 
-const spanMultiplier = 4;
+const columnMultiplier = 8;
+const rowMultiplier = 8;
 const basicSpan = 2;
 const margin = 0.125;
 
@@ -85,33 +86,22 @@ function createHtmlKey(
   column: number,
   size: number,
   row: number,
-  rowSpan: number
+  rowSpan: number,
+  isInvisible?: boolean
 ): string {
-  return `<div style="display: flex; grid-column: ${column} / span ${
-    size * spanMultiplier
-  }; grid-row: ${
-    row + 1
-  } / span ${rowSpan};"><div class="keymapKey" data-key="${keyToData(
-    keyString
-  )}">
-  <span class="letter">${keyToData(keyString) && keyString}</span>
-  </div></div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
-}
+  const dataKey = !isInvisible ? keyToData(keyString) : "";
+  const span = !isInvisible
+    ? `<span class="letter">${keyToData(keyString) && keyString}</span>`
+    : "";
 
-function createInvisibleKey(
-  column: number,
-  size: number,
-  row: number,
-  rowSpan: number
-): string {
   return `<div style="display: flex; grid-column: ${column} / span ${
-    size * spanMultiplier
-  }; grid-row: ${
-    row + 1
-  } / span ${rowSpan};"><div class="keymapKey invisible" data-key=""></div></div>`.replace(
-    /(\r\n|\r|\n|\s{2,})/g,
-    ""
-  );
+    size * columnMultiplier
+  }; grid-row: ${row} / span ${
+    rowSpan * rowMultiplier
+  };"><div class="keymapKey ${
+    isInvisible ? "invisible" : ""
+  }" data-key="${dataKey}">${span}
+  </div></div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
 }
 
 function createSpaceKey(
@@ -122,10 +112,10 @@ function createSpaceKey(
   rowSpan: number
 ): string {
   return `<div style="display: flex; grid-column: ${column} / span ${
-    size * spanMultiplier
-  }; grid-row: ${
-    row + 1
-  } / span ${rowSpan};""><div class="keymapKey keySpace layoutIndicator">
+    size * columnMultiplier
+  }; grid-row: ${row} / span ${
+    rowSpan * rowMultiplier
+  };""><div class="keymapKey keySpace layoutIndicator">
     <span class="letter">${sanitizeString(layout)}</span>
   </div></div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
 }
@@ -135,123 +125,98 @@ export function getCustomKeymapSyle(
   layout: Layout
 ): string {
   const keymapCopy = [...keymapStyle];
-  let maxColumn = 1;
-  const keymapHtml = keymapCopy.map(
-    (row: (KeyProperties | string)[], currentRow: number) => {
-      const rowCopy = [...row];
-      let currentColumn = 1;
-      const rowHtml = rowCopy.map(
-        (element: KeyProperties | string, index: number) => {
-          let keyHtml: string = "",
-            keyString: string =
-              typeof element === "string"
-                ? sanitizeString(element).toLowerCase()
-                : "",
-            currentSize = 1,
-            rowSpan = 1;
+  let maxColumn = 1,
+    maxRow = 1,
+    currentRow = 1;
+  const keymapHtml = keymapCopy.map((row: (KeyProperties | string)[]) => {
+    const rowCopy = [...row];
+    let currentColumn = 1,
+      rowSpan = 1;
+    const rowHtml = rowCopy.map(
+      (element: KeyProperties | string, index: number) => {
+        let keyHtml: string = "",
+          keyString: string =
+            typeof element === "string"
+              ? sanitizeString(element).toLowerCase()
+              : "",
+          columnSpan = 1;
 
-          if (isOnlyInvisibleKey(element)) {
-            if (element.x !== undefined && "x" in element) {
-              currentSize = element.x;
-              keyHtml += createInvisibleKey(
-                currentColumn,
-                currentSize,
-                currentRow,
-                rowSpan
-              );
-            }
-          } else if (isKeyProperties(element)) {
-            if (element.w !== undefined && "w" in element) {
-              currentSize = element.w;
-              if (element.x !== undefined && "x" in element) {
-                const size = element.x;
-                keyHtml += createInvisibleKey(
-                  currentColumn,
-                  size,
-                  currentRow,
-                  rowSpan
-                );
-                currentColumn += size * spanMultiplier;
-              }
-
-              if (element.h !== undefined && "h" in element) {
-                rowSpan = element.h;
-              }
-
-              keyString = rowCopy[index + 1]?.toString() ?? "";
-              rowCopy.splice(index, 1);
-              if (keyString === "spc") {
-                keyHtml += createSpaceKey(
-                  layout,
-                  currentColumn,
-                  currentSize,
-                  currentRow,
-                  rowSpan
-                );
-              } else {
-                keyHtml += createHtmlKey(
-                  keyString,
-                  currentColumn,
-                  currentSize,
-                  currentRow,
-                  rowSpan
-                );
-              }
-            } else if (element.h !== undefined && "h" in element) {
-              rowSpan = element.h;
-              if (element.x !== undefined && "x" in element) {
-                const size = element.x;
-                keyHtml += createInvisibleKey(
-                  currentColumn,
-                  size,
-                  currentRow,
-                  1
-                );
-                currentColumn += size * spanMultiplier;
-              }
-
-              keyString = rowCopy[index + 1]?.toString() ?? "";
-              rowCopy.splice(index, 1);
-              if (keyString === "spc") {
-                keyHtml += createSpaceKey(
-                  layout,
-                  currentColumn,
-                  currentSize,
-                  currentRow,
-                  rowSpan
-                );
-              } else {
-                keyHtml += createHtmlKey(
-                  keyString,
-                  currentColumn,
-                  currentSize,
-                  currentRow,
-                  rowSpan
-                );
-              }
-            }
+        if (isOnlyInvisibleKey(element)) {
+          if (element.x !== undefined && "x" in element) {
+            columnSpan = element.x;
+            keyHtml += createHtmlKey(
+              "",
+              currentColumn,
+              columnSpan,
+              currentRow,
+              rowSpan,
+              true
+            );
+          }
+        } else if (isKeyProperties(element)) {
+          if (element.w !== undefined && "w" in element) {
+            columnSpan = element.w;
+          }
+          if (element.x !== undefined && "x" in element) {
+            const size = element.x;
+            keyHtml += createHtmlKey(
+              "",
+              currentColumn,
+              size,
+              currentRow,
+              rowSpan,
+              true
+            );
+            currentColumn += size * columnMultiplier;
+          }
+          if (element.y !== undefined && "y" in element) {
+            currentRow += element.y * rowMultiplier;
+          }
+          if (element.h !== undefined && "h" in element) {
+            rowSpan = element.h;
+          }
+          keyString = rowCopy[index + 1]?.toString() ?? "";
+          rowCopy.splice(index, 1);
+          if (keyString === "spc") {
+            keyHtml += createSpaceKey(
+              layout,
+              currentColumn,
+              columnSpan,
+              currentRow,
+              rowSpan
+            );
           } else {
             keyHtml += createHtmlKey(
               keyString,
               currentColumn,
-              currentSize,
+              columnSpan,
               currentRow,
               rowSpan
             );
           }
-          maxColumn = currentColumn > maxColumn ? currentColumn : maxColumn;
-          currentColumn += currentSize * spanMultiplier;
-          return keyHtml;
+        } else {
+          keyHtml += createHtmlKey(
+            keyString,
+            currentColumn,
+            columnSpan,
+            currentRow,
+            rowSpan
+          );
         }
-      );
-      return rowHtml.join("");
-    }
-  );
+        maxColumn = currentColumn > maxColumn ? currentColumn : maxColumn;
+        currentColumn += columnSpan * columnMultiplier;
+        return keyHtml;
+      }
+    );
+    maxRow = currentRow > maxRow ? currentRow : maxRow;
+    currentRow += rowMultiplier;
+    return rowHtml.join("");
+  });
   return `<div style="display: grid; grid-template-columns: repeat(${
-    maxColumn + spanMultiplier - 1
+    maxColumn + columnMultiplier - 1
   }, ${
-    basicSpan / spanMultiplier + margin / 2
-  }rem); grid-template-rows: repeat(${keymapCopy.length}, ${
-    basicSpan + margin * 2
+    basicSpan / columnMultiplier + margin / 2
+  }rem); grid-template-rows: repeat(${maxRow + rowMultiplier - 1}, ${
+    basicSpan / columnMultiplier + margin / 2
   }rem)">${keymapHtml.join("")}</div>`;
 }
