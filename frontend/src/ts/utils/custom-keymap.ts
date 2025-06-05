@@ -10,6 +10,7 @@ import { parseWithSchema } from "@monkeytype/util/json";
 
 const spanMultiplier = 4;
 const basicSpan = 2;
+const margin = 0.125;
 
 function keyToData(key: string): string {
   return (key && keyToDataObject[key]) ?? "";
@@ -85,11 +86,13 @@ function createHtmlKey(
   size: number,
   span: number
 ): string {
-  return `<div class="keymapKey" style="grid-column: ${position} / span ${
+  return `<div style="display: flex; grid-column: ${position} / span ${
     size * spanMultiplier
-  }; grid-row: ${span + 1};" data-key="${keyToData(keyString)}">
+  }; grid-row: ${span + 1};"><div class="keymapKey" data-key="${keyToData(
+    keyString
+  )}">
   <span class="letter">${keyToData(keyString) && keyString}</span>
-  </div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
+  </div></div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
 }
 
 function createInvisibleKey(
@@ -97,9 +100,11 @@ function createInvisibleKey(
   size: number,
   span: number
 ): string {
-  return `<div class="keymapKey invisible" style="grid-column: ${position} / span ${
+  return `<div style="display: flex; grid-column: ${position} / span ${
     size * spanMultiplier
-  }; grid-row: ${span + 1};" data-key=""></div>`.replace(
+  }; grid-row: ${
+    span + 1
+  };"><div class="keymapKey invisible" data-key=""></div></div>`.replace(
     /(\r\n|\r|\n|\s{2,})/g,
     ""
   );
@@ -111,11 +116,11 @@ function createSpaceKey(
   size: number,
   span: number
 ): string {
-  return `<div class="keymapKey keySpace layoutIndicator" style="grid-column: ${position} / span ${
+  return `<div style="display: flex; grid-column: ${position} / span ${
     size * spanMultiplier
-  }; grid-row: ${span + 1};">
+  }; grid-row: ${span + 1};""><div class="keymapKey keySpace layoutIndicator">
     <span class="letter">${sanitizeString(layout)}</span>
-  </div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
+  </div></div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
 }
 
 export function getCustomKeymapSyle(
@@ -187,8 +192,9 @@ export function getCustomKeymapSyle(
       return rowHtml.join("");
     }
   );
-  // TODO modify this to adapt every keyboard
   return `<div style="display: grid; grid-template-columns: repeat(${
     maxColumn + spanMultiplier - 1
-  }, ${basicSpan / spanMultiplier}rem);">${keymapHtml.join("")}</div>`;
+  }, ${basicSpan / spanMultiplier + margin / 2}rem);">${keymapHtml.join(
+    ""
+  )}</div>`;
 }
