@@ -22,13 +22,13 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#99947f",
     textColor: "#080909",
   },
-  A_Legion: { 
-  bgColor: "#f0f8ff",       // Alice Blue – soft and pleasant background
-  mainColor: "#ffb6c1",     // Light Pink – vibrant but not harsh
-  subColor: "#ba68c8",      // Soft Purple – elegant sub-color
-  textColor: "#007acc",     // Azure Blue – clear and readable
- },
- 
+  A_Legion: {
+    bgColor: "#f0f8ff", // Alice Blue – soft and pleasant background
+    mainColor: "#ffb6c1", // Light Pink – vibrant but not harsh
+    subColor: "#ba68c8", // Soft Purple – elegant sub-color
+    textColor: "#007acc", // Azure Blue – clear and readable
+  },
+
   dark_note: {
     bgColor: "#1f1f1f",
     mainColor: "#f2c17b",
