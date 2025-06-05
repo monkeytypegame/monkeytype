@@ -82,13 +82,16 @@ export function keymapToString(keymap: KeymapCustom): string {
 
 function createHtmlKey(
   keyString: string,
-  position: number,
+  column: number,
   size: number,
-  span: number
+  row: number,
+  rowSpan: number
 ): string {
-  return `<div style="display: flex; grid-column: ${position} / span ${
+  return `<div style="display: flex; grid-column: ${column} / span ${
     size * spanMultiplier
-  }; grid-row: ${span + 1};"><div class="keymapKey" data-key="${keyToData(
+  }; grid-row: ${
+    row + 1
+  } / span ${rowSpan};"><div class="keymapKey" data-key="${keyToData(
     keyString
   )}">
   <span class="letter">${keyToData(keyString) && keyString}</span>
@@ -96,15 +99,16 @@ function createHtmlKey(
 }
 
 function createInvisibleKey(
-  position: number,
+  column: number,
   size: number,
-  span: number
+  row: number,
+  rowSpan: number
 ): string {
-  return `<div style="display: flex; grid-column: ${position} / span ${
+  return `<div style="display: flex; grid-column: ${column} / span ${
     size * spanMultiplier
   }; grid-row: ${
-    span + 1
-  };"><div class="keymapKey invisible" data-key=""></div></div>`.replace(
+    row + 1
+  } / span ${rowSpan};"><div class="keymapKey invisible" data-key=""></div></div>`.replace(
     /(\r\n|\r|\n|\s{2,})/g,
     ""
   );
@@ -112,13 +116,16 @@ function createInvisibleKey(
 
 function createSpaceKey(
   layout: Layout,
-  position: number,
+  column: number,
   size: number,
-  span: number
+  row: number,
+  rowSpan: number
 ): string {
-  return `<div style="display: flex; grid-column: ${position} / span ${
+  return `<div style="display: flex; grid-column: ${column} / span ${
     size * spanMultiplier
-  }; grid-row: ${span + 1};""><div class="keymapKey keySpace layoutIndicator">
+  }; grid-row: ${
+    row + 1
+  } / span ${rowSpan};""><div class="keymapKey keySpace layoutIndicator">
     <span class="letter">${sanitizeString(layout)}</span>
   </div></div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
 }
@@ -140,7 +147,8 @@ export function getCustomKeymapSyle(
               typeof element === "string"
                 ? sanitizeString(element).toLowerCase()
                 : "",
-            currentSize = 1;
+            currentSize = 1,
+            rowSpan = 1;
 
           if (isOnlyInvisibleKey(element)) {
             if (element.x !== undefined && "x" in element) {
@@ -148,7 +156,8 @@ export function getCustomKeymapSyle(
               keyHtml += createInvisibleKey(
                 currentColumn,
                 currentSize,
-                currentRow
+                currentRow,
+                rowSpan
               );
             }
           } else if (isKeyProperties(element)) {
@@ -156,13 +165,19 @@ export function getCustomKeymapSyle(
               currentSize = element.w;
               if (element.x !== undefined && "x" in element) {
                 const size = element.x;
-                keyHtml += createInvisibleKey(currentColumn, size, currentRow);
+                keyHtml += createInvisibleKey(
+                  currentColumn,
+                  size,
+                  currentRow,
+                  rowSpan
+                );
                 currentColumn += size * spanMultiplier;
               }
-              // TODO add rowspan
-              // if (element.h !== undefined && "h" in element) {
-              //   rowSpan = element.h;
-              // }
+
+              if (element.h !== undefined && "h" in element) {
+                rowSpan = element.h;
+              }
+
               keyString = rowCopy[index + 1]?.toString() ?? "";
               rowCopy.splice(index, 1);
               if (keyString === "spc") {
@@ -170,19 +185,59 @@ export function getCustomKeymapSyle(
                   layout,
                   currentColumn,
                   currentSize,
-                  currentRow
+                  currentRow,
+                  rowSpan
                 );
               } else {
                 keyHtml += createHtmlKey(
                   keyString,
                   currentColumn,
                   currentSize,
-                  currentRow
+                  currentRow,
+                  rowSpan
+                );
+              }
+            } else if (element.h !== undefined && "h" in element) {
+              rowSpan = element.h;
+              if (element.x !== undefined && "x" in element) {
+                const size = element.x;
+                keyHtml += createInvisibleKey(
+                  currentColumn,
+                  size,
+                  currentRow,
+                  1
+                );
+                currentColumn += size * spanMultiplier;
+              }
+
+              keyString = rowCopy[index + 1]?.toString() ?? "";
+              rowCopy.splice(index, 1);
+              if (keyString === "spc") {
+                keyHtml += createSpaceKey(
+                  layout,
+                  currentColumn,
+                  currentSize,
+                  currentRow,
+                  rowSpan
+                );
+              } else {
+                keyHtml += createHtmlKey(
+                  keyString,
+                  currentColumn,
+                  currentSize,
+                  currentRow,
+                  rowSpan
                 );
               }
             }
           } else {
-            keyHtml += createHtmlKey(keyString, currentColumn, 1, currentRow);
+            keyHtml += createHtmlKey(
+              keyString,
+              currentColumn,
+              currentSize,
+              currentRow,
+              rowSpan
+            );
           }
           maxColumn = currentColumn > maxColumn ? currentColumn : maxColumn;
           currentColumn += currentSize * spanMultiplier;
@@ -194,7 +249,9 @@ export function getCustomKeymapSyle(
   );
   return `<div style="display: grid; grid-template-columns: repeat(${
     maxColumn + spanMultiplier - 1
-  }, ${basicSpan / spanMultiplier + margin / 2}rem);">${keymapHtml.join(
-    ""
-  )}</div>`;
+  }, ${
+    basicSpan / spanMultiplier + margin / 2
+  }rem); grid-template-rows: repeat(${keymapCopy.length}, ${
+    basicSpan + margin * 2
+  }rem)">${keymapHtml.join("")}</div>`;
 }
