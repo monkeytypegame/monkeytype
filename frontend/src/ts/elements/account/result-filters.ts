@@ -90,7 +90,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    filters = resultFiltersLS.get();
+    filters = mergeWithDefaultFilters(resultFiltersLS.get());
 
     const newTags: Record<string, boolean> = { none: false };
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
@@ -907,15 +907,9 @@ $(".group.presetFilterButtons .filterBtns").on(
 );
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
-  const filter = Misc.sanitize(ResultFiltersSchema, Misc.deepClone(filterIn));
+  const filter = mergeWithDefaultFilters(
+    Misc.sanitize(ResultFiltersSchema, Misc.deepClone(filterIn))
+  );
 
-  Object.entries(defaultResultFilters).forEach((entry) => {
-    const key = entry[0] as ResultFiltersGroup;
-    const value = entry[1];
-    if (filter[key] === undefined) {
-      // @ts-expect-error key and value is based on default filter so this is safe to ignore
-      filter[key] = value;
-    }
-  });
   return filter;
 }
