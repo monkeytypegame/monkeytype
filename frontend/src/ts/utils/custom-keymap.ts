@@ -8,7 +8,8 @@ import { dataKeys as keyToDataObject } from "../constants/data-keys";
 import { sanitizeString } from "@monkeytype/util/strings";
 import { parseWithSchema } from "@monkeytype/util/json";
 
-const basicSpan = 4;
+const spanMultiplier = 4;
+const basicSpan = 2;
 
 function keyToData(key: string): string {
   return (key && keyToDataObject[key]) ?? "";
@@ -85,7 +86,7 @@ function createHtmlKey(
   span: number
 ): string {
   return `<div class="keymapKey" style="grid-column: ${position} / span ${
-    size * basicSpan
+    size * spanMultiplier
   }; grid-row: ${span + 1};" data-key="${keyToData(keyString)}">
   <span class="letter">${keyToData(keyString) && keyString}</span>
   </div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
@@ -97,7 +98,7 @@ function createInvisibleKey(
   span: number
 ): string {
   return `<div class="keymapKey invisible" style="grid-column: ${position} / span ${
-    size * basicSpan
+    size * spanMultiplier
   }; grid-row: ${span + 1};" data-key=""></div>`.replace(
     /(\r\n|\r|\n|\s{2,})/g,
     ""
@@ -111,7 +112,7 @@ function createSpaceKey(
   span: number
 ): string {
   return `<div class="keymapKey keySpace layoutIndicator" style="grid-column: ${position} / span ${
-    size * basicSpan
+    size * spanMultiplier
   }; grid-row: ${span + 1};">
     <span class="letter">${sanitizeString(layout)}</span>
   </div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
@@ -122,7 +123,7 @@ export function getCustomKeymapSyle(
   layout: Layout
 ): string {
   const keymapCopy = [...keymapStyle];
-
+  let maxColumn = 1;
   const keymapHtml = keymapCopy.map(
     (row: (KeyProperties | string)[], currentRow: number) => {
       const rowCopy = [...row];
@@ -139,7 +140,11 @@ export function getCustomKeymapSyle(
           if (isOnlyInvisibleKey(element)) {
             if (element.x !== undefined && "x" in element) {
               currentSize = element.x;
-              keyHtml += createInvisibleKey(index, currentSize, currentRow);
+              keyHtml += createInvisibleKey(
+                currentColumn,
+                currentSize,
+                currentRow
+              );
             }
           } else if (isKeyProperties(element)) {
             if (element.w !== undefined && "w" in element) {
@@ -147,7 +152,7 @@ export function getCustomKeymapSyle(
               if (element.x !== undefined && "x" in element) {
                 const size = element.x;
                 keyHtml += createInvisibleKey(currentColumn, size, currentRow);
-                currentColumn += size * basicSpan;
+                currentColumn += size * spanMultiplier;
               }
               // TODO add rowspan
               // if (element.h !== undefined && "h" in element) {
@@ -174,7 +179,8 @@ export function getCustomKeymapSyle(
           } else {
             keyHtml += createHtmlKey(keyString, currentColumn, 1, currentRow);
           }
-          currentColumn += currentSize * basicSpan;
+          maxColumn = currentColumn > maxColumn ? currentColumn : maxColumn;
+          currentColumn += currentSize * spanMultiplier;
           return keyHtml;
         }
       );
@@ -182,7 +188,7 @@ export function getCustomKeymapSyle(
     }
   );
   // TODO modify this to adapt every keyboard
-  return `<div style="display: grid; grid-template-columns: repeat(52, 0.5rem);">${keymapHtml.join(
-    ""
-  )}</div>`;
+  return `<div style="display: grid; grid-template-columns: repeat(${
+    maxColumn + spanMultiplier - 1
+  }, ${basicSpan / spanMultiplier}rem);">${keymapHtml.join("")}</div>`;
 }
