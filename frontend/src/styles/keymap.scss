@@ -544,4 +544,28 @@
       position: relative;
     }
   }
+  &.custom {
+    .r1,
+    .r2,
+    .r3,
+    .r4,
+    .r5,
+    .r6 {
+      display: grid;
+      justify-content: start;
+      gap: 0;
+    }
+
+    .keymapKey {
+      width: 100%;
+      height: auto;
+      margin: 0.125rem;
+    }
+
+    .keymapSplitSpacer {
+      display: block;
+      width: 2rem;
+      height: 2rem;
+    }
+  }
 }

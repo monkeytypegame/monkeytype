@@ -14,6 +14,8 @@ import * as ShiftTracker from "../test/shift-tracker";
 import * as AltTracker from "../test/alt-tracker";
 import * as KeyConverter from "../utils/key-converter";
 import { getActiveFunboxNames } from "../test/funbox/list";
+import { getCustomKeymapSyle } from "../utils/custom-keymap";
+import { KeymapCustom, Layout } from "@monkeytype/contracts/schemas/configs";
 
 const stenoKeys: JSONData.Layout = {
   keymapShowTopRow: true,
@@ -416,6 +418,13 @@ export async function refresh(
       });
     }
 
+    if (Config.keymapStyle === "custom") {
+      const {
+        keymapCustom,
+        layout,
+      }: { keymapCustom: KeymapCustom; layout: Layout } = Config;
+      keymapElement = getCustomKeymapSyle(keymapCustom, layout);
+    }
     $("#keymap").html(keymapElement);
 
     $("#keymap").removeClass("staggered");
@@ -425,6 +434,7 @@ export async function refresh(
     $("#keymap").removeClass("alice");
     $("#keymap").removeClass("steno");
     $("#keymap").removeClass("steno_matrix");
+    $("#keymap").removeClass("custom");
     $("#keymap").addClass(Config.keymapStyle);
   } catch (e) {
     if (e instanceof Error) {
