@@ -9,7 +9,7 @@ import { showPopup } from "./simple-modals";
 import * as Notifications from "../elements/notifications";
 
 async function fill(): Promise<void> {
-  const names = CustomText.getCustomTextNames();
+  const names = await CustomText.getCustomTextNames();
   const listEl = $(`#savedTextsModal .list`).empty();
   let list = "";
   if (names.length === 0) {
@@ -26,7 +26,7 @@ async function fill(): Promise<void> {
   }
   listEl.html(list);
 
-  const longNames = CustomText.getCustomTextNames(true);
+  const longNames = await CustomText.getCustomTextNames(true);
   const longListEl = $(`#savedTextsModal .listLong`).empty();
   let longList = "";
   if (longNames.length === 0) {
@@ -36,7 +36,9 @@ async function fill(): Promise<void> {
       longList += `<div class="savedLongText" data-name="${escapeHTML(name)}">
       <div class="button name">${escapeHTML(name)}</div>
       <div class="button ${
-        CustomText.getCustomTextLongProgress(name) <= 0 ? "disabled" : ""
+        (await CustomText.getCustomTextLongProgress(name)) <= 0
+          ? "disabled"
+          : ""
       } resetProgress">reset</div>
       <div class="button delete">
       <i class="fas fa-fw fa-trash"></i>
@@ -91,19 +93,19 @@ async function fill(): Promise<void> {
     }
   );
 
-  $("#savedTextsModal .list .savedText .button.name").on("click", (e) => {
+  $("#savedTextsModal .list .savedText .button.name").on("click", async (e) => {
     const name = $(e.target).text();
     CustomTextState.setCustomTextName(name, false);
-    const text = getSavedText(name, false);
+    const text = await getSavedText(name, false);
     hide({ modalChainData: { text, long: false } });
   });
 
   $("#savedTextsModal .listLong .savedLongText .button.name").on(
     "click",
-    (e) => {
+    async (e) => {
       const name = $(e.target).text();
       CustomTextState.setCustomTextName(name, true);
-      const text = getSavedText(name, true);
+      const text = await getSavedText(name, true);
       hide({ modalChainData: { text, long: true } });
     }
   );
@@ -124,10 +126,10 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
   });
 }
 
-function getSavedText(name: string, long: boolean): string {
-  let text = CustomText.getCustomText(name, long);
+async function getSavedText(name: string, long: boolean): Promise<string> {
+  let text = await CustomText.getCustomText(name, long);
   if (long) {
-    text = text.slice(CustomText.getCustomTextLongProgress(name));
+    text = text.slice(await CustomText.getCustomTextLongProgress(name));
   }
   return text.join(" ");
 }

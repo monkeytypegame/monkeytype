@@ -1035,7 +1035,10 @@ list.deleteCustomText = new SimpleModal({
   text: "Are you sure?",
   buttonText: "delete",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, false);
+    await CustomText.deleteCustomText(
+      _thisPopup.parameters[0] as string,
+      false
+    );
     CustomTextState.setCustomTextName("", undefined);
 
     return {
@@ -1054,7 +1057,7 @@ list.deleteCustomTextLong = new SimpleModal({
   text: "Are you sure?",
   buttonText: "delete",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
+    await CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
     CustomTextState.setCustomTextName("", undefined);
 
     return {
@@ -1073,8 +1076,11 @@ list.resetProgressCustomTextLong = new SimpleModal({
   text: "Are you sure?",
   buttonText: "reset",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
-    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
-    const text = CustomText.getCustomText(
+    await CustomText.setCustomTextLongProgress(
+      _thisPopup.parameters[0] as string,
+      0
+    );
+    const text = await CustomText.getCustomText(
       _thisPopup.parameters[0] as string,
       true
     );

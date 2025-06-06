@@ -118,4 +118,7 @@ export class LocalStorageWithSchema<T> {
       return false;
     }
   }
+  public destroy(): void {
+    window.localStorage.removeItem(this.key);
+  }
 }

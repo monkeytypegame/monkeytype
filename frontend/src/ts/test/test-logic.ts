@@ -1076,20 +1076,21 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       const historyLength = TestInput.input.getHistory()?.length;
       const newProgress =
-        CustomText.getCustomTextLongProgress(customTextName) + historyLength;
-      CustomText.setCustomTextLongProgress(customTextName, newProgress);
+        (await CustomText.getCustomTextLongProgress(customTextName)) +
+        historyLength;
+      await CustomText.setCustomTextLongProgress(customTextName, newProgress);
       Notifications.add("Long custom text progress saved", 1, {
         duration: 5,
         important: true,
       });
 
-      let newText = CustomText.getCustomText(customTextName, true);
+      let newText = await CustomText.getCustomText(customTextName, true);
       newText = newText.slice(newProgress);
       CustomText.setText(newText);
     } else {
       // They finished the test
-      CustomText.setCustomTextLongProgress(customTextName, 0);
-      const text = CustomText.getCustomText(customTextName, true);
+      await CustomText.setCustomTextLongProgress(customTextName, 0);
+      const text = await CustomText.getCustomText(customTextName, true);
       CustomText.setText(text);
       Notifications.add("Long custom text completed", 1, {
         duration: 5,
