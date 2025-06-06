@@ -743,17 +743,36 @@ let selectChangeCallbackFn: () => void = () => {
 };
 
 export function updateTagsDropdownOptions(): void {
-  const el = document.querySelector<HTMLElement>(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select select"
-  );
-
-  if (!(el instanceof HTMLElement)) return;
-
   const snapshot = DB.getSnapshot();
 
   if (snapshot === undefined) {
     return;
   }
+
+  const newTags = snapshot.tags.filter(
+    (it) => defaultResultFilters.tags[it._id] === undefined
+  );
+  if (newTags.length > 0) {
+    const everythingSelected = Object.values(filters.tags).every((v) => v);
+
+    defaultResultFilters.tags = {
+      ...defaultResultFilters.tags,
+      ...Object.fromEntries(newTags.map((tag) => [tag._id, true])),
+    };
+
+    filters.tags = {
+      ...filters.tags,
+      ...Object.fromEntries(
+        newTags.map((tag) => [tag._id, everythingSelected])
+      ),
+    };
+  }
+
+  const el = document.querySelector<HTMLElement>(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select select"
+  );
+
+  if (!(el instanceof HTMLElement)) return;
 
   let html = "";
 
