@@ -32,7 +32,7 @@ function hide(): void {
   void modal.hide();
 }
 
-function save(): boolean {
+async function save(): Promise<boolean> {
   const name = $("#saveCustomTextModal .textName").val() as string;
   const checkbox = $("#saveCustomTextModal .isLongText").prop(
     "checked"
@@ -48,7 +48,11 @@ function save(): boolean {
     return false;
   }
 
-  const saved = CustomText.setCustomText(name, state.textToSave, checkbox);
+  const saved = await CustomText.setCustomText(
+    name,
+    state.textToSave,
+    checkbox
+  );
   if (saved) {
     CustomTextState.setCustomTextName(name, checkbox);
     Notifications.add("Custom text saved", 1);
@@ -59,7 +63,7 @@ function save(): boolean {
   }
 }
 
-function updateIndicatorAndButton(): void {
+async function updateIndicatorAndButton(): Promise<void> {
   const val = $("#saveCustomTextModal .textName").val() as string;
   const checkbox = $("#saveCustomTextModal .isLongText").prop(
     "checked"
@@ -69,7 +73,7 @@ function updateIndicatorAndButton(): void {
     indicator?.hide();
     $("#saveCustomTextModal button.save").prop("disabled", true);
   } else {
-    const names = CustomText.getCustomTextNames(checkbox);
+    const names = await CustomText.getCustomTextNames(checkbox);
     if (names.includes(val)) {
       indicator?.show("unavailable");
       $("#saveCustomTextModal button.save").prop("disabled", true);
@@ -98,22 +102,22 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       level: 0,
     },
   });
-  modalEl.addEventListener("submit", (e) => {
+  modalEl.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (save()) hide();
+    if (await save()) hide();
   });
-  modalEl.querySelector(".textName")?.addEventListener("input", (e) => {
+  modalEl.querySelector(".textName")?.addEventListener("input", async (e) => {
     const val = (e.target as HTMLInputElement).value;
     if (val.length > 0) {
       indicator?.show("loading");
-      updateInputAndButtonDebounced();
+      await updateInputAndButtonDebounced();
     }
   });
-  modalEl.querySelector(".isLongText")?.addEventListener("input", (e) => {
+  modalEl.querySelector(".isLongText")?.addEventListener("input", async (e) => {
     const val = (e.target as HTMLInputElement).value;
     if (val.length > 0) {
       indicator?.show("loading");
-      updateInputAndButtonDebounced();
+      await updateInputAndButtonDebounced();
     }
   });
 }

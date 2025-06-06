@@ -6,27 +6,7 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import { CompletedEventCustomTextSchema } from "@monkeytype/contracts/schemas/results";
 import { deepClone } from "../utils/misc";
-
-const CustomTextObjectSchema = z.record(z.string(), z.string());
-type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
-
-const CustomTextLongObjectSchema = z.record(
-  z.string(),
-  z.object({ text: z.string(), progress: z.number() })
-);
-type CustomTextLongObject = z.infer<typeof CustomTextLongObjectSchema>;
-
-const customTextLS = new LocalStorageWithSchema({
-  key: "customText",
-  schema: CustomTextObjectSchema,
-  fallback: {},
-});
-//todo maybe add migrations here?
-const customTextLongLS = new LocalStorageWithSchema({
-  key: "customTextLong",
-  schema: CustomTextLongObjectSchema,
-  fallback: {},
-});
+import { DBSchema, IDBPDatabase, openDB } from "idb";
 
 export const CustomTextSettingsSchema = CompletedEventCustomTextSchema.omit({
   textLen: true,
@@ -65,6 +45,86 @@ const customTextSettings = new LocalStorageWithSchema({
     return migratedData;
   },
 });
+type CustomTextDB = DBSchema & {
+  customTexts: {
+    key: string;
+    value: {
+      text: string;
+    };
+  };
+  customLongTexts: {
+    key: string;
+    value: {
+      text: string;
+      progress: number;
+    };
+  };
+};
+
+export async function getDB(): Promise<IDBPDatabase<CustomTextDB>> {
+  return await openDB<CustomTextDB>("customTexts", 1, {
+    async upgrade(db, oldVersion, _newVersion, tx, _event) {
+      if (oldVersion === 0) {
+        console.debug("Initialize indexedDB for customTexts from localStorage");
+
+        //Legacy storage
+        const CustomTextObjectSchema = z.record(z.string(), z.string());
+        const CustomTextLongObjectSchema = z.record(
+          z.string(),
+          z.object({ text: z.string(), progress: z.number() })
+        );
+        const customTextLS = new LocalStorageWithSchema({
+          key: "customText",
+          schema: CustomTextObjectSchema,
+          fallback: {},
+        });
+
+        //todo maybe add migrations here?
+        const customTextLongLS = new LocalStorageWithSchema({
+          key: "customTextLong",
+          schema: CustomTextLongObjectSchema,
+          fallback: {},
+        });
+
+        //create objectStores
+        await db.createObjectStore("customTexts");
+        await db.createObjectStore("customLongTexts");
+        //await db.createObjectStore("currentSettings");
+
+        const ctStore = tx.objectStore("customTexts");
+        const longCtStore = tx.objectStore("customLongTexts");
+        //const currentSettingsStore = tx.objectStore("currentSettings");
+
+        //copy from old localStorage
+        await Promise.all([
+          ...Object.entries(customTextLS.get()).map(async ([key, value]) =>
+            ctStore.add({ text: value }, key)
+          ),
+          ...Object.entries(customTextLongLS.get()).map(async ([key, value]) =>
+            longCtStore.add({ text: value.text, progress: value.progress }, key)
+          ),
+          /*          currentSettingsStore.put(
+            customTextSettings.get(),
+            "_currentSettings_"
+          ),*/
+          tx.done,
+        ]);
+
+        console.debug("Remove localStorage after migration");
+        //TODO:
+        //customTextLS.destroy();
+        //customTextLongLS.destroy();
+        //customTextSettings.destroy();
+      }
+    },
+  });
+}
+
+window.globalThis["db"] = {
+  get: getDB,
+  getText: getCustomText,
+  setText: setCustomText,
+};
 
 export function getText(): string[] {
   return customTextSettings.get().text;
@@ -140,111 +200,72 @@ export function getData(): CustomTextSettings {
   return customTextSettings.get();
 }
 
-export function getCustomText(name: string, long = false): string[] {
-  if (long) {
-    const customTextLong = getLocalStorageLong();
-    const customText = customTextLong[name];
-    if (customText === undefined)
-      throw new Error(`Custom text ${name} not found`);
-    return customText.text.split(/ +/);
-  } else {
-    const customText = getLocalStorage()[name];
-    if (customText === undefined)
-      throw new Error(`Custom text ${name} not found`);
-    return customText.split(/ +/);
-  }
+export async function getCustomText(
+  name: string,
+  long = false
+): Promise<string[]> {
+  const db = await getDB();
+  const customText = await db.get(
+    long ? "customLongTexts" : "customTexts",
+    name
+  );
+  if (customText === undefined)
+    throw new Error(`Custom text ${name} not found`);
+
+  return customText.text.split(/ +/);
 }
 
-export function setCustomText(
+export async function setCustomText(
   name: string,
   text: string | string[],
   long = false
-): boolean {
-  if (long) {
-    const customText = getLocalStorageLong();
-
-    customText[name] = {
-      text: "",
-      progress: 0,
-    };
-
-    const textByName = customText[name];
-    if (textByName === undefined) {
-      throw new Error("Custom text not found");
-    }
-
-    if (typeof text === "string") {
-      textByName.text = text;
+): Promise<boolean> {
+  const db = await getDB();
+  const textToStore = typeof text === "string" ? text : text.join(" ");
+  try {
+    if (long) {
+      await db.put("customLongTexts", { text: textToStore, progress: 0 }, name);
     } else {
-      textByName.text = text.join(" ");
+      await db.put("customTexts", { text: textToStore }, name);
     }
-
-    return setLocalStorageLong(customText);
-  } else {
-    const customText = getLocalStorage();
-
-    if (typeof text === "string") {
-      customText[name] = text;
-    } else {
-      customText[name] = text.join(" ");
-    }
-
-    return setLocalStorage(customText);
+    return true;
+  } catch (e) {
+    console.debug("Storing to indexedDb failed: ", e);
+    return false;
   }
 }
 
-export function deleteCustomText(name: string, long: boolean): void {
-  const customText = long ? getLocalStorageLong() : getLocalStorage();
+export async function deleteCustomText(
+  name: string,
+  long: boolean
+): Promise<void> {
+  const db = await getDB();
 
-  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-  delete customText[name];
-
-  if (long) {
-    setLocalStorageLong(customText as CustomTextLongObject);
-  } else {
-    setLocalStorage(customText as CustomTextObject);
-  }
+  await db.delete(long ? "customLongTexts" : "customTexts", name);
 }
 
-export function getCustomTextLongProgress(name: string): number {
-  const customText = getLocalStorageLong()[name];
+export async function getCustomTextLongProgress(name: string): Promise<number> {
+  const db = await getDB();
+  const customText = await db.get("customLongTexts", name);
   if (customText === undefined) throw new Error("Custom text not found");
 
   return customText.progress ?? 0;
 }
 
-export function setCustomTextLongProgress(
+export async function setCustomTextLongProgress(
   name: string,
   progress: number
-): void {
-  const customTexts = getLocalStorageLong();
-  const customText = customTexts[name];
+): Promise<void> {
+  const db = await getDB();
+  const customText = await db.get("customLongTexts", name);
   if (customText === undefined) throw new Error("Custom text not found");
 
   customText.progress = progress;
-  setLocalStorageLong(customTexts);
+  await db.put("customLongTexts", customText, name);
 }
 
-function getLocalStorage(): CustomTextObject {
-  return customTextLS.get();
-}
+export async function getCustomTextNames(long = false): Promise<string[]> {
+  const db = getDB();
 
-function getLocalStorageLong(): CustomTextLongObject {
-  return customTextLongLS.get();
-}
-
-function setLocalStorage(data: CustomTextObject): boolean {
-  return customTextLS.set(data);
-}
-
-function setLocalStorageLong(data: CustomTextLongObject): boolean {
-  return customTextLongLS.set(data);
-}
-
-export function getCustomTextNames(long = false): string[] {
-  if (long) {
-    return Object.keys(getLocalStorageLong());
-  } else {
-    return Object.keys(getLocalStorage());
-  }
+  return (await db).getAllKeys(long ? "customLongTexts" : "customTexts");
 }
