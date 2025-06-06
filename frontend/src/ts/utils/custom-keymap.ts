@@ -130,8 +130,7 @@ export function getCustomKeymapSyle(
     currentRow = 1;
   const keymapHtml = keymapCopy.map((row: (KeyProperties | string)[]) => {
     const rowCopy = [...row];
-    let currentColumn = 1,
-      rowSpan = 1;
+    let currentColumn = 1;
     const rowHtml = rowCopy.map(
       (element: KeyProperties | string, index: number) => {
         let keyHtml: string = "",
@@ -139,8 +138,8 @@ export function getCustomKeymapSyle(
             typeof element === "string"
               ? sanitizeString(element).toLowerCase()
               : "",
-          columnSpan = 1;
-
+          columnSpan = 1,
+          rowSpan = 1;
         if (isOnlyInvisibleKey(element)) {
           if (element.x !== undefined && "x" in element) {
             columnSpan = element.x;
@@ -157,6 +156,9 @@ export function getCustomKeymapSyle(
           if (element.w !== undefined && "w" in element) {
             columnSpan = element.w;
           }
+          if (element.y !== undefined && "y" in element) {
+            currentRow += element.y * rowMultiplier;
+          }
           if (element.x !== undefined && "x" in element) {
             const size = element.x;
             keyHtml += createHtmlKey(
@@ -169,13 +171,12 @@ export function getCustomKeymapSyle(
             );
             currentColumn += size * columnMultiplier;
           }
-          if (element.y !== undefined && "y" in element) {
-            currentRow += element.y * rowMultiplier;
-          }
           if (element.h !== undefined && "h" in element) {
             rowSpan = element.h;
           }
-          keyString = rowCopy[index + 1]?.toString() ?? "";
+          keyString = sanitizeString(
+            rowCopy[index + 1]?.toString() ?? ""
+          ).toLowerCase();
           rowCopy.splice(index, 1);
           if (keyString === "spc") {
             keyHtml += createSpaceKey(
