@@ -117,9 +117,9 @@ export async function getDB(): Promise<IDBPDatabase<CustomTextDB>> {
         ]);
 
         console.debug("Remove localStorage after migration");
-        //TODO:
-        //customTextLS.destroy();
-        //customTextLongLS.destroy();
+        customTextLS.destroy();
+        customTextLongLS.destroy();
+
         customTextSettings.set({
           ...customTextSettings.get(),
           text: ["outdated"],
@@ -128,13 +128,6 @@ export async function getDB(): Promise<IDBPDatabase<CustomTextDB>> {
     },
   });
 }
-
-window.globalThis["db"] = {
-  get: getDB,
-  getText: getCustomText,
-  setText: setCustomText,
-  getData: getData,
-};
 
 export function getText(): string[] {
   return cachedCurrentText;
