@@ -159,7 +159,17 @@ export function navigate(
   }
   url = url.replace(/\/$/, "");
   if (url === "") url = "/";
-  history.pushState(null, "", url);
+
+  // only push to history if we're navigating to a different URL
+  const currentPath =
+    window.location.pathname + window.location.search + window.location.hash;
+  const targetUrl = new URL(url, window.location.origin);
+  const targetPath = targetUrl.pathname + targetUrl.search + targetUrl.hash;
+
+  if (currentPath !== targetPath) {
+    history.pushState(null, "", url);
+  }
+
   void router(options);
 }
 
