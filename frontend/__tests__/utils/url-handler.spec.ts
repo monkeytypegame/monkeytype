@@ -3,7 +3,7 @@ import { Difficulty, Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 import { compressToURI } from "lz-ts";
 import * as UpdateConfig from "../../src/ts/config";
 import * as Notifications from "../../src/ts/elements/notifications";
-import { CustomTextSettings } from "../../src/ts/test/custom-text";
+import * as CustomText from "../../src/ts/test/custom-text";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TestState from "../../src/ts/test/test-state";
 import * as Misc from "../../src/ts/utils/misc";
@@ -33,6 +33,8 @@ describe("url-handler", () => {
     const restartTestMock = vi.spyOn(TestLogic, "restart");
     const addNotificationMock = vi.spyOn(Notifications, "add");
 
+    const setCustomTextMock = vi.spyOn(CustomText, "setText");
+
     beforeEach(() => {
       [
         findGetParameterMock,
@@ -48,6 +50,7 @@ describe("url-handler", () => {
         setFunboxMock,
         restartTestMock,
         addNotificationMock,
+        setCustomTextMock,
       ].forEach((it) => it.mockReset());
 
       findGetParameterMock.mockImplementation((override) => override);
@@ -262,7 +265,7 @@ const urlData = (
   data: Partial<{
     mode: Mode | undefined;
     mode2: Mode2<any> | number;
-    customText: CustomTextSettings;
+    customText: CustomText.CustomTextSettings;
     punctuation: boolean;
     numbers: boolean;
     language: string;

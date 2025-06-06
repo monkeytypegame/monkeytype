@@ -120,7 +120,6 @@ export async function getDB(): Promise<IDBPDatabase<CustomTextDB>> {
         //TODO:
         //customTextLS.destroy();
         //customTextLongLS.destroy();
-        //customTextSettings.destroy();
         customTextSettings.set({
           ...customTextSettings.get(),
           text: ["outdated"],
