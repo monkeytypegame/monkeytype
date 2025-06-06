@@ -25,6 +25,14 @@ const defaultCustomTextSettings: CustomTextSettings = {
   pipeDelimiter: false,
 };
 
+let cachedCurrentText = defaultCustomTextSettings.text;
+export async function initCurrentText(): Promise<void> {
+  const db = await getDB();
+  cachedCurrentText =
+    (await db.get("currentText", "_currentText_")) ??
+    defaultCustomTextSettings.text;
+}
+
 const customTextSettings = new LocalStorageWithSchema({
   key: "customTextSettings",
   schema: CustomTextSettingsSchema,
@@ -59,6 +67,7 @@ type CustomTextDB = DBSchema & {
       progress: number;
     };
   };
+  currentText: { key: "_currentText_"; value: string[] };
 };
 
 export async function getDB(): Promise<IDBPDatabase<CustomTextDB>> {
@@ -89,11 +98,11 @@ export async function getDB(): Promise<IDBPDatabase<CustomTextDB>> {
         //create objectStores
         await db.createObjectStore("customTexts");
         await db.createObjectStore("customLongTexts");
-        //await db.createObjectStore("currentSettings");
+        await db.createObjectStore("currentText");
 
         const ctStore = tx.objectStore("customTexts");
         const longCtStore = tx.objectStore("customLongTexts");
-        //const currentSettingsStore = tx.objectStore("currentSettings");
+        const currentTextStore = tx.objectStore("currentText");
 
         //copy from old localStorage
         await Promise.all([
@@ -103,10 +112,7 @@ export async function getDB(): Promise<IDBPDatabase<CustomTextDB>> {
           ...Object.entries(customTextLongLS.get()).map(async ([key, value]) =>
             longCtStore.add({ text: value.text, progress: value.progress }, key)
           ),
-          /*          currentSettingsStore.put(
-            customTextSettings.get(),
-            "_currentSettings_"
-          ),*/
+          currentTextStore.put(customTextSettings.get().text, "_currentText_"),
           tx.done,
         ]);
 
@@ -115,6 +121,10 @@ export async function getDB(): Promise<IDBPDatabase<CustomTextDB>> {
         //customTextLS.destroy();
         //customTextLongLS.destroy();
         //customTextSettings.destroy();
+        customTextSettings.set({
+          ...customTextSettings.get(),
+          text: ["outdated"],
+        });
       }
     },
   });
@@ -124,19 +134,19 @@ window.globalThis["db"] = {
   get: getDB,
   getText: getCustomText,
   setText: setCustomText,
+  getData: getData,
 };
 
 export function getText(): string[] {
-  return customTextSettings.get().text;
+  return cachedCurrentText;
 }
 
 export function setText(txt: string[]): void {
-  const currentSettings = customTextSettings.get();
-  customTextSettings.set({
-    ...currentSettings,
-    text: txt,
-    limit: { value: txt.length, mode: currentSettings.limit.mode },
-  });
+  cachedCurrentText = txt;
+  setTimeout(async () => {
+    const db = await getDB();
+    await db.put("currentText", cachedCurrentText, "_currentText_");
+  }, 0);
 }
 
 export function getMode(): CustomTextMode {
@@ -197,7 +207,7 @@ export function setPipeDelimiter(val: boolean): void {
 }
 
 export function getData(): CustomTextSettings {
-  return customTextSettings.get();
+  return { ...customTextSettings.get(), text: cachedCurrentText };
 }
 
 export async function getCustomText(

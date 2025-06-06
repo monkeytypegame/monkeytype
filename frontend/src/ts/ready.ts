@@ -8,6 +8,7 @@ import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
 import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { loadPromise } from "./config";
+import { initCurrentText } from "./test/custom-text";
 
 $(async (): Promise<void> => {
   await loadPromise;
@@ -67,4 +68,6 @@ $(async (): Promise<void> => {
       });
     }
   }
+
+  await initCurrentText();
 });
