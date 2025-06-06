@@ -90,7 +90,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    filters = resultFiltersLS.get();
+    filters = mergeWithDefaultFilters(resultFiltersLS.get());
 
     const newTags: Record<string, boolean> = { none: false };
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
@@ -743,17 +743,36 @@ let selectChangeCallbackFn: () => void = () => {
 };
 
 export function updateTagsDropdownOptions(): void {
-  const el = document.querySelector<HTMLElement>(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select select"
-  );
-
-  if (!(el instanceof HTMLElement)) return;
-
   const snapshot = DB.getSnapshot();
 
   if (snapshot === undefined) {
     return;
   }
+
+  const newTags = snapshot.tags.filter(
+    (it) => defaultResultFilters.tags[it._id] === undefined
+  );
+  if (newTags.length > 0) {
+    const everythingSelected = Object.values(filters.tags).every((v) => v);
+
+    defaultResultFilters.tags = {
+      ...defaultResultFilters.tags,
+      ...Object.fromEntries(newTags.map((tag) => [tag._id, true])),
+    };
+
+    filters.tags = {
+      ...filters.tags,
+      ...Object.fromEntries(
+        newTags.map((tag) => [tag._id, everythingSelected])
+      ),
+    };
+  }
+
+  const el = document.querySelector<HTMLElement>(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select select"
+  );
+
+  if (!(el instanceof HTMLElement)) return;
 
   let html = "";
 
@@ -907,15 +926,9 @@ $(".group.presetFilterButtons .filterBtns").on(
 );
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
-  const filter = Misc.sanitize(ResultFiltersSchema, Misc.deepClone(filterIn));
+  const filter = mergeWithDefaultFilters(
+    Misc.sanitize(ResultFiltersSchema, Misc.deepClone(filterIn))
+  );
 
-  Object.entries(defaultResultFilters).forEach((entry) => {
-    const key = entry[0] as ResultFiltersGroup;
-    const value = entry[1];
-    if (filter[key] === undefined) {
-      // @ts-expect-error key and value is based on default filter so this is safe to ignore
-      filter[key] = value;
-    }
-  });
   return filter;
 }
