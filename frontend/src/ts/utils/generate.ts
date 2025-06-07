@@ -1,6 +1,7 @@
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "./arrays";
 import * as Strings from "./strings";
+import { Charset, charsetRanges } from "./charsetRange";
 
 /**
  * Generates a random binary string of length 8.
@@ -101,15 +102,28 @@ export function getMorse(word: string): string {
  * Generates a random gibberish string of lowercase letters.
  * @returns The generated gibberish string.
  */
-export function getGibberish(): string {
+export function getGibberish(charset: Charset): string {
   const randLen = randomIntFromRange(1, 7);
   let ret = "";
-  for (let i = 0; i < randLen; i++) {
-    ret += String.fromCharCode(97 + randomIntFromRange(0, 25));
+  const ranges = charsetRanges[charset];
+
+  const chars = [];
+  for (let range of ranges) {
+    for (let i = range.start; i < range.end; i++) {
+      chars.push(i);
+    }
+  }
+
+  while (ret.length < randLen) {
+    const ch = String.fromCharCode(Arrays.randomElementFromArray(chars));
+
+    // Sanitizing the character
+    // keeping letters and vowels, killing viramas
+    // ref: https://www.regular-expressions.info/unicode.html
+    if (/\p{L}|\p{Mc}/u.test(ch)) ret += ch;
   }
   return ret;
 }
-
 /**
  * Generates a random ASCII string of printable characters.
  * @returns The generated ASCII string.

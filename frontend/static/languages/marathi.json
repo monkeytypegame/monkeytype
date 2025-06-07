@@ -2,6 +2,7 @@
   "name": "marathi",
   "noLazyMode": true,
   "orderedByFrequency": true,
+  "charset": "devanagari",
   "words": [
     "म्हणून",
     "मी",

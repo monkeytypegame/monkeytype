@@ -1,6 +1,7 @@
 {
   "name": "russian_10k",
   "bcp47": "ru-RU",
+  "charset": "cyrillic",
   "words": [
     "абажур",
     "абзац",

@@ -2,6 +2,7 @@
   "name": "armenian_1k",
   "noLazyMode": true,
   "orderedByFrequency": false,
+  "charset": "armenian",
   "words": [
     "ազատ",
     "քաղաք",

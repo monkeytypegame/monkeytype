@@ -2,6 +2,7 @@
   "name": "tatar_crimean_cyrillic_10k",
   "bcp47": "crh-CRH",
   "noLazyMode": true,
+  "charset": "cyrillic",
   "words": [
     "бир",
     "ве",
