@@ -595,16 +595,13 @@ async function runActiveCommand(): Promise<void> {
 
 let lastActiveIndex: string | undefined;
 function keepActiveCommandInView(): void {
+  if (mouseMode) return;
+
   const active: HTMLElement | null = document.querySelector(
     ".suggestions .command.active"
   );
 
   if (active === null || active.dataset["index"] === lastActiveIndex) {
-    return;
-  }
-
-  // check both mouseMode and hover state
-  if (mouseMode || active.matches(":hover")) {
     return;
   }
 
@@ -768,6 +765,7 @@ const modal = new AnimatedModal({
     let lastHover: HTMLElement | undefined;
 
     suggestions.addEventListener("mousemove", async (e) => {
+      mouseMode = true;
       const target = e.target as HTMLElement | null;
       if (target === lastHover) return;
 
