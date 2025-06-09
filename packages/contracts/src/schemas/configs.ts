@@ -333,14 +333,29 @@ export type FontSize = z.infer<typeof FontSizeSchema>;
 export const MaxLineWidthSchema = z.number().min(20).max(1000).or(z.literal(0));
 export type MaxLineWidth = z.infer<typeof MaxLineWidthSchema>;
 
-export const CustomBackgroundSchema = z
-  .string()
-  .url("Needs to be an URI.")
-  .regex(/^(https|http):\/\/.*/, "Unsupported protocol.")
-  .regex(/^[^`'"]*$/, "May not contain quotes.")
-  .regex(/.+(\.png|\.gif|\.jpeg|\.jpg)/gi, "Unsupported image format.")
-  .max(2048, "URL is too long.")
-  .or(z.literal(""));
+export const CustomBackgroundSchema = z.string().refine(
+  (val) => {
+    if (val === "") return true;
+    // check for http/https URL
+    if (
+      /^(https|http):\/\/.*/.test(val) &&
+      /^[^`'"]*$/.test(val) &&
+      /.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(val) &&
+      val.length <= 2048
+    ) {
+      return true;
+    }
+    // check for data URL
+    if (/^data:image\/(png|jpeg|gif);base64,[A-Za-z0-9+/]+=*$/.test(val)) {
+      return true;
+    }
+    return false;
+  },
+  {
+    message:
+      "Must be a valid http/https URL (png, gif, jpeg, jpg, max 2048 chars, no quotes) or a valid data URL (png, jpeg, gif).",
+  }
+);
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
 export const ConfigSchema = z
