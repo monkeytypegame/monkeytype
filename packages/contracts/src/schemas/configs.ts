@@ -85,10 +85,12 @@ export type KeymapStyle = z.infer<typeof KeymapStyleSchema>;
 
 export const KeyPropertiesSchema = z.object({
   w: z.number().optional(),
-  a: z.number().optional(),
   h: z.number().optional(),
   x: z.number().optional(),
   y: z.number().optional(),
+  r: z.number().optional(),
+  rx: z.number().optional(),
+  ry: z.number().optional(),
 });
 
 export type KeyProperties = z.infer<typeof KeyPropertiesSchema>;
