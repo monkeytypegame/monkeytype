@@ -802,9 +802,7 @@ export async function update(): Promise<void> {
     Config.tapeMargin
   );
 
-  $(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
-  ).val(Config.customBackground);
+  $("#customBackgroundInput").val(Config.customBackground);
 
   if (isAuthenticated()) {
     showAccountSection();
