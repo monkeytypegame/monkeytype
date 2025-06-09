@@ -1126,9 +1126,9 @@
         <span>custom background</span>
       </div>
       <div class="text">
-        Set an image url to be a custom background image. Cover fits the image
-        to cover the screen. Contain fits the image to be fully visible. Max
-        fits the image corner to corner.
+        Set an image url or upload a local image to be a custom background.
+        Cover fits the image to cover the screen. Contain fits the image to be
+        fully visible. Max fits the image corner to corner.
       </div>
       <div class="inputs">
         <div class="inputAndButton">
@@ -1146,6 +1146,17 @@
             <button class="save no-auto-handle">
               <i class="fas fa-save fa-fw"></i>
             </button>
+            <div class="upload-container">
+              <label for="customBackgroundUpload" class="button">
+                <i class="fas fa-upload fa-fw"></i>
+              </label>
+              <input
+                type="file"
+                id="customBackgroundUpload"
+                accept="image/png,image/jpeg,image/jpg,image/gif"
+                style="display: none"
+              />
+            </div>
           </span>
         </div>
         <div class="buttons">
