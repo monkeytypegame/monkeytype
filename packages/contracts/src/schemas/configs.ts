@@ -366,9 +366,9 @@ export const CustomBackgroundSchema = z.string().refine(
     if (val === "") return { message: "" };
     if (val.startsWith("javascript:"))
       return { message: "Unsupported protocol." };
-    if (!/^[^`'"]*$/.test(val)) return { message: "May not contain quotes." };
     if (!/^(https|http):\/\/.*/.test(val))
       return { message: "Needs to be an URI." };
+    if (!/^[^`'"]*$/.test(val)) return { message: "May not contain quotes." };
     if (!/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(val))
       return { message: "Unsupported image format." };
     if (val.length > 2048) return { message: "URL is too long." };
