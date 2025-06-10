@@ -336,10 +336,11 @@ export type MaxLineWidth = z.infer<typeof MaxLineWidthSchema>;
 export const CustomBackgroundSchema = z.string().refine(
   (val) => {
     if (val === "") return true;
+    // check for quotes first
+    if (!/^[^`'"]*$/.test(val)) return false;
     // check for http/https URL
     if (
       /^(https|http):\/\/.*/.test(val) &&
-      /^[^`'"]*$/.test(val) &&
       /.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(val) &&
       val.length <= 2048
     ) {
@@ -353,12 +354,12 @@ export const CustomBackgroundSchema = z.string().refine(
   },
   (val) => {
     if (val === "") return { message: "" };
+    if (!/^[^`'"]*$/.test(val)) return { message: "May not contain quotes." };
     if (!/^(https|http):\/\/.*/.test(val)) {
       if (val.startsWith("javascript:"))
         return { message: "Unsupported protocol." };
       return { message: "Needs to be an URI." };
     }
-    if (!/^[^`'"]*$/.test(val)) return { message: "May not contain quotes." };
     if (!/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(val))
       return { message: "Unsupported image format." };
     if (val.length > 2048) return { message: "URL is too long." };
