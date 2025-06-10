@@ -1059,6 +1059,15 @@ $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
   ).val() as string;
 
+  // check if it's a data:image URL
+  if (newVal.startsWith("data:image/")) {
+    Notifications.add(
+      "Data URLs are not allowed in the input field. Please use the import button for local images or use a proper URL link.",
+      0
+    );
+    return;
+  }
+
   const parsed = CustomBackgroundSchema.safeParse(newVal);
 
   if (!parsed.success) {
@@ -1085,6 +1094,15 @@ $(
     const newVal = $(
       ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
     ).val() as string;
+
+    // check if it's a data:image URL
+    if (newVal.startsWith("data:image/")) {
+      Notifications.add(
+        "Data URLs are not allowed in the input field. Please use the import button for local images or use a proper URL link.",
+        0
+      );
+      return;
+    }
 
     const parsed = CustomBackgroundSchema.safeParse(newVal);
 
