@@ -1117,7 +1117,7 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
   tokyo_night: {
     bgColor: "#1f2335",
     mainColor: "#c3e88d",
-    subColor: "#292e42",
+    subColor: "#414868",
     textColor: "#a9b1d6",
   },
 };
