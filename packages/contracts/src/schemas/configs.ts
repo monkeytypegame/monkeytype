@@ -351,9 +351,20 @@ export const CustomBackgroundSchema = z.string().refine(
     }
     return false;
   },
-  {
-    message:
-      "Must be a valid http/https URL (png, gif, jpeg, jpg, max 2048 chars, no quotes) or a valid data URL (png, jpeg, gif).",
+  (val) => {
+    if (val === "") return { message: "" };
+    if (!/^(https|http):\/\/.*/.test(val)) {
+      if (val.startsWith("javascript:"))
+        return { message: "Unsupported protocol." };
+      return { message: "Needs to be an URI." };
+    }
+    if (!/^[^`'"]*$/.test(val)) return { message: "May not contain quotes." };
+    if (!/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(val))
+      return { message: "Unsupported image format." };
+    if (val.length > 2048) return { message: "URL is too long." };
+    if (!/^data:image\/(png|jpeg|gif);base64,[A-Za-z0-9+/]+=*$/.test(val))
+      return { message: "Invalid data URL format" };
+    return { message: "Invalid background value" };
   }
 );
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
