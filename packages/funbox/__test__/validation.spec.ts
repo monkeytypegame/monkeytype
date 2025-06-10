@@ -114,5 +114,46 @@ describe("validation", () => {
         true
       );
     });
+    describe("should validate two funboxes modifying the wordset", () => {
+      const testCases = [
+        {
+          firstFunction: "withWords",
+          secondFunction: "withWords",
+          compatible: false,
+        },
+        {
+          firstFunction: "withWords",
+          secondFunction: "getWord",
+          compatible: false,
+        },
+        {
+          firstFunction: "getWord",
+          secondFunction: "pullSection",
+          compatible: false,
+        },
+      ];
+
+      it.for(testCases)(
+        `expect $firstFunction and $secondFunction to be compatible $compatible`,
+        ({ firstFunction, secondFunction, compatible }) => {
+          //GIVEN
+          getFunboxMock.mockReturnValueOnce([
+            {
+              name: "plus_one",
+              frontendFunctions: [firstFunction],
+            } as FunboxMetadata,
+            {
+              name: "plus_two",
+              frontendFunctions: [secondFunction],
+            } as FunboxMetadata,
+          ]);
+
+          //WHEN / THEN
+          expect(Validation.checkCompatibility(["plus_one", "plus_two"])).toBe(
+            compatible
+          );
+        }
+      );
+    });
   });
 });

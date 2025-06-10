@@ -55,7 +55,7 @@ let visibleTableLines = 0;
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults === undefined || filteredResults.length === 0) return;
   let newVisibleLines;
-  if (lineIndex && lineIndex > visibleTableLines) {
+  if (Numbers.isSafeNumber(lineIndex) && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
   } else {
     newVisibleLines = visibleTableLines + 10;
@@ -97,11 +97,10 @@ function loadMoreLines(lineIndex?: number): void {
       icons += `<span aria-label="lazy mode" data-balloon-pos="up"><i class="fas fa-fw fa-couch"></i></span>`;
     }
 
-    if (result.funbox !== "none" && result.funbox !== undefined) {
+    if (result.funbox !== undefined && result.funbox.length > 0) {
       icons += `<span aria-label="${result.funbox
-        .replace(/_/g, " ")
-        .replace(
-          /#/g,
+        .map((it) => it.replace(/_/g, " "))
+        .join(
           ", "
         )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
     }
@@ -268,6 +267,8 @@ async function fillContent(): Promise<void> {
       amount: number;
       time: number;
       totalWpm: number;
+      totalAcc: number;
+      totalCon: number;
     }
   >;
 
@@ -372,13 +373,11 @@ async function fillContent(): Promise<void> {
         }
       }
 
-      let langFilter = ResultFilters.getFilter(
-        "language",
-        result.language ?? "english"
-      );
+      let langFilter = ResultFilters.getFilter("language", result.language);
 
       if (
-        result.language === "english_expanded" &&
+        //legacy value for english_1k
+        (result.language as string) === "english_expanded" &&
         ResultFilters.getFilter("language", "english_1k")
       ) {
         langFilter = true;
@@ -412,7 +411,7 @@ async function fillContent(): Promise<void> {
         return;
       }
 
-      if (result.funbox === "none" || result.funbox === undefined) {
+      if (result.funbox === undefined || result.funbox.length === 0) {
         if (!ResultFilters.getFilter("funbox", "none")) {
           if (filterDebug) {
             console.log(`skipping result due to funbox filter`, result);
@@ -421,7 +420,7 @@ async function fillContent(): Promise<void> {
         }
       } else {
         let counter = 0;
-        for (const f of result.funbox.split("#")) {
+        for (const f of result.funbox) {
           if (ResultFilters.getFilter("funbox", f)) {
             counter++;
             break;
@@ -529,6 +528,8 @@ async function fillContent(): Promise<void> {
         (result.incompleteTestSeconds ?? 0) -
         (result.afkDuration ?? 0);
       dataForTimestamp.totalWpm += result.wpm;
+      dataForTimestamp.totalAcc += result.acc;
+      dataForTimestamp.totalCon += result.consistency ?? 0;
     } else {
       activityChartData[resultTimestamp] = {
         amount: 1,
@@ -537,6 +538,8 @@ async function fillContent(): Promise<void> {
           (result.incompleteTestSeconds ?? 0) -
           (result.afkDuration ?? 0),
         totalWpm: result.wpm,
+        totalAcc: result.acc,
+        totalCon: result.consistency ?? 0,
       };
     }
 
@@ -682,6 +685,9 @@ async function fillContent(): Promise<void> {
       x: dateInt,
       y: dataPoint.time / 60,
       amount: dataPoint.amount,
+      avgWpm: Numbers.roundTo2(dataPoint.totalWpm / dataPoint.amount),
+      avgAcc: Numbers.roundTo2(dataPoint.totalAcc / dataPoint.amount),
+      avgCon: Numbers.roundTo2(dataPoint.totalCon / dataPoint.amount),
     });
     activityChartData_avgWpm.push({
       x: dateInt,
@@ -689,7 +695,6 @@ async function fillContent(): Promise<void> {
         typingSpeedUnit.fromWpm(dataPoint.totalWpm) / dataPoint.amount
       ),
     });
-    // lastTimestamp = date;
   }
 
   const accountActivityScaleOptions = (
@@ -1095,7 +1100,7 @@ function sortAndRefreshHistory(
       }
     }
 
-    //@ts-expect-error
+    // @ts-expect-error temp
     temp.push(filteredResults[idx]);
     parsedIndexes.push(idx);
   }
@@ -1281,7 +1286,7 @@ $(".pageAccount .group.presetFilterButtons").on(
 );
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
-  //@ts-expect-error
+  //@ts-expect-error dont really wanna figure out the types here but it works
   void Misc.downloadResultsCSV(filteredResults);
 });
 
@@ -1336,6 +1341,7 @@ export const page = new Page({
       $(".pageAccount .preloader").removeClass("hidden");
       await LoadingPage.showBar();
     }
+    ResultFilters.updateTagsDropdownOptions();
     await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);

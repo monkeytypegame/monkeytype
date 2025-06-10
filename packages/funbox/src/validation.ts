@@ -1,6 +1,8 @@
 import { intersect } from "@monkeytype/util/arrays";
-import { FunboxForcedConfig, FunboxName } from "./types";
+import { FunboxForcedConfig } from "./types";
 import { getFunbox } from "./list";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { safeNumber } from "@monkeytype/util/numbers";
 
 export function checkCompatibility(
   funboxNames: FunboxName[],
@@ -19,8 +21,8 @@ export function checkCompatibility(
   const oneWordModifierMax =
     funboxesToCheck.filter(
       (f) =>
-        f.frontendFunctions?.includes("getWord") ??
-        f.frontendFunctions?.includes("pullSection") ??
+        f.frontendFunctions?.includes("getWord") ||
+        f.frontendFunctions?.includes("pullSection") ||
         f.frontendFunctions?.includes("withWords")
     ).length <= 1;
   const oneWordOrderMax =
@@ -109,7 +111,8 @@ export function checkCompatibility(
       .filter((f) => f !== undefined)
       .flat()
       .reduce<Record<string, number>>((counts, cssModification) => {
-        counts[cssModification] = (counts[cssModification] || 0) + 1;
+        counts[cssModification] =
+          (safeNumber(counts[cssModification]) ?? 0) + 1;
         return counts;
       }, {})
   ).every((c) => c <= 1);

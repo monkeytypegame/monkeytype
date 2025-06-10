@@ -62,6 +62,7 @@ function highlightMatches(text: string, matchedText: string[]): string {
 }
 
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
+  if (!modal.isOpen()) return [];
   const quoteLengthFilterValue = $(
     "#quoteSearchModal .quoteLengthFilter"
   ).val() as string[];
@@ -69,17 +70,18 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
     return quotes;
   }
 
-  const quoteLengthFilter = quoteLengthFilterValue.map((filterValue) =>
-    parseInt(filterValue, 10)
+  const quoteLengthFilter = new Set(
+    quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10))
   );
   const filteredQuotes = quotes.filter((quote) =>
-    quoteLengthFilter.includes(quote.group)
+    quoteLengthFilter.has(quote.group)
   );
 
   return filteredQuotes;
 }
 
 function applyQuoteFavFilter(quotes: Quote[]): Quote[] {
+  if (!modal.isOpen()) return [];
   const showFavOnly = (
     document.querySelector(".toggleFavorites") as HTMLDivElement
   ).classList.contains("active");
@@ -154,6 +156,8 @@ function buildQuoteSearchResult(
 }
 
 async function updateResults(searchText: string): Promise<void> {
+  if (!modal.isOpen()) return;
+
   const { quotes } = await QuotesController.getQuotes(Config.language);
 
   const quoteSearchService = getSearchService<Quote>(
@@ -259,10 +263,10 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         $("#quoteSearchModal .toggleFavorites").removeClass("hidden");
       }
 
+      const quoteMod = DB.getSnapshot()?.quoteMod;
       const isQuoteMod =
-        DB.getSnapshot()?.quoteMod !== undefined &&
-        (DB.getSnapshot()?.quoteMod === true ||
-          DB.getSnapshot()?.quoteMod !== "");
+        quoteMod !== undefined &&
+        (quoteMod === true || (quoteMod as string) !== "");
 
       if (isQuoteMod) {
         $("#quoteSearchModal .goToQuoteApprove").removeClass("hidden");
@@ -334,6 +338,7 @@ function apply(val: number): void {
 }
 
 const searchForQuotes = debounce(250, (): void => {
+  if (!modal.isOpen()) return;
   const searchText = (document.getElementById("searchBox") as HTMLInputElement)
     .value;
   currentPageNumber = 1;
@@ -343,7 +348,7 @@ const searchForQuotes = debounce(250, (): void => {
 async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
   const quoteLang = Config.language;
 
-  if (quoteLang === "" || quoteId === "") {
+  if (quoteLang === undefined || quoteId === "") {
     Notifications.add("Could not get quote stats!", -1);
     return;
   }

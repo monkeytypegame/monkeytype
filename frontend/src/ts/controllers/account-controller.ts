@@ -3,7 +3,6 @@ import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
 import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
 import * as Settings from "../pages/settings";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
@@ -50,6 +49,8 @@ import * as PSA from "../elements/psa";
 import defaultResultFilters from "../constants/default-result-filters";
 import { getActiveFunboxesWithFunction } from "../test/funbox/list";
 import { Snapshot } from "../constants/default-snapshot";
+import { LanguageList } from "../constants/languages";
+import * as Sentry from "../sentry";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -88,7 +89,10 @@ async function getDataAndInit(): Promise<boolean> {
     }
     LoadingPage.updateText("Downloading user data...");
     await LoadingPage.showBar();
-    await DB.initSnapshot();
+    const snapshot = await DB.initSnapshot();
+    if (snapshot !== false) {
+      Sentry.setUser(snapshot.uid, snapshot.name);
+    }
   } catch (error) {
     console.error(error);
     AccountButton.loading(false);
@@ -132,26 +136,15 @@ async function getDataAndInit(): Promise<boolean> {
 
   ResultFilters.loadTags(snapshot.tags);
 
-  Promise.all([JSONData.getLanguageList(), getAllFunboxes()])
-    .then((values) => {
-      const [languages, funboxes] = values;
-      languages.forEach((language) => {
-        defaultResultFilters.language[language] = true;
-      });
-      funboxes.forEach((funbox) => {
-        defaultResultFilters.funbox[funbox.name] = true;
-      });
-      // filters = defaultResultFilters;
-      void ResultFilters.load();
-    })
-    .catch((e: unknown) => {
-      console.log(
-        Misc.createErrorMessage(
-          e,
-          "Something went wrong while loading the filters"
-        )
-      );
-    });
+  for (const language of LanguageList) {
+    defaultResultFilters.language[language] = true;
+  }
+
+  for (const funbox of getAllFunboxes()) {
+    defaultResultFilters.funbox[funbox.name] = true;
+  }
+  // filters = defaultResultFilters;
+  void ResultFilters.load();
 
   if (snapshot.needsToChangeName) {
     Notifications.addPSA(
@@ -226,7 +219,7 @@ async function readyFunction(
   console.debug(`account controller ready`);
   if (authInitialisedAndConnected) {
     void PSA.show();
-    console.debug(`auth state changed, user ${user ? true : false}`);
+    console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     console.debug(user);
     if (user) {
       await loadUser(user);
@@ -234,6 +227,7 @@ async function readyFunction(
       if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
+      Sentry.clearUser();
       PageTransition.set(false);
       navigate();
     }
@@ -242,6 +236,7 @@ async function readyFunction(
     if (window.location.pathname === "/account") {
       window.history.replaceState("", "", "/login");
     }
+    Sentry.clearUser();
     PageTransition.set(false);
     navigate();
   }
@@ -465,6 +460,7 @@ export function signOut(): void {
       Notifications.add("Signed out", 0, {
         duration: 2,
       });
+      Sentry.clearUser();
       Settings.hideAccountSection();
       AccountButton.update(undefined);
       navigate("/login");

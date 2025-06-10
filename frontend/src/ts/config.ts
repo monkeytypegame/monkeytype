@@ -2,13 +2,11 @@ import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import {
-  isConfigValueValidAsync,
   isConfigValueValidBoolean,
   isConfigValueValid,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { isAuthenticated } from "./firebase";
-import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 import {
@@ -16,19 +14,25 @@ import {
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
 import {
+  createErrorMessage,
   isDevEnvironment,
   isObject,
+  promiseWithResolvers,
   reloadAfter,
   typedKeys,
 } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
-import { Config } from "@monkeytype/contracts/schemas/configs";
+import { Config, FunboxName } from "@monkeytype/contracts/schemas/configs";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
-import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
+import {
+  Language,
+  LanguageSchema,
+} from "@monkeytype/contracts/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -43,8 +47,6 @@ const configLS = new LocalStorageWithSchema({
     return migrateConfig(value);
   },
 });
-
-let loadDone: (value?: unknown) => void;
 
 const config = {
   ...getDefaultConfig(),
@@ -261,52 +263,42 @@ export function setFunbox(
   if (!isConfigValueValid("funbox", funbox, ConfigSchemas.FunboxSchema))
     return false;
 
-  for (const funbox of config.funbox.split("#")) {
+  for (const funbox of config.funbox) {
     if (!canSetFunboxWithConfig(funbox, config)) {
       return false;
     }
   }
 
-  const val = funbox ? funbox : "none";
-  config.funbox = val;
+  config.funbox = funbox;
   saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);
 
   return true;
 }
 
-export function toggleFunbox(
-  funbox: ConfigSchemas.Funbox,
-  nosave?: boolean
-): number | boolean {
-  if (!isConfigValueValid("funbox", funbox, ConfigSchemas.FunboxSchema))
+export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
+  if (!canSetFunboxWithConfig(funbox, config)) {
     return false;
-
-  let r;
-
-  const funboxArray = config.funbox.split("#");
-  if (funboxArray[0] === "none") funboxArray.splice(0, 1);
-  if (!funboxArray.includes(funbox)) {
-    if (!canSetFunboxWithConfig(funbox, config)) {
-      return false;
-    }
-    funboxArray.push(funbox);
-    config.funbox = funboxArray.sort().join("#");
-    r = funboxArray.indexOf(funbox);
-  } else {
-    r = funboxArray.indexOf(funbox);
-    funboxArray.splice(r, 1);
-    if (funboxArray.length === 0) {
-      config.funbox = "none";
-    } else {
-      config.funbox = funboxArray.join("#");
-    }
-    r = -r - 1;
   }
+
+  let newConfig: FunboxName[] = config.funbox;
+
+  if (newConfig.includes(funbox)) {
+    newConfig = newConfig.filter((it) => it !== funbox);
+  } else {
+    newConfig.push(funbox);
+    newConfig.sort();
+  }
+
+  if (!isConfigValueValid("funbox", newConfig, ConfigSchemas.FunboxSchema)) {
+    return false;
+  }
+
+  config.funbox = newConfig;
   saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);
 
-  return r;
+  return true;
 }
 
 export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
@@ -930,7 +922,7 @@ export function setTapeMargin(
   }
 
   if (
-    !isConfigValueValid("max line width", value, ConfigSchemas.TapeMarginSchema)
+    !isConfigValueValid("tape margin", value, ConfigSchemas.TapeMarginSchema)
   ) {
     return false;
   }
@@ -1453,7 +1445,7 @@ function setThemes(
   if (!isConfigValueValid("themes", theme, ConfigSchemas.ThemeNameSchema))
     return false;
 
-  //@ts-expect-error
+  //@ts-expect-error config used to have 9
   if (customThemeColors.length === 9) {
     //color missing
     if (customState) {
@@ -1539,7 +1531,7 @@ export function setCustomThemeColors(
   nosave?: boolean
 ): boolean {
   // migrate existing configs missing sub alt color
-  // @ts-expect-error
+  // @ts-expect-error legacy configs
   if (colors.length === 9) {
     //color missing
     Notifications.add(
@@ -1577,7 +1569,6 @@ export function setLanguage(language: Language, nosave?: boolean): boolean {
   if (!isConfigValueValid("language", language, LanguageSchema)) return false;
 
   config.language = language;
-  void AnalyticsController.log("changedLanguage", { language });
   saveToLocalStorage("language", nosave);
   ConfigEvent.dispatch("language", config.language);
 
@@ -1876,23 +1867,43 @@ export function setCustomBackground(
   return true;
 }
 
-export async function setCustomLayoutfluid(
+export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
-): Promise<boolean> {
-  const trimmed = value.trim();
-
+): boolean {
   if (
-    !(await isConfigValueValidAsync("layoutfluid", trimmed, ["layoutfluid"]))
+    !isConfigValueValid(
+      "layoutfluid",
+      value,
+      ConfigSchemas.CustomLayoutFluidSchema
+    )
   ) {
     return false;
   }
 
-  const customLayoutfluid = trimmed.replace(/ /g, "#");
-
-  config.customLayoutfluid = customLayoutfluid;
+  config.customLayoutfluid = value;
   saveToLocalStorage("customLayoutfluid", nosave);
-  ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
+  ConfigEvent.dispatch("customLayoutfluid", config.customLayoutfluid);
+
+  return true;
+}
+
+export function setCustomPolyglot(
+  value: ConfigSchemas.CustomPolyglot,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid(
+      "customPolyglot",
+      value,
+      ConfigSchemas.CustomPolyglotSchema
+    )
+  )
+    return false;
+
+  config.customPolyglot = value;
+  saveToLocalStorage("customPolyglot", nosave);
+  ConfigEvent.dispatch("customPolyglot", config.customPolyglot);
 
   return true;
 }
@@ -1922,8 +1933,8 @@ export function setCustomBackgroundFilter(
   array: ConfigSchemas.CustomBackgroundFilter,
   nosave?: boolean
 ): boolean {
-  //convert existing configs using five values down to four
-  //@ts-expect-error
+  // @ts-expect-error this used to be 5
+  // need to convert existing configs using five values down to four
   if (array.length === 5) {
     array = [array[0], array[1], array[2], array[3]];
   }
@@ -2002,7 +2013,8 @@ export async function apply(
       configObj.autoSwitchTheme,
       true
     );
-    await setCustomLayoutfluid(configObj.customLayoutfluid, true);
+    setCustomLayoutfluid(configObj.customLayoutfluid, true);
+    setCustomPolyglot(configObj.customPolyglot, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
@@ -2125,8 +2137,31 @@ export function getConfigChanges(): Partial<Config> {
   return configChanges;
 }
 
-export const loadPromise = new Promise((v) => {
-  loadDone = v;
-});
+export async function applyFromJson(json: string): Promise<void> {
+  try {
+    const parsedConfig = parseJsonWithSchema(
+      json,
+      ConfigSchemas.PartialConfigSchema.strip(),
+      {
+        migrate: (value) => {
+          if (Array.isArray(value)) {
+            throw new Error("Invalid config");
+          }
+          return migrateConfig(value);
+        },
+      }
+    );
+    await apply(parsedConfig);
+    saveFullConfigToLocalStorage();
+    Notifications.add("Done", 1);
+  } catch (e) {
+    const msg = createErrorMessage(e, "Failed to import settings");
+    console.error(msg);
+    Notifications.add(msg, -1);
+  }
+}
 
+const { promise: loadPromise, resolve: loadDone } = promiseWithResolvers();
+
+export { loadPromise };
 export default config;

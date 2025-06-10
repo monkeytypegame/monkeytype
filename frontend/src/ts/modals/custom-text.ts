@@ -357,6 +357,11 @@ function apply(): void {
 
   const text = cleanUpText();
 
+  if (text.length === 0) {
+    Notifications.add("Text cannot be empty", 0);
+    return;
+  }
+
   if (state.customTextMode === "simple") {
     CustomText.setMode("repeat");
     state.customTextLimits.word = `${text.length}`;
@@ -425,7 +430,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   )) {
     button.addEventListener("click", (e) => {
       state.removeFancyTypographyEnabled =
-        (e.target as HTMLButtonElement).value === "true" ? true : false;
+        (e.target as HTMLButtonElement).value === "true";
       updateUI();
     });
   }
@@ -435,7 +440,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   )) {
     button.addEventListener("click", (e) => {
       state.replaceControlCharactersEnabled =
-        (e.target as HTMLButtonElement).value === "true" ? true : false;
+        (e.target as HTMLButtonElement).value === "true";
       updateUI();
     });
   }
@@ -445,7 +450,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   )) {
     button.addEventListener("click", (e) => {
       state.removeZeroWidthCharactersEnabled =
-        (e.target as HTMLButtonElement).value === "true" ? true : false;
+        (e.target as HTMLButtonElement).value === "true";
       updateUI();
     });
   }
@@ -455,7 +460,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   )) {
     button.addEventListener("click", (e) => {
       state.customTextPipeDelimiter =
-        (e.target as HTMLButtonElement).value === "true" ? true : false;
+        (e.target as HTMLButtonElement).value === "true";
       if (state.customTextPipeDelimiter && state.customTextLimits.word !== "") {
         state.customTextLimits.word = "";
       }

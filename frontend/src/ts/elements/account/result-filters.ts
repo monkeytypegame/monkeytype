@@ -1,6 +1,5 @@
 import * as Misc from "../../utils/misc";
 import * as Strings from "../../utils/strings";
-import * as JSONData from "../../utils/json-data";
 import * as DB from "../../db";
 import Config from "../../config";
 import * as Notifications from "../notifications";
@@ -17,7 +16,8 @@ import {
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
-import { SnapshotUserTag } from "../../constants/default-snapshot";
+import { Snapshot, SnapshotUserTag } from "../../constants/default-snapshot";
+import { LanguageList } from "../../constants/languages";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>
@@ -55,7 +55,9 @@ const resultFiltersLS = new LocalStorageWithSchema({
     if (!Misc.isObject(unknown)) {
       return defaultResultFilters;
     }
-    return mergeWithDefaultFilters(unknown as ResultFilters);
+    return mergeWithDefaultFilters(
+      Misc.sanitize(ResultFiltersSchema, unknown as ResultFilters)
+    );
   },
 });
 
@@ -76,7 +78,7 @@ type Option = {
   mandatory: boolean;
 };
 
-const groupsUsingSelect = ["language", "funbox", "tags"];
+const groupsUsingSelect = new Set(["language", "funbox", "tags"]);
 const groupSelects: Partial<Record<keyof ResultFilters, SlimSelect>> = {};
 
 // current activated filter
@@ -315,7 +317,7 @@ export function updateActive(): void {
         }
       }
 
-      if (groupsUsingSelect.includes(group)) {
+      if (groupsUsingSelect.has(group)) {
         const option = $(
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[value="${filter}"]`
         );
@@ -423,9 +425,9 @@ export function updateActive(): void {
             if (id === "none") return id;
             const snapshot = DB.getSnapshot();
             if (snapshot === undefined) return id;
-            const name = snapshot.tags?.filter((t) => t._id === id)[0];
+            const name = snapshot.tags?.find((t) => t._id === id);
             if (name !== undefined) {
-              return snapshot.tags?.filter((t) => t._id === id)[0]?.display;
+              return snapshot.tags?.find((t) => t._id === id)?.display;
             }
             return name;
           })
@@ -644,10 +646,10 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
     filters.language[Config.language] = true;
   }
 
-  if (Config.funbox === "none") {
+  if (Config.funbox.length === 0) {
     filters.funbox["none"] = true;
   } else {
-    for (const f of Config.funbox.split("#")) {
+    for (const f of Config.funbox) {
       filters.funbox[f] = true;
     }
   }
@@ -740,139 +742,121 @@ let selectChangeCallbackFn: () => void = () => {
   //
 };
 
-export async function appendButtons(
-  selectChangeCallback: () => void
-): Promise<void> {
-  selectChangeCallbackFn = selectChangeCallback;
+export function updateTagsDropdownOptions(): void {
+  const el = document.querySelector<HTMLElement>(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select select"
+  );
 
-  let languageList;
-  try {
-    languageList = await JSONData.getLanguageList();
-  } catch (e) {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to append language buttons")
-    );
-  }
-  if (languageList) {
-    let html = "";
+  if (!(el instanceof HTMLElement)) return;
 
-    html +=
-      "<select class='languageSelect' group='language' placeholder='select a language' multiple>";
+  const snapshot = DB.getSnapshot();
 
-    html += "<option value='all'>all</option>";
-
-    for (const language of languageList) {
-      html += `<option value="${language}" filter="${language}">${Strings.getLanguageDisplayString(
-        language
-      )}</option>`;
-    }
-
-    html += "</select>";
-
-    const el = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .select"
-    );
-    if (el) {
-      el.innerHTML = html;
-      groupSelects["language"] = new SlimSelect({
-        select: el.querySelector(".languageSelect") as HTMLSelectElement,
-        settings: {
-          showSearch: true,
-          placeholderText: "select a language",
-          allowDeselect: true,
-          closeOnSelect: false,
-        },
-        events: {
-          beforeChange: (
-            selectedOptions,
-            oldSelectedOptions
-          ): void | boolean => {
-            return selectBeforeChangeFn(
-              "language",
-              selectedOptions,
-              oldSelectedOptions
-            );
-          },
-          beforeOpen: (): void => {
-            adjustScrollposition("language");
-          },
-        },
-      });
-    }
+  if (snapshot === undefined) {
+    return;
   }
 
   let html = "";
 
-  html +=
-    "<select class='funboxSelect' group='funbox' placeholder='select a funbox' multiple>";
-
   html += "<option value='all'>all</option>";
-  html += "<option value='none'>no funbox</option>";
+  html += "<option value='none'>no tag</option>";
 
-  for (const funbox of getAllFunboxes()) {
-    html += `<option value="${funbox.name}" filter="${
-      funbox.name
-    }">${funbox.name.replace(/_/g, " ")}</option>`;
+  for (const tag of snapshot.tags) {
+    html += `<option value="${tag._id}" filter="${tag.name}">${tag.display}</option>`;
   }
 
-  html += "</select>";
+  el.innerHTML = html;
+}
 
-  const el = document.querySelector(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .select"
+let buttonsAppended = false;
+
+export async function appendButtons(
+  selectChangeCallback: () => void
+): Promise<void> {
+  if (buttonsAppended) return;
+
+  selectChangeCallbackFn = selectChangeCallback;
+
+  groupSelects["language"] = new SlimSelect({
+    select:
+      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .select .languageSelect",
+    data: [
+      { value: "all", text: "all" },
+      ...LanguageList.map((language) => ({
+        value: language,
+        text: Strings.getLanguageDisplayString(language),
+        filter: language,
+      })),
+    ],
+    settings: {
+      showSearch: true,
+      placeholderText: "select a language",
+      allowDeselect: true,
+      closeOnSelect: false,
+    },
+    events: {
+      beforeChange: (selectedOptions, oldSelectedOptions): void | boolean => {
+        return selectBeforeChangeFn(
+          "language",
+          selectedOptions,
+          oldSelectedOptions
+        );
+      },
+      beforeOpen: (): void => {
+        adjustScrollposition("language");
+      },
+    },
+  });
+
+  groupSelects["funbox"] = new SlimSelect({
+    select:
+      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .select .funboxSelect",
+    data: [
+      { value: "all", text: "all" },
+      { value: "none", text: "no funbox" },
+      ...getAllFunboxes().map((funbox) => ({
+        value: funbox.name,
+        text: funbox.name.replace(/_/g, " "),
+        filter: funbox.name,
+      })),
+    ],
+    settings: {
+      showSearch: true,
+      placeholderText: "select a funbox",
+      allowDeselect: true,
+      closeOnSelect: false,
+    },
+    events: {
+      beforeChange: (selectedOptions, oldSelectedOptions): void | boolean => {
+        return selectBeforeChangeFn(
+          "funbox",
+          selectedOptions,
+          oldSelectedOptions
+        );
+      },
+      beforeOpen: (): void => {
+        adjustScrollposition("funbox");
+      },
+    },
+  });
+
+  //snapshot at this point is guaranteed to exist
+  const snapshot = DB.getSnapshot() as Snapshot;
+
+  const tagsSection = $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags"
   );
-  if (el) {
-    el.innerHTML = html;
-    groupSelects["funbox"] = new SlimSelect({
-      select: el.querySelector(".funboxSelect") as HTMLSelectElement,
-      settings: {
-        showSearch: true,
-        placeholderText: "select a funbox",
-        allowDeselect: true,
-        closeOnSelect: false,
-      },
-      events: {
-        beforeChange: (selectedOptions, oldSelectedOptions): void | boolean => {
-          return selectBeforeChangeFn(
-            "funbox",
-            selectedOptions,
-            oldSelectedOptions
-          );
-        },
-        beforeOpen: (): void => {
-          adjustScrollposition("funbox");
-        },
-      },
-    });
-  }
 
-  const snapshot = DB.getSnapshot();
-
-  if (snapshot !== undefined && (snapshot.tags?.length ?? 0) > 0) {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
-      "hidden"
+  if (snapshot.tags.length === 0) {
+    tagsSection.addClass("hidden");
+  } else {
+    tagsSection.removeClass("hidden");
+    updateTagsDropdownOptions();
+    const selectEl = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select .tagsSelect"
     );
-
-    let html = "";
-
-    html +=
-      "<select class='tagsSelect' group='tags' placeholder='select a tag' multiple>";
-
-    html += "<option value='all'>all</option>";
-    html += "<option value='none'>no tag</option>";
-
-    for (const tag of snapshot.tags) {
-      html += `<option value="${tag._id}" filter="${tag.name}">${tag.display}</option>`;
-    }
-
-    html += "</select>";
-
-    const el = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select"
-    );
-    if (el) {
-      el.innerHTML = html;
+    if (selectEl) {
       groupSelects["tags"] = new SlimSelect({
-        select: el.querySelector(".tagsSelect") as HTMLSelectElement,
+        select: selectEl,
         settings: {
           showSearch: true,
           placeholderText: "select a tag",
@@ -896,13 +880,10 @@ export async function appendButtons(
         },
       });
     }
-  } else {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
-      "hidden"
-    );
   }
 
   void updateFilterPresets();
+  buttonsAppended = true;
 }
 
 export function removeButtons(): void {
@@ -926,7 +907,8 @@ $(".group.presetFilterButtons .filterBtns").on(
 );
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
-  const filter = Misc.deepClone(filterIn);
+  const filter = Misc.sanitize(ResultFiltersSchema, Misc.deepClone(filterIn));
+
   Object.entries(defaultResultFilters).forEach((entry) => {
     const key = entry[0] as ResultFiltersGroup;
     const value = entry[1];

@@ -52,17 +52,19 @@ import {
   XpBreakdown,
 } from "@monkeytype/contracts/schemas/results";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { mapRange, roundTo2, stdDev } from "@monkeytype/util/numbers";
+import {
+  isSafeNumber,
+  mapRange,
+  roundTo2,
+  stdDev,
+} from "@monkeytype/util/numbers";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
 } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
-import {
-  getFunbox,
-  checkCompatibility,
-  stringToFunboxNames,
-} from "@monkeytype/funbox";
+import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -174,8 +176,8 @@ export async function updateTags(
   if (!(result.language ?? "")) {
     result.language = "english";
   }
-  if (!(result.funbox ?? "")) {
-    result.funbox = "none";
+  if (result.funbox === undefined) {
+    result.funbox = [];
   }
   if (!result.lazyMode) {
     result.lazyMode = false;
@@ -241,16 +243,11 @@ export async function addResult(
     Logger.warning("Object hash check is disabled, skipping hash check");
   }
 
-  if (completedEvent.funbox) {
-    const funboxes = completedEvent.funbox.split("#");
-    if (funboxes.length !== _.uniq(funboxes).length) {
-      throw new MonkeyError(400, "Duplicate funboxes");
-    }
+  if (completedEvent.funbox.length !== _.uniq(completedEvent.funbox).length) {
+    throw new MonkeyError(400, "Duplicate funboxes");
   }
 
-  const funboxNames = stringToFunboxNames(completedEvent.funbox ?? "");
-
-  if (!checkCompatibility(funboxNames)) {
+  if (!checkCompatibility(completedEvent.funbox)) {
     throw new MonkeyError(400, "Impossible funbox combination");
   }
 
@@ -318,13 +315,7 @@ export async function addResult(
   //   );
   //   return res.status(400).json({ message: "Time traveler detected" });
 
-  //get latest result ordered by timestamp
-  let lastResultTimestamp: null | number = null;
-  try {
-    lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
-  } catch (e) {
-    //
-  }
+  const { data: lastResult } = await tryCatch(ResultDAL.getLastResult(uid));
 
   //convert result test duration to miliseconds
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
@@ -333,13 +324,16 @@ export async function addResult(
   const testDurationMilis = completedEvent.testDuration * 1000;
   const incompleteTestsMilis = completedEvent.incompleteTestSeconds * 1000;
   const earliestPossible =
-    (lastResultTimestamp ?? 0) + testDurationMilis + incompleteTestsMilis;
+    (lastResult?.timestamp ?? 0) + testDurationMilis + incompleteTestsMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
-  if (lastResultTimestamp && nowNoMilis < earliestPossible - 1000) {
+  if (
+    isSafeNumber(lastResult?.timestamp) &&
+    nowNoMilis < earliestPossible - 1000
+  ) {
     void addLog(
       "invalid_result_spacing",
       {
-        lastTimestamp: lastResultTimestamp,
+        lastTimestamp: lastResult.timestamp,
         earliestPossible,
         now: nowNoMilis,
         testDuration: testDurationMilis,
@@ -606,9 +600,9 @@ export async function addResult(
           badgeId: selectedBadgeId,
           lastActivityTimestamp: Date.now(),
           isPremium,
+          timeTypedSeconds: totalDurationTypedSeconds,
         },
         xpGained: xpGained.xp,
-        timeTypedSeconds: totalDurationTypedSeconds,
       }
     );
   }
@@ -737,15 +731,12 @@ async function calculateXp(
     }
   }
 
-  if (funboxBonusConfiguration > 0 && resultFunboxes !== "none") {
-    const funboxModifier = _.sumBy(
-      stringToFunboxNames(resultFunboxes),
-      (funboxName) => {
-        const funbox = getFunbox(funboxName);
-        const difficultyLevel = funbox?.difficultyLevel ?? 0;
-        return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
-      }
-    );
+  if (funboxBonusConfiguration > 0 && resultFunboxes.length !== 0) {
+    const funboxModifier = _.sumBy(resultFunboxes, (funboxName) => {
+      const funbox = getFunbox(funboxName);
+      const difficultyLevel = funbox?.difficultyLevel ?? 0;
+      return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
+    });
     if (funboxModifier > 0) {
       modifier += funboxModifier;
       breakdown.funbox = Math.round(baseXp * funboxModifier);
@@ -786,17 +777,16 @@ async function calculateXp(
   const accuracyModifier = (acc - 50) / 50;
 
   let dailyBonus = 0;
-  let lastResultTimestamp: number | undefined;
+  const { data: lastResult, error: getLastResultError } = await tryCatch(
+    ResultDAL.getLastResult(uid)
+  );
 
-  try {
-    const { timestamp } = await ResultDAL.getLastResult(uid);
-    lastResultTimestamp = timestamp;
-  } catch (err) {
-    Logger.error(`Could not fetch last result: ${err}`);
+  if (getLastResultError) {
+    Logger.error(`Could not fetch last result: ${getLastResultError}`);
   }
 
-  if (lastResultTimestamp) {
-    const lastResultDay = getStartOfDayTimestamp(lastResultTimestamp);
+  if (isSafeNumber(lastResult?.timestamp)) {
+    const lastResultDay = getStartOfDayTimestamp(lastResult.timestamp);
     const today = getCurrentDayTimestamp();
     if (lastResultDay !== today) {
       const proportionalXp = Math.round(currentTotalXp * 0.05);

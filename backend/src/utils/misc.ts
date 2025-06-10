@@ -198,6 +198,7 @@ export function isDevEnvironment(): boolean {
  * @param data  database object with `_id: ObjectId`
  * @returns api object with `id: string`
  */
+
 export function replaceObjectId<T extends { _id: ObjectId }>(
   data: T
 ): T & { _id: string };

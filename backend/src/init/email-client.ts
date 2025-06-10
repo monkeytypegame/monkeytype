@@ -8,6 +8,7 @@ import { recordEmail } from "../utils/prometheus";
 import type { EmailTaskContexts, EmailType } from "../queues/email-queue";
 import { isDevEnvironment } from "../utils/misc";
 import { getErrorMessage } from "../utils/error";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 type EmailMetadata = {
   subject: string;
@@ -55,7 +56,7 @@ export async function init(): Promise<void> {
   try {
     transporter = nodemailer.createTransport({
       host: EMAIL_HOST,
-      secure: EMAIL_PORT === "465" ? true : false,
+      secure: EMAIL_PORT === "465",
       port: parseInt(EMAIL_PORT ?? "578", 10),
       auth: {
         user: EMAIL_USER,
@@ -109,14 +110,15 @@ export async function sendEmail(
 
   type Result = { response: string; accepted: string[] };
 
-  let result: Result;
-  try {
-    result = (await transporter.sendMail(mailOptions)) as Result;
-  } catch (e) {
+  const { data: result, error } = await tryCatch(
+    transporter.sendMail(mailOptions) as Promise<Result>
+  );
+
+  if (error) {
     recordEmail(templateName, "fail");
     return {
       success: false,
-      message: getErrorMessage(e) ?? "Unknown error",
+      message: getErrorMessage(error) ?? "Unknown error",
     };
   }
 

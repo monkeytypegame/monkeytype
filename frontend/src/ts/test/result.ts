@@ -37,20 +37,18 @@ import type {
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
-import {
-  getActiveFunboxes,
-  getFromString,
-  isFunboxActiveWithProperty,
-} from "./funbox/list";
-import { getFunboxesFromString } from "@monkeytype/funbox";
+import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
+import { getFunbox } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
+import { Language } from "@monkeytype/contracts/schemas/languages";
+import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 
 let result: CompletedEvent;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
 
-let quoteLang = "";
+let quoteLang: Language | undefined;
 let quoteId = "";
 
 export function toggleUnsmoothedRaw(): void {
@@ -80,7 +78,6 @@ async function updateGraph(): Promise<void> {
       Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
     ),
   ];
-
   if (result.chartData === "toolong") return;
 
   const chartData2 = [
@@ -129,7 +126,7 @@ async function updateGraph(): Promise<void> {
   ChartController.result.getDataset("error").data = result.chartData.err;
 
   const fc = await ThemeColors.get("sub");
-  if (Config.funbox !== "none") {
+  if (Config.funbox.length > 0) {
     let content = "";
     for (const fb of getActiveFunboxes()) {
       content += fb.name;
@@ -184,7 +181,7 @@ export async function updateGraphPBLine(): Promise<void> {
     result.language,
     result.difficulty,
     result.lazyMode ?? false,
-    getFunboxesFromString(result.funbox ?? "none")
+    getFunbox(result.funbox)
   );
   const localPbWpm = localPb?.wpm ?? 0;
   if (localPbWpm === 0) return;
@@ -249,7 +246,7 @@ function updateWpmAndAcc(): void {
   );
 
   if (Config.alwaysShowDecimalPlaces) {
-    if (Config.typingSpeedUnit != "wpm") {
+    if (Config.typingSpeedUnit !== "wpm") {
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
         result.wpm.toFixed(2) + " wpm"
@@ -283,7 +280,7 @@ function updateWpmAndAcc(): void {
     let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
     let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
 
-    if (Config.typingSpeedUnit != "wpm") {
+    if (Config.typingSpeedUnit !== "wpm") {
       wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
     }
@@ -481,12 +478,11 @@ type CanGetPbObject = {
 };
 
 async function resultCanGetPb(): Promise<CanGetPbObject> {
-  const funboxes = result.funbox?.split("#") ?? [];
-  const funboxObjects = getFromString(result.funbox);
+  const funboxes = result.funbox;
+  const funboxObjects = getFunbox(result.funbox);
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
 
-  const funboxesOk =
-    result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb;
+  const funboxesOk = funboxes.length === 0 || allFunboxesCanGetPb;
   const notUsingStopOnLetter = Config.stopOnError !== "letter";
   const notBailedOut = !result.bailedOut;
 
@@ -699,8 +695,9 @@ function updateTestType(randomQuote: Quote | null): void {
   if (Config.lazyMode) {
     testType += "<br>lazy";
   }
-  if (Config.funbox !== "none") {
-    testType += "<br>" + Config.funbox.replace(/_/g, " ").replace(/#/g, ", ");
+  if (Config.funbox.length > 0) {
+    testType +=
+      "<br>" + Config.funbox.map((it) => it.replace(/_/g, " ")).join(", ");
   }
   if (Config.difficulty === "expert") {
     testType += "<br>expert";
@@ -784,7 +781,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
 
     const userqr =
       DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
-    if (userqr) {
+    if (Numbers.isSafeNumber(userqr)) {
       $(".pageTest #result #rateQuoteButton .icon")
         .removeClass("far")
         .addClass("fas");
@@ -796,7 +793,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
           quoteStats?.average?.toFixed(1) ?? ""
         );
       })
-      .catch((e: unknown) => {
+      .catch((_e: unknown) => {
         $(".pageTest #result #rateQuoteButton .rating").text("?");
       });
     $(".pageTest #result #rateQuoteButton")
@@ -821,7 +818,7 @@ function updateQuoteFavorite(randomQuote: Quote | null): void {
     return;
   }
 
-  quoteLang = Config.mode === "quote" ? randomQuote.language : "";
+  quoteLang = Config.mode === "quote" ? randomQuote.language : undefined;
   quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
 
   const userFav = QuotesController.isQuoteFavorite(randomQuote);
@@ -970,7 +967,7 @@ export async function update(
         Misc.applyReducedMotion(125)
       );
 
-      const canQuickRestart = Misc.canQuickRestart(
+      const canQuickRestart = canQuickRestartFn(
         Config.mode,
         Config.words,
         Config.time,
@@ -1046,7 +1043,7 @@ export function updateTagsAfterEdit(
 }
 
 $(".pageTest #favoriteQuoteButton").on("click", async () => {
-  if (quoteLang === "" || quoteId === "") {
+  if (quoteLang === undefined || quoteId === "") {
     Notifications.add("Could not get quote stats!", -1);
     return;
   }

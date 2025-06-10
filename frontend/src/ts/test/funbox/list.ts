@@ -1,13 +1,12 @@
 import Config from "../../config";
 import {
-  FunboxName,
-  stringToFunboxNames,
   FunboxMetadata,
   getFunboxObject,
   FunboxProperty,
 } from "@monkeytype/funbox";
 
 import { FunboxFunctions, getFunboxFunctions } from "./funbox-functions";
+import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 
 type FunboxMetadataWithFunctions = FunboxMetadata & {
   functions?: FunboxFunctions;
@@ -45,18 +44,12 @@ export function getAllFunboxes(): FunboxMetadataWithFunctions[] {
   return Object.values(metadataWithFunctions);
 }
 
-export function getFromString(
-  hashSeparatedFunboxes: string
-): FunboxMetadataWithFunctions[] {
-  return get(stringToFunboxNames(hashSeparatedFunboxes));
-}
-
 export function getActiveFunboxes(): FunboxMetadataWithFunctions[] {
-  return get(stringToFunboxNames(Config.funbox));
+  return get(getActiveFunboxNames());
 }
 
 export function getActiveFunboxNames(): FunboxName[] {
-  return stringToFunboxNames(Config.funbox);
+  return Config.funbox ?? [];
 }
 
 /**
@@ -80,8 +73,8 @@ export function findSingleActiveFunboxWithProperty(
   property: FunboxProperty
 ): FunboxMetadataWithFunctions | undefined {
   const matching = getActiveFunboxesWithProperty(property);
-  if (matching.length == 0) return undefined;
-  if (matching.length == 1) return matching[0];
+  if (matching.length === 0) return undefined;
+  if (matching.length === 1) return matching[0];
   throw new Error(
     `Expecting exactly one funbox with property "${property} but found ${matching.length}`
   );
@@ -139,8 +132,8 @@ export function findSingleActiveFunboxWithFunction<
   F extends keyof FunboxFunctions
 >(functionName: F): FunboxWithFunction<F> | undefined {
   const matching = getActiveFunboxesWithFunction(functionName);
-  if (matching.length == 0) return undefined;
-  if (matching.length == 1) return matching[0] as FunboxWithFunction<F>;
+  if (matching.length === 0) return undefined;
+  if (matching.length === 1) return matching[0] as FunboxWithFunction<F>;
   throw new Error(
     `Expecting exactly one funbox implementing "${functionName} but found ${matching.length}`
   );

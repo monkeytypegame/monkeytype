@@ -15,6 +15,8 @@ import * as Notifications from "../../elements/notifications";
 
 let bannerShownThisSession = false;
 
+export let lastSeenServerCompatibility: number | undefined;
+
 function timeoutSignal(ms: number): AbortSignal {
   const ctrl = new AbortController();
   setTimeout(() => ctrl.abort(new Error("request timed out")), ms);
@@ -36,7 +38,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
       const usePolyfill = AbortSignal?.timeout === undefined;
 
       request.fetchOptions = {
-        ...(request.fetchOptions || {}),
+        ...request.fetchOptions,
         signal: usePolyfill
           ? timeoutSignal(timeout)
           : AbortSignal.timeout(timeout),
@@ -52,6 +54,11 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
       const compatibilityCheckHeader = response.headers.get(
         COMPATIBILITY_CHECK_HEADER
       );
+
+      if (compatibilityCheckHeader !== null) {
+        lastSeenServerCompatibility = parseInt(compatibilityCheckHeader);
+      }
+
       if (compatibilityCheckHeader !== null && !bannerShownThisSession) {
         const backendCheck = parseInt(compatibilityCheckHeader);
         if (backendCheck !== COMPATIBILITY_CHECK) {
@@ -59,14 +66,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
             backendCheck > COMPATIBILITY_CHECK
               ? `Looks like the client and server versions are mismatched (backend is newer). Please <a onClick="location.reload(true)">refresh</a> the page.`
               : `Looks like our monkeys didn't deploy the new server version correctly. If this message persists contact support.`;
-          Notifications.addBanner(
-            message,
-            1,
-            undefined,
-            false,
-            undefined,
-            true
-          );
+          Notifications.addPSA(message, 1, undefined, false, undefined, true);
           bannerShownThisSession = true;
         }
       }

@@ -15,7 +15,8 @@ const badges: Record<number, UserBadge> = {
     description: "I made this",
     icon: "fa-laptop",
     color: "white",
-    customStyle: "animation: rgb-bg 10s linear infinite;",
+    customStyle:
+      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
   },
   2: {
     id: 2,
@@ -23,7 +24,8 @@ const badges: Record<number, UserBadge> = {
     description: "I helped make this",
     icon: "fa-code",
     color: "white",
-    customStyle: "animation: rgb-bg 10s linear infinite;",
+    customStyle:
+      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
   },
   3: {
     id: 3,
@@ -31,7 +33,8 @@ const badges: Record<number, UserBadge> = {
     description: "Discord server moderator",
     icon: "fa-hammer",
     color: "white",
-    customStyle: "animation: rgb-bg 10s linear infinite;",
+    customStyle:
+      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
   },
   4: {
     id: 4,
@@ -111,7 +114,8 @@ const badges: Record<number, UserBadge> = {
     description: "Yes, I'm actually this fast",
     icon: "fa-rocket",
     color: "white",
-    customStyle: "animation: rgb-bg 10s linear infinite;",
+    customStyle:
+      "animation: rgb-bg 10s linear infinite; background: linear-gradient(45deg in hsl longer hue, hsl(330, 90%, 30%) 0%, hsl(250, 90%, 30%) 100%);",
   },
   14: {
     id: 14,

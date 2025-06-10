@@ -2,18 +2,18 @@ import {
   Config,
   ConfigValue,
   PartialConfig,
+  FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
-import { typedKeys } from "./misc";
+import { sanitize, typedKeys } from "./misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
-
 /**
  * migrates possible outdated config and merges with the default config values
  * @param config partial or possible outdated config
  * @returns
  */
 export function migrateConfig(config: PartialConfig | object): Config {
-  return mergeWithDefaultConfig(replaceLegacyValues(config));
+  return mergeWithDefaultConfig(sanitizeConfig(replaceLegacyValues(config)));
 }
 
 function mergeWithDefaultConfig(config: PartialConfig): Config {
@@ -27,10 +27,19 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
   return mergedConfig;
 }
 
+/**
+ * remove all values from the config which are not valid
+ */
+function sanitizeConfig(
+  config: ConfigSchemas.PartialConfig
+): ConfigSchemas.PartialConfig {
+  return sanitize(ConfigSchemas.PartialConfigSchema, config);
+}
+
 export function replaceLegacyValues(
   configObj: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
-  //@ts-expect-error
+  //@ts-expect-error legacy configs
   if (configObj.quickTab === true && configObj.quickRestart === undefined) {
     configObj.quickRestart = "tab";
   }
@@ -40,7 +49,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.swapEscAndTab === true &&
     configObj.quickRestart === undefined
   ) {
@@ -48,14 +57,14 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.alwaysShowCPM === true &&
     configObj.typingSpeedUnit === undefined
   ) {
     configObj.typingSpeedUnit = "cpm";
   }
 
-  //@ts-expect-error
+  //@ts-expect-error legacy configs
   if (configObj.showAverage === "wpm") {
     configObj.showAverage = "speed";
   }
@@ -65,7 +74,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showTimerProgress === false &&
     configObj.timerStyle === undefined
   ) {
@@ -73,7 +82,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showLiveWpm === true &&
     configObj.liveSpeedStyle === undefined
   ) {
@@ -85,7 +94,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showLiveBurst === true &&
     configObj.liveBurstStyle === undefined
   ) {
@@ -97,7 +106,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showLiveAcc === true &&
     configObj.liveAccStyle === undefined
   ) {
@@ -110,6 +119,27 @@ export function replaceLegacyValues(
 
   if (typeof configObj.soundVolume === "string") {
     configObj.soundVolume = parseFloat(configObj.soundVolume);
+  }
+
+  if (typeof configObj.funbox === "string") {
+    if (configObj.funbox === "none") {
+      configObj.funbox = [];
+    } else {
+      configObj.funbox = (configObj.funbox as string).split(
+        "#"
+      ) as FunboxName[];
+    }
+  }
+
+  if (typeof configObj.customLayoutfluid === "string") {
+    configObj.customLayoutfluid = (configObj.customLayoutfluid as string).split(
+      "#"
+    ) as ConfigSchemas.CustomLayoutFluid;
+  }
+
+  if (typeof configObj.indicateTypos === "boolean") {
+    configObj.indicateTypos =
+      configObj.indicateTypos === false ? "off" : "replace";
   }
 
   return configObj;

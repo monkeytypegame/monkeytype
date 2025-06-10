@@ -74,13 +74,13 @@ export function getStats(): unknown {
   };
 
   try {
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.spacing.average =
       TestInput.keypressTimings.spacing.array.reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.spacing.array.length;
 
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.spacing.sd = Numbers.stdDev(
       TestInput.keypressTimings.spacing.array
     );
@@ -88,13 +88,13 @@ export function getStats(): unknown {
     //
   }
   try {
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.duration.average =
       TestInput.keypressTimings.duration.array.reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.duration.array.length;
 
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.duration.sd = Numbers.stdDev(
       TestInput.keypressTimings.duration.array
     );

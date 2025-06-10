@@ -1,3 +1,4 @@
+// eslint-disable no-require-imports
 const fs = require("fs");
 const Ajv = require("ajv");
 const ajv = new Ajv();
@@ -44,46 +45,6 @@ function validateOthers() {
     } else {
       console.log("Fonts JSON schema is \u001b[31minvalid\u001b[0m");
       return reject(new Error(fontsValidator.errors[0].message));
-    }
-
-    //themes
-    const themesData = JSON.parse(
-      fs.readFileSync("./static/themes/_list.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-    const themesSchema = {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          name: { type: "string" },
-          bgColor: { type: "string" },
-          mainColor: { type: "string" },
-        },
-        required: ["name", "bgColor", "mainColor"],
-      },
-    };
-    const themesValidator = ajv.compile(themesSchema);
-    if (themesValidator(themesData)) {
-      console.log("Themes list JSON schema is \u001b[32mvalid\u001b[0m");
-    } else {
-      console.log("Themes list JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(themesValidator.errors[0].message));
-    }
-    //check if files exist
-    for (const theme of themesData) {
-      const themeName = theme.name;
-      const fileName = `${themeName}.css`;
-      const themePath = `./static/themes/${fileName}`;
-      if (!fs.existsSync(themePath)) {
-        console.log(`File ${fileName} was \u001b[31mnot found\u001b[0m`);
-        // return reject(new Error(`File for theme ${themeName} does not exist`));
-        return reject(
-          `Could not find file ${fileName} for theme ${themeName} - make sure the file exists and is named correctly`
-        );
-      }
     }
 
     //challenges
@@ -149,7 +110,7 @@ function validateOthers() {
               funbox: {
                 type: "object",
                 properties: {
-                  exact: { type: "string" },
+                  exact: { type: "array" },
                 },
               },
             },
@@ -263,39 +224,44 @@ function validateOthers() {
         required: ["keymapShowTopRow", "type", "keys"],
       },
     };
-    const layoutsData = JSON.parse(
-      fs.readFileSync("./static/layouts/_list.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
 
-    let layoutsAllGood = true;
-    let layoutsErrors;
-    Object.keys(layoutsData).forEach((layoutName) => {
-      const layoutData = layoutsData[layoutName];
+    let layoutsErrors = [];
+
+    const layouts = fs
+      .readdirSync("./static/layouts")
+      .map((it) => it.substring(0, it.length - 5));
+
+    for (let layoutName of layouts) {
+      let layoutData = "";
+      try {
+        layoutData = JSON.parse(
+          fs.readFileSync(`./static/layouts/${layoutName}.json`, "utf-8")
+        );
+      } catch (e) {
+        layoutsErrors.push(`Layout ${layoutName} has error: ${e.message}`);
+        continue;
+      }
 
       if (!layoutsSchema[layoutData.type]) {
         const msg = `Layout ${layoutName} has an invalid type: ${layoutData.type}`;
         console.log(msg);
-        layoutsAllGood = false;
-        layoutsErrors = [msg];
+        layoutsErrors.push(msg);
       } else {
         const layoutsValidator = ajv.compile(layoutsSchema[layoutData.type]);
         if (!layoutsValidator(layoutData)) {
           console.log(
             `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`
           );
-          layoutsAllGood = false;
-          layoutsErrors = layoutsValidator.errors[0].message;
+          layoutsErrors.push(layoutsValidator.errors[0].message);
         }
       }
-    });
-    if (layoutsAllGood) {
+    }
+
+    if (layoutsErrors.length === 0) {
       console.log(`Layout JSON schemas are \u001b[32mvalid\u001b[0m`);
     } else {
       console.log(`Layout JSON schemas are \u001b[31minvalid\u001b[0m`);
-      return reject(new Error(layoutsErrors));
+      return reject(new Error(layoutsErrors.join("\n")));
     }
     resolve();
   });
@@ -425,58 +391,9 @@ function validateQuotes() {
 
 function validateLanguages() {
   return new Promise((resolve, reject) => {
-    //languages
-    const languagesData = JSON.parse(
-      fs.readFileSync("./static/languages/_list.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-    const languagesSchema = {
-      type: "array",
-      items: {
-        type: "string",
-      },
-    };
-    const languagesValidator = ajv.compile(languagesSchema);
-    if (languagesValidator(languagesData)) {
-      console.log("Languages list JSON schema is \u001b[32mvalid\u001b[0m");
-    } else {
-      console.log("Languages list JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(languagesValidator.errors[0].message));
-    }
-
-    //languages group
-    const languagesGroupData = JSON.parse(
-      fs.readFileSync("./static/languages/_groups.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-    const languagesGroupSchema = {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          name: { type: "string" },
-          languages: {
-            type: "array",
-            items: {
-              type: "string",
-            },
-          },
-        },
-        required: ["name", "languages"],
-      },
-    };
-    const languagesGroupValidator = ajv.compile(languagesGroupSchema);
-    if (languagesGroupValidator(languagesGroupData)) {
-      console.log("Languages groups JSON schema is \u001b[32mvalid\u001b[0m");
-    } else {
-      console.log("Languages groups JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(languagesGroupValidator.errors[0].message));
-    }
-
+    const languages = fs
+      .readdirSync("./static/languages")
+      .map((it) => it.substring(0, it.length - 5));
     //language files
     const languageFileSchema = {
       type: "object",
@@ -506,7 +423,7 @@ function validateLanguages() {
     let languageFilesErrors;
     const duplicatePercentageThreshold = 0.0001;
     let langsWithDuplicates = 0;
-    languagesData.forEach((language) => {
+    languages.forEach((language) => {
       const languageFileData = JSON.parse(
         fs.readFileSync(`./static/languages/${language}.json`, {
           encoding: "utf8",

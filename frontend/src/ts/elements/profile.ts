@@ -172,7 +172,7 @@ export async function update(
       console.debug("isToday", isToday);
       console.debug("isYesterday", isYesterday);
 
-      const offsetString = streakOffset
+      const offsetString = Numbers.isSafeNumber(streakOffset)
         ? `(${streakOffset > 0 ? "+" : ""}${streakOffset} offset)`
         : "";
 
@@ -243,10 +243,10 @@ export async function update(
   let socials = false;
 
   if (!banned) {
-    bio = profile.details?.bio ?? "" ? true : false;
+    bio = !!(profile.details?.bio ?? "");
     details.find(".bio .value").text(profile.details?.bio ?? "");
 
-    keyboard = profile.details?.keyboard ?? "" ? true : false;
+    keyboard = !!(profile.details?.keyboard ?? "");
     details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
     if (
