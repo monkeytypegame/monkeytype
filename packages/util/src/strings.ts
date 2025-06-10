@@ -10,5 +10,6 @@ export function sanitizeString(str: string): string {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;")
     .replace(/\\/g, "&bsol;")
+    .replace(/\n/, "")
     .replace(/script/g, "");
 }

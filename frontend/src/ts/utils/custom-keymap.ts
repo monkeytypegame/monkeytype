@@ -11,8 +11,8 @@ import { parseWithSchema } from "@monkeytype/util/json";
 
 const columnMultiplier = 8;
 const rowMultiplier = 8;
-const basicSpan = 2;
 const margin = 0.125;
+let basicSpan = 2;
 
 function keyToData(key: string): string {
   return (key && keyToDataObject[key]) ?? "";
@@ -119,10 +119,9 @@ function createHtmlKey(
   rowOffset: number
 ): string {
   const dataKey = !isInvisible ? keyToData(keyString) : "";
+  const fontSize = keyString.length > 2 ? "font-size: 0.6rem; " : "";
   const span = !isInvisible
-    ? `<span class="letter" style="${legendStyle}">${
-        keyToData(keyString) && keyString
-      }</span>`
+    ? `<span class="letter" style="${legendStyle}; ${fontSize}">${keyString}</span>`
     : "";
   const remUnit = (basicSpan + 2 * margin) / columnMultiplier;
   let transform =
@@ -209,11 +208,31 @@ function createKey(
   }
 }
 
+function calculateRowSpan(): void {
+  const flag: Element | null = document.querySelector(
+    "#mobileTestConfigButton"
+  );
+  if (flag !== null) {
+    const flagValue = getComputedStyle(flag).display;
+    const grid: HTMLElement | null = document.querySelector(".keyboard-grid");
+    // checking wheter or not the Test Setting is visible and use this as a change point
+    basicSpan = flagValue !== "none" ? 1.25 : 2;
+
+    const newSpanSize = (basicSpan + 2 * margin) / columnMultiplier;
+
+    if (grid !== null && grid !== undefined) {
+      grid.style.setProperty("--colSpan", `${newSpanSize}rem`);
+      grid.style.setProperty("--rowSpan", `${newSpanSize}rem`);
+    }
+  }
+}
+
 export function getCustomKeymapSyle(
   keymapStyle: KeymapCustom,
   layout: Layout,
   keymapLegendStyle: KeymapLegendStyle
 ): string {
+  calculateRowSpan();
   const keymapCopy = [...keymapStyle];
   let legendStyle = "";
   if (keymapLegendStyle === "uppercase") {
@@ -331,11 +350,17 @@ export function getCustomKeymapSyle(
     }
     return rowHtml.join("");
   });
-  return `<div style="display: grid; grid-template-columns: repeat(${
-    maxColumn + columnMultiplier - 1
-  }, ${
-    (basicSpan + 2 * margin) / columnMultiplier
-  }rem); grid-template-rows: repeat(${maxRow + rowMultiplier - 1}, ${
-    (basicSpan + 2 * margin) / columnMultiplier
-  }rem)">${keymapHtml.join("")}</div>`;
+  const cols = maxColumn + columnMultiplier - 1,
+    rows = maxRow + rowMultiplier - 1,
+    colSpan = (basicSpan + 2 * margin) / columnMultiplier,
+    rowSpan = (basicSpan + 2 * margin) / rowMultiplier;
+
+  return `<div class="keyboard-grid" style="
+    --columns: ${cols};
+    --rows: ${rows};
+    --rowSpan: ${rowSpan}rem;
+    --colSpan: ${colSpan}rem;
+  ">${keymapHtml.join("")}</div>`;
 }
+
+window.addEventListener("resize", calculateRowSpan);
