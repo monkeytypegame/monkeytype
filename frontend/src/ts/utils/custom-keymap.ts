@@ -100,7 +100,7 @@ function createHtmlKey(
   row: number,
   rowSpan: number,
   isInvisible: boolean,
-  rotationAngle: number,
+  rotationAngle: number | undefined,
   columnOffset: number,
   rowOffset: number
 ): string {
@@ -109,11 +109,12 @@ function createHtmlKey(
     ? `<span class="letter">${keyToData(keyString) && keyString}</span>`
     : "";
   const remUnit = (basicSpan + 2 * margin) / columnMultiplier;
-  let transform = rotationAngle
-    ? `transform-origin: ${(columnOffset ?? 0) * remUnit}rem ${
-        (rowOffset ?? 0) * remUnit
-      }rem; transform: rotate(${rotationAngle}deg);`
-    : "";
+  let transform =
+    rotationAngle !== undefined
+      ? `transform-origin: ${(columnOffset ?? 0) * remUnit}rem ${
+          (rowOffset ?? 0) * remUnit
+        }rem; transform: rotate(${rotationAngle}deg);`
+      : "";
   return `<div style="display: flex; grid-column: ${column} / span ${
     size * columnMultiplier
   }; grid-row: ${row} / span ${
@@ -129,15 +130,63 @@ function createSpaceKey(
   column: number,
   size: number,
   row: number,
-  rowSpan: number
+  rowSpan: number,
+  rotationAngle: number | undefined,
+  columnOffset: number,
+  rowOffset: number
 ): string {
+  const remUnit = (basicSpan + 2 * margin) / columnMultiplier;
+  let transform =
+    rotationAngle !== undefined
+      ? `transform-origin: ${(columnOffset ?? 0) * remUnit}rem ${
+          (rowOffset ?? 0) * remUnit
+        }rem; transform: rotate(${rotationAngle}deg);`
+      : "";
   return `<div style="display: flex; grid-column: ${column} / span ${
     size * columnMultiplier
   }; grid-row: ${row} / span ${
     rowSpan * rowMultiplier
-  };""><div class="keymapKey keySpace layoutIndicator">
+  }; ${transform}""><div class="keymapKey keySpace layoutIndicator">
     <span class="letter">${sanitizeString(layout)}</span>
   </div></div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
+}
+
+function createKey(
+  keyString: string,
+  layout: Layout,
+  column: number,
+  size: number,
+  row: number,
+  rowSpan: number,
+  isInvisible: boolean,
+  rotationAngle: number | undefined,
+  columnOffset: number,
+  rowOffset: number
+): string {
+  if (keyString === "spc") {
+    return createSpaceKey(
+      layout,
+      column,
+      size,
+      row,
+      rowSpan,
+      rotationAngle,
+      columnOffset,
+      rowOffset
+    );
+  } else {
+    return createHtmlKey(
+      keyString,
+      column,
+      size,
+      row,
+      rowSpan,
+      isInvisible,
+      rotationAngle,
+      columnOffset,
+      rowOffset
+    );
+  }
 }
 
 export function getCustomKeymapSyle(
@@ -147,13 +196,15 @@ export function getCustomKeymapSyle(
   const keymapCopy = [...keymapStyle];
   let maxColumn = 1,
     maxRow = 1,
+    rotationRow = 1,
     currentRow = 1,
-    rotationAngle = 0,
     rowOffset = 0,
-    isRotationSectionStarted: boolean;
+    rotationAngle: number | undefined,
+    isRotationSectionStarted: boolean,
+    rotationColumn: number | undefined;
   const keymapHtml = keymapCopy.map((row: (KeyProperties | string)[]) => {
     const rowCopy = [...row];
-    let currentColumn = 1,
+    let currentColumn = rotationColumn !== undefined ? rotationColumn : 1,
       columnOffset = 0;
     const rowHtml = rowCopy.map(
       (element: KeyProperties | string, index: number) => {
@@ -166,30 +217,27 @@ export function getCustomKeymapSyle(
           rowSpan = 1,
           isInvisible = false;
         if (isOnlyInvisibleKey(element) && element.x !== undefined) {
-          columnSpan = element.x;
-          keyString = "";
-          isInvisible = true;
+          maxColumn = currentColumn > maxColumn ? currentColumn : maxColumn;
+          currentColumn += element.x * columnMultiplier;
+          if (isRotationSectionStarted) {
+            columnOffset += -1 * element.x * columnMultiplier;
+          }
+          return;
         } else if (isKeyProperties(element)) {
           if (element.w !== undefined && "w" in element) {
             columnSpan = element.w;
           }
           if (element.y !== undefined && "y" in element) {
             currentRow += element.y * rowMultiplier;
+            if (isRotationSectionStarted) {
+              rowOffset += -1 * element.y * rowMultiplier;
+            }
           }
           if (element.x !== undefined && "x" in element) {
-            const size = element.x;
-            keyHtml += createHtmlKey(
-              "",
-              currentColumn,
-              size,
-              currentRow,
-              rowSpan,
-              true,
-              rotationAngle,
-              columnOffset,
-              rowOffset
-            );
-            currentColumn += size * columnMultiplier;
+            currentColumn += element.x * columnMultiplier;
+            if (isRotationSectionStarted) {
+              columnOffset += -1 * element.x * columnMultiplier;
+            }
           }
           if (element.h !== undefined && "h" in element) {
             rowSpan = element.h;
@@ -198,10 +246,19 @@ export function getCustomKeymapSyle(
             rotationAngle = element.r;
             columnOffset = -(currentColumn - 1);
             rowOffset = -(currentRow - 1);
-            // TODO improve this, not working
             if (element.rx !== undefined || element.ry !== undefined) {
-              currentColumn = (element.rx ?? 0) * columnMultiplier + 1;
-              currentRow = (element.ry ?? 0) * rowMultiplier + 1;
+              currentColumn =
+                element.rx !== undefined
+                  ? element.rx * columnMultiplier + 1
+                  : rotationColumn ?? 1;
+              currentRow =
+                element.ry !== undefined
+                  ? element.ry * rowMultiplier + 1
+                  : rotationRow ?? 1;
+              rotationColumn = currentColumn;
+              rotationRow = currentRow;
+              rowOffset = 0;
+              columnOffset = 0;
               if (element.y !== undefined && "y" in element) {
                 currentRow += element.y * rowMultiplier;
                 rowOffset = -1 * element.y * rowMultiplier;
@@ -210,17 +267,6 @@ export function getCustomKeymapSyle(
                 currentColumn += element.x * columnMultiplier;
                 columnOffset = -1 * element.x * columnMultiplier;
               }
-              // columnOffset = - (element.x ?? 0) * columnMultiplier;
-              // columnOffset = 0;
-              // if(element.x !== undefined) {
-              //   columnOffset = element.x * columnMultiplier;
-              // }
-              // // rowOffset = - (element.y ?? 0) * rowMultiplier;
-              // rowOffset = 0;
-              // if (element.y !== undefined) {
-              //   rowOffset = - (element.y * rowMultiplier);
-              // }
-              // rotationColumn = currentColumn;
             }
             isRotationSectionStarted = true;
           }
@@ -230,32 +276,22 @@ export function getCustomKeymapSyle(
           rowCopy.splice(index, 1);
         }
 
-        // After all
-        if (keyString === "spc") {
-          keyHtml += createSpaceKey(
-            layout,
-            currentColumn,
-            columnSpan,
-            currentRow,
-            rowSpan
-          );
-        } else {
-          keyHtml += createHtmlKey(
-            keyString,
-            currentColumn,
-            columnSpan,
-            currentRow,
-            rowSpan,
-            isInvisible,
-            rotationAngle,
-            columnOffset,
-            rowOffset
-          );
-        }
+        keyHtml += createKey(
+          keyString,
+          layout,
+          currentColumn,
+          columnSpan,
+          currentRow,
+          rowSpan,
+          isInvisible,
+          rotationAngle,
+          columnOffset,
+          rowOffset
+        );
         maxColumn = currentColumn > maxColumn ? currentColumn : maxColumn;
         currentColumn += columnSpan * columnMultiplier;
         if (isRotationSectionStarted) {
-          columnOffset -= columnSpan * columnMultiplier;
+          columnOffset += -1 * columnSpan * columnMultiplier;
         }
         return keyHtml;
       }
@@ -263,7 +299,7 @@ export function getCustomKeymapSyle(
     maxRow = currentRow > maxRow ? currentRow : maxRow;
     currentRow += rowMultiplier;
     if (isRotationSectionStarted) {
-      rowOffset -= rowMultiplier;
+      rowOffset += -1 * rowMultiplier;
     }
     return rowHtml.join("");
   });
