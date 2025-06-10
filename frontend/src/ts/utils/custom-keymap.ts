@@ -2,7 +2,8 @@ import {
   KeyProperties,
   KeymapCustom,
   KeymapCustomSchema,
-  Layout,
+  KeymapLegendStyle,
+  KeymapLayout as Layout,
 } from "@monkeytype/contracts/schemas/configs";
 import { dataKeys as keyToDataObject } from "../constants/data-keys";
 import { sanitizeString } from "@monkeytype/util/strings";
@@ -107,6 +108,7 @@ export function keymapToString(keymap: KeymapCustom): string {
 
 function createHtmlKey(
   keyString: string,
+  legendStyle: string,
   column: number,
   size: number,
   row: number,
@@ -118,7 +120,9 @@ function createHtmlKey(
 ): string {
   const dataKey = !isInvisible ? keyToData(keyString) : "";
   const span = !isInvisible
-    ? `<span class="letter">${keyToData(keyString) && keyString}</span>`
+    ? `<span class="letter" style="${legendStyle}">${
+        keyToData(keyString) && keyString
+      }</span>`
     : "";
   const remUnit = (basicSpan + 2 * margin) / columnMultiplier;
   let transform =
@@ -139,6 +143,7 @@ function createHtmlKey(
 
 function createSpaceKey(
   layout: Layout,
+  legendStyle: string,
   column: number,
   size: number,
   row: number,
@@ -159,13 +164,14 @@ function createSpaceKey(
   }; grid-row: ${row} / span ${
     rowSpan * rowMultiplier
   }; ${transform}"><div class="keymapKey keySpace layoutIndicator">
-    <div class="letter">${sanitizeString(layout)}</div>
+    <div class="letter" style="${legendStyle}">${sanitizeString(layout)}</div>
   </div></div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
 }
 
 function createKey(
   keyString: string,
   layout: Layout,
+  legendStyle: string,
   column: number,
   size: number,
   row: number,
@@ -178,6 +184,7 @@ function createKey(
   if (keyString === "spc") {
     return createSpaceKey(
       layout,
+      legendStyle,
       column,
       size,
       row,
@@ -189,6 +196,7 @@ function createKey(
   } else {
     return createHtmlKey(
       keyString,
+      legendStyle,
       column,
       size,
       row,
@@ -203,9 +211,16 @@ function createKey(
 
 export function getCustomKeymapSyle(
   keymapStyle: KeymapCustom,
-  layout: Layout
+  layout: Layout,
+  keymapLegendStyle: KeymapLegendStyle
 ): string {
   const keymapCopy = [...keymapStyle];
+  let legendStyle = "";
+  if (keymapLegendStyle === "uppercase") {
+    legendStyle = "text-transform: capitalize;";
+  } else if (keymapLegendStyle === "blank") {
+    legendStyle = "display: none; transition: none;";
+  }
   let maxColumn = 1,
     maxRow = 1,
     rotationRow = 1,
@@ -291,6 +306,7 @@ export function getCustomKeymapSyle(
         keyHtml += createKey(
           keyString,
           layout,
+          legendStyle,
           currentColumn,
           columnSpan,
           currentRow,

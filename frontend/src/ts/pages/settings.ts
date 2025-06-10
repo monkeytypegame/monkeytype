@@ -32,7 +32,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
-import { stringToKeymap } from "../utils/custom-keymap";
+import { keymapToString, stringToKeymap } from "../utils/custom-keymap";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Theme, ThemesList } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
@@ -121,6 +121,10 @@ async function initGroups(): Promise<void> {
           $(
             ".pageSettings .section[data-config-name='keymapCustom']"
           ).removeClass("hidden");
+        } else {
+          $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+            "hidden"
+          );
         }
       }
     }
@@ -814,6 +818,10 @@ export async function update(): Promise<void> {
 
   $(".pageSettings .section[data-config-name='fontSize'] input").val(
     Config.fontSize
+  );
+
+  $(".pageSettings .section[data-config-name='keymapCustom'] textarea").val(
+    keymapToString(Config.keymapCustom)
   );
 
   $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
