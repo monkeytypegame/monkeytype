@@ -39,6 +39,17 @@ function isOnlyInvisibleKey(
   );
 }
 
+function roundUpKeys(element: KeyProperties): KeyProperties {
+  for (let key in element) {
+    const k = key as keyof KeyProperties;
+    element[k] =
+      element[k] !== undefined
+        ? Math.round(element[k] * columnMultiplier) / columnMultiplier
+        : undefined;
+  }
+  return element;
+}
+
 function sanitizeKeymap(keymap: KeymapCustom): KeymapCustom {
   return keymap.map((row: (KeyProperties | string)[]) => {
     return row
@@ -51,7 +62,7 @@ function sanitizeKeymap(keymap: KeymapCustom): KeymapCustom {
           element !== null &&
           Object.keys(element).length > 0
         ) {
-          return element;
+          return roundUpKeys(element);
         } else {
           return null;
         }
@@ -71,7 +82,8 @@ export function stringToKeymap(keymap: string): KeymapCustom {
       processedKeymap,
       KeymapCustomSchema
     );
-    return sanitizeKeymap(jsonKeymap);
+    const test = sanitizeKeymap(jsonKeymap);
+    return test;
   } catch (error) {
     throw new Error("Wrong keymap, make sure you copy the right JSON file!");
   }
@@ -146,8 +158,8 @@ function createSpaceKey(
     size * columnMultiplier
   }; grid-row: ${row} / span ${
     rowSpan * rowMultiplier
-  }; ${transform}""><div class="keymapKey keySpace layoutIndicator">
-    <span class="letter">${sanitizeString(layout)}</span>
+  }; ${transform}"><div class="keymapKey keySpace layoutIndicator">
+    <div class="letter">${sanitizeString(layout)}</div>
   </div></div>`.replace(/(\r\n|\r|\n|\s{2,})/g, "");
 }
 
