@@ -336,7 +336,9 @@ export type MaxLineWidth = z.infer<typeof MaxLineWidthSchema>;
 export const CustomBackgroundSchema = z.string().refine(
   (val) => {
     if (val === "") return true;
-    // check for quotes first
+    // check protocol first
+    if (val.startsWith("javascript:")) return false;
+    // check for quotes
     if (!/^[^`'"]*$/.test(val)) return false;
     // check for http/https URL
     if (
@@ -347,24 +349,42 @@ export const CustomBackgroundSchema = z.string().refine(
       return true;
     }
     // check for data URL
-    if (/^data:image\/(png|jpeg|gif);base64,[A-Za-z0-9+/]+=*$/.test(val)) {
-      return true;
+    if (/^data:image\/(png|jpeg|gif);base64,/.test(val)) {
+      const base64Data = val.split(",")[1];
+      if (base64Data === null || base64Data === undefined || base64Data === "")
+        return false;
+      try {
+        atob(base64Data);
+        return /^[A-Za-z0-9+/]+=*$/.test(base64Data);
+      } catch {
+        return false;
+      }
     }
     return false;
   },
   (val) => {
     if (val === "") return { message: "" };
+    if (val.startsWith("javascript:"))
+      return { message: "Unsupported protocol." };
     if (!/^[^`'"]*$/.test(val)) return { message: "May not contain quotes." };
-    if (!/^(https|http):\/\/.*/.test(val)) {
-      if (val.startsWith("javascript:"))
-        return { message: "Unsupported protocol." };
+    if (!/^(https|http):\/\/.*/.test(val))
       return { message: "Needs to be an URI." };
-    }
     if (!/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(val))
       return { message: "Unsupported image format." };
     if (val.length > 2048) return { message: "URL is too long." };
-    if (!/^data:image\/(png|jpeg|gif);base64,[A-Za-z0-9+/]+=*$/.test(val))
-      return { message: "Invalid data URL format" };
+    if (/^data:image\/(png|jpeg|gif);base64,/.test(val)) {
+      const base64Data = val.split(",")[1];
+      if (base64Data === null || base64Data === undefined || base64Data === "")
+        return { message: "Invalid data URL format" };
+      try {
+        atob(base64Data);
+        if (!/^[A-Za-z0-9+/]+=*$/.test(base64Data)) {
+          return { message: "Invalid data URL format" };
+        }
+      } catch {
+        return { message: "Invalid data URL format" };
+      }
+    }
     return { message: "Invalid background value" };
   }
 );
