@@ -368,9 +368,7 @@ export const CustomBackgroundSchema = z.string().refine(
     if (val.startsWith("javascript:")) return false;
     if (containsQuotes(val)) return false;
     if (isHttpUrl(val)) {
-      if (!isImageExtension(val)) return false;
-      if (val.length > 2048) return false;
-      return true;
+      return isImageExtension(val) && val.length <= 2048;
     }
     if (isDataImageUrl(val)) {
       return isValidBase64Data(val);
