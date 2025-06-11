@@ -5,7 +5,7 @@ import { getAuth, Auth as AuthType, User } from "firebase/auth";
 // oxlint-disable ban-ts-comment
 // @ts-ignore as far as i remember this is for CI
 // eslint-disable-next-line import/no-unresolved
-import { firebaseConfig } from "./constants/firebase-config-example";
+import { firebaseConfig } from "./constants/firebase-config";
 import * as Notifications from "./elements/notifications";
 import { createErrorMessage, isDevEnvironment } from "./utils/misc";
 
