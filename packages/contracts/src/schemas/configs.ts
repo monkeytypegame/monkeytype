@@ -379,10 +379,10 @@ export const CustomBackgroundSchema = z.string().refine(
     if (val === "") return { message: "" };
     if (val.startsWith("javascript:"))
       return { message: "Unsupported protocol." };
+    if (val.length > 2048) return { message: "URL is too long." };
     if (!isHttpUrl(val)) return { message: "Needs to be an URI." };
     if (containsQuotes(val)) return { message: "May not contain quotes." };
     if (!isImageExtension(val)) return { message: "Unsupported image format." };
-    if (val.length > 2048) return { message: "URL is too long." };
     if (isDataImageUrl(val)) {
       const base64Data = val.split(",")[1];
       if (base64Data === null || base64Data === undefined || base64Data === "")
