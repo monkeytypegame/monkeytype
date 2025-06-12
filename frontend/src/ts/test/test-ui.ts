@@ -28,7 +28,7 @@ import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
 
 function createHintsHtml(
-  incorrectLtrIndices: number[][],
+  incorrectLettersIndices: number[][],
   activeWordLetters: NodeListOf<Element>,
   input: string | string[],
   wrapWithDiv: boolean = true
@@ -41,18 +41,17 @@ function createHintsHtml(
   let hintsHtml = "";
   let currentHint = 0;
 
-  for (const adjacentLetters of incorrectLtrIndices) {
-    for (const indx of adjacentLetters) {
-      const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
-      const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
-      const blockIndices = `${indx}`;
+  for (const adjacentLetters of incorrectLettersIndices) {
+    for (const letterIndex of adjacentLetters) {
+      const letter = activeWordLetters[letterIndex] as HTMLElement;
+      const blockIndices = `${letterIndex}`;
       const blockChars = isFullWord
-        ? inputChars[indx]
+        ? inputChars[letterIndex]
         : inputChars[currentHint++];
 
-      hintsHtml +=
-        `<hint data-length=1 data-chars-index=${blockIndices}` +
-        ` style="left: ${blockLeft + blockWidth / 2}px;">${blockChars}</hint>`;
+      hintsHtml += `<hint data-chars-index=${blockIndices} style="left:${
+        letter.offsetLeft + letter.offsetWidth / 2
+      }px;">${blockChars}</hint>`;
     }
   }
   if (wrapWithDiv) hintsHtml = `<div class="hints">${hintsHtml}</div>`;
