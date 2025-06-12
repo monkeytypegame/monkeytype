@@ -38,7 +38,7 @@ function createHintsHtml(
     for (const indx of adjacentLetters) {
       const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
       const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
-      const blockIndices = `[${indx}]`;
+      const blockIndices = `${indx}`;
       const blockChars = inputChars[indx];
 
       hintsHtml +=
@@ -51,56 +51,76 @@ function createHintsHtml(
 }
 
 async function joinOverlappingHints(
-  incorrectLtrIndices: number[][],
+  incorrectLettersIndices: number[][],
   activeWordLetters: NodeListOf<Element>,
   hintElements: HTMLCollection
 ): Promise<void> {
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRTL = currentLanguage.rightToLeft;
 
-  let i = 0;
-  for (const adjacentLetters of incorrectLtrIndices) {
-    for (let j = 0; j < adjacentLetters.length - 1; j++) {
-      const block1El = hintElements[i] as HTMLElement;
-      const block2El = hintElements[i + 1] as HTMLElement;
+  let firstHintInSeq = 0;
+  for (const adjacentLettersSequence of incorrectLettersIndices) {
+    const lastHintInSeq = firstHintInSeq + adjacentLettersSequence.length - 1;
+    joinHintsOfAdjacentLetters(firstHintInSeq, lastHintInSeq);
+    firstHintInSeq += adjacentLettersSequence.length;
+  }
+
+  function joinHintsOfAdjacentLetters(
+    firstHintInSequence: number,
+    lastHintInSequence: number
+  ): void {
+    let currentHint = firstHintInSequence;
+
+    while (currentHint < lastHintInSequence) {
+      const block1El = hintElements[currentHint] as HTMLElement;
+      const block2El = hintElements[currentHint + 1] as HTMLElement;
+
+      const block1Indices = block1El.dataset["charsIndex"]?.split(",") ?? [];
+      const block2Indices = block2El.dataset["charsIndex"]?.split(",") ?? [];
+
+      const block1Letter1Indx = parseInt(block1Indices[0] ?? "0");
+      const block2Letter1Indx = parseInt(block2Indices[0] ?? "0");
+
+      const block1Letter1 = activeWordLetters[block1Letter1Indx] as HTMLElement;
+      const block2Letter1 = activeWordLetters[block2Letter1Indx] as HTMLElement;
+
       const leftBlock = isLanguageRTL ? block2El : block1El;
       const rightBlock = isLanguageRTL ? block1El : block2El;
 
-      /** HintBlock.offsetLeft is at the center line of corresponding letters
-       * then "transform: translate(-50%)" aligns hints with letters */
-      if (
-        leftBlock.offsetLeft + leftBlock.offsetWidth / 2 >
-        rightBlock.offsetLeft - rightBlock.offsetWidth / 2
-      ) {
-        block1El.dataset["length"] = (
-          parseInt(block1El.dataset["length"] ?? "1") +
-          parseInt(block2El.dataset["length"] ?? "1")
-        ).toString();
+      // block edge is offset half its width because of transform: translate(-50%)
+      const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
+      const rightBlockStarts =
+        rightBlock.offsetLeft - rightBlock.offsetWidth / 2;
 
-        const block1Indices = block1El.dataset["charsIndex"] ?? "[]";
-        const block2Indices = block2El.dataset["charsIndex"] ?? "[]";
-        block1El.dataset["charsIndex"] =
-          block1Indices.slice(0, -1) + "," + block2Indices.slice(1);
+      const sameTop = block1Letter1.offsetTop === block2Letter1.offsetTop;
 
-        const letter1Index = adjacentLetters[j] ?? 0;
-        const newLeft =
-          (activeWordLetters[letter1Index] as HTMLElement).offsetLeft +
-          (isLanguageRTL
-            ? (activeWordLetters[letter1Index] as HTMLElement).offsetWidth
-            : 0) +
-          (block2El.offsetLeft - block1El.offsetLeft);
-        block1El.style.left = newLeft.toString() + "px";
+      if (sameTop && leftBlockEnds > rightBlockStarts) {
+        // join hint blocks
+        block1El.dataset["charsIndex"] = [
+          ...block1Indices,
+          ...block2Indices,
+        ].join(",");
+
+        const block1Letter1Pos =
+          block1Letter1.offsetLeft +
+          (isLanguageRTL ? block1Letter1.offsetWidth : 0);
+        const bothBlocksLettersWidthHalved =
+          block2El.offsetLeft - block1El.offsetLeft;
+        block1El.style.left =
+          block1Letter1Pos + bothBlocksLettersWidthHalved + "px";
 
         block1El.insertAdjacentHTML("beforeend", block2El.innerHTML);
-
         block2El.remove();
-        adjacentLetters.splice(j + 1, 1);
-        i -= j === 0 ? 1 : 2;
-        j -= j === 0 ? 1 : 2;
+
+        // after joining blocks, the sequence is shorter
+        lastHintInSequence--;
+        // check if the newly formed block overlaps with the previous one
+        currentHint--;
+        if (currentHint < firstHintInSeq) currentHint = firstHintInSeq;
+      } else {
+        currentHint++;
       }
-      i++;
     }
-    i++;
   }
 }
 
@@ -300,8 +320,7 @@ export async function updateHintsPosition(): Promise<void> {
     }
 
     const letterIndices = hintEl.dataset["charsIndex"]
-      ?.slice(1, -1)
-      .split(",")
+      ?.split(",")
       .map((indx) => parseInt(indx));
     const leftmostIndx = isLanguageRTL
       ? parseInt(hintEl.dataset["length"] ?? "1") - 1
