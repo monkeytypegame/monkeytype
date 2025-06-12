@@ -98,6 +98,7 @@ const debouncedEvent = debounce(250, () => {
       void TestUI.scrollTape();
     } else {
       void TestUI.centerActiveLine();
+      void TestUI.updateHintsPosition();
     }
     setTimeout(() => {
       void TestUI.updateWordsInputPosition();

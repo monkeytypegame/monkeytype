@@ -599,12 +599,14 @@ export function updateWordsWrapperHeight(force = false): void {
 }
 
 function updateWordsMargin(): void {
+  const afterCompleteFn = updateHintsPosition;
   if (Config.tapeMode !== "off") {
-    void scrollTape();
+    void scrollTape(afterCompleteFn);
   } else {
     setTimeout(() => {
       $("#words").css("margin-left", "unset");
       $("#words .afterNewline").css("margin-left", "unset");
+      void afterCompleteFn();
     }, 0);
   }
 }
@@ -818,7 +820,7 @@ function getNlCharWidth(
   return nlChar.offsetWidth + letterMargin;
 }
 
-export async function scrollTape(): Promise<void> {
+export async function scrollTape(afterCompleteFn?: () => void): Promise<void> {
   if (ActivePage.get() !== "test" || resultVisible) return;
 
   await centeringActiveLine;
@@ -976,6 +978,7 @@ export async function scrollTape(): Promise<void> {
       {
         duration: SlowTimer.get() ? 0 : 125,
         queue: "leftMargin",
+        complete: afterCompleteFn,
       }
     );
     jqWords.dequeue("leftMargin");
@@ -991,6 +994,7 @@ export async function scrollTape(): Promise<void> {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
     }
+    if (afterCompleteFn) afterCompleteFn();
   }
 }
 
