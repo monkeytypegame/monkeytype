@@ -30,23 +30,32 @@ import * as TestState from "./test-state";
 function createHintsHtml(
   incorrectLtrIndices: number[][],
   activeWordLetters: NodeListOf<Element>,
-  inputWord: string
+  input: string | string[],
+  wrapWithDiv: boolean = true
 ): string {
-  const inputChars = Strings.splitIntoCharacters(inputWord);
+  // if input is an array, it contains only incorrect letters input.
+  // if input is a string, it contains the whole word input.
+  const isFullWord = typeof input === "string";
+  const inputChars = isFullWord ? Strings.splitIntoCharacters(input) : input;
+
   let hintsHtml = "";
+  let currentHint = 0;
+
   for (const adjacentLetters of incorrectLtrIndices) {
     for (const indx of adjacentLetters) {
       const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
       const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
       const blockIndices = `${indx}`;
-      const blockChars = inputChars[indx];
+      const blockChars = isFullWord
+        ? inputChars[indx]
+        : inputChars[currentHint++];
 
       hintsHtml +=
         `<hint data-length=1 data-chars-index=${blockIndices}` +
         ` style="left: ${blockLeft + blockWidth / 2}px;">${blockChars}</hint>`;
     }
   }
-  hintsHtml = `<div class="hints">${hintsHtml}</div>`;
+  if (wrapWithDiv) hintsHtml = `<div class="hints">${hintsHtml}</div>`;
   return hintsHtml;
 }
 
@@ -150,6 +159,9 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
 });
 
+export const updateHintsPositionDebounced =
+  Misc.debounceUntilResolved(updateHintsPosition);
+
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (
     (eventKey === "language" || eventKey === "funbox") &&
@@ -166,9 +178,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       eventKey
     )
   ) {
-    updateHintsPosition().catch((e: unknown) => {
-      console.error(e);
-    });
+    void updateHintsPositionDebounced();
   }
 
   if (eventKey === "theme") void applyBurstHeatmap();
@@ -294,7 +304,7 @@ export function updateActiveElement(
   }
 }
 
-export async function updateHintsPosition(): Promise<void> {
+async function updateHintsPosition(): Promise<void> {
   if (
     ActivePage.get() !== "test" ||
     resultVisible ||
@@ -302,42 +312,62 @@ export async function updateHintsPosition(): Promise<void> {
   )
     return;
 
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRTL = currentLanguage.rightToLeft;
+  let previousHintsContainer: HTMLElement | undefined;
+  let hintIndices: number[][] = [];
+  let hintText: string[] = [];
 
-  let wordEl: HTMLElement | undefined;
-  let letterElements: NodeListOf<Element> | undefined;
+  const hintElements = document.querySelectorAll<HTMLElement>(".hints > hint");
 
-  const hintElements = document
-    .getElementById("words")
-    ?.querySelectorAll("div.word > div.hints > hint");
-  for (let i = 0; i < (hintElements?.length ?? 0); i++) {
-    const hintEl = hintElements?.[i] as HTMLElement;
+  for (const hintEl of hintElements) {
+    const hintsContainer = hintEl.parentElement as HTMLElement;
 
-    if (!wordEl || hintEl.parentElement?.parentElement !== wordEl) {
-      wordEl = hintEl.parentElement?.parentElement as HTMLElement;
-      letterElements = wordEl?.querySelectorAll("letter");
+    if (hintsContainer !== previousHintsContainer) {
+      await adjustHintsContainer(previousHintsContainer, hintIndices, hintText);
+      previousHintsContainer = hintsContainer;
+      hintIndices = [];
+      hintText = [];
     }
 
     const letterIndices = hintEl.dataset["charsIndex"]
       ?.split(",")
-      .map((indx) => parseInt(indx));
-    const leftmostIndx = isLanguageRTL
-      ? parseInt(hintEl.dataset["length"] ?? "1") - 1
-      : 0;
+      .map((index) => parseInt(index));
 
-    const el = letterElements?.[
-      letterIndices?.[leftmostIndx] ?? 0
-    ] as HTMLElement;
-    let newLeft = el.offsetLeft;
-    const lettersWidth =
-      letterIndices?.reduce((accum, curr) => {
-        const el = letterElements?.[curr] as HTMLElement;
-        return accum + el.offsetWidth;
-      }, 0) ?? 0;
-    newLeft += lettersWidth / 2;
+    if (letterIndices === undefined || letterIndices.length === 0) continue;
 
-    hintEl.style.left = newLeft.toString() + "px";
+    for (const currentLetterIndex of letterIndices) {
+      const lastBlock = hintIndices[hintIndices.length - 1];
+      if (
+        lastBlock &&
+        lastBlock[lastBlock.length - 1] === currentLetterIndex - 1
+      ) {
+        lastBlock.push(currentLetterIndex);
+      } else {
+        hintIndices.push([currentLetterIndex]);
+      }
+    }
+
+    hintText.push(...Strings.splitIntoCharacters(hintEl.innerHTML));
+  }
+  await adjustHintsContainer(previousHintsContainer, hintIndices, hintText);
+
+  async function adjustHintsContainer(
+    hintsContainer: HTMLElement | undefined,
+    hintIndices: number[][],
+    hintText: string[]
+  ): Promise<void> {
+    if (!hintsContainer || hintIndices.length === 0) return;
+
+    const wordElement = hintsContainer.parentElement as HTMLElement;
+    const letterElements = wordElement.querySelectorAll<HTMLElement>("letter");
+
+    hintsContainer.innerHTML = createHintsHtml(
+      hintIndices,
+      letterElements,
+      hintText,
+      false
+    );
+    const wordHintsElements = wordElement.getElementsByTagName("hint");
+    await joinOverlappingHints(hintIndices, letterElements, wordHintsElements);
   }
 }
 
@@ -615,8 +645,9 @@ export function updateWordsWrapperHeight(force = false): void {
 }
 
 function updateWordsMargin(): void {
+  const afterCompleteFn = updateHintsPositionDebounced;
   if (Config.tapeMode !== "off") {
-    void scrollTape(true);
+    void scrollTape(true, afterCompleteFn);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
     const afterNewlineEls =
@@ -630,6 +661,7 @@ function updateWordsMargin(): void {
         {
           duration: SlowTimer.get() ? 0 : 125,
           queue: "leftMargin",
+          complete: afterCompleteFn,
         }
       );
       jqWords.dequeue("leftMargin");
@@ -641,6 +673,7 @@ function updateWordsMargin(): void {
       for (const afterNewline of afterNewlineEls) {
         afterNewline.style.marginLeft = `0`;
       }
+      void afterCompleteFn();
     }
   }
 }
@@ -787,12 +820,10 @@ export async function updateActiveWordLetters(
             : currentLetter) +
           "</letter>";
         if (Config.indicateTypos === "below") {
-          if (!hintIndices?.length) hintIndices.push([i]);
-          else {
-            const lastblock = hintIndices[hintIndices.length - 1];
-            if (lastblock?.[lastblock.length - 1] === i - 1) lastblock.push(i);
-            else hintIndices.push([i]);
-          }
+          const lastBlock = hintIndices[hintIndices.length - 1];
+          if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1)
+            lastBlock.push(i);
+          else hintIndices.push([i]);
         }
       }
     }
@@ -854,7 +885,10 @@ function getNlCharWidth(
   return nlChar.offsetWidth + letterMargin;
 }
 
-export async function scrollTape(noRemove = false): Promise<void> {
+export async function scrollTape(
+  noRemove = false,
+  afterCompleteFn?: () => void
+): Promise<void> {
   if (ActivePage.get() !== "test" || resultVisible) return;
 
   await centeringActiveLine;
@@ -1033,6 +1067,7 @@ export async function scrollTape(noRemove = false): Promise<void> {
       {
         duration: SlowTimer.get() ? 0 : 125,
         queue: "leftMargin",
+        complete: afterCompleteFn,
       }
     );
     jqWords.dequeue("leftMargin");
@@ -1048,6 +1083,7 @@ export async function scrollTape(noRemove = false): Promise<void> {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
     }
+    if (afterCompleteFn) afterCompleteFn();
   }
 }
 
