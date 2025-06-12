@@ -206,7 +206,6 @@
   .beforeNewline {
     display: inline-block;
     vertical-align: top;
-    margin: 0.25em 0;
     box-sizing: content-box;
     height: 1em; //.word line-height
     border-top: 0.05em solid transparent; // letter border-bottom
@@ -298,7 +297,7 @@
     white-space: nowrap;
     width: 200vw;
     .word {
-      margin: 0.25em 0.6em 0.25em 0;
+      margin: 0 0.6em 0 0;
       display: inline-block;
       vertical-align: top;
     }
@@ -492,8 +491,8 @@
 .word {
   position: relative;
   font-size: 1em;
-  line-height: 1em;
-  margin: 0.25em 0.3em;
+  line-height: 1.3;
+  margin: 0 0.3em;
   font-variant: no-common-ligatures;
   border-bottom: 2px solid transparent;
   letter {
