@@ -276,19 +276,19 @@
     }
     & .hints hint {
       position: absolute;
-      bottom: -1.1em;
+      //bottom: -1.1em;
       color: var(--correct-letter-color);
       animation: var(--correct-letter-animation);
       line-height: initial;
       font-size: 0.75em;
       text-shadow: none;
-      padding: 1px;
+      //padding: 1px;
       left: 0;
       opacity: 0.5;
       text-align: center;
       display: grid;
       justify-content: center;
-      transform: translate(-50%);
+      transform: translate(-50%, 1.1em);
     }
   }
 

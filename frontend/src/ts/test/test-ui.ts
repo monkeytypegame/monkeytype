@@ -36,14 +36,14 @@ function createHintsHtml(
   let hintsHtml = "";
   for (const adjacentLetters of incorrectLtrIndices) {
     for (const indx of adjacentLetters) {
-      const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
-      const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
+      const letter = activeWordLetters[indx] as HTMLElement;
       const blockIndices = `[${indx}]`;
       const blockChars = inputChars[indx];
 
       hintsHtml +=
         `<hint data-length=1 data-chars-index=${blockIndices}` +
-        ` style="left: ${blockLeft + blockWidth / 2}px;">${blockChars}</hint>`;
+        ` style="left: ${letter.offsetLeft + letter.offsetWidth / 2}px;` +
+        `top: ${letter.offsetTop}px">${blockChars}</hint>`;
     }
   }
   hintsHtml = `<div class="hints">${hintsHtml}</div>`;
@@ -69,8 +69,9 @@ async function joinOverlappingHints(
       /** HintBlock.offsetLeft is at the center line of corresponding letters
        * then "transform: translate(-50%)" aligns hints with letters */
       if (
+        leftBlock.offsetTop === rightBlock.offsetTop &&
         leftBlock.offsetLeft + leftBlock.offsetWidth / 2 >
-        rightBlock.offsetLeft - rightBlock.offsetWidth / 2
+          rightBlock.offsetLeft - rightBlock.offsetWidth / 2
       ) {
         block1El.dataset["length"] = (
           parseInt(block1El.dataset["length"] ?? "1") +
@@ -319,6 +320,7 @@ export async function updateHintsPosition(): Promise<void> {
     newLeft += lettersWidth / 2;
 
     hintEl.style.left = newLeft.toString() + "px";
+    hintEl.style.top = `${el.offsetTop}px`;
   }
 }
 
