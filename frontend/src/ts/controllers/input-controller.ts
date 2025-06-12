@@ -1453,6 +1453,12 @@ $("#wordsInput").on("select selectstart", (event) => {
 $("#wordsInput").on("keydown", (event) => {
   if (event.key.startsWith("Arrow")) {
     event.preventDefault();
+    return;
+  }
+
+  if (event.ctrlKey && event.key === "a") {
+    event.preventDefault();
+    return;
   }
 });
 
