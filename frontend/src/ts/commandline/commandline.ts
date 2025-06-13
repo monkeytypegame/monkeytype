@@ -765,6 +765,7 @@ const modal = new AnimatedModal({
     let lastHover: HTMLElement | undefined;
 
     suggestions.addEventListener("mousemove", async (e) => {
+      mouseMode = true;
       const target = e.target as HTMLElement | null;
       if (target === lastHover) return;
 
