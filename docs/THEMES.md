@@ -53,10 +53,10 @@ Then, go to `./frontend/src/ts/constants/themes.ts` and add the following code t
 export const themes: Record<ThemeName, Omit<Theme, "name">> = {
   ...
   your_theme_name: {
-    bgColor "#ffffff",
-    mainColor "#ffffff",
-    subColor "#ffffff",
-    textColor "#ffffff"
+    bgColor: "#ffffff",
+    mainColor: "#ffffff",
+    subColor: "#ffffff",
+    textColor: "#ffffff"
   },
 }
 ```
