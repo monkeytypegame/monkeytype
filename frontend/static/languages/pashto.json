@@ -4,6 +4,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "ps",
+  "charset": "arabic",
   "words": [
     "زه",
     "ته",

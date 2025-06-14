@@ -4,6 +4,7 @@
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "bo-TI",
+  "charset": "tibetan",
   "words": [
     "ཡིན།",
     "འདི་དང་།",

@@ -3,6 +3,7 @@
   "rightToLeft": true,
   "ligatures": true,
   "bcp47": "ckb",
+  "charset": "arabic",
   "words": [
     "ناو",
     "نەتەوە",

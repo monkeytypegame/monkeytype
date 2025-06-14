@@ -2,6 +2,7 @@
   "name": "russian",
   "bcp47": "ru-RU",
   "orderedByFrequency": true,
+  "charset": "cyrillic",
   "words": [
     "и",
     "в",

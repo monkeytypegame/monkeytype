@@ -1,6 +1,7 @@
 {
   "name": "greek_25k",
   "bcp47": "el-GR",
+  "charset": "greek",
   "words": [
     "άγγλος",
     "άγιος",

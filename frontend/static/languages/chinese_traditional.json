@@ -1,6 +1,7 @@
 {
   "name": "chinese_traditional",
   "noLazyMode": true,
+  "charset": "han",
   "words": [
     "我們",
     "可以",
