@@ -36,14 +36,14 @@ function createHintsHtml(
   let hintsHtml = "";
   for (const adjacentLetters of incorrectLtrIndices) {
     for (const indx of adjacentLetters) {
-      const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
-      const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
+      const letter = activeWordLetters[indx] as HTMLElement;
       const blockIndices = `[${indx}]`;
       const blockChars = inputChars[indx];
 
       hintsHtml +=
         `<hint data-length=1 data-chars-index=${blockIndices}` +
-        ` style="left: ${blockLeft + blockWidth / 2}px;">${blockChars}</hint>`;
+        ` style="left: ${letter.offsetLeft + letter.offsetWidth / 2}px;` +
+        `top: ${letter.offsetTop}px">${blockChars}</hint>`;
     }
   }
   hintsHtml = `<div class="hints">${hintsHtml}</div>`;
@@ -69,8 +69,9 @@ async function joinOverlappingHints(
       /** HintBlock.offsetLeft is at the center line of corresponding letters
        * then "transform: translate(-50%)" aligns hints with letters */
       if (
+        leftBlock.offsetTop === rightBlock.offsetTop &&
         leftBlock.offsetLeft + leftBlock.offsetWidth / 2 >
-        rightBlock.offsetLeft - rightBlock.offsetWidth / 2
+          rightBlock.offsetLeft - rightBlock.offsetWidth / 2
       ) {
         block1El.dataset["length"] = (
           parseInt(block1El.dataset["length"] ?? "1") +
@@ -319,6 +320,7 @@ export async function updateHintsPosition(): Promise<void> {
     newLeft += lettersWidth / 2;
 
     hintEl.style.left = newLeft.toString() + "px";
+    hintEl.style.top = `${el.offsetTop}px`;
   }
 }
 
@@ -597,12 +599,14 @@ export function updateWordsWrapperHeight(force = false): void {
 }
 
 function updateWordsMargin(): void {
+  const afterCompleteFn = updateHintsPosition;
   if (Config.tapeMode !== "off") {
-    void scrollTape();
+    void scrollTape(afterCompleteFn);
   } else {
     setTimeout(() => {
       $("#words").css("margin-left", "unset");
       $("#words .afterNewline").css("margin-left", "unset");
+      void afterCompleteFn();
     }, 0);
   }
 }
@@ -816,7 +820,7 @@ function getNlCharWidth(
   return nlChar.offsetWidth + letterMargin;
 }
 
-export async function scrollTape(): Promise<void> {
+export async function scrollTape(afterCompleteFn?: () => void): Promise<void> {
   if (ActivePage.get() !== "test" || resultVisible) return;
 
   await centeringActiveLine;
@@ -974,6 +978,7 @@ export async function scrollTape(): Promise<void> {
       {
         duration: SlowTimer.get() ? 0 : 125,
         queue: "leftMargin",
+        complete: afterCompleteFn,
       }
     );
     jqWords.dequeue("leftMargin");
@@ -989,6 +994,7 @@ export async function scrollTape(): Promise<void> {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
     }
+    if (afterCompleteFn) afterCompleteFn();
   }
 }
 
