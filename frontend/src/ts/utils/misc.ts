@@ -679,6 +679,48 @@ export function promiseWithResolvers<T = void>(): {
 }
 
 /**
+ * Wraps an asynchronous function to prevent it from running until it is resolved.
+ * If the function is called while a previous call is still running,
+ * the arguments from the most recent call are queued and run after the current one finishes.
+ *
+ * The returned debounced function always returns a `Promise<boolean>`:
+ * - Resolves to `true` if the function was executed immediately.
+ * - Resolves to `false` if the call was skipped (but possibly queued).
+ * @param asyncFn The asynchronus function to debounce
+ * @returns The debounced function
+ */
+export function debounceUntilResolved<TArgs extends unknown[], TResult>(
+  asyncFn: (...args: TArgs) => Promise<TResult>
+): (...args: TArgs) => Promise<boolean> {
+  let isLocked = false;
+  let next: TArgs | null = null;
+
+  async function run(...args: TArgs): Promise<void> {
+    isLocked = true;
+    try {
+      await asyncFn(...args);
+    } finally {
+      isLocked = false;
+    }
+
+    if (next) {
+      const nextArgs = next;
+      next = null;
+      await run(...nextArgs);
+    }
+  }
+
+  return async function (...args: TArgs): Promise<boolean> {
+    if (isLocked) {
+      next = args;
+      return false;
+    }
+    await run(...args);
+    return true;
+  };
+}
+
+/**
  * Sanitize object. Remove invalid values based on the schema.
  * @param schema zod schema
  * @param obj object
