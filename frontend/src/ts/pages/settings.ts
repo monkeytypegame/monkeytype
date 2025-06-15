@@ -802,9 +802,7 @@ export async function update(): Promise<void> {
     Config.tapeMargin
   );
 
-  $(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
-  ).val(Config.customBackground);
+  $("#customBackgroundInput").val(Config.customBackground);
 
   if (isAuthenticated()) {
     showAccountSection();
@@ -1061,6 +1059,15 @@ $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
   ).val() as string;
 
+  // check if it's a data:image URL
+  if (newVal.startsWith("data:image/")) {
+    Notifications.add(
+      "Data URLs are not allowed in the input field. Please use the import button for local images or use a proper URL link.",
+      0
+    );
+    return;
+  }
+
   const parsed = CustomBackgroundSchema.safeParse(newVal);
 
   if (!parsed.success) {
@@ -1088,6 +1095,15 @@ $(
       ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
     ).val() as string;
 
+    // check if it's a data:image URL
+    if (newVal.startsWith("data:image/")) {
+      Notifications.add(
+        "Data URLs are not allowed in the input field. Please use the import button for local images or use a proper URL link.",
+        0
+      );
+      return;
+    }
+
     const parsed = CustomBackgroundSchema.safeParse(newVal);
 
     if (!parsed.success) {
@@ -1100,6 +1116,57 @@ $(
 
     UpdateConfig.setCustomBackground(newVal);
   }
+});
+
+$("#customBackgroundUpload").on("change", (e) => {
+  const fileInput = e.target as HTMLInputElement;
+  const file = fileInput.files?.[0];
+
+  if (!file) {
+    return;
+  }
+
+  // check file size (limit to 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    Notifications.add("Image file is too large (max 5MB)", 0);
+    fileInput.value = "";
+    return;
+  }
+
+  // check type
+  if (!file.type.match(/image\/(jpeg|jpg|png|gif)/)) {
+    Notifications.add("Unsupported image format", 0);
+    fileInput.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const dataUrl = event.target?.result as string;
+
+    // validate the data URL
+    const parsed = CustomBackgroundSchema.safeParse(dataUrl);
+    if (!parsed.success) {
+      Notifications.add(
+        `Invalid image format (${parsed.error.issues[0]?.message})`,
+        0
+      );
+      return;
+    }
+
+    // update the input field with the data URL
+    $("#customBackgroundInput").val(dataUrl);
+    // save the background
+    UpdateConfig.setCustomBackground(dataUrl);
+    // reset the file input
+    fileInput.value = "";
+  };
+
+  reader.onerror = () => {
+    Notifications.add("Error reading file", 0);
+    fileInput.value = "";
+  };
+  reader.readAsDataURL(file);
 });
 
 $(

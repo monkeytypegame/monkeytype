@@ -59,8 +59,11 @@ describe("config schema", () => {
       },
       {
         name: "data url",
-        input: `data:image/gif;base64,data`,
-        expectedError: "Unsupported protocol.",
+        input: `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7`,
+      },
+      {
+        name: "invalid data url",
+        input: `data:image/gif;base64,invalid`,
       },
       {
         name: "long url",
