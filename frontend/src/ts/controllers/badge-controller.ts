@@ -125,6 +125,14 @@ const badges: Record<number, UserBadge> = {
     color: "var(--bg-color)",
     background: "var(--main-color)",
   },
+  15: {
+    id: 15,
+    name: "Insane",
+    description: "I typed for 69 hours straight",
+    icon: "fa-bomb",
+    color: "var(--bg-color)",
+    background: "var(--main-color)",
+  },
 };
 
 export function getHTMLById(
