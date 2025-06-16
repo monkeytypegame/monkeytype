@@ -6,6 +6,16 @@
   "overrides": [
     {
       "files": ["__tests__/**/*.ts"],
+      "plugins": [
+        "typescript",
+        "unicorn",
+        "oxc",
+        "import",
+        "node",
+        "promise",
+        "jest",
+        "vitest"
+      ],
       "rules": {
         "no-explicit-any": "allow",
         "explicit-function-return-type": "off",

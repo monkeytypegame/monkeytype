@@ -176,17 +176,20 @@ const installDependencies = () => {
 
 const buildProject = () => {
   console.log("Building project...");
-  let filter = "";
 
   if (isFrontend && !isBackend) {
-    filter = "--filter @monkeytype/frontend";
+    runProjectRootCommand(
+      "SENTRY=1 npx turbo lint test validate-json build --filter @monkeytype/frontend --force"
+    );
   } else if (isBackend && !isFrontend) {
-    filter = "--filter @monkeytype/backend";
+    runProjectRootCommand(
+      "SENTRY=1 npx turbo lint test build --filter @monkeytype/backend --force"
+    );
+  } else {
+    runProjectRootCommand(
+      "SENTRY=1 npx turbo lint test validate-json build --force"
+    );
   }
-
-  runProjectRootCommand(
-    "SENTRY=1 npx turbo lint test validate-json build " + filter + " --force"
-  );
 };
 
 const deployBackend = () => {

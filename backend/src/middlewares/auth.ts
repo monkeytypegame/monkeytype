@@ -191,6 +191,17 @@ async function authenticateWithBearerToken(
       email: decodedToken.email ?? "",
     };
   } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.includes("An internal error has occurred")
+    ) {
+      throw new MonkeyError(
+        503,
+        "Firebase returned an internal error when trying to verify the token.",
+        "authenticateWithBearerToken"
+      );
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const errorCode = error?.errorInfo?.code as string | undefined;
 
