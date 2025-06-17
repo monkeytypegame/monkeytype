@@ -120,6 +120,11 @@ Stop the running docker containers using `docker compose down` before making any
     RECAPTCHA_SECRET="your secret key"
     ``` 
 
+If you host privately you can use these defaults:
+```
+RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+RECAPTCHA_SECRET=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
+```
 
 ## Enable daily leaderboards
 
