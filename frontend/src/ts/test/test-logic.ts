@@ -62,7 +62,7 @@ import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import {
   CompletedEvent,
-  CustomTextDataWithTextLen,
+  CompletedEventCustomText,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
 import {
@@ -78,6 +78,7 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 import { captureException } from "../sentry";
 import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
+import { canQuickRestart } from "../utils/quick-restart";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -170,7 +171,7 @@ export function restart(options = {} as RestartOptions): void {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") event?.preventDefault();
       if (
-        !Misc.canQuickRestart(
+        !canQuickRestart(
           Config.mode,
           Config.words,
           Config.time,
@@ -794,7 +795,7 @@ function buildCompletedEvent(
   const wpmCons = Numbers.roundTo2(Numbers.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
-  let customText: CustomTextDataWithTextLen | undefined = undefined;
+  let customText: CompletedEventCustomText | undefined = undefined;
   if (Config.mode === "custom") {
     const temp = CustomText.getData();
     customText = {

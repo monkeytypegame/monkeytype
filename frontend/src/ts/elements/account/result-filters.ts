@@ -16,7 +16,7 @@ import {
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
-import { SnapshotUserTag } from "../../constants/default-snapshot";
+import { Snapshot, SnapshotUserTag } from "../../constants/default-snapshot";
 import { LanguageList } from "../../constants/languages";
 
 export function mergeWithDefaultFilters(
@@ -55,7 +55,9 @@ const resultFiltersLS = new LocalStorageWithSchema({
     if (!Misc.isObject(unknown)) {
       return defaultResultFilters;
     }
-    return mergeWithDefaultFilters(unknown as ResultFilters);
+    return mergeWithDefaultFilters(
+      Misc.sanitize(ResultFiltersSchema, unknown as ResultFilters)
+    );
   },
 });
 
@@ -423,9 +425,9 @@ export function updateActive(): void {
             if (id === "none") return id;
             const snapshot = DB.getSnapshot();
             if (snapshot === undefined) return id;
-            const name = snapshot.tags?.filter((t) => t._id === id)[0];
+            const name = snapshot.tags?.find((t) => t._id === id);
             if (name !== undefined) {
-              return snapshot.tags?.filter((t) => t._id === id)[0]?.display;
+              return snapshot.tags?.find((t) => t._id === id)?.display;
             }
             return name;
           })
@@ -740,9 +742,38 @@ let selectChangeCallbackFn: () => void = () => {
   //
 };
 
+export function updateTagsDropdownOptions(): void {
+  const el = document.querySelector<HTMLElement>(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select select"
+  );
+
+  if (!(el instanceof HTMLElement)) return;
+
+  const snapshot = DB.getSnapshot();
+
+  if (snapshot === undefined) {
+    return;
+  }
+
+  let html = "";
+
+  html += "<option value='all'>all</option>";
+  html += "<option value='none'>no tag</option>";
+
+  for (const tag of snapshot.tags) {
+    html += `<option value="${tag._id}" filter="${tag.name}">${tag.display}</option>`;
+  }
+
+  el.innerHTML = html;
+}
+
+let buttonsAppended = false;
+
 export async function appendButtons(
   selectChangeCallback: () => void
 ): Promise<void> {
+  if (buttonsAppended) return;
+
   selectChangeCallbackFn = selectChangeCallback;
 
   groupSelects["language"] = new SlimSelect({
@@ -808,34 +839,24 @@ export async function appendButtons(
     },
   });
 
-  const snapshot = DB.getSnapshot();
+  //snapshot at this point is guaranteed to exist
+  const snapshot = DB.getSnapshot() as Snapshot;
 
-  if (snapshot !== undefined && (snapshot.tags?.length ?? 0) > 0) {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
-      "hidden"
+  const tagsSection = $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags"
+  );
+
+  if (snapshot.tags.length === 0) {
+    tagsSection.addClass("hidden");
+  } else {
+    tagsSection.removeClass("hidden");
+    updateTagsDropdownOptions();
+    const selectEl = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select .tagsSelect"
     );
-
-    let html = "";
-
-    html +=
-      "<select class='tagsSelect' group='tags' placeholder='select a tag' multiple>";
-
-    html += "<option value='all'>all</option>";
-    html += "<option value='none'>no tag</option>";
-
-    for (const tag of snapshot.tags) {
-      html += `<option value="${tag._id}" filter="${tag.name}">${tag.display}</option>`;
-    }
-
-    html += "</select>";
-
-    const el = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select"
-    );
-    if (el) {
-      el.innerHTML = html;
+    if (selectEl) {
       groupSelects["tags"] = new SlimSelect({
-        select: el.querySelector(".tagsSelect") as HTMLSelectElement,
+        select: selectEl,
         settings: {
           showSearch: true,
           placeholderText: "select a tag",
@@ -859,13 +880,10 @@ export async function appendButtons(
         },
       });
     }
-  } else {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
-      "hidden"
-    );
   }
 
   void updateFilterPresets();
+  buttonsAppended = true;
 }
 
 export function removeButtons(): void {
@@ -889,7 +907,8 @@ $(".group.presetFilterButtons .filterBtns").on(
 );
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
-  const filter = Misc.deepClone(filterIn);
+  const filter = Misc.sanitize(ResultFiltersSchema, Misc.deepClone(filterIn));
+
   Object.entries(defaultResultFilters).forEach((entry) => {
     const key = entry[0] as ResultFiltersGroup;
     const value = entry[1];

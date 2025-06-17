@@ -460,6 +460,15 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const targetTop =
     activeWord.offsetTop + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
 
+  if (Config.tapeMode !== "off") {
+    const wordsWrapperWidth = (
+      document.querySelector("#wordsWrapper") as HTMLElement
+    ).offsetWidth;
+    el.style.maxWidth =
+      wordsWrapperWidth * (1 - Config.tapeMargin / 100) + "px";
+  } else {
+    el.style.maxWidth = "";
+  }
   if (activeWord.offsetWidth < letterHeight) {
     el.style.width = letterHeight + "px";
   } else {

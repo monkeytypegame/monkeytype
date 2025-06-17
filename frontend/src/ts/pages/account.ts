@@ -264,8 +264,10 @@ async function fillContent(): Promise<void> {
   type ActivityChartData = Record<
     number,
     {
+      restarts: number;
       amount: number;
       time: number;
+      maxWpm: number;
       totalWpm: number;
       totalAcc: number;
       totalCon: number;
@@ -523,20 +525,26 @@ async function fillContent(): Promise<void> {
 
     if (dataForTimestamp !== undefined) {
       dataForTimestamp.amount++;
+      dataForTimestamp.restarts += result.restartCount ?? 0;
       dataForTimestamp.time +=
         result.testDuration +
         (result.incompleteTestSeconds ?? 0) -
         (result.afkDuration ?? 0);
+      if (result.wpm > dataForTimestamp.maxWpm) {
+        dataForTimestamp.maxWpm = result.wpm;
+      }
       dataForTimestamp.totalWpm += result.wpm;
       dataForTimestamp.totalAcc += result.acc;
       dataForTimestamp.totalCon += result.consistency ?? 0;
     } else {
       activityChartData[resultTimestamp] = {
         amount: 1,
+        restarts: result.restartCount ?? 0,
         time:
           result.testDuration +
           (result.incompleteTestSeconds ?? 0) -
           (result.afkDuration ?? 0),
+        maxWpm: result.wpm,
         totalWpm: result.wpm,
         totalAcc: result.acc,
         totalCon: result.consistency ?? 0,
@@ -685,6 +693,8 @@ async function fillContent(): Promise<void> {
       x: dateInt,
       y: dataPoint.time / 60,
       amount: dataPoint.amount,
+      restarts: dataPoint.restarts,
+      maxWpm: Numbers.roundTo2(typingSpeedUnit.fromWpm(dataPoint.maxWpm)),
       avgWpm: Numbers.roundTo2(dataPoint.totalWpm / dataPoint.amount),
       avgAcc: Numbers.roundTo2(dataPoint.totalAcc / dataPoint.amount),
       avgCon: Numbers.roundTo2(dataPoint.totalCon / dataPoint.amount),
@@ -1341,6 +1351,7 @@ export const page = new Page({
       $(".pageAccount .preloader").removeClass("hidden");
       await LoadingPage.showBar();
     }
+    ResultFilters.updateTagsDropdownOptions();
     await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
