@@ -415,7 +415,11 @@ export function showWords(): void {
   updateActiveElement(undefined, true);
   updateWordWrapperClasses();
   setTimeout(() => {
-    void Caret.updatePosition();
+    if (TestInput.input.current.length === 0) {
+      Caret.show();
+    } else {
+      void Caret.updatePosition();
+    }
   }, 125);
 }
 
