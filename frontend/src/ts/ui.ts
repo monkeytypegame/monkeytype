@@ -9,6 +9,7 @@ import { get as getActivePage } from "./states/active-page";
 import { isDevEnvironment } from "./utils/misc";
 import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
+import * as TestInput from "./test/test-input";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: string): void {
@@ -92,7 +93,12 @@ window.addEventListener("beforeunload", (event) => {
 });
 
 const debouncedEvent = debounce(250, () => {
-  void Caret.updatePosition();
+  // ensure caret is properly initialized on first resize to avoid misalignment
+  if (TestInput.input.current.length === 0) {
+    Caret.show();
+  } else {
+    void Caret.updatePosition();
+  }
   if (getActivePage() === "test" && !TestUI.resultVisible) {
     if (Config.tapeMode !== "off") {
       void TestUI.scrollTape();
