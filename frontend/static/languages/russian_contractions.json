@@ -3,6 +3,7 @@
   "bcp47": "ru-RU",
   "noLazyMode": true,
   "orderedByFrequency": false,
+  "charset": "cyrillic",
   "words": [
     "1-ый",
     "авг",

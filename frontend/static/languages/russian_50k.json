@@ -1,6 +1,7 @@
 {
   "name": "russian_50k",
   "bcp47": "ru-RU",
+  "charset": "cyrillic",
   "words": [
     "а",
     "аа",

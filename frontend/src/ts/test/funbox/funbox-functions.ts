@@ -417,8 +417,17 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   gibberish: {
-    getWord(): string {
-      return GetText.getGibberish();
+    async withWords(words): Promise<Wordset> {
+      if (!words || words.length === 0) {
+        return new Wordset([]);
+      }
+
+      const lang = await JSONData.getLanguage(Config.language);
+      const gibberishWords = words.map(() =>
+        GetText.getGibberish(lang?.charset || "latin")
+      );
+
+      return new Wordset(gibberishWords);
     },
   },
   ascii: {
