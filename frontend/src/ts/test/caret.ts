@@ -174,6 +174,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {
     newTop = activeWordEl.offsetTop + letterPosTop - caret.offsetHeight / 2;
+  } else if (Config.caretStyle === "block") {
+    newTop = activeWordEl.offsetTop + letterPosTop;
   }
 
   let letterWidth = currentLetter?.offsetWidth;
