@@ -711,6 +711,7 @@ const modal = new AnimatedModal({
       ) {
         if (
           Config.singleListCommandLine === "on" &&
+          subgroupOverride === null &&
           inputValue === "" &&
           lastSingleListModeInputValue !== ""
         ) {
