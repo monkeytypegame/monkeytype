@@ -6,6 +6,7 @@ export const ThemeNameSchema = z.enum(
     "8008",
     "80s_after_dark",
     "9009",
+    "A_Legion",
     "aether",
     "alduin",
     "alpine",
