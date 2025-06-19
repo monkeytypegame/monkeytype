@@ -333,14 +333,73 @@ export type FontSize = z.infer<typeof FontSizeSchema>;
 export const MaxLineWidthSchema = z.number().min(20).max(1000).or(z.literal(0));
 export type MaxLineWidth = z.infer<typeof MaxLineWidthSchema>;
 
-export const CustomBackgroundSchema = z
-  .string()
-  .url("Needs to be an URI.")
-  .regex(/^(https|http):\/\/.*/, "Unsupported protocol.")
-  .regex(/^[^`'"]*$/, "May not contain quotes.")
-  .regex(/.+(\.png|\.gif|\.jpeg|\.jpg)/gi, "Unsupported image format.")
-  .max(2048, "URL is too long.")
-  .or(z.literal(""));
+// custom background image validations
+function containsQuotes(val: string): boolean {
+  return /[`'"]/.test(val);
+}
+
+function isHttpUrl(val: string): boolean {
+  return /^(https|http):\/\/.*/.test(val);
+}
+
+function isImageExtension(val: string): boolean {
+  return /.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(val);
+}
+
+function isDataImageUrl(val: string): boolean {
+  return /^data:image\/(png|jpeg|gif);base64,/.test(val);
+}
+
+function isValidBase64Data(val: string): boolean {
+  const base64Data = val.split(",")[1];
+  if (base64Data === null || base64Data === undefined || base64Data === "")
+    return false;
+  try {
+    atob(base64Data);
+    return /^[A-Za-z0-9+/]+=*$/.test(base64Data);
+  } catch {
+    return false;
+  }
+}
+
+export const CustomBackgroundSchema = z.string().refine(
+  (val) => {
+    if (val === "") return true;
+    if (val.startsWith("javascript:")) return false;
+    if (containsQuotes(val)) return false;
+    if (isHttpUrl(val)) {
+      return isImageExtension(val) && val.length <= 2048;
+    }
+    if (isDataImageUrl(val)) {
+      return isValidBase64Data(val);
+    }
+    return false;
+  },
+  (val) => {
+    if (val === "") return { message: "" };
+    if (val.startsWith("javascript:"))
+      return { message: "Unsupported protocol." };
+    if (isHttpUrl(val) && val.length > 2048)
+      return { message: "URL is too long." };
+    if (!isHttpUrl(val)) return { message: "Needs to be an URI." };
+    if (containsQuotes(val)) return { message: "May not contain quotes." };
+    if (!isImageExtension(val)) return { message: "Unsupported image format." };
+    if (isDataImageUrl(val)) {
+      const base64Data = val.split(",")[1];
+      if (base64Data === null || base64Data === undefined || base64Data === "")
+        return { message: "Invalid data URL format" };
+      try {
+        atob(base64Data);
+        if (!/^[A-Za-z0-9+/]+=*$/.test(base64Data)) {
+          return { message: "Invalid data URL format" };
+        }
+      } catch {
+        return { message: "Invalid data URL format" };
+      }
+    }
+    return { message: "Invalid background value" };
+  }
+);
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
 export const ConfigSchema = z
