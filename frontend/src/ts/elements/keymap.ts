@@ -14,15 +14,45 @@ import * as ShiftTracker from "../test/shift-tracker";
 import * as AltTracker from "../test/alt-tracker";
 import * as KeyConverter from "../utils/key-converter";
 import { getActiveFunboxNames } from "../test/funbox/list";
+import { areSortedArraysEqual } from "../utils/arrays";
+
+export const keyDataDelimiter = "~~";
 
 const stenoKeys: JSONData.Layout = {
   keymapShowTopRow: true,
   type: "matrix",
   keys: {
     row1: [],
-    row2: ["sS", "tT", "pP", "hH", "**", "fF", "pP", "lL", "tT", "dD"],
-    row3: ["sS", "kK", "wW", "rR", "**", "rR", "bB", "gG", "sS", "zZ"],
-    row4: ["aA", "oO", "eE", "uU"],
+    row2: [
+      ["s", "S"],
+      ["t", "T"],
+      ["p", "P"],
+      ["h", "H"],
+      ["*", "*"],
+      ["f", "F"],
+      ["p", "P"],
+      ["l", "L"],
+      ["t", "T"],
+      ["d", "D"],
+    ],
+    row3: [
+      ["s", "S"],
+      ["k", "K"],
+      ["w", "W"],
+      ["r", "R"],
+      ["*", "*"],
+      ["r", "R"],
+      ["b", "B"],
+      ["g", "G"],
+      ["s", "S"],
+      ["z", "Z"],
+    ],
+    row4: [
+      ["a", "A"],
+      ["o", "O"],
+      ["e", "E"],
+      ["u", "U"],
+    ],
     row5: [],
   },
 };
@@ -115,7 +145,7 @@ export function show(): void {
 function buildRow(options: {
   layoutData: JSONData.Layout;
   rowId: string;
-  rowKeys: string[];
+  rowKeys: string[][];
   layoutNameDisplayString: string;
   showTopRow: boolean;
   isMatrix: boolean;
@@ -189,30 +219,37 @@ function buildRow(options: {
      * It is just created for simplicity in the for loop below.
      * */
     // If only one space, add another
-    if (rowKeys.length === 1 && rowKeys[0] === " ") {
-      rowKeys[1] = rowKeys[0];
+    const isRowEmpty = (row: string[] | undefined): boolean =>
+      areSortedArraysEqual(row ?? [], [" "]);
+
+    if (rowKeys.length === 1 && isRowEmpty(rowKeys[0])) {
+      rowKeys[1] = rowKeys[0] ?? [];
     }
     // If only one alpha, add one space and place it on the left
-    if (rowKeys.length === 1 && rowKeys[0] !== " ") {
-      rowKeys[1] = " ";
+    if (rowKeys.length === 1 && !isRowEmpty(rowKeys[0])) {
+      rowKeys[1] = [" "];
       rowKeys.reverse();
     }
     // If two alphas equal, replace one with a space on the left
-    if (rowKeys.length > 1 && rowKeys[0] !== " " && rowKeys[0] === rowKeys[1]) {
-      rowKeys[0] = " ";
+    if (
+      rowKeys.length > 1 &&
+      !isRowEmpty(rowKeys[0]) &&
+      areSortedArraysEqual(rowKeys[0] as string[], rowKeys[1] as string[])
+    ) {
+      rowKeys[0] = [" "];
     }
-    const alphas = (v: string): boolean => v !== " ";
+    const alphas = (v: string[]): boolean => v.some((key) => key !== " ");
     hasAlphas = rowKeys.some(alphas);
 
     keysHtml += "<div></div>";
 
     for (let keyId = 0; keyId < rowKeys.length; keyId++) {
-      const key = rowKeys[keyId] as string;
+      const key = rowKeys[keyId] as string[];
       let keyDisplay = key[0] as string;
       if (Config.keymapLegendStyle === "uppercase") {
         keyDisplay = keyDisplay.toUpperCase();
       }
-      const keyVisualValue = key.replace('"', "&quot;");
+      const keyVisualValue = key.map((it) => it.replace('"', "&quot;"));
       // these are used to keep grid layout but magically hide keys using opacity:
       let side = keyId < 1 ? "left" : "right";
       // we won't use this trick for alternate layouts, unless Alice (for rotation):
@@ -221,7 +258,7 @@ function buildRow(options: {
         keysHtml += `<div class="keymapSplitSpacer"></div>`;
         r5Grid += "-";
       }
-      if (keyVisualValue === " ") {
+      if (isRowEmpty(keyVisualValue)) {
         keysHtml += `<div class="keymapKey keySpace layoutIndicator ${side}">
               <div class="letter" ${letterStyle}>${layoutDisplay}</div>
             </div>`;
@@ -256,7 +293,7 @@ function buildRow(options: {
         continue;
       }
 
-      const key = rowKeys[keyId] as string;
+      const key = rowKeys[keyId] as string[];
       const bump = rowId === "row3" && (keyId === 3 || keyId === 6);
       let keyDisplay = key[0] as string;
       let letterStyle = "";
@@ -277,10 +314,11 @@ function buildRow(options: {
         hide = ` invisible`;
       }
 
-      const keyElement = `<div class="keymapKey${hide}" data-key="${key.replace(
-        '"',
-        "&quot;"
-      )}"><span class="letter" ${letterStyle}>${keyDisplay}</span>${
+      const keyElement = `<div class="keymapKey${hide}" data-key="${key
+        .map((it) => it.replace('"', "&quot;"))
+        .join(
+          keyDataDelimiter
+        )}"><span class="letter" ${letterStyle}>${keyDisplay}</span>${
         bump ? "<div class='bump'></div>" : ""
       }</div>`;
 
@@ -486,7 +524,9 @@ async function updateLegends(): Promise<void> {
     }
   ) as HTMLElement[];
 
-  const layoutKeys = keymapKeys.map((el) => el.dataset["key"]);
+  const layoutKeys = keymapKeys.map((el) =>
+    el.dataset["key"]?.split(keyDataDelimiter)
+  );
   if (layoutKeys.includes(undefined)) return;
 
   const keys = keymapKeys.map((el) => el.childNodes[0]);
@@ -508,7 +548,7 @@ async function updateLegends(): Promise<void> {
   }
 
   for (let i = 0; i < layoutKeys.length; i++) {
-    const layoutKey = layoutKeys[i] as string;
+    const layoutKey = layoutKeys[i] as string[];
     const key = keys[i];
     const lowerCaseCharacter = layoutKey[0];
     const upperCaseCharacter = layoutKey[1];
