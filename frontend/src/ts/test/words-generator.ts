@@ -1,6 +1,7 @@
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
-import * as Wordset from "./wordset";
+import * as WordsetModule from "./wordset";
+import { Wordset } from "./wordset";
 import QuotesController, {
   Quote,
   QuoteWithTextSplit,
@@ -307,7 +308,9 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
   return EnglishPunctuation.replace(word);
 }
 
-function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
+function getFunboxWordsFrequency():
+  | WordsetModule.FunboxWordsFrequency
+  | undefined {
   const funbox = findSingleActiveFunboxWithFunction("getWordsFrequencyMode");
   if (funbox) {
     return funbox.functions.getWordsFrequencyMode();
@@ -341,7 +344,7 @@ async function getFunboxSection(): Promise<string[]> {
 function getFunboxWord(
   word: string,
   wordIndex: number,
-  wordset?: Wordset.Wordset
+  wordset?: Wordset
 ): string {
   const funbox = findSingleActiveFunboxWithFunction("getWord");
 
@@ -575,7 +578,7 @@ async function getQuoteWordList(
   return TestWords.currentQuote.textSplit;
 }
 
-let currentWordset: Wordset.Wordset | null = null;
+let currentWordset: Wordset | null = null;
 let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
@@ -584,6 +587,8 @@ type GenerateWordsReturn = {
   sectionIndexes: number[];
   hasTab: boolean;
   hasNewline: boolean;
+  allRightToLeft?: boolean;
+  allLigatures?: boolean;
 };
 
 let previousRandomQuote: QuoteWithTextSplit | null = null;
@@ -591,6 +596,22 @@ let previousRandomQuote: QuoteWithTextSplit | null = null;
 export async function generateWords(
   language: LanguageObject
 ): Promise<GenerateWordsReturn> {
+  function isPolyglotResult(
+    obj: unknown
+  ): obj is {
+    wordset: Wordset;
+    allRightToLeft: boolean;
+    allLigatures: boolean;
+  } {
+    return (
+      Boolean(obj) &&
+      typeof obj === "object" &&
+      obj !== null &&
+      "wordset" in obj &&
+      "allRightToLeft" in obj &&
+      "allLigatures" in obj
+    );
+  }
   if (!TestState.isRepeated) {
     previousGetNextWordReturns = [];
   }
@@ -605,6 +626,8 @@ export async function generateWords(
     sectionIndexes: [],
     hasTab: false,
     hasNewline: false,
+    allRightToLeft: language.rightToLeft,
+    allLigatures: language.ligatures ?? false,
   };
 
   isCurrentlyUsingFunboxSection = isFunboxActiveWithFunction("pullSection");
@@ -635,9 +658,24 @@ export async function generateWords(
 
   const funbox = findSingleActiveFunboxWithFunction("withWords");
   if (funbox) {
-    currentWordset = await funbox.functions.withWords(wordList);
+    // check if polyglot funbox (returns object)
+    const result = await funbox.functions.withWords(wordList);
+    const isPolyglot = Array.isArray(Config.funbox)
+      ? Config.funbox.includes("polyglot")
+      : Config.funbox === "polyglot";
+    if (isPolyglot && isPolyglotResult(result)) {
+      currentWordset = result.wordset;
+      ret.allRightToLeft = result.allRightToLeft;
+      ret.allLigatures = result.allLigatures;
+    } else {
+      if (result instanceof Wordset) {
+        currentWordset = result;
+      } else {
+        throw new Error("withWords did not return a Wordset");
+      }
+    }
   } else {
-    currentWordset = await Wordset.withWords(wordList);
+    currentWordset = await WordsetModule.withWords(wordList);
   }
 
   console.debug("Wordset", currentWordset);

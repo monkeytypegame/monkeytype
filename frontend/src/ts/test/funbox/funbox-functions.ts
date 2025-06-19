@@ -31,7 +31,12 @@ import { Language } from "@monkeytype/contracts/schemas/languages";
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
-  withWords?: (words?: string[]) => Promise<Wordset>;
+  withWords?: (
+    words?: string[]
+  ) => Promise<
+    | Wordset
+    | { wordset: Wordset; allRightToLeft: boolean; allLigatures: boolean }
+  >;
   alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
   applyGlobalCSS?: () => void;
@@ -689,7 +694,10 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
 
       const wordSet = languages.flatMap((it) => it.words);
       Arrays.shuffle(wordSet);
-      return new Wordset(wordSet);
+      // compute RTL and ligature info
+      const allRightToLeft = languages.every((lang) => lang.rightToLeft);
+      const allLigatures = languages.every((lang) => lang.ligatures);
+      return { wordset: new Wordset(wordSet), allRightToLeft, allLigatures };
     },
   },
 };

@@ -493,12 +493,16 @@ export async function init(): Promise<void | null> {
   let generatedSectionIndexes: number[];
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
+  let allRightToLeft: boolean | undefined = undefined;
+  let allLigatures: boolean | undefined = undefined;
   try {
     const gen = await WordsGenerator.generateWords(language);
     generatedWords = gen.words;
     generatedSectionIndexes = gen.sectionIndexes;
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
+    allRightToLeft = gen.allRightToLeft;
+    allLigatures = gen.allLigatures;
   } catch (e) {
     Loader.hide();
     if (e instanceof WordGenError || e instanceof Error) {
@@ -555,8 +559,14 @@ export async function init(): Promise<void | null> {
     );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
-  TestUI.setRightToLeft(language.rightToLeft);
-  TestUI.setLigatures(language.ligatures ?? false);
+  TestUI.setRightToLeft(
+    typeof allRightToLeft === "boolean" ? allRightToLeft : language.rightToLeft
+  );
+  TestUI.setLigatures(
+    typeof allLigatures === "boolean"
+      ? allLigatures
+      : language.ligatures ?? false
+  );
   TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
   console.debug(
