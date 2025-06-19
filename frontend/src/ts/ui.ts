@@ -92,7 +92,6 @@ window.addEventListener("beforeunload", (event) => {
 });
 
 const debouncedEvent = debounce(250, () => {
-  void Caret.updatePosition();
   if (getActivePage() === "test" && !TestUI.resultVisible) {
     if (Config.tapeMode !== "off") {
       void TestUI.scrollTape();
@@ -102,7 +101,7 @@ const debouncedEvent = debounce(250, () => {
     setTimeout(() => {
       void TestUI.updateWordsInputPosition();
       if ($("#wordsInput").is(":focus")) {
-        Caret.show();
+        Caret.show(true);
       }
     }, 250);
   }
