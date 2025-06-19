@@ -101,7 +101,7 @@ const debouncedEvent = debounce(250, () => {
     setTimeout(() => {
       void TestUI.updateWordsInputPosition();
       if ($("#wordsInput").is(":focus")) {
-        Caret.show();
+        Caret.show(true);
       }
     }, 250);
   }
