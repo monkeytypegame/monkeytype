@@ -199,31 +199,17 @@ export async function updatePosition(noAnim = false): Promise<void> {
   }
   const newWidth = fullWidthCaret ? (letterWidth ?? 0) + "px" : "";
 
-  let newLeft: number;
-
-  // special handling for initial position
-  if (inputLen === 0) {
-    if (isLanguageRightToLeft) {
-      // for RTL languages -> position at the end of the word
-      // for LTR languages -> position at the start of the word
-      newLeft = activeWordEl.offsetLeft + activeWordEl.offsetWidth;
-    } else {
-      newLeft = activeWordEl.offsetLeft;
-    }
-  } else {
-    // normal position calculation for when we're typing
-    const letterPosLeft = getTargetPositionLeft(
-      fullWidthCaret,
-      isLanguageRightToLeft,
-      activeWordEl,
-      activeWordEmpty,
-      currentWordNodeList,
-      letterWidth,
-      wordLen,
-      inputLen
-    );
-    newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
-  }
+  const letterPosLeft = getTargetPositionLeft(
+    fullWidthCaret,
+    isLanguageRightToLeft,
+    activeWordEl,
+    activeWordEmpty,
+    currentWordNodeList,
+    letterWidth,
+    wordLen,
+    inputLen
+  );
+  const newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
 
   let smoothlinescroll = $("#words .smoothScroller").height();
   if (smoothlinescroll === undefined) smoothlinescroll = 0;
