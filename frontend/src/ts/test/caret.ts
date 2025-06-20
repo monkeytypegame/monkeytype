@@ -8,6 +8,7 @@ import { prefersReducedMotion } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
 import { splitIntoCharacters } from "../utils/strings";
 import { safeNumber } from "@monkeytype/util/numbers";
+import { subscribe } from "../observables/config-event";
 
 export let caretAnimating = true;
 const caret = document.querySelector("#caret") as HTMLElement;
@@ -263,6 +264,13 @@ export async function updatePosition(noAnim = false): Promise<void> {
     }
   }
 }
+
+subscribe((eventKey) => {
+  if (eventKey === "caretStyle") {
+    caret.style.width = "";
+    void updatePosition(true);
+  }
+});
 
 export function show(noAnim = false): void {
   caret.classList.remove("hidden");
