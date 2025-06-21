@@ -695,8 +695,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       const wordSet = languages.flatMap((it) => it.words);
       Arrays.shuffle(wordSet);
       // compute RTL and ligature info
-      const allRightToLeft = languages.every((lang) => lang.rightToLeft);
-      const allLigatures = languages.every((lang) => lang.ligatures);
+      const allRightToLeft = languages.some((lang) => lang.rightToLeft);
+      const allLigatures = languages.some((lang) => lang.ligatures);
       return { wordset: new Wordset(wordSet), allRightToLeft, allLigatures };
     },
   },
