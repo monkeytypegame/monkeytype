@@ -301,9 +301,26 @@ export function setNotificationBubbleVisible(tf: boolean): void {
 }
 
 function updateInboxSize(): void {
-  $("#alertsPopup .accountAlerts .title .right").text(
-    `${accountAlerts.length}/${maxMail}`
-  );
+  const remainingItems = accountAlerts.length - mailToDelete.length;
+  if (remainingItems > 0) {
+    $("#alertsPopup .accountAlerts .title .right").text(
+      `${remainingItems}/${maxMail}`
+    );
+  } else {
+    $("#alertsPopup .accountAlerts .title .right").text("");
+  }
+}
+
+function updateNotificationBubble(): void {
+  const unreadCount = accountAlerts.filter(
+    (alert) =>
+      !alert.read &&
+      !mailToMarkRead.includes(alert.id) &&
+      !mailToDelete.includes(alert.id)
+  ).length;
+
+  DB.updateInboxUnreadSize(unreadCount);
+  setNotificationBubbleVisible(unreadCount > 0);
 }
 
 function deleteAlert(id: string): void {
@@ -318,6 +335,7 @@ function deleteAlert(id: string): void {
   }
   updateClaimDeleteAllButton();
   updateInboxSize();
+  updateNotificationBubble();
 }
 
 function markReadAlert(id: string): void {
@@ -458,6 +476,7 @@ const modal = new AnimatedModal({
           .closest(".item")
           .attr("data-id") as string;
         markReadAlert(id);
+        updateNotificationBubble();
       }
     );
   },
