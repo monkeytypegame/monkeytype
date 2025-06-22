@@ -6,7 +6,7 @@ import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
 
 const unfocusPx = 3;
-export let state = false;
+let state = false;
 
 export function set(foc: boolean, withCursor = false): void {
   if (foc && !state) {
