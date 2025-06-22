@@ -6,7 +6,7 @@ import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
 
 const unfocusPx = 3;
-let state = false;
+export let state = false;
 
 export function set(foc: boolean, withCursor = false): void {
   if (foc && !state) {
@@ -14,7 +14,7 @@ export function set(foc: boolean, withCursor = false): void {
     Caret.stopAnimation();
     $("header").addClass("focus");
     $("footer").addClass("focus");
-    if (!withCursor) $("body").css("cursor", "none");
+    if (!withCursor) $("*").css("cursor", "none");
     $("main").addClass("focus");
     $("#bannerCenter").addClass("focus");
     $("#notificationCenter").addClass("focus");
@@ -32,7 +32,7 @@ export function set(foc: boolean, withCursor = false): void {
     Caret.startAnimation();
     $("header").removeClass("focus");
     $("footer").removeClass("focus");
-    $("body").css("cursor", "default");
+    $("*").css("cursor", "default");
     $("main").removeClass("focus");
     $("#bannerCenter").removeClass("focus");
     $("#notificationCenter").removeClass("focus");
