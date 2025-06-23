@@ -62,7 +62,7 @@ import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import {
   CompletedEvent,
-  CustomTextDataWithTextLen,
+  CompletedEventCustomText,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
 import {
@@ -78,6 +78,7 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 import { captureException } from "../sentry";
 import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
+import { canQuickRestart } from "../utils/quick-restart";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -170,7 +171,7 @@ export function restart(options = {} as RestartOptions): void {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") event?.preventDefault();
       if (
-        !Misc.canQuickRestart(
+        !canQuickRestart(
           Config.mode,
           Config.words,
           Config.time,
@@ -422,7 +423,7 @@ export async function init(): Promise<void | null> {
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
-  TestUI.setActiveWordElementOffset(0);
+  TestState.setRemovedUIWordCount(0);
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
@@ -452,13 +453,6 @@ export async function init(): Promise<void | null> {
     if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
       UpdateConfig.setQuoteLength(-1);
     }
-  }
-
-  if (Config.tapeMode !== "off" && language.rightToLeft) {
-    Notifications.add("This language does not support tape mode.", 0, {
-      important: true,
-    });
-    UpdateConfig.setTapeMode("off");
   }
 
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
@@ -801,7 +795,7 @@ function buildCompletedEvent(
   const wpmCons = Numbers.roundTo2(Numbers.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
-  let customText: CustomTextDataWithTextLen | undefined = undefined;
+  let customText: CompletedEventCustomText | undefined = undefined;
   if (Config.mode === "custom") {
     const temp = CustomText.getData();
     customText = {
@@ -1461,6 +1455,7 @@ $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
 
 $("header").on("click", "nav #startTestButton, #logo", () => {
   if (ActivePage.get() === "test") restart();
+  // Result.showConfetti();
 });
 
 // ===============================

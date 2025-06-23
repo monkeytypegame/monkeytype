@@ -15315,10 +15315,10 @@
       "length": 250
     },
     {
-      "text": "I think he knows what Rome is. Rome is the mob. Conjure magic for them and they'll be distracted. Take away their freedom and still they'll roar. The beating heart of Rome is not the marble of the senate, it's the sand of the coliseum. He'll bring them death - and they will love him for it.",
-      "source": "The Gladiator",
+      "text": "I think he knows what Rome is. Rome is the mob. Conjure magic for them and they'll be distracted. Take away their freedom and still they'll roar. The beating heart of Rome is not the marble of the senate, it's the sand of the colosseum. He'll bring them death - and they will love him for it.",
+      "source": "Gladiator",
       "id": 2725,
-      "length": 291
+      "length": 292
     },
     {
       "text": "This is why we're here. Because this little gray rock sells for 20 million dollars a kilo. That's the only reason. This is what pays for the whole party, and it's what pays for your science. Those savages are threatening our whole operation. We're on the brink of war and you're supposed to be finding me a diplomatic solution. So use what you've got, and get me some results.",
@@ -38589,6 +38589,54 @@
       "source": "The Eleventh Doctor - Doctor Who",
       "length": 311,
       "id": 7644
+    },
+    {
+      "text": "'Cause you never think the last time's going to be the last time - you think there will be more. You think you have forever, but you don't.",
+      "source": "Dr. Meredith Grey - Grey's Anatomy",
+      "length": 139,
+      "id": 7645
+    },
+    {
+      "text": "With freedom, flowers, books, and the moon, who could not be perfectly happy?",
+      "source": "De Profundis",
+      "length": 77,
+      "id": 7646
+    },
+    {
+      "text": "There will be times when the struggle seems impossible. I know this already. Alone, unsure, dwarfed by the scale of the enemy. Remember this. Freedom is a pure idea. It occurs spontaneously and without instruction. Random acts of insurrection are occurring constantly throughout the galaxy. There are whole armies, battalions that have no idea that they've already enlisted in the cause. Remember that the frontier of the Rebellion is everywhere. And even the smallest act of insurrection pushes our lines forward. And then remember this. The Imperial need for control is so desperate because it is so unnatural. Tyranny requires constant effort. It breaks, it leaks. Authority is brittle. Oppression is the mask of fear. Remember that. And know this, the day will come when all these skirmishes and battles, these moments of defiance will have flooded the banks of the Empire's authority and then there will be one too many. One single thing will break the siege. Remember this. Try.",
+      "source": "Nemik's Manifesto, Andor Season 1",
+      "length": 984,
+      "id": 7647
+    },
+    {
+      "text": "I've given up all chance at inner peace. I've made my mind a sunless space. I share my dreams with ghosts. I wake up every day to an equation I wrote 15 years ago from which there's only one conclusion: I'm damned for what I do. My anger, my ego, my unwillingness to yield, my eagerness to fight, they've set me on a path from which there is no escape. I yearned to be a savior against injustice without contemplating the cost and by the time I looked down there was no longer any ground beneath my feet. What is my sacrifice? I'm condemned to use the tools of my enemy to defeat them. I burn my decency for someone else's future. I burn my life to make a sunrise that I know I'll never see. And the ego that started this fight will never have a mirror or an audience or the light of gratitude. So what do I sacrifice? Everything!",
+      "source": "Luthen, Andor Season 1",
+      "length": 830,
+      "id": 7648
+    },
+    {
+      "text": "There is a wound that won't heal at the center of the galaxy. There is a darkness reaching like rust into everything around us. We let it grow, and now it's here. It's here, and it's not visiting anymore. It wants to stay. The Empire is a disease that thrives in darkness, it is never more alive than when we sleep. It's easy for the dead to tell you to fight, and maybe it's true, maybe fighting is useless. Perhaps it's too late. But I'll tell you this... If I could do it again, I'd wake up early and be fighting these bastards from the start.",
+      "source": "Maarva, Andor Season 1",
+      "length": 546,
+      "id": 7649
+    },
+    {
+      "text": "I don't have lately. I have always. I have a constant blur of plates spinning and knives on the floor, and needy, panicked faces at the window, of which you are but one of many.",
+      "source": "Kleya, Andor Season 1",
+      "length": 177,
+      "id": 7650
+    },
+    {
+      "text": "Gets to you, doesn't it? That's what a reckoning sounds like. You want it to stop, but it just keeps coming. It's when it stops, that's when you'll really want to start to fret.",
+      "source": "Maarva, Andor Season 1",
+      "length": 177,
+      "id": 7651
+    },
+    {
+      "text": "It's a lie. The Mon Mothma people think they know, it's a lie. It's a projection. It's a front. I've learned from Palpatine. I show you the stone in my hand, you miss the knife at your throat.",
+      "source": "Mon Mothma, Andor Season 1",
+      "length": 192,
+      "id": 7652
     }
   ]
 }

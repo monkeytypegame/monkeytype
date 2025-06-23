@@ -7,6 +7,7 @@ import {
   TestActivityCalendar,
   TestActivityMonth,
 } from "./test-activity-calendar";
+import { safeNumber } from "@monkeytype/util/numbers";
 
 let yearSelector: SlimSelect | undefined = undefined;
 
@@ -21,7 +22,10 @@ export function init(
   $("#testActivity").removeClass("hidden");
 
   yearSelector = getYearSelector();
-  initYearSelector("current", userSignUpDate?.getFullYear() || 2022);
+  initYearSelector(
+    "current",
+    safeNumber(userSignUpDate?.getFullYear()) ?? 2022
+  );
   updateLabels(calendar.firstDayOfWeek);
   update(calendar);
 }

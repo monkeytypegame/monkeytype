@@ -1,39 +1,20 @@
-import { activateAnalytics } from "../controllers/analytics-controller";
 import * as Notifications from "../elements/notifications";
 import { isPopupVisible } from "../utils/misc";
 import * as AdController from "../controllers/ad-controller";
 import AnimatedModal from "../utils/animated-modal";
 import { focusWords } from "../test/test-ui";
-import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
-import { z } from "zod";
-
-const AcceptedSchema = z.object({
-  security: z.boolean(),
-  analytics: z.boolean(),
-});
-type Accepted = z.infer<typeof AcceptedSchema>;
-
-const acceptedCookiesLS = new LocalStorageWithSchema({
-  key: "acceptedCookies",
-  schema: AcceptedSchema,
-  fallback: undefined,
-});
-
-function setAcceptedObject(obj: Accepted): void {
-  acceptedCookiesLS.set(obj);
-}
-
-export function check(): void {
-  if (acceptedCookiesLS.get() === undefined) {
-    show();
-  }
-}
+import {
+  AcceptedCookies,
+  getAcceptedCookies,
+  setAcceptedCookies,
+} from "../cookies";
 
 export function show(goToSettings?: boolean): void {
   void modal.show({
     beforeAnimation: async () => {
       if (goToSettings) {
-        showSettings();
+        const currentAcceptedCookies = getAcceptedCookies();
+        showSettings(currentAcceptedCookies);
       }
     },
     afterAnimation: async () => {
@@ -44,9 +25,26 @@ export function show(goToSettings?: boolean): void {
   });
 }
 
-function showSettings(): void {
+function showSettings(currentAcceptedCookies?: AcceptedCookies): void {
   modal.getModal().querySelector(".main")?.classList.add("hidden");
   modal.getModal().querySelector(".settings")?.classList.remove("hidden");
+
+  if (currentAcceptedCookies) {
+    if (currentAcceptedCookies.analytics) {
+      (
+        modal
+          .getModal()
+          .querySelector(".cookie.analytics input") as HTMLInputElement
+      ).checked = true;
+    }
+    if (currentAcceptedCookies.sentry) {
+      (
+        modal
+          .getModal()
+          .querySelector(".cookie.sentry input") as HTMLInputElement
+      ).checked = true;
+    }
+  }
 }
 
 async function hide(): Promise<void> {
@@ -56,14 +54,6 @@ async function hide(): Promise<void> {
     },
   });
 }
-
-// function verifyVisible(): void {
-//   if (!modal.isOpen()) return;
-//   if (!isPopupVisible("cookiePopup")) {
-//     //removed by cookie popup blocking extension
-//     modal.destroy();
-//   }
-// }
 
 const modal = new AnimatedModal({
   dialogId: "cookiesModal",
@@ -78,17 +68,18 @@ const modal = new AnimatedModal({
       const accepted = {
         security: true,
         analytics: true,
+        sentry: true,
       };
-      setAcceptedObject(accepted);
-      activateAnalytics();
+      setAcceptedCookies(accepted);
       void hide();
     });
     modalEl.querySelector(".rejectAll")?.addEventListener("click", () => {
       const accepted = {
         security: true,
         analytics: false,
+        sentry: false,
       };
-      setAcceptedObject(accepted);
+      setAcceptedCookies(accepted);
       void hide();
     });
     modalEl.querySelector(".openSettings")?.addEventListener("click", () => {
@@ -111,16 +102,16 @@ const modal = new AnimatedModal({
       const analyticsChecked = (
         modalEl.querySelector(".cookie.analytics input") as HTMLInputElement
       ).checked;
+      const sentryChecked = (
+        modalEl.querySelector(".cookie.sentry input") as HTMLInputElement
+      ).checked;
       const accepted = {
         security: true,
         analytics: analyticsChecked,
+        sentry: sentryChecked,
       };
-      setAcceptedObject(accepted);
+      setAcceptedCookies(accepted);
       void hide();
-
-      if (analyticsChecked) {
-        activateAnalytics();
-      }
     });
   },
 });

@@ -12,6 +12,7 @@ export class LocalStorageWithSchema<T> {
     value: Record<string, unknown> | unknown[],
     zodIssues?: ZodIssue[]
   ) => T;
+  private cache?: T;
 
   constructor(options: {
     key: string;
@@ -29,10 +30,18 @@ export class LocalStorageWithSchema<T> {
   }
 
   public get(): T {
+    if (this.cache !== undefined) {
+      console.debug(`LS ${this.key} Got cached value:`, this.cache);
+      return this.cache;
+    }
+
+    console.debug(`LS ${this.key} Getting value from localStorage`);
     const value = window.localStorage.getItem(this.key);
 
     if (value === null) {
-      return this.fallback;
+      console.debug(`LS ${this.key} No value found, returning fallback`);
+      this.cache = this.fallback;
+      return this.cache;
     }
 
     let migrated = false;
@@ -40,32 +49,51 @@ export class LocalStorageWithSchema<T> {
       parseJsonWithSchema(value, this.schema, {
         fallback: this.fallback,
         migrate: (oldData, zodIssues) => {
+          console.debug(`LS ${this.key} Schema validation failed`);
           migrated = true;
           if (this.migrate) {
-            return this.migrate(oldData, zodIssues);
+            console.debug(
+              `LS ${this.key} Migrating from old format to new format`
+            );
+            this.cache = this.migrate(oldData, zodIssues);
+            return this.cache;
           } else {
-            return this.fallback;
+            console.debug(
+              `LS ${this.key} No migration function provided, returning fallback`
+            );
+            this.cache = this.fallback;
+            return this.cache;
           }
         },
       })
     );
 
     if (error) {
+      console.error(
+        `LS ${this.key} Failed to parse from localStorage: ${error.message}`
+      );
       window.localStorage.setItem(this.key, JSON.stringify(this.fallback));
-      return this.fallback;
+      this.cache = this.fallback;
+      return this.cache;
     }
 
     if (migrated || parsed === this.fallback) {
+      console.debug(`LS ${this.key} Setting in localStorage`);
       window.localStorage.setItem(this.key, JSON.stringify(parsed));
     }
 
-    return parsed;
+    console.debug(`LS ${this.key} Got value:`, parsed);
+    this.cache = parsed;
+    return this.cache;
   }
 
   public set(data: T): boolean {
     try {
+      console.debug(`LS ${this.key} Parsing to set in localStorage`);
       const parsed = this.schema.parse(data);
+      console.debug(`LS ${this.key} Setting in localStorage`);
       window.localStorage.setItem(this.key, JSON.stringify(parsed));
+      this.cache = parsed;
       return true;
     } catch (e) {
       let message = "Unknown error occurred";

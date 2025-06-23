@@ -46,6 +46,7 @@ import {
   Language,
   LanguageSchema,
 } from "@monkeytype/contracts/schemas/languages";
+import { isSafeNumber } from "@monkeytype/util/numbers";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -479,7 +480,9 @@ function buildTableRow(entry: LeaderboardEntry, me = false): string {
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
             ${getHtmlByUserFlags(entry)}
-            ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
+            ${
+              isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
+            }
           </div>
         </div>
       </td>
@@ -530,7 +533,9 @@ function buildWeeklyTableRow(entry: XpLeaderboardEntry, me = false): string {
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
             ${getHtmlByUserFlags(entry)}
-            ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
+            ${
+              isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
+            }
           </div>
         </div>
       </td>
@@ -1071,7 +1076,7 @@ function handleJumpButton(action: Action, page?: number): void {
       const user = Auth?.currentUser;
       if (user) {
         const rank = state.userData?.rank;
-        if (rank) {
+        if (isSafeNumber(rank)) {
           // - 1 to make sure position 50 with page size 50 is on the first page (page 0)
           const page = Math.floor((rank - 1) / state.pageSize);
 

@@ -580,7 +580,7 @@ async function fillSettingsPage(): Promise<void> {
   customLayoutFluidSelect = new SlimSelect({
     select:
       ".pageSettings .section[data-config-name='customLayoutfluid'] select",
-    settings: { keepOrder: true },
+    settings: { keepOrder: true, minSelected: 1 },
     events: {
       afterChange: (newVal): void => {
         const customLayoutfluid = newVal.map(
@@ -598,6 +598,7 @@ async function fillSettingsPage(): Promise<void> {
 
   customPolyglotSelect = new SlimSelect({
     select: ".pageSettings .section[data-config-name='customPolyglot'] select",
+    settings: { minSelected: 1 },
     data: getLanguageDropdownData((language) =>
       Config.customPolyglot.includes(language)
     ),
