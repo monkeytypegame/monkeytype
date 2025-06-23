@@ -1114,6 +1114,12 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#5b578e",
     textColor: "#f4e0c9",
   },
+  jango: {
+    bgColor: "#1c2025",
+    mainColor: "#3c6fa3",
+    subColor: "#5c6169",
+    textColor: "#ced5dc",
+  },
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
