@@ -46,9 +46,9 @@ On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added 
 
 If you encounter a bug or have a feature request, [send us an email](mailto:contact@monkeytype.com), [create an issue](https://github.com/monkeytypegame/monkeytype/issues), [create a discussion thread](https://github.com/monkeytypegame/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
 
-# Want to Contribute?
+## Want to Contribute?
 
-Refer to [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
+Refer to [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for contribution guidelines. The project requires Node.js version 22.16.0 and pnpm 9.6.0. See the advanced guide for setup instructions using nvm and the correct Node version.
 
 # Code of Conduct
 
