@@ -728,5 +728,21 @@
     "display": "Feet warrior",
     "type": "customTime",
     "parameters": [3600]
+  },
+  {
+    "name": "shakespeareanHour",
+    "display": "Shakespearean Hour",
+    "type": "customTime",
+    "parameters": [3600],
+    "requirements": {
+      "time": {
+        "min": 3600
+      },
+      "config": {
+        "language": "english_shakespearean",
+        "punctuation": true,
+        "numbers": true
+      }
+    }
   }
 ]
