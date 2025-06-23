@@ -37,9 +37,12 @@ export function hide(): void {
 
 function getSpaceWidth(wordElement?: HTMLElement): number {
   if (!wordElement) {
-    const el = document.querySelector("#words .word");
-    if (el) wordElement = el as HTMLElement;
-    else return 0;
+    const el = document.querySelector<HTMLElement>("#words .word");
+    if (el) {
+      wordElement = el;
+    } else {
+      return 0;
+    }
   }
   const wordComputedStyle = window.getComputedStyle(wordElement);
   return (
