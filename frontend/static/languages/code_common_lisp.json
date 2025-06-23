@@ -199,7 +199,7 @@
     "write-string",
     "terpri",
     "fresh-line",
-    "write-squence",
+    "write-sequence",
     "write-byte",
     "pathname",
     "defgeneric",
