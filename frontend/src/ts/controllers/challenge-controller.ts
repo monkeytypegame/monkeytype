@@ -230,9 +230,9 @@ export async function setup(challengeName: string): Promise<boolean> {
     return false;
   }
 
-  const challenge = list.filter(
+  const challenge = list.find(
     (c) => c.name.toLowerCase() === challengeName.toLowerCase()
-  )[0];
+  );
   let notitext;
   try {
     if (challenge === undefined) {

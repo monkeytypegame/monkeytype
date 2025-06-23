@@ -213,6 +213,10 @@ export const LayoutNameSchema = z.enum([
     "ergopti",
     "sword",
     "opy",
+    "tarmak_1",
+    "tarmak_2",
+    "tarmak_3",
+    "tarmak_4",
   ]
 );
 

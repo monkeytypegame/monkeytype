@@ -39,6 +39,15 @@ let subgroupOverride: CommandsSubgroup | null = null;
 let isAnimating = false;
 let lastSingleListModeInputValue = "";
 
+type CommandWithActiveState = Omit<Command, "active"> & { isActive: boolean };
+
+let lastState:
+  | {
+      list: CommandWithActiveState[];
+      usingSingleList: boolean;
+    }
+  | undefined;
+
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
@@ -110,9 +119,9 @@ export function show(
       let showInputCommand: Command | undefined = undefined;
 
       if (settings?.commandOverride !== undefined) {
-        const command = (await getList()).filter(
+        const command = (await getList()).find(
           (c) => c.id === settings.commandOverride
-        )[0];
+        );
         if (command === undefined) {
           Notifications.add(`Command ${settings.commandOverride} not found`, 0);
         } else if (command?.input !== true) {
@@ -328,7 +337,7 @@ function hideCommands(): void {
     throw new Error("Commandline element not found");
   }
   element.innerHTML = "";
-  lastList = undefined;
+  lastState = undefined;
 }
 
 let cachedSingleSubgroup: CommandsSubgroup | null = null;
@@ -353,8 +362,6 @@ async function getList(): Promise<Command[]> {
   return (await getSubgroup()).list;
 }
 
-let lastList: Command[] | undefined;
-
 async function showCommands(): Promise<void> {
   const element = document.querySelector("#commandLine .suggestions");
   if (element === null) {
@@ -366,11 +373,42 @@ async function showCommands(): Promise<void> {
     return;
   }
 
-  const list = (await getList()).filter((c) => c.found === true);
-  if (lastList && areSortedArraysEqual(list, lastList)) {
+  const subgroup = await getSubgroup();
+
+  const list = subgroup.list
+    .filter((c) => c.found === true)
+    .map((command) => {
+      let isActive = false;
+      if (command.active !== undefined) {
+        isActive = command.active();
+      } else {
+        const configKey = command.configKey ?? subgroup.configKey;
+        if (configKey !== undefined) {
+          if (command.configValueMode === "include") {
+            isActive = (Config[configKey] as unknown[]).includes(
+              command.configValue
+            );
+          } else {
+            isActive = Config[configKey] === command.configValue;
+          }
+        }
+      }
+      const { active: _active, ...restOfCommand } = command;
+      return { ...restOfCommand, isActive } as CommandWithActiveState;
+    });
+
+  if (
+    lastState &&
+    usingSingleList === lastState.usingSingleList &&
+    areSortedArraysEqual(list, lastState.list)
+  ) {
     return;
   }
-  lastList = list;
+
+  lastState = {
+    list: list,
+    usingSingleList: usingSingleList,
+  };
 
   let html = "";
   let index = 0;
@@ -381,44 +419,21 @@ async function showCommands(): Promise<void> {
     if (command.found !== true) continue;
     let icon = command.icon ?? "fa-chevron-right";
     const faIcon = icon.startsWith("fa-");
+    const iconType = command.iconType ?? "solid";
+    const iconTypeClass = iconType === "solid" ? "fas" : "far";
     if (!faIcon) {
       icon = `<div class="textIcon">${icon}</div>`;
     } else {
-      icon = `<i class="fas fa-fw ${icon}"></i>`;
+      icon = `<i class="${iconTypeClass} fa-fw ${icon}"></i>`;
     }
     let configIcon = "";
-    const configKey = command.configKey ?? (await getSubgroup()).configKey;
-    if (command.active !== undefined) {
-      if (command.active()) {
-        firstActive = firstActive ?? index;
-        configIcon = `<i class="fas fa-fw fa-check"></i>`;
-      } else {
-        configIcon = `<i class="fas fa-fw"></i>`;
-      }
-    } else if (configKey !== undefined) {
-      let isActive;
-
-      if (command.configValueMode === "include") {
-        isActive = (
-          Config[configKey] as (
-            | string
-            | number
-            | boolean
-            | number[]
-            | undefined
-          )[]
-        ).includes(command.configValue);
-      } else {
-        isActive = Config[configKey] === command.configValue;
-      }
-
-      if (isActive) {
-        firstActive = firstActive ?? index;
-        configIcon = `<i class="fas fa-fw fa-check"></i>`;
-      } else {
-        configIcon = `<i class="fas fa-fw"></i>`;
-      }
+    if (command.isActive) {
+      firstActive = firstActive ?? index;
+      configIcon = `<i class="fas fa-fw fa-check"></i>`;
+    } else {
+      configIcon = `<i class="fas fa-fw"></i>`;
     }
+
     const iconHTML = `<div class="icon">${
       usingSingleList || configIcon === "" ? icon : configIcon
     }</div>`;
@@ -438,12 +453,27 @@ async function showCommands(): Promise<void> {
 
     if (command.customData !== undefined) {
       if (command.id.startsWith("changeTheme")) {
-        html += `<div class="command withThemeBubbles" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">
+        html += `<div class="command changeThemeCommand" data-command-id="${
+          command.id
+        }" data-index="${index}" style="${customStyle}">
       ${iconHTML}<div>${display}</div>
-      <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
-        <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
-        <div class="themeBubble" style="background: ${command.customData["subColor"]}"></div>
-        <div class="themeBubble" style="background: ${command.customData["textColor"]}"></div>
+      <div class="themeFavIcon ${
+        command.customData["isFavorite"] === true ? "" : "hidden"
+      }">
+        <i class="fas fa-star"></i>
+      </div>
+      <div class="themeBubbles" style="background: ${
+        command.customData["bgColor"]
+      };outline: 0.25rem solid ${command.customData["bgColor"]};">
+        <div class="themeBubble" style="background: ${
+          command.customData["mainColor"]
+        }"></div>
+        <div class="themeBubble" style="background: ${
+          command.customData["subColor"]
+        }"></div>
+        <div class="themeBubble" style="background: ${
+          command.customData["textColor"]
+        }"></div>
       </div>
       </div>`;
       }
@@ -681,6 +711,7 @@ const modal = new AnimatedModal({
       ) {
         if (
           Config.singleListCommandLine === "on" &&
+          subgroupOverride === null &&
           inputValue === "" &&
           lastSingleListModeInputValue !== ""
         ) {
@@ -735,6 +766,7 @@ const modal = new AnimatedModal({
     let lastHover: HTMLElement | undefined;
 
     suggestions.addEventListener("mousemove", async (e) => {
+      mouseMode = true;
       const target = e.target as HTMLElement | null;
       if (target === lastHover) return;
 
