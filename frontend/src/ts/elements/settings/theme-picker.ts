@@ -48,9 +48,9 @@ export async function refreshThemeUI(): Promise<void> {
     return;
   }
   // first full initialization or subsequent refreshes when needed
-  await refreshPresetButtons();
+  await fillPresetButtons();
   updateActiveButton();
-  await refreshCustomButtons();
+  await fillCustomButtons();
   // mark as initialized
   themeUIInitialized = true;
 }
@@ -136,7 +136,7 @@ function updateColors(
   colorPicker.find("input.color").attr("value", color);
 }
 
-export async function refreshPresetButtons(): Promise<void> {
+export async function fillPresetButtons(): Promise<void> {
   // Update theme buttons
   const favThemesEl = document.querySelector<HTMLElement>(
     ".pageSettings .section.themes .favThemes.buttons"
@@ -232,7 +232,7 @@ export async function refreshPresetButtons(): Promise<void> {
   themesEl.innerHTML = themesElHTML;
 }
 
-export async function refreshCustomButtons(): Promise<void> {
+export async function fillCustomButtons(): Promise<void> {
   // Update custom theme buttons
   const customThemesEl = $(
     ".pageSettings .section.themes .allCustomThemes.buttons"
@@ -384,7 +384,7 @@ $(".pageSettings").on("click", ".section.themes .theme .favButton", (e) => {
     .attr("theme") as ThemeName;
   if (theme !== undefined) {
     toggleFavourite(theme);
-    void refreshPresetButtons();
+    void fillPresetButtons();
   } else {
     console.error(
       "Could not find the theme attribute attached to the button clicked!"
@@ -493,7 +493,7 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
     await DB.addCustomTheme(newCustomTheme);
     Loader.hide();
   }
-  void refreshCustomButtons();
+  void fillCustomButtons();
 });
 
 ConfigEvent.subscribe((eventKey) => {
@@ -505,7 +505,7 @@ ConfigEvent.subscribe((eventKey) => {
     // to ensures proper refresh when navigating to settings after changing favorites
     resetThemeUIInitialized();
     if (ActivePage.get() === "settings") {
-      void refreshPresetButtons();
+      void fillPresetButtons();
     }
   }
 });
