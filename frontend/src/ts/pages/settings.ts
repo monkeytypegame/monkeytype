@@ -1365,7 +1365,6 @@ export const page = new Page({
     await UpdateConfig.loadPromise;
     await fillSettingsPage();
     await update();
-    ThemePicker.updateActiveButton();
   },
 });
 
