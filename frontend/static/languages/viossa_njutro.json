@@ -1,6 +1,7 @@
 {
-  "name": "viossa_nju",
+  "name": "viossa_njutro",
   "orderedByFrequency": false,
+  "noLazyMode": true,
   "words": [
     "ka",
     "unn",
