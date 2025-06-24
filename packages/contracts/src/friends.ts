@@ -20,7 +20,7 @@ export const GetFriendsQuerySchema = z.object({
 export type GetFriendsQuery = z.infer<typeof GetFriendsQuerySchema>;
 
 export const CreateFriendRequestSchema = FriendSchema.pick({
-  friendUid: true,
+  friendName: true,
 }).strict();
 export type CreateFriendRequest = z.infer<typeof CreateFriendRequestSchema>;
 
