@@ -161,12 +161,13 @@ export function navigate(
   if (url === "") url = "/";
 
   // only push to history if we're navigating to a different URL
-  const currentPath =
-    window.location.pathname + window.location.search + window.location.hash;
+  const currentUrl = new URL(window.location.href);
   const targetUrl = new URL(url, window.location.origin);
-  const targetPath = targetUrl.pathname + targetUrl.search + targetUrl.hash;
 
-  if (currentPath !== targetPath) {
+  if (
+    currentUrl.pathname + currentUrl.search + currentUrl.hash !==
+    targetUrl.pathname + targetUrl.search + targetUrl.hash
+  ) {
     history.pushState(null, "", url);
   }
 
