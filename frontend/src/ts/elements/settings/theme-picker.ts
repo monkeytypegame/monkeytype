@@ -480,7 +480,4 @@ ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "theme" && ActivePage.get() === "settings") {
     updateActiveButton();
   }
-  if (eventKey === "favThemes" && ActivePage.get() === "settings") {
-    void fillPresetButtons();
-  }
 });
