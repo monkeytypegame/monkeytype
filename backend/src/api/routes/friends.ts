@@ -15,4 +15,7 @@ export default s.router(friendsContract, {
   delete: {
     handler: async (r) => callController(FriendsController.deleteFriend)(r),
   },
+  update: {
+    handler: async (r) => callController(FriendsController.update)(r),
+  },
 });

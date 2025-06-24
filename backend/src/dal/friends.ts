@@ -1,14 +1,18 @@
-import { Friend, FriendStatus } from "@monkeytype/contracts/schemas/friends";
 import { Collection, Filter, ObjectId } from "mongodb";
 import * as db from "../init/db";
+import { Friend, FriendStatus } from "@monkeytype/contracts/schemas/friends";
 import MonkeyError from "../utils/error";
 import { WithObjectId } from "../utils/misc";
-import _ from "lodash";
+
 export type DBFriend = WithObjectId<
   Friend & {
     key: string; //sorted uid
   }
 >;
+
+// Export for use in tests
+export const getCollection = (): Collection<DBFriend> =>
+  db.collection("friends");
 
 export async function get(
   uid: string,
@@ -20,7 +24,8 @@ export async function get(
   if (status !== undefined) {
     filter = { $and: [filter, { status: { $in: status } }] };
   }
-  return await getFriendsCollection().find(filter).toArray();
+
+  return await getCollection().find(filter).toArray();
 }
 
 export async function create(
@@ -28,7 +33,7 @@ export async function create(
   friend: { uid: string; name: string }
 ): Promise<DBFriend> {
   try {
-    const created = await getFriendsCollection().insertOne({
+    const created: DBFriend = {
       _id: new ObjectId(),
       key: getKey(initiator.uid, friend.uid),
       initiatorUid: initiator.uid,
@@ -37,15 +42,11 @@ export async function create(
       friendName: friend.name,
       addedAt: Date.now(),
       status: "pending",
-    });
-    const inserted = await getFriendsCollection().findOne({
-      _id: created.insertedId,
-    });
+    };
 
-    if (inserted === null) {
-      throw new MonkeyError(500, "Insert friend failed");
-    }
-    return inserted;
+    await getCollection().insertOne(created);
+
+    return created;
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.name === "MongoServerError" && e.code === 11000) {
@@ -56,11 +57,42 @@ export async function create(
   }
 }
 
-export async function deleteFriend(
+/**
+ *Update the status of a friend by id
+ * @param friendUid
+ * @param id
+ * @param status
+ * @throws MonkeyError if the friend id is unknown or the friendUid does not match
+ */
+export async function updateStatus(
+  friendUid: string,
+  id: string,
+  status: FriendStatus
+): Promise<void> {
+  const updateResult = await getCollection().updateOne(
+    {
+      _id: new ObjectId(id),
+      friendUid,
+    },
+    { $set: { status } }
+  );
+
+  if (updateResult.matchedCount === 0) {
+    throw new MonkeyError(404, "Friend not found");
+  }
+}
+
+/**
+ * delete a friend by the id.
+ * @param initiatorUid
+ * @param id
+ * @throws MonkeyError if the friend id is unknown or the initiatorUid does not match
+ */
+export async function deleteById(
   initiatorUid: string,
   id: string
 ): Promise<void> {
-  const deletionResult = await getFriendsCollection().deleteOne({
+  const deletionResult = await getCollection().deleteOne({
     _id: new ObjectId(id),
     initiatorUid,
   });
@@ -76,7 +108,7 @@ export async function deleteFriend(
  * @param newName
  */
 export async function updateName(uid: string, newName: string): Promise<void> {
-  await getFriendsCollection().bulkWrite([
+  await getCollection().bulkWrite([
     {
       updateMany: {
         filter: { initiatorUid: uid },
@@ -97,13 +129,9 @@ export async function updateName(uid: string, newName: string): Promise<void> {
  * @param uid
  */
 export async function deleteByUid(uid: string): Promise<void> {
-  await getFriendsCollection().deleteMany({
+  await getCollection().deleteMany({
     $or: [{ initiatorUid: uid }, { friendUid: uid }],
   });
-}
-
-function getFriendsCollection(): Collection<DBFriend> {
-  return db.collection("friends");
 }
 
 function getKey(initiatorUid: string, friendUid: string): string {
@@ -114,6 +142,9 @@ function getKey(initiatorUid: string, friendUid: string): string {
 
 export async function createIndicies(): Promise<void> {
   //index used for search
+  await getCollection().createIndex({ initiatorUid: 1 });
+  await getCollection().createIndex({ friendUid: 1 });
+
   //make sure there is only one friend entry for each friend/creator pair
-  await getFriendsCollection().createIndex({ key: 1 }, { unique: true });
+  await getCollection().createIndex({ key: 1 }, { unique: true });
 }

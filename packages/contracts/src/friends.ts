@@ -15,13 +15,16 @@ export const GetFriendsResponseSchema = responseWithData(z.array(FriendSchema));
 export type GetFriendsResponse = z.infer<typeof GetFriendsResponseSchema>;
 
 export const GetFriendsQuerySchema = z.object({
-  status: z.array(FriendStatusSchema).optional(),
+  status: z
+    .array(FriendStatusSchema)
+    .or(FriendStatusSchema.transform((it) => [it]))
+    .optional(),
 });
 export type GetFriendsQuery = z.infer<typeof GetFriendsQuerySchema>;
 
 export const CreateFriendRequestSchema = FriendSchema.pick({
   friendName: true,
-}).strict();
+});
 export type CreateFriendRequest = z.infer<typeof CreateFriendRequestSchema>;
 
 export const CreateFriendResponseSchema = responseWithData(FriendSchema);
@@ -32,6 +35,11 @@ export const FriendIdPathParamsSchema = z.object({
 });
 export type FriendIdPathParams = z.infer<typeof FriendIdPathParamsSchema>;
 
+export const UpdateFriendsRequestSchema = z.object({
+  status: FriendStatusSchema.exclude(["pending"]),
+});
+export type UpdateFriendsRequest = z.infer<typeof UpdateFriendsRequestSchema>;
+
 export const friendsContract = c.router(
   {
     get: {
@@ -39,7 +47,7 @@ export const friendsContract = c.router(
       description: "Get friends of the current user",
       method: "GET",
       path: "",
-      query: GetFriendsQuerySchema,
+      query: GetFriendsQuerySchema.strict(),
       responses: {
         200: GetFriendsResponseSchema,
       },
@@ -52,7 +60,7 @@ export const friendsContract = c.router(
       description: "Request a user to become a friend",
       method: "POST",
       path: "",
-      body: CreateFriendRequestSchema,
+      body: CreateFriendRequestSchema.strict(),
       responses: {
         200: CreateFriendResponseSchema,
         404: MonkeyResponseSchema.describe("FriendUid unknown"),
@@ -74,6 +82,20 @@ export const friendsContract = c.router(
       },
       metadata: meta({
         rateLimit: "friendsDelete",
+      }),
+    },
+    update: {
+      summary: "Update friend",
+      description: "Update a friends status",
+      method: "PATCH",
+      path: "/:id",
+      pathParams: FriendIdPathParamsSchema.strict(),
+      body: UpdateFriendsRequestSchema.strict(),
+      responses: {
+        200: MonkeyResponseSchema,
+      },
+      metadata: meta({
+        rateLimit: "friendsUpdate",
       }),
     },
   },

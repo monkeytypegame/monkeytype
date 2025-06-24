@@ -4,6 +4,9 @@ import { mockBearerAuthentication } from "../../__testData__/auth";
 import * as Configuration from "../../../src/init/configuration";
 import { ObjectId } from "mongodb";
 import _ from "lodash";
+import * as FriendsDal from "../../../src/dal/friends";
+import * as UserDal from "../../../src/dal/user";
+
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
 const uid = new ObjectId().toHexString();
@@ -18,6 +21,72 @@ describe("FriendsController", () => {
   });
 
   describe("get friends", () => {
+    const getFriendsMock = vi.spyOn(FriendsDal, "get");
+
+    beforeEach(() => {
+      getFriendsMock.mockReset();
+    });
+
+    it("should get for the current user", async () => {
+      //GIVEN
+      const friend: FriendsDal.DBFriend = {
+        _id: new ObjectId(),
+        addedAt: 42,
+        initiatorUid: new ObjectId().toHexString(),
+        initiatorName: "Bob",
+        friendUid: new ObjectId().toHexString(),
+        friendName: "Kevin",
+        status: "pending",
+        key: "key",
+      };
+
+      getFriendsMock.mockResolvedValue([friend]);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/friends")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body.data).toEqual([{ ...friend, _id: friend._id.toHexString() }]);
+      expect(getFriendsMock).toHaveBeenCalledWith(uid, undefined);
+    });
+
+    it("should filter by status", async () => {
+      //GIVEN
+      getFriendsMock.mockResolvedValue([]);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/friends")
+        .query({ status: "accepted" })
+        .set("Authorization", `Bearer ${uid}`);
+      //.expect(200);
+
+      console.log(body);
+
+      //THEN
+      expect(getFriendsMock).toHaveBeenCalledWith(uid, ["accepted"]);
+    });
+    it("should filter by multiple status", async () => {
+      //GIVEN
+      getFriendsMock.mockResolvedValue([]);
+
+      //WHEN
+      await mockApp
+        .get("/friends")
+        .query({ status: ["accepted", "rejected"] })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(getFriendsMock).toHaveBeenCalledWith(uid, [
+        "accepted",
+        "rejected",
+      ]);
+    });
+
     it("should fail if friends endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
         mockApp.get("/friends").set("Authorization", `Bearer ${uid}`)
@@ -26,9 +95,107 @@ describe("FriendsController", () => {
     it("should fail without authentication", async () => {
       await mockApp.get("/friends").expect(401);
     });
+    it("should fail for unknown query parameter", async () => {
+      const { body } = await mockApp
+        .get("/friends")
+        .query({ extra: "yes" })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(422);
+
+      expect(body).toStrictEqual({
+        message: "Invalid query schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
+    });
   });
 
   describe("create friend", () => {
+    const getUserByNameMock = vi.spyOn(UserDal, "getUserByName");
+    const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
+    const addToInboxMock = vi.spyOn(UserDal, "addToInbox");
+    const createUserMock = vi.spyOn(FriendsDal, "create");
+
+    beforeEach(() => {
+      [
+        getUserByNameMock,
+        getPartialUserMock,
+        addToInboxMock,
+        createUserMock,
+      ].forEach((it) => it.mockReset());
+    });
+
+    it("should create friend", async () => {
+      //GIVEN
+      const me = { uid, name: "Bob" };
+      const myFriend = { uid: new ObjectId().toHexString(), name: "Kevin" };
+      getUserByNameMock.mockResolvedValue(myFriend as any);
+      getPartialUserMock.mockResolvedValue(me as any);
+
+      const result: FriendsDal.DBFriend = {
+        _id: new ObjectId(),
+        addedAt: 42,
+        initiatorUid: me.uid,
+        initiatorName: me.name,
+        friendUid: myFriend.uid,
+        friendName: myFriend.name,
+        key: "test",
+        status: "pending",
+      };
+      createUserMock.mockResolvedValue(result);
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/friends")
+        .send({ friendName: "Kevin" })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body.data).toEqual({
+        _id: result._id.toHexString(),
+        addedAt: 42,
+        initiatorUid: me.uid,
+        initiatorName: me.name,
+        friendUid: myFriend.uid,
+        friendName: myFriend.name,
+        status: "pending",
+      });
+
+      expect(getUserByNameMock).toHaveBeenCalledWith("Kevin", "create friend");
+      expect(getPartialUserMock).toHaveBeenCalledWith(uid, "create friend", [
+        "uid",
+        "name",
+      ]);
+      expect(addToInboxMock).toBeCalledWith(
+        myFriend.uid,
+        [
+          expect.objectContaining({
+            body: "Bob wants to be your friend. You can accept/deny this request in [FRIEND_SETTINGS]",
+            subject: "Friend request",
+          }),
+        ],
+        expect.anything()
+      );
+    });
+
+    it("should fail if user and friend are the same", async () => {
+      //GIVEN
+      const me = { uid, name: "Bob" };
+
+      getUserByNameMock.mockResolvedValue(me as any);
+      getPartialUserMock.mockResolvedValue(me as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/friends")
+        .send({ friendName: "Bob" })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(400);
+
+      //THEN
+      expect(body.message).toEqual("You cannot be your own friend, sorry.");
+    });
+
     it("should fail without mandatory properties", async () => {
       //WHEN
       const { body } = await mockApp
@@ -40,14 +207,14 @@ describe("FriendsController", () => {
       //THEN
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
-        validationErrors: [`"friendUid" Required`],
+        validationErrors: [`"friendName" Required`],
       });
     });
     it("should fail with extra properties", async () => {
       //WHEN
       const { body } = await mockApp
         .post("/friends")
-        .send({ friendUid: "1", extra: "value" })
+        .send({ friendName: "1", extra: "value" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
@@ -62,7 +229,7 @@ describe("FriendsController", () => {
       await expectFailForDisabledEndpoint(
         mockApp
           .post("/friends")
-          .send({ friendUid: "1" })
+          .send({ friendName: "1" })
           .set("Authorization", `Bearer ${uid}`)
       );
     });
@@ -73,6 +240,22 @@ describe("FriendsController", () => {
   });
 
   describe("delete friend", () => {
+    const deleteByIdMock = vi.spyOn(FriendsDal, "deleteById");
+
+    beforeEach(() => {
+      deleteByIdMock.mockReset();
+    });
+
+    it("should delete by id", async () => {
+      //WHEN
+      await mockApp
+        .delete("/friends/1")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(deleteByIdMock).toHaveBeenCalledWith(uid, "1");
+    });
     it("should fail if friends endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
         mockApp.delete("/friends/1").set("Authorization", `Bearer ${uid}`)
@@ -81,6 +264,56 @@ describe("FriendsController", () => {
 
     it("should fail without authentication", async () => {
       await mockApp.delete("/friends/1").expect(401);
+    });
+  });
+
+  describe("update friend", () => {
+    const updateStatusMock = vi.spyOn(FriendsDal, "updateStatus");
+
+    beforeEach(() => {
+      updateStatusMock.mockReset();
+    });
+
+    it("should update friend", async () => {
+      //WHEN
+      await mockApp
+        .patch("/friends/1")
+        .send({ status: "accepted" })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(updateStatusMock).toHaveBeenCalledWith(uid, "1", "accepted");
+    });
+
+    it("should fail for invalid status", async () => {
+      const { body } = await mockApp
+        .patch("/friends/1")
+        .send({ status: "invalid" })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(422);
+
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          `"status" Invalid enum value. Expected 'accepted' | 'rejected', received 'invalid'`,
+        ],
+      });
+    });
+    it("should fail if friends endpoints are disabled", async () => {
+      await expectFailForDisabledEndpoint(
+        mockApp
+          .patch("/friends/1")
+          .send({ status: "accepted" })
+          .set("Authorization", `Bearer ${uid}`)
+      );
+    });
+
+    it("should fail without authentication", async () => {
+      await mockApp
+        .patch("/friends/1")
+        .send({ status: "accepted" })
+        .expect(401);
     });
   });
 });

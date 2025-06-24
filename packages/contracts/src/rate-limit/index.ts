@@ -376,6 +376,11 @@ export const limits = {
     window: "hour",
     max: 60,
   },
+
+  friendsUpdate: {
+    window: "hour",
+    max: 60,
+  },
 } satisfies Record<string, RateLimitOptions>;
 
 export type RateLimiterId = keyof typeof limits;
