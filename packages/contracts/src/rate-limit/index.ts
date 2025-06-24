@@ -361,6 +361,21 @@ export const limits = {
     window: "second",
     max: 1,
   },
+
+  friendsGet: {
+    window: "hour",
+    max: 60,
+  },
+
+  friendsCreate: {
+    window: "hour",
+    max: 60,
+  },
+
+  friendsDelete: {
+    window: "hour",
+    max: 60,
+  },
 } satisfies Record<string, RateLimitOptions>;
 
 export type RateLimiterId = keyof typeof limits;
