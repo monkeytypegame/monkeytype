@@ -616,9 +616,8 @@ async function fillSettingsPage(): Promise<void> {
   setEventDisabled(true);
 
   await initGroups();
-  // reset theme UI initialization state before refreshing
-  ThemePicker.resetThemeUIInitialized();
-  await ThemePicker.refreshThemeUI();
+  await ThemePicker.fillPresetButtons();
+  await ThemePicker.fillCustomButtons();
 
   setEventDisabled(false);
   settingsInitialized = true;
@@ -740,7 +739,8 @@ export async function update(): Promise<void> {
   await Misc.sleep(0);
   ThemePicker.updateActiveTab();
   ThemePicker.setCustomInputs(true);
-  // ThemePicker.updateActiveButton();
+  await ThemePicker.fillPresetButtons();
+  ThemePicker.updateActiveButton();
 
   $(
     ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed"
@@ -1365,7 +1365,7 @@ export const page = new Page({
     await UpdateConfig.loadPromise;
     await fillSettingsPage();
     await update();
-    await ThemePicker.refreshThemeUI();
+    ThemePicker.updateActiveButton();
   },
 });
 

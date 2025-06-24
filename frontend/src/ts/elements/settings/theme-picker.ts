@@ -17,7 +17,7 @@ import {
 import { captureException } from "../../sentry";
 import { ThemesListSorted } from "../../constants/themes";
 
-function updateActiveButton(): void {
+export function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
   if (
     Config.randomTheme !== "off" &&
@@ -37,26 +37,6 @@ function updateActiveButton(): void {
       `.pageSettings .section.themes .theme[theme='${activeThemeName}']`
     )
     ?.classList.add("active");
-}
-
-// track if theme UI has been initialized
-let themeUIInitialized = false;
-export async function refreshThemeUI(): Promise<void> {
-  // if fillSettingsPage has already initialized the theme UI, just update the active button
-  if (themeUIInitialized) {
-    updateActiveButton();
-    return;
-  }
-  // first full initialization or subsequent refreshes when needed
-  await fillPresetButtons();
-  updateActiveButton();
-  await fillCustomButtons();
-  // mark as initialized
-  themeUIInitialized = true;
-}
-// reset the initialization flag when settings are modified
-export function resetThemeUIInitialized(): void {
-  themeUIInitialized = false;
 }
 
 function updateColors(
@@ -498,14 +478,10 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "theme" && ActivePage.get() === "settings") {
+    void fillPresetButtons();
     updateActiveButton();
   }
-  if (eventKey === "favThemes") {
-    // reset initialization flag when favorites change, regardless of current page
-    // to ensures proper refresh when navigating to settings after changing favorites
-    resetThemeUIInitialized();
-    if (ActivePage.get() === "settings") {
-      void fillPresetButtons();
-    }
+  if (eventKey === "favThemes" && ActivePage.get() === "settings") {
+    void fillPresetButtons();
   }
 });
