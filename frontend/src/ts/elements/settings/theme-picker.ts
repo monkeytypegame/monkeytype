@@ -478,7 +478,6 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "theme" && ActivePage.get() === "settings") {
-    void fillPresetButtons();
     updateActiveButton();
   }
   if (eventKey === "favThemes" && ActivePage.get() === "settings") {
