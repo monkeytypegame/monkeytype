@@ -21,6 +21,7 @@ RUN npm i -g pnpm && \
 FROM nginx:mainline-alpine
 
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
+COPY docker/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 COPY docker/frontend/updateConfig.sh /docker-entrypoint.d/updateConfig.sh
 RUN chmod +x /docker-entrypoint.d/updateConfig.sh
 
