@@ -380,7 +380,14 @@ async function applyCustomBackground(): Promise<void> {
   //   backgroundImage: `url(${Config.customBackground})`,
   //   backgroundAttachment: "fixed",
   // });
-  if (Config.customBackground === "") {
+
+  let backgroundUrl = Config.customBackground;
+  //check for local file
+  if (backgroundUrl === "localBackgroundFile") {
+    backgroundUrl = (await fileStorage.getFile("localBackgroundFile")) ?? "";
+  }
+
+  if (backgroundUrl === "") {
     $("#words").removeClass("noErrorBorder");
     $("#resultWordsHistory").removeClass("noErrorBorder");
     $(".customBackground img").remove();
@@ -391,12 +398,7 @@ async function applyCustomBackground(): Promise<void> {
     //use setAttribute for possible unsafe customBackground value
     const container = document.querySelector(".customBackground");
     const img = document.createElement("img");
-    let backgroundUrl = Config.customBackground;
 
-    //check for local file
-    if (backgroundUrl === "localBackgroundFile") {
-      backgroundUrl = (await fileStorage.getFile("localBackgroundFile")) ?? "";
-    }
     img.setAttribute("src", backgroundUrl);
     img.setAttribute(
       "onError",

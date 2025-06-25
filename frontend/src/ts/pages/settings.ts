@@ -1091,7 +1091,10 @@ $(
 
 $(
   ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.remove"
-).on("click", () => {
+).on("click", async () => {
+  if (Config.customBackground === "localBackgroundFile") {
+    await FileStorage.deleteFile("localBackgroundFile");
+  }
   UpdateConfig.setCustomBackground("");
 });
 
