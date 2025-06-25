@@ -9,12 +9,19 @@ import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import * as Loader from "../elements/loader";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 import * as Notifications from "../elements/notifications";
-
+import { z } from "zod";
+import {
+  safeParse as parseUrlSearchParams,
+  serialize as serializeUrlSearchParams,
+} from "zod-urlsearchparams";
 const pageElement = $(".page.pageAccountSettings");
 
-type State = {
-  activeTab: "authentication" | "general" | "api" | "dangerZone";
-};
+const StateSchema = z.object({
+  activeTab: z.enum(["authentication", "general", "api", "dangerZone"]),
+});
+type State = z.infer<typeof StateSchema>;
+
+const UrlParameterSchema = StateSchema.partial();
 
 const state: State = {
   activeTab: "general",
@@ -180,11 +187,38 @@ export function updateUI(): void {
   updateAccountSections();
   void ApeKeyTable.update(updateUI);
   updateTabs();
+  updateGetParameters();
+}
+
+function updateGetParameters(): void {
+  const urlParams = serializeUrlSearchParams({
+    schema: UrlParameterSchema,
+    data: state,
+  });
+  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+  window.history.replaceState({}, "", newUrl);
+}
+
+function readGetParameters(): void {
+  const urlParams = new URLSearchParams(window.location.search);
+  const parsed = parseUrlSearchParams({
+    schema: UrlParameterSchema,
+    input: urlParams,
+  });
+
+  if (!parsed.success) {
+    return;
+  }
+
+  if (parsed.data.activeTab !== undefined) {
+    state.activeTab = parsed.data.activeTab;
+  }
 }
 
 $(".page.pageAccountSettings").on("click", ".tabs button", (event) => {
   state.activeTab = $(event.target).data("tab") as State["activeTab"];
   updateTabs();
+  updateGetParameters();
 });
 
 $(
@@ -217,7 +251,9 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccountSettings", "main");
+    readGetParameters();
     updateUI();
+    updateGetParameters();
   },
 });
 
