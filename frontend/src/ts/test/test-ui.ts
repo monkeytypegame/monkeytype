@@ -187,7 +187,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
-export let activeWordElementOffset = 0;
 export let resultVisible = false;
 export let activeWordTop = 0;
 export let testRestarting = false;
@@ -197,10 +196,6 @@ export let resultCalculating = false;
 
 export function setResultVisible(val: boolean): void {
   resultVisible = val;
-}
-
-export function setActiveWordElementOffset(val: number): void {
-  activeWordElementOffset = val;
 }
 
 export function setActiveWordTop(val: number): void {
@@ -228,7 +223,7 @@ export function setResultCalculating(val: boolean): void {
 
 export function reset(): void {
   currentTestLine = 0;
-  activeWordElementOffset = 0;
+  TestState.setRemovedUIWordCount(0);
 }
 
 export function focusWords(): void {
@@ -253,7 +248,7 @@ export function updateActiveElement(
     active.classList.remove("active");
   }
   const newActiveWord = document.querySelectorAll("#words .word")[
-    TestState.activeWordIndex - activeWordElementOffset
+    TestState.activeWordIndex - TestState.removedUIWordCount
   ] as HTMLElement | undefined;
 
   if (newActiveWord === undefined) {
@@ -443,7 +438,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
   const activeWord =
     document.querySelectorAll<HTMLElement>("#words .word")[
-      TestState.activeWordIndex - activeWordElementOffset
+      TestState.activeWordIndex - TestState.removedUIWordCount
     ];
 
   if (!activeWord) {
@@ -461,11 +456,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
     activeWord.offsetTop + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
 
   if (Config.tapeMode !== "off") {
-    const wordsWrapperWidth = (
-      document.querySelector("#wordsWrapper") as HTMLElement
-    ).offsetWidth;
-    el.style.maxWidth =
-      wordsWrapperWidth * (1 - Config.tapeMargin / 100) + "px";
+    el.style.maxWidth = `${100 - Config.tapeMargin}%`;
   } else {
     el.style.maxWidth = "";
   }
@@ -488,7 +479,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   if (activeWord.offsetWidth < letterHeight && isLanguageRTL) {
     el.style.left = activeWord.offsetLeft - letterHeight + "px";
   } else {
-    el.style.left = activeWord.offsetLeft + "px";
+    el.style.left = Math.max(0, activeWord.offsetLeft) + "px";
   }
 }
 
@@ -503,7 +494,8 @@ export async function centerActiveLine(): Promise<void> {
   centeringActiveLine = promise;
 
   const wordElements = document.querySelectorAll<HTMLElement>("#words .word");
-  const activeWordIndex = TestState.activeWordIndex - activeWordElementOffset;
+  const activeWordIndex =
+    TestState.activeWordIndex - TestState.removedUIWordCount;
   const activeWordEl = wordElements[activeWordIndex];
   if (!activeWordEl) {
     resolve();
@@ -533,7 +525,7 @@ export function updateWordsWrapperHeight(force = false): void {
   ) as HTMLElement;
   const wordElements = wrapperEl.querySelectorAll<HTMLElement>("#words .word");
   const activeWordEl =
-    wordElements[TestState.activeWordIndex - activeWordElementOffset];
+    wordElements[TestState.activeWordIndex - TestState.removedUIWordCount];
   if (!activeWordEl) return;
 
   wrapperEl.classList.remove("hidden");
@@ -655,7 +647,7 @@ export async function updateActiveWordLetters(
   let ret = "";
   const activeWord =
     document.querySelectorAll<HTMLElement>("#words .word")?.[
-      TestState.activeWordIndex - activeWordElementOffset
+      TestState.activeWordIndex - TestState.removedUIWordCount
     ];
   if (!activeWord) return;
   const hintIndices: number[][] = [];
@@ -844,7 +836,8 @@ export async function scrollTape(noRemove = false): Promise<void> {
   const isLanguageRTL = currentLang.rightToLeft;
 
   // index of the active word in the collection of .word elements
-  const wordElementIndex = TestState.activeWordIndex - activeWordElementOffset;
+  const wordElementIndex =
+    TestState.activeWordIndex - TestState.removedUIWordCount;
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
@@ -960,8 +953,8 @@ export async function scrollTape(noRemove = false): Promise<void> {
 
   /* remove overflown elements */
   if (toRemove.length > 0 && !noRemove) {
-    activeWordElementOffset += wordsToRemoveCount;
     for (const el of toRemove) el.remove();
+    TestState.incrementRemovedUIWordCount(wordsToRemoveCount);
     for (let i = 0; i < widthRemovedFromLine.length; i++) {
       const afterNewlineEl = afterNewLineEls[i] as HTMLElement;
       const currentLineIndent =
@@ -1062,7 +1055,7 @@ function removeElementsBeforeWord(
     const child = wordsChildren[i];
     if (!child || !child.isConnected) continue;
     if (child.classList.contains("word")) removedWords++;
-    if (!child.classList.contains("smoothScroller")) child.remove();
+    child.remove();
   }
   return removedWords;
 }
@@ -1081,7 +1074,7 @@ export async function lineJump(
 
     // index of the active word in the collection of .word elements
     const wordElementIndex =
-      TestState.activeWordIndex - activeWordElementOffset;
+      TestState.activeWordIndex - TestState.removedUIWordCount;
     const wordsEl = document.getElementById("words") as HTMLElement;
     const wordsChildrenArr = [...wordsEl.children];
     const wordElements = wordsEl.querySelectorAll(".word");
@@ -1121,29 +1114,7 @@ export async function lineJump(
       resolve();
     } else if (Config.smoothLineScroll) {
       lineTransition = true;
-      const smoothScroller = $("#words .smoothScroller");
-      if (smoothScroller.length === 0) {
-        wordsEl.insertAdjacentHTML(
-          "afterbegin",
-          `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
-        );
-      } else {
-        smoothScroller.css(
-          "height",
-          `${(smoothScroller.outerHeight(true) ?? 0) + wordHeight}px`
-        );
-      }
-      $("#words .smoothScroller")
-        .stop(true, false)
-        .animate(
-          {
-            height: 0,
-          },
-          SlowTimer.get() ? 0 : 125,
-          () => {
-            $("#words .smoothScroller").remove();
-          }
-        );
+
       $(paceCaretElement)
         .stop(true, false)
         .animate(
@@ -1153,25 +1124,32 @@ export async function lineJump(
           SlowTimer.get() ? 0 : 125
         );
 
+      const scrollDistance = TestState.lineScrollDistance + wordHeight;
+      TestState.setLineScrollDistance(scrollDistance);
+      currentLinesAnimating++;
       const newCss: Record<string, string> = {
-        marginTop: `-${wordHeight * (currentLinesAnimating + 1)}px`,
+        marginTop: `-${wordHeight * currentLinesAnimating}px`,
       };
 
-      currentLinesAnimating++;
       const jqWords = $(wordsEl);
       jqWords.stop("topMargin", true, false).animate(newCss, {
         duration: SlowTimer.get() ? 0 : 125,
         queue: "topMargin",
+        step: (now, fx) => {
+          const completionRate = (now - fx.start) / (fx.end - fx.start);
+          TestState.setLineScrollDistance(
+            scrollDistance * (1 - completionRate)
+          );
+        },
         complete: () => {
           currentLinesAnimating = 0;
-          activeWordTop = (
-            document.querySelectorAll("#words .word")?.[
+          TestState.setLineScrollDistance(0);
+          activeWordTop =
+            document.querySelectorAll<HTMLElement>("#words .word")?.[
               wordElementIndex
-            ] as HTMLElement
-          )?.offsetTop;
-          activeWordElementOffset += removeElementsBeforeWord(
-            lastElementToRemoveIndex,
-            wordsChildrenArr
+            ]?.offsetTop ?? 0;
+          TestState.incrementRemovedUIWordCount(
+            removeElementsBeforeWord(lastElementToRemoveIndex, wordsChildrenArr)
           );
           wordsEl.style.marginTop = "0";
           lineTransition = false;
@@ -1180,9 +1158,8 @@ export async function lineJump(
       });
       jqWords.dequeue("topMargin");
     } else {
-      activeWordElementOffset += removeElementsBeforeWord(
-        lastElementToRemoveIndex,
-        wordsChildrenArr
+      TestState.incrementRemovedUIWordCount(
+        removeElementsBeforeWord(lastElementToRemoveIndex, wordsChildrenArr)
       );
       paceCaretElement.style.top = `${
         paceCaretElement.offsetTop - wordHeight
