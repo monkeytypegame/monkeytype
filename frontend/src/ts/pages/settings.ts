@@ -1096,6 +1096,9 @@ $(
     await FileStorage.deleteFile("localBackgroundFile");
   }
   UpdateConfig.setCustomBackground("");
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input.input"
+  ).val("");
 });
 
 $("#customBackgroundUpload").on("change", async (e) => {
