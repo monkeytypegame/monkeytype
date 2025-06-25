@@ -457,7 +457,7 @@ export async function checkIfPb(
   if (
     "stopOnLetter" in result &&
     result.stopOnLetter === true &&
-    result.difficulty !== "master"
+    result.acc !== 100
   )
     return false;
 
@@ -508,7 +508,7 @@ export async function checkIfTagPb(
   if (
     "stopOnLetter" in result &&
     result.stopOnLetter === true &&
-    result.difficulty !== "master"
+    result.acc !== 100
   )
     return [];
 
