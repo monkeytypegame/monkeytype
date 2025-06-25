@@ -25,6 +25,7 @@ import {
   ThemeName,
   CustomLayoutFluid,
   FunboxName,
+  ConfigKeySchema,
 } from "@monkeytype/contracts/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
@@ -37,7 +38,8 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/contracts/schemas/languages";
-
+import { z } from "zod";
+import { safeParse as parseUrlSearchParams } from "zod-urlsearchparams";
 let settingsInitialized = false;
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
@@ -45,6 +47,12 @@ let customLayoutFluidSelect: SlimSelect | undefined;
 let customPolyglotSelect: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
+
+const UrlParameterSchema = z
+  .object({
+    highlight: ConfigKeySchema,
+  })
+  .partial();
 
 async function initGroups(): Promise<void> {
   groups["smoothCaret"] = new SettingsGroup(
@@ -1333,6 +1341,32 @@ function getThemeDropdownData(
   }));
 }
 
+function handleHighlightSection(): void {
+  const urlParams = new URLSearchParams(window.location.search);
+  const parsed = parseUrlSearchParams({
+    schema: UrlParameterSchema,
+    input: urlParams,
+  });
+
+  if (!parsed.success) {
+    return;
+  }
+
+  if (parsed.data.highlight !== undefined) {
+    const element = document.querySelector(
+      `[data-config-name="${parsed.data.highlight}"]`
+    );
+
+    if (element !== null) {
+      setTimeout(() => {
+        element.scrollIntoView({ block: "center", behavior: "auto" });
+        element.classList.remove("highlight");
+        element.classList.add("highlight");
+      }, 250);
+    }
+  }
+}
+
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChange") setEventDisabled(true);
   if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
@@ -1364,6 +1398,7 @@ export const page = new Page({
     await UpdateConfig.loadPromise;
     await fillSettingsPage();
     await update();
+    handleHighlightSection();
   },
 });
 

@@ -489,6 +489,24 @@
         }
       }
     }
+
+    &.highlight {
+      position: relative;
+      z-index: 0;
+    }
+
+    &.highlight::before {
+      content: "";
+      position: absolute;
+      top: -1em;
+      right: -1em;
+      bottom: -1em;
+      left: -1em;
+      animation: flashBorder 4s ease-in;
+      border-radius: var(--roundness);
+      z-index: -1;
+      pointer-events: none;
+    }
   }
 }
 
