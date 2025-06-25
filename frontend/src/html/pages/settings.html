@@ -1140,12 +1140,28 @@
             onClick="this.select();"
           />
           <span>
-            <button class="hidden remove no-auto-handle">
-              <i class="fas fa-trash fa-fw"></i>
-            </button>
             <button class="save no-auto-handle">
               <i class="fas fa-save fa-fw"></i>
             </button>
+            <button class="hidden remove no-auto-handle">
+              <i class="fas fa-trash fa-fw"></i>
+            </button>
+            <div class="upload-container">
+              <label
+                for="customBackgroundUpload"
+                class="button"
+                aria-label="Upload custom background image"
+                data-balloon-pos="left"
+              >
+                <i class="fas fa-upload fa-fw"></i>
+              </label>
+              <input
+                type="file"
+                id="customBackgroundUpload"
+                accept="image/png,image/jpeg,image/jpg,image/gif"
+                style="display: none"
+              />
+            </div>
           </span>
         </div>
         <div class="buttons">

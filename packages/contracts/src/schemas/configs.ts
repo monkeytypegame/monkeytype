@@ -340,7 +340,8 @@ export const CustomBackgroundSchema = z
   .regex(/^[^`'"]*$/, "May not contain quotes.")
   .regex(/.+(\.png|\.gif|\.jpeg|\.jpg)/gi, "Unsupported image format.")
   .max(2048, "URL is too long.")
-  .or(z.literal(""));
+  .or(z.literal(""))
+  .or(z.literal("localBackgroundFile"));
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
 export const ConfigSchema = z

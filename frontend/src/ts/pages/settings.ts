@@ -37,6 +37,7 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/contracts/schemas/languages";
+import FileStorage from "../utils/file-storage";
 
 let settingsInitialized = false;
 
@@ -802,9 +803,7 @@ export async function update(): Promise<void> {
     Config.tapeMargin
   );
 
-  $(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
-  ).val(Config.customBackground);
+  $("#customBackgroundInput").val(Config.customBackground);
 
   if (isAuthenticated()) {
     showAccountSection();
@@ -873,6 +872,22 @@ function updateCustomBackgroundRemoveButtonVisibility(): void {
     button.removeClass("hidden");
   } else {
     button.addClass("hidden");
+  }
+
+  const urlInput = $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input.input"
+  );
+  const saveButton = $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.save"
+  );
+
+  if (Config.customBackground === "localBackgroundFile") {
+    urlInput.attr("disabled", "disabled");
+    urlInput.val("using local file");
+    saveButton.addClass("disabled");
+  } else {
+    urlInput.removeAttr("disabled");
+    saveButton.removeClass("disabled");
   }
 }
 
@@ -1079,6 +1094,43 @@ $(
 ).on("click", () => {
   UpdateConfig.setCustomBackground("");
 });
+
+$("#customBackgroundUpload").on("change", async (e) => {
+  const fileInput = e.target as HTMLInputElement;
+  const file = fileInput.files?.[0];
+
+  if (!file) {
+    return;
+  }
+
+  // check type
+  if (!file.type.match(/image\/(jpeg|jpg|png|gif)/)) {
+    Notifications.add("Unsupported image format", 0);
+    fileInput.value = "";
+    return;
+  }
+
+  const dataUrl = await readFileAsDataURL(file);
+  await FileStorage.storeFile("localBackgroundFile", dataUrl);
+
+  // update the input field with the data URL
+  $("#customBackgroundInput").val(dataUrl);
+  // save the background placeholder
+  UpdateConfig.setCustomBackground("localBackgroundFile");
+  // reset the file input
+  fileInput.value = "";
+
+  updateCustomBackgroundRemoveButtonVisibility();
+});
+
+async function readFileAsDataURL(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 $(
   ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
