@@ -133,9 +133,9 @@ function getTargetPositionLeft(
 }
 
 export async function updatePosition(noAnim = false): Promise<void> {
-  const caretWidth = Math.round(
-    document.querySelector("#caret")?.getBoundingClientRect().width ?? 0
-  );
+  const caretComputedStyle = window.getComputedStyle(caret);
+  const caretWidth = parseInt(caretComputedStyle.width) || 0;
+  const caretHeight = parseInt(caretComputedStyle.height) || 0;
 
   const fullWidthCaret = ["block", "outline", "underline"].includes(
     Config.caretStyle
@@ -170,10 +170,10 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   const letterPosTop =
     currentLetter?.offsetTop ?? lastWordLetter?.offsetTop ?? 0;
-  const diff = letterHeight - caret.offsetHeight;
+  const diff = letterHeight - caretHeight;
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {
-    newTop = activeWordEl.offsetTop + letterPosTop - caret.offsetHeight / 2;
+    newTop = activeWordEl.offsetTop + letterPosTop - caretHeight / 2;
   }
 
   let letterWidth = currentLetter?.offsetWidth;
