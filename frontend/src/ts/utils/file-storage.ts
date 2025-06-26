@@ -39,6 +39,10 @@ class FileStorage {
     const db = await this.dbPromise;
     return db.getAllKeys("files");
   }
+
+  async hasFile(filename: string): Promise<boolean> {
+    return (await this.getFile(filename)) !== undefined;
+  }
 }
 
 export default new FileStorage();

@@ -375,6 +375,8 @@ function applyCustomBackgroundSize(): void {
   }
 }
 
+export const LocalBackgroundFile = "LocalBackgroundFile";
+
 async function applyCustomBackground(): Promise<void> {
   // $(".customBackground").css({
   //   backgroundImage: `url(${Config.customBackground})`,
@@ -382,9 +384,12 @@ async function applyCustomBackground(): Promise<void> {
   // });
 
   let backgroundUrl = Config.customBackground;
-  //check for local file
-  if (backgroundUrl === "localBackgroundFile") {
-    backgroundUrl = (await fileStorage.getFile("localBackgroundFile")) ?? "";
+
+  //if there is a localBackgroundFile available, use it.
+  const localBackgroundFile = await fileStorage.getFile(LocalBackgroundFile);
+
+  if (localBackgroundFile !== undefined) {
+    backgroundUrl = localBackgroundFile;
   }
 
   if (backgroundUrl === "") {

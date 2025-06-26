@@ -33,6 +33,8 @@ import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import fileStorage from "./utils/file-storage";
+import { LocalBackgroundFile } from "./controllers/theme-controller";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -2109,6 +2111,7 @@ export async function apply(
 export async function reset(): Promise<void> {
   await apply(getDefaultConfig());
   await DB.resetConfig();
+  await fileStorage.deleteFile(LocalBackgroundFile);
   saveFullConfigToLocalStorage(true);
 }
 
