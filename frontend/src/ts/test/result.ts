@@ -484,11 +484,11 @@ async function resultCanGetPb(): Promise<CanGetPbObject> {
 
   const funboxesOk = funboxes.length === 0 || allFunboxesCanGetPb;
   // allow stopOnError:letter to be PB only if 100% accuracy, since it doesn't affect gameplay
-  const notUsingStopOnLetter =
-    Config.stopOnError !== "letter" || result.acc === 100;
+  const stopOnLetterTriggered =
+    Config.stopOnError === "letter" && result.acc < 100;
   const notBailedOut = !result.bailedOut;
 
-  if (funboxesOk && notUsingStopOnLetter && notBailedOut) {
+  if (funboxesOk && !stopOnLetterTriggered && notBailedOut) {
     return {
       value: true,
     };
@@ -499,7 +499,7 @@ async function resultCanGetPb(): Promise<CanGetPbObject> {
         reason: "funbox",
       };
     }
-    if (!notUsingStopOnLetter) {
+    if (stopOnLetterTriggered) {
       return {
         value: false,
         reason: "stop on letter",
