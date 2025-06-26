@@ -303,13 +303,9 @@ export function setNotificationBubbleVisible(tf: boolean): void {
 
 function updateInboxSize(): void {
   const remainingItems = accountAlerts.length - mailToDelete.length;
-  if (remainingItems > 0) {
-    $("#alertsPopup .accountAlerts .title .right").text(
-      `${remainingItems}/${maxMail}`
-    );
-  } else {
-    $("#alertsPopup .accountAlerts .title .right").text(`0/${maxMail}`);
-  }
+  $("#alertsPopup .accountAlerts .title .right").text(
+    `${remainingItems}/${maxMail}`
+  );
 }
 
 function deleteAlert(id: string): void {
