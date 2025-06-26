@@ -599,9 +599,8 @@ export async function generateWords(
 ): Promise<GenerateWordsReturn> {
   function isPolyglotResult(obj: unknown): obj is PolyglotResult {
     return (
-      Boolean(obj) &&
-      typeof obj === "object" &&
       obj !== null &&
+      typeof obj === "object" &&
       "wordset" in obj &&
       "allRightToLeft" in obj &&
       "allLigatures" in obj
