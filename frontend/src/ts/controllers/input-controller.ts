@@ -1450,6 +1450,13 @@ $("#wordsInput").on("select selectstart", (event) => {
   event.preventDefault();
 });
 
+$("#wordsInput").on("selectionchange", (event) => {
+  event.preventDefault();
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+  target.setSelectionRange(value.length, value.length);
+});
+
 $("#wordsInput").on("keydown", (event) => {
   if (event.key.startsWith("Arrow")) {
     event.preventDefault();
