@@ -1,4 +1,4 @@
-import Page from "./page";
+import { PageWithUrlParams } from "./page";
 import * as Skeleton from "../utils/skeleton";
 import Config from "../config";
 import {
@@ -34,10 +34,6 @@ import { abbreviateNumber } from "../utils/numbers";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
-import {
-  safeParse as parseUrlSearchParams,
-  serialize as serializeUrlSearchParams,
-} from "zod-urlsearchparams";
 import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
@@ -1135,33 +1131,16 @@ function updateGetParameters(): void {
 
   params.page = state.page + 1;
 
-  const urlParams = serializeUrlSearchParams({
-    schema: UrlParameterSchema,
-    data: params,
-  });
-
-  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-  window.history.replaceState({}, "", newUrl);
+  page.setUrlParams(params);
 
   selectorLS.set(state);
 }
 
-function readGetParameters(): void {
-  const urlParams = new URLSearchParams(window.location.search);
-
-  if (urlParams.size === 0) {
+function readGetParameters(params: UrlParameter | null): void {
+  if (params === null) {
     Object.assign(state, selectorLS.get());
     return;
   }
-
-  const parsed = parseUrlSearchParams({
-    schema: UrlParameterSchema,
-    input: urlParams,
-  });
-  if (!parsed.success) {
-    return;
-  }
-  const params = parsed.data;
 
   if (params.type !== undefined) {
     state.type = params.type;
@@ -1288,10 +1267,16 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
   }
 );
 
-export const page = new Page({
+export const page = new PageWithUrlParams({
   id: "leaderboards",
   element: $(".page.pageLeaderboards"),
   path: "/leaderboards",
+  urlParams: {
+    schema: UrlParameterSchema,
+    onLoad: async (params) => {
+      readGetParameters(params);
+    },
+  },
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLeaderboards");
     stopTimer();
@@ -1299,7 +1284,6 @@ export const page = new Page({
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLeaderboards", "main");
     // await appendLanguageButtons(); //todo figure out this race condition
-    readGetParameters();
     startTimer();
     updateTypeButtons();
     updateTitle();
