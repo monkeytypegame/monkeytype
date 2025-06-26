@@ -596,9 +596,7 @@ let previousRandomQuote: QuoteWithTextSplit | null = null;
 export async function generateWords(
   language: LanguageObject
 ): Promise<GenerateWordsReturn> {
-  function isPolyglotResult(
-    obj: unknown
-  ): obj is {
+  function isPolyglotResult(obj: unknown): obj is {
     wordset: Wordset;
     allRightToLeft: boolean;
     allLigatures: boolean;
@@ -665,7 +663,6 @@ export async function generateWords(
       : Config.funbox === "polyglot";
     if (isPolyglot && isPolyglotResult(result)) {
       currentWordset = result.wordset;
-      ret.allRightToLeft = result.allRightToLeft;
       ret.allLigatures = result.allLigatures;
     } else {
       if (result instanceof Wordset) {
