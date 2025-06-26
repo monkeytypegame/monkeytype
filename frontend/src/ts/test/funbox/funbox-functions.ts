@@ -28,15 +28,18 @@ import {
   Layout,
 } from "@monkeytype/contracts/schemas/configs";
 import { Language } from "@monkeytype/contracts/schemas/languages";
+
+// type for polyglot funbox results
+export type PolyglotResult = {
+  wordset: Wordset;
+  allRightToLeft: boolean;
+  allLigatures: boolean;
+};
+
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
-  withWords?: (
-    words?: string[]
-  ) => Promise<
-    | Wordset
-    | { wordset: Wordset; allRightToLeft: boolean; allLigatures: boolean }
-  >;
+  withWords?: (words?: string[]) => Promise<Wordset | PolyglotResult>;
   alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
   applyGlobalCSS?: () => void;
