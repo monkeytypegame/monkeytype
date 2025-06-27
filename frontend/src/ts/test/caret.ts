@@ -137,6 +137,30 @@ function resetCaretWidth(): void {
   caret.style.width = "";
 }
 
+function calculateCaretSize(
+  fullWidthCaret: boolean,
+  currentLetter: HTMLElement | undefined,
+  activeWordEl: HTMLElement,
+  currentWordNodeList: NodeListOf<HTMLElement>,
+  inputLen: number,
+  wordLen: number
+): { width: string } {
+  let letterWidth = currentLetter?.offsetWidth;
+  if (letterWidth === undefined || wordLen === 0) {
+    // at word beginning in zen mode current letter is defined "_" but wordLen is 0
+    letterWidth = getSpaceWidth(activeWordEl);
+  } else if (letterWidth === 0) {
+    // current letter is a zero-width character e.g, diacritics)
+    for (let i = inputLen; i >= 0; i--) {
+      letterWidth = (currentWordNodeList[i] as HTMLElement)?.offsetWidth;
+      if (letterWidth) break;
+    }
+  }
+  return {
+    width: fullWidthCaret ? (letterWidth ?? 0) + "px" : "",
+  };
+}
+
 export async function updatePosition(noAnim = false): Promise<void> {
   const caretComputedStyle = window.getComputedStyle(caret);
   const caretWidth = parseInt(caretComputedStyle.width) || 0;
@@ -160,7 +184,6 @@ export async function updatePosition(noAnim = false): Promise<void> {
   if (!currentWordNodeList?.length) return;
 
   const currentLetter = currentWordNodeList[inputLen];
-  const lastWordLetter = currentWordNodeList[wordLen - 1];
 
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
@@ -170,36 +193,30 @@ export async function updatePosition(noAnim = false): Promise<void> {
   // so is offsetTop (for same line letters)
   const letterHeight =
     (safeNumber(currentLetter?.offsetHeight) ?? 0) ||
-    (safeNumber(lastWordLetter?.offsetHeight) ?? 0) ||
     Config.fontSize * convertRemToPixels(1);
 
-  const letterPosTop =
-    currentLetter?.offsetTop ?? lastWordLetter?.offsetTop ?? 0;
+  const letterPosTop = currentLetter?.offsetTop ?? 0;
   const diff = letterHeight - caretHeight;
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {
     newTop = activeWordEl.offsetTop + letterPosTop - caretHeight / 2;
   }
 
-  let letterWidth = currentLetter?.offsetWidth;
-  if (letterWidth === undefined || wordLen === 0) {
-    // at word beginning in zen mode current letter is defined "_" but wordLen is 0
-    letterWidth = getSpaceWidth(activeWordEl);
-  } else if (letterWidth === 0) {
-    // current letter is a zero-width character e.g, diacritics)
-    for (let i = inputLen; i >= 0; i--) {
-      letterWidth = (currentWordNodeList[i] as HTMLElement)?.offsetWidth;
-      if (letterWidth) break;
-    }
-  }
-  const newWidth = fullWidthCaret ? (letterWidth ?? 0) + "px" : "";
+  const { width: newWidth } = calculateCaretSize(
+    fullWidthCaret,
+    currentLetter,
+    activeWordEl,
+    currentWordNodeList,
+    inputLen,
+    wordLen
+  );
 
   const letterPosLeft = getTargetPositionLeft(
     fullWidthCaret,
     isLanguageRightToLeft,
     activeWordEl,
     currentWordNodeList,
-    letterWidth,
+    newWidth ? parseInt(newWidth) : 0,
     wordLen,
     inputLen
   );
