@@ -19,7 +19,6 @@ import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
 import * as AccountSettings from "../pages/account-settings";
-import { getAllFunboxes } from "@monkeytype/funbox";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -46,10 +45,8 @@ import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
 import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
-import defaultResultFilters from "../constants/default-result-filters";
 import { getActiveFunboxesWithFunction } from "../test/funbox/list";
 import { Snapshot } from "../constants/default-snapshot";
-import { LanguageList } from "../constants/languages";
 import * as Sentry from "../sentry";
 
 export const gmailProvider = new GoogleAuthProvider();
@@ -136,13 +133,6 @@ async function getDataAndInit(): Promise<boolean> {
 
   ResultFilters.loadTags(snapshot.tags);
 
-  for (const language of LanguageList) {
-    defaultResultFilters.language[language] = true;
-  }
-
-  for (const funbox of getAllFunboxes()) {
-    defaultResultFilters.funbox[funbox.name] = true;
-  }
   // filters = defaultResultFilters;
   void ResultFilters.load();
 
