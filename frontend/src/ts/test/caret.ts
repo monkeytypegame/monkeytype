@@ -133,10 +133,6 @@ function getTargetPositionLeft(
   return result;
 }
 
-function resetCaretWidth(): void {
-  caret.style.width = "";
-}
-
 function calculateCaretSize(
   fullWidthCaret: boolean,
   currentLetter: HTMLElement | undefined,
@@ -276,7 +272,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
 subscribe((eventKey) => {
   if (eventKey === "caretStyle") {
-    resetCaretWidth();
+    caret.style.width = "";
     void updatePosition(true);
   }
 });
