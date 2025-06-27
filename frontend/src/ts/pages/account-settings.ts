@@ -1,4 +1,4 @@
-import Page from "./page";
+import { PageWithUrlParams } from "./page";
 import * as Skeleton from "../utils/skeleton";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as ActivePage from "../states/active-page";
@@ -9,12 +9,16 @@ import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import * as Loader from "../elements/loader";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 import * as Notifications from "../elements/notifications";
+import { z } from "zod";
 
 const pageElement = $(".page.pageAccountSettings");
 
-type State = {
-  activeTab: "authentication" | "general" | "api" | "dangerZone";
-};
+const StateSchema = z.object({
+  activeTab: z.enum(["authentication", "general", "api", "dangerZone"]),
+});
+type State = z.infer<typeof StateSchema>;
+
+const UrlParameterSchema = StateSchema.partial();
 
 const state: State = {
   activeTab: "general",
@@ -180,11 +184,13 @@ export function updateUI(): void {
   updateAccountSections();
   void ApeKeyTable.update(updateUI);
   updateTabs();
+  page.setUrlParams(state);
 }
 
 $(".page.pageAccountSettings").on("click", ".tabs button", (event) => {
   state.activeTab = $(event.target).data("tab") as State["activeTab"];
   updateTabs();
+  page.setUrlParams(state);
 });
 
 $(
@@ -207,11 +213,19 @@ $(".page.pageAccountSettings #setStreakHourOffset").on("click", () => {
   StreakHourOffsetModal.show();
 });
 
-export const page = new Page({
+export const page = new PageWithUrlParams({
   id: "accountSettings",
   display: "Account Settings",
   element: pageElement,
   path: "/account-settings",
+  urlParams: {
+    schema: UrlParameterSchema,
+    onUrlParamUpdate: (params) => {
+      if (params !== null && params.activeTab !== undefined) {
+        state.activeTab = params.activeTab;
+      }
+    },
+  },
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageAccountSettings");
   },
