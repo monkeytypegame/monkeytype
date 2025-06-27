@@ -4,8 +4,6 @@ import {
   serialize as serializeUrlSearchParams,
 } from "zod-urlsearchparams";
 
-type Schema = z.ZodObject<Record<string, z.ZodTypeAny>>;
-
 export type PageName =
   | "loading"
   | "test"
@@ -35,13 +33,6 @@ type PageProperties<T> = {
   afterShow?: () => Promise<void>;
 };
 
-type PagePropertiesWithUrlParams<T, U extends Schema> = PageProperties<T> & {
-  urlParams: {
-    schema: U;
-    onLoad?: (params: z.infer<U> | null) => Promise<void>;
-  };
-};
-
 async function empty(): Promise<void> {
   return;
 }
@@ -68,9 +59,22 @@ export default class Page<T> {
   }
 }
 
-export class PageWithUrlParams<T, U extends Schema> extends Page<T> {
+type UrlParameterSchema = z.ZodObject<Record<string, z.ZodTypeAny>>;
+type PagePropertiesWithUrlParams<
+  T,
+  U extends UrlParameterSchema
+> = PageProperties<T> & {
+  urlParams: {
+    schema: U;
+    onLoad?: (params: z.infer<U> | null) => Promise<void>;
+  };
+};
+
+export class PageWithUrlParams<
+  T,
+  U extends UrlParameterSchema
+> extends Page<T> {
   private urlSchema: U;
-  private urlParams?: z.infer<U>;
   private urlOnload?: (params: z.infer<U> | null) => Promise<void>;
 
   constructor(props: PagePropertiesWithUrlParams<T, U>) {
@@ -80,7 +84,7 @@ export class PageWithUrlParams<T, U extends Schema> extends Page<T> {
   }
 
   public async readGetParameters(): Promise<void> {
-    if (this.urlSchema === undefined) {
+    if (this.urlOnload === undefined) {
       return;
     }
     const urlParams = new URLSearchParams(window.location.search);
@@ -95,16 +99,12 @@ export class PageWithUrlParams<T, U extends Schema> extends Page<T> {
       return;
     }
 
-    this.urlParams = parsed.data;
-
-    await this.urlOnload?.(this.urlParams);
+    await this.urlOnload?.(parsed.data);
   }
-  public setUrlParams(params: Partial<z.infer<U>>): void {
-    this.urlParams = { ...this.urlParams, ...params };
-
+  public setUrlParams(params: z.infer<U>): void {
     const urlParams = serializeUrlSearchParams({
       schema: this.urlSchema,
-      data: this.urlParams,
+      data: params,
     });
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     window.history.replaceState({}, "", newUrl);
