@@ -139,6 +139,10 @@ function getTargetPositionLeft(
   return result;
 }
 
+function resetCaretWidth(): void {
+  caret.style.width = "";
+}
+
 export async function updatePosition(noAnim = false): Promise<void> {
   const caretWidth = Math.round(
     document.querySelector("#caret")?.getBoundingClientRect().width ?? 0
@@ -226,8 +230,6 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   if (newWidth !== "") {
     animation.width = newWidth;
-  } else {
-    jqcaret.css("width", "");
   }
 
   const smoothCaretSpeed =
@@ -267,7 +269,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
 subscribe((eventKey) => {
   if (eventKey === "caretStyle") {
-    caret.style.width = "";
+    resetCaretWidth();
     void updatePosition(true);
   }
 });
