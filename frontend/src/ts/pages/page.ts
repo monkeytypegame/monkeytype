@@ -66,7 +66,7 @@ type PagePropertiesWithUrlParams<
 > = PageProperties<T> & {
   urlParams: {
     schema: U;
-    onLoad?: (params: z.infer<U> | null) => Promise<void>;
+    onLoad?: (params: z.infer<U> | null) => void;
   };
 };
 
@@ -75,7 +75,7 @@ export class PageWithUrlParams<
   U extends UrlParameterSchema
 > extends Page<T> {
   private urlSchema: U;
-  private urlOnload?: (params: z.infer<U> | null) => Promise<void>;
+  private urlOnload?: (params: z.infer<U> | null) => void;
 
   constructor(props: PagePropertiesWithUrlParams<T, U>) {
     super(props);
@@ -83,7 +83,7 @@ export class PageWithUrlParams<
     this.urlOnload = props.urlParams.onLoad;
   }
 
-  public async readGetParameters(): Promise<void> {
+  public readGetParameters(): void {
     if (this.urlOnload === undefined) {
       return;
     }
@@ -95,11 +95,11 @@ export class PageWithUrlParams<
     });
 
     if (!parsed.success) {
-      await this.urlOnload?.(null);
+      this.urlOnload?.(null);
       return;
     }
 
-    await this.urlOnload?.(parsed.data);
+    this.urlOnload?.(parsed.data);
   }
   public setUrlParams(params: z.infer<U>): void {
     const urlParams = serializeUrlSearchParams({

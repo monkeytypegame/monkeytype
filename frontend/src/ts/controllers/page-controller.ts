@@ -112,7 +112,7 @@ export async function change(
           await previousPage?.afterHide();
 
           if (nextPage instanceof PageWithUrlParams) {
-            await nextPage?.readGetParameters();
+            nextPage.readGetParameters();
           }
           await nextPage?.beforeShow({
             params: options.params,

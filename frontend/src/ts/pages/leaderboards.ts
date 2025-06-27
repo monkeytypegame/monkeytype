@@ -1273,9 +1273,7 @@ export const page = new PageWithUrlParams({
   path: "/leaderboards",
   urlParams: {
     schema: UrlParameterSchema,
-    onLoad: async (params) => {
-      readGetParameters(params);
-    },
+    onLoad: readGetParameters,
   },
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLeaderboards");
