@@ -38,7 +38,7 @@ import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/contracts/schemas/languages";
 import FileStorage from "../utils/file-storage";
-import { LocalBackgroundFile } from "../controllers/theme-controller";
+import { LocalBackgroundFile } from "../constants/default-config";
 
 let settingsInitialized = false;
 

@@ -13,6 +13,7 @@ import { debounce } from "throttle-debounce";
 import { ThemeName } from "@monkeytype/contracts/schemas/configs";
 import { ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
+import { LocalBackgroundFile } from "../constants/default-config";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
@@ -374,8 +375,6 @@ function applyCustomBackgroundSize(): void {
     });
   }
 }
-
-export const LocalBackgroundFile = "LocalBackgroundFile";
 
 async function applyCustomBackground(): Promise<void> {
   // $(".customBackground").css({
