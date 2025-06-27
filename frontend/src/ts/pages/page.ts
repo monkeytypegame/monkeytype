@@ -59,32 +59,29 @@ export default class Page<T> {
   }
 }
 
-type UrlParameterSchema = z.ZodObject<Record<string, z.ZodTypeAny>>;
+type UrlParamsSchema = z.ZodObject<Record<string, z.ZodTypeAny>>;
 type PagePropertiesWithUrlParams<
   T,
-  U extends UrlParameterSchema
+  U extends UrlParamsSchema
 > = PageProperties<T> & {
   urlParams: {
     schema: U;
-    onLoad?: (params: z.infer<U> | null) => void;
+    onUrlParamUpdate?: (params: z.infer<U> | null) => void;
   };
 };
 
-export class PageWithUrlParams<
-  T,
-  U extends UrlParameterSchema
-> extends Page<T> {
+export class PageWithUrlParams<T, U extends UrlParamsSchema> extends Page<T> {
   private urlSchema: U;
-  private urlOnload?: (params: z.infer<U> | null) => void;
+  private onUrlParamUpdate?: (params: z.infer<U> | null) => void;
 
   constructor(props: PagePropertiesWithUrlParams<T, U>) {
     super(props);
     this.urlSchema = props.urlParams.schema;
-    this.urlOnload = props.urlParams.onLoad;
+    this.onUrlParamUpdate = props.urlParams.onUrlParamUpdate;
   }
 
-  public readGetParameters(): void {
-    if (this.urlOnload === undefined) {
+  public readUrlParams(): void {
+    if (this.onUrlParamUpdate === undefined) {
       return;
     }
     const urlParams = new URLSearchParams(window.location.search);
@@ -95,11 +92,11 @@ export class PageWithUrlParams<
     });
 
     if (!parsed.success) {
-      this.urlOnload?.(null);
+      this.onUrlParamUpdate?.(null);
       return;
     }
 
-    this.urlOnload?.(parsed.data);
+    this.onUrlParamUpdate?.(parsed.data);
   }
   public setUrlParams(params: z.infer<U>): void {
     const urlParams = serializeUrlSearchParams({
