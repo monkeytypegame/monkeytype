@@ -49,6 +49,25 @@ import { getDevOptionsModal } from "./utils/async-modules";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
 
+// Lock Math.random
+Object.defineProperty(Math, "random", {
+  value: Math.random,
+  writable: false,
+  configurable: false,
+  enumerable: true,
+});
+
+// Freeze Math object
+Object.freeze(Math);
+
+// Lock Math on window
+Object.defineProperty(window, "Math", {
+  value: Math,
+  writable: false,
+  configurable: false,
+  enumerable: true,
+});
+
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {
     //@ts-expect-error dev
