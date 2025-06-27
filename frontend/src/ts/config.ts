@@ -31,12 +31,8 @@ import {
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
-import {
-  getDefaultConfig,
-  LocalBackgroundFile,
-} from "./constants/default-config";
+import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-import fileStorage from "./utils/file-storage";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -2113,7 +2109,6 @@ export async function apply(
 export async function reset(): Promise<void> {
   await apply(getDefaultConfig());
   await DB.resetConfig();
-  await fileStorage.deleteFile(LocalBackgroundFile);
   saveFullConfigToLocalStorage(true);
 }
 
