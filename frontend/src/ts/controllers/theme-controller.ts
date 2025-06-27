@@ -153,7 +153,9 @@ async function apply(
     customColorsOverride,
     isPreview
   );
-  clearCustomTheme();
+  if (!Config.customTheme) {
+    clearCustomTheme();
+  }
   const name = customColorsOverride ? "custom" : themeName;
 
   ThemeColors.reset();
