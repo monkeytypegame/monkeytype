@@ -32,7 +32,7 @@ import { Language } from "@monkeytype/contracts/schemas/languages";
 // type for polyglot funbox results
 export type PolyglotResult = {
   wordset: Wordset;
-  allRightToLeft: boolean;
+  allRightToLeft: boolean | undefined;
   allLigatures: boolean;
 };
 
@@ -698,7 +698,21 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       const wordSet = languages.flatMap((it) => it.words);
       Arrays.shuffle(wordSet);
       // compute RTL and ligature info
-      const allRightToLeft = languages.some((lang) => lang.rightToLeft);
+      // check if all languages are the same direction
+      const rtlLanguages = languages.filter((lang) => lang.rightToLeft);
+      const ltrLanguages = languages.filter((lang) => !lang.rightToLeft);
+
+      // only set direction if all languages are the same direction
+      let allRightToLeft: boolean | undefined;
+      if (rtlLanguages.length === languages.length) {
+        allRightToLeft = true;
+      } else if (ltrLanguages.length === languages.length) {
+        allRightToLeft = false;
+      } else {
+        // mixed directions - don't set any direction
+        allRightToLeft = undefined;
+      }
+
       const allLigatures = languages.some((lang) => lang.ligatures);
       return { wordset: new Wordset(wordSet), allRightToLeft, allLigatures };
     },

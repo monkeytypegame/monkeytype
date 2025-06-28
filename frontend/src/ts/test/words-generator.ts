@@ -654,6 +654,8 @@ export async function generateWords(
     if (isPolyglotResult(result)) {
       currentWordset = result.wordset;
       ret.allLigatures = result.allLigatures;
+      // for polyglot with multiple languages, use the result direction
+      ret.allRightToLeft = result.allRightToLeft;
     } else if (result instanceof Wordset) {
       currentWordset = result;
     } else {
