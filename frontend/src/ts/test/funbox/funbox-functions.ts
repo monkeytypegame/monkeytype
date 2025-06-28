@@ -28,10 +28,18 @@ import {
   Layout,
 } from "@monkeytype/contracts/schemas/configs";
 import { Language } from "@monkeytype/contracts/schemas/languages";
+
+// type for polyglot funbox results
+export type PolyglotResult = {
+  wordset: Wordset;
+  allRightToLeft: boolean | undefined;
+  allLigatures: boolean;
+};
+
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
-  withWords?: (words?: string[]) => Promise<Wordset>;
+  withWords?: (words?: string[]) => Promise<Wordset | PolyglotResult>;
   alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
   applyGlobalCSS?: () => void;
@@ -689,7 +697,50 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
 
       const wordSet = languages.flatMap((it) => it.words);
       Arrays.shuffle(wordSet);
-      return new Wordset(wordSet);
+      // compute RTL and ligature info
+      // check if all languages are the same direction
+      const rtlLanguages = languages.filter((lang) => lang.rightToLeft);
+      const ltrLanguages = languages.filter((lang) => !lang.rightToLeft);
+
+      // only set direction if all languages are the same direction
+      let allRightToLeft: boolean | undefined;
+      if (rtlLanguages.length === languages.length) {
+        allRightToLeft = true;
+      } else if (ltrLanguages.length === languages.length) {
+        allRightToLeft = false;
+      } else {
+        // mixed directions - don't set any direction
+        allRightToLeft = undefined;
+      }
+
+      // check if main language direction conflicts with polyglot direction
+      const mainLanguage = await JSONData.getLanguage(Config.language);
+      // determine if main language direction conflicts with polyglot direction
+      // this occurs if one is RTL and the other is LTR.
+      const mainLanguageIsRTL = mainLanguage?.rightToLeft ?? false;
+      const polyglotIsRTL = allRightToLeft === true; // true if all polyglot are RTL
+      const polyglotIsLTR = allRightToLeft === false; // true if all polyglot are LTR
+
+      if (
+        (mainLanguageIsRTL && polyglotIsLTR) ||
+        (!mainLanguageIsRTL && polyglotIsRTL)
+      ) {
+        // main language is in opposite direction - fall back to safe default
+        const fallbackLanguage = allRightToLeft ? "arabic" : "english";
+        UpdateConfig.setLanguage(fallbackLanguage, true);
+        Notifications.add(
+          `Main language direction (${
+            mainLanguageIsRTL ? "RTL" : "LTR"
+          }) conflicts with polyglot languages (${
+            polyglotIsRTL ? "RTL" : "LTR"
+          }). Switched to ${fallbackLanguage} for consistency.`,
+          0,
+          { duration: 5 }
+        );
+      }
+
+      const allLigatures = languages.some((lang) => lang.ligatures);
+      return { wordset: new Wordset(wordSet), allRightToLeft, allLigatures };
     },
   },
 };
