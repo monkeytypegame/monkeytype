@@ -140,6 +140,12 @@ export function getOpenApi(): OpenAPIObject {
           "x-displayName": "Webhooks",
           "x-public": "yes",
         },
+        {
+          name: "friends",
+          description: "User friends",
+          "x-displayName": "Friends",
+          "x-public": "no",
+        },
       ],
     },
 
@@ -277,7 +283,6 @@ function addRequiredConfiguration(
   if (metadata === undefined || metadata.requireConfiguration === undefined)
     return;
 
-  //@ts-expect-error
   operation.description += `**Required configuration:** This operation can only be called if the [configuration](#tag/configuration/operation/configuration.get) for  \`${metadata.requireConfiguration.path}\` is \`true\`.\n\n`;
 }
 

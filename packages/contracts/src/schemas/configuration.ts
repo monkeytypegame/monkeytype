@@ -83,6 +83,9 @@ export const ConfigurationSchema = z.object({
     premium: z.object({
       enabled: z.boolean(),
     }),
+    friends: z.object({
+      enabled: z.boolean(),
+    }),
   }),
   admin: z.object({
     endpointsEnabled: z.boolean(),

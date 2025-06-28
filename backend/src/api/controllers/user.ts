@@ -89,6 +89,7 @@ import {
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import * as FriendsDal from "../../dal/friends";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   const { data: verified, error } = await tryCatch(verify(captcha));
@@ -296,6 +297,7 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
       uid,
       req.ctx.configuration.leaderboards.weeklyXp
     ),
+    FriendsDal.deleteByUid(uid),
   ]);
 
   try {
@@ -386,6 +388,8 @@ export async function updateName(
   }
 
   await UserDAL.updateName(uid, name, user.name);
+
+  await FriendsDal.updateName(uid, name);
   void addImportantLog(
     "user_name_updated",
     `changed name from ${user.name} to ${name}`,

@@ -78,6 +78,7 @@ export const BASE_CONFIGURATION: Configuration = {
     premium: {
       enabled: false,
     },
+    friends: { enabled: false },
   },
   rateLimiting: {
     badAuthentication: {
@@ -295,6 +296,16 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
         premium: {
           type: "object",
           label: "Premium",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+          },
+        },
+        friends: {
+          type: "object",
+          label: "Friends",
           fields: {
             enabled: {
               type: "boolean",
