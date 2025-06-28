@@ -8,6 +8,7 @@ import { prefersReducedMotion } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
 import { splitIntoCharacters } from "../utils/strings";
 import { safeNumber } from "@monkeytype/util/numbers";
+import { subscribe } from "../observables/config-event";
 
 export let caretAnimating = true;
 const caret = document.querySelector("#caret") as HTMLElement;
@@ -132,6 +133,31 @@ function getTargetPositionLeft(
   return result;
 }
 
+function calculateCaretSize(
+  fullWidthCaret: boolean,
+  currentLetter: HTMLElement | undefined,
+  activeWordEl: HTMLElement,
+  currentWordNodeList: NodeListOf<HTMLElement>,
+  inputLen: number,
+  wordLen: number
+): { width: string; numericWidth: number } {
+  let letterWidth = currentLetter?.offsetWidth;
+  if (letterWidth === undefined || wordLen === 0) {
+    // at word beginning in zen mode current letter is defined "_" but wordLen is 0
+    letterWidth = getSpaceWidth(activeWordEl);
+  } else if (letterWidth === 0) {
+    // current letter is a zero-width character e.g, diacritics)
+    for (let i = inputLen; i >= 0; i--) {
+      letterWidth = (currentWordNodeList[i] as HTMLElement)?.offsetWidth;
+      if (letterWidth) break;
+    }
+  }
+  return {
+    width: fullWidthCaret ? (letterWidth ?? 0) + "px" : "",
+    numericWidth: letterWidth ?? 0,
+  };
+}
+
 export async function updatePosition(noAnim = false): Promise<void> {
   const caretComputedStyle = window.getComputedStyle(caret);
   const caretWidth = parseInt(caretComputedStyle.width) || 0;
@@ -176,25 +202,21 @@ export async function updatePosition(noAnim = false): Promise<void> {
     newTop = activeWordEl.offsetTop + letterPosTop - caretHeight / 2;
   }
 
-  let letterWidth = currentLetter?.offsetWidth;
-  if (letterWidth === undefined || wordLen === 0) {
-    // at word beginning in zen mode current letter is defined "_" but wordLen is 0
-    letterWidth = getSpaceWidth(activeWordEl);
-  } else if (letterWidth === 0) {
-    // current letter is a zero-width character e.g, diacritics)
-    for (let i = inputLen; i >= 0; i--) {
-      letterWidth = (currentWordNodeList[i] as HTMLElement)?.offsetWidth;
-      if (letterWidth) break;
-    }
-  }
-  const newWidth = fullWidthCaret ? (letterWidth ?? 0) + "px" : "";
+  const { width: newWidth, numericWidth } = calculateCaretSize(
+    fullWidthCaret,
+    currentLetter,
+    activeWordEl,
+    currentWordNodeList,
+    inputLen,
+    wordLen
+  );
 
   const letterPosLeft = getTargetPositionLeft(
     fullWidthCaret,
     isLanguageRightToLeft,
     activeWordEl,
     currentWordNodeList,
-    letterWidth,
+    numericWidth,
     wordLen,
     inputLen
   );
@@ -211,8 +233,6 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   if (newWidth !== "") {
     animation.width = newWidth;
-  } else {
-    jqcaret.css("width", "");
   }
 
   const smoothCaretSpeed =
@@ -249,6 +269,13 @@ export async function updatePosition(noAnim = false): Promise<void> {
     }
   }
 }
+
+subscribe((eventKey) => {
+  if (eventKey === "caretStyle") {
+    caret.style.width = "";
+    void updatePosition(true);
+  }
+});
 
 export function show(noAnim = false): void {
   caret.classList.remove("hidden");
