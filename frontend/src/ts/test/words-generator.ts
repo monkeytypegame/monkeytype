@@ -650,18 +650,14 @@ export async function generateWords(
   const funbox = findSingleActiveFunboxWithFunction("withWords");
   if (funbox) {
     const result = await funbox.functions.withWords(wordList);
-    const isPolyglot = Array.isArray(Config.funbox)
-      ? Config.funbox.includes("polyglot")
-      : Config.funbox === "polyglot";
-
     // handle polyglot result (returns object with wordset + metadata)
-    if (isPolyglot && isPolyglotResult(result)) {
+    if (isPolyglotResult(result)) {
       currentWordset = result.wordset;
       ret.allLigatures = result.allLigatures;
     } else if (result instanceof Wordset) {
       currentWordset = result;
     } else {
-      throw new Error("withWords did not return a Wordset");
+      throw new Error("withWords did not return a Wordset or PolyglotResult");
     }
   } else {
     currentWordset = await withWords(wordList);
