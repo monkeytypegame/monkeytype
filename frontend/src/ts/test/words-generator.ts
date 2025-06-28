@@ -1,7 +1,6 @@
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
-import * as WordsetModule from "./wordset";
-import { Wordset } from "./wordset";
+import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
 import QuotesController, {
   Quote,
   QuoteWithTextSplit,
@@ -309,9 +308,7 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
   return EnglishPunctuation.replace(word);
 }
 
-function getFunboxWordsFrequency():
-  | WordsetModule.FunboxWordsFrequency
-  | undefined {
+function getFunboxWordsFrequency(): FunboxWordsFrequency | undefined {
   const funbox = findSingleActiveFunboxWithFunction("getWordsFrequencyMode");
   if (funbox) {
     return funbox.functions.getWordsFrequencyMode();
@@ -667,7 +664,7 @@ export async function generateWords(
       throw new Error("withWords did not return a Wordset");
     }
   } else {
-    currentWordset = await WordsetModule.withWords(wordList);
+    currentWordset = await withWords(wordList);
   }
 
   console.debug("Wordset", currentWordset);
