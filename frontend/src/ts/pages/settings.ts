@@ -13,7 +13,7 @@ import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import Page from "./page";
+import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import SlimSelect from "slim-select";
@@ -25,6 +25,8 @@ import {
   ThemeName,
   CustomLayoutFluid,
   FunboxName,
+  ConfigKeySchema,
+  ConfigKey,
 } from "@monkeytype/contracts/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
@@ -37,6 +39,7 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/contracts/schemas/languages";
+import { z } from "zod";
 
 let settingsInitialized = false;
 
@@ -45,6 +48,16 @@ let customLayoutFluidSelect: SlimSelect | undefined;
 let customPolyglotSelect: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
+
+const StateSchema = z
+  .object({
+    highlight: ConfigKeySchema,
+  })
+  .partial();
+
+type State = z.infer<typeof StateSchema>;
+
+const state: State = {};
 
 async function initGroups(): Promise<void> {
   groups["smoothCaret"] = new SettingsGroup(
@@ -1333,6 +1346,43 @@ function getThemeDropdownData(
   }));
 }
 
+function handleHighlightSection(): void {
+  if (state.highlight === undefined) {
+    return;
+  }
+
+  const element = document.querySelector(
+    `[data-config-name="${state.highlight}"]`
+  );
+
+  if (element !== null) {
+    setTimeout(() => {
+      element.scrollIntoView({ block: "center", behavior: "auto" });
+      element.classList.remove("highlight");
+      element.classList.add("highlight");
+    }, 250);
+  }
+}
+
+$(".pageSettings .section .groupTitle").on("click", (e) => {
+  const configName = e.target.parentElement?.dataset?.["configName"];
+  if (configName === undefined) {
+    return;
+  }
+
+  state.highlight = configName as ConfigKey;
+  page.setUrlParams(state);
+
+  navigator.clipboard
+    .writeText(window.location.toString())
+    .then(() => {
+      Notifications.add("Link copied to clipboard", 1);
+    })
+    .catch((e: unknown) => {
+      Notifications.add("Failed to copy to clipboard: " + e, -1);
+    });
+});
+
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChange") setEventDisabled(true);
   if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
@@ -1352,10 +1402,20 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   }
 });
 
-export const page = new Page({
+export const page = new PageWithUrlParams({
   id: "settings",
   element: $(".page.pageSettings"),
   path: "/settings",
+  urlParams: {
+    schema: StateSchema,
+    onUrlParamUpdate: (params) => {
+      if (params === null) {
+        delete state.highlight;
+      } else {
+        state.highlight = params.highlight;
+      }
+    },
+  },
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageSettings");
   },
@@ -1364,6 +1424,7 @@ export const page = new Page({
     await UpdateConfig.loadPromise;
     await fillSettingsPage();
     await update();
+    handleHighlightSection();
   },
 });
 
