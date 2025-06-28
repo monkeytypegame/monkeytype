@@ -713,6 +713,23 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         allRightToLeft = undefined;
       }
 
+      // check if main language direction conflicts with polyglot direction
+      const mainLanguage = await JSONData.getLanguage(Config.language);
+      if (
+        mainLanguage?.rightToLeft !== undefined &&
+        typeof allRightToLeft === "boolean" &&
+        mainLanguage.rightToLeft !== allRightToLeft
+      ) {
+        // main language is in opposite direction - fall back to safe default
+        const fallbackLanguage = allRightToLeft ? "arabic" : "english";
+        UpdateConfig.setLanguage(fallbackLanguage, true);
+        Notifications.add(
+          `Main language direction conflicts with polyglot languages. Switched to ${fallbackLanguage} for consistency.`,
+          0,
+          { duration: 5 }
+        );
+      }
+
       const allLigatures = languages.some((lang) => lang.ligatures);
       return { wordset: new Wordset(wordSet), allRightToLeft, allLigatures };
     },
