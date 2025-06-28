@@ -715,16 +715,25 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
 
       // check if main language direction conflicts with polyglot direction
       const mainLanguage = await JSONData.getLanguage(Config.language);
+      // determine if main language direction conflicts with polyglot direction
+      // this occurs if one is RTL and the other is LTR.
+      const mainLanguageIsRTL = mainLanguage?.rightToLeft ?? false;
+      const polyglotIsRTL = allRightToLeft === true; // true if all polyglot are RTL
+      const polyglotIsLTR = allRightToLeft === false; // true if all polyglot are LTR
+
       if (
-        mainLanguage?.rightToLeft !== undefined &&
-        typeof allRightToLeft === "boolean" &&
-        mainLanguage.rightToLeft !== allRightToLeft
+        (mainLanguageIsRTL && polyglotIsLTR) ||
+        (!mainLanguageIsRTL && polyglotIsRTL)
       ) {
         // main language is in opposite direction - fall back to safe default
         const fallbackLanguage = allRightToLeft ? "arabic" : "english";
         UpdateConfig.setLanguage(fallbackLanguage, true);
         Notifications.add(
-          `Main language direction conflicts with polyglot languages. Switched to ${fallbackLanguage} for consistency.`,
+          `Main language direction (${
+            mainLanguageIsRTL ? "RTL" : "LTR"
+          }) conflicts with polyglot languages (${
+            polyglotIsRTL ? "RTL" : "LTR"
+          }). Switched to ${fallbackLanguage} for consistency.`,
           0,
           { duration: 5 }
         );
