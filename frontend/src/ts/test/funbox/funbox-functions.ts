@@ -34,6 +34,7 @@ export type PolyglotResult = {
   wordset: Wordset;
   allRightToLeft: boolean;
   allLigatures: boolean;
+  wordLazyModeSupport?: Map<string, boolean>; // track lazy mode support for each word
 };
 
 export type FunboxFunctions = {
@@ -695,12 +696,30 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         throw new WordGenError("");
       }
 
-      const wordSet = languages.flatMap((it) => it.words);
+      // create wordset and track word origins
+      const wordSet: string[] = [];
+      const wordLazyModeSupport = new Map<string, boolean>();
+
+      for (const lang of languages) {
+        const supportsLazyMode = !lang.noLazyMode;
+        for (const word of lang.words) {
+          wordSet.push(word);
+          wordLazyModeSupport.set(word, supportsLazyMode);
+        }
+      }
+
       Arrays.shuffle(wordSet);
+
       // compute RTL and ligature info
       const allRightToLeft = languages.some((lang) => lang.rightToLeft);
       const allLigatures = languages.some((lang) => lang.ligatures);
-      return { wordset: new Wordset(wordSet), allRightToLeft, allLigatures };
+
+      return {
+        wordset: new Wordset(wordSet),
+        allRightToLeft,
+        allLigatures,
+        wordLazyModeSupport,
+      };
     },
   },
 };
