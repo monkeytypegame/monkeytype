@@ -281,4 +281,25 @@ $(".pageTest").on("click", "#saveScreenshotButton", (event) => {
   } else {
     void copyToClipboard();
   }
+
+  // reset save screenshot button icon
+  $("#saveScreenshotButton i")
+    .removeClass("fas fa-download")
+    .addClass("far fa-image");
+});
+
+$(document).on("keydown", (event) => {
+  if (event.key === "Shift") {
+    $("#saveScreenshotButton i")
+      .removeClass("far fa-image")
+      .addClass("fas fa-download");
+  }
+});
+
+$(document).on("keyup", (event) => {
+  if (event.key === "Shift") {
+    $("#saveScreenshotButton i")
+      .removeClass("fas fa-download")
+      .addClass("far fa-image");
+  }
 });
