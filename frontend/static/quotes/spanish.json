@@ -1148,22 +1148,16 @@
       "id": 199
     },
     {
-      "text": "Lo bueno, si breve, dos veces bueno",
-      "source": "Baltasar Gracián",
-      "length": 35,
-      "id": 200
-    },
-    {
       "text": "Es mucho más difícil crear que destruir, por eso solo los cobardes se decantan por lo segundo.",
       "source": "Steve - Una película de Minecraft",
       "length": 94,
-      "id": 201
+      "id": 200
     },
     {
-      "text": "Caminante, no hay camino, se hace camino al andar.",
+      "text": "Caminante, no hay camino, se hace camino al andar. Al andar se hace el camino, y al volver la vista atrás se ve la senda que nunca se ha de volver a pisar.",
       "source": "Antonio Machado",
-      "length": 50,
-      "id": 202
+      "length": 155,
+      "id": 201
     }
   ]
 }
