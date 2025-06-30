@@ -72,7 +72,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       eventKey
     )
   ) {
-    void updateHintsPositionDebounced();
+    updateHintsPositionDebounced().catch((e: unknown) => console.error(e));
   }
 
   if (eventKey === "theme") void applyBurstHeatmap();
@@ -672,7 +672,7 @@ function updateWordsMargin(): void {
       for (const afterNewline of afterNewlineEls) {
         afterNewline.style.marginLeft = `0`;
       }
-      void afterCompleteFn();
+      afterCompleteFn().catch((e: unknown) => console.error(e));
     }
   }
 }

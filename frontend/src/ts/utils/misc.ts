@@ -679,43 +679,52 @@ export function promiseWithResolvers<T = void>(): {
 }
 
 /**
- * Wraps an asynchronous function to prevent it from running until it is finished and settled.
- * If the function is called while a previous call is still running,
- * the arguments from the most recent call are queued and run after the current one finishes.
- * The returned debounced function returns a `Promise<boolean>` that:
- * - Resolves to `true` if the function was executed immediately.
- * - Resolves to `false` if the call was skipped or queued (another call is running).
- * @param asyncFn The asynchronus function to debounce
- * @returns The debounced function
+ * Wrap a function so only one call runs at a time. While a call is running, new
+ * calls will not run and only the latest one will be queued, any prior queued
+ * calls are skipped. Once the running call finishes, the queued call runs.
+ * @param fn the function to debounce
+ * @returns debounced version of the original function that returns a promise
+ * of the original return value that will be rejected if the call was skipped
  */
 export function debounceUntilResolved<TArgs extends unknown[], TResult>(
-  asyncFn: (...args: TArgs) => Promise<TResult>
-): (...args: TArgs) => Promise<boolean> {
+  fn: (...args: TArgs) => TResult
+): (...args: TArgs) => Promise<TResult> {
   let isLocked = false;
-  let next: TArgs | null = null;
+  let next: {
+    args: TArgs;
+    resolve: (value: TResult) => void;
+    reject: (reason?: unknown) => void;
+  } | null = null;
 
-  async function run(...args: TArgs): Promise<void> {
+  async function run(...args: TArgs): Promise<TResult> {
     isLocked = true;
     try {
-      await asyncFn(...args);
+      return await Promise.resolve(fn(...args));
     } finally {
       isLocked = false;
-    }
 
-    if (next) {
-      const nextArgs = next;
+      const queued = next;
       next = null;
-      await run(...nextArgs);
+      if (queued) run(...queued.args).then(queued.resolve, queued.reject);
     }
   }
 
-  return async function (...args: TArgs): Promise<boolean> {
+  return async function debounced(...args: TArgs): Promise<TResult> {
     if (isLocked) {
-      next = args;
-      return false;
+      // drop previously queued call
+      if (next) {
+        next.reject(
+          new Error("skipped call: call was superseded by a more recent one")
+        );
+      }
+
+      // queue the new call
+      return new Promise<TResult>((resolve, reject) => {
+        next = { args, resolve, reject };
+      });
     }
-    await run(...args);
-    return true;
+    // no running instances, run immediately
+    return run(...args);
   };
 }
 

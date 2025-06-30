@@ -16,7 +16,7 @@ export function previewFontFamily(font: string): void {
     "--font",
     '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
   );
-  void TestUI.updateHintsPositionDebounced();
+  TestUI.updateHintsPositionDebounced().catch((e: unknown) => console.error(e));
   isPreviewingFont = true;
 }
 
@@ -98,7 +98,9 @@ const debouncedEvent = debounce(250, () => {
       void TestUI.scrollTape();
     } else {
       void TestUI.centerActiveLine();
-      void TestUI.updateHintsPositionDebounced();
+      TestUI.updateHintsPositionDebounced().catch((e: unknown) =>
+        console.error(e)
+      );
     }
     setTimeout(() => {
       void TestUI.updateWordsInputPosition();
