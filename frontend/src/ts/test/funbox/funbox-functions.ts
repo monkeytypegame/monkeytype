@@ -692,7 +692,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             duration: 7,
           }
         );
-        throw new WordGenError("");
+        return {
+          wordset: new Wordset([]),
+          allRightToLeft: undefined,
+          allLigatures: false,
+        };
       }
 
       const wordSet = languages.flatMap((it) => it.words);
@@ -737,6 +741,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           0,
           { duration: 5 }
         );
+        throw new WordGenError("");
       }
 
       const allLigatures = languages.some((lang) => lang.ligatures);
