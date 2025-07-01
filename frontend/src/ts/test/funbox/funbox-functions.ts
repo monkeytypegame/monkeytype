@@ -30,16 +30,19 @@ import {
 import { Language } from "@monkeytype/contracts/schemas/languages";
 
 // type for polyglot funbox results
-export type PolyglotResult = {
-  wordset: Wordset;
-  allRightToLeft: boolean | undefined;
-  allLigatures: boolean;
-};
+export type WithWordsResult =
+  | { type: "single"; wordset: Wordset }
+  | {
+      type: "polyglot";
+      wordset: Wordset;
+      allRightToLeft: boolean | undefined;
+      allLigatures: boolean;
+    };
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
-  withWords?: (words?: string[]) => Promise<Wordset | PolyglotResult>;
+  withWords?: (words?: string[]) => Promise<WithWordsResult>;
   alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
   applyGlobalCSS?: () => void;
@@ -528,9 +531,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   pseudolang: {
-    async withWords(words?: string[]): Promise<Wordset> {
-      if (words !== undefined) return new PseudolangWordGenerator(words);
-      return new Wordset([]);
+    async withWords(words?: string[]): Promise<WithWordsResult> {
+      if (words !== undefined) {
+        return { type: "single", wordset: new PseudolangWordGenerator(words) };
+      }
+      return { type: "single", wordset: new Wordset([]) };
     },
   },
   IPv4: {
@@ -655,7 +660,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   polyglot: {
-    async withWords(_words) {
+    async withWords(_words): Promise<WithWordsResult> {
       const promises = Config.customPolyglot.map(async (language) =>
         JSONData.getLanguage(language).catch(() => {
           Notifications.add(
@@ -692,11 +697,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             duration: 7,
           }
         );
-        return {
-          wordset: new Wordset([]),
-          allRightToLeft: undefined,
-          allLigatures: false,
-        };
+        return { type: "single", wordset: new Wordset([]) };
       }
 
       const wordSet = languages.flatMap((it) => it.words);
@@ -742,7 +743,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
 
       const allLigatures = languages.some((lang) => lang.ligatures);
-      return { wordset: new Wordset(wordSet), allRightToLeft, allLigatures };
+      return {
+        type: "polyglot",
+        wordset: new Wordset(wordSet),
+        allRightToLeft,
+        allLigatures,
+      };
     },
   },
 };

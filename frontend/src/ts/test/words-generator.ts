@@ -24,7 +24,6 @@ import {
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
 import * as Loader from "../elements/loader";
-import { PolyglotResult } from "./funbox/funbox-functions";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -594,15 +593,6 @@ let previousRandomQuote: QuoteWithTextSplit | null = null;
 export async function generateWords(
   language: LanguageObject
 ): Promise<GenerateWordsReturn> {
-  function isPolyglotResult(obj: unknown): obj is PolyglotResult {
-    return (
-      obj !== null &&
-      typeof obj === "object" &&
-      "wordset" in obj &&
-      "allRightToLeft" in obj &&
-      "allLigatures" in obj
-    );
-  }
   if (!TestState.isRepeated) {
     previousGetNextWordReturns = [];
   }
@@ -650,16 +640,14 @@ export async function generateWords(
   const funbox = findSingleActiveFunboxWithFunction("withWords");
   if (funbox) {
     const result = await funbox.functions.withWords(wordList);
-    // handle polyglot result (returns object with wordset + metadata)
-    if (isPolyglotResult(result)) {
+    if (result.type === "polyglot") {
       currentWordset = result.wordset;
       ret.allLigatures = result.allLigatures;
-      // for polyglot with multiple languages, use the result direction
       ret.allRightToLeft = result.allRightToLeft;
-    } else if (result instanceof Wordset) {
-      currentWordset = result;
+    } else if (result.type === "single") {
+      currentWordset = result.wordset;
     } else {
-      throw new Error("withWords did not return a Wordset or PolyglotResult");
+      throw new Error("withWords did not return a valid WithWordsResult");
     }
   } else {
     currentWordset = await withWords(wordList);
