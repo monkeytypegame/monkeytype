@@ -1136,8 +1136,8 @@ function updateGetParameters(): void {
   selectorLS.set(state);
 }
 
-function readGetParameters(params: UrlParameter | null): void {
-  if (params === null) {
+function readGetParameters(params?: UrlParameter): void {
+  if (params === undefined) {
     Object.assign(state, selectorLS.get());
     return;
   }
@@ -1271,17 +1271,16 @@ export const page = new PageWithUrlParams({
   id: "leaderboards",
   element: $(".page.pageLeaderboards"),
   path: "/leaderboards",
-  urlParams: {
-    schema: UrlParameterSchema,
-    onUrlParamUpdate: readGetParameters,
-  },
+  urlParamsSchema: UrlParameterSchema,
+
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLeaderboards");
     stopTimer();
   },
-  beforeShow: async (): Promise<void> => {
+  beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageLeaderboards", "main");
     // await appendLanguageButtons(); //todo figure out this race condition
+    readGetParameters(options.urlParams);
     startTimer();
     updateTypeButtons();
     updateTitle();
