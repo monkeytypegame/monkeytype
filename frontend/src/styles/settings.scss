@@ -510,6 +510,7 @@
 
     .groupTitle button.text {
       opacity: 0;
+      transition: opacity 0.125s;
     }
     &:hover .groupTitle button.text {
       opacity: 1;
