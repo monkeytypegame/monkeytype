@@ -140,7 +140,7 @@ function calculateCaretSize(
   currentWordNodeList: NodeListOf<HTMLElement>,
   inputLen: number,
   wordLen: number
-): { width: string; numericWidth: number } {
+): { width: string; letterWidth: number } {
   let letterWidth = currentLetter?.offsetWidth;
   if (letterWidth === undefined || wordLen === 0) {
     // at word beginning in zen mode current letter is defined "_" but wordLen is 0
@@ -154,7 +154,7 @@ function calculateCaretSize(
   }
   return {
     width: fullWidthCaret ? (letterWidth ?? 0) + "px" : "",
-    numericWidth: letterWidth ?? 0,
+    letterWidth: letterWidth ?? 0,
   };
 }
 
@@ -202,7 +202,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     newTop = activeWordEl.offsetTop + letterPosTop - caretHeight / 2;
   }
 
-  const { width: newWidth, numericWidth } = calculateCaretSize(
+  const { width: newWidth, letterWidth: numericWidth } = calculateCaretSize(
     fullWidthCaret,
     currentLetter,
     activeWordEl,
