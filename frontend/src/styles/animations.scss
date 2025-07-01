@@ -114,18 +114,9 @@
 
 @keyframes flashBorder {
   0% {
-    box-shadow: 0 0 0 0 var(--bg-color);
-  }
-  25% {
-    box-shadow: 0 0 0 0.1em var(--main-color);
-  }
-  50% {
-    box-shadow: 0 0 0 0 var(--bg-color);
-  }
-  75% {
-    box-shadow: 0 0 0 0.1em var(--main-color);
+    box-shadow: 0 0 0 0.2em var(--main-color);
   }
   100% {
-    box-shadow: none;
+    box-shadow: 0 0 0 0.2em transparent;
   }
 }
