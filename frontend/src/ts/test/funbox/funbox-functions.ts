@@ -734,11 +734,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
         UpdateConfig.setLanguage(fallbackLanguage, true);
         Notifications.add(
-          `Main language direction (${
-            mainLanguageIsRTL ? "RTL" : "LTR"
-          }) conflicts with polyglot languages (${
-            polyglotIsRTL ? "RTL" : "LTR"
-          }). Switched to ${fallbackLanguage} for consistency.`,
+          `Language direction conflict, switched to ${fallbackLanguage} for consistency.`,
           0,
           { duration: 5 }
         );
