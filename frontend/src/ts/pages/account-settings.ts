@@ -17,14 +17,14 @@ import {
 const pageElement = $(".page.pageAccountSettings");
 
 const StateSchema = z.object({
-  activeTab: z.enum(["authentication", "general", "api", "dangerZone"]),
+  tab: z.enum(["authentication", "account", "apeKeys", "dangerZone"]),
 });
 type State = z.infer<typeof StateSchema>;
 
 const UrlParameterSchema = StateSchema.partial();
 
 const state: State = {
-  activeTab: "general",
+  tab: "account",
 };
 
 function updateAuthenticationSections(): void {
@@ -129,20 +129,18 @@ function updateIntegrationSections(): void {
 function updateTabs(): void {
   void swapElements(
     pageElement.find(".tab.active"),
-    pageElement.find(`.tab[data-tab="${state.activeTab}"]`),
+    pageElement.find(`.tab[data-tab="${state.tab}"]`),
     250,
     async () => {
       //
     },
     async () => {
       pageElement.find(".tab").removeClass("active");
-      pageElement
-        .find(`.tab[data-tab="${state.activeTab}"]`)
-        .addClass("active");
+      pageElement.find(`.tab[data-tab="${state.tab}"]`).addClass("active");
     }
   );
   pageElement.find("button").removeClass("active");
-  pageElement.find(`button[data-tab="${state.activeTab}"]`).addClass("active");
+  pageElement.find(`button[data-tab="${state.tab}"]`).addClass("active");
 }
 
 function updateAccountSections(): void {
@@ -210,13 +208,13 @@ function readGetParameters(): void {
     return;
   }
 
-  if (parsed.data.activeTab !== undefined) {
-    state.activeTab = parsed.data.activeTab;
+  if (parsed.data.tab !== undefined) {
+    state.tab = parsed.data.tab;
   }
 }
 
 $(".page.pageAccountSettings").on("click", ".tabs button", (event) => {
-  state.activeTab = $(event.target).data("tab") as State["activeTab"];
+  state.tab = $(event.target).data("tab") as State["tab"];
   updateTabs();
   updateGetParameters();
 });
