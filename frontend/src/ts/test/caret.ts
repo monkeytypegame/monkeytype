@@ -202,7 +202,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     newTop = activeWordEl.offsetTop + letterPosTop - caretHeight / 2;
   }
 
-  const { width: newWidth, letterWidth: numericWidth } = calculateCaretSize(
+  const { width: newWidth, letterWidth } = calculateCaretSize(
     fullWidthCaret,
     currentLetter,
     activeWordEl,
@@ -216,7 +216,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     isLanguageRightToLeft,
     activeWordEl,
     currentWordNodeList,
-    numericWidth,
+    letterWidth,
     wordLen,
     inputLen
   );
