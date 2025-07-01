@@ -15,7 +15,7 @@ import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
-import { PageName, PageWithUrlParams } from "../pages/page";
+import { PageName } from "../pages/page";
 
 type ChangeOptions = {
   force?: boolean;
@@ -111,10 +111,7 @@ export async function change(
 
           await previousPage?.afterHide();
 
-          if (nextPage instanceof PageWithUrlParams) {
-            nextPage.readUrlParams();
-          }
-          await nextPage?.beforeShow({
+          await nextPage?.show({
             params: options.params,
             // @ts-expect-error for the future (i think)
             data: options.data,
