@@ -116,6 +116,7 @@ export async function change(
           ActivePage.set(nextPage.id);
 
           await previousPage?.afterHide();
+
           await nextPage?.beforeShow({
             params: options.params,
             // @ts-expect-error for the future (i think)
