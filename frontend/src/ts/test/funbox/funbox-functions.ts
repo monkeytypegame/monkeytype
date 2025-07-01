@@ -697,7 +697,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             duration: 7,
           }
         );
-        return { type: "single", wordset: new Wordset([]) };
+        return { type: "single", wordset: new Wordset(lang.words) };
       }
 
       const wordSet = languages.flatMap((it) => it.words);
