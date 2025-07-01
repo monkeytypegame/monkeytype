@@ -508,15 +508,13 @@
       pointer-events: none;
     }
 
-    .groupTitle button {
+    .groupTitle button.text {
       padding: 0;
       margin-left: 0.5em;
-      .text {
-        opacity: 0;
-        transition: opacity 0.125s;
-        .fas {
-          margin-right: 0;
-        }
+      align-self: center;
+      opacity: 0;
+      .fas {
+        margin-right: 0;
       }
     }
     &:hover .groupTitle button.text {
