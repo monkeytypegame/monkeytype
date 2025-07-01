@@ -53,8 +53,10 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
 });
 
-export const updateHintsPositionDebounced =
-  Misc.debounceUntilResolved(updateHintsPosition);
+export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
+  updateHintsPosition,
+  true
+);
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (
@@ -72,7 +74,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       eventKey
     )
   ) {
-    updateHintsPositionDebounced().catch((e: unknown) => console.error(e));
+    void updateHintsPositionDebounced();
   }
 
   if (eventKey === "theme") void applyBurstHeatmap();
@@ -636,9 +638,8 @@ export function updateWordsWrapperHeight(force = false): void {
 }
 
 function updateWordsMargin(): void {
-  const afterCompleteFn = updateHintsPositionDebounced;
   if (Config.tapeMode !== "off") {
-    void scrollTape(true, afterCompleteFn);
+    void scrollTape(true, updateHintsPositionDebounced);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
     const afterNewlineEls =
@@ -652,7 +653,7 @@ function updateWordsMargin(): void {
         {
           duration: SlowTimer.get() ? 0 : 125,
           queue: "leftMargin",
-          complete: afterCompleteFn,
+          complete: updateHintsPositionDebounced,
         }
       );
       jqWords.dequeue("leftMargin");
@@ -664,7 +665,7 @@ function updateWordsMargin(): void {
       for (const afterNewline of afterNewlineEls) {
         afterNewline.style.marginLeft = `0`;
       }
-      afterCompleteFn().catch((e: unknown) => console.error(e));
+      void updateHintsPositionDebounced();
     }
   }
 }
