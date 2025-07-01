@@ -507,6 +507,17 @@
       z-index: -1;
       pointer-events: none;
     }
+
+    &[data-config-name] .groupTitle:hover::after {
+      //icon fa-link KEEP COMMENT IN PLACE TO INCLUDE THIS ICON AT BUILD TIME
+      content: "\f0c1";
+      padding-left: 1em;
+      font-family: "Font Awesome";
+      font-weight: 900;
+      color: var(--sub-color);
+      cursor: pointer;
+      pointer-events: auto;
+    }
   }
 }
 

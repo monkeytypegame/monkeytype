@@ -13,7 +13,7 @@ import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import Page from "./page";
+import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import SlimSelect from "slim-select";
@@ -26,6 +26,7 @@ import {
   CustomLayoutFluid,
   FunboxName,
   ConfigKeySchema,
+  ConfigKey,
 } from "@monkeytype/contracts/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
@@ -39,7 +40,7 @@ import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/contracts/schemas/languages";
 import { z } from "zod";
-import { safeParse as parseUrlSearchParams } from "zod-urlsearchparams";
+
 let settingsInitialized = false;
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
@@ -48,7 +49,7 @@ let customPolyglotSelect: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
 
-const UrlParameterSchema = z
+const StateSchema = z
   .object({
     highlight: ConfigKeySchema,
   })
@@ -1341,31 +1342,37 @@ function getThemeDropdownData(
   }));
 }
 
-function handleHighlightSection(): void {
-  const urlParams = new URLSearchParams(window.location.search);
-  const parsed = parseUrlSearchParams({
-    schema: UrlParameterSchema,
-    input: urlParams,
-  });
+function handleHighlightSection(highlight: ConfigKey): void {
+  const element = document.querySelector(`[data-config-name="${highlight}"]`);
 
-  if (!parsed.success) {
+  if (element !== null) {
+    setTimeout(() => {
+      element.scrollIntoView({ block: "center", behavior: "auto" });
+      element.classList.remove("highlight");
+      element.classList.add("highlight");
+    }, 250);
+  }
+}
+
+$(".pageSettings .section .groupTitle").on("click", (e) => {
+  const configName = e.target.parentElement?.dataset?.["configName"] as
+    | ConfigKey
+    | undefined;
+  if (configName === undefined) {
     return;
   }
 
-  if (parsed.data.highlight !== undefined) {
-    const element = document.querySelector(
-      `[data-config-name="${parsed.data.highlight}"]`
-    );
+  page.setUrlParams({ highlight: configName });
 
-    if (element !== null) {
-      setTimeout(() => {
-        element.scrollIntoView({ block: "center", behavior: "auto" });
-        element.classList.remove("highlight");
-        element.classList.add("highlight");
-      }, 250);
-    }
-  }
-}
+  navigator.clipboard
+    .writeText(window.location.toString())
+    .then(() => {
+      Notifications.add("Link copied to clipboard", 1);
+    })
+    .catch((e: unknown) => {
+      Notifications.add("Failed to copy to clipboard: " + e, -1);
+    });
+});
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChange") setEventDisabled(true);
@@ -1386,19 +1393,22 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   }
 });
 
-export const page = new Page({
+export const page = new PageWithUrlParams({
   id: "settings",
   element: $(".page.pageSettings"),
   path: "/settings",
+  urlParamsSchema: StateSchema,
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageSettings");
   },
-  beforeShow: async (): Promise<void> => {
+  beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageSettings", "main");
     await UpdateConfig.loadPromise;
     await fillSettingsPage();
     await update();
-    handleHighlightSection();
+    if (options.urlParams?.highlight !== undefined) {
+      handleHighlightSection(options.urlParams.highlight);
+    }
   },
 });
 
