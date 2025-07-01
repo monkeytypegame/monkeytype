@@ -749,6 +749,9 @@ export async function getNextWord(
         (Config.mode === "custom" &&
           CustomText.getLimitMode() === "word" &&
           wordIndex < CustomText.getLimitValue()) ||
+        (Config.mode === "custom" &&
+          CustomText.getLimitMode() === "section" &&
+          sectionIndex < CustomText.getLimitValue()) ||
         (Config.mode === "words" && wordIndex < Config.words)
       ) {
         continueRandomGeneration = true;

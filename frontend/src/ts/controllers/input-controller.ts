@@ -1335,6 +1335,7 @@ $("#wordsInput").on("input", (event) => {
     inputValue.length >= currTestInput.length
   ) {
     setWordsInput(" " + currTestInput);
+    updateUI();
     return;
   }
 
@@ -1448,6 +1449,13 @@ $("#wordsInput").on("copy paste", (event) => {
 
 $("#wordsInput").on("select selectstart", (event) => {
   event.preventDefault();
+});
+
+$("#wordsInput").on("selectionchange", (event) => {
+  event.preventDefault();
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+  target.setSelectionRange(value.length, value.length);
 });
 
 $("#wordsInput").on("keydown", (event) => {

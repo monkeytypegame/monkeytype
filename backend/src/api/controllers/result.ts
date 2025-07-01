@@ -488,13 +488,16 @@ export async function addResult(
 
   let dailyLeaderboardRank = -1;
 
+  const stopOnLetterTriggered =
+    completedEvent.stopOnLetter && completedEvent.acc < 100;
+
   const validResultCriteria =
     canFunboxGetPb(completedEvent) &&
     !completedEvent.bailedOut &&
     user.banned !== true &&
     user.lbOptOut !== true &&
     (isDevEnvironment() || (user.timeTyping ?? 0) > 7200) &&
-    !completedEvent.stopOnLetter;
+    !stopOnLetterTriggered;
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
   const isPremium =

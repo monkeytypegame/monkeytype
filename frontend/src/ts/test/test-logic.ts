@@ -656,7 +656,10 @@ export async function addWord(): Promise<void> {
         e,
         "Error while getting next word. Please try again later"
       ),
-      -1
+      -1,
+      {
+        important: true,
+      }
     );
   }
 }
