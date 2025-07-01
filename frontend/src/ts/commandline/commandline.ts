@@ -711,6 +711,7 @@ const modal = new AnimatedModal({
       ) {
         if (
           Config.singleListCommandLine === "on" &&
+          subgroupOverride === null &&
           inputValue === "" &&
           lastSingleListModeInputValue !== ""
         ) {
@@ -765,6 +766,7 @@ const modal = new AnimatedModal({
     let lastHover: HTMLElement | undefined;
 
     suggestions.addEventListener("mousemove", async (e) => {
+      mouseMode = true;
       const target = e.target as HTMLElement | null;
       if (target === lastHover) return;
 
