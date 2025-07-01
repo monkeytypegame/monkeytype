@@ -729,8 +729,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         (mainLanguageIsRTL && polyglotIsLTR) ||
         (!mainLanguageIsRTL && polyglotIsRTL)
       ) {
-        // main language is in opposite direction - fall back to safe default
-        const fallbackLanguage = allRightToLeft ? "arabic" : "english";
+        // main language is in opposite direction - fall back to one of the selected polyglot languages
+        const fallbackLanguage =
+          languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
         UpdateConfig.setLanguage(fallbackLanguage, true);
         Notifications.add(
           `Main language direction (${
