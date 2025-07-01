@@ -1,4 +1,4 @@
-import Page from "./page";
+import { PageWithUrlParams } from "./page";
 import * as Skeleton from "../utils/skeleton";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as ActivePage from "../states/active-page";
@@ -10,10 +10,7 @@ import * as Loader from "../elements/loader";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
-import {
-  safeParse as parseUrlSearchParams,
-  serialize as serializeUrlSearchParams,
-} from "zod-urlsearchparams";
+
 const pageElement = $(".page.pageAccountSettings");
 
 const StateSchema = z.object({
@@ -185,38 +182,13 @@ export function updateUI(): void {
   updateAccountSections();
   void ApeKeyTable.update(updateUI);
   updateTabs();
-  updateGetParameters();
-}
-
-function updateGetParameters(): void {
-  const urlParams = serializeUrlSearchParams({
-    schema: UrlParameterSchema,
-    data: state,
-  });
-  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-  window.history.replaceState({}, "", newUrl);
-}
-
-function readGetParameters(): void {
-  const urlParams = new URLSearchParams(window.location.search);
-  const parsed = parseUrlSearchParams({
-    schema: UrlParameterSchema,
-    input: urlParams,
-  });
-
-  if (!parsed.success) {
-    return;
-  }
-
-  if (parsed.data.tab !== undefined) {
-    state.tab = parsed.data.tab;
-  }
+  page.setUrlParams(state);
 }
 
 $(".page.pageAccountSettings").on("click", ".tabs button", (event) => {
   state.tab = $(event.target).data("tab") as State["tab"];
   updateTabs();
-  updateGetParameters();
+  page.setUrlParams(state);
 });
 
 $(
@@ -239,19 +211,22 @@ $(".page.pageAccountSettings #setStreakHourOffset").on("click", () => {
   StreakHourOffsetModal.show();
 });
 
-export const page = new Page({
+export const page = new PageWithUrlParams({
   id: "accountSettings",
   display: "Account Settings",
   element: pageElement,
   path: "/account-settings",
+  urlParamsSchema: UrlParameterSchema,
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageAccountSettings");
   },
-  beforeShow: async (): Promise<void> => {
+  beforeShow: async (options): Promise<void> => {
+    if (options.urlParams?.tab !== undefined) {
+      state.tab = options.urlParams.tab;
+    }
     Skeleton.append("pageAccountSettings", "main");
     pageElement.find(`.tab[data-tab="${state.tab}"]`).addClass("active");
     updateUI();
-    updateGetParameters();
   },
 });
 
