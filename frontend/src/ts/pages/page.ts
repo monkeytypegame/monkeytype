@@ -44,7 +44,7 @@ export default class Page<T> {
 
   public beforeHide: () => Promise<void>;
   public afterHide: () => Promise<void>;
-  protected beforeShow: (options: Options<T>) => Promise<void>;
+  protected _beforeShow: (options: Options<T>) => Promise<void>;
   public afterShow: () => Promise<void>;
 
   constructor(props: PageProperties<T>) {
@@ -54,12 +54,12 @@ export default class Page<T> {
     this.pathname = props.path;
     this.beforeHide = props.beforeHide ?? empty;
     this.afterHide = props.afterHide ?? empty;
-    this.beforeShow = props.beforeShow ?? empty;
+    this._beforeShow = props.beforeShow ?? empty;
     this.afterShow = props.afterShow ?? empty;
   }
 
-  public async show(options: Options<T>): Promise<void> {
-    await this.beforeShow?.(options);
+  public async beforeShow(options: Options<T>): Promise<void> {
+    await this._beforeShow?.(options);
   }
 }
 
@@ -78,14 +78,14 @@ type PagePropertiesWithUrlParams<T, U extends UrlParamsSchema> = Omit<
 
 export class PageWithUrlParams<T, U extends UrlParamsSchema> extends Page<T> {
   private urlSchema: U;
-  protected override beforeShow: (
+  protected override _beforeShow: (
     options: OptionsWithUrlParams<T, U>
   ) => Promise<void>;
 
   constructor(props: PagePropertiesWithUrlParams<T, U>) {
     super(props);
     this.urlSchema = props.urlParamsSchema;
-    this.beforeShow = props.beforeShow ?? empty;
+    this._beforeShow = props.beforeShow ?? empty;
   }
 
   private readUrlParams(): z.infer<U> | undefined {
@@ -111,8 +111,8 @@ export class PageWithUrlParams<T, U extends UrlParamsSchema> extends Page<T> {
     window.history.replaceState({}, "", newUrl);
   }
 
-  public override async show(options: Options<T>): Promise<void> {
+  public override async beforeShow(options: Options<T>): Promise<void> {
     const urlParams = this.readUrlParams();
-    await this.beforeShow?.({ ...options, urlParams: urlParams });
+    await this._beforeShow?.({ ...options, urlParams: urlParams });
   }
 }
