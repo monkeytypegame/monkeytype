@@ -1871,17 +1871,19 @@ export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
 ): boolean {
+  // Remove duplicates
+  const deduped = Array.from(new Set(value));
   if (
     !isConfigValueValid(
       "layoutfluid",
-      value,
+      deduped,
       ConfigSchemas.CustomLayoutFluidSchema
     )
   ) {
     return false;
   }
 
-  config.customLayoutfluid = value;
+  config.customLayoutfluid = deduped;
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutfluid", config.customLayoutfluid);
 
@@ -1892,16 +1894,18 @@ export function setCustomPolyglot(
   value: ConfigSchemas.CustomPolyglot,
   nosave?: boolean
 ): boolean {
+  // remove duplicates
+  const deduped = Array.from(new Set(value));
   if (
     !isConfigValueValid(
       "customPolyglot",
-      value,
+      deduped,
       ConfigSchemas.CustomPolyglotSchema
     )
   )
     return false;
 
-  config.customPolyglot = value;
+  config.customPolyglot = deduped;
   saveToLocalStorage("customPolyglot", nosave);
   ConfigEvent.dispatch("customPolyglot", config.customPolyglot);
 
