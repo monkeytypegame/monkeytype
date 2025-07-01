@@ -37,6 +37,8 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/contracts/schemas/languages";
+import FileStorage from "../utils/file-storage";
+import { LocalBackgroundFile } from "../constants/default-config";
 
 let settingsInitialized = false;
 
@@ -784,7 +786,7 @@ export async function update(): Promise<void> {
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).addClass("hidden");
   }
-  updateCustomBackgroundRemoveButtonVisibility();
+  void updateCustomBackgroundRemoveButtonVisibility();
 
   $(".pageSettings .section[data-config-name='fontSize'] input").val(
     Config.fontSize
@@ -802,9 +804,7 @@ export async function update(): Promise<void> {
     Config.tapeMargin
   );
 
-  $(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
-  ).val(Config.customBackground);
+  $("#customBackgroundInput").val(Config.customBackground);
 
   if (isAuthenticated()) {
     showAccountSection();
@@ -862,18 +862,36 @@ function toggleSettingsGroup(groupName: string): void {
   }
 }
 
-function updateCustomBackgroundRemoveButtonVisibility(): void {
+async function updateCustomBackgroundRemoveButtonVisibility(): Promise<void> {
   const button = $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] button.remove"
   );
   if (
-    Config.customBackground !== undefined &&
-    Config.customBackground.length > 0
+    (Config.customBackground !== undefined &&
+      Config.customBackground.length > 0) ||
+    (await FileStorage.hasFile(LocalBackgroundFile))
   ) {
     button.removeClass("hidden");
   } else {
     button.addClass("hidden");
   }
+
+  /* Todo mio
+  const urlInput = $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input.input"
+  );
+  const saveButton = $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.save"
+  );
+  if (Config.customBackground === "localBackgroundFile") {
+    urlInput.attr("disabled", "disabled");
+    urlInput.val("using local file");
+    saveButton.addClass("disabled");
+  } else {
+    urlInput.removeAttr("disabled");
+    saveButton.removeClass("disabled");
+  }
+    */
 }
 
 $(".pageSettings .section[data-config-name='paceCaret']").on(
@@ -1076,9 +1094,51 @@ $(
 
 $(
   ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.remove"
-).on("click", () => {
+).on("click", async () => {
+  await FileStorage.deleteFile(LocalBackgroundFile);
+
   UpdateConfig.setCustomBackground("");
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input.input"
+  ).val("");
 });
+
+$("#customBackgroundUpload").on("change", async (e) => {
+  const fileInput = e.target as HTMLInputElement;
+  const file = fileInput.files?.[0];
+
+  if (!file) {
+    return;
+  }
+
+  // check type
+  if (!file.type.match(/image\/(jpeg|jpg|png|gif)/)) {
+    Notifications.add("Unsupported image format", 0);
+    fileInput.value = "";
+    return;
+  }
+
+  const dataUrl = await readFileAsDataURL(file);
+  await FileStorage.storeFile(LocalBackgroundFile, dataUrl);
+
+  // update the input field with the data URL
+  $("#customBackgroundInput").val(dataUrl);
+  //set the config to empty string, triggers config update event
+  UpdateConfig.setCustomBackground("");
+  // reset the file input
+  fileInput.value = "";
+
+  void updateCustomBackgroundRemoveButtonVisibility();
+});
+
+async function readFileAsDataURL(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 $(
   ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"

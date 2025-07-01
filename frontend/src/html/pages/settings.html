@@ -1126,9 +1126,10 @@
         <span>custom background</span>
       </div>
       <div class="text">
-        Set an image url to be a custom background image. Cover fits the image
-        to cover the screen. Contain fits the image to be fully visible. Max
-        fits the image corner to corner.
+        Set an image url or local image to be a custom background image.
+        <br />
+        Cover fits the image to cover the screen. Contain fits the image to be
+        fully visible. Max fits the image corner to corner.
       </div>
       <div class="inputs">
         <div class="inputAndButton">
@@ -1140,12 +1141,28 @@
             onClick="this.select();"
           />
           <span>
-            <button class="hidden remove no-auto-handle">
-              <i class="fas fa-trash fa-fw"></i>
-            </button>
             <button class="save no-auto-handle">
               <i class="fas fa-save fa-fw"></i>
             </button>
+            <button class="hidden remove no-auto-handle">
+              <i class="fas fa-trash fa-fw"></i>
+            </button>
+            <div class="upload-container">
+              <label
+                for="customBackgroundUpload"
+                class="button"
+                aria-label="Select custom background image"
+                data-balloon-pos="left"
+              >
+                <i class="fas fa-file-import fa-fw"></i>
+              </label>
+              <input
+                type="file"
+                id="customBackgroundUpload"
+                accept="image/png,image/jpeg,image/jpg,image/gif"
+                style="display: none"
+              />
+            </div>
           </span>
         </div>
         <div class="buttons">
