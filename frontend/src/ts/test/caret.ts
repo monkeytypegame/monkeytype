@@ -133,29 +133,25 @@ function getTargetPositionLeft(
   return result;
 }
 
-function calculateCaretSize(
-  fullWidthCaret: boolean,
+function getLetterWidth(
   currentLetter: HTMLElement | undefined,
   activeWordEl: HTMLElement,
-  currentWordNodeList: NodeListOf<HTMLElement>,
-  inputLen: number,
-  wordLen: number
-): { width: string; letterWidth: number } {
+  wordLength: number,
+  inputLength: number,
+  currentWordNodeList: NodeListOf<HTMLElement>
+): number {
   let letterWidth = currentLetter?.offsetWidth;
-  if (letterWidth === undefined || wordLen === 0) {
+  if (letterWidth === undefined || wordLength === 0) {
     // at word beginning in zen mode current letter is defined "_" but wordLen is 0
     letterWidth = getSpaceWidth(activeWordEl);
   } else if (letterWidth === 0) {
     // current letter is a zero-width character e.g, diacritics)
-    for (let i = inputLen; i >= 0; i--) {
+    for (let i = inputLength; i >= 0; i--) {
       letterWidth = (currentWordNodeList[i] as HTMLElement)?.offsetWidth;
       if (letterWidth) break;
     }
   }
-  return {
-    width: fullWidthCaret ? (letterWidth ?? 0) + "px" : "",
-    letterWidth: letterWidth ?? 0,
-  };
+  return letterWidth ?? 0;
 }
 
 export async function updatePosition(noAnim = false): Promise<void> {
@@ -202,13 +198,12 @@ export async function updatePosition(noAnim = false): Promise<void> {
     newTop = activeWordEl.offsetTop + letterPosTop - caretHeight / 2;
   }
 
-  const { width: newWidth, letterWidth } = calculateCaretSize(
-    fullWidthCaret,
+  const letterWidth = getLetterWidth(
     currentLetter,
     activeWordEl,
-    currentWordNodeList,
+    wordLen,
     inputLen,
-    wordLen
+    currentWordNodeList
   );
 
   const letterPosLeft = getTargetPositionLeft(
@@ -231,8 +226,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
     left: newLeft,
   };
 
-  if (newWidth !== "") {
-    animation.width = newWidth;
+  if (fullWidthCaret) {
+    animation.width = `${letterWidth}px`;
   }
 
   const smoothCaretSpeed =
