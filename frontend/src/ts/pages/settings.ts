@@ -26,7 +26,6 @@ import {
   CustomLayoutFluid,
   FunboxName,
   ConfigKeySchema,
-  ConfigKey,
 } from "@monkeytype/contracts/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
@@ -49,9 +48,21 @@ let customPolyglotSelect: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
 
+const HighlightSchema = ConfigKeySchema.or(
+  z.enum([
+    "resetSettings",
+    "updateCookiePreferences",
+    "importexportSettings",
+    "theme",
+    "presets",
+    "tags",
+  ])
+);
+type Highlight = z.infer<typeof HighlightSchema>;
+
 const StateSchema = z
   .object({
-    highlight: ConfigKeySchema,
+    highlight: HighlightSchema,
   })
   .partial();
 
@@ -1010,7 +1021,7 @@ $(".pageSettings .section[data-config-name='minBurst']").on(
 );
 
 //funbox
-$(".pageSettings .section[data-config-name='funbox']").on(
+$(".pageSettings .section[data-config-name='funbox'] .buttons").on(
   "click",
   "button",
   (e) => {
@@ -1342,22 +1353,24 @@ function getThemeDropdownData(
   }));
 }
 
-function handleHighlightSection(highlight: ConfigKey): void {
-  const element = document.querySelector(`[data-config-name="${highlight}"]`);
+function handleHighlightSection(highlight: Highlight): void {
+  const element = document.querySelector(
+    `[data-config-name="${highlight}"] .groupTitle,[data-section-id="${highlight}"] .groupTitle`
+  );
 
   if (element !== null) {
     setTimeout(() => {
       element.scrollIntoView({ block: "center", behavior: "auto" });
-      element.classList.remove("highlight");
-      element.classList.add("highlight");
+      element.parentElement?.classList.remove("highlight");
+      element.parentElement?.classList.add("highlight");
     }, 250);
   }
 }
 
-$(".pageSettings .section .groupTitle").on("click", (e) => {
-  const configName = e.target.parentElement?.dataset?.["configName"] as
-    | ConfigKey
-    | undefined;
+$(".pageSettings .section .groupTitle button").on("click", (e) => {
+  const section = e.target.parentElement?.parentElement;
+  const configName = (section?.dataset?.["configName"] ??
+    section?.dataset?.["sectionId"]) as Highlight | undefined;
   if (configName === undefined) {
     return;
   }
