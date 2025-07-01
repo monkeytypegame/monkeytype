@@ -508,9 +508,16 @@
       pointer-events: none;
     }
 
-    .groupTitle button.text {
-      opacity: 0;
-      transition: opacity 0.125s;
+    .groupTitle button {
+      padding: 0;
+      margin-left: 0.5em;
+      .text {
+        opacity: 0;
+        transition: opacity 0.125s;
+        .fas {
+          margin-right: 0;
+        }
+      }
     }
     &:hover .groupTitle button.text {
       opacity: 1;
