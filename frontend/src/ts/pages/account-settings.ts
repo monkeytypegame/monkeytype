@@ -249,7 +249,7 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccountSettings", "main");
-    readGetParameters();
+    pageElement.find(`.tab[data-tab="${state.tab}"]`).addClass("active");
     updateUI();
     updateGetParameters();
   },
