@@ -721,6 +721,31 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         throw new WordGenError("");
       }
 
+      // direction conflict check
+      const allRightToLeft = languages.every((lang) => lang.rightToLeft)
+        ? true
+        : languages.every((lang) => !lang.rightToLeft)
+        ? false
+        : undefined;
+      const mainLanguage = await JSONData.getLanguage(Config.language);
+      const mainLanguageIsRTL = mainLanguage?.rightToLeft ?? false;
+      const polyglotIsRTL = allRightToLeft === true;
+      const polyglotIsLTR = allRightToLeft === false;
+      if (
+        (mainLanguageIsRTL && polyglotIsLTR) ||
+        (!mainLanguageIsRTL && polyglotIsRTL)
+      ) {
+        const fallbackLanguage =
+          languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
+        UpdateConfig.setLanguage(fallbackLanguage, true);
+        Notifications.add(
+          `Language direction conflict, switched to ${fallbackLanguage} for consistency.`,
+          0,
+          { duration: 5 }
+        );
+        throw new WordGenError("");
+      }
+
       // build maps for the PolyglotWordset
       const wordsWithLanguage = new Map<string, Language>();
       const languageProperties = new Map<Language, LanguageProperties>();
