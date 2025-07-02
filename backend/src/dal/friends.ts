@@ -17,15 +17,28 @@ export type DBFriend = WithObjectId<
 export const getCollection = (): Collection<DBFriend> =>
   db.collection("friends");
 
-export async function get(
-  uid: string,
-  status?: FriendRequestStatus[]
-): Promise<DBFriend[]> {
-  let filter: Filter<DBFriend> = {
-    $or: [{ initiatorUid: uid }, { friendUid: uid }],
-  };
+export async function getRequests(options: {
+  initiatorUid?: string;
+  friendUid?: string;
+  status?: FriendRequestStatus[];
+}): Promise<DBFriend[]> {
+  const { initiatorUid, friendUid, status } = options;
+
+  if (initiatorUid === undefined && friendUid === undefined)
+    throw new Error("no filter provided");
+
+  let filter: Filter<DBFriend> = { $or: [] };
+
+  if (initiatorUid !== undefined) {
+    filter.$or?.push({ initiatorUid });
+  }
+
+  if (friendUid !== undefined) {
+    filter.$or?.push({ friendUid });
+  }
+
   if (status !== undefined) {
-    filter = { $and: [filter, { status: { $in: status } }] };
+    filter.status = { $in: status };
   }
 
   return await getCollection().find(filter).toArray();

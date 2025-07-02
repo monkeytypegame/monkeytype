@@ -8,6 +8,7 @@ import {
 import {
   FriendRequestSchema,
   FriendRequestStatusSchema,
+  FriendRequestTypeSchema,
 } from "./schemas/friends";
 import { z } from "zod";
 import { IdSchema } from "./schemas/util";
@@ -25,6 +26,10 @@ export const GetFriendRequestsQuerySchema = z.object({
   status: z
     .array(FriendRequestStatusSchema)
     .or(FriendRequestStatusSchema.transform((it) => [it]))
+    .optional(),
+  type: z
+    .array(FriendRequestTypeSchema)
+    .or(FriendRequestTypeSchema.transform((it) => [it]))
     .optional(),
 });
 export type GetFriendRequestsQuery = z.infer<

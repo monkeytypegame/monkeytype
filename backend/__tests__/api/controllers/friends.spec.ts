@@ -21,7 +21,7 @@ describe("FriendsController", () => {
   });
 
   describe("get friend requests", () => {
-    const getFriendsMock = vi.spyOn(FriendsDal, "get");
+    const getFriendsMock = vi.spyOn(FriendsDal, "getRequests");
 
     beforeEach(() => {
       getFriendsMock.mockReset();
@@ -50,7 +50,10 @@ describe("FriendsController", () => {
 
       //THEN
       expect(body.data).toEqual([{ ...friend, _id: friend._id.toHexString() }]);
-      expect(getFriendsMock).toHaveBeenCalledWith(uid, undefined);
+      expect(getFriendsMock).toHaveBeenCalledWith({
+        initiatorUid: uid,
+        friendUid: uid,
+      });
     });
 
     it("should filter by status", async () => {
@@ -65,8 +68,13 @@ describe("FriendsController", () => {
         .expect(200);
 
       //THEN
-      expect(getFriendsMock).toHaveBeenCalledWith(uid, ["accepted"]);
+      expect(getFriendsMock).toHaveBeenCalledWith({
+        initiatorUid: uid,
+        friendUid: uid,
+        status: ["accepted"],
+      });
     });
+
     it("should filter by multiple status", async () => {
       //GIVEN
       getFriendsMock.mockResolvedValue([]);
@@ -79,7 +87,63 @@ describe("FriendsController", () => {
         .expect(200);
 
       //THEN
-      expect(getFriendsMock).toHaveBeenCalledWith(uid, ["accepted", "blocked"]);
+      expect(getFriendsMock).toHaveBeenCalledWith({
+        initiatorUid: uid,
+        friendUid: uid,
+        status: ["accepted", "blocked"],
+      });
+    });
+
+    it("should filter by type incoming", async () => {
+      //GIVEN
+      getFriendsMock.mockResolvedValue([]);
+
+      //WHEN
+      await mockApp
+        .get("/friends/requests")
+        .query({ type: "incoming" })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(getFriendsMock).toHaveBeenCalledWith({
+        friendUid: uid,
+      });
+    });
+
+    it("should filter by type outgoing", async () => {
+      //GIVEN
+      getFriendsMock.mockResolvedValue([]);
+
+      //WHEN
+      await mockApp
+        .get("/friends/requests")
+        .query({ type: "outgoing" })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(getFriendsMock).toHaveBeenCalledWith({
+        initiatorUid: uid,
+      });
+    });
+
+    it("should filter by multiple types", async () => {
+      //GIVEN
+      getFriendsMock.mockResolvedValue([]);
+
+      //WHEN
+      await mockApp
+        .get("/friends/requests")
+        .query({ type: ["incoming", "outgoing"] })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(getFriendsMock).toHaveBeenCalledWith({
+        initiatorUid: uid,
+        friendUid: uid,
+      });
     });
 
     it("should fail if friends endpoints are disabled", async () => {

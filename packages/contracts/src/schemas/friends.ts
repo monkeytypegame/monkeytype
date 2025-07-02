@@ -8,6 +8,9 @@ export const FriendRequestStatusSchema = z.enum([
 ]);
 export type FriendRequestStatus = z.infer<typeof FriendRequestStatusSchema>;
 
+export const FriendRequestTypeSchema = z.enum(["incoming", "outgoing"]);
+export type FriendRequestType = z.infer<typeof FriendRequestTypeSchema>;
+
 export const FriendRequestSchema = z.object({
   _id: IdSchema,
   initiatorUid: IdSchema,

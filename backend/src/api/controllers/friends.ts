@@ -19,9 +19,15 @@ export async function getRequests(
   req: MonkeyRequest<GetFriendRequestsQuery>
 ): Promise<GetFriendRequestsResponse> {
   const { uid } = req.ctx.decodedToken;
-  const status = req.query.status;
+  const { status, type } = req.query;
 
-  const results = await FriendsDal.get(uid, status);
+  const results = await FriendsDal.getRequests({
+    initiatorUid:
+      type === undefined || type.includes("outgoing") ? uid : undefined,
+    friendUid:
+      type === undefined || type?.includes("incoming") ? uid : undefined,
+    status: status,
+  });
 
   return new MonkeyResponse("Friends retrieved", replaceObjectIds(results));
 }

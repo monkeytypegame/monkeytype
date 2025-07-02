@@ -7,7 +7,7 @@ describe("FriendsDal", () => {
     FriendsDal.createIndicies();
   });
 
-  describe("get", () => {
+  describe("getRequests", () => {
     it("get by uid", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
@@ -16,11 +16,11 @@ describe("FriendsDal", () => {
       const friendOne = await createFriend({ friendUid: uid });
       const _decoy = await createFriend({});
 
-      //WHEN
-      const myFriends = await FriendsDal.get(uid);
+      //WHEN / THEM
 
-      //THEN
-      expect(myFriends).toStrictEqual([initOne, initTwo, friendOne]);
+      expect(
+        await FriendsDal.getRequests({ initiatorUid: uid, friendUid: uid })
+      ).toStrictEqual([initOne, initTwo, friendOne]);
     });
 
     it("get by uid and status", async () => {
@@ -50,15 +50,15 @@ describe("FriendsDal", () => {
 
       const _decoy = await createFriend({ status: "accepted" });
 
-      //WHEN
-      const nonPending = await FriendsDal.get(uid, ["accepted", "blocked"]);
+      //WHEN / THEN
 
-      //THEN
-      expect(nonPending).toStrictEqual([
-        initAccepted,
-        initBlocked,
-        friendAccepted,
-      ]);
+      expect(
+        await FriendsDal.getRequests({
+          initiatorUid: uid,
+          friendUid: uid,
+          status: ["accepted", "blocked"],
+        })
+      ).toStrictEqual([initAccepted, initBlocked, friendAccepted]);
     });
   });
 
@@ -134,14 +134,14 @@ describe("FriendsDal", () => {
         friendUid: uid,
       });
       const second = await createFriend({
-        initiatorUid: uid,
+        friendUid: uid,
       });
 
       //WHEN
       await FriendsDal.updateStatus(uid, first._id.toHexString(), "accepted");
 
       //THEN
-      expect(await FriendsDal.get(uid)).toEqual(
+      expect(await FriendsDal.getRequests({ friendUid: uid })).toEqual(
         expect.arrayContaining([{ ...first, status: "accepted" }, second])
       );
 
@@ -177,7 +177,9 @@ describe("FriendsDal", () => {
       await FriendsDal.deleteById(uid, first._id.toHexString());
 
       //THEN
-      expect(await FriendsDal.get(uid)).toStrictEqual([second]);
+      expect(await FriendsDal.getRequests({ initiatorUid: uid })).toStrictEqual(
+        [second]
+      );
     });
     it("should fail if uid does not match", async () => {
       //GIVEN
@@ -206,8 +208,13 @@ describe("FriendsDal", () => {
       await FriendsDal.deleteByUid(uid);
 
       //THEN
-      expect(await FriendsDal.get(uid)).toEqual([]);
-      expect(await FriendsDal.get(decoy.initiatorUid)).toEqual([decoy]);
+      expect(
+        await FriendsDal.getRequests({ initiatorUid: uid, friendUid: uid })
+      ).toEqual([]);
+
+      expect(
+        await FriendsDal.getRequests({ initiatorUid: decoy.initiatorUid })
+      ).toEqual([decoy]);
     });
   });
   describe("updateName", () => {
@@ -232,13 +239,17 @@ describe("FriendsDal", () => {
       await FriendsDal.updateName(uid, "King Bob");
 
       //THEN
-      expect(await FriendsDal.get(uid)).toEqual([
+      expect(
+        await FriendsDal.getRequests({ initiatorUid: uid, friendUid: uid })
+      ).toEqual([
         { ...initOne, initiatorName: "King Bob" },
         { ...initTwo, initiatorName: "King Bob" },
         { ...friendOne, friendName: "King Bob" },
       ]);
 
-      expect(await FriendsDal.get(decoy.initiatorUid)).toEqual([decoy]);
+      expect(
+        await FriendsDal.getRequests({ initiatorUid: decoy.initiatorUid })
+      ).toEqual([decoy]);
     });
   });
 });
