@@ -83,9 +83,6 @@ export const ConfigurationSchema = z.object({
     premium: z.object({
       enabled: z.boolean(),
     }),
-    friends: z.object({
-      enabled: z.boolean(),
-    }),
   }),
   admin: z.object({
     endpointsEnabled: z.boolean(),
@@ -125,6 +122,10 @@ export const ConfigurationSchema = z.object({
       expirationTimeInDays: z.number().nonnegative(),
       xpRewardBrackets: z.array(RewardBracketSchema),
     }),
+  }),
+  friends: z.object({
+    enabled: z.boolean(),
+    maxFriendsPerUser: z.number().int().nonnegative(),
   }),
 });
 export type Configuration = z.infer<typeof ConfigurationSchema>;

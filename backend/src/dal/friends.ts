@@ -33,8 +33,20 @@ export async function get(
 
 export async function create(
   initiator: { uid: string; name: string },
-  friend: { uid: string; name: string }
+  friend: { uid: string; name: string },
+  maxFriendsPerUser: number
 ): Promise<DBFriend> {
+  const count = await getCollection().countDocuments({
+    initiatorUid: initiator.uid,
+  });
+
+  if (count >= maxFriendsPerUser) {
+    throw new MonkeyError(
+      409,
+      "Maximum number of friends reached",
+      "create friend request"
+    );
+  }
   try {
     const created: DBFriend = {
       _id: new ObjectId(),

@@ -96,7 +96,8 @@ describe("FriendsDal", () => {
       //WHEN
       const created = await FriendsDal.create(
         { uid, name: "Bob" },
-        { uid: friendUid, name: "Kevin" }
+        { uid: friendUid, name: "Kevin" },
+        2
       );
 
       //THEN
@@ -110,6 +111,18 @@ describe("FriendsDal", () => {
           status: "pending",
           key: `${uid}/${friendUid}`,
         })
+      );
+    });
+
+    it("should fail if maximum friends are reached", async () => {
+      //GIVEN
+      const initiatorUid = new ObjectId().toHexString();
+      await createFriend({ initiatorUid });
+      await createFriend({ initiatorUid });
+
+      //WHEN / THEM
+      await expect(createFriend({ initiatorUid }, 2)).rejects.toThrow(
+        "Maximum number of friends reached\nStack: create friend request"
       );
     });
   });
@@ -231,7 +244,8 @@ describe("FriendsDal", () => {
 });
 
 async function createFriend(
-  data: Partial<FriendsDal.DBFriend>
+  data: Partial<FriendsDal.DBFriend>,
+  maxFriendsPerUser = 25
 ): Promise<FriendsDal.DBFriend> {
   const result = await FriendsDal.create(
     {
@@ -241,7 +255,8 @@ async function createFriend(
     {
       uid: data.friendUid ?? new ObjectId().toHexString(),
       name: data.friendName ?? "user" + new ObjectId().toHexString(),
-    }
+    },
+    maxFriendsPerUser
   );
   await FriendsDal.getCollection().updateOne(
     { _id: result._id },

@@ -32,7 +32,8 @@ export async function createRequest(
   req: MonkeyRequest<undefined, CreateFriendRequestRequest>
 ): Promise<CreateFriendRequestResponse> {
   const { uid } = req.ctx.decodedToken;
-  const friendName = req.body.friendName;
+  const { friendName } = req.body;
+  const { maxFriendsPerUser } = req.ctx.configuration.friends;
 
   const friend = await UserDal.getUserByName(friendName, "create friend");
 
@@ -46,7 +47,9 @@ export async function createRequest(
   ]);
 
   const result: FriendRequest = omit(
-    replaceObjectId(await FriendsDal.create(initiator, friend)),
+    replaceObjectId(
+      await FriendsDal.create(initiator, friend, maxFriendsPerUser)
+    ),
     "key"
   );
 

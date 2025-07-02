@@ -20,7 +20,7 @@ describe("FriendsController", () => {
     mockAuth.beforeEach();
   });
 
-  describe("get friends", () => {
+  describe("get friend requests", () => {
     const getFriendsMock = vi.spyOn(FriendsDal, "get");
 
     beforeEach(() => {
@@ -106,7 +106,7 @@ describe("FriendsController", () => {
     });
   });
 
-  describe("create friend", () => {
+  describe("create friend request", () => {
     const getUserByNameMock = vi.spyOn(UserDal, "getUserByName");
     const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
     const addToInboxMock = vi.spyOn(UserDal, "addToInbox");
@@ -121,7 +121,7 @@ describe("FriendsController", () => {
       ].forEach((it) => it.mockReset());
     });
 
-    it("should create friend", async () => {
+    it("should create", async () => {
       //GIVEN
       const me = { uid, name: "Bob" };
       const myFriend = { uid: new ObjectId().toHexString(), name: "Kevin" };
@@ -163,6 +163,7 @@ describe("FriendsController", () => {
         "uid",
         "name",
       ]);
+      expect(createUserMock).toHaveBeenCalledWith(me, myFriend, 100);
       expect(addToInboxMock).toBeCalledWith(
         myFriend.uid,
         [
@@ -236,7 +237,7 @@ describe("FriendsController", () => {
     });
   });
 
-  describe("delete friend", () => {
+  describe("delete friend request", () => {
     const deleteByIdMock = vi.spyOn(FriendsDal, "deleteById");
 
     beforeEach(() => {
@@ -266,14 +267,14 @@ describe("FriendsController", () => {
     });
   });
 
-  describe("update friend", () => {
+  describe("update friend request", () => {
     const updateStatusMock = vi.spyOn(FriendsDal, "updateStatus");
 
     beforeEach(() => {
       updateStatusMock.mockReset();
     });
 
-    it("should update friend", async () => {
+    it("should accept", async () => {
       //WHEN
       await mockApp
         .patch("/friends/requests/1")
@@ -283,6 +284,17 @@ describe("FriendsController", () => {
 
       //THEN
       expect(updateStatusMock).toHaveBeenCalledWith(uid, "1", "accepted");
+    });
+    it("should block", async () => {
+      //WHEN
+      await mockApp
+        .patch("/friends/requests/1")
+        .send({ status: "blocked" })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(updateStatusMock).toHaveBeenCalledWith(uid, "1", "blocked");
     });
 
     it("should fail for invalid status", async () => {
@@ -319,7 +331,7 @@ describe("FriendsController", () => {
 
 async function enableFriendsEndpoints(enabled: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {
-    users: { friends: { enabled } },
+    friends: { enabled },
   });
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(

@@ -78,7 +78,6 @@ export const BASE_CONFIGURATION: Configuration = {
     premium: {
       enabled: false,
     },
-    friends: { enabled: false },
   },
   rateLimiting: {
     badAuthentication: {
@@ -104,6 +103,7 @@ export const BASE_CONFIGURATION: Configuration = {
       xpRewardBrackets: [],
     },
   },
+  friends: { enabled: false, maxFriendsPerUser: 100 },
 };
 
 type BaseSchema = {
@@ -296,16 +296,6 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
         premium: {
           type: "object",
           label: "Premium",
-          fields: {
-            enabled: {
-              type: "boolean",
-              label: "Enabled",
-            },
-          },
-        },
-        friends: {
-          type: "object",
-          label: "Friends",
           fields: {
             enabled: {
               type: "boolean",
@@ -611,6 +601,17 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
               },
             },
           },
+        },
+      },
+    },
+    friends: {
+      type: "object",
+      label: "Friends",
+      fields: {
+        enabled: { type: "boolean", label: "Enabled" },
+        maxFriendsPerUser: {
+          type: "number",
+          label: "Max Friends per user",
         },
       },
     },

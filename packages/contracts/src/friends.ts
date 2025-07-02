@@ -80,7 +80,9 @@ export const friendsContract = c.router(
       responses: {
         200: CreateFriendRequestResponseSchema,
         404: MonkeyResponseSchema.describe("FriendUid unknown"),
-        409: MonkeyResponseSchema.describe("Duplicate friend"),
+        409: MonkeyResponseSchema.describe(
+          "Duplicate friend or max friends reached"
+        ),
       },
       metadata: meta({
         rateLimit: "friendRequestsCreate",
@@ -121,7 +123,7 @@ export const friendsContract = c.router(
     metadata: meta({
       openApiTags: "friends",
       requireConfiguration: {
-        path: "users.friends.enabled",
+        path: "friends.enabled",
         invalidMessage: "Friends are not available at this time.",
       },
     }),
