@@ -733,7 +733,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       ) {
         const fallbackLanguage =
           languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
-        UpdateConfig.setLanguage(fallbackLanguage, true);
+        UpdateConfig.setLanguage(fallbackLanguage);
         Notifications.add(
           `Language direction conflict: switched to ${fallbackLanguage} for consistency.`,
           0,
