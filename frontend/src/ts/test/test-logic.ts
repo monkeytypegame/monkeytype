@@ -472,12 +472,9 @@ export async function init(): Promise<void | null> {
       }
     });
 
-    const loadedLanguages = (await Promise.all(languagePromises)).filter(
-      (lang) => lang !== null
-    );
-    const anySupportsLazyMode = loadedLanguages.some(
-      (lang) => !lang.noLazyMode
-    );
+    const anySupportsLazyMode = (await Promise.all(languagePromises))
+      .filter((lang) => lang !== null)
+      .some((lang) => !lang.noLazyMode);
 
     if (Config.lazyMode && !anySupportsLazyMode) {
       rememberLazyMode = true;
