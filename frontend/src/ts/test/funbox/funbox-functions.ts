@@ -28,19 +28,12 @@ import {
   Layout,
 } from "@monkeytype/contracts/schemas/configs";
 import { Language } from "@monkeytype/contracts/schemas/languages";
-
-// type for polyglot funbox results
-export type PolyglotResult = {
-  wordset: Wordset;
-  allRightToLeft: boolean;
-  allLigatures: boolean;
-  wordLazyModeSupport?: Map<string, boolean>; // track lazy mode support for each word
-};
+import type { LanguageObject } from "../../utils/json-data";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
-  withWords?: (words?: string[]) => Promise<Wordset | PolyglotResult>;
+  withWords?: (words?: string[]) => Promise<Wordset | PolyglotWordset>;
   alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
   applyGlobalCSS?: () => void;
@@ -161,6 +154,38 @@ class PseudolangWordGenerator extends Wordset {
       word += nextChar;
     }
     return word;
+  }
+}
+
+type LanguageProperties = Pick<
+  LanguageObject,
+  "noLazyMode" | "ligatures" | "rightToLeft"
+>;
+
+export class PolyglotWordset extends Wordset {
+  private wordsWithLanguage: Map<string, Language>;
+  public languageProperties: Map<Language, LanguageProperties>;
+  public wordLazyModeSupport: Map<string, boolean>;
+
+  constructor(
+    wordsWithLanguage: Map<string, Language>,
+    languageProperties: Map<Language, LanguageProperties>,
+    wordLazyModeSupport: Map<string, boolean>
+  ) {
+    // use the keys as the words array for the base Wordset
+    super(Array.from(wordsWithLanguage.keys()));
+    this.wordsWithLanguage = wordsWithLanguage;
+    this.languageProperties = languageProperties;
+    this.wordLazyModeSupport = wordLazyModeSupport;
+  }
+
+  // getter for all words
+  get allWords(): string[] {
+    return Array.from(this.wordsWithLanguage.keys());
+  }
+
+  getLanguageForWord(word: string): Language | undefined {
+    return this.wordsWithLanguage.get(word);
   }
 }
 
@@ -663,12 +688,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             `Failed to load language: ${language}. It will be ignored.`,
             0
           );
-          return null; // Return null for failed languages
+          return null;
         })
       );
 
       const languages = (await Promise.all(promises)).filter(
-        (lang) => lang !== null
+        (lang): lang is LanguageObject => lang !== null
       );
 
       if (languages.length === 0) {
@@ -681,7 +706,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
 
       if (languages.length === 1) {
-        const lang = languages[0] as JSONData.LanguageObject;
+        const lang = languages[0] as LanguageObject;
         UpdateConfig.setLanguage(lang.name, true);
         UpdateConfig.toggleFunbox("polyglot", true);
         Notifications.add(
@@ -696,30 +721,43 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         throw new WordGenError("");
       }
 
-      // create wordset and track word origins
-      const wordSet: string[] = [];
+      // build maps for the PolyglotWordset
+      const wordsWithLanguage = new Map<string, Language>();
+      const languageProperties = new Map<Language, LanguageProperties>();
       const wordLazyModeSupport = new Map<string, boolean>();
-
       for (const lang of languages) {
+        languageProperties.set(lang.name, {
+          noLazyMode: lang.noLazyMode,
+          ligatures: lang.ligatures,
+          rightToLeft: lang.rightToLeft,
+        });
         const supportsLazyMode = !lang.noLazyMode;
         for (const word of lang.words) {
-          wordSet.push(word);
+          wordsWithLanguage.set(word, lang.name);
           wordLazyModeSupport.set(word, supportsLazyMode);
         }
       }
-
-      Arrays.shuffle(wordSet);
-
-      // compute RTL and ligature info
-      const allRightToLeft = languages.some((lang) => lang.rightToLeft);
-      const allLigatures = languages.some((lang) => lang.ligatures);
-
-      return {
-        wordset: new Wordset(wordSet),
-        allRightToLeft,
-        allLigatures,
-        wordLazyModeSupport,
-      };
+      // shuffle words
+      const shuffledWords = Array.from(wordsWithLanguage.keys());
+      Arrays.shuffle(shuffledWords);
+      // rebuild maps in shuffled order
+      const shuffledWordsWithLanguage = new Map<string, Language>();
+      const shuffledWordLazyModeSupport = new Map<string, boolean>();
+      for (const word of shuffledWords) {
+        const langValue = wordsWithLanguage.get(word);
+        if (langValue !== undefined) {
+          shuffledWordsWithLanguage.set(word, langValue);
+        }
+        const lazyModeValue = wordLazyModeSupport.get(word);
+        if (lazyModeValue !== undefined) {
+          shuffledWordLazyModeSupport.set(word, lazyModeValue);
+        }
+      }
+      return new PolyglotWordset(
+        shuffledWordsWithLanguage,
+        languageProperties,
+        shuffledWordLazyModeSupport
+      );
     },
   },
 };

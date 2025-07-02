@@ -24,7 +24,7 @@ import {
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
 import * as Loader from "../elements/loader";
-import { PolyglotResult } from "./funbox/funbox-functions";
+import { PolyglotWordset } from "./funbox/funbox-functions";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -604,14 +604,8 @@ let previousRandomQuote: QuoteWithTextSplit | null = null;
 export async function generateWords(
   language: LanguageObject
 ): Promise<GenerateWordsReturn> {
-  function isPolyglotResult(obj: unknown): obj is PolyglotResult {
-    return (
-      obj !== null &&
-      typeof obj === "object" &&
-      "wordset" in obj &&
-      "allRightToLeft" in obj &&
-      "allLigatures" in obj
-    );
+  function isPolyglotWordset(obj: unknown): obj is PolyglotWordset {
+    return obj instanceof PolyglotWordset;
   }
   if (!TestState.isRepeated) {
     previousGetNextWordReturns = [];
@@ -662,14 +656,17 @@ export async function generateWords(
   if (funbox) {
     const result = await funbox.functions.withWords(wordList);
     // handle polyglot result (returns object with wordset + metadata)
-    if (isPolyglotResult(result)) {
-      currentWordset = result.wordset;
-      ret.allLigatures = result.allLigatures;
+    if (isPolyglotWordset(result)) {
+      currentWordset = result;
+      // set allLigatures if any language in languageProperties has ligatures true
+      ret.allLigatures = Array.from(result.languageProperties.values()).some(
+        (props) => !!props.ligatures
+      );
       polyglotWordLazyModeSupport = result.wordLazyModeSupport ?? null;
     } else if (result instanceof Wordset) {
       currentWordset = result;
     } else {
-      throw new Error("withWords did not return a Wordset or PolyglotResult");
+      throw new Error("withWords did not return a Wordset or PolyglotWordset");
     }
   } else {
     currentWordset = await withWords(wordList);
