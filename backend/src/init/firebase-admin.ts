@@ -16,6 +16,8 @@ export function init(): void {
       Logger.warning(
         "Firebase service account key not found! Continuing in dev mode, but authentication will throw errors."
       );
+    } else if (process.env["BYPASS_FIREBASE"] === "true") {
+      Logger.warning("BYPASS_FIREBASE is enabled! Running without firebase.");
     } else {
       throw new MonkeyError(
         500,
