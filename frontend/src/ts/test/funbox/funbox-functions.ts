@@ -735,17 +735,20 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
         UpdateConfig.setLanguage(fallbackLanguage, true);
         Notifications.add(
-          `Language direction conflict, switched to ${fallbackLanguage} for consistency.`,
+          `Language direction conflict: switched to ${fallbackLanguage} for consistency.`,
           0,
           { duration: 5 }
         );
         throw new WordGenError("");
       }
 
-      // build maps for the PolyglotWordset
-      const wordsWithLanguage = new Map<string, Language>();
+      // build array of {word, language, supportsLazyMode}
+      const wordEntries: {
+        word: string;
+        language: Language;
+        supportsLazyMode: boolean;
+      }[] = [];
       const languageProperties = new Map<Language, LanguageProperties>();
-      const wordLazyModeSupport = new Map<string, boolean>();
       for (const lang of languages) {
         languageProperties.set(lang.name, {
           noLazyMode: lang.noLazyMode,
@@ -754,30 +757,22 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         });
         const supportsLazyMode = !lang.noLazyMode;
         for (const word of lang.words) {
-          wordsWithLanguage.set(word, lang.name);
-          wordLazyModeSupport.set(word, supportsLazyMode);
+          wordEntries.push({ word, language: lang.name, supportsLazyMode });
         }
       }
-      // shuffle words
-      const shuffledWords = Array.from(wordsWithLanguage.keys());
-      Arrays.shuffle(shuffledWords);
-      // rebuild maps in shuffled order
-      const shuffledWordsWithLanguage = new Map<string, Language>();
-      const shuffledWordLazyModeSupport = new Map<string, boolean>();
-      for (const word of shuffledWords) {
-        const langValue = wordsWithLanguage.get(word);
-        if (langValue !== undefined) {
-          shuffledWordsWithLanguage.set(word, langValue);
-        }
-        const lazyModeValue = wordLazyModeSupport.get(word);
-        if (lazyModeValue !== undefined) {
-          shuffledWordLazyModeSupport.set(word, lazyModeValue);
-        }
+      // shuffle the array
+      Arrays.shuffle(wordEntries);
+      // build the maps from the shuffled array
+      const wordsWithLanguage = new Map<string, Language>();
+      const wordLazyModeSupport = new Map<string, boolean>();
+      for (const entry of wordEntries) {
+        wordsWithLanguage.set(entry.word, entry.language);
+        wordLazyModeSupport.set(entry.word, entry.supportsLazyMode);
       }
       return new PolyglotWordset(
-        shuffledWordsWithLanguage,
+        wordsWithLanguage,
         languageProperties,
-        shuffledWordLazyModeSupport
+        wordLazyModeSupport
       );
     },
   },
