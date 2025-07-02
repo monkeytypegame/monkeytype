@@ -44,7 +44,7 @@ export default class Page<T> {
 
   public beforeHide: () => Promise<void>;
   public afterHide: () => Promise<void>;
-  public beforeShow: (options: Options<T>) => Promise<void>;
+  protected _beforeShow: (options: Options<T>) => Promise<void>;
   public afterShow: () => Promise<void>;
 
   constructor(props: PageProperties<T>) {
@@ -54,36 +54,41 @@ export default class Page<T> {
     this.pathname = props.path;
     this.beforeHide = props.beforeHide ?? empty;
     this.afterHide = props.afterHide ?? empty;
-    this.beforeShow = props.beforeShow ?? empty;
+    this._beforeShow = props.beforeShow ?? empty;
     this.afterShow = props.afterShow ?? empty;
+  }
+
+  public async beforeShow(options: Options<T>): Promise<void> {
+    await this._beforeShow?.(options);
   }
 }
 
+type OptionsWithUrlParams<T, U extends UrlParamsSchema> = Options<T> & {
+  urlParams?: z.infer<U>;
+};
+
 type UrlParamsSchema = z.ZodObject<Record<string, z.ZodTypeAny>>;
-type PagePropertiesWithUrlParams<
-  T,
-  U extends UrlParamsSchema
-> = PageProperties<T> & {
-  urlParams: {
-    schema: U;
-    onUrlParamUpdate?: (params: z.infer<U> | null) => void;
-  };
+type PagePropertiesWithUrlParams<T, U extends UrlParamsSchema> = Omit<
+  PageProperties<T>,
+  "beforeShow"
+> & {
+  urlParamsSchema: U;
+  beforeShow?: (options: OptionsWithUrlParams<T, U>) => Promise<void>;
 };
 
 export class PageWithUrlParams<T, U extends UrlParamsSchema> extends Page<T> {
   private urlSchema: U;
-  private onUrlParamUpdate?: (params: z.infer<U> | null) => void;
+  protected override _beforeShow: (
+    options: OptionsWithUrlParams<T, U>
+  ) => Promise<void>;
 
   constructor(props: PagePropertiesWithUrlParams<T, U>) {
     super(props);
-    this.urlSchema = props.urlParams.schema;
-    this.onUrlParamUpdate = props.urlParams.onUrlParamUpdate;
+    this.urlSchema = props.urlParamsSchema;
+    this._beforeShow = props.beforeShow ?? empty;
   }
 
-  public readUrlParams(): void {
-    if (this.onUrlParamUpdate === undefined) {
-      return;
-    }
+  private readUrlParams(): z.infer<U> | undefined {
     const urlParams = new URLSearchParams(window.location.search);
 
     const parsed = parseUrlSearchParams({
@@ -92,12 +97,11 @@ export class PageWithUrlParams<T, U extends UrlParamsSchema> extends Page<T> {
     });
 
     if (!parsed.success) {
-      this.onUrlParamUpdate?.(null);
-      return;
+      return undefined;
     }
-
-    this.onUrlParamUpdate?.(parsed.data);
+    return parsed.data;
   }
+
   public setUrlParams(params: z.infer<U>): void {
     const urlParams = serializeUrlSearchParams({
       schema: this.urlSchema,
@@ -105,5 +109,10 @@ export class PageWithUrlParams<T, U extends UrlParamsSchema> extends Page<T> {
     });
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     window.history.replaceState({}, "", newUrl);
+  }
+
+  public override async beforeShow(options: Options<T>): Promise<void> {
+    const urlParams = this.readUrlParams();
+    await this._beforeShow?.({ ...options, urlParams: urlParams });
   }
 }
