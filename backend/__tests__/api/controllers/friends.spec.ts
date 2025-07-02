@@ -58,13 +58,11 @@ describe("FriendsController", () => {
       getFriendsMock.mockResolvedValue([]);
 
       //WHEN
-      const { body } = await mockApp
+      await mockApp
         .get("/friends/requests")
         .query({ status: "accepted" })
-        .set("Authorization", `Bearer ${uid}`);
-      //.expect(200);
-
-      console.log(body);
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
 
       //THEN
       expect(getFriendsMock).toHaveBeenCalledWith(uid, ["accepted"]);
@@ -109,16 +107,12 @@ describe("FriendsController", () => {
   describe("create friend request", () => {
     const getUserByNameMock = vi.spyOn(UserDal, "getUserByName");
     const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
-    const addToInboxMock = vi.spyOn(UserDal, "addToInbox");
     const createUserMock = vi.spyOn(FriendsDal, "create");
 
     beforeEach(() => {
-      [
-        getUserByNameMock,
-        getPartialUserMock,
-        addToInboxMock,
-        createUserMock,
-      ].forEach((it) => it.mockReset());
+      [getUserByNameMock, getPartialUserMock, createUserMock].forEach((it) =>
+        it.mockReset()
+      );
     });
 
     it("should create", async () => {
@@ -164,16 +158,6 @@ describe("FriendsController", () => {
         "name",
       ]);
       expect(createUserMock).toHaveBeenCalledWith(me, myFriend, 100);
-      expect(addToInboxMock).toBeCalledWith(
-        myFriend.uid,
-        [
-          expect.objectContaining({
-            body: "Bob wants to be your friend. You can accept/deny this request in [FRIEND_SETTINGS]",
-            subject: "Friend request",
-          }),
-        ],
-        expect.anything()
-      );
     });
 
     it("should fail if user and friend are the same", async () => {

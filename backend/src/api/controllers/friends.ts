@@ -8,12 +8,10 @@ import {
 } from "@monkeytype/contracts/friends";
 import { MonkeyRequest } from "../types";
 import { MonkeyResponse } from "../../utils/monkey-response";
-
 import * as FriendsDal from "../../dal/friends";
 import * as UserDal from "../../dal/user";
 import { replaceObjectId, replaceObjectIds } from "../../utils/misc";
 import MonkeyError from "../../utils/error";
-import { buildMonkeyMail } from "../../utils/monkey-mail";
 import { omit } from "lodash";
 import { FriendRequest } from "@monkeytype/contracts/schemas/friends";
 
@@ -51,17 +49,6 @@ export async function createRequest(
       await FriendsDal.create(initiator, friend, maxFriendsPerUser)
     ),
     "key"
-  );
-
-  //notify user
-  const mail = buildMonkeyMail({
-    subject: "Friend request",
-    body: `${initiator.name} wants to be your friend. You can accept/deny this request in [FRIEND_SETTINGS]`,
-  });
-  await UserDal.addToInbox(
-    friend.uid,
-    [mail],
-    req.ctx.configuration.users.inbox
   );
 
   return new MonkeyResponse("Friend created", result);
