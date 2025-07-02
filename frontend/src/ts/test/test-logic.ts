@@ -69,6 +69,7 @@ import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
+  getActiveFunboxNames,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
@@ -455,8 +456,11 @@ export async function init(): Promise<void | null> {
     }
   }
 
+  const usingPolyglot = getActiveFunboxNames().includes("polyglot");
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
-  if (Config.lazyMode && !allowLazyMode) {
+  if (Config.lazyMode && usingPolyglot) {
+    UpdateConfig.setLazyMode(true, true);
+  } else if (Config.lazyMode && !allowLazyMode) {
     rememberLazyMode = true;
     Notifications.add("This language does not support lazy mode.", 0, {
       important: true,
