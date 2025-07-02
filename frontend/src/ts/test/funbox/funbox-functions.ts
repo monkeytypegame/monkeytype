@@ -723,18 +723,13 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
 
       // direction conflict check
-      const allRightToLeft = languages.every((lang) => lang.rightToLeft)
-        ? true
-        : languages.every((lang) => !lang.rightToLeft)
-        ? false
-        : undefined;
+      const allRightToLeft = languages.every((lang) => lang.rightToLeft);
+      const allLeftToRight = languages.every((lang) => !lang.rightToLeft);
       const mainLanguage = await JSONData.getLanguage(Config.language);
       const mainLanguageIsRTL = mainLanguage?.rightToLeft ?? false;
-      const polyglotIsRTL = allRightToLeft === true;
-      const polyglotIsLTR = allRightToLeft === false;
       if (
-        (mainLanguageIsRTL && polyglotIsLTR) ||
-        (!mainLanguageIsRTL && polyglotIsRTL)
+        (mainLanguageIsRTL && allLeftToRight) ||
+        (!mainLanguageIsRTL && allRightToLeft)
       ) {
         const fallbackLanguage =
           languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
