@@ -1,17 +1,21 @@
 import { z } from "zod";
 import { IdSchema } from "./util";
 
-export const FriendStatusSchema = z.enum(["pending", "accepted", "rejected"]);
-export type FriendStatus = z.infer<typeof FriendStatusSchema>;
+export const FriendRequestStatusSchema = z.enum([
+  "pending",
+  "accepted",
+  "blocked",
+]);
+export type FriendRequestStatus = z.infer<typeof FriendRequestStatusSchema>;
 
-export const FriendSchema = z.object({
+export const FriendRequestSchema = z.object({
   _id: IdSchema,
   initiatorUid: IdSchema,
   initiatorName: z.string(),
   friendUid: IdSchema,
   friendName: z.string(),
   addedAt: z.number().int().nonnegative(),
-  status: FriendStatusSchema,
+  status: FriendRequestStatusSchema,
 });
 
-export type Friend = z.infer<typeof FriendSchema>;
+export type FriendRequest = z.infer<typeof FriendRequestSchema>;

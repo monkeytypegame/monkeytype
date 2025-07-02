@@ -34,9 +34,9 @@ describe("FriendsDal", () => {
         initiatorUid: uid,
         status: "pending",
       });
-      const initRejected = await createFriend({
+      const initBlocked = await createFriend({
         initiatorUid: uid,
-        status: "rejected",
+        status: "blocked",
       });
 
       const friendAccepted = await createFriend({
@@ -51,12 +51,12 @@ describe("FriendsDal", () => {
       const _decoy = await createFriend({ status: "accepted" });
 
       //WHEN
-      const nonPending = await FriendsDal.get(uid, ["accepted", "rejected"]);
+      const nonPending = await FriendsDal.get(uid, ["accepted", "blocked"]);
 
       //THEN
       expect(nonPending).toStrictEqual([
         initAccepted,
-        initRejected,
+        initBlocked,
         friendAccepted,
       ]);
     });

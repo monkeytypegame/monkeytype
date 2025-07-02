@@ -6,16 +6,16 @@ import * as FriendsController from "../controllers/friends";
 
 const s = initServer();
 export default s.router(friendsContract, {
-  get: {
-    handler: async (r) => callController(FriendsController.get)(r),
+  getRequests: {
+    handler: async (r) => callController(FriendsController.getRequests)(r),
   },
-  create: {
-    handler: async (r) => callController(FriendsController.create)(r),
+  createRequest: {
+    handler: async (r) => callController(FriendsController.createRequest)(r),
   },
-  delete: {
-    handler: async (r) => callController(FriendsController.deleteFriend)(r),
+  deleteRequest: {
+    handler: async (r) => callController(FriendsController.deleteRequest)(r),
   },
-  update: {
-    handler: async (r) => callController(FriendsController.update)(r),
+  updateRequest: {
+    handler: async (r) => callController(FriendsController.updateRequest)(r),
   },
 });

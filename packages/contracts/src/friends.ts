@@ -5,97 +5,113 @@ import {
   MonkeyResponseSchema,
   responseWithData,
 } from "./schemas/api";
-import { FriendSchema, FriendStatusSchema } from "./schemas/friends";
+import {
+  FriendRequestSchema,
+  FriendRequestStatusSchema,
+} from "./schemas/friends";
 import { z } from "zod";
 import { IdSchema } from "./schemas/util";
 
 const c = initContract();
 
-export const GetFriendsResponseSchema = responseWithData(z.array(FriendSchema));
-export type GetFriendsResponse = z.infer<typeof GetFriendsResponseSchema>;
+export const GetFriendRequestsResponseSchema = responseWithData(
+  z.array(FriendRequestSchema)
+);
+export type GetFriendRequestsResponse = z.infer<
+  typeof GetFriendRequestsResponseSchema
+>;
 
-export const GetFriendsQuerySchema = z.object({
+export const GetFriendRequestsQuerySchema = z.object({
   status: z
-    .array(FriendStatusSchema)
-    .or(FriendStatusSchema.transform((it) => [it]))
+    .array(FriendRequestStatusSchema)
+    .or(FriendRequestStatusSchema.transform((it) => [it]))
     .optional(),
 });
-export type GetFriendsQuery = z.infer<typeof GetFriendsQuerySchema>;
+export type GetFriendRequestsQuery = z.infer<
+  typeof GetFriendRequestsQuerySchema
+>;
 
-export const CreateFriendRequestSchema = FriendSchema.pick({
+export const CreateFriendRequestRequestSchema = FriendRequestSchema.pick({
   friendName: true,
 });
-export type CreateFriendRequest = z.infer<typeof CreateFriendRequestSchema>;
+export type CreateFriendRequestRequest = z.infer<
+  typeof CreateFriendRequestRequestSchema
+>;
 
-export const CreateFriendResponseSchema = responseWithData(FriendSchema);
-export type CreateFriendResponse = z.infer<typeof CreateFriendResponseSchema>;
+export const CreateFriendRequestResponseSchema =
+  responseWithData(FriendRequestSchema);
+export type CreateFriendRequestResponse = z.infer<
+  typeof CreateFriendRequestResponseSchema
+>;
 
-export const FriendIdPathParamsSchema = z.object({
+export const IdPathParamsSchema = z.object({
   id: IdSchema,
 });
-export type FriendIdPathParams = z.infer<typeof FriendIdPathParamsSchema>;
+export type IdPathParams = z.infer<typeof IdPathParamsSchema>;
 
-export const UpdateFriendsRequestSchema = z.object({
-  status: FriendStatusSchema.exclude(["pending"]),
+export const UpdateFriendRequestsRequestSchema = z.object({
+  status: FriendRequestStatusSchema.exclude(["pending"]),
 });
-export type UpdateFriendsRequest = z.infer<typeof UpdateFriendsRequestSchema>;
+export type UpdateFriendRequestsRequest = z.infer<
+  typeof UpdateFriendRequestsRequestSchema
+>;
 
 export const friendsContract = c.router(
   {
-    get: {
-      summary: "Get friends",
-      description: "Get friends of the current user",
+    getRequests: {
+      summary: "get friend requests",
+      description: "Get friend requests of the current user",
       method: "GET",
-      path: "",
-      query: GetFriendsQuerySchema.strict(),
+      path: "/requests",
+      query: GetFriendRequestsQuerySchema.strict(),
       responses: {
-        200: GetFriendsResponseSchema,
+        200: GetFriendRequestsResponseSchema,
       },
       metadata: meta({
-        rateLimit: "friendsGet",
+        rateLimit: "friendRequestsGet",
       }),
     },
-    create: {
-      summary: "Create friend",
+    createRequest: {
+      summary: "create friend request",
       description: "Request a user to become a friend",
       method: "POST",
-      path: "",
-      body: CreateFriendRequestSchema.strict(),
+      path: "/requests",
+      body: CreateFriendRequestRequestSchema.strict(),
       responses: {
-        200: CreateFriendResponseSchema,
+        200: CreateFriendRequestResponseSchema,
         404: MonkeyResponseSchema.describe("FriendUid unknown"),
         409: MonkeyResponseSchema.describe("Duplicate friend"),
       },
       metadata: meta({
-        rateLimit: "friendsCreate",
+        rateLimit: "friendRequestsCreate",
       }),
     },
-    delete: {
-      summary: "Delete friend",
-      description: "Remove a friend",
+    deleteRequest: {
+      summary: "delete friend request",
+      description: "Delete a friend request",
       method: "DELETE",
-      path: "/:id",
-      pathParams: FriendIdPathParamsSchema.strict(),
+      path: "/requests/:id",
+      pathParams: IdPathParamsSchema.strict(),
       body: c.noBody(),
       responses: {
         200: MonkeyResponseSchema,
       },
       metadata: meta({
-        rateLimit: "friendsDelete",
+        rateLimit: "friendRequestsDelete",
       }),
     },
-    update: {
-      summary: "Update friend",
-      description: "Update a friends status",
+    updateRequest: {
+      summary: "update friend request",
+      description: "Update a friend request status",
       method: "PATCH",
-      path: "/:id",
-      pathParams: FriendIdPathParamsSchema.strict(),
-      body: UpdateFriendsRequestSchema.strict(),
+      path: "/requests/:id",
+      pathParams: IdPathParamsSchema.strict(),
+      body: UpdateFriendRequestsRequestSchema.strict(),
       responses: {
         200: MonkeyResponseSchema,
       },
       metadata: meta({
-        rateLimit: "friendsUpdate",
+        rateLimit: "friendRequestsUpdate",
       }),
     },
   },

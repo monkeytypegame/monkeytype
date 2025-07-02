@@ -362,22 +362,22 @@ export const limits = {
     max: 1,
   },
 
-  friendsGet: {
+  friendRequestsGet: {
     window: "hour",
     max: 60,
   },
 
-  friendsCreate: {
+  friendRequestsCreate: {
     window: "hour",
     max: 60,
   },
 
-  friendsDelete: {
+  friendRequestsDelete: {
     window: "hour",
     max: 60,
   },
 
-  friendsUpdate: {
+  friendRequestsUpdate: {
     window: "hour",
     max: 60,
   },

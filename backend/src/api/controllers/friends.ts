@@ -1,10 +1,10 @@
 import {
-  CreateFriendRequest,
-  CreateFriendResponse,
-  FriendIdPathParams,
-  GetFriendsQuery,
-  GetFriendsResponse,
-  UpdateFriendsRequest,
+  CreateFriendRequestRequest,
+  CreateFriendRequestResponse,
+  GetFriendRequestsQuery,
+  GetFriendRequestsResponse,
+  IdPathParams,
+  UpdateFriendRequestsRequest,
 } from "@monkeytype/contracts/friends";
 import { MonkeyRequest } from "../types";
 import { MonkeyResponse } from "../../utils/monkey-response";
@@ -13,14 +13,13 @@ import * as FriendsDal from "../../dal/friends";
 import * as UserDal from "../../dal/user";
 import { replaceObjectId, replaceObjectIds } from "../../utils/misc";
 import MonkeyError from "../../utils/error";
-
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import { Friend } from "@monkeytype/contracts/schemas/friends";
 import { omit } from "lodash";
+import { FriendRequest } from "@monkeytype/contracts/schemas/friends";
 
-export async function get(
-  req: MonkeyRequest<GetFriendsQuery>
-): Promise<GetFriendsResponse> {
+export async function getRequests(
+  req: MonkeyRequest<GetFriendRequestsQuery>
+): Promise<GetFriendRequestsResponse> {
   const { uid } = req.ctx.decodedToken;
   const status = req.query.status;
 
@@ -29,9 +28,9 @@ export async function get(
   return new MonkeyResponse("Friends retrieved", replaceObjectIds(results));
 }
 
-export async function create(
-  req: MonkeyRequest<undefined, CreateFriendRequest>
-): Promise<CreateFriendResponse> {
+export async function createRequest(
+  req: MonkeyRequest<undefined, CreateFriendRequestRequest>
+): Promise<CreateFriendRequestResponse> {
   const { uid } = req.ctx.decodedToken;
   const friendName = req.body.friendName;
 
@@ -46,7 +45,7 @@ export async function create(
     "name",
   ]);
 
-  const result: Friend = omit(
+  const result: FriendRequest = omit(
     replaceObjectId(await FriendsDal.create(initiator, friend)),
     "key"
   );
@@ -65,8 +64,8 @@ export async function create(
   return new MonkeyResponse("Friend created", result);
 }
 
-export async function deleteFriend(
-  req: MonkeyRequest<undefined, undefined, FriendIdPathParams>
+export async function deleteRequest(
+  req: MonkeyRequest<undefined, undefined, IdPathParams>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { id } = req.params;
@@ -76,8 +75,8 @@ export async function deleteFriend(
   return new MonkeyResponse("Friend deleted", null);
 }
 
-export async function update(
-  req: MonkeyRequest<undefined, UpdateFriendsRequest, FriendIdPathParams>
+export async function updateRequest(
+  req: MonkeyRequest<undefined, UpdateFriendRequestsRequest, IdPathParams>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { id } = req.params;

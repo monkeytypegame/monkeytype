@@ -44,7 +44,7 @@ describe("FriendsController", () => {
 
       //WHEN
       const { body } = await mockApp
-        .get("/friends")
+        .get("/friends/requests")
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
@@ -59,7 +59,7 @@ describe("FriendsController", () => {
 
       //WHEN
       const { body } = await mockApp
-        .get("/friends")
+        .get("/friends/requests")
         .query({ status: "accepted" })
         .set("Authorization", `Bearer ${uid}`);
       //.expect(200);
@@ -75,29 +75,26 @@ describe("FriendsController", () => {
 
       //WHEN
       await mockApp
-        .get("/friends")
-        .query({ status: ["accepted", "rejected"] })
+        .get("/friends/requests")
+        .query({ status: ["accepted", "blocked"] })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
-      expect(getFriendsMock).toHaveBeenCalledWith(uid, [
-        "accepted",
-        "rejected",
-      ]);
+      expect(getFriendsMock).toHaveBeenCalledWith(uid, ["accepted", "blocked"]);
     });
 
     it("should fail if friends endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
-        mockApp.get("/friends").set("Authorization", `Bearer ${uid}`)
+        mockApp.get("/friends/requests").set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should fail without authentication", async () => {
-      await mockApp.get("/friends").expect(401);
+      await mockApp.get("/friends/requests").expect(401);
     });
     it("should fail for unknown query parameter", async () => {
       const { body } = await mockApp
-        .get("/friends")
+        .get("/friends/requests")
         .query({ extra: "yes" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
@@ -145,7 +142,7 @@ describe("FriendsController", () => {
 
       //WHEN
       const { body } = await mockApp
-        .post("/friends")
+        .post("/friends/requests")
         .send({ friendName: "Kevin" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
@@ -187,7 +184,7 @@ describe("FriendsController", () => {
 
       //WHEN
       const { body } = await mockApp
-        .post("/friends")
+        .post("/friends/requests")
         .send({ friendName: "Bob" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(400);
@@ -199,7 +196,7 @@ describe("FriendsController", () => {
     it("should fail without mandatory properties", async () => {
       //WHEN
       const { body } = await mockApp
-        .post("/friends")
+        .post("/friends/requests")
         .send({})
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
@@ -213,7 +210,7 @@ describe("FriendsController", () => {
     it("should fail with extra properties", async () => {
       //WHEN
       const { body } = await mockApp
-        .post("/friends")
+        .post("/friends/requests")
         .send({ friendName: "1", extra: "value" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
@@ -228,14 +225,14 @@ describe("FriendsController", () => {
     it("should fail if friends endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
         mockApp
-          .post("/friends")
+          .post("/friends/requests")
           .send({ friendName: "1" })
           .set("Authorization", `Bearer ${uid}`)
       );
     });
 
     it("should fail without authentication", async () => {
-      await mockApp.post("/friends").expect(401);
+      await mockApp.post("/friends/requests").expect(401);
     });
   });
 
@@ -249,7 +246,7 @@ describe("FriendsController", () => {
     it("should delete by id", async () => {
       //WHEN
       await mockApp
-        .delete("/friends/1")
+        .delete("/friends/requests/1")
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
@@ -258,12 +255,14 @@ describe("FriendsController", () => {
     });
     it("should fail if friends endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
-        mockApp.delete("/friends/1").set("Authorization", `Bearer ${uid}`)
+        mockApp
+          .delete("/friends/requests/1")
+          .set("Authorization", `Bearer ${uid}`)
       );
     });
 
     it("should fail without authentication", async () => {
-      await mockApp.delete("/friends/1").expect(401);
+      await mockApp.delete("/friends/requests/1").expect(401);
     });
   });
 
@@ -277,7 +276,7 @@ describe("FriendsController", () => {
     it("should update friend", async () => {
       //WHEN
       await mockApp
-        .patch("/friends/1")
+        .patch("/friends/requests/1")
         .send({ status: "accepted" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
@@ -288,7 +287,7 @@ describe("FriendsController", () => {
 
     it("should fail for invalid status", async () => {
       const { body } = await mockApp
-        .patch("/friends/1")
+        .patch("/friends/requests/1")
         .send({ status: "invalid" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
@@ -296,14 +295,14 @@ describe("FriendsController", () => {
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          `"status" Invalid enum value. Expected 'accepted' | 'rejected', received 'invalid'`,
+          `"status" Invalid enum value. Expected 'accepted' | 'blocked', received 'invalid'`,
         ],
       });
     });
     it("should fail if friends endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
         mockApp
-          .patch("/friends/1")
+          .patch("/friends/requests/1")
           .send({ status: "accepted" })
           .set("Authorization", `Bearer ${uid}`)
       );
@@ -311,7 +310,7 @@ describe("FriendsController", () => {
 
     it("should fail without authentication", async () => {
       await mockApp
-        .patch("/friends/1")
+        .patch("/friends/requests/1")
         .send({ status: "accepted" })
         .expect(401);
     });

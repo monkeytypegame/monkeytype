@@ -1,11 +1,14 @@
 import { Collection, Filter, ObjectId } from "mongodb";
 import * as db from "../init/db";
-import { Friend, FriendStatus } from "@monkeytype/contracts/schemas/friends";
+import {
+  FriendRequest,
+  FriendRequestStatus,
+} from "@monkeytype/contracts/schemas/friends";
 import MonkeyError from "../utils/error";
 import { WithObjectId } from "../utils/misc";
 
 export type DBFriend = WithObjectId<
-  Friend & {
+  FriendRequest & {
     key: string; //sorted uid
   }
 >;
@@ -16,7 +19,7 @@ export const getCollection = (): Collection<DBFriend> =>
 
 export async function get(
   uid: string,
-  status?: FriendStatus[]
+  status?: FriendRequestStatus[]
 ): Promise<DBFriend[]> {
   let filter: Filter<DBFriend> = {
     $or: [{ initiatorUid: uid }, { friendUid: uid }],
@@ -67,7 +70,7 @@ export async function create(
 export async function updateStatus(
   friendUid: string,
   id: string,
-  status: FriendStatus
+  status: FriendRequestStatus
 ): Promise<void> {
   const updateResult = await getCollection().updateOne(
     {
