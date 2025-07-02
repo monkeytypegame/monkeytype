@@ -163,6 +163,7 @@ type LanguageProperties = Pick<
 >;
 
 export class PolyglotWordset extends Wordset {
+  public override isPolyglot = true;
   private wordsWithLanguage: Map<string, Language>;
   public languageProperties: Map<Language, LanguageProperties>;
   public wordLazyModeSupport: Map<string, boolean>;
