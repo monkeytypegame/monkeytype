@@ -381,18 +381,23 @@ async function applyBritishEnglishToWord(
 }
 
 function applyLazyModeToWord(word: string, language: LanguageObject): string {
-  // in polyglot mode, check the lazy mode support for the specific word
-  if (polyglotWordLazyModeSupport && polyglotWordLazyModeSupport.has(word)) {
-    const supportsLazyMode = polyglotWordLazyModeSupport.get(word);
-    if (supportsLazyMode && Config.lazyMode) {
-      word = LazyMode.replaceAccents(word, language.additionalAccents);
-    }
-  } else {
-    // normal mode - use the current language's settings
-    const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
+  // if currentWordset is a PolyglotWordset, use the word's actual language for lazy mode
+  if (currentWordset && currentWordset instanceof PolyglotWordset) {
+    const langName = currentWordset.wordsWithLanguage.get(word);
+    const langProps = langName
+      ? currentWordset.languageProperties.get(langName)
+      : undefined;
+    const allowLazyMode =
+      (langProps && !langProps.noLazyMode) || Config.mode === "custom";
     if (Config.lazyMode && allowLazyMode) {
       word = LazyMode.replaceAccents(word, language.additionalAccents);
     }
+    return word;
+  }
+  // normal mode - use the current language's settings
+  const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
+  if (Config.lazyMode && allowLazyMode) {
+    word = LazyMode.replaceAccents(word, language.additionalAccents);
   }
   return word;
 }
@@ -587,7 +592,6 @@ async function getQuoteWordList(
 
 let currentWordset: Wordset | null = null;
 let currentLanguage: LanguageObject | null = null;
-let polyglotWordLazyModeSupport: Map<string, boolean> | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
 type GenerateWordsReturn = {
@@ -613,7 +617,6 @@ export async function generateWords(
   sectionIndex = 0;
   sectionHistory = [];
   currentLanguage = language;
-  polyglotWordLazyModeSupport = null; // reset polyglot word lazy mode support
   const ret: GenerateWordsReturn = {
     words: [],
     sectionIndexes: [],
@@ -653,14 +656,13 @@ export async function generateWords(
   if (funbox) {
     const result = await funbox.functions.withWords(wordList);
     // handle result from withWords: PolyglotWordset if isPolyglot, otherwise Wordset
-    if (result.isPolyglot) {
-      const polyglotResult = result as PolyglotWordset;
+    if (result instanceof PolyglotWordset) {
+      const polyglotResult = result;
       currentWordset = polyglotResult;
       // set allLigatures if any language in languageProperties has ligatures true
       ret.allLigatures = Array.from(
         polyglotResult.languageProperties.values()
       ).some((props) => !!props.ligatures);
-      polyglotWordLazyModeSupport = polyglotResult.wordLazyModeSupport ?? null;
     } else {
       currentWordset = result;
     }
