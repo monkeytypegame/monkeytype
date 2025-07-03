@@ -28,7 +28,7 @@ import {
   Layout,
 } from "@monkeytype/contracts/schemas/configs";
 import { Language } from "@monkeytype/contracts/schemas/languages";
-import type { LanguageObject } from "../../utils/json-data";
+import type { LanguageObject, LanguageProperties } from "../../utils/json-data";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -156,11 +156,6 @@ class PseudolangWordGenerator extends Wordset {
     return word;
   }
 }
-
-type LanguageProperties = Pick<
-  LanguageObject,
-  "noLazyMode" | "ligatures" | "rightToLeft"
->;
 
 export class PolyglotWordset extends Wordset {
   public override isPolyglot = true;

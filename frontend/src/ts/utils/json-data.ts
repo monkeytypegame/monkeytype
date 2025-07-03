@@ -104,6 +104,12 @@ export type LanguageObject = {
   originalPunctuation?: boolean;
 };
 
+// used for polyglot wordset language-specific properties
+export type LanguageProperties = Pick<
+  LanguageObject,
+  "noLazyMode" | "ligatures" | "rightToLeft"
+>;
+
 let currentLanguage: LanguageObject;
 
 /**
