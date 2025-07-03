@@ -700,6 +700,26 @@ async function decrementActiveIndex(): Promise<void> {
   await updateActiveCommand();
 }
 
+function showWarning(message: string): void {
+  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
+  const warningTextEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".warning .text");
+  if (warningEl === null || warningTextEl === null) {
+    throw new Error("Commandline warning element not found");
+  }
+  warningEl.classList.remove("hidden");
+  warningTextEl.textContent = message;
+}
+
+function hideWarning(): void {
+  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
+  if (warningEl === null) {
+    throw new Error("Commandline warning element not found");
+  }
+  warningEl.classList.add("hidden");
+}
+
 const modal = new AnimatedModal({
   dialogId: "commandLine",
   customEscapeHandler: (): void => {

@@ -30,6 +30,21 @@
       }
     }
 
+    .warning {
+      background: var(--sub-alt-color);
+      padding: 1em 0;
+      font-size: 0.5em;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      .icon {
+        color: var(--error-color);
+        margin: 0 1.33rem;
+      }
+      .text {
+        color: var(--error-color);
+      }
+    }
+
     .suggestions {
       display: block;
       @extend .ffscroll;
