@@ -726,29 +726,22 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         throw new WordGenError("");
       }
 
-      // build array of {word, language}
-      const wordEntries: {
-        word: string;
-        language: Language;
-      }[] = [];
-      const languageProperties = new Map<Language, LanguageProperties>();
-      for (const lang of languages) {
-        languageProperties.set(lang.name, {
-          noLazyMode: lang.noLazyMode,
-          ligatures: lang.ligatures,
-          rightToLeft: lang.rightToLeft,
-        });
-        for (const word of lang.words) {
-          wordEntries.push({ word, language: lang.name });
-        }
-      }
-      // shuffle the array
-      Arrays.shuffle(wordEntries);
-      // build the map from the shuffled array
-      const wordsWithLanguage = new Map<string, Language>();
-      for (const entry of wordEntries) {
-        wordsWithLanguage.set(entry.word, entry.language);
-      }
+      // build languageProperties and wordsWithLanguage using functional style
+      const languageProperties = new Map(
+        languages.map((lang) => [
+          lang.name,
+          {
+            noLazyMode: lang.noLazyMode,
+            ligatures: lang.ligatures,
+            rightToLeft: lang.rightToLeft,
+          },
+        ])
+      );
+
+      const wordsWithLanguage = new Map(
+        languages.flatMap((lang) => lang.words.map((word) => [word, lang.name]))
+      );
+
       return new PolyglotWordset(wordsWithLanguage, languageProperties);
     },
   },
