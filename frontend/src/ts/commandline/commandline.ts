@@ -194,6 +194,7 @@ function hide(clearModalChain = false): void {
 }
 
 async function goBackOrHide(): Promise<void> {
+  hideWarning();
   if (mode === "input") {
     mode = "search";
     inputModeParams = {
@@ -810,27 +811,58 @@ const modal = new AnimatedModal({
       }
     });
 
+    function updateValidationResult(): void {
+      if (
+        inputModeParams.validation?.status === "failed" &&
+        inputModeParams.validation.errorMessage !== undefined
+      ) {
+        showWarning(inputModeParams.validation.errorMessage);
+      } else {
+        hideWarning();
+      }
+    }
+
     const debouceIsValid = debounce(
-      1000,
+      100,
       async (
         checkValue: unknown,
-        isValid: (value: unknown) => Promise<true | string>,
+        validation: CommandWithValidation<unknown>["validation"],
         inputModeParams: InputModeParams
       ) => {
-        const result = await isValid(checkValue);
+        if (validation.schema !== undefined) {
+          const schemaResult = validation.schema.safeParse(checkValue);
 
-        if (result === true) {
-          inputModeParams.validation = { status: "success" };
-        } else {
-          inputModeParams.validation = {
-            status: "failed",
-            errorMessage: result,
-          };
+          if (schemaResult.success) {
+            inputModeParams.validation = { status: "success" };
+          } else {
+            inputModeParams.validation = {
+              status: "failed",
+              errorMessage: schemaResult.error.errors
+                .map((err) => err.message)
+                .join(", "),
+            };
+            updateValidationResult();
+            return;
+          }
         }
 
-        console.log("### validation result is ", inputModeParams.validation);
+        if (validation.isValid !== undefined) {
+          const result = await validation.isValid(checkValue);
+
+          if (result === true) {
+            inputModeParams.validation = { status: "success" };
+          } else {
+            inputModeParams.validation = {
+              status: "failed",
+              errorMessage: result,
+            };
+          }
+
+          updateValidationResult();
+        }
       }
     );
+
     input.addEventListener("keyup", async (e) => {
       let currentValue: unknown = (e.target as HTMLInputElement).value;
 
@@ -848,33 +880,9 @@ const modal = new AnimatedModal({
           currentValue = command.valueConvert(currentValue as string);
         }
 
-        let failed = false;
-        if (command.validation.schema !== undefined) {
-          const schemaResult =
-            command.validation.schema.safeParse(currentValue);
+        inputModeParams.validation = { status: "checking" };
 
-          if (schemaResult.success) {
-            inputModeParams.validation = { status: "success" };
-          } else {
-            inputModeParams.validation = {
-              status: "failed",
-              errorMessage: schemaResult.error.errors
-                .map((err) => err.message)
-                .join(", "),
-            };
-            failed = true;
-          }
-        }
-
-        if (!failed && command.validation.isValid !== undefined) {
-          inputModeParams.validation = { status: "checking" };
-          void debouceIsValid(
-            currentValue,
-            command.validation.isValid,
-            inputModeParams
-          );
-        }
-        console.log("### validation result is ", inputModeParams.validation);
+        void debouceIsValid(currentValue, command.validation, inputModeParams);
       }
     });
 
