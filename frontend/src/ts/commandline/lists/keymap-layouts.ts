@@ -6,7 +6,7 @@ import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
-  title: "Change keymap layout...",
+  title: "Keymap layout...",
   configKey: "keymapLayout",
   list: [
     {
