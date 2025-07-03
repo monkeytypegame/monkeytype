@@ -750,9 +750,3 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
 export function getFunboxFunctions(): Record<FunboxName, FunboxFunctions> {
   return list as Record<FunboxName, FunboxFunctions>;
 }
-
-export function isPolyglotWordset(
-  wordset: Wordset
-): wordset is PolyglotWordset {
-  return (wordset as PolyglotWordset).isPolyglot;
-}
