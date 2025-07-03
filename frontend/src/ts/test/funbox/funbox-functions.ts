@@ -734,6 +734,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             noLazyMode: lang.noLazyMode,
             ligatures: lang.ligatures,
             rightToLeft: lang.rightToLeft,
+            additionalAccents: lang.additionalAccents,
           },
         ])
       );

@@ -107,7 +107,7 @@ export type LanguageObject = {
 // used for polyglot wordset language-specific properties
 export type LanguageProperties = Pick<
   LanguageObject,
-  "noLazyMode" | "ligatures" | "rightToLeft"
+  "noLazyMode" | "ligatures" | "rightToLeft" | "additionalAccents"
 >;
 
 let currentLanguage: LanguageObject;

@@ -389,8 +389,8 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
       : undefined;
     const allowLazyMode =
       (langProps && !langProps.noLazyMode) || Config.mode === "custom";
-    if (Config.lazyMode && allowLazyMode) {
-      word = LazyMode.replaceAccents(word, language.additionalAccents);
+    if (Config.lazyMode && allowLazyMode && langProps) {
+      word = LazyMode.replaceAccents(word, langProps.additionalAccents);
     }
     return word;
   }
