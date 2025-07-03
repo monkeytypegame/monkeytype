@@ -129,7 +129,7 @@ export function rateLimitRequest<
         )
       );
     } else {
-      rateLimiter(req, res, next);
+      await rateLimiter(req, res, next);
     }
   };
 }
