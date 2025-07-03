@@ -4,12 +4,12 @@ import { z } from "zod";
 
 // this file is needed becauase otherwise it would produce a circular dependency
 
-export type CommandExecOptions<T> = {
-  input?: T;
+export type CommandExecOptions = {
+  input?: string;
   commandlineModal: AnimatedModal;
 };
 
-export type Command<T = string> = {
+export type Command = {
   id: string;
   display: string;
   singleListDisplay?: string;
@@ -28,7 +28,7 @@ export type Command<T = string> = {
   configKey?: keyof Config;
   configValue?: string | number | boolean | number[];
   configValueMode?: "include";
-  exec?: (options: CommandExecOptions<T>) => void;
+  exec?: (options: CommandExecOptions) => void;
   hover?: () => void;
   available?: () => boolean;
   active?: () => boolean;
