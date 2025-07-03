@@ -179,15 +179,6 @@ export class PolyglotWordset extends Wordset {
     this.languageProperties = languageProperties;
     this.wordLazyModeSupport = wordLazyModeSupport;
   }
-
-  // getter for all words
-  get allWords(): string[] {
-    return Array.from(this.wordsWithLanguage.keys());
-  }
-
-  getLanguageForWord(word: string): Language | undefined {
-    return this.wordsWithLanguage.get(word);
-  }
 }
 
 const list: Partial<Record<FunboxName, FunboxFunctions>> = {
