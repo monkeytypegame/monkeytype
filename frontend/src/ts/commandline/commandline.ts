@@ -10,7 +10,7 @@ import * as OutOfFocus from "../test/out-of-focus";
 import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
-import { Command, CommandsSubgroup } from "./types";
+import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
@@ -21,6 +21,10 @@ type InputModeParams = {
   placeholder: string | null;
   value: string | null;
   icon: string | null;
+  validation?: {
+    status: "checking" | "success" | "failed";
+    errorMessage?: string;
+  };
 };
 
 let activeIndex = 0;
@@ -541,6 +545,7 @@ function handleInputSubmit(): void {
   if (inputModeParams.command === null) {
     throw new Error("Can't handle input submit - command is null");
   }
+
   inputModeParams.command.exec?.({
     commandlineModal: modal,
     input: inputValue,
@@ -755,6 +760,74 @@ const modal = new AnimatedModal({
         e.preventDefault();
         e.stopPropagation();
         await goBackOrHide();
+      }
+    });
+
+    const debouceIsValid = debounce(
+      1000,
+      async (
+        checkValue: unknown,
+        isValid: (value: unknown) => Promise<true | string>,
+        inputModeParams: InputModeParams
+      ) => {
+        const result = await isValid(checkValue);
+
+        if (result === true) {
+          inputModeParams.validation = { status: "success" };
+        } else {
+          inputModeParams.validation = {
+            status: "failed",
+            errorMessage: result,
+          };
+        }
+
+        console.log("### validation result is ", inputModeParams.validation);
+      }
+    );
+    input.addEventListener("keyup", async (e) => {
+      let currentValue: unknown = (e.target as HTMLInputElement).value;
+
+      if (
+        inputModeParams !== null &&
+        inputModeParams.command !== null &&
+        "validation" in inputModeParams.command
+      ) {
+        delete inputModeParams.validation;
+
+        const command =
+          inputModeParams.command as CommandWithValidation<unknown>;
+
+        if (command.valueConvert) {
+          currentValue = command.valueConvert(currentValue as string);
+        }
+
+        let failed = false;
+        if (command.validation.schema !== undefined) {
+          const schemaResult =
+            command.validation.schema.safeParse(currentValue);
+
+          if (schemaResult.success) {
+            inputModeParams.validation = { status: "success" };
+          } else {
+            inputModeParams.validation = {
+              status: "failed",
+              errorMessage: schemaResult.error.errors
+                .map((err) => err.message)
+                .join(", "),
+            };
+            failed = true;
+          }
+        }
+
+        if (!failed && command.validation.isValid !== undefined) {
+          inputModeParams.validation = { status: "checking" };
+          void debouceIsValid(
+            currentValue,
+            command.validation.isValid,
+            inputModeParams
+          );
+        }
+        console.log("### validation result is ", inputModeParams.validation);
       }
     });
 
