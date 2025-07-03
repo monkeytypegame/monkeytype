@@ -165,7 +165,7 @@ export class PolyglotWordset extends Wordset {
     wordsWithLanguage: Map<string, Language>,
     languageProperties: Map<Language, LanguageProperties>
   ) {
-    // use the keys as the words array for the base Wordset
+    // build and shuffle the word array
     const wordArray = Array.from(wordsWithLanguage.keys());
     Arrays.shuffle(wordArray);
     super(wordArray);
@@ -726,7 +726,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         throw new WordGenError("");
       }
 
-      // build languageProperties and wordsWithLanguage using functional style
+      // build languageProperties
       const languageProperties = new Map(
         languages.map((lang) => [
           lang.name,
@@ -749,4 +749,10 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
 
 export function getFunboxFunctions(): Record<FunboxName, FunboxFunctions> {
   return list as Record<FunboxName, FunboxFunctions>;
+}
+
+export function isPolyglotWordset(
+  wordset: Wordset
+): wordset is PolyglotWordset {
+  return (wordset as PolyglotWordset).isPolyglot;
 }

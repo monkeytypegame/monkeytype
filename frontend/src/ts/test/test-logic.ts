@@ -464,12 +464,19 @@ export async function init(): Promise<void | null> {
 
     // load all selected polyglot languages to check their lazy mode support
     const languagePromises = polyglotLanguages.map(async (langName) => {
-      try {
-        const lang = await JSONData.getLanguage(langName);
-        return lang;
-      } catch {
-        return null;
+      const { data: lang, error } = await tryCatch(
+        JSONData.getLanguage(langName)
+      );
+      if (error) {
+        Notifications.add(
+          Misc.createErrorMessage(
+            error,
+            `Failed to load language: ${langName}`
+          ),
+          -1
+        );
       }
+      return lang;
     });
 
     const anySupportsLazyMode = (await Promise.all(languagePromises))
