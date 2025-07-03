@@ -438,7 +438,8 @@ export const ConfigSchema = z
   .strict();
 
 export type Config = z.infer<typeof ConfigSchema>;
-export type ConfigKey = keyof Config;
+export const ConfigKeySchema = ConfigSchema.keyof();
+export type ConfigKey = z.infer<typeof ConfigKeySchema>;
 export type ConfigValue = Config[keyof Config];
 
 export const PartialConfigSchema = ConfigSchema.partial();

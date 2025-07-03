@@ -111,3 +111,12 @@
     bottom: 0%;
   }
 }
+
+@keyframes flashBorder {
+  0% {
+    box-shadow: 0 0 0 0.2em var(--main-color);
+  }
+  100% {
+    box-shadow: 0 0 0 0.2em transparent;
+  }
+}
