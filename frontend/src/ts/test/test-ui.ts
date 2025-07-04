@@ -398,7 +398,6 @@ export function showWords(): void {
   $("#words").empty();
 
   if (Config.mode === "zen") {
-    setLigatures(true);
     appendEmptyWordElement();
   } else {
     let wordsHTML = "";
@@ -1187,7 +1186,7 @@ export function setRightToLeft(isEnabled: boolean): void {
 }
 
 export function setLigatures(isEnabled: boolean): void {
-  if (isEnabled) {
+  if (isEnabled || Config.mode === "custom" || Config.mode === "zen") {
     $("#words").addClass("withLigatures");
     $("#resultWordsHistory .words").addClass("withLigatures");
     $("#resultReplay .words").addClass("withLigatures");
