@@ -570,7 +570,10 @@ function handleInputSubmit(): void {
     throw new Error("Can't handle input submit - command is null");
   }
 
-  if (inputModeParams.validation?.status === "failed") {
+  if (inputModeParams.validation?.status === "checking") {
+    //validation ongoing, ignore the submit
+    return;
+  } else if (inputModeParams.validation?.status === "failed") {
     const cmdLine = $("#commandLine .modal");
     cmdLine.addClass("hasError");
     setTimeout(() => cmdLine.removeClass("hasError"), 500);
@@ -751,9 +754,7 @@ const debounceIsValid = debounce(
     if (validation.schema !== undefined) {
       const schemaResult = validation.schema.safeParse(checkValue);
 
-      if (schemaResult.success) {
-        inputModeParams.validation = { status: "success" };
-      } else {
+      if (!schemaResult.success) {
         inputModeParams.validation = {
           status: "failed",
           errorMessage: schemaResult.error.errors
@@ -778,6 +779,8 @@ const debounceIsValid = debounce(
       }
 
       updateValidationResult();
+    } else {
+      inputModeParams.validation = { status: "success" };
     }
   }
 );
