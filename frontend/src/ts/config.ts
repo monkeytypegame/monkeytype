@@ -1992,6 +1992,26 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
   return true;
 }
 
+export function setPlayTimeWarning(
+  value: ConfigSchemas.PlayTimeWarning,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid(
+      "play time warning",
+      value,
+      ConfigSchemas.PlayTimeWarningSchema
+    )
+  )
+    return false;
+
+  config.playTimeWarning = value;
+  saveToLocalStorage("playTimeWarning", nosave);
+  ConfigEvent.dispatch("playTimeWarning", config.playTimeWarning);
+
+  return true;
+}
+
 export async function apply(
   configToApply: Config | Partial<Config>
 ): Promise<void> {
@@ -2098,6 +2118,7 @@ export async function apply(
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
     setTapeMargin(configObj.tapeMargin, true);
+    setPlayTimeWarning(configObj.playTimeWarning, true);
 
     ConfigEvent.dispatch(
       "configApplied",

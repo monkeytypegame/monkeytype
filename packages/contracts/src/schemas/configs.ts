@@ -343,6 +343,9 @@ export const CustomBackgroundSchema = z
   .or(z.literal(""));
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
+export const PlayTimeWarningSchema = z.enum(["off", "1", "3", "5", "10"]);
+export type PlayTimeWarning = z.infer<typeof PlayTimeWarningSchema>;
+
 export const ConfigSchema = z
   .object({
     theme: ThemeNameSchema,
@@ -434,6 +437,7 @@ export const ConfigSchema = z
     showAverage: ShowAverageSchema,
     maxLineWidth: MaxLineWidthSchema,
     customPolyglot: CustomPolyglotSchema,
+    playTimeWarning: PlayTimeWarningSchema,
   } satisfies Record<string, ZodSchema>)
   .strict();
 
@@ -549,6 +553,7 @@ export const ConfigGroupsLiteral = {
   showAverage: "hideElements",
   maxLineWidth: "appearance",
   customPolyglot: "behavior",
+  playTimeWarning: "sound",
 } as const satisfies Record<ConfigKey, ConfigGroupName>;
 
 export type ConfigGroups = typeof ConfigGroupsLiteral;
