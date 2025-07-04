@@ -683,23 +683,23 @@ export function promiseWithResolvers<T = void>(): {
  * calls will not run and only the latest one will be queued, any prior queued
  * calls are skipped. Once the running call finishes, the queued call runs.
  * @param fn the function to debounce
- * @param catchSkippedCalls if true, promises returned by skipped calls will be
- * resolved to null, otherwise will be rejected.
+ * @param options - `rejectSkippedCalls`: if false, promises returned by skipped
+ * calls will be resolved to null, otherwise will be rejected (defaults to true).
  * @returns debounced version of the original function. This debounced function
  * returns a promise that resolves to the original return value. Promises of skipped
- * calls will be rejected, (or resolved to null if `catchSkippedCalls` was true).
+ * calls will be rejected, (or resolved to null if `options.rejectSkippedCalls` was false).
  */
 export function debounceUntilResolved<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
-  catchSkippedCalls?: false
+  options?: { rejectSkippedCalls?: true }
 ): (...args: TArgs) => Promise<TResult>;
 export function debounceUntilResolved<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
-  catchSkippedCalls: true
+  options: { rejectSkippedCalls: false }
 ): (...args: TArgs) => Promise<TResult | null>;
 export function debounceUntilResolved<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
-  catchSkippedCalls?: boolean
+  { rejectSkippedCalls = true }: { rejectSkippedCalls?: boolean } = {}
 ): (...args: TArgs) => Promise<TResult | null> {
   let isLocked = false;
   let next: {
@@ -725,12 +725,12 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
     if (isLocked) {
       // drop previously queued call
       if (next) {
-        if (catchSkippedCalls) {
-          next.resolve(null);
-        } else {
+        if (rejectSkippedCalls) {
           next.reject(
             new Error("skipped call: call was superseded by a more recent one")
           );
+        } else {
+          next.resolve(null);
         }
       }
 

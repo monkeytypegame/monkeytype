@@ -55,7 +55,7 @@ const debouncedZipfCheck = debounce(250, async () => {
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
-  true
+  { rejectSkippedCalls: false }
 );
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
