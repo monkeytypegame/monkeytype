@@ -902,7 +902,7 @@ const modal = new AnimatedModal({
       }
     });
 
-    input.addEventListener("keyup", async (e) => {
+    input.addEventListener("input", async (e) => {
       let currentValue: unknown = (e.target as HTMLInputElement).value;
 
       if (
