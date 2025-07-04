@@ -739,7 +739,6 @@ const showCheckingIcon = debounce(200, async () => {
 
 function hideCheckingIcon(): void {
   console.log("hide checking icon");
-  //@ts-expect-error idk this isnt correctly typed
   showCheckingIcon.cancel({ upcomingOnly: true });
 
   const checkingiconEl = modal
@@ -921,8 +920,8 @@ const modal = new AnimatedModal({
 
         inputModeParams.validation = { status: "checking" };
 
-        void showCheckingIcon();
-        void debounceIsValid(currentValue, command.validation, inputModeParams);
+        showCheckingIcon();
+        debounceIsValid(currentValue, command.validation, inputModeParams);
       }
     });
 
