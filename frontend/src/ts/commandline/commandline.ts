@@ -808,6 +808,9 @@ const debounceIsValid = debounce(
     } else {
       inputModeParams.validation = { status: "success" };
     }
+  },
+  {
+    atBegin: true,
   }
 );
 
