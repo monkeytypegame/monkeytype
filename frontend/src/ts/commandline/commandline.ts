@@ -571,6 +571,9 @@ function handleInputSubmit(): void {
   }
 
   if (inputModeParams.validation?.status === "failed") {
+    const cmdLine = $("#commandLine .modal");
+    cmdLine.addClass("hasError");
+    setTimeout(() => cmdLine.removeClass("hasError"), 500);
     return;
   }
 
