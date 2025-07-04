@@ -773,10 +773,6 @@ function handleChar(
   if (char !== "\n") {
     void Caret.updatePosition();
   }
-
-  if (Config.mode === "zen") {
-    TestUI.setLigatures(true);
-  }
 }
 
 function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {

@@ -398,8 +398,10 @@ export function showWords(): void {
   $("#words").empty();
 
   if (Config.mode === "zen") {
+    setLigatures(true);
     appendEmptyWordElement();
   } else {
+    setLigatures(false);
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
       wordsHTML += getWordHTML(TestWords.words.get(i));
