@@ -1789,15 +1789,6 @@ export function setFontSize(
     return false;
   }
 
-  // i dont know why the above check is not enough
-  // some people are getting font size 15 when it should be converted to 1.5
-  // after converting from the string to float system
-
-  // keeping this in for now, if you want a big font go 14.9 or something
-  if (fontSize === 15) {
-    fontSize = 1.5;
-  }
-
   config.fontSize = fontSize;
 
   $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
