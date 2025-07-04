@@ -570,6 +570,10 @@ function handleInputSubmit(): void {
     throw new Error("Can't handle input submit - command is null");
   }
 
+  if (inputModeParams.validation?.status === "failed") {
+    return;
+  }
+
   inputModeParams.command.exec?.({
     commandlineModal: modal,
     input: inputValue,
