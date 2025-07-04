@@ -15,12 +15,12 @@ export async function getCharFromEvent(
 ): Promise<string | null> {
   function emulatedLayoutGetVariant(
     event: JQuery.KeyDownEvent | JQuery.KeyUpEvent,
-    keyVariants: string
+    keyVariants: string[]
   ): string | undefined {
     let isCapitalized = event.shiftKey;
     const altGrIndex = isAltGrPressed && keyVariants.length > 2 ? 2 : 0;
     const isNotPunctuation = !isPunctuationPattern.test(
-      keyVariants.slice(altGrIndex, altGrIndex + 2)
+      keyVariants.slice(altGrIndex, altGrIndex + 2).join()
     );
     if (capsState && isNotPunctuation) {
       isCapitalized = !event.shiftKey;
@@ -229,7 +229,7 @@ export async function getCharFromEvent(
   }
   const charVariant = emulatedLayoutGetVariant(
     event,
-    layoutMap[mapIndex] ?? ""
+    layoutMap[mapIndex] ?? []
   );
   if (charVariant !== undefined) {
     return charVariant;

@@ -10,7 +10,7 @@ const commands: Command[] = [
     icon: "fa-quote-right",
     alias: "quotes",
     subgroup: {
-      title: "Change quote length...",
+      title: "Quote length...",
       configKey: "quoteLength",
       list: [
         {
