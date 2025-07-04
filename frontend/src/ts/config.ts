@@ -1770,18 +1770,6 @@ export function setFontSize(
   if (fontSize < 0) {
     fontSize = 1;
   }
-  if (
-    typeof fontSize === "string" &&
-    ["1", "125", "15", "2", "3", "4"].includes(fontSize)
-  ) {
-    if (fontSize === "125") {
-      fontSize = 1.25;
-    } else if (fontSize === "15") {
-      fontSize = 1.5;
-    } else {
-      fontSize = parseInt(fontSize);
-    }
-  }
 
   if (
     !isConfigValueValid("font size", fontSize, ConfigSchemas.FontSizeSchema)
