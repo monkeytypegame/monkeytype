@@ -179,6 +179,7 @@ function hide(clearModalChain = false): void {
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
+      hideWarning();
       addCommandlineBackground();
       if (ActivePage.get() === "test") {
         const isWordsFocused = $("#wordsInput").is(":focus");
@@ -194,7 +195,6 @@ function hide(clearModalChain = false): void {
 }
 
 async function goBackOrHide(): Promise<void> {
-  hideWarning();
   if (mode === "input") {
     mode = "search";
     inputModeParams = {
@@ -207,6 +207,7 @@ async function goBackOrHide(): Promise<void> {
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
+    hideWarning();
     return;
   }
 
@@ -217,6 +218,7 @@ async function goBackOrHide(): Promise<void> {
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
+    hideWarning();
   } else {
     hide();
   }
