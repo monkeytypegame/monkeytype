@@ -829,7 +829,7 @@ const modal = new AnimatedModal({
     input.addEventListener(
       "input",
       debounce(50, async (e) => {
-        inputValue = (e.target as HTMLInputElement).value;
+        inputValue = ((e as InputEvent).target as HTMLInputElement).value;
         if (subgroupOverride === null) {
           if (Config.singleListCommandLine === "on") {
             usingSingleList = true;

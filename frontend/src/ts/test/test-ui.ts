@@ -135,7 +135,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     (eventKey === "language" || eventKey === "funbox") &&
     Config.funbox.includes("zipf")
   ) {
-    void debouncedZipfCheck();
+    debouncedZipfCheck();
   }
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
