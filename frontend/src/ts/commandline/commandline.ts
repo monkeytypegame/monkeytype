@@ -714,6 +714,7 @@ async function decrementActiveIndex(): Promise<void> {
 }
 
 function showWarning(message: string): void {
+  hideCheckingIcon();
   const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
   const warningTextEl = modal
     .getModal()
@@ -725,7 +726,33 @@ function showWarning(message: string): void {
   warningTextEl.textContent = message;
 }
 
+const showCheckingIcon = debounce(200, async () => {
+  console.log("show checking icon");
+  const checkingiconEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".checkingicon");
+  if (checkingiconEl === null) {
+    throw new Error("Commandline checking icon element not found");
+  }
+  checkingiconEl.classList.remove("hidden");
+});
+
+function hideCheckingIcon(): void {
+  console.log("hide checking icon");
+  //@ts-expect-error idk this isnt correctly typed
+  showCheckingIcon.cancel({ upcomingOnly: true });
+
+  const checkingiconEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".checkingicon");
+  if (checkingiconEl === null) {
+    throw new Error("Commandline checking icon element not found");
+  }
+  checkingiconEl.classList.add("hidden");
+}
+
 function hideWarning(): void {
+  hideCheckingIcon();
   const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
   if (warningEl === null) {
     throw new Error("Commandline warning element not found");
@@ -894,6 +921,7 @@ const modal = new AnimatedModal({
 
         inputModeParams.validation = { status: "checking" };
 
+        void showCheckingIcon();
         void debounceIsValid(currentValue, command.validation, inputModeParams);
       }
     });

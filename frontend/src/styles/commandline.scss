@@ -14,6 +14,16 @@
     .searchicon {
       color: var(--sub-color);
       margin: 1px 1rem 0 1rem;
+      grid-column: 1/2;
+      grid-row: 1/2;
+    }
+
+    .checkingicon {
+      color: var(--sub-color);
+      margin: 1px 1rem 0 1rem;
+      grid-column: 1/2;
+      grid-row: 1/2;
+      background-color: var(--bg-color);
     }
 
     input {
