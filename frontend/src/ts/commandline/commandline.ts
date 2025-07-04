@@ -774,11 +774,11 @@ const debounceIsValid = debounce(
   100,
   async (
     checkValue: unknown,
-    validation: CommandWithValidation<unknown>["validation"],
+    command: CommandWithValidation<unknown>,
     inputModeParams: InputModeParams
   ) => {
-    if (validation.schema !== undefined) {
-      const schemaResult = validation.schema.safeParse(checkValue);
+    if (command.validation.schema !== undefined) {
+      const schemaResult = command.validation.schema.safeParse(checkValue);
 
       if (!schemaResult.success) {
         inputModeParams.validation = {
@@ -792,8 +792,18 @@ const debounceIsValid = debounce(
       }
     }
 
-    if (validation.isValid !== undefined) {
-      const result = await validation.isValid(checkValue);
+    if (command.validation.isValid !== undefined) {
+      const result = await command.validation.isValid(checkValue);
+
+      const currentValue =
+        command.valueConvert !== undefined
+          ? command.valueConvert(inputValue)
+          : inputValue;
+
+      if (currentValue !== checkValue) {
+        //value has change in the meantime, discard result
+        return;
+      }
 
       if (result === true) {
         inputModeParams.validation = { status: "success" };
@@ -924,7 +934,7 @@ const modal = new AnimatedModal({
         inputModeParams.validation = { status: "checking" };
 
         showCheckingIcon();
-        debounceIsValid(currentValue, command.validation, inputModeParams);
+        debounceIsValid(currentValue, command, inputModeParams);
       }
     });
 
