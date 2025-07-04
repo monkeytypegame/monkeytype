@@ -61,13 +61,18 @@ async function joinOverlappingHints(
   let i = 0;
   for (const adjacentLetters of incorrectLtrIndices) {
     for (let j = 0; j < adjacentLetters.length - 1; j++) {
-      const block1El = hintElements[i] as HTMLElement;
-      const block2El = hintElements[i + 1] as HTMLElement;
+      const block1ElRaw = hintElements[i];
+      const block2ElRaw = hintElements[i + 1];
+      if (!block1ElRaw || !block2ElRaw) {
+        i++;
+        continue;
+      }
+      const block1El = block1ElRaw as HTMLElement;
+      const block2El = block2ElRaw as HTMLElement;
+
       const leftBlock = isLanguageRTL ? block2El : block1El;
       const rightBlock = isLanguageRTL ? block1El : block2El;
 
-      /** HintBlock.offsetLeft is at the center line of corresponding letters
-       * then "transform: translate(-50%)" aligns hints with letters */
       if (
         leftBlock.offsetLeft + leftBlock.offsetWidth / 2 >
         rightBlock.offsetLeft - rightBlock.offsetWidth / 2
@@ -83,11 +88,17 @@ async function joinOverlappingHints(
           block1Indices.slice(0, -1) + "," + block2Indices.slice(1);
 
         const letter1Index = adjacentLetters[j] ?? 0;
+        const letterElement = activeWordLetters[letter1Index] as
+          | HTMLElement
+          | undefined;
+        if (!letterElement) {
+          i++;
+          continue;
+        }
+
         const newLeft =
-          (activeWordLetters[letter1Index] as HTMLElement).offsetLeft +
-          (isLanguageRTL
-            ? (activeWordLetters[letter1Index] as HTMLElement).offsetWidth
-            : 0) +
+          letterElement.offsetLeft +
+          (isLanguageRTL ? letterElement.offsetWidth : 0) +
           (block2El.offsetLeft - block1El.offsetLeft);
         block1El.style.left = newLeft.toString() + "px";
 
