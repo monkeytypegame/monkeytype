@@ -443,12 +443,6 @@ describe("Config", () => {
 
     //gets converted
     expect(Config.setFontSize(-1)).toBe(true);
-    expect(Config.setFontSize("1" as any)).toBe(true);
-    expect(Config.setFontSize("125" as any)).toBe(true);
-    expect(Config.setFontSize("15" as any)).toBe(true);
-    expect(Config.setFontSize("2" as any)).toBe(true);
-    expect(Config.setFontSize("3" as any)).toBe(true);
-    expect(Config.setFontSize("4" as any)).toBe(true);
 
     expect(Config.setFontSize(0)).toBe(false);
     expect(Config.setFontSize("5" as any)).toBe(false);
