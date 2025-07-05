@@ -10,7 +10,7 @@ import * as OutOfFocus from "../test/out-of-focus";
 import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
-import { Command, CommandsSubgroup } from "./types";
+import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
@@ -21,6 +21,10 @@ type InputModeParams = {
   placeholder: string | null;
   value: string | null;
   icon: string | null;
+  validation?: {
+    status: "checking" | "success" | "failed";
+    errorMessage?: string;
+  };
 };
 
 let activeIndex = 0;
@@ -175,6 +179,7 @@ function hide(clearModalChain = false): void {
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
+      hideWarning();
       addCommandlineBackground();
       if (ActivePage.get() === "test") {
         const isWordsFocused = $("#wordsInput").is(":focus");
@@ -202,6 +207,7 @@ async function goBackOrHide(): Promise<void> {
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
+    hideWarning();
     return;
   }
 
@@ -212,6 +218,7 @@ async function goBackOrHide(): Promise<void> {
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
+    hideWarning();
   } else {
     hide();
   }
@@ -562,6 +569,17 @@ function handleInputSubmit(): void {
   if (inputModeParams.command === null) {
     throw new Error("Can't handle input submit - command is null");
   }
+
+  if (inputModeParams.validation?.status === "checking") {
+    //validation ongoing, ignore the submit
+    return;
+  } else if (inputModeParams.validation?.status === "failed") {
+    const cmdLine = $("#commandLine .modal");
+    cmdLine.addClass("hasError");
+    setTimeout(() => cmdLine.removeClass("hasError"), 500);
+    return;
+  }
+
   inputModeParams.command.exec?.({
     commandlineModal: modal,
     input: inputValue,
@@ -695,6 +713,116 @@ async function decrementActiveIndex(): Promise<void> {
   await updateActiveCommand();
 }
 
+function showWarning(message: string): void {
+  hideCheckingIcon();
+  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
+  const warningTextEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".warning .text");
+  if (warningEl === null || warningTextEl === null) {
+    throw new Error("Commandline warning element not found");
+  }
+  warningEl.classList.remove("hidden");
+  warningTextEl.textContent = message;
+}
+
+const showCheckingIcon = debounce(200, async () => {
+  console.log("show checking icon");
+  const checkingiconEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".checkingicon");
+  if (checkingiconEl === null) {
+    throw new Error("Commandline checking icon element not found");
+  }
+  checkingiconEl.classList.remove("hidden");
+});
+
+function hideCheckingIcon(): void {
+  console.log("hide checking icon");
+  showCheckingIcon.cancel({ upcomingOnly: true });
+
+  const checkingiconEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".checkingicon");
+  if (checkingiconEl === null) {
+    throw new Error("Commandline checking icon element not found");
+  }
+  checkingiconEl.classList.add("hidden");
+}
+
+function hideWarning(): void {
+  hideCheckingIcon();
+  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
+  if (warningEl === null) {
+    throw new Error("Commandline warning element not found");
+  }
+  warningEl.classList.add("hidden");
+}
+
+function updateValidationResult(
+  validation: NonNullable<InputModeParams["validation"]>
+): void {
+  inputModeParams.validation = validation;
+  if (validation.status === "checking") {
+    showCheckingIcon();
+  } else if (
+    validation.status === "failed" &&
+    validation.errorMessage !== undefined
+  ) {
+    showWarning(validation.errorMessage);
+  } else {
+    hideWarning();
+  }
+}
+
+const debounceIsValid = debounce(
+  100,
+  async (
+    checkValue: unknown,
+    originalInput: string,
+    validation: CommandWithValidation<unknown>["validation"]
+  ) => {
+    updateValidationResult({ status: "checking" });
+
+    if (validation.schema !== undefined) {
+      const schemaResult = validation.schema.safeParse(checkValue);
+
+      if (!schemaResult.success) {
+        updateValidationResult({
+          status: "failed",
+          errorMessage: schemaResult.error.errors
+            .map((err) => err.message)
+            .join(", "),
+        });
+        return;
+      }
+    }
+
+    if (validation.isValid === undefined) {
+      updateValidationResult({ status: "success" });
+      return;
+    }
+
+    const result = await validation.isValid(checkValue);
+    if (originalInput !== inputValue) {
+      //value has change in the meantime, discard result
+      return;
+    }
+
+    if (result === true) {
+      updateValidationResult({ status: "success" });
+    } else {
+      updateValidationResult({
+        status: "failed",
+        errorMessage: result,
+      });
+    }
+  },
+  {
+    atBegin: true,
+  }
+);
+
 const modal = new AnimatedModal({
   dialogId: "commandLine",
   customEscapeHandler: (): void => {
@@ -782,6 +910,26 @@ const modal = new AnimatedModal({
         e.preventDefault();
         e.stopPropagation();
         await goBackOrHide();
+      }
+    });
+
+    input.addEventListener("input", async (e) => {
+      const currentValue: string = (e.target as HTMLInputElement).value;
+      let checkValue: unknown = currentValue;
+
+      if (
+        inputModeParams !== null &&
+        inputModeParams.command !== null &&
+        "validation" in inputModeParams.command
+      ) {
+        const command =
+          inputModeParams.command as CommandWithValidation<unknown>;
+
+        if (command.valueConvert) {
+          checkValue = command.valueConvert(currentValue);
+        }
+
+        debounceIsValid(checkValue, currentValue, command.validation);
       }
     });
 
