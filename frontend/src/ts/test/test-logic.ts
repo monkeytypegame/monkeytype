@@ -69,6 +69,7 @@ import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
+  getActiveFunboxNames,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
@@ -456,14 +457,56 @@ export async function init(): Promise<void | null> {
   }
 
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
-  if (Config.lazyMode && !allowLazyMode) {
-    rememberLazyMode = true;
-    Notifications.add("This language does not support lazy mode.", 0, {
-      important: true,
+  // special handling for polyglot mode
+  if (getActiveFunboxNames().includes("polyglot")) {
+    // in polyglot mode, check if any of the selected languages support lazy mode
+    const polyglotLanguages = Config.customPolyglot;
+
+    // load all selected polyglot languages to check their lazy mode support
+    const languagePromises = polyglotLanguages.map(async (langName) => {
+      const { data: lang, error } = await tryCatch(
+        JSONData.getLanguage(langName)
+      );
+      if (error) {
+        Notifications.add(
+          Misc.createErrorMessage(
+            error,
+            `Failed to load language: ${langName}`
+          ),
+          -1
+        );
+      }
+      return lang;
     });
-    UpdateConfig.setLazyMode(false, true);
-  } else if (rememberLazyMode && !language.noLazyMode) {
-    UpdateConfig.setLazyMode(true, true);
+
+    const anySupportsLazyMode = (await Promise.all(languagePromises))
+      .filter((lang) => lang !== null)
+      .some((lang) => !lang.noLazyMode);
+
+    if (Config.lazyMode && !anySupportsLazyMode) {
+      rememberLazyMode = true;
+      Notifications.add(
+        "None of the selected polyglot languages support lazy mode.",
+        0,
+        {
+          important: true,
+        }
+      );
+      UpdateConfig.setLazyMode(false, true);
+    } else if (rememberLazyMode && anySupportsLazyMode) {
+      UpdateConfig.setLazyMode(true, true);
+    }
+  } else {
+    // normal mode - use the current language's settings
+    if (Config.lazyMode && !allowLazyMode) {
+      rememberLazyMode = true;
+      Notifications.add("This language does not support lazy mode.", 0, {
+        important: true,
+      });
+      UpdateConfig.setLazyMode(false, true);
+    } else if (rememberLazyMode && !language.noLazyMode) {
+      UpdateConfig.setLazyMode(true, true);
+    }
   }
 
   if (!Config.lazyMode && !language.noLazyMode) {
@@ -489,16 +532,19 @@ export async function init(): Promise<void | null> {
     currentQuote: TestWords.currentQuote,
   });
 
-  let generatedWords: string[];
-  let generatedSectionIndexes: number[];
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
+  let allRightToLeft: boolean | undefined = undefined;
+  let allLigatures: boolean | undefined = undefined;
+  let generatedWords: string[] = [];
+  let generatedSectionIndexes: number[] = [];
   try {
     const gen = await WordsGenerator.generateWords(language);
     generatedWords = gen.words;
     generatedSectionIndexes = gen.sectionIndexes;
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
+    ({ allRightToLeft, allLigatures } = gen);
   } catch (e) {
     Loader.hide();
     if (e instanceof WordGenError || e instanceof Error) {
@@ -555,8 +601,8 @@ export async function init(): Promise<void | null> {
     );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
-  TestUI.setRightToLeft(language.rightToLeft);
-  TestUI.setLigatures(language.ligatures ?? false);
+  TestUI.setRightToLeft(allRightToLeft ?? language.rightToLeft);
+  TestUI.setLigatures(allLigatures ?? language.ligatures ?? false);
   TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
   console.debug(
