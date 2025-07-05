@@ -61,13 +61,8 @@ async function joinOverlappingHints(
   let i = 0;
   for (const adjacentLetters of incorrectLtrIndices) {
     for (let j = 0; j < adjacentLetters.length - 1; j++) {
-      const block1El = hintElements[i] as HTMLElement | undefined;
-      const block2El = hintElements[i + 1] as HTMLElement | undefined;
-      if (!block1El || !block2El) {
-        i++;
-        continue;
-      }
-
+      const block1El = hintElements[i] as HTMLElement;
+      const block2El = hintElements[i + 1] as HTMLElement;
       const leftBlock = isLanguageRTL ? block2El : block1El;
       const rightBlock = isLanguageRTL ? block1El : block2El;
 
@@ -88,17 +83,11 @@ async function joinOverlappingHints(
           block1Indices.slice(0, -1) + "," + block2Indices.slice(1);
 
         const letter1Index = adjacentLetters[j] ?? 0;
-        const letterElement = activeWordLetters[letter1Index] as
-          | HTMLElement
-          | undefined;
-        if (!letterElement) {
-          i++;
-          continue;
-        }
-
         const newLeft =
-          letterElement.offsetLeft +
-          (isLanguageRTL ? letterElement.offsetWidth : 0) +
+          (activeWordLetters[letter1Index] as HTMLElement).offsetLeft +
+          (isLanguageRTL
+            ? (activeWordLetters[letter1Index] as HTMLElement).offsetWidth
+            : 0) +
           (block2El.offsetLeft - block1El.offsetLeft);
         block1El.style.left = newLeft.toString() + "px";
 
