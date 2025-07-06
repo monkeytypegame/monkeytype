@@ -214,6 +214,12 @@ export async function updatePosition(noAnim = false): Promise<void> {
     currentWordNodeList
   );
 
+  // in zen mode, use the input content to determine word direction
+  const currentWordForDirection =
+    Config.mode === "zen"
+      ? TestInput.input.current
+      : TestWords.words.getCurrent();
+
   const letterPosLeft = getTargetPositionLeft(
     fullWidthCaret,
     isLanguageRightToLeft,
@@ -222,7 +228,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     letterWidth,
     wordLen,
     inputLen,
-    TestWords.words.getCurrent()
+    currentWordForDirection
   );
   const newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
 
