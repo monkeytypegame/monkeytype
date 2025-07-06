@@ -1,5 +1,5 @@
 // Import the functions you need from the SDKs you need
-import { FirebaseApp, initializeApp } from "firebase/app";
+import { FirebaseApp, initializeApp, type FirebaseOptions } from "firebase/app";
 import { getAuth, Auth as AuthType, User } from "firebase/auth";
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
 // oxlint-disable ban-ts-comment
@@ -27,7 +27,7 @@ export function getAuthenticatedUser(): User {
 }
 
 try {
-  app = initializeApp(firebaseConfig);
+  app = initializeApp(firebaseConfig as unknown as FirebaseOptions);
   Auth = getAuth(app);
 } catch (e) {
   app = undefined;

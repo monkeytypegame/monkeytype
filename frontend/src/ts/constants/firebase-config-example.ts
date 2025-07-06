@@ -3,7 +3,9 @@
 // scroll down to Your apps > Web Apps (if it doesnt exist, create one) > SDK setup and configuration > select npm
 // your config should be visible there
 
-export const firebaseConfig = {
+import type { FirebaseOptions } from "firebase/app";
+
+export const firebaseConfig: FirebaseOptions = {
   apiKey: "",
   authDomain: "",
   databaseURL: "",
