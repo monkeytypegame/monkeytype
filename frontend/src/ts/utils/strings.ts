@@ -167,3 +167,30 @@ export function splitIntoCharacters(s: string): string[] {
 
   return result;
 }
+/**
+ * Detect if a word contains RTL (Right-to-Left) characters.
+ * This is for mixed language scenarios where individual words may have different directions.
+ * Uses a simple regex pattern for efficiency and reliability.
+ * @param word the word to check for RTL characters
+ * @returns true if the word contains RTL characters, false otherwise
+ *
+ * @example
+ * hasRTLCharacters("hello") // false
+ * hasRTLCharacters("مرحبا") // true (Arabic)
+ * hasRTLCharacters("שלום") // true (Hebrew)
+ * hasRTLCharacters("helloمرحبا") // true (mixed)
+ * hasRTLCharacters("123") // false
+ * hasRTLCharacters("") // false
+ */
+export function hasRTLCharacters(word: string): boolean {
+  if (!word || word.length === 0) {
+    return false;
+  }
+
+  // Simple regex pattern for common RTL scripts
+  // This covers Arabic, Farsi, Urdu, and other RTL scripts
+  const rtlPattern =
+    /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+
+  return rtlPattern.test(word);
+}
