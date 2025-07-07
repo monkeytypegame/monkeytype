@@ -434,7 +434,7 @@ export function getLimit(): number {
   // Set word limits for time mode to prevent WPM inflation on leaderboards
   // Prevents exploits in short leaderboard tests
   const timeModeLimits: Record<number, number> = {
-    // Provides sufficient words for (15s, 30s) test initially
+    // Provides sufficient words for (15s, 30s) test
     15: 25,
     30: 50,
   };
