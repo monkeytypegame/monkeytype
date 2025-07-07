@@ -85,7 +85,7 @@ describe("FriendsDal", () => {
           initiatorUid: first.friendUid,
           friendUid: uid,
         })
-      ).rejects.toThrow("Duplicate friend");
+      ).rejects.toThrow("Duplicate friend or blocked");
     });
 
     it("should create", async () => {
@@ -163,7 +163,7 @@ describe("FriendsDal", () => {
   });
 
   describe("deleteById", () => {
-    it("should delete", async () => {
+    it("should delete by initiator", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
       const first = await createFriend({
@@ -181,6 +181,27 @@ describe("FriendsDal", () => {
         [second]
       );
     });
+
+    it("should delete by friend", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const first = await createFriend({
+        friendUid: uid,
+      });
+      const second = await createFriend({
+        friendUid: uid,
+        status: "accepted",
+      });
+
+      //WHEN
+      await FriendsDal.deleteById(uid, first._id.toHexString());
+
+      //THEN
+      expect(
+        await FriendsDal.getRequests({ initiatorUid: second.initiatorUid })
+      ).toStrictEqual([second]);
+    });
+
     it("should fail if uid does not match", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
@@ -191,7 +212,21 @@ describe("FriendsDal", () => {
       //WHEN / THEN
       await expect(
         FriendsDal.deleteById("Bob", first._id.toHexString())
-      ).rejects.toThrow("Friend not found");
+      ).rejects.toThrow("Cannot be deleted");
+    });
+
+    it("should fail if friend deletes blocked", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const first = await createFriend({
+        friendUid: uid,
+        status: "blocked",
+      });
+
+      //WHEN / THEN
+      await expect(
+        FriendsDal.deleteById(uid, first._id.toHexString())
+      ).rejects.toThrow("Cannot be deleted");
     });
   });
 

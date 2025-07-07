@@ -86,7 +86,7 @@ export const friendsContract = c.router(
         200: CreateFriendRequestResponseSchema,
         404: MonkeyResponseSchema.describe("FriendUid unknown"),
         409: MonkeyResponseSchema.describe(
-          "Duplicate friend or max friends reached"
+          "Duplicate friend, blocked or max friends reached"
         ),
       },
       metadata: meta({

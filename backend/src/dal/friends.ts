@@ -78,7 +78,7 @@ export async function create(
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.name === "MongoServerError" && e.code === 11000) {
-      throw new MonkeyError(409, "Duplicate friend");
+      throw new MonkeyError(409, "Duplicate friend or blocked");
     }
 
     throw e;
@@ -121,12 +121,21 @@ export async function deleteById(
   id: string
 ): Promise<void> {
   const deletionResult = await getCollection().deleteOne({
-    _id: new ObjectId(id),
-    initiatorUid,
+    $and: [
+      {
+        _id: new ObjectId(id),
+      },
+      {
+        $or: [
+          { initiatorUid },
+          { status: { $in: ["accepted", "pending"] }, friendUid: initiatorUid },
+        ],
+      },
+    ],
   });
 
   if (deletionResult.deletedCount === 0) {
-    throw new MonkeyError(404, "Friend not found");
+    throw new MonkeyError(404, "Cannot be deleted");
   }
 }
 
