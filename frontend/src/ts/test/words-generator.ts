@@ -430,6 +430,18 @@ export function getLimit(): number {
     }
   }
 
+  // time
+  // Set word limits for time mode to prevent WPM inflation on leaderboards
+  // Prevents exploits in short leaderboard tests
+  const timeModeLimits: Record<number, number> = {
+    15: 25, // at max, wpm will be 100
+    30: 50, // at max, wpm will be 100
+  };
+
+  if (Config.mode === "time" && Config.time in timeModeLimits) {
+    limit = timeModeLimits[Config.time] ?? 100;
+  }
+
   //infinite words
   if (Config.mode === "words" && Config.words === 0) {
     limit = 100;
