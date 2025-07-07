@@ -1339,7 +1339,7 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
-export const page = new Page({
+export const page = new Page<undefined>({
   id: "account",
   element: $(".page.pageAccount"),
   path: "/account",

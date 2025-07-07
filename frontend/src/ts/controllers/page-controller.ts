@@ -12,6 +12,7 @@ import * as PageProfileSearch from "../pages/profile-search";
 import * as Page404 from "../pages/404";
 import * as PageLeaderboards from "../pages/leaderboards";
 import * as PageAccountSettings from "../pages/account-settings";
+import * as PageFriends from "../pages/friends";
 import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
@@ -78,6 +79,7 @@ export async function change(
       404: Page404.page,
       accountSettings: PageAccountSettings.page,
       leaderboards: PageLeaderboards.page,
+      friends: PageFriends.page,
     };
 
     const previousPage = pages[ActivePage.get()];
