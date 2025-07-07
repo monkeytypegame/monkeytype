@@ -6,10 +6,9 @@ import * as TestState from "../test/test-state";
 import * as TestWords from "./test-words";
 import { prefersReducedMotion } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
-import { splitIntoCharacters } from "../utils/strings";
+import { splitIntoCharacters, getWordDirection } from "../utils/strings";
 import { safeNumber } from "@monkeytype/util/numbers";
 import { subscribe } from "../observables/config-event";
-import * as Strings from "../utils/strings";
 
 export let caretAnimating = true;
 const caret = document.querySelector("#caret") as HTMLElement;
@@ -67,7 +66,7 @@ function getTargetPositionLeft(
   let result = 0;
 
   // use word-specific direction if available and different from language direction
-  const isWordRightToLeft = Strings.getWordDirection(
+  const isWordRightToLeft = getWordDirection(
     currentWord,
     isLanguageRightToLeft
   );

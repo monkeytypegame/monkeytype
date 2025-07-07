@@ -9,7 +9,7 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { convertRemToPixels } from "../utils/numbers";
 import { getActiveFunboxes } from "./funbox/list";
-import * as Strings from "../utils/strings";
+import { getWordDirection } from "../utils/strings";
 
 type Settings = {
   wpm: number;
@@ -58,7 +58,7 @@ async function resetCaretPosition(): Promise<void> {
   const currentWord = TestWords.words.get(settings?.currentWordIndex ?? 0);
 
   // use word-specific direction if available and different from language direction
-  const isWordRightToLeft = Strings.getWordDirection(
+  const isWordRightToLeft = getWordDirection(
     currentWord,
     isLanguageRightToLeft
   );
@@ -245,7 +245,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
       const currentWord = TestWords.words.get(settings.currentWordIndex);
 
       // use word-specific direction if available and different from language direction
-      const isWordRightToLeft = Strings.getWordDirection(
+      const isWordRightToLeft = getWordDirection(
         currentWord,
         isLanguageRightToLeft
       );
