@@ -9,7 +9,7 @@ const commands: Command[] = [
     alias: "words",
     icon: "fa-font",
     subgroup: {
-      title: "Change word count...",
+      title: "Words...",
       configKey: "words",
       list: [
         {
