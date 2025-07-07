@@ -2,6 +2,7 @@ import * as PageController from "./page-controller";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
 import { Auth, isAuthenticated } from "../firebase";
+import { get } from "../ape/server-configuration";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -133,6 +134,26 @@ const routes: Route[] = [
         params: {
           uidOrName: params["uidOrName"] as string,
         },
+        data: options.data,
+      });
+    },
+  },
+  {
+    path: "/friends",
+    load: (_params, options): void => {
+      if (!Auth) {
+        navigate("/");
+        return;
+      }
+      if (!isAuthenticated()) {
+        navigate("/friends");
+        return;
+      }
+
+      if (!get()?.friends.enabled) {
+        return;
+      }
+      void PageController.change("friends", {
         data: options.data,
       });
     },
