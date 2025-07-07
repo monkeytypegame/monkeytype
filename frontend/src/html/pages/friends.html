@@ -1,0 +1,92 @@
+<div class="page pageFriends hidden" id="pageFriends">
+  <div class="preloader hidden">
+    <div class="icon">
+      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+    </div>
+    <div class="barWrapper hidden">
+      <div class="bar">
+        <div class="fill"></div>
+      </div>
+      <div class="text">‎</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="request">
+      <div class="buttons">
+        <button
+          id="friendAdd"
+          class="button"
+          aria-label="add friend"
+          data-balloon-pos="right"
+        >
+          <i class="fas fa-user-plus fa-fw"></i>
+        </button>
+      </div>
+    </div>
+    <div class="pendingRequests">
+      <div class="bigtitle">
+        <div class="text">
+          Pending Friend Requests
+          <button
+            class="refresh"
+            aria-label="refresh"
+            data-balloon-pos="bottom"
+          >
+            <i class="fas fa-sync fa-fw"></i>
+          </button>
+        </div>
+      </div>
+      <div class="loading hidden">
+        <i class="fas fa-circle-notch fa-spin"></i>
+      </div>
+      <div class="error hidden">
+        <i class="fas fa-times"></i>
+        <p>Something went wrong</p>
+      </div>
+      <div class="nodata hidden">No pending friend requests :)</div>
+      <table>
+        <thead>
+          <tr>
+            <td>user</td>
+            <td>date</td>
+            <td>actions</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-id="id">
+            <td>Username</td>
+            <td class="small">3 days ago</td>
+            <td>
+              <button
+                class="accept"
+                aria-label="accept friend"
+                data-balloon-pos="bottom"
+              >
+                <i class="fas fa-user-check fa-fw"></i>
+              </button>
+            </td>
+            <td>
+              <button
+                class="reject"
+                aria-label="reject friend"
+                data-balloon-pos="bottom"
+              >
+                <i class="fas fa-user-times fa-fw"></i>
+              </button>
+            </td>
+            <td>
+              <button
+                class="block"
+                aria-label="block user from sending friend requests"
+                data-balloon-pos="bottom"
+              >
+                <i class="fas fa-user-slash fa-fw"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

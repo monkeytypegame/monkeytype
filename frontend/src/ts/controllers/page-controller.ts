@@ -9,6 +9,7 @@ import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as PageProfile from "../pages/profile";
 import * as PageProfileSearch from "../pages/profile-search";
+import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
 import * as PageLeaderboards from "../pages/leaderboards";
 import * as PageAccountSettings from "../pages/account-settings";
@@ -186,6 +187,7 @@ export async function change(
     login: PageLogin.page,
     profile: PageProfile.page,
     profileSearch: PageProfileSearch.page,
+    friends: Friends.page,
     404: Page404.page,
     accountSettings: PageAccountSettings.page,
     leaderboards: PageLeaderboards.page,
