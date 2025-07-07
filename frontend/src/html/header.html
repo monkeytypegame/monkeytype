@@ -175,6 +175,16 @@
             <i class="fas fa-fw fa-cog"></i>
             Account settings
           </a>
+          <!-- TODO: disable if configuration is not set for friends -->
+          <a
+            href="/friends"
+            class="button goToFriends"
+            onclick="this.blur();"
+            router-link
+          >
+            <i class="fas fa-fw fa-user-friends"></i>
+            Friends
+          </a>
           <button class="signOut" onclick="this.blur();">
             <i class="fas fa-fw fa-sign-out-alt"></i>
             Sign out
