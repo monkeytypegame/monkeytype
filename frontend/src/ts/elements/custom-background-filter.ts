@@ -146,7 +146,7 @@ $(".section[data-config-name='customBackgroundFilter'] .opacity input").on(
 $(".section[data-config-name='customBackgroundFilter'] input").on(
   "input",
   () => {
-    void debouncedSave();
+    debouncedSave();
   }
 );
 

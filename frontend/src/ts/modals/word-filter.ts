@@ -14,8 +14,8 @@ import { Language } from "@monkeytype/contracts/schemas/languages";
 
 type FilterPreset = {
   display: string;
-  getIncludeString: (layout: JSONData.Layout) => string[];
-  getExcludeString: (layout: JSONData.Layout) => string[];
+  getIncludeString: (layout: JSONData.Layout) => string[][];
+  getExcludeString: (layout: JSONData.Layout) => string[][];
 };
 
 const presets: Record<string, FilterPreset> = {
