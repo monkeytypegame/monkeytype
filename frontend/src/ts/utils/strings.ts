@@ -194,3 +194,12 @@ export function hasRTLCharacters(word: string): boolean {
 
   return rtlPattern.test(word);
 }
+
+export function getWordDirection(
+  word: string | undefined,
+  languageRTL: boolean
+): boolean {
+  return word !== undefined && word !== null && word.length > 0
+    ? hasRTLCharacters(word)
+    : languageRTL;
+}

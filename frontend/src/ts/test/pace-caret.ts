@@ -35,15 +35,6 @@ export function setLastTestWpm(wpm: number): void {
   }
 }
 
-function getWordDirection(
-  word: string | undefined,
-  languageRTL: boolean
-): boolean {
-  return word !== undefined && word !== null && word.length > 0
-    ? Strings.hasRTLCharacters(word)
-    : languageRTL;
-}
-
 async function resetCaretPosition(): Promise<void> {
   if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
   if (!$("#paceCaret").hasClass("hidden")) {
@@ -67,7 +58,10 @@ async function resetCaretPosition(): Promise<void> {
   const firstWord = TestWords.words.get(0);
 
   // use word-specific direction if available and different from language direction
-  const isWordRightToLeft = getWordDirection(firstWord, isLanguageRightToLeft);
+  const isWordRightToLeft = Strings.getWordDirection(
+    firstWord,
+    isLanguageRightToLeft
+  );
 
   caret.stop(true, true).animate(
     {
@@ -251,7 +245,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
       const currentWord = TestWords.words.get(settings.currentWordIndex);
 
       // use word-specific direction if available and different from language direction
-      const isWordRightToLeft = getWordDirection(
+      const isWordRightToLeft = Strings.getWordDirection(
         currentWord,
         isLanguageRightToLeft
       );

@@ -67,10 +67,10 @@ function getTargetPositionLeft(
   let result = 0;
 
   // use word-specific direction if available and different from language direction
-  const isWordRightToLeft =
-    currentWord !== undefined && currentWord !== null && currentWord.length > 0
-      ? Strings.hasRTLCharacters(currentWord)
-      : isLanguageRightToLeft;
+  const isWordRightToLeft = Strings.getWordDirection(
+    currentWord,
+    isLanguageRightToLeft
+  );
 
   if (Config.tapeMode === "off") {
     let positionOffsetToWord = 0;
