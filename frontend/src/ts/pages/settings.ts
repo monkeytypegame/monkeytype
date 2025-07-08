@@ -869,6 +869,9 @@ export async function update(): Promise<void> {
   }
 }
 function toggleSettingsGroup(groupName: string): void {
+  //The highlight is repeated/broken when toggling the group
+  handleHighlightSection(undefined);
+
   const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
   groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
   if (groupEl.hasClass("slideup")) {
