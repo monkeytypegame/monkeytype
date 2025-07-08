@@ -1,2 +1,35 @@
 .pageFriends {
+  .pendingRequests {
+    table {
+      border-spacing: 0;
+      border-collapse: collapse;
+      color: var(--text-color);
+
+      thead {
+        color: var(--sub-color);
+        font-size: 0.75rem;
+      }
+
+      tbody tr:nth-child(odd) td {
+        background: var(--sub-alt-color);
+      }
+
+      tbody td:nth-child(1) {
+        border-radius: var(--roundness) 0 0 var(--roundness);
+      }
+      tbody td:last-child {
+        border-radius: 0 var(--roundness) var(--roundness) 0;
+      }
+
+      td {
+        padding: 0.5rem 0.5rem;
+        -webkit-appearance: unset;
+
+        &.actions {
+          display: flex;
+          gap: 0.5rem;
+        }
+      }
+    }
+  }
 }
