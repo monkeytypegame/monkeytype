@@ -65,6 +65,7 @@ import {
 import { MonkeyRequest } from "../types";
 import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { getCachedConfiguration } from "../../init/configuration";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -491,12 +492,15 @@ export async function addResult(
   const stopOnLetterTriggered =
     completedEvent.stopOnLetter && completedEvent.acc < 100;
 
+  const minTimeTyping = (await getCachedConfiguration(true)).leaderboards
+    .minTimeTyping;
+
   const validResultCriteria =
     canFunboxGetPb(completedEvent) &&
     !completedEvent.bailedOut &&
     user.banned !== true &&
     user.lbOptOut !== true &&
-    (isDevEnvironment() || (user.timeTyping ?? 0) > 7200) &&
+    (isDevEnvironment() || (user.timeTyping ?? 0) > minTimeTyping) &&
     !stopOnLetterTriggered;
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
@@ -582,7 +586,7 @@ export async function addResult(
   const eligibleForWeeklyXpLeaderboard =
     user.banned !== true &&
     user.lbOptOut !== true &&
-    (isDevEnvironment() || (user.timeTyping ?? 0) > 7200);
+    (isDevEnvironment() || (user.timeTyping ?? 0) > minTimeTyping);
 
   const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
     weeklyXpLeaderboardConfig
