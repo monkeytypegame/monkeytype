@@ -59,14 +59,14 @@ async function updatePendingRequests(): Promise<void> {
         <td>${item.initiatorName}</td>
         <td>${format(item.addedAt)} ago</td>
         <td class="actions">
-          <button class="accepted" aria-label="accept friend" data-balloon-pos="bottom">
-            <i class="fas fa-user-check fa-fw"></i>
+          <button class="accepted" aria-label="accept friend" data-balloon-pos="top">
+            <i class="fas fa-check fa-fw"></i>
           </button> 
-          <button class="rejected" aria-label="reject friend" data-balloon-pos="bottom">
-            <i class="fas fa-user-times fa-fw"></i>
+          <button class="rejected" aria-label="reject friend" data-balloon-pos="top">
+            <i class="fas fa-times fa-fw"></i>
           </button> 
-          <button class="blocked" aria-label="block user from sending friend requests" data-balloon-pos="bottom">
-            <i class="fas fa-user-slash fa-fw"></i>
+          <button class="blocked" aria-label="block user from sending friend requests" data-balloon-pos="top">
+            <i class="fas fa-shield-alt fa-fw"></i>
           </button>
         </td>
       </tr>`
