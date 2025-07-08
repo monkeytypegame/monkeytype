@@ -199,7 +199,8 @@ export function getWordDirection(
   word: string | undefined,
   languageRTL: boolean
 ): boolean {
-  return word !== undefined && word !== null && word.length > 0
-    ? hasRTLCharacters(word)
-    : languageRTL;
+  if (word === undefined || word.length === 0) return languageRTL;
+  // if only punctuation or symbols, use main language direction
+  if (/^[\p{P}\p{S}]+$/u.test(word)) return languageRTL;
+  return hasRTLCharacters(word);
 }
