@@ -514,7 +514,7 @@ function onDelete({ inputType }: InputEventHandler): void {
   setTestInputToDOMValue();
   if (realInputValue === "") {
     const isFirstVisibleWord =
-      TestState.activeWordIndex - TestUI.activeWordElementOffset === 0;
+      TestState.activeWordIndex - TestState.removedUIWordCount === 0;
 
     if (!isFirstVisibleWord) {
       goToPreviousWord(inputType);

@@ -1564,7 +1564,7 @@ function updateLiveStatsColor(value: TimerColor): void {
 
 export function getActiveWordTopAfterAppend(data: string): number {
   const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex - activeWordElementOffset
+    TestState.activeWordIndex - TestState.removedUIWordCount
   ] as HTMLElement;
 
   if (data === " ") {
@@ -1629,7 +1629,7 @@ export function afterTestTextInput(
   const newTop =
     (
       document.querySelectorAll("#words .word")?.[
-        TestState.activeWordIndex - activeWordElementOffset
+        TestState.activeWordIndex - TestState.removedUIWordCount
       ] as HTMLElement
     )?.offsetTop ?? 0;
 
@@ -1655,10 +1655,12 @@ export function beforeTestWordChange(
   if (direction === "forward") {
     if (Config.blindMode) {
       highlightAllLettersAsCorrect(
-        TestState.activeWordIndex - activeWordElementOffset
+        TestState.activeWordIndex - TestState.removedUIWordCount
       );
     } else if (correct === false) {
-      highlightBadWord(TestState.activeWordIndex - activeWordElementOffset);
+      highlightBadWord(
+        TestState.activeWordIndex - TestState.removedUIWordCount
+      );
     }
   } else if (direction === "back") {
     void updateActiveWordLetters();
@@ -1677,7 +1679,7 @@ export function afterTestWordChange(direction: "forward" | "back"): void {
   ) {
     const wordElements = document.querySelectorAll("#words .word");
     const currentElementId =
-      TestState.activeWordIndex - activeWordElementOffset;
+      TestState.activeWordIndex - TestState.removedUIWordCount;
 
     const previousTop: number = Math.floor(
       (wordElements[currentElementId - 1] as HTMLElement | undefined)
