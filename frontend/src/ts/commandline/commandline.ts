@@ -987,6 +987,3 @@ const modal = new AnimatedModal({
     });
   },
 });
-export function withValidation<T>(command: CommandWithValidation<T>): Command {
-  return command as unknown as Command;
-}

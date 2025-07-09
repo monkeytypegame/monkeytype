@@ -1,7 +1,6 @@
 import { FontSizeSchema } from "@monkeytype/contracts/schemas/configs";
 import Config, * as UpdateConfig from "../../config";
-import { Command } from "../types";
-import { withValidation } from "../commandline";
+import { Command, withValidation } from "../types";
 
 const commands: Command[] = [
   withValidation({
