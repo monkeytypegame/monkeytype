@@ -779,8 +779,6 @@ async function isValid(
   originalInput: HTMLInputElement,
   validation: CommandWithValidation<unknown>["validation"]
 ): Promise<void> {
-  updateValidationResult({ status: "checking" });
-
   if (validation.schema !== undefined) {
     const schemaResult = validation.schema.safeParse(checkValue);
 
@@ -800,13 +798,11 @@ async function isValid(
     return;
   }
 
+  updateValidationResult({ status: "checking" });
+
   const result = await validation.isValid(checkValue);
   if (originalInput.value !== originalValue) {
     //value has change in the meantime, discard result
-    console.log("### skip outdated2", {
-      originalInput: originalInput.value,
-      originalValue,
-    });
     return;
   }
 
@@ -913,28 +909,29 @@ const modal = new AnimatedModal({
     input.addEventListener(
       "input",
       debounce(100, async (e) => {
+        if (
+          inputModeParams === null ||
+          inputModeParams.command === null ||
+          !("validation" in inputModeParams.command)
+        ) {
+          return;
+        }
+
         const originalInput = (e as InputEvent).target as HTMLInputElement;
         const currentValue = originalInput.value;
         let checkValue: unknown = currentValue;
+        const command =
+          inputModeParams.command as CommandWithValidation<unknown>;
 
-        if (
-          inputModeParams !== null &&
-          inputModeParams.command !== null &&
-          "validation" in inputModeParams.command
-        ) {
-          const command =
-            inputModeParams.command as CommandWithValidation<unknown>;
-
-          if (command.valueConvert) {
-            checkValue = command.valueConvert(currentValue);
-          }
-          await isValid(
-            checkValue,
-            currentValue,
-            originalInput,
-            command.validation
-          );
+        if (command.valueConvert) {
+          checkValue = command.valueConvert(currentValue);
         }
+        await isValid(
+          checkValue,
+          currentValue,
+          originalInput,
+          command.validation
+        );
       })
     );
 
