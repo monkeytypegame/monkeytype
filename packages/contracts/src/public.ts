@@ -3,7 +3,7 @@ import { z } from "zod";
 import { CommonResponses, meta, responseWithData } from "./schemas/api";
 import { SpeedHistogramSchema, TypingStatsSchema } from "./schemas/public";
 import { Mode2Schema, ModeSchema } from "./schemas/shared";
-import { LanguageSchema } from "./schemas/util";
+import { LanguageSchema } from "./schemas/languages";
 
 export const GetSpeedHistogramQuerySchema = z
   .object({

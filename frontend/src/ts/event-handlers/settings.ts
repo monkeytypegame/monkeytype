@@ -14,7 +14,7 @@ settingsPage
   });
 
 settingsPage
-  ?.querySelector(".section.updateCookiePreferences button")
+  ?.querySelector(".section.updateCookiePreferences .buttons button")
   ?.addEventListener("click", () => {
     CookiesModal.show(true);
   });

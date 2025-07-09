@@ -424,7 +424,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   instant_messaging: {
     description: "Who needs shift anyway?",
     canGetPb: false,
-    difficultyLevel: 1,
+    difficultyLevel: 0,
     properties: ["changesCapitalisation"],
     frontendFunctions: ["alterText"],
     name: "instant_messaging",
@@ -432,7 +432,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   underscore_spaces: {
     description: "Underscores_are_better.",
     canGetPb: false,
-    difficultyLevel: 0,
+    difficultyLevel: 1,
     properties: ["ignoresLanguage", "ignoresLayout", "nospace"],
     frontendFunctions: ["alterText"],
     name: "underscore_spaces",

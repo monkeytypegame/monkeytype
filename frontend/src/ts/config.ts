@@ -7,7 +7,6 @@ import {
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { isAuthenticated } from "./firebase";
-import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 import {
@@ -15,6 +14,7 @@ import {
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
 import {
+  createErrorMessage,
   isDevEnvironment,
   isObject,
   promiseWithResolvers,
@@ -24,11 +24,15 @@ import {
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config, FunboxName } from "@monkeytype/contracts/schemas/configs";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
-import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
+import {
+  Language,
+  LanguageSchema,
+} from "@monkeytype/contracts/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -1565,7 +1569,6 @@ export function setLanguage(language: Language, nosave?: boolean): boolean {
   if (!isConfigValueValid("language", language, LanguageSchema)) return false;
 
   config.language = language;
-  void AnalyticsController.log("changedLanguage", { language });
   saveToLocalStorage("language", nosave);
   ConfigEvent.dispatch("language", config.language);
 
@@ -1767,32 +1770,11 @@ export function setFontSize(
   if (fontSize < 0) {
     fontSize = 1;
   }
-  if (
-    typeof fontSize === "string" &&
-    ["1", "125", "15", "2", "3", "4"].includes(fontSize)
-  ) {
-    if (fontSize === "125") {
-      fontSize = 1.25;
-    } else if (fontSize === "15") {
-      fontSize = 1.5;
-    } else {
-      fontSize = parseInt(fontSize);
-    }
-  }
 
   if (
     !isConfigValueValid("font size", fontSize, ConfigSchemas.FontSizeSchema)
   ) {
     return false;
-  }
-
-  // i dont know why the above check is not enough
-  // some people are getting font size 15 when it should be converted to 1.5
-  // after converting from the string to float system
-
-  // keeping this in for now, if you want a big font go 14.9 or something
-  if (fontSize === 15) {
-    fontSize = 1.5;
   }
 
   config.fontSize = fontSize;
@@ -1868,17 +1850,19 @@ export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
 ): boolean {
+  // Remove duplicates
+  const deduped = Array.from(new Set(value));
   if (
     !isConfigValueValid(
       "layoutfluid",
-      value,
+      deduped,
       ConfigSchemas.CustomLayoutFluidSchema
     )
   ) {
     return false;
   }
 
-  config.customLayoutfluid = value;
+  config.customLayoutfluid = deduped;
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutfluid", config.customLayoutfluid);
 
@@ -1889,16 +1873,18 @@ export function setCustomPolyglot(
   value: ConfigSchemas.CustomPolyglot,
   nosave?: boolean
 ): boolean {
+  // remove duplicates
+  const deduped = Array.from(new Set(value));
   if (
     !isConfigValueValid(
       "customPolyglot",
-      value,
+      deduped,
       ConfigSchemas.CustomPolyglotSchema
     )
   )
     return false;
 
-  config.customPolyglot = value;
+  config.customPolyglot = deduped;
   saveToLocalStorage("customPolyglot", nosave);
   ConfigEvent.dispatch("customPolyglot", config.customPolyglot);
 
@@ -2132,6 +2118,30 @@ export function getConfigChanges(): Partial<Config> {
       configChanges[key] = config[key];
     });
   return configChanges;
+}
+
+export async function applyFromJson(json: string): Promise<void> {
+  try {
+    const parsedConfig = parseJsonWithSchema(
+      json,
+      ConfigSchemas.PartialConfigSchema.strip(),
+      {
+        migrate: (value) => {
+          if (Array.isArray(value)) {
+            throw new Error("Invalid config");
+          }
+          return migrateConfig(value);
+        },
+      }
+    );
+    await apply(parsedConfig);
+    saveFullConfigToLocalStorage();
+    Notifications.add("Done", 1);
+  } catch (e) {
+    const msg = createErrorMessage(e, "Failed to import settings");
+    console.error(msg);
+    Notifications.add(msg, -1);
+  }
 }
 
 const { promise: loadPromise, resolve: loadDone } = promiseWithResolvers();

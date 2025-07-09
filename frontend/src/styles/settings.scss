@@ -302,7 +302,6 @@
 
           &.customTheme {
             grid-template-columns: 1fr;
-            margin-top: 1rem;
             .colorText {
               color: var(--text-color);
             }
@@ -489,6 +488,26 @@
           grid-column: span 2;
         }
       }
+    }
+
+    &.highlight {
+      margin: -1em;
+      padding: 1em;
+      animation: flashBorder 4s ease-in;
+      border-radius: var(--roundness);
+    }
+
+    .groupTitle button.text {
+      padding: 0;
+      margin-left: 0.5em;
+      align-self: center;
+      opacity: 0;
+      .fas {
+        margin-right: 0;
+      }
+    }
+    &:hover .groupTitle button.text {
+      opacity: 1;
     }
   }
 }

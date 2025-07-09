@@ -1,3 +1,8 @@
+//pin implementations
+const random = Math.random;
+const ceil = Math.ceil;
+const floor = Math.floor;
+
 /**
  * Rounds a number to one decimal places.
  * @param num The number to round.
@@ -85,9 +90,9 @@ export function kogasa(cov: number): number {
  * @returns Random integer betwen min and max.
  */
 export function randomIntFromRange(min: number, max: number): number {
-  const minNorm = Math.ceil(min);
-  const maxNorm = Math.floor(max);
-  return Math.floor(Math.random() * (maxNorm - minNorm + 1) + minNorm);
+  const minNorm = ceil(min);
+  const maxNorm = floor(max);
+  return floor(random() * (maxNorm - minNorm + 1) + minNorm);
 }
 
 /**
@@ -124,4 +129,30 @@ export function mapRange(
   }
 
   return result;
+}
+
+/**
+ * Checks if a value is a safe number. Safe numbers are finite and not NaN.
+ * @param value The value to check.
+ * @returns True if the value is a safe number, false otherwise.
+ */
+export function isSafeNumber(value: unknown): value is number {
+  if (typeof value === "number") {
+    return !isNaN(value) && isFinite(value);
+  }
+  return false;
+}
+
+/**
+ * Converts a number to a safe number or undefined. NaN, Infinity, and -Infinity are converted to undefined.
+ * @param value The value to convert.
+ * @returns The input number if it is safe, undefined otherwise.
+ */
+export function safeNumber(
+  value: number | undefined | null
+): number | undefined {
+  if (isSafeNumber(value)) {
+    return value;
+  }
+  return undefined;
 }

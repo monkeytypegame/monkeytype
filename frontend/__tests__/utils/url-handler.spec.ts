@@ -251,16 +251,7 @@ describe("url-handler", () => {
 
       //THEN
       expect(addNotificationMock).toHaveBeenCalledWith(
-        `Failed to load test settings from URL: \"0\" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'invalidMode'
-\"1\" Needs to be a number or a number represented as a string e.g. \"10\".
-\"2.text\" Expected array, received string
-\"2.mode\" Invalid enum value. Expected 'repeat' | 'random' | 'shuffle', received 'invalid'
-\"2.limit\" Expected object, received string
-\"2.pipeDelimiter\" Expected boolean, received string
-\"3\" Expected boolean, received string
-\"4\" Expected boolean, received string
-\"6\" Invalid enum value. Expected 'normal' | 'expert' | 'master', received 'invalid'
-\"7\" Invalid input`,
+        `Failed to load test settings from URL: JSON does not match schema: \"0\" invalid enum value. expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'invalidmode', \"1\" needs to be a number or a number represented as a string e.g. \"10\"., \"2.mode\" invalid enum value. expected 'repeat' | 'random' | 'shuffle', received 'invalid', \"2.pipeDelimiter\" expected boolean, received string, \"2.limit\" expected object, received string, \"2.text\" expected array, received string, \"3\" expected boolean, received string, \"4\" expected boolean, received string, \"6\" invalid enum value. expected 'normal' | 'expert' | 'master', received 'invalid', \"7\" invalid input`,
         0
       );
     });

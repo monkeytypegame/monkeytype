@@ -1,5 +1,6 @@
 import { z, ZodEffects, ZodOptional, ZodString } from "zod";
-import { IdSchema, LanguageSchema, StringNumberSchema } from "./util";
+import { IdSchema, StringNumberSchema } from "./util";
+import { LanguageSchema } from "./languages";
 import {
   ModeSchema,
   Mode2Schema,
@@ -9,9 +10,10 @@ import {
   QuoteLengthSchema,
   DifficultySchema,
 } from "./shared";
-import { CustomThemeColorsSchema } from "./configs";
+import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
 import { doesNotContainProfanity } from "../validation/validation";
 
+const NoneFilterSchema = z.literal("none");
 export const ResultFiltersSchema = z.object({
   _id: IdSchema,
   name: z
@@ -50,9 +52,9 @@ export const ResultFiltersSchema = z.object({
       all: z.boolean(),
     })
     .strict(),
-  tags: z.record(z.string(), z.boolean()),
+  tags: z.record(IdSchema.or(NoneFilterSchema), z.boolean()),
   language: z.record(LanguageSchema, z.boolean()),
-  funbox: z.record(z.string(), z.boolean()),
+  funbox: z.record(FunboxNameSchema.or(NoneFilterSchema), z.boolean()),
 });
 export type ResultFilters = z.infer<typeof ResultFiltersSchema>;
 
@@ -86,27 +88,33 @@ function profileDetailsBase(
     .transform((value) => (value === null ? undefined : value));
 }
 
+export const TwitterProfileSchema = profileDetailsBase(
+  z
+    .string()
+    .max(20)
+    .regex(/^[0-9a-zA-Z_.-]+$/)
+).or(z.literal(""));
+
+export const GithubProfileSchema = profileDetailsBase(
+  z
+    .string()
+    .max(39)
+    .regex(/^[0-9a-zA-Z_.-]+$/)
+).or(z.literal(""));
+
+export const WebsiteSchema = profileDetailsBase(
+  z.string().url().max(200).startsWith("https://")
+).or(z.literal(""));
+
 export const UserProfileDetailsSchema = z
   .object({
     bio: profileDetailsBase(z.string().max(250)).or(z.literal("")),
     keyboard: profileDetailsBase(z.string().max(75)).or(z.literal("")),
     socialProfiles: z
       .object({
-        twitter: profileDetailsBase(
-          z
-            .string()
-            .max(20)
-            .regex(/^[0-9a-zA-Z_.-]+$/)
-        ).or(z.literal("")),
-        github: profileDetailsBase(
-          z
-            .string()
-            .max(39)
-            .regex(/^[0-9a-zA-Z_.-]+$/)
-        ).or(z.literal("")),
-        website: profileDetailsBase(
-          z.string().url().max(200).startsWith("https://")
-        ).or(z.literal("")),
+        twitter: TwitterProfileSchema,
+        github: GithubProfileSchema,
+        website: WebsiteSchema,
       })
       .strict()
       .optional(),

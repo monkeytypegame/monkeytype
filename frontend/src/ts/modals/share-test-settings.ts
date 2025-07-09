@@ -16,7 +16,7 @@ function getCheckboxValue(checkbox: string): boolean {
 type SharedTestSettings = [
   Mode | null,
   Mode2<Mode> | null,
-  CustomText.CustomTextData | null,
+  CustomText.CustomTextSettings | null,
   boolean | null,
   boolean | null,
   string | null,

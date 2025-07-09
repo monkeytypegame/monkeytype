@@ -111,3 +111,24 @@
     bottom: 0%;
   }
 }
+
+@keyframes flashBorder {
+  0% {
+    box-shadow: 0 0 0 0.2em var(--main-color);
+  }
+  100% {
+    box-shadow: 0 0 0 0.2em transparent;
+  }
+}
+
+@keyframes gold-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

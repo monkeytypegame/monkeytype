@@ -1,7 +1,8 @@
 import { z, ZodSchema } from "zod";
-import { LanguageSchema, token } from "./util";
 import * as Shared from "./shared";
+import * as Themes from "./themes";
 import * as Layouts from "./layouts";
+import { LanguageSchema } from "./languages";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -234,7 +235,10 @@ export const CustomThemeColorsSchema = z.tuple([
 ]);
 export type CustomThemeColors = z.infer<typeof CustomThemeColorsSchema>;
 
-export const FavThemesSchema = z.array(token().max(50));
+export const ThemeNameSchema = Themes.ThemeNameSchema;
+export type ThemeName = z.infer<typeof ThemeNameSchema>;
+
+export const FavThemesSchema = z.array(ThemeNameSchema);
 export type FavThemes = z.infer<typeof FavThemesSchema>;
 
 export const FunboxNameSchema = z.enum([
@@ -314,9 +318,6 @@ export const FontFamilySchema = z
   .max(50)
   .regex(/^[a-zA-Z0-9_\-+.]+$/);
 export type FontFamily = z.infer<typeof FontFamilySchema>;
-
-export const ThemeNameSchema = token().max(50);
-export type ThemeName = z.infer<typeof ThemeNameSchema>;
 
 export const KeymapLayoutSchema = z
   .literal("overrideSync")
@@ -437,7 +438,8 @@ export const ConfigSchema = z
   .strict();
 
 export type Config = z.infer<typeof ConfigSchema>;
-export type ConfigKey = keyof Config;
+export const ConfigKeySchema = ConfigSchema.keyof();
+export type ConfigKey = z.infer<typeof ConfigKeySchema>;
 export type ConfigValue = Config[keyof Config];
 
 export const PartialConfigSchema = ConfigSchema.partial();

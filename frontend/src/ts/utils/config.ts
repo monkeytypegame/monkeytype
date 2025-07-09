@@ -4,17 +4,16 @@ import {
   PartialConfig,
   FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
-import { typedKeys } from "./misc";
+import { sanitize, typedKeys } from "./misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
-
 /**
  * migrates possible outdated config and merges with the default config values
  * @param config partial or possible outdated config
  * @returns
  */
 export function migrateConfig(config: PartialConfig | object): Config {
-  return mergeWithDefaultConfig(replaceLegacyValues(config));
+  return mergeWithDefaultConfig(sanitizeConfig(replaceLegacyValues(config)));
 }
 
 function mergeWithDefaultConfig(config: PartialConfig): Config {
@@ -26,6 +25,15 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
     mergedConfig[key] = newValue;
   }
   return mergedConfig;
+}
+
+/**
+ * remove all values from the config which are not valid
+ */
+function sanitizeConfig(
+  config: ConfigSchemas.PartialConfig
+): ConfigSchemas.PartialConfig {
+  return sanitize(ConfigSchemas.PartialConfigSchema, config);
 }
 
 export function replaceLegacyValues(
@@ -127,6 +135,25 @@ export function replaceLegacyValues(
     configObj.customLayoutfluid = (configObj.customLayoutfluid as string).split(
       "#"
     ) as ConfigSchemas.CustomLayoutFluid;
+  }
+
+  if (typeof configObj.indicateTypos === "boolean") {
+    configObj.indicateTypos =
+      configObj.indicateTypos === false ? "off" : "replace";
+  }
+
+  if (typeof configObj.fontSize === "string") {
+    //legacy values use strings
+    const oldValue = configObj.fontSize;
+    let newValue = parseInt(oldValue);
+
+    if (oldValue === "125") {
+      newValue = 1.25;
+    } else if (oldValue === "15") {
+      newValue = 1.5;
+    }
+
+    configObj.fontSize = newValue;
   }
 
   return configObj;

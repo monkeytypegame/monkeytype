@@ -454,7 +454,12 @@ export async function checkIfPb(
   const { mode } = result;
 
   if (!canFunboxGetPb(result)) return false;
-  if ("stopOnLetter" in result && result.stopOnLetter === true) return false;
+  if (
+    "stopOnLetter" in result &&
+    result.stopOnLetter === true &&
+    result.acc < 100
+  )
+    return false;
 
   if (mode === "quote") {
     return false;
@@ -500,7 +505,12 @@ export async function checkIfTagPb(
 
   const { mode, tags: resultTags } = result;
   if (!canFunboxGetPb(result)) return [];
-  if ("stopOnLetter" in result && result.stopOnLetter === true) return [];
+  if (
+    "stopOnLetter" in result &&
+    result.stopOnLetter === true &&
+    result.acc < 100
+  )
+    return [];
 
   if (mode === "quote") {
     return [];
@@ -1144,6 +1154,17 @@ export async function setBanned(uid: string, banned: boolean): Promise<void> {
   } else {
     await getUsersCollection().updateOne({ uid }, { $unset: { banned: "" } });
   }
+}
+
+export async function clearStreakHourOffset(uid: string): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $unset: {
+        "streak.hourOffset": "",
+      },
+    }
+  );
 }
 
 export async function checkIfUserIsPremium(
