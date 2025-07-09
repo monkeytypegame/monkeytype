@@ -727,7 +727,6 @@ function showWarning(message: string): void {
 }
 
 const showCheckingIcon = debounce(200, async () => {
-  console.log("show checking icon");
   const checkingiconEl = modal
     .getModal()
     .querySelector<HTMLElement>(".checkingicon");
@@ -738,7 +737,6 @@ const showCheckingIcon = debounce(200, async () => {
 });
 
 function hideCheckingIcon(): void {
-  console.log("hide checking icon");
   showCheckingIcon.cancel({ upcomingOnly: true });
 
   const checkingiconEl = modal
@@ -775,53 +773,52 @@ function updateValidationResult(
   }
 }
 
-const debounceIsValid = debounce(
-  100,
-  async (
-    checkValue: unknown,
-    originalInput: string,
-    validation: CommandWithValidation<unknown>["validation"]
-  ) => {
-    updateValidationResult({ status: "checking" });
+async function isValid(
+  checkValue: unknown,
+  originalValue: string,
+  originalInput: HTMLInputElement,
+  validation: CommandWithValidation<unknown>["validation"]
+): Promise<void> {
+  updateValidationResult({ status: "checking" });
 
-    if (validation.schema !== undefined) {
-      const schemaResult = validation.schema.safeParse(checkValue);
+  if (validation.schema !== undefined) {
+    const schemaResult = validation.schema.safeParse(checkValue);
 
-      if (!schemaResult.success) {
-        updateValidationResult({
-          status: "failed",
-          errorMessage: schemaResult.error.errors
-            .map((err) => err.message)
-            .join(", "),
-        });
-        return;
-      }
-    }
-
-    if (validation.isValid === undefined) {
-      updateValidationResult({ status: "success" });
-      return;
-    }
-
-    const result = await validation.isValid(checkValue);
-    if (originalInput !== inputValue) {
-      //value has change in the meantime, discard result
-      return;
-    }
-
-    if (result === true) {
-      updateValidationResult({ status: "success" });
-    } else {
+    if (!schemaResult.success) {
       updateValidationResult({
         status: "failed",
-        errorMessage: result,
+        errorMessage: schemaResult.error.errors
+          .map((err) => err.message)
+          .join(", "),
       });
+      return;
     }
-  },
-  {
-    atBegin: true,
   }
-);
+
+  if (validation.isValid === undefined) {
+    updateValidationResult({ status: "success" });
+    return;
+  }
+
+  const result = await validation.isValid(checkValue);
+  if (originalInput.value !== originalValue) {
+    //value has change in the meantime, discard result
+    console.log("### skip outdated2", {
+      originalInput: originalInput.value,
+      originalValue,
+    });
+    return;
+  }
+
+  if (result === true) {
+    updateValidationResult({ status: "success" });
+  } else {
+    updateValidationResult({
+      status: "failed",
+      errorMessage: result,
+    });
+  }
+}
 
 const modal = new AnimatedModal({
   dialogId: "commandLine",
@@ -913,25 +910,33 @@ const modal = new AnimatedModal({
       }
     });
 
-    input.addEventListener("input", async (e) => {
-      const currentValue: string = (e.target as HTMLInputElement).value;
-      let checkValue: unknown = currentValue;
+    input.addEventListener(
+      "input",
+      debounce(100, async (e) => {
+        const originalInput = (e as InputEvent).target as HTMLInputElement;
+        const currentValue = originalInput.value;
+        let checkValue: unknown = currentValue;
 
-      if (
-        inputModeParams !== null &&
-        inputModeParams.command !== null &&
-        "validation" in inputModeParams.command
-      ) {
-        const command =
-          inputModeParams.command as CommandWithValidation<unknown>;
+        if (
+          inputModeParams !== null &&
+          inputModeParams.command !== null &&
+          "validation" in inputModeParams.command
+        ) {
+          const command =
+            inputModeParams.command as CommandWithValidation<unknown>;
 
-        if (command.valueConvert) {
-          checkValue = command.valueConvert(currentValue);
+          if (command.valueConvert) {
+            checkValue = command.valueConvert(currentValue);
+          }
+          await isValid(
+            checkValue,
+            currentValue,
+            originalInput,
+            command.validation
+          );
         }
-
-        debounceIsValid(checkValue, currentValue, command.validation);
-      }
-    });
+      })
+    );
 
     modalEl.addEventListener("mousemove", (_e) => {
       mouseMode = true;
