@@ -679,6 +679,72 @@ export function promiseWithResolvers<T = void>(): {
 }
 
 /**
+ * Wrap a function so only one call runs at a time. While a call is running, new
+ * calls will not run and only the latest one will be queued, any prior queued
+ * calls are skipped. Once the running call finishes, the queued call runs.
+ * @param fn the function to debounce
+ * @param options - `rejectSkippedCalls`: if false, promises returned by skipped
+ * calls will be resolved to null, otherwise will be rejected (defaults to true).
+ * @returns debounced version of the original function. This debounced function
+ * returns a promise that resolves to the original return value. Promises of skipped
+ * calls will be rejected, (or resolved to null if `options.rejectSkippedCalls` was false).
+ */
+export function debounceUntilResolved<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => TResult,
+  options?: { rejectSkippedCalls?: true }
+): (...args: TArgs) => Promise<TResult>;
+export function debounceUntilResolved<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => TResult,
+  options: { rejectSkippedCalls: false }
+): (...args: TArgs) => Promise<TResult | null>;
+export function debounceUntilResolved<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => TResult,
+  { rejectSkippedCalls = true }: { rejectSkippedCalls?: boolean } = {}
+): (...args: TArgs) => Promise<TResult | null> {
+  let isLocked = false;
+  let next: {
+    args: TArgs;
+    resolve: (value: TResult | null) => void;
+    reject: (reason?: unknown) => void;
+  } | null = null;
+
+  async function run(...args: TArgs): Promise<TResult> {
+    isLocked = true;
+    try {
+      return await Promise.resolve(fn(...args));
+    } finally {
+      isLocked = false;
+
+      const queued = next;
+      next = null;
+      if (queued) run(...queued.args).then(queued.resolve, queued.reject);
+    }
+  }
+
+  return async function debounced(...args: TArgs): Promise<TResult | null> {
+    if (isLocked) {
+      // drop previously queued call
+      if (next) {
+        if (rejectSkippedCalls) {
+          next.reject(
+            new Error("skipped call: call was superseded by a more recent one")
+          );
+        } else {
+          next.resolve(null);
+        }
+      }
+
+      // queue the new call
+      return new Promise<TResult | null>((resolve, reject) => {
+        next = { args, resolve, reject };
+      });
+    }
+    // no running instances, run immediately
+    return run(...args);
+  };
+}
+
+/**
  * Sanitize object. Remove invalid values based on the schema.
  * @param schema zod schema
  * @param obj object

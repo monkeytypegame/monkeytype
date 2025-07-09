@@ -130,8 +130,10 @@ const badges: Record<number, UserBadge> = {
     name: "Insane",
     description: "I typed for 69 hours straight",
     icon: "fa-bomb",
-    color: "var(--bg-color)",
-    background: "var(--main-color)",
+    color: "white",
+    background: "#093d79",
+    customStyle:
+      "animation: gold-shimmer 10s cubic-bezier(0.5, 0, 0.5, 1) infinite; background: linear-gradient(90deg, rgb(8 31 84) 0%, rgb(18 134 158) 100%); background-size: 200% 200%;",
   },
   16: {
     id: 16,

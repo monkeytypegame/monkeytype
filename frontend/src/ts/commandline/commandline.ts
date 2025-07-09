@@ -10,7 +10,7 @@ import * as OutOfFocus from "../test/out-of-focus";
 import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
-import { Command, CommandsSubgroup } from "./types";
+import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
@@ -21,6 +21,10 @@ type InputModeParams = {
   placeholder: string | null;
   value: string | null;
   icon: string | null;
+  validation?: {
+    status: "checking" | "success" | "failed";
+    errorMessage?: string;
+  };
 };
 
 let activeIndex = 0;
@@ -175,6 +179,7 @@ function hide(clearModalChain = false): void {
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
+      hideWarning();
       addCommandlineBackground();
       if (ActivePage.get() === "test") {
         const isWordsFocused = $("#wordsInput").is(":focus");
@@ -202,6 +207,7 @@ async function goBackOrHide(): Promise<void> {
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
+    hideWarning();
     return;
   }
 
@@ -212,6 +218,7 @@ async function goBackOrHide(): Promise<void> {
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
+    hideWarning();
   } else {
     hide();
   }
@@ -562,10 +569,36 @@ function handleInputSubmit(): void {
   if (inputModeParams.command === null) {
     throw new Error("Can't handle input submit - command is null");
   }
-  inputModeParams.command.exec?.({
-    commandlineModal: modal,
-    input: inputValue,
-  });
+
+  if (inputModeParams.validation?.status === "checking") {
+    //validation ongoing, ignore the submit
+    return;
+  } else if (inputModeParams.validation?.status === "failed") {
+    const cmdLine = $("#commandLine .modal");
+    cmdLine
+      .stop(true, true)
+      .addClass("hasError")
+      .animate({ undefined: 1 }, 500, () => {
+        cmdLine.removeClass("hasError");
+      });
+    return;
+  }
+
+  if ("inputValueConvert" in inputModeParams.command) {
+    inputModeParams.command.exec?.({
+      commandlineModal: modal,
+
+      // @ts-expect-error this is fine
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      input: inputModeParams.command.inputValueConvert(inputValue),
+    });
+  } else {
+    inputModeParams.command.exec?.({
+      commandlineModal: modal,
+      input: inputValue,
+    });
+  }
+
   void AnalyticsController.log("usedCommandLine", {
     command: inputModeParams.command.id,
   });
@@ -695,6 +728,109 @@ async function decrementActiveIndex(): Promise<void> {
   await updateActiveCommand();
 }
 
+function showWarning(message: string): void {
+  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
+  const warningTextEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".warning .text");
+  if (warningEl === null || warningTextEl === null) {
+    throw new Error("Commandline warning element not found");
+  }
+  warningEl.classList.remove("hidden");
+  warningTextEl.textContent = message;
+}
+
+const showCheckingIcon = debounce(200, async () => {
+  const checkingiconEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".checkingicon");
+  if (checkingiconEl === null) {
+    throw new Error("Commandline checking icon element not found");
+  }
+  checkingiconEl.classList.remove("hidden");
+});
+
+function hideCheckingIcon(): void {
+  showCheckingIcon.cancel({ upcomingOnly: true });
+
+  const checkingiconEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".checkingicon");
+  if (checkingiconEl === null) {
+    throw new Error("Commandline checking icon element not found");
+  }
+  checkingiconEl.classList.add("hidden");
+}
+
+function hideWarning(): void {
+  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
+  if (warningEl === null) {
+    throw new Error("Commandline warning element not found");
+  }
+  warningEl.classList.add("hidden");
+}
+
+function updateValidationResult(
+  validation: NonNullable<InputModeParams["validation"]>
+): void {
+  inputModeParams.validation = validation;
+  if (validation.status === "checking") {
+    showCheckingIcon();
+  } else if (
+    validation.status === "failed" &&
+    validation.errorMessage !== undefined
+  ) {
+    showWarning(validation.errorMessage);
+    hideCheckingIcon();
+  } else {
+    hideWarning();
+    hideCheckingIcon();
+  }
+}
+
+async function isValid(
+  checkValue: unknown,
+  originalValue: string,
+  originalInput: HTMLInputElement,
+  validation: CommandWithValidation<unknown>["validation"]
+): Promise<void> {
+  updateValidationResult({ status: "checking" });
+
+  if (validation.schema !== undefined) {
+    const schemaResult = validation.schema.safeParse(checkValue);
+
+    if (!schemaResult.success) {
+      updateValidationResult({
+        status: "failed",
+        errorMessage: schemaResult.error.errors
+          .map((err) => err.message)
+          .join(", "),
+      });
+      return;
+    }
+  }
+
+  if (validation.isValid === undefined) {
+    updateValidationResult({ status: "success" });
+    return;
+  }
+
+  const result = await validation.isValid(checkValue);
+  if (originalInput.value !== originalValue) {
+    //value has change in the meantime, discard result
+    return;
+  }
+
+  if (result === true) {
+    updateValidationResult({ status: "success" });
+  } else {
+    updateValidationResult({
+      status: "failed",
+      errorMessage: result,
+    });
+  }
+}
+
 const modal = new AnimatedModal({
   dialogId: "commandLine",
   customEscapeHandler: (): void => {
@@ -784,6 +920,35 @@ const modal = new AnimatedModal({
         await goBackOrHide();
       }
     });
+
+    input.addEventListener(
+      "input",
+      debounce(100, async (e) => {
+        if (
+          inputModeParams === null ||
+          inputModeParams.command === null ||
+          !("validation" in inputModeParams.command)
+        ) {
+          return;
+        }
+
+        const originalInput = (e as InputEvent).target as HTMLInputElement;
+        const currentValue = originalInput.value;
+        let checkValue: unknown = currentValue;
+        const command =
+          inputModeParams.command as CommandWithValidation<unknown>;
+
+        if ("inputValueConvert" in command) {
+          checkValue = command.inputValueConvert(currentValue);
+        }
+        await isValid(
+          checkValue,
+          currentValue,
+          originalInput,
+          command.validation
+        );
+      })
+    );
 
     modalEl.addEventListener("mousemove", (_e) => {
       mouseMode = true;
