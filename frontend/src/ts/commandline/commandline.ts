@@ -714,7 +714,6 @@ async function decrementActiveIndex(): Promise<void> {
 }
 
 function showWarning(message: string): void {
-  hideCheckingIcon();
   const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
   const warningTextEl = modal
     .getModal()
@@ -749,7 +748,6 @@ function hideCheckingIcon(): void {
 }
 
 function hideWarning(): void {
-  hideCheckingIcon();
   const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
   if (warningEl === null) {
     throw new Error("Commandline warning element not found");
@@ -768,8 +766,10 @@ function updateValidationResult(
     validation.errorMessage !== undefined
   ) {
     showWarning(validation.errorMessage);
+    hideCheckingIcon();
   } else {
     hideWarning();
+    hideCheckingIcon();
   }
 }
 
