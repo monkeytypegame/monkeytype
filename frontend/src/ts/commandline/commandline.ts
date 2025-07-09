@@ -779,6 +779,8 @@ async function isValid(
   originalInput: HTMLInputElement,
   validation: CommandWithValidation<unknown>["validation"]
 ): Promise<void> {
+  updateValidationResult({ status: "checking" });
+
   if (validation.schema !== undefined) {
     const schemaResult = validation.schema.safeParse(checkValue);
 
@@ -797,8 +799,6 @@ async function isValid(
     updateValidationResult({ status: "success" });
     return;
   }
-
-  updateValidationResult({ status: "checking" });
 
   const result = await validation.isValid(checkValue);
   if (originalInput.value !== originalValue) {
