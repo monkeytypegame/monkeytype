@@ -740,16 +740,19 @@ export async function updateActiveWordLetters(
     }
 
     const compositionData = CompositionState.getData();
-    for (const char of compositionData) {
-      ret += `<letter class="dead">${
-        Config.indicateTypos === "replace"
-          ? char === " "
-            ? "_"
-            : char
-          : currentWordChars[input.length] === undefined
-          ? char
-          : currentWordChars[input.length]
-      }</letter>`;
+    for (let i = 0; i < compositionData.length; i++) {
+      const compositionChar = compositionData[i];
+      let charToShow = currentWordChars[input.length + i];
+
+      if (charToShow === undefined) {
+        charToShow = compositionChar;
+      }
+
+      if (Config.indicateTypos === "replace") {
+        charToShow = compositionChar === " " ? "_" : compositionChar;
+      }
+
+      ret += `<letter class="dead">${charToShow}</letter>`;
     }
 
     for (
