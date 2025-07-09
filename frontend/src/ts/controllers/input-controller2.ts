@@ -858,6 +858,10 @@ wordsInput.addEventListener("keyup", (event) => {
 wordsInput.addEventListener("compositionstart", (event) => {
   console.debug("wordsInput event compositionstart", { data: event.data });
   CompositionState.setComposing(true);
+  if (!TestState.isActive) {
+    TestUI.setActiveWordTop();
+    TestLogic.startTest(performance.now());
+  }
 });
 
 wordsInput.addEventListener("compositionupdate", (event) => {
