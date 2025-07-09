@@ -12,7 +12,7 @@ const commands: Command[] = [
     defaultValue: (): string => {
       return Config.fontSize.toString();
     },
-    valueConvert: Number,
+    inputValueConvert: Number,
     validation: {
       schema: FontSizeSchema,
     },

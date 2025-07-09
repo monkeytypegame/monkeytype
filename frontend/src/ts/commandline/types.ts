@@ -39,7 +39,7 @@ export type Command = {
 export type CommandWithValidation<T> = (T extends string
   ? Command
   : Omit<Command, "exec"> & {
-      valueConvert: (val: string) => T;
+      inputValueConvert: (val: string) => T;
       exec?: (options: CommandExecOptions<T>) => void;
     }) & {
   /**

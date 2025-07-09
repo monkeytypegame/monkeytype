@@ -584,13 +584,13 @@ function handleInputSubmit(): void {
     return;
   }
 
-  if ("valueConvert" in inputModeParams.command) {
+  if ("inputValueConvert" in inputModeParams.command) {
     inputModeParams.command.exec?.({
       commandlineModal: modal,
 
       // @ts-expect-error this is fine
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      input: inputModeParams.command.valueConvert(inputValue),
+      input: inputModeParams.command.inputValueConvert(inputValue),
     });
   } else {
     inputModeParams.command.exec?.({
@@ -938,8 +938,8 @@ const modal = new AnimatedModal({
         const command =
           inputModeParams.command as CommandWithValidation<unknown>;
 
-        if ("valueConvert" in command) {
-          checkValue = command.valueConvert(currentValue);
+        if ("inputValueConvert" in command) {
+          checkValue = command.inputValueConvert(currentValue);
         }
         await isValid(
           checkValue,
