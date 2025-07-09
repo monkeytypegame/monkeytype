@@ -1039,45 +1039,67 @@ function convertRuleOption(rule: string): string[] {
 }
 
 async function appendSecondaryButtons(): Promise<void> {
-  const dailyRules = await ServerConfiguration.get()?.dailyLeaderboards
+  const dailyRulesConfig = await ServerConfiguration.get()?.dailyLeaderboards
     .validModeRules;
-  console.log("###", { dailyRules });
-  if (dailyRules === undefined)
-    throw new Error("cannot load server configuration");
 
-  const dailyEntries = dailyRules.flatMap((entry) => {
-    const languages = convertRuleOption(entry.language) as Language[];
-    const mode2 = convertRuleOption(entry.mode2);
+  if (dailyRulesConfig === undefined)
+    throw new Error(
+      "cannot load server configuration for dailyLeaderboards.validModeRules"
+    );
 
-    return mode2.map((it) => ({
-      mode: entry.mode,
-      mode2: it,
+  //a rule can contain multiple values. create a flat list out of them
+  const dailyRules = dailyRulesConfig.flatMap((rule) => {
+    const languages = convertRuleOption(rule.language) as Language[];
+    const mode2List = convertRuleOption(rule.mode2);
+
+    return mode2List.map((mode2) => ({
+      mode: rule.mode as Mode,
+      mode2,
       languages,
     }));
   });
 
-  const result: Map<string, Map<string, string[]>> = dailyEntries.reduce(
-    (acc: Map<string, Map<string, string[]>>, { mode, mode2, languages }) => {
-      let modeMap = acc.get(mode);
-      if (modeMap === undefined) {
-        modeMap = new Map();
-        acc.set(mode, modeMap);
-      }
+  const langByMode = dailyRules.reduce<
+    Map<Mode, Map<string /*mode2*/, Language[]>>
+  >((acc, { mode, mode2, languages }) => {
+    let modeMap = acc.get(mode);
+    if (modeMap === undefined) {
+      modeMap = new Map();
+      acc.set(mode, modeMap);
+    }
 
-      let mode2Array = modeMap.get(mode2);
-      if (mode2Array === undefined) {
-        mode2Array = [];
-        modeMap.set(mode2, []);
-      }
+    let mode2Array = modeMap.get(mode2);
+    if (mode2Array === undefined) {
+      mode2Array = [];
+      modeMap.set(mode2, []);
+    }
 
-      mode2Array.push(...languages);
-      return acc;
-    },
-    new Map()
-  );
+    mode2Array.push(...languages);
+    return acc;
+  }, new Map());
 
-  const modesByLanguage: Map<string, string[]> = dailyEntries.reduce(
-    (acc: Map<string, string[]>, { mode, mode2, languages }) => {
+  const mode2Buttons = Array.from(langByMode.keys())
+    .sort()
+    .flatMap((mode) => {
+      // oxlint-disable-next-line no-non-null-assertion
+      const modes2Sorted = Array.from(langByMode.get(mode)!.keys()).sort(
+        (a, b) => parseInt(a) - parseInt(b)
+      );
+
+      const icon = mode === "time" ? "fas fa-clock" : "fas fa-align-left";
+
+      return modes2Sorted.map(
+        (mode2) => `<button data-mode="${mode}" data-mode2="${mode2}">
+      <i class="${icon}"></i>
+       ${mode} ${mode2}
+    </button>`
+      );
+    });
+
+  $(".modeButtons").html(mode2Buttons.join("\n"));
+
+  const modesByLanguage = dailyRules.reduce<Map<string, string[]>>(
+    (acc, { mode, mode2, languages }) => {
       for (const lang of languages) {
         let modesList = acc.get(lang);
         if (modesList === undefined) {
@@ -1090,38 +1112,17 @@ async function appendSecondaryButtons(): Promise<void> {
     },
     new Map()
   );
-  console.log("###", modesByLanguage);
 
-  const mode2Buttons = [];
-
-  const modes: string[] = Array.from(result.keys());
-  modes.sort();
-
-  for (const mode of modes) {
-    // @ts-expect-error cannot be undefined
-    const modes2 = Array.from(result.get(mode).keys());
-    modes2.sort((a, b) => parseInt(a) - parseInt(b));
-    for (const mode2 of modes2) {
-      mode2Buttons.push(`<button data-mode="${mode}" data-mode2="${mode2}">
-          <i class="${
-            mode === "time" ? "fas fa-clock" : "fas fa-align-left"
-          }"></i>
-           ${mode} ${mode2}
-        </button>`);
-    }
-  }
-  $(".modeButtons").html(mode2Buttons.join("\n"));
-
-  const newLangButtons = Array.from(modesByLanguage.entries()).map(
-    ([lang, modes]) =>
-      `<button data-language="${lang}" data-modes="${modes.join(" ")}">
+  const newLangButtons = Array.from(modesByLanguage.entries())
+    .sort()
+    .map(
+      ([lang, modes]) =>
+        `<button data-language="${lang}" data-modes="${modes.join(" ")}">
           <i class="fas fa-globe"></i>
           ${lang}
         </button>`
-  );
+    );
   $(".languageButtons").html(newLangButtons.join("\n"));
-
-  console.log("###", result);
 }
 
 function updateModeButtons(): void {
