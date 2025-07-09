@@ -14,11 +14,6 @@ const commands: Command[] = [
     valueConvert: Number,
     validation: {
       schema: FontSizeSchema,
-      isValid: async (value: number) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        if (value < 10) return true;
-        return "number to big";
-      },
     },
     exec: ({ input }): void => {
       if (input === undefined || input === "") return;
