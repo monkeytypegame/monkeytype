@@ -299,6 +299,15 @@ function onBeforeDelete({ event }: InputEventHandler): void {
     event.preventDefault();
     return;
   }
+  const { inputValue } = getInputValue();
+  const inputIsEmpty = inputValue === "";
+  const firstWord = TestState.activeWordIndex === 0;
+
+  if (inputIsEmpty && firstWord) {
+    //block this no matter what
+    event.preventDefault();
+    return;
+  }
 
   const freedomMode = Config.freedomMode;
   if (freedomMode) {
@@ -306,13 +315,10 @@ function onBeforeDelete({ event }: InputEventHandler): void {
     return;
   }
 
-  const { inputValue } = getInputValue();
-
   const confidence = Config.confidenceMode;
   const previousWordCorrect =
     (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
     TestWords.words.get(TestState.activeWordIndex - 1);
-  const inputIsEmpty = inputValue === "";
 
   if (confidence === "on" && inputIsEmpty && !previousWordCorrect) {
     event.preventDefault();
@@ -530,6 +536,8 @@ function replaceLastInputValueChar(char: string): void {
 }
 
 function setInputValue(value: string): void {
+  console.trace();
+  console.log("setting input value", value);
   wordsInput.value = " " + value;
   setTestInputToDOMValue();
 }
