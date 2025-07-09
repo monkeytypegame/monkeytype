@@ -202,7 +202,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       return;
     } else {
       nameIndicator.show("checking");
-      void checkNameDebounced();
+      checkNameDebounced();
     }
   });
 }

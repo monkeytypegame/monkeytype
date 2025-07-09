@@ -54,7 +54,7 @@ export default class SettingsGroup<T extends ConfigValue> {
       this.elements = [el];
     } else if (this.mode === "button") {
       const els = document.querySelectorAll(`
-        .pageSettings .section[data-config-name=${this.configName}] button`);
+        .pageSettings .section[data-config-name=${this.configName}] .buttons button, .pageSettings .section[data-config-name=${this.configName}] .inputs button`);
 
       if (els.length === 0) {
         throw new Error(`Failed to find a button element for ${configName}`);

@@ -1,4 +1,4 @@
-import Page from "./page";
+import { PageWithUrlParams } from "./page";
 import * as Skeleton from "../utils/skeleton";
 import Config from "../config";
 import {
@@ -15,6 +15,8 @@ import {
   endOfDay,
   endOfWeek,
   format,
+  formatDuration,
+  intervalToDuration,
   startOfDay,
   startOfWeek,
   subDays,
@@ -34,10 +36,6 @@ import { abbreviateNumber } from "../utils/numbers";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
-import {
-  safeParse as parseUrlSearchParams,
-  serialize as serializeUrlSearchParams,
-} from "zod-urlsearchparams";
 import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
@@ -47,6 +45,7 @@ import {
   LanguageSchema,
 } from "@monkeytype/contracts/schemas/languages";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -633,13 +632,18 @@ function fillUser(): void {
     return;
   }
 
+  const minTimeTyping =
+    ServerConfiguration.get()?.leaderboards.minTimeTyping ?? 7200;
+
   if (
     isAuthenticated() &&
     !isDevEnvironment() &&
-    (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 7200
+    (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < minTimeTyping
   ) {
     $(".page.pageLeaderboards .bigUser").html(
-      '<div class="warning">Your account must have 2 hours typed to be placed on the leaderboard.</div>'
+      `<div class="warning">Your account must have ${formatDuration(
+        intervalToDuration({ start: 0, end: minTimeTyping * 1000 })
+      )} typed to be placed on the leaderboard.</div>`
     );
     return;
   }
@@ -1135,33 +1139,16 @@ function updateGetParameters(): void {
 
   params.page = state.page + 1;
 
-  const urlParams = serializeUrlSearchParams({
-    schema: UrlParameterSchema,
-    data: params,
-  });
-
-  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-  window.history.replaceState({}, "", newUrl);
+  page.setUrlParams(params);
 
   selectorLS.set(state);
 }
 
-function readGetParameters(): void {
-  const urlParams = new URLSearchParams(window.location.search);
-
-  if (urlParams.size === 0) {
+function readGetParameters(params?: UrlParameter): void {
+  if (params === undefined) {
     Object.assign(state, selectorLS.get());
     return;
   }
-
-  const parsed = parseUrlSearchParams({
-    schema: UrlParameterSchema,
-    input: urlParams,
-  });
-  if (!parsed.success) {
-    return;
-  }
-  const params = parsed.data;
 
   if (params.type !== undefined) {
     state.type = params.type;
@@ -1288,18 +1275,20 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
   }
 );
 
-export const page = new Page({
+export const page = new PageWithUrlParams({
   id: "leaderboards",
   element: $(".page.pageLeaderboards"),
   path: "/leaderboards",
+  urlParamsSchema: UrlParameterSchema,
+
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLeaderboards");
     stopTimer();
   },
-  beforeShow: async (): Promise<void> => {
+  beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageLeaderboards", "main");
     // await appendLanguageButtons(); //todo figure out this race condition
-    readGetParameters();
+    readGetParameters(options.urlParams);
     startTimer();
     updateTypeButtons();
     updateTitle();

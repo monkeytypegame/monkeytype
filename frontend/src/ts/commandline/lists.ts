@@ -530,7 +530,7 @@ export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
   }
 
   singleList = {
-    title: "All commands",
+    title: "",
     list: singleCommands,
   };
   return singleList;
