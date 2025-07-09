@@ -135,7 +135,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     (eventKey === "language" || eventKey === "funbox") &&
     Config.funbox.includes("zipf")
   ) {
-    void debouncedZipfCheck();
+    debouncedZipfCheck();
   }
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
@@ -1186,7 +1186,7 @@ export function setRightToLeft(isEnabled: boolean): void {
 }
 
 export function setLigatures(isEnabled: boolean): void {
-  if (isEnabled) {
+  if (isEnabled || Config.mode === "custom" || Config.mode === "zen") {
     $("#words").addClass("withLigatures");
     $("#resultWordsHistory .words").addClass("withLigatures");
     $("#resultReplay .words").addClass("withLigatures");

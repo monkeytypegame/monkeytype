@@ -15,6 +15,8 @@ import {
   endOfDay,
   endOfWeek,
   format,
+  formatDuration,
+  intervalToDuration,
   startOfDay,
   startOfWeek,
   subDays,
@@ -43,6 +45,7 @@ import {
   LanguageSchema,
 } from "@monkeytype/contracts/schemas/languages";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -629,13 +632,18 @@ function fillUser(): void {
     return;
   }
 
+  const minTimeTyping =
+    ServerConfiguration.get()?.leaderboards.minTimeTyping ?? 7200;
+
   if (
     isAuthenticated() &&
     !isDevEnvironment() &&
-    (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 7200
+    (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < minTimeTyping
   ) {
     $(".page.pageLeaderboards .bigUser").html(
-      '<div class="warning">Your account must have 2 hours typed to be placed on the leaderboard.</div>'
+      `<div class="warning">Your account must have ${formatDuration(
+        intervalToDuration({ start: 0, end: minTimeTyping * 1000 })
+      )} typed to be placed on the leaderboard.</div>`
     );
     return;
   }
