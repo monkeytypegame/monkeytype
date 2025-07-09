@@ -584,10 +584,21 @@ function handleInputSubmit(): void {
     return;
   }
 
-  inputModeParams.command.exec?.({
-    commandlineModal: modal,
-    input: inputValue,
-  });
+  if ("valueConvert" in inputModeParams.command) {
+    inputModeParams.command.exec?.({
+      commandlineModal: modal,
+
+      // @ts-expect-error this is fine
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      input: inputModeParams.command.valueConvert(inputValue),
+    });
+  } else {
+    inputModeParams.command.exec?.({
+      commandlineModal: modal,
+      input: inputValue,
+    });
+  }
+
   void AnalyticsController.log("usedCommandLine", {
     command: inputModeParams.command.id,
   });
@@ -927,7 +938,7 @@ const modal = new AnimatedModal({
         const command =
           inputModeParams.command as CommandWithValidation<unknown>;
 
-        if (command.valueConvert) {
+        if ("valueConvert" in command) {
           checkValue = command.valueConvert(currentValue);
         }
         await isValid(

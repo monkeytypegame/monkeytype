@@ -4,8 +4,8 @@ import { z } from "zod";
 
 // this file is needed becauase otherwise it would produce a circular dependency
 
-export type CommandExecOptions = {
-  input?: string;
+export type CommandExecOptions<T> = {
+  input?: T;
   commandlineModal: AnimatedModal;
 };
 
@@ -28,7 +28,7 @@ export type Command = {
   configKey?: keyof Config;
   configValue?: string | number | boolean | number[];
   configValueMode?: "include";
-  exec?: (options: CommandExecOptions) => void;
+  exec?: (options: CommandExecOptions<string>) => void;
   hover?: () => void;
   available?: () => boolean;
   active?: () => boolean;
@@ -36,9 +36,12 @@ export type Command = {
   customData?: Record<string, string | boolean>;
 };
 
-export type CommandWithValidation<T> = Command & {
-  valueConvert?: (val: string) => T | string;
-
+export type CommandWithValidation<T> = (T extends string
+  ? Command
+  : Omit<Command, "exec"> & {
+      valueConvert: (val: string) => T;
+      exec?: (options: CommandExecOptions<T>) => void;
+    }) & {
   /**
    * Validate the input value and indicate the validation result
    * If the schema is defined it is always checked first.

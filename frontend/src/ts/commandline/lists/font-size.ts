@@ -1,4 +1,7 @@
-import { FontSizeSchema } from "@monkeytype/contracts/schemas/configs";
+import {
+  FontSize,
+  FontSizeSchema,
+} from "@monkeytype/contracts/schemas/configs";
 import Config, * as UpdateConfig from "../../config";
 import { Command, CommandWithValidation } from "../types";
 
@@ -16,9 +19,10 @@ const commands: Command[] = [
       schema: FontSizeSchema,
     },
     exec: ({ input }): void => {
-      if (input === undefined || input === "") return;
-      UpdateConfig.setFontSize(parseFloat(input));
+      if (input === undefined) return;
+      UpdateConfig.setFontSize(input);
     },
-  } as CommandWithValidation<number>,
+  } as CommandWithValidation<FontSize> as Command,
 ];
+
 export default commands;
