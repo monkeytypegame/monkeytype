@@ -45,6 +45,7 @@ import {
   LanguageSchema,
 } from "@monkeytype/contracts/schemas/languages";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import { Mode, Mode2, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
@@ -71,8 +72,8 @@ type WeeklyState = {
 
 type DailyState = {
   type: "daily";
-  mode: "time";
-  mode2: "15" | "60";
+  mode: Mode;
+  mode2: Mode2<DailyState["mode"]>;
   yesterday: boolean;
   minWpm: number;
   language: Language;
@@ -98,6 +99,7 @@ const state = {
   loading: true,
   updating: false,
   type: "allTime",
+  mode: "time",
   mode2: "15",
   data: null,
   userData: null,
@@ -111,7 +113,8 @@ const state = {
 
 const SelectorSchema = z.object({
   type: LeaderboardTypeSchema,
-  mode2: z.enum(["15", "60"]).optional(),
+  mode: ModeSchema.optional(),
+  mode2: z.string().optional(),
   language: LanguageSchema.optional(),
   yesterday: z.boolean().optional(),
   lastWeek: z.boolean().optional(),
@@ -147,7 +150,7 @@ function updateTitle(): void {
     state.type === "allTime"
       ? ` Time ${state.mode2}`
       : state.type === "daily"
-      ? ` Time ${state.mode2}`
+      ? ` ${capitalizeFirstLetter(state.mode)} ${state.mode2}`
       : "";
 
   state.title = `${type} ${language} ${mode} Leaderboard`;
@@ -273,7 +276,7 @@ async function requestData(update = false): Promise<void> {
       Ape.leaderboards.getDailyRank,
       {
         language: state.language,
-        mode: "time",
+        mode: state.mode,
         mode2: state.mode2,
         daysBefore: state.yesterday ? 1 : undefined,
       }
@@ -1028,11 +1031,118 @@ function stopTimer(): void {
 //   }
 // }
 
+function convertRuleOption(rule: string): string[] {
+  if (rule.startsWith("(")) {
+    return rule.slice(1, -1).split("|");
+  }
+  return [rule];
+}
+
+async function appendSecondaryButtons(): Promise<void> {
+  const dailyRules = await ServerConfiguration.get()?.dailyLeaderboards
+    .validModeRules;
+  console.log("###", { dailyRules });
+  if (dailyRules === undefined)
+    throw new Error("cannot load server configuration");
+
+  const dailyEntries = dailyRules.flatMap((entry) => {
+    const languages = convertRuleOption(entry.language) as Language[];
+    const mode2 = convertRuleOption(entry.mode2);
+
+    return mode2.map((it) => ({
+      mode: entry.mode,
+      mode2: it,
+      languages,
+    }));
+  });
+
+  const result: Map<string, Map<string, string[]>> = dailyEntries.reduce(
+    (acc: Map<string, Map<string, string[]>>, { mode, mode2, languages }) => {
+      let modeMap = acc.get(mode);
+      if (modeMap === undefined) {
+        modeMap = new Map();
+        acc.set(mode, modeMap);
+      }
+
+      let mode2Array = modeMap.get(mode2);
+      if (mode2Array === undefined) {
+        mode2Array = [];
+        modeMap.set(mode2, []);
+      }
+
+      mode2Array.push(...languages);
+      return acc;
+    },
+    new Map()
+  );
+
+  const modesByLanguage: Map<string, string[]> = dailyEntries.reduce(
+    (acc: Map<string, string[]>, { mode, mode2, languages }) => {
+      for (const lang of languages) {
+        let modesList = acc.get(lang);
+        if (modesList === undefined) {
+          modesList = [];
+          acc.set(lang, modesList);
+        }
+        modesList.push(mode + "-" + mode2);
+      }
+      return acc;
+    },
+    new Map()
+  );
+  console.log("###", modesByLanguage);
+
+  const mode2Buttons = [];
+
+  const modes: string[] = Array.from(result.keys());
+  modes.sort();
+
+  for (const mode of modes) {
+    // @ts-expect-error cannot be undefined
+    const modes2 = Array.from(result.get(mode).keys());
+    modes2.sort((a, b) => parseInt(a) - parseInt(b));
+    for (const mode2 of modes2) {
+      mode2Buttons.push(`<button data-mode="${mode}" data-mode2="${mode2}">
+          <i class="${
+            mode === "time" ? "fas fa-clock" : "fas fa-align-left"
+          }"></i>
+           ${mode} ${mode2}
+        </button>`);
+    }
+  }
+  $(".modeButtons").html(mode2Buttons.join("\n"));
+
+  const newLangButtons = Array.from(modesByLanguage.entries()).map(
+    ([lang, modes]) =>
+      `<button data-language="${lang}" data-modes="${modes.join(" ")}">
+          <i class="fas fa-globe"></i>
+          ${lang}
+        </button>`
+  );
+  $(".languageButtons").html(newLangButtons.join("\n"));
+
+  console.log("###", result);
+}
+
 function updateModeButtons(): void {
   if (state.type !== "allTime" && state.type !== "daily") return;
   const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
   el.find("button").removeClass("active");
-  el.find(`button[data-mode=${state.mode2}]`).addClass("active");
+  el.find(`button[data-mode2=${state.mode2}]`).addClass("active");
+
+  if (state.type === "allTime") {
+    $(".page.pageLeaderboards .buttonGroup.modeButtons button").addClass(
+      "hidden"
+    );
+
+    $(
+      '.page.pageLeaderboards .buttonGroup.modeButtons [data-mode="time"][data-mode2="15"], .page.pageLeaderboards .buttonGroup.modeButtons [data-mode="time"][data-mode2="60"]'
+    ).removeClass("hidden");
+  } else {
+    $(".page.pageLeaderboards .buttonGroup.modeButtons button").removeClass(
+      "hidden"
+    );
+  }
 }
 
 function updateLanguageButtons(): void {
@@ -1040,6 +1150,13 @@ function updateLanguageButtons(): void {
   const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
   el.find("button").removeClass("active");
   el.find(`button[data-language=${state.language}]`).addClass("active");
+
+  $(
+    `.page.pageLeaderboards .buttonGroup.languageButtons button:not([data-modes~="${state.mode}-${state.mode2}"])`
+  ).addClass("hidden");
+  $(
+    `.page.pageLeaderboards .buttonGroup.languageButtons button[data-modes~="${state.mode}-${state.mode2}"]`
+  ).removeClass("hidden");
 }
 
 function disableButtons(): void {
@@ -1126,6 +1243,7 @@ function updateGetParameters(): void {
   if (state.type === "allTime") {
     params.mode2 = state.mode2;
   } else if (state.type === "daily") {
+    params.mode = state.mode;
     params.language = state.language;
     params.mode2 = state.mode2;
     if (state.yesterday) {
@@ -1155,8 +1273,8 @@ function readGetParameters(params?: UrlParameter): void {
   }
 
   if (state.type === "allTime") {
-    if (params.mode2) {
-      state.mode2 = params.mode2;
+    if (params.mode2 !== undefined) {
+      state.mode2 = params.mode2 as AllTimeState["mode2"];
     }
   } else if (state.type === "daily") {
     if (params.language !== undefined) {
@@ -1167,6 +1285,9 @@ function readGetParameters(params?: UrlParameter): void {
     }
     if (params.mode2 !== undefined) {
       state.mode2 = params.mode2;
+    }
+    if (params.mode !== undefined) {
+      state.mode = params.mode;
     }
     if (params.yesterday !== undefined) {
       state.yesterday = params.yesterday;
@@ -1250,14 +1371,16 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
   "click",
   "button",
   function () {
-    const mode = $(this).attr("data-mode") as "15" | "60" | undefined;
+    const mode = $(this).attr("data-mode") as Mode;
+    const mode2 = $(this).attr("data-mode2");
     const language = $(this).data("language") as Language;
     if (
-      mode !== undefined &&
+      mode2 !== undefined &&
       (state.type === "allTime" || state.type === "daily")
     ) {
-      if (state.mode2 === mode) return;
-      state.mode2 = mode;
+      state.mode = mode;
+      if (state.mode2 === mode2) return;
+      state.mode2 = mode2;
       state.page = 0;
     } else if (language !== undefined && state.type === "daily") {
       if (state.language === language) return;
@@ -1288,6 +1411,7 @@ export const page = new PageWithUrlParams({
   beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageLeaderboards", "main");
     // await appendLanguageButtons(); //todo figure out this race condition
+    await appendSecondaryButtons();
     readGetParameters(options.urlParams);
     startTimer();
     updateTypeButtons();
