@@ -1181,6 +1181,22 @@ describe("UserDal", () => {
       expect(read.email).toEqual("next");
       expect(read.emailVerified).toEqual(false);
     });
+
+    it("should update email and isVerified", async () => {
+      //given
+      const { uid } = await UserTestData.createUser({
+        email: "init",
+        emailVerified: false,
+      });
+
+      //when
+      await expect(UserDAL.updateEmail(uid, "next", true)).resolves.toBe(true);
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.email).toEqual("next");
+      expect(read.emailVerified).toEqual(true);
+    });
   });
   describe("resetPb", () => {
     it("throws for nonexisting user", async () => {

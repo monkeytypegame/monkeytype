@@ -233,7 +233,7 @@ export async function updateQuoteRatings(
 export async function updateEmail(
   uid: string,
   email: string,
-  emailVerified: boolean = true
+  emailVerified: boolean = false
 ): Promise<boolean> {
   await updateUser(
     { uid },
