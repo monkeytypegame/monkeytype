@@ -153,6 +153,12 @@ async function goToNextWord({
 }: GoToNextWordParams): Promise<void> {
   TestUI.beforeTestWordChange("forward", correctInsert);
 
+  if (correctInsert) {
+    Replay.addReplayEvent("submitCorrectWord");
+  } else {
+    Replay.addReplayEvent("submitErrorWord");
+  }
+
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
     fb.functions.handleSpace();
   }
@@ -212,6 +218,8 @@ function goToPreviousWord(inputType: SupportedInputType): void {
   }
 
   TestUI.beforeTestWordChange("back", null);
+
+  Replay.addReplayEvent("backWord");
 
   const word = TestInput.input.popHistory();
   TestState.decreaseActiveWordIndex();
@@ -527,6 +535,9 @@ function onDelete({ inputType }: InputEventHandler): void {
   const { realInputValue } = getInputValue();
 
   setTestInputToDOMValue();
+
+  Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
+
   if (realInputValue === "") {
     const isFirstVisibleWord =
       TestState.activeWordIndex - TestState.removedUIWordCount === 0;
