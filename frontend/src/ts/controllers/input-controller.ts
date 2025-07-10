@@ -731,10 +731,19 @@ function handleChar(
   //stop the word jump by slicing off the last character, update word again
   // dont do it in replace typos, because it might trigger in the middle of a wrd
   // when using non monospace fonts
+  /**
+   * NOTE: this input length > 1 guard, added in commit bc94a64,
+   * aimed to prevent some input blocking issue after test restarts.
+   *
+   * This check was found to cause a jump to a hidden 3rd line bug in zen mode (#6697)
+   * So commented due to the zen bug and the original issue not being reproducible,
+   *
+   * REVISIT this logic if any INPUT or WORD JUMP issues reappear.
+   */
   if (
     activeWordTopBeforeJump < newActiveTop &&
-    !TestUI.lineTransition &&
-    TestInput.input.current.length > 1
+    !TestUI.lineTransition
+    // TestInput.input.current.length > 1
   ) {
     if (Config.mode === "zen" || Config.indicateTypos === "replace") {
       if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);

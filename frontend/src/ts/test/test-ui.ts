@@ -690,24 +690,6 @@ export function colorful(tc: boolean): void {
   }
 }
 
-function handleZenLineOverflow(): void {
-  const wordIndex = TestState.activeWordIndex - TestState.removedUIWordCount;
-  const activeWord = document.querySelectorAll("#words .word")?.[wordIndex] as
-    | HTMLElement
-    | undefined;
-
-  if (!activeWord) return;
-
-  const { marginTop, marginBottom } = window.getComputedStyle(activeWord);
-  const wordHeight =
-    activeWord.offsetHeight + parseInt(marginTop) + parseInt(marginBottom);
-
-  const maxTop = wordHeight; // second line (0-based)
-  if (activeWord.offsetTop > maxTop && !lineTransition) {
-    void lineJump(activeWord.offsetTop - wordHeight);
-  }
-}
-
 export async function updateActiveWordLetters(
   inputOverride?: string
 ): Promise<void> {
@@ -868,9 +850,6 @@ export async function updateActiveWordLetters(
     );
   if (Config.tapeMode !== "off") {
     void scrollTape();
-  }
-  if (Config.mode === "zen") {
-    handleZenLineOverflow();
   }
 }
 
