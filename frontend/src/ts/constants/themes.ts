@@ -1114,6 +1114,13 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#5b578e",
     textColor: "#f4e0c9",
   },
+  serratura_blu: {
+    bgColor: "#094494",
+    mainColor: "#ffffff",
+    subColor: "#2f3336",
+    textColor: "#ffffff",
+  },
+  
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
