@@ -354,12 +354,14 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
     preventDefault = true;
   }
 
+  const shouldInsertSpace = shouldInsertSpaceCharacter(data);
+
   //prevent the word from jumping to the next line if the word is too long
   //this will not work for the first word of each line, but that has a low chance of happening
   if (
     data !== null &&
     data !== "" &&
-    data !== " " &&
+    ((data === " " && shouldInsertSpace) || data !== " ") &&
     TestInput.input.current.length >= TestWords.words.getCurrent().length &&
     TestUI.getActiveWordTopAfterAppend(data) > TestUI.activeWordTop &&
     Config.mode !== "zen"
@@ -370,7 +372,8 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   // block input if the word is too long
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
-  if (TestInput.input.current.length >= inputLimit && data !== " ") {
+  const overLimit = TestInput.input.current.length >= inputLimit;
+  if (overLimit && ((data === " " && shouldInsertSpace) || data !== " ")) {
     console.error("Hitting word limit");
     preventDefault = true;
   }
