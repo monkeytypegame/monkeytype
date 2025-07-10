@@ -1971,26 +1971,6 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setDeleteOnError(
-  value: ConfigSchemas.DeleteOnError,
-  nosave?: boolean
-): boolean {
-  if (
-    !isConfigValueValid(
-      "delete on error",
-      value,
-      ConfigSchemas.DeleteOnErrorSchema
-    )
-  )
-    return false;
-
-  config.deleteOnError = value;
-  saveToLocalStorage("deleteOnError", nosave);
-  ConfigEvent.dispatch("deleteOnError", config.deleteOnError);
-
-  return true;
-}
-
 export async function apply(
   configToApply: Config | Partial<Config>
 ): Promise<void> {
@@ -2097,7 +2077,6 @@ export async function apply(
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
     setTapeMargin(configObj.tapeMargin, true);
-    setDeleteOnError(configObj.deleteOnError, true);
 
     ConfigEvent.dispatch(
       "configApplied",

@@ -343,9 +343,6 @@ export const CustomBackgroundSchema = z
   .or(z.literal(""));
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
-export const DeleteOnErrorSchema = z.enum(["off", "word", "letter"]);
-export type DeleteOnError = z.infer<typeof DeleteOnErrorSchema>;
-
 export const ConfigSchema = z
   .object({
     theme: ThemeNameSchema,
@@ -437,7 +434,6 @@ export const ConfigSchema = z
     showAverage: ShowAverageSchema,
     maxLineWidth: MaxLineWidthSchema,
     customPolyglot: CustomPolyglotSchema,
-    deleteOnError: DeleteOnErrorSchema,
   } satisfies Record<string, ZodSchema>)
   .strict();
 
@@ -553,7 +549,6 @@ export const ConfigGroupsLiteral = {
   showAverage: "hideElements",
   maxLineWidth: "appearance",
   customPolyglot: "behavior",
-  deleteOnError: "input",
 } as const satisfies Record<ConfigKey, ConfigGroupName>;
 
 export type ConfigGroups = typeof ConfigGroupsLiteral;
