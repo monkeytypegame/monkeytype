@@ -605,6 +605,18 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
   );
   delete relevantUserInfo.customThemes;
 
+  //update users emailVerified status if it changed
+  const { email, emailVerified } = req.ctx.decodedToken;
+  if (emailVerified !== undefined && emailVerified !== userInfo.emailVerified) {
+    void addImportantLog(
+      "user_verify_email",
+      `emailVerified changed to ${emailVerified} for email ${email}`,
+      uid
+    );
+    await UserDAL.updateEmail(uid, email, emailVerified);
+    userInfo.emailVerified = emailVerified;
+  }
+
   const userData: User = {
     ...relevantUserInfo,
     resultFilterPresets,
