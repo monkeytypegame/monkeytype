@@ -27,83 +27,6 @@ import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
 
-function createHintsHtml(
-  incorrectLtrIndices: number[][],
-  activeWordLetters: NodeListOf<Element>,
-  inputWord: string
-): string {
-  const inputChars = Strings.splitIntoCharacters(inputWord);
-  let hintsHtml = "";
-  for (const adjacentLetters of incorrectLtrIndices) {
-    for (const indx of adjacentLetters) {
-      const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
-      const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
-      const blockIndices = `[${indx}]`;
-      const blockChars = inputChars[indx];
-
-      hintsHtml +=
-        `<hint data-length=1 data-chars-index=${blockIndices}` +
-        ` style="left: ${blockLeft + blockWidth / 2}px;">${blockChars}</hint>`;
-    }
-  }
-  hintsHtml = `<div class="hints">${hintsHtml}</div>`;
-  return hintsHtml;
-}
-
-async function joinOverlappingHints(
-  incorrectLtrIndices: number[][],
-  activeWordLetters: NodeListOf<Element>,
-  hintElements: HTMLCollection
-): Promise<void> {
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRTL = currentLanguage.rightToLeft;
-
-  let i = 0;
-  for (const adjacentLetters of incorrectLtrIndices) {
-    for (let j = 0; j < adjacentLetters.length - 1; j++) {
-      const block1El = hintElements[i] as HTMLElement;
-      const block2El = hintElements[i + 1] as HTMLElement;
-      const leftBlock = isLanguageRTL ? block2El : block1El;
-      const rightBlock = isLanguageRTL ? block1El : block2El;
-
-      /** HintBlock.offsetLeft is at the center line of corresponding letters
-       * then "transform: translate(-50%)" aligns hints with letters */
-      if (
-        leftBlock.offsetLeft + leftBlock.offsetWidth / 2 >
-        rightBlock.offsetLeft - rightBlock.offsetWidth / 2
-      ) {
-        block1El.dataset["length"] = (
-          parseInt(block1El.dataset["length"] ?? "1") +
-          parseInt(block2El.dataset["length"] ?? "1")
-        ).toString();
-
-        const block1Indices = block1El.dataset["charsIndex"] ?? "[]";
-        const block2Indices = block2El.dataset["charsIndex"] ?? "[]";
-        block1El.dataset["charsIndex"] =
-          block1Indices.slice(0, -1) + "," + block2Indices.slice(1);
-
-        const letter1Index = adjacentLetters[j] ?? 0;
-        const newLeft =
-          (activeWordLetters[letter1Index] as HTMLElement).offsetLeft +
-          (isLanguageRTL
-            ? (activeWordLetters[letter1Index] as HTMLElement).offsetWidth
-            : 0) +
-          (block2El.offsetLeft - block1El.offsetLeft);
-        block1El.style.left = newLeft.toString() + "px";
-
-        block1El.insertAdjacentHTML("beforeend", block2El.innerHTML);
-
-        block2El.remove();
-        adjacentLetters.splice(j + 1, 1);
-        i -= j === 0 ? 1 : 2;
-        j -= j === 0 ? 1 : 2;
-      }
-      i++;
-    }
-    i++;
-  }
-}
-
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
   if (supports === "no") {
@@ -130,12 +53,17 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
 });
 
+export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
+  updateHintsPosition,
+  { rejectSkippedCalls: false }
+);
+
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (
     (eventKey === "language" || eventKey === "funbox") &&
     Config.funbox.includes("zipf")
   ) {
-    void debouncedZipfCheck();
+    debouncedZipfCheck();
   }
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
@@ -146,9 +74,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       eventKey
     )
   ) {
-    updateHintsPosition().catch((e: unknown) => {
-      console.error(e);
-    });
+    void updateHintsPositionDebounced();
   }
 
   if (eventKey === "theme") void applyBurstHeatmap();
@@ -269,7 +195,112 @@ export function updateActiveElement(
   }
 }
 
-export async function updateHintsPosition(): Promise<void> {
+function createHintsHtml(
+  incorrectLettersIndices: number[][],
+  activeWordLetters: NodeListOf<Element>,
+  input: string | string[],
+  wrapWithDiv: boolean = true
+): string {
+  // if input is an array, it contains only incorrect letters input.
+  // if input is a string, it contains the whole word input.
+  const isFullWord = typeof input === "string";
+  const inputChars = isFullWord ? Strings.splitIntoCharacters(input) : input;
+
+  let hintsHtml = "";
+  let currentHint = 0;
+
+  for (const adjacentLetters of incorrectLettersIndices) {
+    for (const letterIndex of adjacentLetters) {
+      const letter = activeWordLetters[letterIndex] as HTMLElement;
+      const blockIndices = `${letterIndex}`;
+      const blockChars = isFullWord
+        ? inputChars[letterIndex]
+        : inputChars[currentHint++];
+
+      hintsHtml += `<hint data-chars-index=${blockIndices} style="left:${
+        letter.offsetLeft + letter.offsetWidth / 2
+      }px;">${blockChars}</hint>`;
+    }
+  }
+  if (wrapWithDiv) hintsHtml = `<div class="hints">${hintsHtml}</div>`;
+  return hintsHtml;
+}
+
+async function joinOverlappingHints(
+  incorrectLettersIndices: number[][],
+  activeWordLetters: NodeListOf<Element>,
+  hintElements: HTMLCollection
+): Promise<void> {
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
+  let firstHintInSeq = 0;
+  for (const adjacentLettersSequence of incorrectLettersIndices) {
+    const lastHintInSeq = firstHintInSeq + adjacentLettersSequence.length - 1;
+    joinHintsOfAdjacentLetters(firstHintInSeq, lastHintInSeq);
+    firstHintInSeq += adjacentLettersSequence.length;
+  }
+
+  function joinHintsOfAdjacentLetters(
+    firstHintInSequence: number,
+    lastHintInSequence: number
+  ): void {
+    let currentHint = firstHintInSequence;
+
+    while (currentHint < lastHintInSequence) {
+      const block1El = hintElements[currentHint] as HTMLElement;
+      const block2El = hintElements[currentHint + 1] as HTMLElement;
+
+      const block1Indices = block1El.dataset["charsIndex"]?.split(",") ?? [];
+      const block2Indices = block2El.dataset["charsIndex"]?.split(",") ?? [];
+
+      const block1Letter1Indx = parseInt(block1Indices[0] ?? "0");
+      const block2Letter1Indx = parseInt(block2Indices[0] ?? "0");
+
+      const block1Letter1 = activeWordLetters[block1Letter1Indx] as HTMLElement;
+      const block2Letter1 = activeWordLetters[block2Letter1Indx] as HTMLElement;
+
+      const leftBlock = isLanguageRTL ? block2El : block1El;
+      const rightBlock = isLanguageRTL ? block1El : block2El;
+
+      // block edge is offset half its width because of transform: translate(-50%)
+      const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
+      const rightBlockStarts =
+        rightBlock.offsetLeft - rightBlock.offsetWidth / 2;
+
+      const sameTop = block1Letter1.offsetTop === block2Letter1.offsetTop;
+
+      if (sameTop && leftBlockEnds > rightBlockStarts) {
+        // join hint blocks
+        block1El.dataset["charsIndex"] = [
+          ...block1Indices,
+          ...block2Indices,
+        ].join(",");
+
+        const block1Letter1Pos =
+          block1Letter1.offsetLeft +
+          (isLanguageRTL ? block1Letter1.offsetWidth : 0);
+        const bothBlocksLettersWidthHalved =
+          block2El.offsetLeft - block1El.offsetLeft;
+        block1El.style.left =
+          block1Letter1Pos + bothBlocksLettersWidthHalved + "px";
+
+        block1El.insertAdjacentHTML("beforeend", block2El.innerHTML);
+        block2El.remove();
+
+        // after joining blocks, the sequence is shorter
+        lastHintInSequence--;
+        // check if the newly formed block overlaps with the previous one
+        currentHint--;
+        if (currentHint < firstHintInSeq) currentHint = firstHintInSeq;
+      } else {
+        currentHint++;
+      }
+    }
+  }
+}
+
+async function updateHintsPosition(): Promise<void> {
   if (
     ActivePage.get() !== "test" ||
     resultVisible ||
@@ -277,43 +308,62 @@ export async function updateHintsPosition(): Promise<void> {
   )
     return;
 
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRTL = currentLanguage.rightToLeft;
+  let previousHintsContainer: HTMLElement | undefined;
+  let hintIndices: number[][] = [];
+  let hintText: string[] = [];
 
-  let wordEl: HTMLElement | undefined;
-  let letterElements: NodeListOf<Element> | undefined;
+  const hintElements = document.querySelectorAll<HTMLElement>(".hints > hint");
 
-  const hintElements = document
-    .getElementById("words")
-    ?.querySelectorAll("div.word > div.hints > hint");
-  for (let i = 0; i < (hintElements?.length ?? 0); i++) {
-    const hintEl = hintElements?.[i] as HTMLElement;
+  for (const hintEl of hintElements) {
+    const hintsContainer = hintEl.parentElement as HTMLElement;
 
-    if (!wordEl || hintEl.parentElement?.parentElement !== wordEl) {
-      wordEl = hintEl.parentElement?.parentElement as HTMLElement;
-      letterElements = wordEl?.querySelectorAll("letter");
+    if (hintsContainer !== previousHintsContainer) {
+      await adjustHintsContainer(previousHintsContainer, hintIndices, hintText);
+      previousHintsContainer = hintsContainer;
+      hintIndices = [];
+      hintText = [];
     }
 
     const letterIndices = hintEl.dataset["charsIndex"]
-      ?.slice(1, -1)
-      .split(",")
-      .map((indx) => parseInt(indx));
-    const leftmostIndx = isLanguageRTL
-      ? parseInt(hintEl.dataset["length"] ?? "1") - 1
-      : 0;
+      ?.split(",")
+      .map((index) => parseInt(index));
 
-    const el = letterElements?.[
-      letterIndices?.[leftmostIndx] ?? 0
-    ] as HTMLElement;
-    let newLeft = el.offsetLeft;
-    const lettersWidth =
-      letterIndices?.reduce((accum, curr) => {
-        const el = letterElements?.[curr] as HTMLElement;
-        return accum + el.offsetWidth;
-      }, 0) ?? 0;
-    newLeft += lettersWidth / 2;
+    if (letterIndices === undefined || letterIndices.length === 0) continue;
 
-    hintEl.style.left = newLeft.toString() + "px";
+    for (const currentLetterIndex of letterIndices) {
+      const lastBlock = hintIndices[hintIndices.length - 1];
+      if (
+        lastBlock &&
+        lastBlock[lastBlock.length - 1] === currentLetterIndex - 1
+      ) {
+        lastBlock.push(currentLetterIndex);
+      } else {
+        hintIndices.push([currentLetterIndex]);
+      }
+    }
+
+    hintText.push(...Strings.splitIntoCharacters(hintEl.innerHTML));
+  }
+  await adjustHintsContainer(previousHintsContainer, hintIndices, hintText);
+
+  async function adjustHintsContainer(
+    hintsContainer: HTMLElement | undefined,
+    hintIndices: number[][],
+    hintText: string[]
+  ): Promise<void> {
+    if (!hintsContainer || hintIndices.length === 0) return;
+
+    const wordElement = hintsContainer.parentElement as HTMLElement;
+    const letterElements = wordElement.querySelectorAll<HTMLElement>("letter");
+
+    hintsContainer.innerHTML = createHintsHtml(
+      hintIndices,
+      letterElements,
+      hintText,
+      false
+    );
+    const wordHintsElements = wordElement.getElementsByTagName("hint");
+    await joinOverlappingHints(hintIndices, letterElements, wordHintsElements);
   }
 }
 
@@ -589,7 +639,7 @@ export function updateWordsWrapperHeight(force = false): void {
 
 function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
-    void scrollTape(true);
+    void scrollTape(true, updateHintsPositionDebounced);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
     const afterNewlineEls =
@@ -603,6 +653,7 @@ function updateWordsMargin(): void {
         {
           duration: SlowTimer.get() ? 0 : 125,
           queue: "leftMargin",
+          complete: updateHintsPositionDebounced,
         }
       );
       jqWords.dequeue("leftMargin");
@@ -614,6 +665,7 @@ function updateWordsMargin(): void {
       for (const afterNewline of afterNewlineEls) {
         afterNewline.style.marginLeft = `0`;
       }
+      void updateHintsPositionDebounced();
     }
   }
 }
@@ -760,12 +812,10 @@ export async function updateActiveWordLetters(
             : currentLetter) +
           "</letter>";
         if (Config.indicateTypos === "below") {
-          if (!hintIndices?.length) hintIndices.push([i]);
-          else {
-            const lastblock = hintIndices[hintIndices.length - 1];
-            if (lastblock?.[lastblock.length - 1] === i - 1) lastblock.push(i);
-            else hintIndices.push([i]);
-          }
+          const lastBlock = hintIndices[hintIndices.length - 1];
+          if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1)
+            lastBlock.push(i);
+          else hintIndices.push([i]);
         }
       }
     }
@@ -827,7 +877,10 @@ function getNlCharWidth(
   return nlChar.offsetWidth + letterMargin;
 }
 
-export async function scrollTape(noRemove = false): Promise<void> {
+export async function scrollTape(
+  noRemove = false,
+  afterCompleteFn?: () => void
+): Promise<void> {
   if (ActivePage.get() !== "test" || resultVisible) return;
 
   await centeringActiveLine;
@@ -1007,6 +1060,7 @@ export async function scrollTape(noRemove = false): Promise<void> {
       {
         duration: SlowTimer.get() ? 0 : 125,
         queue: "leftMargin",
+        complete: afterCompleteFn,
       }
     );
     jqWords.dequeue("leftMargin");
@@ -1022,6 +1076,7 @@ export async function scrollTape(noRemove = false): Promise<void> {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
     }
+    if (afterCompleteFn) afterCompleteFn();
   }
 }
 
@@ -1186,7 +1241,7 @@ export function setRightToLeft(isEnabled: boolean): void {
 }
 
 export function setLigatures(isEnabled: boolean): void {
-  if (isEnabled) {
+  if (isEnabled || Config.mode === "custom" || Config.mode === "zen") {
     $("#words").addClass("withLigatures");
     $("#resultWordsHistory .words").addClass("withLigatures");
     $("#resultReplay .words").addClass("withLigatures");

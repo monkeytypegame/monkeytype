@@ -1770,32 +1770,11 @@ export function setFontSize(
   if (fontSize < 0) {
     fontSize = 1;
   }
-  if (
-    typeof fontSize === "string" &&
-    ["1", "125", "15", "2", "3", "4"].includes(fontSize)
-  ) {
-    if (fontSize === "125") {
-      fontSize = 1.25;
-    } else if (fontSize === "15") {
-      fontSize = 1.5;
-    } else {
-      fontSize = parseInt(fontSize);
-    }
-  }
 
   if (
     !isConfigValueValid("font size", fontSize, ConfigSchemas.FontSizeSchema)
   ) {
     return false;
-  }
-
-  // i dont know why the above check is not enough
-  // some people are getting font size 15 when it should be converted to 1.5
-  // after converting from the string to float system
-
-  // keeping this in for now, if you want a big font go 14.9 or something
-  if (fontSize === 15) {
-    fontSize = 1.5;
   }
 
   config.fontSize = fontSize;
@@ -1871,17 +1850,19 @@ export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
 ): boolean {
+  // Remove duplicates
+  const deduped = Array.from(new Set(value));
   if (
     !isConfigValueValid(
       "layoutfluid",
-      value,
+      deduped,
       ConfigSchemas.CustomLayoutFluidSchema
     )
   ) {
     return false;
   }
 
-  config.customLayoutfluid = value;
+  config.customLayoutfluid = deduped;
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutfluid", config.customLayoutfluid);
 
@@ -1892,16 +1873,18 @@ export function setCustomPolyglot(
   value: ConfigSchemas.CustomPolyglot,
   nosave?: boolean
 ): boolean {
+  // remove duplicates
+  const deduped = Array.from(new Set(value));
   if (
     !isConfigValueValid(
       "customPolyglot",
-      value,
+      deduped,
       ConfigSchemas.CustomPolyglotSchema
     )
   )
     return false;
 
-  config.customPolyglot = value;
+  config.customPolyglot = deduped;
   saveToLocalStorage("customPolyglot", nosave);
   ConfigEvent.dispatch("customPolyglot", config.customPolyglot);
 

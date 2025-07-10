@@ -8,7 +8,7 @@ const commands: Command[] = [
     display: "Punctuation...",
     icon: "fa-at",
     subgroup: {
-      title: "Change punctuation...",
+      title: "Punctuation...",
       configKey: "punctuation",
       list: [
         {

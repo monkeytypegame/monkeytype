@@ -729,12 +729,14 @@ function handleChar(
 
   const newActiveTop = activeWord?.offsetTop;
   //stop the word jump by slicing off the last character, update word again
+  // dont do it in replace typos, because it might trigger in the middle of a wrd
+  // when using non monospace fonts
   if (
     activeWordTopBeforeJump < newActiveTop &&
     !TestUI.lineTransition &&
     TestInput.input.current.length > 1
   ) {
-    if (Config.mode === "zen") {
+    if (Config.mode === "zen" || Config.indicateTypos === "replace") {
       if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
@@ -1335,6 +1337,7 @@ $("#wordsInput").on("input", (event) => {
     inputValue.length >= currTestInput.length
   ) {
     setWordsInput(" " + currTestInput);
+    updateUI();
     return;
   }
 
