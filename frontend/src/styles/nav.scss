@@ -433,3 +433,13 @@ header {
     }
   }
 }
+#logo:hover {
+  filter: brightness(1.79);
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+#logo .icon:hover {
+  transform: scale(1.15);
+  transition: transform 0.2s ease;
+}
+
