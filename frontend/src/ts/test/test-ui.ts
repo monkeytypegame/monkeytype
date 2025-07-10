@@ -153,7 +153,9 @@ export function reset(): void {
 }
 
 export function focusWords(): void {
-  $("#wordsInput").trigger("focus");
+  const wordsInputEl = document.getElementById("wordsInput");
+  if (!wordsInputEl) return;
+  wordsInputEl.focus({ preventScroll: true });
 }
 
 export function blurWords(): void {
