@@ -131,6 +131,8 @@ const selectorLS = new LocalStorageWithSchema({
   fallback: { type: "allTime", mode2: "15" },
 });
 
+let langByMode: Map<Mode, Map<string /*mode2*/, Language[]>>;
+
 function updateTitle(): void {
   const type =
     state.type === "allTime"
@@ -1059,24 +1061,25 @@ async function appendSecondaryButtons(): Promise<void> {
     }));
   });
 
-  const langByMode = dailyRules.reduce<
-    Map<Mode, Map<string /*mode2*/, Language[]>>
-  >((acc, { mode, mode2, languages }) => {
-    let modeMap = acc.get(mode);
-    if (modeMap === undefined) {
-      modeMap = new Map();
-      acc.set(mode, modeMap);
-    }
+  langByMode = dailyRules.reduce<Map<Mode, Map<string /*mode2*/, Language[]>>>(
+    (acc, { mode, mode2, languages }) => {
+      let modeMap = acc.get(mode);
+      if (modeMap === undefined) {
+        modeMap = new Map();
+        acc.set(mode, modeMap);
+      }
 
-    let mode2Array = modeMap.get(mode2);
-    if (mode2Array === undefined) {
-      mode2Array = [];
-      modeMap.set(mode2, []);
-    }
+      let mode2Array = modeMap.get(mode2);
+      if (mode2Array === undefined) {
+        mode2Array = [];
+        modeMap.set(mode2, mode2Array);
+      }
 
-    mode2Array.push(...languages);
-    return acc;
-  }, new Map());
+      mode2Array.push(...languages);
+      return acc;
+    },
+    new Map()
+  );
 
   const mode2Buttons = Array.from(langByMode.keys())
     .sort()
@@ -1098,7 +1101,7 @@ async function appendSecondaryButtons(): Promise<void> {
 
   $(".modeButtons").html(mode2Buttons.join("\n"));
 
-  const modesByLanguage = dailyRules.reduce<Map<string, string[]>>(
+  const modesByLanguage = dailyRules.reduce<Map<Language, string[]>>(
     (acc, { mode, mode2, languages }) => {
       for (const lang of languages) {
         let modesList = acc.get(lang);
@@ -1113,7 +1116,7 @@ async function appendSecondaryButtons(): Promise<void> {
     new Map()
   );
 
-  const newLangButtons = Array.from(modesByLanguage.entries())
+  const languageButtons = Array.from(modesByLanguage.entries())
     .sort()
     .map(
       ([lang, modes]) =>
@@ -1122,7 +1125,7 @@ async function appendSecondaryButtons(): Promise<void> {
           ${lang}
         </button>`
     );
-  $(".languageButtons").html(newLangButtons.join("\n"));
+  $(".languageButtons").html(languageButtons.join("\n"));
 }
 
 function updateModeButtons(): void {
@@ -1375,6 +1378,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
     const mode = $(this).attr("data-mode") as Mode;
     const mode2 = $(this).attr("data-mode2");
     const language = $(this).data("language") as Language;
+
     if (
       mode2 !== undefined &&
       (state.type === "allTime" || state.type === "daily")
@@ -1383,6 +1387,19 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
       if (state.mode2 === mode2) return;
       state.mode2 = mode2;
       state.page = 0;
+
+      if (state.type === "daily") {
+        //if the current language is not supported by the mode/mode2 use the first supported language
+        const supportedLanguages = langByMode.get(state.mode)?.get(state.mode2);
+        if (supportedLanguages === undefined || supportedLanguages.length < 1) {
+          throw new Error(
+            `Daily leaderboard config not valid for mode:${state.mode} mode2:${state.mode2}`
+          );
+        }
+        if (!supportedLanguages.includes(state.language)) {
+          state.language = supportedLanguages[0] as Language;
+        }
+      }
     } else if (language !== undefined && state.type === "daily") {
       if (state.language === language) return;
       state.language = language;
