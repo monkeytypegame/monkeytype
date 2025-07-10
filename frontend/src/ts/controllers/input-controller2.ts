@@ -559,6 +559,17 @@ async function emulateInsertText(
   event: KeyboardEvent,
   now: number
 ): Promise<void> {
+  const preventDefault = onBeforeInsertText({
+    data,
+    now,
+    event,
+    inputType: "insertText",
+  });
+
+  if (preventDefault) {
+    return;
+  }
+
   // default is prevented so we need to manually update the input value.
   // remember to not call setInputValue or setTestInputToDOMValue in here
   // because onBeforeInsertText can also block the event
@@ -566,12 +577,6 @@ async function emulateInsertText(
   const { inputValue } = getInputValue();
   wordsInput.value = " " + inputValue + data;
 
-  onBeforeInsertText({
-    data,
-    now,
-    event,
-    inputType: "insertText",
-  });
   await onInsertText({
     data,
     now,
