@@ -378,9 +378,15 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   return preventDefault;
 }
 
-function shouldInsertSpaceCharacter(correct: boolean): boolean {
+function shouldInsertSpaceCharacter(data: string): boolean {
+  const correctSoFar = (TestWords.words.getCurrent() + " ").startsWith(
+    TestInput.input.current + data
+  );
+
   const stopOnErrorWordAndIncorrect =
-    Config.stopOnError === "word" && !correct && Config.difficulty === "normal";
+    Config.stopOnError === "word" &&
+    !correctSoFar &&
+    Config.difficulty === "normal";
   const strictSpace =
     TestInput.input.current.length === 0 &&
     (Config.strictSpace || Config.difficulty !== "normal");
@@ -412,7 +418,7 @@ async function onInsertText({
     TestInput.setBurstStart(now);
   }
 
-  const shouldInsertSpace = shouldInsertSpaceCharacter(correct);
+  const shouldInsertSpace = shouldInsertSpaceCharacter(data);
   const charIsNotSpace = data !== " ";
   if (charIsNotSpace || shouldInsertSpace) {
     setTestInputToDOMValue(data === "\n");
