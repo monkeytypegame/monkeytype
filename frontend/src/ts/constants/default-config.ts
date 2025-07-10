@@ -4,7 +4,7 @@ import {
 } from "@monkeytype/contracts/schemas/configs";
 import { deepClone } from "../utils/misc";
 
-const obj = {
+const obj: Config = {
   theme: "serika_dark",
   themeLight: "serika",
   themeDark: "serika_dark",
@@ -104,8 +104,7 @@ const obj = {
   tapeMode: "off",
   tapeMargin: 50,
   maxLineWidth: 0,
-  deleteOnError: "off",
-} as Config;
+};
 
 export function getDefaultConfig(): Config {
   return deepClone(obj);
