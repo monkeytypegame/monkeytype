@@ -370,12 +370,15 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
 
   //prevent the word from jumping to the next line if the word is too long
   //this will not work for the first word of each line, but that has a low chance of happening
+
+  const topAfterAppend = TestUI.getActiveWordTopAfterAppend(data);
+  const wordJumped = topAfterAppend > TestUI.activeWordTop;
   if (
     data !== null &&
     data !== "" &&
     ((data === " " && shouldInsertSpace) || data !== " ") &&
     TestInput.input.current.length >= TestWords.words.getCurrent().length &&
-    TestUI.getActiveWordTopAfterAppend(data) > TestUI.activeWordTop &&
+    wordJumped &&
     Config.mode !== "zen"
   ) {
     return true;
