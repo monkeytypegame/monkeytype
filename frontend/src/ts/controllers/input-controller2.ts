@@ -854,13 +854,10 @@ wordsInput.addEventListener("keydown", async (event) => {
 
       if (char !== undefined) {
         await emulateInsertText(char, event, now);
-        event.preventDefault();
-        return;
       }
-    } else {
-      event.preventDefault();
-      return;
     }
+    event.preventDefault();
+    return;
   }
 
   if (!event.repeat) {
