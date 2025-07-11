@@ -25,7 +25,7 @@ import * as Loader from "../elements/loader";
 import * as CompositionState from "../states/composition";
 import { getCharFromEvent } from "../test/layout-emulator";
 import * as Monkey from "../test/monkey";
-import { whorf } from "../utils/misc";
+import { isAnyPopupVisible, whorf } from "../utils/misc";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -611,6 +611,13 @@ wordsInput.addEventListener("beforeinput", (event) => {
     data: event.data,
     value: (event.target as HTMLInputElement).value,
   });
+
+  const popupVisible = isAnyPopupVisible();
+  if (popupVisible) {
+    event.preventDefault();
+    console.warn("Prevented beforeinput due to popup visibility");
+    return;
+  }
 
   for (const ignoredInputType of ignoredInputTypes) {
     let prevent = false;
