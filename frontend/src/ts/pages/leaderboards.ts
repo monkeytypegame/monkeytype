@@ -1109,6 +1109,8 @@ async function updateValidDailyLeaderboards(): Promise<void> {
 }
 
 async function appendModeAndLanguageButtons(): Promise<void> {
+  //todo: base these buttons on "validLeaderboards" global, dont pull server configuration again
+
   const dailyRulesConfig = await ServerConfiguration.get()?.dailyLeaderboards
     .validModeRules;
 
