@@ -29,7 +29,7 @@ describe("FriendsController", () => {
 
     it("should get for the current user", async () => {
       //GIVEN
-      const friend: FriendsDal.DBFriend = {
+      const friend: FriendsDal.DBFriendRequest = {
         _id: new ObjectId(),
         addedAt: 42,
         initiatorUid: new ObjectId().toHexString(),
@@ -186,7 +186,7 @@ describe("FriendsController", () => {
       getUserByNameMock.mockResolvedValue(myFriend as any);
       getPartialUserMock.mockResolvedValue(me as any);
 
-      const result: FriendsDal.DBFriend = {
+      const result: FriendsDal.DBFriendRequest = {
         _id: new ObjectId(),
         addedAt: 42,
         initiatorUid: me.uid,

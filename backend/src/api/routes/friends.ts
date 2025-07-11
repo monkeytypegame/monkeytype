@@ -18,4 +18,7 @@ export default s.router(friendsContract, {
   updateRequest: {
     handler: async (r) => callController(FriendsController.updateRequest)(r),
   },
+  getFriends: {
+    handler: async (r) => callController(FriendsController.getFriends)(r),
+  },
 });

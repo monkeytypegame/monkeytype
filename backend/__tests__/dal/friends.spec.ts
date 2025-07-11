@@ -1,6 +1,8 @@
 import { ObjectId } from "mongodb";
 
 import * as FriendsDal from "../../src/dal/friends";
+import { createUser } from "../__testData__/users";
+import { pb } from "./leaderboards.spec";
 
 describe("FriendsDal", () => {
   beforeAll(async () => {
@@ -287,12 +289,109 @@ describe("FriendsDal", () => {
       ).toEqual([decoy]);
     });
   });
+
+  describe("getFriends", () => {
+    it("get list of friends", async () => {
+      //GIVEN
+
+      const me = await createUser({ name: "Me" });
+      const uid = me.uid;
+
+      const friendOne = await createUser({
+        name: "One",
+        personalBests: {
+          time: { "15": [pb(100)], "60": [pb(85), pb(90)] },
+        } as any,
+      });
+      const friendOneRequest = await createFriend({
+        initiatorUid: uid,
+        friendUid: friendOne.uid,
+        status: "accepted",
+        addedAt: 100,
+      });
+      const friendTwo = await createUser({
+        name: "Two",
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+        timeTyping: 600,
+        startedTests: 150,
+        completedTests: 125,
+        streak: {
+          length: 10,
+          maxLength: 50,
+        } as any,
+        xp: 42,
+      });
+      const friendTwoRequest = await createFriend({
+        initiatorUid: uid,
+        friendUid: friendTwo.uid,
+        status: "accepted",
+        addedAt: 200,
+      });
+
+      const friendThree = await createUser({ name: "Three" });
+      const friendThreeRequest = await createFriend({
+        friendUid: uid,
+        initiatorUid: friendThree.uid,
+        status: "accepted",
+        addedAt: 300,
+      });
+
+      //non accepted
+      await createFriend({ friendUid: uid, status: "pending" });
+      await createFriend({ initiatorUid: uid, status: "blocked" });
+
+      //WHEN
+      const friends = await FriendsDal.getFriends(uid);
+
+      console.log(friends);
+
+      //THEN
+      expect(friends).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            uid: friendOne.uid,
+            name: "One",
+            addedAt: 100,
+            friendRequestId: friendOneRequest._id,
+            // oxlint-disable-next-line no-non-null-assertion
+            top15: friendOne.personalBests.time["15"]![0] as any,
+            // oxlint-disable-next-line no-non-null-assertion
+            top60: friendOne.personalBests.time["60"]![1] as any,
+          }),
+          expect.objectContaining({
+            uid: friendTwo.uid,
+            name: "Two",
+            addedAt: 200,
+            friendRequestId: friendTwoRequest._id,
+            discordId: friendTwo.discordId,
+            discordAvatar: friendTwo.discordAvatar,
+            timeTyping: friendTwo.timeTyping,
+            startedTests: friendTwo.startedTests,
+            completedTests: friendTwo.completedTests,
+            streak: friendTwo.streak,
+            xp: friendTwo.xp,
+          }),
+          expect.objectContaining({
+            uid: friendThree.uid,
+            name: "Three",
+            addedAt: 300,
+            friendRequestId: friendThreeRequest._id,
+          }),
+          expect.objectContaining({
+            uid: me.uid,
+            name: "Me",
+          }),
+        ])
+      );
+    });
+  });
 });
 
 async function createFriend(
-  data: Partial<FriendsDal.DBFriend>,
+  data: Partial<FriendsDal.DBFriendRequest>,
   maxFriendsPerUser = 25
-): Promise<FriendsDal.DBFriend> {
+): Promise<FriendsDal.DBFriendRequest> {
   const result = await FriendsDal.create(
     {
       uid: data.initiatorUid ?? new ObjectId().toHexString(),

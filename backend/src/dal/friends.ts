@@ -1,33 +1,36 @@
 import { Collection, Filter, ObjectId } from "mongodb";
 import * as db from "../init/db";
 import {
+  Friend,
   FriendRequest,
   FriendRequestStatus,
 } from "@monkeytype/contracts/schemas/friends";
 import MonkeyError from "../utils/error";
 import { WithObjectId } from "../utils/misc";
 
-export type DBFriend = WithObjectId<
+export type DBFriendRequest = WithObjectId<
   FriendRequest & {
     key: string; //sorted uid
   }
 >;
 
+export type DBFriend = Friend;
+
 // Export for use in tests
-export const getCollection = (): Collection<DBFriend> =>
+export const getCollection = (): Collection<DBFriendRequest> =>
   db.collection("friends");
 
 export async function getRequests(options: {
   initiatorUid?: string;
   friendUid?: string;
   status?: FriendRequestStatus[];
-}): Promise<DBFriend[]> {
+}): Promise<DBFriendRequest[]> {
   const { initiatorUid, friendUid, status } = options;
 
   if (initiatorUid === undefined && friendUid === undefined)
     throw new Error("no filter provided");
 
-  let filter: Filter<DBFriend> = { $or: [] };
+  let filter: Filter<DBFriendRequest> = { $or: [] };
 
   if (initiatorUid !== undefined) {
     filter.$or?.push({ initiatorUid });
@@ -48,7 +51,7 @@ export async function create(
   initiator: { uid: string; name: string },
   friend: { uid: string; name: string },
   maxFriendsPerUser: number
-): Promise<DBFriend> {
+): Promise<DBFriendRequest> {
   const count = await getCollection().countDocuments({
     initiatorUid: initiator.uid,
   });
@@ -61,7 +64,7 @@ export async function create(
     );
   }
   try {
-    const created: DBFriend = {
+    const created: DBFriendRequest = {
       _id: new ObjectId(),
       key: getKey(initiator.uid, friend.uid),
       initiatorUid: initiator.uid,
@@ -175,6 +178,169 @@ function getKey(initiatorUid: string, friendUid: string): string {
   const ids = [initiatorUid, friendUid];
   ids.sort();
   return ids.join("/");
+}
+
+export async function getFriends(uid: string): Promise<DBFriend[]> {
+  return (await getCollection()
+    .aggregate([
+      {
+        $match: {
+          //uid is friend or initiator
+          $and: [
+            {
+              $or: [{ initiatorUid: uid }, { friendUid: uid }],
+              status: "accepted",
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          friendUid: true,
+          initiatorUid: true,
+          addedAt: true,
+        },
+      },
+      {
+        $addFields: {
+          //pick the other user, not uid
+          uid: {
+            $cond: {
+              if: { $eq: ["$friendUid", uid] },
+              // oxlint-disable-next-line no-thenable
+              then: "$initiatorUid",
+              else: "$friendUid",
+            },
+          },
+        },
+      },
+      // we want to fetch the data for our uid as well, add it to the list of documents
+      // workaround for missing unionWith + $documents in mongodb 5.0
+      {
+        $group: {
+          _id: null,
+          data: {
+            $push: {
+              uid: "$uid",
+              addedAt: "$addedAt",
+              friendRequestId: "$_id",
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          data: {
+            $concatArrays: ["$data", [{ uid }]],
+          },
+        },
+      },
+      {
+        $unwind: "$data",
+      },
+
+      /* end of workaround, this is the replacement for >= 5.1
+    
+      { $addFields: { friendRequestId: "$_id" } },
+      { $project: { uid: true, addedAt: true, friendRequestId: true } },
+      {
+        $unionWith: {
+          pipeline: [{ $documents: [{ uid }] }],
+        },
+      },
+      */
+
+      {
+        $lookup: {
+          /* query users to get the friend data */
+          from: "users",
+          localField: "data.uid", //just uid if we remove the workaround above
+          foreignField: "uid",
+          as: "result",
+          let: {
+            addedAt: "$data.addedAt", //just $addedAt if we remove the workaround above
+            friendRequestId: "$data.friendRequestId", //just $friendRequestId if we remove the workaround above
+          },
+          pipeline: [
+            {
+              $project: {
+                _id: false,
+                uid: true,
+                friendRequestId: true,
+                name: true,
+                discordId: true,
+                discordAvatar: true,
+                startedTests: true,
+                completedTests: true,
+                timeTyping: true,
+                xp: true,
+                streak: true,
+                personalBests: true,
+              },
+            },
+            {
+              $addFields: {
+                addedAt: "$$addedAt",
+                friendRequestId: "$$friendRequestId",
+                top15: {
+                  $reduce: {
+                    //find highest wpm from time 15 PBs
+                    input: "$personalBests.time.15",
+                    initialValue: {},
+                    in: {
+                      $cond: [
+                        { $gte: ["$$this.wpm", "$$value.wpm"] },
+                        "$$this",
+                        "$$value",
+                      ],
+                    },
+                  },
+                },
+                top60: {
+                  $reduce: {
+                    //find highest wpm from time 60 PBs
+                    input: "$personalBests.time.60",
+                    initialValue: {},
+                    in: {
+                      $cond: [
+                        { $gte: ["$$this.wpm", "$$value.wpm"] },
+                        "$$this",
+                        "$$value",
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+            {
+              $addFields: {
+                //remove nulls
+                top15: { $ifNull: ["$top15", "$$REMOVE"] },
+                top60: { $ifNull: ["$top60", "$$REMOVE"] },
+                addedAt: "$addedAt",
+              },
+            },
+            {
+              $project: {
+                personalBests: false,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $cond: [
+              { $gt: [{ $size: "$result" }, 0] },
+              { $first: "$result" },
+              {}, // empty document fallback, this can happen if the user is not present
+            ],
+          },
+        },
+      },
+    ])
+    .toArray()) as DBFriend[];
 }
 
 export async function createIndicies(): Promise<void> {

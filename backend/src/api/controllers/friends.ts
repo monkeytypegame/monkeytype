@@ -3,6 +3,7 @@ import {
   CreateFriendRequestResponse,
   GetFriendRequestsQuery,
   GetFriendRequestsResponse,
+  GetFriendsResponse,
   IdPathParams,
   UpdateFriendRequestsRequest,
 } from "@monkeytype/contracts/friends";
@@ -29,7 +30,10 @@ export async function getRequests(
     status: status,
   });
 
-  return new MonkeyResponse("Friends retrieved", replaceObjectIds(results));
+  return new MonkeyResponse(
+    "Friend requests retrieved",
+    replaceObjectIds(results)
+  );
 }
 
 export async function createRequest(
@@ -81,4 +85,13 @@ export async function updateRequest(
   await FriendsDal.updateStatus(uid, id, status);
 
   return new MonkeyResponse("Friend updated", null);
+}
+
+export async function getFriends(
+  req: MonkeyRequest
+): Promise<GetFriendsResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const data = await FriendsDal.getFriends(uid);
+
+  return new MonkeyResponse("Friends retrieved", data);
 }
