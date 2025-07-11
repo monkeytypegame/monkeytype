@@ -17,7 +17,7 @@ import {
 import { captureException } from "../../sentry";
 import { ThemesListSorted } from "../../constants/themes";
 
-function updateActiveButton(): void {
+export function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
   if (
     Config.randomTheme !== "off" &&
@@ -118,7 +118,7 @@ function updateColors(
   colorPicker.find("input.color").val(color);
 }
 
-export async function refreshPresetButtons(): Promise<void> {
+export async function fillPresetButtons(): Promise<void> {
   // Update theme buttons
   const favThemesEl = document.querySelector<HTMLElement>(
     ".pageSettings .section.themes .favThemes.buttons"
@@ -214,7 +214,7 @@ export async function refreshPresetButtons(): Promise<void> {
   themesEl.innerHTML = themesElHTML;
 }
 
-export async function refreshCustomButtons(): Promise<void> {
+export async function fillCustomButtons(): Promise<void> {
   // Update custom theme buttons
   const customThemesEl = $(
     ".pageSettings .section.themes .allCustomThemes.buttons"
@@ -366,7 +366,7 @@ $(".pageSettings").on("click", ".section.themes .theme .favButton", (e) => {
     .attr("theme") as ThemeName;
   if (theme !== undefined) {
     toggleFavourite(theme);
-    void refreshPresetButtons();
+    void fillPresetButtons();
   } else {
     console.error(
       "Could not find the theme attribute attached to the button clicked!"
@@ -475,14 +475,11 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
     await DB.addCustomTheme(newCustomTheme);
     Loader.hide();
   }
-  void refreshCustomButtons();
+  void fillCustomButtons();
 });
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "theme" && ActivePage.get() === "settings") {
     updateActiveButton();
-  }
-  if (eventKey === "favThemes" && ActivePage.get() === "settings") {
-    void refreshPresetButtons();
   }
 });
