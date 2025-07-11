@@ -342,10 +342,6 @@ function onBeforeDelete({ event }: InputEventHandler): void {
 }
 
 function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
-  if (!TestState.isActive) {
-    return true;
-  }
-
   let preventDefault = false;
 
   const { inputValue } = getInputValue();
