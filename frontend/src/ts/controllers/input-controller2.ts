@@ -840,6 +840,10 @@ wordsInput.addEventListener("keydown", async (event) => {
     }
   }
 
+  // there used to be an if check here with funbox preventDefaultEvent check
+  // but its only used in arrows so im not sure if its needed
+  // todo: decide what to do
+
   const arrowsActive = Config.funbox.includes("arrows");
   if (event.key.startsWith("Arrow")) {
     if (arrowsActive) {
