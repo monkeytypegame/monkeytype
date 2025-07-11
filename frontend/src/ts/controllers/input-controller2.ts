@@ -430,6 +430,62 @@ async function onInsertText({
     return;
   }
 
+  if (
+    data === "…" &&
+    TestWords.words.getCurrent()[TestInput.input.current.length] !== "…"
+  ) {
+    for (let i = 0; i < 3; i++) {
+      await onInsertText({
+        inputType,
+        event,
+        data: ".",
+        now,
+      });
+    }
+
+    return;
+  }
+
+  console.log(TestWords.words.getCurrent()[TestInput.input.current.length]);
+
+  if (
+    data === "œ" &&
+    TestWords.words.getCurrent()[TestInput.input.current.length] !== "œ"
+  ) {
+    await onInsertText({
+      inputType,
+      event,
+      data: "o",
+      now,
+    });
+    await onInsertText({
+      inputType,
+      event,
+      data: "e",
+      now,
+    });
+    return;
+  }
+
+  if (
+    data === "æ" &&
+    TestWords.words.getCurrent()[TestInput.input.current.length] !== "æ"
+  ) {
+    await onInsertText({
+      inputType,
+      event,
+      data: "a",
+      now,
+    });
+    await onInsertText({
+      inputType,
+      event,
+      data: "e",
+      now,
+    });
+    return;
+  }
+
   const correct = isCharCorrect(data);
 
   if (TestInput.input.current.length === 0) {
