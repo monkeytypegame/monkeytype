@@ -556,6 +556,7 @@ function onDelete({ inputType }: InputEventHandler): void {
   setTestInputToDOMValue();
 
   Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
+  TestInput.setCurrentNotAfk();
 
   if (realInputValue === "") {
     const isFirstVisibleWord =
@@ -566,7 +567,6 @@ function onDelete({ inputType }: InputEventHandler): void {
     }
   }
   TestUI.afterTestDelete();
-  TestInput.setCurrentNotAfk();
 }
 
 function replaceLastInputValueChar(char: string): void {
