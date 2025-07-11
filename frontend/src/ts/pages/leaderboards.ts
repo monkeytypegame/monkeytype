@@ -133,6 +133,21 @@ const selectorLS = new LocalStorageWithSchema({
 
 let langByMode: Map<Mode, Map<string /*mode2*/, Language[]>>;
 
+type ValidLeaderboards = {
+  allTime: Pick<AllTimeState, "mode" | "mode2">[];
+  weekly: "*";
+  daily: Pick<DailyState, "mode" | "mode2" | "language">[];
+};
+
+const validLeaderboards: ValidLeaderboards = {
+  allTime: [
+    { mode: "time", mode2: "15" },
+    { mode: "time", mode2: "60" },
+  ],
+  weekly: "*",
+  daily: [],
+};
+
 function updateTitle(): void {
   const type =
     state.type === "allTime"
@@ -1060,6 +1075,39 @@ function convertRuleOption(rule: string): string[] {
   return [rule];
 }
 
+async function updateValidDailyLeaderboards(): Promise<void> {
+  const dailyRulesConfig = await ServerConfiguration.get()?.dailyLeaderboards
+    .validModeRules;
+
+  if (dailyRulesConfig === undefined) {
+    throw new Error(
+      "cannot load server configuration for dailyLeaderboards.validModeRules"
+    );
+  }
+
+  let validDailyLeaderboards: ValidLeaderboards["daily"] = [];
+
+  dailyRulesConfig.flatMap((rule) => {
+    const modeList = convertRuleOption(rule.mode) as Mode[];
+    const languages = convertRuleOption(rule.language) as Language[];
+    const mode2List = convertRuleOption(rule.mode2);
+
+    for (const mode of modeList) {
+      for (const mode2 of mode2List) {
+        for (const language of languages) {
+          validDailyLeaderboards.push({
+            mode,
+            mode2,
+            language,
+          });
+        }
+      }
+    }
+  });
+
+  validLeaderboards.daily = validDailyLeaderboards;
+}
+
 async function appendModeAndLanguageButtons(): Promise<void> {
   const dailyRulesConfig = await ServerConfiguration.get()?.dailyLeaderboards
     .validModeRules;
@@ -1442,7 +1490,7 @@ export const page = new PageWithUrlParams({
   beforeShow: async (options): Promise<void> => {
     await ServerConfiguration.configPromise;
     Skeleton.append("pageLeaderboards", "main");
-    // await appendLanguageButtons(); //todo figure out this race condition
+    await updateValidDailyLeaderboards();
     await appendModeAndLanguageButtons();
     readGetParameters(options.urlParams);
     startTimer();
