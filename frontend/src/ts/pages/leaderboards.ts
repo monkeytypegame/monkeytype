@@ -1132,7 +1132,9 @@ function updateModeButtons(): void {
   if (state.type !== "allTime" && state.type !== "daily") return;
   const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
   el.find("button").removeClass("active");
-  el.find(`button[data-mode2=${state.mode2}]`).addClass("active");
+  el.find(
+    `button[data-mode=${state.mode}][data-mode2=${state.mode2}]`
+  ).addClass("active");
 
   if (state.type === "allTime") {
     $(".page.pageLeaderboards .buttonGroup.modeButtons button").addClass(
