@@ -1385,8 +1385,8 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
       mode2 !== undefined &&
       (state.type === "allTime" || state.type === "daily")
     ) {
+      if (state.mode === mode && state.mode2 === mode2) return;
       state.mode = mode;
-      if (state.mode2 === mode2) return;
       state.mode2 = mode2;
       state.page = 0;
 
