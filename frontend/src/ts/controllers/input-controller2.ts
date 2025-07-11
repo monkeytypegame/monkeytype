@@ -26,6 +26,9 @@ import * as CompositionState from "../states/composition";
 import { getCharFromEvent } from "../test/layout-emulator";
 import * as Monkey from "../test/monkey";
 import { isAnyPopupVisible, whorf } from "../utils/misc";
+import { canQuickRestart } from "../utils/quick-restart";
+import * as CustomText from "../test/custom-text";
+import * as CustomTextState from "../states/custom-text-name";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -64,6 +67,7 @@ const ignoredInputTypes = [
 let correctShiftUsed = true;
 let incorrectShiftsInARow = 0;
 let awaitingNextWord = false;
+let lastBailoutAttempt = -1;
 
 function isCharCorrect(data: string): boolean {
   if (Config.mode === "zen") return true;
@@ -888,6 +892,39 @@ wordsInput.addEventListener("keydown", async (event) => {
   }
 
   if (event.key === "Enter") {
+    if (event.shiftKey) {
+      if (Config.mode === "zen") {
+        void TestLogic.finish();
+        return;
+      } else if (
+        !canQuickRestart(
+          Config.mode,
+          Config.words,
+          Config.time,
+          CustomText.getData(),
+          CustomTextState.isCustomTextLong() ?? false
+        )
+      ) {
+        const delay = Date.now() - lastBailoutAttempt;
+        if (lastBailoutAttempt === -1 || delay > 200) {
+          lastBailoutAttempt = Date.now();
+          if (delay >= 5000) {
+            Notifications.add(
+              "Please double tap shift+enter to confirm bail out",
+              0,
+              {
+                important: true,
+                duration: 5,
+              }
+            );
+          }
+        } else {
+          TestState.setBailedOut(true);
+          void TestLogic.finish();
+        }
+      }
+    }
+
     if (Config.quickRestart === "enter") {
       event.preventDefault();
       if ((TestWords.hasNewline && event.shiftKey) || !TestWords.hasNewline) {
