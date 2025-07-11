@@ -331,11 +331,16 @@ async function requestData(update = false): Promise<void> {
     }
   } else {
     state.data = null;
-    state.error = "Something went wrong";
-    Notifications.add(
-      "Failed to get leaderboard: " + dataResponse.body.message,
-      -1
-    );
+
+    if (dataResponse.status === 404) {
+      state.error = "No leaderboard found";
+    } else {
+      state.error = "Something went wrong";
+      Notifications.add(
+        "Failed to get leaderboard: " + dataResponse.body.message,
+        -1
+      );
+    }
   }
 
   if (state.userData === null && rankResponse !== undefined) {
