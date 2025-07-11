@@ -558,14 +558,35 @@ function onDelete({ inputType }: InputEventHandler): void {
   Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
   TestInput.setCurrentNotAfk();
 
-  if (realInputValue === "") {
-    const isFirstVisibleWord =
-      TestState.activeWordIndex - TestState.removedUIWordCount === 0;
+  const onlyTabs = /^\t*$/.test(TestInput.input.current);
+  const allTabsCorrect = TestWords.words
+    .getCurrent()
+    .startsWith(TestInput.input.current);
 
-    if (!isFirstVisibleWord) {
-      goToPreviousWord(inputType);
+  //special check for code languages
+  if (
+    Config.language.startsWith("code") &&
+    Config.codeUnindentOnBackspace &&
+    onlyTabs &&
+    allTabsCorrect
+    // (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
+    //   TestWords.words.get(TestState.activeWordIndex - 1) ||
+    //   Config.freedomMode)
+  ) {
+    setInputValue("");
+    goToPreviousWord(inputType);
+  } else {
+    //normal backspace
+    if (realInputValue === "") {
+      const isFirstVisibleWord =
+        TestState.activeWordIndex - TestState.removedUIWordCount === 0;
+
+      if (!isFirstVisibleWord) {
+        goToPreviousWord(inputType);
+      }
     }
   }
+
   TestUI.afterTestDelete();
 }
 
