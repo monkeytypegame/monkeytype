@@ -929,35 +929,71 @@ function updateContent(): void {
   }
 }
 
+function updateSideButtons(): void {
+  updateTypeButtons();
+  updateModeButtons();
+  updateLanguageButtons();
+}
+
 function updateTypeButtons(): void {
   const el = $(".page.pageLeaderboards .buttonGroup.typeButtons");
   el.find("button").removeClass("active");
   el.find(`button[data-type=${state.type}]`).addClass("active");
 }
 
-function updateSecondaryButtons(): void {
-  $(".page.pageLeaderboards .buttonGroup.secondary").addClass("hidden");
-  $(".page.pageLeaderboards .buttons .divider").addClass("hidden");
-  $(".page.pageLeaderboards .buttons .divider2").addClass("hidden");
+function updateModeButtons(): void {
+  if (state.type !== "allTime" && state.type !== "daily") {
+    $(".page.pageLeaderboards .buttonGroup.modeButtons").addClass("hidden");
+    $(".page.pageLeaderboards .buttons .divider").addClass("hidden");
+    return;
+  }
+  $(".page.pageLeaderboards .buttonGroup.modeButtons").removeClass("hidden");
+  $(".page.pageLeaderboards .buttons .divider").removeClass("hidden");
+
+  const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
+  el.find("button").removeClass("active");
+  el.find(
+    `button[data-mode=${state.mode}][data-mode2=${state.mode2}]`
+  ).addClass("active");
 
   if (state.type === "allTime") {
-    $(".page.pageLeaderboards .buttonGroup.modeButtons").removeClass("hidden");
-    $(".page.pageLeaderboards .buttons .divider").removeClass("hidden");
-    $(".page.pageLeaderboards .buttons .divider2").addClass("hidden");
-
-    updateModeButtons();
-  }
-  if (state.type === "daily") {
-    $(".page.pageLeaderboards .buttonGroup.modeButtons").removeClass("hidden");
-    $(".page.pageLeaderboards .buttonGroup.languageButtons").removeClass(
+    $(".page.pageLeaderboards .buttonGroup.modeButtons button").addClass(
       "hidden"
     );
-    $(".page.pageLeaderboards .buttons .divider").removeClass("hidden");
-    $(".page.pageLeaderboards .buttons .divider2").removeClass("hidden");
 
-    updateModeButtons();
-    updateLanguageButtons();
+    $(
+      '.page.pageLeaderboards .buttonGroup.modeButtons [data-mode="time"][data-mode2="15"], .page.pageLeaderboards .buttonGroup.modeButtons [data-mode="time"][data-mode2="60"]'
+    ).removeClass("hidden");
+  } else {
+    $(".page.pageLeaderboards .buttonGroup.modeButtons button").removeClass(
+      "hidden"
+    );
   }
+}
+
+function updateLanguageButtons(): void {
+  if (state.type !== "daily") return;
+
+  if (state.type !== "daily") {
+    $(".page.pageLeaderboards .buttonGroup.languageButtons").addClass("hidden");
+    $(".page.pageLeaderboards .buttons .divider2").addClass("hidden");
+    return;
+  }
+  $(".page.pageLeaderboards .buttonGroup.languageButtons").removeClass(
+    "hidden"
+  );
+  $(".page.pageLeaderboards .buttons .divider2").removeClass("hidden");
+
+  const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
+  el.find("button").removeClass("active");
+  el.find(`button[data-language=${state.language}]`).addClass("active");
+
+  $(
+    `.page.pageLeaderboards .buttonGroup.languageButtons button:not([data-modes~="${state.mode}-${state.mode2}"])`
+  ).addClass("hidden");
+  $(
+    `.page.pageLeaderboards .buttonGroup.languageButtons button[data-modes~="${state.mode}-${state.mode2}"]`
+  ).removeClass("hidden");
 }
 
 let updateTimer: number | undefined;
@@ -1019,25 +1055,6 @@ function stopTimer(): void {
   $(".page.pageLeaderboards .titleAndButtons .timer").text("-");
 }
 
-// async function appendLanguageButtons(): Promise<void> {
-//   const languages =
-//     (await ServerConfiguration.get()?.dailyLeaderboards.validModeRules.map(
-//       (r) => r.language
-//     )) ?? [];
-
-//   const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
-//   el.empty();
-
-//   for (const language of languages) {
-//     el.append(`
-//       <button data-language="${language}">
-//         <i class="fas fa-globe"></i>
-//         ${language}
-//       </button>
-//     `);
-//   }
-// }
-
 function convertRuleOption(rule: string): string[] {
   if (rule.startsWith("(")) {
     return rule.slice(1, -1).split("|");
@@ -1045,7 +1062,7 @@ function convertRuleOption(rule: string): string[] {
   return [rule];
 }
 
-async function appendSecondaryButtons(): Promise<void> {
+async function appendModeAndLanguageButtons(): Promise<void> {
   const dailyRulesConfig = await ServerConfiguration.get()?.dailyLeaderboards
     .validModeRules;
 
@@ -1131,43 +1148,6 @@ async function appendSecondaryButtons(): Promise<void> {
         </button>`
     );
   $(".languageButtons").html(languageButtons.join("\n"));
-}
-
-function updateModeButtons(): void {
-  if (state.type !== "allTime" && state.type !== "daily") return;
-  const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
-  el.find("button").removeClass("active");
-  el.find(
-    `button[data-mode=${state.mode}][data-mode2=${state.mode2}]`
-  ).addClass("active");
-
-  if (state.type === "allTime") {
-    $(".page.pageLeaderboards .buttonGroup.modeButtons button").addClass(
-      "hidden"
-    );
-
-    $(
-      '.page.pageLeaderboards .buttonGroup.modeButtons [data-mode="time"][data-mode2="15"], .page.pageLeaderboards .buttonGroup.modeButtons [data-mode="time"][data-mode2="60"]'
-    ).removeClass("hidden");
-  } else {
-    $(".page.pageLeaderboards .buttonGroup.modeButtons button").removeClass(
-      "hidden"
-    );
-  }
-}
-
-function updateLanguageButtons(): void {
-  if (state.type !== "daily") return;
-  const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
-  el.find("button").removeClass("active");
-  el.find(`button[data-language=${state.language}]`).addClass("active");
-
-  $(
-    `.page.pageLeaderboards .buttonGroup.languageButtons button:not([data-modes~="${state.mode}-${state.mode2}"])`
-  ).addClass("hidden");
-  $(
-    `.page.pageLeaderboards .buttonGroup.languageButtons button[data-modes~="${state.mode}-${state.mode2}"]`
-  ).removeClass("hidden");
 }
 
 function disableButtons(): void {
@@ -1370,23 +1350,22 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     state.data = null;
     state.page = 0;
     void requestData();
-    updateTypeButtons();
     updateTitle();
-    updateSecondaryButtons();
+    updateSideButtons();
     updateContent();
     updateGetParameters();
   }
 );
 
-$(".page.pageLeaderboards .buttonGroup.secondary").on(
+$(".page.pageLeaderboards .buttonGroup.modeButtons").on(
   "click",
   "button",
   function () {
     const mode = $(this).attr("data-mode") as Mode;
     const mode2 = $(this).attr("data-mode2");
-    const language = $(this).data("language") as Language;
 
     if (
+      mode !== undefined &&
       mode2 !== undefined &&
       (state.type === "allTime" || state.type === "daily")
     ) {
@@ -1396,7 +1375,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
       state.page = 0;
 
       if (state.type === "daily") {
-        //if the current language is not supported by the mode/mode2 use the first supported language
+        //if the current language is not supported, use the first supported language
         const supportedLanguages = langByMode.get(state.mode)?.get(state.mode2);
         if (supportedLanguages === undefined || supportedLanguages.length < 1) {
           throw new Error(
@@ -1407,16 +1386,45 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
           state.language = supportedLanguages[0] as Language;
         }
       }
-    } else if (language !== undefined && state.type === "daily") {
-      if (state.language === language) return;
-      state.language = language;
-      state.page = 0;
     } else {
       return;
     }
     state.data = null;
     void requestData();
-    updateSecondaryButtons();
+    updateSideButtons();
+    updateTitle();
+    updateContent();
+    updateGetParameters();
+  }
+);
+
+$(".page.pageLeaderboards .buttonGroup.languageButtons").on(
+  "click",
+  "button",
+  function () {
+    const language = $(this).attr("data-language") as Language;
+
+    if (language !== undefined && state.type === "daily") {
+      if (state.language === language) return;
+      state.language = language;
+      state.page = 0;
+
+      //if the current language is not supported, use the first supported language
+      const supportedLanguages = langByMode.get(state.mode)?.get(state.mode2);
+      if (supportedLanguages === undefined || supportedLanguages.length < 1) {
+        throw new Error(
+          `Daily leaderboard config not valid for mode:${state.mode} mode2:${state.mode2}`
+        );
+      }
+      if (!supportedLanguages.includes(state.language)) {
+        state.language = supportedLanguages[0] as Language;
+      }
+    } else {
+      return;
+    }
+    state.data = null;
+    void requestData();
+    updateSideButtons();
     updateTitle();
     updateContent();
     updateGetParameters();
@@ -1437,18 +1445,17 @@ export const page = new PageWithUrlParams({
     await ServerConfiguration.configPromise;
     Skeleton.append("pageLeaderboards", "main");
     // await appendLanguageButtons(); //todo figure out this race condition
-    await appendSecondaryButtons();
+    await appendModeAndLanguageButtons();
     readGetParameters(options.urlParams);
     startTimer();
-    updateTypeButtons();
     updateTitle();
-    updateSecondaryButtons();
     updateContent();
+    updateSideButtons();
     updateGetParameters();
     void requestData(false);
   },
   afterShow: async (): Promise<void> => {
-    updateSecondaryButtons();
+    // updateSideButtons();
   },
 });
 
