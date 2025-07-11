@@ -533,6 +533,21 @@ async function onInsertText({
       correctInsert: correct,
     });
   }
+
+  const currentWord = TestWords.words.getCurrent();
+  const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
+  const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
+
+  if (
+    Config.language.startsWith("code") &&
+    correct &&
+    doesCurrentWordHaveTab &&
+    isCurrentCharTab
+  ) {
+    setTimeout(() => {
+      void emulateInsertText("\t", event as KeyboardEvent, now);
+    }, 0);
+  }
 }
 
 function onDelete({ inputType }: InputEventHandler): void {
