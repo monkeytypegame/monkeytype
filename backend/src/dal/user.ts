@@ -90,6 +90,7 @@ export async function addUser(
       custom: {},
     },
     testActivity: {},
+    emailVerified: false,
   };
 
   const result = await getUsersCollection().updateOne(
@@ -234,9 +235,14 @@ export async function updateQuoteRatings(
 
 export async function updateEmail(
   uid: string,
-  email: string
+  email: string,
+  emailVerified: boolean = false
 ): Promise<boolean> {
-  await updateUser({ uid }, { $set: { email } }, { stack: "update email" });
+  await updateUser(
+    { uid },
+    { $set: { email, emailVerified } },
+    { stack: "update email" }
+  );
 
   return true;
 }

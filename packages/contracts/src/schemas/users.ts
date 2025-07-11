@@ -271,6 +271,7 @@ export const UserSchema = z.object({
   quoteMod: QuoteModSchema.optional(),
   resultFilterPresets: z.array(ResultFiltersSchema).optional(),
   testActivity: TestActivitySchema.optional(),
+  emailVerified: z.boolean().optional(),
 });
 export type User = z.infer<typeof UserSchema>;
 
