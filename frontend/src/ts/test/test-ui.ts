@@ -438,10 +438,7 @@ function updateWordWrapperClasses(): void {
 
   updateWordsWidth();
   updateWordsWrapperHeight(true);
-  updateWordsMargin();
-  setTimeout(() => {
-    void updateWordsInputPosition(true);
-  }, 250);
+  updateWordsMargin(updateWordsInputPosition, [true]);
 }
 
 export function showWords(): void {
@@ -637,9 +634,16 @@ export function updateWordsWrapperHeight(force = false): void {
   outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
 }
 
-function updateWordsMargin(): void {
+function updateWordsMargin<T extends unknown[]>(
+  afterCompleteFn: (...args: T) => void,
+  args: T
+): void {
+  const afterComplete = (): void => {
+    afterCompleteFn(...args);
+    void updateHintsPositionDebounced();
+  };
   if (Config.tapeMode !== "off") {
-    void scrollTape(true, updateHintsPositionDebounced);
+    void scrollTape(true, afterComplete);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
     const afterNewlineEls =
@@ -653,7 +657,7 @@ function updateWordsMargin(): void {
         {
           duration: SlowTimer.get() ? 0 : 125,
           queue: "leftMargin",
-          complete: updateHintsPositionDebounced,
+          complete: afterComplete,
         }
       );
       jqWords.dequeue("leftMargin");
@@ -665,7 +669,7 @@ function updateWordsMargin(): void {
       for (const afterNewline of afterNewlineEls) {
         afterNewline.style.marginLeft = `0`;
       }
-      void updateHintsPositionDebounced();
+      afterComplete();
     }
   }
 }
