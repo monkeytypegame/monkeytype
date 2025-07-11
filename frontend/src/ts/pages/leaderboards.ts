@@ -1429,6 +1429,7 @@ export const page = new PageWithUrlParams({
     stopTimer();
   },
   beforeShow: async (options): Promise<void> => {
+    await ServerConfiguration.configPromise;
     Skeleton.append("pageLeaderboards", "main");
     // await appendLanguageButtons(); //todo figure out this race condition
     await appendSecondaryButtons();
