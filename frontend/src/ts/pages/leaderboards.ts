@@ -972,8 +972,6 @@ function updateModeButtons(): void {
 }
 
 function updateLanguageButtons(): void {
-  if (state.type !== "daily") return;
-
   if (state.type !== "daily") {
     $(".page.pageLeaderboards .buttonGroup.languageButtons").addClass("hidden");
     $(".page.pageLeaderboards .sideButtons .divider2").addClass("hidden");
