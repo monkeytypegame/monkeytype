@@ -1246,77 +1246,77 @@ $(document).on("keydown", async (event) => {
   isBackspace = event.key === "Backspace" || event.key === "delete";
 });
 
-$("#wordsInput").on("keydown", (event) => {
-  if (event.originalEvent?.repeat) {
-    console.log(
-      "spacing debug keydown STOPPED - repeat",
-      event.key,
-      event.code,
-      event.which
-    );
-    return;
-  }
+// $("#wordsInput").on("keydown", (event) => {
+//   if (event.originalEvent?.repeat) {
+//     console.log(
+//       "spacing debug keydown STOPPED - repeat",
+//       event.key,
+//       event.code,
+//       event.which
+//     );
+//     return;
+//   }
 
-  Monkey.type(event);
-  // console.debug("Event: keydown", event);
+//   Monkey.type(event);
+//   // console.debug("Event: keydown", event);
 
-  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
-    event.code = "Space";
-  }
+//   if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+//     event.code = "Space";
+//   }
 
-  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
-    event.code = "NoCode";
-  }
+//   if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+//     event.code = "NoCode";
+//   }
 
-  const now = performance.now();
-  setTimeout(() => {
-    const eventCode =
-      event.code === "" || event.which === 231 ? "NoCode" : event.code;
-    TestInput.recordKeydownTime(now, eventCode);
-  }, 0);
-});
+//   const now = performance.now();
+//   setTimeout(() => {
+//     const eventCode =
+//       event.code === "" || event.which === 231 ? "NoCode" : event.code;
+//     TestInput.recordKeydownTime(now, eventCode);
+//   }, 0);
+// });
 
-$("#wordsInput").on("keyup", (event) => {
-  if (event.originalEvent?.repeat) {
-    console.log(
-      "spacing debug keydown STOPPED - repeat",
-      event.key,
-      event.code,
-      event.which
-    );
-    return;
-  }
+// $("#wordsInput").on("keyup", (event) => {
+//   if (event.originalEvent?.repeat) {
+//     console.log(
+//       "spacing debug keydown STOPPED - repeat",
+//       event.key,
+//       event.code,
+//       event.which
+//     );
+//     return;
+//   }
 
-  // console.debug("Event: keyup", event);
+//   // console.debug("Event: keyup", event);
 
-  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
-    event.code = "Space";
-  }
+//   if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+//     event.code = "Space";
+//   }
 
-  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
-    event.code = "NoCode";
-  }
+//   if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+//     event.code = "NoCode";
+//   }
 
-  const now = performance.now();
-  setTimeout(() => {
-    const eventCode =
-      event.code === "" || event.which === 231 ? "NoCode" : event.code;
-    TestInput.recordKeyupTime(now, eventCode);
-  }, 0);
-});
+//   const now = performance.now();
+//   setTimeout(() => {
+//     const eventCode =
+//       event.code === "" || event.which === 231 ? "NoCode" : event.code;
+//     TestInput.recordKeyupTime(now, eventCode);
+//   }, 0);
+// });
 
-$("#wordsInput").on("keyup", (event) => {
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
-    event.preventDefault();
-    return;
-  }
+// $("#wordsInput").on("keyup", (event) => {
+//   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+//     event.preventDefault();
+//     return;
+//   }
 
-  Monkey.stop(event);
+//   Monkey.stop(event);
 
-  if (IgnoredKeys.includes(event.key)) return;
+//   if (IgnoredKeys.includes(event.key)) return;
 
-  if (TestUI.resultVisible) return;
-});
+//   if (TestUI.resultVisible) return;
+// });
 
 $("#wordsInput").on("beforeinput", (event) => {
   if (!event.originalEvent?.isTrusted) return;
