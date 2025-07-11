@@ -944,11 +944,11 @@ function updateTypeButtons(): void {
 function updateModeButtons(): void {
   if (state.type !== "allTime" && state.type !== "daily") {
     $(".page.pageLeaderboards .buttonGroup.modeButtons").addClass("hidden");
-    $(".page.pageLeaderboards .buttons .divider").addClass("hidden");
+    $(".page.pageLeaderboards .sideButtons .divider").addClass("hidden");
     return;
   }
   $(".page.pageLeaderboards .buttonGroup.modeButtons").removeClass("hidden");
-  $(".page.pageLeaderboards .buttons .divider").removeClass("hidden");
+  $(".page.pageLeaderboards .sideButtons .divider").removeClass("hidden");
 
   const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
   el.find("button").removeClass("active");
@@ -976,13 +976,13 @@ function updateLanguageButtons(): void {
 
   if (state.type !== "daily") {
     $(".page.pageLeaderboards .buttonGroup.languageButtons").addClass("hidden");
-    $(".page.pageLeaderboards .buttons .divider2").addClass("hidden");
+    $(".page.pageLeaderboards .sideButtons .divider2").addClass("hidden");
     return;
   }
   $(".page.pageLeaderboards .buttonGroup.languageButtons").removeClass(
     "hidden"
   );
-  $(".page.pageLeaderboards .buttons .divider2").removeClass("hidden");
+  $(".page.pageLeaderboards .sideButtons .divider2").removeClass("hidden");
 
   const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
   el.find("button").removeClass("active");
