@@ -1108,6 +1108,25 @@ async function updateValidDailyLeaderboards(): Promise<void> {
   validLeaderboards.daily = validDailyLeaderboards;
 }
 
+function checkIfLeaderboardIsValid(): void {
+  // check the current state mode mode2 language against the validLeaderboards
+  // revert to something valid if not found
+  // update the state with the valid one
+  // example from old approach
+  //   if (state.type === "daily") {
+  //   //if the current language is not supported, use the first supported language
+  //   const supportedLanguages = langByMode.get(state.mode)?.get(state.mode2);
+  //   if (supportedLanguages === undefined || supportedLanguages.length < 1) {
+  //     throw new Error(
+  //       `Daily leaderboard config not valid for mode:${state.mode} mode2:${state.mode2}`
+  //     );
+  //   }
+  //   if (!supportedLanguages.includes(state.language)) {
+  //     state.language = supportedLanguages[0] as Language;
+  //   }
+  // }
+}
+
 async function appendModeAndLanguageButtons(): Promise<void> {
   //todo: base these buttons on "validLeaderboards" global, dont pull server configuration again
 
@@ -1395,6 +1414,7 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     if (state.type === "weekly") {
       state.lastWeek = false;
     }
+    checkIfLeaderboardIsValid();
     state.data = null;
     state.page = 0;
     void requestData();
@@ -1421,22 +1441,10 @@ $(".page.pageLeaderboards .buttonGroup.modeButtons").on(
       state.mode = mode;
       state.mode2 = mode2;
       state.page = 0;
-
-      if (state.type === "daily") {
-        //if the current language is not supported, use the first supported language
-        const supportedLanguages = langByMode.get(state.mode)?.get(state.mode2);
-        if (supportedLanguages === undefined || supportedLanguages.length < 1) {
-          throw new Error(
-            `Daily leaderboard config not valid for mode:${state.mode} mode2:${state.mode2}`
-          );
-        }
-        if (!supportedLanguages.includes(state.language)) {
-          state.language = supportedLanguages[0] as Language;
-        }
-      }
     } else {
       return;
     }
+    checkIfLeaderboardIsValid();
     state.data = null;
     void requestData();
     updateSideButtons();
@@ -1456,20 +1464,10 @@ $(".page.pageLeaderboards .buttonGroup.languageButtons").on(
       if (state.language === language) return;
       state.language = language;
       state.page = 0;
-
-      //if the current language is not supported, use the first supported language
-      const supportedLanguages = langByMode.get(state.mode)?.get(state.mode2);
-      if (supportedLanguages === undefined || supportedLanguages.length < 1) {
-        throw new Error(
-          `Daily leaderboard config not valid for mode:${state.mode} mode2:${state.mode2}`
-        );
-      }
-      if (!supportedLanguages.includes(state.language)) {
-        state.language = supportedLanguages[0] as Language;
-      }
     } else {
       return;
     }
+    checkIfLeaderboardIsValid();
     state.data = null;
     void requestData();
     updateSideButtons();
