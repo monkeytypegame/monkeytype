@@ -328,6 +328,9 @@
         flex-direction: column;
         gap: 1em;
         //word-break: break-word;
+        .sub {
+          text-align: center;
+        }
       }
     }
   }
