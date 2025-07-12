@@ -295,7 +295,8 @@ function failOrFinish({
   }
 
   // if we went to the next word, shift the active index back
-  const lastWord = wentToNextWord && !spaceIncreasedIndex;
+  const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
+  const spaceOnLastWord = wentToNextWord && !spaceIncreasedIndex;
   const currentWord = TestWords.words.getCurrent();
   const allWordGenerated = TestLogic.areAllTestWordsGenerated();
   const wordIsCorrect =
@@ -307,7 +308,7 @@ function failOrFinish({
   if (
     lastWord &&
     allWordGenerated &&
-    (wordIsCorrect || shouldQuickEnd || wentToNextWord)
+    (wordIsCorrect || shouldQuickEnd || spaceOnLastWord)
   ) {
     void TestLogic.finish();
     return;
