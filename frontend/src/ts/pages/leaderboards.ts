@@ -154,8 +154,6 @@ const validLeaderboards: ValidLeaderboards = {
   daily: new Map(),
 };
 
-let availableLanguages: Language[];
-
 function updateTitle(): void {
   const type =
     state.type === "allTime"
@@ -1125,26 +1123,37 @@ async function updateValidDailyLeaderboards(): Promise<void> {
     mode2Array.push(...languages);
     return acc;
   }, new Map());
-
-  availableLanguages = Array.from(
-    new Set(dailyRules.flatMap((it) => it.languages))
-  );
 }
 
 function checkIfLeaderboardIsValid(): void {
   if (state.type === "weekly") return;
-  if (state.type === "allTime") {
-    state.language = "english";
-    state.mode = "time"; //we only support time
-    if (state.mode2 !== "15" && state.mode2 !== "60") {
-      state.mode2 = "15";
+
+  const validLeaderboard = validLeaderboards[state.type];
+
+  let validModes2 = validLeaderboard.get(state.mode);
+  if (validModes2 === undefined) {
+    const firstMode = Array.from(validLeaderboard.keys()).sort()[0];
+    if (firstMode === undefined) {
+      throw new Error(`no valid leaderboard config for type ${state.type}`);
     }
-    return;
+    state.mode = firstMode;
+    // oxlint-disable-next-line no-non-null-assertion
+    validModes2 = validLeaderboard.get(state.mode)!;
   }
-  // oxlint-disable-next-line no-non-null-assertion
-  const supportedLanguages = validLeaderboards[state.type]
-    .get(state.mode)!
-    .get(state.mode2)!;
+
+  let supportedLanguages = validModes2.get(state.mode2)?.sort();
+  if (supportedLanguages === undefined) {
+    const firstMode2 = Array.from(validModes2.keys()).sort(
+      (a, b) => parseInt(a) - parseInt(b)
+    )[0];
+    if (firstMode2 === undefined) {
+      throw new Error(
+        `no valid leaderboard config for type ${state.type} and mode ${state.mode}`
+      );
+    }
+    state.mode2 = firstMode2;
+    supportedLanguages = validModes2.get(state.mode2);
+  }
 
   if (supportedLanguages === undefined || supportedLanguages.length < 1) {
     throw new Error(
@@ -1184,6 +1193,16 @@ async function appendModeAndLanguageButtons(): Promise<void> {
       );
   });
   $(".modeButtons").html(mode2Buttons.join("\n"));
+
+  const availableLanguages = Array.from(
+    new Set(
+      Object.values(validLeaderboards)
+        .filter((rule) => rule !== "*")
+        .flatMap((rule) => Array.from(rule.values()))
+        .flatMap((mode) => Array.from(mode.values()))
+        .flatMap((it) => it)
+    )
+  ).sort();
 
   const languageButtons = availableLanguages.map(
     (lang) =>
