@@ -400,7 +400,10 @@ function shouldInsertSpaceCharacter(data: string): boolean {
   const correctSoFar = (TestWords.words.getCurrent() + " ").startsWith(
     TestInput.input.current + data
   );
-
+  const stopOnErrorLetterAndIncorrect =
+    Config.stopOnError === "letter" &&
+    !correctSoFar &&
+    Config.difficulty === "normal";
   const stopOnErrorWordAndIncorrect =
     Config.stopOnError === "word" &&
     !correctSoFar &&
@@ -408,7 +411,9 @@ function shouldInsertSpaceCharacter(data: string): boolean {
   const strictSpace =
     TestInput.input.current.length === 0 &&
     (Config.strictSpace || Config.difficulty !== "normal");
-  return stopOnErrorWordAndIncorrect || strictSpace;
+  return (
+    stopOnErrorLetterAndIncorrect || stopOnErrorWordAndIncorrect || strictSpace
+  );
 }
 
 async function onInsertText({
