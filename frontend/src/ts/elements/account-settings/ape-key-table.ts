@@ -157,7 +157,7 @@ const generateApeKey = new SimpleModal({
 
 let apeKeys: ApeKeys | null = {};
 
-const element = $("#pageAccountSettings .tab[data-tab='api']");
+const element = $("#pageAccountSettings .tab[data-tab='apeKeys']");
 
 async function getData(): Promise<boolean> {
   showLoaderRow();
@@ -277,7 +277,7 @@ let lostAccess = false;
 
 export async function update(onApeKeyChangee?: () => void): Promise<void> {
   if (lostAccess) {
-    $(".pageAccountSettings .tab[data-tab='api'] table").remove();
+    $(".pageAccountSettings .tab[data-tab='apeKeys'] table").remove();
     $(".pageAccountSettings .section.apeKeys .buttons").remove();
     $(".pageAccountSettings .section.apeKeys .lostAccess").removeClass(
       "hidden"

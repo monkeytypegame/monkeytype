@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { customEnumErrorHandler } from "./util";
 
 export const LayoutNameSchema = z.enum([
     "qwerty",
@@ -217,7 +218,10 @@ export const LayoutNameSchema = z.enum([
     "tarmak_2",
     "tarmak_3",
     "tarmak_4",
-  ]
+  ], 
+  {
+    errorMap: customEnumErrorHandler("Must be a supported layout"),
+  }
 );
 
 export type LayoutName = z.infer<typeof LayoutNameSchema>;

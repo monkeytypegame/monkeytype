@@ -184,6 +184,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   if (!currentWordNodeList?.length) return;
 
   const currentLetter = currentWordNodeList[inputLen];
+  const lastInputLetter = currentWordNodeList[inputLen - 1];
   const lastWordLetter = currentWordNodeList[wordLen - 1];
 
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
@@ -194,11 +195,15 @@ export async function updatePosition(noAnim = false): Promise<void> {
   // so is offsetTop (for same line letters)
   const letterHeight =
     (safeNumber(currentLetter?.offsetHeight) ?? 0) ||
+    (safeNumber(lastInputLetter?.offsetHeight) ?? 0) ||
     (safeNumber(lastWordLetter?.offsetHeight) ?? 0) ||
     Config.fontSize * convertRemToPixels(1);
 
   const letterPosTop =
-    currentLetter?.offsetTop ?? lastWordLetter?.offsetTop ?? 0;
+    currentLetter?.offsetTop ??
+    lastInputLetter?.offsetTop ??
+    lastWordLetter?.offsetTop ??
+    0;
   const diff = letterHeight - caretHeight;
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {
