@@ -1141,7 +1141,7 @@ function checkIfLeaderboardIsValid(): void {
     validModes2 = validLeaderboard.get(state.mode)!;
   }
 
-  let supportedLanguages = validModes2.get(state.mode2)?.sort();
+  let supportedLanguages = validModes2.get(state.mode2);
   if (supportedLanguages === undefined) {
     const firstMode2 = Array.from(validModes2.keys()).sort(
       (a, b) => parseInt(a) - parseInt(b)
@@ -1162,7 +1162,7 @@ function checkIfLeaderboardIsValid(): void {
   }
 
   if (!supportedLanguages.includes(state.language)) {
-    state.language = supportedLanguages[0] as Language;
+    state.language = supportedLanguages.sort()[0] as Language;
   }
 }
 
