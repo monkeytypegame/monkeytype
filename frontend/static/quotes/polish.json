@@ -1058,19 +1058,19 @@
       "id": 178
     },
     {
-      "text": "Nie można tego zobaczyć ani dotknąć palcami, Nie można wyczuć węchem ani usłyszeć uszami; Jest pod górami, jest nad gwiazdami, Pustej jaskini nie omija,Po nas zostanie, było przed nami, Życie gasi, a śmiech zabija.",
+      "text": "Nie można tego zobaczyć ani dotknąć palcami, nie można wyczuć węchem ani usłyszeć uszami. Jest pod górami, jest nad gwiazdami, pustej jaskini nie omija, po nas zostanie, było przed nami, życie gasi, a śmiech zabija.",
       "source": "J.R.R. Tolkien, Hobbit, czyli tam i z powrotem",
-      "length": 214,
+      "length": 215,
       "id": 179
     },
     {
-      "text": "Tłuczmy szklanki, spodki, miski, Niech gospodarz żyje nasz! A choć Bilbo płaczu bliski, Niechaj drzazgi lecą z flasz!",
+      "text": "Tłuczmy szklanki, spodki, miski, niech gospodarz żyje nasz! A choć Bilbo płaczu bliski, niechaj drzazgi lecą z flasz!",
       "source": "J.R.R. Tolkien, Hobbit, czyli tam i z powrotem",
       "length": 117,
       "id": 180
     },
     {
-      "text": "Trzy Pierścienie dla królów elfów pod otwartym niebem, Siedem dla władców krasnali w ich kamiennych pałacach, Dziewięć dla śmiertelników, ludzi śmierci podległych, Jeden dla Władcy Ciemności na czarnym tronie.",
+      "text": "Trzy pierścienie dla królów elfów pod otwartym niebem, siedem dla władców krasnali w ich kamiennych pałacach, dziewięć dla śmiertelników, ludzi śmierci podległych, jeden dla Władcy Ciemności na czarnym tronie.",
       "source": "J.R.R. Tolkien, Władca Pierścieni",
       "length": 209,
       "id": 181
@@ -1188,6 +1188,96 @@
       "source": "Frank Herbert, Diuna",
       "length": 243,
       "id": 200
+    },
+    {
+      "text": "Grzegorz Brzęczyszczykiewicz. Chrząszczyrzewoszczyce, powiat Łękołody.",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 70,
+      "id": 201
+    },
+    {
+      "text": "Melduję posłusznie, panie pułkowniku, ja tę wojnę zupełnie niechcący wywołałem.",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 79,
+      "id": 202
+    },
+    {
+      "text": "Każdy szczęściu dopomoże, każdy dzisiaj wygrać może. Czarna przegrywa, czerwona wygrywa. Raz, dwa, trzy...",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 106,
+      "id": 203
+    },
+    {
+      "text": "Umarł w drodze, na pewno od ran. - To nie od ran, panie pułkowniku! Śliwowica!",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 78,
+      "id": 204
+    },
+    {
+      "text": "Ty, chodź no tu. Gdzie ty tam idziesz? Chodź tu do pana. Jaki dobry! Jaką ma ładną panią! Tylko jakaś taka poważna… A czemu ona taka poważna, co? Grubciu… No masz. Co, dobre paproszki? Jedz, jedz. Jak nie będziesz jadł, to pani cię zamknie w takiej dziurze jak nas tutaj.",
+      "source": "Seksmisja",
+      "length": 271,
+      "id": 205
+    },
+    {
+      "text": "Ciemność, widzę ciemność, ciemność widzę.",
+      "source": "Seksmisja",
+      "length": 41,
+      "id": 206
+    },
+    {
+      "text": "Uratowani! Uratowani jesteśmy! Bocian! Patrz! Bocian! Jak on żyje, to znaczy, że my też możemy. Bocian, bociuś!",
+      "source": "Seksmisja",
+      "length": 111,
+      "id": 207
+    },
+    {
+      "text": "Liga broni, liga radzi, liga nigdy was nie zdradzi!",
+      "source": "Seksmisja",
+      "length": 51,
+      "id": 208
+    },
+    {
+      "text": "Za parę dni, proszę pana, to się dopiero zacznie: wywiady, autografy, wizyty w zakładach pracy.",
+      "source": "Seksmisja",
+      "length": 95,
+      "id": 209
+    },
+    {
+      "text": "Ja, książę Jeremi Wiśniowiecki, wojewoda ruski, pan na Łubniach i Wiśniowcu, przysięgam tobie, Boże żywy, w Trójcy Świętej jedyny, jako wznosząc tę szablę przeciw hultajstwu dopóty jej nie złożę, dopóki Ukrainy nie uspokoję, i buntów chłopskich we krwi nie utopię! Tak mi dopomóż Bóg!",
+      "source": "Ogniem i mieczem (1999)",
+      "length": 284,
+      "id": 210
+    },
+    {
+      "text": "Może chcesz waść zaczekać, aż siąpić przestanie. Żal umierać w taki deszcz. - Pułkownika będą chować, to i niebo płacze.",
+      "source": "Potop (1974)",
+      "length": 120,
+      "id": 211
+    },
+    {
+      "text": "Waść machasz jak cepem! - Kończ waść, wstydu oszczędź.",
+      "source": "Potop (1974)",
+      "length": 54,
+      "id": 212
+    },
+    {
+      "text": "Litwo! Ojczyzno moja! ty jesteś jak zdrowie. Ile cię trzeba cenić, ten tylko się dowie, kto cię stracił. Dziś piękność twą w całej ozdobie widzę i opisuję, bo tęsknię po tobie.",
+      "source": "Pan Tadeusz (1999)",
+      "length": 176,
+      "id": 213
+    },
+    {
+      "text": "Mówiłem panu zawsze – procesów zaniechać. Mówiłem panu zawsze – najechać, zajechać!",
+      "source": "Pan Tadeusz (1999)",
+      "length": 83,
+      "id": 214
+    },
+    {
+      "text": "Ja nie mam nic, ty nie masz nic, on nie ma nic... To razem właśnie mamy tyle, żeby założyć wielką fabrykę.",
+      "source": "Ziemia obiecana (1975)",
+      "length": 106,
+      "id": 215
     }
   ]
 }
