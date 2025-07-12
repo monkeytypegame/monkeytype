@@ -366,6 +366,8 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
     preventDefault = true;
   }
 
+  // we need this here because space characters sometimes need to be blocked,
+  // while space skips to next word shouldnt
   const shouldInsertSpace = shouldInsertSpaceCharacter(data);
 
   //prevent the word from jumping to the next line if the word is too long
