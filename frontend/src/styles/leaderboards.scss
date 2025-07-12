@@ -279,7 +279,7 @@
       color: var(--sub-color);
       padding: 1em;
     }
-    .buttons {
+    .sideButtons {
       align-content: start;
       align-items: start;
       grid-area: buttons;
@@ -294,7 +294,8 @@
         justify-content: start;
         padding-left: 0.75em;
       }
-      .divider {
+      .divider,
+      .divider2 {
         background: var(--bg-color);
         width: 100%;
         height: 0.25em;
