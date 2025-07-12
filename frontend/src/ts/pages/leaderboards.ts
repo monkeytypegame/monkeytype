@@ -57,6 +57,7 @@ type AllTimeState = {
   type: "allTime";
   mode: "time";
   mode2: "15" | "60";
+  language: "english";
   data: LeaderboardEntry[] | null;
   count: number;
   userData: LeaderboardEntry | null;
@@ -131,22 +132,29 @@ const selectorLS = new LocalStorageWithSchema({
   fallback: { type: "allTime", mode2: "15" },
 });
 
-let langByMode: Map<Mode, Map<string /*mode2*/, Language[]>>;
+type LanguagesByModeByMode2 = Map<Mode, Map<string /*mode2*/, Language[]>>;
 
 type ValidLeaderboards = {
-  allTime: Pick<AllTimeState, "mode" | "mode2">[];
+  allTime: LanguagesByModeByMode2;
   weekly: "*";
-  daily: Pick<DailyState, "mode" | "mode2" | "language">[];
+  daily: LanguagesByModeByMode2;
 };
 
 const validLeaderboards: ValidLeaderboards = {
-  allTime: [
-    { mode: "time", mode2: "15" },
-    { mode: "time", mode2: "60" },
-  ],
+  allTime: new Map([
+    [
+      "time",
+      new Map([
+        ["15", ["english"]],
+        ["60", ["english"]],
+      ]),
+    ],
+  ]),
   weekly: "*",
-  daily: [],
+  daily: new Map(),
 };
+
+let availableLanguages: Language[];
 
 function updateTitle(): void {
   const type =
@@ -157,16 +165,10 @@ function updateTitle(): void {
       : "Daily";
 
   const language =
-    state.type === "daily"
-      ? capitalizeFirstLetter(state.language)
-      : state.type === "allTime"
-      ? "English"
-      : "";
+    state.type !== "weekly" ? capitalizeFirstLetter(state.language) : "";
 
   const mode =
-    state.type === "allTime"
-      ? ` Time ${state.mode2}`
-      : state.type === "daily"
+    state.type !== "weekly"
       ? ` ${capitalizeFirstLetter(state.mode)} ${state.mode2}`
       : "";
 
@@ -1001,12 +1003,20 @@ function updateLanguageButtons(): void {
   el.find("button").removeClass("active");
   el.find(`button[data-language=${state.language}]`).addClass("active");
 
-  $(
-    `.page.pageLeaderboards .buttonGroup.languageButtons button:not([data-modes~="${state.mode}-${state.mode2}"])`
-  ).addClass("hidden");
-  $(
-    `.page.pageLeaderboards .buttonGroup.languageButtons button[data-modes~="${state.mode}-${state.mode2}"]`
-  ).removeClass("hidden");
+  //hide all languages
+  $(`.page.pageLeaderboards .buttonGroup.languageButtons button`).addClass(
+    "hidden"
+  );
+
+  //show all valid ones
+  // oxlint-disable-next-line no-non-null-assertion
+  for (const lang of validLeaderboards[state.type]
+    .get(state.mode)!
+    .get(state.mode2)!) {
+    $(
+      `.page.pageLeaderboards .buttonGroup.languageButtons button[data-language="${lang}"]`
+    ).removeClass("hidden");
+  }
 }
 
 let updateTimer: number | undefined;
@@ -1085,59 +1095,6 @@ async function updateValidDailyLeaderboards(): Promise<void> {
     );
   }
 
-  let validDailyLeaderboards: ValidLeaderboards["daily"] = [];
-
-  dailyRulesConfig.flatMap((rule) => {
-    const modeList = convertRuleOption(rule.mode) as Mode[];
-    const languages = convertRuleOption(rule.language) as Language[];
-    const mode2List = convertRuleOption(rule.mode2);
-
-    for (const mode of modeList) {
-      for (const mode2 of mode2List) {
-        for (const language of languages) {
-          validDailyLeaderboards.push({
-            mode,
-            mode2,
-            language,
-          });
-        }
-      }
-    }
-  });
-
-  validLeaderboards.daily = validDailyLeaderboards;
-}
-
-function checkIfLeaderboardIsValid(): void {
-  // check the current state mode mode2 language against the validLeaderboards
-  // revert to something valid if not found
-  // update the state with the valid one
-  // example from old approach
-  //   if (state.type === "daily") {
-  //   //if the current language is not supported, use the first supported language
-  //   const supportedLanguages = langByMode.get(state.mode)?.get(state.mode2);
-  //   if (supportedLanguages === undefined || supportedLanguages.length < 1) {
-  //     throw new Error(
-  //       `Daily leaderboard config not valid for mode:${state.mode} mode2:${state.mode2}`
-  //     );
-  //   }
-  //   if (!supportedLanguages.includes(state.language)) {
-  //     state.language = supportedLanguages[0] as Language;
-  //   }
-  // }
-}
-
-async function appendModeAndLanguageButtons(): Promise<void> {
-  //todo: base these buttons on "validLeaderboards" global, dont pull server configuration again
-
-  const dailyRulesConfig = await ServerConfiguration.get()?.dailyLeaderboards
-    .validModeRules;
-
-  if (dailyRulesConfig === undefined)
-    throw new Error(
-      "cannot load server configuration for dailyLeaderboards.validModeRules"
-    );
-
   //a rule can contain multiple values. create a flat list out of them
   const dailyRules = dailyRulesConfig.flatMap((rule) => {
     const languages = convertRuleOption(rule.language) as Language[];
@@ -1150,70 +1107,91 @@ async function appendModeAndLanguageButtons(): Promise<void> {
     }));
   });
 
-  langByMode = dailyRules.reduce<Map<Mode, Map<string /*mode2*/, Language[]>>>(
-    (acc, { mode, mode2, languages }) => {
-      let modeMap = acc.get(mode);
-      if (modeMap === undefined) {
-        modeMap = new Map();
-        acc.set(mode, modeMap);
-      }
+  validLeaderboards.daily = dailyRules.reduce<
+    Map<Mode, Map<string /*mode2*/, Language[]>>
+  >((acc, { mode, mode2, languages }) => {
+    let modeMap = acc.get(mode);
+    if (modeMap === undefined) {
+      modeMap = new Map();
+      acc.set(mode, modeMap);
+    }
 
-      let mode2Array = modeMap.get(mode2);
-      if (mode2Array === undefined) {
-        mode2Array = [];
-        modeMap.set(mode2, mode2Array);
-      }
+    let mode2Array = modeMap.get(mode2);
+    if (mode2Array === undefined) {
+      mode2Array = [];
+      modeMap.set(mode2, mode2Array);
+    }
 
-      mode2Array.push(...languages);
-      return acc;
-    },
-    new Map()
+    mode2Array.push(...languages);
+    return acc;
+  }, new Map());
+
+  availableLanguages = Array.from(
+    new Set(dailyRules.flatMap((it) => it.languages))
   );
+}
 
-  const mode2Buttons = Array.from(langByMode.keys())
-    .sort()
-    .flatMap((mode) => {
-      // oxlint-disable-next-line no-non-null-assertion
-      const modes2Sorted = Array.from(langByMode.get(mode)!.keys()).sort(
-        (a, b) => parseInt(a) - parseInt(b)
-      );
+function checkIfLeaderboardIsValid(): void {
+  if (state.type === "weekly") return;
+  if (state.type === "allTime") {
+    state.language = "english";
+    state.mode = "time"; //we only support time
+    if (state.mode2 !== "15" && state.mode2 !== "60") {
+      state.mode2 = "15";
+    }
+    return;
+  }
+  // oxlint-disable-next-line no-non-null-assertion
+  const supportedLanguages = validLeaderboards[state.type]
+    .get(state.mode)!
+    .get(state.mode2)!;
 
-      const icon = mode === "time" ? "fas fa-clock" : "fas fa-align-left";
+  if (supportedLanguages === undefined || supportedLanguages.length < 1) {
+    throw new Error(
+      `Daily leaderboard config not valid for mode:${state.mode} mode2:${state.mode2}`
+    );
+  }
 
-      return modes2Sorted.map(
+  if (!supportedLanguages.includes(state.language)) {
+    state.language = supportedLanguages[0] as Language;
+  }
+}
+
+async function appendModeAndLanguageButtons(): Promise<void> {
+  //modes from daily, make sure we have `time` for the all-time leaderboard
+  const modes = Array.from(
+    new Set(validLeaderboards.daily.keys()).add("time")
+  ).sort();
+
+  const mode2Buttons = modes.flatMap((mode) => {
+    // oxlint-disable-next-line no-non-null-assertion
+    const modes2 = new Set(validLeaderboards.daily.get(mode)!.keys());
+
+    //modes2 from the daily, make sure we have `15` and `60` for time for the all-time leaderboard
+    if (mode === "time") {
+      modes2.add("15").add("60");
+    }
+
+    const icon = mode === "time" ? "fas fa-clock" : "fas fa-align-left";
+
+    return Array.from(modes2.keys())
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .map(
         (mode2) => `<button data-mode="${mode}" data-mode2="${mode2}">
       <i class="${icon}"></i>
        ${mode} ${mode2}
     </button>`
       );
-    });
-
+  });
   $(".modeButtons").html(mode2Buttons.join("\n"));
 
-  const modesByLanguage = dailyRules.reduce<Map<Language, string[]>>(
-    (acc, { mode, mode2, languages }) => {
-      for (const lang of languages) {
-        let modesList = acc.get(lang);
-        if (modesList === undefined) {
-          modesList = [];
-          acc.set(lang, modesList);
-        }
-        modesList.push(mode + "-" + mode2);
-      }
-      return acc;
-    },
-    new Map()
-  );
-
-  const languageButtons = Array.from(modesByLanguage.entries())
-    .sort()
-    .map(
-      ([lang, modes]) =>
-        `<button data-language="${lang}" data-modes="${modes.join(" ")}">
+  const languageButtons = availableLanguages.map(
+    (lang) =>
+      `<button data-language="${lang}">
           <i class="fas fa-globe"></i>
           ${lang}
         </button>`
-    );
+  );
   $(".languageButtons").html(languageButtons.join("\n"));
 }
 
@@ -1338,9 +1316,6 @@ function readGetParameters(params?: UrlParameter): void {
     if (params.language !== undefined) {
       state.language = params.language;
     }
-    if (state.language === undefined) {
-      state.language = "english";
-    }
     if (params.mode2 !== undefined) {
       state.mode2 = params.mode2;
     }
@@ -1363,7 +1338,7 @@ function readGetParameters(params?: UrlParameter): void {
       state.page = 0;
     }
   }
-  if (params.goToUserPage) {
+  if (params.goToUserPage === true) {
     state.goToUserPage = true;
   }
 }
@@ -1493,6 +1468,7 @@ export const page = new PageWithUrlParams({
     await updateValidDailyLeaderboards();
     await appendModeAndLanguageButtons();
     readGetParameters(options.urlParams);
+    checkIfLeaderboardIsValid();
     startTimer();
     updateTitle();
     updateContent();
