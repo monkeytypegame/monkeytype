@@ -368,7 +368,7 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
 
   // we need this here because space characters sometimes need to be blocked,
   // while space skips to next word shouldnt
-  const shouldInsertSpace = shouldInsertSpaceCharacter(data);
+  const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
 
   //prevent the word from jumping to the next line if the word is too long
   //this will not work for the first word of each line, but that has a low chance of happening
@@ -398,7 +398,11 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   return preventDefault;
 }
 
-function shouldInsertSpaceCharacter(data: string): boolean {
+// boolean if data is space, null if not
+function shouldInsertSpaceCharacter(data: string): boolean | null {
+  if (data !== " ") {
+    return null;
+  }
   const correctSoFar = (TestWords.words.getCurrent() + " ").startsWith(
     TestInput.input.current + data
   );
@@ -495,7 +499,7 @@ async function onInsertText({
     TestInput.setBurstStart(now);
   }
 
-  const shouldInsertSpace = shouldInsertSpaceCharacter(data);
+  const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
   const charIsNotSpace = data !== " ";
   if (charIsNotSpace || shouldInsertSpace) {
     setTestInputToDOMValue(data === "\n");
