@@ -152,9 +152,20 @@ function isCharCorrect(data: string): boolean {
 type GoToNextWordParams = {
   correctInsert: boolean;
 };
+
+type GoToNextWordReturn = {
+  increasedIndex: boolean;
+  lastBurst: number;
+};
+
 async function goToNextWord({
   correctInsert,
-}: GoToNextWordParams): Promise<void> {
+}: GoToNextWordParams): Promise<GoToNextWordReturn> {
+  const ret = {
+    increasedIndex: false,
+    lastBurst: 0,
+  };
+
   TestUI.beforeTestWordChange("forward", correctInsert);
 
   if (correctInsert) {
@@ -171,22 +182,7 @@ async function goToNextWord({
   const burst: number = TestStats.calculateBurst();
   void LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
-
-  let wordLength: number;
-  if (Config.mode === "zen") {
-    wordLength = TestInput.input.current.length;
-  } else {
-    wordLength = TestWords.words.getCurrent().length;
-  }
-
-  const flex: number = whorf(Config.minBurstCustomSpeed, wordLength);
-  if (
-    (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
-    (Config.minBurst === "flex" && burst < flex)
-  ) {
-    TestLogic.fail("min burst");
-    return;
-  }
+  ret.lastBurst = burst;
 
   PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
 
@@ -208,11 +204,14 @@ async function goToNextWord({
     TestState.activeWordIndex < TestWords.words.length - 1 ||
     Config.mode === "zen"
   ) {
+    ret.increasedIndex = true;
     TestState.increaseActiveWordIndex();
   }
 
   setInputValue("");
   TestUI.afterTestWordChange("forward");
+
+  return ret;
 }
 
 function goToPreviousWord(inputType: SupportedInputType): void {
@@ -251,48 +250,67 @@ type FailOrFinishParams = {
   data: string;
   correctInsert: boolean;
   inputType: SupportedInputType;
-  dataStoppedByStopOnLetter: string | null;
-  willGoToNextWord: boolean;
+  spaceIncreasedIndex: boolean | null;
+  wentToNextWord: boolean;
+  shouldInsertSpace: boolean;
+  lastBurst: number | null;
 };
 
 function failOrFinish({
   correctInsert,
-  dataStoppedByStopOnLetter,
-  willGoToNextWord,
+  wentToNextWord,
+  spaceIncreasedIndex,
+  shouldInsertSpace,
+  lastBurst,
 }: FailOrFinishParams): void {
-  const input = TestInput.input.current + (dataStoppedByStopOnLetter ?? "");
+  if (Config.minBurst !== "off" && lastBurst !== null) {
+    let wordLength: number;
+    if (Config.mode === "zen") {
+      wordLength = TestInput.input.current.length;
+    } else {
+      wordLength = TestWords.words.getCurrent().length;
+    }
+
+    const flex: number = whorf(Config.minBurstCustomSpeed, wordLength);
+    if (
+      (Config.minBurst === "fixed" && lastBurst < Config.minBurstCustomSpeed) ||
+      (Config.minBurst === "flex" && lastBurst < flex)
+    ) {
+      TestLogic.fail("min burst");
+      return;
+    }
+  }
 
   const shouldFailDueToExpert =
-    !correctInsert &&
-    willGoToNextWord &&
     Config.difficulty === "expert" &&
-    input.length > 0;
+    !correctInsert &&
+    (shouldInsertSpace || wentToNextWord);
+
   const shouldFailDueToMaster =
-    !correctInsert && Config.difficulty === "master";
+    Config.difficulty === "master" && !correctInsert;
 
   if (shouldFailDueToExpert || shouldFailDueToMaster) {
     TestLogic.fail("difficulty");
-    console.log("failing difficulty");
-  } else {
-    const currentWord = TestWords.words.getCurrent();
-    const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
-    const allWordGenerated = TestLogic.areAllTestWordsGenerated();
-    const wordIsCorrect =
-      TestInput.input.current ===
-      TestWords.words.get(TestState.activeWordIndex);
-    const shouldQuickEnd =
-      Config.quickEnd &&
-      currentWord.length === TestInput.input.current.length &&
-      Config.stopOnError === "off";
-    const shouldSpaceEnd = willGoToNextWord && Config.stopOnError === "off";
+    return;
+  }
 
-    if (
-      lastWord &&
-      allWordGenerated &&
-      (wordIsCorrect || shouldQuickEnd || shouldSpaceEnd)
-    ) {
-      void TestLogic.finish();
-    }
+  // if we went to the next word, shift the active index back
+  const lastWord = wentToNextWord && !spaceIncreasedIndex;
+  const currentWord = TestWords.words.getCurrent();
+  const allWordGenerated = TestLogic.areAllTestWordsGenerated();
+  const wordIsCorrect =
+    TestInput.input.current === TestWords.words.get(TestState.activeWordIndex);
+  const shouldQuickEnd =
+    Config.quickEnd &&
+    currentWord.length === TestInput.input.current.length &&
+    Config.stopOnError === "off";
+  if (
+    lastWord &&
+    allWordGenerated &&
+    (wordIsCorrect || shouldQuickEnd || wentToNextWord)
+  ) {
+    void TestLogic.finish();
+    return;
   }
 }
 
@@ -551,23 +569,19 @@ async function onInsertText({
     }
   }
 
-  let dataStoppedByStopOnLetter: string | null = null;
   let visualInputOverride: string | undefined;
   if (Config.stopOnError === "letter" && !correct) {
     if (!Config.blindMode) {
       visualInputOverride = TestInput.input.current;
     }
-    dataStoppedByStopOnLetter = data;
     replaceLastInputValueChar("");
   }
 
-  TestUI.afterTestTextInput(correct, visualInputOverride);
-
   // going to next word
 
-  const nospace = isFunboxActiveWithProperty("nospace");
+  const nospaceEnabled = isFunboxActiveWithProperty("nospace");
   const noSpaceForce =
-    nospace &&
+    nospaceEnabled &&
     TestInput.input.current.length === TestWords.words.getCurrent().length;
   const spaceOrNewLine =
     (data === " " && TestInput.input.current.length > 0) ||
@@ -576,28 +590,21 @@ async function onInsertText({
 
   // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
   // like accuracy, keypress errors, and missed words
-  const stopOnErrorBlock =
-    (Config.stopOnError === "word" || Config.stopOnError === "letter") &&
-    Config.difficulty === "normal" &&
-    !correct;
+  // const stopOnErrorBlock =
+  //   (Config.stopOnError === "word" || Config.stopOnError === "letter") &&
+  //   Config.difficulty === "normal" &&
+  //   !correct;
 
-  const shouldGoToNextWord =
-    !stopOnErrorBlock && spaceOrNewLine && !shouldInsertSpace;
+  const shouldGoToNextWord = spaceOrNewLine && !shouldInsertSpace;
 
-  if (!CompositionState.getComposing()) {
-    failOrFinish({
-      data: data ?? "",
-      correctInsert: correct,
-      dataStoppedByStopOnLetter,
-      inputType: "insertText",
-      willGoToNextWord: shouldGoToNextWord,
-    });
-  }
-
+  let increasedIndex = null;
+  let lastBurst = null;
   if (shouldGoToNextWord) {
-    await goToNextWord({
+    const result = await goToNextWord({
       correctInsert: correct,
     });
+    lastBurst = result.lastBurst;
+    increasedIndex = result.increasedIndex;
   }
 
   const currentWord = TestWords.words.getCurrent();
@@ -614,6 +621,20 @@ async function onInsertText({
       void emulateInsertText("\t", event as KeyboardEvent, now);
     }, 0);
   }
+
+  if (!CompositionState.getComposing()) {
+    failOrFinish({
+      data: data ?? "",
+      correctInsert: correct,
+      inputType: "insertText",
+      wentToNextWord: shouldGoToNextWord,
+      shouldInsertSpace,
+      spaceIncreasedIndex: increasedIndex,
+      lastBurst,
+    });
+  }
+
+  TestUI.afterTestTextInput(correct, visualInputOverride);
 }
 
 function onDelete({ inputType }: InputEventHandler): void {
