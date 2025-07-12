@@ -403,13 +403,9 @@ function shouldInsertSpaceCharacter(data: string): boolean {
     TestInput.input.current + data
   );
   const stopOnErrorLetterAndIncorrect =
-    Config.stopOnError === "letter" &&
-    !correctSoFar &&
-    Config.difficulty === "normal";
+    Config.stopOnError === "letter" && !correctSoFar;
   const stopOnErrorWordAndIncorrect =
-    Config.stopOnError === "word" &&
-    !correctSoFar &&
-    Config.difficulty === "normal";
+    Config.stopOnError === "word" && !correctSoFar;
   const strictSpace =
     TestInput.input.current.length === 0 &&
     (Config.strictSpace || Config.difficulty !== "normal");
