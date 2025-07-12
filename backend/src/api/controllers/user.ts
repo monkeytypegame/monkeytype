@@ -8,7 +8,7 @@ import { MonkeyResponse } from "../../utils/monkey-response";
 import * as DiscordUtils from "../../utils/discord";
 import {
   buildAgentLog,
-  isDevEnvironment,
+  getFrontendUrl,
   replaceObjectId,
   replaceObjectIds,
   sanitizeString,
@@ -178,11 +178,7 @@ export async function sendVerificationEmail(
   const { data: link, error } = await tryCatch(
     FirebaseAdmin()
       .auth()
-      .generateEmailVerificationLink(email, {
-        url: isDevEnvironment()
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
-      })
+      .generateEmailVerificationLink(email, { url: getFrontendUrl() })
   );
 
   if (error) {
