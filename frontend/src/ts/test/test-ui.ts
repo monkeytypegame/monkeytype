@@ -1657,6 +1657,7 @@ export function beforeTestWordChange(
   direction: "forward" | "back",
   correct: boolean | null
 ): void {
+  void updateActiveWordLetters();
   if (direction === "forward") {
     if (Config.blindMode) {
       highlightAllLettersAsCorrect(
@@ -1667,8 +1668,6 @@ export function beforeTestWordChange(
         TestState.activeWordIndex - TestState.removedUIWordCount
       );
     }
-  } else if (direction === "back") {
-    void updateActiveWordLetters();
   }
 }
 
