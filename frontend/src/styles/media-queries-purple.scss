@@ -29,6 +29,20 @@
     }
     .content .tableAndUser {
       overflow-x: hidden;
+      table {
+        tr[data-uid] {
+          .avatarNameBadge {
+            gap: 0.2em;
+          }
+          .stat {
+            padding: 0.1em 0.2em;
+          }
+        }
+        td,
+        th {
+          padding: 0.7em 0.9em;
+        }
+      }
     }
   }
   header {

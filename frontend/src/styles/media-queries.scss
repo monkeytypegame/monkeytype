@@ -63,6 +63,32 @@ body {
   }
 }
 
+@media only screen and (max-width: 540px) {
+  .pageLeaderboards {
+    .content .tableAndUser {
+      .bigUser,
+      .needAuth {
+        text-align: center;
+        flex-direction: column;
+        gap: 1em;
+        //word-break: break-word;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 520px) {
+  .pageLeaderboards {
+    .content .tableAndUser {
+      table {
+        tr[data-uid] {
+          font-size: 0.75em;
+        }
+      }
+    }
+  }
+}
+
 // //1450px
 // @media only screen and (max-width: 90.625rem) {
 //   #leaderboardsWrapper #leaderboards {
