@@ -132,7 +132,9 @@ const selectorLS = new LocalStorageWithSchema({
   fallback: { type: "allTime", mode2: "15" },
 });
 
-type LanguagesByModeByMode2 = Map<Mode, Map<string /*mode2*/, Language[]>>;
+type LanguagesByModeByMode2 = Partial<
+  Record<Mode, Record<string /*mode2*/, Language[]>>
+>;
 
 type ValidLeaderboards = {
   allTime: LanguagesByModeByMode2;
@@ -140,16 +142,13 @@ type ValidLeaderboards = {
 };
 
 const validLeaderboards: ValidLeaderboards = {
-  allTime: new Map([
-    [
-      "time",
-      new Map([
-        ["15", ["english"]],
-        ["60", ["english"]],
-      ]),
-    ],
-  ]),
-  daily: new Map(),
+  allTime: {
+    time: {
+      "15": ["english"],
+      "60": ["english"],
+    },
+  },
+  daily: {},
 };
 
 function updateTitle(): void {
@@ -975,9 +974,11 @@ function updateModeButtons(): void {
   );
 
   //show all valid ones
-  for (const mode of validLeaderboards[state.type].keys()) {
-    // oxlint-disable-next-line no-non-null-assertion
-    for (const mode2 of validLeaderboards[state.type].get(mode)!.keys()) {
+  for (const mode of Object.keys(validLeaderboards[state.type]) as Mode[]) {
+    for (const mode2 of Object.keys(
+      // oxlint-disable-next-line no-non-null-assertion
+      validLeaderboards[state.type][mode]!
+    )) {
       $(
         `.page.pageLeaderboards .buttonGroup.modeButtons button[data-mode="${mode}"][data-mode2="${mode2}"]`
       ).removeClass("hidden");
@@ -1006,10 +1007,8 @@ function updateLanguageButtons(): void {
   );
 
   //show all valid ones
-  // oxlint-disable-next-line no-non-null-assertion
-  for (const lang of validLeaderboards[state.type]
-    .get(state.mode)!
-    .get(state.mode2)!) {
+  for (const lang of validLeaderboards[state.type][state.mode]?.[state.mode2] ??
+    []) {
     $(
       `.page.pageLeaderboards .buttonGroup.languageButtons button[data-language="${lang}"]`
     ).removeClass("hidden");
@@ -1105,23 +1104,23 @@ async function updateValidDailyLeaderboards(): Promise<void> {
   });
 
   validLeaderboards.daily = dailyRules.reduce<
-    Map<Mode, Map<string /*mode2*/, Language[]>>
+    Partial<Record<Mode, Record<string /*mode2*/, Language[]>>>
   >((acc, { mode, mode2, languages }) => {
-    let modeMap = acc.get(mode);
-    if (modeMap === undefined) {
-      modeMap = new Map();
-      acc.set(mode, modeMap);
+    let modes = acc[mode];
+    if (modes === undefined) {
+      modes = {};
+      acc[mode] = modes;
     }
 
-    let mode2Array = modeMap.get(mode2);
-    if (mode2Array === undefined) {
-      mode2Array = [];
-      modeMap.set(mode2, mode2Array);
+    let modes2 = modes[mode2];
+    if (modes2 === undefined) {
+      modes2 = [];
+      modes[mode2] = modes2;
     }
 
-    mode2Array.push(...languages);
+    modes2.push(...languages);
     return acc;
-  }, new Map());
+  }, {});
 }
 
 function checkIfLeaderboardIsValid(): void {
@@ -1129,20 +1128,20 @@ function checkIfLeaderboardIsValid(): void {
 
   const validLeaderboard = validLeaderboards[state.type];
 
-  let validModes2 = validLeaderboard.get(state.mode);
+  let validModes2 = validLeaderboard[state.mode];
   if (validModes2 === undefined) {
-    const firstMode = Array.from(validLeaderboard.keys()).sort()[0];
+    const firstMode = Object.keys(validLeaderboard).sort()[0] as Mode;
     if (firstMode === undefined) {
       throw new Error(`no valid leaderboard config for type ${state.type}`);
     }
     state.mode = firstMode;
     // oxlint-disable-next-line no-non-null-assertion
-    validModes2 = validLeaderboard.get(state.mode)!;
+    validModes2 = validLeaderboard[state.mode]!;
   }
 
-  let supportedLanguages = validModes2.get(state.mode2);
+  let supportedLanguages = validModes2[state.mode2];
   if (supportedLanguages === undefined) {
-    const firstMode2 = Array.from(validModes2.keys()).sort(
+    const firstMode2 = Object.keys(validModes2).sort(
       (a, b) => parseInt(a) - parseInt(b)
     )[0];
     if (firstMode2 === undefined) {
@@ -1151,7 +1150,7 @@ function checkIfLeaderboardIsValid(): void {
       );
     }
     state.mode2 = firstMode2;
-    supportedLanguages = validModes2.get(state.mode2);
+    supportedLanguages = validModes2[state.mode2];
   }
 
   if (supportedLanguages === undefined || supportedLanguages.length < 1) {
@@ -1168,8 +1167,8 @@ function checkIfLeaderboardIsValid(): void {
 async function appendModeAndLanguageButtons(): Promise<void> {
   const modes = Array.from(
     new Set(
-      Object.values(validLeaderboards).flatMap((rule) =>
-        Array.from(rule.keys())
+      Object.values(validLeaderboards).flatMap(
+        (rule) => Object.keys(rule) as Mode[]
       )
     )
   ).sort();
@@ -1178,7 +1177,7 @@ async function appendModeAndLanguageButtons(): Promise<void> {
     const modes2 = Array.from(
       new Set(
         Object.values(validLeaderboards).flatMap((rule) =>
-          Array.from(rule.get(mode)?.keys() ?? [])
+          Object.keys(rule[mode] ?? {})
         )
       )
     ).sort((a, b) => parseInt(a) - parseInt(b));
@@ -1197,8 +1196,8 @@ async function appendModeAndLanguageButtons(): Promise<void> {
   const availableLanguages = Array.from(
     new Set(
       Object.values(validLeaderboards)
-        .flatMap((rule) => Array.from(rule.values()))
-        .flatMap((mode) => Array.from(mode.values()))
+        .flatMap((rule) => Object.values(rule))
+        .flatMap((mode) => Object.values(mode))
         .flatMap((it) => it)
     )
   ).sort();
