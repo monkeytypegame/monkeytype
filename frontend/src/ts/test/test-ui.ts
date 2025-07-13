@@ -234,69 +234,69 @@ async function joinOverlappingHints(
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRTL = currentLanguage.rightToLeft;
 
-  let firstHintInSeq = 0;
-  for (const adjacentLettersSequence of incorrectLettersIndices) {
-    const lastHintInSeq = firstHintInSeq + adjacentLettersSequence.length - 1;
-    joinHintsOfAdjacentLetters(firstHintInSeq, lastHintInSeq);
-    firstHintInSeq += adjacentLettersSequence.length;
-  }
+  let previousBlocksAdjacent = false;
+  let currentHintBlock = 0;
+  let HintBlocksCount = hintElements.length;
+  while (currentHintBlock < HintBlocksCount - 1) {
+    const hintBlock1 = hintElements[currentHintBlock] as HTMLElement;
+    const hintBlock2 = hintElements[currentHintBlock + 1] as HTMLElement;
 
-  function joinHintsOfAdjacentLetters(
-    firstHintInSequence: number,
-    lastHintInSequence: number
-  ): void {
-    let currentHint = firstHintInSequence;
+    const block1Indices = hintBlock1.dataset["charsIndex"]?.split(",") ?? [];
+    const block2Indices = hintBlock2.dataset["charsIndex"]?.split(",") ?? [];
 
-    while (currentHint < lastHintInSequence) {
-      const block1El = hintElements[currentHint] as HTMLElement;
-      const block2El = hintElements[currentHint + 1] as HTMLElement;
+    const block1Letter1Indx = parseInt(block1Indices[0] ?? "0");
+    const block2Letter1Indx = parseInt(block2Indices[0] ?? "0");
 
-      const block1Indices = block1El.dataset["charsIndex"]?.split(",") ?? [];
-      const block2Indices = block2El.dataset["charsIndex"]?.split(",") ?? [];
+    const currentBlocksAdjacent = incorrectLettersIndices.some(
+      (adjacentLettersSequence) =>
+        adjacentLettersSequence.includes(block1Letter1Indx) &&
+        adjacentLettersSequence.includes(block2Letter1Indx)
+    );
 
-      const block1Letter1Indx = parseInt(block1Indices[0] ?? "0");
-      const block2Letter1Indx = parseInt(block2Indices[0] ?? "0");
-
-      const block1Letter1 = activeWordLetters[block1Letter1Indx] as HTMLElement;
-      const block2Letter1 = activeWordLetters[block2Letter1Indx] as HTMLElement;
-
-      const leftBlock = isLanguageRTL ? block2El : block1El;
-      const rightBlock = isLanguageRTL ? block1El : block2El;
-
-      // block edge is offset half its width because of transform: translate(-50%)
-      const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
-      const rightBlockStarts =
-        rightBlock.offsetLeft - rightBlock.offsetWidth / 2;
-
-      const sameTop = block1Letter1.offsetTop === block2Letter1.offsetTop;
-
-      if (sameTop && leftBlockEnds > rightBlockStarts) {
-        // join hint blocks
-        block1El.dataset["charsIndex"] = [
-          ...block1Indices,
-          ...block2Indices,
-        ].join(",");
-
-        const block1Letter1Pos =
-          block1Letter1.offsetLeft +
-          (isLanguageRTL ? block1Letter1.offsetWidth : 0);
-        const bothBlocksLettersWidthHalved =
-          block2El.offsetLeft - block1El.offsetLeft;
-        block1El.style.left =
-          block1Letter1Pos + bothBlocksLettersWidthHalved + "px";
-
-        block1El.insertAdjacentHTML("beforeend", block2El.innerHTML);
-        block2El.remove();
-
-        // after joining blocks, the sequence is shorter
-        lastHintInSequence--;
-        // check if the newly formed block overlaps with the previous one
-        currentHint--;
-        if (currentHint < firstHintInSeq) currentHint = firstHintInSeq;
-      } else {
-        currentHint++;
-      }
+    if (!currentBlocksAdjacent) {
+      currentHintBlock++;
+      previousBlocksAdjacent = false;
+      continue;
     }
+
+    const block1Letter1 = activeWordLetters[block1Letter1Indx] as HTMLElement;
+    const block2Letter1 = activeWordLetters[block2Letter1Indx] as HTMLElement;
+
+    const sameTop = block1Letter1.offsetTop === block2Letter1.offsetTop;
+
+    const leftBlock = isLanguageRTL ? hintBlock2 : hintBlock1;
+    const rightBlock = isLanguageRTL ? hintBlock1 : hintBlock2;
+
+    // block edge is offset half its width because of transform: translate(-50%)
+    const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
+    const rightBlockStarts = rightBlock.offsetLeft - rightBlock.offsetWidth / 2;
+
+    if (sameTop && leftBlockEnds > rightBlockStarts) {
+      // join hint blocks
+      hintBlock1.dataset["charsIndex"] = [
+        ...block1Indices,
+        ...block2Indices,
+      ].join(",");
+
+      const block1Letter1Pos =
+        block1Letter1.offsetLeft +
+        (isLanguageRTL ? block1Letter1.offsetWidth : 0);
+      const bothBlocksLettersWidthHalved =
+        hintBlock2.offsetLeft - hintBlock1.offsetLeft;
+      hintBlock1.style.left =
+        block1Letter1Pos + bothBlocksLettersWidthHalved + "px";
+
+      hintBlock1.insertAdjacentHTML("beforeend", hintBlock2.innerHTML);
+      hintBlock2.remove();
+
+      // after joining blocks, the sequence is shorter
+      HintBlocksCount--;
+      // check if the newly formed block overlaps with the previous one
+      if (previousBlocksAdjacent && currentHintBlock > 0) currentHintBlock--;
+    } else {
+      currentHintBlock++;
+    }
+    previousBlocksAdjacent = true;
   }
 }
 
@@ -438,10 +438,7 @@ function updateWordWrapperClasses(): void {
 
   updateWordsWidth();
   updateWordsWrapperHeight(true);
-  updateWordsMargin();
-  setTimeout(() => {
-    void updateWordsInputPosition(true);
-  }, 250);
+  updateWordsMargin(updateWordsInputPosition, [true]);
 }
 
 export function showWords(): void {
@@ -637,9 +634,16 @@ export function updateWordsWrapperHeight(force = false): void {
   outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
 }
 
-function updateWordsMargin(): void {
+function updateWordsMargin<T extends unknown[]>(
+  afterCompleteFn: (...args: T) => void,
+  args: T
+): void {
+  const afterComplete = (): void => {
+    afterCompleteFn(...args);
+    void updateHintsPositionDebounced();
+  };
   if (Config.tapeMode !== "off") {
-    void scrollTape(true, updateHintsPositionDebounced);
+    void scrollTape(true, afterComplete);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
     const afterNewlineEls =
@@ -653,7 +657,7 @@ function updateWordsMargin(): void {
         {
           duration: SlowTimer.get() ? 0 : 125,
           queue: "leftMargin",
-          complete: updateHintsPositionDebounced,
+          complete: afterComplete,
         }
       );
       jqWords.dequeue("leftMargin");
@@ -665,7 +669,7 @@ function updateWordsMargin(): void {
       for (const afterNewline of afterNewlineEls) {
         afterNewline.style.marginLeft = `0`;
       }
-      void updateHintsPositionDebounced();
+      afterComplete();
     }
   }
 }
