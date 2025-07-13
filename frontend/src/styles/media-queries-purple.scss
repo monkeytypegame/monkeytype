@@ -349,70 +349,85 @@
 }
 
 @media only screen and (max-width: 350px) {
-  .pageLeaderboards table {
-    thead {
-      display: none;
-    }
-    tbody tr {
-      display: grid;
-      //grid-template-columns: 1fr;
-      gap: 0.7rem;
-      padding: 1rem;
+  .pageLeaderboards {
+    .content .tableAndUser .titleAndButtons {
+      grid-template-columns: 1fr;
+      gap: 1rem;
       margin-bottom: 1rem;
-      border: 1px solid var(--sub-alt-color);
-      border-radius: var(--roundness);
-      //background: var(--sub-alt-color);
-
-      &:nth-child(even) {
-        background: var(--bg-color);
-        border-color: var(--sub-color);
+      .jumpButtons {
+        justify-self: center;
+        gap: 0.25em;
+        button {
+          width: 2rem;
+          font-size: 0.8rem;
+        }
       }
+    }
+    table {
+      thead {
+        display: none;
+      }
+      tbody tr {
+        display: grid;
+        //grid-template-columns: 1fr;
+        gap: 0.7rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--sub-alt-color);
+        border-radius: var(--roundness);
+        //background: var(--sub-alt-color);
 
-      td {
-        display: block !important;
-        text-align: center !important;
-
-        &:nth-child(1) {
-          font-size: 1.5em;
+        &:nth-child(even) {
+          background: var(--bg-color);
+          border-color: var(--sub-color);
         }
 
-        .avatarNameBadge {
+        td {
+          display: block !important;
+          text-align: center !important;
+
+          &:nth-child(1) {
+            font-size: 1.5em;
+          }
+
+          .avatarNameBadge {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 1.5em;
+            gap: 0.5em;
+          }
+
+          &:nth-child(5)::before {
+            content: "wpm: ";
+            font-weight: bold;
+          }
+          &:nth-child(6)::before {
+            content: "accuracy: ";
+            font-weight: bold;
+          }
+          &:nth-child(7)::before {
+            content: "raw: ";
+            font-weight: bold;
+          }
+          &:nth-child(8)::before {
+            content: "consistency: ";
+            font-weight: bold;
+          }
+          &:nth-child(9)::before {
+            content: "date: ";
+            font-weight: bold;
+          }
+        }
+
+        .narrow {
+          display: none !important;
+        }
+
+        .wide .avatarNameBadge {
           display: flex !important;
-          flex-direction: column !important;
-          align-items: center !important;
-          justify-content: center !important;
-          font-size: 1.5em;
-          gap: 0.5em;
         }
-
-        &:nth-child(5)::before {
-          content: "wpm: ";
-          font-weight: bold;
-        }
-        &:nth-child(6)::before {
-          content: "accuracy: ";
-          font-weight: bold;
-        }
-        &:nth-child(7)::before {
-          content: "raw: ";
-          font-weight: bold;
-        }
-        &:nth-child(8)::before {
-          content: "consistency: ";
-          font-weight: bold;
-        }
-        &:nth-child(9)::before {
-          content: "date: ";
-          font-weight: bold;
-        }
-      }
-
-      .narrow {
-        display: none !important;
-      }
-
-      .wide .avatarNameBadge {
-        display: flex !important;
       }
     }
   }
