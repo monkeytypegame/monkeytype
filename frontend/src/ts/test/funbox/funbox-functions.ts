@@ -28,10 +28,21 @@ import {
   Layout,
 } from "@monkeytype/contracts/schemas/configs";
 import { Language } from "@monkeytype/contracts/schemas/languages";
+
+// type for polyglot funbox results
+export type WithWordsResult =
+  | { type: "single"; wordset: Wordset }
+  | {
+      type: "polyglot";
+      wordset: Wordset;
+      allRightToLeft: boolean | undefined;
+      allLigatures: boolean;
+    };
+
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
-  withWords?: (words?: string[]) => Promise<Wordset>;
+  withWords?: (words?: string[]) => Promise<WithWordsResult>;
   alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
   applyGlobalCSS?: () => void;
@@ -520,9 +531,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   pseudolang: {
-    async withWords(words?: string[]): Promise<Wordset> {
-      if (words !== undefined) return new PseudolangWordGenerator(words);
-      return new Wordset([]);
+    async withWords(words?: string[]): Promise<WithWordsResult> {
+      if (words !== undefined) {
+        return { type: "single", wordset: new PseudolangWordGenerator(words) };
+      }
+      return { type: "single", wordset: new Wordset([]) };
     },
   },
   IPv4: {
@@ -647,7 +660,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   polyglot: {
-    async withWords(_words) {
+    async withWords(_words): Promise<WithWordsResult> {
       const promises = Config.customPolyglot.map(async (language) =>
         JSONData.getLanguage(language).catch(() => {
           Notifications.add(
@@ -684,12 +697,58 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             duration: 7,
           }
         );
-        throw new WordGenError("");
+        return { type: "single", wordset: new Wordset(lang.words) };
       }
 
       const wordSet = languages.flatMap((it) => it.words);
       Arrays.shuffle(wordSet);
-      return new Wordset(wordSet);
+      // compute RTL and ligature info
+      // check if all languages are the same direction
+      const rtlLanguages = languages.filter((lang) => lang.rightToLeft);
+      const ltrLanguages = languages.filter((lang) => !lang.rightToLeft);
+
+      // only set direction if all languages are the same direction
+      let allRightToLeft: boolean | undefined;
+      if (rtlLanguages.length === languages.length) {
+        allRightToLeft = true;
+      } else if (ltrLanguages.length === languages.length) {
+        allRightToLeft = false;
+      } else {
+        // mixed directions - don't set any direction
+        allRightToLeft = undefined;
+      }
+
+      // check if main language direction conflicts with polyglot direction
+      const mainLanguage = await JSONData.getLanguage(Config.language);
+      // determine if main language direction conflicts with polyglot direction
+      // this occurs if one is RTL and the other is LTR.
+      const mainLanguageIsRTL = mainLanguage?.rightToLeft ?? false;
+      const polyglotIsRTL = allRightToLeft === true; // true if all polyglot are RTL
+      const polyglotIsLTR = allRightToLeft === false; // true if all polyglot are LTR
+
+      if (
+        (mainLanguageIsRTL && polyglotIsLTR) ||
+        (!mainLanguageIsRTL && polyglotIsRTL)
+      ) {
+        // main language is in opposite direction - fall back to one of the selected polyglot languages
+        const fallbackLanguage =
+          languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
+        UpdateConfig.setLanguage(fallbackLanguage, true);
+        Notifications.add(
+          `Language direction conflict, switched to ${fallbackLanguage} for consistency.`,
+          0,
+          { duration: 5 }
+        );
+        throw new WordGenError("");
+      }
+
+      const allLigatures = languages.some((lang) => lang.ligatures);
+      return {
+        type: "polyglot",
+        wordset: new Wordset(wordSet),
+        allRightToLeft,
+        allLigatures,
+      };
     },
   },
 };
