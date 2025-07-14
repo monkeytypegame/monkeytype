@@ -14,7 +14,7 @@
         - [Setup Firebase](#setup-firebase)
         - [Update backend configuration](#update-backend-configuration)
         - [Setup Recaptcha](#setup-recaptcha)
-        - [Setup eMail optional](#setup-email-optional)
+        - [Setup email optional](#setup-email-optional)
     - [Enable daily leaderboards](#enable-daily-leaderboards)
     - [Configuration files](#configuration-files)
         - [env file](#env-file)
@@ -127,7 +127,7 @@ RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
 RECAPTCHA_SECRET=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
 ```
 
-### Setup eMail (optional)
+### Setup email (optional)
 
 To enable emails for password reset and email verification update the following config in `.env` file:
 
