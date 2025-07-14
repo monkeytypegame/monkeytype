@@ -8,7 +8,7 @@ import {
 
 export const PresetNameSchema = z
   .string()
-  .regex(/^[ -~]+$/)
+  .regex(/^[0-9a-zA-Z_-]+$/)
   .max(16);
 export type PresetName = z.infer<typeof PresetNameSchema>;
 
