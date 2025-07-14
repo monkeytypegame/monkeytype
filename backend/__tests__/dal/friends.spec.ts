@@ -302,6 +302,9 @@ describe("FriendsDal", () => {
         personalBests: {
           time: { "15": [pb(100)], "60": [pb(85), pb(90)] },
         } as any,
+        inventory: {
+          badges: [{ id: 42, selected: true }, { id: 23 }, { id: 5 }],
+        },
       });
       const friendOneRequest = await createFriend({
         initiatorUid: uid,
@@ -321,6 +324,9 @@ describe("FriendsDal", () => {
           maxLength: 50,
         } as any,
         xp: 42,
+        inventory: {
+          badges: [{ id: 23 }, { id: 5 }],
+        },
       });
       const friendTwoRequest = await createFriend({
         initiatorUid: uid,
@@ -358,6 +364,7 @@ describe("FriendsDal", () => {
             top15: friendOne.personalBests.time["15"]![0] as any,
             // oxlint-disable-next-line no-non-null-assertion
             top60: friendOne.personalBests.time["60"]![1] as any,
+            badgeId: 42,
           }),
           expect.objectContaining({
             uid: friendTwo.uid,

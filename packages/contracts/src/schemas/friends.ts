@@ -40,6 +40,7 @@ export const FriendSchema = UserSchema.pick({
   friendRequestId: IdSchema.optional(),
   top15: PersonalBestSchema.optional(),
   top60: PersonalBestSchema.optional(),
+  badgeId: z.number().int().optional(),
 });
 
 export type Friend = z.infer<typeof FriendSchema>;

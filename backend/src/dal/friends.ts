@@ -276,6 +276,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
                 xp: true,
                 streak: true,
                 personalBests: true,
+                "inventory.badges": true,
               },
             },
             {
@@ -310,6 +311,21 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
                     },
                   },
                 },
+                badgeId: {
+                  $first: {
+                    $map: {
+                      input: {
+                        $filter: {
+                          input: "$inventory.badges",
+                          as: "badge",
+                          cond: { $eq: ["$$badge.selected", true] },
+                        },
+                      },
+                      as: "selectedBadge",
+                      in: "$$selectedBadge.id",
+                    },
+                  },
+                },
               },
             },
             {
@@ -317,12 +333,14 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
                 //remove nulls
                 top15: { $ifNull: ["$top15", "$$REMOVE"] },
                 top60: { $ifNull: ["$top60", "$$REMOVE"] },
+                badgeId: { $ifNull: ["$badgeId", "$$REMOVE"] },
                 addedAt: "$addedAt",
               },
             },
             {
               $project: {
                 personalBests: false,
+                inventory: false,
               },
             },
           ],
