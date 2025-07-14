@@ -60,16 +60,14 @@
   .pageLeaderboards {
     .content .tableAndUser {
       table {
-        tr[data-uid] {
-          .avatarNameBadge {
-            grid-template-columns: 1.25em 1fr;
-            grid-template-areas:
-              "avatar name"
-              "badges badges";
-            .flagsAndBadge {
-              grid-area: badges;
-              justify-self: center;
-            }
+        .avatarNameBadge {
+          grid-template-columns: 1.25em 1fr;
+          grid-template-areas:
+            "avatar name"
+            "badges badges";
+          .flagsAndBadge {
+            grid-area: badges;
+            // justify-self: center;
           }
         }
       }
