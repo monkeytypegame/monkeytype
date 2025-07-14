@@ -872,6 +872,19 @@ export const usersContract = c.router(
         rateLimit: "userRequestVerificationEmail",
       }),
     },
+    verifyEmail: {
+      summary: "verify email",
+      description: "Verify the user email",
+      method: "GET",
+      path: "/verifyEmail",
+      responses: {
+        200: MonkeyResponseSchema,
+      },
+      metadata: meta({
+        authenticationOptions: { noCache: true },
+        rateLimit: "userVerifyEmail",
+      }),
+    },
     forgotPasswordEmail: {
       summary: "send forgot password email",
       description: "Send a forgot password email",

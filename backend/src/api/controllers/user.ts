@@ -158,6 +158,7 @@ export async function sendVerificationEmail(
         );
       })
   ).emailVerified;
+
   if (isVerified) {
     throw new MonkeyError(400, "Email already verified");
   }
@@ -238,6 +239,13 @@ export async function sendVerificationEmail(
   await emailQueue.sendVerificationEmail(email, userInfo.name, link);
 
   return new MonkeyResponse("Email sent", null);
+}
+
+export async function verifyEmail(req: MonkeyRequest): Promise<MonkeyResponse> {
+  const { uid, email, emailVerified } = req.ctx.decodedToken;
+  await UserDAL.updateEmail(uid, email, emailVerified);
+
+  return new MonkeyResponse("emailVerify updated.", null);
 }
 
 export async function sendForgotPasswordEmail(
@@ -605,7 +613,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
   );
   delete relevantUserInfo.customThemes;
 
-  //update users emailVerified status if it changed
+  // soft-migrate user.emailVerified for existing users, update status if it has changed
   const { email, emailVerified } = req.ctx.decodedToken;
   if (emailVerified !== undefined && emailVerified !== userInfo.emailVerified) {
     void addImportantLog(
