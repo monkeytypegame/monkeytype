@@ -50,12 +50,12 @@
 
       .titleAndButtons {
         align-items: center;
-        font-size: 1rem;
+        font-size: 1em;
         display: grid;
         grid-template-columns: 1fr 1fr;
         justify-content: space-between;
         button {
-          width: 3rem;
+          width: 3em;
         }
         .title {
           font-size: 1rem;
