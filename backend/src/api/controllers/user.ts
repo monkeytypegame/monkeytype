@@ -85,6 +85,7 @@ import {
   UpdateUserNameRequest,
   UpdateUserProfileRequest,
   UpdateUserProfileResponse,
+  VerifyEmailRequest,
 } from "@monkeytype/contracts/users";
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
@@ -241,9 +242,30 @@ export async function sendVerificationEmail(
   return new MonkeyResponse("Email sent", null);
 }
 
-export async function verifyEmail(req: MonkeyRequest): Promise<MonkeyResponse> {
-  const { uid, email, emailVerified } = req.ctx.decodedToken;
-  await UserDAL.updateEmail(uid, email, emailVerified);
+export async function verifyEmail(
+  req: MonkeyRequest<undefined, VerifyEmailRequest>
+): Promise<MonkeyResponse> {
+  const { email } = req.body;
+
+  const { data: firebaseUser } = await tryCatch(
+    FirebaseAdmin().auth().getUserByEmail(email)
+  );
+
+  if (firebaseUser === undefined || firebaseUser === null) {
+    throw new MonkeyError(404, "not found", "verify email");
+  }
+
+  await UserDAL.updateEmail(
+    firebaseUser.uid,
+    email,
+    firebaseUser.emailVerified
+  );
+
+  void addImportantLog(
+    "user_verify_email",
+    `emailVerified changed to ${firebaseUser.emailVerified} for email ${email}`,
+    firebaseUser.uid
+  );
 
   return new MonkeyResponse("emailVerify updated.", null);
 }
@@ -616,13 +638,13 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
   // soft-migrate user.emailVerified for existing users, update status if it has changed
   const { email, emailVerified } = req.ctx.decodedToken;
   if (emailVerified !== undefined && emailVerified !== userInfo.emailVerified) {
-    void addImportantLog(
-      "user_verify_email",
-      `emailVerified changed to ${emailVerified} for email ${email}`,
-      uid
-    );
     await UserDAL.updateEmail(uid, email, emailVerified);
     userInfo.emailVerified = emailVerified;
+    void addImportantLog(
+      "user_verify_email",
+      `soft-migrate emailVerified changed to ${emailVerified} for email ${email}`,
+      uid
+    );
   }
 
   const userData: User = {

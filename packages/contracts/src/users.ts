@@ -308,6 +308,11 @@ export const ReportUserRequestSchema = z.object({
 });
 export type ReportUserRequest = z.infer<typeof ReportUserRequestSchema>;
 
+export const VerifyEmailRequestSchema = z.object({
+  email: UserEmailSchema,
+});
+export type VerifyEmailRequest = z.infer<typeof VerifyEmailRequestSchema>;
+
 export const ForgotPasswordEmailRequestSchema = z.object({
   captcha: z.string(),
   email: UserEmailSchema,
@@ -875,13 +880,14 @@ export const usersContract = c.router(
     verifyEmail: {
       summary: "verify email",
       description: "Verify the user email",
-      method: "GET",
+      method: "POST",
       path: "/verifyEmail",
+      body: VerifyEmailRequestSchema.strict(),
       responses: {
         200: MonkeyResponseSchema,
       },
       metadata: meta({
-        authenticationOptions: { noCache: true },
+        authenticationOptions: { isPublic: true },
         rateLimit: "userVerifyEmail",
       }),
     },

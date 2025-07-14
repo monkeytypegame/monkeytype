@@ -190,20 +190,23 @@
     }
 
     function handleVerifyEmail(actionCode, continueUrl) {
-      applyActionCode(Auth, actionCode)
+      var email = null;
+      checkActionCode(Auth, actionCode)
+        .then((info) => {
+          // Get the email address
+          email = info["data"]["email"];
+
+          return applyActionCode(Auth, actionCode);
+        })
+
         .then(async (resp) => {
           // Email address has been verified.
-          const token =
-            Auth.currentUser !== undefined
-              ? await Auth.currentUser.getIdToken(true)
-              : undefined;
-          const url = envConfig.backendUrl + "/users/verifyEmail";
 
-          await fetch(url, {
-            method: "GET",
+          await fetch(envConfig.backendUrl + "/users/verifyEmail", {
+            method: "POST",
+            body: JSON.stringify({ email }),
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
             },
           });
 
