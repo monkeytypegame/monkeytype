@@ -547,7 +547,6 @@ async function onInsertText({
   }
   TestInput.incrementKeypressCount();
   TestInput.pushKeypressWord(TestState.activeWordIndex);
-  TestInput.corrected.update(data, correct);
 
   if (Config.keymapMode === "react") {
     void KeymapEvent.flash(data, correct);
@@ -597,6 +596,10 @@ async function onInsertText({
   //   !correct;
 
   const shouldGoToNextWord = spaceOrNewLine && !shouldInsertSpace;
+
+  if (!shouldGoToNextWord) {
+    TestInput.corrected.update(data, correct);
+  }
 
   let increasedIndex = null;
   let lastBurst = null;
