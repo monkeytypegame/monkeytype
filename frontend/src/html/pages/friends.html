@@ -12,21 +12,9 @@
   </div>
 
   <div class="content">
-    <div class="request">
-      <div class="buttons">
-        <button
-          id="friendAdd"
-          class="button"
-          aria-label="add friend"
-          data-balloon-pos="right"
-        >
-          <i class="fas fa-user-plus fa-fw"></i>
-        </button>
-      </div>
-    </div>
     <div class="pendingRequests">
       <div class="bigtitle">
-        <div class="text">
+        <h2>
           Pending Friend Requests
           <button
             class="refresh"
@@ -35,7 +23,7 @@
           >
             <i class="fas fa-sync fa-fw"></i>
           </button>
-        </div>
+        </h2>
       </div>
       <div class="loading hidden">
         <i class="fas fa-circle-notch fa-spin"></i>
@@ -51,6 +39,45 @@
             <td>user</td>
             <td>date</td>
             <td>actions</td>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="friends">
+      <h2>
+        Friends
+
+        <button
+          id="friendAdd"
+          class="button"
+          aria-label="add friend"
+          data-balloon-pos="right"
+        >
+          <i class="fas fa-user-plus fa-fw"></i>
+        </button>
+      </h2>
+      <div class="loading hidden">
+        <i class="fas fa-circle-notch fa-spin"></i>
+      </div>
+      <div class="error hidden">
+        <i class="fas fa-times"></i>
+        <p>Something went wrong</p>
+      </div>
+      <div class="nodata hidden">You don't have any friends :(</div>
+      <table width="100%">
+        <thead>
+          <tr>
+            <td>name</td>
+            <td>friend since</td>
+            <td>level</td>
+            <td>tests</td>
+            <td>time typing</td>
+            <td>streak</td>
+            <td>best 15s</td>
+            <td>best 60s</td>
+            <td></td>
           </tr>
         </thead>
         <tbody></tbody>

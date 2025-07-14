@@ -1,5 +1,12 @@
 .pageFriends {
-  .pendingRequests {
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: normal;
+  }
+  .pendingRequests,
+  .friends {
+    margin-bottom: 1rem;
     table {
       border-spacing: 0;
       border-collapse: collapse;
@@ -29,6 +36,44 @@
           display: flex;
           gap: 0.5rem;
         }
+      }
+    }
+  }
+
+  .friends {
+    .avatarNameBadge {
+      display: grid;
+      grid-template-columns: 1.25em max-content auto;
+      gap: 0.5em;
+      place-items: center left;
+      .avatarPlaceholder {
+        width: 1.25em;
+        height: 1.25em;
+        font-size: 1.25em;
+        // background: var(--sub-color);
+        color: var(--sub-color);
+        // display: grid;
+        // place-content: center center;
+        border-radius: 100%;
+      }
+      .entryName {
+        text-decoration: none;
+        color: var(--text-color);
+        cursor: pointer;
+      }
+      .avatarPlaceholder,
+      .avatar {
+        grid-row: 1/2;
+        grid-column: 1/2;
+      }
+      .badge {
+        font-size: 0.6em;
+      }
+      .flagsAndBadge {
+        display: flex;
+        gap: 0.5em;
+        color: var(--sub-color);
+        place-items: center;
       }
     }
   }
