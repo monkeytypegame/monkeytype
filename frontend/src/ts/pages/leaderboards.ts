@@ -858,7 +858,7 @@ function fillUser(): void {
 
 function updateContent(): void {
   $(".page.pageLeaderboards .loading").addClass("hidden");
-  $(".page.pageLeaderboards .updating").addClass("hidden");
+  $(".page.pageLeaderboards .updating").addClass("invisible");
   $(".page.pageLeaderboards .error").addClass("hidden");
 
   if (state.error !== undefined) {
@@ -870,7 +870,7 @@ function updateContent(): void {
 
   if (state.updating) {
     disableButtons();
-    $(".page.pageLeaderboards .updating").removeClass("hidden");
+    $(".page.pageLeaderboards .updating").removeClass("invisible");
     return;
   } else if (state.loading) {
     disableButtons();
