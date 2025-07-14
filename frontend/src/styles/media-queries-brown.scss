@@ -72,6 +72,9 @@
         }
       }
       table {
+        .avatarNameBadge .flagsAndBadge .badge .text {
+          display: block;
+        }
         tbody td.date {
           font-size: 0.75em;
         }
