@@ -29,6 +29,7 @@
       transform: none;
     }
     .content .tableAndUser {
+      font-size: clamp(0.7rem, 2.8vw, 0.9rem);
       .bigUser {
         gap: 1.5em;
       }
