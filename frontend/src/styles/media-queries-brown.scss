@@ -61,14 +61,24 @@
   .pageLeaderboards {
     .content .tableAndUser {
       font-size: 0.7rem;
-      .bigUser .stat.narrow:last-child {
-        font-size: 0.75em;
-      }
       .bigUser {
         gap: 0.5em;
         padding-left: 0.75em;
+        .stat.narrow:last-child {
+          font-size: 0.75em;
+        }
+        .userInfo {
+          font-size: 0.8em;
+        }
         .rank {
           margin-right: 0.5em;
+        }
+      }
+      .titleAndButtons {
+        // grid-template-columns: 1fr;
+        .title {
+          // text-align: center;
+          font-size: 1em;
         }
       }
       table {
