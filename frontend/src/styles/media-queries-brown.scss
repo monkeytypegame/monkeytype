@@ -57,9 +57,24 @@
   #testActivity {
     display: none;
   }
+
   .pageLeaderboards {
     .content .tableAndUser {
+      font-size: 0.7rem;
+      .bigUser .stat.narrow:last-child {
+        font-size: 0.75em;
+      }
+      .bigUser {
+        gap: 0.5em;
+        padding-left: 0.75em;
+        .rank {
+          margin-right: 0.5em;
+        }
+      }
       table {
+        tbody td.date {
+          font-size: 0.75em;
+        }
         .avatarNameBadge {
           grid-template-columns: 1.25em 1fr;
           grid-template-areas:

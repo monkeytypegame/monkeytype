@@ -22,26 +22,30 @@
       }
     }
   }
+
   .pageLeaderboards {
     .content .bigtitle .text:after {
       left: 0.1rem;
       transform: none;
     }
     .content .tableAndUser {
-      overflow-x: hidden;
+      .bigUser {
+        gap: 1.5em;
+      }
       table {
-        tr[data-uid] {
-          .avatarNameBadge {
-            gap: 0.2em;
-          }
-          .stat {
-            padding: 0.1em 0.2em;
-          }
+        td {
+          padding: 0.5em;
         }
-        td,
-        th {
-          padding: 0.7em 0.9em;
+        .avatarNameBadge .flagsAndBadge .badge .text {
+          display: none;
         }
+        tbody td:nth-child(2) {
+          width: 100%;
+        }
+      }
+      .bigUser {
+        padding: 0.5em;
+        padding-left: 1em;
       }
     }
   }
@@ -316,119 +320,5 @@
   .popupWrapper .modal .inputs.withLabel,
   .modalWrapper .modal .inputs.withLabel {
     grid-template-columns: 1fr;
-  }
-}
-
-@media only screen and (max-width: 540px) {
-  .pageLeaderboards {
-    .content .tableAndUser {
-      .bigUser,
-      .needAuth {
-        text-align: center;
-        flex-direction: column;
-        gap: 1em;
-        //word-break: break-word;
-        .sub {
-          text-align: center;
-        }
-      }
-    }
-  }
-}
-
-@media only screen and (max-width: 520px) {
-  .pageLeaderboards {
-    .content .tableAndUser {
-      table {
-        tr[data-uid] {
-          font-size: 0.75em;
-        }
-      }
-    }
-  }
-}
-
-@media only screen and (max-width: 350px) {
-  .pageLeaderboards {
-    .content .tableAndUser .titleAndButtons {
-      grid-template-columns: 1fr;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      .jumpButtons {
-        justify-self: center;
-        gap: 0.25em;
-        button {
-          width: 2rem;
-          font-size: 0.8rem;
-        }
-      }
-    }
-    table {
-      thead {
-        display: none;
-      }
-      tbody tr {
-        display: grid;
-        //grid-template-columns: 1fr;
-        gap: 0.7rem;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border: 1px solid var(--sub-alt-color);
-        border-radius: var(--roundness);
-        //background: var(--sub-alt-color);
-
-        &:nth-child(even) {
-          background: var(--bg-color);
-          border-color: var(--sub-color);
-        }
-
-        td {
-          display: block !important;
-          text-align: center !important;
-
-          &:nth-child(1) {
-            font-size: 1.5em;
-          }
-
-          .avatarNameBadge {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-size: 1.5em;
-            gap: 0.5em;
-          }
-
-          &:nth-child(5)::before {
-            content: "wpm: ";
-            font-weight: bold;
-          }
-          &:nth-child(6)::before {
-            content: "accuracy: ";
-            font-weight: bold;
-          }
-          &:nth-child(7)::before {
-            content: "raw: ";
-            font-weight: bold;
-          }
-          &:nth-child(8)::before {
-            content: "consistency: ";
-            font-weight: bold;
-          }
-          &:nth-child(9)::before {
-            content: "date: ";
-            font-weight: bold;
-          }
-        }
-
-        .narrow {
-          display: none !important;
-        }
-
-        .wide .avatarNameBadge {
-          display: flex !important;
-        }
-      }
-    }
   }
 }

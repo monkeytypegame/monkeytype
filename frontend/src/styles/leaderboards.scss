@@ -121,6 +121,9 @@
           .sub {
             opacity: 0.5;
           }
+          &:last-child {
+            text-wrap-mode: nowrap;
+          }
         }
         .date {
           font-size: 0.75em;
@@ -178,7 +181,7 @@
               text-align: right;
             }
             &.date {
-              width: 20ch;
+              width: 1px;
               text-align: right;
             }
           }
@@ -234,6 +237,7 @@
           }
 
           td.date {
+            text-wrap-mode: nowrap;
             text-align: right;
             font-size: 0.75em;
           }
