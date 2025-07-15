@@ -45,3 +45,22 @@ export function getMetadata(req: TsRestRequestWithContext): EndpointMetadata {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return (req.tsRestRoute["metadata"] ?? {}) as EndpointMetadata;
 }
+
+/**
+ * The req.body property returns undefined when the body has not been parsed. In Express 4, it returns {} by default.
+ * Restore the v4 behavior
+ * @param req
+ * @param _res
+ * @param next
+ */
+export async function v4RequestBody(
+  req: Request,
+  _res: Response,
+  next: NextFunction
+): Promise<void> {
+  if (req.body === undefined) {
+    req.body = {};
+  }
+
+  next();
+}

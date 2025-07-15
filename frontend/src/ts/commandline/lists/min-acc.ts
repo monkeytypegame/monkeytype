@@ -2,7 +2,7 @@ import * as UpdateConfig from "../../config";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
-  title: "Change min accuracy mode...",
+  title: "Minimum accuracy...",
   configKey: "minAcc",
   list: [
     {

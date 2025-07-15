@@ -59,6 +59,7 @@ function updateColors(
     }
     colorPicker.find("input.input").val(color);
     colorPicker.find("input.color").attr("value", color);
+    colorPicker.find("input.color").val(color);
     return;
   }
   const colorREGEX = [
@@ -114,6 +115,7 @@ function updateColors(
   }
   colorPicker.find("input.input").val(color);
   colorPicker.find("input.color").attr("value", color);
+  colorPicker.find("input.color").val(color);
 }
 
 export async function fillPresetButtons(): Promise<void> {

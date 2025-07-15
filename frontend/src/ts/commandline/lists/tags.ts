@@ -8,7 +8,7 @@ import { isAuthenticated } from "../../firebase";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
-  title: "Change tags...",
+  title: "Tags...",
   list: [],
   beforeList: (): void => {
     update();

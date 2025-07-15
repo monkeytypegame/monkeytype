@@ -355,7 +355,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_odin",
     "code_fortran",
   ],
-  viossa: ["viossa"],
+  viossa: ["viossa", "viossa_njutro"],
 };
 
 export type LanguageGroupName = keyof typeof LanguageGroups;

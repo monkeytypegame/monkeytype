@@ -377,7 +377,7 @@ export class SimpleModal {
 
           if (input.validation?.isValid !== undefined) {
             indicator.show("checking");
-            void debouceIsValid(value);
+            debouceIsValid(value);
             return;
           }
 

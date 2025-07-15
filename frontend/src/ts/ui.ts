@@ -16,7 +16,7 @@ export function previewFontFamily(font: string): void {
     "--font",
     '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
   );
-  void TestUI.updateHintsPosition();
+  void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
 }
 
@@ -92,17 +92,17 @@ window.addEventListener("beforeunload", (event) => {
 });
 
 const debouncedEvent = debounce(250, () => {
-  void Caret.updatePosition();
   if (getActivePage() === "test" && !TestUI.resultVisible) {
     if (Config.tapeMode !== "off") {
       void TestUI.scrollTape();
     } else {
       void TestUI.centerActiveLine();
+      void TestUI.updateHintsPositionDebounced();
     }
     setTimeout(() => {
       void TestUI.updateWordsInputPosition();
       if ($("#wordsInput").is(":focus")) {
-        Caret.show();
+        Caret.show(true);
       }
     }, 250);
   }

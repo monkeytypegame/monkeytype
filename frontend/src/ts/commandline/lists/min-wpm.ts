@@ -3,7 +3,7 @@ import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
-  title: "Change min speed mode...",
+  title: "Minimum speed...",
   configKey: "minWpm",
   list: [
     {
