@@ -512,7 +512,7 @@ function buildTableRow(entry: LeaderboardEntry, me = false): string {
         <div class="sub">${formatted.acc}</div>
       </td>
       </td>
-      <td class="stat narrow">
+      <td class="stat narrow rawAndConsistency">
       ${formatted.raw}
         <div class="sub">${formatted.con}</div>
       </td>
@@ -778,7 +778,7 @@ function fillUser(): void {
           <div>${formatted.wpm}</div>
           <div class="sub">${formatted.acc}</div>
         </div>
-        <div class="stat narrow">
+        <div class="stat narrow rawAndConsistency">
           <div>${formatted.raw}</div>
           <div class="sub">${formatted.con}</div>
         </div>
@@ -880,7 +880,7 @@ function fillUser(): void {
 
 function updateContent(): void {
   $(".page.pageLeaderboards .loading").addClass("hidden");
-  $(".page.pageLeaderboards .updating").addClass("hidden");
+  $(".page.pageLeaderboards .updating").addClass("invisible");
   $(".page.pageLeaderboards .error").addClass("hidden");
 
   if (state.error !== undefined) {
@@ -892,7 +892,7 @@ function updateContent(): void {
 
   if (state.updating) {
     disableButtons();
-    $(".page.pageLeaderboards .updating").removeClass("hidden");
+    $(".page.pageLeaderboards .updating").removeClass("invisible");
     return;
   } else if (state.loading) {
     disableButtons();
