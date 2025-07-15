@@ -135,13 +135,7 @@ export async function update(
         timeTyping: { $gt: isDevEnvironment() ? 0 : minTimeTyping },
       },
     },
-    {
-      $sort: {
-        [`${key}.wpm`]: -1,
-        [`${key}.acc`]: -1,
-        [`${key}.timestamp`]: -1,
-      },
-    },
+
     {
       $project: {
         _id: 0,
@@ -158,6 +152,20 @@ export async function update(
         discordAvatar: 1,
         inventory: 1,
         premium: 1,
+        sortKey: {
+          $add: [
+            { $multiply: [`${key}.wpm`, 1e19] }, //maybe use   $convert: {input: `${key}.wpm`,to: "double",onError: null,},
+            { $multiply: [`${key}.acc`, 1e16] },
+            [`${key}.timestamp`],
+          ],
+        },
+      },
+    },
+    //sort by wpm, acc, timestamp descending, add rank number
+    {
+      $setWindowFields: {
+        sortBy: { sortKey: -1 },
+        output: { "user.rank": { $documentNumber: {} } },
       },
     },
     {
@@ -198,17 +206,6 @@ export async function update(
             // oxlint-disable-next-line no-thenable
             then: true,
             else: "$$REMOVE",
-          },
-        },
-
-        "user.rank": {
-          $function: {
-            lang: "js",
-            args: [],
-            body: `function() { 
-                      try {row_number+= 1;} catch (e) {row_number= 1;} 
-                      return row_number;
-                    }`,
           },
         },
       },
