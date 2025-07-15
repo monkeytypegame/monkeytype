@@ -321,6 +321,12 @@ export function updateActiveTab(): void {
   }
 }
 
+// separated to avoid repeated calls
+export async function updateThemeUI(): Promise<void> {
+  await fillPresetButtons();
+  updateActiveButton();
+}
+
 // Add events to the DOM
 
 // Handle click on theme: preset or custom tab
@@ -366,7 +372,6 @@ $(".pageSettings").on("click", ".section.themes .theme .favButton", (e) => {
     .attr("theme") as ThemeName;
   if (theme !== undefined) {
     toggleFavourite(theme);
-    void fillPresetButtons();
   } else {
     console.error(
       "Could not find the theme attribute attached to the button clicked!"
@@ -481,5 +486,8 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "theme" && ActivePage.get() === "settings") {
     updateActiveButton();
+  }
+  if (eventKey === "favThemes" && ActivePage.get() === "settings") {
+    void fillPresetButtons();
   }
 });
