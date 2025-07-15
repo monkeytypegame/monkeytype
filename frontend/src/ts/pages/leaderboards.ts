@@ -922,7 +922,7 @@ function updateContent(): void {
   fillTable();
 
   for (const element of document.querySelectorAll(
-    ".page.pageLeaderboards .speedUnit"
+    ".page.pageLeaderboards .wide.speedUnit, .page.pageLeaderboards .narrow.speedUnit span"
   )) {
     element.innerHTML = Config.typingSpeedUnit;
   }
