@@ -490,7 +490,7 @@ function buildTableRow(entry: LeaderboardEntry, me = false): string {
         <div class="sub">${formatted.acc}</div>
       </td>
       </td>
-      <td class="stat narrow">
+      <td class="stat narrow rawAndConsistency">
       ${formatted.raw}
         <div class="sub">${formatted.con}</div>
       </td>
@@ -756,7 +756,7 @@ function fillUser(): void {
           <div>${formatted.wpm}</div>
           <div class="sub">${formatted.acc}</div>
         </div>
-        <div class="stat narrow">
+        <div class="stat narrow rawAndConsistency">
           <div>${formatted.raw}</div>
           <div class="sub">${formatted.con}</div>
         </div>
