@@ -10,6 +10,7 @@ export class Wordset {
   length: number;
   orderedIndex: number;
   shuffledIndexes: number[];
+  public isPolyglot = false;
 
   constructor(words: string[]) {
     this.words = words;
