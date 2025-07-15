@@ -280,7 +280,7 @@ function expectedLbEntry(
     // @ts-expect-error
     user.lbPersonalBests?.time[Number.parseInt(time)].english;
 
-  return {
+  const entry = {
     rank,
     uid: user.uid,
     name: user.name,
@@ -294,6 +294,15 @@ function expectedLbEntry(
     badgeId,
     isPremium,
   };
+
+  if (badgeId === undefined) {
+    delete entry.badgeId;
+  }
+  if (isPremium === undefined) {
+    delete entry.isPremium;
+  }
+
+  return entry;
 }
 
 async function createUser(

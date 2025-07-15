@@ -123,96 +123,107 @@ export async function update(
   const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
   const minTimeTyping = (await getCachedConfiguration(true)).leaderboards
     .minTimeTyping;
-  const lb = db.collection<DBUser>("users").aggregate<LeaderboardEntry>(
-    [
-      {
-        $match: {
-          [`${key}.wpm`]: {
-            $gt: 0,
-          },
-          [`${key}.acc`]: {
-            $gt: 0,
-          },
-          [`${key}.timestamp`]: {
-            $gt: 0,
-          },
-          banned: {
-            $ne: true,
-          },
-          lbOptOut: {
-            $ne: true,
-          },
-          needsToChangeName: {
-            $ne: true,
-          },
-          timeTyping: {
-            $gt: isDevEnvironment() ? 0 : minTimeTyping,
-          },
-        },
+  const pipeline = [
+    {
+      $match: {
+        [`${key}.wpm`]: { $gt: 0 },
+        [`${key}.acc`]: { $gt: 0 },
+        [`${key}.timestamp`]: { $gt: 0 },
+        banned: { $ne: true },
+        lbOptOut: { $ne: true },
+        needsToChangeName: { $ne: true },
+        timeTyping: { $gt: isDevEnvironment() ? 0 : minTimeTyping },
       },
-      {
-        $sort: {
-          [`${key}.wpm`]: -1,
-          [`${key}.acc`]: -1,
-          [`${key}.timestamp`]: -1,
-        },
+    },
+    {
+      $sort: {
+        [`${key}.wpm`]: -1,
+        [`${key}.acc`]: -1,
+        [`${key}.timestamp`]: -1,
       },
-      {
-        $project: {
-          _id: 0,
-          [`${key}.wpm`]: 1,
-          [`${key}.acc`]: 1,
-          [`${key}.raw`]: 1,
-          [`${key}.consistency`]: 1,
-          [`${key}.timestamp`]: 1,
-          uid: 1,
-          name: 1,
-          discordId: 1,
-          discordAvatar: 1,
-          inventory: 1,
-          premium: 1,
+    },
+    {
+      $project: {
+        _id: 0,
+        [`${key}.wpm`]: 1,
+        [`${key}.acc`]: 1,
+        [`${key}.raw`]: 1,
+        [`${key}.consistency`]: {
+          $ifNull: [`$${key}.consistency`, "$$REMOVE"],
         },
+        [`${key}.timestamp`]: 1,
+        uid: 1,
+        name: 1,
+        discordId: 1,
+        discordAvatar: 1,
+        inventory: 1,
+        premium: 1,
       },
-
-      {
-        $addFields: {
-          "user.uid": "$uid",
-          "user.name": "$name",
-          "user.discordId": { $ifNull: ["$discordId", "$$REMOVE"] },
-          "user.discordAvatar": { $ifNull: ["$discordAvatar", "$$REMOVE"] },
-          [`${key}.consistency`]: {
-            $ifNull: [`$${key}.consistency`, "$$REMOVE"],
-          },
-          calculated: {
-            $function: {
-              lang: "js",
-              args: [
-                "$premium.expirationTimestamp",
-                "$$NOW",
-                "$inventory.badges",
-              ],
-              body: `function(expiration, currentTime, badges) { 
-                        try {row_number+= 1;} catch (e) {row_number= 1;} 
-                        var badgeId = undefined;
-                        if(badges)for(let i=0; i<badges.length; i++){
-                            if(badges[i].selected){ badgeId = badges[i].id; break}
-                        }
-                        var isPremium = expiration !== undefined && (expiration === -1 || new Date(expiration)>currentTime) || undefined;
-                        return {rank:row_number,badgeId, isPremium};
-                      }`,
+    },
+    {
+      $addFields: {
+        "user.uid": "$uid",
+        "user.name": "$name",
+        "user.discordId": { $ifNull: ["$discordId", "$$REMOVE"] },
+        "user.discordAvatar": { $ifNull: ["$discordAvatar", "$$REMOVE"] },
+        "user.badgeId": {
+          $ifNull: [
+            {
+              $first: {
+                $map: {
+                  input: {
+                    $filter: {
+                      input: "$inventory.badges",
+                      as: "badge",
+                      cond: { $eq: ["$$badge.selected", true] },
+                    },
+                  },
+                  as: "selectedBadge",
+                  in: "$$selectedBadge.id",
+                },
+              },
             },
+            "$$REMOVE",
+          ],
+        },
+
+        "user.isPremium": {
+          $cond: {
+            if: {
+              $or: [
+                { $eq: ["$premium.expirationTimestamp", -1] },
+                { $gt: ["$premium.expirationTimestamp", { $toLong: "$$NOW" }] },
+              ],
+            },
+            // oxlint-disable-next-line no-thenable
+            then: true,
+            else: "$$REMOVE",
+          },
+        },
+
+        "user.rank": {
+          $function: {
+            lang: "js",
+            args: [],
+            body: `function() { 
+                      try {row_number+= 1;} catch (e) {row_number= 1;} 
+                      return row_number;
+                    }`,
           },
         },
       },
-      {
-        $replaceWith: {
-          $mergeObjects: [`$${key}`, "$user", "$calculated"],
-        },
+    },
+    {
+      $replaceWith: {
+        $mergeObjects: [`$${key}`, "$user"],
       },
-      { $out: lbCollectionName },
-    ],
-    { allowDiskUse: true }
-  );
+    },
+    { $out: lbCollectionName },
+  ];
+
+  const lb = db
+    .collection<DBUser>("users")
+    .aggregate<LeaderboardEntry>(pipeline, { allowDiskUse: true });
 
   const start1 = performance.now();
   await lb.toArray();
