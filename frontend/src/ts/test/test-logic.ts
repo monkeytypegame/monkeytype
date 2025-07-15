@@ -310,7 +310,7 @@ export function restart(options = {} as RestartOptions): void {
     async () => {
       $("#result").addClass("hidden");
       $("#typingTest").css("opacity", 0).removeClass("hidden");
-      $("#wordsInput").val(" ");
+      $("#wordsInput").css({ left: 0 }).val(" ");
 
       if (Config.language.startsWith("korean")) {
         koInputVisual.innerText = " ";
@@ -656,7 +656,10 @@ export async function addWord(): Promise<void> {
         e,
         "Error while getting next word. Please try again later"
       ),
-      -1
+      -1,
+      {
+        important: true,
+      }
     );
   }
 }

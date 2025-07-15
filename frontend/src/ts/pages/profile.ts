@@ -10,6 +10,7 @@ import { UserProfile } from "@monkeytype/contracts/schemas/users";
 import { PersonalBests } from "@monkeytype/contracts/schemas/shared";
 
 function reset(): void {
+  $(".page.pageProfile .error").addClass("hidden");
   $(".page.pageProfile .preloader").removeClass("hidden");
   $(".page.pageProfile .profile").html(`
       <div class="details none">

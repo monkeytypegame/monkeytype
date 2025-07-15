@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   CommonResponses,
   meta,
+  MonkeyClientError,
   responseWithData,
   responseWithNullableData,
 } from "./schemas/api";
@@ -145,6 +146,7 @@ export const leaderboardsContract = c.router(
       query: GetLeaderboardQuerySchema.strict(),
       responses: {
         200: GetLeaderboardResponseSchema,
+        404: MonkeyClientError,
       },
       metadata: meta({
         authenticationOptions: { isPublic: true },
