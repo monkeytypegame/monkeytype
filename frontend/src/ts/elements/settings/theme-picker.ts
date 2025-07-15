@@ -17,7 +17,7 @@ import {
 import { captureException } from "../../sentry";
 import { ThemesListSorted } from "../../constants/themes";
 
-export function updateActiveButton(): void {
+function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
   if (
     Config.randomTheme !== "off" &&
