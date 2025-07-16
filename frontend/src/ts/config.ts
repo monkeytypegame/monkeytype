@@ -33,6 +33,7 @@ import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { z, ZodSchema } from "zod";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -91,22 +92,75 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
-//numbers
-export function setNumbers(numb: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("numbers", numb)) return false;
+// type ConfigMetadata = Partial<
+//   Record<
+//     ConfigSchemas.ConfigKey,
+//     {
+//       configKey: ConfigSchemas.ConfigKey;
+//       schema: z.ZodTypeAny;
+//       displayString?: string;
+//       preventSet: (
+//         value: ConfigSchemas.Config[keyof ConfigSchemas.Config]
+//       ) => boolean;
+//     }
+//   >
+// >;
 
-  if (!canSetConfigWithCurrentFunboxes("numbers", numb, config.funbox)) {
+type ConfigMetadata = {
+  [K in keyof ConfigSchemas.Config]?: {
+    configKey: K;
+    schema: ZodSchema;
+    displayString?: string;
+    preventSet?: (value: ConfigSchemas.Config[K]) => boolean;
+  };
+};
+
+const configMetadata: ConfigMetadata = {
+  numbers: {
+    configKey: "numbers",
+    schema: z.number(),
+    preventSet: () => {
+      if (config.mode === "quote") return true;
+      return false;
+    },
+  },
+};
+
+export function genericSet<T extends keyof ConfigSchemas.Config>(
+  key: T,
+  value: ConfigSchemas.Config[T],
+  nosave?: boolean
+): boolean {
+  if (configMetadata[key] === undefined) {
+    throw new Error(`Config metadata for key "${key}" is not defined.`);
+  }
+  const metadata = configMetadata[key];
+
+  if (
+    !isConfigValueValid(metadata.displayString ?? key, value, metadata.schema)
+  ) {
     return false;
   }
 
-  if (config.mode === "quote") {
-    numb = false;
+  if (
+    !canSetConfigWithCurrentFunboxes(metadata.configKey, value, config.funbox)
+  ) {
+    return false;
   }
-  config.numbers = numb;
-  saveToLocalStorage("numbers", nosave);
-  ConfigEvent.dispatch("numbers", config.numbers);
 
+  if (metadata.preventSet && metadata.preventSet(value)) {
+    return false;
+  }
+
+  config[key] = value;
+  saveToLocalStorage(key, nosave);
+  ConfigEvent.dispatch(key, value, nosave);
   return true;
+}
+
+//numbers
+export function setNumbers(numb: boolean, nosave?: boolean): boolean {
+  return genericSet("numbers", numb, nosave);
 }
 
 //punctuation
