@@ -119,25 +119,33 @@ function isConfigChangeBlocked(): boolean {
 
 type ConfigMetadataProperty = "blockedByNoQuit";
 
+type SetBlock = {
+  [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
+};
+
 type ConfigMetadata = {
   [K in keyof ConfigSchemas.Config]?: {
     configKey: K;
     schema: ZodSchema;
     displayString?: string;
-    preventSet?: (value: ConfigSchemas.Config[K]) => boolean;
     properties?: ConfigMetadataProperty[];
+    setBlock?: SetBlock;
+    customSetBlock?: (value: ConfigSchemas.Config[K]) => boolean;
   };
 };
 
 const configMetadata: ConfigMetadata = {
   numbers: {
     configKey: "numbers",
-    schema: z.number(),
+    schema: z.boolean(),
     properties: ["blockedByNoQuit"],
-    preventSet: () => {
-      if (config.mode === "quote") return true;
-      return false;
+    setBlock: {
+      mode: ["quote"],
     },
+    // customSetBlock: () => {
+    //   if (config.mode === "quote") return true;
+    //   return false;
+    // },
   },
 };
 
@@ -162,6 +170,29 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     return false;
   }
 
+  if (metadata.setBlock) {
+    let block = false;
+    for (const blockKey of typedKeys(metadata.setBlock)) {
+      const blockValues = metadata.setBlock[blockKey] ?? [];
+      if (
+        config[blockKey] !== undefined &&
+        (blockValues as Array<(typeof config)[typeof blockKey]>).includes(
+          config[blockKey]
+        )
+      ) {
+        block = true;
+        break;
+      }
+    }
+    if (block) {
+      return false;
+    }
+  }
+
+  if (metadata.customSetBlock && metadata.customSetBlock(value)) {
+    return false;
+  }
+
   if (
     !isConfigValueValid(metadata.displayString ?? key, value, metadata.schema)
   ) {
@@ -171,10 +202,6 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   if (
     !canSetConfigWithCurrentFunboxes(metadata.configKey, value, config.funbox)
   ) {
-    return false;
-  }
-
-  if (metadata.preventSet && metadata.preventSet(value)) {
     return false;
   }
 
