@@ -156,5 +156,12 @@ export function replaceLegacyValues(
     configObj.fontSize = newValue;
   }
 
+  if (
+    Array.isArray(configObj.accountChart) &&
+    configObj.accountChart.length !== 4
+  ) {
+    configObj.accountChart = ["on", "on", "on", "on"];
+  }
+
   return configObj;
 }

@@ -431,10 +431,6 @@ export function setAccountChart(
   array: ConfigSchemas.AccountChart,
   nosave?: boolean
 ): boolean {
-  if (array.length !== 4) {
-    array = ["on", "on", "on", "on"];
-  }
-
   if (
     !isConfigValueValid(
       "account chart",
