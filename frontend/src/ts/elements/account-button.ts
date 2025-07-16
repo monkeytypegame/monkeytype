@@ -147,7 +147,7 @@ export function update(snapshot: Snapshot | undefined): void {
     updateName(name);
     updateFlags(snapshot ?? {});
     XpBar.setXp(xp);
-    updateAvatar(discordId ?? "", discordAvatar ?? "");
+    updateAvatar(discordId, discordAvatar);
 
     $("nav .accountButtonAndMenu .menu .items .goToProfile").attr(
       "href",

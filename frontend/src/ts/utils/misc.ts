@@ -224,6 +224,7 @@ type LastIndex = {
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
 
+//TODO remove
 export async function getDiscordAvatarUrl(
   discordId?: string,
   discordAvatar?: string,

@@ -16,10 +16,6 @@ function reset(): void {
       <div class="details none">
         <div class="avatarAndName">
           <div class="avatars">
-            <div class="placeholderAvatar">
-              <i class="fas fa-user-circle"></i>
-            </div>
-            <div class="avatar"></div>
           </div>
           <div>
              <div class="user">
