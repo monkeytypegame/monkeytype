@@ -131,6 +131,7 @@ type ConfigMetadata = {
     properties?: ConfigMetadataProperty[];
     setBlock?: SetBlock;
     customSetBlock?: (value: ConfigSchemas.Config[K]) => boolean;
+    valueOverride?: (value: ConfigSchemas.Config[K]) => ConfigSchemas.Config[K];
   };
 };
 
@@ -139,13 +140,19 @@ const configMetadata: ConfigMetadata = {
     configKey: "numbers",
     schema: z.boolean(),
     properties: ["blockedByNoQuit"],
-    setBlock: {
-      mode: ["quote"],
-    },
+    // setBlock: {
+    //   mode: ["quote"],
+    // },
     // customSetBlock: () => {
     //   if (config.mode === "quote") return true;
     //   return false;
     // },
+    valueOverride: (value) => {
+      if (config.mode === "quote") {
+        return false;
+      }
+      return value;
+    },
   },
 };
 
@@ -191,6 +198,10 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
 
   if (metadata.customSetBlock && metadata.customSetBlock(value)) {
     return false;
+  }
+
+  if (metadata.valueOverride) {
+    value = metadata.valueOverride(value);
   }
 
   if (
