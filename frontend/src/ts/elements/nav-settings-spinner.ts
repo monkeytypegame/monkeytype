@@ -1,11 +1,11 @@
 const el = document.querySelector(
-  "header .view-settings .spinner"
+  "header .view-settings .icon i"
 ) as HTMLElement;
 
 export function hide(): void {
-  el.style.opacity = "0";
+  el.classList.remove("fa-spin");
 }
 
 export function show(): void {
-  el.style.opacity = "1";
+  el.classList.add("fa-spin");
 }

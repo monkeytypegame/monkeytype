@@ -33,21 +33,6 @@ nav {
       display: grid;
       place-content: center center;
     }
-    .spinner {
-      opacity: 0;
-      position: absolute;
-      right: 0.5em;
-      top: 0.5em;
-      background: var(--bg-color);
-      border-radius: 100%;
-      width: 1.7em;
-      height: 1.7em;
-      // box-sizing: content-box;
-      display: grid;
-      place-content: center center;
-      font-size: 0.58em;
-      transition: opacity 0.125s;
-    }
   }
 
   .accountButtonAndMenu {
