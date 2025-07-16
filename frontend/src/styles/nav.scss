@@ -16,6 +16,7 @@ nav {
   }
 
   .textButton {
+    position: relative;
     .text {
       font-size: 0.75em;
       align-self: center;
@@ -32,6 +33,19 @@ nav {
       // background: red;
       display: grid;
       place-content: center center;
+    }
+    .spinner {
+      position: absolute;
+      right: 0.5em;
+      top: 0.5em;
+      background: var(--bg-color);
+      border-radius: 100%;
+      width: 1.7em;
+      height: 1.7em;
+      // box-sizing: content-box;
+      display: grid;
+      place-content: center center;
+      font-size: 0.58em;
     }
   }
 
