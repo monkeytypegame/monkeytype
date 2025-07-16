@@ -134,7 +134,7 @@ type ConfigMetadata = {
   };
 };
 
-const configMetadata: ConfigMetadata = {
+const configMetadata = {
   numbers: {
     schema: z.boolean(),
     properties: ["blockedByNoQuit"],
@@ -152,17 +152,17 @@ const configMetadata: ConfigMetadata = {
       return value;
     },
   },
-};
+} satisfies ConfigMetadata;
 
-export function genericSet<T extends keyof ConfigSchemas.Config>(
+export function genericSet<T extends keyof typeof configMetadata>(
   key: T,
   value: ConfigSchemas.Config[T],
   nosave?: boolean
 ): boolean {
-  if (configMetadata[key] === undefined) {
+  const metadata = configMetadata[key] as ConfigMetadata[T];
+  if (metadata === undefined) {
     throw new Error(`Config metadata for key "${key}" is not defined.`);
   }
-  const metadata = configMetadata[key];
 
   const previousValue = config[key];
 
@@ -227,22 +227,7 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
 
 //punctuation
 export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (!isConfigValueValidBoolean("punctuation", punc)) return false;
-
-  if (!canSetConfigWithCurrentFunboxes("punctuation", punc, config.funbox)) {
-    return false;
-  }
-
-  if (config.mode === "quote") {
-    punc = false;
-  }
-  config.punctuation = punc;
-  saveToLocalStorage("punctuation", nosave);
-  ConfigEvent.dispatch("punctuation", config.punctuation);
-
-  return true;
+  return genericSet("punctuation", punc, nosave);
 }
 
 export function setMode(mode: Mode, nosave?: boolean): boolean {
