@@ -152,6 +152,16 @@ const configMetadata = {
       return value;
     },
   },
+  punctuation: {
+    schema: z.boolean(),
+    properties: ["blockedByNoQuit"],
+    valueOverride: (value) => {
+      if (config.mode === "quote") {
+        return false;
+      }
+      return value;
+    },
+  },
 } satisfies ConfigMetadata;
 
 export function genericSet<T extends keyof typeof configMetadata>(
