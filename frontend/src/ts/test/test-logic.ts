@@ -78,7 +78,6 @@ import { captureException } from "../sentry";
 import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
-import { showLoader } from "../elements/loader";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -697,7 +696,7 @@ export async function retrySavingResult(): Promise<void> {
   retrySaving.canRetry = false;
   $("#retrySavingResultButton").addClass("hidden");
 
-  showLoader(true);
+  Loader.show();
 
   Notifications.add("Retrying to save...");
 
@@ -1150,7 +1149,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   completedEvent.uid = Auth?.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.currentQuote);
 
-  showLoader(true);
+  Loader.show();
 
   if (!completedEvent.bailedOut) {
     const challenge = ChallengeContoller.verify(completedEvent);
@@ -1172,7 +1171,7 @@ async function saveResult(
       customTitle: "Notice",
       important: true,
     });
-    showLoader(false);
+    Loader.hide();
     return;
   }
 
@@ -1182,7 +1181,7 @@ async function saveResult(
       customTitle: "Notice",
       important: true,
     });
-    showLoader(false);
+    Loader.hide();
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");
     if (!isRetrying) {
@@ -1193,7 +1192,7 @@ async function saveResult(
 
   const response = await Ape.results.add({ body: { result: completedEvent } });
 
-  showLoader(false);
+  Loader.hide();
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list
