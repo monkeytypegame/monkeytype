@@ -461,6 +461,12 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "asl",
     cssModifications: ["words"],
   },
+  no_quit: {
+    description: "You can't restart the test.",
+    canGetPb: true,
+    difficultyLevel: 1,
+    name: "no_quit",
+  },
 };
 
 export function getFunbox(name: FunboxName): FunboxMetadata;
