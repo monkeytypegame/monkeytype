@@ -28,7 +28,6 @@ import * as TimerProgress from "./timer-progress";
 
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
-import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
@@ -79,6 +78,7 @@ import { captureException } from "../sentry";
 import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
+import { showLoader } from "../elements/loader";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -697,7 +697,7 @@ export async function retrySavingResult(): Promise<void> {
   retrySaving.canRetry = false;
   $("#retrySavingResultButton").addClass("hidden");
 
-  AccountButton.loading(true);
+  showLoader(true);
 
   Notifications.add("Retrying to save...");
 
@@ -1150,7 +1150,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   completedEvent.uid = Auth?.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.currentQuote);
 
-  AccountButton.loading(true);
+  showLoader(true);
 
   if (!completedEvent.bailedOut) {
     const challenge = ChallengeContoller.verify(completedEvent);
@@ -1172,7 +1172,7 @@ async function saveResult(
       customTitle: "Notice",
       important: true,
     });
-    AccountButton.loading(false);
+    showLoader(false);
     return;
   }
 
@@ -1182,7 +1182,7 @@ async function saveResult(
       customTitle: "Notice",
       important: true,
     });
-    AccountButton.loading(false);
+    showLoader(false);
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");
     if (!isRetrying) {
@@ -1193,7 +1193,7 @@ async function saveResult(
 
   const response = await Ape.results.add({ body: { result: completedEvent } });
 
-  AccountButton.loading(false);
+  showLoader(false);
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list

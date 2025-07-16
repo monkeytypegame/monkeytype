@@ -23,3 +23,11 @@ export function hide(): void {
   $("#backgroundLoader").stop(true, true).fadeOut(125);
   visible = false;
 }
+
+export function showLoader(loading: boolean): void {
+  if (loading) {
+    show();
+  } else {
+    hide();
+  }
+}
