@@ -42,14 +42,12 @@ export function getAvatarElement(
   const cachedUrl = cachedAvatarUrlByAvatarId.get(data.discordAvatar);
 
   if (cachedUrl !== undefined) {
-    console.log("### cache hit", { data, cached: cachedUrl });
     return buildElement(cachedUrl, { size: options?.size });
   } else {
     const element = buildElement(null, { loading: true });
 
     void getDiscordAvatarUrl({ discordId, discordAvatar }).then((url) => {
       cachedAvatarUrlByAvatarId.set(data.discordAvatar as string, url);
-      console.log("### callback", { data, url });
       if (url !== null) {
         element.replaceWith(buildElement(url, { size: options?.size ?? 32 }));
       }
@@ -59,7 +57,6 @@ export function getAvatarElement(
   }
 }
 
-//TODO remove from misc
 async function getDiscordAvatarUrl({
   discordId,
   discordAvatar,
@@ -71,9 +68,7 @@ async function getDiscordAvatarUrl({
   try {
     const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png`;
 
-    const response = await fetch(avatarUrl, {
-      method: "HEAD",
-    });
+    const response = await fetch(avatarUrl, { method: "HEAD" });
     if (!response.ok) {
       return null;
     }

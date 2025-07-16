@@ -69,7 +69,7 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     }
 
     DB.setSnapshot(snapshot);
-    AccountButton.updateAvatar(discordId, discordAvatar);
+    AccountButton.updateAvatar(snapshot);
   }
 }
 

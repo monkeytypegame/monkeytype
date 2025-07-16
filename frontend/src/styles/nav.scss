@@ -26,8 +26,7 @@ nav {
     }
 
     .icon,
-    .loading,
-    .user {
+    .avatarPlaceholder {
       width: 1.25em;
       height: 1.25em;
       // background: red;
@@ -59,19 +58,13 @@ nav {
       gap: 0.33em;
       display: grid;
       grid-auto-flow: column;
-      .loading,
-      .user,
+      .avatarPlaceholder,
       .avatar {
         grid-column: 1/2;
         grid-row: 1/2;
         width: 1.25em;
         height: 1.25em;
       }
-
-      // .loading,
-      // .user {
-      //   // margin-top: 0.1rem;
-      // }
 
       .levelAndBar {
         transition: 0.125s;
