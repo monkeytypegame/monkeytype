@@ -125,7 +125,6 @@ type SetBlock = {
 
 type ConfigMetadata = {
   [K in keyof ConfigSchemas.Config]?: {
-    configKey: K;
     schema: ZodSchema;
     displayString?: string;
     properties?: ConfigMetadataProperty[];
@@ -137,7 +136,6 @@ type ConfigMetadata = {
 
 const configMetadata: ConfigMetadata = {
   numbers: {
-    configKey: "numbers",
     schema: z.boolean(),
     properties: ["blockedByNoQuit"],
     // setBlock: {
@@ -210,9 +208,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     return false;
   }
 
-  if (
-    !canSetConfigWithCurrentFunboxes(metadata.configKey, value, config.funbox)
-  ) {
+  if (!canSetConfigWithCurrentFunboxes(key, value, config.funbox)) {
     return false;
   }
 
