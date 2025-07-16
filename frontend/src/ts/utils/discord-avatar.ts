@@ -20,7 +20,10 @@ function buildElement(
 }
 
 export function getAvatarElement(
-  data: {
+  {
+    discordId,
+    discordAvatar,
+  }: {
     discordId?: string;
     discordAvatar?: string;
   },
@@ -29,17 +32,15 @@ export function getAvatarElement(
   }
 ): HTMLElement {
   if (
-    data.discordId === undefined ||
-    data.discordId === "" ||
-    data.discordAvatar === undefined ||
-    data.discordAvatar === ""
+    discordId === undefined ||
+    discordId === "" ||
+    discordAvatar === undefined ||
+    discordAvatar === ""
   ) {
     return buildElement(null);
   }
 
-  const discordId: string = data.discordId;
-  const discordAvatar: string = data.discordAvatar;
-  const cachedUrl = cachedAvatarUrlByAvatarId.get(data.discordAvatar);
+  const cachedUrl = cachedAvatarUrlByAvatarId.get(discordAvatar);
 
   if (cachedUrl !== undefined) {
     return buildElement(cachedUrl, { size: options?.size });
@@ -47,10 +48,8 @@ export function getAvatarElement(
     const element = buildElement(null, { loading: true });
 
     void getDiscordAvatarUrl({ discordId, discordAvatar }).then((url) => {
-      cachedAvatarUrlByAvatarId.set(data.discordAvatar as string, url);
-      if (url !== null) {
-        element.replaceWith(buildElement(url, { size: options?.size ?? 32 }));
-      }
+      cachedAvatarUrlByAvatarId.set(discordAvatar, url);
+      element.replaceWith(buildElement(url, { size: options?.size ?? 32 }));
     });
 
     return element;
