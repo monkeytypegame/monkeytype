@@ -507,6 +507,7 @@ type RelevantUserInfo = Omit<
   | "note"
   | "ips"
   | "testActivity"
+  | "suspicious"
 >;
 
 function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
@@ -521,6 +522,7 @@ function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
     "note",
     "ips",
     "testActivity",
+    "suspicious",
   ]) as RelevantUserInfo;
 }
 

@@ -32,7 +32,7 @@ import {
   replaceLegacyValues,
 } from "../../utils/result";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
-import { addLog } from "../../dal/logs";
+import { addImportantLog, addLog } from "../../dal/logs";
 import {
   AddResultRequest,
   AddResultResponse,
@@ -213,6 +213,10 @@ export async function addResult(
 
   const completedEvent = req.body.result;
   completedEvent.uid = uid;
+
+  if (user.suspicious) {
+    await addImportantLog("suspicious_user_result", completedEvent, uid);
+  }
 
   if (isTestTooShort(completedEvent)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
