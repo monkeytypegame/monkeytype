@@ -43,7 +43,7 @@ export function getAvatarElement(
 
   if (cachedUrl !== undefined) {
     console.log("### cache hit", { data, cached: cachedUrl });
-    return buildElement(cachedUrl);
+    return buildElement(cachedUrl, { size: options?.size });
   } else {
     const element = buildElement(null, { loading: true });
 
