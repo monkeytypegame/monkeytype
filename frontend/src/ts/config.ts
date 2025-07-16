@@ -164,6 +164,8 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   }
   const metadata = configMetadata[key];
 
+  const previousValue = config[key];
+
   if (
     metadata.properties?.includes("blockedByNoQuit") &&
     TestState.isActive &&
@@ -214,7 +216,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
 
   config[key] = value;
   saveToLocalStorage(key, nosave);
-  ConfigEvent.dispatch(key, value, nosave);
+  ConfigEvent.dispatch(key, value, nosave, previousValue);
   return true;
 }
 
