@@ -464,7 +464,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   no_quit: {
     description: "You can't restart the test.",
     canGetPb: true,
-    difficultyLevel: 1,
+    difficultyLevel: 0,
     name: "no_quit",
   },
 };
