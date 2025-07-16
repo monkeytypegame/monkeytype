@@ -43,13 +43,13 @@ export function getAvatarElement(
   const cachedUrl = cachedAvatarUrlByAvatarId.get(discordAvatar);
 
   if (cachedUrl !== undefined) {
-    return buildElement(cachedUrl, { size: options?.size });
+    return buildElement(cachedUrl, options);
   } else {
     const element = buildElement(null, { loading: true });
 
     void getDiscordAvatarUrl({ discordId, discordAvatar }).then((url) => {
       cachedAvatarUrlByAvatarId.set(discordAvatar, url);
-      element.replaceWith(buildElement(url, { size: options?.size ?? 32 }));
+      element.replaceWith(buildElement(url, options));
     });
 
     return element;
