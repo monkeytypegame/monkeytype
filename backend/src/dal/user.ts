@@ -62,6 +62,7 @@ export type DBUser = Omit<
   canManageApeKeys?: boolean;
   bananas?: number;
   testActivity?: CountByYearAndDay;
+  suspicious?: boolean;
 };
 
 const SECONDS_PER_HOUR = 3600;

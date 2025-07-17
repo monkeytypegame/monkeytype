@@ -493,7 +493,8 @@
     &.highlight {
       margin: -1em;
       padding: 1em;
-      animation: flashBorder 4s ease-in;
+      animation: flashBorder 4s ease-in forwards;
+      box-shadow: 0 0 0 0.2em var(--sub-color);
       border-radius: var(--roundness);
     }
 
