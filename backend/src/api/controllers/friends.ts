@@ -91,7 +91,14 @@ export async function getFriends(
   req: MonkeyRequest
 ): Promise<GetFriendsResponse> {
   const { uid } = req.ctx.decodedToken;
+  const premiumEnabled = req.ctx.configuration.users.premium.enabled;
   const data = await FriendsDal.getFriends(uid);
+
+  if (!premiumEnabled) {
+    for (const friend of data) {
+      delete friend.isPremium;
+    }
+  }
 
   return new MonkeyResponse("Friends retrieved", data);
 }

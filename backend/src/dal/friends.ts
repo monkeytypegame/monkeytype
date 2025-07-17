@@ -277,6 +277,9 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
                 streak: true,
                 personalBests: true,
                 "inventory.badges": true,
+                "premium.expirationTimestamp": true,
+                banned: 1,
+                lbOptOut: 1,
               },
             },
             {
@@ -312,18 +315,41 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
                   },
                 },
                 badgeId: {
-                  $first: {
-                    $map: {
-                      input: {
-                        $filter: {
-                          input: "$inventory.badges",
-                          as: "badge",
-                          cond: { $eq: ["$$badge.selected", true] },
+                  $ifNull: [
+                    {
+                      $first: {
+                        $map: {
+                          input: {
+                            $filter: {
+                              input: "$inventory.badges",
+                              as: "badge",
+                              cond: { $eq: ["$$badge.selected", true] },
+                            },
+                          },
+                          as: "selectedBadge",
+                          in: "$$selectedBadge.id",
                         },
                       },
-                      as: "selectedBadge",
-                      in: "$$selectedBadge.id",
                     },
+                    "$$REMOVE",
+                  ],
+                },
+                isPremium: {
+                  $cond: {
+                    if: {
+                      $or: [
+                        { $eq: ["$premium.expirationTimestamp", -1] },
+                        {
+                          $gt: [
+                            "$premium.expirationTimestamp",
+                            { $toLong: "$$NOW" },
+                          ],
+                        },
+                      ],
+                    },
+                    // oxlint-disable-next-line no-thenable
+                    then: true,
+                    else: "$$REMOVE",
                   },
                 },
               },
@@ -341,6 +367,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
               $project: {
                 personalBests: false,
                 inventory: false,
+                premium: false,
               },
             },
           ],

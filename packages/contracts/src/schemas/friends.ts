@@ -35,12 +35,15 @@ export const FriendSchema = UserSchema.pick({
   timeTyping: true,
   xp: true,
   streak: true,
+  banned: true,
+  lbOptOut: true,
 }).extend({
   addedAt: z.number().int().nonnegative().optional(),
   friendRequestId: IdSchema.optional(),
   top15: PersonalBestSchema.optional(),
   top60: PersonalBestSchema.optional(),
   badgeId: z.number().int().optional(),
+  isPremium: z.boolean().optional(),
 });
 
 export type Friend = z.infer<typeof FriendSchema>;

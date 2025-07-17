@@ -103,17 +103,16 @@ describe("FriendsDal", () => {
       );
 
       //THEN
-      expect(created).toEqual(
-        expect.objectContaining({
-          initiatorUid: uid,
-          initiatorName: "Bob",
-          friendUid: friendUid,
-          friendName: "Kevin",
-          addedAt: now,
-          status: "pending",
-          key: `${uid}/${friendUid}`,
-        })
-      );
+      expect(created).toEqual({
+        _id: created._id,
+        initiatorUid: uid,
+        initiatorName: "Bob",
+        friendUid: friendUid,
+        friendName: "Kevin",
+        addedAt: now,
+        status: "pending",
+        key: `${uid}/${friendUid}`,
+      });
     });
 
     it("should fail if maximum friends are reached", async () => {
@@ -143,9 +142,10 @@ describe("FriendsDal", () => {
       await FriendsDal.updateStatus(uid, first._id.toHexString(), "accepted");
 
       //THEN
-      expect(await FriendsDal.getRequests({ friendUid: uid })).toEqual(
-        expect.arrayContaining([{ ...first, status: "accepted" }, second])
-      );
+      expect(await FriendsDal.getRequests({ friendUid: uid })).toEqual([
+        { ...first, status: "accepted" },
+        second,
+      ]);
 
       //can update twice to the same status
       await FriendsDal.updateStatus(uid, first._id.toHexString(), "accepted");
@@ -305,6 +305,9 @@ describe("FriendsDal", () => {
         inventory: {
           badges: [{ id: 42, selected: true }, { id: 23 }, { id: 5 }],
         },
+        banned: true,
+        lbOptOut: true,
+        premium: { expirationTimestamp: -1 } as any,
       });
       const friendOneRequest = await createFriend({
         initiatorUid: uid,
@@ -327,6 +330,7 @@ describe("FriendsDal", () => {
         inventory: {
           badges: [{ id: 23 }, { id: 5 }],
         },
+        premium: { expirationTimestamp: Date.now() + 5000 } as any,
       });
       const friendTwoRequest = await createFriend({
         initiatorUid: uid,
@@ -350,47 +354,47 @@ describe("FriendsDal", () => {
       //WHEN
       const friends = await FriendsDal.getFriends(uid);
 
-      console.log(friends);
-
       //THEN
-      expect(friends).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            uid: friendOne.uid,
-            name: "One",
-            addedAt: 100,
-            friendRequestId: friendOneRequest._id,
-            // oxlint-disable-next-line no-non-null-assertion
-            top15: friendOne.personalBests.time["15"]![0] as any,
-            // oxlint-disable-next-line no-non-null-assertion
-            top60: friendOne.personalBests.time["60"]![1] as any,
-            badgeId: 42,
-          }),
-          expect.objectContaining({
-            uid: friendTwo.uid,
-            name: "Two",
-            addedAt: 200,
-            friendRequestId: friendTwoRequest._id,
-            discordId: friendTwo.discordId,
-            discordAvatar: friendTwo.discordAvatar,
-            timeTyping: friendTwo.timeTyping,
-            startedTests: friendTwo.startedTests,
-            completedTests: friendTwo.completedTests,
-            streak: friendTwo.streak,
-            xp: friendTwo.xp,
-          }),
-          expect.objectContaining({
-            uid: friendThree.uid,
-            name: "Three",
-            addedAt: 300,
-            friendRequestId: friendThreeRequest._id,
-          }),
-          expect.objectContaining({
-            uid: me.uid,
-            name: "Me",
-          }),
-        ])
-      );
+      expect(friends).toEqual([
+        {
+          uid: friendOne.uid,
+          name: "One",
+          addedAt: 100,
+          friendRequestId: friendOneRequest._id,
+          // oxlint-disable-next-line no-non-null-assertion
+          top15: friendOne.personalBests.time["15"]![0] as any,
+          // oxlint-disable-next-line no-non-null-assertion
+          top60: friendOne.personalBests.time["60"]![1] as any,
+          badgeId: 42,
+          banned: true,
+          lbOptOut: true,
+          isPremium: true,
+        },
+        {
+          uid: friendTwo.uid,
+          name: "Two",
+          addedAt: 200,
+          friendRequestId: friendTwoRequest._id,
+          discordId: friendTwo.discordId,
+          discordAvatar: friendTwo.discordAvatar,
+          timeTyping: friendTwo.timeTyping,
+          startedTests: friendTwo.startedTests,
+          completedTests: friendTwo.completedTests,
+          streak: friendTwo.streak,
+          xp: friendTwo.xp,
+          isPremium: true,
+        },
+        {
+          uid: friendThree.uid,
+          name: "Three",
+          addedAt: 300,
+          friendRequestId: friendThreeRequest._id,
+        },
+        {
+          uid: me.uid,
+          name: "Me",
+        },
+      ]);
     });
   });
 });
