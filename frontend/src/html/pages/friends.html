@@ -69,14 +69,34 @@
       <table width="100%">
         <thead>
           <tr>
-            <td>name</td>
-            <td>friend since</td>
-            <td>level</td>
-            <td>tests</td>
-            <td>time typing</td>
-            <td>streak</td>
-            <td>best 15s</td>
-            <td>best 60s</td>
+            <td type="button" class="sortable" data-property="name">name</td>
+            <td type="button" class="sortable" data-property="addedAt">
+              friend since
+            </td>
+            <td type="button" class="sortable" data-property="xp">level</td>
+            <td
+              type="button"
+              class="sortable"
+              data-property="completedTests"
+              aria-label="completed / started"
+              data-balloon-pos="up"
+            >
+              tests
+            </td>
+            <td type="button" class="sortable" data-property="timeTyping">
+              time typing
+            </td>
+            <td type="button" class="sortable" data-property="streak.length">
+              streak
+            </td>
+            <td type="button" class="sortable" data-property="top15.wpm">
+              15s wpm
+              <div class="sub">accuracy</div>
+            </td>
+            <td type="button" class="sortable" data-property="top60.wpm">
+              60s wpm
+              <div class="sub">accuracy</div>
+            </td>
             <td></td>
           </tr>
         </thead>
