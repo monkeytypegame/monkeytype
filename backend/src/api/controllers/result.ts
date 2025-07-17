@@ -214,7 +214,7 @@ export async function addResult(
   const completedEvent = req.body.result;
   completedEvent.uid = uid;
 
-  if (user.suspicious) {
+  if (user.suspicious && completedEvent.testDuration <= 120) {
     await addImportantLog("suspicious_user_result", completedEvent, uid);
   }
 
