@@ -442,3 +442,15 @@ key {
     pointer-events: none !important;
   }
 }
+
+//sorted-tables
+.headerSorted {
+  font-weight: bold;
+}
+
+td.sortable:hover {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  background-color: var(--sub-alt-color);
+}
