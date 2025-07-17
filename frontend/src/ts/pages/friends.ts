@@ -13,24 +13,9 @@ import { PersonalBest } from "@monkeytype/contracts/schemas/shared";
 import Format from "../utils/format";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { Friend } from "@monkeytype/contracts/schemas/friends";
+import { SortedTable } from "../utils/sorted-table";
 
 const pageElement = $(".page.pageFriends");
-
-type Sort = {
-  property: string;
-  descending: boolean;
-};
-
-type State = {
-  friends: {
-    data: Array<Friend>;
-    sort: Sort;
-  };
-};
-
-const state: State = {
-  friends: { data: [], sort: { property: "name", descending: false } },
-};
 
 const addFriendModal = new SimpleModal({
   id: "addFriend",
@@ -101,44 +86,51 @@ async function updatePendingRequests(): Promise<void> {
 async function fetchFriends(): Promise<void> {
   $(".pageFriends .friends .loading").removeClass("hidden");
   const result = await Ape.friends.getFriends();
+  $(".pageFriends .friends .loading").addClass("hidden");
+
   if (result.status !== 200) {
     $(".pageFriends .friends .error").removeClass("hidden");
     $(".pageFriends .friends .error p").html(result.body.message);
-  } else {
-    $(".pageFriends .friends .error").addClass("hidden");
-    state.friends.data = result.body.data;
+    return;
   }
-  $(".pageFriends .friends .loading").addClass("hidden");
-}
 
-async function updateFriends(): Promise<void> {
-  if (state.friends.data.length === 0) {
+  $(".pageFriends .friends .error").addClass("hidden");
+
+  if (result.body.data.length === 0) {
     $(".pageFriends .friends table").addClass("hidden");
     $(".pageFriends .friends .nodata").removeClass("hidden");
   } else {
     $(".pageFriends .friends table").removeClass("hidden");
     $(".pageFriends .friends .nodata").addClass("hidden");
 
-    const html = state.friends.data
-      .map((entry) => {
-        let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
-        if (entry.discordAvatar !== undefined) {
-          avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
-        }
-        const xpDetails = getXpDetails(entry.xp ?? 0);
+    new SortedTable<Friend>({
+      table: ".pageFriends .friends table",
+      data: result.body.data,
+      buildRow: buildFriendRow,
+      initialSort: { property: "name", descending: false },
+    });
+  }
+}
 
-        const top15 = formatPb(entry.top15);
-        const top60 = formatPb(entry.top60);
+function buildFriendRow(entry: Friend): HTMLTableRowElement {
+  let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
+  if (entry.discordAvatar !== undefined) {
+    avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
+  }
+  const xpDetails = getXpDetails(entry.xp ?? 0);
 
-        return `<tr data-id="${entry.friendRequestId}">
+  const top15 = formatPb(entry.top15);
+  const top60 = formatPb(entry.top60);
+
+  const element = document.createElement("tr");
+  element.dataset["id"] = entry.friendRequestId;
+  element.innerHTML = `<tr data-id="${entry.friendRequestId}">
         <td>
           <div class="avatarNameBadge">
             <div class="lbav">${avatar}</div>
               <a href="${location.origin}/profile/${
-          entry.uid
-        }?isUid" class="entryName" uid=${entry.uid} router-link>${
-          entry.name
-        }</a>
+    entry.uid
+  }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
             <div class="flagsAndBadge">
             ${getHtmlByUserFlags(entry)}
               ${
@@ -169,11 +161,7 @@ async function updateFriends(): Promise<void> {
           </button>
         </td>
       </tr>`;
-      })
-      .join("\n");
-
-    $(".pageFriends .friends tbody").html(html);
-  }
+  return element;
 }
 
 function formatAge(timestamp?: number): string {
@@ -202,50 +190,6 @@ function formatPb(entry?: PersonalBest):
     raw: Format.typingSpeed(entry.raw, { showDecimalPlaces: true }),
     con: Format.percentage(entry.consistency, { showDecimalPlaces: true }),
   };
-}
-
-function getValueByPath(obj: unknown, path: string): unknown {
-  return path.split(".").reduce((acc, key) => {
-    // oxlint-disable-next-line no-explicit-any
-    // @ts-expect-error this is fine
-    return acc !== null && acc !== undefined ? acc[key] : undefined;
-  }, obj);
-}
-
-function sortFriends({ property, descending }: Sort): void {
-  // Removes styling from previous sorting requests:
-  $(".friends td").removeClass("headerSorted");
-  $(".friends td").children("i").remove();
-  $(`.friends td[data-property="${property}"]`)
-    .addClass("headerSorted")
-    .append(
-      `<i class="fas ${
-        descending ? "fa-sort-down" : "fa-sort-up"
-      } aria-hidden="true"></i>`
-    );
-
-  state.friends.data.sort((a, b) => {
-    const valA = getValueByPath(a, property);
-    const valB = getValueByPath(b, property);
-
-    let result = 0;
-
-    if (valA === undefined && valB !== undefined) {
-      return descending ? 1 : -1;
-    } else if (valA !== undefined && valB === undefined) {
-      return descending ? -1 : 1;
-    }
-
-    if (typeof valA === "string" && typeof valB === "string") {
-      result = valA.localeCompare(valB);
-    }
-
-    if (typeof valA === "number" && typeof valB === "number") {
-      result = valA - valB;
-    }
-
-    return descending ? -result : result;
-  });
 }
 
 $("#friendAdd").on("click", () => {
@@ -299,22 +243,6 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
   }
 });
 
-$(".pageFriends .friends thead td.sortable").on("click", async (e) => {
-  const property = e.currentTarget.dataset["property"];
-  if (property === undefined) return;
-
-  if (property === state.friends.sort.property) {
-    state.friends.sort.descending = !state.friends.sort.descending;
-  } else {
-    state.friends.sort = {
-      property,
-      descending: false,
-    };
-  }
-  sortFriends(state.friends.sort);
-  await updateFriends();
-});
-
 export const page = new Page<undefined>({
   id: "friends",
   display: "Friends",
@@ -328,8 +256,6 @@ export const page = new Page<undefined>({
 
     await updatePendingRequests();
     await fetchFriends();
-    sortFriends({ property: "name", descending: false });
-    await updateFriends();
   },
 });
 
