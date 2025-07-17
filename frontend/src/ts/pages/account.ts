@@ -1163,7 +1163,9 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
     Misc.applyReducedMotion(500)
   );
   $(".resultRow").removeClass("active");
-  $(`#result-${index}`).addClass("active");
+  setTimeout(() => {
+    $(`#result-${index}`).addClass("active");
+  }, 0);
 });
 
 $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
