@@ -11,8 +11,26 @@ import { getXpDetails } from "../utils/levels";
 import { secondsToString } from "../utils/date-and-time";
 import { PersonalBest } from "@monkeytype/contracts/schemas/shared";
 import Format from "../utils/format";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
+import { Friend } from "@monkeytype/contracts/schemas/friends";
 
 const pageElement = $(".page.pageFriends");
+
+type Sort = {
+  property: string;
+  descending: boolean;
+};
+
+type State = {
+  friends: {
+    data: Array<Friend>;
+    sort: Sort;
+  };
+};
+
+const state: State = {
+  friends: { data: [], sort: { property: "name", descending: false } },
+};
 
 const addFriendModal = new SimpleModal({
   id: "addFriend",
@@ -36,6 +54,7 @@ const addFriendModal = new SimpleModal({
 
 async function updatePendingRequests(): Promise<void> {
   $(".pageFriends .pendingRequests .loading").removeClass("hidden");
+  $(".pageFriends .pendingRequests .nodata").addClass("hidden");
 
   const result = await Ape.friends.getRequests({
     query: { status: "pending", type: "incoming" },
@@ -79,47 +98,54 @@ async function updatePendingRequests(): Promise<void> {
   $(".pageFriends .pendingRequests .loading").addClass("hidden");
 }
 
-async function updateFriends(): Promise<void> {
+async function fetchFriends(): Promise<void> {
   $(".pageFriends .friends .loading").removeClass("hidden");
-
   const result = await Ape.friends.getFriends();
-
   if (result.status !== 200) {
     $(".pageFriends .friends .error").removeClass("hidden");
     $(".pageFriends .friends .error p").html(result.body.message);
   } else {
     $(".pageFriends .friends .error").addClass("hidden");
-    if (result.body.data.length === 0) {
-      $(".pageFriends .friends table").addClass("hidden");
-      $(".pageFriends .friends .nodata").removeClass("hidden");
-    } else {
-      $(".pageFriends .friends table").removeClass("hidden");
-      $(".pageFriends .friends .nodata").addClass("hidden");
+    state.friends.data = result.body.data;
+  }
+  $(".pageFriends .friends .loading").addClass("hidden");
+}
 
-      const html = result.body.data
-        .map((entry) => {
-          let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
-          if (entry.discordAvatar !== undefined) {
-            avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
-          }
-          const xpDetails = getXpDetails(entry.xp ?? 0);
+async function updateFriends(): Promise<void> {
+  if (state.friends.data.length === 0) {
+    $(".pageFriends .friends table").addClass("hidden");
+    $(".pageFriends .friends .nodata").removeClass("hidden");
+  } else {
+    $(".pageFriends .friends table").removeClass("hidden");
+    $(".pageFriends .friends .nodata").addClass("hidden");
 
-          const top15 = formatPb(entry.top15);
-          const top60 = formatPb(entry.top60);
+    const html = state.friends.data
+      .map((entry) => {
+        let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
+        if (entry.discordAvatar !== undefined) {
+          avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
+        }
+        const xpDetails = getXpDetails(entry.xp ?? 0);
 
-          return `<tr data-id="${entry.friendRequestId}">
+        const top15 = formatPb(entry.top15);
+        const top60 = formatPb(entry.top60);
+
+        return `<tr data-id="${entry.friendRequestId}">
         <td>
           <div class="avatarNameBadge">
             <div class="lbav">${avatar}</div>
               <a href="${location.origin}/profile/${
-            entry.uid
-          }?isUid" class="entryName" uid=${entry.uid} router-link>${
-            entry.name
-          }</a>
+          entry.uid
+        }?isUid" class="entryName" uid=${entry.uid} router-link>${
+          entry.name
+        }</a>
             <div class="flagsAndBadge">
-            ${
-              isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
-            }
+            ${getHtmlByUserFlags(entry)}
+              ${
+                isSafeNumber(entry.badgeId)
+                  ? getBadgeHTMLbyId(entry.badgeId)
+                  : ""
+              }
             </div>
           </div>
         </td>
@@ -132,22 +158,22 @@ async function updateFriends(): Promise<void> {
           true
         )}</td>
         <td>${entry.streak !== undefined ? entry.streak.length + " days" : ""}
-        <td>${top15?.wpm}</td>
-        <td>${top60?.wpm}</td>
+        <td>${top15?.wpm}<div class="sub">${top15?.acc}</div></td>
+        <td>${top60?.wpm}<div class="sub">${top60?.acc}</div></td>
         <td class="actions">
-          <button class="actions" aria-label="actions" data-balloon-pos="top">
-            <i class="fas fa-ellipsis-v fa-fw"></i>
+            <button class="rejected" aria-label="reject friend" data-balloon-pos="top">
+            <i class="fas fa-user-times fa-fw"></i>
           </button> 
+          <button class="blocked" aria-label="block user from sending friend requests" data-balloon-pos="top">
+            <i class="fas fa-user-shield fa-fw"></i>
+          </button>
         </td>
       </tr>`;
-        })
-        .join("\n");
+      })
+      .join("\n");
 
-      $(".pageFriends .friends tbody").html(html);
-    }
+    $(".pageFriends .friends tbody").html(html);
   }
-
-  $(".pageFriends .friends .loading").addClass("hidden");
 }
 
 function formatAge(timestamp?: number): string {
@@ -178,6 +204,50 @@ function formatPb(entry?: PersonalBest):
   };
 }
 
+function getValueByPath(obj: unknown, path: string): unknown {
+  return path.split(".").reduce((acc, key) => {
+    // oxlint-disable-next-line no-explicit-any
+    // @ts-expect-error this is fine
+    return acc !== null && acc !== undefined ? acc[key] : undefined;
+  }, obj);
+}
+
+function sortFriends({ property, descending }: Sort): void {
+  // Removes styling from previous sorting requests:
+  $(".friends td").removeClass("headerSorted");
+  $(".friends td").children("i").remove();
+  $(`.friends td[data-property="${property}"]`)
+    .addClass("headerSorted")
+    .append(
+      `<i class="fas ${
+        descending ? "fa-sort-down" : "fa-sort-up"
+      } aria-hidden="true"></i>`
+    );
+
+  state.friends.data.sort((a, b) => {
+    const valA = getValueByPath(a, property);
+    const valB = getValueByPath(b, property);
+
+    let result = 0;
+
+    if (valA === undefined && valB !== undefined) {
+      return descending ? 1 : -1;
+    } else if (valA !== undefined && valB === undefined) {
+      return descending ? -1 : 1;
+    }
+
+    if (typeof valA === "string" && typeof valB === "string") {
+      result = valA.localeCompare(valB);
+    }
+
+    if (typeof valA === "number" && typeof valB === "number") {
+      result = valA - valB;
+    }
+
+    return descending ? -result : result;
+  });
+}
+
 $("#friendAdd").on("click", () => {
   addFriendModal.show(undefined, {});
 });
@@ -186,6 +256,7 @@ $(".pageFriends .pendingRequests button.refresh").on("click", async () => {
   void updatePendingRequests();
 });
 
+// need to set the listener for action buttons on the table because the table content is getting replaced
 $(".pageFriends .pendingRequests table").on("click", async (e) => {
   const action = Array.from(e.target.classList).find((it) =>
     ["accepted", "rejected", "blocked"].includes(it)
@@ -228,6 +299,22 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
   }
 });
 
+$(".pageFriends .friends thead td.sortable").on("click", async (e) => {
+  const property = e.currentTarget.dataset["property"];
+  if (property === undefined) return;
+
+  if (property === state.friends.sort.property) {
+    state.friends.sort.descending = !state.friends.sort.descending;
+  } else {
+    state.friends.sort = {
+      property,
+      descending: false,
+    };
+  }
+  sortFriends(state.friends.sort);
+  await updateFriends();
+});
+
 export const page = new Page<undefined>({
   id: "friends",
   display: "Friends",
@@ -240,6 +327,8 @@ export const page = new Page<undefined>({
     Skeleton.append("pageFriends", "main");
 
     await updatePendingRequests();
+    await fetchFriends();
+    sortFriends({ property: "name", descending: false });
     await updateFriends();
   },
 });
