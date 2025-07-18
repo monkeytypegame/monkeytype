@@ -1163,8 +1163,7 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
       done: () => {
         const element = $(`#result-${index}`);
         $(".resultRow").removeClass("active");
-        element.addClass("active");
-        setTimeout(() => element.removeClass("active"), 4000);
+        requestAnimationFrame(() => element.addClass("active"));
       },
     }
   );
