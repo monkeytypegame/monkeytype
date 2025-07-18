@@ -123,26 +123,45 @@ type ConfigMetadataProperty = "blockedByNoQuit";
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K];
 // };
 
-/**
- * ConfigMetadata describes the metadata for each config key.
- *
- * - `schema`: Zod schema for validation.
- * - `displayString`: Optional display name for the UI.
- * - `properties`: Optional array of metadata properties (e.g., "blockedByNoQuit").
- * - `isBlocked`: Optional function. Returns true if setting the config value should be blocked.
- * - `overrideValue`: Optional function to override the value before setting.
- * - `overrideConfig`: Optional function to override other config values before this ones is set.
- */
 type ConfigMetadata = {
   [K in keyof ConfigSchemas.Config]: {
+    /**
+     * Zod schema for the config value.
+     */
     schema: ZodSchema;
+    /**
+     * Optional display string for the config key.
+     */
     displayString?: string;
+    /**
+     * Optional array of metadata properties that can be used to control behavior.
+     */
     properties?: ConfigMetadataProperty[];
+    /**
+     * Optional function that checks if the config value is blocked from being set.
+     * Returns true if setting the config value should be blocked.
+     * @param value - The value being set for the config key.
+     */
     isBlocked?: (value: ConfigSchemas.Config[K]) => boolean;
+    /**
+     * Optional function to override the value before setting it.
+     * Returns the modified value.
+     * @param value - The value being set for the config key.
+     */
     overrideValue?: (value: ConfigSchemas.Config[K]) => ConfigSchemas.Config[K];
+    /**
+     * Optional function to override other config values before this one is set.
+     * Returns an object with the config keys and their new values.
+     * @param value - The value being set for the config key.
+     */
     overrideConfig?: (
       value: ConfigSchemas.Config[K]
     ) => Partial<ConfigSchemas.Config> | undefined;
+    /**
+     * Optional function that is called after the config value is set.
+     * It can be used to perform additional actions, like reloading the page.
+     * @param nosave - If true, the change is not saved to localStorage or database.
+     */
     afterSet?: (nosave: boolean) => void;
   };
 };
