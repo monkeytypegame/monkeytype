@@ -1159,14 +1159,13 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const element = $(`#result-${index}`);
   $([document.documentElement, document.body]).animate(
     { scrollTop: scrollTo },
-    {
-      duration: Misc.applyReducedMotion(500),
-      done: () => {
-        $(".resultRow").removeClass("active");
-        setTimeout(() => {
-          element.addClass("active");
-        }, 0);
-      },
+    Misc.applyReducedMotion(500),
+    () => {
+      $(".resultRow").removeClass("active");
+      requestAnimationFrame(() => {
+        element.addClass("active");
+        setTimeout(() => element.removeClass("active"), 4000);
+      });
     }
   );
 });
