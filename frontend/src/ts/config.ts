@@ -126,8 +126,6 @@ type ConfigMetadataProperty = "blockedByNoQuit";
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K];
 // };
 
-//todo: remove the ? here so that all config elements must be defined
-
 /**
  * ConfigMetadata describes the metadata for each config key.
  *
@@ -139,16 +137,20 @@ type ConfigMetadataProperty = "blockedByNoQuit";
  * - `overrideConfig`: Optional function to override other config values before this ones is set.
  */
 type ConfigMetadata = {
-  [K in keyof ConfigSchemas.Config]?: {
-    schema: ZodSchema;
-    displayString?: string;
-    properties?: ConfigMetadataProperty[];
-    isBlocked?: (value: ConfigSchemas.Config[K]) => boolean;
-    overrideValue?: (value: ConfigSchemas.Config[K]) => ConfigSchemas.Config[K];
-    overrideConfig?: (
-      value: ConfigSchemas.Config[K]
-    ) => Partial<ConfigSchemas.Config> | undefined;
-  };
+  [K in keyof ConfigSchemas.Config]:
+    | {
+        schema: ZodSchema;
+        displayString?: string;
+        properties?: ConfigMetadataProperty[];
+        isBlocked?: (value: ConfigSchemas.Config[K]) => boolean;
+        overrideValue?: (
+          value: ConfigSchemas.Config[K]
+        ) => ConfigSchemas.Config[K];
+        overrideConfig?: (
+          value: ConfigSchemas.Config[K]
+        ) => Partial<ConfigSchemas.Config> | undefined;
+      }
+    | undefined;
 };
 
 //todo:
@@ -157,7 +159,7 @@ type ConfigMetadata = {
 // maybe add config group to each metadata object? all though its already defined in ConfigGroupsLiteral
 // maybe rework valueoverride to dependsOn, for cases like stop on error and confidence mode or numbers and quote mode
 
-const configMetadata = {
+const configMetadata: ConfigMetadata = {
   numbers: {
     schema: z.boolean(),
     properties: ["blockedByNoQuit"],
@@ -517,7 +519,30 @@ const configMetadata = {
       return value;
     },
   },
-} satisfies ConfigMetadata;
+  words: {
+    schema: ConfigSchemas.WordCountSchema,
+    displayString: "word count",
+    properties: ["blockedByNoQuit"],
+  },
+  fontFamily: {
+    schema: ConfigSchemas.FontFamilySchema,
+    displayString: "font family",
+  },
+  theme: undefined,
+  mode: undefined,
+  freedomMode: undefined,
+  funbox: undefined,
+  confidenceMode: undefined,
+  randomTheme: undefined,
+  stopOnError: undefined,
+  keymapLegendStyle: undefined,
+  keymapSize: undefined,
+  paceCaret: undefined,
+  ads: undefined,
+  customLayoutfluid: undefined,
+  maxLineWidth: undefined,
+  customPolyglot: undefined,
+};
 
 export function genericSet<T extends keyof typeof configMetadata>(
   key: T,
@@ -586,11 +611,7 @@ export function genericSet<T extends keyof typeof configMetadata>(
         const targetValue = targetConfig[
           targetKey
         ] as ConfigSchemas.Config[keyof typeof configMetadata];
-        const set = genericSet(
-          targetKey as keyof typeof configMetadata,
-          targetValue,
-          true
-        );
+        const set = genericSet(targetKey, targetValue, true);
         if (!set) {
           throw new Error(
             `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`
@@ -1063,24 +1084,7 @@ export function setWordCount(
   wordCount: ConfigSchemas.WordCount,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  wordCount =
-    wordCount < 0 || wordCount > 100000 ? getDefaultConfig().words : wordCount;
-
-  if (!isConfigValueValid("words", wordCount, ConfigSchemas.WordCountSchema))
-    return false;
-
-  if (!canSetConfigWithCurrentFunboxes("words", wordCount, config.funbox)) {
-    return false;
-  }
-
-  config.words = wordCount;
-
-  saveToLocalStorage("words", nosave);
-  ConfigEvent.dispatch("words", config.words);
-
-  return true;
+  return genericSet("words", wordCount, nosave);
 }
 
 //caret
@@ -1120,35 +1124,7 @@ export function setFontFamily(
   font: ConfigSchemas.FontFamily,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("font family", font, ConfigSchemas.FontFamilySchema))
-    return false;
-
-  if (font === "") {
-    font = "roboto_mono";
-    Notifications.add(
-      "Empty input received, reverted to the default font.",
-      0,
-      {
-        customTitle: "Custom font",
-      }
-    );
-  }
-  if (!font || !/^[0-9a-zA-Z_.\-#+()]+$/.test(font)) {
-    Notifications.add(`Invalid font name value: "${font}".`, -1, {
-      customTitle: "Custom font",
-      duration: 3,
-    });
-    return false;
-  }
-  config.fontFamily = font;
-  document.documentElement.style.setProperty(
-    "--font",
-    `"${font.replace(/_/g, " ")}", "Roboto Mono", "Vazirmatn", monospace`
-  );
-  saveToLocalStorage("fontFamily", nosave);
-  ConfigEvent.dispatch("fontFamily", config.fontFamily);
-
-  return true;
+  return genericSet("fontFamily", font, nosave);
 }
 
 //freedom

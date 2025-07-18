@@ -137,4 +137,13 @@ ConfigEvent.subscribe((eventKey, value, nosave) => {
     );
     if (!nosave) $(window).trigger("resize");
   }
+  if (eventKey === "fontFamily") {
+    document.documentElement.style.setProperty(
+      "--font",
+      `"${(value as string).replace(
+        /_/g,
+        " "
+      )}", "Roboto Mono", "Vazirmatn", monospace`
+    );
+  }
 });
