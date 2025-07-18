@@ -789,7 +789,7 @@ const configMetadata: ConfigMetadata = {
   },
 };
 
-export function genericSet<T extends keyof typeof configMetadata>(
+export function genericSet<T extends keyof ConfigSchemas.Config>(
   key: T,
   value: ConfigSchemas.Config[T],
   nosave?: boolean
