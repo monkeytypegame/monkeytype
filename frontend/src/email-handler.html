@@ -176,6 +176,8 @@
       signInWithEmailAndPassword,
     } from "firebase/auth";
 
+    import { envConfig } from "./ts/constants/env-config";
+
     function isPasswordStrong(password) {
       const hasCapital = !!password.match(/[A-Z]/);
       const hasNumber = !!password.match(/[\d]/);
@@ -188,9 +190,25 @@
     }
 
     function handleVerifyEmail(actionCode, continueUrl) {
-      applyActionCode(Auth, actionCode)
-        .then((resp) => {
+      var email = null;
+      checkActionCode(Auth, actionCode)
+        .then((info) => {
+          // Get the email address
+          email = info["data"]["email"];
+
+          return applyActionCode(Auth, actionCode);
+        })
+
+        .then(async (resp) => {
           // Email address has been verified.
+
+          await fetch(envConfig.backendUrl + "/users/verifyEmail", {
+            method: "POST",
+            body: JSON.stringify({ email }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
 
           $("main .preloader .icon").html(`<i class="fas fa-fw fa-check"></i>`);
           $("main .preloader .text").text(

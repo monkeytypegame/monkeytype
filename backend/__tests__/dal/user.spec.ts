@@ -105,6 +105,7 @@ describe("UserDal", () => {
     expect(insertedUser.email).toBe(newUser.email);
     expect(insertedUser.uid).toBe(newUser.uid);
     expect(insertedUser.name).toBe(newUser.name);
+    expect(insertedUser.emailVerified).toBe(false);
   });
 
   it("should error if the user already exists", async () => {
@@ -1170,7 +1171,10 @@ describe("UserDal", () => {
     });
     it("should update", async () => {
       //given
-      const { uid } = await UserTestData.createUser({ email: "init" });
+      const { uid } = await UserTestData.createUser({
+        email: "init",
+        emailVerified: true,
+      });
 
       //when
       await expect(UserDAL.updateEmail(uid, "next")).resolves.toBe(true);
@@ -1178,6 +1182,23 @@ describe("UserDal", () => {
       //then
       const read = await UserDAL.getUser(uid, "read");
       expect(read.email).toEqual("next");
+      expect(read.emailVerified).toEqual(false);
+    });
+
+    it("should update email and isVerified", async () => {
+      //given
+      const { uid } = await UserTestData.createUser({
+        email: "init",
+        emailVerified: false,
+      });
+
+      //when
+      await expect(UserDAL.updateEmail(uid, "next", true)).resolves.toBe(true);
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.email).toEqual("next");
+      expect(read.emailVerified).toEqual(true);
     });
   });
   describe("resetPb", () => {

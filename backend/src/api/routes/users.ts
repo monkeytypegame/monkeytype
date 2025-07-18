@@ -120,6 +120,9 @@ export default s.router(usersContract, {
     handler: async (r) =>
       callController(UserController.sendVerificationEmail)(r),
   },
+  verifyEmail: {
+    handler: async (r) => callController(UserController.verifyEmail)(r),
+  },
   forgotPasswordEmail: {
     handler: async (r) =>
       callController(UserController.sendForgotPasswordEmail)(r),

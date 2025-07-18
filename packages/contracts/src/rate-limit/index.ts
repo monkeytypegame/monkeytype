@@ -301,6 +301,11 @@ export const limits = {
     max: 1,
   },
 
+  userVerifyEmail: {
+    window: 15 * 60 * 1000, //15 minutes
+    max: 1,
+  },
+
   userForgotPasswordEmail: {
     window: "minute",
     max: 1,
