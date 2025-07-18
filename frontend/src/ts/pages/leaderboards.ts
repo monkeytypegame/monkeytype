@@ -27,11 +27,7 @@ import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import {
-  applyReducedMotion,
-  getDiscordAvatarUrl,
-  isDevEnvironment,
-} from "../utils/misc";
+import { applyReducedMotion, isDevEnvironment } from "../utils/misc";
 import { abbreviateNumber } from "../utils/numbers";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { z } from "zod";
@@ -47,6 +43,7 @@ import {
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { Mode, Mode2, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import * as ServerConfiguration from "../ape/server-configuration";
+import { getAvatarElement } from "../utils/discord-avatar";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
@@ -91,7 +88,6 @@ type State = {
   pageSize: number;
   title: string;
   error?: string;
-  discordAvatarUrls: Map<string, string>;
   scrollToUserAfterFill: boolean;
   goToUserPage: boolean;
 } & (AllTimeState | WeeklyState | DailyState);
@@ -107,7 +103,6 @@ const state = {
   page: 0,
   pageSize: 50,
   title: "All-time English Time 15 Leaderboard",
-  discordAvatarUrls: new Map<string, string>(),
   scrollToUserAfterFill: false,
   goToUserPage: false,
 } as State;
@@ -367,19 +362,6 @@ async function requestData(update = false): Promise<void> {
     }
   }
 
-  if (state.data !== null) {
-    const entriesMissingAvatars = state.data.filter(
-      (entry) => !state.discordAvatarUrls.has(entry.uid)
-    );
-    void getAvatarUrls(entriesMissingAvatars).then((urlMap) => {
-      state.discordAvatarUrls = new Map([
-        ...state.discordAvatarUrls,
-        ...urlMap,
-      ]);
-      fillAvatars();
-    });
-  }
-
   state.loading = false;
   state.updating = false;
   updateContent();
@@ -430,57 +412,7 @@ function updateJumpButtons(): void {
   }
 }
 
-async function getAvatarUrls(
-  data: {
-    uid: string;
-    discordId?: string | undefined;
-    discordAvatar?: string | undefined;
-  }[]
-): Promise<Map<string, string>> {
-  const results = await Promise.allSettled(
-    data.map(async (entry) => ({
-      uid: entry.uid,
-      url: await getDiscordAvatarUrl(entry.discordId, entry.discordAvatar),
-    }))
-  );
-
-  const avatarMap = new Map<string, string>();
-  results.forEach((result) => {
-    if (result.status === "fulfilled" && result.value.url !== null) {
-      avatarMap.set(result.value.uid, result.value.url);
-    }
-  });
-
-  return avatarMap;
-}
-function fillAvatars(): void {
-  const elements = $(".page.pageLeaderboards table .lbav");
-
-  for (const element of elements) {
-    const uid = $(element).siblings(".entryName").attr("uid") as string;
-    const url = state.discordAvatarUrls.get(uid);
-
-    if (url !== undefined) {
-      $(element).html(
-        `<div class="avatar" style="background-image:url(${url})"></div>`
-      );
-    } else {
-      $(element).html(
-        `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`
-      );
-    }
-  }
-}
-
-function buildTableRow(entry: LeaderboardEntry, me = false): string {
-  let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
-
-  if (entry.discordAvatar !== undefined) {
-    avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
-  }
-
-  const meClass = me ? "me" : "";
-
+function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
   const formatted = {
     wpm: Format.typingSpeed(entry.wpm, { showDecimalPlaces: true }),
     acc: Format.percentage(entry.acc, { showDecimalPlaces: true }),
@@ -488,14 +420,19 @@ function buildTableRow(entry: LeaderboardEntry, me = false): string {
     con: Format.percentage(entry.consistency, { showDecimalPlaces: true }),
   };
 
-  return `
-    <tr class="${meClass}" data-uid="${entry.uid}">
+  const element = document.createElement("tr");
+  if (me) {
+    element.classList.add("me");
+  }
+  element.dataset["uid"] = entry.uid;
+  element.innerHTML = `
+    
       <td>${
         entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
       }</td>
       <td>
         <div class="avatarNameBadge">
-          <div class="lbav">${avatar}</div>
+          <div class="avatarPlaceholder"></div>
           <a href="${location.origin}/profile/${
     entry.uid
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
@@ -524,31 +461,33 @@ function buildTableRow(entry: LeaderboardEntry, me = false): string {
         entry.timestamp,
         "dd MMM yyyy"
       )}<div class="sub">${format(entry.timestamp, "HH:mm")}</div></td>
-    </tr>
+    
   `;
+  element
+    .querySelector(".avatarPlaceholder")
+    ?.replaceWith(getAvatarElement(entry));
+  return element;
 }
 
-function buildWeeklyTableRow(entry: XpLeaderboardEntry, me = false): string {
-  let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
-
-  if (entry.discordAvatar !== undefined) {
-    avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
-  }
-
-  const meClass = me ? "me" : "";
-
+function buildWeeklyTableRow(
+  entry: XpLeaderboardEntry,
+  me = false
+): HTMLElement {
   const activeDiff = formatDistanceToNow(entry.lastActivityTimestamp, {
     addSuffix: true,
   });
-
-  return `
-    <tr class="${meClass}" data-uid="${entry.uid}">
+  const element = document.createElement("tr");
+  if (me) {
+    element.classList.add("me");
+  }
+  element.dataset["uid"] = entry.uid;
+  element.innerHTML = `
       <td>${
         entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
       }</td>
       <td>
         <div class="avatarNameBadge">
-          <div class="lbav">${avatar}</div>
+          <div class="avatarPlaceholder"></div>
           <a href="${location.origin}/profile/${
     entry.uid
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
@@ -586,6 +525,10 @@ function buildWeeklyTableRow(entry: XpLeaderboardEntry, me = false): string {
       </td>
     </tr>
   `;
+  element
+    .querySelector(".avatarPlaceholder")
+    ?.replaceWith(getAvatarElement(entry));
+  return element;
 }
 
 function fillTable(): void {
@@ -1506,6 +1449,5 @@ ConfigEvent.subscribe((eventKey) => {
   if (ActivePage.get() === "leaderboards" && eventKey === "typingSpeedUnit") {
     updateContent();
     fillUser();
-    fillAvatars();
   }
 });
