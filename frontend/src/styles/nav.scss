@@ -50,6 +50,12 @@ nav {
       .avatar {
         grid-column: 1/2;
         grid-row: 1/2;
+        place-self: center center;
+      }
+
+      .discordImage {
+        width: 1.25em;
+        height: 1.25em;
       }
 
       .levelAndBar {
