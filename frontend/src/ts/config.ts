@@ -134,6 +134,10 @@ type ConfigMetadata = {
      */
     displayString?: string;
     /**
+     * Should the config change trigger a resize event? handled in ui.ts:108
+     */
+    triggerResize?: true;
+    /**
      * Optional array of metadata properties that can be used to control behavior.
      */
     properties?: ConfigMetadataProperty[];
@@ -170,8 +174,6 @@ type ConfigMetadata = {
 // maybe change blockedByNoQuit to 'canChangeDuringTest' which means that changing needs to restart test and noquit blocks that
 // maybe have generic set somehow handle test restarting
 // maybe add config group to each metadata object? all though its already defined in ConfigGroupsLiteral
-// maybe rework valueoverride to dependsOn, for cases like stop on error and confidence mode or numbers and quote mode
-// add triggerResize to metadata
 
 const configMetadata: ConfigMetadata = {
   numbers: {
@@ -463,6 +465,7 @@ const configMetadata: ConfigMetadata = {
   },
   fontSize: {
     schema: ConfigSchemas.FontSizeSchema,
+    triggerResize: true,
     displayString: "font size",
     overrideValue: (value) => {
       if (value < 0) {
@@ -496,6 +499,7 @@ const configMetadata: ConfigMetadata = {
   },
   tapeMode: {
     schema: ConfigSchemas.TapeModeSchema,
+    triggerResize: true,
     displayString: "tape mode",
     overrideConfig: (value) => {
       if (value !== "off") {
@@ -628,6 +632,7 @@ const configMetadata: ConfigMetadata = {
   },
   keymapSize: {
     schema: ConfigSchemas.KeymapSizeSchema,
+    triggerResize: true,
     displayString: "keymap size",
     overrideValue: (value) => {
       return roundTo1(value);
@@ -706,6 +711,7 @@ const configMetadata: ConfigMetadata = {
   },
   maxLineWidth: {
     schema: ConfigSchemas.MaxLineWidthSchema,
+    triggerResize: true,
     displayString: "max line width",
   },
   customPolyglot: {
@@ -803,6 +809,10 @@ export function genericSet<T extends keyof typeof configMetadata>(
   config[key] = value;
   if (!nosave) saveToLocalStorage(key, nosave);
   ConfigEvent.dispatch(key, value, nosave, previousValue);
+
+  if (metadata.triggerResize && !nosave) {
+    $(window).trigger("resize");
+  }
 
   if (metadata.afterSet) {
     metadata.afterSet(nosave || false);

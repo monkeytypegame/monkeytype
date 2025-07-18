@@ -117,12 +117,8 @@ $(window).on("resize", () => {
   debouncedEvent();
 });
 
-ConfigEvent.subscribe((eventKey, value, nosave) => {
+ConfigEvent.subscribe((eventKey, value) => {
   if (eventKey === "quickRestart") updateKeytips();
-  if (eventKey === "tapeMode" || eventKey === "maxLineWidth") {
-    // trigger a resize event to update the layout - handled above
-    $(window).trigger("resize");
-  }
   if (eventKey === "showKeyTips") {
     if (Config.showKeyTips) {
       $("footer .keyTips").removeClass("hidden");
@@ -135,7 +131,6 @@ ConfigEvent.subscribe((eventKey, value, nosave) => {
       "fontSize",
       value + "rem"
     );
-    if (!nosave) $(window).trigger("resize");
   }
   if (eventKey === "fontFamily") {
     document.documentElement.style.setProperty(

@@ -601,8 +601,6 @@ ConfigEvent.subscribe((eventKey, newValue) => {
   }
   if (eventKey === "keymapSize") {
     $("#keymap").css("zoom", newValue as string);
-    // trigger a resize event to update the layout - handled in ui.ts:108
-    $(window).trigger("resize");
   }
   if (eventKey === "keymapLegendStyle") {
     let style = newValue as string;
