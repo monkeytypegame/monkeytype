@@ -194,7 +194,7 @@
       table td {
         -webkit-appearance: unset;
       }
-      .active {
+      .active td {
         animation: flashHighlight 4s linear 0s 1;
       }
 
@@ -441,17 +441,6 @@
       }
     }
   }
-}
-
-.headerSorted {
-  font-weight: bold;
-}
-
-.sortable:hover {
-  cursor: pointer;
-  -webkit-user-select: none;
-  user-select: none;
-  background-color: var(--sub-alt-color);
 }
 
 #testActivity {
