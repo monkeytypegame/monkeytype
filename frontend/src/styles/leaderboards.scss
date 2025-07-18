@@ -251,13 +251,13 @@
           }
         }
       }
-    }
-    .loading {
-      display: grid;
-      place-items: center;
-      font-size: 3em;
-      color: var(--sub-color);
-      padding: 1em;
+      & > .loading {
+        display: grid;
+        place-items: center;
+        font-size: 3em;
+        color: var(--sub-color);
+        padding: 1em;
+      }
     }
     .error {
       display: grid;
