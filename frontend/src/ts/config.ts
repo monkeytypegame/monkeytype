@@ -1381,30 +1381,7 @@ export function setRandomTheme(
   val: ConfigSchemas.RandomTheme,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("random theme", val, ConfigSchemas.RandomThemeSchema)
-  ) {
-    return false;
-  }
-
-  if (val === "custom") {
-    if (!isAuthenticated()) {
-      config.randomTheme = val;
-      return false;
-    }
-    if (!DB.getSnapshot()) return true;
-    if (DB.getSnapshot()?.customThemes?.length === 0) {
-      Notifications.add("You need to create a custom theme first", 0);
-      config.randomTheme = "off";
-      return false;
-    }
-  }
-
-  config.randomTheme = val;
-  saveToLocalStorage("randomTheme", nosave);
-  ConfigEvent.dispatch("randomTheme", config.randomTheme);
-
-  return true;
+  return genericSet("randomTheme", val, nosave);
 }
 
 export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
