@@ -751,12 +751,12 @@ const configMetadata: ConfigMetadata = {
   ads: {
     schema: ConfigSchemas.AdsSchema,
     changeRequiresRestart: false,
-    overrideValue: (value) => {
+    isBlocked: () => {
       if (isDevEnvironment()) {
         Notifications.add("Ads are disabled in development mode.", 0);
-        return "off";
+        return true;
       }
-      return value;
+      return false;
     },
     afterSet: (nosave) => {
       if (!nosave && !isDevEnvironment()) {
