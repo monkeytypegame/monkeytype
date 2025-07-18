@@ -224,36 +224,6 @@ type LastIndex = {
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
 
-export async function getDiscordAvatarUrl(
-  discordId?: string,
-  discordAvatar?: string,
-  discordAvatarSize = 32
-): Promise<string | null> {
-  if (
-    discordId === undefined ||
-    discordId === "" ||
-    discordAvatar === undefined ||
-    discordAvatar === ""
-  ) {
-    return null;
-  }
-  // An invalid request to this URL will return a 404.
-  try {
-    const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
-
-    const response = await fetch(avatarUrl, {
-      method: "HEAD",
-    });
-    if (!response.ok) {
-      return null;
-    }
-
-    return avatarUrl;
-  } catch (error) {}
-
-  return null;
-}
-
 export async function swapElements(
   el1: JQuery,
   el2: JQuery,
