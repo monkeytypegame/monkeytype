@@ -751,8 +751,8 @@ const configMetadata: ConfigMetadata = {
   ads: {
     schema: ConfigSchemas.AdsSchema,
     changeRequiresRestart: false,
-    isBlocked: () => {
-      if (isDevEnvironment()) {
+    isBlocked: (value) => {
+      if (value !== "off" && isDevEnvironment()) {
         Notifications.add("Ads are disabled in development mode.", 0);
         return true;
       }
