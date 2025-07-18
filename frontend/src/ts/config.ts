@@ -785,13 +785,16 @@ export function genericSet<T extends keyof typeof configMetadata>(
         const targetValue = targetConfig[
           targetKey
         ] as ConfigSchemas.Config[keyof typeof configMetadata];
-        if (config[targetKey] !== targetValue) {
-          const set = genericSet(targetKey, targetValue, true);
-          if (!set) {
-            throw new Error(
-              `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`
-            );
-          }
+
+        if (config[targetKey] === targetValue) {
+          continue; // no need to set if the value is already the same
+        }
+
+        const set = genericSet(targetKey, targetValue, true);
+        if (!set) {
+          throw new Error(
+            `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`
+          );
         }
       }
     }
