@@ -1,5 +1,4 @@
 import * as DB from "./db";
-import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import {
   isConfigValueValidBoolean,
@@ -123,6 +122,7 @@ type SetBlock = {
   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 };
 
+//todo: remove the ? here so that all config elements must be defined
 type ConfigMetadata = {
   [K in keyof ConfigSchemas.Config]?: {
     schema: ZodSchema;
@@ -133,6 +133,12 @@ type ConfigMetadata = {
     valueOverride?: (value: ConfigSchemas.Config[K]) => ConfigSchemas.Config[K];
   };
 };
+
+//todo:
+// maybe change blockedByNoQuit to 'canChangeDuringTest' which means that changing needs to restart test and noquit blocks that
+// maybe have generic set somehow handle test restarting
+// maybe add config group to each metadata object? all though its already defined in ConfigGroupsLiteral
+// maybe rework valueoverride to dependsOn, for cases like stop on error and confidence mode or numbers and quote mode
 
 const configMetadata = {
   numbers: {
@@ -161,6 +167,133 @@ const configMetadata = {
       }
       return value;
     },
+  },
+  playSoundOnError: {
+    schema: ConfigSchemas.PlaySoundOnErrorSchema,
+    displayString: "play sound on error",
+  },
+  playSoundOnClick: {
+    schema: ConfigSchemas.PlaySoundOnClickSchema,
+    displayString: "play sound on click",
+  },
+  soundVolume: {
+    schema: ConfigSchemas.SoundVolumeSchema,
+    displayString: "sound volume",
+  },
+  difficulty: {
+    schema: ConfigSchemas.DifficultySchema,
+    properties: ["blockedByNoQuit"],
+  },
+  favThemes: {
+    schema: ConfigSchemas.FavThemesSchema,
+    displayString: "favorite themes",
+  },
+  blindMode: {
+    schema: z.boolean(),
+    displayString: "blind mode",
+  },
+  accountChart: {
+    schema: ConfigSchemas.AccountChartSchema,
+    displayString: "account chart",
+    valueOverride: (value) => {
+      // if both speed and accuracy are off, set speed to on
+      // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
+      if (value[0] === "off" && value[1] === "off") {
+        value[0] = "on";
+      }
+      return value;
+    },
+  },
+  alwaysShowDecimalPlaces: {
+    schema: z.boolean(),
+    displayString: "always show decimal places",
+  },
+  typingSpeedUnit: {
+    schema: ConfigSchemas.TypingSpeedUnitSchema,
+    displayString: "typing speed unit",
+  },
+  showOutOfFocusWarning: {
+    schema: z.boolean(),
+    displayString: "show out of focus warning",
+  },
+  paceCaretCustomSpeed: {
+    schema: ConfigSchemas.PaceCaretCustomSpeedSchema,
+    displayString: "pace caret custom speed",
+  },
+  repeatedPace: {
+    schema: z.boolean(),
+    displayString: "repeated pace",
+  },
+  minWpm: {
+    schema: ConfigSchemas.MinimumWordsPerMinuteSchema,
+    displayString: "min speed",
+    properties: ["blockedByNoQuit"],
+  },
+  minWpmCustomSpeed: {
+    schema: ConfigSchemas.MinWpmCustomSpeedSchema,
+    displayString: "min speed custom",
+    properties: ["blockedByNoQuit"],
+  },
+  minAcc: {
+    schema: ConfigSchemas.MinimumAccuracySchema,
+    displayString: "min accuracy",
+    properties: ["blockedByNoQuit"],
+  },
+  minAccCustom: {
+    schema: ConfigSchemas.MinimumAccuracyCustomSchema,
+    displayString: "min accuracy custom",
+    properties: ["blockedByNoQuit"],
+  },
+  minBurst: {
+    schema: ConfigSchemas.MinimumBurstSchema,
+    displayString: "min burst",
+    properties: ["blockedByNoQuit"],
+  },
+  minBurstCustomSpeed: {
+    schema: ConfigSchemas.MinimumBurstCustomSpeedSchema,
+    displayString: "min burst custom speed",
+    properties: ["blockedByNoQuit"],
+  },
+  alwaysShowWordsHistory: {
+    schema: z.boolean(),
+    displayString: "always show words history",
+  },
+  singleListCommandLine: {
+    schema: ConfigSchemas.SingleListCommandLineSchema,
+    displayString: "single list command line",
+  },
+  capsLockWarning: {
+    schema: z.boolean(),
+    displayString: "caps lock warning",
+  },
+  quickEnd: {
+    schema: z.boolean(),
+    displayString: "quick end",
+  },
+  repeatQuotes: {
+    schema: ConfigSchemas.RepeatQuotesSchema,
+    displayString: "repeat quotes",
+  },
+  flipTestColors: {
+    schema: z.boolean(),
+    displayString: "flip test colors",
+  },
+  colorfulMode: {
+    schema: z.boolean(),
+    displayString: "colorful mode",
+  },
+  strictSpace: {
+    schema: z.boolean(),
+    displayString: "strict space",
+    properties: ["blockedByNoQuit"],
+  },
+  oppositeShiftMode: {
+    schema: ConfigSchemas.OppositeShiftModeSchema,
+    displayString: "opposite shift mode",
+  },
+  caretStyle: {
+    schema: ConfigSchemas.CaretStyleSchema,
+    displayString: "caret style",
   },
 } satisfies ConfigMetadata;
 
@@ -274,59 +407,21 @@ export function setPlaySoundOnError(
   val: ConfigSchemas.PlaySoundOnError,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "play sound on error",
-      val,
-      ConfigSchemas.PlaySoundOnErrorSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.playSoundOnError = val;
-  saveToLocalStorage("playSoundOnError", nosave);
-  ConfigEvent.dispatch("playSoundOnError", config.playSoundOnError);
-
-  return true;
+  return genericSet("playSoundOnError", val, nosave);
 }
 
 export function setPlaySoundOnClick(
   val: ConfigSchemas.PlaySoundOnClick,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "play sound on click",
-      val,
-      ConfigSchemas.PlaySoundOnClickSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.playSoundOnClick = val;
-  saveToLocalStorage("playSoundOnClick", nosave);
-  ConfigEvent.dispatch("playSoundOnClick", config.playSoundOnClick);
-
-  return true;
+  return genericSet("playSoundOnClick", val, nosave);
 }
 
 export function setSoundVolume(
   val: ConfigSchemas.SoundVolume,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("sound volume", val, ConfigSchemas.SoundVolumeSchema)
-  ) {
-    return false;
-  }
-
-  config.soundVolume = val;
-  saveToLocalStorage("soundVolume", nosave);
-  ConfigEvent.dispatch("soundVolume", config.soundVolume);
-
-  return true;
+  return genericSet("soundVolume", val, nosave);
 }
 
 //difficulty
@@ -334,17 +429,7 @@ export function setDifficulty(
   diff: ConfigSchemas.Difficulty,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (!isConfigValueValid("difficulty", diff, ConfigSchemas.DifficultySchema)) {
-    return false;
-  }
-
-  config.difficulty = diff;
-  saveToLocalStorage("difficulty", nosave);
-  ConfigEvent.dispatch("difficulty", config.difficulty, nosave);
-
-  return true;
+  return genericSet("difficulty", diff, nosave);
 }
 
 //set fav themes
@@ -352,20 +437,7 @@ export function setFavThemes(
   themes: ConfigSchemas.FavThemes,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "favorite themes",
-      themes,
-      ConfigSchemas.FavThemesSchema
-    )
-  ) {
-    return false;
-  }
-  config.favThemes = themes;
-  saveToLocalStorage("favThemes", nosave);
-  ConfigEvent.dispatch("favThemes", config.favThemes);
-
-  return true;
+  return genericSet("favThemes", themes, nosave);
 }
 
 export function setFunbox(
@@ -418,40 +490,14 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
 }
 
 export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("blind mode", blind)) return false;
-
-  config.blindMode = blind;
-  saveToLocalStorage("blindMode", nosave);
-  ConfigEvent.dispatch("blindMode", config.blindMode, nosave);
-
-  return true;
+  return genericSet("blindMode", blind, nosave);
 }
 
 export function setAccountChart(
   array: ConfigSchemas.AccountChart,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "account chart",
-      array,
-      ConfigSchemas.AccountChartSchema
-    )
-  ) {
-    return false;
-  }
-
-  // if both speed and accuracy are off, set speed to on
-  // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
-  if (array[0] === "off" && array[1] === "off") {
-    array[0] = "on";
-  }
-
-  config.accountChart = array;
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
+  return genericSet("accountChart", array, nosave);
 }
 
 export function setStopOnError(
@@ -481,56 +527,21 @@ export function setAlwaysShowDecimalPlaces(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValidBoolean("always show decimal places", val)) {
-    return false;
-  }
-
-  config.alwaysShowDecimalPlaces = val;
-  saveToLocalStorage("alwaysShowDecimalPlaces", nosave);
-  ConfigEvent.dispatch(
-    "alwaysShowDecimalPlaces",
-    config.alwaysShowDecimalPlaces
-  );
-
-  return true;
+  return genericSet("alwaysShowDecimalPlaces", val, nosave);
 }
 
 export function setTypingSpeedUnit(
   val: ConfigSchemas.TypingSpeedUnit,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "typing speed unit",
-      val,
-      ConfigSchemas.TypingSpeedUnitSchema
-    )
-  ) {
-    return false;
-  }
-  config.typingSpeedUnit = val;
-  saveToLocalStorage("typingSpeedUnit", nosave);
-  ConfigEvent.dispatch("typingSpeedUnit", config.typingSpeedUnit, nosave);
-
-  return true;
+  return genericSet("typingSpeedUnit", val, nosave);
 }
 
 export function setShowOutOfFocusWarning(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValidBoolean("show out of focus warning", val)) {
-    return false;
-  }
-
-  config.showOutOfFocusWarning = val;
-  if (!config.showOutOfFocusWarning) {
-    OutOfFocus.hide();
-  }
-  saveToLocalStorage("showOutOfFocusWarning", nosave);
-  ConfigEvent.dispatch("showOutOfFocusWarning", config.showOutOfFocusWarning);
-
-  return true;
+  return genericSet("showOutOfFocusWarning", val, nosave);
 }
 
 //pace caret
@@ -566,31 +577,11 @@ export function setPaceCaretCustomSpeed(
   val: ConfigSchemas.PaceCaretCustomSpeed,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "pace caret custom speed",
-      val,
-      ConfigSchemas.PaceCaretCustomSpeedSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.paceCaretCustomSpeed = val;
-  saveToLocalStorage("paceCaretCustomSpeed", nosave);
-  ConfigEvent.dispatch("paceCaretCustomSpeed", config.paceCaretCustomSpeed);
-
-  return true;
+  return genericSet("paceCaretCustomSpeed", val, nosave);
 }
 
 export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("repeated pace", pace)) return false;
-
-  config.repeatedPace = pace;
-  saveToLocalStorage("repeatedPace", nosave);
-  ConfigEvent.dispatch("repeatedPace", config.repeatedPace);
-
-  return true;
+  return genericSet("repeatedPace", pace, nosave);
 }
 
 //min wpm
@@ -598,46 +589,14 @@ export function setMinWpm(
   minwpm: ConfigSchemas.MinimumWordsPerMinute,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (
-    !isConfigValueValid(
-      "min speed",
-      minwpm,
-      ConfigSchemas.MinimumWordsPerMinuteSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.minWpm = minwpm;
-  saveToLocalStorage("minWpm", nosave);
-  ConfigEvent.dispatch("minWpm", config.minWpm, nosave);
-
-  return true;
+  return genericSet("minWpm", minwpm, nosave);
 }
 
 export function setMinWpmCustomSpeed(
   val: ConfigSchemas.MinWpmCustomSpeed,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (
-    !isConfigValueValid(
-      "min speed custom",
-      val,
-      ConfigSchemas.MinWpmCustomSpeedSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.minWpmCustomSpeed = val;
-  saveToLocalStorage("minWpmCustomSpeed", nosave);
-  ConfigEvent.dispatch("minWpmCustomSpeed", config.minWpmCustomSpeed);
-
-  return true;
+  return genericSet("minWpmCustomSpeed", val, nosave);
 }
 
 //min acc
@@ -645,40 +604,14 @@ export function setMinAcc(
   min: ConfigSchemas.MinimumAccuracy,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (!isConfigValueValid("min acc", min, ConfigSchemas.MinimumAccuracySchema))
-    return false;
-
-  config.minAcc = min;
-  saveToLocalStorage("minAcc", nosave);
-  ConfigEvent.dispatch("minAcc", config.minAcc, nosave);
-
-  return true;
+  return genericSet("minAcc", min, nosave);
 }
 
 export function setMinAccCustom(
   val: ConfigSchemas.MinimumAccuracyCustom,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  //migrate legacy configs
-  if (val > 100) val = 100;
-  if (
-    !isConfigValueValid(
-      "min acc custom",
-      val,
-      ConfigSchemas.MinimumAccuracyCustomSchema
-    )
-  )
-    return false;
-
-  config.minAccCustom = val;
-  saveToLocalStorage("minAccCustom", nosave);
-  ConfigEvent.dispatch("minAccCustom", config.minAccCustom);
-
-  return true;
+  return genericSet("minAccCustom", val, nosave);
 }
 
 //min burst
@@ -686,40 +619,14 @@ export function setMinBurst(
   min: ConfigSchemas.MinimumBurst,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (!isConfigValueValid("min burst", min, ConfigSchemas.MinimumBurstSchema)) {
-    return false;
-  }
-
-  config.minBurst = min;
-  saveToLocalStorage("minBurst", nosave);
-  ConfigEvent.dispatch("minBurst", config.minBurst, nosave);
-
-  return true;
+  return genericSet("minBurst", min, nosave);
 }
 
 export function setMinBurstCustomSpeed(
   val: ConfigSchemas.MinimumBurstCustomSpeed,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (
-    !isConfigValueValid(
-      "min burst custom speed",
-      val,
-      ConfigSchemas.MinimumBurstCustomSpeedSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.minBurstCustomSpeed = val;
-  saveToLocalStorage("minBurstCustomSpeed", nosave);
-  ConfigEvent.dispatch("minBurstCustomSpeed", config.minBurstCustomSpeed);
-
-  return true;
+  return genericSet("minBurstCustomSpeed", val, nosave);
 }
 
 //always show words history
@@ -727,15 +634,7 @@ export function setAlwaysShowWordsHistory(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValidBoolean("always show words history", val)) {
-    return false;
-  }
-
-  config.alwaysShowWordsHistory = val;
-  saveToLocalStorage("alwaysShowWordsHistory", nosave);
-  ConfigEvent.dispatch("alwaysShowWordsHistory", config.alwaysShowWordsHistory);
-
-  return true;
+  return genericSet("alwaysShowWordsHistory", val, nosave);
 }
 
 //single list command line
@@ -743,32 +642,12 @@ export function setSingleListCommandLine(
   option: ConfigSchemas.SingleListCommandLine,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "single list command line",
-      option,
-      ConfigSchemas.SingleListCommandLineSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.singleListCommandLine = option;
-  saveToLocalStorage("singleListCommandLine", nosave);
-  ConfigEvent.dispatch("singleListCommandLine", config.singleListCommandLine);
-
-  return true;
+  return genericSet("singleListCommandLine", option, nosave);
 }
 
 //caps lock warning
 export function setCapsLockWarning(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("caps lock warning", val)) return false;
-
-  config.capsLockWarning = val;
-  saveToLocalStorage("capsLockWarning", nosave);
-  ConfigEvent.dispatch("capsLockWarning", config.capsLockWarning);
-
-  return true;
+  return genericSet("capsLockWarning", val, nosave);
 }
 
 export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
@@ -787,13 +666,7 @@ export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
 }
 
 export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("quick end", qe)) return false;
-
-  config.quickEnd = qe;
-  saveToLocalStorage("quickEnd", nosave);
-  ConfigEvent.dispatch("quickEnd", config.quickEnd);
-
-  return true;
+  return genericSet("quickEnd", qe, nosave);
 }
 
 export function setAds(val: ConfigSchemas.Ads, nosave?: boolean): boolean {
@@ -821,52 +694,22 @@ export function setRepeatQuotes(
   val: ConfigSchemas.RepeatQuotes,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("repeat quotes", val, ConfigSchemas.RepeatQuotesSchema)
-  ) {
-    return false;
-  }
-
-  config.repeatQuotes = val;
-  saveToLocalStorage("repeatQuotes", nosave);
-  ConfigEvent.dispatch("repeatQuotes", config.repeatQuotes);
-
-  return true;
+  return genericSet("repeatQuotes", val, nosave);
 }
 
 //flip colors
 export function setFlipTestColors(flip: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("flip test colors", flip)) return false;
-
-  config.flipTestColors = flip;
-  saveToLocalStorage("flipTestColors", nosave);
-  ConfigEvent.dispatch("flipTestColors", config.flipTestColors);
-
-  return true;
+  return genericSet("flipTestColors", flip, nosave);
 }
 
 //extra color
 export function setColorfulMode(extra: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("colorful mode", extra)) return false;
-
-  config.colorfulMode = extra;
-  saveToLocalStorage("colorfulMode", nosave);
-  ConfigEvent.dispatch("colorfulMode", config.colorfulMode);
-
-  return true;
+  return genericSet("colorfulMode", extra, nosave);
 }
 
 //strict space
 export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (!isConfigValueValidBoolean("strict space", val)) return false;
-
-  config.strictSpace = val;
-  saveToLocalStorage("strictSpace", nosave);
-  ConfigEvent.dispatch("strictSpace", config.strictSpace);
-
-  return true;
+  return genericSet("strictSpace", val, nosave);
 }
 
 //opposite shift space
@@ -874,65 +717,14 @@ export function setOppositeShiftMode(
   val: ConfigSchemas.OppositeShiftMode,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "opposite shift mode",
-      val,
-      ConfigSchemas.OppositeShiftModeSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.oppositeShiftMode = val;
-  saveToLocalStorage("oppositeShiftMode", nosave);
-  ConfigEvent.dispatch("oppositeShiftMode", config.oppositeShiftMode);
-
-  return true;
+  return genericSet("oppositeShiftMode", val, nosave);
 }
 
 export function setCaretStyle(
   caretStyle: ConfigSchemas.CaretStyle,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "caret style",
-      caretStyle,
-      ConfigSchemas.CaretStyleSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.caretStyle = caretStyle;
-  $("#caret").removeClass("off");
-  $("#caret").removeClass("default");
-  $("#caret").removeClass("underline");
-  $("#caret").removeClass("outline");
-  $("#caret").removeClass("block");
-  $("#caret").removeClass("carrot");
-  $("#caret").removeClass("banana");
-
-  if (caretStyle === "off") {
-    $("#caret").addClass("off");
-  } else if (caretStyle === "default") {
-    $("#caret").addClass("default");
-  } else if (caretStyle === "block") {
-    $("#caret").addClass("block");
-  } else if (caretStyle === "outline") {
-    $("#caret").addClass("outline");
-  } else if (caretStyle === "underline") {
-    $("#caret").addClass("underline");
-  } else if (caretStyle === "carrot") {
-    $("#caret").addClass("carrot");
-  } else if (caretStyle === "banana") {
-    $("#caret").addClass("banana");
-  }
-  saveToLocalStorage("caretStyle", nosave);
-  ConfigEvent.dispatch("caretStyle", config.caretStyle);
-
-  return true;
+  return genericSet("caretStyle", caretStyle, nosave);
 }
 
 export function setPaceCaretStyle(

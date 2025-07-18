@@ -163,5 +163,12 @@ export function replaceLegacyValues(
     configObj.accountChart = ["on", "on", "on", "on"];
   }
 
+  if (
+    typeof configObj.minAccCustom === "number" &&
+    configObj.minAccCustom > 100
+  ) {
+    configObj.minAccCustom = 100;
+  }
+
   return configObj;
 }

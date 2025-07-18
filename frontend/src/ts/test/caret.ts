@@ -270,9 +270,17 @@ export async function updatePosition(noAnim = false): Promise<void> {
   }
 }
 
+function updateStyle(): void {
+  caret.style.width = "";
+  caret.classList.remove(
+    ...["off", "default", "underline", "outline", "block", "carrot", "banana"]
+  );
+  caret.classList.add(Config.caretStyle);
+}
+
 subscribe((eventKey) => {
   if (eventKey === "caretStyle") {
-    caret.style.width = "";
+    updateStyle();
     void updatePosition(true);
   }
 });
