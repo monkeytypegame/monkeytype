@@ -17,6 +17,8 @@ import { SortedTable } from "../utils/sorted-table";
 
 const pageElement = $(".page.pageFriends");
 
+let friendsTable: SortedTable<Friend> | undefined = undefined;
+
 const addFriendModal = new SimpleModal({
   id: "addFriend",
   title: "Add a friend",
@@ -103,12 +105,17 @@ async function fetchFriends(): Promise<void> {
     $(".pageFriends .friends table").removeClass("hidden");
     $(".pageFriends .friends .nodata").addClass("hidden");
 
-    new SortedTable<Friend>({
-      table: ".pageFriends .friends table",
-      data: result.body.data,
-      buildRow: buildFriendRow,
-      initialSort: { property: "name", descending: false },
-    });
+    if (friendsTable === undefined) {
+      friendsTable = new SortedTable<Friend>({
+        table: ".pageFriends .friends table",
+        data: result.body.data,
+        buildRow: buildFriendRow,
+        initialSort: { property: "name", descending: false },
+      });
+    } else {
+      friendsTable.setData(result.body.data);
+    }
+    friendsTable.updateBody();
   }
 }
 
