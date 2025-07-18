@@ -557,11 +557,41 @@ const configMetadata: ConfigMetadata = {
     },
   },
   funbox: undefined,
-  confidenceMode: undefined,
+  confidenceMode: {
+    schema: ConfigSchemas.ConfidenceModeSchema,
+    displayString: "confidence mode",
+    overrideConfig: (value) => {
+      if (value !== "off") {
+        return {
+          freedomMode: false,
+          stopOnError: "off",
+        };
+      }
+      return undefined;
+    },
+  },
   randomTheme: undefined,
-  stopOnError: undefined,
+  stopOnError: {
+    schema: ConfigSchemas.StopOnErrorSchema,
+    displayString: "stop on error",
+    properties: ["blockedByNoQuit"],
+    overrideConfig: (value) => {
+      if (value !== "off") {
+        return {
+          confidenceMode: "off",
+        };
+      }
+      return undefined;
+    },
+  },
   keymapLegendStyle: undefined,
-  keymapSize: undefined,
+  keymapSize: {
+    schema: ConfigSchemas.KeymapSizeSchema,
+    displayString: "keymap size",
+    overrideValue: (value) => {
+      return roundTo1(value);
+    },
+  },
   paceCaret: undefined,
   ads: undefined,
   customLayoutfluid: undefined,
@@ -769,23 +799,7 @@ export function setStopOnError(
   soe: ConfigSchemas.StopOnError,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (
-    !isConfigValueValid("stop on error", soe, ConfigSchemas.StopOnErrorSchema)
-  ) {
-    return false;
-  }
-
-  config.stopOnError = soe;
-  if (config.stopOnError !== "off") {
-    config.confidenceMode = "off";
-    saveToLocalStorage("confidenceMode", nosave);
-  }
-  saveToLocalStorage("stopOnError", nosave);
-  ConfigEvent.dispatch("stopOnError", config.stopOnError, nosave);
-
-  return true;
+  return genericSet("stopOnError", soe, nosave);
 }
 
 export function setAlwaysShowDecimalPlaces(
@@ -1137,27 +1151,7 @@ export function setConfidenceMode(
   cm: ConfigSchemas.ConfidenceMode,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "confidence mode",
-      cm,
-      ConfigSchemas.ConfidenceModeSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.confidenceMode = cm;
-  if (config.confidenceMode !== "off") {
-    config.freedomMode = false;
-    config.stopOnError = "off";
-    saveToLocalStorage("freedomMode", nosave);
-    saveToLocalStorage("stopOnError", nosave);
-  }
-  saveToLocalStorage("confidenceMode", nosave);
-  ConfigEvent.dispatch("confidenceMode", config.confidenceMode, nosave);
-
-  return true;
+  return genericSet("confidenceMode", cm, nosave);
 }
 
 export function setIndicateTypos(
@@ -1371,32 +1365,7 @@ export function setKeymapSize(
   keymapSize: ConfigSchemas.KeymapSize,
   nosave?: boolean
 ): boolean {
-  //auto-fix values to avoid validation errors
-  if (keymapSize < 0.5) keymapSize = 0.5;
-  if (keymapSize > 3.5) keymapSize = 3.5;
-  keymapSize = roundTo1(keymapSize);
-
-  if (
-    !isConfigValueValid(
-      "keymap size",
-      keymapSize,
-      ConfigSchemas.KeymapSizeSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.keymapSize = keymapSize;
-
-  $("#keymap").css("zoom", keymapSize);
-
-  saveToLocalStorage("keymapSize", nosave);
-  ConfigEvent.dispatch("keymapSize", config.keymapSize, nosave);
-
-  // trigger a resize event to update the layout - handled in ui.ts:108
-  $(window).trigger("resize");
-
-  return true;
+  return genericSet("keymapSize", keymapSize, nosave);
 }
 
 export function setLayout(
@@ -1405,16 +1374,6 @@ export function setLayout(
 ): boolean {
   return genericSet("layout", layout, nosave);
 }
-
-// export function setSavedLayout(layout: string, nosave?: boolean): boolean {
-//   if (layout === null || layout === undefined) {
-//     layout = "qwerty";
-//   }
-//   config.savedLayout = layout;
-//   setLayout(layout, nosave);
-
-//   return true;
-// }
 
 export function setFontSize(
   fontSize: ConfigSchemas.FontSize,

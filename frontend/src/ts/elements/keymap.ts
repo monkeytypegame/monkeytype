@@ -599,6 +599,11 @@ ConfigEvent.subscribe((eventKey, newValue) => {
     $(".keymapKey").attr("style", "");
     newValue === "off" ? hide() : show();
   }
+  if (eventKey === "keymapSize") {
+    $("#keymap").css("zoom", newValue as string);
+    // trigger a resize event to update the layout - handled in ui.ts:108
+    $(window).trigger("resize");
+  }
 });
 
 KeymapEvent.subscribe((mode, key, correct) => {
