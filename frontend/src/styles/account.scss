@@ -308,6 +308,7 @@
 
     td {
       padding: 0.5rem 0.5rem;
+      background: var(--row-bg, var(--bg-color));
     }
 
     thead {
@@ -316,7 +317,7 @@
     }
 
     tbody tr:nth-child(odd) td {
-      background: var(--sub-alt-color);
+      --row-bg: var(--sub-alt-color);
     }
 
     tbody td:nth-child(1) {
