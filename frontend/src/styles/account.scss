@@ -194,7 +194,7 @@
       table td {
         -webkit-appearance: unset;
       }
-      .active td {
+      .active {
         animation: flashHighlight 4s linear 0s 1;
       }
 
@@ -306,10 +306,12 @@
     border-collapse: collapse;
     color: var(--text-color);
 
+    tr {
+      background: var(--row-bg, var(--bg-color));
+    }
+
     td {
       padding: 0.5rem 0.5rem;
-      background: var(--row-bg, var(--bg-color));
-      background-clip: padding-box;
     }
 
     thead {
@@ -317,7 +319,7 @@
       font-size: 0.75rem;
     }
 
-    tbody tr:nth-child(odd) td {
+    tbody tr:nth-child(odd) {
       --row-bg: var(--sub-alt-color);
     }
 
