@@ -4,7 +4,7 @@ import Ape from "../../ape";
 import { ApeKey, ApeKeys } from "@monkeytype/contracts/schemas/ape-keys";
 import { format } from "date-fns/format";
 import { SimpleModal, TextArea } from "../../utils/simple-modal";
-
+import { isAuthenticated } from "../../firebase";
 const editApeKey = new SimpleModal({
   id: "editApeKey",
   title: "Edit Ape key",
@@ -161,8 +161,10 @@ const element = $("#pageAccountSettings .tab[data-tab='apeKeys']");
 
 async function getData(): Promise<boolean> {
   showLoaderRow();
+  if (!isAuthenticated()) {
+    return false;
+  }
   const response = await Ape.apeKeys.get();
-
   if (response.status !== 200) {
     if (
       response.body.message ===
