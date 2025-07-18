@@ -64,7 +64,8 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     const { discordId, discordAvatar } = response.body.data;
     if (discordId !== undefined) {
       snapshot.discordId = discordId;
-    } else {
+    }
+    if (discordAvatar !== undefined) {
       snapshot.discordAvatar = discordAvatar;
     }
 
