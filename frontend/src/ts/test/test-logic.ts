@@ -28,6 +28,7 @@ import * as TimerProgress from "./timer-progress";
 
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
+import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
@@ -696,7 +697,7 @@ export async function retrySavingResult(): Promise<void> {
   retrySaving.canRetry = false;
   $("#retrySavingResultButton").addClass("hidden");
 
-  Loader.show();
+  AccountButton.loading(true);
 
   Notifications.add("Retrying to save...");
 
@@ -1149,7 +1150,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   completedEvent.uid = Auth?.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.currentQuote);
 
-  Loader.show();
+  AccountButton.loading(true);
 
   if (!completedEvent.bailedOut) {
     const challenge = ChallengeContoller.verify(completedEvent);
@@ -1171,7 +1172,7 @@ async function saveResult(
       customTitle: "Notice",
       important: true,
     });
-    Loader.hide();
+    AccountButton.loading(false);
     return;
   }
 
@@ -1181,7 +1182,7 @@ async function saveResult(
       customTitle: "Notice",
       important: true,
     });
-    Loader.hide();
+    AccountButton.loading(false);
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");
     if (!isRetrying) {
@@ -1192,7 +1193,7 @@ async function saveResult(
 
   const response = await Ape.results.add({ body: { result: completedEvent } });
 
-  Loader.hide();
+  AccountButton.loading(false);
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list

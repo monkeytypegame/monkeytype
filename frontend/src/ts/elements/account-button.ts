@@ -13,6 +13,13 @@ export function hide(): void {
   $("nav .textButton.view-login").addClass("hidden");
 }
 
+export function loading(state: boolean): void {
+  $("nav .accountButtonAndMenu .loading").css({ opacity: state ? "1" : "0" });
+  $(
+    "nav .accountButtonAndMenu .avatar,nav .accountButtonAndMenu .avatarPlaceholder"
+  ).css({ opacity: state ? "0" : "1" });
+}
+
 export function updateName(name: string): void {
   $("header nav .view-account > .text").text(name);
 }

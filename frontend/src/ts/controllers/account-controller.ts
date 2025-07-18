@@ -92,6 +92,7 @@ async function getDataAndInit(): Promise<boolean> {
     }
   } catch (error) {
     console.error(error);
+    AccountButton.loading(false);
     LoginPage.enableInputs();
     $("header nav .view-account").css("opacity", 1);
     if (error instanceof DB.SnapshotInitError) {
@@ -161,6 +162,7 @@ async function getDataAndInit(): Promise<boolean> {
       fb.functions.applyGlobalCSS();
     }
   }
+  AccountButton.loading(false);
   TagController.loadActiveFromLocalStorage();
   if (window.location.pathname === "/account") {
     LoadingPage.updateBar(90);
@@ -177,6 +179,7 @@ async function getDataAndInit(): Promise<boolean> {
 export async function loadUser(_user: UserType): Promise<void> {
   // User is signed in.
   PageTransition.set(false);
+  AccountButton.loading(true);
   if (!(await getDataAndInit())) {
     signOut();
   }

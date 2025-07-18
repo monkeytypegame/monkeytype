@@ -7,7 +7,7 @@ import {
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { isAuthenticated } from "./firebase";
-import * as NavSettingsSpinner from "./elements/nav-settings-spinner";
+import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 import {
   canSetConfigWithCurrentFunboxes,
@@ -55,9 +55,9 @@ const config = {
 let configToSend = {} as Config;
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
-    NavSettingsSpinner.show();
+    AccountButton.loading(true);
     void DB.saveConfig(configToSend).then(() => {
-      NavSettingsSpinner.hide();
+      AccountButton.loading(false);
     });
   }
   configToSend = {} as Config;
@@ -83,9 +83,9 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   console.log("saving full config to localStorage");
   configLS.set(config);
   if (!noDbCheck) {
-    NavSettingsSpinner.show();
+    AccountButton.loading(true);
     void DB.saveConfig(config);
-    NavSettingsSpinner.hide();
+    AccountButton.loading(false);
   }
   const stringified = JSON.stringify(config);
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
