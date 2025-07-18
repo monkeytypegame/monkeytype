@@ -1156,16 +1156,14 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const windowHeight = $(window).height() ?? 0;
   const offset = $(`#result-${index}`).offset()?.top ?? 0;
   const scrollTo = offset - windowHeight / 2;
-  const element = $(`#result-${index}`);
   $([document.documentElement, document.body]).animate(
     { scrollTop: scrollTo },
     Misc.applyReducedMotion(500),
     () => {
+      const element = $(`#result-${index}`);
       $(".resultRow").removeClass("active");
-      setTimeout(() => {
-        element.addClass("active");
-        setTimeout(() => element.removeClass("active"), 4000);
-      }, 0);
+      element.addClass("active");
+      setTimeout(() => element.removeClass("active"), 4000);
     }
   );
 });
