@@ -1162,10 +1162,10 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
     Misc.applyReducedMotion(500),
     () => {
       $(".resultRow").removeClass("active");
-      requestAnimationFrame(() => {
+      setTimeout(() => {
         element.addClass("active");
         setTimeout(() => element.removeClass("active"), 4000);
-      });
+      }, 0);
     }
   );
 });
