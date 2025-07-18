@@ -32,7 +32,9 @@ export function updateAvatar(avatar?: {
   discordId?: string;
   discordAvatar?: string;
 }): void {
-  const element = getAvatarElement(avatar ?? {});
+  const element = getAvatarElement(avatar ?? {}, {
+    userIcon: "fas fa-fw fa-user",
+  });
   $("header nav .view-account .avatar").replaceWith(element);
 }
 

@@ -1,8 +1,10 @@
 const cachedAvatarUrlByAvatarId: Map<string, string | null> = new Map();
 
+type Options = { size?: number; userIcon?: string };
+
 function buildElement(
   url: string | null,
-  options?: { loading?: boolean; size?: number; userIcon?: string }
+  options?: { loading?: boolean } & Options
 ): HTMLElement {
   const avatar = document.createElement("div");
   avatar.classList.add("avatar");
@@ -30,9 +32,7 @@ export function getAvatarElement(
     discordId?: string;
     discordAvatar?: string;
   },
-  options?: {
-    size?: number;
-  }
+  options?: Options
 ): HTMLElement {
   if (
     discordId === undefined ||
@@ -40,7 +40,7 @@ export function getAvatarElement(
     discordAvatar === undefined ||
     discordAvatar === ""
   ) {
-    return buildElement(null);
+    return buildElement(null, options);
   }
 
   const cachedUrl = cachedAvatarUrlByAvatarId.get(discordAvatar);
@@ -52,6 +52,7 @@ export function getAvatarElement(
 
     void getDiscordAvatarUrl({ discordId, discordAvatar }).then((url) => {
       cachedAvatarUrlByAvatarId.set(discordAvatar, url);
+
       element.replaceWith(buildElement(url, options));
     });
 
