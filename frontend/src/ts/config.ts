@@ -539,15 +539,6 @@ export function genericSet<T extends keyof typeof configMetadata>(
     return false;
   }
 
-  // if (metadata.requiredConfig) {
-  //   for (const requiredKey of typedKeys(metadata.requiredConfig)) {
-  //     const requiredValue = metadata.requiredConfig[requiredKey];
-  //     if (config[requiredKey] !== requiredValue) {
-
-  //     }
-  //   }
-  // }
-
   if (metadata.overrideValue) {
     value = metadata.overrideValue(value);
   }
@@ -562,8 +553,29 @@ export function genericSet<T extends keyof typeof configMetadata>(
     return false;
   }
 
+  if (metadata.overrideConfig) {
+    const targetConfig = metadata.overrideConfig(value);
+    if (targetConfig) {
+      for (const targetKey of typedKeys(targetConfig)) {
+        const targetValue = targetConfig[
+          targetKey
+        ] as ConfigSchemas.Config[keyof typeof configMetadata];
+        const set = genericSet(
+          targetKey as keyof typeof configMetadata,
+          targetValue,
+          true
+        );
+        if (!set) {
+          throw new Error(
+            `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`
+          );
+        }
+      }
+    }
+  }
+
   config[key] = value;
-  saveToLocalStorage(key, nosave);
+  if (!nosave) saveToLocalStorage(key, nosave);
   ConfigEvent.dispatch(key, value, nosave, previousValue);
   return true;
 }
@@ -946,19 +958,7 @@ export function setTapeMode(
   mode: ConfigSchemas.TapeMode,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("tape mode", mode, ConfigSchemas.TapeModeSchema)) {
-    return false;
-  }
-
-  if (mode !== "off" && config.showAllLines) {
-    setShowAllLines(false, true);
-  }
-
-  config.tapeMode = mode;
-  saveToLocalStorage("tapeMode", nosave);
-  ConfigEvent.dispatch("tapeMode", config.tapeMode);
-
-  return true;
+  return genericSet("tapeMode", mode, nosave);
 }
 
 export function setTapeMargin(
