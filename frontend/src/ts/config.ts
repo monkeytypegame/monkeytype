@@ -134,21 +134,17 @@ type ConfigMetadataProperty = "blockedByNoQuit";
  * - `overrideConfig`: Optional function to override other config values before this ones is set.
  */
 type ConfigMetadata = {
-  [K in keyof ConfigSchemas.Config]:
-    | {
-        schema: ZodSchema;
-        displayString?: string;
-        properties?: ConfigMetadataProperty[];
-        isBlocked?: (value: ConfigSchemas.Config[K]) => boolean;
-        overrideValue?: (
-          value: ConfigSchemas.Config[K]
-        ) => ConfigSchemas.Config[K];
-        overrideConfig?: (
-          value: ConfigSchemas.Config[K]
-        ) => Partial<ConfigSchemas.Config> | undefined;
-        afterSet?: (nosave: boolean) => void;
-      }
-    | undefined;
+  [K in keyof ConfigSchemas.Config]: {
+    schema: ZodSchema;
+    displayString?: string;
+    properties?: ConfigMetadataProperty[];
+    isBlocked?: (value: ConfigSchemas.Config[K]) => boolean;
+    overrideValue?: (value: ConfigSchemas.Config[K]) => ConfigSchemas.Config[K];
+    overrideConfig?: (
+      value: ConfigSchemas.Config[K]
+    ) => Partial<ConfigSchemas.Config> | undefined;
+    afterSet?: (nosave: boolean) => void;
+  };
 };
 
 //todo:
@@ -565,7 +561,22 @@ const configMetadata: ConfigMetadata = {
       return undefined;
     },
   },
-  funbox: undefined,
+  funbox: {
+    schema: ConfigSchemas.FunboxSchema,
+    properties: ["blockedByNoQuit"],
+    isBlocked: (value) => {
+      for (const funbox of config.funbox) {
+        if (!canSetFunboxWithConfig(funbox, config)) {
+          Notifications.add(
+            `${value}" cannot be enabled with the current config`,
+            0
+          );
+          return true;
+        }
+      }
+      return false;
+    },
+  },
   confidenceMode: {
     schema: ConfigSchemas.ConfidenceModeSchema,
     displayString: "confidence mode",
@@ -833,22 +844,7 @@ export function setFunbox(
   funbox: ConfigSchemas.Funbox,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (!isConfigValueValid("funbox", funbox, ConfigSchemas.FunboxSchema))
-    return false;
-
-  for (const funbox of config.funbox) {
-    if (!canSetFunboxWithConfig(funbox, config)) {
-      return false;
-    }
-  }
-
-  config.funbox = funbox;
-  saveToLocalStorage("funbox", nosave);
-  ConfigEvent.dispatch("funbox", config.funbox);
-
-  return true;
+  return genericSet("funbox", funbox, nosave);
 }
 
 export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
