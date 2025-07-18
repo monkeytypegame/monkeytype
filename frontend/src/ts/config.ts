@@ -19,17 +19,14 @@ import {
 } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config, FunboxName } from "@monkeytype/contracts/schemas/configs";
-import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
-import {
-  Language,
-  LanguageSchema,
-} from "@monkeytype/contracts/schemas/languages";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { Language } from "@monkeytype/contracts/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-import { z, ZodSchema } from "zod";
+import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 
 const configLS = new LocalStorageWithSchema({
@@ -124,10 +121,6 @@ function isConfigChangeBlocked(): boolean {
 type ConfigMetadata = {
   [K in keyof ConfigSchemas.Config]: {
     /**
-     * Zod schema for the config value.
-     */
-    schema: ZodSchema;
-    /**
      * Optional display string for the config key.
      */
     displayString?: string;
@@ -175,7 +168,6 @@ type ConfigMetadata = {
 
 const configMetadata: ConfigMetadata = {
   numbers: {
-    schema: z.boolean(),
     changeRequiresRestart: true,
     overrideValue: (value) => {
       if (config.mode === "quote") {
@@ -185,7 +177,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   punctuation: {
-    schema: z.boolean(),
     changeRequiresRestart: true,
     overrideValue: (value) => {
       if (config.mode === "quote") {
@@ -195,36 +186,29 @@ const configMetadata: ConfigMetadata = {
     },
   },
   playSoundOnError: {
-    schema: ConfigSchemas.PlaySoundOnErrorSchema,
     displayString: "play sound on error",
     changeRequiresRestart: false,
   },
   playSoundOnClick: {
-    schema: ConfigSchemas.PlaySoundOnClickSchema,
     displayString: "play sound on click",
     changeRequiresRestart: false,
   },
   soundVolume: {
-    schema: ConfigSchemas.SoundVolumeSchema,
     displayString: "sound volume",
     changeRequiresRestart: false,
   },
   difficulty: {
-    schema: ConfigSchemas.DifficultySchema,
     changeRequiresRestart: true,
   },
   favThemes: {
-    schema: ConfigSchemas.FavThemesSchema,
     displayString: "favorite themes",
     changeRequiresRestart: false,
   },
   blindMode: {
-    schema: z.boolean(),
     displayString: "blind mode",
     changeRequiresRestart: false,
   },
   accountChart: {
-    schema: ConfigSchemas.AccountChartSchema,
     displayString: "account chart",
     changeRequiresRestart: false,
     overrideValue: (value) => {
@@ -237,127 +221,102 @@ const configMetadata: ConfigMetadata = {
     },
   },
   alwaysShowDecimalPlaces: {
-    schema: z.boolean(),
     displayString: "always show decimal places",
     changeRequiresRestart: false,
   },
   typingSpeedUnit: {
-    schema: ConfigSchemas.TypingSpeedUnitSchema,
     displayString: "typing speed unit",
     changeRequiresRestart: false,
   },
   showOutOfFocusWarning: {
-    schema: z.boolean(),
     displayString: "show out of focus warning",
     changeRequiresRestart: false,
   },
   paceCaretCustomSpeed: {
-    schema: ConfigSchemas.PaceCaretCustomSpeedSchema,
     displayString: "pace caret custom speed",
     changeRequiresRestart: false,
   },
   repeatedPace: {
-    schema: z.boolean(),
     displayString: "repeated pace",
     changeRequiresRestart: false,
   },
   minWpm: {
-    schema: ConfigSchemas.MinimumWordsPerMinuteSchema,
     displayString: "min speed",
     changeRequiresRestart: true,
   },
   minWpmCustomSpeed: {
-    schema: ConfigSchemas.MinWpmCustomSpeedSchema,
     displayString: "min speed custom",
     changeRequiresRestart: true,
   },
   minAcc: {
-    schema: ConfigSchemas.MinimumAccuracySchema,
     displayString: "min accuracy",
     changeRequiresRestart: true,
   },
   minAccCustom: {
-    schema: ConfigSchemas.MinimumAccuracyCustomSchema,
     displayString: "min accuracy custom",
     changeRequiresRestart: true,
   },
   minBurst: {
-    schema: ConfigSchemas.MinimumBurstSchema,
     displayString: "min burst",
     changeRequiresRestart: true,
   },
   minBurstCustomSpeed: {
-    schema: ConfigSchemas.MinimumBurstCustomSpeedSchema,
     displayString: "min burst custom speed",
     changeRequiresRestart: true,
   },
   alwaysShowWordsHistory: {
-    schema: z.boolean(),
     displayString: "always show words history",
     changeRequiresRestart: false,
   },
   singleListCommandLine: {
-    schema: ConfigSchemas.SingleListCommandLineSchema,
     displayString: "single list command line",
     changeRequiresRestart: false,
   },
   capsLockWarning: {
-    schema: z.boolean(),
     displayString: "caps lock warning",
     changeRequiresRestart: false,
   },
   quickEnd: {
-    schema: z.boolean(),
     displayString: "quick end",
     changeRequiresRestart: false,
   },
   repeatQuotes: {
-    schema: ConfigSchemas.RepeatQuotesSchema,
     displayString: "repeat quotes",
     changeRequiresRestart: false,
   },
   flipTestColors: {
-    schema: z.boolean(),
     displayString: "flip test colors",
     changeRequiresRestart: false,
   },
   colorfulMode: {
-    schema: z.boolean(),
     displayString: "colorful mode",
     changeRequiresRestart: false,
   },
   strictSpace: {
-    schema: z.boolean(),
     displayString: "strict space",
     changeRequiresRestart: true,
   },
   oppositeShiftMode: {
-    schema: ConfigSchemas.OppositeShiftModeSchema,
     displayString: "opposite shift mode",
     changeRequiresRestart: false,
   },
   caretStyle: {
-    schema: ConfigSchemas.CaretStyleSchema,
     displayString: "caret style",
     changeRequiresRestart: false,
   },
   paceCaretStyle: {
-    schema: ConfigSchemas.CaretStyleSchema,
     displayString: "pace caret style",
     changeRequiresRestart: false,
   },
   showAverage: {
-    schema: ConfigSchemas.ShowAverageSchema,
     displayString: "show average",
     changeRequiresRestart: false,
   },
   highlightMode: {
-    schema: ConfigSchemas.HighlightModeSchema,
     displayString: "highlight mode",
     changeRequiresRestart: false,
   },
   tapeMargin: {
-    schema: ConfigSchemas.TapeMarginSchema,
     displayString: "tape margin",
     changeRequiresRestart: false,
     overrideValue: (value) => {
@@ -371,147 +330,118 @@ const configMetadata: ConfigMetadata = {
     },
   },
   hideExtraLetters: {
-    schema: z.boolean(),
     displayString: "hide extra letters",
     changeRequiresRestart: false,
   },
   timerStyle: {
-    schema: ConfigSchemas.TimerStyleSchema,
     displayString: "timer style",
     changeRequiresRestart: false,
   },
   liveSpeedStyle: {
-    schema: ConfigSchemas.LiveSpeedAccBurstStyleSchema,
     displayString: "live speed style",
     changeRequiresRestart: false,
   },
   liveAccStyle: {
-    schema: ConfigSchemas.LiveSpeedAccBurstStyleSchema,
     displayString: "live accuracy style",
     changeRequiresRestart: false,
   },
   liveBurstStyle: {
-    schema: ConfigSchemas.LiveSpeedAccBurstStyleSchema,
     displayString: "live burst style",
     changeRequiresRestart: false,
   },
   timerColor: {
-    schema: ConfigSchemas.TimerColorSchema,
     displayString: "timer color",
     changeRequiresRestart: false,
   },
   timerOpacity: {
-    schema: ConfigSchemas.TimerOpacitySchema,
     displayString: "timer opacity",
     changeRequiresRestart: false,
   },
   showKeyTips: {
-    schema: z.boolean(),
     displayString: "show key tips",
     changeRequiresRestart: false,
   },
   smoothCaret: {
-    schema: ConfigSchemas.SmoothCaretSchema,
     displayString: "smooth caret",
     changeRequiresRestart: false,
   },
   codeUnindentOnBackspace: {
-    schema: z.boolean(),
     displayString: "code unindent on backspace",
     changeRequiresRestart: true,
   },
   startGraphsAtZero: {
-    schema: z.boolean(),
     displayString: "start graphs at zero",
     changeRequiresRestart: false,
   },
   smoothLineScroll: {
-    schema: z.boolean(),
     displayString: "smooth line scroll",
     changeRequiresRestart: false,
   },
   quickRestart: {
-    schema: ConfigSchemas.QuickRestartSchema,
     displayString: "quick restart",
     changeRequiresRestart: false,
   },
   indicateTypos: {
-    schema: ConfigSchemas.IndicateTyposSchema,
     displayString: "indicate typos",
     changeRequiresRestart: false,
   },
   autoSwitchTheme: {
-    schema: z.boolean(),
     displayString: "auto switch theme",
     changeRequiresRestart: false,
   },
   customTheme: {
-    schema: z.boolean(),
     displayString: "custom theme",
     changeRequiresRestart: false,
   },
   themeLight: {
-    schema: ConfigSchemas.ThemeNameSchema,
     displayString: "theme light",
     changeRequiresRestart: false,
   },
   themeDark: {
-    schema: ConfigSchemas.ThemeNameSchema,
     displayString: "theme dark",
     changeRequiresRestart: false,
   },
   britishEnglish: {
-    schema: z.boolean(),
     displayString: "british english",
     changeRequiresRestart: true,
   },
   lazyMode: {
-    schema: z.boolean(),
     displayString: "lazy mode",
     changeRequiresRestart: true,
   },
   customThemeColors: {
-    schema: ConfigSchemas.CustomThemeColorsSchema,
     displayString: "custom theme colors",
     changeRequiresRestart: false,
   },
   language: {
-    schema: LanguageSchema,
     displayString: "language",
     changeRequiresRestart: true,
   },
   monkey: {
-    schema: z.boolean(),
     displayString: "monkey",
     changeRequiresRestart: false,
   },
   keymapMode: {
-    schema: ConfigSchemas.KeymapModeSchema,
     displayString: "keymap mode",
     changeRequiresRestart: false,
   },
   keymapStyle: {
-    schema: ConfigSchemas.KeymapStyleSchema,
     displayString: "keymap style",
     changeRequiresRestart: false,
   },
   keymapLayout: {
-    schema: ConfigSchemas.KeymapLayoutSchema,
     displayString: "keymap layout",
     changeRequiresRestart: false,
   },
   keymapShowTopRow: {
-    schema: ConfigSchemas.KeymapShowTopRowSchema,
     displayString: "keymap show top row",
     changeRequiresRestart: false,
   },
   layout: {
-    schema: ConfigSchemas.LayoutSchema,
     displayString: "layout",
     changeRequiresRestart: true,
   },
   fontSize: {
-    schema: ConfigSchemas.FontSizeSchema,
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "font size",
@@ -523,7 +453,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   customBackground: {
-    schema: ConfigSchemas.CustomBackgroundSchema,
     displayString: "custom background",
     changeRequiresRestart: false,
     overrideValue: (value) => {
@@ -531,27 +460,22 @@ const configMetadata: ConfigMetadata = {
     },
   },
   customBackgroundSize: {
-    schema: ConfigSchemas.CustomBackgroundSizeSchema,
     displayString: "custom background size",
     changeRequiresRestart: false,
   },
   customBackgroundFilter: {
-    schema: ConfigSchemas.CustomBackgroundFilterSchema,
     displayString: "custom background filter",
     changeRequiresRestart: false,
   },
   monkeyPowerLevel: {
-    schema: ConfigSchemas.MonkeyPowerLevelSchema,
     displayString: "monkey power level",
     changeRequiresRestart: false,
   },
   burstHeatmap: {
-    schema: z.boolean(),
     displayString: "burst heatmap",
     changeRequiresRestart: false,
   },
   tapeMode: {
-    schema: ConfigSchemas.TapeModeSchema,
     triggerResize: true,
     changeRequiresRestart: false,
     displayString: "tape mode",
@@ -565,7 +489,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   showAllLines: {
-    schema: z.boolean(),
     changeRequiresRestart: false,
     displayString: "show all lines",
     isBlocked: (value) => {
@@ -577,12 +500,10 @@ const configMetadata: ConfigMetadata = {
     },
   },
   time: {
-    schema: ConfigSchemas.TimeConfigSchema,
     changeRequiresRestart: true,
     displayString: "time",
   },
   quoteLength: {
-    schema: ConfigSchemas.QuoteLengthConfigSchema,
     displayString: "quote length",
     changeRequiresRestart: true,
     overrideValue: (value) => {
@@ -593,17 +514,14 @@ const configMetadata: ConfigMetadata = {
     },
   },
   words: {
-    schema: ConfigSchemas.WordCountSchema,
     displayString: "word count",
     changeRequiresRestart: true,
   },
   fontFamily: {
-    schema: ConfigSchemas.FontFamilySchema,
     displayString: "font family",
     changeRequiresRestart: false,
   },
   theme: {
-    schema: ConfigSchemas.ThemeNameSchema,
     changeRequiresRestart: false,
     overrideConfig: () => {
       return {
@@ -612,7 +530,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   mode: {
-    schema: ModeSchema,
     changeRequiresRestart: true,
     overrideConfig: (value) => {
       if (value === "custom" || value === "quote") {
@@ -630,7 +547,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   freedomMode: {
-    schema: z.boolean(),
     changeRequiresRestart: false,
     displayString: "freedom mode",
     overrideConfig: (value) => {
@@ -643,7 +559,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   funbox: {
-    schema: ConfigSchemas.FunboxSchema,
     changeRequiresRestart: true,
     isBlocked: (value) => {
       for (const funbox of config.funbox) {
@@ -659,7 +574,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   confidenceMode: {
-    schema: ConfigSchemas.ConfidenceModeSchema,
     displayString: "confidence mode",
     changeRequiresRestart: false,
     overrideConfig: (value) => {
@@ -673,7 +587,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   stopOnError: {
-    schema: ConfigSchemas.StopOnErrorSchema,
     displayString: "stop on error",
     changeRequiresRestart: true,
     overrideConfig: (value) => {
@@ -686,12 +599,10 @@ const configMetadata: ConfigMetadata = {
     },
   },
   keymapLegendStyle: {
-    schema: ConfigSchemas.KeymapLegendStyleSchema,
     displayString: "keymap legend style",
     changeRequiresRestart: false,
   },
   keymapSize: {
-    schema: ConfigSchemas.KeymapSizeSchema,
     triggerResize: true,
     changeRequiresRestart: false,
     displayString: "keymap size",
@@ -700,7 +611,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   randomTheme: {
-    schema: ConfigSchemas.RandomThemeSchema,
     changeRequiresRestart: false,
     displayString: "random theme",
     isBlocked: (value) => {
@@ -732,7 +642,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   paceCaret: {
-    schema: ConfigSchemas.PaceCaretSchema,
     displayString: "pace caret",
     changeRequiresRestart: false,
     isBlocked: (value) => {
@@ -749,7 +658,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   ads: {
-    schema: ConfigSchemas.AdsSchema,
     changeRequiresRestart: false,
     isBlocked: (value) => {
       if (value !== "off" && isDevEnvironment()) {
@@ -766,7 +674,6 @@ const configMetadata: ConfigMetadata = {
     },
   },
   customLayoutfluid: {
-    schema: ConfigSchemas.CustomLayoutFluidSchema,
     displayString: "custom layoutfluid",
     changeRequiresRestart: true,
     overrideValue: (value) => {
@@ -774,13 +681,11 @@ const configMetadata: ConfigMetadata = {
     },
   },
   maxLineWidth: {
-    schema: ConfigSchemas.MaxLineWidthSchema,
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "max line width",
   },
   customPolyglot: {
-    schema: ConfigSchemas.CustomPolyglotSchema,
     displayString: "custom polyglot",
     changeRequiresRestart: false,
     overrideValue: (value) => {
@@ -839,9 +744,9 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     value = metadata.overrideValue(value);
   }
 
-  if (
-    !isConfigValueValid(metadata.displayString ?? key, value, metadata.schema)
-  ) {
+  const schema = ConfigSchemas.ConfigSchema.shape[key] as ZodSchema;
+
+  if (!isConfigValueValid(metadata.displayString ?? key, value, schema)) {
     return false;
   }
 
