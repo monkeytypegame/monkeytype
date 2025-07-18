@@ -604,6 +604,33 @@ ConfigEvent.subscribe((eventKey, newValue) => {
     // trigger a resize event to update the layout - handled in ui.ts:108
     $(window).trigger("resize");
   }
+  if (eventKey === "keymapLegendStyle") {
+    let style = newValue as string;
+
+    // Remove existing styles
+    const keymapLegendStyles = ["lowercase", "uppercase", "blank", "dynamic"];
+    keymapLegendStyles.forEach((name) => {
+      $(".keymapLegendStyle").removeClass(name);
+    });
+
+    style = style || "lowercase";
+
+    // Mutate the keymap in the DOM, if it exists.
+    // 1. Remove everything
+    $(".keymapKey > .letter").css("display", "");
+    $(".keymapKey > .letter").css("text-transform", "");
+
+    // 2. Append special styles onto the DOM elements
+    if (style === "uppercase") {
+      $(".keymapKey > .letter").css("text-transform", "capitalize");
+    }
+    if (style === "blank") {
+      $(".keymapKey > .letter").css("display", "none");
+    }
+
+    // Update and save to cookie for persistence
+    $(".keymapLegendStyle").addClass(style);
+  }
 });
 
 KeymapEvent.subscribe((mode, key, correct) => {

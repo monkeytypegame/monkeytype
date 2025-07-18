@@ -146,6 +146,7 @@ type ConfigMetadata = {
         overrideConfig?: (
           value: ConfigSchemas.Config[K]
         ) => Partial<ConfigSchemas.Config> | undefined;
+        afterSet?: (nosave: boolean) => void;
       }
     | undefined;
 };
@@ -155,6 +156,7 @@ type ConfigMetadata = {
 // maybe have generic set somehow handle test restarting
 // maybe add config group to each metadata object? all though its already defined in ConfigGroupsLiteral
 // maybe rework valueoverride to dependsOn, for cases like stop on error and confidence mode or numbers and quote mode
+// add triggerResize to metadata
 
 const configMetadata: ConfigMetadata = {
   numbers: {
@@ -525,7 +527,14 @@ const configMetadata: ConfigMetadata = {
     schema: ConfigSchemas.FontFamilySchema,
     displayString: "font family",
   },
-  theme: undefined,
+  theme: {
+    schema: ConfigSchemas.ThemeNameSchema,
+    overrideConfig: () => {
+      return {
+        customTheme: false,
+      };
+    },
+  },
   mode: {
     schema: ModeSchema,
     properties: ["blockedByNoQuit"],
@@ -570,7 +579,6 @@ const configMetadata: ConfigMetadata = {
       return undefined;
     },
   },
-  randomTheme: undefined,
   stopOnError: {
     schema: ConfigSchemas.StopOnErrorSchema,
     displayString: "stop on error",
@@ -584,7 +592,10 @@ const configMetadata: ConfigMetadata = {
       return undefined;
     },
   },
-  keymapLegendStyle: undefined,
+  keymapLegendStyle: {
+    schema: ConfigSchemas.KeymapLegendStyleSchema,
+    displayString: "keymap legend style",
+  },
   keymapSize: {
     schema: ConfigSchemas.KeymapSizeSchema,
     displayString: "keymap size",
@@ -592,11 +603,89 @@ const configMetadata: ConfigMetadata = {
       return roundTo1(value);
     },
   },
-  paceCaret: undefined,
-  ads: undefined,
-  customLayoutfluid: undefined,
-  maxLineWidth: undefined,
-  customPolyglot: undefined,
+  randomTheme: {
+    schema: ConfigSchemas.RandomThemeSchema,
+    displayString: "random theme",
+    isBlocked: (value) => {
+      if (value === "custom") {
+        const snapshot = DB.getSnapshot();
+        if (!isAuthenticated()) {
+          Notifications.add(
+            "Random theme 'custom' is unavailable without an account",
+            0
+          );
+          return true;
+        }
+        if (!snapshot) {
+          Notifications.add(
+            "Random theme 'custom' requires a snapshot to be set",
+            0
+          );
+          return true;
+        }
+        if (snapshot?.customThemes?.length === 0) {
+          Notifications.add(
+            "Random theme 'custom' requires at least one custom theme to be saved",
+            0
+          );
+          return true;
+        }
+      }
+      return false;
+    },
+  },
+  paceCaret: {
+    schema: ConfigSchemas.PaceCaretSchema,
+    displayString: "pace caret",
+    isBlocked: (value) => {
+      if (document.readyState === "complete") {
+        if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
+          Notifications.add(
+            `Pace caret "pb" and "tag pb" are unavailable without an account`,
+            0
+          );
+          return true;
+        }
+      }
+      return false;
+    },
+  },
+  ads: {
+    schema: ConfigSchemas.AdsSchema,
+    overrideValue: (value) => {
+      if (isDevEnvironment()) {
+        Notifications.add("Ads are disabled in development mode.", 0);
+        return "off";
+      }
+      return value;
+    },
+    afterSet: (nosave) => {
+      if (!nosave && !isDevEnvironment()) {
+        reloadAfter(3);
+        Notifications.add("Ad settings changed. Refreshing...", 0);
+      }
+    },
+  },
+  customLayoutfluid: {
+    schema: ConfigSchemas.CustomLayoutFluidSchema,
+    displayString: "custom layoutfluid",
+    properties: ["blockedByNoQuit"],
+    overrideValue: (value) => {
+      return Array.from(new Set(value));
+    },
+  },
+  maxLineWidth: {
+    schema: ConfigSchemas.MaxLineWidthSchema,
+    displayString: "max line width",
+  },
+  customPolyglot: {
+    schema: ConfigSchemas.CustomPolyglotSchema,
+    displayString: "custom polyglot",
+    properties: ["blockedByNoQuit"],
+    overrideValue: (value) => {
+      return Array.from(new Set(value));
+    },
+  },
 };
 
 export function genericSet<T extends keyof typeof configMetadata>(
@@ -681,6 +770,11 @@ export function genericSet<T extends keyof typeof configMetadata>(
   config[key] = value;
   if (!nosave) saveToLocalStorage(key, nosave);
   ConfigEvent.dispatch(key, value, nosave, previousValue);
+
+  if (metadata.afterSet) {
+    metadata.afterSet(nosave || false);
+  }
+
   return true;
 }
 
@@ -828,28 +922,7 @@ export function setPaceCaret(
   val: ConfigSchemas.PaceCaret,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("pace caret", val, ConfigSchemas.PaceCaretSchema)) {
-    return false;
-  }
-
-  if (document.readyState === "complete") {
-    if ((val === "pb" || val === "tagPb") && !isAuthenticated()) {
-      Notifications.add(
-        `Pace caret "pb" and "tag pb" are unavailable without an account`,
-        0
-      );
-      return false;
-    }
-  }
-  // if (config.mode === "zen" && val !== "off") {
-  //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
-  //   val = "off";
-  // }
-  config.paceCaret = val;
-  saveToLocalStorage("paceCaret", nosave);
-  ConfigEvent.dispatch("paceCaret", config.paceCaret, nosave);
-
-  return true;
+  return genericSet("paceCaret", val, nosave);
 }
 
 export function setPaceCaretCustomSpeed(
@@ -940,11 +1013,6 @@ export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
 export function setAds(val: ConfigSchemas.Ads, nosave?: boolean): boolean {
   if (!isConfigValueValid("ads", val, ConfigSchemas.AdsSchema)) {
     return false;
-  }
-
-  if (isDevEnvironment()) {
-    val = "off";
-    console.debug("Ads are disabled in dev environment");
   }
 
   config.ads = val;
@@ -1176,15 +1244,7 @@ export function setTheme(
   name: ConfigSchemas.ThemeName,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("theme", name, ConfigSchemas.ThemeNameSchema))
-    return false;
-
-  config.theme = name;
-  if (config.customTheme) setCustomTheme(false);
-  saveToLocalStorage("theme", nosave);
-  ConfigEvent.dispatch("theme", config.theme);
-
-  return true;
+  return genericSet("theme", name, nosave);
 }
 
 export function setThemeLight(
@@ -1300,44 +1360,7 @@ export function setKeymapLegendStyle(
   style: ConfigSchemas.KeymapLegendStyle,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "keymap legend style",
-      style,
-      ConfigSchemas.KeymapLegendStyleSchema
-    )
-  ) {
-    return false;
-  }
-
-  // Remove existing styles
-  const keymapLegendStyles = ["lowercase", "uppercase", "blank", "dynamic"];
-  keymapLegendStyles.forEach((name) => {
-    $(".keymapLegendStyle").removeClass(name);
-  });
-
-  style = style || "lowercase";
-
-  // Mutate the keymap in the DOM, if it exists.
-  // 1. Remove everything
-  $(".keymapKey > .letter").css("display", "");
-  $(".keymapKey > .letter").css("text-transform", "");
-
-  // 2. Append special styles onto the DOM elements
-  if (style === "uppercase") {
-    $(".keymapKey > .letter").css("text-transform", "capitalize");
-  }
-  if (style === "blank") {
-    $(".keymapKey > .letter").css("display", "none");
-  }
-
-  // Update and save to cookie for persistence
-  $(".keymapLegendStyle").addClass(style);
-  config.keymapLegendStyle = style;
-  saveToLocalStorage("keymapLegendStyle", nosave);
-  ConfigEvent.dispatch("keymapLegendStyle", config.keymapLegendStyle);
-
-  return true;
+  return genericSet("keymapLegendStyle", style, nosave);
 }
 
 export function setKeymapStyle(
@@ -1386,32 +1409,7 @@ export function setMaxLineWidth(
   maxLineWidth: ConfigSchemas.MaxLineWidth,
   nosave?: boolean
 ): boolean {
-  if (maxLineWidth < 20 && maxLineWidth !== 0) {
-    maxLineWidth = 20;
-  }
-  if (maxLineWidth > 1000) {
-    maxLineWidth = 1000;
-  }
-
-  if (
-    !isConfigValueValid(
-      "max line width",
-      maxLineWidth,
-      ConfigSchemas.MaxLineWidthSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.maxLineWidth = maxLineWidth;
-
-  saveToLocalStorage("maxLineWidth", nosave);
-  ConfigEvent.dispatch("maxLineWidth", config.maxLineWidth, nosave);
-
-  // trigger a resize event to update the layout - handled in ui.ts:108
-  $(window).trigger("resize");
-
-  return true;
+  return genericSet("maxLineWidth", maxLineWidth, nosave);
 }
 
 export function setCustomBackground(
@@ -1425,49 +1423,14 @@ export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  // Remove duplicates
-  const deduped = Array.from(new Set(value));
-  if (
-    !isConfigValueValid(
-      "layoutfluid",
-      deduped,
-      ConfigSchemas.CustomLayoutFluidSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.customLayoutfluid = deduped;
-  saveToLocalStorage("customLayoutfluid", nosave);
-  ConfigEvent.dispatch("customLayoutfluid", config.customLayoutfluid);
-
-  return true;
+  return genericSet("customLayoutfluid", value, nosave);
 }
 
 export function setCustomPolyglot(
   value: ConfigSchemas.CustomPolyglot,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  // remove duplicates
-  const deduped = Array.from(new Set(value));
-  if (
-    !isConfigValueValid(
-      "customPolyglot",
-      deduped,
-      ConfigSchemas.CustomPolyglotSchema
-    )
-  )
-    return false;
-
-  config.customPolyglot = deduped;
-  saveToLocalStorage("customPolyglot", nosave);
-  ConfigEvent.dispatch("customPolyglot", config.customPolyglot);
-
-  return true;
+  return genericSet("customPolyglot", value, nosave);
 }
 
 export function setCustomBackgroundSize(

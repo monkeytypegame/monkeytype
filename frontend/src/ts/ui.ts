@@ -119,7 +119,7 @@ $(window).on("resize", () => {
 
 ConfigEvent.subscribe((eventKey, value, nosave) => {
   if (eventKey === "quickRestart") updateKeytips();
-  if (eventKey === "tapeMode") {
+  if (eventKey === "tapeMode" || eventKey === "maxLineWidth") {
     // trigger a resize event to update the layout - handled above
     $(window).trigger("resize");
   }
