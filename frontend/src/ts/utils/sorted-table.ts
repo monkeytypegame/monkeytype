@@ -1,4 +1,7 @@
-type Sort = { property: string; descending: boolean };
+type Sort = {
+  property: string;
+  descending: boolean;
+};
 
 type SortedTableOptions<T> = {
   table: string;
