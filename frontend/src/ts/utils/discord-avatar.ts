@@ -2,21 +2,24 @@ const cachedAvatarUrlByAvatarId: Map<string, string | null> = new Map();
 
 function buildElement(
   url: string | null,
-  options?: { loading?: boolean; size?: number }
+  options?: { loading?: boolean; size?: number; userIcon?: string }
 ): HTMLElement {
+  const avatar = document.createElement("div");
+  avatar.classList.add("avatar");
   if (url === null) {
-    const placeholder = document.createElement("div");
-    placeholder.classList.add("avatarPlaceholder");
-    placeholder.innerHTML = `<i class="fas ${
-      options?.loading === true ? "fa-circle-notch fa-spin" : "fa-user-circle"
-    }"></i>`;
-    return placeholder;
+    if (options?.loading) {
+      avatar.innerHTML = `<div class="avatarLoading"><i class="fas fa-circle-notch fa-spin"><i></div>`;
+    } else {
+      avatar.innerHTML = `<div class="userIcon"><i class="${
+        options?.userIcon ?? "fas fa-user-circle"
+      }"><i></div>`;
+    }
   } else {
-    const element = document.createElement("div");
-    element.classList.add("avatar");
-    element.style.backgroundImage = `url(${url}?size=${options?.size ?? 32})`;
-    return element;
+    avatar.innerHTML = `<div class="discordImage" style="background-image:url(${url}?size=${
+      options?.size ?? 32
+    })"></div>`;
   }
+  return avatar;
 }
 
 export function getAvatarElement(

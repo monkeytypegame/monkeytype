@@ -48,8 +48,8 @@ export async function update(
   )
     return;
 
-  const avatars = details.find(".avatarAndName .avatars");
-  avatars.append(getAvatarElement(profile, { size: 256 }));
+  const avatar = details.find(".avatarAndName .avatar");
+  avatar.replaceWith(getAvatarElement(profile, { size: 256 }));
 
   if (profile.inventory?.badges && !banned) {
     let mainHtml = "";

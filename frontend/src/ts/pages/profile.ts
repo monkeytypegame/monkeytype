@@ -15,8 +15,7 @@ function reset(): void {
   $(".page.pageProfile .profile").html(`
       <div class="details none">
         <div class="avatarAndName">
-          <div class="avatars">
-          </div>
+          <div class="avatar"></div>
           <div>
              <div class="user">
               <div class="name">-</div>

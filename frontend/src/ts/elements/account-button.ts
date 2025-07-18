@@ -14,10 +14,8 @@ export function hide(): void {
 }
 
 export function loading(state: boolean): void {
-  $("nav .accountButtonAndMenu .loading").css({ opacity: state ? "1" : "0" });
-  $(
-    "nav .accountButtonAndMenu .avatar,nav .accountButtonAndMenu .avatarPlaceholder"
-  ).css({ opacity: state ? "0" : "1" });
+  $("nav .accountButtonAndMenu .spinner").css({ opacity: state ? "1" : "0" });
+  $("nav .accountButtonAndMenu .avatar").css({ opacity: state ? "0" : "1" });
 }
 
 export function updateName(name: string): void {
@@ -34,9 +32,8 @@ export function updateAvatar(avatar?: {
   discordId?: string;
   discordAvatar?: string;
 }): void {
-  $(
-    "header nav .view-account .avatar, header nav .view-account .avatarPlaceholder"
-  ).replaceWith(getAvatarElement(avatar ?? {}));
+  const element = getAvatarElement(avatar ?? {});
+  $("header nav .view-account .avatar").replaceWith(element);
 }
 
 export function update(snapshot: Snapshot | undefined): void {

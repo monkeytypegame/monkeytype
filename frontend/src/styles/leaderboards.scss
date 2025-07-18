@@ -192,9 +192,8 @@
           grid-template-columns: 1.25em max-content auto;
           gap: 0.5em;
           place-items: center left;
-          .avatarPlaceholder {
+          .avatar .userIcon {
             color: var(--sub-color);
-            border-radius: 100%;
             i {
               font-size: 1.29em;
             }
@@ -204,10 +203,7 @@
             color: var(--text-color);
             cursor: pointer;
           }
-          .avatarPlaceholder,
           .avatar {
-            width: 1.25em;
-            height: 1.25em;
             grid-row: 1/2;
             grid-column: 1/2;
           }

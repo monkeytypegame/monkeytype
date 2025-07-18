@@ -345,18 +345,18 @@
       gap: 1rem;
       align-items: center;
       align-self: center;
-      .avatars {
+      .avatar {
         display: grid;
         font-size: 5rem;
         line-height: 5rem;
         height: 5rem;
-        .placeholderAvatar {
+        .userIcon {
           // font-size: 5rem;
           // line-height: 6rem;
           margin-left: 0.1rem;
           color: var(--sub-color);
         }
-        .avatar {
+        .discordImage {
           height: auto;
           aspect-ratio: 1/1;
           width: 100%;
