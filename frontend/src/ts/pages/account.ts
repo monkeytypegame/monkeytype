@@ -1156,17 +1156,19 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const windowHeight = $(window).height() ?? 0;
   const offset = $(`#result-${index}`).offset()?.top ?? 0;
   const scrollTo = offset - windowHeight / 2;
-  $([document.documentElement, document.body]).animate(
-    { scrollTop: scrollTo },
-    {
-      duration: Misc.applyReducedMotion(500),
-      done: () => {
-        const element = $(`#result-${index}`);
-        $(".resultRow").removeClass("active");
-        requestAnimationFrame(() => element.addClass("active"));
-      },
-    }
-  );
+  $([document.documentElement, document.body])
+    .stop(true)
+    .animate(
+      { scrollTop: scrollTo },
+      {
+        duration: Misc.applyReducedMotion(500),
+        done: () => {
+          const element = $(`#result-${index}`);
+          $(".resultRow").removeClass("active");
+          requestAnimationFrame(() => element.addClass("active"));
+        },
+      }
+    );
 });
 
 $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
