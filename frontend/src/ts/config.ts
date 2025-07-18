@@ -118,9 +118,13 @@ function isConfigChangeBlocked(): boolean {
 
 type ConfigMetadataProperty = "blockedByNoQuit";
 
-type SetBlock = {
-  [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
-};
+// type SetBlock = {
+//   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
+// };
+
+// type RequiredConfig = {
+//   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K];
+// };
 
 //todo: remove the ? here so that all config elements must be defined
 type ConfigMetadata = {
@@ -128,9 +132,12 @@ type ConfigMetadata = {
     schema: ZodSchema;
     displayString?: string;
     properties?: ConfigMetadataProperty[];
-    setBlock?: SetBlock;
-    customSetBlock?: (value: ConfigSchemas.Config[K]) => boolean;
-    valueOverride?: (value: ConfigSchemas.Config[K]) => ConfigSchemas.Config[K];
+    // setBlock?: SetBlock;
+    isBlocked?: (value: ConfigSchemas.Config[K]) => boolean;
+    overrideValue?: (value: ConfigSchemas.Config[K]) => ConfigSchemas.Config[K];
+    overrideConfig?: (
+      value: ConfigSchemas.Config[K]
+    ) => Partial<ConfigSchemas.Config> | undefined;
   };
 };
 
@@ -144,14 +151,7 @@ const configMetadata = {
   numbers: {
     schema: z.boolean(),
     properties: ["blockedByNoQuit"],
-    // setBlock: {
-    //   mode: ["quote"],
-    // },
-    // customSetBlock: () => {
-    //   if (config.mode === "quote") return true;
-    //   return false;
-    // },
-    valueOverride: (value) => {
+    overrideValue: (value) => {
       if (config.mode === "quote") {
         return false;
       }
@@ -161,7 +161,7 @@ const configMetadata = {
   punctuation: {
     schema: z.boolean(),
     properties: ["blockedByNoQuit"],
-    valueOverride: (value) => {
+    overrideValue: (value) => {
       if (config.mode === "quote") {
         return false;
       }
@@ -195,7 +195,7 @@ const configMetadata = {
   accountChart: {
     schema: ConfigSchemas.AccountChartSchema,
     displayString: "account chart",
-    valueOverride: (value) => {
+    overrideValue: (value) => {
       // if both speed and accuracy are off, set speed to on
       // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
       if (value[0] === "off" && value[1] === "off") {
@@ -310,7 +310,7 @@ const configMetadata = {
   tapeMargin: {
     schema: ConfigSchemas.TapeMarginSchema,
     displayString: "tape margin",
-    valueOverride: (value) => {
+    overrideValue: (value) => {
       if (value < 10) {
         value = 10;
       }
@@ -438,7 +438,7 @@ const configMetadata = {
   fontSize: {
     schema: ConfigSchemas.FontSizeSchema,
     displayString: "font size",
-    valueOverride: (value) => {
+    overrideValue: (value) => {
       if (value < 0) {
         value = 1;
       }
@@ -448,7 +448,7 @@ const configMetadata = {
   customBackground: {
     schema: ConfigSchemas.CustomBackgroundSchema,
     displayString: "custom background",
-    valueOverride: (value) => {
+    overrideValue: (value) => {
       return value.trim();
     },
   },
@@ -467,6 +467,29 @@ const configMetadata = {
   burstHeatmap: {
     schema: z.boolean(),
     displayString: "burst heatmap",
+  },
+  tapeMode: {
+    schema: ConfigSchemas.TapeModeSchema,
+    displayString: "tape mode",
+    overrideConfig: (value) => {
+      if (value !== "off") {
+        return {
+          showAllLines: false,
+        };
+      }
+      return undefined;
+    },
+  },
+  showAllLines: {
+    schema: z.boolean(),
+    displayString: "show all lines",
+    isBlocked: (value) => {
+      if (value && config.tapeMode !== "off") {
+        Notifications.add("Show all lines doesn't support tape mode.", 0);
+        return true;
+      }
+      return false;
+    },
   },
 } satisfies ConfigMetadata;
 
@@ -493,31 +516,40 @@ export function genericSet<T extends keyof typeof configMetadata>(
     return false;
   }
 
-  if (metadata.setBlock) {
-    let block = false;
-    for (const blockKey of typedKeys(metadata.setBlock)) {
-      const blockValues = metadata.setBlock[blockKey] ?? [];
-      if (
-        config[blockKey] !== undefined &&
-        (blockValues as Array<(typeof config)[typeof blockKey]>).includes(
-          config[blockKey]
-        )
-      ) {
-        block = true;
-        break;
-      }
-    }
-    if (block) {
-      return false;
-    }
-  }
+  // if (metadata.setBlock) {
+  //   let block = false;
+  //   for (const blockKey of typedKeys(metadata.setBlock)) {
+  //     const blockValues = metadata.setBlock[blockKey] ?? [];
+  //     if (
+  //       config[blockKey] !== undefined &&
+  //       (blockValues as Array<(typeof config)[typeof blockKey]>).includes(
+  //         config[blockKey]
+  //       )
+  //     ) {
+  //       block = true;
+  //       break;
+  //     }
+  //   }
+  //   if (block) {
+  //     return false;
+  //   }
+  // }
 
-  if (metadata.customSetBlock && metadata.customSetBlock(value)) {
+  if (metadata.isBlocked && metadata.isBlocked(value)) {
     return false;
   }
 
-  if (metadata.valueOverride) {
-    value = metadata.valueOverride(value);
+  // if (metadata.requiredConfig) {
+  //   for (const requiredKey of typedKeys(metadata.requiredConfig)) {
+  //     const requiredValue = metadata.requiredConfig[requiredKey];
+  //     if (config[requiredKey] !== requiredValue) {
+
+  //     }
+  //   }
+  // }
+
+  if (metadata.overrideValue) {
+    value = metadata.overrideValue(value);
   }
 
   if (
