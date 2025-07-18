@@ -369,11 +369,11 @@ const configMetadata = {
     displayString: "smooth line scroll",
   },
   quickRestart: {
-    schema: z.boolean(),
+    schema: ConfigSchemas.QuickRestartSchema,
     displayString: "quick restart",
   },
   indicateTypos: {
-    schema: z.boolean(),
+    schema: ConfigSchemas.IndicateTyposSchema,
     displayString: "indicate typos",
   },
   autoSwitchTheme: {
@@ -428,7 +428,7 @@ const configMetadata = {
     displayString: "keymap layout",
   },
   keymapShowTopRow: {
-    schema: z.boolean(),
+    schema: ConfigSchemas.KeymapShowTopRowSchema,
     displayString: "keymap show top row",
   },
   layout: {
@@ -856,18 +856,7 @@ export function setCapsLockWarning(val: boolean, nosave?: boolean): boolean {
 }
 
 export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("show all lines", sal)) return false;
-
-  if (sal && config.tapeMode !== "off") {
-    Notifications.add("Show all lines doesn't support tape mode", 0);
-    return false;
-  }
-
-  config.showAllLines = sal;
-  saveToLocalStorage("showAllLines", nosave);
-  ConfigEvent.dispatch("showAllLines", config.showAllLines, nosave);
-
-  return true;
+  return genericSet("showAllLines", sal, nosave);
 }
 
 export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
