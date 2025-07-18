@@ -113,8 +113,6 @@ function isConfigChangeBlocked(): boolean {
   return false;
 }
 
-type ConfigMetadataProperty = "blockedByNoQuit";
-
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -137,10 +135,11 @@ type ConfigMetadata = {
      * Should the config change trigger a resize event? handled in ui.ts:108
      */
     triggerResize?: true;
+
     /**
-     * Optional array of metadata properties that can be used to control behavior.
+     * Is a test restart required after this config change?
      */
-    properties?: ConfigMetadataProperty[];
+    changeRequiresRestart: boolean;
     /**
      * Optional function that checks if the config value is blocked from being set.
      * Returns true if setting the config value should be blocked.
@@ -178,7 +177,7 @@ type ConfigMetadata = {
 const configMetadata: ConfigMetadata = {
   numbers: {
     schema: z.boolean(),
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
     overrideValue: (value) => {
       if (config.mode === "quote") {
         return false;
@@ -188,7 +187,7 @@ const configMetadata: ConfigMetadata = {
   },
   punctuation: {
     schema: z.boolean(),
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
     overrideValue: (value) => {
       if (config.mode === "quote") {
         return false;
@@ -199,30 +198,36 @@ const configMetadata: ConfigMetadata = {
   playSoundOnError: {
     schema: ConfigSchemas.PlaySoundOnErrorSchema,
     displayString: "play sound on error",
+    changeRequiresRestart: false,
   },
   playSoundOnClick: {
     schema: ConfigSchemas.PlaySoundOnClickSchema,
     displayString: "play sound on click",
+    changeRequiresRestart: false,
   },
   soundVolume: {
     schema: ConfigSchemas.SoundVolumeSchema,
     displayString: "sound volume",
+    changeRequiresRestart: false,
   },
   difficulty: {
     schema: ConfigSchemas.DifficultySchema,
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   favThemes: {
     schema: ConfigSchemas.FavThemesSchema,
     displayString: "favorite themes",
+    changeRequiresRestart: false,
   },
   blindMode: {
     schema: z.boolean(),
     displayString: "blind mode",
+    changeRequiresRestart: false,
   },
   accountChart: {
     schema: ConfigSchemas.AccountChartSchema,
     displayString: "account chart",
+    changeRequiresRestart: false,
     overrideValue: (value) => {
       // if both speed and accuracy are off, set speed to on
       // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
@@ -235,109 +240,127 @@ const configMetadata: ConfigMetadata = {
   alwaysShowDecimalPlaces: {
     schema: z.boolean(),
     displayString: "always show decimal places",
+    changeRequiresRestart: false,
   },
   typingSpeedUnit: {
     schema: ConfigSchemas.TypingSpeedUnitSchema,
     displayString: "typing speed unit",
+    changeRequiresRestart: false,
   },
   showOutOfFocusWarning: {
     schema: z.boolean(),
     displayString: "show out of focus warning",
+    changeRequiresRestart: false,
   },
   paceCaretCustomSpeed: {
     schema: ConfigSchemas.PaceCaretCustomSpeedSchema,
     displayString: "pace caret custom speed",
+    changeRequiresRestart: false,
   },
   repeatedPace: {
     schema: z.boolean(),
     displayString: "repeated pace",
+    changeRequiresRestart: false,
   },
   minWpm: {
     schema: ConfigSchemas.MinimumWordsPerMinuteSchema,
     displayString: "min speed",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   minWpmCustomSpeed: {
     schema: ConfigSchemas.MinWpmCustomSpeedSchema,
     displayString: "min speed custom",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   minAcc: {
     schema: ConfigSchemas.MinimumAccuracySchema,
     displayString: "min accuracy",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   minAccCustom: {
     schema: ConfigSchemas.MinimumAccuracyCustomSchema,
     displayString: "min accuracy custom",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   minBurst: {
     schema: ConfigSchemas.MinimumBurstSchema,
     displayString: "min burst",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   minBurstCustomSpeed: {
     schema: ConfigSchemas.MinimumBurstCustomSpeedSchema,
     displayString: "min burst custom speed",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   alwaysShowWordsHistory: {
     schema: z.boolean(),
     displayString: "always show words history",
+    changeRequiresRestart: false,
   },
   singleListCommandLine: {
     schema: ConfigSchemas.SingleListCommandLineSchema,
     displayString: "single list command line",
+    changeRequiresRestart: false,
   },
   capsLockWarning: {
     schema: z.boolean(),
     displayString: "caps lock warning",
+    changeRequiresRestart: false,
   },
   quickEnd: {
     schema: z.boolean(),
     displayString: "quick end",
+    changeRequiresRestart: false,
   },
   repeatQuotes: {
     schema: ConfigSchemas.RepeatQuotesSchema,
     displayString: "repeat quotes",
+    changeRequiresRestart: false,
   },
   flipTestColors: {
     schema: z.boolean(),
     displayString: "flip test colors",
+    changeRequiresRestart: false,
   },
   colorfulMode: {
     schema: z.boolean(),
     displayString: "colorful mode",
+    changeRequiresRestart: false,
   },
   strictSpace: {
     schema: z.boolean(),
     displayString: "strict space",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   oppositeShiftMode: {
     schema: ConfigSchemas.OppositeShiftModeSchema,
     displayString: "opposite shift mode",
+    changeRequiresRestart: false,
   },
   caretStyle: {
     schema: ConfigSchemas.CaretStyleSchema,
     displayString: "caret style",
+    changeRequiresRestart: false,
   },
   paceCaretStyle: {
     schema: ConfigSchemas.CaretStyleSchema,
     displayString: "pace caret style",
+    changeRequiresRestart: false,
   },
   showAverage: {
     schema: ConfigSchemas.ShowAverageSchema,
     displayString: "show average",
+    changeRequiresRestart: false,
   },
   highlightMode: {
     schema: ConfigSchemas.HighlightModeSchema,
     displayString: "highlight mode",
+    changeRequiresRestart: false,
   },
   tapeMargin: {
     schema: ConfigSchemas.TapeMarginSchema,
     displayString: "tape margin",
+    changeRequiresRestart: false,
     overrideValue: (value) => {
       if (value < 10) {
         value = 10;
@@ -351,120 +374,146 @@ const configMetadata: ConfigMetadata = {
   hideExtraLetters: {
     schema: z.boolean(),
     displayString: "hide extra letters",
+    changeRequiresRestart: false,
   },
   timerStyle: {
     schema: ConfigSchemas.TimerStyleSchema,
     displayString: "timer style",
+    changeRequiresRestart: false,
   },
   liveSpeedStyle: {
     schema: ConfigSchemas.LiveSpeedAccBurstStyleSchema,
     displayString: "live speed style",
+    changeRequiresRestart: false,
   },
   liveAccStyle: {
     schema: ConfigSchemas.LiveSpeedAccBurstStyleSchema,
     displayString: "live accuracy style",
+    changeRequiresRestart: false,
   },
   liveBurstStyle: {
     schema: ConfigSchemas.LiveSpeedAccBurstStyleSchema,
     displayString: "live burst style",
+    changeRequiresRestart: false,
   },
   timerColor: {
     schema: ConfigSchemas.TimerColorSchema,
     displayString: "timer color",
+    changeRequiresRestart: false,
   },
   timerOpacity: {
     schema: ConfigSchemas.TimerOpacitySchema,
     displayString: "timer opacity",
+    changeRequiresRestart: false,
   },
   showKeyTips: {
     schema: z.boolean(),
     displayString: "show key tips",
+    changeRequiresRestart: false,
   },
   smoothCaret: {
     schema: ConfigSchemas.SmoothCaretSchema,
     displayString: "smooth caret",
+    changeRequiresRestart: false,
   },
   codeUnindentOnBackspace: {
     schema: z.boolean(),
     displayString: "code unindent on backspace",
+    changeRequiresRestart: true,
   },
   startGraphsAtZero: {
     schema: z.boolean(),
     displayString: "start graphs at zero",
+    changeRequiresRestart: false,
   },
   smoothLineScroll: {
     schema: z.boolean(),
     displayString: "smooth line scroll",
+    changeRequiresRestart: false,
   },
   quickRestart: {
     schema: ConfigSchemas.QuickRestartSchema,
     displayString: "quick restart",
+    changeRequiresRestart: false,
   },
   indicateTypos: {
     schema: ConfigSchemas.IndicateTyposSchema,
     displayString: "indicate typos",
+    changeRequiresRestart: false,
   },
   autoSwitchTheme: {
     schema: z.boolean(),
     displayString: "auto switch theme",
+    changeRequiresRestart: false,
   },
   customTheme: {
     schema: z.boolean(),
     displayString: "custom theme",
+    changeRequiresRestart: false,
   },
   themeLight: {
     schema: ConfigSchemas.ThemeNameSchema,
     displayString: "theme light",
+    changeRequiresRestart: false,
   },
   themeDark: {
     schema: ConfigSchemas.ThemeNameSchema,
     displayString: "theme dark",
+    changeRequiresRestart: false,
   },
   britishEnglish: {
     schema: z.boolean(),
     displayString: "british english",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   lazyMode: {
     schema: z.boolean(),
     displayString: "lazy mode",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   customThemeColors: {
     schema: ConfigSchemas.CustomThemeColorsSchema,
     displayString: "custom theme colors",
+    changeRequiresRestart: false,
   },
   language: {
     schema: LanguageSchema,
     displayString: "language",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   monkey: {
     schema: z.boolean(),
     displayString: "monkey",
+    changeRequiresRestart: false,
   },
   keymapMode: {
     schema: ConfigSchemas.KeymapModeSchema,
     displayString: "keymap mode",
+    changeRequiresRestart: false,
   },
   keymapStyle: {
     schema: ConfigSchemas.KeymapStyleSchema,
     displayString: "keymap style",
+    changeRequiresRestart: false,
   },
   keymapLayout: {
     schema: ConfigSchemas.KeymapLayoutSchema,
     displayString: "keymap layout",
+    changeRequiresRestart: false,
   },
   keymapShowTopRow: {
     schema: ConfigSchemas.KeymapShowTopRowSchema,
     displayString: "keymap show top row",
+    changeRequiresRestart: false,
   },
   layout: {
     schema: ConfigSchemas.LayoutSchema,
     displayString: "layout",
+    changeRequiresRestart: true,
   },
   fontSize: {
     schema: ConfigSchemas.FontSizeSchema,
+    changeRequiresRestart: false,
     triggerResize: true,
     displayString: "font size",
     overrideValue: (value) => {
@@ -477,6 +526,7 @@ const configMetadata: ConfigMetadata = {
   customBackground: {
     schema: ConfigSchemas.CustomBackgroundSchema,
     displayString: "custom background",
+    changeRequiresRestart: false,
     overrideValue: (value) => {
       return value.trim();
     },
@@ -484,22 +534,27 @@ const configMetadata: ConfigMetadata = {
   customBackgroundSize: {
     schema: ConfigSchemas.CustomBackgroundSizeSchema,
     displayString: "custom background size",
+    changeRequiresRestart: false,
   },
   customBackgroundFilter: {
     schema: ConfigSchemas.CustomBackgroundFilterSchema,
     displayString: "custom background filter",
+    changeRequiresRestart: false,
   },
   monkeyPowerLevel: {
     schema: ConfigSchemas.MonkeyPowerLevelSchema,
     displayString: "monkey power level",
+    changeRequiresRestart: false,
   },
   burstHeatmap: {
     schema: z.boolean(),
     displayString: "burst heatmap",
+    changeRequiresRestart: false,
   },
   tapeMode: {
     schema: ConfigSchemas.TapeModeSchema,
     triggerResize: true,
+    changeRequiresRestart: false,
     displayString: "tape mode",
     overrideConfig: (value) => {
       if (value !== "off") {
@@ -512,6 +567,7 @@ const configMetadata: ConfigMetadata = {
   },
   showAllLines: {
     schema: z.boolean(),
+    changeRequiresRestart: false,
     displayString: "show all lines",
     isBlocked: (value) => {
       if (value && config.tapeMode !== "off") {
@@ -523,13 +579,13 @@ const configMetadata: ConfigMetadata = {
   },
   time: {
     schema: ConfigSchemas.TimeConfigSchema,
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
     displayString: "time",
   },
   quoteLength: {
     schema: ConfigSchemas.QuoteLengthConfigSchema,
     displayString: "quote length",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
     overrideValue: (value) => {
       if (value.length === 1 && value[0] === -1) {
         return [0, 1, 2, 3];
@@ -540,14 +596,16 @@ const configMetadata: ConfigMetadata = {
   words: {
     schema: ConfigSchemas.WordCountSchema,
     displayString: "word count",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
   },
   fontFamily: {
     schema: ConfigSchemas.FontFamilySchema,
     displayString: "font family",
+    changeRequiresRestart: false,
   },
   theme: {
     schema: ConfigSchemas.ThemeNameSchema,
+    changeRequiresRestart: false,
     overrideConfig: () => {
       return {
         customTheme: false,
@@ -556,7 +614,7 @@ const configMetadata: ConfigMetadata = {
   },
   mode: {
     schema: ModeSchema,
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
     overrideConfig: (value) => {
       if (value === "custom" || value === "quote") {
         return {
@@ -574,6 +632,7 @@ const configMetadata: ConfigMetadata = {
   },
   freedomMode: {
     schema: z.boolean(),
+    changeRequiresRestart: false,
     displayString: "freedom mode",
     overrideConfig: (value) => {
       if (value) {
@@ -586,7 +645,7 @@ const configMetadata: ConfigMetadata = {
   },
   funbox: {
     schema: ConfigSchemas.FunboxSchema,
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
     isBlocked: (value) => {
       for (const funbox of config.funbox) {
         if (!canSetFunboxWithConfig(funbox, config)) {
@@ -603,6 +662,7 @@ const configMetadata: ConfigMetadata = {
   confidenceMode: {
     schema: ConfigSchemas.ConfidenceModeSchema,
     displayString: "confidence mode",
+    changeRequiresRestart: false,
     overrideConfig: (value) => {
       if (value !== "off") {
         return {
@@ -616,7 +676,7 @@ const configMetadata: ConfigMetadata = {
   stopOnError: {
     schema: ConfigSchemas.StopOnErrorSchema,
     displayString: "stop on error",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
     overrideConfig: (value) => {
       if (value !== "off") {
         return {
@@ -629,10 +689,12 @@ const configMetadata: ConfigMetadata = {
   keymapLegendStyle: {
     schema: ConfigSchemas.KeymapLegendStyleSchema,
     displayString: "keymap legend style",
+    changeRequiresRestart: false,
   },
   keymapSize: {
     schema: ConfigSchemas.KeymapSizeSchema,
     triggerResize: true,
+    changeRequiresRestart: false,
     displayString: "keymap size",
     overrideValue: (value) => {
       return roundTo1(value);
@@ -640,6 +702,7 @@ const configMetadata: ConfigMetadata = {
   },
   randomTheme: {
     schema: ConfigSchemas.RandomThemeSchema,
+    changeRequiresRestart: false,
     displayString: "random theme",
     isBlocked: (value) => {
       if (value === "custom") {
@@ -672,6 +735,7 @@ const configMetadata: ConfigMetadata = {
   paceCaret: {
     schema: ConfigSchemas.PaceCaretSchema,
     displayString: "pace caret",
+    changeRequiresRestart: false,
     isBlocked: (value) => {
       if (document.readyState === "complete") {
         if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
@@ -687,6 +751,7 @@ const configMetadata: ConfigMetadata = {
   },
   ads: {
     schema: ConfigSchemas.AdsSchema,
+    changeRequiresRestart: false,
     overrideValue: (value) => {
       if (isDevEnvironment()) {
         Notifications.add("Ads are disabled in development mode.", 0);
@@ -704,20 +769,21 @@ const configMetadata: ConfigMetadata = {
   customLayoutfluid: {
     schema: ConfigSchemas.CustomLayoutFluidSchema,
     displayString: "custom layoutfluid",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: true,
     overrideValue: (value) => {
       return Array.from(new Set(value));
     },
   },
   maxLineWidth: {
     schema: ConfigSchemas.MaxLineWidthSchema,
+    changeRequiresRestart: false,
     triggerResize: true,
     displayString: "max line width",
   },
   customPolyglot: {
     schema: ConfigSchemas.CustomPolyglotSchema,
     displayString: "custom polyglot",
-    properties: ["blockedByNoQuit"],
+    changeRequiresRestart: false,
     overrideValue: (value) => {
       return Array.from(new Set(value));
     },
@@ -737,7 +803,7 @@ export function genericSet<T extends keyof typeof configMetadata>(
   const previousValue = config[key];
 
   if (
-    metadata.properties?.includes("blockedByNoQuit") &&
+    metadata.changeRequiresRestart &&
     TestState.isActive &&
     config.funbox.includes("no_quit")
   ) {
