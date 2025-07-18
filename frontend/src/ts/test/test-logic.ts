@@ -461,7 +461,7 @@ export async function init(): Promise<void | null> {
 
   if (Config.mode === "quote") {
     if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLength([-1]);
     }
   }
 
@@ -1442,14 +1442,20 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  let len: QuoteLength | QuoteLength[] = parseInt(
+  const len = parseInt(
     $(e.currentTarget).attr("quoteLength") ?? "1"
   ) as QuoteLength;
+
   if (len !== -2) {
-    if (len === -1) {
-      len = [0, 1, 2, 3];
+    let arr: QuoteLength[] = [];
+
+    if (e.shiftKey) {
+      arr = [...Config.quoteLength, len];
+    } else {
+      arr = [len];
     }
-    if (UpdateConfig.setQuoteLength(len, false, e.shiftKey)) {
+
+    if (UpdateConfig.setQuoteLength(arr, false)) {
       ManualRestart.set();
       restart();
     }

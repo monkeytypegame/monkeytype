@@ -127,12 +127,22 @@ type ConfigMetadataProperty = "blockedByNoQuit";
 // };
 
 //todo: remove the ? here so that all config elements must be defined
+
+/**
+ * ConfigMetadata describes the metadata for each config key.
+ *
+ * - `schema`: Zod schema for validation.
+ * - `displayString`: Optional display name for the UI.
+ * - `properties`: Optional array of metadata properties (e.g., "blockedByNoQuit").
+ * - `isBlocked`: Optional function. Returns true if setting the config value should be blocked.
+ * - `overrideValue`: Optional function to override the value before setting.
+ * - `overrideConfig`: Optional function to override other config values before this ones is set.
+ */
 type ConfigMetadata = {
   [K in keyof ConfigSchemas.Config]?: {
     schema: ZodSchema;
     displayString?: string;
     properties?: ConfigMetadataProperty[];
-    // setBlock?: SetBlock;
     isBlocked?: (value: ConfigSchemas.Config[K]) => boolean;
     overrideValue?: (value: ConfigSchemas.Config[K]) => ConfigSchemas.Config[K];
     overrideConfig?: (
@@ -489,6 +499,22 @@ const configMetadata = {
         return true;
       }
       return false;
+    },
+  },
+  time: {
+    schema: ConfigSchemas.TimeConfigSchema,
+    properties: ["blockedByNoQuit"],
+    displayString: "time",
+  },
+  quoteLength: {
+    schema: ConfigSchemas.QuoteLengthConfigSchema,
+    displayString: "quote length",
+    properties: ["blockedByNoQuit"],
+    overrideValue: (value) => {
+      if (value.length === 1 && value[0] === -1) {
+        return [0, 1, 2, 3];
+      }
+      return value;
     },
   },
 } satisfies ConfigMetadata;
@@ -1023,76 +1049,14 @@ export function setTimeConfig(
   time: ConfigSchemas.TimeConfig,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  time = isNaN(time) || time < 0 ? getDefaultConfig().time : time;
-  if (!isConfigValueValid("time", time, ConfigSchemas.TimeConfigSchema))
-    return false;
-
-  if (!canSetConfigWithCurrentFunboxes("words", time, config.funbox)) {
-    return false;
-  }
-
-  config.time = time;
-  saveToLocalStorage("time", nosave);
-  ConfigEvent.dispatch("time", config.time);
-
-  return true;
+  return genericSet("time", time, nosave);
 }
 
 export function setQuoteLength(
-  len: ConfigSchemas.QuoteLength[] | ConfigSchemas.QuoteLength,
-  nosave?: boolean,
-  multipleMode?: boolean
+  len: ConfigSchemas.QuoteLength[],
+  nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (Array.isArray(len)) {
-    if (
-      !isConfigValueValid(
-        "quote length",
-        len,
-        ConfigSchemas.QuoteLengthConfigSchema
-      )
-    ) {
-      return false;
-    }
-
-    //config load
-    if (len.length === 1 && len[0] === -1) len = [1];
-    config.quoteLength = len;
-  } else {
-    if (
-      !isConfigValueValid("quote length", len, ConfigSchemas.QuoteLengthSchema)
-    ) {
-      return false;
-    }
-
-    if (!Array.isArray(config.quoteLength)) config.quoteLength = [];
-    if (len === null || isNaN(len) || len < -3 || len > 3) {
-      len = 1;
-    }
-    len = parseInt(len.toString()) as ConfigSchemas.QuoteLength;
-
-    if (len === -1) {
-      config.quoteLength = [0, 1, 2, 3];
-    } else if (multipleMode && len >= 0) {
-      if (!config.quoteLength.includes(len)) {
-        config.quoteLength.push(len);
-      } else {
-        if (config.quoteLength.length > 1) {
-          config.quoteLength = config.quoteLength.filter((ql) => ql !== len);
-        }
-      }
-    } else {
-      config.quoteLength = [len];
-    }
-  }
-  // if (!nosave) setMode("quote", nosave);
-  saveToLocalStorage("quoteLength", nosave);
-  ConfigEvent.dispatch("quoteLength", config.quoteLength);
-
-  return true;
+  return genericSet("quoteLength", len, nosave);
 }
 
 export function setWordCount(
