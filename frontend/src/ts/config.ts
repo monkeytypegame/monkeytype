@@ -170,7 +170,6 @@ type ConfigMetadata = {
 };
 
 //todo:
-// maybe change blockedByNoQuit to 'canChangeDuringTest' which means that changing needs to restart test and noquit blocks that
 // maybe have generic set somehow handle test restarting
 // maybe add config group to each metadata object? all though its already defined in ConfigGroupsLiteral
 
