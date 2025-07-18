@@ -309,6 +309,7 @@
     td {
       padding: 0.5rem 0.5rem;
       background: var(--row-bg, var(--bg-color));
+      background-clip: padding-box;
     }
 
     thead {
