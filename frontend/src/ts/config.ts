@@ -1104,19 +1104,7 @@ export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
 }
 
 export function setAds(val: ConfigSchemas.Ads, nosave?: boolean): boolean {
-  if (!isConfigValueValid("ads", val, ConfigSchemas.AdsSchema)) {
-    return false;
-  }
-
-  config.ads = val;
-  saveToLocalStorage("ads", nosave);
-  if (!nosave && !isDevEnvironment()) {
-    reloadAfter(3);
-    Notifications.add("Ad settings changed. Refreshing...", 0);
-  }
-  ConfigEvent.dispatch("ads", config.ads);
-
-  return true;
+  return genericSet("ads", val, nosave);
 }
 
 export function setRepeatQuotes(
