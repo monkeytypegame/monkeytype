@@ -189,7 +189,7 @@
 
         .avatarNameBadge {
           display: grid;
-          grid-template-columns: 1.25em max-content auto;
+          grid-template-columns: max-content max-content auto;
           gap: 0.5em;
           place-items: center left;
           .avatar .userIcon {
