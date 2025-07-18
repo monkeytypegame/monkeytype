@@ -1,9 +1,6 @@
 import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
-import {
-  isConfigValueValidBoolean,
-  isConfigValueValid,
-} from "./config-validation";
+import { isConfigValueValid } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import { isAuthenticated } from "./firebase";
 import * as AccountButton from "./elements/account-button";
@@ -529,8 +526,36 @@ const configMetadata: ConfigMetadata = {
     displayString: "font family",
   },
   theme: undefined,
-  mode: undefined,
-  freedomMode: undefined,
+  mode: {
+    schema: ModeSchema,
+    properties: ["blockedByNoQuit"],
+    overrideConfig: (value) => {
+      if (value === "custom" || value === "quote") {
+        return {
+          numbers: false,
+          punctuation: false,
+        };
+      }
+      if (value === "zen") {
+        if (config.paceCaret !== "off") {
+          Notifications.add(`Pace caret will not work with zen mode.`, 0);
+        }
+      }
+      return undefined;
+    },
+  },
+  freedomMode: {
+    schema: z.boolean(),
+    displayString: "freedom mode",
+    overrideConfig: (value) => {
+      if (value) {
+        return {
+          confidenceMode: "off",
+        };
+      }
+      return undefined;
+    },
+  },
   funbox: undefined,
   confidenceMode: undefined,
   randomTheme: undefined,
@@ -611,11 +636,13 @@ export function genericSet<T extends keyof typeof configMetadata>(
         const targetValue = targetConfig[
           targetKey
         ] as ConfigSchemas.Config[keyof typeof configMetadata];
-        const set = genericSet(targetKey, targetValue, true);
-        if (!set) {
-          throw new Error(
-            `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`
-          );
+        if (config[targetKey] !== targetValue) {
+          const set = genericSet(targetKey, targetValue, true);
+          if (!set) {
+            throw new Error(
+              `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`
+            );
+          }
         }
       }
     }
@@ -638,33 +665,7 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
 }
 
 export function setMode(mode: Mode, nosave?: boolean): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (!isConfigValueValid("mode", mode, ModeSchema)) {
-    return false;
-  }
-
-  if (!canSetConfigWithCurrentFunboxes("mode", mode, config.funbox)) {
-    return false;
-  }
-
-  const previous = config.mode;
-  config.mode = mode;
-  if (config.mode === "custom") {
-    setPunctuation(false, true);
-    setNumbers(false, true);
-  } else if (config.mode === "quote") {
-    setPunctuation(false, true);
-    setNumbers(false, true);
-  } else if (config.mode === "zen") {
-    if (config.paceCaret !== "off") {
-      Notifications.add(`Pace caret will not work with zen mode.`, 0);
-    }
-  }
-  saveToLocalStorage("mode", nosave);
-  ConfigEvent.dispatch("mode", config.mode, nosave, previous);
-
-  return true;
+  return genericSet("mode", mode, nosave);
 }
 
 export function setPlaySoundOnError(
@@ -1129,19 +1130,7 @@ export function setFontFamily(
 
 //freedom
 export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("freedom mode", freedom)) return false;
-
-  if (freedom === null || freedom === undefined) {
-    freedom = false;
-  }
-  config.freedomMode = freedom;
-  if (config.freedomMode && config.confidenceMode !== "off") {
-    config.confidenceMode = "off";
-  }
-  saveToLocalStorage("freedomMode", nosave);
-  ConfigEvent.dispatch("freedomMode", config.freedomMode);
-
-  return true;
+  return genericSet("freedomMode", freedom, nosave);
 }
 
 export function setConfidenceMode(
