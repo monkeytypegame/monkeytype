@@ -10,7 +10,7 @@ function buildElement(
   avatar.classList.add("avatar");
   if (url === null) {
     if (options?.loading) {
-      avatar.innerHTML = `<div class="avatarLoading"><i class="fas fa-circle-notch fa-spin"><i></div>`;
+      avatar.innerHTML = `<div class="loading"><i class="fas fa-circle-notch fa-spin"><i></div>`;
     } else {
       avatar.innerHTML = `<div class="userIcon"><i class="${
         options?.userIcon ?? "fas fa-user-circle"
@@ -52,7 +52,6 @@ export function getAvatarElement(
 
     void getDiscordAvatarUrl({ discordId, discordAvatar }).then((url) => {
       cachedAvatarUrlByAvatarId.set(discordAvatar, url);
-
       element.replaceWith(buildElement(url, options));
     });
 
