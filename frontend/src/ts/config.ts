@@ -295,6 +295,179 @@ const configMetadata = {
     schema: ConfigSchemas.CaretStyleSchema,
     displayString: "caret style",
   },
+  paceCaretStyle: {
+    schema: ConfigSchemas.CaretStyleSchema,
+    displayString: "pace caret style",
+  },
+  showAverage: {
+    schema: ConfigSchemas.ShowAverageSchema,
+    displayString: "show average",
+  },
+  highlightMode: {
+    schema: ConfigSchemas.HighlightModeSchema,
+    displayString: "highlight mode",
+  },
+  tapeMargin: {
+    schema: ConfigSchemas.TapeMarginSchema,
+    displayString: "tape margin",
+    valueOverride: (value) => {
+      if (value < 10) {
+        value = 10;
+      }
+      if (value > 90) {
+        value = 90;
+      }
+      return value;
+    },
+  },
+  hideExtraLetters: {
+    schema: z.boolean(),
+    displayString: "hide extra letters",
+  },
+  timerStyle: {
+    schema: ConfigSchemas.TimerStyleSchema,
+    displayString: "timer style",
+  },
+  liveSpeedStyle: {
+    schema: ConfigSchemas.LiveSpeedAccBurstStyleSchema,
+    displayString: "live speed style",
+  },
+  liveAccStyle: {
+    schema: ConfigSchemas.LiveSpeedAccBurstStyleSchema,
+    displayString: "live accuracy style",
+  },
+  liveBurstStyle: {
+    schema: ConfigSchemas.LiveSpeedAccBurstStyleSchema,
+    displayString: "live burst style",
+  },
+  timerColor: {
+    schema: ConfigSchemas.TimerColorSchema,
+    displayString: "timer color",
+  },
+  timerOpacity: {
+    schema: ConfigSchemas.TimerOpacitySchema,
+    displayString: "timer opacity",
+  },
+  showKeyTips: {
+    schema: z.boolean(),
+    displayString: "show key tips",
+  },
+  smoothCaret: {
+    schema: ConfigSchemas.SmoothCaretSchema,
+    displayString: "smooth caret",
+  },
+  codeUnindentOnBackspace: {
+    schema: z.boolean(),
+    displayString: "code unindent on backspace",
+  },
+  startGraphsAtZero: {
+    schema: z.boolean(),
+    displayString: "start graphs at zero",
+  },
+  smoothLineScroll: {
+    schema: z.boolean(),
+    displayString: "smooth line scroll",
+  },
+  quickRestart: {
+    schema: z.boolean(),
+    displayString: "quick restart",
+  },
+  indicateTypos: {
+    schema: z.boolean(),
+    displayString: "indicate typos",
+  },
+  autoSwitchTheme: {
+    schema: z.boolean(),
+    displayString: "auto switch theme",
+  },
+  customTheme: {
+    schema: z.boolean(),
+    displayString: "custom theme",
+  },
+  themeLight: {
+    schema: ConfigSchemas.ThemeNameSchema,
+    displayString: "theme light",
+  },
+  themeDark: {
+    schema: ConfigSchemas.ThemeNameSchema,
+    displayString: "theme dark",
+  },
+  britishEnglish: {
+    schema: z.boolean(),
+    displayString: "british english",
+    properties: ["blockedByNoQuit"],
+  },
+  lazyMode: {
+    schema: z.boolean(),
+    displayString: "lazy mode",
+    properties: ["blockedByNoQuit"],
+  },
+  customThemeColors: {
+    schema: ConfigSchemas.CustomThemeColorsSchema,
+    displayString: "custom theme colors",
+  },
+  language: {
+    schema: LanguageSchema,
+    displayString: "language",
+    properties: ["blockedByNoQuit"],
+  },
+  monkey: {
+    schema: z.boolean(),
+    displayString: "monkey",
+  },
+  keymapMode: {
+    schema: ConfigSchemas.KeymapModeSchema,
+    displayString: "keymap mode",
+  },
+  keymapStyle: {
+    schema: ConfigSchemas.KeymapStyleSchema,
+    displayString: "keymap style",
+  },
+  keymapLayout: {
+    schema: ConfigSchemas.KeymapLayoutSchema,
+    displayString: "keymap layout",
+  },
+  keymapShowTopRow: {
+    schema: z.boolean(),
+    displayString: "keymap show top row",
+  },
+  layout: {
+    schema: ConfigSchemas.LayoutSchema,
+    displayString: "layout",
+  },
+  fontSize: {
+    schema: ConfigSchemas.FontSizeSchema,
+    displayString: "font size",
+    valueOverride: (value) => {
+      if (value < 0) {
+        value = 1;
+      }
+      return value;
+    },
+  },
+  customBackground: {
+    schema: ConfigSchemas.CustomBackgroundSchema,
+    displayString: "custom background",
+    valueOverride: (value) => {
+      return value.trim();
+    },
+  },
+  customBackgroundSize: {
+    schema: ConfigSchemas.CustomBackgroundSizeSchema,
+    displayString: "custom background size",
+  },
+  customBackgroundFilter: {
+    schema: ConfigSchemas.CustomBackgroundFilterSchema,
+    displayString: "custom background filter",
+  },
+  monkeyPowerLevel: {
+    schema: ConfigSchemas.MonkeyPowerLevelSchema,
+    displayString: "monkey power level",
+  },
+  burstHeatmap: {
+    schema: z.boolean(),
+    displayString: "burst heatmap",
+  },
 } satisfies ConfigMetadata;
 
 export function genericSet<T extends keyof typeof configMetadata>(
@@ -731,84 +904,21 @@ export function setPaceCaretStyle(
   caretStyle: ConfigSchemas.CaretStyle,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "pace caret style",
-      caretStyle,
-      ConfigSchemas.CaretStyleSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.paceCaretStyle = caretStyle;
-  $("#paceCaret").removeClass("off");
-  $("#paceCaret").removeClass("default");
-  $("#paceCaret").removeClass("underline");
-  $("#paceCaret").removeClass("outline");
-  $("#paceCaret").removeClass("block");
-  $("#paceCaret").removeClass("carrot");
-  $("#paceCaret").removeClass("banana");
-
-  if (caretStyle === "default") {
-    $("#paceCaret").addClass("default");
-  } else if (caretStyle === "block") {
-    $("#paceCaret").addClass("block");
-  } else if (caretStyle === "outline") {
-    $("#paceCaret").addClass("outline");
-  } else if (caretStyle === "underline") {
-    $("#paceCaret").addClass("underline");
-  } else if (caretStyle === "carrot") {
-    $("#paceCaret").addClass("carrot");
-  } else if (caretStyle === "banana") {
-    $("#paceCaret").addClass("banana");
-  }
-  saveToLocalStorage("paceCaretStyle", nosave);
-  ConfigEvent.dispatch("paceCaretStyle", config.paceCaretStyle);
-
-  return true;
+  return genericSet("paceCaretStyle", caretStyle, nosave);
 }
 
 export function setShowAverage(
   value: ConfigSchemas.ShowAverage,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("show average", value, ConfigSchemas.ShowAverageSchema)
-  ) {
-    return false;
-  }
-
-  config.showAverage = value;
-  saveToLocalStorage("showAverage", nosave);
-  ConfigEvent.dispatch("showAverage", config.showAverage, nosave);
-
-  return true;
+  return genericSet("showAverage", value, nosave);
 }
 
 export function setHighlightMode(
   mode: ConfigSchemas.HighlightMode,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "highlight mode",
-      mode,
-      ConfigSchemas.HighlightModeSchema
-    )
-  ) {
-    return false;
-  }
-
-  if (!canSetConfigWithCurrentFunboxes("highlightMode", mode, config.funbox)) {
-    return false;
-  }
-
-  config.highlightMode = mode;
-  saveToLocalStorage("highlightMode", nosave);
-  ConfigEvent.dispatch("highlightMode", config.highlightMode);
-
-  return true;
+  return genericSet("highlightMode", mode, nosave);
 }
 
 export function setTapeMode(
@@ -834,172 +944,57 @@ export function setTapeMargin(
   value: ConfigSchemas.TapeMargin,
   nosave?: boolean
 ): boolean {
-  if (value < 10) {
-    value = 10;
-  }
-  if (value > 90) {
-    value = 90;
-  }
-
-  if (
-    !isConfigValueValid("tape margin", value, ConfigSchemas.TapeMarginSchema)
-  ) {
-    return false;
-  }
-
-  config.tapeMargin = value;
-
-  saveToLocalStorage("tapeMargin", nosave);
-  ConfigEvent.dispatch("tapeMargin", config.tapeMargin, nosave);
-
-  // trigger a resize event to update the layout - handled in ui.ts:108
-  $(window).trigger("resize");
-
-  return true;
+  return genericSet("tapeMargin", value, nosave);
 }
 
 export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("hide extra letters", val)) return false;
-
-  config.hideExtraLetters = val;
-  saveToLocalStorage("hideExtraLetters", nosave);
-  ConfigEvent.dispatch("hideExtraLetters", config.hideExtraLetters);
-
-  return true;
+  return genericSet("hideExtraLetters", val, nosave);
 }
 
 export function setTimerStyle(
   style: ConfigSchemas.TimerStyle,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("timer style", style, ConfigSchemas.TimerStyleSchema)
-  ) {
-    return false;
-  }
-
-  config.timerStyle = style;
-  saveToLocalStorage("timerStyle", nosave);
-  ConfigEvent.dispatch("timerStyle", config.timerStyle);
-
-  return true;
+  return genericSet("timerStyle", style, nosave);
 }
 
 export function setLiveSpeedStyle(
   style: ConfigSchemas.LiveSpeedAccBurstStyle,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "live speed style",
-      style,
-      ConfigSchemas.LiveSpeedAccBurstStyleSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.liveSpeedStyle = style;
-  saveToLocalStorage("liveSpeedStyle", nosave);
-  ConfigEvent.dispatch("liveSpeedStyle", config.timerStyle);
-
-  return true;
+  return genericSet("liveSpeedStyle", style, nosave);
 }
 
 export function setLiveAccStyle(
   style: ConfigSchemas.LiveSpeedAccBurstStyle,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "live acc style",
-      style,
-      ConfigSchemas.LiveSpeedAccBurstStyleSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.liveAccStyle = style;
-  saveToLocalStorage("liveAccStyle", nosave);
-  ConfigEvent.dispatch("liveAccStyle", config.timerStyle);
-
-  return true;
+  return genericSet("liveAccStyle", style, nosave);
 }
 
 export function setLiveBurstStyle(
   style: ConfigSchemas.LiveSpeedAccBurstStyle,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "live burst style",
-      style,
-      ConfigSchemas.LiveSpeedAccBurstStyleSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.liveBurstStyle = style;
-  saveToLocalStorage("liveBurstStyle", nosave);
-  ConfigEvent.dispatch("liveBurstStyle", config.timerStyle);
-
-  return true;
+  return genericSet("liveBurstStyle", style, nosave);
 }
 
 export function setTimerColor(
   color: ConfigSchemas.TimerColor,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("timer color", color, ConfigSchemas.TimerColorSchema)
-  ) {
-    return false;
-  }
-
-  config.timerColor = color;
-
-  saveToLocalStorage("timerColor", nosave);
-  ConfigEvent.dispatch("timerColor", config.timerColor);
-
-  return true;
+  return genericSet("timerColor", color, nosave);
 }
 export function setTimerOpacity(
   opacity: ConfigSchemas.TimerOpacity,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "timer opacity",
-      opacity,
-      ConfigSchemas.TimerOpacitySchema
-    )
-  ) {
-    return false;
-  }
-
-  config.timerOpacity = opacity;
-  saveToLocalStorage("timerOpacity", nosave);
-  ConfigEvent.dispatch("timerOpacity", config.timerOpacity);
-
-  return true;
+  return genericSet("timerOpacity", opacity, nosave);
 }
 
 //key tips
 export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("key tips", keyTips)) return false;
-
-  config.showKeyTips = keyTips;
-  if (config.showKeyTips) {
-    $("footer .keyTips").removeClass("hidden");
-  } else {
-    $("footer .keyTips").addClass("hidden");
-  }
-  saveToLocalStorage("showKeyTips", nosave);
-  ConfigEvent.dispatch("showKeyTips", config.showKeyTips);
-
-  return true;
+  return genericSet("showKeyTips", keyTips, nosave);
 }
 
 //mode
@@ -1108,65 +1103,23 @@ export function setSmoothCaret(
   mode: ConfigSchemas.SmoothCaret,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("smooth caret", mode, ConfigSchemas.SmoothCaretSchema)
-  ) {
-    return false;
-  }
-  config.smoothCaret = mode;
-  if (mode === "off") {
-    $("#caret").css("animation-name", "caretFlashHard");
-  } else {
-    $("#caret").css("animation-name", "caretFlashSmooth");
-  }
-
-  saveToLocalStorage("smoothCaret", nosave);
-  ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
-
-  return true;
+  return genericSet("smoothCaret", mode, nosave);
 }
 
 export function setCodeUnindentOnBackspace(
   mode: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValidBoolean("code unindent on backspace", mode)) {
-    return false;
-  }
-  config.codeUnindentOnBackspace = mode;
-
-  saveToLocalStorage("codeUnindentOnBackspace", nosave);
-  ConfigEvent.dispatch(
-    "codeUnindentOnBackspace",
-    config.codeUnindentOnBackspace,
-    nosave
-  );
-  return true;
+  return genericSet("codeUnindentOnBackspace", mode, nosave);
 }
 
 export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("start graphs at zero", mode)) {
-    return false;
-  }
-
-  config.startGraphsAtZero = mode;
-  saveToLocalStorage("startGraphsAtZero", nosave);
-  ConfigEvent.dispatch("startGraphsAtZero", config.startGraphsAtZero);
-
-  return true;
+  return genericSet("startGraphsAtZero", mode, nosave);
 }
 
 //linescroll
 export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("smooth line scroll", mode)) {
-    return false;
-  }
-
-  config.smoothLineScroll = mode;
-  saveToLocalStorage("smoothLineScroll", nosave);
-  ConfigEvent.dispatch("smoothLineScroll", config.smoothLineScroll);
-
-  return true;
+  return genericSet("smoothLineScroll", mode, nosave);
 }
 
 //quick restart
@@ -1174,21 +1127,7 @@ export function setQuickRestartMode(
   mode: ConfigSchemas.QuickRestart,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "quick restart mode",
-      mode,
-      ConfigSchemas.QuickRestartSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.quickRestart = mode;
-  saveToLocalStorage("quickRestart", nosave);
-  ConfigEvent.dispatch("quickRestart", config.quickRestart);
-
-  return true;
+  return genericSet("quickRestart", mode, nosave);
 }
 
 //font family
@@ -1275,47 +1214,18 @@ export function setIndicateTypos(
   value: ConfigSchemas.IndicateTypos,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "indicate typos",
-      value,
-      ConfigSchemas.IndicateTyposSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.indicateTypos = value;
-  saveToLocalStorage("indicateTypos", nosave);
-  ConfigEvent.dispatch("indicateTypos", config.indicateTypos);
-
-  return true;
+  return genericSet("indicateTypos", value, nosave);
 }
 
 export function setAutoSwitchTheme(
   boolean: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValidBoolean("auto switch theme", boolean)) {
-    return false;
-  }
-
-  boolean = boolean ?? getDefaultConfig().autoSwitchTheme;
-  config.autoSwitchTheme = boolean;
-  saveToLocalStorage("autoSwitchTheme", nosave);
-  ConfigEvent.dispatch("autoSwitchTheme", config.autoSwitchTheme);
-
-  return true;
+  return genericSet("autoSwitchTheme", boolean, nosave);
 }
 
 export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("custom theme", boolean)) return false;
-
-  config.customTheme = boolean;
-  saveToLocalStorage("customTheme", nosave);
-  ConfigEvent.dispatch("customTheme", config.customTheme);
-
-  return true;
+  return genericSet("customTheme", boolean, nosave);
 }
 
 export function setTheme(
@@ -1337,28 +1247,14 @@ export function setThemeLight(
   name: ConfigSchemas.ThemeName,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("theme light", name, ConfigSchemas.ThemeNameSchema))
-    return false;
-
-  config.themeLight = name;
-  saveToLocalStorage("themeLight", nosave);
-  ConfigEvent.dispatch("themeLight", config.themeLight, nosave);
-
-  return true;
+  return genericSet("themeLight", name, nosave);
 }
 
 export function setThemeDark(
   name: ConfigSchemas.ThemeName,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("theme dark", name, ConfigSchemas.ThemeNameSchema))
-    return false;
-
-  config.themeDark = name;
-  saveToLocalStorage("themeDark", nosave);
-  ConfigEvent.dispatch("themeDark", config.themeDark, nosave);
-
-  return true;
+  return genericSet("themeDark", name, nosave);
 }
 
 function setThemes(
@@ -1427,113 +1323,33 @@ export function setRandomTheme(
 }
 
 export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (!isConfigValueValidBoolean("british english", val)) return false;
-
-  if (!val) {
-    val = false;
-  }
-  config.britishEnglish = val;
-  saveToLocalStorage("britishEnglish", nosave);
-  ConfigEvent.dispatch("britishEnglish", config.britishEnglish);
-
-  return true;
+  return genericSet("britishEnglish", val, nosave);
 }
 
 export function setLazyMode(val: boolean, nosave?: boolean): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (!isConfigValueValidBoolean("lazy mode", val)) return false;
-
-  if (!val) {
-    val = false;
-  }
-  config.lazyMode = val;
-  saveToLocalStorage("lazyMode", nosave);
-  ConfigEvent.dispatch("lazyMode", config.lazyMode, nosave);
-
-  return true;
+  return genericSet("lazyMode", val, nosave);
 }
 
 export function setCustomThemeColors(
   colors: ConfigSchemas.CustomThemeColors,
   nosave?: boolean
 ): boolean {
-  // migrate existing configs missing sub alt color
-  // @ts-expect-error legacy configs
-  if (colors.length === 9) {
-    //color missing
-    Notifications.add(
-      "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
-      0,
-      {
-        duration: 7,
-      }
-    );
-    colors.splice(4, 0, "#000000");
-  }
-
-  if (
-    !isConfigValueValid(
-      "custom theme colors",
-      colors,
-      ConfigSchemas.CustomThemeColorsSchema
-    )
-  ) {
-    return false;
-  }
-
-  if (colors !== undefined) {
-    config.customThemeColors = colors;
-    // ThemeController.set("custom");
-    // applyCustomThemeColors();
-  }
-  saveToLocalStorage("customThemeColors", nosave);
-  ConfigEvent.dispatch("customThemeColors", config.customThemeColors, nosave);
-
-  return true;
+  return genericSet("customThemeColors", colors, nosave);
 }
 
 export function setLanguage(language: Language, nosave?: boolean): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (!isConfigValueValid("language", language, LanguageSchema)) return false;
-
-  config.language = language;
-  saveToLocalStorage("language", nosave);
-  ConfigEvent.dispatch("language", config.language);
-
-  return true;
+  return genericSet("language", language, nosave);
 }
 
 export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("monkey", monkey)) return false;
-
-  config.monkey = monkey;
-  saveToLocalStorage("monkey", nosave);
-  ConfigEvent.dispatch("monkey", config.monkey);
-
-  return true;
+  return genericSet("monkey", monkey, nosave);
 }
 
 export function setKeymapMode(
   mode: ConfigSchemas.KeymapMode,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("keymap mode", mode, ConfigSchemas.KeymapModeSchema)
-  ) {
-    return false;
-  }
-
-  $(".activeKey").removeClass("activeKey");
-  $(".keymapKey").attr("style", "");
-  config.keymapMode = mode;
-  saveToLocalStorage("keymapMode", nosave);
-  ConfigEvent.dispatch("keymapMode", config.keymapMode, nosave);
-
-  return true;
+  return genericSet("keymapMode", mode, nosave);
 }
 
 export function setKeymapLegendStyle(
@@ -1584,59 +1400,21 @@ export function setKeymapStyle(
   style: ConfigSchemas.KeymapStyle,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("keymap style", style, ConfigSchemas.KeymapStyleSchema)
-  ) {
-    return false;
-  }
-
-  style = style || "staggered";
-  config.keymapStyle = style;
-  saveToLocalStorage("keymapStyle", nosave);
-  ConfigEvent.dispatch("keymapStyle", config.keymapStyle);
-
-  return true;
+  return genericSet("keymapStyle", style, nosave);
 }
 
 export function setKeymapLayout(
   layout: ConfigSchemas.KeymapLayout,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "keymap layout",
-      layout,
-      ConfigSchemas.KeymapLayoutSchema
-    )
-  )
-    return false;
-
-  config.keymapLayout = layout;
-  saveToLocalStorage("keymapLayout", nosave);
-  ConfigEvent.dispatch("keymapLayout", config.keymapLayout);
-
-  return true;
+  return genericSet("keymapLayout", layout, nosave);
 }
 
 export function setKeymapShowTopRow(
   show: ConfigSchemas.KeymapShowTopRow,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "keymapShowTopRow",
-      show,
-      ConfigSchemas.KeymapShowTopRowSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.keymapShowTopRow = show;
-  saveToLocalStorage("keymapShowTopRow", nosave);
-  ConfigEvent.dispatch("keymapShowTopRow", config.keymapShowTopRow);
-
-  return true;
+  return genericSet("keymapShowTopRow", show, nosave);
 }
 
 export function setKeymapSize(
@@ -1675,16 +1453,7 @@ export function setLayout(
   layout: ConfigSchemas.Layout,
   nosave?: boolean
 ): boolean {
-  if (isConfigChangeBlocked()) return false;
-
-  if (!isConfigValueValid("layout", layout, ConfigSchemas.LayoutSchema))
-    return false;
-
-  config.layout = layout;
-  saveToLocalStorage("layout", nosave);
-  ConfigEvent.dispatch("layout", config.layout, nosave);
-
-  return true;
+  return genericSet("layout", layout, nosave);
 }
 
 // export function setSavedLayout(layout: string, nosave?: boolean): boolean {
@@ -1701,30 +1470,7 @@ export function setFontSize(
   fontSize: ConfigSchemas.FontSize,
   nosave?: boolean
 ): boolean {
-  if (fontSize < 0) {
-    fontSize = 1;
-  }
-
-  if (
-    !isConfigValueValid("font size", fontSize, ConfigSchemas.FontSizeSchema)
-  ) {
-    return false;
-  }
-
-  config.fontSize = fontSize;
-
-  $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
-    "fontSize",
-    fontSize + "rem"
-  );
-
-  saveToLocalStorage("fontSize", nosave);
-  ConfigEvent.dispatch("fontSize", config.fontSize, nosave);
-
-  // trigger a resize event to update the layout - handled in ui.ts:108
-  if (!nosave) $(window).trigger("resize");
-
-  return true;
+  return genericSet("fontSize", fontSize, nosave);
 }
 
 export function setMaxLineWidth(
@@ -1763,21 +1509,7 @@ export function setCustomBackground(
   value: ConfigSchemas.CustomBackground,
   nosave?: boolean
 ): boolean {
-  value = value.trim();
-  if (
-    !isConfigValueValid(
-      "custom background",
-      value,
-      ConfigSchemas.CustomBackgroundSchema
-    )
-  )
-    return false;
-
-  config.customBackground = value;
-  saveToLocalStorage("customBackground", nosave);
-  ConfigEvent.dispatch("customBackground", config.customBackground);
-
-  return true;
+  return genericSet("customBackground", value, nosave);
 }
 
 export function setCustomLayoutfluid(
@@ -1833,80 +1565,25 @@ export function setCustomBackgroundSize(
   value: ConfigSchemas.CustomBackgroundSize,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "custom background size",
-      value,
-      ConfigSchemas.CustomBackgroundSizeSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.customBackgroundSize = value;
-  saveToLocalStorage("customBackgroundSize", nosave);
-  ConfigEvent.dispatch("customBackgroundSize", config.customBackgroundSize);
-
-  return true;
+  return genericSet("customBackgroundSize", value, nosave);
 }
 
 export function setCustomBackgroundFilter(
   array: ConfigSchemas.CustomBackgroundFilter,
   nosave?: boolean
 ): boolean {
-  // @ts-expect-error this used to be 5
-  // need to convert existing configs using five values down to four
-  if (array.length === 5) {
-    array = [array[0], array[1], array[2], array[3]];
-  }
-
-  if (
-    !isConfigValueValid(
-      "custom background filter",
-      array,
-      ConfigSchemas.CustomBackgroundFilterSchema
-    )
-  ) {
-    return false;
-  }
-
-  config.customBackgroundFilter = array;
-  saveToLocalStorage("customBackgroundFilter", nosave);
-  ConfigEvent.dispatch("customBackgroundFilter", config.customBackgroundFilter);
-
-  return true;
+  return genericSet("customBackgroundFilter", array, nosave);
 }
+
 export function setMonkeyPowerLevel(
   level: ConfigSchemas.MonkeyPowerLevel,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "monkey power level",
-      level,
-      ConfigSchemas.MonkeyPowerLevelSchema
-    )
-  ) {
-    return false;
-  }
-  config.monkeyPowerLevel = level;
-  saveToLocalStorage("monkeyPowerLevel", nosave);
-  ConfigEvent.dispatch("monkeyPowerLevel", config.monkeyPowerLevel);
-
-  return true;
+  return genericSet("monkeyPowerLevel", level, nosave);
 }
 
 export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValidBoolean("burst heatmap", value)) return false;
-
-  if (!value) {
-    value = false;
-  }
-  config.burstHeatmap = value;
-  saveToLocalStorage("burstHeatmap", nosave);
-  ConfigEvent.dispatch("burstHeatmap", config.burstHeatmap);
-
-  return true;
+  return genericSet("burstHeatmap", value, nosave);
 }
 
 export async function apply(

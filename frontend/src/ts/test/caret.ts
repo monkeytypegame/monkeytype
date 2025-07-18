@@ -283,6 +283,13 @@ subscribe((eventKey) => {
     updateStyle();
     void updatePosition(true);
   }
+  if (eventKey === "smoothCaret") {
+    if (Config.smoothCaret === "off") {
+      caret.style.animationName = "caretFlashHard";
+    } else {
+      caret.style.animationName = "caretFlashSmooth";
+    }
+  }
 });
 
 export function show(noAnim = false): void {

@@ -117,6 +117,24 @@ $(window).on("resize", () => {
   debouncedEvent();
 });
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe((eventKey, value, nosave) => {
   if (eventKey === "quickRestart") updateKeytips();
+  if (eventKey === "tapeMode") {
+    // trigger a resize event to update the layout - handled above
+    $(window).trigger("resize");
+  }
+  if (eventKey === "showKeyTips") {
+    if (Config.showKeyTips) {
+      $("footer .keyTips").removeClass("hidden");
+    } else {
+      $("footer .keyTips").addClass("hidden");
+    }
+  }
+  if (eventKey === "fontSize") {
+    $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
+      "fontSize",
+      value + "rem"
+    );
+    if (!nosave) $(window).trigger("resize");
+  }
 });

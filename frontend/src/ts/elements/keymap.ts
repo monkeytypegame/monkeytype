@@ -595,6 +595,8 @@ ConfigEvent.subscribe((eventKey, newValue) => {
     void refresh();
   }
   if (eventKey === "keymapMode") {
+    $(".activeKey").removeClass("activeKey");
+    $(".keymapKey").attr("style", "");
     newValue === "off" ? hide() : show();
   }
 });
