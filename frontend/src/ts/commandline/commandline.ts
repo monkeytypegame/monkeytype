@@ -14,6 +14,7 @@ import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
+import { handleValidatedInputEvent } from "../elements/input-validation";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -788,49 +789,6 @@ function updateValidationResult(
   }
 }
 
-async function isValid(
-  checkValue: unknown,
-  originalValue: string,
-  originalInput: HTMLInputElement,
-  validation: CommandWithValidation<unknown>["validation"]
-): Promise<void> {
-  updateValidationResult({ status: "checking" });
-
-  if (validation.schema !== undefined) {
-    const schemaResult = validation.schema.safeParse(checkValue);
-
-    if (!schemaResult.success) {
-      updateValidationResult({
-        status: "failed",
-        errorMessage: schemaResult.error.errors
-          .map((err) => err.message)
-          .join(", "),
-      });
-      return;
-    }
-  }
-
-  if (validation.isValid === undefined) {
-    updateValidationResult({ status: "success" });
-    return;
-  }
-
-  const result = await validation.isValid(checkValue);
-  if (originalInput.value !== originalValue) {
-    //value has change in the meantime, discard result
-    return;
-  }
-
-  if (result === true) {
-    updateValidationResult({ status: "success" });
-  } else {
-    updateValidationResult({
-      status: "failed",
-      errorMessage: result,
-    });
-  }
-}
-
 const modal = new AnimatedModal({
   dialogId: "commandLine",
   customEscapeHandler: (): void => {
@@ -932,20 +890,14 @@ const modal = new AnimatedModal({
           return;
         }
 
-        const originalInput = (e as InputEvent).target as HTMLInputElement;
-        const currentValue = originalInput.value;
-        let checkValue: unknown = currentValue;
         const command =
           inputModeParams.command as CommandWithValidation<unknown>;
 
-        if ("inputValueConvert" in command) {
-          checkValue = command.inputValueConvert(currentValue);
-        }
-        await isValid(
-          checkValue,
-          currentValue,
-          originalInput,
-          command.validation
+        await handleValidatedInputEvent(
+          e as InputEvent,
+          updateValidationResult,
+          command.validation,
+          "inputValueConvert" in command ? command.inputValueConvert : undefined
         );
       })
     );
