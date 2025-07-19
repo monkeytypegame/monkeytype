@@ -537,7 +537,7 @@
     },
     {
       "id": 90,
-      "length": 287,
+      "length": 266,
       "source": "Binomial coefficient \"n choose k\" - programming-idioms.org",
       "text": "extern crate num;\nuse num::bigint::BigInt;\nuse num::bigint::ToBigInt;\nuse num::traits::One;\nfn binom(n: u64, k: u64) -> BigInt {\n\tlet mut res = BigInt::one();\n\tfor i in 0..k {\n\t\tres = (res * (n - i).to_bigint().unwrap()) /\n\t\t\t\t(i + 1).to_bigint().unwrap();\n\t}\n\tres\n}"
     },
@@ -1257,7 +1257,7 @@
     },
     {
       "id": 210,
-      "length": 45,
+      "length": 46,
       "source": "Insert entry in map - programming-idioms.org",
       "text": "use std::collections::HashMap;\nm.insert(k, v);"
     },
@@ -1341,7 +1341,7 @@
     },
     {
       "id": 224,
-      "length": 51,
+      "length": 47,
       "source": "Exit program cleanly - programming-idioms.org",
       "text": "use std::process::exit;\nfn main() {\n\texit(0);\n}"
     },
