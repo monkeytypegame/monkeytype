@@ -22,6 +22,7 @@ import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
   ConfigValue,
   CustomBackgroundSchema,
+  KeymapCustom,
   ThemeName,
   CustomLayoutFluid,
   FunboxName,
@@ -32,6 +33,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
+import { keymapToString, stringToKeymap } from "../utils/custom-keymap";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Theme, ThemesList } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
@@ -116,6 +118,9 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .section[data-config-name='keymapSize']").addClass(
           "hidden"
         );
+        $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+          "hidden"
+        );
       } else {
         $(".pageSettings .section[data-config-name='keymapStyle']").removeClass(
           "hidden"
@@ -132,13 +137,33 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .section[data-config-name='keymapSize']").removeClass(
           "hidden"
         );
+        if (Config.keymapStyle === "custom") {
+          $(
+            ".pageSettings .section[data-config-name='keymapCustom']"
+          ).removeClass("hidden");
+        } else {
+          $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+            "hidden"
+          );
+        }
       }
     }
   ) as SettingsGroup<ConfigValue>;
   groups["keymapMatrix"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
-    "button"
+    "button",
+    () => {
+      if (Config.keymapStyle !== "custom") {
+        $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+          "hidden"
+        );
+      } else {
+        $(
+          ".pageSettings .section[data-config-name='keymapCustom']"
+        ).removeClass("hidden");
+      }
+    }
   ) as SettingsGroup<ConfigValue>;
   groups["keymapLayout"] = new SettingsGroup(
     "keymapLayout",
@@ -354,6 +379,11 @@ async function initGroups(): Promise<void> {
   groups["fontSize"] = new SettingsGroup(
     "fontSize",
     UpdateConfig.setFontSize,
+    "button"
+  ) as SettingsGroup<ConfigValue>;
+  groups["keymapCustom"] = new SettingsGroup(
+    "keymapCustom",
+    UpdateConfig.setKeymapCustom,
     "button"
   ) as SettingsGroup<ConfigValue>;
   groups["maxLineWidth"] = new SettingsGroup(
@@ -810,6 +840,10 @@ export async function update(): Promise<void> {
     Config.fontSize
   );
 
+  $(".pageSettings .section[data-config-name='keymapCustom'] textarea").val(
+    keymapToString(Config.keymapCustom)
+  );
+
   $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
     Config.maxLineWidth
   );
@@ -1153,6 +1187,38 @@ $(
         ).val() as string
       )
     );
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton button.save"
+).on("click", () => {
+  const stringValue = $(
+    ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+  ).val() as string;
+  const keymap: KeymapCustom = stringToKeymap(stringValue);
+  const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+).on("keypress", (e) => {
+  if (e.key === "Enter") {
+    const stringValue = $(
+      ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+    ).val() as string;
+    const keymap: KeymapCustom = stringToKeymap(stringValue);
+    const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
     if (didConfigSave) {
       Notifications.add("Saved", 1, {
         duration: 1,

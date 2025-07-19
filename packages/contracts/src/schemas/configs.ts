@@ -79,8 +79,30 @@ export const KeymapStyleSchema = z.enum([
   "split_matrix",
   "steno",
   "steno_matrix",
+  "custom",
 ]);
 export type KeymapStyle = z.infer<typeof KeymapStyleSchema>;
+
+export const KeyPropertiesSchema = z.object({
+  w: z.number().optional(),
+  h: z.number().optional(),
+  x: z.number().optional(),
+  y: z.number().optional(),
+  r: z.number().optional(),
+  rx: z.number().optional(),
+  ry: z.number().optional(),
+});
+
+export type KeyProperties = z.infer<typeof KeyPropertiesSchema>;
+
+export const KeymapCustomSchema = z.array(
+  z
+    .array(z.union([z.string(), KeyPropertiesSchema.partial()]))
+    .refine((val) => JSON.stringify(val).length <= 4096, {
+      message: "Keymap data must be less than 4096 chars.",
+    })
+);
+export type KeymapCustom = z.infer<typeof KeymapCustomSchema>;
 
 export const KeymapLegendStyleSchema = z.enum([
   "lowercase",
@@ -393,6 +415,7 @@ export const ConfigSchema = z
     keymapLayout: KeymapLayoutSchema,
     keymapShowTopRow: KeymapShowTopRowSchema,
     keymapSize: KeymapSizeSchema,
+    keymapCustom: KeymapCustomSchema,
     fontFamily: FontFamilySchema,
     smoothLineScroll: z.boolean(),
     alwaysShowDecimalPlaces: z.boolean(),
@@ -508,6 +531,7 @@ export const ConfigGroupsLiteral = {
   keymapLayout: "appearance",
   keymapShowTopRow: "appearance",
   keymapSize: "appearance",
+  keymapCustom: "appearance",
   fontFamily: "appearance",
   smoothLineScroll: "appearance",
   alwaysShowDecimalPlaces: "appearance",
