@@ -27,6 +27,7 @@ header #logo .text {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: rainbow-gradient 30s alternate ease-in-out infinite;
+  padding-bottom: 0.1em;
 }
 
 header #logo .top,
