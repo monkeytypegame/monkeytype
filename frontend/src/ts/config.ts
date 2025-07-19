@@ -524,6 +524,15 @@ const configMetadata: ConfigMetadata = {
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "max line width",
+    overrideValue: (value) => {
+      if (value < 20 && value !== 0) {
+        value = 20;
+      }
+      if (value > 1000) {
+        value = 1000;
+      }
+      return value;
+    },
   },
   fontSize: {
     changeRequiresRestart: false,
@@ -565,6 +574,8 @@ const configMetadata: ConfigMetadata = {
     changeRequiresRestart: false,
     displayString: "keymap size",
     overrideValue: (value) => {
+      if (value < 0.5) value = 0.5;
+      if (value > 3.5) value = 3.5;
       return roundTo1(value);
     },
   },

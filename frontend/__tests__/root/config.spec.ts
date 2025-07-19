@@ -1,12 +1,17 @@
 import * as Config from "../../src/ts/config";
+import * as Misc from "../../src/ts/utils/misc";
 
 import {
   CustomThemeColors,
   FunboxName,
 } from "@monkeytype/contracts/schemas/configs";
 import { randomBytes } from "crypto";
+import { vi } from "vitest";
 
 describe("Config", () => {
+  const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
+  beforeEach(() => isDevEnvironmentMock.mockReset());
+
   it("setMode", () => {
     expect(Config.setMode("zen")).toBe(true);
     expect(Config.setMode("invalid" as any)).toBe(false);
@@ -33,7 +38,7 @@ describe("Config", () => {
   it("setAccountChart", () => {
     expect(Config.setAccountChart(["on", "off", "off", "on"])).toBe(true);
     //arrays not having 4 values will get [on, on, on, on] as default
-    expect(Config.setAccountChart(["on", "off"] as any)).toBe(true);
+    expect(Config.setAccountChart(["on", "off"] as any)).toBe(false);
     expect(Config.setAccountChart(["on", "off", "on", "true"] as any)).toBe(
       false
     );
@@ -214,8 +219,10 @@ describe("Config", () => {
   });
   it("setCustomBackgroundFilter", () => {
     expect(Config.setCustomBackgroundFilter([0, 1, 2, 3])).toBe(true);
-    //gets converted
-    expect(Config.setCustomBackgroundFilter([0, 1, 2, 3, 4] as any)).toBe(true);
+
+    expect(Config.setCustomBackgroundFilter([0, 1, 2, 3, 4] as any)).toBe(
+      false
+    );
     expect(Config.setCustomBackgroundFilter([] as any)).toBe(false);
     expect(Config.setCustomBackgroundFilter(["invalid"] as any)).toBe(false);
     expect(Config.setCustomBackgroundFilter([1, 2, 3, 4, 5, 6] as any)).toBe(
@@ -231,9 +238,7 @@ describe("Config", () => {
   it("setCustomThemeColors", () => {
     expect(Config.setCustomThemeColors(customThemeColors(10))).toBe(true);
 
-    //gets converted
-    expect(Config.setCustomThemeColors(customThemeColors(9))).toBe(true);
-
+    expect(Config.setCustomThemeColors(customThemeColors(9))).toBe(false);
     expect(Config.setCustomThemeColors([] as any)).toBe(false);
     expect(Config.setCustomThemeColors(["invalid"] as any)).toBe(false);
     expect(Config.setCustomThemeColors(customThemeColors(5))).toBe(false);
@@ -258,7 +263,7 @@ describe("Config", () => {
   });
   it("setAccountChart", () => {
     expect(Config.setAccountChart(["on", "off", "off", "on"])).toBe(true);
-    expect(Config.setAccountChart(["on", "off"] as any)).toBe(true);
+    expect(Config.setAccountChart(["on", "off"] as any)).toBe(false);
     expect(Config.setAccountChart(["on", "off", "on", "true"] as any)).toBe(
       false
     );
@@ -358,8 +363,6 @@ describe("Config", () => {
     expect(Config.setMinAccCustom(0)).toBe(true);
     expect(Config.setMinAccCustom(1)).toBe(true);
     expect(Config.setMinAccCustom(11.11)).toBe(true);
-    //gets converted
-    expect(Config.setMinAccCustom(120)).toBe(true);
 
     expect(Config.setMinAccCustom("invalid" as any)).toBe(false);
     expect(Config.setMinAccCustom(-1)).toBe(false);
@@ -376,18 +379,11 @@ describe("Config", () => {
     expect(Config.setTimeConfig(0)).toBe(true);
     expect(Config.setTimeConfig(1)).toBe(true);
 
-    //gets converted
-    expect(Config.setTimeConfig("invalid" as any)).toBe(true);
-    expect(Config.setTimeConfig(-1)).toBe(true);
-
     expect(Config.setTimeConfig(11.11)).toBe(false);
   });
   it("setWordCount", () => {
     expect(Config.setWordCount(0)).toBe(true);
     expect(Config.setWordCount(1)).toBe(true);
-
-    //gets converted
-    expect(Config.setWordCount(-1)).toBe(true);
 
     expect(Config.setWordCount("invalid" as any)).toBe(false);
     expect(Config.setWordCount(11.11)).toBe(false);
@@ -486,12 +482,14 @@ describe("Config", () => {
     expect(Config.setCustomBackground("invalid")).toBe(false);
   });
   it("setQuoteLength", () => {
-    expect(Config.setQuoteLength(0)).toBe(true);
-    expect(Config.setQuoteLength(-3)).toBe(true);
-    expect(Config.setQuoteLength(3)).toBe(true);
+    expect(Config.setQuoteLength([0])).toBe(true);
+    expect(Config.setQuoteLength([-3])).toBe(true);
+    expect(Config.setQuoteLength([3])).toBe(true);
 
     expect(Config.setQuoteLength(-4 as any)).toBe(false);
     expect(Config.setQuoteLength(4 as any)).toBe(false);
+    expect(Config.setQuoteLength(3 as any)).toBe(false);
+    expect(Config.setQuoteLength(2 as any)).toBe(false);
 
     expect(Config.setQuoteLength([0, -3, 2])).toBe(true);
 
