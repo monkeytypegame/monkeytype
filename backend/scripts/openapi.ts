@@ -4,7 +4,7 @@ import { writeFileSync, mkdirSync } from "fs";
 import {
   EndpointMetadata,
   PermissionId,
-} from "@monkeytype/contracts/schemas/api";
+} from "@monkeytype/contracts/schemas/util";
 import type { OpenAPIObject, OperationObject } from "openapi3-ts";
 import {
   RateLimitIds,
@@ -277,7 +277,6 @@ function addRequiredConfiguration(
   if (metadata === undefined || metadata.requireConfiguration === undefined)
     return;
 
-  //@ts-expect-error
   operation.description += `**Required configuration:** This operation can only be called if the [configuration](#tag/configuration/operation/configuration.get) for  \`${metadata.requireConfiguration.path}\` is \`true\`.\n\n`;
 }
 

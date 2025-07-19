@@ -10,7 +10,7 @@ import {
   mockAuthenticateWithApeKey,
   mockBearerAuthentication,
 } from "../../__testData__/auth";
-import { XpLeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import { XpLeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
