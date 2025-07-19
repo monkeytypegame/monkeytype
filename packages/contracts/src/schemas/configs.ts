@@ -287,6 +287,7 @@ export const FunboxNameSchema = z.enum([
   "ALL_CAPS",
   "polyglot",
   "asl",
+  "no_quit",
 ]);
 export type FunboxName = z.infer<typeof FunboxNameSchema>;
 
@@ -446,7 +447,8 @@ export const ConfigSchema = z
   .strict();
 
 export type Config = z.infer<typeof ConfigSchema>;
-export type ConfigKey = keyof Config;
+export const ConfigKeySchema = ConfigSchema.keyof();
+export type ConfigKey = z.infer<typeof ConfigKeySchema>;
 export type ConfigValue = Config[keyof Config];
 
 export const PartialConfigSchema = ConfigSchema.partial();

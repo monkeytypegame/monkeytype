@@ -81,6 +81,7 @@ import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
+  isFunboxActive,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
@@ -177,6 +178,15 @@ export function restart(options = {} as RestartOptions): void {
 
   options = { ...defaultOptions, ...options };
   const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
+
+  const noQuit = isFunboxActive("no_quit");
+  if (TestState.isActive && noQuit) {
+    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
+      important: true,
+    });
+    event?.preventDefault();
+    return;
+  }
 
   if (
     TestUI.testRestarting ||
@@ -330,7 +340,7 @@ export function restart(options = {} as RestartOptions): void {
     async () => {
       $("#result").addClass("hidden");
       $("#typingTest").css("opacity", 0).removeClass("hidden");
-      $("#wordsInput").val(" ");
+      $("#wordsInput").css({ left: 0 }).val(" ");
 
       if (Config.language.startsWith("korean")) {
         koInputVisual.innerText = " ";
@@ -1595,18 +1605,20 @@ $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as Mode;
   if (mode === undefined) return;
-  UpdateConfig.setMode(mode);
-  ManualRestart.set();
-  restart();
+  if (UpdateConfig.setMode(mode)) {
+    ManualRestart.set();
+    restart();
+  }
 });
 
 $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd !== "custom") {
-    UpdateConfig.setWordCount(parseInt(wrd));
-    ManualRestart.set();
-    restart();
+    if (UpdateConfig.setWordCount(parseInt(wrd))) {
+      ManualRestart.set();
+      restart();
+    }
   }
 });
 
@@ -1614,9 +1626,10 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode !== "custom") {
-    UpdateConfig.setTimeConfig(parseInt(mode));
-    ManualRestart.set();
-    restart();
+    if (UpdateConfig.setTimeConfig(parseInt(mode))) {
+      ManualRestart.set();
+      restart();
+    }
   }
 });
 
@@ -1629,24 +1642,27 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
     if (len === -1) {
       len = [0, 1, 2, 3];
     }
-    UpdateConfig.setQuoteLength(len, false, e.shiftKey);
-    ManualRestart.set();
-    restart();
+    if (UpdateConfig.setQuoteLength(len, false, e.shiftKey)) {
+      ManualRestart.set();
+      restart();
+    }
   }
 });
 
 $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
   if (TestUI.testRestarting) return;
-  UpdateConfig.setPunctuation(!Config.punctuation);
-  ManualRestart.set();
-  restart();
+  if (UpdateConfig.setPunctuation(!Config.punctuation)) {
+    ManualRestart.set();
+    restart();
+  }
 });
 
 $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   if (TestUI.testRestarting) return;
-  UpdateConfig.setNumbers(!Config.numbers);
-  ManualRestart.set();
-  restart();
+  if (UpdateConfig.setNumbers(!Config.numbers)) {
+    ManualRestart.set();
+    restart();
+  }
 });
 
 $("header").on("click", "nav #startTestButton, #logo", () => {

@@ -275,7 +275,7 @@ $(".page.pageLogin .register.side .usernameInput").on("input", () => {
       return;
     } else {
       nameIndicator.show("checking");
-      void checkNameDebounced();
+      checkNameDebounced();
     }
   }, 1);
 });

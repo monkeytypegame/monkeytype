@@ -3,6 +3,9 @@ import * as TribeState from "../tribe/tribe-state";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
 import { Auth, isAuthenticated } from "../firebase";
+import { isFunboxActive } from "../test/funbox/list";
+import * as TestState from "../test/test-state";
+import * as Notifications from "../elements/notifications";
 import tribeSocket from "../tribe/tribe-socket";
 import { setAutoJoin } from "../tribe/tribe";
 
@@ -219,6 +222,16 @@ export function navigate(
     );
     return;
   }
+
+  const noQuit = isFunboxActive("no_quit");
+  if (TestState.isActive && noQuit) {
+    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
+      important: true,
+    });
+    event?.preventDefault();
+    return;
+  }
+
   url = url.replace(/\/$/, "");
   if (url === "") url = "/";
 

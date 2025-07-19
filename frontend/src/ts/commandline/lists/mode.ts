@@ -9,7 +9,7 @@ const commands: Command[] = [
     display: "Mode...",
     icon: "fa-bars",
     subgroup: {
-      title: "Change mode...",
+      title: "Mode...",
       configKey: "mode",
       list: [
         {

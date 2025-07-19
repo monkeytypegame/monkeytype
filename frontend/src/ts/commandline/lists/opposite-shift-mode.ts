@@ -3,7 +3,7 @@ import * as ModesNotice from "./../../elements/modes-notice";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
-  title: "Change opposite shift mode...",
+  title: "Opposite shift mode...",
   configKey: "oppositeShiftMode",
   list: [
     {
@@ -39,7 +39,7 @@ const subgroup: CommandsSubgroup = {
 const commands: Command[] = [
   {
     id: "changeOppositeShiftMode",
-    display: "Change opposite shift mode...",
+    display: "Opposite shift mode...",
     icon: "fa-exchange-alt",
     subgroup,
   },

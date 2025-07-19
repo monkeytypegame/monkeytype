@@ -35,6 +35,7 @@ import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import * as TestState from "./test/test-state";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -93,12 +94,24 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
+function isConfigChangeBlocked(): boolean {
+  if (TestState.isActive && config.funbox.includes("no_quit")) {
+    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
+      important: true,
+    });
+    return true;
+  }
+  return false;
+}
+
 //numbers
 export function setNumbers(
   numb: boolean,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValidBoolean("numbers", numb)) return false;
 
   if (!canSetConfigWithCurrentFunboxes("numbers", numb, config.funbox)) {
@@ -123,6 +136,8 @@ export function setPunctuation(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValidBoolean("punctuation", punc)) return false;
 
   if (!canSetConfigWithCurrentFunboxes("punctuation", punc, config.funbox)) {
@@ -146,6 +161,8 @@ export function setMode(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("mode", mode, ModeSchema)) {
     return false;
   }
@@ -245,6 +262,8 @@ export function setDifficulty(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("difficulty", diff, ConfigSchemas.DifficultySchema)) {
     return false;
   }
@@ -284,6 +303,8 @@ export function setFunbox(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("funbox", funbox, ConfigSchemas.FunboxSchema))
     return false;
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
@@ -302,13 +323,17 @@ export function setFunbox(
   return true;
 }
 
-export function toggleFunbox(funbox: FunboxName, nosave?: boolean,
-  tribeOverride = false): boolean {
+export function toggleFunbox(
+  funbox: FunboxName,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!canSetFunboxWithConfig(funbox, config)) {
     return false;
   }
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
-
 
   let newConfig: FunboxName[] = config.funbox;
 
@@ -377,6 +402,8 @@ export function setStopOnError(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (
     !isConfigValueValid("stop on error", soe, ConfigSchemas.StopOnErrorSchema)
   ) {
@@ -518,6 +545,8 @@ export function setMinWpm(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (
     !isConfigValueValid(
       "min speed",
@@ -542,6 +571,8 @@ export function setMinWpmCustomSpeed(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (
     !isConfigValueValid(
       "min speed custom",
@@ -567,6 +598,8 @@ export function setMinAcc(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("min acc", min, ConfigSchemas.MinimumAccuracySchema))
     return false;
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
@@ -585,6 +618,8 @@ export function setMinAccCustom(
   tribeOverride = false
 ): boolean {
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
+  if (isConfigChangeBlocked()) return false;
+
   //migrate legacy configs
   if (val > 100) val = 100;
   if (
@@ -610,6 +645,8 @@ export function setMinBurst(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("min burst", min, ConfigSchemas.MinimumBurstSchema)) {
     return false;
   }
@@ -628,6 +665,8 @@ export function setMinBurstCustomSpeed(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (
     !isConfigValueValid(
       "min burst custom speed",
@@ -783,6 +822,8 @@ export function setColorfulMode(extra: boolean, nosave?: boolean): boolean {
 
 //strict space
 export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValidBoolean("strict space", val)) return false;
 
   config.strictSpace = val;
@@ -1139,6 +1180,8 @@ export function setTimeConfig(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   time = isNaN(time) || time < 0 ? getDefaultConfig().time : time;
   if (!isConfigValueValid("time", time, ConfigSchemas.TimeConfigSchema))
     return false;
@@ -1163,6 +1206,8 @@ export function setQuoteLength(
   tribeOverride = false
 ): boolean {
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
+  if (isConfigChangeBlocked()) return false;
+
   if (Array.isArray(len)) {
     if (
       !isConfigValueValid(
@@ -1217,6 +1262,8 @@ export function setWordCount(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   wordCount =
     wordCount < 0 || wordCount > 100000 ? getDefaultConfig().words : wordCount;
 
@@ -1561,6 +1608,8 @@ export function setRandomTheme(
 }
 
 export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValidBoolean("british english", val)) return false;
 
   if (!val) {
@@ -1578,6 +1627,8 @@ export function setLazyMode(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValidBoolean("lazy mode", val)) return false;
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
@@ -1636,6 +1687,8 @@ export function setLanguage(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("language", language, LanguageSchema)) return false;
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
@@ -1815,6 +1868,8 @@ export function setLayout(
   layout: ConfigSchemas.Layout,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("layout", layout, ConfigSchemas.LayoutSchema))
     return false;
 
@@ -1842,18 +1897,6 @@ export function setFontSize(
   if (fontSize < 0) {
     fontSize = 1;
   }
-  if (
-    typeof fontSize === "string" &&
-    ["1", "125", "15", "2", "3", "4"].includes(fontSize)
-  ) {
-    if (fontSize === "125") {
-      fontSize = 1.25;
-    } else if (fontSize === "15") {
-      fontSize = 1.5;
-    } else {
-      fontSize = parseInt(fontSize);
-    }
-  }
 
   if (
     !isConfigValueValid("font size", fontSize, ConfigSchemas.FontSizeSchema)
@@ -1861,21 +1904,11 @@ export function setFontSize(
     return false;
   }
 
-  // i dont know why the above check is not enough
-  // some people are getting font size 15 when it should be converted to 1.5
-  // after converting from the string to float system
-
-  // keeping this in for now, if you want a big font go 14.9 or something
-  if (fontSize === 15) {
-    fontSize = 1.5;
-  }
-
   config.fontSize = fontSize;
 
-  $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, .tribeCaret").css(
-    "fontSize",
-    fontSize + "rem"
-  );
+  $(
+    "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, .tribeCaret"
+  ).css("fontSize", fontSize + "rem");
   $("#typingTest .tribeCountdown").css("font-size", fontSize * 3 + "rem");
 
   $("#typingTest .tribeBars").css("margin-bottom", fontSize + "rem");
@@ -1946,6 +1979,8 @@ export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   // Remove duplicates
   const deduped = Array.from(new Set(value));
   if (
@@ -1969,6 +2004,8 @@ export function setCustomPolyglot(
   value: ConfigSchemas.CustomPolyglot,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   // remove duplicates
   const deduped = Array.from(new Set(value));
   if (

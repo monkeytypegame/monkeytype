@@ -13,7 +13,7 @@ import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import Page from "./page";
+import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import SlimSelect from "slim-select";
@@ -25,6 +25,7 @@ import {
   ThemeName,
   CustomLayoutFluid,
   FunboxName,
+  ConfigKeySchema,
 } from "@monkeytype/contracts/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
@@ -37,6 +38,7 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/contracts/schemas/languages";
+import { z } from "zod";
 
 let settingsInitialized = false;
 
@@ -45,6 +47,24 @@ let customLayoutFluidSelect: SlimSelect | undefined;
 let customPolyglotSelect: SlimSelect | undefined;
 
 export const groups: SettingsGroups<ConfigValue> = {};
+
+const HighlightSchema = ConfigKeySchema.or(
+  z.enum([
+    "resetSettings",
+    "updateCookiePreferences",
+    "importexportSettings",
+    "theme",
+    "presets",
+    "tags",
+  ])
+);
+type Highlight = z.infer<typeof HighlightSchema>;
+
+const StateSchema = z
+  .object({
+    highlight: HighlightSchema,
+  })
+  .partial();
 
 async function initGroups(): Promise<void> {
   groups["smoothCaret"] = new SettingsGroup(
@@ -859,6 +879,9 @@ export async function update(): Promise<void> {
   }
 }
 function toggleSettingsGroup(groupName: string): void {
+  //The highlight is repeated/broken when toggling the group
+  handleHighlightSection(undefined);
+
   const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
   groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
   if (groupEl.hasClass("slideup")) {
@@ -1011,7 +1034,7 @@ $(".pageSettings .section[data-config-name='minBurst']").on(
 );
 
 //funbox
-$(".pageSettings .section[data-config-name='funbox']").on(
+$(".pageSettings .section[data-config-name='funbox'] .buttons").on(
   "click",
   "button",
   (e) => {
@@ -1343,6 +1366,48 @@ function getThemeDropdownData(
   }));
 }
 
+function handleHighlightSection(highlight: Highlight | undefined): void {
+  if (highlight === undefined) {
+    const element = document.querySelector(".section.highlight");
+    if (element !== null) {
+      element.classList.remove("highlight");
+    }
+    return;
+  }
+
+  const element = document.querySelector(
+    `[data-config-name="${highlight}"] .groupTitle,[data-section-id="${highlight}"] .groupTitle`
+  );
+
+  if (element !== null) {
+    setTimeout(() => {
+      element.scrollIntoView({ block: "center", behavior: "auto" });
+      element.parentElement?.classList.remove("highlight");
+      element.parentElement?.classList.add("highlight");
+    }, 250);
+  }
+}
+
+$(".pageSettings .section .groupTitle button").on("click", (e) => {
+  const section = e.target.parentElement?.parentElement;
+  const configName = (section?.dataset?.["configName"] ??
+    section?.dataset?.["sectionId"]) as Highlight | undefined;
+  if (configName === undefined) {
+    return;
+  }
+
+  page.setUrlParams({ highlight: configName });
+
+  navigator.clipboard
+    .writeText(window.location.toString())
+    .then(() => {
+      Notifications.add("Link copied to clipboard", 1);
+    })
+    .catch((e: unknown) => {
+      Notifications.add("Failed to copy to clipboard: " + e, -1);
+    });
+});
+
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChange") setEventDisabled(true);
   if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
@@ -1362,18 +1427,21 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   }
 });
 
-export const page = new Page({
+export const page = new PageWithUrlParams({
   id: "settings",
   element: $(".page.pageSettings"),
   path: "/settings",
+  urlParamsSchema: StateSchema,
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageSettings");
   },
-  beforeShow: async (): Promise<void> => {
+  beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageSettings", "main");
     await UpdateConfig.loadPromise;
     await fillSettingsPage();
     await update();
+
+    handleHighlightSection(options.urlParams?.highlight);
   },
 });
 

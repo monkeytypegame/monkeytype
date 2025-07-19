@@ -142,5 +142,19 @@ export function replaceLegacyValues(
       configObj.indicateTypos === false ? "off" : "replace";
   }
 
+  if (typeof configObj.fontSize === "string") {
+    //legacy values use strings
+    const oldValue = configObj.fontSize;
+    let newValue = parseInt(oldValue);
+
+    if (oldValue === "125") {
+      newValue = 1.25;
+    } else if (oldValue === "15") {
+      newValue = 1.5;
+    }
+
+    configObj.fontSize = newValue;
+  }
+
   return configObj;
 }

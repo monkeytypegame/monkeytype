@@ -103,11 +103,13 @@ import * as FPSCounter from "../elements/fps-counter";
 import {
   CustomBackgroundSchema,
   CustomLayoutFluid,
+  CustomLayoutFluidSchema,
+  CustomPolyglot,
+  CustomPolyglotSchema,
 } from "@monkeytype/contracts/schemas/configs";
-import { Command, CommandsSubgroup } from "./types";
+import { Command, CommandsSubgroup, withValidation } from "./types";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";
-import { Language } from "@monkeytype/contracts/schemas/languages";
 
 const fontsPromise = JSONData.getFontsList();
 fontsPromise
@@ -191,7 +193,7 @@ export const commands: CommandsSubgroup = {
     ...LanguagesCommands,
     ...BritishEnglishCommands,
     ...FunboxCommands,
-    {
+    withValidation({
       id: "changeCustomLayoutfluid",
       display: "Custom layoutfluid...",
       defaultValue: (): string => {
@@ -199,14 +201,14 @@ export const commands: CommandsSubgroup = {
       },
       input: true,
       icon: "fa-tint",
+      inputValueConvert: (val) => val.trim().split(" ") as CustomLayoutFluid,
+      validation: { schema: CustomLayoutFluidSchema },
       exec: ({ input }): void => {
         if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(
-          input.split(" ") as CustomLayoutFluid
-        );
+        UpdateConfig.setCustomLayoutfluid(input);
       },
-    },
-    {
+    }),
+    withValidation({
       id: "changeCustomPolyglot",
       display: "Polyglot languages...",
       defaultValue: (): string => {
@@ -214,14 +216,16 @@ export const commands: CommandsSubgroup = {
       },
       input: true,
       icon: "fa-language",
+      inputValueConvert: (val) => val.trim().split(" ") as CustomPolyglot,
+      validation: { schema: CustomPolyglotSchema },
       exec: ({ input }): void => {
         if (input === undefined) return;
-        void UpdateConfig.setCustomPolyglot(input.split(" ") as Language[]);
+        void UpdateConfig.setCustomPolyglot(input);
         if (ActivePage.get() === "test") {
           TestLogic.restart();
         }
       },
-    },
+    }),
 
     //input
     ...FreedomModeCommands,
@@ -540,7 +544,7 @@ export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
   }
 
   singleList = {
-    title: "All commands",
+    title: "",
     list: singleCommands,
   };
   return singleList;

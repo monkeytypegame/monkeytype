@@ -193,6 +193,22 @@ describe("config.ts", () => {
             favThemes: ["80s_after_dark", "luna", "pulse"],
           },
         },
+        {
+          given: { fontSize: "2" },
+          expected: { fontSize: 2 },
+        },
+        {
+          given: { fontSize: "15" },
+          expected: { fontSize: 1.5 },
+        },
+        {
+          given: { fontSize: "125" },
+          expected: { fontSize: 1.25 },
+        },
+        {
+          given: { fontSize: 15 },
+          expected: { fontSize: 15 },
+        },
       ])(`$given`, ({ given, expected }) => {
         const description = `given: ${JSON.stringify(
           given

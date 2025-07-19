@@ -489,6 +489,27 @@
         }
       }
     }
+
+    &.highlight {
+      margin: -1em;
+      padding: 1em;
+      animation: flashBorder 4s ease-in forwards;
+      box-shadow: 0 0 0 0.2em var(--sub-color);
+      border-radius: var(--roundness);
+    }
+
+    .groupTitle button.text {
+      padding: 0;
+      margin-left: 0.5em;
+      align-self: center;
+      opacity: 0;
+      .fas {
+        margin-right: 0;
+      }
+    }
+    &:hover .groupTitle button.text {
+      opacity: 1;
+    }
   }
 }
 

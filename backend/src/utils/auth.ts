@@ -6,7 +6,7 @@ import {
   setTokenCacheSize,
 } from "./prometheus";
 import { type DecodedIdToken, UserRecord } from "firebase-admin/auth";
-import { isDevEnvironment } from "./misc";
+import { getFrontendUrl } from "./misc";
 import emailQueue from "../queues/email-queue";
 import * as UserDAL from "../dal/user";
 import { isFirebaseError } from "./error";
@@ -98,11 +98,7 @@ export async function sendForgotPasswordEmail(email: string): Promise<void> {
 
     const link = await FirebaseAdmin()
       .auth()
-      .generatePasswordResetLink(email, {
-        url: isDevEnvironment()
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
-      });
+      .generatePasswordResetLink(email, { url: getFrontendUrl() });
 
     await emailQueue.sendForgotPasswordEmail(email, name, link);
   } catch (err) {

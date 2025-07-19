@@ -2,6 +2,9 @@ import { FunboxName } from "@monkeytype/contracts/schemas/configs";
 import { Language } from "@monkeytype/contracts/schemas/languages";
 import { Accents } from "../test/lazy-mode";
 
+//pin implementation
+const fetch = window.fetch;
+
 /**
  * Fetches JSON data from the specified URL using the fetch API.
  * @param url - The URL to fetch the JSON data from.
@@ -68,11 +71,11 @@ export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
 );
 
 export type Keys = {
-  row1: string[];
-  row2: string[];
-  row3: string[];
-  row4: string[];
-  row5: string[];
+  row1: string[][];
+  row2: string[][];
+  row3: string[][];
+  row4: string[][];
+  row5: string[][];
 };
 
 export type Layout = {

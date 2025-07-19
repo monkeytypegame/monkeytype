@@ -1,3 +1,8 @@
+//pin implementations
+const random = Math.random;
+const ceil = Math.ceil;
+const floor = Math.floor;
+
 /**
  * Rounds a number to one decimal places.
  * @param num The number to round.
@@ -85,9 +90,9 @@ export function kogasa(cov: number): number {
  * @returns Random integer betwen min and max.
  */
 export function randomIntFromRange(min: number, max: number): number {
-  const minNorm = Math.ceil(min);
-  const maxNorm = Math.floor(max);
-  return Math.floor(Math.random() * (maxNorm - minNorm + 1) + minNorm);
+  const minNorm = ceil(min);
+  const maxNorm = floor(max);
+  return floor(random() * (maxNorm - minNorm + 1) + minNorm);
 }
 
 /**

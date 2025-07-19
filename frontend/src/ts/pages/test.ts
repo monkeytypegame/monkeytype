@@ -41,7 +41,6 @@ export const page = new Page({
       tribeOverride: options.tribeOverride ?? false,
     });
     void TestConfig.instantUpdate();
-    void Funbox.activate();
     void Keymap.refresh();
     ScrollToTop.hide();
   },
