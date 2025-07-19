@@ -277,6 +277,7 @@ function addRequiredConfiguration(
   if (metadata === undefined || metadata.requireConfiguration === undefined)
     return;
 
+  //@ts-expect-error somehow path doesnt exist
   operation.description += `**Required configuration:** This operation can only be called if the [configuration](#tag/configuration/operation/configuration.get) for  \`${metadata.requireConfiguration.path}\` is \`true\`.\n\n`;
 }
 
