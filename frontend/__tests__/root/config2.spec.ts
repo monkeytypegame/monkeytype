@@ -70,6 +70,54 @@ describe("Config", () => {
             expected: { punctuation: false },
           },
         ],
+        numbers: [
+          { value: true, expected: { numbers: true } },
+          {
+            value: true,
+            given: { mode: "quote" },
+            expected: { numbers: false },
+          },
+        ],
+        customLayoutfluid: [
+          {
+            value: ["qwerty", "qwerty", "qwertz"],
+            expected: { customLayoutfluid: ["qwerty", "qwertz"] },
+          },
+        ],
+        customPolyglot: [
+          {
+            value: ["english", "polish", "english"],
+            expected: { customPolyglot: ["english", "polish"] },
+          },
+        ],
+        keymapSize: [
+          { value: 1, expected: { keymapSize: 1 } },
+          { value: 1.234, expected: { keymapSize: 1.2 } },
+          { value: 0.4, expected: { keymapSize: 0.5 } },
+          { value: 3.6, expected: { keymapSize: 3.5 } },
+        ],
+        customBackground: [
+          {
+            value: " https://example.com/test.jpg ",
+            expected: { customBackground: "https://example.com/test.jpg" },
+          },
+        ],
+        accountChart: [
+          {
+            value: ["on", "off", "off", "off"],
+            expected: { accountChart: ["on", "off", "off", "off"] },
+          },
+          {
+            value: ["off", "off", "off", "off"],
+            given: { accountChart: ["on", "off", "off", "off"] },
+            expected: { accountChart: ["off", "on", "off", "off"] },
+          },
+          {
+            value: ["off", "off", "on", "on"],
+            given: { accountChart: ["off", "on", "off", "off"] },
+            expected: { accountChart: ["on", "off", "on", "on"] },
+          },
+        ],
       };
 
       it.for(
@@ -143,6 +191,61 @@ describe("Config", () => {
             value: "zen",
             given: { numbers: true, punctuation: true },
             expected: { numbers: false, punctuation: false },
+          },
+        ],
+        freedomMode: [
+          {
+            value: false,
+            given: { confidenceMode: "on" },
+            expected: { confidenceMode: "on" },
+          },
+          {
+            value: true,
+            given: { confidenceMode: "on" },
+            expected: { confidenceMode: "off" },
+          },
+        ],
+        stopOnError: [
+          {
+            value: "off",
+            given: { confidenceMode: "on" },
+            expected: { confidenceMode: "on" },
+          },
+          {
+            value: "word",
+            given: { confidenceMode: "on" },
+            expected: { confidenceMode: "off" },
+          },
+        ],
+        confidenceMode: [
+          {
+            value: "off",
+            given: { freedomMode: true, stopOnError: "word" },
+            expected: { freedomMode: true, stopOnError: "word" },
+          },
+          {
+            value: "on",
+            given: { freedomMode: true, stopOnError: "word" },
+            expected: { freedomMode: false, stopOnError: "off" },
+          },
+        ],
+        tapeMode: [
+          {
+            value: "off",
+            given: { showAllLines: true },
+            expected: { showAllLines: true },
+          },
+          {
+            value: "letter",
+            given: { showAllLines: true },
+            expected: { showAllLines: false },
+          },
+        ],
+        theme: [
+          {
+            value: "8008",
+            given: { customTheme: true },
+            expected: { customTheme: false },
           },
         ],
       };

@@ -219,6 +219,7 @@ const configMetadata: ConfigMetadata = {
     displayString: "quote length",
     changeRequiresRestart: true,
     overrideValue: (value) => {
+      //todo move to migration?
       if (value.length === 1 && value[0] === -1) {
         return [0, 1, 2, 3];
       }
@@ -485,6 +486,7 @@ const configMetadata: ConfigMetadata = {
     displayString: "tape margin",
     changeRequiresRestart: false,
     overrideValue: (value) => {
+      //TODO move to migration after settings validation
       if (value < 10) {
         value = 10;
       }
@@ -526,6 +528,7 @@ const configMetadata: ConfigMetadata = {
     triggerResize: true,
     displayString: "max line width",
     overrideValue: (value) => {
+      //TODO move to migration after settings validation
       if (value < 20 && value !== 0) {
         value = 20;
       }
@@ -540,6 +543,7 @@ const configMetadata: ConfigMetadata = {
     triggerResize: true,
     displayString: "font size",
     overrideValue: (value) => {
+      //TODO move to migration after settings validation
       if (value < 0) {
         value = 1;
       }
