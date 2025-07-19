@@ -532,18 +532,18 @@ const configMetadata: ConfigMetadata = {
   mode: {
     changeRequiresRestart: true,
     overrideConfig: (value) => {
-      if (value === "custom" || value === "quote") {
+      if (value === "custom" || value === "quote" || value === "zen") {
         return {
           numbers: false,
           punctuation: false,
         };
       }
-      if (value === "zen") {
-        if (config.paceCaret !== "off") {
-          Notifications.add(`Pace caret will not work with zen mode.`, 0);
-        }
-      }
       return undefined;
+    },
+    afterSet: () => {
+      if (config.mode === "zen" && config.paceCaret !== "off") {
+        Notifications.add(`Pace caret will not work with zen mode.`, 0);
+      }
     },
   },
   freedomMode: {
