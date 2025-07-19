@@ -27,9 +27,6 @@
   "dependencies": {
     "@monkeytype/util": "workspace:*"
   },
-  "peerDependencies": {
-    "@monkeytype/contracts": "workspace:*"
-  },
   "exports": {
     ".": {
       "types": "./src/index.ts",

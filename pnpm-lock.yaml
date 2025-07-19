@@ -584,9 +584,6 @@ importers:
 
   packages/funbox:
     dependencies:
-      '@monkeytype/contracts':
-        specifier: workspace:*
-        version: link:../contracts
       '@monkeytype/util':
         specifier: workspace:*
         version: link:../util
