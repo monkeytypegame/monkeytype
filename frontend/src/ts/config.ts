@@ -144,7 +144,10 @@ type ConfigMetadata = {
      * Returns the modified value.
      * @param value - The value being set for the config key.
      */
-    overrideValue?: (value: ConfigSchemas.Config[K]) => ConfigSchemas.Config[K];
+    overrideValue?: (
+      value: ConfigSchemas.Config[K],
+      currentValue: ConfigSchemas.Config[K]
+    ) => ConfigSchemas.Config[K];
     /**
      * Optional function to override other config values before this one is set.
      * Returns an object with the config keys and their new values.
@@ -211,11 +214,26 @@ const configMetadata: ConfigMetadata = {
   accountChart: {
     displayString: "account chart",
     changeRequiresRestart: false,
-    overrideValue: (value) => {
-      // if both speed and accuracy are off, set speed to on
+    overrideValue: (value, currentValue) => {
+      // if both speed and accuracy are off, set opposite to on
       // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
-      if (value[0] === "off" && value[1] === "off") {
+      if (
+        currentValue[0] === "on" &&
+        currentValue[1] === "off" &&
+        value[0] === "off" &&
+        value[1] === "off"
+      ) {
+        value[1] = "on";
+        return value;
+      }
+      if (
+        currentValue[0] === "off" &&
+        currentValue[1] === "on" &&
+        value[0] === "off" &&
+        value[1] === "off"
+      ) {
         value[0] = "on";
+        return value;
       }
       return value;
     },
@@ -741,7 +759,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   }
 
   if (metadata.overrideValue) {
-    value = metadata.overrideValue(value);
+    value = metadata.overrideValue(value, config[key]);
   }
 
   const schema = ConfigSchemas.ConfigSchema.shape[key] as ZodSchema;
