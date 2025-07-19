@@ -541,7 +541,12 @@ export async function addResult(
       dailyLeaderboardRank <= 10 &&
       completedEvent.testDuration <= 120
     ) {
-      await addLog("daily_leaderboard_top_10_result", completedEvent, uid);
+      const now = Date.now();
+      const reset = getCurrentDayTimestamp();
+      const limit = 6 * 60 * 60 * 1000;
+      if (now - reset >= limit) {
+        await addLog("daily_leaderboard_top_10_result", completedEvent, uid);
+      }
     }
   }
 
