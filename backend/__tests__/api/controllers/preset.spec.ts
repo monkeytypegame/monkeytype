@@ -249,8 +249,8 @@ describe("PresetController", () => {
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          `"config.autoSwitchTheme" Expected boolean, received string`,
           `"config.confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
+          `"config.autoSwitchTheme" Expected boolean, received string`,
           `"config" Unrecognized key(s) in object: 'extra'`,
           `Unrecognized key(s) in object: '_id', 'extra'`,
         ],
@@ -427,9 +427,9 @@ describe("PresetController", () => {
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          `"settingGroups.0" Invalid enum value. Expected 'test' | 'behavior' | 'input' | 'sound' | 'caret' | 'appearance' | 'theme' | 'hideElements' | 'ads' | 'hidden', received 'mappers'`,
-          `"config.autoSwitchTheme" Expected boolean, received string`,
+          `"settingGroups.0" Invalid enum value. Expected 'test' | 'behavior' | 'input' | 'sound' | 'caret' | 'appearance' | 'theme' | 'hideElements' | 'hidden' | 'ads', received 'mappers'`,
           `"config.confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
+          `"config.autoSwitchTheme" Expected boolean, received string`,
           `"config" Unrecognized key(s) in object: 'extra'`,
           `Unrecognized key(s) in object: 'extra'`,
         ],

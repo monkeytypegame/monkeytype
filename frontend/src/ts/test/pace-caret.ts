@@ -322,6 +322,21 @@ export function start(): void {
   void update(performance.now() + (settings?.spc ?? 0) * 1000);
 }
 
+function updateStyle(): void {
+  const paceCaret = $("#paceCaret");
+  paceCaret.removeClass([
+    "off",
+    "default",
+    "underline",
+    "outline",
+    "block",
+    "carrot",
+    "banana",
+  ]);
+  paceCaret.addClass(Config.paceCaretStyle);
+}
+
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "paceCaret") void init();
+  if (eventKey === "paceCaretStyle") updateStyle();
 });

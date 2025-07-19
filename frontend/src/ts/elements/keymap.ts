@@ -595,7 +595,39 @@ ConfigEvent.subscribe((eventKey, newValue) => {
     void refresh();
   }
   if (eventKey === "keymapMode") {
+    $(".activeKey").removeClass("activeKey");
+    $(".keymapKey").attr("style", "");
     newValue === "off" ? hide() : show();
+  }
+  if (eventKey === "keymapSize") {
+    $("#keymap").css("zoom", newValue as string);
+  }
+  if (eventKey === "keymapLegendStyle") {
+    let style = newValue as string;
+
+    // Remove existing styles
+    const keymapLegendStyles = ["lowercase", "uppercase", "blank", "dynamic"];
+    keymapLegendStyles.forEach((name) => {
+      $(".keymapLegendStyle").removeClass(name);
+    });
+
+    style = style || "lowercase";
+
+    // Mutate the keymap in the DOM, if it exists.
+    // 1. Remove everything
+    $(".keymapKey > .letter").css("display", "");
+    $(".keymapKey > .letter").css("text-transform", "");
+
+    // 2. Append special styles onto the DOM elements
+    if (style === "uppercase") {
+      $(".keymapKey > .letter").css("text-transform", "capitalize");
+    }
+    if (style === "blank") {
+      $(".keymapKey > .letter").css("display", "none");
+    }
+
+    // Update and save to cookie for persistence
+    $(".keymapLegendStyle").addClass(style);
   }
 });
 

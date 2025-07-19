@@ -100,8 +100,8 @@ describe("ConfigController", () => {
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          `"autoSwitchTheme" Expected boolean, received string`,
           `"confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
+          `"autoSwitchTheme" Expected boolean, received string`,
         ],
       });
 
