@@ -103,6 +103,12 @@ export function getOpenApi(): OpenAPIObject {
           "x-displayName": "Leaderboards",
         },
         {
+          name: "friends",
+          description: "User friend requests and friends list.",
+          "x-displayName": "Friends",
+          "x-public": "no",
+        },
+        {
           name: "psas",
           description: "Public service announcements.",
           "x-displayName": "PSAs",
@@ -277,7 +283,6 @@ function addRequiredConfiguration(
   if (metadata === undefined || metadata.requireConfiguration === undefined)
     return;
 
-  //@ts-expect-error
   operation.description += `**Required configuration:** This operation can only be called if the [configuration](#tag/configuration/operation/configuration.get) for  \`${metadata.requireConfiguration.path}\` is \`true\`.\n\n`;
 }
 
