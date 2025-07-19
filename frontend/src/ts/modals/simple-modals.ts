@@ -1151,7 +1151,7 @@ list.updateCustomTheme = new SimpleModal({
       };
     }
     UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
-    void ThemePicker.refreshCustomButtons();
+    void ThemePicker.fillCustomButtons();
 
     return {
       status: 1,
@@ -1178,7 +1178,7 @@ list.deleteCustomTheme = new SimpleModal({
   onlineOnly: true,
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
-    void ThemePicker.refreshCustomButtons();
+    void ThemePicker.fillCustomButtons();
 
     return {
       status: 1,
