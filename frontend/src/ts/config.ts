@@ -682,23 +682,9 @@ const configMetadata: ConfigMetadata = {
     overrideValue: (value, currentValue) => {
       // if both speed and accuracy are off, set opposite to on
       // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
-      if (
-        currentValue[0] === "on" &&
-        currentValue[1] === "off" &&
-        value[0] === "off" &&
-        value[1] === "off"
-      ) {
-        value[1] = "on";
-        return value;
-      }
-      if (
-        currentValue[0] === "off" &&
-        currentValue[1] === "on" &&
-        value[0] === "off" &&
-        value[1] === "off"
-      ) {
-        value[0] = "on";
-        return value;
+      if (value[0] === "off" && value[1] === "off") {
+        const changedIndex = value[0] === currentValue[0] ? 0 : 1;
+        value[changedIndex] = "on";
       }
       return value;
     },
