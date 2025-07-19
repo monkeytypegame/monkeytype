@@ -43,7 +43,7 @@ const configLS = new LocalStorageWithSchema({
   },
 });
 
-const config = {
+let config = {
   ...getDefaultConfig(),
 };
 
@@ -118,7 +118,7 @@ function isConfigChangeBlocked(): boolean {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K];
 // };
 
-type ConfigMetadata = {
+export type ConfigMetadata = {
   [K in keyof ConfigSchemas.Config]: {
     /**
      * Optional display string for the config key.
@@ -169,6 +169,7 @@ type ConfigMetadata = {
 //todo:
 // maybe have generic set somehow handle test restarting
 // maybe add config group to each metadata object? all though its already defined in ConfigGroupsLiteral
+
 const configMetadata: ConfigMetadata = {
   // test
   punctuation: {
@@ -1510,3 +1511,10 @@ const { promise: loadPromise, resolve: loadDone } = promiseWithResolvers();
 
 export { loadPromise };
 export default config;
+export const __testing = {
+  configMetadata,
+  replaceConfig: (setConfig: Partial<Config>): void => {
+    config = { ...getDefaultConfig(), ...setConfig };
+  },
+  getConfig: () => config,
+};
