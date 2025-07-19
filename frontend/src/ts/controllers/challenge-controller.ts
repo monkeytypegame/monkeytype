@@ -9,18 +9,15 @@ import * as TestUI from "../test/test-ui";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as Loader from "../elements/loader";
-import {
-  CustomTextLimitMode,
-  CustomTextMode,
-} from "@monkeytype/contracts/schemas/util";
+import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import {
   Config as ConfigType,
   Difficulty,
   ThemeName,
   FunboxName,
-} from "@monkeytype/contracts/schemas/configs";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+} from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
+import { CompletedEvent } from "@monkeytype/schemas/results";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { tryCatch } from "@monkeytype/util/trycatch";
 

@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
 import { identity } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import { addLog } from "../dal/logs";
 import {
   PartialConfiguration,

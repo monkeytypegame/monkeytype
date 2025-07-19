@@ -1,5 +1,5 @@
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { FunboxName } from "@monkeytype/schemas/configs";
+import { Language } from "@monkeytype/schemas/languages";
 import { Accents } from "../test/lazy-mode";
 
 //pin implementation

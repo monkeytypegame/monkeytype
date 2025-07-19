@@ -1,10 +1,7 @@
-import {
-  CustomTextLimitMode,
-  CustomTextMode,
-} from "@monkeytype/contracts/schemas/util";
+import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import { CompletedEventCustomTextSchema } from "@monkeytype/contracts/schemas/results";
+import { CompletedEventCustomTextSchema } from "@monkeytype/schemas/results";
 import { deepClone } from "../utils/misc";
 
 const CustomTextObjectSchema = z.record(z.string(), z.string());

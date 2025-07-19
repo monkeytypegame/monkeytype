@@ -3,7 +3,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import { format } from "date-fns/format";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { Quote } from "@monkeytype/contracts/schemas/quotes";
+import { Quote } from "@monkeytype/schemas/quotes";
 
 let quotes: Quote[] = [];
 

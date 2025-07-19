@@ -26,7 +26,7 @@ import {
   CustomLayoutFluid,
   FunboxName,
   ConfigKeySchema,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
@@ -35,9 +35,9 @@ import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Theme, ThemesList } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
-import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
+import { LayoutName } from "@monkeytype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 import { z } from "zod";
 
 let settingsInitialized = false;

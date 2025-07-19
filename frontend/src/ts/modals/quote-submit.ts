@@ -7,7 +7,7 @@ import Config from "../config";
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 import { LanguageGroupNames } from "../constants/languages";
 
 let dropdownReady = false;

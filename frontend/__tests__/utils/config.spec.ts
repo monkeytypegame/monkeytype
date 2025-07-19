@@ -1,6 +1,6 @@
 import { getDefaultConfig } from "../../src/ts/constants/default-config";
 import { migrateConfig } from "../../src/ts/utils/config";
-import { PartialConfig } from "@monkeytype/contracts/schemas/configs";
+import { PartialConfig } from "@monkeytype/schemas/configs";
 
 const defaultConfig = getDefaultConfig();
 

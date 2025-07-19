@@ -1,4 +1,4 @@
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 
 /**
  * Removes accents from a string.

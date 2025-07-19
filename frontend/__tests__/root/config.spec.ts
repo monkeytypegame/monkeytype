@@ -1,9 +1,6 @@
 import * as Config from "../../src/ts/config";
 
-import {
-  CustomThemeColors,
-  FunboxName,
-} from "@monkeytype/contracts/schemas/configs";
+import { CustomThemeColors, FunboxName } from "@monkeytype/schemas/configs";
 import { randomBytes } from "crypto";
 
 describe("Config", () => {

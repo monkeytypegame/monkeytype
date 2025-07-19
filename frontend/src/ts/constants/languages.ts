@@ -1,7 +1,4 @@
-import {
-  Language,
-  LanguageSchema,
-} from "@monkeytype/contracts/schemas/languages";
+import { Language, LanguageSchema } from "@monkeytype/schemas/languages";
 
 export const LanguageList: Language[] = LanguageSchema._def.values;
 

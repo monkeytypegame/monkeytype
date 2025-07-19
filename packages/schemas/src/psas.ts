@@ -8,4 +8,5 @@ export const PSASchema = z.object({
   level: z.number().int().optional(),
   sticky: z.boolean().optional(),
 });
+
 export type PSA = z.infer<typeof PSASchema>;

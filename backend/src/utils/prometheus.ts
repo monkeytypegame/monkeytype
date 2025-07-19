@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { Counter, Histogram, Gauge } from "prom-client";
-import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { CompletedEvent } from "@monkeytype/schemas/results";
 import { Request } from "express";
 
 const auth = new Counter({

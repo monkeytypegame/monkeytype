@@ -1,4 +1,4 @@
-import { ResultFilters } from "@monkeytype/contracts/schemas/users";
+import { ResultFilters } from "@monkeytype/schemas/users";
 import { deepClone } from "../utils/misc";
 import { LanguageList } from "./languages";
 import { getFunboxNames } from "@monkeytype/funbox";

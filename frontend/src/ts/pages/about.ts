@@ -7,10 +7,7 @@ import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
 import { intervalToDuration } from "date-fns/intervalToDuration";
 import * as Skeleton from "../utils/skeleton";
-import {
-  TypingStats,
-  SpeedHistogram,
-} from "@monkeytype/contracts/schemas/public";
+import { TypingStats, SpeedHistogram } from "@monkeytype/schemas/public";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
 import { tryCatch } from "@monkeytype/util/trycatch";
 

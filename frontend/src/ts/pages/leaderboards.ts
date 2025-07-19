@@ -4,7 +4,7 @@ import Config from "../config";
 import {
   LeaderboardEntry,
   XpLeaderboardEntry,
-} from "@monkeytype/contracts/schemas/leaderboards";
+} from "@monkeytype/schemas/leaderboards";
 import { capitalizeFirstLetter } from "../utils/strings";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
@@ -36,12 +36,9 @@ import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { PaginationQuery } from "@monkeytype/contracts/leaderboards";
-import {
-  Language,
-  LanguageSchema,
-} from "@monkeytype/contracts/schemas/languages";
+import { Language, LanguageSchema } from "@monkeytype/schemas/languages";
 import { isSafeNumber } from "@monkeytype/util/numbers";
-import { Mode, Mode2, ModeSchema } from "@monkeytype/contracts/schemas/shared";
+import { Mode, Mode2, ModeSchema } from "@monkeytype/schemas/shared";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { getAvatarElement } from "../utils/discord-avatar";
 

@@ -5,7 +5,7 @@ import * as LeaderboardsDal from "../../src/dal/leaderboards";
 import * as PublicDal from "../../src/dal/public";
 import * as Configuration from "../../src/init/configuration";
 import type { DBLeaderboardEntry } from "../../src/dal/leaderboards";
-import type { PersonalBest } from "@monkeytype/contracts/schemas/shared";
+import type { PersonalBest } from "@monkeytype/schemas/shared";
 const configuration = Configuration.getCachedConfiguration();
 
 import * as DB from "../../src/init/db";

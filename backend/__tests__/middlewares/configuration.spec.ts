@@ -1,6 +1,6 @@
 import { RequireConfiguration } from "@monkeytype/contracts/require-configuration/index";
 import { verifyRequiredConfiguration } from "../../src/middlewares/configuration";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import { Response } from "express";
 import MonkeyError from "../../src/utils/error";
 import { TsRestRequest } from "../../src/api/types";

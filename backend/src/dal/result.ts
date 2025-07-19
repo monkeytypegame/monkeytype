@@ -10,7 +10,7 @@ import * as db from "../init/db";
 
 import { getUser, getTags } from "./user";
 import { DBResult } from "../utils/result";
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 import { tryCatch } from "@monkeytype/util/trycatch";
 
 export const getResultCollection = (): Collection<DBResult> =>

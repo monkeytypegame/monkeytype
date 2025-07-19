@@ -4,11 +4,7 @@ import { getLanguageDisplayString } from "../utils/strings";
 import Config from "../config";
 import Format from "../utils/format";
 import AnimatedModal from "../utils/animated-modal";
-import {
-  Mode,
-  Mode2,
-  PersonalBest,
-} from "@monkeytype/contracts/schemas/shared";
+import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
 
 type PBWithMode2 = {
   mode2: Mode2<Mode>;

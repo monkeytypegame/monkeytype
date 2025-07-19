@@ -12,7 +12,7 @@ import crypto from "crypto";
 import {
   EndpointMetadata,
   RequestAuthenticationOptions,
-} from "@monkeytype/contracts/schemas/api";
+} from "@monkeytype/schemas/api";
 import * as Prometheus from "../../src/utils/prometheus";
 import { TsRestRequestWithContext } from "../../src/api/types";
 

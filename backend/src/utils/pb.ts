@@ -1,10 +1,6 @@
 import _ from "lodash";
-import {
-  Mode,
-  PersonalBest,
-  PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
-import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
+import { Mode, PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
+import { Result as ResultType } from "@monkeytype/schemas/results";
 import { getFunbox } from "@monkeytype/funbox";
 
 export type LbPersonalBests = {

@@ -21,7 +21,7 @@ import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
-import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
+import { QuoteLength } from "@monkeytype/schemas/configs";
 
 const searchServiceCache: Record<string, SearchService<Quote>> = {};
 

@@ -1,4 +1,4 @@
-import { MonkeyMail } from "@monkeytype/contracts/schemas/users";
+import { MonkeyMail } from "@monkeytype/schemas/users";
 import { v4 } from "uuid";
 
 type MonkeyMailOptions = Partial<Omit<MonkeyMail, "id" | "read">>;

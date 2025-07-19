@@ -5,7 +5,7 @@ import * as JSONData from "../utils/json-data";
 import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { getGroupForLanguage, LanguageGroupName } from "../constants/languages";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 
 export async function getTLD(
   languageGroup: LanguageGroupName
