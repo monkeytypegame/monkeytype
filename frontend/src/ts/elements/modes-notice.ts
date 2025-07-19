@@ -26,6 +26,7 @@ ConfigEvent.subscribe((eventKey) => {
     "typingSpeedUnit",
     "quickRestart",
     "customPolyglot",
+    "alwaysShowDecimalPlaces",
   ];
   if (configKeys.includes(eventKey)) {
     void update();
@@ -170,14 +171,11 @@ export async function update(): Promise<void> {
 
     if (isAuthenticated() && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
-        ? Format.typingSpeed(avgWPM, {
-            suffix: ` ${Config.typingSpeedUnit}`,
-            showDecimalPlaces: false,
-          })
+        ? Format.typingSpeed(avgWPM, { suffix: ` ${Config.typingSpeedUnit}` })
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
-        ? Format.accuracy(avgAcc, { suffix: " acc", showDecimalPlaces: false })
+        ? Format.accuracy(avgAcc, { suffix: " acc" })
         : "";
 
       const text = `${avgWPMText} ${avgAccText}`.trim();
