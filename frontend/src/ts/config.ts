@@ -1284,41 +1284,6 @@ export function setThemeDark(
   return genericSet("themeDark", name, nosave);
 }
 
-function setThemes(
-  theme: ConfigSchemas.ThemeName,
-  customState: boolean,
-  customThemeColors: ConfigSchemas.CustomThemeColors,
-  autoSwitchTheme: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("themes", theme, ConfigSchemas.ThemeNameSchema))
-    return false;
-
-  //@ts-expect-error config used to have 9
-  if (customThemeColors.length === 9) {
-    //color missing
-    if (customState) {
-      Notifications.add(
-        "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
-        0,
-        {
-          duration: 7,
-        }
-      );
-    }
-    customThemeColors.splice(4, 0, "#000000");
-  }
-
-  config.customThemeColors = customThemeColors;
-  config.theme = theme;
-  config.customTheme = customState;
-  config.autoSwitchTheme = autoSwitchTheme;
-  saveToLocalStorage("theme", nosave);
-  ConfigEvent.dispatch("setThemes", customState);
-
-  return true;
-}
-
 export function setRandomTheme(
   val: ConfigSchemas.RandomTheme,
   nosave?: boolean
@@ -1473,97 +1438,10 @@ export async function apply(
     }
   });
   if (configObj !== undefined && configObj !== null) {
-    setAds(configObj.ads, true);
-    setThemeLight(configObj.themeLight, true);
-    setThemeDark(configObj.themeDark, true);
-    setThemes(
-      configObj.theme,
-      configObj.customTheme,
-      configObj.customThemeColors,
-      configObj.autoSwitchTheme,
-      true
-    );
-    setCustomLayoutfluid(configObj.customLayoutfluid, true);
-    setCustomPolyglot(configObj.customPolyglot, true);
-    setCustomBackground(configObj.customBackground, true);
-    setCustomBackgroundSize(configObj.customBackgroundSize, true);
-    setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
-    setQuickRestartMode(configObj.quickRestart, true);
-    setKeyTips(configObj.showKeyTips, true);
-    setTimeConfig(configObj.time, true);
-    setQuoteLength(configObj.quoteLength, true);
-    setWordCount(configObj.words, true);
-    setLanguage(configObj.language, true);
-    setLayout(configObj.layout, true);
-    setFontSize(configObj.fontSize, true);
-    setMaxLineWidth(configObj.maxLineWidth, true);
-    setFreedomMode(configObj.freedomMode, true);
-    setCaretStyle(configObj.caretStyle, true);
-    setPaceCaretStyle(configObj.paceCaretStyle, true);
-    setDifficulty(configObj.difficulty, true);
-    setBlindMode(configObj.blindMode, true);
-    setQuickEnd(configObj.quickEnd, true);
-    setFlipTestColors(configObj.flipTestColors, true);
-    setColorfulMode(configObj.colorfulMode, true);
-    setConfidenceMode(configObj.confidenceMode, true);
-    setIndicateTypos(configObj.indicateTypos, true);
-    setTimerStyle(configObj.timerStyle, true);
-    setLiveSpeedStyle(configObj.liveSpeedStyle, true);
-    setLiveAccStyle(configObj.liveAccStyle, true);
-    setLiveBurstStyle(configObj.liveBurstStyle, true);
-    setTimerColor(configObj.timerColor, true);
-    setTimerOpacity(configObj.timerOpacity, true);
-    setKeymapMode(configObj.keymapMode, true);
-    setKeymapStyle(configObj.keymapStyle, true);
-    setKeymapLegendStyle(configObj.keymapLegendStyle, true);
-    setKeymapLayout(configObj.keymapLayout, true);
-    setKeymapShowTopRow(configObj.keymapShowTopRow, true);
-    setKeymapSize(configObj.keymapSize, true);
-    setFontFamily(configObj.fontFamily, true);
-    setSmoothCaret(configObj.smoothCaret, true);
-    setCodeUnindentOnBackspace(configObj.codeUnindentOnBackspace, true);
-    setSmoothLineScroll(configObj.smoothLineScroll, true);
-    setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
-    setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
-    setSingleListCommandLine(configObj.singleListCommandLine, true);
-    setCapsLockWarning(configObj.capsLockWarning, true);
-    setPlaySoundOnError(configObj.playSoundOnError, true);
-    setPlaySoundOnClick(configObj.playSoundOnClick, true);
-    setSoundVolume(configObj.soundVolume, true);
-    setStopOnError(configObj.stopOnError, true);
-    setFavThemes(configObj.favThemes, true);
-    setFunbox(configObj.funbox, true);
-    setRandomTheme(configObj.randomTheme, true);
-    setShowAllLines(configObj.showAllLines, true);
-    setShowOutOfFocusWarning(configObj.showOutOfFocusWarning, true);
-    setPaceCaret(configObj.paceCaret, true);
-    setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
-    setRepeatedPace(configObj.repeatedPace, true);
-    setAccountChart(configObj.accountChart, true);
-    setMinBurst(configObj.minBurst, true);
-    setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
-    setMinWpm(configObj.minWpm, true);
-    setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
-    setMinAcc(configObj.minAcc, true);
-    setMinAccCustom(configObj.minAccCustom, true);
-    setHighlightMode(configObj.highlightMode, true);
-    setTypingSpeedUnit(configObj.typingSpeedUnit, true);
-    setHideExtraLetters(configObj.hideExtraLetters, true);
-    setStartGraphsAtZero(configObj.startGraphsAtZero, true);
-    setStrictSpace(configObj.strictSpace, true);
-    setOppositeShiftMode(configObj.oppositeShiftMode, true);
-    setMode(configObj.mode, true);
-    setNumbers(configObj.numbers, true);
-    setPunctuation(configObj.punctuation, true);
-    setMonkey(configObj.monkey, true);
-    setRepeatQuotes(configObj.repeatQuotes, true);
-    setMonkeyPowerLevel(configObj.monkeyPowerLevel, true);
-    setBurstHeatmap(configObj.burstHeatmap, true);
-    setBritishEnglish(configObj.britishEnglish, true);
-    setLazyMode(configObj.lazyMode, true);
-    setShowAverage(configObj.showAverage, true);
-    setTapeMode(configObj.tapeMode, true);
-    setTapeMargin(configObj.tapeMargin, true);
+    for (const configKey of typedKeys(configObj)) {
+      const configValue = configObj[configKey];
+      genericSet(configKey, configValue, true);
+    }
 
     ConfigEvent.dispatch(
       "configApplied",
