@@ -96,43 +96,45 @@ async function initGroups(): Promise<void> {
     "keymapMode",
     UpdateConfig.setKeymapMode,
     "button",
-    () => {
-      groups["showLiveWpm"]?.updateUI();
-    },
-    () => {
-      if (Config.keymapMode === "off") {
-        $(".pageSettings .section[data-config-name='keymapStyle']").addClass(
-          "hidden"
-        );
-        $(".pageSettings .section[data-config-name='keymapLayout']").addClass(
-          "hidden"
-        );
-        $(
-          ".pageSettings .section[data-config-name='keymapLegendStyle']"
-        ).addClass("hidden");
-        $(
-          ".pageSettings .section[data-config-name='keymapShowTopRow']"
-        ).addClass("hidden");
-        $(".pageSettings .section[data-config-name='keymapSize']").addClass(
-          "hidden"
-        );
-      } else {
-        $(".pageSettings .section[data-config-name='keymapStyle']").removeClass(
-          "hidden"
-        );
-        $(
-          ".pageSettings .section[data-config-name='keymapLayout']"
-        ).removeClass("hidden");
-        $(
-          ".pageSettings .section[data-config-name='keymapLegendStyle']"
-        ).removeClass("hidden");
-        $(
-          ".pageSettings .section[data-config-name='keymapShowTopRow']"
-        ).removeClass("hidden");
-        $(".pageSettings .section[data-config-name='keymapSize']").removeClass(
-          "hidden"
-        );
-      }
+    {
+      setCallback: () => {
+        groups["showLiveWpm"]?.updateUI();
+      },
+      updateCallback: () => {
+        if (Config.keymapMode === "off") {
+          $(".pageSettings .section[data-config-name='keymapStyle']").addClass(
+            "hidden"
+          );
+          $(".pageSettings .section[data-config-name='keymapLayout']").addClass(
+            "hidden"
+          );
+          $(
+            ".pageSettings .section[data-config-name='keymapLegendStyle']"
+          ).addClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapShowTopRow']"
+          ).addClass("hidden");
+          $(".pageSettings .section[data-config-name='keymapSize']").addClass(
+            "hidden"
+          );
+        } else {
+          $(
+            ".pageSettings .section[data-config-name='keymapStyle']"
+          ).removeClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapLayout']"
+          ).removeClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapLegendStyle']"
+          ).removeClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapShowTopRow']"
+          ).removeClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapSize']"
+          ).removeClass("hidden");
+        }
+      },
     }
   ) as SettingsGroup<ConfigValue>;
   groups["keymapMatrix"] = new SettingsGroup(
@@ -169,8 +171,10 @@ async function initGroups(): Promise<void> {
     "freedomMode",
     UpdateConfig.setFreedomMode,
     "button",
-    () => {
-      groups["confidenceMode"]?.updateUI();
+    {
+      setCallback: () => {
+        groups["confidenceMode"]?.updateUI();
+      },
     }
   ) as SettingsGroup<ConfigValue>;
   groups["strictSpace"] = new SettingsGroup(
@@ -187,9 +191,11 @@ async function initGroups(): Promise<void> {
     "confidenceMode",
     UpdateConfig.setConfidenceMode,
     "button",
-    () => {
-      groups["freedomMode"]?.updateUI();
-      groups["stopOnError"]?.updateUI();
+    {
+      setCallback: () => {
+        groups["freedomMode"]?.updateUI();
+        groups["stopOnError"]?.updateUI();
+      },
     }
   ) as SettingsGroup<ConfigValue>;
   groups["indicateTypos"] = new SettingsGroup(
@@ -276,8 +282,10 @@ async function initGroups(): Promise<void> {
     "stopOnError",
     UpdateConfig.setStopOnError,
     "button",
-    () => {
-      groups["confidenceMode"]?.updateUI();
+    {
+      setCallback: () => {
+        groups["confidenceMode"]?.updateUI();
+      },
     }
   ) as SettingsGroup<ConfigValue>;
   groups["soundVolume"] = new SettingsGroup(
@@ -289,16 +297,20 @@ async function initGroups(): Promise<void> {
     "playSoundOnError",
     UpdateConfig.setPlaySoundOnError,
     "button",
-    () => {
-      if (Config.playSoundOnError !== "off") void Sound.playError();
+    {
+      setCallback: () => {
+        if (Config.playSoundOnError !== "off") void Sound.playError();
+      },
     }
   ) as SettingsGroup<ConfigValue>;
   groups["playSoundOnClick"] = new SettingsGroup(
     "playSoundOnClick",
     UpdateConfig.setPlaySoundOnClick,
     "button",
-    () => {
-      if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
+    {
+      setCallback: () => {
+        if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
+      },
     }
   ) as SettingsGroup<ConfigValue>;
   groups["showAllLines"] = new SettingsGroup(
@@ -354,12 +366,14 @@ async function initGroups(): Promise<void> {
   groups["fontSize"] = new SettingsGroup(
     "fontSize",
     UpdateConfig.setFontSize,
-    "button"
+    "button",
+    { validation: { schema: true, inputValueConvert: Number } }
   ) as SettingsGroup<ConfigValue>;
   groups["maxLineWidth"] = new SettingsGroup(
     "maxLineWidth",
     UpdateConfig.setMaxLineWidth,
-    "button"
+    "button",
+    { validation: { schema: true, inputValueConvert: Number } }
   ) as SettingsGroup<ConfigValue>;
   groups["caretStyle"] = new SettingsGroup(
     "caretStyle",
@@ -404,7 +418,8 @@ async function initGroups(): Promise<void> {
   groups["tapeMargin"] = new SettingsGroup(
     "tapeMargin",
     UpdateConfig.setTapeMargin,
-    "button"
+    "button",
+    { validation: { schema: true, inputValueConvert: Number } }
   ) as SettingsGroup<ConfigValue>;
   groups["timerOpacity"] = new SettingsGroup(
     "timerOpacity",
@@ -420,22 +435,23 @@ async function initGroups(): Promise<void> {
     "fontFamily",
     UpdateConfig.setFontFamily,
     "button",
-    undefined,
-    () => {
-      const customButton = $(
-        ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']"
-      );
+    {
+      updateCallback: () => {
+        const customButton = $(
+          ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']"
+        );
 
-      if (
-        $(
-          ".pageSettings .section[data-config-name='fontFamily'] .buttons .active"
-        ).length === 0
-      ) {
-        customButton.addClass("active");
-        customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
-      } else {
-        customButton.text("Custom");
-      }
+        if (
+          $(
+            ".pageSettings .section[data-config-name='fontFamily'] .buttons .active"
+          ).length === 0
+        ) {
+          customButton.addClass("active");
+          customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
+        } else {
+          customButton.text("Custom");
+        }
+      },
     }
   ) as SettingsGroup<ConfigValue>;
   groups["alwaysShowDecimalPlaces"] = new SettingsGroup(

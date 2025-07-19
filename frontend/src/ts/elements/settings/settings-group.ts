@@ -1,10 +1,17 @@
-import { ConfigValue } from "@monkeytype/schemas/configs";
+import { ConfigSchema, ConfigValue } from "@monkeytype/schemas/configs";
+
 import Config from "../../config";
 import * as Notifications from "../notifications";
 import SlimSelect from "slim-select";
 import { debounce } from "throttle-debounce";
+import { validateWithIndicator, Validation } from "../input-validation";
+import { ZodType } from "zod";
 
 type Mode = "select" | "button" | "range";
+
+type SimpleValidation<T> = Pick<Validation<T>, "isValid"> & {
+  schema?: true;
+};
 
 export default class SettingsGroup<T extends ConfigValue> {
   public configName: string;
@@ -13,19 +20,32 @@ export default class SettingsGroup<T extends ConfigValue> {
   public setCallback?: () => void;
   public updateCallback?: () => void;
   private elements: Element[];
+  private validation?: T extends string
+    ? SimpleValidation<T>
+    : SimpleValidation<T> & {
+        inputValueConvert: (val: string) => T;
+      };
 
   constructor(
     configName: string,
     configFunction: (param: T, nosave?: boolean) => boolean,
     mode: Mode,
-    setCallback?: () => void,
-    updateCallback?: () => void
+    options?: {
+      setCallback?: () => void;
+      updateCallback?: () => void;
+      validation?: T extends string
+        ? SimpleValidation<T>
+        : SimpleValidation<T> & {
+            inputValueConvert: (val: string) => T;
+          };
+    }
   ) {
     this.configName = configName;
     this.mode = mode;
     this.configFunction = configFunction;
-    this.setCallback = setCallback;
-    this.updateCallback = updateCallback;
+    this.setCallback = options?.setCallback;
+    this.updateCallback = options?.updateCallback;
+    this.validation = options?.validation;
 
     if (this.mode === "select") {
       const el = document.querySelector(
@@ -55,6 +75,35 @@ export default class SettingsGroup<T extends ConfigValue> {
     } else if (this.mode === "button") {
       const els = document.querySelectorAll(`
         .pageSettings .section[data-config-name=${this.configName}] .buttons button, .pageSettings .section[data-config-name=${this.configName}] .inputs button`);
+
+      if (this.validation?.schema) {
+        const input = document.querySelector(`
+        .pageSettings .section[data-config-name=${this.configName}] .inputs .inputAndButton input`);
+
+        const saveButton = document.querySelector(`
+        .pageSettings .section[data-config-name=${this.configName}] .inputs .inputAndButton button.save`);
+
+        if (input === null)
+          throw new Error("missing input element for " + this.configName);
+
+        //@ts-expect-error this is fine?
+        const schema = ConfigSchema.shape[this.configName] as ZodType;
+
+        validateWithIndicator(input as HTMLInputElement, {
+          schema,
+          inputValueConvert:
+            "inputValueConvert" in this.validation
+              ? this.validation.inputValueConvert
+              : undefined,
+          callback: (result) => {
+            if (result.status !== "success") {
+              saveButton?.setAttribute("disabled", "disabled");
+            } else {
+              saveButton?.removeAttribute("disabled");
+            }
+          },
+        });
+      }
 
       if (els.length === 0) {
         throw new Error(`Failed to find a button element for ${configName}`);
