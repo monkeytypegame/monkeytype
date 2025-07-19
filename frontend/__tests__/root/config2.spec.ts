@@ -57,6 +57,14 @@ describe("Config", () => {
       );
     });
 
+    it("should throw if config key in not found in metadata", () => {
+      expect(() => {
+        Config.genericSet("nonExistentKey" as ConfigKey, true);
+      }).toThrowError(
+        `Config metadata for key "nonExistentKey" is not defined.`
+      );
+    });
+
     describe("overrideValue", () => {
       const testCases: TestsByConfig<{
         given?: Partial<ConfigType>;
@@ -193,6 +201,7 @@ describe("Config", () => {
             expected: { numbers: false, punctuation: false },
           },
         ],
+        numbers: [{ value: false, given: { mode: "quote" } }],
         freedomMode: [
           {
             value: false,
