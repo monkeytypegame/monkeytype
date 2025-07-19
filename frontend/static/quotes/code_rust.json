@@ -297,9 +297,9 @@
     },
     {
       "id": 50,
-      "length": 145,
+      "length": 149,
       "source": "First-class function : compose - programming-idioms.org",
-      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
+      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<dyn Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
     },
     {
       "id": 51,
@@ -309,9 +309,9 @@
     },
     {
       "id": 52,
-      "length": 145,
+      "length": 149,
       "source": "First-class function : generic composition - programming-idioms.org",
-      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
+      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<dyn Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
     },
     {
       "id": 53,
