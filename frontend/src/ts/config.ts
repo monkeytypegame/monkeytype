@@ -169,17 +169,8 @@ type ConfigMetadata = {
 //todo:
 // maybe have generic set somehow handle test restarting
 // maybe add config group to each metadata object? all though its already defined in ConfigGroupsLiteral
-
 const configMetadata: ConfigMetadata = {
-  numbers: {
-    changeRequiresRestart: true,
-    overrideValue: (value) => {
-      if (config.mode === "quote") {
-        return false;
-      }
-      return value;
-    },
-  },
+  // test
   punctuation: {
     changeRequiresRestart: true,
     overrideValue: (value) => {
@@ -189,74 +180,81 @@ const configMetadata: ConfigMetadata = {
       return value;
     },
   },
-  playSoundOnError: {
-    displayString: "play sound on error",
+  numbers: {
+    changeRequiresRestart: true,
+    overrideValue: (value) => {
+      if (config.mode === "quote") {
+        return false;
+      }
+      return value;
+    },
+  },
+  words: {
+    displayString: "word count",
+    changeRequiresRestart: true,
+  },
+  time: {
+    changeRequiresRestart: true,
+    displayString: "time",
+  },
+  mode: {
+    changeRequiresRestart: true,
+    overrideConfig: (value) => {
+      if (value === "custom" || value === "quote" || value === "zen") {
+        return {
+          numbers: false,
+          punctuation: false,
+        };
+      }
+      return undefined;
+    },
+    afterSet: () => {
+      if (config.mode === "zen" && config.paceCaret !== "off") {
+        Notifications.add(`Pace caret will not work with zen mode.`, 0);
+      }
+    },
+  },
+  quoteLength: {
+    displayString: "quote length",
+    changeRequiresRestart: true,
+    overrideValue: (value) => {
+      if (value.length === 1 && value[0] === -1) {
+        return [0, 1, 2, 3];
+      }
+      return value;
+    },
+  },
+  language: {
+    displayString: "language",
+    changeRequiresRestart: true,
+  },
+  burstHeatmap: {
+    displayString: "burst heatmap",
     changeRequiresRestart: false,
   },
-  playSoundOnClick: {
-    displayString: "play sound on click",
-    changeRequiresRestart: false,
-  },
-  soundVolume: {
-    displayString: "sound volume",
-    changeRequiresRestart: false,
-  },
+
+  // behavior
   difficulty: {
     changeRequiresRestart: true,
   },
-  favThemes: {
-    displayString: "favorite themes",
+  quickRestart: {
+    displayString: "quick restart",
+    changeRequiresRestart: false,
+  },
+  repeatQuotes: {
+    displayString: "repeat quotes",
     changeRequiresRestart: false,
   },
   blindMode: {
     displayString: "blind mode",
     changeRequiresRestart: false,
   },
-  accountChart: {
-    displayString: "account chart",
-    changeRequiresRestart: false,
-    overrideValue: (value, currentValue) => {
-      // if both speed and accuracy are off, set opposite to on
-      // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
-      if (
-        currentValue[0] === "on" &&
-        currentValue[1] === "off" &&
-        value[0] === "off" &&
-        value[1] === "off"
-      ) {
-        value[1] = "on";
-        return value;
-      }
-      if (
-        currentValue[0] === "off" &&
-        currentValue[1] === "on" &&
-        value[0] === "off" &&
-        value[1] === "off"
-      ) {
-        value[0] = "on";
-        return value;
-      }
-      return value;
-    },
-  },
-  alwaysShowDecimalPlaces: {
-    displayString: "always show decimal places",
+  alwaysShowWordsHistory: {
+    displayString: "always show words history",
     changeRequiresRestart: false,
   },
-  typingSpeedUnit: {
-    displayString: "typing speed unit",
-    changeRequiresRestart: false,
-  },
-  showOutOfFocusWarning: {
-    displayString: "show out of focus warning",
-    changeRequiresRestart: false,
-  },
-  paceCaretCustomSpeed: {
-    displayString: "pace caret custom speed",
-    changeRequiresRestart: false,
-  },
-  repeatedPace: {
-    displayString: "repeated pace",
+  singleListCommandLine: {
+    displayString: "single list command line",
     changeRequiresRestart: false,
   },
   minWpm: {
@@ -283,33 +281,52 @@ const configMetadata: ConfigMetadata = {
     displayString: "min burst custom speed",
     changeRequiresRestart: true,
   },
-  alwaysShowWordsHistory: {
-    displayString: "always show words history",
-    changeRequiresRestart: false,
+  britishEnglish: {
+    displayString: "british english",
+    changeRequiresRestart: true,
   },
-  singleListCommandLine: {
-    displayString: "single list command line",
-    changeRequiresRestart: false,
+  funbox: {
+    changeRequiresRestart: true,
+    isBlocked: (value) => {
+      for (const funbox of config.funbox) {
+        if (!canSetFunboxWithConfig(funbox, config)) {
+          Notifications.add(
+            `${value}" cannot be enabled with the current config`,
+            0
+          );
+          return true;
+        }
+      }
+      return false;
+    },
   },
-  capsLockWarning: {
-    displayString: "caps lock warning",
-    changeRequiresRestart: false,
+  customLayoutfluid: {
+    displayString: "custom layoutfluid",
+    changeRequiresRestart: true,
+    overrideValue: (value) => {
+      return Array.from(new Set(value));
+    },
   },
-  quickEnd: {
-    displayString: "quick end",
+  customPolyglot: {
+    displayString: "custom polyglot",
     changeRequiresRestart: false,
+    overrideValue: (value) => {
+      return Array.from(new Set(value));
+    },
   },
-  repeatQuotes: {
-    displayString: "repeat quotes",
+
+  // input
+  freedomMode: {
     changeRequiresRestart: false,
-  },
-  flipTestColors: {
-    displayString: "flip test colors",
-    changeRequiresRestart: false,
-  },
-  colorfulMode: {
-    displayString: "colorful mode",
-    changeRequiresRestart: false,
+    displayString: "freedom mode",
+    overrideConfig: (value) => {
+      if (value) {
+        return {
+          confidenceMode: "off",
+        };
+      }
+      return undefined;
+    },
   },
   strictSpace: {
     displayString: "strict space",
@@ -319,39 +336,109 @@ const configMetadata: ConfigMetadata = {
     displayString: "opposite shift mode",
     changeRequiresRestart: false,
   },
+  stopOnError: {
+    displayString: "stop on error",
+    changeRequiresRestart: true,
+    overrideConfig: (value) => {
+      if (value !== "off") {
+        return {
+          confidenceMode: "off",
+        };
+      }
+      return undefined;
+    },
+  },
+  confidenceMode: {
+    displayString: "confidence mode",
+    changeRequiresRestart: false,
+    overrideConfig: (value) => {
+      if (value !== "off") {
+        return {
+          freedomMode: false,
+          stopOnError: "off",
+        };
+      }
+      return undefined;
+    },
+  },
+  quickEnd: {
+    displayString: "quick end",
+    changeRequiresRestart: false,
+  },
+  indicateTypos: {
+    displayString: "indicate typos",
+    changeRequiresRestart: false,
+  },
+  hideExtraLetters: {
+    displayString: "hide extra letters",
+    changeRequiresRestart: false,
+  },
+  lazyMode: {
+    displayString: "lazy mode",
+    changeRequiresRestart: true,
+  },
+  layout: {
+    displayString: "layout",
+    changeRequiresRestart: true,
+  },
+  codeUnindentOnBackspace: {
+    displayString: "code unindent on backspace",
+    changeRequiresRestart: true,
+  },
+
+  // sound
+  soundVolume: {
+    displayString: "sound volume",
+    changeRequiresRestart: false,
+  },
+  playSoundOnClick: {
+    displayString: "play sound on click",
+    changeRequiresRestart: false,
+  },
+  playSoundOnError: {
+    displayString: "play sound on error",
+    changeRequiresRestart: false,
+  },
+
+  // caret
+  smoothCaret: {
+    displayString: "smooth caret",
+    changeRequiresRestart: false,
+  },
   caretStyle: {
     displayString: "caret style",
+    changeRequiresRestart: false,
+  },
+  paceCaret: {
+    displayString: "pace caret",
+    changeRequiresRestart: false,
+    isBlocked: (value) => {
+      if (document.readyState === "complete") {
+        if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
+          Notifications.add(
+            `Pace caret "pb" and "tag pb" are unavailable without an account`,
+            0
+          );
+          return true;
+        }
+      }
+      return false;
+    },
+  },
+  paceCaretCustomSpeed: {
+    displayString: "pace caret custom speed",
     changeRequiresRestart: false,
   },
   paceCaretStyle: {
     displayString: "pace caret style",
     changeRequiresRestart: false,
   },
-  showAverage: {
-    displayString: "show average",
+  repeatedPace: {
+    displayString: "repeated pace",
     changeRequiresRestart: false,
   },
-  highlightMode: {
-    displayString: "highlight mode",
-    changeRequiresRestart: false,
-  },
-  tapeMargin: {
-    displayString: "tape margin",
-    changeRequiresRestart: false,
-    overrideValue: (value) => {
-      if (value < 10) {
-        value = 10;
-      }
-      if (value > 90) {
-        value = 90;
-      }
-      return value;
-    },
-  },
-  hideExtraLetters: {
-    displayString: "hide extra letters",
-    changeRequiresRestart: false,
-  },
+
+  // appearance
   timerStyle: {
     displayString: "timer style",
     changeRequiresRestart: false,
@@ -376,89 +463,67 @@ const configMetadata: ConfigMetadata = {
     displayString: "timer opacity",
     changeRequiresRestart: false,
   },
-  showKeyTips: {
-    displayString: "show key tips",
+  highlightMode: {
+    displayString: "highlight mode",
     changeRequiresRestart: false,
   },
-  smoothCaret: {
-    displayString: "smooth caret",
+  tapeMode: {
+    triggerResize: true,
     changeRequiresRestart: false,
+    displayString: "tape mode",
+    overrideConfig: (value) => {
+      if (value !== "off") {
+        return {
+          showAllLines: false,
+        };
+      }
+      return undefined;
+    },
   },
-  codeUnindentOnBackspace: {
-    displayString: "code unindent on backspace",
-    changeRequiresRestart: true,
-  },
-  startGraphsAtZero: {
-    displayString: "start graphs at zero",
+  tapeMargin: {
+    displayString: "tape margin",
     changeRequiresRestart: false,
+    overrideValue: (value) => {
+      if (value < 10) {
+        value = 10;
+      }
+      if (value > 90) {
+        value = 90;
+      }
+      return value;
+    },
   },
   smoothLineScroll: {
     displayString: "smooth line scroll",
     changeRequiresRestart: false,
   },
-  quickRestart: {
-    displayString: "quick restart",
+  showAllLines: {
+    changeRequiresRestart: false,
+    displayString: "show all lines",
+    isBlocked: (value) => {
+      if (value && config.tapeMode !== "off") {
+        Notifications.add("Show all lines doesn't support tape mode.", 0);
+        return true;
+      }
+      return false;
+    },
+  },
+  alwaysShowDecimalPlaces: {
+    displayString: "always show decimal places",
     changeRequiresRestart: false,
   },
-  indicateTypos: {
-    displayString: "indicate typos",
+  typingSpeedUnit: {
+    displayString: "typing speed unit",
     changeRequiresRestart: false,
   },
-  autoSwitchTheme: {
-    displayString: "auto switch theme",
+  startGraphsAtZero: {
+    displayString: "start graphs at zero",
     changeRequiresRestart: false,
   },
-  customTheme: {
-    displayString: "custom theme",
+  maxLineWidth: {
     changeRequiresRestart: false,
-  },
-  themeLight: {
-    displayString: "theme light",
-    changeRequiresRestart: false,
-  },
-  themeDark: {
-    displayString: "theme dark",
-    changeRequiresRestart: false,
-  },
-  britishEnglish: {
-    displayString: "british english",
-    changeRequiresRestart: true,
-  },
-  lazyMode: {
-    displayString: "lazy mode",
-    changeRequiresRestart: true,
-  },
-  customThemeColors: {
-    displayString: "custom theme colors",
-    changeRequiresRestart: false,
-  },
-  language: {
-    displayString: "language",
-    changeRequiresRestart: true,
-  },
-  monkey: {
-    displayString: "monkey",
-    changeRequiresRestart: false,
-  },
-  keymapMode: {
-    displayString: "keymap mode",
-    changeRequiresRestart: false,
-  },
-  keymapStyle: {
-    displayString: "keymap style",
-    changeRequiresRestart: false,
-  },
-  keymapLayout: {
-    displayString: "keymap layout",
-    changeRequiresRestart: false,
-  },
-  keymapShowTopRow: {
-    displayString: "keymap show top row",
-    changeRequiresRestart: false,
-  },
-  layout: {
-    displayString: "layout",
-    changeRequiresRestart: true,
+    triggerResize: true,
+    displayString: "max line width",
   },
   fontSize: {
     changeRequiresRestart: false,
@@ -470,6 +535,48 @@ const configMetadata: ConfigMetadata = {
       }
       return value;
     },
+  },
+  fontFamily: {
+    displayString: "font family",
+    changeRequiresRestart: false,
+  },
+  keymapMode: {
+    displayString: "keymap mode",
+    changeRequiresRestart: false,
+  },
+  keymapLayout: {
+    displayString: "keymap layout",
+    changeRequiresRestart: false,
+  },
+  keymapStyle: {
+    displayString: "keymap style",
+    changeRequiresRestart: false,
+  },
+  keymapLegendStyle: {
+    displayString: "keymap legend style",
+    changeRequiresRestart: false,
+  },
+  keymapShowTopRow: {
+    displayString: "keymap show top row",
+    changeRequiresRestart: false,
+  },
+  keymapSize: {
+    triggerResize: true,
+    changeRequiresRestart: false,
+    displayString: "keymap size",
+    overrideValue: (value) => {
+      return roundTo1(value);
+    },
+  },
+
+  // theme
+  flipTestColors: {
+    displayString: "flip test colors",
+    changeRequiresRestart: false,
+  },
+  colorfulMode: {
+    displayString: "colorful mode",
+    changeRequiresRestart: false,
   },
   customBackground: {
     displayString: "custom background",
@@ -486,148 +593,17 @@ const configMetadata: ConfigMetadata = {
     displayString: "custom background filter",
     changeRequiresRestart: false,
   },
-  monkeyPowerLevel: {
-    displayString: "monkey power level",
+  autoSwitchTheme: {
+    displayString: "auto switch theme",
     changeRequiresRestart: false,
   },
-  burstHeatmap: {
-    displayString: "burst heatmap",
+  themeLight: {
+    displayString: "theme light",
     changeRequiresRestart: false,
   },
-  tapeMode: {
-    triggerResize: true,
+  themeDark: {
+    displayString: "theme dark",
     changeRequiresRestart: false,
-    displayString: "tape mode",
-    overrideConfig: (value) => {
-      if (value !== "off") {
-        return {
-          showAllLines: false,
-        };
-      }
-      return undefined;
-    },
-  },
-  showAllLines: {
-    changeRequiresRestart: false,
-    displayString: "show all lines",
-    isBlocked: (value) => {
-      if (value && config.tapeMode !== "off") {
-        Notifications.add("Show all lines doesn't support tape mode.", 0);
-        return true;
-      }
-      return false;
-    },
-  },
-  time: {
-    changeRequiresRestart: true,
-    displayString: "time",
-  },
-  quoteLength: {
-    displayString: "quote length",
-    changeRequiresRestart: true,
-    overrideValue: (value) => {
-      if (value.length === 1 && value[0] === -1) {
-        return [0, 1, 2, 3];
-      }
-      return value;
-    },
-  },
-  words: {
-    displayString: "word count",
-    changeRequiresRestart: true,
-  },
-  fontFamily: {
-    displayString: "font family",
-    changeRequiresRestart: false,
-  },
-  theme: {
-    changeRequiresRestart: false,
-    overrideConfig: () => {
-      return {
-        customTheme: false,
-      };
-    },
-  },
-  mode: {
-    changeRequiresRestart: true,
-    overrideConfig: (value) => {
-      if (value === "custom" || value === "quote" || value === "zen") {
-        return {
-          numbers: false,
-          punctuation: false,
-        };
-      }
-      return undefined;
-    },
-    afterSet: () => {
-      if (config.mode === "zen" && config.paceCaret !== "off") {
-        Notifications.add(`Pace caret will not work with zen mode.`, 0);
-      }
-    },
-  },
-  freedomMode: {
-    changeRequiresRestart: false,
-    displayString: "freedom mode",
-    overrideConfig: (value) => {
-      if (value) {
-        return {
-          confidenceMode: "off",
-        };
-      }
-      return undefined;
-    },
-  },
-  funbox: {
-    changeRequiresRestart: true,
-    isBlocked: (value) => {
-      for (const funbox of config.funbox) {
-        if (!canSetFunboxWithConfig(funbox, config)) {
-          Notifications.add(
-            `${value}" cannot be enabled with the current config`,
-            0
-          );
-          return true;
-        }
-      }
-      return false;
-    },
-  },
-  confidenceMode: {
-    displayString: "confidence mode",
-    changeRequiresRestart: false,
-    overrideConfig: (value) => {
-      if (value !== "off") {
-        return {
-          freedomMode: false,
-          stopOnError: "off",
-        };
-      }
-      return undefined;
-    },
-  },
-  stopOnError: {
-    displayString: "stop on error",
-    changeRequiresRestart: true,
-    overrideConfig: (value) => {
-      if (value !== "off") {
-        return {
-          confidenceMode: "off",
-        };
-      }
-      return undefined;
-    },
-  },
-  keymapLegendStyle: {
-    displayString: "keymap legend style",
-    changeRequiresRestart: false,
-  },
-  keymapSize: {
-    triggerResize: true,
-    changeRequiresRestart: false,
-    displayString: "keymap size",
-    overrideValue: (value) => {
-      return roundTo1(value);
-    },
   },
   randomTheme: {
     changeRequiresRestart: false,
@@ -660,22 +636,83 @@ const configMetadata: ConfigMetadata = {
       return false;
     },
   },
-  paceCaret: {
-    displayString: "pace caret",
+  favThemes: {
+    displayString: "favorite themes",
     changeRequiresRestart: false,
-    isBlocked: (value) => {
-      if (document.readyState === "complete") {
-        if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
-          Notifications.add(
-            `Pace caret "pb" and "tag pb" are unavailable without an account`,
-            0
-          );
-          return true;
-        }
-      }
-      return false;
+  },
+  theme: {
+    changeRequiresRestart: false,
+    overrideConfig: () => {
+      return {
+        customTheme: false,
+      };
     },
   },
+  customTheme: {
+    displayString: "custom theme",
+    changeRequiresRestart: false,
+  },
+  customThemeColors: {
+    displayString: "custom theme colors",
+    changeRequiresRestart: false,
+  },
+
+  // hide elements
+  showKeyTips: {
+    displayString: "show key tips",
+    changeRequiresRestart: false,
+  },
+  showOutOfFocusWarning: {
+    displayString: "show out of focus warning",
+    changeRequiresRestart: false,
+  },
+  capsLockWarning: {
+    displayString: "caps lock warning",
+    changeRequiresRestart: false,
+  },
+  showAverage: {
+    displayString: "show average",
+    changeRequiresRestart: false,
+  },
+
+  // other (hidden)
+  accountChart: {
+    displayString: "account chart",
+    changeRequiresRestart: false,
+    overrideValue: (value, currentValue) => {
+      // if both speed and accuracy are off, set opposite to on
+      // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
+      if (
+        currentValue[0] === "on" &&
+        currentValue[1] === "off" &&
+        value[0] === "off" &&
+        value[1] === "off"
+      ) {
+        value[1] = "on";
+        return value;
+      }
+      if (
+        currentValue[0] === "off" &&
+        currentValue[1] === "on" &&
+        value[0] === "off" &&
+        value[1] === "off"
+      ) {
+        value[0] = "on";
+        return value;
+      }
+      return value;
+    },
+  },
+  monkey: {
+    displayString: "monkey",
+    changeRequiresRestart: false,
+  },
+  monkeyPowerLevel: {
+    displayString: "monkey power level",
+    changeRequiresRestart: false,
+  },
+
+  // ads
   ads: {
     changeRequiresRestart: false,
     isBlocked: (value) => {
@@ -690,25 +727,6 @@ const configMetadata: ConfigMetadata = {
         reloadAfter(3);
         Notifications.add("Ad settings changed. Refreshing...", 0);
       }
-    },
-  },
-  customLayoutfluid: {
-    displayString: "custom layoutfluid",
-    changeRequiresRestart: true,
-    overrideValue: (value) => {
-      return Array.from(new Set(value));
-    },
-  },
-  maxLineWidth: {
-    changeRequiresRestart: false,
-    triggerResize: true,
-    displayString: "max line width",
-  },
-  customPolyglot: {
-    displayString: "custom polyglot",
-    changeRequiresRestart: false,
-    overrideValue: (value) => {
-      return Array.from(new Set(value));
     },
   },
 };
