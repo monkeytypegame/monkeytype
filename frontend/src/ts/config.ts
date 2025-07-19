@@ -143,6 +143,7 @@ type ConfigMetadata = {
      * Optional function to override the value before setting it.
      * Returns the modified value.
      * @param value - The value being set for the config key.
+     * @param currentValue - The current value of the config key.
      */
     overrideValue?: (
       value: ConfigSchemas.Config[K],
