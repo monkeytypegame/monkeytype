@@ -76,20 +76,20 @@ export default class SettingsGroup<T extends ConfigValue> {
       const els = document.querySelectorAll(`
         .pageSettings .section[data-config-name=${this.configName}] .buttons button, .pageSettings .section[data-config-name=${this.configName}] .inputs button`);
 
-      if (this.validation?.schema) {
-        const input = document.querySelector(`
+      const input: HTMLInputElement | null = document.querySelector(`
         .pageSettings .section[data-config-name=${this.configName}] .inputs .inputAndButton input`);
 
-        const saveButton = document.querySelector(`
+      const saveButton = document.querySelector(`
         .pageSettings .section[data-config-name=${this.configName}] .inputs .inputAndButton button.save`);
 
+      if (this.validation?.schema) {
         if (input === null)
           throw new Error("missing input element for " + this.configName);
 
         //@ts-expect-error this is fine?
         const schema = ConfigSchema.shape[this.configName] as ZodType;
 
-        validateWithIndicator(input as HTMLInputElement, {
+        validateWithIndicator(input, {
           schema,
           inputValueConvert:
             "inputValueConvert" in this.validation
@@ -109,16 +109,35 @@ export default class SettingsGroup<T extends ConfigValue> {
         throw new Error(`Failed to find a button element for ${configName}`);
       }
 
+      const convertValue = (value: string): T => {
+        let typed = value as T;
+        if (
+          this.validation !== undefined &&
+          "inputValueConvert" in this.validation
+        ) {
+          typed = this.validation.inputValueConvert(value) as T;
+        }
+        if (typed === "true") typed = true as T;
+        if (typed === "false") typed = false as T;
+
+        return typed;
+      };
+
       for (const button of els) {
         button.addEventListener("click", (e) => {
+          const isSaveButton = button.classList.contains("save");
           if (
             button.classList.contains("disabled") ||
             button.classList.contains("no-auto-handle")
           ) {
             return;
           }
-          const value = button.getAttribute("data-config-value");
-          if (value === undefined || value === "") {
+
+          let value = button.getAttribute("data-config-value");
+          if (isSaveButton && value === null && input !== null) {
+            value = input.value;
+          }
+          if (value === null || value === "") {
             console.error(
               `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`
             );
@@ -128,11 +147,39 @@ export default class SettingsGroup<T extends ConfigValue> {
             );
             return;
           }
-          let typed = value as T;
-          if (typed === "true") typed = true as T;
-          if (typed === "false") typed = false as T;
-          this.setValue(typed);
+
+          let typed = convertValue(value);
+          const didConfigSave = this.setValue(typed);
+
+          if (isSaveButton && didConfigSave) {
+            Notifications.add("Saved", 1, {
+              duration: 1,
+            });
+          }
         });
+      }
+      if (input !== null) {
+        const handleStore = (): void => {
+          if (saveButton?.getAttribute("disabled") === "disabled") {
+            console.log("### show error");
+            return;
+          }
+          const value = convertValue(input.value);
+          const didConfigSave = this.setValue(value);
+
+          if (didConfigSave) {
+            Notifications.add("Saved", 1, {
+              duration: 1,
+            });
+          }
+        };
+
+        input.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            handleStore();
+          }
+        });
+        input.addEventListener("focusout", handleStore);
       }
 
       this.elements = Array.from(els);
@@ -175,13 +222,14 @@ export default class SettingsGroup<T extends ConfigValue> {
     this.updateUI();
   }
 
-  setValue(value: T): void {
+  setValue(value: T): boolean {
     if (Config[this.configName as keyof typeof Config] === value) {
-      return;
+      return false;
     }
-    this.configFunction(value);
+    const didSet = this.configFunction(value);
     this.updateUI();
     if (this.setCallback) this.setCallback();
+    return didSet;
   }
 
   updateUI(valueOverride?: T): void {
