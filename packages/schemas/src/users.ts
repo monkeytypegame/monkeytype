@@ -11,7 +11,7 @@ import {
   DifficultySchema,
 } from "./shared";
 import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
-import { doesNotContainProfanity } from "../validation/validation";
+import { doesNotContainProfanity } from "./validation/validation";
 
 const NoneFilterSchema = z.literal("none");
 export const ResultFiltersSchema = z.object({

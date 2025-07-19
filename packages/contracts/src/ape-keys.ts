@@ -6,14 +6,14 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
+} from "@monkeytype/schemas/api";
 
-import { IdSchema } from "./schemas/util";
+import { IdSchema } from "@monkeytype/schemas/util";
 import {
   ApeKeySchema,
   ApeKeysSchema,
   ApeKeyUserDefinedSchema,
-} from "./schemas/ape-keys";
+} from "@monkeytype/schemas/ape-keys";
 
 export const GetApeKeyResponseSchema = responseWithData(ApeKeysSchema);
 export type GetApeKeyResponse = z.infer<typeof GetApeKeyResponseSchema>;

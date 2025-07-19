@@ -5,8 +5,8 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
-import { IdSchema } from "./schemas/util";
+} from "@monkeytype/schemas/api";
+import { IdSchema } from "@monkeytype/schemas/util";
 
 export const ToggleBanRequestSchema = z
   .object({

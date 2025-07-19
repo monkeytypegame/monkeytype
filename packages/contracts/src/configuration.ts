@@ -6,8 +6,8 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
-import { ConfigurationSchema } from "./schemas/configuration";
+} from "@monkeytype/schemas/api";
+import { ConfigurationSchema } from "@monkeytype/schemas/configuration";
 
 export const GetConfigurationResponseSchema =
   responseWithData(ConfigurationSchema);

@@ -7,6 +7,6 @@
     "declarationMap": true,
     "target": "ES6"
   },
-  "include": ["src", "../schemas/src/validation"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }

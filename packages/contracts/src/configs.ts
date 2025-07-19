@@ -6,8 +6,8 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithNullableData,
-} from "./schemas/api";
-import { PartialConfigSchema } from "./schemas/configs";
+} from "@monkeytype/schemas/api";
+import { PartialConfigSchema } from "@monkeytype/schemas/configs";
 
 export const GetConfigResponseSchema =
   responseWithNullableData(PartialConfigSchema);
