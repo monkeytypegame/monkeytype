@@ -1,13 +1,12 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-
+import { PartialConfigSchema } from "@monkeytype/schemas/configs";
 import {
   CommonResponses,
   meta,
   MonkeyResponseSchema,
   responseWithNullableData,
-} from "@monkeytype/schemas/api";
-import { PartialConfigSchema } from "@monkeytype/schemas/configs";
+} from "./schemas/util";
 
 export const GetConfigResponseSchema =
   responseWithNullableData(PartialConfigSchema);

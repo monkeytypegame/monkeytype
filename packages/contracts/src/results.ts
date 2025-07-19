@@ -5,7 +5,7 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "@monkeytype/schemas/api";
+} from "./schemas/util";
 import {
   CompletedEventSchema,
   PostResultResponseSchema,

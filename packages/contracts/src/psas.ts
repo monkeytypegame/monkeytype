@@ -1,12 +1,8 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 import { PSASchema } from "@monkeytype/schemas/psas";
+import { CommonResponses, meta, responseWithData } from "./schemas/util";
 
-import {
-  CommonResponses,
-  meta,
-  responseWithData,
-} from "@monkeytype/schemas/api";
 export const GetPsaResponseSchema = responseWithData(z.array(PSASchema));
 export type GetPsaResponse = z.infer<typeof GetPsaResponseSchema>;
 

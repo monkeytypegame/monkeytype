@@ -1,10 +1,6 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import {
-  CommonResponses,
-  meta,
-  responseWithData,
-} from "@monkeytype/schemas/api";
+import { CommonResponses, meta, responseWithData } from "./schemas/util";
 import {
   SpeedHistogramSchema,
   TypingStatsSchema,
