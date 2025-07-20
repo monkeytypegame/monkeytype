@@ -152,6 +152,13 @@ describe("Config", () => {
         given?: Partial<ConfigType>;
         fail?: true;
       }> = {
+        funbox: [
+          {
+            value: "gibberish" as any,
+            given: { mode: "quote" },
+            fail: true,
+          },
+        ],
         showAllLines: [
           { value: true, given: { tapeMode: "off" } },
           { value: false, given: { tapeMode: "word" } },
