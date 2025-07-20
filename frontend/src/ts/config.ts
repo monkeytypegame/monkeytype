@@ -218,13 +218,6 @@ const configMetadata: ConfigMetadata = {
   quoteLength: {
     displayString: "quote length",
     changeRequiresRestart: true,
-    overrideValue: (value) => {
-      //todo move to migration?
-      if (value.length === 1 && value[0] === -1) {
-        return [0, 1, 2, 3];
-      }
-      return value;
-    },
   },
   language: {
     displayString: "language",
@@ -1186,6 +1179,10 @@ export function setQuoteLength(
   nosave?: boolean
 ): boolean {
   return genericSet("quoteLength", len, nosave);
+}
+
+export function setQuoteLengthAll(nosave?: boolean): boolean {
+  return genericSet("quoteLength", [0, 1, 2, 3], nosave);
 }
 
 export function setWordCount(

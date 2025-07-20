@@ -19,7 +19,7 @@ const commands: Command[] = [
           configValue: [0, 1, 2, 3],
           exec: (): void => {
             UpdateConfig.setMode("quote");
-            UpdateConfig.setQuoteLength([-1]);
+            UpdateConfig.setQuoteLengthAll();
             TestLogic.restart();
           },
         },

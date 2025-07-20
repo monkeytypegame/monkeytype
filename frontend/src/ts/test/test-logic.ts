@@ -461,7 +461,7 @@ export async function init(): Promise<void | null> {
 
   if (Config.mode === "quote") {
     if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
-      UpdateConfig.setQuoteLength([-1]);
+      UpdateConfig.setQuoteLengthAll();
     }
   }
 
