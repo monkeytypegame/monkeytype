@@ -1,6 +1,6 @@
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
-import * as Wordset from "./wordset";
+import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
 import QuotesController, {
   Quote,
   QuoteWithTextSplit,
@@ -310,7 +310,7 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
   return EnglishPunctuation.replace(word);
 }
 
-function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
+function getFunboxWordsFrequency(): FunboxWordsFrequency | undefined {
   const funbox = findSingleActiveFunboxWithFunction("getWordsFrequencyMode");
   if (funbox) {
     return funbox.functions.getWordsFrequencyMode();
@@ -344,7 +344,7 @@ async function getFunboxSection(): Promise<string[]> {
 function getFunboxWord(
   word: string,
   wordIndex: number,
-  wordset?: Wordset.Wordset
+  wordset?: Wordset
 ): string {
   const funbox = findSingleActiveFunboxWithFunction("getWord");
 
@@ -578,7 +578,7 @@ async function getQuoteWordList(
   return TestWords.currentQuote.textSplit;
 }
 
-let currentWordset: Wordset.Wordset | null = null;
+let currentWordset: Wordset | null = null;
 let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
@@ -587,6 +587,8 @@ type GenerateWordsReturn = {
   sectionIndexes: number[];
   hasTab: boolean;
   hasNewline: boolean;
+  allRightToLeft?: boolean;
+  allLigatures?: boolean;
 };
 
 let previousRandomQuote: QuoteWithTextSplit | null = null;
@@ -608,6 +610,8 @@ export async function generateWords(
     sectionIndexes: [],
     hasTab: false,
     hasNewline: false,
+    allRightToLeft: language.rightToLeft,
+    allLigatures: language.ligatures ?? false,
   };
 
   isCurrentlyUsingFunboxSection = isFunboxActiveWithFunction("pullSection");
@@ -638,9 +642,18 @@ export async function generateWords(
 
   const funbox = findSingleActiveFunboxWithFunction("withWords");
   if (funbox) {
-    currentWordset = await funbox.functions.withWords(wordList);
+    const result = await funbox.functions.withWords(wordList);
+    if (result.type === "polyglot") {
+      currentWordset = result.wordset;
+      ret.allLigatures = result.allLigatures;
+      ret.allRightToLeft = result.allRightToLeft;
+    } else if (result.type === "single") {
+      currentWordset = result.wordset;
+    } else {
+      throw new Error("withWords did not return a valid WithWordsResult");
+    }
   } else {
-    currentWordset = await Wordset.withWords(wordList);
+    currentWordset = await withWords(wordList);
   }
 
   console.debug("Wordset", currentWordset);
