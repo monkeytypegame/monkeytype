@@ -119,7 +119,7 @@ describe("url-handler", () => {
 
       //THEN
       expect(setModeMock).toHaveBeenCalledWith("quote", true);
-      expect(setQuoteLengthMock).toHaveBeenCalledWith(-2, false);
+      expect(setQuoteLengthMock).toHaveBeenCalledWith([-2], false);
       expect(setSelectedQuoteIdMock).toHaveBeenCalledWith(512);
       expect(restartTestMock).toHaveBeenCalled();
     });

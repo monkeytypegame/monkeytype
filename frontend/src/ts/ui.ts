@@ -117,6 +117,28 @@ $(window).on("resize", () => {
   debouncedEvent();
 });
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe((eventKey, value) => {
   if (eventKey === "quickRestart") updateKeytips();
+  if (eventKey === "showKeyTips") {
+    if (Config.showKeyTips) {
+      $("footer .keyTips").removeClass("hidden");
+    } else {
+      $("footer .keyTips").addClass("hidden");
+    }
+  }
+  if (eventKey === "fontSize") {
+    $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
+      "fontSize",
+      value + "rem"
+    );
+  }
+  if (eventKey === "fontFamily") {
+    document.documentElement.style.setProperty(
+      "--font",
+      `"${(value as string).replace(
+        /_/g,
+        " "
+      )}", "Roboto Mono", "Vazirmatn", monospace`
+    );
+  }
 });
