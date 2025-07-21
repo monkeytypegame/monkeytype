@@ -159,7 +159,7 @@ export default class SettingsGroup<T extends ConfigValue> {
         });
       }
       if (input !== null) {
-        const handleStore = (): void => {
+        const handleStore = (indicateError: boolean): void => {
           const hasError = saveButton?.getAttribute("disabled") === "disabled";
 
           if (hasError || input.value === "") {
@@ -168,7 +168,7 @@ export default class SettingsGroup<T extends ConfigValue> {
             input.value = new String(Config[configName]).toString();
             input.dispatchEvent(new Event("input"));
           }
-          if (hasError) {
+          if (hasError && indicateError) {
             const parent = $(input.parentElement as HTMLElement);
             parent
               .stop(true, true)
@@ -189,10 +189,10 @@ export default class SettingsGroup<T extends ConfigValue> {
 
         input.addEventListener("keypress", (e) => {
           if (e.key === "Enter") {
-            handleStore();
+            handleStore(true);
           }
         });
-        input.addEventListener("focusout", handleStore);
+        input.addEventListener("focusout", (e) => handleStore(false));
       }
 
       this.elements = Array.from(els);
