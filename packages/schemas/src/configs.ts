@@ -355,7 +355,11 @@ export const CustomBackgroundSchema = z
   .or(z.literal(""));
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
-export const PlayTimeWarningSchema = z.enum(["off", "1", "3", "5", "10"]);
+export const PlayTimeWarningSchema = z
+  .enum(["off", "1", "3", "5", "10"])
+  .describe(
+    "How many seconds before the end of the test to play a warning sound."
+  );
 export type PlayTimeWarning = z.infer<typeof PlayTimeWarningSchema>;
 
 export const ConfigSchema = z
