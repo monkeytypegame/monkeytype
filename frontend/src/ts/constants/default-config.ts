@@ -101,6 +101,7 @@ const obj = {
   tapeMode: "off",
   tapeMargin: 50,
   maxLineWidth: 0,
+  playTimeWarning: "off",
 } as Config;
 
 export function getDefaultConfig(): Config {

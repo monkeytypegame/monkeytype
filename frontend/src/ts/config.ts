@@ -394,6 +394,10 @@ const configMetadata: ConfigMetadata = {
     displayString: "play sound on error",
     changeRequiresRestart: false,
   },
+  playTimeWarning: {
+    displayString: "play time warning",
+    changeRequiresRestart: false,
+  },
 
   // caret
   smoothCaret: {
@@ -853,6 +857,13 @@ export function setSoundVolume(
   nosave?: boolean
 ): boolean {
   return genericSet("soundVolume", val, nosave);
+}
+
+export function setPlayTimeWarning(
+  value: ConfigSchemas.PlayTimeWarning,
+  nosave?: boolean
+): boolean {
+  return genericSet("playTimeWarning", value, nosave);
 }
 
 //difficulty
