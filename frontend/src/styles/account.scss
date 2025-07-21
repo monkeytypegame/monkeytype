@@ -311,10 +311,6 @@
     border-collapse: collapse;
     color: var(--text-color);
 
-    tr {
-      background: var(--row-bg, var(--bg-color));
-    }
-
     td {
       padding: 0.5rem 0.5rem;
     }
@@ -325,7 +321,7 @@
     }
 
     tbody tr:nth-child(odd) {
-      --row-bg: var(--sub-alt-color);
+      background: var(--sub-alt-color);
     }
 
     tbody td:nth-child(1) {
