@@ -3,9 +3,9 @@ import {
   ConfigValue,
   PartialConfig,
   FunboxName,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
 import { sanitize, typedKeys } from "./misc";
-import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
+import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 /**
  * migrates possible outdated config and merges with the default config values

@@ -13,7 +13,7 @@ import {
   ToggleBanResponse,
 } from "@monkeytype/contracts/admin";
 import MonkeyError, { getErrorMessage } from "../../utils/error";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import { addImportantLog } from "../../dal/logs";
 import { MonkeyRequest } from "../types";
 

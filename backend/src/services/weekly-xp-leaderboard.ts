@@ -1,4 +1,4 @@
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import {
@@ -6,7 +6,7 @@ import {
   RedisXpLeaderboardEntrySchema,
   RedisXpLeaderboardScore,
   XpLeaderboardEntry,
-} from "@monkeytype/contracts/schemas/leaderboards";
+} from "@monkeytype/schemas/leaderboards";
 import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
 import MonkeyError from "../utils/error";
 import { omit } from "lodash";

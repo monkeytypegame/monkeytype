@@ -11,7 +11,7 @@ import * as ActivePage from "../states/active-page";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
-import { UserProfile, RankAndCount } from "@monkeytype/contracts/schemas/users";
+import { UserProfile, RankAndCount } from "@monkeytype/schemas/users";
 import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
 import { secondsToString } from "../utils/date-and-time";
 import { Auth } from "../firebase";

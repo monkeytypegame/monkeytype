@@ -1,4 +1,4 @@
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { Mode } from "@monkeytype/schemas/shared";
 import { getDailyLeaderboard } from "../../src/utils/daily-leaderboards";
 
 const dailyLeaderboardsConfig = {

@@ -105,7 +105,7 @@ import {
   CustomLayoutFluidSchema,
   CustomPolyglot,
   CustomPolyglotSchema,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
 import { Command, CommandsSubgroup, withValidation } from "./types";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";

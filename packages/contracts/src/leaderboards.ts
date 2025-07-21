@@ -5,14 +5,14 @@ import {
   MonkeyClientError,
   responseWithData,
   responseWithNullableData,
-} from "./schemas/api";
+} from "./util/api";
 import {
   LeaderboardEntrySchema,
   XpLeaderboardEntrySchema,
-} from "./schemas/leaderboards";
-import { Mode2Schema, ModeSchema } from "./schemas/shared";
+} from "@monkeytype/schemas/leaderboards";
+import { Mode2Schema, ModeSchema } from "@monkeytype/schemas/shared";
 import { initContract } from "@ts-rest/core";
-import { LanguageSchema } from "./schemas/languages";
+import { LanguageSchema } from "@monkeytype/schemas/languages";
 
 const LanguageAndModeQuerySchema = z.object({
   language: LanguageSchema,

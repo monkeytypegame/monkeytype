@@ -1,9 +1,6 @@
 const hasAnticheatImplemented = process.env["BYPASS_ANTICHEAT"] === "true";
 
-import {
-  CompletedEvent,
-  KeyStats,
-} from "@monkeytype/contracts/schemas/results";
+import { CompletedEvent, KeyStats } from "@monkeytype/schemas/results";
 import Logger from "../utils/logger";
 
 export function implemented(): boolean {
