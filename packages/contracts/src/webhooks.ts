@@ -7,7 +7,7 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/util";
+} from "./util/api";
 
 /**
  *Schema: https://docs.github.com/en/webhooks/webhook-events-and-payloads?actionType=published#release

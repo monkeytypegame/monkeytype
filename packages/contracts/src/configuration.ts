@@ -7,7 +7,7 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/util";
+} from "./util/api";
 
 export const GetConfigurationResponseSchema =
   responseWithData(ConfigurationSchema);

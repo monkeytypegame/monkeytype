@@ -6,7 +6,7 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/util";
+} from "./util/api";
 
 export const ToggleBanRequestSchema = z
   .object({

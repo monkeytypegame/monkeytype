@@ -7,7 +7,7 @@ import {
   MonkeyResponseSchema,
   responseWithData,
   responseWithNullableData,
-} from "./schemas/util";
+} from "./util/api";
 import {
   CountByYearAndDaySchema,
   CustomThemeNameSchema,

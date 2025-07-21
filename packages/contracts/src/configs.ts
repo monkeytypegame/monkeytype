@@ -6,7 +6,7 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithNullableData,
-} from "./schemas/util";
+} from "./util/api";
 
 export const GetConfigResponseSchema =
   responseWithNullableData(PartialConfigSchema);

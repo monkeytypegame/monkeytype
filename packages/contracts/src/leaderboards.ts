@@ -5,7 +5,7 @@ import {
   MonkeyClientError,
   responseWithData,
   responseWithNullableData,
-} from "./schemas/util";
+} from "./util/api";
 import {
   LeaderboardEntrySchema,
   XpLeaderboardEntrySchema,

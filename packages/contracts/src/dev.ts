@@ -1,6 +1,6 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import { CommonResponses, meta, responseWithData } from "./schemas/util";
+import { CommonResponses, meta, responseWithData } from "./util/api";
 import { IdSchema } from "@monkeytype/schemas/util";
 
 export const GenerateDataRequestSchema = z.object({
