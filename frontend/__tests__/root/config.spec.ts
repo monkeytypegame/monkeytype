@@ -8,6 +8,12 @@ import {
 } from "@monkeytype/contracts/schemas/configs";
 import { randomBytes } from "crypto";
 import { vi } from "vitest";
+import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
+import * as ConfigValidation from "../../src/ts/config-validation";
+import * as ConfigEvent from "../../src/ts/observables/config-event";
+import * as DB from "../../src/ts/db";
+import * as AccountButton from "../../src/ts/elements/account-button";
+import * as Notifications from "../../src/ts/elements/notifications";
 
 type TestsByConfig<T> = Partial<{
   [K in keyof ConfigType]: (T & { value: ConfigType[K] })[];
@@ -294,6 +300,141 @@ describe("Config", () => {
           expect(getConfig()).toMatchObject(expected ?? {});
         }
       );
+    });
+
+    describe("test with mocks", () => {
+      const canSetConfigWithCurrentFunboxesMock = vi.spyOn(
+        FunboxValidation,
+        "canSetConfigWithCurrentFunboxes"
+      );
+      const isConfigValueValidMock = vi.spyOn(
+        ConfigValidation,
+        "isConfigValueValid"
+      );
+      const dispatchConfigEventMock = vi.spyOn(ConfigEvent, "dispatch");
+      const dbSaveConfigMock = vi.spyOn(DB, "saveConfig");
+      const accountButtonLoadingMock = vi.spyOn(AccountButton, "loading");
+      const notificationAddMock = vi.spyOn(Notifications, "add");
+      const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
+
+      const mocks = [
+        canSetConfigWithCurrentFunboxesMock,
+        isConfigValueValidMock,
+        dispatchConfigEventMock,
+        dbSaveConfigMock,
+        accountButtonLoadingMock,
+        notificationAddMock,
+        miscReloadAfterMock,
+      ];
+
+      beforeEach(async () => {
+        vi.useFakeTimers();
+        mocks.forEach((it) => it.mockReset());
+
+        isConfigValueValidMock.mockReturnValue(true);
+        canSetConfigWithCurrentFunboxesMock.mockReturnValue(true);
+        dbSaveConfigMock.mockResolvedValue();
+      });
+
+      afterAll(() => {
+        mocks.forEach((it) => it.mockRestore());
+        vi.useRealTimers();
+      });
+
+      it("cannot set if funbox disallows", () => {
+        //GIVEN
+        canSetConfigWithCurrentFunboxesMock.mockReturnValue(false);
+
+        //WHEN / THEN
+        expect(Config.genericSet("numbers", true)).toBe(false);
+      });
+
+      it("fails if config is invalid", () => {
+        //GIVEN
+        isConfigValueValidMock.mockReturnValue(false);
+
+        //WHEN / THEN
+        expect(Config.genericSet("numbers", "off" as any)).toBe(false);
+      });
+
+      it("dispatches event on set", () => {
+        //GIVEN
+        replaceConfig({ numbers: false });
+
+        //WHEN
+        Config.genericSet("numbers", true, true);
+
+        //THEN
+
+        expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+          "numbers",
+          true,
+          true,
+          false
+        );
+      });
+
+      it("saves to localstorage if nosave=false", async () => {
+        //GIVEN
+        replaceConfig({ numbers: false });
+
+        //WHEN
+        Config.genericSet("numbers", true);
+
+        //THEN
+        //wait for debounce
+        await vi.advanceTimersByTimeAsync(2500);
+
+        //show loading
+        expect(accountButtonLoadingMock).toHaveBeenNthCalledWith(1, true);
+
+        //save
+        expect(dbSaveConfigMock).toHaveBeenCalledWith({ numbers: true });
+
+        //hide loading
+        expect(accountButtonLoadingMock).toHaveBeenNthCalledWith(2, false);
+
+        //send event
+        expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+          "saveToLocalStorage",
+          expect.stringContaining("numbers")
+        );
+      });
+      it("does not save to localstorage if nosave=true", async () => {
+        //GIVEN
+
+        replaceConfig({ numbers: false });
+
+        //WHEN
+        Config.genericSet("numbers", true, true);
+
+        //THEN
+        //wait for debounce
+        await vi.advanceTimersByTimeAsync(2500);
+
+        expect(accountButtonLoadingMock).not.toHaveBeenCalled();
+        expect(dbSaveConfigMock).not.toHaveBeenCalled();
+
+        expect(dispatchConfigEventMock).not.toHaveBeenCalledWith(
+          "saveToLocalStorage",
+          expect.any(String)
+        );
+      });
+      it("calls afterSet", () => {
+        //GIVEN
+        isDevEnvironmentMock.mockReturnValue(false);
+        replaceConfig({ ads: "off" });
+
+        //WHEN
+        Config.genericSet("ads", "sellout");
+
+        //THEN
+        expect(notificationAddMock).toHaveBeenCalledWith(
+          "Ad settings changed. Refreshing...",
+          0
+        );
+        expect(miscReloadAfterMock).toHaveBeenCalledWith(3);
+      });
     });
   });
 

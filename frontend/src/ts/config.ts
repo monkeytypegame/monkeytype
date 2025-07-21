@@ -47,7 +47,7 @@ let config = {
   ...getDefaultConfig(),
 };
 
-let configToSend = {} as Config;
+let configToSend: Partial<Config> = {};
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
@@ -768,7 +768,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   //   }
   // }
 
-  if (metadata.isBlocked && metadata.isBlocked(value)) {
+  if (metadata.isBlocked?.(value)) {
     return false;
   }
 
@@ -816,9 +816,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     $(window).trigger("resize");
   }
 
-  if (metadata.afterSet) {
-    metadata.afterSet(nosave || false);
-  }
+  metadata.afterSet?.(nosave || false);
 
   return true;
 }
@@ -1516,6 +1514,7 @@ export const __testing = {
   configMetadata,
   replaceConfig: (setConfig: Partial<Config>): void => {
     config = { ...getDefaultConfig(), ...setConfig };
+    configToSend = {} as Config;
   },
   getConfig: () => config,
 };
