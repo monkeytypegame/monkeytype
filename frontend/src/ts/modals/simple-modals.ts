@@ -1018,7 +1018,7 @@ list.unlinkDiscord = new SimpleModal({
 
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
-    AccountButton.updateAvatar(undefined, undefined);
+    AccountButton.updateAvatar();
     DB.setSnapshot(snap);
     AccountSettings.updateUI();
 

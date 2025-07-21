@@ -16,6 +16,7 @@ import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
 import { secondsToString } from "../utils/date-and-time";
 import { Auth } from "../firebase";
 import { Snapshot } from "../constants/default-snapshot";
+import { getAvatarElement } from "../utils/discord-avatar";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = UserProfile | Snapshot;
@@ -47,25 +48,8 @@ export async function update(
   )
     return;
 
-  details.find(".placeholderAvatar").removeClass("hidden");
-  if (
-    profile.discordAvatar !== undefined &&
-    profile.discordId !== undefined &&
-    !banned
-  ) {
-    void Misc.getDiscordAvatarUrl(
-      profile.discordId,
-      profile.discordAvatar,
-      256
-    ).then((avatarUrl) => {
-      if (avatarUrl !== null) {
-        details.find(".placeholderAvatar").addClass("hidden");
-        details.find(".avatar").css("background-image", `url(${avatarUrl})`);
-      }
-    });
-  } else {
-    details.find(".avatar").removeAttr("style");
-  }
+  const avatar = details.find(".avatarAndName .avatar");
+  avatar.replaceWith(getAvatarElement(profile, { size: 256 }));
 
   if (profile.inventory?.badges && !banned) {
     let mainHtml = "";

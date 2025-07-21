@@ -32,7 +32,7 @@ import {
   replaceLegacyValues,
 } from "../../utils/result";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
-import { addLog } from "../../dal/logs";
+import { addImportantLog, addLog } from "../../dal/logs";
 import {
   AddResultRequest,
   AddResultResponse,
@@ -278,6 +278,10 @@ export async function addResult(
         ) / completedEvent.keyDuration.length,
       sd: stdDev(completedEvent.keyDuration),
     };
+  }
+
+  if (user.suspicious && completedEvent.testDuration <= 120) {
+    await addImportantLog("suspicious_user_result", completedEvent, uid);
   }
 
   if (anticheatImplemented()) {
@@ -532,6 +536,18 @@ export async function addResult(
       },
       dailyLeaderboardsConfig
     );
+    if (
+      dailyLeaderboardRank >= 1 &&
+      dailyLeaderboardRank <= 10 &&
+      completedEvent.testDuration <= 120
+    ) {
+      const now = Date.now();
+      const reset = getCurrentDayTimestamp();
+      const limit = 6 * 60 * 60 * 1000;
+      if (now - reset >= limit) {
+        await addLog("daily_leaderboard_top_10_result", completedEvent, uid);
+      }
+    }
   }
 
   const streak = await UserDAL.updateStreak(uid, completedEvent.timestamp);

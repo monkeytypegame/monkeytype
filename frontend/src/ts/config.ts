@@ -33,6 +33,7 @@ import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import * as TestState from "./test/test-state";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -91,8 +92,20 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
+function isConfigChangeBlocked(): boolean {
+  if (TestState.isActive && config.funbox.includes("no_quit")) {
+    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
+      important: true,
+    });
+    return true;
+  }
+  return false;
+}
+
 //numbers
 export function setNumbers(numb: boolean, nosave?: boolean): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValidBoolean("numbers", numb)) return false;
 
   if (!canSetConfigWithCurrentFunboxes("numbers", numb, config.funbox)) {
@@ -111,6 +124,8 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
 
 //punctuation
 export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValidBoolean("punctuation", punc)) return false;
 
   if (!canSetConfigWithCurrentFunboxes("punctuation", punc, config.funbox)) {
@@ -128,6 +143,8 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
 }
 
 export function setMode(mode: Mode, nosave?: boolean): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("mode", mode, ModeSchema)) {
     return false;
   }
@@ -224,6 +241,8 @@ export function setDifficulty(
   diff: ConfigSchemas.Difficulty,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("difficulty", diff, ConfigSchemas.DifficultySchema)) {
     return false;
   }
@@ -260,6 +279,8 @@ export function setFunbox(
   funbox: ConfigSchemas.Funbox,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("funbox", funbox, ConfigSchemas.FunboxSchema))
     return false;
 
@@ -277,6 +298,8 @@ export function setFunbox(
 }
 
 export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!canSetFunboxWithConfig(funbox, config)) {
     return false;
   }
@@ -346,6 +369,8 @@ export function setStopOnError(
   soe: ConfigSchemas.StopOnError,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (
     !isConfigValueValid("stop on error", soe, ConfigSchemas.StopOnErrorSchema)
   ) {
@@ -484,6 +509,8 @@ export function setMinWpm(
   minwpm: ConfigSchemas.MinimumWordsPerMinute,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (
     !isConfigValueValid(
       "min speed",
@@ -505,6 +532,8 @@ export function setMinWpmCustomSpeed(
   val: ConfigSchemas.MinWpmCustomSpeed,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (
     !isConfigValueValid(
       "min speed custom",
@@ -527,6 +556,8 @@ export function setMinAcc(
   min: ConfigSchemas.MinimumAccuracy,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("min acc", min, ConfigSchemas.MinimumAccuracySchema))
     return false;
 
@@ -541,6 +572,8 @@ export function setMinAccCustom(
   val: ConfigSchemas.MinimumAccuracyCustom,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   //migrate legacy configs
   if (val > 100) val = 100;
   if (
@@ -564,6 +597,8 @@ export function setMinBurst(
   min: ConfigSchemas.MinimumBurst,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("min burst", min, ConfigSchemas.MinimumBurstSchema)) {
     return false;
   }
@@ -579,6 +614,8 @@ export function setMinBurstCustomSpeed(
   val: ConfigSchemas.MinimumBurstCustomSpeed,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (
     !isConfigValueValid(
       "min burst custom speed",
@@ -732,6 +769,8 @@ export function setColorfulMode(extra: boolean, nosave?: boolean): boolean {
 
 //strict space
 export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValidBoolean("strict space", val)) return false;
 
   config.strictSpace = val;
@@ -1087,6 +1126,8 @@ export function setTimeConfig(
   time: ConfigSchemas.TimeConfig,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   time = isNaN(time) || time < 0 ? getDefaultConfig().time : time;
   if (!isConfigValueValid("time", time, ConfigSchemas.TimeConfigSchema))
     return false;
@@ -1107,6 +1148,8 @@ export function setQuoteLength(
   nosave?: boolean,
   multipleMode?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (Array.isArray(len)) {
     if (
       !isConfigValueValid(
@@ -1159,6 +1202,8 @@ export function setWordCount(
   wordCount: ConfigSchemas.WordCount,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   wordCount =
     wordCount < 0 || wordCount > 100000 ? getDefaultConfig().words : wordCount;
 
@@ -1501,6 +1546,8 @@ export function setRandomTheme(
 }
 
 export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValidBoolean("british english", val)) return false;
 
   if (!val) {
@@ -1514,6 +1561,8 @@ export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
 }
 
 export function setLazyMode(val: boolean, nosave?: boolean): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValidBoolean("lazy mode", val)) return false;
 
   if (!val) {
@@ -1566,6 +1615,8 @@ export function setCustomThemeColors(
 }
 
 export function setLanguage(language: Language, nosave?: boolean): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("language", language, LanguageSchema)) return false;
 
   config.language = language;
@@ -1743,6 +1794,8 @@ export function setLayout(
   layout: ConfigSchemas.Layout,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   if (!isConfigValueValid("layout", layout, ConfigSchemas.LayoutSchema))
     return false;
 
@@ -1850,6 +1903,8 @@ export function setCustomLayoutfluid(
   value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   // Remove duplicates
   const deduped = Array.from(new Set(value));
   if (
@@ -1873,6 +1928,8 @@ export function setCustomPolyglot(
   value: ConfigSchemas.CustomPolyglot,
   nosave?: boolean
 ): boolean {
+  if (isConfigChangeBlocked()) return false;
+
   // remove duplicates
   const deduped = Array.from(new Set(value));
   if (

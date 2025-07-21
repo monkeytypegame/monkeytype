@@ -89,6 +89,15 @@ export function isFunboxActiveWithProperty(property: FunboxProperty): boolean {
   return getActiveFunboxesWithProperty(property).length > 0;
 }
 
+/**
+ * Check if the given funbox is active
+ * @param funbox funbox name
+ * @returns true if the funbox is active, false otherwise
+ */
+export function isFunboxActive(funbox: FunboxName): boolean {
+  return getActiveFunboxNames().includes(funbox);
+}
+
 type MandatoryFunboxFunction<F extends keyof FunboxFunctions> = Exclude<
   FunboxFunctions[F],
   undefined

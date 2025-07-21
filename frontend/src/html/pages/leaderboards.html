@@ -23,7 +23,7 @@
         <div class="title timer">Updates in: -</div>
 
         <div class="jumpButtons">
-          <div class="updating hidden">
+          <div class="updating">
             <i class="fas fa-circle-notch fa-spin"></i>
           </div>
           <button data-action="firstPage"><i class="fas fa-crown"></i></button>
@@ -52,10 +52,10 @@
             <td>#</td>
             <td>name</td>
             <td class="stat narrow speedUnit">
-              wpm
+              <span>wpm</span>
               <div class="sub">accuracy</div>
             </td>
-            <td class="stat narrow">
+            <td class="stat narrow rawAndConsistency">
               raw
               <div class="sub">consistency</div>
             </td>
@@ -84,8 +84,27 @@
             <td>1</td>
             <td>
               <div class="avatarNameBadge">
-                <div class="lbav">
-                  <div class="avatarPlaceholder">
+                <div class="avatar">
+                  <div class="userIcon">
+                    <i class="fas fa-user-circle"></i>
+                  </div>
+                </div>
+
+                <div class="name">Username</div>
+              </div>
+            </td>
+            <td>100.00</td>
+            <td>100.00%</td>
+            <td>100.00</td>
+            <td>100.00%</td>
+            <td class="small">23 Aug 2024 12:10</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>
+              <div class="avatarNameBadge">
+                <div class="avatar">
+                  <div class="userIcon">
                     <i class="fas fa-user-circle"></i>
                   </div>
                 </div>
@@ -102,29 +121,12 @@
             <td>2</td>
             <td>
               <div class="avatarNameBadge">
-                <div class="lbav">
-                  <div class="avatarPlaceholder">
+                <div class="avatar">
+                  <div class="userIcon">
                     <i class="fas fa-user-circle"></i>
                   </div>
                 </div>
-                <div class="name">Username</div>
-              </div>
-            </td>
-            <td>100.00</td>
-            <td>100.00%</td>
-            <td>100.00</td>
-            <td>100.00%</td>
-            <td class="small">23 Aug 2024 12:10</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>
-              <div class="avatarNameBadge">
-                <div class="lbav">
-                  <div class="avatarPlaceholder">
-                    <i class="fas fa-user-circle"></i>
-                  </div>
-                </div>
+
                 <div class="name">Username</div>
               </div>
             </td>
@@ -156,7 +158,7 @@
         </div>
       </div>
     </div>
-    <div class="buttons">
+    <div class="sideButtons">
       <div class="buttonGroup typeButtons">
         <button data-type="allTime">
           <i class="fas fa-globe-americas"></i>
@@ -172,7 +174,7 @@
         </button>
       </div>
       <div class="divider hidden"></div>
-      <div class="buttonGroup hidden secondary modeButtons">
+      <div class="buttonGroup hidden modeButtons">
         <button data-mode="15">
           <i class="fas fa-clock"></i>
           time 15
@@ -182,8 +184,8 @@
           time 60
         </button>
       </div>
-      <div class="divider divider2 hidden"></div>
-      <div class="buttonGroup hidden secondary languageButtons">
+      <div class="divider2 hidden"></div>
+      <div class="buttonGroup hidden languageButtons">
         <button data-language="english">
           <i class="fas fa-globe"></i>
           english
