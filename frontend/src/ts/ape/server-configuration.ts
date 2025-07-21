@@ -1,4 +1,4 @@
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import Ape from ".";
 import { promiseWithResolvers } from "../utils/misc";
 

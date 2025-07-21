@@ -2,7 +2,7 @@ import * as Misc from "../utils/misc";
 import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
-import { XpBreakdown } from "@monkeytype/contracts/schemas/results";
+import { XpBreakdown } from "@monkeytype/schemas/results";
 import { isSafeNumber, mapRange } from "@monkeytype/util/numbers";
 
 let breakdownVisible = false;

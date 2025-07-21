@@ -5,7 +5,7 @@ import {
   FunboxName,
   ConfigKey,
   Config as ConfigType,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
 import { randomBytes } from "crypto";
 import { vi } from "vitest";
 import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";

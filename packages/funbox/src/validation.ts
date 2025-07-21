@@ -1,7 +1,7 @@
 import { intersect } from "@monkeytype/util/arrays";
 import { FunboxForcedConfig } from "./types";
 import { getFunbox } from "./list";
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 import { safeNumber } from "@monkeytype/util/numbers";
 
 export function checkCompatibility(

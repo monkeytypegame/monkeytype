@@ -10,7 +10,7 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import { debounce } from "throttle-debounce";
-import { ThemeName } from "@monkeytype/contracts/schemas/configs";
+import { ThemeName } from "@monkeytype/schemas/configs";
 import { ThemesList } from "../constants/themes";
 
 export let randomTheme: ThemeName | string | null = null;

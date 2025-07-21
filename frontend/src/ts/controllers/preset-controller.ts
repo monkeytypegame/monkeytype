@@ -1,4 +1,4 @@
-import { Preset } from "@monkeytype/contracts/schemas/presets";
+import { Preset } from "@monkeytype/schemas/presets";
 import * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";

@@ -17,10 +17,10 @@ import {
   reloadAfter,
   typedKeys,
 } from "./utils/misc";
-import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
-import { Config, FunboxName } from "@monkeytype/contracts/schemas/configs";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import { Config, FunboxName } from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
+import { Language } from "@monkeytype/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
