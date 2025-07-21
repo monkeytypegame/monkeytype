@@ -297,8 +297,10 @@ async function initGroups(): Promise<void> {
     "playTimeWarning",
     UpdateConfig.setPlayTimeWarning,
     "button",
-    () => {
-      if (Config.playTimeWarning !== "off") void Sound.playTimeWarning();
+    {
+      setCallback: () => {
+        if (Config.playTimeWarning !== "off") void Sound.playTimeWarning();
+      },
     }
   ) as SettingsGroup<ConfigValue>;
   groups["playSoundOnError"] = new SettingsGroup(
@@ -374,13 +376,13 @@ async function initGroups(): Promise<void> {
   groups["fontSize"] = new SettingsGroup(
     "fontSize",
     UpdateConfig.setFontSize,
-    "button",
+    "input",
     { validation: { schema: true, inputValueConvert: Number } }
   ) as SettingsGroup<ConfigValue>;
   groups["maxLineWidth"] = new SettingsGroup(
     "maxLineWidth",
     UpdateConfig.setMaxLineWidth,
-    "button",
+    "input",
     { validation: { schema: true, inputValueConvert: Number } }
   ) as SettingsGroup<ConfigValue>;
   groups["caretStyle"] = new SettingsGroup(
@@ -426,7 +428,7 @@ async function initGroups(): Promise<void> {
   groups["tapeMargin"] = new SettingsGroup(
     "tapeMargin",
     UpdateConfig.setTapeMargin,
-    "button",
+    "input",
     { validation: { schema: true, inputValueConvert: Number } }
   ) as SettingsGroup<ConfigValue>;
   groups["timerOpacity"] = new SettingsGroup(

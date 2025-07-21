@@ -4,10 +4,14 @@ import Config from "../../config";
 import * as Notifications from "../notifications";
 import SlimSelect from "slim-select";
 import { debounce } from "throttle-debounce";
-import { validateWithIndicator, Validation } from "../input-validation";
+import {
+  validateWithIndicator,
+  Validation,
+  ValidationResult,
+} from "../input-validation";
 import { ZodType } from "zod";
 
-type Mode = "select" | "button" | "range";
+type Mode = "select" | "button" | "range" | "input";
 
 type SimpleValidation<T> = Pick<Validation<T>, "isValid"> & {
   schema?: true;
@@ -25,6 +29,7 @@ export default class SettingsGroup<T extends ConfigValue> {
     : SimpleValidation<T> & {
         inputValueConvert: (val: string) => T;
       };
+  private validationResult: ValidationResult["status"] = "checking";
 
   constructor(
     configName: string,
@@ -46,6 +51,20 @@ export default class SettingsGroup<T extends ConfigValue> {
     this.setCallback = options?.setCallback;
     this.updateCallback = options?.updateCallback;
     this.validation = options?.validation;
+
+    const convertValue = (value: string): T => {
+      let typed = value as T;
+      if (
+        this.validation !== undefined &&
+        "inputValueConvert" in this.validation
+      ) {
+        typed = this.validation.inputValueConvert(value) as T;
+      }
+      if (typed === "true") typed = true as T;
+      if (typed === "false") typed = false as T;
+
+      return typed;
+    };
 
     if (this.mode === "select") {
       const el = document.querySelector(
@@ -76,56 +95,12 @@ export default class SettingsGroup<T extends ConfigValue> {
       const els = document.querySelectorAll(`
         .pageSettings .section[data-config-name=${this.configName}] .buttons button, .pageSettings .section[data-config-name=${this.configName}] .inputs button`);
 
-      const input: HTMLInputElement | null = document.querySelector(`
-        .pageSettings .section[data-config-name=${this.configName}] .inputs .inputAndButton input`);
-
-      const saveButton = document.querySelector(`
-        .pageSettings .section[data-config-name=${this.configName}] .inputs .inputAndButton button.save`);
-
-      if (this.validation?.schema) {
-        if (input === null)
-          throw new Error("missing input element for " + this.configName);
-
-        //@ts-expect-error this is fine?
-        const schema = ConfigSchema.shape[this.configName] as ZodType;
-
-        validateWithIndicator(input, {
-          schema,
-          inputValueConvert:
-            "inputValueConvert" in this.validation
-              ? this.validation.inputValueConvert
-              : undefined,
-          callback: (result) => {
-            if (result.status !== "success") {
-              saveButton?.setAttribute("disabled", "disabled");
-            } else {
-              saveButton?.removeAttribute("disabled");
-            }
-          },
-        });
-      }
-
       if (els.length === 0) {
         throw new Error(`Failed to find a button element for ${configName}`);
       }
 
-      const convertValue = (value: string): T => {
-        let typed = value as T;
-        if (
-          this.validation !== undefined &&
-          "inputValueConvert" in this.validation
-        ) {
-          typed = this.validation.inputValueConvert(value) as T;
-        }
-        if (typed === "true") typed = true as T;
-        if (typed === "false") typed = false as T;
-
-        return typed;
-      };
-
       for (const button of els) {
         button.addEventListener("click", (e) => {
-          const isSaveButton = button.classList.contains("save");
           if (
             button.classList.contains("disabled") ||
             button.classList.contains("no-auto-handle")
@@ -134,9 +109,6 @@ export default class SettingsGroup<T extends ConfigValue> {
           }
 
           let value = button.getAttribute("data-config-value");
-          if (isSaveButton && value === null && input !== null) {
-            value = input.value;
-          }
           if (value === null || value === "") {
             console.error(
               `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`
@@ -149,53 +121,71 @@ export default class SettingsGroup<T extends ConfigValue> {
           }
 
           let typed = convertValue(value);
-          const didConfigSave = this.setValue(typed);
-
-          if (isSaveButton && didConfigSave) {
-            Notifications.add("Saved", 1, {
-              duration: 1,
-            });
-          }
+          this.setValue(typed);
         });
-      }
-      if (input !== null) {
-        const handleStore = (indicateError: boolean): void => {
-          const hasError = saveButton?.getAttribute("disabled") === "disabled";
-
-          if (hasError || input.value === "") {
-            //use last config value, clear validation
-            //@ts-expect-error this is fine
-            input.value = new String(Config[configName]).toString();
-            input.dispatchEvent(new Event("input"));
-          }
-          if (hasError && indicateError) {
-            const parent = $(input.parentElement as HTMLElement);
-            parent
-              .stop(true, true)
-              .addClass("hasError")
-              .animate({ undefined: 1 }, 500, () => {
-                parent.removeClass("hasError");
-              });
-          }
-          const value = convertValue(input.value);
-          const didConfigSave = this.setValue(value);
-
-          if (didConfigSave) {
-            Notifications.add("Saved", 1, {
-              duration: 1,
-            });
-          }
-        };
-
-        input.addEventListener("keypress", (e) => {
-          if (e.key === "Enter") {
-            handleStore(true);
-          }
-        });
-        input.addEventListener("focusout", (e) => handleStore(false));
       }
 
       this.elements = Array.from(els);
+    } else if (this.mode === "input") {
+      const input: HTMLInputElement | null = document.querySelector(`
+        .pageSettings .section[data-config-name=${this.configName}] .inputs .inputAndButton input`);
+
+      if (input === null) {
+        throw new Error(`Failed to find a input element for ${configName}`);
+      }
+
+      if (this.validation?.schema) {
+        //@ts-expect-error this is fine?
+        const schema = ConfigSchema.shape[this.configName] as ZodType;
+
+        validateWithIndicator(input, {
+          schema,
+          inputValueConvert:
+            "inputValueConvert" in this.validation
+              ? this.validation.inputValueConvert
+              : undefined,
+          callback: (result) => {
+            this.validationResult = result.status;
+            console.log("###", input.parentElement);
+          },
+        });
+      }
+
+      const handleStore = (): void => {
+        if (input.value === "") {
+          //use last config value, clear validation
+          //@ts-expect-error this is fine
+          input.value = new String(Config[configName]).toString();
+          input.dispatchEvent(new Event("input"));
+        }
+        if (this.validationResult === "failed") {
+          const parent = $(input.parentElement as HTMLElement);
+          parent
+            .stop(true, true)
+            .addClass("hasError")
+            .animate({ undefined: 1 }, 500, () => {
+              parent.removeClass("hasError");
+            });
+          return;
+        }
+        const value = convertValue(input.value);
+        const didConfigSave = this.setValue(value);
+
+        if (didConfigSave) {
+          Notifications.add("Saved", 1, {
+            duration: 1,
+          });
+        }
+      };
+
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          handleStore();
+        }
+      });
+      input.addEventListener("focusout", (e) => handleStore());
+
+      this.elements = [input];
     } else if (this.mode === "range") {
       const el = document.querySelector(
         `.pageSettings .section[data-config-name=${this.configName}] input[type=range]`

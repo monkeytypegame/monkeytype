@@ -112,7 +112,8 @@
       .statusIndicator {
         opacity: 0;
       }
-      &:has(input:focus) {
+      &:has(input:focus),
+      &:has([data-indicator-status="failed"]) {
         .statusIndicator {
           opacity: 1;
         }
