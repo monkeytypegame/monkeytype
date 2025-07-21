@@ -105,7 +105,7 @@
         }
       }
 
-      input.hasError {
+      .hasError {
         animation: shake 0.1s ease-in-out infinite;
       }
     }

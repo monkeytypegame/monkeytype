@@ -166,11 +166,12 @@ export default class SettingsGroup<T extends ConfigValue> {
             input.value = new String(Config[configName]).toString();
             input.dispatchEvent(new Event("input"));
           } else if (saveButton?.getAttribute("disabled") === "disabled") {
-            $(input)
+            const parent = $(input.parentElement as HTMLElement);
+            parent
               .stop(true, true)
               .addClass("hasError")
               .animate({ undefined: 1 }, 500, () => {
-                input.classList.remove("hasError");
+                parent.removeClass("hasError");
               });
             return;
           }
