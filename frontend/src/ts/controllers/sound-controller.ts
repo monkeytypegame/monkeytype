@@ -623,6 +623,7 @@ function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
 export async function playTimeWarning(): Promise<void> {
   if (timeWarning === null) await initTimeWarning();
   const soundToPlay = timeWarning as Howl;
+  soundToPlay.stop();
   soundToPlay.seek(0);
   soundToPlay.play();
 }
