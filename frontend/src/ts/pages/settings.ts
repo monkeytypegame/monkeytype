@@ -1142,59 +1142,6 @@ $(
 });
 
 $(
-  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton button.save"
-).on("click", () => {
-  const didConfigSave = UpdateConfig.setMaxLineWidth(
-    parseFloat(
-      $(
-        ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
-      ).val() as string
-    )
-  );
-  if (didConfigSave) {
-    Notifications.add("Saved", 1, {
-      duration: 1,
-    });
-  }
-});
-
-$(
-  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
-).on("focusout", () => {
-  const didConfigSave = UpdateConfig.setMaxLineWidth(
-    parseFloat(
-      $(
-        ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
-      ).val() as string
-    )
-  );
-  if (didConfigSave) {
-    Notifications.add("Saved", 1, {
-      duration: 1,
-    });
-  }
-});
-
-$(
-  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
-).on("keypress", (e) => {
-  if (e.key === "Enter") {
-    const didConfigSave = UpdateConfig.setMaxLineWidth(
-      parseFloat(
-        $(
-          ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
-        ).val() as string
-      )
-    );
-    if (didConfigSave) {
-      Notifications.add("Saved", 1, {
-        duration: 1,
-      });
-    }
-  }
-});
-
-$(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton button.save"
 ).on("click", () => {
   const didConfigSave = UpdateConfig.setKeymapSize(

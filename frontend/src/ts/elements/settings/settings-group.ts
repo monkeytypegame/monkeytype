@@ -160,7 +160,12 @@ export default class SettingsGroup<T extends ConfigValue> {
       }
       if (input !== null) {
         const handleStore = (): void => {
-          if (saveButton?.getAttribute("disabled") === "disabled") {
+          if (input.value === "") {
+            //use last config value, clear validation
+            //@ts-expect-error this is fine
+            input.value = new String(Config[configName]).toString();
+            input.dispatchEvent(new Event("input"));
+          } else if (saveButton?.getAttribute("disabled") === "disabled") {
             $(input)
               .stop(true, true)
               .addClass("hasError")
