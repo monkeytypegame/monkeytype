@@ -28,6 +28,7 @@ describe("Config", () => {
   describe("configMeta", () => {
     afterAll(() => {
       replaceConfig({});
+      vi.resetModules();
     });
     it("should have changeRequiresRestart defined", () => {
       const configsRequiringRestarts = Object.entries(configMetadata)
@@ -331,6 +332,10 @@ describe("Config", () => {
         vi.useFakeTimers();
         mocks.forEach((it) => it.mockReset());
 
+        vi.mock("../../src/ts/test/test-state", () => ({
+          isActive: true,
+        }));
+
         isConfigValueValidMock.mockReturnValue(true);
         canSetConfigWithCurrentFunboxesMock.mockReturnValue(true);
         dbSaveConfigMock.mockResolvedValue();
@@ -434,6 +439,23 @@ describe("Config", () => {
           0
         );
         expect(miscReloadAfterMock).toHaveBeenCalledWith(3);
+      });
+
+      it("fails if test is active and funbox no_quit", () => {
+        //GIVEN
+        replaceConfig({ funbox: ["no_quit"], numbers: false });
+
+        //WHEN
+        expect(Config.genericSet("numbers", true, true)).toBe(false);
+
+        //THEN
+        expect(notificationAddMock).toHaveBeenCalledWith(
+          "No quit funbox is active. Please finish the test.",
+          0,
+          {
+            important: true,
+          }
+        );
       });
     });
   });
