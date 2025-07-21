@@ -478,16 +478,6 @@ const configMetadata: ConfigMetadata = {
   tapeMargin: {
     displayString: "tape margin",
     changeRequiresRestart: false,
-    overrideValue: (value) => {
-      //TODO move to migration after settings validation
-      if (value < 10) {
-        value = 10;
-      }
-      if (value > 90) {
-        value = 90;
-      }
-      return value;
-    },
   },
   smoothLineScroll: {
     displayString: "smooth line scroll",
@@ -520,28 +510,11 @@ const configMetadata: ConfigMetadata = {
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "max line width",
-    overrideValue: (value) => {
-      //TODO move to migration after settings validation
-      if (value < 20 && value !== 0) {
-        value = 20;
-      }
-      if (value > 1000) {
-        value = 1000;
-      }
-      return value;
-    },
   },
   fontSize: {
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "font size",
-    overrideValue: (value) => {
-      //TODO move to migration after settings validation
-      if (value < 0) {
-        value = 1;
-      }
-      return value;
-    },
   },
   fontFamily: {
     displayString: "font family",
