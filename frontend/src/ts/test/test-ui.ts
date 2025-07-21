@@ -1753,4 +1753,7 @@ ConfigEvent.subscribe((key, value) => {
   if (key === "timerColor") {
     updateLiveStatsColor(value as TimerColor);
   }
+  if (key === "showOutOfFocusWarning" && value === false) {
+    OutOfFocus.hide();
+  }
 });

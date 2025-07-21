@@ -1,9 +1,499 @@
 import * as Config from "../../src/ts/config";
-
-import { CustomThemeColors, FunboxName } from "@monkeytype/schemas/configs";
+import * as Misc from "../../src/ts/utils/misc";
+import {
+  CustomThemeColors,
+  FunboxName,
+  ConfigKey,
+  Config as ConfigType,
+} from "@monkeytype/schemas/configs";
 import { randomBytes } from "crypto";
+import { vi } from "vitest";
+import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
+import * as ConfigValidation from "../../src/ts/config-validation";
+import * as ConfigEvent from "../../src/ts/observables/config-event";
+import * as DB from "../../src/ts/db";
+import * as AccountButton from "../../src/ts/elements/account-button";
+import * as Notifications from "../../src/ts/elements/notifications";
+
+type TestsByConfig<T> = Partial<{
+  [K in keyof ConfigType]: (T & { value: ConfigType[K] })[];
+}>;
+
+const { configMetadata, replaceConfig, getConfig } = Config.__testing;
 
 describe("Config", () => {
+  const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
+  beforeEach(() => isDevEnvironmentMock.mockReset());
+
+  describe("configMeta", () => {
+    afterAll(() => {
+      replaceConfig({});
+      vi.resetModules();
+    });
+    it("should have changeRequiresRestart defined", () => {
+      const configsRequiringRestarts = Object.entries(configMetadata)
+        .filter(([_key, value]) => value.changeRequiresRestart === true)
+        .map(([key]) => key)
+        .sort();
+
+      expect(configsRequiringRestarts).toEqual(
+        [
+          "punctuation",
+          "numbers",
+          "words",
+          "time",
+          "mode",
+          "quoteLength",
+          "language",
+          "difficulty",
+          "minWpmCustomSpeed",
+          "minWpm",
+          "minAcc",
+          "minAccCustom",
+          "minBurst",
+          "minBurstCustomSpeed",
+          "britishEnglish",
+          "funbox",
+          "customLayoutfluid",
+          "strictSpace",
+          "stopOnError",
+          "lazyMode",
+          "layout",
+          "codeUnindentOnBackspace",
+        ].sort()
+      );
+    });
+
+    it("should have triggerResize defined", () => {
+      const configsWithTriggeResize = Object.entries(configMetadata)
+        .filter(([_key, value]) => value.triggerResize === true)
+        .map(([key]) => key)
+        .sort();
+
+      expect(configsWithTriggeResize).toEqual(
+        ["fontSize", "keymapSize", "maxLineWidth", "tapeMode"].sort()
+      );
+    });
+
+    it("should throw if config key in not found in metadata", () => {
+      expect(() => {
+        Config.genericSet("nonExistentKey" as ConfigKey, true);
+      }).toThrowError(
+        `Config metadata for key "nonExistentKey" is not defined.`
+      );
+    });
+
+    describe("overrideValue", () => {
+      const testCases: TestsByConfig<{
+        given?: Partial<ConfigType>;
+        expected: Partial<ConfigType>;
+      }> = {
+        punctuation: [
+          { value: true, expected: { punctuation: true } },
+          {
+            value: true,
+            given: { mode: "quote" },
+            expected: { punctuation: false },
+          },
+        ],
+        numbers: [
+          { value: true, expected: { numbers: true } },
+          {
+            value: true,
+            given: { mode: "quote" },
+            expected: { numbers: false },
+          },
+        ],
+        customLayoutfluid: [
+          {
+            value: ["qwerty", "qwerty", "qwertz"],
+            expected: { customLayoutfluid: ["qwerty", "qwertz"] },
+          },
+        ],
+        customPolyglot: [
+          {
+            value: ["english", "polish", "english"],
+            expected: { customPolyglot: ["english", "polish"] },
+          },
+        ],
+        keymapSize: [
+          { value: 1, expected: { keymapSize: 1 } },
+          { value: 1.234, expected: { keymapSize: 1.2 } },
+          { value: 0.4, expected: { keymapSize: 0.5 } },
+          { value: 3.6, expected: { keymapSize: 3.5 } },
+        ],
+        customBackground: [
+          {
+            value: " https://example.com/test.jpg ",
+            expected: { customBackground: "https://example.com/test.jpg" },
+          },
+        ],
+        accountChart: [
+          {
+            value: ["on", "off", "off", "off"],
+            expected: { accountChart: ["on", "off", "off", "off"] },
+          },
+          {
+            value: ["off", "off", "off", "off"],
+            given: { accountChart: ["on", "off", "off", "off"] },
+            expected: { accountChart: ["off", "on", "off", "off"] },
+          },
+          {
+            value: ["off", "off", "on", "on"],
+            given: { accountChart: ["off", "on", "off", "off"] },
+            expected: { accountChart: ["on", "off", "on", "on"] },
+          },
+        ],
+      };
+
+      it.for(
+        Object.entries(testCases).flatMap(([key, value]) =>
+          value.flatMap((it) => ({ key: key as ConfigKey, ...it }))
+        )
+      )(
+        `$key value=$value given=$given expect=$expected`,
+        ({ key, value, given, expected }) => {
+          //GIVEN
+          replaceConfig(given ?? {});
+
+          //WHEN
+          Config.genericSet(key, value as any);
+
+          //THEN
+          expect(getConfig()).toMatchObject(expected);
+        }
+      );
+    });
+
+    describe("isBlocked", () => {
+      const testCases: TestsByConfig<{
+        given?: Partial<ConfigType>;
+        fail?: true;
+      }> = {
+        funbox: [
+          {
+            value: "gibberish" as any,
+            given: { mode: "quote" },
+            fail: true,
+          },
+        ],
+        showAllLines: [
+          { value: true, given: { tapeMode: "off" } },
+          { value: false, given: { tapeMode: "word" } },
+          { value: true, given: { tapeMode: "word" }, fail: true },
+        ],
+      };
+
+      it.for(
+        Object.entries(testCases).flatMap(([key, value]) =>
+          value.flatMap((it) => ({ key: key as ConfigKey, ...it }))
+        )
+      )(
+        `$key value=$value given=$given fail=$fail`,
+        ({ key, value, given, fail }) => {
+          //GIVEN
+          replaceConfig(given ?? {});
+
+          //WHEN
+          const applied = Config.genericSet(key, value as any);
+
+          //THEN
+          expect(applied).toEqual(!fail);
+        }
+      );
+    });
+
+    describe("overrideConfig", () => {
+      const testCases: TestsByConfig<{
+        given: Partial<ConfigType>;
+        expected?: Partial<ConfigType>;
+      }> = {
+        mode: [
+          { value: "time", given: { numbers: true, punctuation: true } },
+          {
+            value: "custom",
+            given: { numbers: true, punctuation: true },
+            expected: { numbers: false, punctuation: false },
+          },
+          {
+            value: "quote",
+            given: { numbers: true, punctuation: true },
+            expected: { numbers: false, punctuation: false },
+          },
+          {
+            value: "zen",
+            given: { numbers: true, punctuation: true },
+            expected: { numbers: false, punctuation: false },
+          },
+        ],
+        numbers: [{ value: false, given: { mode: "quote" } }],
+        freedomMode: [
+          {
+            value: false,
+            given: { confidenceMode: "on" },
+            expected: { confidenceMode: "on" },
+          },
+          {
+            value: true,
+            given: { confidenceMode: "on" },
+            expected: { confidenceMode: "off" },
+          },
+        ],
+        stopOnError: [
+          {
+            value: "off",
+            given: { confidenceMode: "on" },
+            expected: { confidenceMode: "on" },
+          },
+          {
+            value: "word",
+            given: { confidenceMode: "on" },
+            expected: { confidenceMode: "off" },
+          },
+        ],
+        confidenceMode: [
+          {
+            value: "off",
+            given: { freedomMode: true, stopOnError: "word" },
+            expected: { freedomMode: true, stopOnError: "word" },
+          },
+          {
+            value: "on",
+            given: { freedomMode: true, stopOnError: "word" },
+            expected: { freedomMode: false, stopOnError: "off" },
+          },
+        ],
+        tapeMode: [
+          {
+            value: "off",
+            given: { showAllLines: true },
+            expected: { showAllLines: true },
+          },
+          {
+            value: "letter",
+            given: { showAllLines: true },
+            expected: { showAllLines: false },
+          },
+        ],
+        theme: [
+          {
+            value: "8008",
+            given: { customTheme: true },
+            expected: { customTheme: false },
+          },
+        ],
+      };
+
+      it.for(
+        Object.entries(testCases).flatMap(([key, value]) =>
+          value.flatMap((it) => ({ key: key as ConfigKey, ...it }))
+        )
+      )(
+        `$key value=$value given=$given expected=$expected`,
+        ({ key, value, given, expected }) => {
+          //GIVEN
+          replaceConfig(given);
+
+          //WHEN
+          Config.genericSet(key, value as any);
+
+          //THEN
+          expect(getConfig()).toMatchObject(expected ?? {});
+        }
+      );
+    });
+
+    describe("test with mocks", () => {
+      const canSetConfigWithCurrentFunboxesMock = vi.spyOn(
+        FunboxValidation,
+        "canSetConfigWithCurrentFunboxes"
+      );
+      const isConfigValueValidMock = vi.spyOn(
+        ConfigValidation,
+        "isConfigValueValid"
+      );
+      const dispatchConfigEventMock = vi.spyOn(ConfigEvent, "dispatch");
+      const dbSaveConfigMock = vi.spyOn(DB, "saveConfig");
+      const accountButtonLoadingMock = vi.spyOn(AccountButton, "loading");
+      const notificationAddMock = vi.spyOn(Notifications, "add");
+      const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
+
+      const mocks = [
+        canSetConfigWithCurrentFunboxesMock,
+        isConfigValueValidMock,
+        dispatchConfigEventMock,
+        dbSaveConfigMock,
+        accountButtonLoadingMock,
+        notificationAddMock,
+        miscReloadAfterMock,
+      ];
+
+      beforeEach(async () => {
+        vi.useFakeTimers();
+        mocks.forEach((it) => it.mockReset());
+
+        vi.mock("../../src/ts/test/test-state", () => ({
+          isActive: true,
+        }));
+
+        isConfigValueValidMock.mockReturnValue(true);
+        canSetConfigWithCurrentFunboxesMock.mockReturnValue(true);
+        dbSaveConfigMock.mockResolvedValue();
+      });
+
+      afterAll(() => {
+        mocks.forEach((it) => it.mockRestore());
+        vi.useRealTimers();
+      });
+
+      it("cannot set if funbox disallows", () => {
+        //GIVEN
+        canSetConfigWithCurrentFunboxesMock.mockReturnValue(false);
+
+        //WHEN / THEN
+        expect(Config.genericSet("numbers", true)).toBe(false);
+      });
+
+      it("fails if config is invalid", () => {
+        //GIVEN
+        isConfigValueValidMock.mockReturnValue(false);
+
+        //WHEN / THEN
+        expect(Config.genericSet("numbers", "off" as any)).toBe(false);
+      });
+
+      it("dispatches event on set", () => {
+        //GIVEN
+        replaceConfig({ numbers: false });
+
+        //WHEN
+        Config.genericSet("numbers", true, true);
+
+        //THEN
+
+        expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+          "numbers",
+          true,
+          true,
+          false
+        );
+      });
+
+      it("saves to localstorage if nosave=false", async () => {
+        //GIVEN
+        replaceConfig({ numbers: false });
+
+        //WHEN
+        Config.genericSet("numbers", true);
+
+        //THEN
+        //wait for debounce
+        await vi.advanceTimersByTimeAsync(2500);
+
+        //show loading
+        expect(accountButtonLoadingMock).toHaveBeenNthCalledWith(1, true);
+
+        //save
+        expect(dbSaveConfigMock).toHaveBeenCalledWith({ numbers: true });
+
+        //hide loading
+        expect(accountButtonLoadingMock).toHaveBeenNthCalledWith(2, false);
+
+        //send event
+        expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+          "saveToLocalStorage",
+          expect.stringContaining("numbers")
+        );
+      });
+      it("does not save to localstorage if nosave=true", async () => {
+        //GIVEN
+
+        replaceConfig({ numbers: false });
+
+        //WHEN
+        Config.genericSet("numbers", true, true);
+
+        //THEN
+        //wait for debounce
+        await vi.advanceTimersByTimeAsync(2500);
+
+        expect(accountButtonLoadingMock).not.toHaveBeenCalled();
+        expect(dbSaveConfigMock).not.toHaveBeenCalled();
+
+        expect(dispatchConfigEventMock).not.toHaveBeenCalledWith(
+          "saveToLocalStorage",
+          expect.any(String)
+        );
+      });
+      it("calls afterSet", () => {
+        //GIVEN
+        isDevEnvironmentMock.mockReturnValue(false);
+        replaceConfig({ ads: "off" });
+
+        //WHEN
+        Config.genericSet("ads", "sellout");
+
+        //THEN
+        expect(notificationAddMock).toHaveBeenCalledWith(
+          "Ad settings changed. Refreshing...",
+          0
+        );
+        expect(miscReloadAfterMock).toHaveBeenCalledWith(3);
+      });
+
+      it("fails if test is active and funbox no_quit", () => {
+        //GIVEN
+        replaceConfig({ funbox: ["no_quit"], numbers: false });
+
+        //WHEN
+        expect(Config.genericSet("numbers", true, true)).toBe(false);
+
+        //THEN
+        expect(notificationAddMock).toHaveBeenCalledWith(
+          "No quit funbox is active. Please finish the test.",
+          0,
+          {
+            important: true,
+          }
+        );
+      });
+
+      it("sends configEvents for overrideConfigs", () => {
+        //GIVEN
+        replaceConfig({
+          confidenceMode: "off",
+          freedomMode: true,
+          stopOnError: "letter",
+        });
+
+        //WHEN
+        Config.genericSet("confidenceMode", "max");
+
+        //THEN
+        expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+          "freedomMode",
+          false,
+          true,
+          true
+        );
+
+        expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+          "stopOnError",
+          "off",
+          true,
+          "letter"
+        );
+
+        expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+          "confidenceMode",
+          "max",
+          false,
+          "off"
+        );
+      });
+    });
+  });
+
   it("setMode", () => {
     expect(Config.setMode("zen")).toBe(true);
     expect(Config.setMode("invalid" as any)).toBe(false);
@@ -30,7 +520,7 @@ describe("Config", () => {
   it("setAccountChart", () => {
     expect(Config.setAccountChart(["on", "off", "off", "on"])).toBe(true);
     //arrays not having 4 values will get [on, on, on, on] as default
-    expect(Config.setAccountChart(["on", "off"] as any)).toBe(true);
+    expect(Config.setAccountChart(["on", "off"] as any)).toBe(false);
     expect(Config.setAccountChart(["on", "off", "on", "true"] as any)).toBe(
       false
     );
@@ -196,13 +686,13 @@ describe("Config", () => {
 
     //invalid values being  "auto-fixed"
     expect(Config.setKeymapSize(0)).toBe(true);
-    expect(Config.default.keymapSize).toBe(0.5);
+    expect(getConfig().keymapSize).toBe(0.5);
     expect(Config.setKeymapSize(4)).toBe(true);
-    expect(Config.default.keymapSize).toBe(3.5);
+    expect(getConfig().keymapSize).toBe(3.5);
     expect(Config.setKeymapSize(1.25)).toBe(true);
-    expect(Config.default.keymapSize).toBe(1.3);
+    expect(getConfig().keymapSize).toBe(1.3);
     expect(Config.setKeymapSize(1.24)).toBe(true);
-    expect(Config.default.keymapSize).toBe(1.2);
+    expect(getConfig().keymapSize).toBe(1.2);
   });
   it("setCustomBackgroundSize", () => {
     expect(Config.setCustomBackgroundSize("contain")).toBe(true);
@@ -211,8 +701,10 @@ describe("Config", () => {
   });
   it("setCustomBackgroundFilter", () => {
     expect(Config.setCustomBackgroundFilter([0, 1, 2, 3])).toBe(true);
-    //gets converted
-    expect(Config.setCustomBackgroundFilter([0, 1, 2, 3, 4] as any)).toBe(true);
+
+    expect(Config.setCustomBackgroundFilter([0, 1, 2, 3, 4] as any)).toBe(
+      false
+    );
     expect(Config.setCustomBackgroundFilter([] as any)).toBe(false);
     expect(Config.setCustomBackgroundFilter(["invalid"] as any)).toBe(false);
     expect(Config.setCustomBackgroundFilter([1, 2, 3, 4, 5, 6] as any)).toBe(
@@ -228,9 +720,7 @@ describe("Config", () => {
   it("setCustomThemeColors", () => {
     expect(Config.setCustomThemeColors(customThemeColors(10))).toBe(true);
 
-    //gets converted
-    expect(Config.setCustomThemeColors(customThemeColors(9))).toBe(true);
-
+    expect(Config.setCustomThemeColors(customThemeColors(9))).toBe(false);
     expect(Config.setCustomThemeColors([] as any)).toBe(false);
     expect(Config.setCustomThemeColors(["invalid"] as any)).toBe(false);
     expect(Config.setCustomThemeColors(customThemeColors(5))).toBe(false);
@@ -255,7 +745,7 @@ describe("Config", () => {
   });
   it("setAccountChart", () => {
     expect(Config.setAccountChart(["on", "off", "off", "on"])).toBe(true);
-    expect(Config.setAccountChart(["on", "off"] as any)).toBe(true);
+    expect(Config.setAccountChart(["on", "off"] as any)).toBe(false);
     expect(Config.setAccountChart(["on", "off", "on", "true"] as any)).toBe(
       false
     );
@@ -355,8 +845,6 @@ describe("Config", () => {
     expect(Config.setMinAccCustom(0)).toBe(true);
     expect(Config.setMinAccCustom(1)).toBe(true);
     expect(Config.setMinAccCustom(11.11)).toBe(true);
-    //gets converted
-    expect(Config.setMinAccCustom(120)).toBe(true);
 
     expect(Config.setMinAccCustom("invalid" as any)).toBe(false);
     expect(Config.setMinAccCustom(-1)).toBe(false);
@@ -373,18 +861,11 @@ describe("Config", () => {
     expect(Config.setTimeConfig(0)).toBe(true);
     expect(Config.setTimeConfig(1)).toBe(true);
 
-    //gets converted
-    expect(Config.setTimeConfig("invalid" as any)).toBe(true);
-    expect(Config.setTimeConfig(-1)).toBe(true);
-
     expect(Config.setTimeConfig(11.11)).toBe(false);
   });
   it("setWordCount", () => {
     expect(Config.setWordCount(0)).toBe(true);
     expect(Config.setWordCount(1)).toBe(true);
-
-    //gets converted
-    expect(Config.setWordCount(-1)).toBe(true);
 
     expect(Config.setWordCount("invalid" as any)).toBe(false);
     expect(Config.setWordCount(11.11)).toBe(false);
@@ -483,12 +964,14 @@ describe("Config", () => {
     expect(Config.setCustomBackground("invalid")).toBe(false);
   });
   it("setQuoteLength", () => {
-    expect(Config.setQuoteLength(0)).toBe(true);
-    expect(Config.setQuoteLength(-3)).toBe(true);
-    expect(Config.setQuoteLength(3)).toBe(true);
+    expect(Config.setQuoteLength([0])).toBe(true);
+    expect(Config.setQuoteLength([-3])).toBe(true);
+    expect(Config.setQuoteLength([3])).toBe(true);
 
     expect(Config.setQuoteLength(-4 as any)).toBe(false);
     expect(Config.setQuoteLength(4 as any)).toBe(false);
+    expect(Config.setQuoteLength(3 as any)).toBe(false);
+    expect(Config.setQuoteLength(2 as any)).toBe(false);
 
     expect(Config.setQuoteLength([0, -3, 2])).toBe(true);
 

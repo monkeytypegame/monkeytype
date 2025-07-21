@@ -930,7 +930,7 @@ export async function updateLbMemory<M extends Mode>(
   }
 }
 
-export async function saveConfig(config: Config): Promise<void> {
+export async function saveConfig(config: Partial<Config>): Promise<void> {
   if (isAuthenticated()) {
     const response = await Ape.configs.save({ body: config });
     if (response.status !== 200) {

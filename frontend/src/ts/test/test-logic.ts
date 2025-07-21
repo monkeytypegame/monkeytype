@@ -58,7 +58,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
-import { QuoteLength } from "@monkeytype/schemas/configs";
+import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import {
   CompletedEvent,
@@ -461,7 +461,7 @@ export async function init(): Promise<void | null> {
 
   if (Config.mode === "quote") {
     if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
     }
   }
 
@@ -1442,14 +1442,20 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  let len: QuoteLength | QuoteLength[] = parseInt(
+  const len = parseInt(
     $(e.currentTarget).attr("quoteLength") ?? "1"
   ) as QuoteLength;
+
   if (len !== -2) {
-    if (len === -1) {
-      len = [0, 1, 2, 3];
+    let arr: QuoteLengthConfig = [];
+
+    if (e.shiftKey) {
+      arr = [...Config.quoteLength, len];
+    } else {
+      arr = [len];
     }
-    if (UpdateConfig.setQuoteLength(len, false, e.shiftKey)) {
+
+    if (UpdateConfig.setQuoteLength(arr, false)) {
       ManualRestart.set();
       restart();
     }
