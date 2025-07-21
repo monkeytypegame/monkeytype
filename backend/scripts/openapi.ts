@@ -1,10 +1,7 @@
 import { generateOpenApi } from "@ts-rest/open-api";
 import { contract } from "@monkeytype/contracts/index";
 import { writeFileSync, mkdirSync } from "fs";
-import {
-  EndpointMetadata,
-  PermissionId,
-} from "@monkeytype/contracts/schemas/util";
+import { EndpointMetadata, PermissionId } from "@monkeytype/contracts/util/api";
 import type { OpenAPIObject, OperationObject } from "openapi3-ts";
 import {
   RateLimitIds,

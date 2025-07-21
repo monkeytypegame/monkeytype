@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { isDevEnvironment } from "./misc";
-import { MonkeyServerErrorType } from "@monkeytype/contracts/schemas/util";
+import { MonkeyServerErrorType } from "@monkeytype/contracts/util/api";
 import { FirebaseError } from "firebase-admin";
 
 type FirebaseErrorParent = {
