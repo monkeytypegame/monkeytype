@@ -194,8 +194,13 @@
       table td {
         -webkit-appearance: unset;
       }
+
+      table tr {
+        border-radius: var(--roundness);
+      }
+
       .active {
-        animation: flashHighlight 4s linear 0s 1;
+        animation: accountRowHighlight 4s linear 0s 1;
       }
 
       .loadMoreButton {
