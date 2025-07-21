@@ -64,12 +64,13 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     const { discordId, discordAvatar } = response.body.data;
     if (discordId !== undefined) {
       snapshot.discordId = discordId;
-    } else {
+    }
+    if (discordAvatar !== undefined) {
       snapshot.discordAvatar = discordAvatar;
     }
 
     DB.setSnapshot(snapshot);
-    AccountButton.updateAvatar(discordId, discordAvatar);
+    AccountButton.updateAvatar(snapshot);
   }
 }
 
@@ -187,7 +188,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     } else if (mode === "words") {
       UpdateConfig.setWordCount(parseInt(de[1], 10), true);
     } else if (mode === "quote") {
-      UpdateConfig.setQuoteLength(-2, false);
+      UpdateConfig.setQuoteLength([-2], false);
       TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();
     }

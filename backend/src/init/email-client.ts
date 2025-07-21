@@ -28,6 +28,7 @@ const templates: Record<EmailType, EmailMetadata> = {
 
 let transportInitialized = false;
 let transporter: nodemailer.Transporter;
+let emailFrom = "Monkeytype <noreply@monkeytype.com>";
 
 export function isInitialized(): boolean {
   return transportInitialized;
@@ -38,7 +39,12 @@ export async function init(): Promise<void> {
     return;
   }
 
-  const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_PORT } = process.env;
+  const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_PORT, EMAIL_FROM } =
+    process.env;
+
+  if (EMAIL_FROM !== undefined) {
+    emailFrom = EMAIL_FROM;
+  }
 
   if (!(EMAIL_HOST ?? "") || !(EMAIL_USER ?? "") || !(EMAIL_PASS ?? "")) {
     if (isDevEnvironment()) {
@@ -102,7 +108,7 @@ export async function sendEmail(
   const template = await fillTemplate<typeof templateName>(templateName, data);
 
   const mailOptions = {
-    from: "Monkeytype <noreply@monkeytype.com>",
+    from: emailFrom,
     to,
     subject: templates[templateName].subject,
     html: template,

@@ -14,6 +14,7 @@
         - [Setup Firebase](#setup-firebase)
         - [Update backend configuration](#update-backend-configuration)
         - [Setup Recaptcha](#setup-recaptcha)
+        - [Setup email optional](#setup-email-optional)
     - [Enable daily leaderboards](#enable-daily-leaderboards)
     - [Configuration files](#configuration-files)
         - [env file](#env-file)
@@ -125,6 +126,20 @@ If you host privately you can use these defaults:
 RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
 RECAPTCHA_SECRET=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
 ```
+
+### Setup email (optional)
+
+To enable emails for password reset and email verification update the following config in `.env` file:
+
+```
+# email server config
+# uncomment below if you want to send emails for e.g. password reset
+EMAIL_HOST=mail.myserver   # your mailserver domain
+EMAIL_USER=mailuser        # username to authenticate with your mailserver
+EMAIL_PASS=mailpass        # password for the user
+EMAIL_PORT=465             # port, likely 465 or 578
+EMAIL_FROM="Support <noreply@myserver>"
+``` 
 
 ## Enable daily leaderboards
 

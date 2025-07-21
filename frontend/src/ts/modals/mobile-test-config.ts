@@ -6,7 +6,10 @@ import * as CustomTestDurationPopup from "./custom-test-duration";
 import * as QuoteSearchModal from "./quote-search";
 import * as CustomTextPopup from "./custom-text";
 import AnimatedModal from "../utils/animated-modal";
-import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
+import {
+  QuoteLength,
+  QuoteLengthConfig,
+} from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 function update(): void {
@@ -126,22 +129,25 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   for (const button of quoteGroupButtons) {
     button.addEventListener("click", (e) => {
       const target = e.currentTarget as HTMLElement;
-      const len = parseInt(target.getAttribute("data-quoteLength") ?? "0", 10);
+      const len = parseInt(
+        target.getAttribute("data-quoteLength") ?? "0",
+        10
+      ) as QuoteLength;
 
       if (len === -2) {
         void QuoteSearchModal.show({
           modalChain: modal,
         });
       } else {
-        let newVal: number[] | number = len;
-        if (len === -1) {
-          newVal = [0, 1, 2, 3];
+        let arr: QuoteLengthConfig = [];
+
+        if ((e as MouseEvent).shiftKey) {
+          arr = [...Config.quoteLength, len];
+        } else {
+          arr = [len];
         }
-        UpdateConfig.setQuoteLength(
-          newVal as QuoteLength | QuoteLength[],
-          false,
-          (e as MouseEvent).shiftKey
-        );
+
+        UpdateConfig.setQuoteLength(arr, false);
         ManualRestart.set();
         TestLogic.restart();
       }

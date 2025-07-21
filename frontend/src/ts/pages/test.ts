@@ -33,7 +33,6 @@ export const page = new Page({
       noAnim: true,
     });
     void TestConfig.instantUpdate();
-    void Funbox.activate();
     void Keymap.refresh();
     ScrollToTop.hide();
   },

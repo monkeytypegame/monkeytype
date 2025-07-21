@@ -877,6 +877,9 @@ export async function update(): Promise<void> {
   }
 }
 function toggleSettingsGroup(groupName: string): void {
+  //The highlight is repeated/broken when toggling the group
+  handleHighlightSection(undefined);
+
   const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
   groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
   if (groupEl.hasClass("slideup")) {
@@ -1361,7 +1364,15 @@ function getThemeDropdownData(
   }));
 }
 
-function handleHighlightSection(highlight: Highlight): void {
+function handleHighlightSection(highlight: Highlight | undefined): void {
+  if (highlight === undefined) {
+    const element = document.querySelector(".section.highlight");
+    if (element !== null) {
+      element.classList.remove("highlight");
+    }
+    return;
+  }
+
   const element = document.querySelector(
     `[data-config-name="${highlight}"] .groupTitle,[data-section-id="${highlight}"] .groupTitle`
   );
@@ -1427,9 +1438,8 @@ export const page = new PageWithUrlParams({
     await UpdateConfig.loadPromise;
     await fillSettingsPage();
     await update();
-    if (options.urlParams?.highlight !== undefined) {
-      handleHighlightSection(options.urlParams.highlight);
-    }
+
+    handleHighlightSection(options.urlParams?.highlight);
   },
 });
 

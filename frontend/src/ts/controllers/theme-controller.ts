@@ -415,7 +415,36 @@ window
     }
   });
 
+let ignoreConfigEvent = false;
+
 ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
+  if (eventKey === "fullConfigChange") {
+    ignoreConfigEvent = true;
+  }
+  if (eventKey === "fullConfigChangeFinished") {
+    ignoreConfigEvent = false;
+
+    await clearRandom();
+    await clearPreview(false);
+    if (Config.autoSwitchTheme) {
+      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+        await set(Config.themeDark, true);
+      } else {
+        await set(Config.themeLight, true);
+      }
+    } else {
+      if (Config.customTheme) {
+        await set("custom");
+      } else {
+        await set(Config.theme);
+      }
+    }
+  }
+
+  // this is here to prevent calling set / preview multiple times during a full config loading
+  // once the full config is loaded, we can apply everything once
+  if (ignoreConfigEvent) return;
+
   if (eventKey === "randomTheme") {
     void changeThemeList();
   }
@@ -429,23 +458,6 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     await clearRandom();
     await clearPreview(false);
     await set(eventValue as string);
-  }
-  if (eventKey === "setThemes") {
-    await clearRandom();
-    await clearPreview(false);
-    if (Config.autoSwitchTheme) {
-      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-        await set(Config.themeDark, true);
-      } else {
-        await set(Config.themeLight, true);
-      }
-    } else {
-      if (eventValue as boolean) {
-        await set("custom");
-      } else {
-        await set(Config.theme);
-      }
-    }
   }
   if (eventKey === "randomTheme" && eventValue === "off") await clearRandom();
   if (eventKey === "customBackground") applyCustomBackground();
