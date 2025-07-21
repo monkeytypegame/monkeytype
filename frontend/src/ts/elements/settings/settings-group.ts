@@ -13,7 +13,7 @@ import { ZodType } from "zod";
 
 type Mode = "select" | "button" | "range" | "input";
 
-type SimpleValidation<T> = Pick<Validation<T>, "isValid"> & {
+export type SimpleValidation<T> = Pick<Validation<T>, "isValid"> & {
   schema?: true;
 };
 
@@ -29,7 +29,7 @@ export default class SettingsGroup<T extends ConfigValue> {
     : SimpleValidation<T> & {
         inputValueConvert: (val: string) => T;
       };
-  private validationResult: ValidationResult["status"] = "checking";
+  private status: ValidationResult["status"] = "checking";
 
   constructor(
     configName: string,
@@ -145,8 +145,7 @@ export default class SettingsGroup<T extends ConfigValue> {
               ? this.validation.inputValueConvert
               : undefined,
           callback: (result) => {
-            this.validationResult = result.status;
-            console.log("###", input.parentElement);
+            this.status = result.status;
           },
         });
       }
@@ -158,7 +157,7 @@ export default class SettingsGroup<T extends ConfigValue> {
           input.value = new String(Config[configName]).toString();
           input.dispatchEvent(new Event("input"));
         }
-        if (this.validationResult === "failed") {
+        if (this.status === "failed") {
           const parent = $(input.parentElement as HTMLElement);
           parent
             .stop(true, true)
