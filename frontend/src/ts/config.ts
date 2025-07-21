@@ -1172,7 +1172,7 @@ export function setTimeConfig(
 }
 
 export function setQuoteLength(
-  len: ConfigSchemas.QuoteLength[],
+  len: ConfigSchemas.QuoteLengthConfig,
   nosave?: boolean
 ): boolean {
   return genericSet("quoteLength", len, nosave);

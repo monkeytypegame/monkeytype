@@ -6,7 +6,10 @@ import * as CustomTestDurationPopup from "./custom-test-duration";
 import * as QuoteSearchModal from "./quote-search";
 import * as CustomTextPopup from "./custom-text";
 import AnimatedModal from "../utils/animated-modal";
-import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
+import {
+  QuoteLength,
+  QuoteLengthConfig,
+} from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 function update(): void {
@@ -136,7 +139,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
           modalChain: modal,
         });
       } else {
-        let arr: QuoteLength[] = [];
+        let arr: QuoteLengthConfig = [];
 
         if ((e as MouseEvent).shiftKey) {
           arr = [...Config.quoteLength, len];

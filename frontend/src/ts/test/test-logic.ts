@@ -58,7 +58,10 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
-import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
+import {
+  QuoteLength,
+  QuoteLengthConfig,
+} from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import {
   CompletedEvent,
@@ -1447,7 +1450,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   ) as QuoteLength;
 
   if (len !== -2) {
-    let arr: QuoteLength[] = [];
+    let arr: QuoteLengthConfig = [];
 
     if (e.shiftKey) {
       arr = [...Config.quoteLength, len];
