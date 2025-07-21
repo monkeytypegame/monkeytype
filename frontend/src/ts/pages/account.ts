@@ -39,7 +39,7 @@ import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
-import { AccountChart } from "@monkeytype/contracts/schemas/configs";
+import { AccountChart } from "@monkeytype/schemas/configs";
 
 let filterDebug = false;
 //toggle filterdebug

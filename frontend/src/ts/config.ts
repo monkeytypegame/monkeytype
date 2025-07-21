@@ -19,8 +19,8 @@ import {
 } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { Config, FunboxName } from "@monkeytype/schemas/configs";
-import { Mode, ModeSchema } from "@monkeytype/schemas/shared";
-import { Language, LanguageSchema } from "@monkeytype/schemas/languages";
+import { Mode } from "@monkeytype/schemas/shared";
+import { Language } from "@monkeytype/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
