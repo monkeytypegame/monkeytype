@@ -20,7 +20,19 @@ export const QuoteLengthSchema = z.union([
 ]);
 export type QuoteLength = z.infer<typeof QuoteLengthSchema>;
 
-export const QuoteLengthConfigSchema = z.array(QuoteLengthSchema);
+export const QuoteLengthConfigSchema = z
+  .array(QuoteLengthSchema)
+  .describe(
+    [
+      "|value|description|\n|-|-|",
+      "|-3|Favorite quotes|",
+      "|-2|Quote search|",
+      "|0|Short quotes|",
+      "|1|Medium quotes|",
+      "|2|Long quotes|",
+      "|3|Thicc quotes|",
+    ].join("\n")
+  );
 export type QuoteLengthConfig = z.infer<typeof QuoteLengthConfigSchema>;
 
 export const CaretStyleSchema = z.enum([
