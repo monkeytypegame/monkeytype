@@ -293,6 +293,14 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setSoundVolume,
     "range"
   ) as SettingsGroup<ConfigValue>;
+  groups["playTimeWarning"] = new SettingsGroup(
+    "playTimeWarning",
+    UpdateConfig.setPlayTimeWarning,
+    "button",
+    () => {
+      if (Config.playTimeWarning !== "off") void Sound.playTimeWarning();
+    }
+  ) as SettingsGroup<ConfigValue>;
   groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
     UpdateConfig.setPlaySoundOnError,
