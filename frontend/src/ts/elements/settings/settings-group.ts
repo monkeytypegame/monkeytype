@@ -160,12 +160,15 @@ export default class SettingsGroup<T extends ConfigValue> {
       }
       if (input !== null) {
         const handleStore = (): void => {
-          if (input.value === "") {
+          const hasError = saveButton?.getAttribute("disabled") === "disabled";
+
+          if (hasError || input.value === "") {
             //use last config value, clear validation
             //@ts-expect-error this is fine
             input.value = new String(Config[configName]).toString();
             input.dispatchEvent(new Event("input"));
-          } else if (saveButton?.getAttribute("disabled") === "disabled") {
+          }
+          if (hasError) {
             const parent = $(input.parentElement as HTMLElement);
             parent
               .stop(true, true)
@@ -173,7 +176,6 @@ export default class SettingsGroup<T extends ConfigValue> {
               .animate({ undefined: 1 }, 500, () => {
                 parent.removeClass("hasError");
               });
-            return;
           }
           const value = convertValue(input.value);
           const didConfigSave = this.setValue(value);
