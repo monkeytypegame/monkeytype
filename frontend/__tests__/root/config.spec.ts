@@ -457,6 +457,40 @@ describe("Config", () => {
           }
         );
       });
+
+      it("sends configEvents for overrideConfigs", () => {
+        //GIVEN
+        replaceConfig({
+          confidenceMode: "off",
+          freedomMode: true,
+          stopOnError: "letter",
+        });
+
+        //WHEN
+        Config.genericSet("confidenceMode", "max");
+
+        //THEN
+        expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+          "freedomMode",
+          false,
+          true,
+          true
+        );
+
+        expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+          "stopOnError",
+          "off",
+          true,
+          "letter"
+        );
+
+        expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+          "confidenceMode",
+          "max",
+          false,
+          "off"
+        );
+      });
     });
   });
 

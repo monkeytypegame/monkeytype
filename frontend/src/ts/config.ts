@@ -156,7 +156,7 @@ export type ConfigMetadata = {
      */
     overrideConfig?: (
       value: ConfigSchemas.Config[K]
-    ) => Partial<ConfigSchemas.Config> | undefined;
+    ) => Partial<ConfigSchemas.Config>;
     /**
      * Optional function that is called after the config value is set.
      * It can be used to perform additional actions, like reloading the page.
@@ -207,7 +207,7 @@ const configMetadata: ConfigMetadata = {
           punctuation: false,
         };
       }
-      return undefined;
+      return {};
     },
     afterSet: () => {
       if (config.mode === "zen" && config.paceCaret !== "off") {
@@ -320,7 +320,7 @@ const configMetadata: ConfigMetadata = {
           confidenceMode: "off",
         };
       }
-      return undefined;
+      return {};
     },
   },
   strictSpace: {
@@ -340,7 +340,7 @@ const configMetadata: ConfigMetadata = {
           confidenceMode: "off",
         };
       }
-      return undefined;
+      return {};
     },
   },
   confidenceMode: {
@@ -353,7 +353,7 @@ const configMetadata: ConfigMetadata = {
           stopOnError: "off",
         };
       }
-      return undefined;
+      return {};
     },
   },
   quickEnd: {
@@ -472,7 +472,7 @@ const configMetadata: ConfigMetadata = {
           showAllLines: false,
         };
       }
-      return undefined;
+      return {};
     },
   },
   tapeMargin: {
@@ -729,7 +729,7 @@ const configMetadata: ConfigMetadata = {
 export function genericSet<T extends keyof ConfigSchemas.Config>(
   key: T,
   value: ConfigSchemas.Config[T],
-  nosave?: boolean
+  nosave: boolean = false
 ): boolean {
   const metadata = configMetadata[key] as ConfigMetadata[T];
   if (metadata === undefined) {
@@ -788,22 +788,21 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
 
   if (metadata.overrideConfig) {
     const targetConfig = metadata.overrideConfig(value);
-    if (targetConfig) {
-      for (const targetKey of typedKeys(targetConfig)) {
-        const targetValue = targetConfig[
-          targetKey
-        ] as ConfigSchemas.Config[keyof typeof configMetadata];
 
-        if (config[targetKey] === targetValue) {
-          continue; // no need to set if the value is already the same
-        }
+    for (const targetKey of typedKeys(targetConfig)) {
+      const targetValue = targetConfig[
+        targetKey
+      ] as ConfigSchemas.Config[keyof typeof configMetadata];
 
-        const set = genericSet(targetKey, targetValue, true);
-        if (!set) {
-          throw new Error(
-            `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`
-          );
-        }
+      if (config[targetKey] === targetValue) {
+        continue; // no need to set if the value is already the same
+      }
+
+      const set = genericSet(targetKey, targetValue, true);
+      if (!set) {
+        throw new Error(
+          `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`
+        );
       }
     }
   }
