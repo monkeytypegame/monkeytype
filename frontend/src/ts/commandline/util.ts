@@ -58,6 +58,10 @@ export function buildCommandForConfigKey(
         //@ts-expect-error cant figure out this type
         commandMeta?.afterExec?.(value);
       },
+      hover: (): void => {
+        //@ts-expect-error cant figure out this type
+        commandMeta?.hover?.(value);
+      },
     };
 
     return command;

@@ -11,6 +11,7 @@ type CommandlineConfigMetadata = {
     rootDisplay?: string;
     commandAlias?: (value: ConfigSchemas.Config[K]) => string;
     commandDisplay?: (value: ConfigSchemas.Config[K]) => string;
+    hover?: (value: ConfigSchemas.Config[K]) => void;
     afterExec?: (value: ConfigSchemas.Config[K]) => void;
   };
 };
