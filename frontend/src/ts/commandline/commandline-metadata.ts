@@ -43,6 +43,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   blindMode: {},
   alwaysShowWordsHistory: {},
   singleListCommandLine: {},
+  minWpm: {},
   //sound
   playTimeWarning: {
     commandDisplay: (value) => {

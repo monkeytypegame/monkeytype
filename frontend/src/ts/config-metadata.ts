@@ -178,6 +178,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   minWpm: {
+    icon: "fa-bomb",
     displayString: "min speed",
     changeRequiresRestart: true,
   },
