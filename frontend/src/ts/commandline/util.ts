@@ -13,7 +13,8 @@ export function buildCommandForConfigKey(
   const commandMeta = commandlineConfigMetadata[key];
 
   const display =
-    capitalizeFirstLetter(configMeta?.displayString ?? key) + "...";
+    commandMeta?.rootDisplay ??
+    `${capitalizeFirstLetter(configMeta?.displayString ?? key)}...`;
 
   const schema = ConfigSchemas.ConfigSchema.shape[key];
 
