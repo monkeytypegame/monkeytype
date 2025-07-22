@@ -1,4 +1,3 @@
-import PunctuationCommands from "./lists/punctuation";
 import ModeCommands from "./lists/mode";
 import TimeCommands from "./lists/time";
 import WordsCommands from "./lists/words";
@@ -109,6 +108,7 @@ import {
 import { Command, CommandsSubgroup, withValidation } from "./types";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";
+import { buildCommandForConfigMetadata } from "./util";
 
 const fontsPromise = JSONData.getFontsList();
 fontsPromise
@@ -139,7 +139,7 @@ export const commands: CommandsSubgroup = {
     ...ResultScreenCommands,
 
     //test screen
-    ...PunctuationCommands,
+    buildCommandForConfigMetadata("punctuation"),
     ...NumbersCommands,
     ...ModeCommands,
     ...TimeCommands,
