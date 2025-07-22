@@ -3,6 +3,7 @@ import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
 
+//todo: remove ? here to require all config keys to be defined
 type CommandlineConfigMetadata = {
   [K in keyof ConfigSchemas.Config]?: {
     rootAlias?: string;
@@ -25,11 +26,16 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
       TestLogic.restart();
     },
   },
+  words: {},
+  time: {},
+  mode: {},
+  quoteLength: {},
   language: {
     commandDisplay: (value) => {
       return getLanguageDisplayString(value);
     },
   },
+  burstHeatmap: {},
   //behavior
   difficulty: {},
   quickRestart: {},
