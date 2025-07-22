@@ -27,7 +27,6 @@ import LazyModeCommands from "./lists/lazy-mode";
 import ShowAllLinesCommands from "./lists/show-all-lines";
 import ColorfulModeCommands from "./lists/colorful-mode";
 import OutOfFocusWarningCommands from "./lists/out-of-focus-warning";
-import SingleListCommandlineCommands from "./lists/single-list-commandline";
 import CapsLockWarningCommands from "./lists/caps-lock-warning";
 import SoundOnClickCommands from "./lists/sound-on-click";
 import MinWpmCommands from "./lists/min-wpm";
@@ -182,7 +181,7 @@ export const commands: CommandsSubgroup = {
     buildCommandForConfigKey("repeatQuotes"),
     blindModeCommand,
     buildCommandForConfigKey("alwaysShowWordsHistory"),
-    ...SingleListCommandlineCommands,
+    buildCommandForConfigKey("singleListCommandLine"),
     ...MinWpmCommands,
     ...MinAccCommands,
     ...MinBurstCommands,

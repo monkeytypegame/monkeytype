@@ -173,6 +173,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   singleListCommandLine: {
+    icon: "fa-list",
     displayString: "single list command line",
     changeRequiresRestart: false,
   },
