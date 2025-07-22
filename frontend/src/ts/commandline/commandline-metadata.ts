@@ -89,6 +89,29 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
       void SoundController.playClick();
     },
   },
+  playSoundOnError: {
+    rootAlias: "play",
+    rootDisplay: "Sound on error...",
+    commandDisplay: (value) => {
+      const map: Record<ConfigSchemas.Config["playSoundOnError"], string> = {
+        off: "off",
+        "1": "damage",
+        "2": "triangle",
+        "3": "square",
+        "4": "punch miss",
+      };
+      return map[value];
+    },
+    hover: (value) => {
+      if (value === "off") {
+        return;
+      }
+      void SoundController.previewError(value);
+    },
+    afterExec: () => {
+      void SoundController.playError();
+    },
+  },
   playTimeWarning: {
     rootAlias: "sound",
     commandDisplay: (value) => {

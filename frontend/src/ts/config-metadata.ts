@@ -333,6 +333,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   playSoundOnError: {
+    icon: "fa-volume-mute",
     displayString: "play sound on error",
     changeRequiresRestart: false,
   },

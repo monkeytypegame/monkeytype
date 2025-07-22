@@ -8,7 +8,6 @@ import LiveAccStyleCommands from "./lists/live-acc-style";
 import LiveBurstStyleCommands from "./lists/live-burst-style";
 import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
-import SoundOnErrorCommands from "./lists/sound-on-error";
 import SoundVolumeCommands from "./lists/sound-volume";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
 import SmoothLineScrollCommands from "./lists/smooth-line-scroll";
@@ -231,7 +230,7 @@ export const commands: CommandsSubgroup = {
     ...SoundVolumeCommands,
     // ...SoundOnClickCommands,
     buildCommandForConfigKey("playSoundOnClick"),
-    ...SoundOnErrorCommands,
+    buildCommandForConfigKey("playSoundOnError"),
     buildCommandForConfigKey("playTimeWarning"),
 
     //caret
