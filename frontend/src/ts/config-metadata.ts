@@ -153,6 +153,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   quickRestart: {
+    icon: "fa-redo-alt",
     displayString: "quick restart",
     changeRequiresRestart: false,
   },

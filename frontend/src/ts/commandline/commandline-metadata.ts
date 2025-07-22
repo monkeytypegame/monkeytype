@@ -32,6 +32,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   },
   //behavior
   difficulty: {},
+  quickRestart: {},
   //sound
   playTimeWarning: {
     commandDisplay: (value) => {

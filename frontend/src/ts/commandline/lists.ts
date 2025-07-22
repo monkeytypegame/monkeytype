@@ -5,7 +5,6 @@ import ConfidenceModeCommands from "./lists/confidence-mode";
 import QuoteLengthCommands from "./lists/quote-length";
 import StopOnErrorCommands from "./lists/stop-on-error";
 import SmoothCaretCommands from "./lists/smooth-caret";
-import QuickRestartCommands from "./lists/quick-restart";
 import RepeatQuotesCommands from "./lists/repeat-quotes";
 import LiveSpeedStyleCommands from "./lists/live-speed-style";
 import LiveAccStyleCommands from "./lists/live-acc-style";
@@ -181,7 +180,7 @@ export const commands: CommandsSubgroup = {
 
     //behavior
     difficultyCommand,
-    ...QuickRestartCommands,
+    buildCommandForConfigKey("quickRestart"),
     ...RepeatQuotesCommands,
     ...BlindModeCommands,
     ...ShowWordsHistoryCommands,
