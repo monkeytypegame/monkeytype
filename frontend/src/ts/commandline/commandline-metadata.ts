@@ -54,6 +54,21 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
     },
   },
   funbox: {},
+  //input
+  freedomMode: {},
+  strictSpace: {},
+  oppositeShiftMode: {
+    afterExec: () => {
+      void ModesNotice.update();
+    },
+  },
+  stopOnError: {},
+  confidenceMode: {},
+  quickEnd: {},
+  indicateTypos: {},
+  hideExtraLetters: {},
+  lazyMode: {},
+  codeUnindentOnBackspace: {},
   //sound
   playSoundOnClick: {
     rootAlias: "play",
@@ -131,19 +146,4 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
       }
     },
   },
-  //input
-  freedomMode: {},
-  strictSpace: {},
-  oppositeShiftMode: {
-    afterExec: () => {
-      void ModesNotice.update();
-    },
-  },
-  stopOnError: {},
-  confidenceMode: {},
-  quickEnd: {},
-  indicateTypos: {},
-  hideExtraLetters: {},
-  lazyMode: {},
-  codeUnindentOnBackspace: {},
 };
