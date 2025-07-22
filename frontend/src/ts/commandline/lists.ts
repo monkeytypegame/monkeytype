@@ -24,7 +24,6 @@ import CustomThemeCommands from "./lists/custom-theme";
 import RandomThemeCommands from "./lists/random-theme";
 import PaceCaretStyleCommands from "./lists/pace-caret-style";
 import PaceCaretModeCommands from "./lists/pace-caret";
-import RepeatedPaceCommands from "./lists/repeated-pace";
 import TimerStyleCommands from "./lists/timer-style";
 import TimerColorCommands from "./lists/timer-color";
 import TimerOpacityCommands from "./lists/timer-opacity";
@@ -234,7 +233,7 @@ export const commands: CommandsSubgroup = {
     buildCommandForConfigKey("smoothCaret"),
     buildCommandForConfigKey("caretStyle"),
     ...PaceCaretModeCommands,
-    ...RepeatedPaceCommands,
+    buildCommandForConfigKey("repeatedPace"),
     ...PaceCaretStyleCommands,
 
     //appearence

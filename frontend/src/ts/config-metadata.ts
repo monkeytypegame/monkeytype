@@ -379,6 +379,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   repeatedPace: {
+    icon: "fa-i-cursor",
     displayString: "repeated pace",
     changeRequiresRestart: false,
   },
