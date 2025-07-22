@@ -102,6 +102,7 @@ function buildSetCommand<K extends keyof ConfigSchemas.Config>(
     hover,
     commandDisplay,
     commandAlias,
+    isCommandVisible,
   }: CommandlineConfigMetadata<K> = {}
 ): Command {
   const val = value;
@@ -125,6 +126,7 @@ function buildSetCommand<K extends keyof ConfigSchemas.Config>(
     display: displayString,
     alias: commandAlias?.(value) ?? undefined,
     configValue: val,
+    visible: isCommandVisible?.(value) ?? undefined,
     exec: (): void => {
       genericSet(key, val);
       afterExec?.(val);

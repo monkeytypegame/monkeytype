@@ -14,6 +14,7 @@ export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> = {
   rootDisplay?: string;
   commandAlias?: (value: ConfigSchemas.Config[T]) => string;
   commandDisplay?: (value: ConfigSchemas.Config[T]) => string;
+  isCommandVisible?: (value: ConfigSchemas.Config[T]) => boolean;
   hover?: (value: ConfigSchemas.Config[T]) => void;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
 };
@@ -150,9 +151,13 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   //caret
   smoothCaret: {},
-  caretStyle: {},
+  caretStyle: {
+    isCommandVisible: (value) => !["banana", "carrot"].includes(value),
+  },
   repeatedPace: {},
-  paceCaretStyle: {},
+  paceCaretStyle: {
+    isCommandVisible: (value) => !["banana", "carrot"].includes(value),
+  },
 
   //appearence
   timerStyle: { rootAlias: "timer" },
