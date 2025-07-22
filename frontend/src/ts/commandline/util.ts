@@ -29,11 +29,6 @@ export function buildCommandForConfigMetadata(
     );
   }
 
-  // const displayValues = (meta.displayValues ?? {}) as Record<
-  //   string | number | symbol,
-  //   string
-  // >;
-
   const list: Command[] = values.map((value) => {
     //@ts-expect-error cant figure out this type
     let display = commandMeta?.commandDisplay?.(value);
@@ -65,7 +60,6 @@ export function buildCommandForConfigMetadata(
     return command;
   });
 
-  //put configValue off or false at the start of the list
   list.sort((a, b) => {
     if (a.configValue === "off" || a.configValue === false) return -1;
     if (b.configValue === "off" || b.configValue === false) return 1;
