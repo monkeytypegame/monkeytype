@@ -46,7 +46,9 @@ export function buildCommandForConfigKey(
     }
 
     const command = {
-      id: `set${capitalizeFirstLetter(key)}${value}`,
+      id: `set${capitalizeFirstLetter(key)}${capitalizeFirstLetter(
+        value.toString()
+      )}`,
       display,
       alias,
       configValue: value,
