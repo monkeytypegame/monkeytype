@@ -81,4 +81,5 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   indicateTypos: {},
   hideExtraLetters: {},
   lazyMode: {},
+  codeUnindentOnBackspace: {},
 };

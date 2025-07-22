@@ -317,6 +317,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   codeUnindentOnBackspace: {
+    icon: "fa-code",
     displayString: "code unindent on backspace",
     changeRequiresRestart: true,
   },

@@ -52,7 +52,6 @@ import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundSizeCommands from "./lists/background-size";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
-import CodeUnindentOnBackspace from "./lists/code-unindent-on-backspace";
 
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
@@ -226,8 +225,8 @@ export const commands: CommandsSubgroup = {
     buildCommandForConfigKey("indicateTypos"),
     buildCommandForConfigKey("hideExtraLetters"),
     lazyModeCommand,
-    ...LayoutsCommands,
-    ...CodeUnindentOnBackspace,
+    ...LayoutsCommands, //union type, skip
+    buildCommandForConfigKey("codeUnindentOnBackspace"),
 
     //sound
     ...SoundVolumeCommands,
