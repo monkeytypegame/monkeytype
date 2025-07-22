@@ -1,7 +1,7 @@
 import { genericSet } from "../config";
 import { configMetadata } from "../config-metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
-import { commandlineConfigMetadata } from "./metadata";
+import { commandlineConfigMetadata } from "./commandline-metadata";
 import { Command, CommandsSubgroup } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { z } from "zod";
