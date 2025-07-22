@@ -4,7 +4,6 @@ import WordsCommands from "./lists/words";
 import ConfidenceModeCommands from "./lists/confidence-mode";
 import QuoteLengthCommands from "./lists/quote-length";
 import StopOnErrorCommands from "./lists/stop-on-error";
-import NumbersCommands from "./lists/numbers";
 import SmoothCaretCommands from "./lists/smooth-caret";
 import QuickRestartCommands from "./lists/quick-restart";
 import RepeatQuotesCommands from "./lists/repeat-quotes";
@@ -139,7 +138,7 @@ export const commands: CommandsSubgroup = {
 
     //test screen
     buildCommandForConfigKey("punctuation"),
-    ...NumbersCommands,
+    buildCommandForConfigKey("numbers"),
     ...ModeCommands,
     ...TimeCommands,
     ...WordsCommands,

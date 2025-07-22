@@ -99,6 +99,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   numbers: {
+    icon: "fa-hashtag",
     changeRequiresRestart: true,
     overrideValue: ({ value, currentConfig }) => {
       if (currentConfig.mode === "quote") {

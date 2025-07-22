@@ -1,5 +1,6 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
+import * as TestLogic from "../test/test-logic";
 
 type CommandlineConfigMetadata = {
   [K in keyof ConfigSchemas.Config]?: {
@@ -12,6 +13,17 @@ type CommandlineConfigMetadata = {
 };
 
 export const commandlineConfigMetadata: CommandlineConfigMetadata = {
+  //test
+  punctuation: {
+    afterExec: () => {
+      TestLogic.restart();
+    },
+  },
+  numbers: {
+    afterExec: () => {
+      TestLogic.restart();
+    },
+  },
   //sound
   playTimeWarning: {
     commandDisplay: (value) => {
