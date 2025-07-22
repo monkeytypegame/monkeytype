@@ -1,6 +1,13 @@
 import { debounce } from "throttle-debounce";
-import { z } from "zod";
+import { z, ZodType } from "zod";
 import { InputIndicator } from "./input-indicator";
+import {
+  ConfigKey,
+  ConfigSchema,
+  Config as ConfigType,
+} from "@monkeytype/schemas/configs";
+import Config, * as UpdateConfig from "../config";
+import * as Notifications from "../elements/notifications";
 
 export type ValidationResult = {
   status: "checking" | "success" | "failed";
@@ -122,4 +129,85 @@ export function validateWithIndicator<T>(
       );
     })
   );
+}
+
+export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
+  input: HTMLInputElement | null;
+  configName: K;
+  validation?: (T extends string
+    ? Omit<Validation<T>, "schema">
+    : Omit<Validation<T>, "schema"> & {
+        inputValueConvert: (val: string) => T;
+      }) & {
+    schema: boolean;
+    validationCallback?: (result: ValidationResult) => void;
+  };
+};
+
+export function handleConfigInput<T extends ConfigKey>({
+  input,
+  configName,
+  validation,
+}: ConfigInputOptions<T, ConfigType[T]>): void {
+  if (input === null) {
+    throw new Error(`Failed to find input element for ${configName}`);
+  }
+
+  const inputValueConvert =
+    validation !== undefined && "inputValueConvert" in validation
+      ? validation.inputValueConvert
+      : undefined;
+  let status: ValidationResult["status"] = "checking";
+
+  if (validation !== undefined) {
+    const schema = ConfigSchema.shape[configName] as ZodType;
+
+    validateWithIndicator(input, {
+      schema: validation.schema ? schema : undefined,
+      //@ts-expect-error todo
+      isValid: validation.isValid,
+      inputValueConvert,
+      callback: (result) => {
+        status = result.status;
+      },
+    });
+  }
+
+  const handleStore = (): void => {
+    if (input.value === "") {
+      //use last config value, clear validation
+      input.value = new String(Config[configName]).toString();
+      input.dispatchEvent(new Event("input"));
+    }
+    if (status === "failed") {
+      const parent = $(input.parentElement as HTMLElement);
+      parent
+        .stop(true, true)
+        .addClass("hasError")
+        .animate({ undefined: 1 }, 500, () => {
+          parent.removeClass("hasError");
+        });
+      return;
+    }
+    const value = (inputValueConvert?.(input.value) ??
+      input.value) as ConfigType[T];
+
+    if (Config[configName] === value) {
+      return;
+    }
+    const didConfigSave = UpdateConfig.genericSet(configName, value, false);
+
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
+  };
+
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      handleStore();
+    }
+  });
+  input.addEventListener("focusout", (e) => handleStore());
 }

@@ -1,15 +1,14 @@
-import { ConfigSchema, ConfigValue } from "@monkeytype/schemas/configs";
+import { ConfigKey, ConfigValue } from "@monkeytype/schemas/configs";
 
 import Config from "../../config";
 import * as Notifications from "../notifications";
 import SlimSelect from "slim-select";
 import { debounce } from "throttle-debounce";
 import {
-  validateWithIndicator,
+  handleConfigInput,
+  ConfigInputOptions,
   Validation,
-  ValidationResult,
 } from "../input-validation";
-import { ZodType } from "zod";
 
 type Mode = "select" | "button" | "range" | "input";
 
@@ -29,7 +28,6 @@ export default class SettingsGroup<T extends ConfigValue> {
     : SimpleValidation<T> & {
         inputValueConvert: (val: string) => T;
       };
-  private status: ValidationResult["status"] = "checking";
 
   constructor(
     configName: string,
@@ -129,60 +127,30 @@ export default class SettingsGroup<T extends ConfigValue> {
     } else if (this.mode === "input") {
       const input: HTMLInputElement | null = document.querySelector(`
         .pageSettings .section[data-config-name=${this.configName}] .inputs .inputAndButton input`);
-
       if (input === null) {
-        throw new Error(`Failed to find a input element for ${configName}`);
+        throw new Error(`Failed to find input element for ${configName}`);
       }
 
-      if (this.validation?.schema) {
-        //@ts-expect-error this is fine?
-        const schema = ConfigSchema.shape[this.configName] as ZodType;
-
-        validateWithIndicator(input, {
-          schema,
+      // oxlint-disable-next-line no-explicit-any
+      let validation: ConfigInputOptions<any>["validation"] | undefined =
+        undefined;
+      if (this.validation !== undefined) {
+        // oxlint-disable-next-line no-explicit-any TODO change this.configName to ConfigKey
+        validation = {
+          schema: this.validation.schema ?? false,
+          isValid: this.validation.isValid,
           inputValueConvert:
             "inputValueConvert" in this.validation
               ? this.validation.inputValueConvert
               : undefined,
-          callback: (result) => {
-            this.status = result.status;
-          },
-        });
+        };
       }
 
-      const handleStore = (): void => {
-        if (input.value === "") {
-          //use last config value, clear validation
-          //@ts-expect-error this is fine
-          input.value = new String(Config[configName]).toString();
-          input.dispatchEvent(new Event("input"));
-        }
-        if (this.status === "failed") {
-          const parent = $(input.parentElement as HTMLElement);
-          parent
-            .stop(true, true)
-            .addClass("hasError")
-            .animate({ undefined: 1 }, 500, () => {
-              parent.removeClass("hasError");
-            });
-          return;
-        }
-        const value = convertValue(input.value);
-        const didConfigSave = this.setValue(value);
-
-        if (didConfigSave) {
-          Notifications.add("Saved", 1, {
-            duration: 1,
-          });
-        }
-      };
-
-      input.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-          handleStore();
-        }
+      handleConfigInput({
+        input,
+        configName: this.configName as ConfigKey,
+        validation,
       });
-      input.addEventListener("focusout", (e) => handleStore());
 
       this.elements = [input];
     } else if (this.mode === "range") {

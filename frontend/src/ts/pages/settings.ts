@@ -1,6 +1,4 @@
-import SettingsGroup, {
-  SimpleValidation,
-} from "../elements/settings/settings-group";
+import SettingsGroup from "../elements/settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
@@ -28,9 +26,6 @@ import {
   CustomLayoutFluid,
   FunboxName,
   ConfigKeySchema,
-  ConfigKey,
-  Config as ConfigType,
-  ConfigSchema,
 } from "@monkeytype/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
@@ -43,11 +38,8 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
-import { z, ZodType } from "zod";
-import {
-  validateWithIndicator,
-  ValidationResult,
-} from "../elements/input-validation";
+import { z } from "zod";
+import { handleConfigInput } from "../elements/input-validation";
 
 let settingsInitialized = false;
 
@@ -668,7 +660,7 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
-  addValidationToInput({
+  handleConfigInput({
     input: document.querySelector(
       ".pageSettings .section[data-config-name='minWpm'] input"
     ),
@@ -682,7 +674,7 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
-  addValidationToInput({
+  handleConfigInput({
     input: document.querySelector(
       ".pageSettings .section[data-config-name='minAcc'] input"
     ),
@@ -693,7 +685,7 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
-  addValidationToInput({
+  handleConfigInput({
     input: document.querySelector(
       ".pageSettings .section[data-config-name='minBurst'] input"
     ),
@@ -707,7 +699,7 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
-  addValidationToInput({
+  handleConfigInput({
     input: document.querySelector(
       ".pageSettings .section[data-config-name='paceCaret'] input"
     ),
@@ -1232,77 +1224,6 @@ $(".pageSettings .section .groupTitle button").on("click", (e) => {
       Notifications.add("Failed to copy to clipboard: " + e, -1);
     });
 });
-
-function addValidationToInput<T extends ConfigKey>({
-  input,
-  configName,
-  validation,
-}: {
-  input: HTMLInputElement | null;
-  configName: T;
-  validation: ConfigType[T] extends string
-    ? SimpleValidation<T>
-    : SimpleValidation<T> & {
-        inputValueConvert: (val: string) => ConfigType[T];
-      };
-}): void {
-  if (input === null) {
-    throw new Error(`Failed to find input element for ${configName}`);
-  }
-  const inputValueConvert =
-    "inputValueConvert" in validation
-      ? validation.inputValueConvert
-      : undefined;
-  let status: ValidationResult["status"] = "checking";
-
-  const schema = ConfigSchema.shape[configName] as ZodType;
-  validateWithIndicator(input, {
-    schema,
-    inputValueConvert,
-    callback: (result) => {
-      status = result.status;
-    },
-  });
-
-  const handleStore = (): void => {
-    if (input.value === "") {
-      //use last config value, clear validation
-
-      input.value = new String(Config[configName]).toString();
-      input.dispatchEvent(new Event("input"));
-    }
-    if (status === "failed") {
-      const parent = $(input.parentElement as HTMLElement);
-      parent
-        .stop(true, true)
-        .addClass("hasError")
-        .animate({ undefined: 1 }, 500, () => {
-          parent.removeClass("hasError");
-        });
-      return;
-    }
-    const value = (inputValueConvert?.(input.value) ??
-      input.value) as ConfigType[T];
-
-    if (Config[configName] === value) {
-      return;
-    }
-    const didConfigSave = UpdateConfig.genericSet(configName, value, false);
-
-    if (didConfigSave) {
-      Notifications.add("Saved", 1, {
-        duration: 1,
-      });
-    }
-  };
-
-  input.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      handleStore();
-    }
-  });
-  input.addEventListener("focusout", (e) => handleStore());
-}
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChange") setEventDisabled(true);
