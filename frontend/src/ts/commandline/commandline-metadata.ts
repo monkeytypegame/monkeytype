@@ -155,6 +155,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   paceCaretStyle: {},
 
   //appearence
-  timerStyle: {},
-  liveSpeedStyle: {},
+  timerStyle: { rootAlias: "timer" },
+  liveSpeedStyle: { rootAlias: "wpm" },
+  liveAccStyle: { rootAlias: "wpm" },
+  liveBurstStyle: { rootAlias: "wpm" },
 };

@@ -2,8 +2,6 @@ import ModeCommands from "./lists/mode";
 import TimeCommands from "./lists/time";
 import WordsCommands from "./lists/words";
 import QuoteLengthCommands from "./lists/quote-length";
-import LiveAccStyleCommands from "./lists/live-acc-style";
-import LiveBurstStyleCommands from "./lists/live-burst-style";
 import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
 import SoundVolumeCommands from "./lists/sound-volume";
@@ -236,8 +234,8 @@ export const commands: CommandsSubgroup = {
     //appearence
     buildCommandForConfigKey("timerStyle"),
     buildCommandForConfigKey("liveSpeedStyle"),
-    ...LiveAccStyleCommands,
-    ...LiveBurstStyleCommands,
+    buildCommandForConfigKey("liveAccStyle"),
+    buildCommandForConfigKey("liveBurstStyle"),
 
     ...TimerColorCommands,
     ...TimerOpacityCommands,

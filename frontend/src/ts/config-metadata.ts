@@ -397,10 +397,12 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   liveAccStyle: {
+    icon: "fa-tachometer-alt",
     displayString: "live accuracy style",
     changeRequiresRestart: false,
   },
   liveBurstStyle: {
+    icon: "fa-tachometer-alt",
     displayString: "live burst style",
     changeRequiresRestart: false,
   },
