@@ -89,6 +89,7 @@ export type ConfigMetadataObject = {
 export const configMetadata: ConfigMetadataObject = {
   // test
   punctuation: {
+    icon: "fa-at",
     changeRequiresRestart: true,
     overrideValue: ({ value, currentConfig }) => {
       if (currentConfig.mode === "quote") {

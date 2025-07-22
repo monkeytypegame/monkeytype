@@ -1,9 +1,8 @@
-import { configMetadata, ConfigMetadata } from "../config-metadata";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 
 type CommandlineConfigMetadata = {
-  [K in keyof ConfigSchemas.Config]?: ConfigMetadata<K> & {
+  [K in keyof ConfigSchemas.Config]?: {
     rootAlias?: string;
     rootDisplay?: string;
     commandAlias?: (value: ConfigSchemas.Config[K]) => string;
@@ -15,7 +14,6 @@ type CommandlineConfigMetadata = {
 export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   //sound
   playTimeWarning: {
-    ...configMetadata.playTimeWarning,
     commandDisplay: (value) => {
       if (value === "off") {
         return "off";

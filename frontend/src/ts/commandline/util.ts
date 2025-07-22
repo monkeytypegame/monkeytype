@@ -1,4 +1,5 @@
 import { genericSet } from "../config";
+import { configMetadata } from "../config-metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import { commandlineConfigMetadata } from "./metadata";
 import { Command, CommandsSubgroup } from "./types";
@@ -8,7 +9,10 @@ import { z } from "zod";
 export function buildCommandForConfigMetadata(
   key: keyof typeof commandlineConfigMetadata
 ): Command {
-  const meta = commandlineConfigMetadata[key];
+  const meta = {
+    ...configMetadata[key],
+    ...commandlineConfigMetadata[key],
+  };
 
   const display = capitalizeFirstLetter(meta?.displayString ?? key) + "...";
 
