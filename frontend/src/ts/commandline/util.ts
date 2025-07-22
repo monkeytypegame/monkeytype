@@ -28,29 +28,40 @@ export function buildCommandForConfigMetadata(key: EnumConfigKeys): Command {
   //   string
   // >;
 
+  const list = values.map((value) => {
+    //@ts-expect-error this type is super hard to figure out
+    const display = meta?.commandline?.commandDisplay?.(value) ?? value;
+    //@ts-expect-error this type is super hard to figure out
+    const alias = meta?.commandline?.commandAlias?.(value) ?? undefined;
+
+    const command = {
+      id: `set${capitalizeFirstLetter(key)}${value}`,
+      display,
+      alias,
+      configValue: value,
+      exec: (): void => {
+        genericSet(key, value);
+        //@ts-expect-error this is also hard
+        meta.commandline?.afterExec?.(value);
+      },
+    };
+
+    return command;
+  });
+
+  //put configValue off or false at the start of the list
+  list.sort((a, b) => {
+    // if (a.configValue === "off" || a.configValue === false) return -1;
+    // if (b.configValue === "off" || b.configValue === false) return 1;
+    if (a.configValue === "off") return -1;
+    if (b.configValue === "off") return 1;
+    return 0;
+  });
+
   const subgroup: CommandsSubgroup = {
     title: display,
     configKey: key,
-    list: values.map((value) => {
-      //@ts-expect-error this type is super hard to figure out
-      const display = meta?.commandline?.commandDisplay?.(value) ?? value;
-      //@ts-expect-error this type is super hard to figure out
-      const alias = meta?.commandline?.commandAlias?.(value) ?? undefined;
-
-      const command = {
-        id: `set${capitalizeFirstLetter(key)}${value}`,
-        display,
-        alias,
-        configValue: value,
-        exec: (): void => {
-          genericSet(key, value);
-          //@ts-expect-error this is also hard
-          meta.commandline?.afterExec?.(value);
-        },
-      };
-
-      return command;
-    }),
+    list,
   };
 
   return {
