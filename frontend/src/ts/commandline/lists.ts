@@ -228,7 +228,6 @@ export const commands: CommandsSubgroup = {
 
     //sound
     ...SoundVolumeCommands,
-    // ...SoundOnClickCommands,
     buildCommandForConfigKey("playSoundOnClick"),
     buildCommandForConfigKey("playSoundOnError"),
     buildCommandForConfigKey("playTimeWarning"),
