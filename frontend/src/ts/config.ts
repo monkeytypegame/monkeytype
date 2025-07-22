@@ -28,6 +28,7 @@ import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
+import * as SoundController from "./controllers/sound-controller";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -118,6 +119,12 @@ function isConfigChangeBlocked(): boolean {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K];
 // };
 
+export type CommandlineCommandMetadata<T> = {
+  display?: string;
+  alias?: string;
+  afterExec?: (value: T) => void;
+};
+
 export type ConfigMetadata = {
   [K in keyof ConfigSchemas.Config]: {
     /**
@@ -128,6 +135,30 @@ export type ConfigMetadata = {
      * Should the config change trigger a resize event? handled in ui.ts:108
      */
     triggerResize?: true;
+
+    /**
+     * Icon to display in the commandline and settings
+     */
+    icon?: string;
+
+    // commandline?: {
+    //   displayValues?: ConfigSchemas.Config[K] extends string | number | symbol
+    //     ? Partial<Record<ConfigSchemas.Config[K], string>>
+    //     : never;
+    // };
+
+    commandline?: {
+      alias?: string;
+      commands?: ConfigSchemas.Config[K] extends string | number | symbol
+        ? Partial<
+            Record<
+              ConfigSchemas.Config[K],
+              CommandlineCommandMetadata<ConfigSchemas.Config[K]>
+            >
+          >
+        : never;
+      afterEachExec?: (value: ConfigSchemas.Config[K]) => void;
+    };
 
     /**
      * Is a test restart required after this config change?
@@ -170,7 +201,7 @@ export type ConfigMetadata = {
 // maybe have generic set somehow handle test restarting
 // maybe add config group to each metadata object? all though its already defined in ConfigGroupsLiteral
 
-const configMetadata: ConfigMetadata = {
+export const configMetadata: ConfigMetadata = {
   // test
   punctuation: {
     changeRequiresRestart: true,
@@ -397,6 +428,28 @@ const configMetadata: ConfigMetadata = {
   playTimeWarning: {
     displayString: "play time warning",
     changeRequiresRestart: false,
+    icon: "fa-exclamation-triangle",
+    commandline: {
+      commands: {
+        "1": {
+          display: "1 second",
+        },
+        "3": {
+          display: "3 seconds",
+        },
+        "5": {
+          display: "5 seconds",
+        },
+        "10": {
+          display: "10 seconds",
+        },
+      },
+      afterEachExec: (value) => {
+        if (value !== "off") {
+          void SoundController.playTimeWarning();
+        }
+      },
+    },
   },
 
   // caret
