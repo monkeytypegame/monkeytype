@@ -158,6 +158,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   repeatQuotes: {
+    icon: "fa-sync-alt",
     displayString: "repeat quotes",
     changeRequiresRestart: false,
   },
