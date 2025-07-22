@@ -278,6 +278,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   confidenceMode: {
+    icon: "fa-backspace",
     displayString: "confidence mode",
     changeRequiresRestart: false,
     overrideConfig: ({ value }) => {

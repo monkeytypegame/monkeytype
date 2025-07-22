@@ -76,4 +76,5 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
     },
   },
   stopOnError: {},
+  confidenceMode: {},
 };
