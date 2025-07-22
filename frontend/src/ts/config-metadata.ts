@@ -412,6 +412,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   timerOpacity: {
+    icon: "fa-chart-pie",
     displayString: "timer opacity",
     changeRequiresRestart: false,
   },

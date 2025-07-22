@@ -168,4 +168,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     rootAlias: "timer speed wpm burst acc",
     commandAlias: () => "timer",
   },
+  timerOpacity: {
+    rootAlias: "timer speed wpm burst acc",
+    commandAlias: () => "timer",
+  },
 };
