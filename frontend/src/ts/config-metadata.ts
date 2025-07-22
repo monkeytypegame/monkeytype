@@ -210,6 +210,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   funbox: {
+    icon: "fa-gamepad",
     changeRequiresRestart: true,
     isBlocked: ({ value, currentConfig }) => {
       for (const funbox of currentConfig.funbox) {
