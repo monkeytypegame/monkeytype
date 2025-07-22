@@ -79,4 +79,5 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   confidenceMode: {},
   quickEnd: {},
   indicateTypos: {},
+  hideExtraLetters: {},
 };

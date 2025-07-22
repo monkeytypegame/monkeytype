@@ -303,6 +303,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   hideExtraLetters: {
+    icon: "fa-eye-slash",
     displayString: "hide extra letters",
     changeRequiresRestart: false,
   },

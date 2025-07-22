@@ -8,7 +8,6 @@ import LiveAccStyleCommands from "./lists/live-acc-style";
 import LiveBurstStyleCommands from "./lists/live-burst-style";
 import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
-import HideExtraLettersCommands from "./lists/hide-extra-letters";
 import SoundOnErrorCommands from "./lists/sound-on-error";
 import SoundVolumeCommands from "./lists/sound-volume";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
@@ -225,7 +224,7 @@ export const commands: CommandsSubgroup = {
     confidenceModeCommand,
     buildCommandForConfigKey("quickEnd"),
     buildCommandForConfigKey("indicateTypos"),
-    ...HideExtraLettersCommands,
+    buildCommandForConfigKey("hideExtraLetters"),
     ...LazyModeCommands,
     ...LayoutsCommands,
     ...CodeUnindentOnBackspace,
