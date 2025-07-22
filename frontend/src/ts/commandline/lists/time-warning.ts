@@ -5,7 +5,7 @@
 // import * as UpdateConfig from "../../config";
 // import * as SoundController from "../../controllers/sound-controller";
 // import { Command, CommandsSubgroup } from "../types";
-import { buildCommandForConfigMetadata } from "../util";
+import { buildCommandForConfigKey } from "../util";
 
 // const subgroup: CommandsSubgroup = {
 //   title: "Time warning...",
@@ -37,4 +37,4 @@ import { buildCommandForConfigMetadata } from "../util";
 
 // export default commands;
 
-export default [buildCommandForConfigMetadata("playTimeWarning")];
+export default [buildCommandForConfigKey("playTimeWarning")];
