@@ -2,6 +2,7 @@ import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
+import * as ModesNotice from "../elements/modes-notice";
 
 //todo: remove ? here to require all config keys to be defined
 type CommandlineConfigMetadata = {
@@ -69,4 +70,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   //input
   freedomMode: {},
   strictSpace: {},
+  oppositeShiftMode: {
+    afterExec: () => {
+      void ModesNotice.update();
+    },
+  },
 };

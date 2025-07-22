@@ -260,6 +260,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   oppositeShiftMode: {
+    icon: "fa-exchange-alt",
     displayString: "opposite shift mode",
     changeRequiresRestart: false,
   },

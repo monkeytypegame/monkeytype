@@ -13,7 +13,6 @@ import KeyTipsCommands from "./lists/key-tips";
 import IndicateTyposCommands from "./lists/indicate-typos";
 import HideExtraLettersCommands from "./lists/hide-extra-letters";
 import QuickEndCommands from "./lists/quick-end";
-import OppositeShiftModeCommands from "./lists/opposite-shift-mode";
 import SoundOnErrorCommands from "./lists/sound-on-error";
 import SoundVolumeCommands from "./lists/sound-volume";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
@@ -123,6 +122,7 @@ challengesPromise
 const languageCommand = buildCommandForConfigKey("language");
 const difficultyCommand = buildCommandForConfigKey("difficulty");
 const blindModeCommand = buildCommandForConfigKey("blindMode");
+const oppositeShiftModeCommand = buildCommandForConfigKey("oppositeShiftMode");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -221,7 +221,8 @@ export const commands: CommandsSubgroup = {
     //input
     buildCommandForConfigKey("freedomMode"),
     buildCommandForConfigKey("strictSpace"),
-    ...OppositeShiftModeCommands,
+    oppositeShiftModeCommand,
+
     ...StopOnErrorCommands,
     ...ConfidenceModeCommands,
     ...QuickEndCommands,
@@ -463,7 +464,7 @@ const lists = {
   confidenceMode: ConfidenceModeCommands[0]?.subgroup,
   stopOnError: StopOnErrorCommands[0]?.subgroup,
   layouts: LayoutsCommands[0]?.subgroup,
-  oppositeShiftMode: OppositeShiftModeCommands[0]?.subgroup,
+  oppositeShiftMode: oppositeShiftModeCommand.subgroup,
   tags: TagsCommands[0]?.subgroup,
   resultSaving: ResultSavingCommands[0]?.subgroup,
   blindMode: blindModeCommand.subgroup,
