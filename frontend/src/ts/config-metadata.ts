@@ -392,6 +392,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   liveSpeedStyle: {
+    icon: "fa-tachometer-alt",
     displayString: "live speed style",
     changeRequiresRestart: false,
   },

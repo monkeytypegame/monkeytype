@@ -154,4 +154,5 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
 
   //appearence
   timerStyle: {},
+  liveSpeedStyle: {},
 };
