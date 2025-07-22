@@ -7,7 +7,7 @@ import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { z } from "zod";
 
 export function buildCommandForConfigMetadata(
-  key: keyof typeof commandlineConfigMetadata
+  key: keyof ConfigSchemas.Config
 ): Command {
   const configMeta = configMetadata[key];
   const commandMeta = commandlineConfigMetadata[key];
