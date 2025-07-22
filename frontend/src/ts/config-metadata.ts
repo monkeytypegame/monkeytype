@@ -163,6 +163,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   blindMode: {
+    icon: "fa-eye-slash",
     displayString: "blind mode",
     changeRequiresRestart: false,
   },

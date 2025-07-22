@@ -12,7 +12,6 @@ import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
 import FreedomModeCommands from "./lists/freedom-mode";
 import StrictSpaceCommands from "./lists/strict-space";
-import BlindModeCommands from "./lists/blind-mode";
 import ShowWordsHistoryCommands from "./lists/show-words-history";
 import IndicateTyposCommands from "./lists/indicate-typos";
 import HideExtraLettersCommands from "./lists/hide-extra-letters";
@@ -128,6 +127,7 @@ challengesPromise
 
 const languageCommand = buildCommandForConfigKey("language");
 const difficultyCommand = buildCommandForConfigKey("difficulty");
+const blindModeCommand = buildCommandForConfigKey("blindMode");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -181,7 +181,7 @@ export const commands: CommandsSubgroup = {
     difficultyCommand,
     buildCommandForConfigKey("quickRestart"),
     buildCommandForConfigKey("repeatQuotes"),
-    ...BlindModeCommands,
+    blindModeCommand,
     ...ShowWordsHistoryCommands,
     ...SingleListCommandlineCommands,
     ...MinWpmCommands,
@@ -471,7 +471,7 @@ const lists = {
   oppositeShiftMode: OppositeShiftModeCommands[0]?.subgroup,
   tags: TagsCommands[0]?.subgroup,
   resultSaving: ResultSavingCommands[0]?.subgroup,
-  blindMode: BlindModeCommands[0]?.subgroup,
+  blindMode: blindModeCommand.subgroup,
 };
 
 export function doesListExist(listName: string): boolean {
