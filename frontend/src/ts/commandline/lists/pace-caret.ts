@@ -1,7 +1,8 @@
+import { PaceCaretCustomSpeedSchema } from "@monkeytype/schemas/configs";
 import Config, * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
-import { Command, CommandsSubgroup } from "../types";
+import { Command, CommandsSubgroup, withValidation } from "../types";
 
 const subgroup: CommandsSubgroup = {
   title: "Pace caret mode...",
@@ -61,21 +62,21 @@ const subgroup: CommandsSubgroup = {
         TestLogic.restart();
       },
     },
-    {
+    withValidation({
       id: "setPaceCaretCustom",
       display: "custom...",
       configValue: "custom",
       input: true,
+      inputValueConvert: Number,
+      validation: { schema: PaceCaretCustomSpeedSchema },
       exec: ({ input }): void => {
-        if (input === undefined || input === "") return;
-        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-          parseInt(input)
-        );
+        if (input === undefined) return;
+        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(input);
         UpdateConfig.setPaceCaretCustomSpeed(newVal);
         UpdateConfig.setPaceCaret("custom");
         TestLogic.restart();
       },
-    },
+    }),
   ],
 };
 

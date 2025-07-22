@@ -1,6 +1,7 @@
+import { SoundVolumeSchema } from "@monkeytype/schemas/configs";
 import * as UpdateConfig from "../../config";
 import * as SoundController from "../../controllers/sound-controller";
-import { Command, CommandsSubgroup } from "../types";
+import { Command, CommandsSubgroup, withValidation } from "../types";
 
 const subgroup: CommandsSubgroup = {
   title: "Sound volume...",
@@ -33,16 +34,18 @@ const subgroup: CommandsSubgroup = {
         void SoundController.playClick();
       },
     },
-    {
+    withValidation({
       id: "setSoundVolumeCustom",
       display: "custom...",
       input: true,
+      inputValueConvert: Number,
+      validation: { schema: SoundVolumeSchema },
       exec: ({ input }): void => {
-        if (input === undefined || input === "") return;
-        UpdateConfig.setSoundVolume(parseFloat(input));
+        if (input === undefined) return;
+        UpdateConfig.setSoundVolume(input);
         void SoundController.playClick();
       },
-    },
+    }),
   ],
 };
 

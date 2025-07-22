@@ -1,6 +1,7 @@
+import { MinWpmCustomSpeedSchema } from "@monkeytype/schemas/configs";
 import Config, * as UpdateConfig from "../../config";
 import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
-import { Command, CommandsSubgroup } from "../types";
+import { Command, CommandsSubgroup, withValidation } from "../types";
 
 const subgroup: CommandsSubgroup = {
   title: "Minimum speed...",
@@ -14,20 +15,20 @@ const subgroup: CommandsSubgroup = {
         UpdateConfig.setMinWpm("off");
       },
     },
-    {
+    withValidation({
       id: "setMinWpmCustom",
       display: "custom...",
       configValue: "custom",
       input: true,
+      inputValueConvert: Number,
+      validation: { schema: MinWpmCustomSpeedSchema },
       exec: ({ input }): void => {
-        if (input === undefined || input === "") return;
-        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-          parseInt(input)
-        );
+        if (input === undefined) return;
+        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(input);
         UpdateConfig.setMinWpmCustomSpeed(newVal);
         UpdateConfig.setMinWpm("custom");
       },
-    },
+    }),
   ],
 };
 

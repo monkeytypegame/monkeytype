@@ -1,5 +1,6 @@
+import { MinimumAccuracyCustomSchema } from "@monkeytype/schemas/configs";
 import * as UpdateConfig from "../../config";
-import { Command, CommandsSubgroup } from "../types";
+import { Command, CommandsSubgroup, withValidation } from "../types";
 
 const subgroup: CommandsSubgroup = {
   title: "Minimum accuracy...",
@@ -13,17 +14,19 @@ const subgroup: CommandsSubgroup = {
         UpdateConfig.setMinAcc("off");
       },
     },
-    {
+    withValidation({
       id: "setMinAccCustom",
       display: "custom...",
       configValue: "custom",
       input: true,
+      inputValueConvert: Number,
+      validation: { schema: MinimumAccuracyCustomSchema },
       exec: ({ input }): void => {
-        if (input === undefined || input === "") return;
-        UpdateConfig.setMinAccCustom(parseInt(input));
+        if (input === undefined) return;
+        UpdateConfig.setMinAccCustom(input);
         UpdateConfig.setMinAcc("custom");
       },
-    },
+    }),
   ],
 };
 

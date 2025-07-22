@@ -1,6 +1,7 @@
+import { MinimumBurstCustomSpeedSchema } from "@monkeytype/schemas/configs";
 import Config, * as UpdateConfig from "../../config";
 import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
-import { Command, CommandsSubgroup } from "../types";
+import { Command, CommandsSubgroup, withValidation } from "../types";
 
 const subgroup: CommandsSubgroup = {
   title: "Minimum burst...",
@@ -14,34 +15,34 @@ const subgroup: CommandsSubgroup = {
         UpdateConfig.setMinBurst("off");
       },
     },
-    {
+    withValidation({
       id: "setMinBurstFixed",
       display: "fixed...",
-      configValue: "fixed",
+      configValue: "minBurstCustomSpeed",
       input: true,
+      inputValueConvert: Number,
+      validation: { schema: MinimumBurstCustomSpeedSchema },
       exec: ({ input }): void => {
-        if (input === undefined || input === "") return;
+        if (input === undefined) return;
         UpdateConfig.setMinBurst("fixed");
-        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-          parseInt(input)
-        );
+        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(input);
         UpdateConfig.setMinBurstCustomSpeed(newVal);
       },
-    },
-    {
+    }),
+    withValidation({
       id: "setMinBurstFlex",
       display: "flex...",
-      configValue: "flex",
+      configValue: "minBurstCustomSpeed",
       input: true,
+      inputValueConvert: Number,
+      validation: { schema: MinimumBurstCustomSpeedSchema },
       exec: ({ input }): void => {
-        if (input === undefined || input === "") return;
+        if (input === undefined) return;
         UpdateConfig.setMinBurst("flex");
-        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-          parseInt(input)
-        );
+        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(input);
         UpdateConfig.setMinBurstCustomSpeed(newVal);
       },
-    },
+    }),
   ],
 };
 
