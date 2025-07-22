@@ -23,7 +23,6 @@ import MinBurstCommands from "./lists/min-burst";
 import CustomThemeCommands from "./lists/custom-theme";
 import RandomThemeCommands from "./lists/random-theme";
 import PaceCaretModeCommands from "./lists/pace-caret";
-import TimerStyleCommands from "./lists/timer-style";
 import TimerColorCommands from "./lists/timer-color";
 import TimerOpacityCommands from "./lists/timer-opacity";
 import HighlightModeCommands from "./lists/highlight-mode";
@@ -236,7 +235,7 @@ export const commands: CommandsSubgroup = {
     buildCommandForConfigKey("paceCaretStyle"),
 
     //appearence
-    ...TimerStyleCommands,
+    buildCommandForConfigKey("timerStyle"),
     ...LiveSpeedStyleCommands,
     ...LiveAccStyleCommands,
     ...LiveBurstStyleCommands,

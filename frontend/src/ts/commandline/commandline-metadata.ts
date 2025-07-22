@@ -151,4 +151,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   caretStyle: {},
   repeatedPace: {},
   paceCaretStyle: {},
+
+  //appearence
+  timerStyle: {},
 };
