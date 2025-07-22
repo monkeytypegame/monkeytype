@@ -18,7 +18,7 @@ const subgroup: CommandsSubgroup = {
     withValidation({
       id: "setMinBurstFixed",
       display: "fixed...",
-      configValue: "minBurstCustomSpeed", //TODO
+      configValue: "fixed",
       input: true,
       inputValueConvert: Number,
       validation: { schema: MinimumBurstCustomSpeedSchema },
@@ -32,7 +32,7 @@ const subgroup: CommandsSubgroup = {
     withValidation({
       id: "setMinBurstFlex",
       display: "flex...",
-      configValue: "minBurstCustomSpeed", //TODO
+      configValue: "flex",
       input: true,
       inputValueConvert: Number,
       validation: { schema: MinimumBurstCustomSpeedSchema },
