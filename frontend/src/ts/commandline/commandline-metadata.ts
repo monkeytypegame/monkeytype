@@ -90,6 +90,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
     },
   },
   playTimeWarning: {
+    rootAlias: "sound",
     commandDisplay: (value) => {
       if (value === "off") {
         return "off";
@@ -97,6 +98,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
       return `${value} second${value !== "1" ? "s" : ""}`;
     },
     afterExec: (value) => {
+      if (value !== "off") {
+        void SoundController.playTimeWarning();
+      }
+    },
+    hover: (value) => {
       if (value !== "off") {
         void SoundController.playTimeWarning();
       }
