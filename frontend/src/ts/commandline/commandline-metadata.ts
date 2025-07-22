@@ -172,4 +172,5 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     rootAlias: "timer speed wpm burst acc",
     commandAlias: () => "timer",
   },
+  highlightMode: {},
 };

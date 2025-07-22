@@ -417,6 +417,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   highlightMode: {
+    icon: "fa-highlighter",
     displayString: "highlight mode",
     changeRequiresRestart: false,
   },
