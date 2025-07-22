@@ -168,6 +168,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   alwaysShowWordsHistory: {
+    icon: "fa-align-left",
     displayString: "always show words history",
     changeRequiresRestart: false,
   },

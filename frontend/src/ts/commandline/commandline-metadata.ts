@@ -41,6 +41,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   quickRestart: {},
   repeatQuotes: {},
   blindMode: {},
+  alwaysShowWordsHistory: {},
   //sound
   playTimeWarning: {
     commandDisplay: (value) => {

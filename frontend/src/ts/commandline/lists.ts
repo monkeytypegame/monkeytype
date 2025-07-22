@@ -12,7 +12,6 @@ import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
 import FreedomModeCommands from "./lists/freedom-mode";
 import StrictSpaceCommands from "./lists/strict-space";
-import ShowWordsHistoryCommands from "./lists/show-words-history";
 import IndicateTyposCommands from "./lists/indicate-typos";
 import HideExtraLettersCommands from "./lists/hide-extra-letters";
 import QuickEndCommands from "./lists/quick-end";
@@ -182,7 +181,7 @@ export const commands: CommandsSubgroup = {
     buildCommandForConfigKey("quickRestart"),
     buildCommandForConfigKey("repeatQuotes"),
     blindModeCommand,
-    ...ShowWordsHistoryCommands,
+    buildCommandForConfigKey("alwaysShowWordsHistory"),
     ...SingleListCommandlineCommands,
     ...MinWpmCommands,
     ...MinAccCommands,
