@@ -1,8 +1,4 @@
-import {
-  CommandlineCommandMetadata,
-  configMetadata,
-  genericSet,
-} from "../config";
+import { configMetadata, genericSet } from "../config";
 import { capitalizeFirstLetter } from "../utils/strings";
 import { Command, CommandsSubgroup } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
@@ -37,19 +33,19 @@ export function buildCommandForConfigMetadata(key: EnumConfigKeys): Command {
     configKey: key,
     list: values.map((value) => {
       //@ts-expect-error this type is super hard to figure out
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const metaCommandSettings = (meta?.commandline?.commands?.[value] ??
-        undefined) as CommandlineCommandMetadata<typeof value> | undefined;
+      const display = meta?.commandline?.commandDisplay?.(value) ?? value;
+      //@ts-expect-error this type is super hard to figure out
+      const alias = meta?.commandline?.commandAlias?.(value) ?? undefined;
 
       const command = {
         id: `set${capitalizeFirstLetter(key)}${value}`,
-        display: metaCommandSettings?.display ?? value,
+        display,
+        alias,
         configValue: value,
         exec: (): void => {
           genericSet(key, value);
-          metaCommandSettings?.afterExec?.(value);
           //@ts-expect-error this is also hard
-          meta.commandline?.afterEachExec?.(value);
+          meta.commandline?.afterExec?.(value);
         },
       };
 

@@ -119,11 +119,11 @@ function isConfigChangeBlocked(): boolean {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K];
 // };
 
-export type CommandlineCommandMetadata<T> = {
-  display?: string;
-  alias?: string;
-  afterExec?: (value: T) => void;
-};
+// export type CommandlineCommandMetadata<T> = {
+//   display?: string;
+//   alias?: string;
+//   afterExec?: (value: T) => void;
+// };
 
 export type ConfigMetadata = {
   [K in keyof ConfigSchemas.Config]: {
@@ -148,16 +148,11 @@ export type ConfigMetadata = {
     // };
 
     commandline?: {
-      alias?: string;
-      commands?: ConfigSchemas.Config[K] extends string | number | symbol
-        ? Partial<
-            Record<
-              ConfigSchemas.Config[K],
-              CommandlineCommandMetadata<ConfigSchemas.Config[K]>
-            >
-          >
-        : never;
-      afterEachExec?: (value: ConfigSchemas.Config[K]) => void;
+      rootAlias?: string;
+      rootDisplay?: string;
+      commandAlias?: (value: ConfigSchemas.Config[K]) => string;
+      commandDisplay?: (value: ConfigSchemas.Config[K]) => string;
+      afterExec?: (value: ConfigSchemas.Config[K]) => void;
     };
 
     /**
@@ -430,21 +425,13 @@ export const configMetadata: ConfigMetadata = {
     changeRequiresRestart: false,
     icon: "fa-exclamation-triangle",
     commandline: {
-      commands: {
-        "1": {
-          display: "1 second",
-        },
-        "3": {
-          display: "3 seconds",
-        },
-        "5": {
-          display: "5 seconds",
-        },
-        "10": {
-          display: "10 seconds",
-        },
+      commandDisplay: (value) => {
+        if (value === "off") {
+          return "off";
+        }
+        return `${value} second${value !== "1" ? "s" : ""}`;
       },
-      afterEachExec: (value) => {
+      afterExec: (value) => {
         if (value !== "off") {
           void SoundController.playTimeWarning();
         }
