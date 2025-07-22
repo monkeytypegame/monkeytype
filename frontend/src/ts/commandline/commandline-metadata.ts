@@ -5,18 +5,20 @@ import { getLanguageDisplayString } from "../utils/strings";
 import * as ModesNotice from "../elements/modes-notice";
 
 //todo: remove ? here to require all config keys to be defined
-type CommandlineConfigMetadata = {
-  [K in keyof ConfigSchemas.Config]?: {
-    rootAlias?: string;
-    rootDisplay?: string;
-    commandAlias?: (value: ConfigSchemas.Config[K]) => string;
-    commandDisplay?: (value: ConfigSchemas.Config[K]) => string;
-    hover?: (value: ConfigSchemas.Config[K]) => void;
-    afterExec?: (value: ConfigSchemas.Config[K]) => void;
-  };
+type CommandlineConfigMetadataObject = {
+  [K in keyof ConfigSchemas.Config]?: CommandlineConfigMetadata<K>;
 };
 
-export const commandlineConfigMetadata: CommandlineConfigMetadata = {
+export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> = {
+  rootAlias?: string;
+  rootDisplay?: string;
+  commandAlias?: (value: ConfigSchemas.Config[T]) => string;
+  commandDisplay?: (value: ConfigSchemas.Config[T]) => string;
+  hover?: (value: ConfigSchemas.Config[T]) => void;
+  afterExec?: (value: ConfigSchemas.Config[T]) => void;
+};
+
+export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   //test
   punctuation: {
     afterExec: () => {
