@@ -328,6 +328,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   playSoundOnClick: {
+    icon: "fa-volume-up",
     displayString: "play sound on click",
     changeRequiresRestart: false,
   },

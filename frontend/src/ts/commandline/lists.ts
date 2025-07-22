@@ -19,7 +19,6 @@ import ShowAllLinesCommands from "./lists/show-all-lines";
 import ColorfulModeCommands from "./lists/colorful-mode";
 import OutOfFocusWarningCommands from "./lists/out-of-focus-warning";
 import CapsLockWarningCommands from "./lists/caps-lock-warning";
-import SoundOnClickCommands from "./lists/sound-on-click";
 import MinWpmCommands from "./lists/min-wpm";
 import MinAccCommands from "./lists/min-acc";
 import MinBurstCommands from "./lists/min-burst";
@@ -230,7 +229,8 @@ export const commands: CommandsSubgroup = {
 
     //sound
     ...SoundVolumeCommands,
-    ...SoundOnClickCommands,
+    // ...SoundOnClickCommands,
+    buildCommandForConfigKey("playSoundOnClick"),
     ...SoundOnErrorCommands,
     buildCommandForConfigKey("playTimeWarning"),
 

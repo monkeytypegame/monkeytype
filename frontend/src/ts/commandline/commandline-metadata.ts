@@ -55,6 +55,40 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   },
   funbox: {},
   //sound
+  playSoundOnClick: {
+    rootAlias: "play",
+    rootDisplay: "Sound on click...",
+    commandDisplay: (value) => {
+      const map: Record<ConfigSchemas.Config["playSoundOnClick"], string> = {
+        off: "off",
+        "1": "click",
+        "2": "beep",
+        "3": "pop",
+        "4": "nk creams",
+        "5": "typewriter",
+        "6": "osu",
+        "7": "hitmarker",
+        "8": "sine",
+        "9": "sawtooth",
+        "10": "square",
+        "11": "triangle",
+        "12": "pentatonic",
+        "13": "wholetone",
+        "14": "fist fight",
+        "15": "rubber keys",
+      };
+      return map[value];
+    },
+    hover: (value) => {
+      if (value === "off") {
+        return;
+      }
+      void SoundController.previewClick(value);
+    },
+    afterExec: () => {
+      void SoundController.playClick();
+    },
+  },
   playTimeWarning: {
     commandDisplay: (value) => {
       if (value === "off") {
