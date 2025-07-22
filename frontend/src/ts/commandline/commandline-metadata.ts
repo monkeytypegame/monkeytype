@@ -51,6 +51,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
       TestLogic.restart();
     },
   },
+  funbox: {},
   //sound
   playTimeWarning: {
     commandDisplay: (value) => {
