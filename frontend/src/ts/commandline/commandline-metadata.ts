@@ -30,6 +30,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
       return getLanguageDisplayString(value);
     },
   },
+  //behavior
+  difficulty: {},
   //sound
   playTimeWarning: {
     commandDisplay: (value) => {

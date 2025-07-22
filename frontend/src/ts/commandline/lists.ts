@@ -39,7 +39,6 @@ import MinAccCommands from "./lists/min-acc";
 import MinBurstCommands from "./lists/min-burst";
 import CustomThemeCommands from "./lists/custom-theme";
 import RandomThemeCommands from "./lists/random-theme";
-import DifficultyCommands from "./lists/difficulty";
 import PaceCaretStyleCommands from "./lists/pace-caret-style";
 import PaceCaretModeCommands from "./lists/pace-caret";
 import CaretStyleCommands from "./lists/caret-style";
@@ -130,6 +129,7 @@ challengesPromise
   });
 
 const languageCommand = buildCommandForConfigKey("language");
+const difficultyCommand = buildCommandForConfigKey("difficulty");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -180,7 +180,7 @@ export const commands: CommandsSubgroup = {
     ...ResultSavingCommands,
 
     //behavior
-    ...DifficultyCommands,
+    difficultyCommand,
     ...QuickRestartCommands,
     ...RepeatQuotesCommands,
     ...BlindModeCommands,
@@ -459,7 +459,7 @@ const lists = {
   themes: ThemesCommands[0]?.subgroup,
   loadChallenge: LoadChallengeCommands[0]?.subgroup,
   languages: languageCommand.subgroup,
-  difficulty: DifficultyCommands[0]?.subgroup,
+  difficulty: difficultyCommand.subgroup,
   lazyMode: LazyModeCommands[0]?.subgroup,
   paceCaretMode: PaceCaretModeCommands[0]?.subgroup,
   showAverage: ShowAverageCommands[0]?.subgroup,

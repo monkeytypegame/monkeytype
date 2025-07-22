@@ -149,6 +149,7 @@ export const configMetadata: ConfigMetadataObject = {
 
   // behavior
   difficulty: {
+    icon: "fa-star",
     changeRequiresRestart: true,
   },
   quickRestart: {
