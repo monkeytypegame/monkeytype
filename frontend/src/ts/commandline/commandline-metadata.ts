@@ -44,6 +44,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   alwaysShowWordsHistory: {},
   singleListCommandLine: {},
   minWpm: {},
+  minAcc: {},
+  minBurst: {},
   //sound
   playTimeWarning: {
     commandDisplay: (value) => {

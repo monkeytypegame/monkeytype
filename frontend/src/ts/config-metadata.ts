@@ -187,6 +187,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   minAcc: {
+    icon: "fa-bomb",
     displayString: "min accuracy",
     changeRequiresRestart: true,
   },
@@ -195,6 +196,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   minBurst: {
+    icon: "fa-bomb",
     displayString: "min burst",
     changeRequiresRestart: true,
   },
