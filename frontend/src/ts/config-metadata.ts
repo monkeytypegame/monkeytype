@@ -5,7 +5,6 @@ import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
 import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
-import * as SoundController from "./controllers/sound-controller";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -14,86 +13,80 @@ import * as SoundController from "./controllers/sound-controller";
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K];
 // };
 
-export type ConfigMetadata = {
-  [K in keyof ConfigSchemas.Config]: {
-    /**
-     * Optional display string for the config key.
-     */
-    displayString?: string;
-    /**
-     * Should the config change trigger a resize event? handled in ui.ts:108
-     */
-    triggerResize?: true;
+export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
+  /**
+   * Optional display string for the config key.
+   */
+  displayString?: string;
+  /**
+   * Should the config change trigger a resize event? handled in ui.ts:108
+   */
+  triggerResize?: true;
 
-    /**
-     * Icon to display in the commandline and settings
-     */
-    icon?: string;
+  /**
+   * Icon to display in the commandline and settings
+   */
+  icon?: string;
 
-    // commandline?: {
-    //   displayValues?: ConfigSchemas.Config[K] extends string | number | symbol
-    //     ? Partial<Record<ConfigSchemas.Config[K], string>>
-    //     : never;
-    // };
+  // commandline?: {
+  //   displayValues?: ConfigSchemas.Config[K] extends string | number | symbol
+  //     ? Partial<Record<ConfigSchemas.Config[K], string>>
+  //     : never;
+  // };
 
-    commandline?: {
-      rootAlias?: string;
-      rootDisplay?: string;
-      commandAlias?: (value: ConfigSchemas.Config[K]) => string;
-      commandDisplay?: (value: ConfigSchemas.Config[K]) => string;
-      afterExec?: (value: ConfigSchemas.Config[K]) => void;
-    };
+  /**
+   * Is a test restart required after this config change?
+   */
+  changeRequiresRestart: boolean;
+  /**
+   * Optional function that checks if the config value is blocked from being set.
+   * Returns true if setting the config value should be blocked.
+   * @param options - The options object containing the value being set and the current config.
+   */
+  isBlocked?: (options: {
+    value: ConfigSchemas.Config[K];
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => boolean;
+  /**
+   * Optional function to override the value before setting it.
+   * Returns the modified value.
+   * @param options - The options object containing the value being set, the current value, and the current config.
+   * @returns The modified value to be set for the config key.
+   */
+  overrideValue?: (options: {
+    value: ConfigSchemas.Config[K];
+    currentValue: ConfigSchemas.Config[K];
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => ConfigSchemas.Config[K];
+  /**
+   * Optional function to override other config values before this one is set.
+   * Returns an object with the config keys and their new values.
+   * @param options - The options object containing the value being set and the current config.
+   */
+  overrideConfig?: (options: {
+    value: ConfigSchemas.Config[K];
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => Partial<ConfigSchemas.Config>;
+  /**
+   * Optional function that is called after the config value is set.
+   * It can be used to perform additional actions, like reloading the page.
+   * @param options - The options object containing the nosave flag and the current config.
+   */
+  afterSet?: (options: {
+    nosave: boolean;
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => void;
+};
 
-    /**
-     * Is a test restart required after this config change?
-     */
-    changeRequiresRestart: boolean;
-    /**
-     * Optional function that checks if the config value is blocked from being set.
-     * Returns true if setting the config value should be blocked.
-     * @param options - The options object containing the value being set and the current config.
-     */
-    isBlocked?: (options: {
-      value: ConfigSchemas.Config[K];
-      currentConfig: Readonly<ConfigSchemas.Config>;
-    }) => boolean;
-    /**
-     * Optional function to override the value before setting it.
-     * Returns the modified value.
-     * @param options - The options object containing the value being set, the current value, and the current config.
-     * @returns The modified value to be set for the config key.
-     */
-    overrideValue?: (options: {
-      value: ConfigSchemas.Config[K];
-      currentValue: ConfigSchemas.Config[K];
-      currentConfig: Readonly<ConfigSchemas.Config>;
-    }) => ConfigSchemas.Config[K];
-    /**
-     * Optional function to override other config values before this one is set.
-     * Returns an object with the config keys and their new values.
-     * @param options - The options object containing the value being set and the current config.
-     */
-    overrideConfig?: (options: {
-      value: ConfigSchemas.Config[K];
-      currentConfig: Readonly<ConfigSchemas.Config>;
-    }) => Partial<ConfigSchemas.Config>;
-    /**
-     * Optional function that is called after the config value is set.
-     * It can be used to perform additional actions, like reloading the page.
-     * @param options - The options object containing the nosave flag and the current config.
-     */
-    afterSet?: (options: {
-      nosave: boolean;
-      currentConfig: Readonly<ConfigSchemas.Config>;
-    }) => void;
-  };
+export type ConfigMetadataObject = {
+  [K in keyof ConfigSchemas.Config]: ConfigMetadata<K>;
 };
 
 //todo:
 // maybe have generic set somehow handle test restarting
 // maybe add config group to each metadata object? all though its already defined in ConfigGroupsLiteral
 
-export const configMetadata: ConfigMetadata = {
+export const configMetadata: ConfigMetadataObject = {
   // test
   punctuation: {
     changeRequiresRestart: true,
@@ -321,19 +314,6 @@ export const configMetadata: ConfigMetadata = {
     displayString: "play time warning",
     changeRequiresRestart: false,
     icon: "fa-exclamation-triangle",
-    commandline: {
-      commandDisplay: (value) => {
-        if (value === "off") {
-          return "off";
-        }
-        return `${value} second${value !== "1" ? "s" : ""}`;
-      },
-      afterExec: (value) => {
-        if (value !== "off") {
-          void SoundController.playTimeWarning();
-        }
-      },
-    },
   },
 
   // caret

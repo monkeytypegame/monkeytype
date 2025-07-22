@@ -24,7 +24,7 @@ import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
-import { ConfigMetadata, configMetadata } from "./config-metadata";
+import { ConfigMetadataObject, configMetadata } from "./config-metadata";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -112,7 +112,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   value: ConfigSchemas.Config[T],
   nosave: boolean = false
 ): boolean {
-  const metadata = configMetadata[key] as ConfigMetadata[T];
+  const metadata = configMetadata[key] as ConfigMetadataObject[T];
   if (metadata === undefined) {
     throw new Error(`Config metadata for key "${key}" is not defined.`);
   }

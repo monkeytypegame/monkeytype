@@ -1,13 +1,14 @@
-import { configMetadata, genericSet } from "../config";
+import { genericSet } from "../config";
 import { capitalizeFirstLetter } from "../utils/strings";
+import { commandlineConfigMetadata } from "./metadata";
 import { Command, CommandsSubgroup } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { z } from "zod";
 
 export function buildCommandForConfigMetadata(
-  key: keyof typeof configMetadata
+  key: keyof typeof commandlineConfigMetadata
 ): Command {
-  const meta = configMetadata[key];
+  const meta = commandlineConfigMetadata[key];
 
   const display = capitalizeFirstLetter(meta?.displayString ?? key) + "...";
 
@@ -25,7 +26,7 @@ export function buildCommandForConfigMetadata(
     );
   }
 
-  // const displayValues = (meta.commandline?.displayValues ?? {}) as Record<
+  // const displayValues = (meta.displayValues ?? {}) as Record<
   //   string | number | symbol,
   //   string
   // >;
@@ -33,9 +34,9 @@ export function buildCommandForConfigMetadata(
   const list: Command[] = values.map((value) => {
     let display =
       //@ts-expect-error this type is hard to figure out
-      meta?.commandline?.commandDisplay?.(value);
+      meta?.commandDisplay?.(value);
     //@ts-expect-error this type is hard to figure out
-    const alias = meta?.commandline?.commandAlias?.(value) ?? undefined;
+    const alias = meta?.commandAlias?.(value) ?? undefined;
 
     if (display === undefined) {
       if (value === true) {
@@ -55,7 +56,7 @@ export function buildCommandForConfigMetadata(
       exec: (): void => {
         genericSet(key, value);
         //@ts-expect-error this is also hard
-        meta.commandline?.afterExec?.(value);
+        meta.afterExec?.(value);
       },
     };
 
