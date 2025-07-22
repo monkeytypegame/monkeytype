@@ -422,6 +422,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   tapeMode: {
+    icon: "fa-tape",
     triggerResize: true,
     changeRequiresRestart: false,
     displayString: "tape mode",

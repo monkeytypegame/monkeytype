@@ -173,4 +173,5 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     commandAlias: () => "timer",
   },
   highlightMode: {},
+  tapeMode: {},
 };
