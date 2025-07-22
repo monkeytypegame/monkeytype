@@ -23,7 +23,6 @@ import QuickEndCommands from "./lists/quick-end";
 import OppositeShiftModeCommands from "./lists/opposite-shift-mode";
 import SoundOnErrorCommands from "./lists/sound-on-error";
 import SoundVolumeCommands from "./lists/sound-volume";
-import TimeWarningCommands from "./lists/time-warning";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
 import SmoothLineScrollCommands from "./lists/smooth-line-scroll";
 import AlwaysShowDecimalCommands from "./lists/always-show-decimal";
@@ -243,7 +242,7 @@ export const commands: CommandsSubgroup = {
     ...SoundVolumeCommands,
     ...SoundOnClickCommands,
     ...SoundOnErrorCommands,
-    ...TimeWarningCommands,
+    buildCommandForConfigKey("playTimeWarning"),
 
     //caret
     ...SmoothCaretCommands,
