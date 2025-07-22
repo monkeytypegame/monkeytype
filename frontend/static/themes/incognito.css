@@ -27,5 +27,8 @@ header #logo .icon svg path {
 }
 
 header #logo .icon {
-  padding-bottom: 0.1em;
+  padding-bottom: 0.05em;
+}
+nav {
+  padding-bottom: 0.2em;
 }
