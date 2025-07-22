@@ -257,6 +257,7 @@ export const configMetadata: ConfigMetadataObject = {
   strictSpace: {
     displayString: "strict space",
     changeRequiresRestart: true,
+    icon: "fa-minus",
   },
   oppositeShiftMode: {
     displayString: "opposite shift mode",
