@@ -242,9 +242,9 @@ export const configMetadata: ConfigMetadataObject = {
 
   // input
   freedomMode: {
+    icon: "fa-feather-alt",
     changeRequiresRestart: false,
     displayString: "freedom mode",
-    icon: "fa-feather-alt",
     overrideConfig: ({ value }) => {
       if (value) {
         return {
@@ -255,9 +255,9 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   strictSpace: {
+    icon: "fa-minus",
     displayString: "strict space",
     changeRequiresRestart: true,
-    icon: "fa-minus",
   },
   oppositeShiftMode: {
     displayString: "opposite shift mode",
@@ -327,9 +327,9 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   playTimeWarning: {
+    icon: "fa-exclamation-triangle",
     displayString: "play time warning",
     changeRequiresRestart: false,
-    icon: "fa-exclamation-triangle",
   },
 
   // caret
