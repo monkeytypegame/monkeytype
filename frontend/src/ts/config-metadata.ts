@@ -375,6 +375,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   paceCaretStyle: {
+    icon: "fa-i-cursor",
     displayString: "pace caret style",
     changeRequiresRestart: false,
   },

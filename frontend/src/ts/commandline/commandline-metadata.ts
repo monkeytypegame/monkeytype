@@ -150,4 +150,5 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   smoothCaret: {},
   caretStyle: {},
   repeatedPace: {},
+  paceCaretStyle: {},
 };
