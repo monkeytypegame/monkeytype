@@ -407,6 +407,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   timerColor: {
+    icon: "fa-chart-pie",
     displayString: "timer color",
     changeRequiresRestart: false,
   },

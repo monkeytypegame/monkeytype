@@ -164,4 +164,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   liveSpeedStyle: { rootAlias: "wpm" },
   liveAccStyle: { rootAlias: "wpm" },
   liveBurstStyle: { rootAlias: "wpm" },
+  timerColor: {
+    rootAlias: "timer speed wpm burst acc",
+    commandAlias: () => "timer",
+  },
 };
