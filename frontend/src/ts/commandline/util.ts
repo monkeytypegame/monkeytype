@@ -31,11 +31,21 @@ export function buildCommandForConfigMetadata(
   // >;
 
   const list: Command[] = values.map((value) => {
-    const display =
+    let display =
       //@ts-expect-error this type is hard to figure out
-      meta?.commandline?.commandDisplay?.(value) ?? value.toString();
+      meta?.commandline?.commandDisplay?.(value);
     //@ts-expect-error this type is hard to figure out
     const alias = meta?.commandline?.commandAlias?.(value) ?? undefined;
+
+    if (display === undefined) {
+      if (value === true) {
+        display = "on";
+      } else if (value === false) {
+        display = "off";
+      } else {
+        display = value.toString();
+      }
+    }
 
     const command = {
       id: `set${capitalizeFirstLetter(key)}${value}`,
