@@ -80,5 +80,6 @@ export function buildCommandForConfigKey(
     display: display,
     icon: configMeta?.icon ?? "fa-cog",
     subgroup,
+    alias: commandMeta?.rootAlias,
   };
 }
