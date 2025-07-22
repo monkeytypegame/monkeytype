@@ -1,6 +1,7 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
+import { getLanguageDisplayString } from "../utils/strings";
 
 type CommandlineConfigMetadata = {
   [K in keyof ConfigSchemas.Config]?: {
@@ -22,6 +23,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   numbers: {
     afterExec: () => {
       TestLogic.restart();
+    },
+  },
+  language: {
+    commandDisplay: (value) => {
+      return getLanguageDisplayString(value);
     },
   },
   //sound

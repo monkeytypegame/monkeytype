@@ -82,7 +82,6 @@ import LoadChallengeCommands, {
 import FontFamilyCommands, {
   update as updateFontFamilyCommands,
 } from "./lists/font-family";
-import LanguagesCommands from "./lists/languages";
 import KeymapLayoutsCommands from "./lists/keymap-layouts";
 
 import Config, * as UpdateConfig from "../config";
@@ -130,6 +129,8 @@ challengesPromise
     );
   });
 
+const languageCommand = buildCommandForConfigKey("language");
+
 export const commands: CommandsSubgroup = {
   title: "",
   list: [
@@ -143,6 +144,7 @@ export const commands: CommandsSubgroup = {
     ...TimeCommands,
     ...WordsCommands,
     ...QuoteLengthCommands,
+    languageCommand,
     {
       id: "changeCustomModeText",
       display: "Change custom text",
@@ -187,7 +189,6 @@ export const commands: CommandsSubgroup = {
     ...MinWpmCommands,
     ...MinAccCommands,
     ...MinBurstCommands,
-    ...LanguagesCommands,
     ...BritishEnglishCommands,
     ...FunboxCommands,
     withValidation({
@@ -457,7 +458,7 @@ const lists = {
   customThemesList: CustomThemesListCommands[0]?.subgroup,
   themes: ThemesCommands[0]?.subgroup,
   loadChallenge: LoadChallengeCommands[0]?.subgroup,
-  languages: LanguagesCommands[0]?.subgroup,
+  languages: languageCommand.subgroup,
   difficulty: DifficultyCommands[0]?.subgroup,
   lazyMode: LazyModeCommands[0]?.subgroup,
   paceCaretMode: PaceCaretModeCommands[0]?.subgroup,

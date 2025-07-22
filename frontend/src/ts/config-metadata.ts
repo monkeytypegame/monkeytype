@@ -138,6 +138,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   language: {
+    icon: "fa-language",
     displayString: "language",
     changeRequiresRestart: true,
   },
