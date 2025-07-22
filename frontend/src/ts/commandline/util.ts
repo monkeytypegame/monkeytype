@@ -9,12 +9,11 @@ import { z } from "zod";
 export function buildCommandForConfigMetadata(
   key: keyof typeof commandlineConfigMetadata
 ): Command {
-  const meta = {
-    ...configMetadata[key],
-    ...commandlineConfigMetadata[key],
-  };
+  const configMeta = configMetadata[key];
+  const commandMeta = commandlineConfigMetadata[key];
 
-  const display = capitalizeFirstLetter(meta?.displayString ?? key) + "...";
+  const display =
+    capitalizeFirstLetter(configMeta?.displayString ?? key) + "...";
 
   const schema = ConfigSchemas.ConfigSchema.shape[key];
 
@@ -36,11 +35,10 @@ export function buildCommandForConfigMetadata(
   // >;
 
   const list: Command[] = values.map((value) => {
-    let display =
-      //@ts-expect-error this type is hard to figure out
-      meta?.commandDisplay?.(value);
-    //@ts-expect-error this type is hard to figure out
-    const alias = meta?.commandAlias?.(value) ?? undefined;
+    //@ts-expect-error cant figure out this type
+    let display = commandMeta?.commandDisplay?.(value);
+    //@ts-expect-error cant figure out this type
+    const alias = commandMeta?.commandAlias?.(value) ?? undefined;
 
     if (display === undefined) {
       if (value === true) {
@@ -59,8 +57,8 @@ export function buildCommandForConfigMetadata(
       configValue: value,
       exec: (): void => {
         genericSet(key, value);
-        //@ts-expect-error this is also hard
-        meta.afterExec?.(value);
+        //@ts-expect-error cant figure out this type
+        commandMeta?.afterExec?.(value);
       },
     };
 
@@ -83,7 +81,7 @@ export function buildCommandForConfigMetadata(
   return {
     id: `change${capitalizeFirstLetter(key)}`,
     display: display,
-    icon: meta?.icon ?? "fa-cog",
+    icon: configMeta?.icon ?? "fa-cog",
     subgroup,
   };
 }
