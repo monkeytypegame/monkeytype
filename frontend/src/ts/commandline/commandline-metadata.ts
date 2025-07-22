@@ -60,4 +60,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
       }
     },
   },
+  //input
+  freedomMode: {},
 };

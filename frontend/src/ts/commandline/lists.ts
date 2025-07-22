@@ -10,7 +10,6 @@ import LiveAccStyleCommands from "./lists/live-acc-style";
 import LiveBurstStyleCommands from "./lists/live-burst-style";
 import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
-import FreedomModeCommands from "./lists/freedom-mode";
 import StrictSpaceCommands from "./lists/strict-space";
 import IndicateTyposCommands from "./lists/indicate-typos";
 import HideExtraLettersCommands from "./lists/hide-extra-letters";
@@ -222,7 +221,7 @@ export const commands: CommandsSubgroup = {
     }),
 
     //input
-    ...FreedomModeCommands,
+    buildCommandForConfigKey("freedomMode"),
     ...StrictSpaceCommands,
     ...OppositeShiftModeCommands,
     ...StopOnErrorCommands,

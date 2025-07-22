@@ -242,6 +242,7 @@ export const configMetadata: ConfigMetadataObject = {
   freedomMode: {
     changeRequiresRestart: false,
     displayString: "freedom mode",
+    icon: "fa-feather-alt",
     overrideConfig: ({ value }) => {
       if (value) {
         return {
