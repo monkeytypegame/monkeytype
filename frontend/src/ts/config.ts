@@ -12,6 +12,7 @@ import {
   createErrorMessage,
   isObject,
   promiseWithResolvers,
+  triggerResize,
   typedKeys,
 } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
@@ -200,7 +201,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   ConfigEvent.dispatch(key, value, nosave, previousValue);
 
   if (metadata.triggerResize && !nosave) {
-    $(window).trigger("resize");
+    triggerResize();
   }
 
   metadata.afterSet?.({ nosave: nosave || false, currentConfig: config });

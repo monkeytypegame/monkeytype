@@ -4,6 +4,7 @@ import {
   CustomThemeColors,
   FunboxName,
   ConfigKey,
+  CaretStyleSchema,
 } from "@monkeytype/schemas/configs";
 import { randomBytes } from "crypto";
 import { vi } from "vitest";
@@ -33,6 +34,7 @@ describe("Config", () => {
     const accountButtonLoadingMock = vi.spyOn(AccountButton, "loading");
     const notificationAddMock = vi.spyOn(Notifications, "add");
     const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
+    const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
 
     const mocks = [
       canSetConfigWithCurrentFunboxesMock,
@@ -42,6 +44,7 @@ describe("Config", () => {
       accountButtonLoadingMock,
       notificationAddMock,
       miscReloadAfterMock,
+      miscTriggerResizeMock,
     ];
 
     beforeEach(async () => {
@@ -55,6 +58,8 @@ describe("Config", () => {
       isConfigValueValidMock.mockReturnValue(true);
       canSetConfigWithCurrentFunboxesMock.mockReturnValue(true);
       dbSaveConfigMock.mockResolvedValue();
+
+      replaceConfig({});
     });
 
     afterAll(() => {
@@ -72,6 +77,53 @@ describe("Config", () => {
       );
     });
 
+    it("fails if test is active and funbox no_quit", () => {
+      //GIVEN
+      replaceConfig({ funbox: ["no_quit"], numbers: false });
+
+      //WHEN
+      expect(Config.genericSet("numbers", true, true)).toBe(false);
+
+      //THEN
+      expect(notificationAddMock).toHaveBeenCalledWith(
+        "No quit funbox is active. Please finish the test.",
+        0,
+        {
+          important: true,
+        }
+      );
+    });
+
+    //TODO isBlocked
+    it("should fail if config is blocked", () => {
+      //GIVEN
+      replaceConfig({ tapeMode: "letter" });
+
+      //WHEN / THEN
+      expect(Config.genericSet("showAllLines", true)).toBe(false);
+    });
+
+    it("should use overrideValue", () => {
+      //WHEN
+      Config.genericSet("customLayoutfluid", ["3l", "ABNT2", "3l"]);
+
+      //THEN
+      expect(getConfig().customLayoutfluid).toEqual(["3l", "ABNT2"]);
+    });
+
+    it("fails if config is invalid", () => {
+      //GIVEN
+      isConfigValueValidMock.mockReturnValue(false);
+
+      //WHEN / THEN
+      expect(Config.genericSet("caretStyle", "banana" as any)).toBe(false);
+      expect(isConfigValueValidMock).toHaveBeenCalledWith(
+        "caret style",
+        "banana",
+        CaretStyleSchema
+      );
+    });
+
     it("cannot set if funbox disallows", () => {
       //GIVEN
       canSetConfigWithCurrentFunboxesMock.mockReturnValue(false);
@@ -80,28 +132,37 @@ describe("Config", () => {
       expect(Config.genericSet("numbers", true)).toBe(false);
     });
 
-    it("fails if config is invalid", () => {
+    it("sets overrideConfigs", () => {
       //GIVEN
-      isConfigValueValidMock.mockReturnValue(false);
-
-      //WHEN / THEN
-      expect(Config.genericSet("numbers", "off" as any)).toBe(false);
-    });
-
-    it("dispatches event on set", () => {
-      //GIVEN
-      replaceConfig({ numbers: false });
+      replaceConfig({
+        confidenceMode: "off",
+        freedomMode: false, //already set correctly
+        stopOnError: "letter", //should get updated
+      });
 
       //WHEN
-      Config.genericSet("numbers", true, true);
+      Config.genericSet("confidenceMode", "max");
 
       //THEN
+      expect(dispatchConfigEventMock).not.toHaveBeenCalledWith(
+        "freedomMode",
+        false,
+        true,
+        true
+      );
 
       expect(dispatchConfigEventMock).toHaveBeenCalledWith(
-        "numbers",
+        "stopOnError",
+        "off",
         true,
-        true,
-        false
+        "letter"
+      );
+
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+        "confidenceMode",
+        "max",
+        false,
+        "off"
       );
     });
 
@@ -151,6 +212,45 @@ describe("Config", () => {
         expect.any(String)
       );
     });
+
+    it("dispatches event on set", () => {
+      //GIVEN
+      replaceConfig({ numbers: false });
+
+      //WHEN
+      Config.genericSet("numbers", true, true);
+
+      //THEN
+
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+        "numbers",
+        true,
+        true,
+        false
+      );
+    });
+
+    it("triggers resize if property is set", () => {
+      ///WHEN
+      Config.genericSet("maxLineWidth", 50, false);
+
+      expect(miscTriggerResizeMock).toHaveBeenCalled();
+    });
+
+    it("does not triggers resize if property is not set", () => {
+      ///WHEN
+      Config.genericSet("startGraphsAtZero", true, false);
+
+      expect(miscTriggerResizeMock).not.toHaveBeenCalled();
+    });
+
+    it("does not triggers resize if property on nosave", () => {
+      ///WHEN
+      Config.genericSet("maxLineWidth", 50, true);
+
+      expect(miscTriggerResizeMock).not.toHaveBeenCalled();
+    });
+
     it("calls afterSet", () => {
       //GIVEN
       isDevEnvironmentMock.mockReturnValue(false);
@@ -165,57 +265,6 @@ describe("Config", () => {
         0
       );
       expect(miscReloadAfterMock).toHaveBeenCalledWith(3);
-    });
-
-    it("fails if test is active and funbox no_quit", () => {
-      //GIVEN
-      replaceConfig({ funbox: ["no_quit"], numbers: false });
-
-      //WHEN
-      expect(Config.genericSet("numbers", true, true)).toBe(false);
-
-      //THEN
-      expect(notificationAddMock).toHaveBeenCalledWith(
-        "No quit funbox is active. Please finish the test.",
-        0,
-        {
-          important: true,
-        }
-      );
-    });
-
-    it("sends configEvents for overrideConfigs", () => {
-      //GIVEN
-      replaceConfig({
-        confidenceMode: "off",
-        freedomMode: true,
-        stopOnError: "letter",
-      });
-
-      //WHEN
-      Config.genericSet("confidenceMode", "max");
-
-      //THEN
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
-        "freedomMode",
-        false,
-        true,
-        true
-      );
-
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
-        "stopOnError",
-        "off",
-        true,
-        "letter"
-      );
-
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
-        "confidenceMode",
-        "max",
-        false,
-        "off"
-      );
     });
   });
 
