@@ -30,10 +30,20 @@ export type Validation<T> = {
   isValid?: (value: T) => Promise<true | string>;
 };
 
+/**
+ * Handle input element and apply validation to the value.
+ * the `callback` is called for each validation state change, including "checking".
+ * Note: this is not de-bounced, you possibly want to debounce this yourself
+ * @param e the event
+ * @param callback callback to call for each change of the validation status
+ * @param validation validation options
+ * @param inputValueConvert  convert method from string to the schema type, mandatory if the schema is not a string schema
+ * @returns
+ */
 export async function handleValidatedInputEvent<T>(
   e: InputEvent,
   callback: (result: ValidationResult) => void,
-  options: Validation<T>,
+  validation: Validation<T>,
   inputValueConvert?: (val: string) => T
 ): Promise<void> {
   const originalInput = e.target as HTMLInputElement;
@@ -46,8 +56,8 @@ export async function handleValidatedInputEvent<T>(
 
   callback({ status: "checking" });
 
-  if (options.schema !== undefined) {
-    const schemaResult = options.schema.safeParse(checkValue);
+  if (validation.schema !== undefined) {
+    const schemaResult = validation.schema.safeParse(checkValue);
 
     if (!schemaResult.success) {
       callback({
@@ -60,12 +70,12 @@ export async function handleValidatedInputEvent<T>(
     }
   }
 
-  if (options.isValid === undefined) {
+  if (validation.isValid === undefined) {
     callback({ status: "success" });
     return;
   }
 
-  const result = await options.isValid(checkValue as T);
+  const result = await validation.isValid(checkValue as T);
   if (originalInput.value !== currentValue) {
     //value has change in the meantime, discard result
     return;
@@ -86,9 +96,18 @@ export async function handleValidatedInputEvent<T>(
 export type ValidationOptions<T> = (T extends string
   ? Validation<T>
   : Validation<T> & {
+      /** convert string input. For `number`s use `Number` constructor  */
       inputValueConvert: (val: string) => T;
-    }) & { callback?: (result: ValidationResult) => void };
+    }) & {
+  /** optional callback is called for each change of the validation result */
+  callback?: (result: ValidationResult) => void;
+};
 
+/**
+ * adds an 'InputIndicator` to the given `inputElement` and updates its status depending on the given validation
+ * @param inputElement
+ * @param options
+ */
 export function validateWithIndicator<T>(
   inputElement: HTMLInputElement,
   options: ValidationOptions<T>
@@ -139,11 +158,20 @@ export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
     : Omit<Validation<T>, "schema"> & {
         inputValueConvert: (val: string) => T;
       }) & {
+    /**set to `true` to validate against the  `ConfigSchema`  */
     schema: boolean;
+    /** optional callback is called for each change of the validation result */
     validationCallback?: (result: ValidationResult) => void;
   };
 };
 
+/**
+ * Adds input event listeners to the given input element. On `focusOut` and when pressing `Enter` the current value is stored in the Config using  `genericSet`.
+ * Note: Config is not updated if the value has not changed.
+ *
+ * If validation is set, Adds input validation using `InputIndicator` to the given input element. Config is only updated if the value is valid.
+ *
+ */
 export function handleConfigInput<T extends ConfigKey>({
   input,
   configName,
