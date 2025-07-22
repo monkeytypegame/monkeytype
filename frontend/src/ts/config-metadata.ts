@@ -265,6 +265,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   stopOnError: {
+    icon: "fa-hand-paper",
     displayString: "stop on error",
     changeRequiresRestart: true,
     overrideConfig: ({ value }) => {

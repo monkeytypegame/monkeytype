@@ -75,4 +75,5 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
       void ModesNotice.update();
     },
   },
+  stopOnError: {},
 };

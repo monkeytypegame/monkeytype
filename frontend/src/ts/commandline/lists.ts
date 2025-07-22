@@ -3,7 +3,6 @@ import TimeCommands from "./lists/time";
 import WordsCommands from "./lists/words";
 import ConfidenceModeCommands from "./lists/confidence-mode";
 import QuoteLengthCommands from "./lists/quote-length";
-import StopOnErrorCommands from "./lists/stop-on-error";
 import SmoothCaretCommands from "./lists/smooth-caret";
 import LiveSpeedStyleCommands from "./lists/live-speed-style";
 import LiveAccStyleCommands from "./lists/live-acc-style";
@@ -123,6 +122,7 @@ const languageCommand = buildCommandForConfigKey("language");
 const difficultyCommand = buildCommandForConfigKey("difficulty");
 const blindModeCommand = buildCommandForConfigKey("blindMode");
 const oppositeShiftModeCommand = buildCommandForConfigKey("oppositeShiftMode");
+const stopOnErrorCommand = buildCommandForConfigKey("stopOnError");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -223,7 +223,7 @@ export const commands: CommandsSubgroup = {
     buildCommandForConfigKey("strictSpace"),
     oppositeShiftModeCommand,
 
-    ...StopOnErrorCommands,
+    stopOnErrorCommand,
     ...ConfidenceModeCommands,
     ...QuickEndCommands,
     ...IndicateTyposCommands,
@@ -462,7 +462,7 @@ const lists = {
   minBurst: MinBurstCommands[0]?.subgroup,
   funbox: FunboxCommands[0]?.subgroup,
   confidenceMode: ConfidenceModeCommands[0]?.subgroup,
-  stopOnError: StopOnErrorCommands[0]?.subgroup,
+  stopOnError: stopOnErrorCommand.subgroup,
   layouts: LayoutsCommands[0]?.subgroup,
   oppositeShiftMode: oppositeShiftModeCommand.subgroup,
   tags: TagsCommands[0]?.subgroup,
