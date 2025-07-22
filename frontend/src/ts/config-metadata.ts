@@ -345,6 +345,7 @@ export const configMetadata: ConfigMetadataObject = {
 
   // caret
   smoothCaret: {
+    icon: "fa-i-cursor",
     displayString: "smooth caret",
     changeRequiresRestart: false,
   },

@@ -2,7 +2,6 @@ import ModeCommands from "./lists/mode";
 import TimeCommands from "./lists/time";
 import WordsCommands from "./lists/words";
 import QuoteLengthCommands from "./lists/quote-length";
-import SmoothCaretCommands from "./lists/smooth-caret";
 import LiveSpeedStyleCommands from "./lists/live-speed-style";
 import LiveAccStyleCommands from "./lists/live-acc-style";
 import LiveBurstStyleCommands from "./lists/live-burst-style";
@@ -233,7 +232,7 @@ export const commands: CommandsSubgroup = {
     buildCommandForConfigKey("playTimeWarning"),
 
     //caret
-    ...SmoothCaretCommands,
+    buildCommandForConfigKey("smoothCaret"),
     ...CaretStyleCommands,
     ...PaceCaretModeCommands,
     ...RepeatedPaceCommands,
