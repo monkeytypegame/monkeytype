@@ -308,6 +308,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   lazyMode: {
+    icon: "fa-couch",
     displayString: "lazy mode",
     changeRequiresRestart: true,
   },

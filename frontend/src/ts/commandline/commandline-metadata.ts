@@ -80,4 +80,5 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   quickEnd: {},
   indicateTypos: {},
   hideExtraLetters: {},
+  lazyMode: {},
 };

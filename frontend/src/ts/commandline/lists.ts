@@ -15,7 +15,6 @@ import SmoothLineScrollCommands from "./lists/smooth-line-scroll";
 import AlwaysShowDecimalCommands from "./lists/always-show-decimal";
 import TypingSpeedUnitCommands from "./lists/typing-speed-unit";
 import StartGraphsAtZeroCommands from "./lists/start-graphs-at-zero";
-import LazyModeCommands from "./lists/lazy-mode";
 import ShowAllLinesCommands from "./lists/show-all-lines";
 import ColorfulModeCommands from "./lists/colorful-mode";
 import OutOfFocusWarningCommands from "./lists/out-of-focus-warning";
@@ -120,6 +119,7 @@ const blindModeCommand = buildCommandForConfigKey("blindMode");
 const oppositeShiftModeCommand = buildCommandForConfigKey("oppositeShiftMode");
 const stopOnErrorCommand = buildCommandForConfigKey("stopOnError");
 const confidenceModeCommand = buildCommandForConfigKey("confidenceMode");
+const lazyModeCommand = buildCommandForConfigKey("lazyMode");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -225,7 +225,7 @@ export const commands: CommandsSubgroup = {
     buildCommandForConfigKey("quickEnd"),
     buildCommandForConfigKey("indicateTypos"),
     buildCommandForConfigKey("hideExtraLetters"),
-    ...LazyModeCommands,
+    lazyModeCommand,
     ...LayoutsCommands,
     ...CodeUnindentOnBackspace,
 
@@ -451,7 +451,7 @@ const lists = {
   loadChallenge: LoadChallengeCommands[0]?.subgroup,
   languages: languageCommand.subgroup,
   difficulty: difficultyCommand.subgroup,
-  lazyMode: LazyModeCommands[0]?.subgroup,
+  lazyMode: lazyModeCommand.subgroup,
   paceCaretMode: PaceCaretModeCommands[0]?.subgroup,
   showAverage: ShowAverageCommands[0]?.subgroup,
   minWpm: MinWpmCommands[0]?.subgroup,
