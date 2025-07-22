@@ -10,7 +10,6 @@ import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
 import IndicateTyposCommands from "./lists/indicate-typos";
 import HideExtraLettersCommands from "./lists/hide-extra-letters";
-import QuickEndCommands from "./lists/quick-end";
 import SoundOnErrorCommands from "./lists/sound-on-error";
 import SoundVolumeCommands from "./lists/sound-volume";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
@@ -225,7 +224,7 @@ export const commands: CommandsSubgroup = {
 
     stopOnErrorCommand,
     confidenceModeCommand,
-    ...QuickEndCommands,
+    buildCommandForConfigKey("quickEnd"),
     ...IndicateTyposCommands,
     ...HideExtraLettersCommands,
     ...LazyModeCommands,

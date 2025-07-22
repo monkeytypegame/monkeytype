@@ -292,6 +292,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   quickEnd: {
+    icon: "fa-step-forward",
     displayString: "quick end",
     changeRequiresRestart: false,
   },
