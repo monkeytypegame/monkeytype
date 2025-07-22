@@ -205,6 +205,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   britishEnglish: {
+    icon: "fa-language",
     displayString: "british english",
     changeRequiresRestart: true,
   },

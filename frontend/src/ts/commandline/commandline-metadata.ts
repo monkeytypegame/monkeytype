@@ -46,6 +46,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadata = {
   minWpm: {},
   minAcc: {},
   minBurst: {},
+  britishEnglish: {
+    afterExec: () => {
+      TestLogic.restart();
+    },
+  },
   //sound
   playTimeWarning: {
     commandDisplay: (value) => {
