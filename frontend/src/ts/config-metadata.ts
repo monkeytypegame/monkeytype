@@ -6,7 +6,6 @@ import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
 import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import * as SoundController from "./controllers/sound-controller";
-import * as TestLogic from "./test/test-logic";
 
 export type ConfigMetadata = {
   [K in keyof ConfigSchemas.Config]: {
@@ -98,11 +97,6 @@ export const configMetadata: ConfigMetadata = {
       }
       return value;
     },
-    commandline: {
-      afterExec: () => {
-        TestLogic.restart();
-      },
-    },
   },
   numbers: {
     icon: "fa-hashtag",
@@ -112,11 +106,6 @@ export const configMetadata: ConfigMetadata = {
         return false;
       }
       return value;
-    },
-    commandline: {
-      afterExec: () => {
-        TestLogic.restart();
-      },
     },
   },
   words: {
