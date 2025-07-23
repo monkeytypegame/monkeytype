@@ -342,4 +342,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
+  showAllLines: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
 };

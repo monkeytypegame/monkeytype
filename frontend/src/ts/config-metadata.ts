@@ -457,6 +457,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   showAllLines: {
+    icon: "fa-align-left",
     changeRequiresRestart: false,
     displayString: "show all lines",
     isBlocked: ({ value, currentConfig }) => {

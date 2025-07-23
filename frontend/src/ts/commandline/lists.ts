@@ -8,7 +8,6 @@ import FlipTestColorsCommands from "./lists/flip-test-colors";
 import AlwaysShowDecimalCommands from "./lists/always-show-decimal";
 import TypingSpeedUnitCommands from "./lists/typing-speed-unit";
 import StartGraphsAtZeroCommands from "./lists/start-graphs-at-zero";
-import ShowAllLinesCommands from "./lists/show-all-lines";
 import ColorfulModeCommands from "./lists/colorful-mode";
 import OutOfFocusWarningCommands from "./lists/out-of-focus-warning";
 import CapsLockWarningCommands from "./lists/caps-lock-warning";
@@ -243,10 +242,10 @@ export const commands: CommandsSubgroup = {
 
       "tapeMode",
       "tapeMargin",
-      "smoothLineScroll"
+      "smoothLineScroll",
+      "showAllLines"
     ),
 
-    ...ShowAllLinesCommands,
     ...TypingSpeedUnitCommands,
     ...AlwaysShowDecimalCommands,
     ...StartGraphsAtZeroCommands,
