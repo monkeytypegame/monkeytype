@@ -1,5 +1,5 @@
 import { genericSet } from "../config";
-import { ConfigMetadata, configMetadata } from "../config-metadata";
+import { configMetadata } from "../config-metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import {
   commandlineConfigMetadata,
@@ -57,14 +57,17 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   const display =
     commandMeta?.rootDisplay ??
     `${capitalizeFirstLetter(configMeta?.displayString ?? key)}...`;
+  const schema = ConfigSchemas.ConfigSchema.shape[key];
 
   let values =
-    commandMeta.commandValues ??
-    (getOptions(schema) as ConfigSchemas.Config[K][]);
+    commandMeta.options ?? (getOptions(schema) as ConfigSchemas.Config[K][]);
+
+  if (values === "fromSchema") {
+    values = getOptions(schema) as ConfigSchemas.Config[K][];
+  }
 
   if (values === undefined) {
     throw new Error(
-      //@ts-expect-error TODO find better type
       `Unsupported schema type for key "${key}": ${schema._def.typeName}`
     );
   }
@@ -134,4 +137,4 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
   };
 }
 
-export const __testing = { _buildCommandWithSubgroup };
+// export const __testing = { _buildCommandWithSubgroup };
