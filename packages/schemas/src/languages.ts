@@ -397,6 +397,7 @@ export const LanguageSchema = z.enum(
     "code_arduino",
     "code_systemverilog",
     "code_elixir",
+    "code_gleam",
     "code_zig",
     "code_gdscript",
     "code_gdscript_2",
