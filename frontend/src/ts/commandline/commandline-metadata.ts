@@ -389,4 +389,13 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     alias: "keyboard",
     inputValueConvert: Number,
   },
+  keymapLayout: {
+    type: "subgroup",
+    options: "fromSchema",
+    rootAlias: "keyboard",
+    commandAlias: (val) => (val === "overrideSync" ? "default" : ""),
+    commandDisplay: (layout) =>
+      layout === "overrideSync" ? "emulator sync" : layout.replace(/_/g, " "),
+    afterExec: () => TestLogic.restart(),
+  },
 };

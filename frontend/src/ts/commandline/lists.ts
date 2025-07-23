@@ -37,7 +37,6 @@ import LoadChallengeCommands, {
 import FontFamilyCommands, {
   update as updateFontFamilyCommands,
 } from "./lists/font-family";
-import KeymapLayoutsCommands from "./lists/keymap-layouts";
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
@@ -93,6 +92,8 @@ const stopOnErrorCommand = buildCommandForConfigKey("stopOnError");
 const confidenceModeCommand = buildCommandForConfigKey("confidenceMode");
 const lazyModeCommand = buildCommandForConfigKey("lazyMode");
 const layoutCommand = buildCommandForConfigKey("layout");
+
+const keymapLayoutCommand = buildCommandForConfigKey("keymapLayout");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -244,10 +245,10 @@ export const commands: CommandsSubgroup = {
       "keymapMode",
       "keymapStyle",
       "keymapLegendStyle",
-      "keymapSize"
+      "keymapSize",
+      keymapLayoutCommand
     ),
 
-    ...KeymapLayoutsCommands,
     ...KeymapShowTopRowCommands,
 
     //theme
@@ -426,7 +427,7 @@ export const commands: CommandsSubgroup = {
 };
 
 const lists = {
-  keymapLayouts: KeymapLayoutsCommands[0]?.subgroup,
+  keymapLayouts: keymapLayoutCommand.subgroup,
   enableAds: EnableAdsCommands[0]?.subgroup,
   customThemesList: CustomThemesListCommands[0]?.subgroup,
   themes: ThemesCommands[0]?.subgroup,
