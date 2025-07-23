@@ -3,13 +3,31 @@ import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
 import * as ModesNotice from "../elements/modes-notice";
+import { ZodSchema } from "zod";
 
 //todo: remove ? here to require all config keys to be defined
 type CommandlineConfigMetadataObject = {
   [K in keyof ConfigSchemas.Config]?: CommandlineConfigMetadata<K>;
 };
 
-export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> = {
+// export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> = {
+//   rootAlias?: string;
+//   rootDisplay?: string;
+//   commandAlias?: (value: ConfigSchemas.Config[T]) => string;
+//   commandDisplay?: (value: ConfigSchemas.Config[T]) => string;
+//   isCommandVisible?: (value: ConfigSchemas.Config[T]) => boolean;
+//   hover?: (value: ConfigSchemas.Config[T]) => void;
+//   afterExec?: (value: ConfigSchemas.Config[T]) => void;
+// };
+
+export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
+  | SubgroupMeta<T>
+  | InputMeta<T>
+  | SubgroupWithInputMeta<T>
+  | SubgroupWithSecondKeyInputMeta<T>
+  | null;
+
+type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   rootAlias?: string;
   rootDisplay?: string;
   commandAlias?: (value: ConfigSchemas.Config[T]) => string;
@@ -17,63 +35,106 @@ export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> = {
   isCommandVisible?: (value: ConfigSchemas.Config[T]) => boolean;
   hover?: (value: ConfigSchemas.Config[T]) => void;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
+  options: "fromSchema" | ConfigSchemas.Config[T][];
 };
+
+type InputProps<T extends keyof ConfigSchemas.Config> = {
+  alias: string;
+  display: string;
+  validation: {
+    schema: ZodSchema;
+    isValid: (value: ConfigSchemas.Config[T]) => boolean;
+  };
+  inputValueConvert: (value: string) => ConfigSchemas.Config[T];
+};
+
+type SubgroupMeta<T extends keyof ConfigSchemas.Config> = {
+  type: "subgroup";
+} & SubgroupProps<T>;
+
+type InputMeta<T extends keyof ConfigSchemas.Config> = {
+  type: "input";
+} & InputProps<T>;
+
+type SubgroupWithInputMeta<T extends keyof ConfigSchemas.Config> = {
+  type: "subgroupWithInput";
+  input: InputProps<T>;
+} & SubgroupProps<T>;
+
+type SubgroupWithSecondKeyInputMeta<T extends keyof ConfigSchemas.Config> = {
+  type: "subgroupWithSecondKeyInput";
+  input: InputProps<T> & {
+    secondKey: keyof ConfigSchemas.Config;
+  };
+} & SubgroupProps<T>;
 
 export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   //test
   punctuation: {
+    type: "subgroup",
+    options: "fromSchema",
     afterExec: () => {
       TestLogic.restart();
     },
   },
   numbers: {
+    type: "subgroup",
+    options: "fromSchema",
     afterExec: () => {
       TestLogic.restart();
     },
   },
-  words: {},
-  time: {},
-  mode: {},
-  quoteLength: {},
+  words: null,
+  time: null,
+  mode: null,
+  quoteLength: null,
   language: {
+    type: "subgroup",
+    options: "fromSchema",
     commandDisplay: (value) => {
       return getLanguageDisplayString(value);
     },
   },
-  burstHeatmap: {},
+  burstHeatmap: null,
   //behavior
-  difficulty: {},
-  quickRestart: {},
-  repeatQuotes: {},
-  blindMode: {},
-  alwaysShowWordsHistory: {},
-  singleListCommandLine: {},
-  minWpm: {},
-  minAcc: {},
-  minBurst: {},
+  difficulty: null,
+  quickRestart: null,
+  repeatQuotes: null,
+  blindMode: null,
+  alwaysShowWordsHistory: null,
+  singleListCommandLine: null,
+  minWpm: null,
+  minAcc: null,
+  minBurst: null,
   britishEnglish: {
+    type: "subgroup",
+    options: "fromSchema",
     afterExec: () => {
       TestLogic.restart();
     },
   },
-  funbox: {},
+  funbox: null,
   //input
-  freedomMode: {},
-  strictSpace: {},
+  freedomMode: null,
+  strictSpace: null,
   oppositeShiftMode: {
+    type: "subgroup",
+    options: "fromSchema",
     afterExec: () => {
       void ModesNotice.update();
     },
   },
-  stopOnError: {},
-  confidenceMode: {},
-  quickEnd: {},
-  indicateTypos: {},
-  hideExtraLetters: {},
-  lazyMode: {},
-  codeUnindentOnBackspace: {},
+  stopOnError: null,
+  confidenceMode: null,
+  quickEnd: null,
+  indicateTypos: null,
+  hideExtraLetters: null,
+  lazyMode: null,
+  codeUnindentOnBackspace: null,
   //sound
   playSoundOnClick: {
+    type: "subgroup",
+    options: "fromSchema",
     rootAlias: "play",
     rootDisplay: "Sound on click...",
     commandDisplay: (value) => {
@@ -108,6 +169,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   playSoundOnError: {
+    type: "subgroup",
+    options: "fromSchema",
     rootAlias: "play",
     rootDisplay: "Sound on error...",
     commandDisplay: (value) => {
@@ -131,6 +194,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   playTimeWarning: {
+    type: "subgroup",
+    options: "fromSchema",
     rootAlias: "sound",
     commandDisplay: (value) => {
       if (value === "off") {
@@ -150,28 +215,36 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   //caret
-  smoothCaret: {},
+  smoothCaret: null,
   caretStyle: {
+    type: "subgroup",
+    options: "fromSchema",
     isCommandVisible: (value) => !["banana", "carrot"].includes(value),
   },
-  repeatedPace: {},
+  repeatedPace: null,
   paceCaretStyle: {
+    type: "subgroup",
+    options: "fromSchema",
     isCommandVisible: (value) => !["banana", "carrot"].includes(value),
   },
 
   //appearence
-  timerStyle: { rootAlias: "timer" },
-  liveSpeedStyle: { rootAlias: "wpm" },
-  liveAccStyle: { rootAlias: "wpm" },
-  liveBurstStyle: { rootAlias: "wpm" },
+  timerStyle: { type: "subgroup", options: "fromSchema", rootAlias: "timer" },
+  liveSpeedStyle: { type: "subgroup", options: "fromSchema", rootAlias: "wpm" },
+  liveAccStyle: { type: "subgroup", options: "fromSchema", rootAlias: "wpm" },
+  liveBurstStyle: { type: "subgroup", options: "fromSchema", rootAlias: "wpm" },
   timerColor: {
+    type: "subgroup",
+    options: "fromSchema",
     rootAlias: "timer speed wpm burst acc",
     commandAlias: () => "timer",
   },
   timerOpacity: {
+    type: "subgroup",
+    options: "fromSchema",
     rootAlias: "timer speed wpm burst acc",
     commandAlias: () => "timer",
   },
-  highlightMode: {},
-  tapeMode: {},
+  highlightMode: null,
+  tapeMode: null,
 };
