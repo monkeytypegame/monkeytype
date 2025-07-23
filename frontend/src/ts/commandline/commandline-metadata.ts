@@ -39,10 +39,13 @@ export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
 
 export type InputProps<T extends keyof ConfigSchemas.Config> = {
   alias?: string;
-  display: string;
+  display?: string;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
+  /**
+   * default value for missing validation is `{schema:true}`
+   */
   validation?: {
-    schema?: true;
+    schema?: boolean;
     isValid?: (value: ConfigSchemas.Config[T]) => Promise<boolean | string>;
   };
 } & (ConfigSchemas.Config[T] extends string
@@ -191,7 +194,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   //v
   soundVolume: {
     type: "subgroupWithInput",
-    icon: "fa-volume-down",
     options: [0.1, 0.5, 1],
     commandDisplay: (val) =>
       new Map([
@@ -201,7 +203,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       ]).get(val) ?? "custom...",
     input: {
       display: "custom...",
-      validation: { schema: true },
       inputValueConvert: Number,
     },
     afterExec: () => SoundController.playClick,
@@ -332,5 +333,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   tapeMode: {
     type: "subgroup",
     options: "fromSchema",
+  },
+  tapeMargin: {
+    type: "input",
+    inputValueConvert: Number,
   },
 };

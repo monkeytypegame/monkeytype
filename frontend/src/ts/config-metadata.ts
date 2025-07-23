@@ -437,6 +437,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   tapeMargin: {
+    icon: "fa-tape",
     displayString: "tape margin",
     changeRequiresRestart: false,
     overrideValue: ({ value }) => {

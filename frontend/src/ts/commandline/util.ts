@@ -50,7 +50,13 @@ function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
   if (commandMeta.type === "subgroup") {
     return buildCommandWithSubgroup(key, commandMeta, configMeta, schema);
   } else if (commandMeta.type === "input") {
-    return buildInputCommand({ key, commandMeta, configMeta, schema });
+    return buildInputCommand({
+      key,
+      displayFallback: configMeta.displayString ?? "custom...",
+      commandMeta,
+      configMeta,
+      schema,
+    });
   } else if (commandMeta.type === "subgroupWithInput") {
     const result = buildCommandWithSubgroup(
       key,
@@ -61,6 +67,7 @@ function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
     result.subgroup?.list.push(
       buildInputCommand({
         key,
+        displayFallback: configMeta.displayString ?? "custom...",
         commandMeta: commandMeta.input,
         configMeta,
         schema,
@@ -170,19 +177,22 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
 
 function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   key,
+  displayFallback,
   commandMeta,
   configMeta,
   schema,
 }: {
   key: K;
+  displayFallback: string;
   commandMeta: InputProps<K>;
   configMeta: ConfigMetadata<K>;
   schema: ZodType; //TODO better type
 }): Command {
+  const validation = commandMeta.validation ?? { schema: true };
   const result = {
     id: `set${capitalizeFirstLetter(key)}Custom`,
     defaultValue: () => Config[key]?.toString() ?? "",
-    display: commandMeta.display,
+    display: commandMeta.display ?? displayFallback,
     alias: commandMeta.alias ?? undefined,
     input: true,
     icon: configMeta.icon ?? "fa-cog",
@@ -200,13 +210,12 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
     //@ts-expect-error this is fine
     result["inputValueConvert"] = commandMeta.inputValueConvert;
   }
-  if (commandMeta.validation !== undefined) {
-    //@ts-expect-error this is fine
-    result["validation"] = {
-      schema: commandMeta.validation.schema === true ? schema : undefined,
-      isValid: commandMeta.validation.isValid,
-    };
-  }
+
+  //@ts-expect-error this is fine
+  result["validation"] = {
+    schema: validation.schema === true ? schema : undefined,
+    isValid: validation.isValid,
+  };
 
   return result as Command;
 }

@@ -147,6 +147,7 @@ describe("CommandlineUtils", () => {
           icon: "icon",
           exec: expect.anything(),
           inputValueConvert: Number,
+          validation: expect.anything(),
         });
       });
     });
@@ -182,7 +183,32 @@ describe("CommandlineUtils", () => {
         icon: "icon",
         exec: expect.anything(),
         defaultValue: expect.anything(),
+        validation: expect.anything(),
       });
+    });
+
+    it("uses displayString from config for display ", () => {
+      //GIVEN
+
+      //WHEN
+      const cmd = buildCommand(type, {
+        configMeta: {
+          displayString: "My Setting",
+        },
+      });
+
+      //THEN
+      expect(cmd.display).toEqual("My Setting");
+    });
+
+    it("uses custom as fallback for display", () => {
+      //GIVEN
+
+      //WHEN
+      const cmd = buildCommand(type, {});
+
+      //THEN
+      expect(cmd.display).toEqual("custom...");
     });
 
     it("uses inputValueConvert", () => {
@@ -217,6 +243,39 @@ describe("CommandlineUtils", () => {
         cmdMeta: {
           validation: { schema: true },
         },
+        schema,
+      });
+
+      expect(cmd).toEqual(
+        expect.objectContaining({
+          validation: { schema },
+        })
+      );
+    });
+
+    it("does not use validation if empty", () => {
+      //GIVEN
+      const schema = z.enum(["on", "off"]);
+
+      //WHEN
+      const cmd = buildCommand(type, {
+        key: "test" as any,
+        cmdMeta: { validation: {} },
+        schema,
+      });
+      console.log(cmd);
+
+      expect(cmd).toHaveProperty("validation", {});
+    });
+
+    it("uses validation by default", () => {
+      //GIVEN
+      const schema = z.enum(["on", "off"]);
+
+      //WHEN
+      const cmd = buildCommand(type, {
+        key: "test" as any,
+        cmdMeta: {},
         schema,
       });
 

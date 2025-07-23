@@ -19,7 +19,6 @@ import MinBurstCommands from "./lists/min-burst";
 import CustomThemeCommands from "./lists/custom-theme";
 import RandomThemeCommands from "./lists/random-theme";
 import PaceCaretModeCommands from "./lists/pace-caret";
-import TapeMarginCommands from "./lists/tape-margin";
 import KeymapModeCommands from "./lists/keymap-mode";
 import KeymapStyleCommands from "./lists/keymap-style";
 import KeymapLegendStyleCommands from "./lists/keymap-legend-style";
@@ -243,9 +242,10 @@ export const commands: CommandsSubgroup = {
       "timerOpacity",
       "highlightMode",
 
-      "tapeMode"
+      "tapeMode",
+      "tapeMargin"
     ),
-    ...TapeMarginCommands,
+
     ...SmoothLineScrollCommands,
     ...ShowAllLinesCommands,
     ...TypingSpeedUnitCommands,
