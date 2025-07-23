@@ -20,12 +20,15 @@ type CommandlineConfigMetadataObject = {
 //   afterExec?: (value: ConfigSchemas.Config[T]) => void;
 // };
 
-export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
+export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> = {
+  type: string;
+} & (
   | SubgroupMeta<T>
   | InputMeta<T>
   | SubgroupWithInputMeta<T>
   | SubgroupWithSecondKeyInputMeta<T>
-  | null;
+  | null
+);
 
 type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   rootAlias?: string;

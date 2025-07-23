@@ -1,13 +1,14 @@
 import { genericSet } from "../config";
-import { configMetadata } from "../config-metadata";
+import { ConfigMetadata, configMetadata } from "../config-metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import {
+  CommandlineConfigMetadata,
   commandlineConfigMetadata,
   SubgroupMeta,
 } from "./commandline-metadata";
 import { Command } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { z, ZodSchema } from "zod";
+import { z, ZodSchema, ZodType } from "zod";
 
 function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
   if (schema instanceof z.ZodLiteral) {
@@ -28,14 +29,25 @@ function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
 export function buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
   key: K
 ): Command {
+  const configMeta = configMetadata[key];
   const commandMeta = commandlineConfigMetadata[key];
+  const schema = ConfigSchemas.ConfigSchema.shape[key];
 
+  return _buildCommandForConfigKey(key, configMeta, commandMeta, schema);
+}
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
+  key: K,
+  configMeta: ConfigMetadata<K>,
+  commandMeta: CommandlineConfigMetadata<K> | undefined,
+  schema: ZodType //TODO better type
+): Command {
   if (commandMeta === undefined || commandMeta === null) {
     throw new Error(`No commandline metadata found for config key "${key}".`);
   }
 
   if (commandMeta.type === "subgroup") {
-    return buildCommandWithSubgroup(key, commandMeta);
+    return buildCommandWithSubgroup(key, commandMeta, configMeta, schema);
   }
 
   throw new Error(
@@ -46,10 +58,10 @@ export function buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   key: K,
-  commandMeta: SubgroupMeta<K>
+  commandMeta: SubgroupMeta<K>,
+  configMeta: ConfigMetadata<K>,
+  schema: ZodType //TODO better type
 ): Command {
-  const configMeta = configMetadata[key];
-
   if (commandMeta === null) {
     throw new Error(`No commandline metadata found for config key "${key}".`);
   }
@@ -57,7 +69,6 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   const display =
     commandMeta?.rootDisplay ??
     `${capitalizeFirstLetter(configMeta?.displayString ?? key)}...`;
-  const schema = ConfigSchemas.ConfigSchema.shape[key];
 
   let values =
     commandMeta.options ?? (getOptions(schema) as ConfigSchemas.Config[K][]);
@@ -68,6 +79,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
 
   if (values === undefined) {
     throw new Error(
+      //@ts-expect-error todo
       `Unsupported schema type for key "${key}": ${schema._def.typeName}`
     );
   }
@@ -137,4 +149,4 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
   };
 }
 
-// export const __testing = { _buildCommandWithSubgroup };
+export const __testing = { _buildCommandForConfigKey };
