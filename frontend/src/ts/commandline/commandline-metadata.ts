@@ -97,12 +97,30 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   burstHeatmap: null,
   //behavior
-  difficulty: null,
-  quickRestart: null,
-  repeatQuotes: null,
-  blindMode: null,
-  alwaysShowWordsHistory: null,
-  singleListCommandLine: null,
+  difficulty: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  quickRestart: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  repeatQuotes: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  blindMode: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  alwaysShowWordsHistory: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  singleListCommandLine: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
   minWpm: null,
   minAcc: null,
   minBurst: null,
@@ -115,8 +133,14 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   funbox: null,
   //input
-  freedomMode: null,
-  strictSpace: null,
+  freedomMode: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  strictSpace: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
   oppositeShiftMode: {
     type: "subgroup",
     options: "fromSchema",
@@ -124,13 +148,34 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       void ModesNotice.update();
     },
   },
-  stopOnError: null,
-  confidenceMode: null,
-  quickEnd: null,
-  indicateTypos: null,
-  hideExtraLetters: null,
-  lazyMode: null,
-  codeUnindentOnBackspace: null,
+  stopOnError: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  confidenceMode: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  quickEnd: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  indicateTypos: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  hideExtraLetters: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  lazyMode: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  codeUnindentOnBackspace: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
   //sound
   playSoundOnClick: {
     type: "subgroup",
@@ -215,13 +260,19 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   //caret
-  smoothCaret: null,
+  smoothCaret: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
   caretStyle: {
     type: "subgroup",
     options: "fromSchema",
     isCommandVisible: (value) => !["banana", "carrot"].includes(value),
   },
-  repeatedPace: null,
+  repeatedPace: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
   paceCaretStyle: {
     type: "subgroup",
     options: "fromSchema",
@@ -245,6 +296,12 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     rootAlias: "timer speed wpm burst acc",
     commandAlias: () => "timer",
   },
-  highlightMode: null,
-  tapeMode: null,
+  highlightMode: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  tapeMode: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
 };

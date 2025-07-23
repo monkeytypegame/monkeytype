@@ -23,6 +23,10 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   const configMeta = configMetadata[key];
   const commandMeta = commandlineConfigMetadata[key];
 
+  if (commandMeta === null) {
+    throw new Error(`No commandline metadata found for config key "${key}".`);
+  }
+
   const display =
     commandMeta?.rootDisplay ??
     `${capitalizeFirstLetter(configMeta?.displayString ?? key)}...`;
