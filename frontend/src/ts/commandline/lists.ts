@@ -1,4 +1,3 @@
-import ModeCommands from "./lists/mode";
 import TimeCommands from "./lists/time";
 import WordsCommands from "./lists/words";
 import QuoteLengthCommands from "./lists/quote-length";
@@ -92,7 +91,8 @@ export const commands: CommandsSubgroup = {
     //test screen
     buildCommandForConfigKey("punctuation"),
     buildCommandForConfigKey("numbers"),
-    ...ModeCommands,
+    buildCommandForConfigKey("mode"),
+    // ...ModeCommands,
     ...TimeCommands,
     ...WordsCommands,
     ...QuoteLengthCommands,

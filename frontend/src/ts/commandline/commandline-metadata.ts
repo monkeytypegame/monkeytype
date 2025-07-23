@@ -4,6 +4,7 @@ import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
 import * as ModesNotice from "../elements/modes-notice";
 import { isAuthenticated } from "../firebase";
+import * as ManualRestart from "../test/manual-restart-tracker";
 
 //todo: remove ? here to require all config keys to be defined
 type CommandlineConfigMetadataObject = {
@@ -98,7 +99,14 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   words: null,
   time: null,
-  mode: null,
+  mode: {
+    type: "subgroup",
+    options: ["time", "words", "quote", "zen", "custom"],
+    afterExec: () => {
+      ManualRestart.set();
+      TestLogic.restart();
+    },
+  },
   quoteLength: null,
   language: {
     type: "subgroup",
