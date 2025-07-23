@@ -1,4 +1,4 @@
-import { KeymapLayout } from "@monkeytype/contracts/schemas/configs";
+import { KeymapLayout } from "@monkeytype/schemas/configs";
 import * as UpdateConfig from "../../config";
 import { LayoutsList } from "../../constants/layouts";
 import * as TestLogic from "../../test/test-logic";

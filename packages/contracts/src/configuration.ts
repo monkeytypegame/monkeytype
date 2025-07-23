@@ -1,13 +1,13 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 
+import { ConfigurationSchema } from "@monkeytype/schemas/configuration";
 import {
   CommonResponses,
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
-import { ConfigurationSchema } from "./schemas/configuration";
+} from "./util/api";
 
 export const GetConfigurationResponseSchema =
   responseWithData(ConfigurationSchema);

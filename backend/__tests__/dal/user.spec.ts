@@ -2,12 +2,9 @@ import _ from "lodash";
 import * as UserDAL from "../../src/dal/user";
 import * as UserTestData from "../__testData__/users";
 import { ObjectId } from "mongodb";
-import { MonkeyMail, ResultFilters } from "@monkeytype/contracts/schemas/users";
-import {
-  PersonalBest,
-  PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
-import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
+import { MonkeyMail, ResultFilters } from "@monkeytype/schemas/users";
+import { PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
+import { CustomThemeColors } from "@monkeytype/schemas/configs";
 
 const mockPersonalBest = {
   acc: 1,

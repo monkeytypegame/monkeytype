@@ -1,12 +1,274 @@
 import * as Config from "../../src/ts/config";
-
+import * as Misc from "../../src/ts/utils/misc";
 import {
   CustomThemeColors,
   FunboxName,
-} from "@monkeytype/contracts/schemas/configs";
+  ConfigKey,
+  CaretStyleSchema,
+} from "@monkeytype/schemas/configs";
 import { randomBytes } from "crypto";
+import { vi } from "vitest";
+import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
+import * as ConfigValidation from "../../src/ts/config-validation";
+import * as ConfigEvent from "../../src/ts/observables/config-event";
+import * as DB from "../../src/ts/db";
+import * as AccountButton from "../../src/ts/elements/account-button";
+import * as Notifications from "../../src/ts/elements/notifications";
+
+const { replaceConfig, getConfig } = Config.__testing;
 
 describe("Config", () => {
+  describe("test with mocks", () => {
+    const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
+
+    const canSetConfigWithCurrentFunboxesMock = vi.spyOn(
+      FunboxValidation,
+      "canSetConfigWithCurrentFunboxes"
+    );
+    const isConfigValueValidMock = vi.spyOn(
+      ConfigValidation,
+      "isConfigValueValid"
+    );
+    const dispatchConfigEventMock = vi.spyOn(ConfigEvent, "dispatch");
+    const dbSaveConfigMock = vi.spyOn(DB, "saveConfig");
+    const accountButtonLoadingMock = vi.spyOn(AccountButton, "loading");
+    const notificationAddMock = vi.spyOn(Notifications, "add");
+    const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
+    const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
+
+    const mocks = [
+      canSetConfigWithCurrentFunboxesMock,
+      isConfigValueValidMock,
+      dispatchConfigEventMock,
+      dbSaveConfigMock,
+      accountButtonLoadingMock,
+      notificationAddMock,
+      miscReloadAfterMock,
+      miscTriggerResizeMock,
+    ];
+
+    beforeEach(async () => {
+      vi.useFakeTimers();
+      mocks.forEach((it) => it.mockReset());
+
+      vi.mock("../../src/ts/test/test-state", () => ({
+        isActive: true,
+      }));
+
+      isConfigValueValidMock.mockReturnValue(true);
+      canSetConfigWithCurrentFunboxesMock.mockReturnValue(true);
+      dbSaveConfigMock.mockResolvedValue();
+
+      replaceConfig({});
+    });
+
+    afterAll(() => {
+      mocks.forEach((it) => it.mockRestore());
+      vi.useRealTimers();
+    });
+
+    beforeEach(() => isDevEnvironmentMock.mockReset());
+
+    it("should throw if config key in not found in metadata", () => {
+      expect(() => {
+        Config.genericSet("nonExistentKey" as ConfigKey, true);
+      }).toThrowError(
+        `Config metadata for key "nonExistentKey" is not defined.`
+      );
+    });
+
+    it("fails if test is active and funbox no_quit", () => {
+      //GIVEN
+      replaceConfig({ funbox: ["no_quit"], numbers: false });
+
+      //WHEN
+      expect(Config.genericSet("numbers", true, true)).toBe(false);
+
+      //THEN
+      expect(notificationAddMock).toHaveBeenCalledWith(
+        "No quit funbox is active. Please finish the test.",
+        0,
+        {
+          important: true,
+        }
+      );
+    });
+
+    //TODO isBlocked
+    it("should fail if config is blocked", () => {
+      //GIVEN
+      replaceConfig({ tapeMode: "letter" });
+
+      //WHEN / THEN
+      expect(Config.genericSet("showAllLines", true)).toBe(false);
+    });
+
+    it("should use overrideValue", () => {
+      //WHEN
+      Config.genericSet("customLayoutfluid", ["3l", "ABNT2", "3l"]);
+
+      //THEN
+      expect(getConfig().customLayoutfluid).toEqual(["3l", "ABNT2"]);
+    });
+
+    it("fails if config is invalid", () => {
+      //GIVEN
+      isConfigValueValidMock.mockReturnValue(false);
+
+      //WHEN / THEN
+      expect(Config.genericSet("caretStyle", "banana" as any)).toBe(false);
+      expect(isConfigValueValidMock).toHaveBeenCalledWith(
+        "caret style",
+        "banana",
+        CaretStyleSchema
+      );
+    });
+
+    it("cannot set if funbox disallows", () => {
+      //GIVEN
+      canSetConfigWithCurrentFunboxesMock.mockReturnValue(false);
+
+      //WHEN / THEN
+      expect(Config.genericSet("numbers", true)).toBe(false);
+    });
+
+    it("sets overrideConfigs", () => {
+      //GIVEN
+      replaceConfig({
+        confidenceMode: "off",
+        freedomMode: false, //already set correctly
+        stopOnError: "letter", //should get updated
+      });
+
+      //WHEN
+      Config.genericSet("confidenceMode", "max");
+
+      //THEN
+      expect(dispatchConfigEventMock).not.toHaveBeenCalledWith(
+        "freedomMode",
+        false,
+        true,
+        true
+      );
+
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+        "stopOnError",
+        "off",
+        true,
+        "letter"
+      );
+
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+        "confidenceMode",
+        "max",
+        false,
+        "off"
+      );
+    });
+
+    it("saves to localstorage if nosave=false", async () => {
+      //GIVEN
+      replaceConfig({ numbers: false });
+
+      //WHEN
+      Config.genericSet("numbers", true);
+
+      //THEN
+      //wait for debounce
+      await vi.advanceTimersByTimeAsync(2500);
+
+      //show loading
+      expect(accountButtonLoadingMock).toHaveBeenNthCalledWith(1, true);
+
+      //save
+      expect(dbSaveConfigMock).toHaveBeenCalledWith({ numbers: true });
+
+      //hide loading
+      expect(accountButtonLoadingMock).toHaveBeenNthCalledWith(2, false);
+
+      //send event
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+        "saveToLocalStorage",
+        expect.stringContaining("numbers")
+      );
+    });
+    it("does not save to localstorage if nosave=true", async () => {
+      //GIVEN
+
+      replaceConfig({ numbers: false });
+
+      //WHEN
+      Config.genericSet("numbers", true, true);
+
+      //THEN
+      //wait for debounce
+      await vi.advanceTimersByTimeAsync(2500);
+
+      expect(accountButtonLoadingMock).not.toHaveBeenCalled();
+      expect(dbSaveConfigMock).not.toHaveBeenCalled();
+
+      expect(dispatchConfigEventMock).not.toHaveBeenCalledWith(
+        "saveToLocalStorage",
+        expect.any(String)
+      );
+    });
+
+    it("dispatches event on set", () => {
+      //GIVEN
+      replaceConfig({ numbers: false });
+
+      //WHEN
+      Config.genericSet("numbers", true, true);
+
+      //THEN
+
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+        "numbers",
+        true,
+        true,
+        false
+      );
+    });
+
+    it("triggers resize if property is set", () => {
+      ///WHEN
+      Config.genericSet("maxLineWidth", 50, false);
+
+      expect(miscTriggerResizeMock).toHaveBeenCalled();
+    });
+
+    it("does not triggers resize if property is not set", () => {
+      ///WHEN
+      Config.genericSet("startGraphsAtZero", true, false);
+
+      expect(miscTriggerResizeMock).not.toHaveBeenCalled();
+    });
+
+    it("does not triggers resize if property on nosave", () => {
+      ///WHEN
+      Config.genericSet("maxLineWidth", 50, true);
+
+      expect(miscTriggerResizeMock).not.toHaveBeenCalled();
+    });
+
+    it("calls afterSet", () => {
+      //GIVEN
+      isDevEnvironmentMock.mockReturnValue(false);
+      replaceConfig({ ads: "off" });
+
+      //WHEN
+      Config.genericSet("ads", "sellout");
+
+      //THEN
+      expect(notificationAddMock).toHaveBeenCalledWith(
+        "Ad settings changed. Refreshing...",
+        0
+      );
+      expect(miscReloadAfterMock).toHaveBeenCalledWith(3);
+    });
+  });
+
+  //TODO move the rest to schema/tests or remove after removing the setX functions from Config
   it("setMode", () => {
     expect(Config.setMode("zen")).toBe(true);
     expect(Config.setMode("invalid" as any)).toBe(false);
@@ -33,7 +295,7 @@ describe("Config", () => {
   it("setAccountChart", () => {
     expect(Config.setAccountChart(["on", "off", "off", "on"])).toBe(true);
     //arrays not having 4 values will get [on, on, on, on] as default
-    expect(Config.setAccountChart(["on", "off"] as any)).toBe(true);
+    expect(Config.setAccountChart(["on", "off"] as any)).toBe(false);
     expect(Config.setAccountChart(["on", "off", "on", "true"] as any)).toBe(
       false
     );
@@ -199,13 +461,13 @@ describe("Config", () => {
 
     //invalid values being  "auto-fixed"
     expect(Config.setKeymapSize(0)).toBe(true);
-    expect(Config.default.keymapSize).toBe(0.5);
+    expect(getConfig().keymapSize).toBe(0.5);
     expect(Config.setKeymapSize(4)).toBe(true);
-    expect(Config.default.keymapSize).toBe(3.5);
+    expect(getConfig().keymapSize).toBe(3.5);
     expect(Config.setKeymapSize(1.25)).toBe(true);
-    expect(Config.default.keymapSize).toBe(1.3);
+    expect(getConfig().keymapSize).toBe(1.3);
     expect(Config.setKeymapSize(1.24)).toBe(true);
-    expect(Config.default.keymapSize).toBe(1.2);
+    expect(getConfig().keymapSize).toBe(1.2);
   });
   it("setCustomBackgroundSize", () => {
     expect(Config.setCustomBackgroundSize("contain")).toBe(true);
@@ -214,8 +476,10 @@ describe("Config", () => {
   });
   it("setCustomBackgroundFilter", () => {
     expect(Config.setCustomBackgroundFilter([0, 1, 2, 3])).toBe(true);
-    //gets converted
-    expect(Config.setCustomBackgroundFilter([0, 1, 2, 3, 4] as any)).toBe(true);
+
+    expect(Config.setCustomBackgroundFilter([0, 1, 2, 3, 4] as any)).toBe(
+      false
+    );
     expect(Config.setCustomBackgroundFilter([] as any)).toBe(false);
     expect(Config.setCustomBackgroundFilter(["invalid"] as any)).toBe(false);
     expect(Config.setCustomBackgroundFilter([1, 2, 3, 4, 5, 6] as any)).toBe(
@@ -231,9 +495,7 @@ describe("Config", () => {
   it("setCustomThemeColors", () => {
     expect(Config.setCustomThemeColors(customThemeColors(10))).toBe(true);
 
-    //gets converted
-    expect(Config.setCustomThemeColors(customThemeColors(9))).toBe(true);
-
+    expect(Config.setCustomThemeColors(customThemeColors(9))).toBe(false);
     expect(Config.setCustomThemeColors([] as any)).toBe(false);
     expect(Config.setCustomThemeColors(["invalid"] as any)).toBe(false);
     expect(Config.setCustomThemeColors(customThemeColors(5))).toBe(false);
@@ -258,7 +520,7 @@ describe("Config", () => {
   });
   it("setAccountChart", () => {
     expect(Config.setAccountChart(["on", "off", "off", "on"])).toBe(true);
-    expect(Config.setAccountChart(["on", "off"] as any)).toBe(true);
+    expect(Config.setAccountChart(["on", "off"] as any)).toBe(false);
     expect(Config.setAccountChart(["on", "off", "on", "true"] as any)).toBe(
       false
     );
@@ -358,8 +620,6 @@ describe("Config", () => {
     expect(Config.setMinAccCustom(0)).toBe(true);
     expect(Config.setMinAccCustom(1)).toBe(true);
     expect(Config.setMinAccCustom(11.11)).toBe(true);
-    //gets converted
-    expect(Config.setMinAccCustom(120)).toBe(true);
 
     expect(Config.setMinAccCustom("invalid" as any)).toBe(false);
     expect(Config.setMinAccCustom(-1)).toBe(false);
@@ -376,18 +636,11 @@ describe("Config", () => {
     expect(Config.setTimeConfig(0)).toBe(true);
     expect(Config.setTimeConfig(1)).toBe(true);
 
-    //gets converted
-    expect(Config.setTimeConfig("invalid" as any)).toBe(true);
-    expect(Config.setTimeConfig(-1)).toBe(true);
-
     expect(Config.setTimeConfig(11.11)).toBe(false);
   });
   it("setWordCount", () => {
     expect(Config.setWordCount(0)).toBe(true);
     expect(Config.setWordCount(1)).toBe(true);
-
-    //gets converted
-    expect(Config.setWordCount(-1)).toBe(true);
 
     expect(Config.setWordCount("invalid" as any)).toBe(false);
     expect(Config.setWordCount(11.11)).toBe(false);
@@ -486,12 +739,14 @@ describe("Config", () => {
     expect(Config.setCustomBackground("invalid")).toBe(false);
   });
   it("setQuoteLength", () => {
-    expect(Config.setQuoteLength(0)).toBe(true);
-    expect(Config.setQuoteLength(-3)).toBe(true);
-    expect(Config.setQuoteLength(3)).toBe(true);
+    expect(Config.setQuoteLength([0])).toBe(true);
+    expect(Config.setQuoteLength([-3])).toBe(true);
+    expect(Config.setQuoteLength([3])).toBe(true);
 
     expect(Config.setQuoteLength(-4 as any)).toBe(false);
     expect(Config.setQuoteLength(4 as any)).toBe(false);
+    expect(Config.setQuoteLength(3 as any)).toBe(false);
+    expect(Config.setQuoteLength(2 as any)).toBe(false);
 
     expect(Config.setQuoteLength([0, -3, 2])).toBe(true);
 

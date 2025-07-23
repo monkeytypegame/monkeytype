@@ -24,6 +24,7 @@ import QuickEndCommands from "./lists/quick-end";
 import OppositeShiftModeCommands from "./lists/opposite-shift-mode";
 import SoundOnErrorCommands from "./lists/sound-on-error";
 import SoundVolumeCommands from "./lists/sound-volume";
+import TimeWarningCommands from "./lists/time-warning";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
 import SmoothLineScrollCommands from "./lists/smooth-line-scroll";
 import AlwaysShowDecimalCommands from "./lists/always-show-decimal";
@@ -104,7 +105,7 @@ import {
   CustomLayoutFluidSchema,
   CustomPolyglot,
   CustomPolyglotSchema,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
 import { Command, CommandsSubgroup, withValidation } from "./types";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";
@@ -242,6 +243,7 @@ export const commands: CommandsSubgroup = {
     ...SoundVolumeCommands,
     ...SoundOnClickCommands,
     ...SoundOnErrorCommands,
+    ...TimeWarningCommands,
 
     //caret
     ...SmoothCaretCommands,

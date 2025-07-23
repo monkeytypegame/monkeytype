@@ -13,7 +13,6 @@ export type QuickRestart = z.infer<typeof QuickRestartSchema>;
 export const QuoteLengthSchema = z.union([
   z.literal(-3),
   z.literal(-2),
-  z.literal(-1),
   z.literal(0),
   z.literal(1),
   z.literal(2),
@@ -21,7 +20,19 @@ export const QuoteLengthSchema = z.union([
 ]);
 export type QuoteLength = z.infer<typeof QuoteLengthSchema>;
 
-export const QuoteLengthConfigSchema = z.array(QuoteLengthSchema);
+export const QuoteLengthConfigSchema = z
+  .array(QuoteLengthSchema)
+  .describe(
+    [
+      "|value|description|\n|-|-|",
+      "|-3|Favorite quotes|",
+      "|-2|Quote search|",
+      "|0|Short quotes|",
+      "|1|Medium quotes|",
+      "|2|Long quotes|",
+      "|3|Thicc quotes|",
+    ].join("\n")
+  );
 export type QuoteLengthConfig = z.infer<typeof QuoteLengthConfigSchema>;
 
 export const CaretStyleSchema = z.enum([
@@ -344,20 +355,16 @@ export const CustomBackgroundSchema = z
   .or(z.literal(""));
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
+export const PlayTimeWarningSchema = z
+  .enum(["off", "1", "3", "5", "10"])
+  .describe(
+    "How many seconds before the end of the test to play a warning sound."
+  );
+export type PlayTimeWarning = z.infer<typeof PlayTimeWarningSchema>;
+
 export const ConfigSchema = z
   .object({
-    theme: ThemeNameSchema,
-    themeLight: ThemeNameSchema,
-    themeDark: ThemeNameSchema,
-    autoSwitchTheme: z.boolean(),
-    customTheme: z.boolean(),
-    //customThemeId: token().nonnegative().max(24),
-    customThemeColors: CustomThemeColorsSchema,
-    favThemes: FavThemesSchema,
-    showKeyTips: z.boolean(),
-    smoothCaret: SmoothCaretSchema,
-    codeUnindentOnBackspace: z.boolean(),
-    quickRestart: QuickRestartSchema,
+    // test
     punctuation: z.boolean(),
     numbers: z.boolean(),
     words: WordCountSchema,
@@ -365,76 +372,106 @@ export const ConfigSchema = z
     mode: Shared.ModeSchema,
     quoteLength: QuoteLengthConfigSchema,
     language: LanguageSchema,
-    fontSize: FontSizeSchema,
-    freedomMode: z.boolean(),
+    burstHeatmap: z.boolean(),
+
+    // behavior
     difficulty: DifficultySchema,
+    quickRestart: QuickRestartSchema,
+    repeatQuotes: RepeatQuotesSchema,
     blindMode: z.boolean(),
-    quickEnd: z.boolean(),
-    caretStyle: CaretStyleSchema,
-    paceCaretStyle: CaretStyleSchema,
-    flipTestColors: z.boolean(),
-    layout: LayoutSchema,
+    alwaysShowWordsHistory: z.boolean(),
+    singleListCommandLine: SingleListCommandLineSchema,
+    minWpm: MinimumWordsPerMinuteSchema,
+    minWpmCustomSpeed: MinWpmCustomSpeedSchema,
+    minAcc: MinimumAccuracySchema,
+    minAccCustom: MinimumAccuracyCustomSchema,
+    minBurst: MinimumBurstSchema,
+    minBurstCustomSpeed: MinimumBurstCustomSpeedSchema,
+    britishEnglish: z.boolean(),
     funbox: FunboxSchema,
+    customLayoutfluid: CustomLayoutFluidSchema,
+    customPolyglot: CustomPolyglotSchema,
+
+    // input
+    freedomMode: z.boolean(),
+    strictSpace: z.boolean(),
+    oppositeShiftMode: OppositeShiftModeSchema,
+    stopOnError: StopOnErrorSchema,
     confidenceMode: ConfidenceModeSchema,
+    quickEnd: z.boolean(),
     indicateTypos: IndicateTyposSchema,
+    hideExtraLetters: z.boolean(),
+    lazyMode: z.boolean(),
+    layout: LayoutSchema,
+    codeUnindentOnBackspace: z.boolean(),
+
+    // sound
+    soundVolume: SoundVolumeSchema,
+    playSoundOnClick: PlaySoundOnClickSchema,
+    playSoundOnError: PlaySoundOnErrorSchema,
+    playTimeWarning: PlayTimeWarningSchema,
+
+    // caret
+    smoothCaret: SmoothCaretSchema,
+    caretStyle: CaretStyleSchema,
+    paceCaret: PaceCaretSchema,
+    paceCaretCustomSpeed: PaceCaretCustomSpeedSchema,
+    paceCaretStyle: CaretStyleSchema,
+    repeatedPace: z.boolean(),
+
+    // appearance
     timerStyle: TimerStyleSchema,
     liveSpeedStyle: LiveSpeedAccBurstStyleSchema,
     liveAccStyle: LiveSpeedAccBurstStyleSchema,
     liveBurstStyle: LiveSpeedAccBurstStyleSchema,
-    colorfulMode: z.boolean(),
-    randomTheme: RandomThemeSchema,
     timerColor: TimerColorSchema,
     timerOpacity: TimerOpacitySchema,
-    stopOnError: StopOnErrorSchema,
-    showAllLines: z.boolean(),
-    keymapMode: KeymapModeSchema,
-    keymapStyle: KeymapStyleSchema,
-    keymapLegendStyle: KeymapLegendStyleSchema,
-    keymapLayout: KeymapLayoutSchema,
-    keymapShowTopRow: KeymapShowTopRowSchema,
-    keymapSize: KeymapSizeSchema,
-    fontFamily: FontFamilySchema,
-    smoothLineScroll: z.boolean(),
-    alwaysShowDecimalPlaces: z.boolean(),
-    alwaysShowWordsHistory: z.boolean(),
-    singleListCommandLine: SingleListCommandLineSchema,
-    capsLockWarning: z.boolean(),
-    playSoundOnError: PlaySoundOnErrorSchema,
-    playSoundOnClick: PlaySoundOnClickSchema,
-    soundVolume: SoundVolumeSchema,
-    startGraphsAtZero: z.boolean(),
-    showOutOfFocusWarning: z.boolean(),
-    paceCaret: PaceCaretSchema,
-    paceCaretCustomSpeed: PaceCaretCustomSpeedSchema,
-    repeatedPace: z.boolean(),
-    accountChart: AccountChartSchema,
-    minWpm: MinimumWordsPerMinuteSchema,
-    minWpmCustomSpeed: MinWpmCustomSpeedSchema,
     highlightMode: HighlightModeSchema,
     tapeMode: TapeModeSchema,
     tapeMargin: TapeMarginSchema,
+    smoothLineScroll: z.boolean(),
+    showAllLines: z.boolean(),
+    alwaysShowDecimalPlaces: z.boolean(),
     typingSpeedUnit: TypingSpeedUnitSchema,
-    ads: AdsSchema,
-    hideExtraLetters: z.boolean(),
-    strictSpace: z.boolean(),
-    minAcc: MinimumAccuracySchema,
-    minAccCustom: MinimumAccuracyCustomSchema,
-    monkey: z.boolean(),
-    repeatQuotes: RepeatQuotesSchema,
-    oppositeShiftMode: OppositeShiftModeSchema,
+    startGraphsAtZero: z.boolean(),
+    maxLineWidth: MaxLineWidthSchema,
+    fontSize: FontSizeSchema,
+    fontFamily: FontFamilySchema,
+    keymapMode: KeymapModeSchema,
+    keymapLayout: KeymapLayoutSchema,
+    keymapStyle: KeymapStyleSchema,
+    keymapLegendStyle: KeymapLegendStyleSchema,
+    keymapShowTopRow: KeymapShowTopRowSchema,
+    keymapSize: KeymapSizeSchema,
+
+    // theme
+    flipTestColors: z.boolean(),
+    colorfulMode: z.boolean(),
     customBackground: CustomBackgroundSchema,
     customBackgroundSize: CustomBackgroundSizeSchema,
     customBackgroundFilter: CustomBackgroundFilterSchema,
-    customLayoutfluid: CustomLayoutFluidSchema,
-    monkeyPowerLevel: MonkeyPowerLevelSchema,
-    minBurst: MinimumBurstSchema,
-    minBurstCustomSpeed: MinimumBurstCustomSpeedSchema,
-    burstHeatmap: z.boolean(),
-    britishEnglish: z.boolean(),
-    lazyMode: z.boolean(),
+    autoSwitchTheme: z.boolean(),
+    themeLight: ThemeNameSchema,
+    themeDark: ThemeNameSchema,
+    randomTheme: RandomThemeSchema,
+    favThemes: FavThemesSchema,
+    theme: ThemeNameSchema,
+    customTheme: z.boolean(),
+    customThemeColors: CustomThemeColorsSchema,
+
+    // hide elements
+    showKeyTips: z.boolean(),
+    showOutOfFocusWarning: z.boolean(),
+    capsLockWarning: z.boolean(),
     showAverage: ShowAverageSchema,
-    maxLineWidth: MaxLineWidthSchema,
-    customPolyglot: CustomPolyglotSchema,
+
+    // other (hidden)
+    accountChart: AccountChartSchema,
+    monkey: z.boolean(),
+    monkeyPowerLevel: MonkeyPowerLevelSchema,
+
+    // ads
+    ads: AdsSchema,
   } satisfies Record<string, ZodSchema>)
   .strict();
 
@@ -455,24 +492,14 @@ export const ConfigGroupNameSchema = z.enum([
   "appearance",
   "theme",
   "hideElements",
-  "ads",
   "hidden",
+  "ads",
 ]);
 
 export type ConfigGroupName = z.infer<typeof ConfigGroupNameSchema>;
 
 export const ConfigGroupsLiteral = {
-  theme: "theme",
-  themeLight: "theme",
-  themeDark: "theme",
-  autoSwitchTheme: "theme",
-  customTheme: "theme",
-  customThemeColors: "theme",
-  favThemes: "theme",
-  showKeyTips: "hideElements",
-  smoothCaret: "caret",
-  codeUnindentOnBackspace: "input",
-  quickRestart: "behavior",
+  //test
   punctuation: "test",
   numbers: "test",
   words: "test",
@@ -480,76 +507,106 @@ export const ConfigGroupsLiteral = {
   mode: "test",
   quoteLength: "test",
   language: "test",
-  fontSize: "appearance",
-  freedomMode: "input",
+  burstHeatmap: "test",
+
+  //behavior
   difficulty: "behavior",
+  quickRestart: "behavior",
+  repeatQuotes: "behavior",
   blindMode: "behavior",
-  quickEnd: "input",
-  caretStyle: "caret",
-  paceCaretStyle: "caret",
-  flipTestColors: "theme",
-  layout: "input",
-  funbox: "behavior",
+  alwaysShowWordsHistory: "behavior",
+  singleListCommandLine: "behavior",
+  minWpm: "behavior",
+  minWpmCustomSpeed: "behavior",
+  minAcc: "behavior",
+  minAccCustom: "behavior",
+  minBurst: "behavior",
+  minBurstCustomSpeed: "behavior",
+  britishEnglish: "behavior",
+  funbox: "behavior", //todo: maybe move to test?
+  customLayoutfluid: "behavior",
+  customPolyglot: "behavior",
+
+  //input
+  freedomMode: "input",
+  strictSpace: "input",
+  oppositeShiftMode: "input",
+  stopOnError: "input",
   confidenceMode: "input",
+  quickEnd: "input",
   indicateTypos: "input",
+  hideExtraLetters: "input",
+  lazyMode: "input",
+  layout: "input",
+  codeUnindentOnBackspace: "input",
+
+  //sound
+  soundVolume: "sound",
+  playSoundOnClick: "sound",
+  playSoundOnError: "sound",
+  playTimeWarning: "sound",
+
+  //caret
+  smoothCaret: "caret",
+  caretStyle: "caret",
+  paceCaret: "caret",
+  paceCaretCustomSpeed: "caret",
+  paceCaretStyle: "caret",
+  repeatedPace: "caret",
+
+  //appearance
   timerStyle: "appearance",
   liveSpeedStyle: "appearance",
   liveAccStyle: "appearance",
   liveBurstStyle: "appearance",
-  colorfulMode: "theme",
-  randomTheme: "theme",
   timerColor: "appearance",
   timerOpacity: "appearance",
-  stopOnError: "input",
-  showAllLines: "appearance",
-  keymapMode: "appearance",
-  keymapStyle: "appearance",
-  keymapLegendStyle: "appearance",
-  keymapLayout: "appearance",
-  keymapShowTopRow: "appearance",
-  keymapSize: "appearance",
-  fontFamily: "appearance",
-  smoothLineScroll: "appearance",
-  alwaysShowDecimalPlaces: "appearance",
-  alwaysShowWordsHistory: "behavior",
-  singleListCommandLine: "behavior",
-  capsLockWarning: "hideElements",
-  playSoundOnError: "sound",
-  playSoundOnClick: "sound",
-  soundVolume: "sound",
-  startGraphsAtZero: "appearance",
-  showOutOfFocusWarning: "hideElements",
-  paceCaret: "caret",
-  paceCaretCustomSpeed: "caret",
-  repeatedPace: "caret",
-  accountChart: "hidden",
-  minWpm: "behavior",
-  minWpmCustomSpeed: "behavior",
   highlightMode: "appearance",
   tapeMode: "appearance",
   tapeMargin: "appearance",
+  smoothLineScroll: "appearance",
+  showAllLines: "appearance",
+  alwaysShowDecimalPlaces: "appearance",
   typingSpeedUnit: "appearance",
-  ads: "ads",
-  hideExtraLetters: "input",
-  strictSpace: "input",
-  minAcc: "behavior",
-  minAccCustom: "behavior",
-  monkey: "hidden",
-  repeatQuotes: "behavior",
-  oppositeShiftMode: "input",
+  startGraphsAtZero: "appearance",
+  maxLineWidth: "appearance",
+  fontSize: "appearance",
+  fontFamily: "appearance",
+  keymapMode: "appearance",
+  keymapLayout: "appearance",
+  keymapStyle: "appearance",
+  keymapLegendStyle: "appearance",
+  keymapShowTopRow: "appearance",
+  keymapSize: "appearance",
+
+  //theme
+  flipTestColors: "theme",
+  colorfulMode: "theme",
   customBackground: "theme",
   customBackgroundSize: "theme",
   customBackgroundFilter: "theme",
-  customLayoutfluid: "behavior",
-  monkeyPowerLevel: "hidden",
-  minBurst: "behavior",
-  minBurstCustomSpeed: "behavior",
-  burstHeatmap: "test",
-  britishEnglish: "behavior",
-  lazyMode: "input",
+  autoSwitchTheme: "theme",
+  themeLight: "theme",
+  themeDark: "theme",
+  randomTheme: "theme",
+  favThemes: "theme",
+  theme: "theme",
+  customTheme: "theme",
+  customThemeColors: "theme",
+
+  //hide elements
+  showKeyTips: "hideElements",
+  showOutOfFocusWarning: "hideElements",
+  capsLockWarning: "hideElements",
   showAverage: "hideElements",
-  maxLineWidth: "appearance",
-  customPolyglot: "behavior",
+
+  //other
+  accountChart: "hidden",
+  monkey: "hidden",
+  monkeyPowerLevel: "hidden",
+
+  //ads
+  ads: "ads",
 } as const satisfies Record<ConfigKey, ConfigGroupName>;
 
 export type ConfigGroups = typeof ConfigGroupsLiteral;
