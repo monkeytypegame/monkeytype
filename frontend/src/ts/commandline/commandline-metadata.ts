@@ -106,7 +106,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     rootAlias: "words",
     options: [10, 25, 50, 100],
     input: {
-      display: "custom...",
       inputValueConvert: Number,
       afterExec: () => {
         ManualRestart.set();
@@ -122,7 +121,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroupWithInput",
     options: [15, 30, 60, 120],
     input: {
-      display: "custom...",
       inputValueConvert: Number,
       afterExec: () => {
         ManualRestart.set();
@@ -279,7 +277,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
         [1.0, "loud"],
       ]).get(val) ?? "custom...",
     input: {
-      display: "custom...",
       inputValueConvert: Number,
     },
     afterExec: () => SoundController.playClick,
