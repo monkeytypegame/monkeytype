@@ -2,8 +2,8 @@ import { genericSet } from "../config";
 import { configMetadata } from "../config-metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import {
-  CommandlineConfigMetadata,
   commandlineConfigMetadata,
+  SubgroupMeta,
 } from "./commandline-metadata";
 import { Command } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
@@ -13,15 +13,27 @@ import { z } from "zod";
 export function buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
   key: K
 ): Command {
-  return buildCommandWithSubgroup(key);
+  const commandMeta = commandlineConfigMetadata[key];
+
+  if (commandMeta === undefined || commandMeta === null) {
+    throw new Error(`No commandline metadata found for config key "${key}".`);
+  }
+
+  if (commandMeta.type === "subgroup") {
+    return buildCommandWithSubgroup(key, commandMeta);
+  }
+
+  throw new Error(
+    `Unsupported commandline metadata type for config key "${key}": ${commandMeta.type}`
+  );
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
-  key: K
+  key: K,
+  commandMeta: SubgroupMeta<K>
 ): Command {
   const configMeta = configMetadata[key];
-  const commandMeta = commandlineConfigMetadata[key];
 
   if (commandMeta === null) {
     throw new Error(`No commandline metadata found for config key "${key}".`);
@@ -44,7 +56,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
     );
   }
   const list = values.map((value) =>
-    buildSetCommand<K>(key, value, commandMeta)
+    buildSubgroupCommand<K>(key, value, commandMeta)
   );
 
   list.sort((a, b) => {
@@ -66,7 +78,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   };
 }
 
-function buildSetCommand<K extends keyof ConfigSchemas.Config>(
+function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
   key: keyof ConfigSchemas.Config,
   value: ConfigSchemas.Config[K],
   {
@@ -75,7 +87,7 @@ function buildSetCommand<K extends keyof ConfigSchemas.Config>(
     commandDisplay,
     commandAlias,
     isCommandVisible,
-  }: CommandlineConfigMetadata<K> = {}
+  }: SubgroupMeta<K>
 ): Command {
   const val = value;
 

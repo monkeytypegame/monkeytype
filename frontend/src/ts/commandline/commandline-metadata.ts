@@ -48,7 +48,7 @@ type InputProps<T extends keyof ConfigSchemas.Config> = {
   inputValueConvert: (value: string) => ConfigSchemas.Config[T];
 };
 
-type SubgroupMeta<T extends keyof ConfigSchemas.Config> = {
+export type SubgroupMeta<T extends keyof ConfigSchemas.Config> = {
   type: "subgroup";
 } & SubgroupProps<T>;
 
