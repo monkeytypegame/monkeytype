@@ -565,10 +565,12 @@ export const configMetadata: ConfigMetadataObject = {
 
   // theme
   flipTestColors: {
+    icon: "fa-adjust",
     displayString: "flip test colors",
     changeRequiresRestart: false,
   },
   colorfulMode: {
+    icon: "fa-fill-drip",
     displayString: "colorful mode",
     changeRequiresRestart: false,
   },

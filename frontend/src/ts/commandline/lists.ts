@@ -4,8 +4,6 @@ import WordsCommands from "./lists/words";
 import QuoteLengthCommands from "./lists/quote-length";
 import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
-import FlipTestColorsCommands from "./lists/flip-test-colors";
-import ColorfulModeCommands from "./lists/colorful-mode";
 import OutOfFocusWarningCommands from "./lists/out-of-focus-warning";
 import CapsLockWarningCommands from "./lists/caps-lock-warning";
 import MinWpmCommands from "./lists/min-wpm";
@@ -252,11 +250,11 @@ export const commands: CommandsSubgroup = {
 
     //theme
     ...ThemesCommands,
-    ...buildCommands(customThemeCommand),
+    customThemeCommand,
 
     ...CustomThemesListCommands,
-    ...FlipTestColorsCommands,
-    ...ColorfulModeCommands,
+    buildCommandForConfigKey("flipTestColors"),
+    buildCommandForConfigKey("colorfulMode"),
     ...AddOrRemoveThemeToFavorite,
     {
       id: "changeCustomBackground",

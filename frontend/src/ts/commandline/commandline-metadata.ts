@@ -409,4 +409,12 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
+  flipTestColors: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  colorfulMode: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
 };
