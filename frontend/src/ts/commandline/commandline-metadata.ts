@@ -398,4 +398,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       layout === "overrideSync" ? "emulator sync" : layout.replace(/_/g, " "),
     afterExec: () => TestLogic.restart(),
   },
+  keymapShowTopRow: {
+    type: "subgroup",
+    options: "fromSchema",
+    rootAlias: "keyboard",
+  },
 };

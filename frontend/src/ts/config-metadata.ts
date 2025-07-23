@@ -537,6 +537,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   keymapShowTopRow: {
+    icon: "fa-keyboard",
     displayString: "keymap show top row",
     changeRequiresRestart: false,
   },
