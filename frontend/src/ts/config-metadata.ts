@@ -604,6 +604,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   randomTheme: {
+    icon: "fa-image",
     changeRequiresRestart: false,
     displayString: "random theme",
     isBlocked: ({ value }) => {

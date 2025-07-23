@@ -3,6 +3,7 @@ import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
 import * as ModesNotice from "../elements/modes-notice";
+import { isAuthenticated } from "../firebase";
 
 //todo: remove ? here to require all config keys to be defined
 type CommandlineConfigMetadataObject = {
@@ -32,6 +33,9 @@ export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   commandAlias?: (value: ConfigSchemas.Config[T]) => string;
   commandDisplay?: (value: ConfigSchemas.Config[T]) => string;
   isCommandVisible?: (value: ConfigSchemas.Config[T]) => boolean;
+  isCommandAvailable?: (
+    value: ConfigSchemas.Config[T]
+  ) => (() => boolean) | undefined;
   hover?: (value: ConfigSchemas.Config[T]) => void;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
   options: "fromSchema" | ConfigSchemas.Config[T][];
@@ -423,5 +427,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   customBackgroundSize: {
     type: "subgroup",
     options: "fromSchema",
+  },
+  randomTheme: {
+    type: "subgroup",
+    options: "fromSchema",
+    isCommandAvailable: (value) =>
+      value === "custom" ? isAuthenticated : undefined,
   },
 };

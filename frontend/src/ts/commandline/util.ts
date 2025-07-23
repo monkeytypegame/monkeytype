@@ -141,6 +141,7 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
     commandDisplay,
     commandAlias,
     isCommandVisible,
+    isCommandAvailable,
   }: SubgroupProps<K>
 ): Command {
   const val = value;
@@ -165,6 +166,7 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
     alias: commandAlias?.(value) ?? undefined,
     configValue: val,
     visible: isCommandVisible?.(value) ?? undefined,
+    available: isCommandAvailable?.(value) ?? undefined,
     exec: (): void => {
       genericSet(key, val);
       afterExec?.(val);

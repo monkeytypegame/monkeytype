@@ -101,6 +101,24 @@ describe("CommandlineUtils", () => {
           "set0.75",
         ]);
       });
+
+      it("sets available", () => {
+        //GIVEN
+        const schema = z.boolean();
+        const isCommandAvailable = (val: any) => (val ? () => true : undefined);
+
+        //WHEN
+        const cmd = buildCommand(type, {
+          cmdMeta: {
+            isCommandAvailable,
+          },
+          schema,
+        });
+
+        //THEN
+        expect(cmd.subgroup?.list[0]?.available).toBeUndefined();
+        expect(cmd.subgroup?.list[1]?.available?.()).toBe(true);
+      });
     });
 
     describe("type subgroupWithInput", () => {

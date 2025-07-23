@@ -9,7 +9,6 @@ import CapsLockWarningCommands from "./lists/caps-lock-warning";
 import MinWpmCommands from "./lists/min-wpm";
 import MinAccCommands from "./lists/min-acc";
 import MinBurstCommands from "./lists/min-burst";
-import RandomThemeCommands from "./lists/random-theme";
 import PaceCaretModeCommands from "./lists/pace-caret";
 import EnableAdsCommands from "./lists/enable-ads";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
@@ -256,11 +255,11 @@ export const commands: CommandsSubgroup = {
       "colorfulMode",
       ...AddOrRemoveThemeToFavorite,
       "customBackground",
-      "customBackgroundSize"
+      "customBackgroundSize",
+      ...CustomBackgroundFilterCommands,
+      "randomTheme"
     ),
 
-    ...CustomBackgroundFilterCommands,
-    ...RandomThemeCommands,
     {
       id: "randomizeTheme",
       display: "Next random theme",
