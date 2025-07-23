@@ -179,10 +179,9 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   configMeta: ConfigMetadata<K>;
   schema: ZodType; //TODO better type
 }): Command {
-  const defaultValue = Config[key]?.toString() ?? "";
   const result = {
     id: `set${capitalizeFirstLetter(key)}Custom`,
-    defaultValue: () => defaultValue,
+    defaultValue: () => Config[key]?.toString() ?? "",
     display: commandMeta.display,
     alias: commandMeta.alias ?? undefined,
     input: true,

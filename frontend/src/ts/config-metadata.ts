@@ -324,6 +324,7 @@ export const configMetadata: ConfigMetadataObject = {
 
   // sound
   soundVolume: {
+    icon: "fa-volume-down",
     displayString: "sound volume",
     changeRequiresRestart: false,
   },

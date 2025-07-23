@@ -191,6 +191,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   //v
   soundVolume: {
     type: "subgroupWithInput",
+    icon: "fa-volume-down",
     options: [0.1, 0.5, 1],
     commandDisplay: (val) =>
       new Map([
