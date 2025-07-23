@@ -98,7 +98,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   words: {
-    rootDisplay: "new words",
     type: "subgroupWithInput",
     options: [10, 25, 50, 100],
     input: {
