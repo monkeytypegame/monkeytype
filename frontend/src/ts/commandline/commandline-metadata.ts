@@ -97,7 +97,23 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       TestLogic.restart();
     },
   },
-  words: null,
+  words: {
+    rootDisplay: "new words",
+    type: "subgroupWithInput",
+    options: [10, 25, 50, 100],
+    input: {
+      display: "custom...",
+      inputValueConvert: Number,
+      afterExec: () => {
+        ManualRestart.set();
+        TestLogic.restart();
+      },
+    },
+    afterExec: () => {
+      ManualRestart.set();
+      TestLogic.restart();
+    },
+  },
   time: null,
   mode: {
     type: "subgroup",

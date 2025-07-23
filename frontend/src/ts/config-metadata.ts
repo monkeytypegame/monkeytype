@@ -112,6 +112,14 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-font",
     displayString: "word count",
     changeRequiresRestart: true,
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.mode !== "words") {
+        return {
+          mode: "words",
+        };
+      }
+      return {};
+    },
   },
   time: {
     icon: "fa-clock",

@@ -1,5 +1,4 @@
 import TimeCommands from "./lists/time";
-import WordsCommands from "./lists/words";
 import QuoteLengthCommands from "./lists/quote-length";
 import MinWpmCommands from "./lists/min-wpm";
 import MinAccCommands from "./lists/min-acc";
@@ -94,7 +93,8 @@ export const commands: CommandsSubgroup = {
     buildCommandForConfigKey("mode"),
     // ...ModeCommands,
     ...TimeCommands,
-    ...WordsCommands,
+    // ...WordsCommands,
+    buildCommandForConfigKey("words"),
     ...QuoteLengthCommands,
     languageCommand,
     {
