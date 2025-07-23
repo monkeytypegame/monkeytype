@@ -420,4 +420,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   customBackground: {
     type: "input",
   },
+  customBackgroundSize: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
 };

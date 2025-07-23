@@ -583,6 +583,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   customBackgroundSize: {
+    icon: "fa-image",
     displayString: "custom background size",
     changeRequiresRestart: false,
   },

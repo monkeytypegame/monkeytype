@@ -18,7 +18,6 @@ import QuoteFavoriteCommands from "./lists/quote-favorites";
 import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import ResultScreenCommands from "./lists/result-screen";
-import CustomBackgroundSizeCommands from "./lists/background-size";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 
@@ -256,10 +255,10 @@ export const commands: CommandsSubgroup = {
       "flipTestColors",
       "colorfulMode",
       ...AddOrRemoveThemeToFavorite,
-      "customBackground"
+      "customBackground",
+      "customBackgroundSize"
     ),
 
-    ...CustomBackgroundSizeCommands,
     ...CustomBackgroundFilterCommands,
     ...RandomThemeCommands,
     {
