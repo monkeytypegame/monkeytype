@@ -351,4 +351,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     options: "fromSchema",
     isCommandVisible: (val) => val !== "wph",
   },
+  alwaysShowDecimalPlaces: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
 };

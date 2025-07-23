@@ -469,6 +469,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   alwaysShowDecimalPlaces: {
+    icon: "00",
     displayString: "always show decimal places",
     changeRequiresRestart: false,
   },
