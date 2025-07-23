@@ -4,7 +4,6 @@ import WordsCommands from "./lists/words";
 import QuoteLengthCommands from "./lists/quote-length";
 import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
-import SoundVolumeCommands from "./lists/sound-volume";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
 import SmoothLineScrollCommands from "./lists/smooth-line-scroll";
 import AlwaysShowDecimalCommands from "./lists/always-show-decimal";
@@ -218,7 +217,7 @@ export const commands: CommandsSubgroup = {
 
     //sound
     ...buildCommands(
-      ...SoundVolumeCommands,
+      "soundVolume",
       "playSoundOnClick",
       "playSoundOnError",
       "playTimeWarning"

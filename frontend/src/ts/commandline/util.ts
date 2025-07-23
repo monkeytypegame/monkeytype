@@ -1,10 +1,11 @@
-import { genericSet } from "../config";
+import Config, { genericSet } from "../config";
 import { ConfigMetadata, configMetadata } from "../config-metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import {
   CommandlineConfigMetadata,
   commandlineConfigMetadata,
-  SubgroupMeta,
+  InputProps,
+  SubgroupProps,
 } from "./commandline-metadata";
 import { Command } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
@@ -13,14 +14,14 @@ import { z, ZodSchema, ZodType } from "zod";
 function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
   if (schema instanceof z.ZodLiteral) {
     return [schema.value] as z.infer<T>[];
-  } else if (schema instanceof z.ZodUnion) {
-    return (schema.options as ZodSchema[])
-      .flatMap(getOptions)
-      .filter((it) => it !== undefined) as z.infer<T>[];
   } else if (schema instanceof z.ZodEnum) {
     return schema.options as z.infer<T>[];
   } else if (schema instanceof z.ZodBoolean) {
     return [true, false] as z.infer<T>[];
+  } else if (schema instanceof z.ZodUnion) {
+    return (schema.options as ZodSchema[])
+      .flatMap(getOptions)
+      .filter((it) => it !== undefined) as z.infer<T>[];
   }
   return undefined;
 }
@@ -48,6 +49,24 @@ function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
 
   if (commandMeta.type === "subgroup") {
     return buildCommandWithSubgroup(key, commandMeta, configMeta, schema);
+  } else if (commandMeta.type === "input") {
+    return buildInputCommand({ key, commandMeta, configMeta, schema });
+  } else if (commandMeta.type === "subgroupWithInput") {
+    const result = buildCommandWithSubgroup(
+      key,
+      commandMeta,
+      configMeta,
+      schema
+    );
+    result.subgroup?.list.push(
+      buildInputCommand({
+        key,
+        commandMeta: commandMeta.input,
+        configMeta,
+        schema,
+      })
+    );
+    return result;
   }
 
   throw new Error(
@@ -58,7 +77,7 @@ function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   key: K,
-  commandMeta: SubgroupMeta<K>,
+  commandMeta: SubgroupProps<K>,
   configMeta: ConfigMetadata<K>,
   schema: ZodType //TODO better type
 ): Command {
@@ -115,7 +134,7 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
     commandDisplay,
     commandAlias,
     isCommandVisible,
-  }: SubgroupMeta<K>
+  }: SubgroupProps<K>
 ): Command {
   const val = value;
 
@@ -147,6 +166,53 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
       hover?.(val);
     },
   };
+}
+
+function buildInputCommand<K extends keyof ConfigSchemas.Config>({
+  key,
+  commandMeta,
+  configMeta,
+  schema,
+}: {
+  key: K;
+  commandMeta: InputProps<K>;
+  configMeta: ConfigMetadata<K>;
+  schema: ZodType; //TODO better type
+}): Command {
+  const defaultValue = Config[key]?.toString() ?? "";
+  const result = {
+    id: `set${capitalizeFirstLetter(key)}Custom`,
+    defaultValue: () => defaultValue,
+    display: commandMeta.display,
+    alias: commandMeta.alias ?? undefined,
+    input: true,
+    icon: configMeta.icon ?? "fa-cog",
+
+    //@ts-expect-error this is fine
+    exec: ({ input }): void => {
+      if (input === undefined) return;
+      genericSet(key, input as ConfigSchemas.Config[K]);
+      commandMeta.afterExec?.(input as ConfigSchemas.Config[K]);
+    },
+    //TODO hover?
+  };
+
+  if ("inputValueConvert" in commandMeta) {
+    //@ts-expect-error this is fine
+    result["inputValueConvert"] = commandMeta.inputValueConvert;
+  }
+  if (commandMeta.validation !== undefined) {
+    //@ts-expect-error this is fine
+    result["validation"] = {
+      schema:
+        commandMeta.validation.schema === true
+          ? schema
+          : commandMeta.validation.schema,
+      isValid: commandMeta.validation.isValid,
+    };
+  }
+
+  return result as Command;
 }
 
 export const __testing = { _buildCommandForConfigKey };

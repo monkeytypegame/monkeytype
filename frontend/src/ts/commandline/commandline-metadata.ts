@@ -27,7 +27,7 @@ export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
   | SubgroupWithSecondKeyInputMeta<T>
   | null;
 
-type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
+export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   rootAlias?: string;
   rootDisplay?: string;
   commandAlias?: (value: ConfigSchemas.Config[T]) => string;
@@ -38,12 +38,13 @@ type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   options: "fromSchema" | ConfigSchemas.Config[T][];
 };
 
-type InputProps<T extends keyof ConfigSchemas.Config> = {
+export type InputProps<T extends keyof ConfigSchemas.Config> = {
   alias?: string;
   display: string;
+  afterExec?: (value: ConfigSchemas.Config[T]) => void;
   validation?: {
     schema?: true | ZodSchema;
-    isValid?: (value: ConfigSchemas.Config[T]) => Promise<boolean>;
+    isValid?: (value: ConfigSchemas.Config[T]) => Promise<boolean | string>;
   };
 } & (ConfigSchemas.Config[T] extends string
   ? // oxlint-disable-next-line no-empty-object-type
@@ -188,16 +189,19 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
-  //sound
+  //v
   soundVolume: {
     type: "subgroupWithInput",
     options: [0.1, 0.5, 1],
+    commandDisplay: (val) =>
+      new Map([
+        [0.1, "quiet"],
+        [0.5, "medium"],
+        [1.0, "loud"],
+      ]).get(val) ?? "custom...",
     input: {
       display: "custom...",
-      validation: {
-        schema: true,
-        isValid: async (val) => (val + 10) % 2 === 0,
-      },
+      validation: { schema: true },
       inputValueConvert: Number,
     },
     afterExec: () => SoundController.playClick,

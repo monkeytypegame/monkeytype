@@ -19,10 +19,11 @@ describe("CommandlineUtils", () => {
     vi.resetModules();
     vi.restoreAllMocks();
   });
-  describe("type subgroup", () => {
-    const type = "subgroup";
-    describe("buildCommandWithSubgroup", () => {
-      it("detects values for boolean schema", () => {
+  describe("buildCommandWithSubgroup", () => {
+    describe("type subgroup", () => {
+      const type = "subgroup";
+
+      it("detects options for boolean schema", () => {
         //GIVEN
         const schema = z.boolean();
 
@@ -36,7 +37,7 @@ describe("CommandlineUtils", () => {
         ]);
       });
 
-      it("detects values for enum schema", () => {
+      it("detects options for enum schema", () => {
         //GIVEN
         const schema = z.enum(["one", "two", "three"]);
 
@@ -51,7 +52,7 @@ describe("CommandlineUtils", () => {
         ]);
       });
 
-      it("detects values for union schema of enum + literral", () => {
+      it("detects options for union schema of enum + literral", () => {
         //GIVEN
         const schema = z.literal("default").or(z.enum(["one", "two", "three"]));
 
@@ -67,7 +68,7 @@ describe("CommandlineUtils", () => {
         ]);
       });
 
-      it("uses commandValues over schema values", () => {
+      it("uses preset options over schema values", () => {
         //GIVEN
         const schema = z.enum(["one", "two", "three"]);
 
@@ -84,7 +85,7 @@ describe("CommandlineUtils", () => {
         ]);
       });
 
-      it("uses commandValues for number schema", () => {
+      it("uses preset option  for number schema", () => {
         //GIVEN
         const schema = z.number().int();
 
@@ -100,6 +101,173 @@ describe("CommandlineUtils", () => {
           "set0.75",
         ]);
       });
+    });
+
+    describe("type subgroupWithInput", () => {
+      const type = "subgroupWithInput";
+
+      it("uses commandValues for number schema", () => {
+        //GIVEN
+        const afterExec = () => "test";
+        const schema = z.number().int();
+
+        //WHEN
+        const cmd = buildCommand(type, {
+          key: "test" as any,
+          cmdMeta: {
+            options: [0.25, 0.75],
+            input: {
+              display: "custom test...",
+              inputValueConvert: Number,
+              afterExec,
+              alias: "alias",
+            },
+          },
+          configMeta: {
+            icon: "icon",
+          },
+          schema,
+        });
+
+        const inputCmd = cmd.subgroup?.list.at(cmd.subgroup?.list.length - 1);
+
+        //THEN
+        expect(cmd.subgroup?.list.map((it) => it.id)).toEqual([
+          "setTest0.25",
+          "setTest0.75",
+          "setTestCustom",
+        ]);
+
+        expect(inputCmd).toEqual({
+          id: "setTestCustom",
+          display: "custom test...",
+          defaultValue: expect.anything(),
+          alias: "alias",
+          input: true,
+          icon: "icon",
+          exec: expect.anything(),
+          inputValueConvert: Number,
+        });
+      });
+    });
+  });
+
+  describe("type input", () => {
+    const type = "input";
+
+    it("has basic properties", () => {
+      //GIVEN
+      const afterExec = () => "test";
+      const schema = z.string();
+      //WHEN
+      const cmd = buildCommand(type, {
+        key: "test" as any,
+        cmdMeta: {
+          display: "custom test...",
+          afterExec,
+          alias: "alias",
+        },
+        configMeta: {
+          icon: "icon",
+        },
+        schema,
+      });
+
+      //THEN
+      expect(cmd).toEqual({
+        id: "setTestCustom",
+        display: "custom test...",
+        alias: "alias",
+        input: true,
+        icon: "icon",
+        exec: expect.anything(),
+        defaultValue: expect.anything(),
+      });
+    });
+
+    it("uses inputValueConvert", () => {
+      //GIVEN
+      const schema = z.number().int();
+
+      //WHEN
+      const cmd = buildCommand(type, {
+        key: "test" as any,
+        cmdMeta: {
+          inputValueConvert: Number,
+        },
+
+        schema,
+      });
+
+      //THEN
+      expect(cmd).toEqual(
+        expect.objectContaining({
+          inputValueConvert: Number,
+        })
+      );
+    });
+
+    it("uses validation from schema", () => {
+      //GIVEN
+      const schema = z.enum(["on", "off"]);
+
+      //WHEN
+      const cmd = buildCommand(type, {
+        key: "test" as any,
+        cmdMeta: {
+          validation: { schema: true },
+        },
+        schema,
+      });
+
+      expect(cmd).toEqual(
+        expect.objectContaining({
+          validation: { schema },
+        })
+      );
+    });
+
+    it("uses validation from custom", () => {
+      //GIVEN
+      const schema = z.enum(["on", "off"]);
+      const customSchema = z.literal("off");
+
+      //WHEN
+      const cmd = buildCommand(type, {
+        key: "test" as any,
+        cmdMeta: {
+          validation: { schema: customSchema },
+        },
+        schema,
+      });
+
+      expect(cmd).toEqual(
+        expect.objectContaining({
+          validation: { schema: customSchema },
+        })
+      );
+    });
+
+    it("uses validation with isValid", () => {
+      //GIVEN
+      const schema = z.enum(["on", "off"]);
+      const isValid = (_val: any): Promise<boolean | string> =>
+        Promise.resolve("error");
+
+      //WHEN
+      const cmd = buildCommand(type, {
+        key: "test" as any,
+        cmdMeta: {
+          validation: { schema, isValid: isValid },
+        },
+        schema,
+      });
+
+      expect(cmd).toEqual(
+        expect.objectContaining({
+          validation: { schema, isValid },
+        })
+      );
     });
   });
 });
