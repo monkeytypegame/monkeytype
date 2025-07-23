@@ -26,7 +26,6 @@ import QuoteFavoriteCommands from "./lists/quote-favorites";
 import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import FontSizeCommands from "./lists/font-size";
-import MaxLineWidthCommands from "./lists/max-line-width";
 import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundSizeCommands from "./lists/background-size";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
@@ -243,10 +242,10 @@ export const commands: CommandsSubgroup = {
       "showAllLines",
       "typingSpeedUnit",
       "alwaysShowDecimalPlaces",
-      "startGraphsAtZero"
+      "startGraphsAtZero",
+      "maxLineWidth"
     ),
 
-    ...MaxLineWidthCommands,
     ...FontSizeCommands,
     ...FontFamilyCommands,
     ...KeymapModeCommands,

@@ -359,4 +359,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
+  maxLineWidth: {
+    type: "input",
+    inputValueConvert: Number,
+    alias: "page",
+  },
 };

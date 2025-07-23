@@ -484,6 +484,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   maxLineWidth: {
+    icon: "fa-text-width",
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "max line width",
