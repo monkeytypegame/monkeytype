@@ -1,5 +1,5 @@
 import { genericSet } from "../config";
-import { configMetadata } from "../config-metadata";
+import { ConfigMetadata, configMetadata } from "../config-metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import {
   CommandlineConfigMetadata,
@@ -7,7 +7,22 @@ import {
 } from "./commandline-metadata";
 import { Command } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { z } from "zod";
+import { z, ZodSchema } from "zod";
+
+function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
+  if (schema instanceof z.ZodLiteral) {
+    return [schema.value] as z.infer<T>[];
+  } else if (schema instanceof z.ZodUnion) {
+    return (schema.options as ZodSchema[])
+      .flatMap(getOptions)
+      .filter((it) => it !== undefined) as z.infer<T>[];
+  } else if (schema instanceof z.ZodEnum) {
+    return schema.options as z.infer<T>[];
+  } else if (schema instanceof z.ZodBoolean) {
+    return [true, false] as z.infer<T>[];
+  }
+  return undefined;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 export function buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
@@ -22,20 +37,30 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
 ): Command {
   const configMeta = configMetadata[key];
   const commandMeta = commandlineConfigMetadata[key];
+  const schema = ConfigSchemas.ConfigSchema.shape[key];
 
+  if (commandMeta === undefined) {
+    throw new Error(`missing command meta for key ${key}`);
+  }
+
+  return _buildCommandForConfigKey(key, configMeta, commandMeta, schema);
+}
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
+  key: K,
+  configMeta: ConfigMetadata<K>,
+  commandMeta: CommandlineConfigMetadata<K>,
+  schema: ZodSchema //TODO better type
+): Command {
   const display =
     commandMeta?.rootDisplay ??
     `${capitalizeFirstLetter(configMeta?.displayString ?? key)}...`;
-  const schema = ConfigSchemas.ConfigSchema.shape[key];
 
-  let values: ConfigSchemas.Config[K][];
+  let values = getOptions(schema) as ConfigSchemas.Config[K][];
 
-  if (schema instanceof z.ZodEnum) {
-    values = Object.keys(schema.Values) as ConfigSchemas.Config[K][];
-  } else if (schema instanceof z.ZodBoolean) {
-    values = [true, false] as ConfigSchemas.Config[K][];
-  } else {
+  if (values === undefined) {
     throw new Error(
+      //@ts-expect-error TODO find better type
       `Unsupported schema type for key "${key}": ${schema._def.typeName}`
     );
   }
@@ -104,3 +129,5 @@ function buildSetCommand<K extends keyof ConfigSchemas.Config>(
     },
   };
 }
+
+export const __testing = { _buildCommandForConfigKey };

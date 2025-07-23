@@ -286,7 +286,6 @@ export const configMetadata: ConfigMetadataObject = {
         return {
           freedomMode: false,
           stopOnError: "off",
-          icon: "fa-exclamation",
         };
       }
       return {};
