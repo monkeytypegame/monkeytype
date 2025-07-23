@@ -364,4 +364,14 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     inputValueConvert: Number,
     alias: "page",
   },
+  fontSize: {
+    type: "input",
+    inputValueConvert: Number,
+  },
+  keymapMode: {
+    type: "subgroup",
+    options: "fromSchema",
+    rootAlias: "keyboard",
+    commandAlias: (val) => (val === "react" ? "flash" : ""),
+  },
 };

@@ -14,7 +14,6 @@ import MinBurstCommands from "./lists/min-burst";
 import CustomThemeCommands from "./lists/custom-theme";
 import RandomThemeCommands from "./lists/random-theme";
 import PaceCaretModeCommands from "./lists/pace-caret";
-import KeymapModeCommands from "./lists/keymap-mode";
 import KeymapStyleCommands from "./lists/keymap-style";
 import KeymapLegendStyleCommands from "./lists/keymap-legend-style";
 import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
@@ -25,7 +24,6 @@ import BailOutCommands from "./lists/bail-out";
 import QuoteFavoriteCommands from "./lists/quote-favorites";
 import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
-import FontSizeCommands from "./lists/font-size";
 import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundSizeCommands from "./lists/background-size";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
@@ -243,12 +241,12 @@ export const commands: CommandsSubgroup = {
       "typingSpeedUnit",
       "alwaysShowDecimalPlaces",
       "startGraphsAtZero",
-      "maxLineWidth"
+      "maxLineWidth",
+      "fontSize",
+      ...FontFamilyCommands,
+      "keymapMode"
     ),
 
-    ...FontSizeCommands,
-    ...FontFamilyCommands,
-    ...KeymapModeCommands,
     ...KeymapStyleCommands,
     ...KeymapLegendStyleCommands,
     ...KeymapSizeCommands,

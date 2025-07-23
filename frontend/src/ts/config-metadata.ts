@@ -500,6 +500,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   fontSize: {
+    icon: "fa-font",
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "font size",
@@ -516,6 +517,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   keymapMode: {
+    icon: "fa-keyboard",
     displayString: "keymap mode",
     changeRequiresRestart: false,
   },
