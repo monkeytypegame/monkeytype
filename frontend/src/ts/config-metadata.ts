@@ -540,6 +540,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   keymapSize: {
+    icon: "fa-keyboard",
     triggerResize: true,
     changeRequiresRestart: false,
     displayString: "keymap size",

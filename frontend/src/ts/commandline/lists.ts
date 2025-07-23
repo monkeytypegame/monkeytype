@@ -15,7 +15,6 @@ import CustomThemeCommands from "./lists/custom-theme";
 import RandomThemeCommands from "./lists/random-theme";
 import PaceCaretModeCommands from "./lists/pace-caret";
 import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
-import KeymapSizeCommands from "./lists/keymap-size";
 import EnableAdsCommands from "./lists/enable-ads";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import BailOutCommands from "./lists/bail-out";
@@ -244,10 +243,10 @@ export const commands: CommandsSubgroup = {
       ...FontFamilyCommands,
       "keymapMode",
       "keymapStyle",
-      "keymapLegendStyle"
+      "keymapLegendStyle",
+      "keymapSize"
     ),
 
-    ...KeymapSizeCommands,
     ...KeymapLayoutsCommands,
     ...KeymapShowTopRowCommands,
 

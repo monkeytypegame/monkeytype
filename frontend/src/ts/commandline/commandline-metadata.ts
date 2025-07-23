@@ -384,4 +384,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     options: "fromSchema",
     rootAlias: "keyboard",
   },
+  keymapSize: {
+    type: "input",
+    alias: "keyboard",
+    inputValueConvert: Number,
+  },
 };
