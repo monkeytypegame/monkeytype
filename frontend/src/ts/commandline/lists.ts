@@ -47,7 +47,6 @@ import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
 import {
   ConfigKey,
-  CustomBackgroundSchema,
   CustomLayoutFluid,
   CustomLayoutFluidSchema,
   CustomPolyglot,
@@ -249,33 +248,17 @@ export const commands: CommandsSubgroup = {
     ),
 
     //theme
-    ...ThemesCommands,
-    customThemeCommand,
+    ...buildCommands(
+      ...ThemesCommands,
+      customThemeCommand,
 
-    ...CustomThemesListCommands,
-    buildCommandForConfigKey("flipTestColors"),
-    buildCommandForConfigKey("colorfulMode"),
-    ...AddOrRemoveThemeToFavorite,
-    {
-      id: "changeCustomBackground",
-      display: "Custom background...",
-      icon: "fa-image",
-      defaultValue: (): string => {
-        return Config.customBackground;
-      },
-      input: true,
-      exec: ({ input }): void => {
-        const parsed = CustomBackgroundSchema.safeParse(input);
-        if (!parsed.success) {
-          Notifications.add(
-            `Invalid custom background URL (${parsed.error.issues[0]?.message})`,
-            0
-          );
-          return;
-        }
-        UpdateConfig.setCustomBackground(input ?? "");
-      },
-    },
+      ...CustomThemesListCommands,
+      "flipTestColors",
+      "colorfulMode",
+      ...AddOrRemoveThemeToFavorite,
+      "customBackground"
+    ),
+
     ...CustomBackgroundSizeCommands,
     ...CustomBackgroundFilterCommands,
     ...RandomThemeCommands,

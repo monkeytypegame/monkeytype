@@ -417,4 +417,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
+  customBackground: {
+    type: "input",
+  },
 };

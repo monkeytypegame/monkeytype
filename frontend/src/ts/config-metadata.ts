@@ -575,6 +575,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   customBackground: {
+    icon: "fa-image",
     displayString: "custom background",
     changeRequiresRestart: false,
     overrideValue: ({ value }) => {
