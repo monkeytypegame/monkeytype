@@ -103,6 +103,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   words: {
     type: "subgroupWithInput",
+    rootAlias: "words",
     options: [10, 25, 50, 100],
     input: {
       display: "custom...",
@@ -135,7 +136,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   mode: {
     type: "subgroup",
-    options: ["time", "words", "quote", "zen", "custom"],
+    options: "fromSchema",
     afterExec: () => {
       ManualRestart.set();
       TestLogic.restart();
