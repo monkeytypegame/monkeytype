@@ -643,6 +643,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   customTheme: {
+    icon: "fa-palette",
     displayString: "custom theme",
     changeRequiresRestart: false,
   },

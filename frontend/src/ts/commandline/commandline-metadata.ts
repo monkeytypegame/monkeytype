@@ -191,7 +191,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
-  //v
+  //sound
   soundVolume: {
     type: "subgroupWithInput",
     options: [0.1, 0.5, 1],
@@ -402,5 +402,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
     rootAlias: "keyboard",
+  },
+
+  //themes
+  customTheme: {
+    type: "subgroup",
+    options: "fromSchema",
   },
 };
