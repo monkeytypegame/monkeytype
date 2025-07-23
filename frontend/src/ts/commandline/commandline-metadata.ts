@@ -3,7 +3,7 @@ import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
 import * as ModesNotice from "../elements/modes-notice";
-import { z, ZodSchema } from "zod";
+import { ZodSchema } from "zod";
 
 //todo: remove ? here to require all config keys to be defined
 type CommandlineConfigMetadataObject = {
@@ -20,15 +20,12 @@ type CommandlineConfigMetadataObject = {
 //   afterExec?: (value: ConfigSchemas.Config[T]) => void;
 // };
 
-export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> = {
-  type: string;
-} & (
+export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
   | SubgroupMeta<T>
   | InputMeta<T>
   | SubgroupWithInputMeta<T>
   | SubgroupWithSecondKeyInputMeta<T>
-  | null
-);
+  | null;
 
 type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   rootAlias?: string;
@@ -44,12 +41,16 @@ type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
 type InputProps<T extends keyof ConfigSchemas.Config> = {
   alias?: string;
   display: string;
-  validation: {
-    schema: ZodSchema;
-    isValid: (value: ConfigSchemas.Config[T]) => Promise<boolean>;
+  validation?: {
+    schema?: true | ZodSchema;
+    isValid?: (value: ConfigSchemas.Config[T]) => Promise<boolean>;
   };
-  inputValueConvert: (value: string) => ConfigSchemas.Config[T];
-};
+} & (ConfigSchemas.Config[T] extends string
+  ? // oxlint-disable-next-line no-empty-object-type
+    {}
+  : {
+      inputValueConvert: (val: string) => ConfigSchemas.Config[T];
+    });
 
 export type SubgroupMeta<T extends keyof ConfigSchemas.Config> = {
   type: "subgroup";
@@ -194,7 +195,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     input: {
       display: "custom...",
       validation: {
-        schema: z.boolean(),
+        schema: true,
         isValid: async (val) => (val + 10) % 2 === 0,
       },
       inputValueConvert: Number,

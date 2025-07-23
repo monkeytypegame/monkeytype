@@ -105,7 +105,7 @@ describe("CommandlineUtils", () => {
 });
 
 function buildCommand<K extends ConfigKey>(
-  type: CommandlineConfigMetadata<K>["type"],
+  type: string,
   {
     configMeta,
     cmdMeta,
