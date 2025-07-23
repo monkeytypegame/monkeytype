@@ -125,6 +125,14 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-clock",
     changeRequiresRestart: true,
     displayString: "time",
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.mode !== "time") {
+        return {
+          mode: "time",
+        };
+      }
+      return {};
+    },
   },
   mode: {
     icon: "fa-bars",

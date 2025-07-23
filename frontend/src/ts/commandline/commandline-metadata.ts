@@ -113,7 +113,22 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       TestLogic.restart();
     },
   },
-  time: null,
+  time: {
+    type: "subgroupWithInput",
+    options: [15, 30, 60, 120],
+    input: {
+      display: "custom...",
+      inputValueConvert: Number,
+      afterExec: () => {
+        ManualRestart.set();
+        TestLogic.restart();
+      },
+    },
+    afterExec: () => {
+      ManualRestart.set();
+      TestLogic.restart();
+    },
+  },
   mode: {
     type: "subgroup",
     options: ["time", "words", "quote", "zen", "custom"],
