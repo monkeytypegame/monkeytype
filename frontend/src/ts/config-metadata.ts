@@ -526,6 +526,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   keymapStyle: {
+    icon: "fa-keyboard",
     displayString: "keymap style",
     changeRequiresRestart: false,
   },

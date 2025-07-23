@@ -374,4 +374,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     rootAlias: "keyboard",
     commandAlias: (val) => (val === "react" ? "flash" : ""),
   },
+  keymapStyle: {
+    type: "subgroup",
+    options: "fromSchema",
+    rootAlias: "keyboard",
+  },
 };
