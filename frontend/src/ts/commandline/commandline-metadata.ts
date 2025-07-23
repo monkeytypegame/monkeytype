@@ -30,6 +30,7 @@ export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
 export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   rootAlias?: string;
   rootDisplay?: string;
+  rootVisible?: boolean;
   commandAlias?: (value: ConfigSchemas.Config[T]) => string;
   commandDisplay?: (value: ConfigSchemas.Config[T]) => string;
   isCommandVisible?: (value: ConfigSchemas.Config[T]) => boolean;
@@ -433,5 +434,41 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     options: "fromSchema",
     isCommandAvailable: (value) =>
       value === "custom" ? isAuthenticated : undefined,
+  },
+
+  //showhide
+  showKeyTips: {
+    type: "subgroup",
+    options: "fromSchema",
+    rootDisplay: "Key tips...",
+  },
+  showOutOfFocusWarning: {
+    type: "subgroup",
+    options: "fromSchema",
+    rootDisplay: "Out of focus warning...",
+  },
+  capsLockWarning: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  showAverage: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
+  monkeyPowerLevel: {
+    type: "subgroup",
+    options: "fromSchema",
+    rootAlias: "powermode",
+    rootVisible: false,
+    commandDisplay: (value) => {
+      const map: Record<ConfigSchemas.Config["monkeyPowerLevel"], string> = {
+        off: "off",
+        "1": "mellow",
+        "2": "high",
+        "3": "ultra",
+        "4": "over 9000",
+      };
+      return map[value];
+    },
   },
 };

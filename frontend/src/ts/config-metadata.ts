@@ -659,18 +659,22 @@ export const configMetadata: ConfigMetadataObject = {
 
   // hide elements
   showKeyTips: {
+    icon: "fa-question",
     displayString: "show key tips",
     changeRequiresRestart: false,
   },
   showOutOfFocusWarning: {
+    icon: "fa-exclamation",
     displayString: "show out of focus warning",
     changeRequiresRestart: false,
   },
   capsLockWarning: {
+    icon: "fa-exclamation-triangle",
     displayString: "caps lock warning",
     changeRequiresRestart: false,
   },
   showAverage: {
+    icon: "fa-chart-bar",
     displayString: "show average",
     changeRequiresRestart: false,
   },
@@ -690,10 +694,12 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   monkey: {
+    icon: "fa-egg",
     displayString: "monkey",
     changeRequiresRestart: false,
   },
   monkeyPowerLevel: {
+    icon: "fa-egg",
     displayString: "monkey power level",
     changeRequiresRestart: false,
   },

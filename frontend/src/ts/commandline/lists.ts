@@ -2,16 +2,11 @@ import ModeCommands from "./lists/mode";
 import TimeCommands from "./lists/time";
 import WordsCommands from "./lists/words";
 import QuoteLengthCommands from "./lists/quote-length";
-import ShowAverageCommands from "./lists/show-average";
-import KeyTipsCommands from "./lists/key-tips";
-import OutOfFocusWarningCommands from "./lists/out-of-focus-warning";
-import CapsLockWarningCommands from "./lists/caps-lock-warning";
 import MinWpmCommands from "./lists/min-wpm";
 import MinAccCommands from "./lists/min-acc";
 import MinBurstCommands from "./lists/min-burst";
 import PaceCaretModeCommands from "./lists/pace-caret";
 import EnableAdsCommands from "./lists/enable-ads";
-import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import BailOutCommands from "./lists/bail-out";
 import QuoteFavoriteCommands from "./lists/quote-favorites";
 import ResultSavingCommands from "./lists/result-saving";
@@ -19,7 +14,6 @@ import NavigationCommands from "./lists/navigation";
 import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
-
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
@@ -85,6 +79,7 @@ const stopOnErrorCommand = buildCommandForConfigKey("stopOnError");
 const confidenceModeCommand = buildCommandForConfigKey("confidenceMode");
 const lazyModeCommand = buildCommandForConfigKey("lazyMode");
 const layoutCommand = buildCommandForConfigKey("layout");
+const showAverageCommand = buildCommandForConfigKey("showAverage");
 
 const keymapLayoutCommand = buildCommandForConfigKey("keymapLayout");
 
@@ -271,11 +266,13 @@ export const commands: CommandsSubgroup = {
     },
 
     //showhide elements
-    ...KeyTipsCommands,
-    ...OutOfFocusWarningCommands,
-    ...CapsLockWarningCommands,
-    ...ShowAverageCommands,
-    ...MonkeyPowerLevelCommands,
+    ...buildCommands(
+      "showKeyTips",
+      "showOutOfFocusWarning",
+      "capsLockWarning",
+      showAverageCommand,
+      "monkeyPowerLevel"
+    ),
     {
       id: "toggleMonkey",
       display: "Toggle Monkey",
@@ -415,7 +412,7 @@ const lists = {
   difficulty: difficultyCommand.subgroup,
   lazyMode: lazyModeCommand.subgroup,
   paceCaretMode: PaceCaretModeCommands[0]?.subgroup,
-  showAverage: ShowAverageCommands[0]?.subgroup,
+  showAverage: showAverageCommand.subgroup,
   minWpm: MinWpmCommands[0]?.subgroup,
   minAcc: MinAccCommands[0]?.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
