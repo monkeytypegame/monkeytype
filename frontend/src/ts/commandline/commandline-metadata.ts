@@ -3,7 +3,7 @@ import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
 import * as ModesNotice from "../elements/modes-notice";
-import { ZodSchema } from "zod";
+import { z, ZodSchema } from "zod";
 
 //todo: remove ? here to require all config keys to be defined
 type CommandlineConfigMetadataObject = {
@@ -39,11 +39,11 @@ type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
 };
 
 type InputProps<T extends keyof ConfigSchemas.Config> = {
-  alias: string;
+  alias?: string;
   display: string;
   validation: {
     schema: ZodSchema;
-    isValid: (value: ConfigSchemas.Config[T]) => boolean;
+    isValid: (value: ConfigSchemas.Config[T]) => Promise<boolean>;
   };
   inputValueConvert: (value: string) => ConfigSchemas.Config[T];
 };
@@ -172,11 +172,32 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
+  layout: {
+    type: "subgroup",
+    options: "fromSchema",
+    commandDisplay: (layout) =>
+      layout === "default" ? "off" : layout.replace(/_/g, " "),
+
+    afterExec: () => TestLogic.restart(),
+  },
   codeUnindentOnBackspace: {
     type: "subgroup",
     options: "fromSchema",
   },
   //sound
+  soundVolume: {
+    type: "subgroupWithInput",
+    options: [0.1, 0.5, 1],
+    input: {
+      display: "custom...",
+      validation: {
+        schema: z.boolean(),
+        isValid: async (val) => (val + 10) % 2 === 0,
+      },
+      inputValueConvert: Number,
+    },
+    afterExec: () => SoundController.playClick,
+  },
   playSoundOnClick: {
     type: "subgroup",
     options: "fromSchema",

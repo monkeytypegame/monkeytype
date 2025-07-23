@@ -286,7 +286,6 @@ export const configMetadata: ConfigMetadataObject = {
         return {
           freedomMode: false,
           stopOnError: "off",
-          icon: "fa-exclamation",
         };
       }
       return {};
@@ -313,6 +312,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   layout: {
+    icon: "fa-keyboard",
     displayString: "layout",
     changeRequiresRestart: true,
   },
