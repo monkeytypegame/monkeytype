@@ -706,6 +706,7 @@ export const configMetadata: ConfigMetadataObject = {
 
   // ads
   ads: {
+    icon: "fa-ad",
     changeRequiresRestart: false,
     isBlocked: ({ value }) => {
       if (value !== "off" && isDevEnvironment()) {

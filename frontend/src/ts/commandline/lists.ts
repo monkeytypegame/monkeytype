@@ -6,7 +6,6 @@ import MinWpmCommands from "./lists/min-wpm";
 import MinAccCommands from "./lists/min-acc";
 import MinBurstCommands from "./lists/min-burst";
 import PaceCaretModeCommands from "./lists/pace-caret";
-import EnableAdsCommands from "./lists/enable-ads";
 import BailOutCommands from "./lists/bail-out";
 import QuoteFavoriteCommands from "./lists/quote-favorites";
 import ResultSavingCommands from "./lists/result-saving";
@@ -80,10 +79,9 @@ const confidenceModeCommand = buildCommandForConfigKey("confidenceMode");
 const lazyModeCommand = buildCommandForConfigKey("lazyMode");
 const layoutCommand = buildCommandForConfigKey("layout");
 const showAverageCommand = buildCommandForConfigKey("showAverage");
-
 const keymapLayoutCommand = buildCommandForConfigKey("keymapLayout");
-
 const customThemeCommand = buildCommandForConfigKey("customTheme");
+const adsCommand = buildCommandForConfigKey("ads");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -284,7 +282,7 @@ export const commands: CommandsSubgroup = {
     },
 
     //danger zone
-    ...EnableAdsCommands,
+    adsCommand,
 
     //other
     ...LoadChallengeCommands,
@@ -404,7 +402,7 @@ export const commands: CommandsSubgroup = {
 
 const lists = {
   keymapLayouts: keymapLayoutCommand.subgroup,
-  enableAds: EnableAdsCommands[0]?.subgroup,
+  enableAds: adsCommand.subgroup,
   customThemesList: customThemeCommand.subgroup,
   themes: ThemesCommands[0]?.subgroup,
   loadChallenge: LoadChallengeCommands[0]?.subgroup,

@@ -471,4 +471,10 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       return map[value];
     },
   },
+
+  //danger zone
+  ads: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
 };
