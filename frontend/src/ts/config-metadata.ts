@@ -26,7 +26,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   /**
    * Icon to display in the commandline and settings
    */
-  icon?: string;
+  icon: string;
 
   // commandline?: {
   //   displayValues?: ConfigSchemas.Config[K] extends string | number | symbol
@@ -109,14 +109,17 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   words: {
+    icon: "fa-font",
     displayString: "word count",
     changeRequiresRestart: true,
   },
   time: {
+    icon: "fa-clock",
     changeRequiresRestart: true,
     displayString: "time",
   },
   mode: {
+    icon: "fa-bars",
     changeRequiresRestart: true,
     overrideConfig: ({ value }) => {
       if (value === "custom" || value === "quote" || value === "zen") {
@@ -134,6 +137,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   quoteLength: {
+    icon: "fa-quote-right",
     displayString: "quote length",
     changeRequiresRestart: true,
   },
@@ -143,6 +147,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   burstHeatmap: {
+    icon: "fa-fire",
     displayString: "burst heatmap",
     changeRequiresRestart: false,
   },
@@ -183,6 +188,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   minWpmCustomSpeed: {
+    icon: "fa-bomb",
     displayString: "min speed custom",
     changeRequiresRestart: true,
   },
@@ -192,6 +198,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   minAccCustom: {
+    icon: "fa-bomb",
     displayString: "min accuracy custom",
     changeRequiresRestart: true,
   },
@@ -201,6 +208,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   minBurstCustomSpeed: {
+    icon: "fa-bomb",
     displayString: "min burst custom speed",
     changeRequiresRestart: true,
   },
@@ -226,6 +234,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   customLayoutfluid: {
+    icon: "fa-tint",
     displayString: "custom layoutfluid",
     changeRequiresRestart: true,
     overrideValue: ({ value }) => {
@@ -233,6 +242,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   customPolyglot: {
+    icon: "fa-language",
     displayString: "custom polyglot",
     changeRequiresRestart: false,
     overrideValue: ({ value }) => {
@@ -356,6 +366,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   paceCaret: {
+    icon: "fa-i-cursor",
     displayString: "pace caret",
     changeRequiresRestart: false,
     isBlocked: ({ value }) => {
@@ -372,6 +383,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   paceCaretCustomSpeed: {
+    icon: "fa-i-cursor",
     displayString: "pace caret custom speed",
     changeRequiresRestart: false,
   },
@@ -513,6 +525,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   fontFamily: {
+    icon: "fa-font",
     displayString: "font family",
     changeRequiresRestart: false,
   },
@@ -588,23 +601,27 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   customBackgroundFilter: {
+    icon: "fa-image",
     displayString: "custom background filter",
     changeRequiresRestart: false,
   },
   autoSwitchTheme: {
+    icon: "fa-palette",
     displayString: "auto switch theme",
     changeRequiresRestart: false,
   },
   themeLight: {
+    icon: "fa-palette",
     displayString: "theme light",
     changeRequiresRestart: false,
   },
   themeDark: {
+    icon: "fa-palette",
     displayString: "theme dark",
     changeRequiresRestart: false,
   },
   randomTheme: {
-    icon: "fa-image",
+    icon: "fa-palette",
     changeRequiresRestart: false,
     displayString: "random theme",
     isBlocked: ({ value }) => {
@@ -636,10 +653,12 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   favThemes: {
+    icon: "fa-palette",
     displayString: "favorite themes",
     changeRequiresRestart: false,
   },
   theme: {
+    icon: "fa-palette",
     changeRequiresRestart: false,
     overrideConfig: () => {
       return {
@@ -653,6 +672,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   customThemeColors: {
+    icon: "fa-palette",
     displayString: "custom theme colors",
     changeRequiresRestart: false,
   },
@@ -681,6 +701,7 @@ export const configMetadata: ConfigMetadataObject = {
 
   // other (hidden)
   accountChart: {
+    icon: "fa-chart-line",
     displayString: "account chart",
     changeRequiresRestart: false,
     overrideValue: ({ value, currentValue }) => {
