@@ -43,10 +43,10 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
     throw new Error(`missing command meta for key ${key}`);
   }
 
-  return _buildCommandForConfigKey(key, configMeta, commandMeta, schema);
+  return _buildCommandWithSubgroup(key, configMeta, commandMeta, schema);
 }
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
+function _buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   key: K,
   configMeta: ConfigMetadata<K>,
   commandMeta: CommandlineConfigMetadata<K>,
@@ -130,4 +130,4 @@ function buildSetCommand<K extends keyof ConfigSchemas.Config>(
   };
 }
 
-export const __testing = { _buildCommandForConfigKey };
+export const __testing = { _buildCommandWithSubgroup };

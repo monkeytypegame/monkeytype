@@ -7,7 +7,7 @@ import type { ConfigKey } from "@monkeytype/schemas/configs";
 import type { ConfigMetadata } from "../../src/ts/config-metadata";
 import { z, ZodSchema } from "zod";
 
-const buildCommandForConfigKey = Util.__testing._buildCommandForConfigKey;
+const buildCOmmandWithSubgroup = Util.__testing._buildCommandWithSubgroup;
 
 describe("CommandlineUtils", () => {
   vi.mock("../../src/ts/config-metadata", () => ({ configMetadata: [] }));
@@ -19,7 +19,7 @@ describe("CommandlineUtils", () => {
     vi.resetModules();
     vi.restoreAllMocks();
   });
-  describe("buildCommandForConfigKey", () => {
+  describe("buildCommandWithSubgroup", () => {
     it("detects values for boolean schema", () => {
       //GIVEN
       const schema = z.boolean();
@@ -77,7 +77,7 @@ function buildCommand<K extends ConfigKey>({
   schema?: ZodSchema;
   key?: K;
 }) {
-  return buildCommandForConfigKey(
+  return buildCOmmandWithSubgroup(
     key ?? ("" as any),
     configMeta ?? ({} as any),
     cmdMeta ?? ({} as any),
