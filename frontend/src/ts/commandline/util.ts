@@ -204,10 +204,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   if (commandMeta.validation !== undefined) {
     //@ts-expect-error this is fine
     result["validation"] = {
-      schema:
-        commandMeta.validation.schema === true
-          ? schema
-          : commandMeta.validation.schema,
+      schema: commandMeta.validation.schema === true ? schema : undefined,
       isValid: commandMeta.validation.isValid,
     };
   }

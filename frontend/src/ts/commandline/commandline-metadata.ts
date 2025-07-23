@@ -3,7 +3,6 @@ import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
 import * as ModesNotice from "../elements/modes-notice";
-import { ZodSchema } from "zod";
 
 //todo: remove ? here to require all config keys to be defined
 type CommandlineConfigMetadataObject = {
@@ -43,7 +42,7 @@ export type InputProps<T extends keyof ConfigSchemas.Config> = {
   display: string;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
   validation?: {
-    schema?: true | ZodSchema;
+    schema?: true;
     isValid?: (value: ConfigSchemas.Config[T]) => Promise<boolean | string>;
   };
 } & (ConfigSchemas.Config[T] extends string

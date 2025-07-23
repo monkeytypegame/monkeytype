@@ -227,27 +227,6 @@ describe("CommandlineUtils", () => {
       );
     });
 
-    it("uses validation from custom", () => {
-      //GIVEN
-      const schema = z.enum(["on", "off"]);
-      const customSchema = z.literal("off");
-
-      //WHEN
-      const cmd = buildCommand(type, {
-        key: "test" as any,
-        cmdMeta: {
-          validation: { schema: customSchema },
-        },
-        schema,
-      });
-
-      expect(cmd).toEqual(
-        expect.objectContaining({
-          validation: { schema: customSchema },
-        })
-      );
-    });
-
     it("uses validation with isValid", () => {
       //GIVEN
       const schema = z.enum(["on", "off"]);
@@ -258,14 +237,14 @@ describe("CommandlineUtils", () => {
       const cmd = buildCommand(type, {
         key: "test" as any,
         cmdMeta: {
-          validation: { schema, isValid: isValid },
+          validation: { isValid: isValid },
         },
         schema,
       });
 
       expect(cmd).toEqual(
         expect.objectContaining({
-          validation: { schema, isValid },
+          validation: { isValid },
         })
       );
     });
