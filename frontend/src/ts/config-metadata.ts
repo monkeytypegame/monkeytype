@@ -473,6 +473,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   typingSpeedUnit: {
+    icon: "fa-tachometer-alt",
     displayString: "typing speed unit",
     changeRequiresRestart: false,
   },

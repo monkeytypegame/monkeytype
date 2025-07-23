@@ -346,4 +346,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
+  typingSpeedUnit: {
+    type: "subgroup",
+    options: "fromSchema",
+    isCommandVisible: (val) => val !== "wph",
+  },
 };
