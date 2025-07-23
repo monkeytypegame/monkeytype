@@ -5,7 +5,6 @@ import QuoteLengthCommands from "./lists/quote-length";
 import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
-import StartGraphsAtZeroCommands from "./lists/start-graphs-at-zero";
 import ColorfulModeCommands from "./lists/colorful-mode";
 import OutOfFocusWarningCommands from "./lists/out-of-focus-warning";
 import CapsLockWarningCommands from "./lists/caps-lock-warning";
@@ -243,10 +242,10 @@ export const commands: CommandsSubgroup = {
       "smoothLineScroll",
       "showAllLines",
       "typingSpeedUnit",
-      "alwaysShowDecimalPlaces"
+      "alwaysShowDecimalPlaces",
+      "startGraphsAtZero"
     ),
 
-    ...StartGraphsAtZeroCommands,
     ...MaxLineWidthCommands,
     ...FontSizeCommands,
     ...FontFamilyCommands,

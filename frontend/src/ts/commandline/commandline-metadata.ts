@@ -355,4 +355,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
+  startGraphsAtZero: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
 };

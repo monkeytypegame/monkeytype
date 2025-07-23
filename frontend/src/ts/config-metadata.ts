@@ -479,6 +479,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   startGraphsAtZero: {
+    icon: "fa-chart-line",
     displayString: "start graphs at zero",
     changeRequiresRestart: false,
   },
