@@ -5,7 +5,6 @@ import QuoteLengthCommands from "./lists/quote-length";
 import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
-import SmoothLineScrollCommands from "./lists/smooth-line-scroll";
 import AlwaysShowDecimalCommands from "./lists/always-show-decimal";
 import TypingSpeedUnitCommands from "./lists/typing-speed-unit";
 import StartGraphsAtZeroCommands from "./lists/start-graphs-at-zero";
@@ -243,10 +242,10 @@ export const commands: CommandsSubgroup = {
       "highlightMode",
 
       "tapeMode",
-      "tapeMargin"
+      "tapeMargin",
+      "smoothLineScroll"
     ),
 
-    ...SmoothLineScrollCommands,
     ...ShowAllLinesCommands,
     ...TypingSpeedUnitCommands,
     ...AlwaysShowDecimalCommands,

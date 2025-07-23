@@ -338,4 +338,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "input",
     inputValueConvert: Number,
   },
+  smoothLineScroll: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
 };

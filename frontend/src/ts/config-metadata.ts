@@ -452,6 +452,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   smoothLineScroll: {
+    icon: "fa-align-left",
     displayString: "smooth line scroll",
     changeRequiresRestart: false,
   },
