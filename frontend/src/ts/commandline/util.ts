@@ -140,6 +140,7 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
     hover,
     commandDisplay,
     commandAlias,
+    commandConfigValueMode,
     isCommandVisible,
     isCommandAvailable,
   }: SubgroupProps<K>
@@ -163,6 +164,7 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
       val.toString()
     )}`,
     display: displayString,
+    configValueMode: commandConfigValueMode?.(value),
     alias: commandAlias?.(value) ?? undefined,
     configValue: val,
     visible: isCommandVisible?.(value) ?? undefined,

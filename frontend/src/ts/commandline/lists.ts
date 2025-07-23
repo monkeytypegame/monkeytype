@@ -1,4 +1,3 @@
-import QuoteLengthCommands from "./lists/quote-length";
 import MinWpmCommands from "./lists/min-wpm";
 import MinAccCommands from "./lists/min-acc";
 import MinBurstCommands from "./lists/min-burst";
@@ -92,7 +91,7 @@ export const commands: CommandsSubgroup = {
     buildCommandForConfigKey("mode"),
     buildCommandForConfigKey("time"),
     buildCommandForConfigKey("words"),
-    ...QuoteLengthCommands,
+    buildCommandForConfigKey("quoteLength"),
     languageCommand,
     {
       id: "changeCustomModeText",

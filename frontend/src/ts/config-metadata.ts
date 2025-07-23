@@ -156,6 +156,14 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-quote-right",
     displayString: "quote length",
     changeRequiresRestart: true,
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.mode !== "quote") {
+        return {
+          mode: "quote",
+        };
+      }
+      return {};
+    },
   },
   language: {
     icon: "fa-language",

@@ -5,6 +5,7 @@ import { getLanguageDisplayString } from "../utils/strings";
 import * as ModesNotice from "../elements/modes-notice";
 import { isAuthenticated } from "../firebase";
 import * as ManualRestart from "../test/manual-restart-tracker";
+import { areUnsortedArraysEqual } from "../utils/arrays";
 
 //todo: remove ? here to require all config keys to be defined
 type CommandlineConfigMetadataObject = {
@@ -34,6 +35,9 @@ export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   rootVisible?: boolean;
   commandAlias?: (value: ConfigSchemas.Config[T]) => string;
   commandDisplay?: (value: ConfigSchemas.Config[T]) => string;
+  commandConfigValueMode?: (
+    value: ConfigSchemas.Config[T]
+  ) => "include" | undefined;
   isCommandVisible?: (value: ConfigSchemas.Config[T]) => boolean;
   isCommandAvailable?: (
     value: ConfigSchemas.Config[T]
@@ -137,7 +141,36 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       TestLogic.restart();
     },
   },
-  quoteLength: null,
+  quoteLength: {
+    type: "subgroup",
+    rootAlias: "quotes",
+    options: [[0, 1, 2, 3], [0], [1], [2], [3], [-3]],
+    commandConfigValueMode: () => "include",
+    isCommandAvailable: (value) => {
+      if (value[0] === -3) {
+        return isAuthenticated;
+      }
+      return undefined;
+    },
+    commandDisplay: (value) => {
+      if (areUnsortedArraysEqual(value, [0, 1, 2, 3])) {
+        return "all";
+      }
+
+      const map: Record<number, string> = {
+        0: "short",
+        1: "medium",
+        2: "long",
+        3: "thicc",
+        "-3": "favorite",
+      };
+
+      return map[value[0] as number] as string;
+    },
+    afterExec: () => {
+      TestLogic.restart();
+    },
+  },
   language: {
     type: "subgroup",
     options: "fromSchema",
