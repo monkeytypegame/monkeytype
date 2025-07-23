@@ -525,21 +525,29 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-keyboard",
     displayString: "keymap layout",
     changeRequiresRestart: false,
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapStyle: {
     icon: "fa-keyboard",
     displayString: "keymap style",
     changeRequiresRestart: false,
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapLegendStyle: {
     icon: "fa-keyboard",
     displayString: "keymap legend style",
     changeRequiresRestart: false,
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapShowTopRow: {
     icon: "fa-keyboard",
     displayString: "keymap show top row",
     changeRequiresRestart: false,
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapSize: {
     icon: "fa-keyboard",
@@ -551,6 +559,8 @@ export const configMetadata: ConfigMetadataObject = {
       if (value > 3.5) value = 3.5;
       return roundTo1(value);
     },
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
 
   // theme
