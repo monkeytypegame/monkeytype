@@ -42,7 +42,6 @@ import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
-import LayoutsCommands from "./lists/layouts";
 import FunboxCommands from "./lists/funbox";
 import ThemesCommands from "./lists/themes";
 import LoadChallengeCommands, {
@@ -65,6 +64,7 @@ import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
 import {
+  ConfigKey,
   CustomBackgroundSchema,
   CustomLayoutFluid,
   CustomLayoutFluidSchema,
@@ -105,6 +105,7 @@ const oppositeShiftModeCommand = buildCommandForConfigKey("oppositeShiftMode");
 const stopOnErrorCommand = buildCommandForConfigKey("stopOnError");
 const confidenceModeCommand = buildCommandForConfigKey("confidenceMode");
 const lazyModeCommand = buildCommandForConfigKey("lazyMode");
+const layoutCommand = buildCommandForConfigKey("layout");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -201,43 +202,50 @@ export const commands: CommandsSubgroup = {
     }),
 
     //input
-    buildCommandForConfigKey("freedomMode"),
-    buildCommandForConfigKey("strictSpace"),
-    oppositeShiftModeCommand,
-
-    stopOnErrorCommand,
-    confidenceModeCommand,
-    buildCommandForConfigKey("quickEnd"),
-    buildCommandForConfigKey("indicateTypos"),
-    buildCommandForConfigKey("hideExtraLetters"),
-    lazyModeCommand,
-    ...LayoutsCommands, //union type, skip
-    buildCommandForConfigKey("codeUnindentOnBackspace"),
+    ...buildCommands(
+      "freedomMode",
+      "strictSpace",
+      oppositeShiftModeCommand,
+      stopOnErrorCommand,
+      confidenceModeCommand,
+      "quickEnd",
+      "indicateTypos",
+      "hideExtraLetters",
+      lazyModeCommand,
+      layoutCommand,
+      "codeUnindentOnBackspace"
+    ),
 
     //sound
-    ...SoundVolumeCommands,
-    buildCommandForConfigKey("playSoundOnClick"),
-    buildCommandForConfigKey("playSoundOnError"),
-    buildCommandForConfigKey("playTimeWarning"),
+    ...buildCommands(
+      ...SoundVolumeCommands,
+      "playSoundOnClick",
+      "playSoundOnError",
+      "playTimeWarning"
+    ),
 
     //caret
-    buildCommandForConfigKey("smoothCaret"),
-    buildCommandForConfigKey("caretStyle"),
-    ...PaceCaretModeCommands,
-    buildCommandForConfigKey("repeatedPace"),
-    buildCommandForConfigKey("paceCaretStyle"),
+    ...buildCommands(
+      "smoothCaret",
+      "caretStyle",
+      ...PaceCaretModeCommands,
+      "repeatedPace",
+      "paceCaretStyle"
+    ),
 
     //appearence
-    buildCommandForConfigKey("timerStyle"),
-    buildCommandForConfigKey("liveSpeedStyle"),
-    buildCommandForConfigKey("liveAccStyle"),
-    buildCommandForConfigKey("liveBurstStyle"),
+    ...buildCommands(
+      "timerStyle",
+      "liveSpeedStyle",
+      "liveAccStyle",
+      "liveBurstStyle",
 
-    buildCommandForConfigKey("timerColor"),
-    buildCommandForConfigKey("timerOpacity"),
-    buildCommandForConfigKey("highlightMode"),
+      "timerColor",
+      "timerOpacity",
+      "highlightMode",
 
-    buildCommandForConfigKey("tapeMode"),
+      "tapeMode"
+    ),
     ...TapeMarginCommands,
     ...SmoothLineScrollCommands,
     ...ShowAllLinesCommands,
@@ -446,7 +454,7 @@ const lists = {
   funbox: FunboxCommands[0]?.subgroup,
   confidenceMode: confidenceModeCommand.subgroup,
   stopOnError: stopOnErrorCommand.subgroup,
-  layouts: LayoutsCommands[0]?.subgroup,
+  layouts: layoutCommand.subgroup,
   oppositeShiftMode: oppositeShiftModeCommand.subgroup,
   tags: TagsCommands[0]?.subgroup,
   resultSaving: ResultSavingCommands[0]?.subgroup,
@@ -578,4 +586,10 @@ function buildSingleListCommands(
     }
   }
   return commands;
+}
+
+function buildCommands(...commands: (Command | ConfigKey)[]): Command[] {
+  return commands.map((it) =>
+    typeof it === "string" ? buildCommandForConfigKey(it) : it
+  );
 }

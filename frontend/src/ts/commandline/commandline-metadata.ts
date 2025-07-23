@@ -17,6 +17,10 @@ export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> = {
   isCommandVisible?: (value: ConfigSchemas.Config[T]) => boolean;
   hover?: (value: ConfigSchemas.Config[T]) => void;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
+  /**
+   * set static values for the subgroup instead of detecting them from the schema
+   */
+  commandValues?: ConfigSchemas.Config[T][];
 };
 
 export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
@@ -71,8 +75,26 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   indicateTypos: {},
   hideExtraLetters: {},
   lazyMode: {},
+  layout: {
+    commandDisplay: (layout) =>
+      layout === "default" ? "off" : layout.replace(/_/g, " "),
+
+    afterExec: () => TestLogic.restart(),
+  },
   codeUnindentOnBackspace: {},
   //sound
+  soundVolume: {
+    commandValues: [0.1, 0.5, 1],
+    /*
+    customInput: {
+      validation: {
+        schema: true,
+        isValid: async (val) => (val + 10) % 2 === 0,
+      },
+      inputValueConvert: Number,
+    },*/
+    afterExec: () => SoundController.playClick,
+  },
   playSoundOnClick: {
     rootAlias: "play",
     rootDisplay: "Sound on click...",

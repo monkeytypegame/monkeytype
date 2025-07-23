@@ -312,6 +312,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
   },
   layout: {
+    icon: "fa-keyboard",
     displayString: "layout",
     changeRequiresRestart: true,
   },

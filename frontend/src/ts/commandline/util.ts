@@ -56,7 +56,9 @@ function _buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
     commandMeta?.rootDisplay ??
     `${capitalizeFirstLetter(configMeta?.displayString ?? key)}...`;
 
-  let values = getOptions(schema) as ConfigSchemas.Config[K][];
+  let values =
+    commandMeta.commandValues ??
+    (getOptions(schema) as ConfigSchemas.Config[K][]);
 
   if (values === undefined) {
     throw new Error(

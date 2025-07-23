@@ -48,6 +48,7 @@ describe("CommandlineUtils", () => {
         "setThree",
       ]);
     });
+
     it("detects values for union schema of enum + literral", () => {
       //GIVEN
       const schema = z.literal("default").or(z.enum(["one", "two", "three"]));
@@ -61,6 +62,40 @@ describe("CommandlineUtils", () => {
         "setOne",
         "setTwo",
         "setThree",
+      ]);
+    });
+
+    it("uses commandValues over schema values", () => {
+      //GIVEN
+      const schema = z.enum(["one", "two", "three"]);
+
+      //WHEN
+      const cmd = buildCommand({
+        cmdMeta: { commandValues: ["one", "two"] },
+        schema,
+      });
+
+      //THEN
+      expect(cmd.subgroup?.list.map((it) => it.id)).toEqual([
+        "setOne",
+        "setTwo",
+      ]);
+    });
+
+    it("uses commandValues for number schema", () => {
+      //GIVEN
+      const schema = z.number().int();
+
+      //WHEN
+      const cmd = buildCommand({
+        cmdMeta: { commandValues: [0.25, 0.75] },
+        schema,
+      });
+
+      //THEN
+      expect(cmd.subgroup?.list.map((it) => it.id)).toEqual([
+        "set0.25",
+        "set0.75",
       ]);
     });
   });
