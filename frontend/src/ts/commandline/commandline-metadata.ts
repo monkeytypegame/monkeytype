@@ -379,4 +379,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     options: "fromSchema",
     rootAlias: "keyboard",
   },
+  keymapLegendStyle: {
+    type: "subgroup",
+    options: "fromSchema",
+    rootAlias: "keyboard",
+  },
 };

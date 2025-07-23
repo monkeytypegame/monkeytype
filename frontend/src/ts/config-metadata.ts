@@ -531,6 +531,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   keymapLegendStyle: {
+    icon: "fa-keyboard",
     displayString: "keymap legend style",
     changeRequiresRestart: false,
   },

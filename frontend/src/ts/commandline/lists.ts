@@ -14,7 +14,6 @@ import MinBurstCommands from "./lists/min-burst";
 import CustomThemeCommands from "./lists/custom-theme";
 import RandomThemeCommands from "./lists/random-theme";
 import PaceCaretModeCommands from "./lists/pace-caret";
-import KeymapLegendStyleCommands from "./lists/keymap-legend-style";
 import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
 import KeymapSizeCommands from "./lists/keymap-size";
 import EnableAdsCommands from "./lists/enable-ads";
@@ -244,10 +243,10 @@ export const commands: CommandsSubgroup = {
       "fontSize",
       ...FontFamilyCommands,
       "keymapMode",
-      "keymapStyle"
+      "keymapStyle",
+      "keymapLegendStyle"
     ),
 
-    ...KeymapLegendStyleCommands,
     ...KeymapSizeCommands,
     ...KeymapLayoutsCommands,
     ...KeymapShowTopRowCommands,
