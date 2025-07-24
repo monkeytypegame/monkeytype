@@ -817,7 +817,11 @@ function refreshPresetsSettingsSection(): void {
   }
 }
 
-export async function update(): Promise<void> {
+export async function update(
+  options: {
+    eventKey?: ConfigEvent.ConfigEventKey;
+  } = {}
+): Promise<void> {
   if (Config.showKeyTips) {
     $(".pageSettings .tip").removeClass("hidden");
   } else {
@@ -837,29 +841,44 @@ export async function update(): Promise<void> {
   ThemePicker.setCustomInputs(true);
   // ThemePicker.updateActiveButton();
 
-  $(
-    ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed"
-  ).val(
-    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-      Config.paceCaretCustomSpeed
-    )
-  );
-
-  $(
-    ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed"
-  ).val(
-    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(Config.minWpmCustomSpeed)
-  );
-  $(".pageSettings .section[data-config-name='minAcc'] input.customMinAcc").val(
-    Config.minAccCustom
-  );
-  $(
-    ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst"
-  ).val(
-    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-      Config.minBurstCustomSpeed
-    )
-  );
+  if (options.eventKey === undefined || options.eventKey === "paceCaret") {
+    $(
+      ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed"
+    ).val(
+      getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+        Config.paceCaretCustomSpeed
+      )
+    );
+  }
+  if (
+    options.eventKey === undefined ||
+    options.eventKey === "minWpmCustomSpeed"
+  ) {
+    $(
+      ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed"
+    ).val(
+      getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+        Config.minWpmCustomSpeed
+      )
+    );
+  }
+  if (options.eventKey === undefined || options.eventKey === "minAccCustom") {
+    $(
+      ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc"
+    ).val(Config.minAccCustom);
+  }
+  if (
+    options.eventKey === undefined ||
+    options.eventKey === "minBurstCustomSpeed"
+  ) {
+    $(
+      ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst"
+    ).val(
+      getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+        Config.minBurstCustomSpeed
+      )
+    );
+  }
 
   if (Config.autoSwitchTheme) {
     $(
@@ -882,26 +901,34 @@ export async function update(): Promise<void> {
   }
   updateCustomBackgroundRemoveButtonVisibility();
 
-  $(".pageSettings .section[data-config-name='fontSize'] input").val(
-    Config.fontSize
-  );
-
-  $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
-    Config.maxLineWidth
-  );
-
-  $(".pageSettings .section[data-config-name='keymapSize'] input").val(
-    Config.keymapSize
-  );
-
-  $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
-    Config.tapeMargin
-  );
-
-  $(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
-  ).val(Config.customBackground);
-
+  if (options.eventKey === undefined || options.eventKey === "fontSize") {
+    $(".pageSettings .section[data-config-name='fontSize'] input").val(
+      Config.fontSize
+    );
+  }
+  if (options.eventKey === undefined || options.eventKey === "maxLineWidth") {
+    $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
+      Config.maxLineWidth
+    );
+  }
+  if (options.eventKey === undefined || options.eventKey === "keymapSize") {
+    $(".pageSettings .section[data-config-name='keymapSize'] input").val(
+      Config.keymapSize
+    );
+  }
+  if (options.eventKey === undefined || options.eventKey === "tapeMargin") {
+    $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
+      Config.tapeMargin
+    );
+  }
+  if (
+    options.eventKey === undefined ||
+    options.eventKey === "customBackgroundSize"
+  ) {
+    $(
+      ".pageSettings .section[data-config-name='customBackgroundSize'] input"
+    ).val(Config.customBackground);
+  }
   if (isAuthenticated()) {
     showAccountSection();
   } else {
@@ -1240,7 +1267,7 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings" && eventKey !== "theme") {
-    void update();
+    void update({ eventKey });
   }
 });
 
