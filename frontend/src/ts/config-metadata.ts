@@ -215,6 +215,14 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-bomb",
     displayString: "min speed custom",
     changeRequiresRestart: true,
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.minWpm !== "custom") {
+        return {
+          minWpm: "custom",
+        };
+      }
+      return {};
+    },
   },
   minAcc: {
     icon: "fa-bomb",

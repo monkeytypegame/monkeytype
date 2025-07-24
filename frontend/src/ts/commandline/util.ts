@@ -74,10 +74,37 @@ function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
       })
     );
     return result;
+  } else if (commandMeta.type === "subgroupWithSecondKeyInput") {
+    const result = buildCommandWithSubgroup(
+      key,
+      commandMeta,
+      configMeta,
+      schema
+    );
+
+    const secondConfigMeta = configMetadata[
+      commandMeta.input.secondKey
+    ] as ConfigMetadata<typeof commandMeta.input.secondKey>;
+
+    result.subgroup?.list.push(
+      buildInputCommand({
+        key: commandMeta.input.secondKey,
+        displayFallback: configMeta.displayString ?? "custom...",
+        commandMeta: commandMeta.input,
+        configMeta: secondConfigMeta,
+        schema: ConfigSchemas.ConfigSchema.shape[
+          commandMeta.input.secondKey
+        ] as ZodType,
+      })
+    );
+
+    return result;
   }
 
   throw new Error(
-    `Unsupported commandline metadata type for config key "${key}": ${commandMeta.type}`
+    `Unsupported commandline metadata type for config key "${key}": ${
+      (commandMeta as CommandlineConfigMetadata<K>)?.type
+    }`
   );
 }
 
@@ -190,12 +217,16 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   displayFallback: string;
   commandMeta: InputProps<K>;
   configMeta: ConfigMetadata<K>;
-  schema: ZodType; //TODO better type
+  schema?: ZodType; //TODO better type
 }): Command {
   const validation = commandMeta.validation ?? { schema: true };
   const result = {
     id: `set${capitalizeFirstLetter(key)}Custom`,
     defaultValue: () => Config[key]?.toString() ?? "",
+    configValue:
+      "configValue" in commandMeta
+        ? commandMeta.configValue ?? undefined
+        : undefined,
     display: commandMeta.display ?? displayFallback,
     alias: commandMeta.alias ?? undefined,
     input: true,

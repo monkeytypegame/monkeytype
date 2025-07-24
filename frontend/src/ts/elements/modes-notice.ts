@@ -18,6 +18,7 @@ ConfigEvent.subscribe((eventKey) => {
     "stopOnError",
     "paceCaret",
     "minWpm",
+    "minWpmCustomSpeed",
     "minAcc",
     "minBurst",
     "confidenceMode",

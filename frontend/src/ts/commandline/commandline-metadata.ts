@@ -6,6 +6,8 @@ import * as ModesNotice from "../elements/modes-notice";
 import { isAuthenticated } from "../firebase";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import { areUnsortedArraysEqual } from "../utils/arrays";
+import Config from "../config";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 //todo: remove ? here to require all config keys to be defined
 type CommandlineConfigMetadataObject = {
@@ -26,7 +28,7 @@ export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
   | SubgroupMeta<T>
   | InputMeta<T>
   | SubgroupWithInputMeta<T>
-  | SubgroupWithSecondKeyInputMeta<T>
+  | SubgroupWithSecondKeyInputMeta<T, keyof ConfigSchemas.Config>
   | null;
 
 export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
@@ -75,13 +77,17 @@ type InputMeta<T extends keyof ConfigSchemas.Config> = {
 
 type SubgroupWithInputMeta<T extends keyof ConfigSchemas.Config> = {
   type: "subgroupWithInput";
-  input: InputProps<T>;
+  input: InputProps<T> & { configValue?: ConfigSchemas.Config[T] };
 } & SubgroupProps<T>;
 
-type SubgroupWithSecondKeyInputMeta<T extends keyof ConfigSchemas.Config> = {
+type SubgroupWithSecondKeyInputMeta<
+  T extends keyof ConfigSchemas.Config,
+  T2 extends keyof ConfigSchemas.Config
+> = {
   type: "subgroupWithSecondKeyInput";
-  input: InputProps<T> & {
-    secondKey: keyof ConfigSchemas.Config;
+  input: InputProps<T2> & {
+    configValue?: ConfigSchemas.Config[T2];
+    secondKey: T2;
   };
 } & SubgroupProps<T>;
 
@@ -203,7 +209,22 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
-  minWpm: null,
+  minWpm: {
+    type: "subgroupWithSecondKeyInput",
+    rootDisplay: "Minimum speed...",
+    rootAlias: "wpm",
+    options: ["off"],
+    input: {
+      configValue: "custom",
+      display: "custom...",
+      secondKey: "minWpmCustomSpeed",
+      inputValueConvert: (value) => {
+        let newVal = Number(value);
+        newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(newVal);
+        return newVal;
+      },
+    },
+  },
   minAcc: null,
   minBurst: null,
   britishEnglish: {

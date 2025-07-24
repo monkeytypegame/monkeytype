@@ -1,4 +1,3 @@
-import MinWpmCommands from "./lists/min-wpm";
 import MinAccCommands from "./lists/min-acc";
 import MinBurstCommands from "./lists/min-burst";
 import PaceCaretModeCommands from "./lists/pace-caret";
@@ -78,6 +77,7 @@ const showAverageCommand = buildCommandForConfigKey("showAverage");
 const keymapLayoutCommand = buildCommandForConfigKey("keymapLayout");
 const customThemeCommand = buildCommandForConfigKey("customTheme");
 const adsCommand = buildCommandForConfigKey("ads");
+const minSpeedCommand = buildCommandForConfigKey("minWpm");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -134,7 +134,7 @@ export const commands: CommandsSubgroup = {
     blindModeCommand,
     buildCommandForConfigKey("alwaysShowWordsHistory"),
     buildCommandForConfigKey("singleListCommandLine"),
-    ...MinWpmCommands,
+    minSpeedCommand,
     ...MinAccCommands,
     ...MinBurstCommands,
     buildCommandForConfigKey("britishEnglish"),
@@ -407,7 +407,7 @@ const lists = {
   lazyMode: lazyModeCommand.subgroup,
   paceCaretMode: PaceCaretModeCommands[0]?.subgroup,
   showAverage: showAverageCommand.subgroup,
-  minWpm: MinWpmCommands[0]?.subgroup,
+  minWpm: minSpeedCommand.subgroup,
   minAcc: MinAccCommands[0]?.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
   funbox: FunboxCommands[0]?.subgroup,
