@@ -39,7 +39,7 @@
 
 ## Account System
 
-User signup/login is disabled by default. To allow users to signup you'll need to setup a Firebase project. 
+By default, user sign-up and login are disabled. To enable this, you'll need to set up a Firebase project. 
 Stop the running docker containers using `docker compose down` before making any changes.
 
 ### Setup Firebase
