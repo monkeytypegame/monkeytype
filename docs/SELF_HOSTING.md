@@ -25,7 +25,7 @@
 
 
 ## Prerequisites
-- you need `docker` and `docker-compose-plugin` installed. Follow the [docker documentation](https://docs.docker.com/compose/install/) on how to do this.
+- you need to have `docker` and `docker-compose-plugin` installed. Follow the [docker documentation](https://docs.docker.com/compose/install/) on how to do this.
 
 ## Quickstart
 
