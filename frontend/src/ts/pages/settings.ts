@@ -135,7 +135,6 @@ async function initGroups(): Promise<void> {
       },
     }
   );
-  //TODO was keymapMatrix
   groups["keymapStyle"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
