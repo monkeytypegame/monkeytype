@@ -1,9 +1,8 @@
-import { MaxLineWidthSchema } from "@monkeytype/schemas/configs";
 import Config, * as UpdateConfig from "../../config";
-import { Command, withValidation } from "../types";
+import { Command } from "../types";
 
 const commands: Command[] = [
-  withValidation({
+  {
     id: "changeMaxLineWidth",
     display: "Max line width...",
     icon: "fa-text-width",
@@ -12,14 +11,10 @@ const commands: Command[] = [
     defaultValue: (): string => {
       return Config.maxLineWidth.toString();
     },
-    inputValueConvert: Number,
-    validation: {
-      schema: MaxLineWidthSchema,
-    },
     exec: ({ input }): void => {
-      if (input === undefined) return;
-      UpdateConfig.setMaxLineWidth(input);
+      if (input === undefined || input === "") return;
+      UpdateConfig.setMaxLineWidth(parseFloat(input));
     },
-  }),
+  },
 ];
 export default commands;

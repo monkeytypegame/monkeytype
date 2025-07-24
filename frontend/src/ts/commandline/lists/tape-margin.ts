@@ -1,9 +1,8 @@
-import { TapeMarginSchema } from "@monkeytype/schemas/configs";
 import Config, * as UpdateConfig from "../../config";
-import { Command, withValidation } from "../types";
+import { Command } from "../types";
 
 const commands: Command[] = [
-  withValidation({
+  {
     id: "changeTapeMargin",
     display: "Tape margin...",
     icon: "fa-tape",
@@ -11,12 +10,10 @@ const commands: Command[] = [
     defaultValue: (): string => {
       return Config.tapeMargin.toString();
     },
-    inputValueConvert: Number,
-    validation: { schema: TapeMarginSchema },
     exec: ({ input }): void => {
-      if (input === undefined) return;
-      UpdateConfig.setTapeMargin(input);
+      if (input === undefined || input === "") return;
+      UpdateConfig.setTapeMargin(parseFloat(input));
     },
-  }),
+  },
 ];
 export default commands;
