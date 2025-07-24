@@ -25,7 +25,7 @@
       }
     },
     {
-      "files": ["**/*.d.ts"],
+      "files": ["__tests__/**/*.d.ts"],
       "rules": {
         "typescript/consistent-type-definitions": "off",
         "typescript/no-empty-object-type": "off"
