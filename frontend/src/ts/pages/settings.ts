@@ -26,6 +26,7 @@ import {
   CustomLayoutFluid,
   FunboxName,
   ConfigKeySchema,
+  ConfigKey,
 } from "@monkeytype/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
@@ -841,7 +842,10 @@ export async function update(
   ThemePicker.setCustomInputs(true);
   // ThemePicker.updateActiveButton();
 
-  if (options.eventKey === undefined || options.eventKey === "paceCaret") {
+  const shouldSetInput = (key: ConfigKey): boolean =>
+    options.eventKey === undefined || options.eventKey === key;
+
+  if (shouldSetInput("paceCaret")) {
     $(
       ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed"
     ).val(
@@ -850,10 +854,7 @@ export async function update(
       )
     );
   }
-  if (
-    options.eventKey === undefined ||
-    options.eventKey === "minWpmCustomSpeed"
-  ) {
+  if (shouldSetInput("minWpmCustomSpeed")) {
     $(
       ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed"
     ).val(
@@ -862,15 +863,12 @@ export async function update(
       )
     );
   }
-  if (options.eventKey === undefined || options.eventKey === "minAccCustom") {
+  if (shouldSetInput("minAccCustom")) {
     $(
       ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc"
     ).val(Config.minAccCustom);
   }
-  if (
-    options.eventKey === undefined ||
-    options.eventKey === "minBurstCustomSpeed"
-  ) {
+  if (shouldSetInput("minBurstCustomSpeed")) {
     $(
       ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst"
     ).val(
@@ -901,30 +899,27 @@ export async function update(
   }
   updateCustomBackgroundRemoveButtonVisibility();
 
-  if (options.eventKey === undefined || options.eventKey === "fontSize") {
+  if (shouldSetInput("fontSize")) {
     $(".pageSettings .section[data-config-name='fontSize'] input").val(
       Config.fontSize
     );
   }
-  if (options.eventKey === undefined || options.eventKey === "maxLineWidth") {
+  if (shouldSetInput("maxLineWidth")) {
     $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
       Config.maxLineWidth
     );
   }
-  if (options.eventKey === undefined || options.eventKey === "keymapSize") {
+  if (shouldSetInput("keymapSize")) {
     $(".pageSettings .section[data-config-name='keymapSize'] input").val(
       Config.keymapSize
     );
   }
-  if (options.eventKey === undefined || options.eventKey === "tapeMargin") {
+  if (shouldSetInput("tapeMargin")) {
     $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
       Config.tapeMargin
     );
   }
-  if (
-    options.eventKey === undefined ||
-    options.eventKey === "customBackgroundSize"
-  ) {
+  if (shouldSetInput("customBackgroundSize")) {
     $(
       ".pageSettings .section[data-config-name='customBackgroundSize'] input"
     ).val(Config.customBackground);
