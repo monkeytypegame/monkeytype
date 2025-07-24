@@ -203,7 +203,7 @@ export function handleConfigInput<T extends ConfigKey>({
 
     validateWithIndicator(input, {
       schema: validation.schema ? schema : undefined,
-      //@ts-expect-error todo
+      //@ts-expect-error this is fine
       isValid: validation.isValid,
       inputValueConvert,
       callback: (result) => {
