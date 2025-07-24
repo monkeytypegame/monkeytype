@@ -185,5 +185,4 @@ Contains your firebase config, only needed if you want to allow users to signup.
 Configuration of the backend. Check the [default configuration](https://github.com/monkeytypegame/monkeytype/blob/master/backend/src/constants/base-configuration.ts#L8) for possible values.
 
 > [!NOTE]
-> The configuration is applied on container startup only. You have to restart the container for your changes to become active.
-
+> Configuration changes are applied only on container startup. You must restart the container for your updates to take effect. 
