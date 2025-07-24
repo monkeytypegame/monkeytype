@@ -89,7 +89,6 @@ function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
     result.subgroup?.list.push(
       buildInputCommand({
         key: commandMeta.input.secondKey,
-        displayFallback: configMeta.displayString ?? "custom...",
         commandMeta: commandMeta.input,
         configMeta: secondConfigMeta,
         schema: ConfigSchemas.ConfigSchema.shape[
@@ -208,13 +207,11 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
 
 function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   key,
-  displayFallback,
   commandMeta,
   configMeta,
   schema,
 }: {
   key: K;
-  displayFallback: string;
   commandMeta: InputProps<K>;
   configMeta: ConfigMetadata<K>;
   schema?: ZodType; //TODO better type
@@ -227,7 +224,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
       "configValue" in commandMeta
         ? commandMeta.configValue ?? undefined
         : undefined,
-    display: commandMeta.display ?? displayFallback,
+    display: commandMeta.display ?? "custom...",
     alias: commandMeta.alias ?? undefined,
     input: true,
     icon: configMeta.icon ?? "fa-cog",
