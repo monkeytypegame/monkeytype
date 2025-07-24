@@ -20,6 +20,7 @@ export type Validation<T> = {
    * The indicator will show the error messages from the schema.
    */
   schema?: z.Schema<T>;
+
   /**
    * Custom async validation method.
    * This is intended to be used for validations that cannot be handled with a Zod schema like server-side validations.
@@ -32,7 +33,6 @@ export type Validation<T> = {
   /** custom debounce delay for `isValid` call. defaults to 100 */
   debounceDelay?: number;
 };
-
 /**
  * Create input handler for validated input element.
  * the `callback` is called for each validation state change, including "checking".
@@ -144,7 +144,6 @@ export function validateWithIndicator<T>(
     },
   });
   const callback = (result: ValidationResult): void => {
-    console.log("###", result);
     if (result.status === "failed") {
       indicator.show(result.status, result.errorMessage);
     } else {

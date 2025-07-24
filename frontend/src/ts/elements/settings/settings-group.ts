@@ -12,7 +12,7 @@ import {
 
 type Mode = "select" | "button" | "range" | "input";
 
-export type SimpleValidation<T> = Pick<Validation<T>, "isValid"> & {
+export type SimpleValidation<T> = Omit<Validation<T>, "schema"> & {
   schema?: true;
 };
 
