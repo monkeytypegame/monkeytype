@@ -137,7 +137,7 @@ To enable emails for password reset and email verification update the following 
 EMAIL_HOST=mail.myserver   # your mailserver domain
 EMAIL_USER=mailuser        # username to authenticate with your mailserver
 EMAIL_PASS=mailpass        # password for the user
-EMAIL_PORT=465             # port, likely 465 or 578
+EMAIL_PORT=465             # port, likely 465 or 587
 EMAIL_FROM="Support <noreply@myserver>"
 ``` 
 
