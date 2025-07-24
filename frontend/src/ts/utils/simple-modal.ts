@@ -327,7 +327,7 @@ export class SimpleModal {
 
       if (input.validation !== undefined) {
         const options: ValidationOptions<string> = {
-          schema: input.validation?.schema ?? undefined,
+          schema: input.validation.schema ?? undefined,
           isValid:
             input.validation.isValid !== undefined
               ? async (val: string) => {
@@ -339,6 +339,7 @@ export class SimpleModal {
           callback: (result: ValidationResult) => {
             input.hasError = result.status !== "success";
           },
+          debounceDelay: input.validation.debounceDelay,
         };
 
         withValidation(element, options);

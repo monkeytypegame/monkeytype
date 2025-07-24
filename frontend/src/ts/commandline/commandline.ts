@@ -14,7 +14,7 @@ import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
-import { handleValidatedInputEvent } from "../elements/input-validation";
+import { createInputEventHandler } from "../elements/input-validation";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -879,28 +879,33 @@ const modal = new AnimatedModal({
       }
     });
 
-    input.addEventListener(
-      "input",
-      debounce(100, async (e) => {
-        if (
-          inputModeParams === null ||
-          inputModeParams.command === null ||
-          !("validation" in inputModeParams.command)
-        ) {
-          return;
-        }
+    /*
+     * Handlers needs to be created only once per command to ensure they debounce with the given delay
+     */
+    const handlersCache = new Map<string, (e: Event) => Promise<void>>();
 
-        const command =
-          inputModeParams.command as CommandWithValidation<unknown>;
+    input.addEventListener("input", async (e) => {
+      if (
+        inputModeParams === null ||
+        inputModeParams.command === null ||
+        !("validation" in inputModeParams.command)
+      ) {
+        return;
+      }
 
-        await handleValidatedInputEvent(
-          e as InputEvent,
+      const command = inputModeParams.command as CommandWithValidation<unknown>;
+      let handler = handlersCache.get(command.id);
+      if (handler === undefined) {
+        handler = createInputEventHandler(
           updateValidationResult,
           command.validation,
           "inputValueConvert" in command ? command.inputValueConvert : undefined
         );
-      })
-    );
+        handlersCache.set(command.id, handler);
+      }
+
+      await handler(e);
+    });
 
     modalEl.addEventListener("mousemove", (_e) => {
       mouseMode = true;

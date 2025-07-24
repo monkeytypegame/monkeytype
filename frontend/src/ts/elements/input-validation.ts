@@ -28,69 +28,84 @@ export type Validation<T> = {
    * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
    */
   isValid?: (value: T) => Promise<true | string>;
+
+  /** custom debounce delay for `isValid` call. defaults to 100 */
+  debounceDelay?: number;
 };
 
 /**
- * Handle input element and apply validation to the value.
+ * Create input handler for validated input element.
  * the `callback` is called for each validation state change, including "checking".
- * Note: this is not de-bounced, you possibly want to debounce this yourself
- * @param e the event
  * @param callback callback to call for each change of the validation status
  * @param validation validation options
  * @param inputValueConvert  convert method from string to the schema type, mandatory if the schema is not a string schema
- * @returns
+ * @returns debounced input event handler
  */
-export async function handleValidatedInputEvent<T>(
-  e: InputEvent,
+export function createInputEventHandler<T>(
   callback: (result: ValidationResult) => void,
   validation: Validation<T>,
   inputValueConvert?: (val: string) => T
-): Promise<void> {
-  const originalInput = e.target as HTMLInputElement;
-  const currentValue = originalInput.value;
-  let checkValue: unknown = currentValue;
+): (e: Event) => Promise<void> {
+  let callIsValid =
+    validation.isValid !== undefined
+      ? debounce(
+          validation.debounceDelay ?? 100,
+          async (
+            originalInput: HTMLInputElement,
+            currentValue: string,
+            checkValue: T
+          ) => {
+            const result = await validation.isValid?.(checkValue);
+            if (originalInput.value !== currentValue) {
+              //value has change in the meantime, discard result
+              return;
+            }
 
-  if (inputValueConvert !== undefined) {
-    checkValue = inputValueConvert(currentValue);
-  }
+            if (result === true) {
+              callback({ status: "success" });
+            } else {
+              callback({ status: "failed", errorMessage: result });
+            }
+          }
+        )
+      : undefined;
 
-  callback({ status: "checking" });
+  return async (e) => {
+    const originalInput = e.target as HTMLInputElement;
+    const currentValue = originalInput.value;
+    let checkValue: unknown = currentValue;
 
-  if (validation.schema !== undefined) {
-    const schemaResult = validation.schema.safeParse(checkValue);
+    if (inputValueConvert !== undefined) {
+      checkValue = inputValueConvert(currentValue);
+    }
 
-    if (!schemaResult.success) {
-      callback({
-        status: "failed",
-        errorMessage: schemaResult.error.errors
-          .map((err) => err.message)
-          .join(", "),
-      });
+    callback({ status: "checking" });
+
+    if (validation.schema !== undefined) {
+      const schemaResult = validation.schema.safeParse(checkValue);
+
+      if (!schemaResult.success) {
+        callback({
+          status: "failed",
+          errorMessage: schemaResult.error.errors
+            .map((err) => err.message)
+            .join(", "),
+        });
+        return;
+      }
+    }
+
+    if (callIsValid === undefined) {
+      callback({ status: "success" });
+      //call original handler if defined
+      originalInput.oninput?.(e);
       return;
     }
-  }
 
-  if (validation.isValid === undefined) {
-    callback({ status: "success" });
-    return;
-  }
-
-  const result = await validation.isValid(checkValue as T);
-  if (originalInput.value !== currentValue) {
-    //value has change in the meantime, discard result
-    return;
-  }
-
-  if (result === true) {
-    callback({ status: "success" });
-  } else {
-    callback({
-      status: "failed",
-      errorMessage: result,
-    });
-  }
-  //call original handler if defined
-  originalInput.oninput?.(e);
+    callIsValid(originalInput, currentValue, checkValue as T);
+    //call original handler if defined
+    originalInput.oninput?.(e);
+  };
 }
 
 export type ValidationOptions<T> = (T extends string
@@ -129,6 +144,7 @@ export function validateWithIndicator<T>(
     },
   });
   const callback = (result: ValidationResult): void => {
+    console.log("###", result);
     if (result.status === "failed") {
       indicator.show(result.status, result.errorMessage);
     } else {
@@ -137,17 +153,13 @@ export function validateWithIndicator<T>(
     options.callback?.(result);
   };
 
-  inputElement.addEventListener(
-    "input",
-    debounce(100, async (e) => {
-      return handleValidatedInputEvent(
-        e as InputEvent,
-        callback,
-        options,
-        "inputValueConvert" in options ? options.inputValueConvert : undefined
-      );
-    })
+  const handler = createInputEventHandler(
+    callback,
+    options,
+    "inputValueConvert" in options ? options.inputValueConvert : undefined
   );
+
+  inputElement.addEventListener("input", handler);
 }
 
 export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
