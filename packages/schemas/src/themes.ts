@@ -116,6 +116,7 @@ export const ThemeNameSchema = z.enum(
     "mr_sleeves",
     "ms_cupcakes",
     "muted",
+    "mystic_forest",
     "nautilus",
     "nebula",
     "night_runner",
