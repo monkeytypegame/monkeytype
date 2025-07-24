@@ -43,11 +43,11 @@ let subgroupOverride: CommandsSubgroup | null = null;
 let isAnimating = false;
 let lastSingleListModeInputValue = "";
 
-type CommandWithActiveState = Omit<Command, "active"> & { isActive: boolean };
+type CommandWithIsActive = Command & { isActive: boolean };
 
 let lastState:
   | {
-      list: CommandWithActiveState[];
+      list: CommandWithIsActive[];
       usingSingleList: boolean;
     }
   | undefined;
@@ -427,8 +427,7 @@ async function showCommands(): Promise<void> {
           }
         }
       }
-      const { active: _active, ...restOfCommand } = command;
-      return { ...restOfCommand, isActive } as CommandWithActiveState;
+      return { ...command, isActive } as CommandWithIsActive;
     });
 
   if (
@@ -461,7 +460,7 @@ async function showCommands(): Promise<void> {
     let display = command.display;
     if (usingSingleList) {
       display = (command.singleListDisplay ?? "") || command.display;
-      if (command.configValue !== undefined) {
+      if (command.configValue !== undefined || command.active !== undefined) {
         display = display.replace(
           `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>`,
           `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>` +
@@ -472,9 +471,10 @@ async function showCommands(): Promise<void> {
 
     let finalIconHtml = iconHtml;
     if (
-      !usingSingleList &&
-      command.subgroup === undefined &&
-      command.configValue !== undefined
+      (!usingSingleList &&
+        command.subgroup === undefined &&
+        command.configValue !== undefined) ||
+      (!usingSingleList && command.active !== undefined)
     ) {
       finalIconHtml = configIconHtml;
     }
