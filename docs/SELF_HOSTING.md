@@ -112,7 +112,7 @@ Stop the running docker containers using `docker compose down` before making any
 ### Setup Recaptcha
 
 - [create](https://www.google.com/recaptcha/admin/create) a new recaptcha token
-    - label: monkeytype
+    - label: `monkeytype`
     - type: v2
     - domain: the domain of the frontend 
 - update the `.env` file with the site key from the previous step
