@@ -53,11 +53,11 @@ Stop the running docker containers using `docker compose down` before making any
   - go to `Authentication > Sign-in method`  
   - enable `Email/Password` and save
 - generate service account
-  - open the project settings by clicking the `⚙` icon on the sidebar and `Project settings`
-  - go to `Service accounts`
-  - click `Generate new private key`. This will download a `.json` file.
-  - store the `.json` file as `serviceAccountKey.json`
-  - update the `docker-compose.yml` file and uncomment the first volume from the `monkeytype-backend` container
+  - go to your project settings by clicking the `⚙` icon in the sidebar, then `Project settings`
+  - navigate to the `Service accounts` tab
+  - click `Generate new private key` to download the `.json` file.
+  - save it as `serviceAccountKey.json`
+  - update `docker-compose.yml` and uncomment the volume block in the `monkeytype-backend` container to mount the Firebase service account:
     ```yaml
       #uncomment to enable the account system, check the SELF_HOSTING.md file
       - type: bind
@@ -69,12 +69,12 @@ Stop the running docker containers using `docker compose down` before making any
 - update the `.env` file
   - open the [firebase console](https://console.firebase.google.com/) and open your project
   - open the project settings by clicking the `⚙` icon on the sidebar and `Project settings`
-  - if there is no app in your project create a new web-app `</>`
+  - if your project has no apps yet, create a new Web app (`</>` icon)
     - nickname `monkeytype`
     - uncheck `set up firebase hosting`
     - click `Register app` 
    - select your app and select `Config` for `SDK setup and configuration`
-   - it will display sth like this:
+   - it will display something like this:
         ```
         const firebaseConfig = {
         apiKey: "AAAAAAAA",
