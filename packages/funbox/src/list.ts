@@ -133,7 +133,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   layout_mirror: {
     description: "Mirror the keyboard layout",
     canGetPb: true,
-    difficultyLevel: 1,
+    difficultyLevel: 3,
     properties: ["changesLayout"],
     frontendFunctions: ["applyConfig", "rememberSettings"],
     name: "layout_mirror",

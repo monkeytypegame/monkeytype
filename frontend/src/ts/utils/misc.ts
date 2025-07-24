@@ -760,4 +760,7 @@ export function sanitize<T extends z.ZodTypeAny>(
   ) as z.infer<T>;
 }
 
+export function triggerResize(): void {
+  $(window).trigger("resize");
+}
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
