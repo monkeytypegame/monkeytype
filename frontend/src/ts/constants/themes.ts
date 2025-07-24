@@ -1114,12 +1114,6 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#5b578e",
     textColor: "#f4e0c9",
   },
-  mystic_forest: {
-    bgColor: "#0f1800",
-    mainColor: "#0f6e0b",
-    subColor: "#8caa88",
-    textColor: "#d2f631",
-  },
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
