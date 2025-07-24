@@ -1,4 +1,4 @@
-import { ConfigKey, ConfigValue } from "@monkeytype/schemas/configs";
+import { Config as ConfigType, ConfigKey } from "@monkeytype/schemas/configs";
 
 import Config from "../../config";
 import * as Notifications from "../notifications";
@@ -16,8 +16,8 @@ export type SimpleValidation<T> = Omit<Validation<T>, "schema"> & {
   schema?: true;
 };
 
-export default class SettingsGroup<T extends ConfigValue> {
-  public configName: string;
+export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
+  public configName: K;
   public configFunction: (param: T, nosave?: boolean) => boolean;
   public mode: Mode;
   public setCallback?: () => void;
@@ -30,7 +30,7 @@ export default class SettingsGroup<T extends ConfigValue> {
       };
 
   constructor(
-    configName: string,
+    configName: K,
     configFunction: (param: T, nosave?: boolean) => boolean,
     mode: Mode,
     options?: {
@@ -56,7 +56,7 @@ export default class SettingsGroup<T extends ConfigValue> {
         this.validation !== undefined &&
         "inputValueConvert" in this.validation
       ) {
-        typed = this.validation.inputValueConvert(value) as T;
+        typed = this.validation.inputValueConvert(value);
       }
       if (typed === "true") typed = true as T;
       if (typed === "false") typed = false as T;
@@ -131,11 +131,8 @@ export default class SettingsGroup<T extends ConfigValue> {
         throw new Error(`Failed to find input element for ${configName}`);
       }
 
-      // oxlint-disable-next-line no-explicit-any
-      let validation: ConfigInputOptions<any>["validation"] | undefined =
-        undefined;
+      let validation;
       if (this.validation !== undefined) {
-        // oxlint-disable-next-line no-explicit-any TODO change this.configName to ConfigKey
         validation = {
           schema: this.validation.schema ?? false,
           isValid: this.validation.isValid,
@@ -148,9 +145,9 @@ export default class SettingsGroup<T extends ConfigValue> {
 
       handleConfigInput({
         input,
-        configName: this.configName as ConfigKey,
+        configName: this.configName,
         validation,
-      });
+      } as ConfigInputOptions<K>);
 
       this.elements = [input];
     } else if (this.mode === "range") {
@@ -193,7 +190,7 @@ export default class SettingsGroup<T extends ConfigValue> {
   }
 
   setValue(value: T): boolean {
-    if (Config[this.configName as keyof typeof Config] === value) {
+    if (Config[this.configName] === value) {
       return false;
     }
     const didSet = this.configFunction(value);
@@ -203,8 +200,7 @@ export default class SettingsGroup<T extends ConfigValue> {
   }
 
   updateUI(valueOverride?: T): void {
-    const newValue =
-      valueOverride ?? (Config[this.configName as keyof typeof Config] as T);
+    const newValue = valueOverride ?? (Config[this.configName] as T);
 
     if (this.mode === "select") {
       const select = this.elements?.[0] as HTMLSelectElement | null | undefined;

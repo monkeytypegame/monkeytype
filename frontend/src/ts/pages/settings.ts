@@ -20,7 +20,6 @@ import SlimSelect from "slim-select";
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
-  ConfigValue,
   CustomBackgroundSchema,
   ThemeName,
   CustomLayoutFluid,
@@ -44,11 +43,11 @@ import { handleConfigInput } from "../elements/input-validation";
 
 let settingsInitialized = false;
 
-type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
+type SettingsGroups = Partial<{ [K in ConfigKey]: SettingsGroup<K> }>;
 let customLayoutFluidSelect: SlimSelect | undefined;
 let customPolyglotSelect: SlimSelect | undefined;
 
-export const groups: SettingsGroups<ConfigValue> = {};
+export const groups: SettingsGroups = {};
 
 const HighlightSchema = ConfigKeySchema.or(
   z.enum([
@@ -73,35 +72,32 @@ async function initGroups(): Promise<void> {
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["codeUnindentOnBackspace"] = new SettingsGroup(
     "codeUnindentOnBackspace",
     UpdateConfig.setCodeUnindentOnBackspace,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["difficulty"] = new SettingsGroup(
     "difficulty",
     UpdateConfig.setDifficulty,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["quickRestart"] = new SettingsGroup(
     "quickRestart",
     UpdateConfig.setQuickRestartMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["showAverage"] = new SettingsGroup(
     "showAverage",
     UpdateConfig.setShowAverage,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["keymapMode"] = new SettingsGroup(
     "keymapMode",
     UpdateConfig.setKeymapMode,
     "button",
     {
-      setCallback: () => {
-        groups["showLiveWpm"]?.updateUI();
-      },
       updateCallback: () => {
         if (Config.keymapMode === "off") {
           $(".pageSettings .section[data-config-name='keymapStyle']").addClass(
@@ -138,37 +134,38 @@ async function initGroups(): Promise<void> {
         }
       },
     }
-  ) as SettingsGroup<ConfigValue>;
-  groups["keymapMatrix"] = new SettingsGroup(
+  );
+  //TODO was keymapMatrix
+  groups["keymapStyle"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["keymapLayout"] = new SettingsGroup(
     "keymapLayout",
     UpdateConfig.setKeymapLayout,
     "select"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["keymapLegendStyle"] = new SettingsGroup(
     "keymapLegendStyle",
     UpdateConfig.setKeymapLegendStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["keymapShowTopRow"] = new SettingsGroup(
     "keymapShowTopRow",
     UpdateConfig.setKeymapShowTopRow,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["keymapSize"] = new SettingsGroup(
     "keymapSize",
     UpdateConfig.setKeymapSize,
     "range"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["freedomMode"] = new SettingsGroup(
     "freedomMode",
     UpdateConfig.setFreedomMode,
@@ -178,17 +175,17 @@ async function initGroups(): Promise<void> {
         groups["confidenceMode"]?.updateUI();
       },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["strictSpace"] = new SettingsGroup(
     "strictSpace",
     UpdateConfig.setStrictSpace,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["oppositeShiftMode"] = new SettingsGroup(
     "oppositeShiftMode",
     UpdateConfig.setOppositeShiftMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["confidenceMode"] = new SettingsGroup(
     "confidenceMode",
     UpdateConfig.setConfidenceMode,
@@ -199,87 +196,83 @@ async function initGroups(): Promise<void> {
         groups["stopOnError"]?.updateUI();
       },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["indicateTypos"] = new SettingsGroup(
     "indicateTypos",
     UpdateConfig.setIndicateTypos,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["hideExtraLetters"] = new SettingsGroup(
     "hideExtraLetters",
     UpdateConfig.setHideExtraLetters,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["blindMode"] = new SettingsGroup(
     "blindMode",
     UpdateConfig.setBlindMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["quickEnd"] = new SettingsGroup(
     "quickEnd",
     UpdateConfig.setQuickEnd,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["repeatQuotes"] = new SettingsGroup(
     "repeatQuotes",
     UpdateConfig.setRepeatQuotes,
     "button"
-  ) as SettingsGroup<ConfigValue>;
-  groups["ads"] = new SettingsGroup(
-    "ads",
-    UpdateConfig.setAds,
-    "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
+  groups["ads"] = new SettingsGroup("ads", UpdateConfig.setAds, "button");
   groups["alwaysShowWordsHistory"] = new SettingsGroup(
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["britishEnglish"] = new SettingsGroup(
     "britishEnglish",
     UpdateConfig.setBritishEnglish,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["singleListCommandLine"] = new SettingsGroup(
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["capsLockWarning"] = new SettingsGroup(
     "capsLockWarning",
     UpdateConfig.setCapsLockWarning,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["flipTestColors"] = new SettingsGroup(
     "flipTestColors",
     UpdateConfig.setFlipTestColors,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["showOutOfFocusWarning"] = new SettingsGroup(
     "showOutOfFocusWarning",
     UpdateConfig.setShowOutOfFocusWarning,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["colorfulMode"] = new SettingsGroup(
     "colorfulMode",
     UpdateConfig.setColorfulMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["startGraphsAtZero"] = new SettingsGroup(
     "startGraphsAtZero",
     UpdateConfig.setStartGraphsAtZero,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["autoSwitchTheme"] = new SettingsGroup(
     "autoSwitchTheme",
     UpdateConfig.setAutoSwitchTheme,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["randomTheme"] = new SettingsGroup(
     "randomTheme",
     UpdateConfig.setRandomTheme,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["stopOnError"] = new SettingsGroup(
     "stopOnError",
     UpdateConfig.setStopOnError,
@@ -289,12 +282,12 @@ async function initGroups(): Promise<void> {
         groups["confidenceMode"]?.updateUI();
       },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["soundVolume"] = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
     "range"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["playTimeWarning"] = new SettingsGroup(
     "playTimeWarning",
     UpdateConfig.setPlayTimeWarning,
@@ -304,7 +297,7 @@ async function initGroups(): Promise<void> {
         if (Config.playTimeWarning !== "off") void Sound.playTimeWarning();
       },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
     UpdateConfig.setPlaySoundOnError,
@@ -314,7 +307,7 @@ async function initGroups(): Promise<void> {
         if (Config.playSoundOnError !== "off") void Sound.playError();
       },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["playSoundOnClick"] = new SettingsGroup(
     "playSoundOnClick",
     UpdateConfig.setPlaySoundOnClick,
@@ -324,125 +317,125 @@ async function initGroups(): Promise<void> {
         if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
       },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["showAllLines"] = new SettingsGroup(
     "showAllLines",
     UpdateConfig.setShowAllLines,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["paceCaret"] = new SettingsGroup(
     "paceCaret",
     UpdateConfig.setPaceCaret,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["repeatedPace"] = new SettingsGroup(
     "repeatedPace",
     UpdateConfig.setRepeatedPace,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["minWpm"] = new SettingsGroup(
     "minWpm",
     UpdateConfig.setMinWpm,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["minAcc"] = new SettingsGroup(
     "minAcc",
     UpdateConfig.setMinAcc,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["minBurst"] = new SettingsGroup(
     "minBurst",
     UpdateConfig.setMinBurst,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["smoothLineScroll"] = new SettingsGroup(
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["lazyMode"] = new SettingsGroup(
     "lazyMode",
     UpdateConfig.setLazyMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["layout"] = new SettingsGroup(
     "layout",
     UpdateConfig.setLayout,
     "select"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["language"] = new SettingsGroup(
     "language",
     UpdateConfig.setLanguage,
     "select"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["fontSize"] = new SettingsGroup(
     "fontSize",
     UpdateConfig.setFontSize,
     "input",
     { validation: { schema: true, inputValueConvert: Number } }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["maxLineWidth"] = new SettingsGroup(
     "maxLineWidth",
     UpdateConfig.setMaxLineWidth,
     "input",
     { validation: { schema: true, inputValueConvert: Number } }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["caretStyle"] = new SettingsGroup(
     "caretStyle",
     UpdateConfig.setCaretStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["paceCaretStyle"] = new SettingsGroup(
     "paceCaretStyle",
     UpdateConfig.setPaceCaretStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["liveSpeedStyle"] = new SettingsGroup(
     "liveSpeedStyle",
     UpdateConfig.setLiveSpeedStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["liveAccStyle"] = new SettingsGroup(
     "liveAccStyle",
     UpdateConfig.setLiveAccStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["liveBurstStyle"] = new SettingsGroup(
     "liveBurstStyle",
     UpdateConfig.setLiveBurstStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["highlightMode"] = new SettingsGroup(
     "highlightMode",
     UpdateConfig.setHighlightMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["tapeMode"] = new SettingsGroup(
     "tapeMode",
     UpdateConfig.setTapeMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["tapeMargin"] = new SettingsGroup(
     "tapeMargin",
     UpdateConfig.setTapeMargin,
     "input",
     { validation: { schema: true, inputValueConvert: Number } }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["timerOpacity"] = new SettingsGroup(
     "timerOpacity",
     UpdateConfig.setTimerOpacity,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["timerColor"] = new SettingsGroup(
     "timerColor",
     UpdateConfig.setTimerColor,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["fontFamily"] = new SettingsGroup(
     "fontFamily",
     UpdateConfig.setFontFamily,
@@ -465,22 +458,22 @@ async function initGroups(): Promise<void> {
         }
       },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["alwaysShowDecimalPlaces"] = new SettingsGroup(
     "alwaysShowDecimalPlaces",
     UpdateConfig.setAlwaysShowDecimalPlaces,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["typingSpeedUnit"] = new SettingsGroup(
     "typingSpeedUnit",
     UpdateConfig.setTypingSpeedUnit,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["customBackgroundSize"] = new SettingsGroup(
     "customBackgroundSize",
     UpdateConfig.setCustomBackgroundSize,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
 }
 
 async function fillSettingsPage(): Promise<void> {
@@ -829,8 +822,10 @@ export async function update(
     $(".pageSettings .tip").addClass("hidden");
   }
 
-  for (const group of Object.keys(groups)) {
-    groups[group]?.updateUI();
+  for (const group of Object.values(groups)) {
+    if ("updateUI" in group) {
+      group.updateUI();
+    }
   }
 
   refreshTagsSettingsSection();
