@@ -28,7 +28,8 @@ type SkippedConfigKeys =
   | "minBurst" //this is skipped for now because it has 2 nested inputs;
   | "customBackgroundFilter" //this is skipped for now because it has 4 nested inputs;
   | "theme" //themes are sorted by color and also affected by config.favThemes
-  | "fontFamily"; //font relies on async json;
+  | "fontFamily" //font relies on async json;
+  | "funbox"; //is using a special non schema command at the top to clear funboxes
 
 export type CommandlineConfigMetadataObject = {
   [K in keyof Omit<
@@ -41,8 +42,7 @@ export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
   | SubgroupMeta<T>
   | InputMeta<T>
   | SubgroupWithInputMeta<T>
-  | SubgroupWithSecondKeyInputMeta<T, keyof ConfigSchemas.Config>
-  | null;
+  | SubgroupWithSecondKeyInputMeta<T, keyof ConfigSchemas.Config>;
 
 export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   rootAlias?: string;
@@ -258,7 +258,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       TestLogic.restart();
     },
   },
-  funbox: null,
+  // funbox: null,
   customLayoutfluid: {
     type: "input",
     defaultValue: () => {
