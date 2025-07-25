@@ -131,40 +131,7 @@ export const commands: CommandsSubgroup = {
     ...MinBurstCommands,
     buildCommandForConfigKey("britishEnglish"),
     ...FunboxCommands,
-    // withValidation({
-    //   id: "changeCustomLayoutfluid",
-    //   display: "Custom layoutfluid...",
-    //   defaultValue: (): string => {
-    //     return Config.customLayoutfluid.join(" ");
-    //   },
-    //   input: true,
-    //   icon: "fa-tint",
-    //   inputValueConvert: (val) => val.trim().split(" ") as CustomLayoutFluid,
-    //   validation: { schema: CustomLayoutFluidSchema },
-    //   exec: ({ input }): void => {
-    //     if (input === undefined) return;
-    //     UpdateConfig.setCustomLayoutfluid(input);
-    //   },
-    // }),
     buildCommandForConfigKey("customLayoutfluid"),
-    // withValidation({
-    //   id: "changeCustomPolyglot",
-    //   display: "Polyglot languages...",
-    //   defaultValue: (): string => {
-    //     return Config.customPolyglot.join(" ");
-    //   },
-    //   input: true,
-    //   icon: "fa-language",
-    //   inputValueConvert: (val) => val.trim().split(" ") as CustomPolyglot,
-    //   validation: { schema: CustomPolyglotSchema },
-    //   exec: ({ input }): void => {
-    //     if (input === undefined) return;
-    //     void UpdateConfig.setCustomPolyglot(input);
-    //     if (ActivePage.get() === "test") {
-    //       TestLogic.restart();
-    //     }
-    //   },
-    // }),
     buildCommandForConfigKey("customPolyglot"),
 
     //input
