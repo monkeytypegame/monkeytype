@@ -11,6 +11,7 @@
       border-spacing: 0;
       border-collapse: collapse;
       color: var(--text-color);
+      --padding: 1em 1.5rem;
 
       thead {
         color: var(--sub-color);
@@ -29,7 +30,7 @@
       }
 
       td {
-        padding: 0.5rem 0.5rem;
+        padding: var(--padding);
         -webkit-appearance: unset;
 
         &.actions {
