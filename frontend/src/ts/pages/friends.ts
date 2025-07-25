@@ -154,9 +154,9 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
           </div>
         </td>
         <td>${formatAge(entry.addedAt, ["years", "days"])}</td>
-        <td aria-label="total xp: ${formatXp(
-          xpDetails.levelCurrentXp
-        )}" data-balloon-pos="top">
+        <td aria-label="total xp: ${
+          isSafeNumber(entry.xp) ? formatXp(entry.xp) : ""
+        }" data-balloon-pos="top">
           ${xpDetails.level}
         </td>
         <td aria-label="${testStats.completedPercentage}% (${
@@ -246,7 +246,7 @@ function formatPb(entry?: PersonalBest):
 }
 
 function formatStreak(length?: number, prefix?: string): string {
-  return length !== undefined
+  return isSafeNumber(length)
     ? `${prefix !== undefined ? prefix + " " : ""}${length} ${
         length === 1 ? "day" : "days"
       } `
