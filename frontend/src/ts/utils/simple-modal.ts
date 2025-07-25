@@ -4,8 +4,12 @@ import { format as dateFormat } from "date-fns/format";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
-import { InputIndicator } from "../elements/input-indicator";
-import { debounce } from "throttle-debounce";
+import {
+  Validation,
+  ValidationOptions,
+  ValidationResult,
+  validateWithIndicator as withValidation,
+} from "../elements/input-validation";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -21,12 +25,7 @@ type CommonInput<TType, TValue> = {
    * If the schema is defined it is always checked first.
    * Only if the schema validaton is passed or missing the `isValid` method is called.
    */
-  validation?: {
-    /**
-     * Zod schema to validate the input value against.
-     * The indicator will show the error messages from the schema.
-     */
-    schema?: Zod.Schema<TValue>;
+  validation?: Omit<Validation<string>, "isValid"> & {
     /**
      * Custom async validation method.
      * This is intended to be used for validations that cannot be handled with a Zod schema like server-side validations.
@@ -90,7 +89,7 @@ export type ExecReturn = {
 };
 
 type FormInput = CommonInputType & {
-  indicator?: InputIndicator;
+  hasError?: boolean;
   currentValue: () => string;
 };
 type SimpleModalOptions = {
@@ -327,70 +326,23 @@ export class SimpleModal {
       };
 
       if (input.validation !== undefined) {
-        const indicator = new InputIndicator(element, {
-          valid: {
-            icon: "fa-check",
-            level: 1,
+        const options: ValidationOptions<string> = {
+          schema: input.validation.schema ?? undefined,
+          isValid:
+            input.validation.isValid !== undefined
+              ? async (val: string) => {
+                  //@ts-expect-error this is fine
+                  return input.validation.isValid(val, this);
+                }
+              : undefined,
+
+          callback: (result: ValidationResult) => {
+            input.hasError = result.status !== "success";
           },
-          invalid: {
-            icon: "fa-times",
-            level: -1,
-          },
-          checking: {
-            icon: "fa-circle-notch",
-            spinIcon: true,
-            level: 0,
-          },
-        });
-        input.indicator = indicator;
-
-        const debouceIsValid = debounce(1000, async (value: string) => {
-          const result = await input.validation?.isValid?.(value, this);
-
-          if (element.value !== value) {
-            //value of the input has changed in the meantime. discard
-            return;
-          }
-
-          if (result === true) {
-            indicator.show("valid");
-          } else {
-            indicator.show("invalid", result);
-          }
-        });
-
-        const validateInput = async (value: string): Promise<void> => {
-          if (value === undefined || value === "") {
-            indicator.hide();
-            return;
-          }
-          if (input.validation?.schema !== undefined) {
-            const schemaResult = input.validation.schema.safeParse(value);
-            if (!schemaResult.success) {
-              indicator.show(
-                "invalid",
-                schemaResult.error.errors.map((err) => err.message).join(", ")
-              );
-              return;
-            }
-          }
-
-          if (input.validation?.isValid !== undefined) {
-            indicator.show("checking");
-            debouceIsValid(value);
-            return;
-          }
-
-          indicator.show("valid");
+          debounceDelay: input.validation.debounceDelay,
         };
 
-        element.oninput = async (event) => {
-          const value = (event.target as HTMLInputElement).value;
-          await validateInput(value);
-
-          //call original handler if defined
-          input.oninput?.(event);
-        };
+        withValidation(element, options);
       }
     });
 
@@ -399,7 +351,6 @@ export class SimpleModal {
 
   exec(): void {
     if (!this.canClose) return;
-
     if (
       this.inputs
         .filter((i) => i.hidden !== true && i.optional !== true)
@@ -409,7 +360,7 @@ export class SimpleModal {
       return;
     }
 
-    if (this.inputs.some((i) => i.indicator?.get() === "invalid")) {
+    if (this.inputs.some((i) => i.hasError === true)) {
       Notifications.add("Please solve all validation errors", 0);
       return;
     }

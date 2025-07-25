@@ -14,6 +14,7 @@ import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
+import { createInputEventHandler } from "../elements/input-validation";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -618,6 +619,18 @@ async function runActiveCommand(): Promise<void> {
       value: command.defaultValue?.() ?? "",
       icon: command.icon ?? "fa-chevron-right",
     };
+    if ("validation" in command && !handlersCache.has(command.id)) {
+      const commandWithValidation = command as CommandWithValidation<unknown>;
+      const handler = createInputEventHandler(
+        updateValidationResult,
+        commandWithValidation.validation,
+        "inputValueConvert" in commandWithValidation
+          ? commandWithValidation.inputValueConvert
+          : undefined
+      );
+      handlersCache.set(command.id, handler);
+    }
+
     await updateInput(inputModeParams.value as string);
     hideCommands();
   } else if (command.subgroup) {
@@ -788,48 +801,10 @@ function updateValidationResult(
   }
 }
 
-async function isValid(
-  checkValue: unknown,
-  originalValue: string,
-  originalInput: HTMLInputElement,
-  validation: CommandWithValidation<unknown>["validation"]
-): Promise<void> {
-  updateValidationResult({ status: "checking" });
-
-  if (validation.schema !== undefined) {
-    const schemaResult = validation.schema.safeParse(checkValue);
-
-    if (!schemaResult.success) {
-      updateValidationResult({
-        status: "failed",
-        errorMessage: schemaResult.error.errors
-          .map((err) => err.message)
-          .join(", "),
-      });
-      return;
-    }
-  }
-
-  if (validation.isValid === undefined) {
-    updateValidationResult({ status: "success" });
-    return;
-  }
-
-  const result = await validation.isValid(checkValue);
-  if (originalInput.value !== originalValue) {
-    //value has change in the meantime, discard result
-    return;
-  }
-
-  if (result === true) {
-    updateValidationResult({ status: "success" });
-  } else {
-    updateValidationResult({
-      status: "failed",
-      errorMessage: result,
-    });
-  }
-}
+/*
+ * Handlers needs to be created only once per command to ensure they debounce with the given delay
+ */
+const handlersCache = new Map<string, (e: Event) => Promise<void>>();
 
 const modal = new AnimatedModal({
   dialogId: "commandLine",
@@ -921,34 +896,24 @@ const modal = new AnimatedModal({
       }
     });
 
-    input.addEventListener(
-      "input",
-      debounce(100, async (e) => {
-        if (
-          inputModeParams === null ||
-          inputModeParams.command === null ||
-          !("validation" in inputModeParams.command)
-        ) {
-          return;
-        }
+    input.addEventListener("input", async (e) => {
+      if (
+        inputModeParams === null ||
+        inputModeParams.command === null ||
+        !("validation" in inputModeParams.command)
+      ) {
+        return;
+      }
 
-        const originalInput = (e as InputEvent).target as HTMLInputElement;
-        const currentValue = originalInput.value;
-        let checkValue: unknown = currentValue;
-        const command =
-          inputModeParams.command as CommandWithValidation<unknown>;
-
-        if ("inputValueConvert" in command) {
-          checkValue = command.inputValueConvert(currentValue);
-        }
-        await isValid(
-          checkValue,
-          currentValue,
-          originalInput,
-          command.validation
+      const handler = handlersCache.get(inputModeParams.command.id);
+      if (handler === undefined) {
+        throw new Error(
+          `Expected handler for command ${inputModeParams.command.id} is missing`
         );
-      })
-    );
+      }
+
+      await handler(e);
+    });
 
     modalEl.addEventListener("mousemove", (_e) => {
       mouseMode = true;
