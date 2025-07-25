@@ -23,7 +23,10 @@ type ConfigKeysWithoutCommands =
   | "themeLight"
   | "themeDark";
 
-type SkippedConfigKeys = "customBackgroundFilter"; //this is skipped for now because it has 4 nested inputs;
+type SkippedConfigKeys =
+  | "customBackgroundFilter" //this is skipped for now because it has 4 nested inputs;
+  | "theme" //themes are sorted by color and also affected by config.favThemes
+  | "fontFamily"; //font relies on async json;
 
 export type CommandlineConfigMetadataObject = {
   [K in keyof Omit<
@@ -620,7 +623,4 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
-
-  fontFamily: null,
-  theme: null,
 };
