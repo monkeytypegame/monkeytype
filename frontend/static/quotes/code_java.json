@@ -32,7 +32,7 @@
       "length": 62
     },
     {
-      "text": "public enum OperatingSystem {\n\tOSX, Windows, LINUX;\n\tpublic String toString() {\n\t\tswitch(this) {\n\t\t\tcase OSX: return \"Mac OS\",\n\t\t\tcase WINDOWS: return \"Windows\";\n\t\t\tcase LINUX: return \"Linux\";\n\t\t}\n\t}\n}",
+      "text": "public enum OperatingSystem {\n\tOSX, WINDOWS, LINUX;\n\tpublic String toString() {\n\t\tswitch(this) {\n\t\t\tcase OSX: return \"Mac OS\";\n\t\t\tcase WINDOWS: return \"Windows\";\n\t\t\tcase LINUX: return \"Linux\";\n\t\t}\n\t}\n}",
       "id": 5,
       "source": "Detect OS",
       "length": 201
@@ -50,10 +50,10 @@
       "length": 545
     },
     {
-      "text": "public static int fibonacci(int n) {\n\tif (n <= 2) {\n\t\treturn 1;\n\t} else {\n\t\treturn fibonacci(n - 1) + fibonacci(n - 2);\n}",
+      "text": "public static int fibonacci(int n) {\n\tif (n <= 2) {\n\t\treturn 1;\n\t} else {\n\t\treturn fibonacci(n - 1) + fibonacci(n - 2);\n\t}\n}",
       "id": 8,
       "source": "Find the nth Fibonacci Number Recursively",
-      "length": 121
+      "length": 124
     },
     {
       "text": "public static int binarySearch(int[] arr, int x) {\n\tint low = 0;\n\tint mid = 0;\n\tint high = arr.length - 1;\n\twhile (low <= high) {\n\t\tmid = (low + high) / 2;\n\t\tif (x == arr[mid]) {\n\t\t\treturn mid;\n\t\t} else if (x > arr[mid]) {\n\t\t\tlow = mid + 1;\n\t\t} else {\n\t\t\thigh = mid - 1;\n\t\t}\n\t}\n\treturn -1;\n}",
