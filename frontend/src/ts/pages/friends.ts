@@ -9,10 +9,10 @@ import { isSafeNumber } from "@monkeytype/util/numbers";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import { getXpDetails } from "../utils/levels";
 import { secondsToString } from "../utils/date-and-time";
-import { PersonalBest } from "@monkeytype/contracts/schemas/shared";
+import { PersonalBest } from "@monkeytype/schemas/shared";
 import Format from "../utils/format";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
-import { Friend } from "@monkeytype/contracts/schemas/friends";
+import { Friend } from "@monkeytype/schemas/friends";
 import { SortedTable } from "../utils/sorted-table";
 
 const pageElement = $(".page.pageFriends");
