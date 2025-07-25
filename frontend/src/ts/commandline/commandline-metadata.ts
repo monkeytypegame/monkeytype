@@ -8,10 +8,28 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import Config from "../config";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import { Validation } from "../elements/input-validation";
+
+type ConfigKeysWithoutCommands =
+  | "minWpmCustomSpeed"
+  | "minAccCustom"
+  | "minBurstCustomSpeed"
+  | "accountChart"
+  | "customThemeColors"
+  | "favThemes"
+  | "paceCaretCustomSpeed"
+  | "autoSwitchTheme"
+  | "themeLight"
+  | "themeDark";
+
+type SkippedConfigKeys = "customBackgroundFilter"; //this is skipped for now because it has 4 nested inputs;
 
 //todo: remove ? here to require all config keys to be defined
-type CommandlineConfigMetadataObject = {
-  [K in keyof ConfigSchemas.Config]?: CommandlineConfigMetadata<K>;
+export type CommandlineConfigMetadataObject = {
+  [K in keyof Omit<
+    ConfigSchemas.Config,
+    ConfigKeysWithoutCommands | SkippedConfigKeys
+  >]: CommandlineConfigMetadata<K>;
 };
 
 // export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> = {
@@ -56,10 +74,7 @@ export type InputProps<T extends keyof ConfigSchemas.Config> = {
   /**
    * default value for missing validation is `{schema:true}`
    */
-  validation?: {
-    schema?: boolean;
-    isValid?: (value: ConfigSchemas.Config[T]) => Promise<boolean | string>;
-  };
+  validation?: Omit<Validation<ConfigSchemas.Config[T]>, "schema">;
 } & (ConfigSchemas.Config[T] extends string
   ? // oxlint-disable-next-line no-empty-object-type
     {}
@@ -235,6 +250,12 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   funbox: null,
+  customLayoutfluid: {
+    type: "input",
+    display: "Custom layoutfluid...",
+    inputValueConvert: (val) =>
+      val.trim().split(" ") as ConfigSchemas.CustomLayoutFluid,
+  },
   //input
   freedomMode: {
     type: "subgroup",
@@ -567,4 +588,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     type: "subgroup",
     options: "fromSchema",
   },
+
+  customPolyglot: null,
+  paceCaret: null,
+  monkey: null,
+
+  fontFamily: null,
+  theme: null,
 };

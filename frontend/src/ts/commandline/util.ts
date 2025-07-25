@@ -4,6 +4,7 @@ import { capitalizeFirstLetter } from "../utils/strings";
 import {
   CommandlineConfigMetadata,
   commandlineConfigMetadata,
+  CommandlineConfigMetadataObject,
   InputProps,
   SubgroupProps,
 } from "./commandline-metadata";
@@ -27,9 +28,9 @@ function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-export function buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
-  key: K
-): Command {
+export function buildCommandForConfigKey<
+  K extends keyof CommandlineConfigMetadataObject
+>(key: K): Command {
   const configMeta = configMetadata[key];
   const commandMeta = commandlineConfigMetadata[key];
   const schema = ConfigSchemas.ConfigSchema.shape[key];
@@ -37,7 +38,9 @@ export function buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
   return _buildCommandForConfigKey(key, configMeta, commandMeta, schema);
 }
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
+function _buildCommandForConfigKey<
+  K extends keyof CommandlineConfigMetadataObject
+>(
   key: K,
   configMeta: ConfigMetadata<K>,
   commandMeta: CommandlineConfigMetadata<K> | undefined,
@@ -52,7 +55,7 @@ function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
   } else if (commandMeta.type === "input") {
     return buildInputCommand({
       key,
-      displayFallback: configMeta.displayString ?? "custom...",
+      isPartOfSubgruop: false,
       commandMeta,
       configMeta,
       schema,
@@ -67,7 +70,7 @@ function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
     result.subgroup?.list.push(
       buildInputCommand({
         key,
-        displayFallback: configMeta.displayString ?? "custom...",
+        isPartOfSubgruop: true,
         commandMeta: commandMeta.input,
         configMeta,
         schema,
@@ -88,6 +91,7 @@ function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
 
     result.subgroup?.list.push(
       buildInputCommand({
+        isPartOfSubgruop: true,
         key: commandMeta.input.secondKey,
         commandMeta: commandMeta.input,
         configMeta: secondConfigMeta,
@@ -207,16 +211,23 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
 
 function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   key,
+  isPartOfSubgruop,
   commandMeta,
   configMeta,
   schema,
 }: {
   key: K;
+  isPartOfSubgruop: boolean;
   commandMeta: InputProps<K>;
   configMeta: ConfigMetadata<K>;
   schema?: ZodType; //TODO better type
 }): Command {
   const validation = commandMeta.validation ?? { schema: true };
+
+  const displayString = isPartOfSubgruop
+    ? commandMeta.display ?? "custom..."
+    : capitalizeFirstLetter(configMeta.displayString ?? key) + "...";
+
   const result = {
     id: `set${capitalizeFirstLetter(key)}Custom`,
     defaultValue: () => Config[key]?.toString() ?? "",
@@ -224,7 +235,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
       "configValue" in commandMeta
         ? commandMeta.configValue ?? undefined
         : undefined,
-    display: commandMeta.display ?? "custom...",
+    display: displayString,
     alias: commandMeta.alias ?? undefined,
     input: true,
     icon: configMeta.icon ?? "fa-cog",

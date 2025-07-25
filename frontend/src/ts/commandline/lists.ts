@@ -139,21 +139,22 @@ export const commands: CommandsSubgroup = {
     ...MinBurstCommands,
     buildCommandForConfigKey("britishEnglish"),
     ...FunboxCommands,
-    withValidation({
-      id: "changeCustomLayoutfluid",
-      display: "Custom layoutfluid...",
-      defaultValue: (): string => {
-        return Config.customLayoutfluid.join(" ");
-      },
-      input: true,
-      icon: "fa-tint",
-      inputValueConvert: (val) => val.trim().split(" ") as CustomLayoutFluid,
-      validation: { schema: CustomLayoutFluidSchema },
-      exec: ({ input }): void => {
-        if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(input);
-      },
-    }),
+    // withValidation({
+    //   id: "changeCustomLayoutfluid",
+    //   display: "Custom layoutfluid...",
+    //   defaultValue: (): string => {
+    //     return Config.customLayoutfluid.join(" ");
+    //   },
+    //   input: true,
+    //   icon: "fa-tint",
+    //   inputValueConvert: (val) => val.trim().split(" ") as CustomLayoutFluid,
+    //   validation: { schema: CustomLayoutFluidSchema },
+    //   exec: ({ input }): void => {
+    //     if (input === undefined) return;
+    //     UpdateConfig.setCustomLayoutfluid(input);
+    //   },
+    // }),
+    buildCommandForConfigKey("customLayoutfluid"),
     withValidation({
       id: "changeCustomPolyglot",
       display: "Polyglot languages...",
