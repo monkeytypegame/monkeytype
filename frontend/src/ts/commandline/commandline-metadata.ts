@@ -236,7 +236,19 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       },
     },
   },
-  minAcc: null,
+  minAcc: {
+    type: "subgroupWithSecondKeyInput",
+    rootDisplay: "Minimum accuracy...",
+    options: ["off"],
+    input: {
+      configValue: "custom",
+      display: "custom...",
+      secondKey: "minAccCustom",
+      inputValueConvert: (value) => {
+        return Number(value);
+      },
+    },
+  },
   minBurst: null,
   britishEnglish: {
     type: "subgroup",

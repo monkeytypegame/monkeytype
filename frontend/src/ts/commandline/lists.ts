@@ -1,4 +1,3 @@
-import MinAccCommands from "./lists/min-acc";
 import MinBurstCommands from "./lists/min-burst";
 import BailOutCommands from "./lists/bail-out";
 import QuoteFavoriteCommands from "./lists/quote-favorites";
@@ -69,6 +68,7 @@ const keymapLayoutCommand = buildCommandForConfigKey("keymapLayout");
 const customThemeCommand = buildCommandForConfigKey("customTheme");
 const adsCommand = buildCommandForConfigKey("ads");
 const minSpeedCommand = buildCommandForConfigKey("minWpm");
+const minAccCommand = buildCommandForConfigKey("minAcc");
 const paceCaretCommand = buildCommandForConfigKey("paceCaret");
 
 export const commands: CommandsSubgroup = {
@@ -127,7 +127,7 @@ export const commands: CommandsSubgroup = {
     buildCommandForConfigKey("alwaysShowWordsHistory"),
     buildCommandForConfigKey("singleListCommandLine"),
     minSpeedCommand,
-    ...MinAccCommands,
+    minAccCommand,
     ...MinBurstCommands,
     buildCommandForConfigKey("britishEnglish"),
     ...FunboxCommands,
@@ -361,7 +361,7 @@ const lists = {
   paceCaretMode: paceCaretCommand.subgroup,
   showAverage: showAverageCommand.subgroup,
   minWpm: minSpeedCommand.subgroup,
-  minAcc: MinAccCommands[0]?.subgroup,
+  minAcc: minAccCommand.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
   funbox: FunboxCommands[0]?.subgroup,
   confidenceMode: confidenceModeCommand.subgroup,

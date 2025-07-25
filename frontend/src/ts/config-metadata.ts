@@ -233,6 +233,14 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-bomb",
     displayString: "min accuracy custom",
     changeRequiresRestart: true,
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.minAcc !== "custom") {
+        return {
+          minAcc: "custom",
+        };
+      }
+      return {};
+    },
   },
   minBurst: {
     icon: "fa-bomb",
