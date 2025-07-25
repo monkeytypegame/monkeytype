@@ -836,41 +836,49 @@ export async function update(
   ThemePicker.setCustomInputs(true);
   // ThemePicker.updateActiveButton();
 
-  const shouldSetInput = (key: ConfigKey): boolean =>
-    options.eventKey === undefined || options.eventKey === key;
+  const setInputValue = (
+    key: ConfigKey,
+    query: string,
+    value: string | number
+  ): void => {
+    if (options.eventKey === undefined || options.eventKey === key) {
+      const element = document.querySelector(query) as HTMLInputElement;
+      if (element === null) {
+        throw new Error("Unknown input element " + query);
+      }
 
-  if (shouldSetInput("paceCaret")) {
-    $(
-      ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed"
-    ).val(
-      getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-        Config.paceCaretCustomSpeed
-      )
-    );
-  }
-  if (shouldSetInput("minWpmCustomSpeed")) {
-    $(
-      ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed"
-    ).val(
-      getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-        Config.minWpmCustomSpeed
-      )
-    );
-  }
-  if (shouldSetInput("minAccCustom")) {
-    $(
-      ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc"
-    ).val(Config.minAccCustom);
-  }
-  if (shouldSetInput("minBurstCustomSpeed")) {
-    $(
-      ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst"
-    ).val(
-      getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-        Config.minBurstCustomSpeed
-      )
-    );
-  }
+      element.value = new String(value).toString();
+      element.dispatchEvent(new Event("input"));
+    }
+  };
+
+  setInputValue(
+    "paceCaret",
+    ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed",
+    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+      Config.paceCaretCustomSpeed
+    )
+  );
+
+  setInputValue(
+    "minWpmCustomSpeed",
+    ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed",
+    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(Config.minWpmCustomSpeed)
+  );
+
+  setInputValue(
+    "minAccCustom",
+    ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc",
+    Config.minAccCustom
+  );
+
+  setInputValue(
+    "minBurstCustomSpeed",
+    ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst",
+    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+      Config.minBurstCustomSpeed
+    )
+  );
 
   if (Config.autoSwitchTheme) {
     $(
@@ -893,31 +901,36 @@ export async function update(
   }
   updateCustomBackgroundRemoveButtonVisibility();
 
-  if (shouldSetInput("fontSize")) {
-    $(".pageSettings .section[data-config-name='fontSize'] input").val(
-      Config.fontSize
-    );
-  }
-  if (shouldSetInput("maxLineWidth")) {
-    $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
-      Config.maxLineWidth
-    );
-  }
-  if (shouldSetInput("keymapSize")) {
-    $(".pageSettings .section[data-config-name='keymapSize'] input").val(
-      Config.keymapSize
-    );
-  }
-  if (shouldSetInput("tapeMargin")) {
-    $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
-      Config.tapeMargin
-    );
-  }
-  if (shouldSetInput("customBackgroundSize")) {
-    $(
-      ".pageSettings .section[data-config-name='customBackgroundSize'] input"
-    ).val(Config.customBackground);
-  }
+  setInputValue(
+    "fontSize",
+    ".pageSettings .section[data-config-name='fontSize'] input",
+    Config.fontSize
+  );
+
+  setInputValue(
+    "maxLineWidth",
+    ".pageSettings .section[data-config-name='maxLineWidth'] input",
+    Config.maxLineWidth
+  );
+
+  setInputValue(
+    "keymapSize",
+    ".pageSettings .section[data-config-name='keymapSize'] input",
+    Config.keymapSize
+  );
+
+  setInputValue(
+    "tapeMargin",
+    ".pageSettings .section[data-config-name='tapeMargin'] input",
+    Config.tapeMargin
+  );
+
+  setInputValue(
+    "customBackground",
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input",
+    Config.customBackground
+  );
+
   if (isAuthenticated()) {
     showAccountSection();
   } else {
