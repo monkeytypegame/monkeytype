@@ -25,23 +25,12 @@ type ConfigKeysWithoutCommands =
 
 type SkippedConfigKeys = "customBackgroundFilter"; //this is skipped for now because it has 4 nested inputs;
 
-//todo: remove ? here to require all config keys to be defined
 export type CommandlineConfigMetadataObject = {
   [K in keyof Omit<
     ConfigSchemas.Config,
     ConfigKeysWithoutCommands | SkippedConfigKeys
   >]: CommandlineConfigMetadata<K>;
 };
-
-// export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> = {
-//   rootAlias?: string;
-//   rootDisplay?: string;
-//   commandAlias?: (value: ConfigSchemas.Config[T]) => string;
-//   commandDisplay?: (value: ConfigSchemas.Config[T]) => string;
-//   isCommandVisible?: (value: ConfigSchemas.Config[T]) => boolean;
-//   hover?: (value: ConfigSchemas.Config[T]) => void;
-//   afterExec?: (value: ConfigSchemas.Config[T]) => void;
-// };
 
 export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
   | SubgroupMeta<T>
