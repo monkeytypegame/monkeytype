@@ -32,9 +32,6 @@ import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
 import {
-  ConfigKey,
-  CustomLayoutFluid,
-  CustomLayoutFluidSchema,
   CustomPolyglot,
   CustomPolyglotSchema,
 } from "@monkeytype/schemas/configs";
@@ -42,6 +39,7 @@ import { Command, CommandsSubgroup, withValidation } from "./types";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";
 import { buildCommandForConfigKey } from "./util";
+import { CommandlineConfigMetadataObject } from "./commandline-metadata";
 
 const fontsPromise = JSONData.getFontsList();
 fontsPromise
@@ -548,7 +546,9 @@ function buildSingleListCommands(
   return commands;
 }
 
-function buildCommands(...commands: (Command | ConfigKey)[]): Command[] {
+function buildCommands(
+  ...commands: (Command | keyof CommandlineConfigMetadataObject)[]
+): Command[] {
   return commands.map((it) =>
     typeof it === "string" ? buildCommandForConfigKey(it) : it
   );
