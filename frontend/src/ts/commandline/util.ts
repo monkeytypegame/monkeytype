@@ -230,7 +230,8 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
 
   const result = {
     id: `set${capitalizeFirstLetter(key)}Custom`,
-    defaultValue: () => Config[key]?.toString() ?? "",
+    defaultValue:
+      commandMeta.defaultValue ?? (() => Config[key]?.toString() ?? ""),
     configValue:
       "configValue" in commandMeta
         ? commandMeta.configValue ?? undefined

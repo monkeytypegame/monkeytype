@@ -9,6 +9,7 @@ import { areUnsortedArraysEqual } from "../utils/arrays";
 import Config from "../config";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { Validation } from "../elements/input-validation";
+import * as ActivePage from "../states/active-page";
 
 type ConfigKeysWithoutCommands =
   | "minWpmCustomSpeed"
@@ -71,6 +72,7 @@ export type InputProps<T extends keyof ConfigSchemas.Config> = {
   alias?: string;
   display?: string;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
+  defaultValue?: () => string;
   /**
    * default value for missing validation is `{schema:true}`
    */
@@ -254,9 +256,24 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   funbox: null,
   customLayoutfluid: {
     type: "input",
-    display: "Custom layoutfluid...",
+    defaultValue: () => {
+      return Config.customLayoutfluid.join(" ");
+    },
     inputValueConvert: (val) =>
       val.trim().split(" ") as ConfigSchemas.CustomLayoutFluid,
+  },
+  customPolyglot: {
+    type: "input",
+    defaultValue: () => {
+      return Config.customPolyglot.join(" ");
+    },
+    inputValueConvert: (val) =>
+      val.trim().split(" ") as ConfigSchemas.CustomPolyglot,
+    afterExec: () => {
+      if (ActivePage.get() === "test") {
+        TestLogic.restart();
+      }
+    },
   },
   //input
   freedomMode: {
@@ -591,7 +608,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     options: "fromSchema",
   },
 
-  customPolyglot: null,
   paceCaret: null,
   monkey: null,
 

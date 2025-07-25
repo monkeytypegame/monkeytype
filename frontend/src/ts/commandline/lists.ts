@@ -31,13 +31,7 @@ import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
-import {
-  CustomPolyglot,
-  CustomPolyglotSchema,
-} from "@monkeytype/schemas/configs";
-import { Command, CommandsSubgroup, withValidation } from "./types";
-import * as TestLogic from "../test/test-logic";
-import * as ActivePage from "../states/active-page";
+import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
 
@@ -153,24 +147,25 @@ export const commands: CommandsSubgroup = {
     //   },
     // }),
     buildCommandForConfigKey("customLayoutfluid"),
-    withValidation({
-      id: "changeCustomPolyglot",
-      display: "Polyglot languages...",
-      defaultValue: (): string => {
-        return Config.customPolyglot.join(" ");
-      },
-      input: true,
-      icon: "fa-language",
-      inputValueConvert: (val) => val.trim().split(" ") as CustomPolyglot,
-      validation: { schema: CustomPolyglotSchema },
-      exec: ({ input }): void => {
-        if (input === undefined) return;
-        void UpdateConfig.setCustomPolyglot(input);
-        if (ActivePage.get() === "test") {
-          TestLogic.restart();
-        }
-      },
-    }),
+    // withValidation({
+    //   id: "changeCustomPolyglot",
+    //   display: "Polyglot languages...",
+    //   defaultValue: (): string => {
+    //     return Config.customPolyglot.join(" ");
+    //   },
+    //   input: true,
+    //   icon: "fa-language",
+    //   inputValueConvert: (val) => val.trim().split(" ") as CustomPolyglot,
+    //   validation: { schema: CustomPolyglotSchema },
+    //   exec: ({ input }): void => {
+    //     if (input === undefined) return;
+    //     void UpdateConfig.setCustomPolyglot(input);
+    //     if (ActivePage.get() === "test") {
+    //       TestLogic.restart();
+    //     }
+    //   },
+    // }),
+    buildCommandForConfigKey("customPolyglot"),
 
     //input
     ...buildCommands(
