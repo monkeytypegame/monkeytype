@@ -189,25 +189,19 @@
 
         .avatarNameBadge {
           display: grid;
-          grid-template-columns: 1.25em max-content auto;
+          grid-template-columns: max-content max-content auto;
           gap: 0.5em;
           place-items: center left;
-          .avatarPlaceholder {
+          .avatar .userIcon {
             color: var(--sub-color);
-            border-radius: 100%;
-            i {
-              font-size: 1.29em;
-            }
           }
           .entryName {
             text-decoration: none;
             color: var(--text-color);
             cursor: pointer;
           }
-          .avatarPlaceholder,
           .avatar {
-            width: 1.25em;
-            height: 1.25em;
+            --size: 1.125em;
             grid-row: 1/2;
             grid-column: 1/2;
           }
@@ -255,13 +249,13 @@
           }
         }
       }
-    }
-    .loading {
-      display: grid;
-      place-items: center;
-      font-size: 3em;
-      color: var(--sub-color);
-      padding: 1em;
+      & > .loading {
+        display: grid;
+        place-items: center;
+        font-size: 3em;
+        color: var(--sub-color);
+        padding: 1em;
+      }
     }
     .error {
       display: grid;

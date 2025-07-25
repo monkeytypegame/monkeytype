@@ -9,7 +9,7 @@ import * as ReportDal from "../../../src/dal/report";
 import * as Captcha from "../../../src/utils/captcha";
 import { ObjectId } from "mongodb";
 import _ from "lodash";
-import { ApproveQuote } from "@monkeytype/contracts/schemas/quotes";
+import { ApproveQuote } from "@monkeytype/schemas/quotes";
 import { mockBearerAuthentication } from "../../__testData__/auth";
 
 const mockApp = request(app);

@@ -194,8 +194,13 @@
       table td {
         -webkit-appearance: unset;
       }
+
+      table tr {
+        border-radius: var(--roundness);
+      }
+
       .active {
-        animation: flashHighlight 4s linear 0s 1;
+        animation: accountRowHighlight 4s linear 0s 1;
       }
 
       .loadMoreButton {
@@ -315,7 +320,7 @@
       font-size: 0.75rem;
     }
 
-    tbody tr:nth-child(odd) td {
+    tbody tr:nth-child(odd) {
       background: var(--sub-alt-color);
     }
 

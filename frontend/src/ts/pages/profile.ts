@@ -6,8 +6,8 @@ import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
 import * as UserReportModal from "../modals/user-report";
 import * as Skeleton from "../utils/skeleton";
-import { UserProfile } from "@monkeytype/contracts/schemas/users";
-import { PersonalBests } from "@monkeytype/contracts/schemas/shared";
+import { UserProfile } from "@monkeytype/schemas/users";
+import { PersonalBests } from "@monkeytype/schemas/shared";
 
 function reset(): void {
   $(".page.pageProfile .error").addClass("hidden");
@@ -15,12 +15,7 @@ function reset(): void {
   $(".page.pageProfile .profile").html(`
       <div class="details none">
         <div class="avatarAndName">
-          <div class="avatars">
-            <div class="placeholderAvatar">
-              <i class="fas fa-user-circle"></i>
-            </div>
-            <div class="avatar"></div>
-          </div>
+          <div class="avatar"></div>
           <div>
              <div class="user">
               <div class="name">-</div>

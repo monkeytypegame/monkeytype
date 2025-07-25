@@ -1,7 +1,4 @@
-import {
-  Language,
-  LanguageSchema,
-} from "@monkeytype/contracts/schemas/languages";
+import { Language, LanguageSchema } from "@monkeytype/schemas/languages";
 
 export const LanguageList: Language[] = LanguageSchema._def.values;
 
@@ -344,6 +341,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_arduino",
     "code_systemverilog",
     "code_elixir",
+    "code_gleam",
     "code_zig",
     "code_gdscript",
     "code_gdscript_2",

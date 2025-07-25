@@ -39,7 +39,7 @@ import {
   CountByYearAndDay,
   TestActivity,
   UserProfileDetails,
-} from "@monkeytype/contracts/schemas/users";
+} from "@monkeytype/schemas/users";
 import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 import {
@@ -507,6 +507,7 @@ type RelevantUserInfo = Omit<
   | "note"
   | "ips"
   | "testActivity"
+  | "suspicious"
 >;
 
 function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
@@ -521,6 +522,7 @@ function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
     "note",
     "ips",
     "testActivity",
+    "suspicious",
   ]) as RelevantUserInfo;
 }
 

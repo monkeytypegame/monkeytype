@@ -1,12 +1,10 @@
-import {
-  ConfigValue,
-  QuoteLength,
-} from "@monkeytype/contracts/schemas/configs";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { ConfigValue, QuoteLength } from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { applyReducedMotion } from "../utils/misc";
+import { areUnsortedArraysEqual } from "../utils/arrays";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
@@ -225,11 +223,18 @@ export function updateExtras(key: string, value: ConfigValue): void {
     ).addClass("active");
   } else if (key === "quoteLength") {
     $("#testConfig .quoteLength .textButton").removeClass("active");
-    (value as QuoteLength[]).forEach((ql) => {
-      $(
-        "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
-      ).addClass("active");
-    });
+
+    if (areUnsortedArraysEqual(value as QuoteLength[], [0, 1, 2, 3])) {
+      $("#testConfig .quoteLength .textButton[quoteLength='-1']").addClass(
+        "active"
+      );
+    } else {
+      (value as QuoteLength[]).forEach((ql) => {
+        $(
+          "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
+        ).addClass("active");
+      });
+    }
   } else if (key === "numbers") {
     if (value === false) {
       $("#testConfig .numbersMode.textButton").removeClass("active");
