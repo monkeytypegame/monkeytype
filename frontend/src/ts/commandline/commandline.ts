@@ -619,6 +619,18 @@ async function runActiveCommand(): Promise<void> {
       value: command.defaultValue?.() ?? "",
       icon: command.icon ?? "fa-chevron-right",
     };
+    if ("validation" in command && !handlersCache.has(command.id)) {
+      const commandWithValidation = command as CommandWithValidation<unknown>;
+      const handler = createInputEventHandler(
+        updateValidationResult,
+        commandWithValidation.validation,
+        "inputValueConvert" in commandWithValidation
+          ? commandWithValidation.inputValueConvert
+          : undefined
+      );
+      handlersCache.set(command.id, handler);
+    }
+
     await updateInput(inputModeParams.value as string);
     hideCommands();
   } else if (command.subgroup) {
@@ -789,6 +801,11 @@ function updateValidationResult(
   }
 }
 
+/*
+ * Handlers needs to be created only once per command to ensure they debounce with the given delay
+ */
+const handlersCache = new Map<string, (e: Event) => Promise<void>>();
+
 const modal = new AnimatedModal({
   dialogId: "commandLine",
   customEscapeHandler: (): void => {
@@ -879,11 +896,6 @@ const modal = new AnimatedModal({
       }
     });
 
-    /*
-     * Handlers needs to be created only once per command to ensure they debounce with the given delay
-     */
-    const handlersCache = new Map<string, (e: Event) => Promise<void>>();
-
     input.addEventListener("input", async (e) => {
       if (
         inputModeParams === null ||
@@ -893,15 +905,11 @@ const modal = new AnimatedModal({
         return;
       }
 
-      const command = inputModeParams.command as CommandWithValidation<unknown>;
-      let handler = handlersCache.get(command.id);
+      const handler = handlersCache.get(inputModeParams.command.id);
       if (handler === undefined) {
-        handler = createInputEventHandler(
-          updateValidationResult,
-          command.validation,
-          "inputValueConvert" in command ? command.inputValueConvert : undefined
+        throw new Error(
+          `Expected handler for command ${inputModeParams.command.id} is missing`
         );
-        handlersCache.set(command.id, handler);
       }
 
       await handler(e);
