@@ -14,7 +14,7 @@ import * as UserDal from "../../dal/user";
 import { replaceObjectId, replaceObjectIds } from "../../utils/misc";
 import MonkeyError from "../../utils/error";
 import { omit } from "lodash";
-import { FriendRequest } from "@monkeytype/contracts/schemas/friends";
+import { FriendRequest } from "@monkeytype/schemas/friends";
 
 export async function getRequests(
   req: MonkeyRequest<GetFriendRequestsQuery>

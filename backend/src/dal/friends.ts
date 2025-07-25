@@ -4,7 +4,7 @@ import {
   Friend,
   FriendRequest,
   FriendRequestStatus,
-} from "@monkeytype/contracts/schemas/friends";
+} from "@monkeytype/schemas/friends";
 import MonkeyError from "../utils/error";
 import { WithObjectId } from "../utils/misc";
 
