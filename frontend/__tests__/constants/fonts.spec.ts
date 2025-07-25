@@ -1,8 +1,8 @@
 import { Fonts } from "../../src/ts/constants/fonts";
 import { readdirSync } from "fs";
 const ignoredFonts = new Set([
-  "GallaudetRegular", //used for asl
-  "Vazirmatn-Regular", //default font
+  "GallaudetRegular.woff2", //used for asl
+  "Vazirmatn-Regular.woff2", //default font
 ]);
 describe("fonts", () => {
   it("should have all related font files", () => {
@@ -13,7 +13,7 @@ describe("fonts", () => {
 
     const missingFontFiles = expectedFontFiles
       .filter((fileName) => !fontFiles.includes(fileName))
-      .map((name) => `fontend/static/webfonts/${name}.woff2`);
+      .map((name) => `fontend/static/webfonts/${name}`);
 
     expect(missingFontFiles, "missing font files").toEqual([]);
   });
@@ -28,8 +28,8 @@ describe("fonts", () => {
     );
 
     const additionalFontFiles = fontFiles
-      .filter((it) => !expectedFontFiles.has(it))
-      .map((it) => `fontend/static/webfonts/${it}.woff2`);
+      .filter((name) => !expectedFontFiles.has(name))
+      .map((name) => `fontend/static/webfonts/${name}`);
 
     expect(
       additionalFontFiles,
@@ -39,7 +39,7 @@ describe("fonts", () => {
 });
 
 function listFontFiles() {
-  return readdirSync(import.meta.dirname + "/../../static/webfonts")
-    .map((it) => it.substring(0, it.lastIndexOf(".")))
-    .filter((it) => !ignoredFonts.has(it));
+  return readdirSync(import.meta.dirname + "/../../static/webfonts").filter(
+    (it) => !ignoredFonts.has(it)
+  );
 }

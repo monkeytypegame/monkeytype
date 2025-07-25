@@ -581,7 +581,7 @@ async function fillSettingsPage(): Promise<void> {
 
     for (const name of Misc.typedKeys(Fonts).sort()) {
       const font = Fonts[name];
-      let fontFamily = name;
+      let fontFamily = name.replace(/_/g, " ");
 
       if (!font.systemFont) {
         fontFamily += " Preview";
