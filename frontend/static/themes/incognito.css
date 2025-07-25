@@ -26,6 +26,14 @@ header #logo .icon svg path {
   fill: var(--text-color);
 }
 
+/* fix logo clipping */
 header #logo .icon {
-  padding-bottom: 0.1em;
+  padding-bottom: 0.05em;
 }
+nav {
+  padding-bottom: 0.2em;
+}
+header {
+  margin-bottom: -0.1em;
+}
+/*  */

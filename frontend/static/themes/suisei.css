@@ -30,6 +30,16 @@ header #logo .text {
   color: transparent;
   padding-bottom: 0.1em;
 }
+
+/* fix logo clipping */
+header #logo .icon {
+  padding-bottom: 0.05em;
+}
+header {
+  margin-bottom: -0.1em;
+}
+/*  */
+
 header #logo .text .top {
   color: var(--main-color);
 }

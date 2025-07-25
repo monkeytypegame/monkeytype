@@ -478,6 +478,7 @@ list.updateName = new SimpleModal({
 
           return checkNameResponse === 200 ? true : "Name not available";
         },
+        debounceDelay: 1000,
       },
     },
   ],

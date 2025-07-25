@@ -27,7 +27,21 @@ header #logo .text {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: rainbow-gradient 30s alternate ease-in-out infinite;
+  padding-bottom: 0.1em;
 }
+
+/* fix logo clipping */
+header #logo .icon {
+  padding-bottom: 0.05em;
+}
+nav {
+  padding-bottom: 0.2em;
+}
+
+header {
+  margin-bottom: -0.1em;
+}
+/*  */
 
 header #logo .top,
 .view-account .levelAndBar .level,
