@@ -154,6 +154,8 @@ export function replaceLegacyValues(
     }
 
     configObj.fontSize = newValue;
+  } else if (configObj.fontSize !== undefined && configObj.fontSize < 0) {
+    configObj.fontSize = 1;
   }
 
   if (
@@ -195,6 +197,22 @@ export function replaceLegacyValues(
       configObj.quoteLength = [0, 1, 2, 3];
     } else {
       configObj.quoteLength = [configObj.quoteLength];
+    }
+  }
+
+  if (configObj.tapeMargin !== undefined) {
+    if (configObj.tapeMargin < 10) {
+      configObj.tapeMargin = 10;
+    } else if (configObj.tapeMargin > 90) {
+      configObj.tapeMargin = 90;
+    }
+  }
+
+  if (configObj.maxLineWidth !== undefined) {
+    if (configObj.maxLineWidth < 20 && configObj.maxLineWidth !== 0) {
+      configObj.maxLineWidth = 20;
+    } else if (configObj.maxLineWidth > 1000) {
+      configObj.maxLineWidth = 1000;
     }
   }
 
