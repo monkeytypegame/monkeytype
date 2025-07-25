@@ -82,9 +82,7 @@ import ThemesCommands from "./lists/themes";
 import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
-import FontFamilyCommands, {
-  update as updateFontFamilyCommands,
-} from "./lists/font-family";
+import FontFamilyCommands from "./lists/font-family";
 import LanguagesCommands from "./lists/languages";
 import KeymapLayoutsCommands from "./lists/keymap-layouts";
 
@@ -109,17 +107,6 @@ import {
 import { Command, CommandsSubgroup, withValidation } from "./types";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";
-
-const fontsPromise = JSONData.getFontsList();
-fontsPromise
-  .then((fonts) => {
-    updateFontFamilyCommands(fonts);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update fonts commands")
-    );
-  });
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -484,7 +471,7 @@ export function doesListExist(listName: string): boolean {
 export async function getList(
   listName: ListsObjectKeys
 ): Promise<CommandsSubgroup> {
-  await Promise.allSettled([fontsPromise, challengesPromise]);
+  await Promise.allSettled([challengesPromise]);
 
   const list = lists[listName];
   if (!list) {
@@ -526,7 +513,7 @@ export function getTopOfStack(): CommandsSubgroup {
 
 let singleList: CommandsSubgroup | undefined;
 export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
-  await Promise.allSettled([fontsPromise, challengesPromise]);
+  await Promise.allSettled([challengesPromise]);
   const singleCommands: Command[] = [];
   for (const command of commands.list) {
     const ret = buildSingleListCommands(command);
