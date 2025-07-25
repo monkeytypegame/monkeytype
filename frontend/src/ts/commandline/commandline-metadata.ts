@@ -74,7 +74,9 @@ export type InputProps<T extends keyof ConfigSchemas.Config> = {
   /**
    * default value for missing validation is `{schema:true}`
    */
-  validation?: Omit<Validation<ConfigSchemas.Config[T]>, "schema">;
+  validation?: Omit<Validation<ConfigSchemas.Config[T]>, "schema"> & {
+    schema?: true;
+  };
 } & (ConfigSchemas.Config[T] extends string
   ? // oxlint-disable-next-line no-empty-object-type
     {}
