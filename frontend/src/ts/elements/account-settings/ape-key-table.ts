@@ -160,11 +160,11 @@ let apeKeys: ApeKeys | null = {};
 const element = $("#pageAccountSettings .tab[data-tab='apeKeys']");
 
 async function getData(): Promise<boolean> {
+  if (!isAuthenticated()) return false;
+
   showLoaderRow();
-  if (!isAuthenticated()) {
-    return false;
-  }
   const response = await Ape.apeKeys.get();
+
   if (response.status !== 200) {
     if (
       response.body.message ===
