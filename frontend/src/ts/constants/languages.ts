@@ -39,6 +39,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   ],
   arabic: ["arabic", "arabic_10k"],
   arabic_egypt: ["arabic_egypt", "arabic_egypt_1k"],
+  arabic_morocco: ["arabic_morocco"],
   italian: [
     "italian",
     "italian_1k",

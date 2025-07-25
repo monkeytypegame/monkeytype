@@ -37,6 +37,7 @@ export const LanguageSchema = z.enum(
     "arabic_10k",
     "arabic_egypt",
     "arabic_egypt_1k",
+    "arabic_morocco",
     "malagasy",
     "malagasy_1k",
     "malay",
