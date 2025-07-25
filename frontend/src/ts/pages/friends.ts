@@ -2,18 +2,25 @@ import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
 import { SimpleModal } from "../utils/simple-modal";
 import Ape from "../ape";
-import { formatDuration } from "date-fns/formatDuration";
-import { intervalToDuration } from "date-fns";
+import {
+  FormatDurationOptions,
+  intervalToDuration,
+  format as dateFormat,
+  formatDuration,
+} from "date-fns";
 import * as Notifications from "../elements/notifications";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import { getXpDetails } from "../utils/levels";
+import { formatXp, getXpDetails } from "../utils/levels";
 import { secondsToString } from "../utils/date-and-time";
 import { PersonalBest } from "@monkeytype/schemas/shared";
 import Format from "../utils/format";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { Friend } from "@monkeytype/schemas/friends";
 import { SortedTable } from "../utils/sorted-table";
+import { getAvatarElement } from "../utils/discord-avatar";
+import { formatTypingStatsRatio } from "../utils/misc";
+import { getLanguageDisplayString } from "../utils/strings";
 
 const pageElement = $(".page.pageFriends");
 
@@ -120,11 +127,8 @@ async function fetchFriends(): Promise<void> {
 }
 
 function buildFriendRow(entry: Friend): HTMLTableRowElement {
-  let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
-  if (entry.discordAvatar !== undefined) {
-    avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
-  }
   const xpDetails = getXpDetails(entry.xp ?? 0);
+  const testStats = formatTypingStatsRatio(entry);
 
   const top15 = formatPb(entry.top15);
   const top60 = formatPb(entry.top60);
@@ -134,11 +138,12 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
   element.innerHTML = `<tr data-id="${entry.friendRequestId}">
         <td>
           <div class="avatarNameBadge">
-            <div class="lbav">${avatar}</div>
+            <div class="avatarPlaceholder"></div>
               <a href="${location.origin}/profile/${
     entry.uid
-  }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
-            <div class="flagsAndBadge">
+  }?isUid" class="entryName" uid=${entry.uid} router-link>${
+    entry.name
+  }</a>            <div class="flagsAndBadge">
             ${getHtmlByUserFlags(entry)}
               ${
                 isSafeNumber(entry.badgeId)
@@ -148,17 +153,38 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
             </div>
           </div>
         </td>
-        <td>${formatAge(entry.addedAt)}</td>
-        <td>${xpDetails.level}</td>
-        <td>${entry.completedTests}/${entry.startedTests}</td>
+        <td>${formatAge(entry.addedAt, ["years", "days"])}</td>
+        <td aria-label="total xp: ${formatXp(
+          xpDetails.levelCurrentXp
+        )}" data-balloon-pos="top">
+          ${xpDetails.level}
+        </td>
+        <td aria-label="${testStats.completedPercentage}% (${
+    testStats.restartRatio
+  } restarts per completed test)" data-balloon-pos="top">${
+    entry.completedTests
+  }/${entry.startedTests}</td>
         <td>${secondsToString(
           Math.round(entry.timeTyping ?? 0),
           true,
           true
         )}</td>
-        <td>${entry.streak !== undefined ? entry.streak.length + " days" : ""}
-        <td>${top15?.wpm}<div class="sub">${top15?.acc}</div></td>
-        <td>${top60?.wpm}<div class="sub">${top60?.acc}</div></td>
+        <td aria-label="${formatStreak(
+          entry.streak?.maxLength,
+          "max streak"
+        )}" data-balloon-pos="top">
+          ${formatStreak(entry.streak?.length)} 
+        </td>
+        <td aria-label="${
+          top15?.details
+        }" data-balloon-pos="top" data-balloon-break="">${
+    top15?.wpm
+  }<div class="sub">${top15?.acc}</div></td>
+        <td aria-label="${
+          top60?.details
+        }" data-balloon-pos="top" data-balloon-break="">${
+    top60?.wpm
+  }<div class="sub">${top60?.acc}</div></td>
         <td class="actions">
             <button class="rejected" aria-label="reject friend" data-balloon-pos="top">
             <i class="fas fa-user-times fa-fw"></i>
@@ -168,16 +194,23 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
           </button>
         </td>
       </tr>`;
+
+  element
+    .querySelector(".avatarPlaceholder")
+    ?.replaceWith(getAvatarElement(entry));
   return element;
 }
 
-function formatAge(timestamp?: number): string {
+function formatAge(
+  timestamp: number | undefined,
+  format: FormatDurationOptions["format"] = ["days", "hours", "minutes"]
+): string {
   if (timestamp === undefined) return "";
   const formatted = formatDuration(
     intervalToDuration({ start: timestamp, end: Date.now() }),
-    { format: ["days", "hours", "minutes"] }
+    { format }
   );
-  return (formatted !== "" ? formatted : "less then a minute") + " ago";
+  return formatted !== "" ? formatted : "less then a minute";
 }
 
 function formatPb(entry?: PersonalBest):
@@ -186,17 +219,38 @@ function formatPb(entry?: PersonalBest):
       acc: string;
       raw: string;
       con: string;
+      details: string;
     }
   | undefined {
   if (entry === undefined) {
     return undefined;
   }
-  return {
+  const result = {
     wpm: Format.typingSpeed(entry.wpm, { showDecimalPlaces: true }),
     acc: Format.percentage(entry.acc, { showDecimalPlaces: true }),
     raw: Format.typingSpeed(entry.raw, { showDecimalPlaces: true }),
     con: Format.percentage(entry.consistency, { showDecimalPlaces: true }),
+    details: "",
   };
+
+  result.details = [
+    `${getLanguageDisplayString(entry.language)}`,
+    `${result.wpm} wpm`,
+    `${result.raw} raw`,
+    `${result.acc} acc`,
+    `${result.con} con`,
+    `${dateFormat(entry.timestamp, "dd MMM yyyy")}`,
+  ].join("\n");
+
+  return result;
+}
+
+function formatStreak(length?: number, prefix?: string): string {
+  return length !== undefined
+    ? `${prefix !== undefined ? prefix + " " : ""}${length} ${
+        length === 1 ? "day" : "days"
+      } `
+    : "";
 }
 
 $("#friendAdd").on("click", () => {
