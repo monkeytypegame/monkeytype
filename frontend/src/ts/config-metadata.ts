@@ -418,6 +418,14 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-i-cursor",
     displayString: "pace caret custom speed",
     changeRequiresRestart: false,
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.paceCaret !== "custom") {
+        return {
+          paceCaret: "custom",
+        };
+      }
+      return {};
+    },
   },
   paceCaretStyle: {
     icon: "fa-i-cursor",

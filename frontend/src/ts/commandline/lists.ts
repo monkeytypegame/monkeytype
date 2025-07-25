@@ -1,6 +1,5 @@
 import MinAccCommands from "./lists/min-acc";
 import MinBurstCommands from "./lists/min-burst";
-import PaceCaretModeCommands from "./lists/pace-caret";
 import BailOutCommands from "./lists/bail-out";
 import QuoteFavoriteCommands from "./lists/quote-favorites";
 import ResultSavingCommands from "./lists/result-saving";
@@ -70,6 +69,7 @@ const keymapLayoutCommand = buildCommandForConfigKey("keymapLayout");
 const customThemeCommand = buildCommandForConfigKey("customTheme");
 const adsCommand = buildCommandForConfigKey("ads");
 const minSpeedCommand = buildCommandForConfigKey("minWpm");
+const paceCaretCommand = buildCommandForConfigKey("paceCaret");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -194,7 +194,7 @@ export const commands: CommandsSubgroup = {
     ...buildCommands(
       "smoothCaret",
       "caretStyle",
-      ...PaceCaretModeCommands,
+      paceCaretCommand,
       "repeatedPace",
       "paceCaretStyle"
     ),
@@ -399,7 +399,7 @@ const lists = {
   languages: languageCommand.subgroup,
   difficulty: difficultyCommand.subgroup,
   lazyMode: lazyModeCommand.subgroup,
-  paceCaretMode: PaceCaretModeCommands[0]?.subgroup,
+  paceCaretMode: paceCaretCommand.subgroup,
   showAverage: showAverageCommand.subgroup,
   minWpm: minSpeedCommand.subgroup,
   minAcc: MinAccCommands[0]?.subgroup,

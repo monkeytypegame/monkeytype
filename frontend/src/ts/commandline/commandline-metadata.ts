@@ -434,6 +434,26 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     options: "fromSchema",
     isCommandVisible: (value) => !["banana", "carrot"].includes(value),
   },
+  paceCaret: {
+    type: "subgroupWithSecondKeyInput",
+    rootDisplay: "Pace caret mode...",
+    options: ["off", "pb", "tagPb", "last", "average", "daily"],
+    afterExec: () => {
+      TestLogic.restart();
+    },
+    input: {
+      secondKey: "paceCaretCustomSpeed",
+      configValue: "custom",
+      inputValueConvert: (value) => {
+        let newVal = Number(value);
+        newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(newVal);
+        return newVal;
+      },
+      afterExec: () => {
+        TestLogic.restart();
+      },
+    },
+  },
   repeatedPace: {
     type: "subgroup",
     options: "fromSchema",
@@ -608,7 +628,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     options: "fromSchema",
   },
 
-  paceCaret: null,
   monkey: null,
 
   fontFamily: null,
