@@ -25,6 +25,7 @@ type ConfigKeysWithoutCommands =
   | "burstHeatmap";
 
 type SkippedConfigKeys =
+  | "minBurst" //this is skipped for now because it has 2 nested inputs;
   | "customBackgroundFilter" //this is skipped for now because it has 4 nested inputs;
   | "theme" //themes are sorted by color and also affected by config.favThemes
   | "fontFamily"; //font relies on async json;
@@ -249,7 +250,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       },
     },
   },
-  minBurst: null,
+  // minBurst: null,
   britishEnglish: {
     type: "subgroup",
     options: "fromSchema",
