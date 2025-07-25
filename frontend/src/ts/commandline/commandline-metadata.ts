@@ -21,7 +21,8 @@ type ConfigKeysWithoutCommands =
   | "paceCaretCustomSpeed"
   | "autoSwitchTheme"
   | "themeLight"
-  | "themeDark";
+  | "themeDark"
+  | "burstHeatmap";
 
 type SkippedConfigKeys =
   | "customBackgroundFilter" //this is skipped for now because it has 4 nested inputs;
@@ -194,7 +195,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       return getLanguageDisplayString(value);
     },
   },
-  burstHeatmap: null,
   //behavior
   difficulty: {
     type: "subgroup",
