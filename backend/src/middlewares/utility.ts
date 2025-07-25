@@ -3,7 +3,7 @@ import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { recordClientVersion as prometheusRecordClientVersion } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 import MonkeyError from "../utils/error";
-import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
+import { EndpointMetadata } from "@monkeytype/contracts/util/api";
 import { TsRestRequestWithContext } from "../api/types";
 
 /**

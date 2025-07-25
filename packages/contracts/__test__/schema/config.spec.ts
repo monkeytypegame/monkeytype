@@ -1,4 +1,4 @@
-import { CustomBackgroundSchema } from "../../src/schemas/configs";
+import { CustomBackgroundSchema } from "@monkeytype/schemas/configs";
 
 describe("config schema", () => {
   describe("CustomBackgroundSchema", () => {

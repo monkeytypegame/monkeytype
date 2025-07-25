@@ -8,7 +8,7 @@ import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";
 
 import type { Howl } from "howler";
-import { PlaySoundOnClick } from "@monkeytype/contracts/schemas/configs";
+import { PlaySoundOnClick } from "@monkeytype/schemas/configs";
 
 async function gethowler(): Promise<typeof import("howler")> {
   return await import("howler");
@@ -32,6 +32,16 @@ type ErrorSounds = Record<
 
 let errorSounds: ErrorSounds | null = null;
 let clickSounds: ClickSounds | null = null;
+
+let timeWarning: Howl | null = null;
+
+async function initTimeWarning(): Promise<void> {
+  const Howl = (await gethowler()).Howl;
+  if (timeWarning !== null) return;
+  timeWarning = new Howl({
+    src: "../sound/timeWarning.wav",
+  });
+}
 
 async function initErrorSound(): Promise<void> {
   const Howl = (await gethowler()).Howl;
@@ -608,6 +618,14 @@ function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
   oscillatorNode.start(audioCtx.currentTime);
   gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.3);
   oscillatorNode.stop(audioCtx.currentTime + 2);
+}
+
+export async function playTimeWarning(): Promise<void> {
+  if (timeWarning === null) await initTimeWarning();
+  const soundToPlay = timeWarning as Howl;
+  soundToPlay.stop();
+  soundToPlay.seek(0);
+  soundToPlay.play();
 }
 
 export function playNote(

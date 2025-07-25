@@ -5,14 +5,14 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
+} from "./util/api";
 import {
   CompletedEventSchema,
   PostResultResponseSchema,
   ResultMinifiedSchema,
   ResultSchema,
-} from "./schemas/results";
-import { IdSchema } from "./schemas/util";
+} from "@monkeytype/schemas/results";
+import { IdSchema } from "@monkeytype/schemas/util";
 
 export const GetResultsQuerySchema = z.object({
   onOrAfterTimestamp: z

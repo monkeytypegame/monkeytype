@@ -1,4 +1,4 @@
-import { Config } from "@monkeytype/contracts/schemas/configs";
+import { Config } from "@monkeytype/schemas/configs";
 import AnimatedModal from "../utils/animated-modal";
 import { z } from "zod";
 

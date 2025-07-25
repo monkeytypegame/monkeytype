@@ -19,7 +19,7 @@ import { FirebaseError } from "firebase-admin";
 import * as ApeKeysDal from "../../../src/dal/ape-keys";
 import * as LogDal from "../../../src/dal/logs";
 import { ObjectId } from "mongodb";
-import { PersonalBest } from "@monkeytype/contracts/schemas/shared";
+import { PersonalBest } from "@monkeytype/schemas/shared";
 import { pb } from "../../dal/leaderboards.spec";
 import {
   mockAuthenticateWithApeKey,
@@ -27,9 +27,9 @@ import {
 } from "../../__testData__/auth";
 import { randomUUID } from "node:crypto";
 import _ from "lodash";
-import { MonkeyMail, UserStreak } from "@monkeytype/contracts/schemas/users";
+import { MonkeyMail, UserStreak } from "@monkeytype/schemas/users";
 import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
-import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as FriendsDal from "../../../src/dal/friends";
 

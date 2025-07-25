@@ -1,13 +1,9 @@
 import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
-import { Config } from "@monkeytype/contracts/schemas/configs";
-import {
-  Mode,
-  Mode2,
-  PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
-import { Result } from "@monkeytype/contracts/schemas/results";
+import { Config } from "@monkeytype/schemas/configs";
+import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
+import { Result } from "@monkeytype/schemas/results";
 import { z } from "zod";
 
 export function whorf(speed: number, wordlen: number): number {
@@ -764,4 +760,7 @@ export function sanitize<T extends z.ZodTypeAny>(
   ) as z.infer<T>;
 }
 
+export function triggerResize(): void {
+  $(window).trigger("resize");
+}
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

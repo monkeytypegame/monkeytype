@@ -1,18 +1,19 @@
 import { initContract } from "@ts-rest/core";
-import {
-  CommonResponses,
-  meta,
-  MonkeyResponseSchema,
-  responseWithData,
-} from "./schemas/api";
+
 import {
   FriendRequestSchema,
   FriendRequestStatusSchema,
   FriendRequestTypeSchema,
   FriendSchema,
-} from "./schemas/friends";
+} from "@monkeytype/schemas/friends";
 import { z } from "zod";
-import { IdSchema } from "./schemas/util";
+import {
+  CommonResponses,
+  meta,
+  MonkeyResponseSchema,
+  responseWithData,
+} from "./util/api";
+import { IdSchema } from "@monkeytype/schemas/util";
 
 const c = initContract();
 

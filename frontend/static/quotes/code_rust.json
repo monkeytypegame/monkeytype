@@ -147,9 +147,9 @@
     },
     {
       "id": 24,
-      "length": 56,
+      "length": 54,
       "source": "Create a Tree data structure - programming-idioms.org",
-      "text": "struct Node<T> {\n  value: T,\n  children: Vec<Node<T>>,\n}"
+      "text": "struct Node<T> {\n\tvalue: T,\n\tchildren: Vec<Node<T>>,\n}"
     },
     {
       "id": 25,
@@ -201,9 +201,9 @@
     },
     {
       "id": 33,
-      "length": 66,
+      "length": 64,
       "source": "Convert string to integer - programming-idioms.org",
-      "text": "let i = match s.parse::<i32>() {\n  Ok(i) => i,\n  Err(_e) => -1,\n};"
+      "text": "let i = match s.parse::<i32>() {\n\tOk(i) => i,\n\tErr(_e) => -1,\n};"
     },
     {
       "id": 34,
@@ -213,9 +213,9 @@
     },
     {
       "id": 36,
-      "length": 211,
+      "length": 209,
       "source": "Send a value to another thread - programming-idioms.org",
-      "text": "use std::thread;\nuse std::sync::mpsc::channel;\nlet (send, recv) = channel();\nthread::spawn(move || {\n\tloop {\n\t\tlet msg = recv.recv().unwrap();\n\t\tprintln!(\"Hello, {:?}\", msg);\n\t}  \n});\nsend.send(\"Alan\").unwrap();"
+      "text": "use std::thread;\nuse std::sync::mpsc::channel;\nlet (send, recv) = channel();\nthread::spawn(move || {\n\tloop {\n\t\tlet msg = recv.recv().unwrap();\n\t\tprintln!(\"Hello, {:?}\", msg);\n\t}\n});\nsend.send(\"Alan\").unwrap();"
     },
     {
       "id": 37,
@@ -279,9 +279,9 @@
     },
     {
       "id": 47,
-      "length": 145,
+      "length": 143,
       "source": "Integer exponentiation by squaring - programming-idioms.org",
-      "text": "fn exp(x: u64, n: u64) -> u64 {\n\tmatch n {\n\t\t0 => 1,\n\t\t1 => x,\n\t\ti if i % 2 == 0 => exp(x * x, n / 2),\n\t\t_ => x * exp(x * x, (n - 1) / 2),\n\t}\t \n}"
+      "text": "fn exp(x: u64, n: u64) -> u64 {\n\tmatch n {\n\t\t0 => 1,\n\t\t1 => x,\n\t\ti if i % 2 == 0 => exp(x * x, n / 2),\n\t\t_ => x * exp(x * x, (n - 1) / 2),\n\t}\n}"
     },
     {
       "id": 48,
@@ -297,9 +297,9 @@
     },
     {
       "id": 50,
-      "length": 145,
+      "length": 149,
       "source": "First-class function : compose - programming-idioms.org",
-      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
+      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<dyn Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
     },
     {
       "id": 51,
@@ -309,9 +309,9 @@
     },
     {
       "id": 52,
-      "length": 145,
+      "length": 149,
       "source": "First-class function : generic composition - programming-idioms.org",
-      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
+      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<dyn Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
     },
     {
       "id": 53,
@@ -357,15 +357,15 @@
     },
     {
       "id": 60,
-      "length": 103,
+      "length": 104,
       "source": "Continue outer loop - programming-idioms.org",
-      "text": "outer: for va in &a {\n\tfor vb in &b {\n\t\tif va == vb {\n\t\t\tcontinue 'outer;\n\t\t}\n\t}\n\tprintln!(\"{}\", va);\n}"
+      "text": "'outer: for va in &a {\n\tfor vb in &b {\n\t\tif va == vb {\n\t\t\tcontinue 'outer;\n\t\t}\n\t}\n\tprintln!(\"{}\", va);\n}"
     },
     {
       "id": 61,
-      "length": 108,
+      "length": 109,
       "source": "Break outer loop - programming-idioms.org",
-      "text": "outer: for v in m {\n\t'inner: for i in v {\n\t\tif i < 0 {\n\t\t\tprintln!(\"Found {}\", i);\n\t\t\tbreak 'outer;\n\t\t}\n\t}\n}"
+      "text": "'outer: for v in m {\n\t'inner: for i in v {\n\t\tif i < 0 {\n\t\t\tprintln!(\"Found {}\", i);\n\t\t\tbreak 'outer;\n\t\t}\n\t}\n}"
     },
     {
       "id": 62,
@@ -537,9 +537,9 @@
     },
     {
       "id": 90,
-      "length": 267,
+      "length": 266,
       "source": "Binomial coefficient \"n choose k\" - programming-idioms.org",
-      "text": "extern crate num;\nuse num::bigint::BigInt;\nuse num::bigint::ToBigInt;\nuse num::traits::One;\nfn binom(n: u64, k: u64) -> BigInt {\n\tlet mut res = BigInt::one();\n\tfor i in 0..k {\n\t\tres = (res * (n - i).to_bigint().unwrap()) /\n\t\t\t  (i + 1).to_bigint().unwrap();\n\t}\n\tres\n}"
+      "text": "extern crate num;\nuse num::bigint::BigInt;\nuse num::bigint::ToBigInt;\nuse num::traits::One;\nfn binom(n: u64, k: u64) -> BigInt {\n\tlet mut res = BigInt::one();\n\tfor i in 0..k {\n\t\tres = (res * (n - i).to_bigint().unwrap()) /\n\t\t\t\t(i + 1).to_bigint().unwrap();\n\t}\n\tres\n}"
     },
     {
       "id": 91,
@@ -963,9 +963,9 @@
     },
     {
       "id": 161,
-      "length": 87,
+      "length": 88,
       "source": "Measure duration of procedure execution - programming-idioms.org",
-      "text": "use std::time::Instant;\nlet start = Instant:now();\nf();\nlet duration = start.elapsed();"
+      "text": "use std::time::Instant;\nlet start = Instant::now();\nf();\nlet duration = start.elapsed();"
     },
     {
       "id": 162,
@@ -1167,9 +1167,9 @@
     },
     {
       "id": 195,
-      "length": 204,
+      "length": 205,
       "source": "Execute procedures depending on options - programming-idioms.org",
-      "text": "if let Some(arg) = ::std::env::args().nth(1) {\n\tif &arg == \"f\" {\n\t\tfox();\n\t} else if &arg = \"b\" {\n\t\tbat();\n\t} else {\n\t\teprintln!(\"invalid argument: {}\", arg),\n\t}\n} else {\n\teprintln!(\"missing argument\");\n}"
+      "text": "if let Some(arg) = ::std::env::args().nth(1) {\n\tif &arg == \"f\" {\n\t\tfox();\n\t} else if &arg == \"b\" {\n\t\tbat();\n\t} else {\n\t\teprintln!(\"invalid argument: {}\", arg);\n\t}\n} else {\n\teprintln!(\"missing argument\");\n}"
     },
     {
       "id": 196,
@@ -1257,9 +1257,9 @@
     },
     {
       "id": 210,
-      "length": 45,
+      "length": 46,
       "source": "Insert entry in map - programming-idioms.org",
-      "text": "use std::collection::HashMap;\nm.insert(k, v);"
+      "text": "use std::collections::HashMap;\nm.insert(k, v);"
     },
     {
       "id": 211,
@@ -1287,9 +1287,9 @@
     },
     {
       "id": 215,
-      "length": 80,
+      "length": 81,
       "source": "Hex string to byte array - programming-idioms.org",
-      "text": "use hex::FromHex\nlet a: Vec<u8> = Vec::from_hex(s).expect(\"Invalid Hex String\");"
+      "text": "use hex::FromHex;\nlet a: Vec<u8> = Vec::from_hex(s).expect(\"Invalid Hex String\");"
     },
     {
       "id": 216,
@@ -1311,9 +1311,9 @@
     },
     {
       "id": 219,
-      "length": 61,
+      "length": 62,
       "source": "List files in directory - programming-idioms.org",
-      "text": "let x = std::fs::read_dir(d)?.collect::<Result<Vec<_>, _>()?;"
+      "text": "let x = std::fs::read_dir(d)?.collect::<Result<Vec<_>, _>>()?;"
     },
     {
       "id": 220,
@@ -1341,9 +1341,9 @@
     },
     {
       "id": 224,
-      "length": 48,
+      "length": 47,
       "source": "Exit program cleanly - programming-idioms.org",
-      "text": "use std::process::exit;\nfn main() {\n  exit(0);\n}"
+      "text": "use std::process::exit;\nfn main() {\n\texit(0);\n}"
     },
     {
       "id": 225,
@@ -1461,15 +1461,15 @@
     },
     {
       "id": 244,
-      "length": 67,
+      "length": 65,
       "source": "Pad string on the right - programming-idioms.org",
-      "text": "use std::iter();\ns += &iter::repeat(c).take(m).collect::<String>();"
+      "text": "use std::iter;\ns += &iter::repeat(c).take(m).collect::<String>();"
     },
     {
       "id": 245,
-      "length": 451,
+      "length": 453,
       "source": "Pad string on the left - programming-idioms.org",
-      "text": "use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};\nif let Some(columns_short) = m.checked_sub(s.width()) {\n\tlet padding_width = c\n\t\t.width()\n\t\t.filter(|n| *n > 0)\n\t\t.expect(\"padding character should be visible\");\n\t// Saturate the columns_short\n\tlet padding_needed = columns_short + padding_width - 1 / padding_width;\n\tlet mut t = String::with_capacity(s.len() + padding_needed);\n\tt.extend((0..padding_needed).map(|_| c)\n\tt.push_str(&s);\n\ts = t;\n}"
+      "text": "use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};\nif let Some(columns_short) = m.checked_sub(s.width()) {\n\tlet padding_width = c\n\t\t.width()\n\t\t.filter(|n| *n > 0)\n\t\t.expect(\"padding character should be visible\");\n\t// Saturate the columns_short\n\tlet padding_needed = columns_short + padding_width - 1 / padding_width;\n\tlet mut t = String::with_capacity(s.len() + padding_needed);\n\tt.extend((0..padding_needed).map(|_| c));\n\tt.push_str(&s);\n\ts = t;\n}"
     },
     {
       "id": 246,
@@ -1491,9 +1491,9 @@
     },
     {
       "id": 249,
-      "length": 188,
+      "length": 190,
       "source": "List intersection - programming-idioms.org",
-      "text": "use std::collections::HashSet;\nlet unique_a = a.iter().collect::<HashSet<_>>();\nlet unique_b = b.iter().collect::<HashSet<_>>();\nlet c = unique_a.intersection(&unique_b).collect<Vec<_>>();"
+      "text": "use std::collections::HashSet;\nlet unique_a = a.iter().collect::<HashSet<_>>();\nlet unique_b = b.iter().collect::<HashSet<_>>();\nlet c = unique_a.intersection(&unique_b).collect::<Vec<_>>();"
     },
     {
       "id": 250,
@@ -1521,9 +1521,9 @@
     },
     {
       "id": 254,
-      "length": 118,
+      "length": 114,
       "source": "Find first index of an element in list - programming-idioms.org",
-      "text": "let opt_i = items.iter().position(|y| *y == x);\nlet i = match opt_i {\n   Some(index) => index as i32,\n   None => -1\n};"
+      "text": "let opt_i = items.iter().position(|y| *y == x);\nlet i = match opt_i {\n\tSome(index) => index as i32,\n\tNone => -1\n};"
     },
     {
       "id": 255,
@@ -1557,9 +1557,9 @@
     },
     {
       "id": 260,
-      "length": 112,
+      "length": 111,
       "source": "Declare and use an optional argument - programming-idioms.org",
-      "text": "fn f(x: Option<()>) {\n\tmatch x {\n\t\tSome(x) => println!(\"Present {}\", x),\n\t\tNone => println!(\"Not present\"),\n\t}\n}"
+      "text": "fn f(x: Option<T>) {\n\tmatch x {\n\t\tSome(x) => println!(\"Present {}\", x),\n\t\tNone => println!(\"Not present\"),\n\t}\n}"
     },
     {
       "id": 261,
@@ -1619,7 +1619,7 @@
       "id": 270,
       "length": 156,
       "source": "Sort 2 lists together - programming-idioms.org",
-      "text": "let mut tmp: Vec<_> = a.iter().zip(b).collect();\ntmp.as_mut_slice().sort_by_key(|(&x, _y)| x);\nlet (aa, bb): (Vec<i32>, Vec<i32>) = tmp.into_iter().unzip();"
+      "text": "let mut tmp: Vec<_> = a.iter().zip(b).collect();\ntmp.as_mut_slice().sort_by_key(|&(x, _y)| x);\nlet (aa, bb): (Vec<i32>, Vec<i32>) = tmp.into_iter().unzip();"
     },
     {
       "id": 271,
