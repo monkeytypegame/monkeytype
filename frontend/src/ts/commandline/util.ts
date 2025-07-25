@@ -37,8 +37,8 @@ export function buildCommandForConfigKey<
 
   return _buildCommandForConfigKey(key, configMeta, commandMeta, schema);
 }
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 function _buildCommandForConfigKey<
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   K extends keyof CommandlineConfigMetadataObject
 >(
   key: K,
