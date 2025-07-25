@@ -20,6 +20,7 @@ ConfigEvent.subscribe((eventKey) => {
     "minWpm",
     "minWpmCustomSpeed",
     "minAcc",
+    "minAccCustom",
     "minBurst",
     "confidenceMode",
     "layout",
