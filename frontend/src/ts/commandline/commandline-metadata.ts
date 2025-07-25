@@ -621,14 +621,16 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       return map[value];
     },
   },
+  monkey: {
+    type: "subgroup",
+    options: "fromSchema",
+  },
 
   //danger zone
   ads: {
     type: "subgroup",
     options: "fromSchema",
   },
-
-  monkey: null,
 
   fontFamily: null,
   theme: null,

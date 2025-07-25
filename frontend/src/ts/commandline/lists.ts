@@ -259,17 +259,9 @@ export const commands: CommandsSubgroup = {
       "showOutOfFocusWarning",
       "capsLockWarning",
       showAverageCommand,
-      "monkeyPowerLevel"
+      "monkeyPowerLevel",
+      "monkey"
     ),
-    {
-      id: "toggleMonkey",
-      display: "Toggle Monkey",
-      icon: "fa-egg",
-      visible: false,
-      exec: (): void => {
-        UpdateConfig.setMonkey(!Config.monkey);
-      },
-    },
 
     //danger zone
     adsCommand,
