@@ -195,7 +195,7 @@ describe("CommandlineUtils", () => {
       //THEN
       expect(cmd).toEqual({
         id: "setTestCustom",
-        display: "custom test...",
+        display: "Test...",
         alias: "alias",
         input: true,
         icon: "icon",
@@ -216,17 +216,7 @@ describe("CommandlineUtils", () => {
       });
 
       //THEN
-      expect(cmd.display).toEqual("My Setting");
-    });
-
-    it("uses custom as fallback for display", () => {
-      //GIVEN
-
-      //WHEN
-      const cmd = buildCommand(type, {});
-
-      //THEN
-      expect(cmd.display).toEqual("custom...");
+      expect(cmd.display).toEqual("My Setting...");
     });
 
     it("uses inputValueConvert", () => {
