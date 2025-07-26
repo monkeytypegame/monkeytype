@@ -247,6 +247,14 @@ export async function verifyEmail(
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
 
+  const user = await UserDAL.findPartialByEmail(email, [
+    "email",
+    "emailVerified",
+  ]);
+  if (user === undefined || user.emailVerified === true) {
+    throw new MonkeyError(400, "cannot verify", "verify email");
+  }
+
   const { data: firebaseUser } = await tryCatch(
     FirebaseAdmin().auth().getUserByEmail(email)
   );

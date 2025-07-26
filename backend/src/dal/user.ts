@@ -280,6 +280,20 @@ export async function findByName(name: string): Promise<DBUser | undefined> {
   )[0];
 }
 
+export async function findPartialByEmail<K extends keyof DBUser>(
+  email: string,
+  fields: K[]
+): Promise<Pick<DBUser, K> | undefined> {
+  const projection = new Map(fields.map((it) => [it, 1]));
+  return (
+    await getUsersCollection()
+      .find({ email }, { projection })
+      .collation({ locale: "en", strength: 1 })
+      .limit(1)
+      .toArray()
+  )[0];
+}
+
 export async function isNameAvailable(
   name: string,
   uid: string
