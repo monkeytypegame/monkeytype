@@ -56,7 +56,7 @@ function _buildCommandForConfigKey<
     return buildInputCommand({
       key,
       isPartOfSubgruop: false,
-      commandMeta,
+      commandMeta: commandMeta.input,
       configMeta,
       schema,
     });
@@ -220,26 +220,26 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
 }: {
   key: K;
   isPartOfSubgruop: boolean;
-  commandMeta: InputProps<K>;
+  commandMeta?: InputProps<K>;
   configMeta: ConfigMetadata<K>;
   schema?: ZodType; //TODO better type
 }): Command {
-  const validation = commandMeta.validation ?? { schema: true };
+  const validation = commandMeta?.validation ?? { schema: true };
 
   const displayString = isPartOfSubgruop
-    ? commandMeta.display ?? "custom..."
+    ? commandMeta?.display ?? "custom..."
     : capitalizeFirstLetter(configMeta.displayString ?? key) + "...";
 
   const result = {
     id: `set${capitalizeFirstLetter(key)}Custom`,
     defaultValue:
-      commandMeta.defaultValue ?? (() => Config[key]?.toString() ?? ""),
+      commandMeta?.defaultValue ?? (() => Config[key]?.toString() ?? ""),
     configValue:
-      "configValue" in commandMeta
+      commandMeta !== undefined && "configValue" in commandMeta
         ? commandMeta.configValue ?? undefined
         : undefined,
     display: displayString,
-    alias: commandMeta.alias ?? undefined,
+    alias: commandMeta?.alias ?? undefined,
     input: true,
     icon: configMeta.icon ?? "fa-cog",
 
@@ -247,14 +247,14 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
     exec: ({ input }): void => {
       if (input === undefined) return;
       genericSet(key, input as ConfigSchemas.Config[K]);
-      commandMeta.afterExec?.(input as ConfigSchemas.Config[K]);
+      commandMeta?.afterExec?.(input as ConfigSchemas.Config[K]);
     },
     hover: (): void => {
-      commandMeta.hover?.();
+      commandMeta?.hover?.();
     },
   };
 
-  if ("inputValueConvert" in commandMeta) {
+  if (commandMeta?.inputValueConvert !== undefined) {
     //@ts-expect-error this is fine
     result["inputValueConvert"] = commandMeta.inputValueConvert;
   }

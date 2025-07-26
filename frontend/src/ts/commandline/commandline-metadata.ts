@@ -97,7 +97,8 @@ export type SubgroupMeta<T extends keyof ConfigSchemas.Config> = {
 
 type InputMeta<T extends keyof ConfigSchemas.Config> = {
   type: "input";
-} & InputProps<T>;
+  input?: InputProps<T>;
+};
 
 type SubgroupWithInputMeta<T extends keyof ConfigSchemas.Config> = {
   type: "subgroupWithInput";
@@ -272,23 +273,27 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   // funbox: null,
   customLayoutfluid: {
     type: "input",
-    defaultValue: () => {
-      return Config.customLayoutfluid.join(" ");
+    input: {
+      defaultValue: () => {
+        return Config.customLayoutfluid.join(" ");
+      },
+      inputValueConvert: (val) =>
+        val.trim().split(" ") as ConfigSchemas.CustomLayoutFluid,
     },
-    inputValueConvert: (val) =>
-      val.trim().split(" ") as ConfigSchemas.CustomLayoutFluid,
   },
   customPolyglot: {
     type: "input",
-    defaultValue: () => {
-      return Config.customPolyglot.join(" ");
-    },
-    inputValueConvert: (val) =>
-      val.trim().split(" ") as ConfigSchemas.CustomPolyglot,
-    afterExec: () => {
-      if (ActivePage.get() === "test") {
-        TestLogic.restart();
-      }
+    input: {
+      defaultValue: () => {
+        return Config.customPolyglot.join(" ");
+      },
+      inputValueConvert: (val) =>
+        val.trim().split(" ") as ConfigSchemas.CustomPolyglot,
+      afterExec: () => {
+        if (ActivePage.get() === "test") {
+          TestLogic.restart();
+        }
+      },
     },
   },
   //input
@@ -507,7 +512,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   tapeMargin: {
     type: "input",
-    inputValueConvert: Number,
+    input: {
+      inputValueConvert: Number,
+    },
   },
   smoothLineScroll: {
     type: "subgroup",
@@ -532,12 +539,16 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   maxLineWidth: {
     type: "input",
-    inputValueConvert: Number,
-    alias: "page",
+    input: {
+      alias: "page",
+      inputValueConvert: Number,
+    },
   },
   fontSize: {
     type: "input",
-    inputValueConvert: Number,
+    input: {
+      inputValueConvert: Number,
+    },
   },
   fontFamily: {
     type: "subgroupWithInput",
@@ -581,8 +592,10 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   keymapSize: {
     type: "input",
-    alias: "keyboard",
-    inputValueConvert: Number,
+    input: {
+      alias: "keyboard",
+      inputValueConvert: Number,
+    },
   },
   keymapLayout: {
     type: "subgroup",
