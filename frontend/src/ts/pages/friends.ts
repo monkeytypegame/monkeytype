@@ -68,8 +68,10 @@ async function updatePendingRequests(): Promise<void> {
       const html = result.body.data
         .map(
           (item) => `<tr data-id="${item._id}">
-        <td>${item.initiatorName}</td>
-        <td>${formatAge(item.addedAt)}</td>
+        <td> <a href="${location.origin}/profile/${
+            item.initiatorUid
+          }?isUid" router-link>${item.initiatorName}</a></td>
+        <td>${formatAge(item.addedAt)} ago</td>
         <td class="actions">
           <button class="accepted" aria-label="accept friend" data-balloon-pos="top">
             <i class="fas fa-check fa-fw"></i>
