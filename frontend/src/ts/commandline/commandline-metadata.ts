@@ -38,14 +38,25 @@ export type CommandlineConfigMetadataObject = {
   [K in keyof Omit<
     ConfigSchemas.Config,
     ConfigKeysWithoutCommands | SkippedConfigKeys
-  >]: CommandlineConfigMetadata<K>;
+  >]: CommandlineConfigMetadata<K, keyof ConfigSchemas.Config>;
 };
 
-export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
-  | SubgroupMeta<T>
-  | InputMeta<T>
-  | SubgroupWithInputMeta<T>
-  | SubgroupWithSecondKeyInputMeta<T, keyof ConfigSchemas.Config>;
+// export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
+//   | SubgroupMeta<T>
+//   | InputMeta<T>
+//   | SubgroupWithInputMeta<T>
+//   | SubgroupWithSecondKeyInputMeta<T, keyof ConfigSchemas.Config>;
+
+export type CommandlineConfigMetadata<
+  T extends keyof ConfigSchemas.Config,
+  T2 extends keyof ConfigSchemas.Config = keyof ConfigSchemas.Config
+> = {
+  rootAlias?: string;
+  rootDisplay?: string;
+  rootVisible?: boolean;
+  input?: InputProps<T, T2>;
+  subgroup?: SubgroupProps<T>;
+};
 
 export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   commandAlias?: (value: ConfigSchemas.Config[T]) => string;
@@ -92,7 +103,10 @@ export type RootProps = {
 //   options: "fromSchema" | ConfigSchemas.Config[T][];
 // };
 
-export type InputProps<T extends keyof ConfigSchemas.Config> = {
+export type InputProps<
+  T extends keyof ConfigSchemas.Config,
+  T2 extends keyof ConfigSchemas.Config = keyof ConfigSchemas.Config
+> = {
   alias?: string;
   display?: string;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
@@ -104,49 +118,58 @@ export type InputProps<T extends keyof ConfigSchemas.Config> = {
     schema?: true;
   };
   hover?: () => void;
-} & (ConfigSchemas.Config[T] extends string
+  configValue?: ConfigSchemas.Config[T2];
+} & (
+  | ({
+      secondKey?: T2;
+    } & OptionalConverterIfString<ConfigSchemas.Config[T2]>)
+  | ({
+      secondKey?: never;
+    } & OptionalConverterIfString<ConfigSchemas.Config[T]>)
+);
+
+type OptionalConverterIfString<T> = T extends string
   ? {
-      /**
+      /*
       optional converter, e.g. if the config value contains undersores but we want to show spaces to the user
       */
-      inputValueConvert?: (val: string) => ConfigSchemas.Config[T];
+      inputValueConvert?: (val: string) => T;
     }
   : {
-      inputValueConvert: (val: string) => ConfigSchemas.Config[T];
-    });
+      inputValueConvert: (val: string) => T;
+    };
 
-export type SubgroupMeta<T extends keyof ConfigSchemas.Config> = {
-  type: "subgroup";
-  subgroup: SubgroupProps<T>;
-} & RootProps;
+// export type SubgroupMeta<T extends keyof ConfigSchemas.Config> = {
+//   type: "subgroup";
+//   subgroup: SubgroupProps<T>;
+// } & RootProps;
 
-type InputMeta<T extends keyof ConfigSchemas.Config> = {
-  type: "input";
-  input?: InputProps<T>;
-} & RootProps;
+// type InputMeta<T extends keyof ConfigSchemas.Config> = {
+//   type: "input";
+//   input?: InputProps<T>;
+// } & RootProps;
 
-type SubgroupWithInputMeta<T extends keyof ConfigSchemas.Config> = {
-  type: "subgroupWithInput";
-  input: InputProps<T> & { configValue?: ConfigSchemas.Config[T] };
-  subgroup: SubgroupProps<T>;
-} & RootProps;
+// type SubgroupWithInputMeta<T extends keyof ConfigSchemas.Config> = {
+//   type: "subgroupWithInput";
+//   input: InputProps<T> & { configValue?: ConfigSchemas.Config[T] };
+//   subgroup: SubgroupProps<T>;
+// } & RootProps;
 
-type SubgroupWithSecondKeyInputMeta<
-  T extends keyof ConfigSchemas.Config,
-  T2 extends keyof ConfigSchemas.Config
-> = {
-  type: "subgroupWithSecondKeyInput";
-  input: InputProps<T2> & {
-    configValue?: ConfigSchemas.Config[T2];
-    secondKey: T2;
-  };
-  subgroup: SubgroupProps<T>;
-} & RootProps;
+// type SubgroupWithSecondKeyInputMeta<
+//   T extends keyof ConfigSchemas.Config,
+//   T2 extends keyof ConfigSchemas.Config
+// > = {
+//   type: "subgroupWithSecondKeyInput";
+//   input: InputProps<T2> & {
+//     configValue?: ConfigSchemas.Config[T2];
+//     secondKey: T2;
+//   };
+//   subgroup: SubgroupProps<T>;
+// } & RootProps;
 
 export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   //test
   punctuation: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
@@ -155,7 +178,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   numbers: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
@@ -164,7 +186,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   words: {
-    type: "subgroupWithInput",
     rootAlias: "words",
     subgroup: {
       options: [10, 25, 50, 100],
@@ -182,7 +203,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   time: {
-    type: "subgroupWithInput",
     subgroup: {
       options: [15, 30, 60, 120],
       afterExec: () => {
@@ -199,7 +219,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   mode: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
@@ -209,7 +228,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   quoteLength: {
-    type: "subgroup",
     rootAlias: "quotes",
     subgroup: {
       options: [[0, 1, 2, 3], [0], [1], [2], [3], [-3]],
@@ -241,7 +259,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   language: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
       commandDisplay: (value) => {
@@ -251,43 +268,36 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   //behavior
   difficulty: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   quickRestart: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   repeatQuotes: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   blindMode: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   alwaysShowWordsHistory: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   singleListCommandLine: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   minWpm: {
-    type: "subgroupWithSecondKeyInput",
     rootDisplay: "Minimum speed...",
     rootAlias: "wpm",
     subgroup: {
@@ -305,7 +315,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   minAcc: {
-    type: "subgroupWithSecondKeyInput",
     rootDisplay: "Minimum accuracy...",
     subgroup: {
       options: ["off"],
@@ -321,7 +330,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   // minBurst: null,
   britishEnglish: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
@@ -331,7 +339,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   // funbox: null,
   customLayoutfluid: {
-    type: "input",
     input: {
       defaultValue: () => {
         return Config.customLayoutfluid.join(" ");
@@ -341,7 +348,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   customPolyglot: {
-    type: "input",
     input: {
       defaultValue: () => {
         return Config.customPolyglot.join(" ");
@@ -357,19 +363,16 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   //input
   freedomMode: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   strictSpace: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   oppositeShiftMode: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
@@ -378,43 +381,36 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   stopOnError: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   confidenceMode: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   quickEnd: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   indicateTypos: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   hideExtraLetters: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   lazyMode: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   layout: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
       commandDisplay: (layout) =>
@@ -423,14 +419,12 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   codeUnindentOnBackspace: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   //sound
   soundVolume: {
-    type: "subgroupWithInput",
     subgroup: {
       options: [0.1, 0.5, 1],
       commandDisplay: (val) =>
@@ -446,7 +440,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   playSoundOnClick: {
-    type: "subgroup",
     rootAlias: "play",
     rootDisplay: "Sound on click...",
     subgroup: {
@@ -484,7 +477,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   playSoundOnError: {
-    type: "subgroup",
     rootAlias: "play",
     rootDisplay: "Sound on error...",
     subgroup: {
@@ -511,7 +503,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   playTimeWarning: {
-    type: "subgroup",
     rootAlias: "sound",
     subgroup: {
       options: "fromSchema",
@@ -535,20 +526,17 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   //caret
   smoothCaret: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   caretStyle: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
       isCommandVisible: (value) => !["banana", "carrot"].includes(value),
     },
   },
   paceCaret: {
-    type: "subgroupWithSecondKeyInput",
     rootDisplay: "Pace caret mode...",
     subgroup: {
       options: ["off", "pb", "tagPb", "last", "average", "daily"],
@@ -570,13 +558,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   repeatedPace: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   paceCaretStyle: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
       isCommandVisible: (value) => !["banana", "carrot"].includes(value),
@@ -585,33 +571,28 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
 
   //appearence
   timerStyle: {
-    type: "subgroup",
     subgroup: { options: "fromSchema" },
     rootAlias: "timer",
   },
   liveSpeedStyle: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
     rootAlias: "wpm",
   },
   liveAccStyle: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
     rootAlias: "wpm",
   },
   liveBurstStyle: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
     rootAlias: "wpm",
   },
   timerColor: {
-    type: "subgroup",
     rootAlias: "timer speed wpm burst acc",
     subgroup: {
       options: "fromSchema",
@@ -619,7 +600,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   timerOpacity: {
-    type: "subgroup",
     rootAlias: "timer speed wpm burst acc",
     subgroup: {
       options: "fromSchema",
@@ -627,69 +607,58 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   highlightMode: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   tapeMode: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   tapeMargin: {
-    type: "input",
     input: {
       inputValueConvert: Number,
     },
   },
   smoothLineScroll: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   showAllLines: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   typingSpeedUnit: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
       isCommandVisible: (val) => val !== "wph",
     },
   },
   alwaysShowDecimalPlaces: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   startGraphsAtZero: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   maxLineWidth: {
-    type: "input",
     input: {
       alias: "page",
       inputValueConvert: Number,
     },
   },
   fontSize: {
-    type: "input",
     input: {
       inputValueConvert: Number,
     },
   },
   fontFamily: {
-    type: "subgroupWithInput",
     subgroup: {
       options: typedKeys(Fonts).sort(),
       commandDisplay: (name) =>
@@ -714,7 +683,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   keymapMode: {
-    type: "subgroup",
     rootAlias: "keyboard",
     subgroup: {
       options: "fromSchema",
@@ -722,28 +690,24 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   keymapStyle: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
     rootAlias: "keyboard",
   },
   keymapLegendStyle: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
     rootAlias: "keyboard",
   },
   keymapSize: {
-    type: "input",
     input: {
       alias: "keyboard",
       inputValueConvert: Number,
     },
   },
   keymapLayout: {
-    type: "subgroup",
     rootAlias: "keyboard",
     subgroup: {
       options: "fromSchema",
@@ -754,7 +718,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   keymapShowTopRow: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
@@ -763,34 +726,27 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
 
   //themes
   customTheme: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   flipTestColors: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   colorfulMode: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
-  customBackground: {
-    type: "input",
-  },
+  customBackground: {},
   customBackgroundSize: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   randomTheme: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
       isCommandAvailable: (value) =>
@@ -800,33 +756,28 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
 
   //showhide
   showKeyTips: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
     rootDisplay: "Key tips...",
   },
   showOutOfFocusWarning: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
     rootDisplay: "Out of focus warning...",
   },
   capsLockWarning: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   showAverage: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
   },
   monkeyPowerLevel: {
-    type: "subgroup",
     rootAlias: "powermode",
     rootVisible: false,
     subgroup: {
@@ -844,7 +795,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   monkey: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },
@@ -852,7 +802,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
 
   //danger zone
   ads: {
-    type: "subgroup",
     subgroup: {
       options: "fromSchema",
     },

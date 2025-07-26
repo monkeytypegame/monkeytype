@@ -50,7 +50,14 @@ function _buildCommandForConfigKey<
     throw new Error(`No commandline metadata found for config key "${key}".`);
   }
 
-  if (commandMeta.type === "subgroup") {
+  if (
+    "subgroup" in commandMeta &&
+    commandMeta.subgroup !== undefined &&
+    !("input" in commandMeta && commandMeta.input !== undefined)
+  ) {
+    if (commandMeta.subgroup === undefined) {
+      throw new Error(`No subgroup metadata found for config key "${key}".`);
+    }
     return buildCommandWithSubgroup(
       key,
       commandMeta.rootDisplay,
@@ -59,7 +66,11 @@ function _buildCommandForConfigKey<
       configMeta,
       schema
     );
-  } else if (commandMeta.type === "input") {
+  } else if (
+    "input" in commandMeta &&
+    commandMeta.input !== undefined &&
+    !("subgroup" in commandMeta && commandMeta.subgroup !== undefined)
+  ) {
     return buildInputCommand({
       key,
       isPartOfSubgruop: false,
@@ -67,7 +78,13 @@ function _buildCommandForConfigKey<
       configMeta,
       schema,
     });
-  } else if (commandMeta.type === "subgroupWithInput") {
+  } else if (
+    "subgroup" in commandMeta &&
+    commandMeta.subgroup !== undefined &&
+    "input" in commandMeta &&
+    commandMeta.input !== undefined &&
+    commandMeta?.input?.secondKey === undefined
+  ) {
     const result = buildCommandWithSubgroup(
       key,
       commandMeta.rootDisplay,
@@ -86,7 +103,13 @@ function _buildCommandForConfigKey<
       })
     );
     return result;
-  } else if (commandMeta.type === "subgroupWithSecondKeyInput") {
+  } else if (
+    "subgroup" in commandMeta &&
+    commandMeta.subgroup !== undefined &&
+    "input" in commandMeta &&
+    commandMeta.input !== undefined &&
+    commandMeta?.input?.secondKey !== undefined
+  ) {
     const result = buildCommandWithSubgroup(
       key,
       commandMeta.rootDisplay,
@@ -116,9 +139,7 @@ function _buildCommandForConfigKey<
   }
 
   throw new Error(
-    `Unsupported commandline metadata type for config key "${key}": ${
-      (commandMeta as CommandlineConfigMetadata<K>)?.type
-    }`
+    `Nothing returned for config key "${key}". This is a bug in the commandline metadata.`
   );
 }
 
