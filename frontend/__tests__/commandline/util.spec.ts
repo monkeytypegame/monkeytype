@@ -21,14 +21,15 @@ describe("CommandlineUtils", () => {
   });
   describe("buildCommandWithSubgroup", () => {
     describe("type subgroup", () => {
-      const type = "subgroup";
-
       it("detects options for boolean schema", () => {
         //GIVEN
         const schema = z.boolean();
 
         //WHEN
-        const cmd = buildCommand(type, { schema });
+        const cmd = buildCommand({
+          cmdMeta: { subgroup: { options: "fromSchema" } },
+          schema,
+        });
 
         //THEN
         expect(cmd.subgroup?.list.map((it) => it.id)).toEqual([
@@ -42,7 +43,10 @@ describe("CommandlineUtils", () => {
         const schema = z.enum(["one", "two", "three"]);
 
         //WHEN
-        const cmd = buildCommand(type, { schema });
+        const cmd = buildCommand({
+          cmdMeta: { subgroup: { options: "fromSchema" } },
+          schema,
+        });
 
         //THEN
         expect(cmd.subgroup?.list.map((it) => it.id)).toEqual([
@@ -57,7 +61,10 @@ describe("CommandlineUtils", () => {
         const schema = z.literal("default").or(z.enum(["one", "two", "three"]));
 
         //WHEN
-        const cmd = buildCommand(type, { schema });
+        const cmd = buildCommand({
+          cmdMeta: { subgroup: { options: "fromSchema" } },
+          schema,
+        });
 
         //THEN
         expect(cmd.subgroup?.list.map((it) => it.id)).toEqual([
@@ -73,8 +80,8 @@ describe("CommandlineUtils", () => {
         const schema = z.enum(["one", "two", "three"]);
 
         //WHEN
-        const cmd = buildCommand(type, {
-          cmdMeta: { options: ["one", "two"] },
+        const cmd = buildCommand({
+          cmdMeta: { subgroup: { options: ["one", "two"] } },
           schema,
         });
 
@@ -90,8 +97,8 @@ describe("CommandlineUtils", () => {
         const schema = z.number().int();
 
         //WHEN
-        const cmd = buildCommand(type, {
-          cmdMeta: { options: [0.25, 0.75] },
+        const cmd = buildCommand({
+          cmdMeta: { subgroup: { options: [0.25, 0.75] } },
           schema,
         });
 
@@ -105,12 +112,15 @@ describe("CommandlineUtils", () => {
       it("sets available", () => {
         //GIVEN
         const schema = z.boolean();
-        const isCommandAvailable = (val: any) => (val ? () => true : undefined);
+        const isAvailable = (val: any) => (val ? () => true : undefined);
 
         //WHEN
-        const cmd = buildCommand(type, {
+        const cmd = buildCommand({
           cmdMeta: {
-            isCommandAvailable,
+            subgroup: {
+              options: "fromSchema",
+              isAvailable,
+            },
           },
           schema,
         });
@@ -122,18 +132,18 @@ describe("CommandlineUtils", () => {
     });
 
     describe("type subgroupWithInput", () => {
-      const type = "subgroupWithInput";
-
       it("uses commandValues for number schema", () => {
         //GIVEN
         const afterExec = () => "test";
         const schema = z.number().int();
 
         //WHEN
-        const cmd = buildCommand(type, {
+        const cmd = buildCommand({
           key: "test" as any,
           cmdMeta: {
-            options: [0.25, 0.75],
+            subgroup: {
+              options: [0.25, 0.75],
+            },
             input: {
               display: "custom test...",
               inputValueConvert: Number,
@@ -172,19 +182,19 @@ describe("CommandlineUtils", () => {
   });
 
   describe("type input", () => {
-    const type = "input";
-
     it("has basic properties", () => {
       //GIVEN
       const afterExec = () => "test";
       const schema = z.string();
       //WHEN
-      const cmd = buildCommand(type, {
+      const cmd = buildCommand({
         key: "test" as any,
         cmdMeta: {
-          display: "custom test...",
-          afterExec,
-          alias: "alias",
+          input: {
+            display: "custom test...",
+            afterExec,
+            alias: "alias",
+          },
         },
         configMeta: {
           icon: "icon",
@@ -193,26 +203,24 @@ describe("CommandlineUtils", () => {
       });
 
       //THEN
-      expect(cmd).toEqual({
-        id: "setTestCustom",
-        display: "Test...",
-        alias: "alias",
-        input: true,
-        icon: "icon",
-        exec: expect.anything(),
-        defaultValue: expect.anything(),
-        validation: expect.anything(),
-      });
+      expect(cmd).toEqual(
+        expect.objectContaining({
+          id: "setTestCustom",
+          display: "custom test...",
+          alias: "alias",
+          input: true,
+          icon: "icon",
+        })
+      );
     });
 
     it("uses displayString from config for display ", () => {
       //GIVEN
 
       //WHEN
-      const cmd = buildCommand(type, {
-        configMeta: {
-          displayString: "My Setting",
-        },
+      const cmd = buildCommand({
+        cmdMeta: { input: {} },
+        configMeta: { displayString: "My Setting" },
       });
 
       //THEN
@@ -224,12 +232,9 @@ describe("CommandlineUtils", () => {
       const schema = z.number().int();
 
       //WHEN
-      const cmd = buildCommand(type, {
+      const cmd = buildCommand({
         key: "test" as any,
-        cmdMeta: {
-          inputValueConvert: Number,
-        },
-
+        cmdMeta: { input: { inputValueConvert: Number } },
         schema,
       });
 
@@ -246,11 +251,9 @@ describe("CommandlineUtils", () => {
       const schema = z.enum(["on", "off"]);
 
       //WHEN
-      const cmd = buildCommand(type, {
+      const cmd = buildCommand({
         key: "test" as any,
-        cmdMeta: {
-          validation: { schema: true },
-        },
+        cmdMeta: { input: { validation: { schema: true } } },
         schema,
       });
 
@@ -266,12 +269,11 @@ describe("CommandlineUtils", () => {
       const schema = z.enum(["on", "off"]);
 
       //WHEN
-      const cmd = buildCommand(type, {
+      const cmd = buildCommand({
         key: "test" as any,
-        cmdMeta: { validation: {} },
+        cmdMeta: { input: { validation: {} } },
         schema,
       });
-      console.log(cmd);
 
       expect(cmd).toHaveProperty("validation", {});
     });
@@ -281,9 +283,9 @@ describe("CommandlineUtils", () => {
       const schema = z.enum(["on", "off"]);
 
       //WHEN
-      const cmd = buildCommand(type, {
+      const cmd = buildCommand({
         key: "test" as any,
-        cmdMeta: {},
+        cmdMeta: { input: {} },
         schema,
       });
 
@@ -301,11 +303,9 @@ describe("CommandlineUtils", () => {
         Promise.resolve("error");
 
       //WHEN
-      const cmd = buildCommand(type, {
+      const cmd = buildCommand({
         key: "test" as any,
-        cmdMeta: {
-          validation: { isValid: isValid },
-        },
+        cmdMeta: { input: { validation: { isValid: isValid } } },
         schema,
       });
 
@@ -315,28 +315,46 @@ describe("CommandlineUtils", () => {
         })
       );
     });
+
+    it("uses secondKey", () => {
+      //GIVEN
+      const schema = z.enum(["on", "off"]);
+
+      //WHEN
+      const cmd = buildCommand({
+        key: "test" as any,
+        cmdMeta: {
+          input: { secondKey: "mySecondKey" },
+        },
+        schema,
+      });
+
+      console.log(cmd);
+      expect(cmd).toEqual(
+        expect.objectContaining({
+          id: "setMySecondKeyCustom",
+          display: "MySecondKey...",
+        })
+      );
+    });
   });
 });
 
-function buildCommand<K extends ConfigKey>(
-  type: string,
-  {
-    configMeta,
-    cmdMeta,
-    schema,
-    key,
-  }: {
-    configMeta?: Partial<ConfigMetadata<K>>;
-    cmdMeta?: Partial<CommandlineConfigMetadata<K>>;
-    schema?: ZodSchema;
-    key?: K;
-  }
-) {
-  const cmdMetaAndType = { ...cmdMeta, type };
+function buildCommand<K extends ConfigKey>({
+  cmdMeta,
+  configMeta,
+  schema,
+  key,
+}: {
+  cmdMeta: Partial<CommandlineConfigMetadata<any, any>>;
+  configMeta?: Partial<ConfigMetadata<K>>;
+  schema?: ZodSchema;
+  key?: K;
+}) {
   return buildCommandForConfigKey(
     key ?? ("" as any),
     configMeta ?? ({} as any),
-    cmdMetaAndType as any,
+    cmdMeta as any,
     schema ?? z.string()
   );
 }

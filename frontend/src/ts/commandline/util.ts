@@ -66,6 +66,7 @@ function _buildCommandForConfigKey<
 
   if ("input" in commandMeta && commandMeta.input !== undefined) {
     const inputProps = commandMeta.input;
+
     const inputCommand = buildInputCommand({
       key: "secondKey" in inputProps ? inputProps.secondKey : key,
       isPartOfSubgruop: "subgroup" in commandMeta,
@@ -88,100 +89,6 @@ function _buildCommandForConfigKey<
     );
   }
   return result;
-  /*
-  if (
-    "subgroup" in commandMeta &&
-    commandMeta.subgroup !== undefined &&
-    !("input" in commandMeta && commandMeta.input !== undefined)
-  ) {
-    if (commandMeta.subgroup === undefined) {
-      throw new Error(`No subgroup metadata found for config key "${key}".`);
-    }
-
-    return buildCommandWithSubgroup(
-      key,
-      commandMeta.rootDisplay,
-      commandMeta.rootAlias,
-      commandMeta.subgroup,
-      configMeta,
-      schema
-    );
-  } else if (
-    "input" in commandMeta &&
-    commandMeta.input !== undefined &&
-    !("subgroup" in commandMeta && commandMeta.subgroup !== undefined)
-  ) {
-    return buildInputCommand({
-      key,
-      isPartOfSubgruop: false,
-      inputProps: commandMeta.input,
-      configMeta,
-      schema,
-    });
-  } else if (
-    "subgroup" in commandMeta &&
-    commandMeta.subgroup !== undefined &&
-    "input" in commandMeta &&
-    commandMeta.input !== undefined &&
-    commandMeta?.input?.secondKey === undefined
-  ) {
-    const result = buildCommandWithSubgroup(
-      key,
-      commandMeta.rootDisplay,
-      commandMeta.rootAlias,
-      commandMeta.subgroup,
-      configMeta,
-      schema
-    );
-    result.subgroup?.list.push(
-      buildInputCommand({
-        key,
-        isPartOfSubgruop: true,
-        inputProps: commandMeta.input,
-        configMeta,
-        schema,
-      })
-    );
-    return result;
-  } else if (
-    "subgroup" in commandMeta &&
-    commandMeta.subgroup !== undefined &&
-    "input" in commandMeta &&
-    commandMeta.input !== undefined &&
-    commandMeta?.input?.secondKey !== undefined
-  ) {
-    const result = buildCommandWithSubgroup(
-      key,
-      commandMeta.rootDisplay,
-      commandMeta.rootAlias,
-      commandMeta.subgroup,
-      configMeta,
-      schema
-    );
-
-    const secondConfigMeta = configMetadata[
-      commandMeta.input.secondKey
-    ] as ConfigMetadata<typeof commandMeta.input.secondKey>;
-
-    result.subgroup?.list.push(
-      buildInputCommand({
-        isPartOfSubgruop: true,
-        key: commandMeta.input.secondKey,
-        inputProps: commandMeta.input,
-        configMeta: secondConfigMeta,
-        schema: ConfigSchemas.ConfigSchema.shape[
-          commandMeta.input.secondKey
-        ] as ZodType,
-      })
-    );
-
-    return result;
-  }
-
-  throw new Error(
-    `Nothing returned for config key "${key}". This is a bug in the commandline metadata.`
-  );
-  */
 }
 
 function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
