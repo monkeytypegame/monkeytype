@@ -1,12 +1,57 @@
 import * as UpdateConfig from "../../config";
+import { Fonts } from "../../constants/fonts";
 import * as UI from "../../ui";
-import { FontObject } from "../../utils/json-data";
+import { typedKeys } from "../../utils/misc";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
   title: "Font family...",
   configKey: "fontFamily",
-  list: [],
+  list: [
+    ...typedKeys(Fonts)
+      .sort()
+      .map((name) => {
+        const font = Fonts[name];
+        const configVal = name;
+        const fontName = name.replaceAll(/_/g, " ");
+
+        const customData: Record<string, string | boolean> = {
+          name: fontName,
+        };
+
+        if (font.display !== undefined) {
+          customData["display"] = font.display;
+        }
+
+        customData["isSystem"] = font.systemFont ?? false;
+
+        return {
+          id: "changeFont" + name,
+          display: font.display !== undefined ? font.display : fontName,
+          configValue: configVal,
+          customData,
+          hover: (): void => {
+            UI.previewFontFamily(name);
+          },
+          exec: (): void => {
+            UpdateConfig.setFontFamily(name);
+          },
+        };
+      }),
+    {
+      id: "setFontFamilyCustom",
+      display: "custom...",
+      input: true,
+      hover: (): void => {
+        UI.clearFontPreview();
+      },
+      exec: ({ input }) => {
+        if (input === undefined || input === "") return;
+        UpdateConfig.setFontFamily(input.replace(/\s/g, "_"));
+        // Settings.groups.fontFamily.updateInput();
+      },
+    },
+  ],
 };
 
 const commands: Command[] = [
@@ -17,48 +62,4 @@ const commands: Command[] = [
     subgroup,
   },
 ];
-
-function update(fonts: FontObject[]): void {
-  fonts.forEach((font) => {
-    const configVal = font.name.replace(/ /g, "_");
-
-    const customData: Record<string, string | boolean> = {
-      name: font.name,
-    };
-
-    if (font.display !== undefined) {
-      customData["display"] = font.display;
-    }
-
-    customData["isSystem"] = font.systemFont ?? false;
-
-    subgroup.list.push({
-      id: "changeFont" + font.name.replace(/ /g, "_"),
-      display: font.display !== undefined ? font.display : font.name,
-      configValue: configVal,
-      customData,
-      hover: (): void => {
-        UI.previewFontFamily(font.name);
-      },
-      exec: (): void => {
-        UpdateConfig.setFontFamily(font.name.replace(/ /g, "_"));
-      },
-    });
-  });
-  subgroup.list.push({
-    id: "setFontFamilyCustom",
-    display: "custom...",
-    input: true,
-    hover: (): void => {
-      UI.clearFontPreview();
-    },
-    exec: ({ input }) => {
-      if (input === undefined || input === "") return;
-      UpdateConfig.setFontFamily(input.replace(/\s/g, "_"));
-      // Settings.groups.fontFamily.updateInput();
-    },
-  });
-}
-
 export default commands;
-export { update };

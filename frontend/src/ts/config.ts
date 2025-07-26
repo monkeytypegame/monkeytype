@@ -26,6 +26,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
+import { FontName } from "@monkeytype/schemas/fonts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -618,10 +619,7 @@ export function setQuickRestartMode(
 }
 
 //font family
-export function setFontFamily(
-  font: ConfigSchemas.FontFamily,
-  nosave?: boolean
-): boolean {
+export function setFontFamily(font: FontName, nosave?: boolean): boolean {
   return genericSet("fontFamily", font, nosave);
 }
 

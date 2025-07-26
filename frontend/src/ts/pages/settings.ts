@@ -3,7 +3,6 @@ import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
@@ -32,7 +31,6 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
-import { tryCatch } from "@monkeytype/util/trycatch";
 import { Theme, ThemesList } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/schemas/layouts";
@@ -40,6 +38,7 @@ import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
 import { z } from "zod";
 import { handleConfigInput } from "../elements/input-validation";
+import { Fonts } from "../constants/fonts";
 
 let settingsInitialized = false;
 
@@ -580,41 +579,23 @@ async function fillSettingsPage(): Promise<void> {
   if (fontsEl.innerHTML === "") {
     let fontsElHTML = "";
 
-    const { data: fontsList, error: getFontsListError } = await tryCatch(
-      JSONData.getFontsList()
-    );
-    if (getFontsListError) {
-      console.error(
-        Misc.createErrorMessage(
-          getFontsListError,
-          "Failed to update fonts settings buttons"
-        )
-      );
-    }
+    for (const name of Misc.typedKeys(Fonts).sort()) {
+      const font = Fonts[name];
+      let fontFamily = name.replace(/_/g, " ");
 
-    if (fontsList) {
-      for (const font of fontsList) {
-        let fontFamily = font.name;
-        if (fontFamily === "Helvetica") {
-          fontFamily = "Comic Sans MS";
-        }
-        if ((font.systemFont ?? false) === false) {
-          fontFamily += " Preview";
-        }
-        const activeClass = Config.fontFamily === font.name ? " active" : "";
-        const display = font.display !== undefined ? font.display : font.name;
-
-        fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${font.name.replace(
-          / /g,
-          "_"
-        )}">${display}</button>`;
+      if (!font.systemFont) {
+        fontFamily += " Preview";
       }
+      const activeClass = Config.fontFamily === name ? " active" : "";
+      const display = font.display ?? name.replace(/_/g, " ");
 
-      fontsElHTML +=
-        '<button class="no-auto-handle" data-config-value="custom"">Custom</button>';
-
-      fontsEl.innerHTML = fontsElHTML;
+      fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${name}">${display}</button>`;
     }
+
+    fontsElHTML +=
+      '<button class="no-auto-handle" data-config-value="custom"">Custom</button>';
+
+    fontsEl.innerHTML = fontsElHTML;
   }
 
   customLayoutFluidSelect = new SlimSelect({

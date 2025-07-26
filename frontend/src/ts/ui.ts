@@ -9,12 +9,13 @@ import { get as getActivePage } from "./states/active-page";
 import { isDevEnvironment } from "./utils/misc";
 import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
+import { FontName } from "@monkeytype/schemas/fonts";
 
 let isPreviewingFont = false;
-export function previewFontFamily(font: string): void {
+export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
+    '"' + font + '", "Roboto Mono", "Vazirmatn"'
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
