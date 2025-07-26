@@ -458,7 +458,10 @@ export function isInputFocused(): boolean {
     return false;
   }
 
-  if (activeElement.nodeName === "INPUT" && ActivePage.get() !== "test") {
+  if (
+    activeElement.tagName.toLowerCase() === "input" &&
+    ActivePage.get() !== "test"
+  ) {
     return true;
   }
 
