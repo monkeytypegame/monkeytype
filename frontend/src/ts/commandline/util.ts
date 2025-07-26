@@ -204,9 +204,12 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
       genericSet(key, val);
       afterExec?.(val);
     },
-    hover: (): void => {
-      hover?.(val);
-    },
+    hover:
+      hover !== undefined
+        ? (): void => {
+            hover?.(val);
+          }
+        : undefined,
     customData: commandCustomData?.(val) ?? undefined,
   };
 }
@@ -249,9 +252,12 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
       genericSet(key, input as ConfigSchemas.Config[K]);
       commandMeta.afterExec?.(input as ConfigSchemas.Config[K]);
     },
-    hover: (): void => {
-      commandMeta.hover?.();
-    },
+    hover:
+      commandMeta.hover !== undefined
+        ? (): void => {
+            commandMeta.hover?.();
+          }
+        : undefined,
   };
 
   if ("inputValueConvert" in commandMeta) {
