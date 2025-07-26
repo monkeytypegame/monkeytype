@@ -11,9 +11,10 @@ import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
-import { areSortedArraysEqual } from "../utils/arrays";
+import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
+import { intersect } from "@monkeytype/util/arrays";
 import { createInputEventHandler } from "../elements/input-validation";
 
 type CommandlineMode = "search" | "input";
@@ -420,9 +421,16 @@ async function showCommands(): Promise<void> {
         const configKey = command.configKey ?? subgroup.configKey;
         if (configKey !== undefined) {
           if (command.configValueMode === "include") {
-            isActive = (Config[configKey] as unknown[]).includes(
-              command.configValue
-            );
+            if (Array.isArray(command.configValue)) {
+              isActive = areUnsortedArraysEqual(
+                intersect(Config[configKey] as unknown[], command.configValue),
+                command.configValue
+              );
+            } else {
+              isActive = (Config[configKey] as unknown[]).includes(
+                command.configValue
+              );
+            }
           } else {
             isActive = Config[configKey] === command.configValue;
           }
@@ -506,7 +514,7 @@ async function showCommands(): Promise<void> {
       </div>
       </div>`;
       }
-      if (command.id.startsWith("changeFont")) {
+      if (command.id.startsWith("setFontFamily")) {
         let fontFamily = command.customData["name"];
 
         if (fontFamily === "Helvetica") {

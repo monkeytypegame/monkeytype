@@ -400,7 +400,17 @@ async function init(): Promise<void> {
   Howler.volume(Config.soundVolume);
 }
 
-export async function previewClick(val: string): Promise<void> {
+export async function previewClick(val: PlaySoundOnClick): Promise<void> {
+  if (["8", "9", "10", "11"].includes(val)) {
+    playNote("KeyQ", clickSoundIdsToOscillatorType[val as DynamicClickSounds]);
+    return;
+  }
+
+  if (["12", "13"].includes(val)) {
+    scaleConfigurations[val as "12" | "13"].preview();
+    return;
+  }
+
   if (clickSounds === null) await init();
 
   const safeClickSounds = clickSounds as ClickSounds;
@@ -628,7 +638,7 @@ export async function playTimeWarning(): Promise<void> {
   soundToPlay.play();
 }
 
-export function playNote(
+function playNote(
   codeOverride?: string,
   oscillatorTypeOverride?: SupportedOscillatorTypes
 ): void {

@@ -26,7 +26,7 @@ export type Command = {
   opensModal?: boolean;
   defaultValue?: () => string;
   configKey?: keyof Config;
-  configValue?: string | number | boolean | number[];
+  configValue?: Config[keyof Config];
   configValueMode?: "include";
   exec?: (options: CommandExecOptions<string>) => void;
   hover?: () => void;
