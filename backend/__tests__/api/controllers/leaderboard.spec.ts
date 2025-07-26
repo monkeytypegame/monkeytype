@@ -10,7 +10,7 @@ import {
   mockAuthenticateWithApeKey,
   mockBearerAuthentication,
 } from "../../__testData__/auth";
-import { XpLeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import { XpLeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -139,28 +139,29 @@ describe("Loaderboard Controller", () => {
       );
     });
 
-    it("should get for mode", async () => {
-      getLeaderboardMock.mockResolvedValue([]);
-      for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-        const response = await mockApp
-          .get("/leaderboards")
-          .query({ language: "english", mode, mode2: "custom" });
-        expect(response.status, "for mode " + mode).toEqual(200);
-      }
+    describe("should get for modes", async () => {
+      beforeEach(() => {
+        getLeaderboardMock.mockResolvedValue([]);
+      });
+
+      const testCases = [
+        { mode: "time", mode2: "15", language: "english", expectStatus: 200 },
+        { mode: "time", mode2: "60", language: "english", expectStatus: 200 },
+        { mode: "time", mode2: "30", language: "english", expectStatus: 404 },
+        { mode: "words", mode2: "15", language: "english", expectStatus: 404 },
+        { mode: "time", mode2: "15", language: "spanish", expectStatus: 404 },
+      ];
+      it.for(testCases)(
+        `expect $expectStatus for mode $mode, mode2 $mode2, lang $language`,
+        async ({ mode, mode2, language, expectStatus }) => {
+          await mockApp
+            .get("/leaderboards")
+            .query({ language, mode, mode2 })
+            .expect(expectStatus);
+        }
+      );
     });
 
-    it("should get for mode2", async () => {
-      getLeaderboardMock.mockResolvedValue([]);
-      for (const mode2 of allModes) {
-        const response = await mockApp.get("/leaderboards").query({
-          language: "english",
-          mode: "words",
-          mode2,
-        });
-
-        expect(response.status, "for mode2 " + mode2).toEqual(200);
-      }
-    });
     it("fails for missing query", async () => {
       const { body } = await mockApp.get("/leaderboards").expect(422);
 

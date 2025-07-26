@@ -10,8 +10,8 @@
     height: 100%;
 
     .bigtitle {
-      font-size: 2rem;
-      margin-bottom: 1rem;
+      font-size: 2em;
+      margin-bottom: 1em;
       .text {
         grid-area: text;
       }
@@ -50,12 +50,12 @@
 
       .titleAndButtons {
         align-items: center;
-        font-size: 1rem;
+        font-size: 1em;
         display: grid;
         grid-template-columns: 1fr 1fr;
         justify-content: space-between;
         button {
-          width: 3rem;
+          width: 3em;
         }
         .title {
           font-size: 1rem;
@@ -70,7 +70,7 @@
           .updating {
             font-size: 1.5em;
             color: var(--sub-color);
-            margin-right: 0.5em;
+            margin-left: 0.5em;
           }
         }
       }
@@ -87,8 +87,8 @@
       .bigUser {
         // color: var(--main-color);
         font-size: 1em;
-        margin-bottom: 2rem;
-        margin-top: 2rem;
+        margin-bottom: 2em;
+        margin-top: 2em;
         background: var(--sub-alt-color);
         padding: 1em 2em;
         border-radius: var(--roundness);
@@ -121,6 +121,9 @@
           .sub {
             opacity: 0.5;
           }
+          &:last-child {
+            text-wrap-mode: nowrap;
+          }
         }
         .date {
           font-size: 0.75em;
@@ -141,15 +144,6 @@
           //   .stat .title {
           //     font-size: 0.8em;
           //   }
-        }
-      }
-      .avatarNameBadge {
-        display: grid;
-        grid-template-columns: min-content max-content auto;
-        gap: 0.5rem;
-        place-items: center left;
-        .avatarPlaceholder {
-          color: var(--sub-color);
         }
       }
       table {
@@ -187,7 +181,7 @@
               text-align: right;
             }
             &.date {
-              width: 20ch;
+              width: 1px;
               text-align: right;
             }
           }
@@ -195,31 +189,24 @@
 
         .avatarNameBadge {
           display: grid;
-          grid-template-columns: 1.25em max-content auto;
+          grid-template-columns: max-content max-content auto;
           gap: 0.5em;
           place-items: center left;
-          .avatarPlaceholder {
-            width: 1.25em;
-            height: 1.25em;
-            font-size: 1.25em;
-            // background: var(--sub-color);
+          .avatar .userIcon {
             color: var(--sub-color);
-            // display: grid;
-            // place-content: center center;
-            border-radius: 100%;
           }
           .entryName {
             text-decoration: none;
             color: var(--text-color);
             cursor: pointer;
           }
-          .avatarPlaceholder,
           .avatar {
+            --size: 1.125em;
             grid-row: 1/2;
             grid-column: 1/2;
           }
           .badge {
-            font-size: 0.6em;
+            font-size: 0.75em;
           }
           .flagsAndBadge {
             display: flex;
@@ -244,6 +231,7 @@
           }
 
           td.date {
+            text-wrap-mode: nowrap;
             text-align: right;
             font-size: 0.75em;
           }
@@ -261,13 +249,13 @@
           }
         }
       }
-    }
-    .loading {
-      display: grid;
-      place-items: center;
-      font-size: 3em;
-      color: var(--sub-color);
-      padding: 1em;
+      & > .loading {
+        display: grid;
+        place-items: center;
+        font-size: 3em;
+        color: var(--sub-color);
+        padding: 1em;
+      }
     }
     .error {
       display: grid;
@@ -279,7 +267,7 @@
       color: var(--sub-color);
       padding: 1em;
     }
-    .buttons {
+    .sideButtons {
       align-content: start;
       align-items: start;
       grid-area: buttons;
@@ -294,7 +282,8 @@
         justify-content: start;
         padding-left: 0.75em;
       }
-      .divider {
+      .divider,
+      .divider2 {
         background: var(--bg-color);
         width: 100%;
         height: 0.25em;

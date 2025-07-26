@@ -58,17 +58,18 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
-import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
 import {
   CompletedEvent,
   CompletedEventCustomText,
-} from "@monkeytype/contracts/schemas/results";
+} from "@monkeytype/schemas/results";
 import * as XPBar from "../elements/xp-bar";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
+  isFunboxActive,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
@@ -162,6 +163,15 @@ export function restart(options = {} as RestartOptions): void {
 
   options = { ...defaultOptions, ...options };
   const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
+
+  const noQuit = isFunboxActive("no_quit");
+  if (TestState.isActive && noQuit) {
+    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
+      important: true,
+    });
+    event?.preventDefault();
+    return;
+  }
 
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     event?.preventDefault();
@@ -451,7 +461,7 @@ export async function init(): Promise<void | null> {
 
   if (Config.mode === "quote") {
     if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
     }
   }
 
@@ -1402,18 +1412,20 @@ $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as Mode;
   if (mode === undefined) return;
-  UpdateConfig.setMode(mode);
-  ManualRestart.set();
-  restart();
+  if (UpdateConfig.setMode(mode)) {
+    ManualRestart.set();
+    restart();
+  }
 });
 
 $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd !== "custom") {
-    UpdateConfig.setWordCount(parseInt(wrd));
-    ManualRestart.set();
-    restart();
+    if (UpdateConfig.setWordCount(parseInt(wrd))) {
+      ManualRestart.set();
+      restart();
+    }
   }
 });
 
@@ -1421,39 +1433,49 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode !== "custom") {
-    UpdateConfig.setTimeConfig(parseInt(mode));
-    ManualRestart.set();
-    restart();
+    if (UpdateConfig.setTimeConfig(parseInt(mode))) {
+      ManualRestart.set();
+      restart();
+    }
   }
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  let len: QuoteLength | QuoteLength[] = parseInt(
+  const len = parseInt(
     $(e.currentTarget).attr("quoteLength") ?? "1"
   ) as QuoteLength;
+
   if (len !== -2) {
-    if (len === -1) {
-      len = [0, 1, 2, 3];
+    let arr: QuoteLengthConfig = [];
+
+    if (e.shiftKey) {
+      arr = [...Config.quoteLength, len];
+    } else {
+      arr = [len];
     }
-    UpdateConfig.setQuoteLength(len, false, e.shiftKey);
-    ManualRestart.set();
-    restart();
+
+    if (UpdateConfig.setQuoteLength(arr, false)) {
+      ManualRestart.set();
+      restart();
+    }
   }
 });
 
 $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
   if (TestUI.testRestarting) return;
-  UpdateConfig.setPunctuation(!Config.punctuation);
-  ManualRestart.set();
-  restart();
+  if (UpdateConfig.setPunctuation(!Config.punctuation)) {
+    ManualRestart.set();
+    restart();
+  }
 });
 
 $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   if (TestUI.testRestarting) return;
-  UpdateConfig.setNumbers(!Config.numbers);
-  ManualRestart.set();
-  restart();
+  if (UpdateConfig.setNumbers(!Config.numbers)) {
+    ManualRestart.set();
+    restart();
+  }
 });
 
 $("header").on("click", "nav #startTestButton, #logo", () => {

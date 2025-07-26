@@ -98,7 +98,7 @@ For iso the number of keys need to be exactly thirteen for `row1`, twelve for `r
 
 
 
-In addition to the layout file you need to add your layout to the `packages/contracts/src/schemas/layouts.ts` file. Just append your layout name (without the `.json`) at the __end__ of the `LayoutNameSchema`. Remember to add a comma like this:
+In addition to the layout file you need to add your layout to the `packages/schemas/src/layouts.ts` file. Just append your layout name (without the `.json`) at the __end__ of the `LayoutNameSchema`. Remember to add a comma like this:
 
 ```ts
   export const LayoutNameSchema = z.enum([

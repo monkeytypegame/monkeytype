@@ -90,7 +90,7 @@
     .inputAndButton {
       display: grid;
       grid-template-columns: auto min-content;
-      gap: 0.5rem;
+      // gap: 0.5rem;
       margin-bottom: 0.5rem;
 
       span {
@@ -102,6 +102,20 @@
 
         .fas {
           margin-right: 0rem;
+        }
+      }
+
+      .hasError {
+        animation: shake 0.1s ease-in-out infinite;
+      }
+
+      .statusIndicator {
+        opacity: 0;
+      }
+      &:has(input:focus),
+      &:has([data-indicator-status="failed"]) {
+        .statusIndicator {
+          opacity: 1;
         }
       }
     }

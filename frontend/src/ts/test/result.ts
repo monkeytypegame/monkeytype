@@ -36,11 +36,11 @@ import type {
   LabelPosition,
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 
 let result: CompletedEvent;

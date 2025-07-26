@@ -1,4 +1,4 @@
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 import { FunboxMetadata } from "./types";
 
 const list: Record<FunboxName, FunboxMetadata> = {
@@ -133,7 +133,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   layout_mirror: {
     description: "Mirror the keyboard layout",
     canGetPb: true,
-    difficultyLevel: 1,
+    difficultyLevel: 3,
     properties: ["changesLayout"],
     frontendFunctions: ["applyConfig", "rememberSettings"],
     name: "layout_mirror",
@@ -460,6 +460,12 @@ const list: Record<FunboxName, FunboxMetadata> = {
     properties: ["hasCssFile", "noLigatures"],
     name: "asl",
     cssModifications: ["words"],
+  },
+  no_quit: {
+    description: "You can't restart the test.",
+    canGetPb: true,
+    difficultyLevel: 0,
+    name: "no_quit",
   },
 };
 

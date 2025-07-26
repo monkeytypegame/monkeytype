@@ -1,8 +1,8 @@
 import type { Response, NextFunction } from "express";
 import { TsRestRequestHandler } from "@ts-rest/express";
-import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
+import { EndpointMetadata } from "@monkeytype/contracts/util/api";
 import MonkeyError from "../utils/error";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import {
   ConfigurationPath,
   RequireConfiguration,

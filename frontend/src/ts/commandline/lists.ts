@@ -24,6 +24,7 @@ import QuickEndCommands from "./lists/quick-end";
 import OppositeShiftModeCommands from "./lists/opposite-shift-mode";
 import SoundOnErrorCommands from "./lists/sound-on-error";
 import SoundVolumeCommands from "./lists/sound-volume";
+import TimeWarningCommands from "./lists/time-warning";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
 import SmoothLineScrollCommands from "./lists/smooth-line-scroll";
 import AlwaysShowDecimalCommands from "./lists/always-show-decimal";
@@ -81,9 +82,7 @@ import ThemesCommands from "./lists/themes";
 import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
-import FontFamilyCommands, {
-  update as updateFontFamilyCommands,
-} from "./lists/font-family";
+import FontFamilyCommands from "./lists/font-family";
 import LanguagesCommands from "./lists/languages";
 import KeymapLayoutsCommands from "./lists/keymap-layouts";
 
@@ -104,21 +103,10 @@ import {
   CustomLayoutFluidSchema,
   CustomPolyglot,
   CustomPolyglotSchema,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
 import { Command, CommandsSubgroup, withValidation } from "./types";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";
-
-const fontsPromise = JSONData.getFontsList();
-fontsPromise
-  .then((fonts) => {
-    updateFontFamilyCommands(fonts);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update fonts commands")
-    );
-  });
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -242,6 +230,7 @@ export const commands: CommandsSubgroup = {
     ...SoundVolumeCommands,
     ...SoundOnClickCommands,
     ...SoundOnErrorCommands,
+    ...TimeWarningCommands,
 
     //caret
     ...SmoothCaretCommands,
@@ -482,7 +471,7 @@ export function doesListExist(listName: string): boolean {
 export async function getList(
   listName: ListsObjectKeys
 ): Promise<CommandsSubgroup> {
-  await Promise.allSettled([fontsPromise, challengesPromise]);
+  await Promise.allSettled([challengesPromise]);
 
   const list = lists[listName];
   if (!list) {
@@ -524,7 +513,7 @@ export function getTopOfStack(): CommandsSubgroup {
 
 let singleList: CommandsSubgroup | undefined;
 export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
-  await Promise.allSettled([fontsPromise, challengesPromise]);
+  await Promise.allSettled([challengesPromise]);
   const singleCommands: Command[] = [];
   for (const command of commands.list) {
     const ret = buildSingleListCommands(command);

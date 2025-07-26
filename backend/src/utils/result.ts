@@ -1,5 +1,5 @@
-import { CompletedEvent, Result } from "@monkeytype/contracts/schemas/results";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { CompletedEvent, Result } from "@monkeytype/schemas/results";
+import { Mode } from "@monkeytype/schemas/shared";
 import { ObjectId } from "mongodb";
 import { WithObjectId } from "./misc";
 
