@@ -2,6 +2,7 @@ import { checker } from "vite-plugin-checker";
 import oxlintPlugin from "vite-plugin-oxlint";
 import Inspect from "vite-plugin-inspect";
 import path from "node:path";
+import { getFontsConig } from "./vite.config";
 
 /** @type {import("vite").UserConfig} */
 export default {
@@ -28,6 +29,7 @@ export default {
         additionalData: `
         $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";
         $previewFontsPath:"webfonts";
+        $fonts: (${getFontsConig()});
         `,
       },
     },
