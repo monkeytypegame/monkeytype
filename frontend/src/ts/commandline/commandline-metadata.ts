@@ -10,6 +10,10 @@ import Config from "../config";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { Validation } from "../elements/input-validation";
 import * as ActivePage from "../states/active-page";
+import { Fonts } from "../constants/fonts";
+import { KnownFontName } from "@monkeytype/schemas/fonts";
+import * as UI from "../ui";
+import { typedKeys } from "../utils/misc";
 
 type ConfigKeysWithoutCommands =
   | "minWpmCustomSpeed"
@@ -28,7 +32,6 @@ type SkippedConfigKeys =
   | "minBurst" //this is skipped for now because it has 2 nested inputs;
   | "customBackgroundFilter" //this is skipped for now because it has 4 nested inputs;
   | "theme" //themes are sorted by color and also affected by config.favThemes
-  | "fontFamily" //font relies on async json;
   | "funbox"; //is using a special non schema command at the top to clear funboxes
 
 export type CommandlineConfigMetadataObject = {
@@ -57,6 +60,9 @@ export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   isCommandAvailable?: (
     value: ConfigSchemas.Config[T]
   ) => (() => boolean) | undefined;
+  commandCustomData?: (
+    value: ConfigSchemas.Config[T]
+  ) => Record<string, string | boolean>;
   hover?: (value: ConfigSchemas.Config[T]) => void;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
   options: "fromSchema" | ConfigSchemas.Config[T][];
@@ -73,6 +79,7 @@ export type InputProps<T extends keyof ConfigSchemas.Config> = {
   validation?: Omit<Validation<ConfigSchemas.Config[T]>, "schema"> & {
     schema?: true;
   };
+  hover?: () => void;
 } & (ConfigSchemas.Config[T] extends string
   ? // oxlint-disable-next-line no-empty-object-type
     {}
@@ -527,6 +534,29 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   fontSize: {
     type: "input",
     inputValueConvert: Number,
+  },
+  fontFamily: {
+    type: "subgroupWithInput",
+    options: typedKeys(Fonts).sort(),
+    commandDisplay: (name) =>
+      Fonts[name as KnownFontName]?.display ?? name.replaceAll(/_/g, " "),
+    commandCustomData: (name) => {
+      const fontConfig = Fonts[name as KnownFontName];
+      if (fontConfig === undefined) return {};
+      return {
+        name: name.replaceAll(/_/g, " "),
+        isSystem: fontConfig.systemFont === true,
+        display: fontConfig.display,
+      } as Record<string, string | boolean>;
+    },
+    hover: (name) => UI.previewFontFamily(name.replaceAll(/_/g, " ")),
+
+    input: {
+      //TODO custon font was shown with underscore replaced by spaces
+      hover: (): void => {
+        UI.clearFontPreview();
+      },
+    },
   },
   keymapMode: {
     type: "subgroup",

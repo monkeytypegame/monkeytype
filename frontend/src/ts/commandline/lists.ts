@@ -14,7 +14,6 @@ import ThemesCommands from "./lists/themes";
 import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
-import FontFamilyCommands from "./lists/font-family";
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
@@ -173,7 +172,7 @@ export const commands: CommandsSubgroup = {
       "startGraphsAtZero",
       "maxLineWidth",
       "fontSize",
-      ...FontFamilyCommands,
+      "fontFamily",
       "keymapMode",
       "keymapStyle",
       "keymapLegendStyle",

@@ -173,6 +173,7 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
     commandConfigValueMode,
     isCommandVisible,
     isCommandAvailable,
+    commandCustomData,
   }: SubgroupProps<K>
 ): Command {
   const val = value;
@@ -206,6 +207,7 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
     hover: (): void => {
       hover?.(val);
     },
+    customData: commandCustomData?.(val) ?? undefined,
   };
 }
 
@@ -247,7 +249,9 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
       genericSet(key, input as ConfigSchemas.Config[K]);
       commandMeta.afterExec?.(input as ConfigSchemas.Config[K]);
     },
-    //TODO hover?
+    hover: (): void => {
+      commandMeta.hover?.();
+    },
   };
 
   if ("inputValueConvert" in commandMeta) {

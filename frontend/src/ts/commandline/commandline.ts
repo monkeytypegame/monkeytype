@@ -514,7 +514,7 @@ async function showCommands(): Promise<void> {
       </div>
       </div>`;
       }
-      if (command.id.startsWith("changeFont")) {
+      if (command.id.startsWith("setFontFamily")) {
         let fontFamily = command.customData["name"];
 
         if (fontFamily === "Helvetica") {
