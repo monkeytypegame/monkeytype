@@ -68,7 +68,7 @@ function _buildCommandForConfigKey<
     const inputProps = commandMeta.input;
     const inputCommand = buildInputCommand({
       key: "secondKey" in inputProps ? inputProps.secondKey : key,
-      isPartOfSubgruop: true,
+      isPartOfSubgruop: "subgroup" in commandMeta,
       inputProps: inputProps as InputProps<keyof ConfigSchemas.Config>,
       configMeta: configMeta as unknown as ConfigMetadata<
         keyof ConfigSchemas.Config
