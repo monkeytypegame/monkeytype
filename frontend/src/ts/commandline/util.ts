@@ -56,7 +56,7 @@ function _buildCommandForConfigKey<
     return buildInputCommand({
       key,
       isPartOfSubgruop: false,
-      commandMeta: commandMeta.input,
+      inputProps: commandMeta.input,
       configMeta,
       schema,
     });
@@ -71,7 +71,7 @@ function _buildCommandForConfigKey<
       buildInputCommand({
         key,
         isPartOfSubgruop: true,
-        commandMeta: commandMeta.input,
+        inputProps: commandMeta.input,
         configMeta,
         schema,
       })
@@ -93,7 +93,7 @@ function _buildCommandForConfigKey<
       buildInputCommand({
         isPartOfSubgruop: true,
         key: commandMeta.input.secondKey,
-        commandMeta: commandMeta.input,
+        inputProps: commandMeta.input,
         configMeta: secondConfigMeta,
         schema: ConfigSchemas.ConfigSchema.shape[
           commandMeta.input.secondKey
@@ -214,32 +214,32 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
 function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   key,
   isPartOfSubgruop,
-  commandMeta,
+  inputProps,
   configMeta,
   schema,
 }: {
   key: K;
   isPartOfSubgruop: boolean;
-  commandMeta?: InputProps<K>;
+  inputProps?: InputProps<K>;
   configMeta: ConfigMetadata<K>;
   schema?: ZodType; //TODO better type
 }): Command {
-  const validation = commandMeta?.validation ?? { schema: true };
+  const validation = inputProps?.validation ?? { schema: true };
 
   const displayString = isPartOfSubgruop
-    ? commandMeta?.display ?? "custom..."
+    ? inputProps?.display ?? "custom..."
     : capitalizeFirstLetter(configMeta.displayString ?? key) + "...";
 
   const result = {
     id: `set${capitalizeFirstLetter(key)}Custom`,
     defaultValue:
-      commandMeta?.defaultValue ?? (() => Config[key]?.toString() ?? ""),
+      inputProps?.defaultValue ?? (() => Config[key]?.toString() ?? ""),
     configValue:
-      commandMeta !== undefined && "configValue" in commandMeta
-        ? commandMeta.configValue ?? undefined
+      inputProps !== undefined && "configValue" in inputProps
+        ? inputProps.configValue ?? undefined
         : undefined,
     display: displayString,
-    alias: commandMeta?.alias ?? undefined,
+    alias: inputProps?.alias ?? undefined,
     input: true,
     icon: configMeta.icon ?? "fa-cog",
 
@@ -247,16 +247,16 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
     exec: ({ input }): void => {
       if (input === undefined) return;
       genericSet(key, input as ConfigSchemas.Config[K]);
-      commandMeta?.afterExec?.(input as ConfigSchemas.Config[K]);
+      inputProps?.afterExec?.(input as ConfigSchemas.Config[K]);
     },
     hover: (): void => {
-      commandMeta?.hover?.();
+      inputProps?.hover?.();
     },
   };
 
-  if (commandMeta?.inputValueConvert !== undefined) {
+  if (inputProps?.inputValueConvert !== undefined) {
     //@ts-expect-error this is fine
-    result["inputValueConvert"] = commandMeta.inputValueConvert;
+    result["inputValueConvert"] = inputProps.inputValueConvert;
   }
 
   //@ts-expect-error this is fine
