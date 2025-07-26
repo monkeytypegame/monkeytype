@@ -26,6 +26,7 @@ export type DecodedToken = {
   type: "Bearer" | "ApeKey" | "None" | "GithubWebhook";
   uid: string;
   email: string;
+  emailVerified?: boolean;
 };
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
@@ -189,6 +190,7 @@ async function authenticateWithBearerToken(
       type: "Bearer",
       uid: decodedToken.uid,
       email: decodedToken.email ?? "",
+      emailVerified: decodedToken.email_verified,
     };
   } catch (error) {
     if (

@@ -87,6 +87,7 @@ export async function addUser(
       custom: {},
     },
     testActivity: {},
+    emailVerified: false,
   };
 
   const result = await getUsersCollection().updateOne(
@@ -231,9 +232,14 @@ export async function updateQuoteRatings(
 
 export async function updateEmail(
   uid: string,
-  email: string
+  email: string,
+  emailVerified: boolean = false
 ): Promise<boolean> {
-  await updateUser({ uid }, { $set: { email } }, { stack: "update email" });
+  await updateUser(
+    { uid },
+    { $set: { email, emailVerified } },
+    { stack: "update email" }
+  );
 
   return true;
 }
@@ -268,6 +274,20 @@ export async function findByName(name: string): Promise<DBUser | undefined> {
   return (
     await getUsersCollection()
       .find({ name })
+      .collation({ locale: "en", strength: 1 })
+      .limit(1)
+      .toArray()
+  )[0];
+}
+
+export async function findPartialByEmail<K extends keyof DBUser>(
+  email: string,
+  fields: K[]
+): Promise<Pick<DBUser, K> | undefined> {
+  const projection = new Map(fields.map((it) => [it, 1]));
+  return (
+    await getUsersCollection()
+      .find({ email }, { projection })
       .collation({ locale: "en", strength: 1 })
       .limit(1)
       .toArray()

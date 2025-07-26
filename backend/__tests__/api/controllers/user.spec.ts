@@ -253,6 +253,66 @@ describe("user controller test", () => {
       });
     });
   });
+  describe("getUser", () => {
+    const getUserMock = vi.spyOn(UserDal, "getUser");
+    const updateEmailMock = vi.spyOn(UserDal, "updateEmail");
+    beforeEach(() => {
+      getUserMock.mockReset();
+      updateEmailMock.mockReset();
+    });
+    it("should update emailVerified if undefined", async () => {
+      //GIVEN
+      getUserMock.mockResolvedValue({
+        uid,
+        email: "old",
+      } as any);
+      mockAuth.modifyToken({ email_verified: false, email: "old" });
+
+      //WHEN
+      await mockApp
+        .get("/users")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(updateEmailMock).toHaveBeenCalledWith(uid, "old", false);
+    });
+    it("should update emailVerified if changed", async () => {
+      //GIVEN
+      getUserMock.mockResolvedValue({
+        uid,
+        emailVerified: false,
+        email: "old",
+      } as any);
+      mockAuth.modifyToken({ email_verified: true, email: "next" });
+
+      //WHEN
+      await mockApp
+        .get("/users")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(updateEmailMock).toHaveBeenCalledWith(uid, "next", true);
+    });
+    it("should not update emailVerified if not changed", async () => {
+      //GIVEN
+      getUserMock.mockResolvedValue({
+        uid,
+        emailVerified: false,
+      } as any);
+      mockAuth.modifyToken({ email_verified: false });
+
+      //WHEN
+      await mockApp
+        .get("/users")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(updateEmailMock).not.toHaveBeenCalled();
+    });
+  });
   describe("sendVerificationEmail", () => {
     const adminGetUserMock = vi.fn();
     const adminGenerateVerificationLinkMock = vi.fn();

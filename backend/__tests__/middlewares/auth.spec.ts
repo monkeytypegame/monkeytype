@@ -20,6 +20,7 @@ const mockDecodedToken: DecodedIdToken = {
   uid: "123456789",
   email: "newuser@mail.com",
   iat: 0,
+  email_verified: true,
 } as DecodedIdToken;
 
 vi.spyOn(AuthUtils, "verifyIdToken").mockResolvedValue(mockDecodedToken);
@@ -62,6 +63,7 @@ describe("middlewares/auth", () => {
           type: "None",
           uid: "",
           email: "",
+          emailVerified: false,
         },
       },
     };
@@ -122,6 +124,7 @@ describe("middlewares/auth", () => {
       expect(decodedToken?.type).toBe("Bearer");
       expect(decodedToken?.email).toBe(mockDecodedToken.email);
       expect(decodedToken?.uid).toBe(mockDecodedToken.uid);
+      expect(decodedToken?.emailVerified).toBe(mockDecodedToken.email_verified);
       expect(nextFunction).toHaveBeenCalledOnce();
 
       expect(prometheusIncrementAuthMock).toHaveBeenCalledWith("Bearer");
