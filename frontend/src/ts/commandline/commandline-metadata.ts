@@ -34,11 +34,13 @@ type SkippedConfigKeys =
   | "theme" //themes are sorted by color and also affected by config.favThemes
   | "funbox"; //is using a special non schema command at the top to clear funboxes
 
-export type CommandlineConfigMetadataObject = {
+export type CommandlineConfigMetadataObject<
+  K2 extends ConfigSchemas.ConfigKey
+> = {
   [K in keyof Omit<
     ConfigSchemas.Config,
     ConfigKeysWithoutCommands | SkippedConfigKeys
-  >]: CommandlineConfigMetadata<K, keyof ConfigSchemas.Config>;
+  >]: CommandlineConfigMetadata<K, K2>;
 };
 
 // export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
@@ -47,14 +49,36 @@ export type CommandlineConfigMetadataObject = {
 //   | SubgroupWithInputMeta<T>
 //   | SubgroupWithSecondKeyInputMeta<T, keyof ConfigSchemas.Config>;
 
+export type InputProps<T extends keyof ConfigSchemas.Config> = {
+  alias?: string;
+  display?: string;
+  afterExec?: (value: ConfigSchemas.Config[T]) => void;
+  defaultValue?: () => string;
+  /**
+   * default value for missing validation is `{schema:true}`
+   */
+  validation?: Omit<Validation<ConfigSchemas.Config[T]>, "schema"> & {
+    schema?: true;
+  };
+  hover?: () => void;
+  configValue?: ConfigSchemas.Config[T];
+  inputValueConvert: ConfigSchemas.Config[T] extends string
+    ? ((val: string) => string) | undefined
+    : (val: string) => ConfigSchemas.Config[T];
+};
+
+export type SecondaryInputProps<T extends keyof ConfigSchemas.Config> = {
+  secondKey: T;
+} & InputProps<T>;
+
 export type CommandlineConfigMetadata<
   T extends keyof ConfigSchemas.Config,
-  T2 extends keyof ConfigSchemas.Config = keyof ConfigSchemas.Config
+  T2 extends keyof ConfigSchemas.Config
 > = {
   rootAlias?: string;
   rootDisplay?: string;
   rootVisible?: boolean;
-  input?: InputProps<T, T2>;
+  input?: InputProps<T> | SecondaryInputProps<T2>;
   subgroup?: SubgroupProps<T>;
 };
 
@@ -103,42 +127,6 @@ export type RootProps = {
 //   options: "fromSchema" | ConfigSchemas.Config[T][];
 // };
 
-export type InputProps<
-  T extends keyof ConfigSchemas.Config,
-  T2 extends keyof ConfigSchemas.Config = keyof ConfigSchemas.Config
-> = {
-  alias?: string;
-  display?: string;
-  afterExec?: (value: ConfigSchemas.Config[T]) => void;
-  defaultValue?: () => string;
-  /**
-   * default value for missing validation is `{schema:true}`
-   */
-  validation?: Omit<Validation<ConfigSchemas.Config[T]>, "schema"> & {
-    schema?: true;
-  };
-  hover?: () => void;
-  configValue?: ConfigSchemas.Config[T2];
-} & (
-  | ({
-      secondKey?: T2;
-    } & OptionalConverterIfString<ConfigSchemas.Config[T2]>)
-  | ({
-      secondKey?: never;
-    } & OptionalConverterIfString<ConfigSchemas.Config[T]>)
-);
-
-type OptionalConverterIfString<T> = T extends string
-  ? {
-      /*
-      optional converter, e.g. if the config value contains undersores but we want to show spaces to the user
-      */
-      inputValueConvert?: (val: string) => T;
-    }
-  : {
-      inputValueConvert: (val: string) => T;
-    };
-
 // export type SubgroupMeta<T extends keyof ConfigSchemas.Config> = {
 //   type: "subgroup";
 //   subgroup: SubgroupProps<T>;
@@ -167,7 +155,8 @@ type OptionalConverterIfString<T> = T extends string
 //   subgroup: SubgroupProps<T>;
 // } & RootProps;
 
-export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
+// oxlint-disable-next-line no-explicit-any
+export const commandlineConfigMetadata: CommandlineConfigMetadataObject<any> = {
   //test
   punctuation: {
     subgroup: {
@@ -196,6 +185,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
     input: {
       inputValueConvert: Number,
+
       afterExec: () => {
         ManualRestart.set();
         TestLogic.restart();
