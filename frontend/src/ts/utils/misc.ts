@@ -5,6 +5,7 @@ import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
 import { z } from "zod";
+import * as ActivePage from "../states/active-page";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -448,6 +449,25 @@ export function isAnyPopupVisible(): boolean {
     }
   }
   return popupVisible;
+}
+
+export function isInputFocused(): boolean {
+  const activeElement = document.activeElement;
+
+  if (!activeElement) {
+    return false;
+  }
+
+  if (activeElement.nodeName === "INPUT" && ActivePage.get() !== "test") {
+    return true;
+  }
+
+  //slimselect
+  if (activeElement.getAttribute("role") === "combobox") {
+    return true;
+  }
+
+  return false;
 }
 
 export async function promiseAnimation(

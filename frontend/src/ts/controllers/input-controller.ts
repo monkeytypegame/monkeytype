@@ -956,8 +956,10 @@ $(document).on("keydown", async (event) => {
 
     if (modalVisible) return;
 
-    // change page if not on test page
+    if (Misc.isInputFocused()) return;
+
     if (ActivePage.get() !== "test") {
+      // change page if not on test page
       navigate("/");
       return;
     }

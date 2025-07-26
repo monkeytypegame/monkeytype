@@ -4,18 +4,13 @@ import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Commandline from "../commandline/commandline";
 import * as Notifications from "../elements/notifications";
-import * as ActivePage from "../states/active-page";
 
 document.addEventListener("keydown", async (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
 
   //when pressing Escape on an input element with class input, don't open the commandline
-  if (
-    (e.key === "Escape" || e.key === "Tab") &&
-    document.activeElement?.nodeName === "INPUT" &&
-    ActivePage.get() !== "test"
-  ) {
+  if ((e.key === "Escape" || e.key === "Tab") && Misc.isInputFocused()) {
     return;
   } else if (
     (e.key === "Escape" && Config.quickRestart !== "esc") ||
