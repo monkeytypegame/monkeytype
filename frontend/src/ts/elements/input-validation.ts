@@ -249,4 +249,17 @@ export function handleConfigInput<T extends ConfigKey>({
     }
   });
   input.addEventListener("focusout", (e) => handleStore());
+  input.addEventListener("keyup", (e) => {
+    if (e.key === "Escape") {
+      //use last config value, clear validation
+      input.value = new String(Config[configName]).toString();
+      input.dispatchEvent(new Event("input"));
+      e.preventDefault();
+
+      //prevent global handler
+      e.stopPropagation();
+      //remove focus
+      input.blur();
+    }
+  });
 }
