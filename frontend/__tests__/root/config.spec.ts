@@ -24,7 +24,10 @@ const { configMetadata, replaceConfig, getConfig } = Config.__testing;
 
 describe("Config", () => {
   const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
-  beforeEach(() => isDevEnvironmentMock.mockReset());
+  beforeEach(() => {
+    isDevEnvironmentMock.mockReset();
+    replaceConfig({});
+  });
 
   describe("configMeta", () => {
     afterAll(() => {
