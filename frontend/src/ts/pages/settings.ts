@@ -796,6 +796,10 @@ export async function update(
     eventKey?: ConfigEvent.ConfigEventKey;
   } = {}
 ): Promise<void> {
+  if (ActivePage.get() !== "settings") {
+    return;
+  }
+
   if (Config.showKeyTips) {
     $(".pageSettings .tip").removeClass("hidden");
   } else {
