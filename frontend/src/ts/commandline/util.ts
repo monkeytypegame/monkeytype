@@ -38,13 +38,13 @@ export function buildCommandForConfigKey<
   return _buildCommandForConfigKey(key, configMeta, commandMeta, schema);
 }
 function _buildCommandForConfigKey<
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   K extends keyof CommandlineConfigMetadataObject
 >(
   key: K,
   configMeta: ConfigMetadata<K>,
-  // oxlint-disable-next-line no-explicit-any
-  commandMeta: CommandlineConfigMetadata<K, any> | undefined,
+  commandMeta:
+    | CommandlineConfigMetadata<K, keyof ConfigSchemas.Config>
+    | undefined,
   schema: ZodType //TODO better type
 ): Command {
   if (commandMeta === undefined || commandMeta === null) {
@@ -65,13 +65,14 @@ function _buildCommandForConfigKey<
   }
 
   if ("input" in commandMeta && commandMeta.input !== undefined) {
-    const inputMeta = commandMeta.input;
+    const inputProps = commandMeta.input;
     const inputCommand = buildInputCommand({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      key: "secondKey" in inputMeta ? inputMeta.secondKey : key,
+      key: "secondKey" in inputProps ? inputProps.secondKey : key,
       isPartOfSubgruop: true,
-      inputProps: commandMeta.input,
-      configMeta,
+      inputProps: inputProps as InputProps<keyof ConfigSchemas.Config>,
+      configMeta: configMeta as unknown as ConfigMetadata<
+        keyof ConfigSchemas.Config
+      >,
       schema,
     });
     if (result === undefined) {
@@ -183,7 +184,6 @@ function _buildCommandForConfigKey<
   */
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   key: K,
   rootDisplay: string | undefined,
