@@ -81,8 +81,12 @@ export type InputProps<T extends keyof ConfigSchemas.Config> = {
   };
   hover?: () => void;
 } & (ConfigSchemas.Config[T] extends string
-  ? // oxlint-disable-next-line no-empty-object-type
-    {}
+  ? {
+      /**
+      optional converter, e.g. if the config value contains undersores but we want to show spaces to the user
+      */
+      inputValueConvert?: (val: string) => ConfigSchemas.Config[T];
+    }
   : {
       inputValueConvert: (val: string) => ConfigSchemas.Config[T];
     });
@@ -549,10 +553,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
         display: fontConfig.display,
       } as Record<string, string | boolean>;
     },
-    hover: (name) => UI.previewFontFamily(name.replaceAll(/_/g, " ")),
+    hover: (name) => UI.previewFontFamily(name),
 
     input: {
-      //TODO custon font was shown with underscore replaced by spaces
+      inputValueConvert: (name) => name.replaceAll(/ /g, "_"),
+      defaultValue: () => Config.fontFamily.replace(/_/g, " "),
       hover: (): void => {
         UI.clearFontPreview();
       },
