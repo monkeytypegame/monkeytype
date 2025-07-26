@@ -103,6 +103,7 @@ export const BASE_CONFIGURATION: Configuration = {
       xpRewardBrackets: [],
     },
   },
+  friends: { enabled: false, maxFriendsPerUser: 100 },
 };
 
 type BaseSchema = {
@@ -600,6 +601,17 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
               },
             },
           },
+        },
+      },
+    },
+    friends: {
+      type: "object",
+      label: "Friends",
+      fields: {
+        enabled: { type: "boolean", label: "Enabled" },
+        maxFriendsPerUser: {
+          type: "number",
+          label: "Max Friends per user",
         },
       },
     },

@@ -17,6 +17,7 @@ import * as EmailClient from "./init/email-client";
 import { init as initFirebaseAdmin } from "./init/firebase-admin";
 import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
 import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
+import { createIndicies as friendsDbSetup } from "./dal/friends";
 import { getErrorMessage } from "./utils/error";
 
 async function bootServer(port: number): Promise<Server> {
@@ -75,6 +76,9 @@ async function bootServer(port: number): Promise<Server> {
 
     Logger.info("Setting up blocklist indicies...");
     await blocklistDbSetup();
+
+    Logger.info("Setting up friends indicies...");
+    await friendsDbSetup();
 
     recordServerVersion(version);
   } catch (error) {
