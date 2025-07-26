@@ -115,14 +115,11 @@ export async function updateStatus(
 
 /**
  * delete a friend by the id.
- * @param initiatorUid
+ * @param uid
  * @param id
- * @throws MonkeyError if the friend id is unknown or the initiatorUid does not match
+ * @throws MonkeyError if the friend id is unknown or uid does not match
  */
-export async function deleteById(
-  initiatorUid: string,
-  id: string
-): Promise<void> {
+export async function deleteById(uid: string, id: string): Promise<void> {
   const deletionResult = await getCollection().deleteOne({
     $and: [
       {
@@ -130,8 +127,8 @@ export async function deleteById(
       },
       {
         $or: [
-          { initiatorUid },
-          { status: { $in: ["accepted", "pending"] }, friendUid: initiatorUid },
+          { friendUid: uid },
+          { status: { $in: ["accepted", "pending"] }, initiatorUid: uid },
         ],
       },
     ],

@@ -217,18 +217,32 @@ describe("FriendsDal", () => {
       ).rejects.toThrow("Cannot be deleted");
     });
 
-    it("should fail if friend deletes blocked", async () => {
+    it("should fail if initiator deletes blocked by friend", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const first = await createFriend({
-        friendUid: uid,
+      const myRequestWasBlocked = await createFriend({
+        initiatorName: uid,
         status: "blocked",
       });
 
       //WHEN / THEN
       await expect(
-        FriendsDal.deleteById(uid, first._id.toHexString())
+        FriendsDal.deleteById(uid, myRequestWasBlocked._id.toHexString())
       ).rejects.toThrow("Cannot be deleted");
+    });
+    it("allow friend to delete blocked", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const myBlockedUser = await createFriend({
+        friendUid: uid,
+        status: "blocked",
+      });
+
+      //WHEN
+      await FriendsDal.deleteById(uid, myBlockedUser._id.toHexString());
+
+      //THEN
+      expect(await FriendsDal.getRequests({ friendUid: uid })).toEqual([]);
     });
   });
 
