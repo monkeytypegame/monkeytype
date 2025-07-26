@@ -42,12 +42,6 @@ export type CommandlineConfigMetadataObject = {
   >]: CommandlineConfigMetadata<K, any>;
 };
 
-// export type CommandlineConfigMetadata<T extends keyof ConfigSchemas.Config> =
-//   | SubgroupMeta<T>
-//   | InputMeta<T>
-//   | SubgroupWithInputMeta<T>
-//   | SubgroupWithSecondKeyInputMeta<T, keyof ConfigSchemas.Config>;
-
 export type InputProps<T extends keyof ConfigSchemas.Config> = {
   alias?: string;
   display?: string;
@@ -74,24 +68,20 @@ export type CommandlineConfigMetadata<
   T extends keyof ConfigSchemas.Config,
   T2 extends keyof ConfigSchemas.Config
 > = {
-  rootAlias?: string;
-  rootDisplay?: string;
-  rootVisible?: boolean;
+  alias?: string;
+  display?: string;
+  isVisible?: boolean;
   input?: InputProps<T> | SecondaryInputProps<T2>;
   subgroup?: SubgroupProps<T>;
 };
 
 export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
-  commandAlias?: (value: ConfigSchemas.Config[T]) => string;
-  commandDisplay?: (value: ConfigSchemas.Config[T]) => string;
-  commandConfigValueMode?: (
-    value: ConfigSchemas.Config[T]
-  ) => "include" | undefined;
-  isCommandVisible?: (value: ConfigSchemas.Config[T]) => boolean;
-  isCommandAvailable?: (
-    value: ConfigSchemas.Config[T]
-  ) => (() => boolean) | undefined;
-  commandCustomData?: (
+  alias?: (value: ConfigSchemas.Config[T]) => string;
+  display?: (value: ConfigSchemas.Config[T]) => string;
+  configValueMode?: (value: ConfigSchemas.Config[T]) => "include" | undefined;
+  isVisible?: (value: ConfigSchemas.Config[T]) => boolean;
+  isAvailable?: (value: ConfigSchemas.Config[T]) => (() => boolean) | undefined;
+  customData?: (
     value: ConfigSchemas.Config[T]
   ) => Record<string, string | boolean>;
   hover?: (value: ConfigSchemas.Config[T]) => void;
@@ -99,62 +89,6 @@ export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   options: "fromSchema" | ConfigSchemas.Config[T][];
 };
 
-export type RootProps = {
-  rootAlias?: string;
-  rootDisplay?: string;
-  rootVisible?: boolean;
-};
-
-// export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
-//   rootAlias?: string;
-//   rootDisplay?: string;
-//   rootVisible?: boolean;
-//   commandAlias?: (value: ConfigSchemas.Config[T]) => string;
-//   commandDisplay?: (value: ConfigSchemas.Config[T]) => string;
-//   commandConfigValueMode?: (
-//     value: ConfigSchemas.Config[T]
-//   ) => "include" | undefined;
-//   isCommandVisible?: (value: ConfigSchemas.Config[T]) => boolean;
-//   isCommandAvailable?: (
-//     value: ConfigSchemas.Config[T]
-//   ) => (() => boolean) | undefined;
-//   commandCustomData?: (
-//     value: ConfigSchemas.Config[T]
-//   ) => Record<string, string | boolean>;
-//   hover?: (value: ConfigSchemas.Config[T]) => void;
-//   afterExec?: (value: ConfigSchemas.Config[T]) => void;
-//   options: "fromSchema" | ConfigSchemas.Config[T][];
-// };
-
-// export type SubgroupMeta<T extends keyof ConfigSchemas.Config> = {
-//   type: "subgroup";
-//   subgroup: SubgroupProps<T>;
-// } & RootProps;
-
-// type InputMeta<T extends keyof ConfigSchemas.Config> = {
-//   type: "input";
-//   input?: InputProps<T>;
-// } & RootProps;
-
-// type SubgroupWithInputMeta<T extends keyof ConfigSchemas.Config> = {
-//   type: "subgroupWithInput";
-//   input: InputProps<T> & { configValue?: ConfigSchemas.Config[T] };
-//   subgroup: SubgroupProps<T>;
-// } & RootProps;
-
-// type SubgroupWithSecondKeyInputMeta<
-//   T extends keyof ConfigSchemas.Config,
-//   T2 extends keyof ConfigSchemas.Config
-// > = {
-//   type: "subgroupWithSecondKeyInput";
-//   input: InputProps<T2> & {
-//     configValue?: ConfigSchemas.Config[T2];
-//     secondKey: T2;
-//   };
-//   subgroup: SubgroupProps<T>;
-// } & RootProps;
-
-// oxlint-disable-next-line no-explicit-any
 export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   //test
   punctuation: {
@@ -174,7 +108,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   words: {
-    rootAlias: "words",
+    alias: "words",
     subgroup: {
       options: [10, 25, 50, 100],
       afterExec: () => {
@@ -217,17 +151,17 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   quoteLength: {
-    rootAlias: "quotes",
+    alias: "quotes",
     subgroup: {
       options: [[0, 1, 2, 3], [0], [1], [2], [3], [-3]],
-      commandConfigValueMode: () => "include",
-      isCommandAvailable: (value) => {
+      configValueMode: () => "include",
+      isAvailable: (value) => {
         if (value[0] === -3) {
           return isAuthenticated;
         }
         return undefined;
       },
-      commandDisplay: (value) => {
+      display: (value) => {
         if (areUnsortedArraysEqual(value, [0, 1, 2, 3])) {
           return "all";
         }
@@ -250,7 +184,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   language: {
     subgroup: {
       options: "fromSchema",
-      commandDisplay: (value) => {
+      display: (value) => {
         return getLanguageDisplayString(value);
       },
     },
@@ -287,8 +221,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   minWpm: {
-    rootDisplay: "Minimum speed...",
-    rootAlias: "wpm",
+    display: "Minimum speed...",
+    alias: "wpm",
     subgroup: {
       options: ["off"],
     },
@@ -304,7 +238,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   minAcc: {
-    rootDisplay: "Minimum accuracy...",
+    display: "Minimum accuracy...",
     subgroup: {
       options: ["off"],
     },
@@ -402,7 +336,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   layout: {
     subgroup: {
       options: "fromSchema",
-      commandDisplay: (layout) =>
+      display: (layout) =>
         layout === "default" ? "off" : layout.replace(/_/g, " "),
       afterExec: () => TestLogic.restart(),
     },
@@ -416,7 +350,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   soundVolume: {
     subgroup: {
       options: [0.1, 0.5, 1],
-      commandDisplay: (val) =>
+      display: (val) =>
         new Map([
           [0.1, "quiet"],
           [0.5, "medium"],
@@ -429,11 +363,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   playSoundOnClick: {
-    rootAlias: "play",
-    rootDisplay: "Sound on click...",
+    alias: "play",
+    display: "Sound on click...",
     subgroup: {
       options: "fromSchema",
-      commandDisplay: (value) => {
+      display: (value) => {
         const map: Record<ConfigSchemas.Config["playSoundOnClick"], string> = {
           off: "off",
           "1": "click",
@@ -466,11 +400,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   playSoundOnError: {
-    rootAlias: "play",
-    rootDisplay: "Sound on error...",
+    alias: "play",
+    display: "Sound on error...",
     subgroup: {
       options: "fromSchema",
-      commandDisplay: (value) => {
+      display: (value) => {
         const map: Record<ConfigSchemas.Config["playSoundOnError"], string> = {
           off: "off",
           "1": "damage",
@@ -492,10 +426,10 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   playTimeWarning: {
-    rootAlias: "sound",
+    alias: "sound",
     subgroup: {
       options: "fromSchema",
-      commandDisplay: (value) => {
+      display: (value) => {
         if (value === "off") {
           return "off";
         }
@@ -522,11 +456,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   caretStyle: {
     subgroup: {
       options: "fromSchema",
-      isCommandVisible: (value) => !["banana", "carrot"].includes(value),
+      isVisible: (value) => !["banana", "carrot"].includes(value),
     },
   },
   paceCaret: {
-    rootDisplay: "Pace caret mode...",
+    display: "Pace caret mode...",
     subgroup: {
       options: ["off", "pb", "tagPb", "last", "average", "daily"],
       afterExec: () => {
@@ -554,45 +488,45 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   paceCaretStyle: {
     subgroup: {
       options: "fromSchema",
-      isCommandVisible: (value) => !["banana", "carrot"].includes(value),
+      isVisible: (value) => !["banana", "carrot"].includes(value),
     },
   },
 
   //appearence
   timerStyle: {
     subgroup: { options: "fromSchema" },
-    rootAlias: "timer",
+    alias: "timer",
   },
   liveSpeedStyle: {
     subgroup: {
       options: "fromSchema",
     },
-    rootAlias: "wpm",
+    alias: "wpm",
   },
   liveAccStyle: {
     subgroup: {
       options: "fromSchema",
     },
-    rootAlias: "wpm",
+    alias: "wpm",
   },
   liveBurstStyle: {
     subgroup: {
       options: "fromSchema",
     },
-    rootAlias: "wpm",
+    alias: "wpm",
   },
   timerColor: {
-    rootAlias: "timer speed wpm burst acc",
+    alias: "timer speed wpm burst acc",
     subgroup: {
       options: "fromSchema",
-      commandAlias: () => "timer",
+      alias: () => "timer",
     },
   },
   timerOpacity: {
-    rootAlias: "timer speed wpm burst acc",
+    alias: "timer speed wpm burst acc",
     subgroup: {
       options: "fromSchema",
-      commandAlias: () => "timer",
+      alias: () => "timer",
     },
   },
   highlightMode: {
@@ -623,7 +557,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   typingSpeedUnit: {
     subgroup: {
       options: "fromSchema",
-      isCommandVisible: (val) => val !== "wph",
+      isVisible: (val) => val !== "wph",
     },
   },
   alwaysShowDecimalPlaces: {
@@ -650,9 +584,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   fontFamily: {
     subgroup: {
       options: typedKeys(Fonts).sort(),
-      commandDisplay: (name) =>
+      display: (name) =>
         Fonts[name as KnownFontName]?.display ?? name.replaceAll(/_/g, " "),
-      commandCustomData: (name) => {
+      customData: (name) => {
         const fontConfig = Fonts[name as KnownFontName];
         if (fontConfig === undefined) return {};
         return {
@@ -672,23 +606,23 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   keymapMode: {
-    rootAlias: "keyboard",
+    alias: "keyboard",
     subgroup: {
       options: "fromSchema",
-      commandAlias: (val) => (val === "react" ? "flash" : ""),
+      alias: (val) => (val === "react" ? "flash" : ""),
     },
   },
   keymapStyle: {
     subgroup: {
       options: "fromSchema",
     },
-    rootAlias: "keyboard",
+    alias: "keyboard",
   },
   keymapLegendStyle: {
     subgroup: {
       options: "fromSchema",
     },
-    rootAlias: "keyboard",
+    alias: "keyboard",
   },
   keymapSize: {
     input: {
@@ -697,11 +631,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   keymapLayout: {
-    rootAlias: "keyboard",
+    alias: "keyboard",
     subgroup: {
       options: "fromSchema",
-      commandAlias: (val) => (val === "overrideSync" ? "default" : ""),
-      commandDisplay: (layout) =>
+      alias: (val) => (val === "overrideSync" ? "default" : ""),
+      display: (layout) =>
         layout === "overrideSync" ? "emulator sync" : layout.replace(/_/g, " "),
       afterExec: () => TestLogic.restart(),
     },
@@ -710,7 +644,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
     },
-    rootAlias: "keyboard",
+    alias: "keyboard",
   },
 
   //themes
@@ -738,7 +672,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   randomTheme: {
     subgroup: {
       options: "fromSchema",
-      isCommandAvailable: (value) =>
+      isAvailable: (value) =>
         value === "custom" ? isAuthenticated : undefined,
     },
   },
@@ -748,13 +682,13 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
     },
-    rootDisplay: "Key tips...",
+    display: "Key tips...",
   },
   showOutOfFocusWarning: {
     subgroup: {
       options: "fromSchema",
     },
-    rootDisplay: "Out of focus warning...",
+    display: "Out of focus warning...",
   },
   capsLockWarning: {
     subgroup: {
@@ -767,11 +701,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   monkeyPowerLevel: {
-    rootAlias: "powermode",
-    rootVisible: false,
+    alias: "powermode",
+    isVisible: false,
     subgroup: {
       options: "fromSchema",
-      commandDisplay: (value) => {
+      display: (value) => {
         const map: Record<ConfigSchemas.Config["monkeyPowerLevel"], string> = {
           off: "off",
           "1": "mellow",

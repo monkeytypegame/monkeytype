@@ -56,8 +56,8 @@ function _buildCommandForConfigKey<
   if ("subgroup" in commandMeta && commandMeta.subgroup !== undefined) {
     result = buildCommandWithSubgroup(
       key,
-      commandMeta.rootDisplay,
-      commandMeta.rootAlias,
+      commandMeta.display,
+      commandMeta.alias,
       commandMeta.subgroup,
       configMeta,
       schema
@@ -242,12 +242,12 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
   {
     afterExec,
     hover,
-    commandDisplay,
-    commandAlias,
-    commandConfigValueMode,
-    isCommandVisible,
-    isCommandAvailable,
-    commandCustomData,
+    display: commandDisplay,
+    alias: commandAlias,
+    configValueMode: commandConfigValueMode,
+    isVisible: isCommandVisible,
+    isAvailable: isCommandAvailable,
+    customData: commandCustomData,
   }: SubgroupProps<K>
 ): Command {
   const val = value;
