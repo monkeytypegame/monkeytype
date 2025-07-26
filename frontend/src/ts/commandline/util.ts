@@ -51,7 +51,14 @@ function _buildCommandForConfigKey<
   }
 
   if (commandMeta.type === "subgroup") {
-    return buildCommandWithSubgroup(key, commandMeta, configMeta, schema);
+    return buildCommandWithSubgroup(
+      key,
+      commandMeta.rootDisplay,
+      commandMeta.rootAlias,
+      commandMeta.subgroup,
+      configMeta,
+      schema
+    );
   } else if (commandMeta.type === "input") {
     return buildInputCommand({
       key,
@@ -63,7 +70,9 @@ function _buildCommandForConfigKey<
   } else if (commandMeta.type === "subgroupWithInput") {
     const result = buildCommandWithSubgroup(
       key,
-      commandMeta,
+      commandMeta.rootDisplay,
+      commandMeta.rootAlias,
+      commandMeta.subgroup,
       configMeta,
       schema
     );
@@ -80,7 +89,9 @@ function _buildCommandForConfigKey<
   } else if (commandMeta.type === "subgroupWithSecondKeyInput") {
     const result = buildCommandWithSubgroup(
       key,
-      commandMeta,
+      commandMeta.rootDisplay,
+      commandMeta.rootAlias,
+      commandMeta.subgroup,
       configMeta,
       schema
     );
@@ -114,20 +125,22 @@ function _buildCommandForConfigKey<
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   key: K,
-  commandMeta: SubgroupProps<K>,
+  rootDisplay: string | undefined,
+  rootAlias: string | undefined,
+  subgroupProps: SubgroupProps<K>,
   configMeta: ConfigMetadata<K>,
   schema: ZodType //TODO better type
 ): Command {
-  if (commandMeta === null) {
+  if (subgroupProps === null) {
     throw new Error(`No commandline metadata found for config key "${key}".`);
   }
 
   const display =
-    commandMeta?.rootDisplay ??
+    rootDisplay ??
     `${capitalizeFirstLetter(configMeta?.displayString ?? key)}...`;
 
   let values =
-    commandMeta.options ?? (getOptions(schema) as ConfigSchemas.Config[K][]);
+    subgroupProps.options ?? (getOptions(schema) as ConfigSchemas.Config[K][]);
 
   if (values === "fromSchema") {
     values = getOptions(schema) as ConfigSchemas.Config[K][];
@@ -140,7 +153,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
     );
   }
   const list = values.map((value) =>
-    buildSubgroupCommand<K>(key, value, commandMeta)
+    buildSubgroupCommand<K>(key, value, subgroupProps)
   );
 
   list.sort((a, b) => {
@@ -158,7 +171,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
       configKey: key,
       list,
     },
-    alias: commandMeta?.rootAlias,
+    alias: rootAlias,
   };
 }
 
