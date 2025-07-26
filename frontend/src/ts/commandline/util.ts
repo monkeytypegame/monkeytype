@@ -283,9 +283,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
       genericSet(key, input as ConfigSchemas.Config[K]);
       inputProps?.afterExec?.(input as ConfigSchemas.Config[K]);
     },
-    hover: (): void => {
-      inputProps?.hover?.();
-    },
+    hover: inputProps?.hover,
   };
 
   if (inputProps?.inputValueConvert !== undefined) {
