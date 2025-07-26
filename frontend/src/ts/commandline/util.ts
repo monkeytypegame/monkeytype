@@ -43,13 +43,51 @@ function _buildCommandForConfigKey<
 >(
   key: K,
   configMeta: ConfigMetadata<K>,
-  commandMeta: CommandlineConfigMetadata<K> | undefined,
+  // oxlint-disable-next-line no-explicit-any
+  commandMeta: CommandlineConfigMetadata<K, any> | undefined,
   schema: ZodType //TODO better type
 ): Command {
   if (commandMeta === undefined || commandMeta === null) {
     throw new Error(`No commandline metadata found for config key "${key}".`);
   }
 
+  let result: Command | undefined = undefined;
+
+  if ("subgroup" in commandMeta && commandMeta.subgroup !== undefined) {
+    result = buildCommandWithSubgroup(
+      key,
+      commandMeta.rootDisplay,
+      commandMeta.rootAlias,
+      commandMeta.subgroup,
+      configMeta,
+      schema
+    );
+  }
+
+  if ("input" in commandMeta && commandMeta.input !== undefined) {
+    const inputMeta = commandMeta.input;
+    const inputCommand = buildInputCommand({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      key: "secondKey" in inputMeta ? inputMeta.secondKey : key,
+      isPartOfSubgruop: true,
+      inputProps: commandMeta.input,
+      configMeta,
+      schema,
+    });
+    if (result === undefined) {
+      return inputCommand;
+    }
+
+    result.subgroup?.list.push(inputCommand);
+  }
+
+  if (result === undefined) {
+    throw new Error(
+      `Nothing returned for config key "${key}". This is a bug in the commandline metadata.`
+    );
+  }
+  return result;
+  /*
   if (
     "subgroup" in commandMeta &&
     commandMeta.subgroup !== undefined &&
@@ -58,6 +96,7 @@ function _buildCommandForConfigKey<
     if (commandMeta.subgroup === undefined) {
       throw new Error(`No subgroup metadata found for config key "${key}".`);
     }
+
     return buildCommandWithSubgroup(
       key,
       commandMeta.rootDisplay,
@@ -141,6 +180,7 @@ function _buildCommandForConfigKey<
   throw new Error(
     `Nothing returned for config key "${key}". This is a bug in the commandline metadata.`
   );
+  */
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
