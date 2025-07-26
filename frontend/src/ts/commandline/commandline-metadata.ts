@@ -71,7 +71,7 @@ export type CommandlineConfigMetadata<
   alias?: string;
   display?: string;
   isVisible?: boolean;
-  input?: InputProps<T> | SecondaryInputProps<T2>;
+  input?: InputProps<T> | SecondaryInputProps<T2> | Record<never, never>;
   subgroup?: SubgroupProps<T>;
 };
 
@@ -663,7 +663,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
     },
   },
-  customBackground: {},
+  customBackground: {
+    input: {},
+  },
   customBackgroundSize: {
     subgroup: {
       options: "fromSchema",
