@@ -238,9 +238,12 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
       genericSet(key, val);
       afterExec?.(val);
     },
-    hover: (): void => {
-      hover?.(val);
-    },
+    hover:
+      hover !== undefined
+        ? (): void => {
+            hover?.(val);
+          }
+        : undefined,
     customData: commandCustomData?.(val) ?? undefined,
   };
 }
