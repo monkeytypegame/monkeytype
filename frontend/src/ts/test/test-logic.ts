@@ -49,7 +49,7 @@ import * as Last10Average from "../elements/last-10-average";
 import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
-import { Auth, isAuthenticated } from "../firebase";
+import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
@@ -1157,7 +1157,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // user is logged in
   TestStats.resetIncomplete();
 
-  completedEvent.uid = Auth?.currentUser?.uid as string;
+  //TODO requires authentication?
+  completedEvent.uid = getAuthenticatedUser().uid;
+
   Result.updateRateQuote(TestWords.currentQuote);
 
   AccountButton.loading(true);

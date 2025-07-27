@@ -1,10 +1,9 @@
 import {
   Analytics as AnalyticsType,
-  getAnalytics,
   logEvent,
   setAnalyticsCollectionEnabled,
 } from "firebase/analytics";
-import { app as firebaseApp } from "../firebase";
+import { getAnalytics } from "../firebase";
 import { createErrorMessage } from "../utils/misc";
 
 let analytics: AnalyticsType;
@@ -27,7 +26,7 @@ export function activateAnalytics(): void {
   }
   console.log("Activating Analytics");
   try {
-    analytics = getAnalytics(firebaseApp);
+    analytics = getAnalytics();
     setAnalyticsCollectionEnabled(analytics, true);
     $("body").append(`
     <script

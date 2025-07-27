@@ -22,20 +22,21 @@ import * as AccountSettings from "../pages/account-settings";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
-  browserSessionPersistence,
-  browserLocalPersistence,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  setPersistence,
   updateProfile,
   linkWithPopup,
   getAdditionalUserInfo,
   User as UserType,
-  Unsubscribe,
   AuthProvider,
 } from "firebase/auth";
-import { Auth, getAuthenticatedUser, isAuthenticated } from "../firebase";
+import {
+  isAuthAvailable,
+  getAuthenticatedUser,
+  isAuthenticated,
+  signOut as authSignOut,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+} from "../firebase";
 import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 import {
   hideFavoriteQuoteLength,
@@ -53,7 +54,7 @@ export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
 
 async function sendVerificationEmail(): Promise<void> {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
@@ -200,7 +201,7 @@ export async function loadUser(_user: UserType): Promise<void> {
   }
 }
 
-async function readyFunction(
+export async function readyFunction(
   authInitialisedAndConnected: boolean,
   user: UserType | null
 ): Promise<void> {
@@ -217,6 +218,12 @@ async function readyFunction(
       if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
+
+      Sentry.clearUser();
+      Settings.hideAccountSection();
+      AccountButton.update(undefined);
+      DB.setSnapshot(undefined);
+
       Sentry.clearUser();
       PageTransition.set(false);
       navigate();
@@ -239,20 +246,8 @@ async function readyFunction(
   AccountSettings.updateUI();
 }
 
-let disableAuthListener: Unsubscribe;
-
-if (Auth && ConnectionState.get()) {
-  disableAuthListener = Auth?.onAuthStateChanged(function (user) {
-    void readyFunction(true, user);
-  });
-} else {
-  $((): void => {
-    void readyFunction(false, null);
-  });
-}
-
 export async function signIn(email: string, password: string): Promise<void> {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1);
     return;
   }
@@ -263,7 +258,6 @@ export async function signIn(email: string, password: string): Promise<void> {
     return;
   }
 
-  disableAuthListener();
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
@@ -276,14 +270,12 @@ export async function signIn(email: string, password: string): Promise<void> {
     return;
   }
 
-  const persistence = ($(".pageLogin .login #rememberMe input").prop(
+  const rememberMe = $(".pageLogin .login #rememberMe input").prop(
     "checked"
-  ) as boolean)
-    ? browserLocalPersistence
-    : browserSessionPersistence;
+  ) as boolean;
 
-  await setPersistence(Auth, persistence);
-  return signInWithEmailAndPassword(Auth, email, password)
+  //TODO move error mapping to signinWIthPopup
+  return signInWithEmailAndPassword(email, password, rememberMe)
     .then(async (e) => {
       await loadUser(e.user);
     })
@@ -314,7 +306,7 @@ export async function signIn(email: string, password: string): Promise<void> {
 }
 
 async function signInWithProvider(provider: AuthProvider): Promise<void> {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
@@ -330,15 +322,12 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  disableAuthListener();
-  const persistence = ($(".pageLogin .login #rememberMe input").prop(
+  const rememberMe = $(".pageLogin .login #rememberMe input").prop(
     "checked"
-  ) as boolean)
-    ? browserLocalPersistence
-    : browserSessionPersistence;
+  ) as boolean;
 
-  await setPersistence(Auth, persistence);
-  signInWithPopup(Auth, provider)
+  //TODO move error mapping to signinWIthPopup
+  signInWithPopup(provider, rememberMe)
     .then(async (signedInUser) => {
       if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
         dispatchSignUpEvent(signedInUser, true);
@@ -413,7 +402,7 @@ async function addAuthProvider(
     });
     return;
   }
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
@@ -438,14 +427,14 @@ async function addAuthProvider(
 }
 
 export function signOut(): void {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
     return;
   }
   if (!isAuthenticated()) return;
-  Auth.signOut()
+  authSignOut()
     .then(function () {
       Notifications.add("Signed out", 0, {
         duration: 2,
@@ -466,7 +455,7 @@ export function signOut(): void {
 }
 
 async function signUp(): Promise<void> {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
@@ -548,11 +537,8 @@ async function signUp(): Promise<void> {
     return;
   }
 
-  disableAuthListener();
-
   try {
     const createdAuthUser = await createUserWithEmailAndPassword(
-      Auth,
       email,
       password
     );
@@ -614,7 +600,7 @@ $(".pageLogin .login button.signInWithGitHub").on("click", () => {
 });
 
 $("nav .accountButtonAndMenu .menu button.signOut").on("click", () => {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
