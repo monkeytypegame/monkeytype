@@ -24,8 +24,15 @@ const PaginationQuerySchema = z.object({
   page: z.number().int().safe().nonnegative().default(0),
   pageSize: z.number().int().safe().positive().min(10).max(200).default(50),
 });
-
 export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;
+
+const FriendsOnlyQuerySchema = z.object({
+  friendsOnly: z
+    .boolean()
+    .optional()
+    .describe("include only users from your friends list, defaults to false."),
+});
+export type FriendsOnlyQuery = z.infer<typeof FriendsOnlyQuerySchema>;
 
 const LeaderboardResponseSchema = z.object({
   count: z.number().int().nonnegative(),
@@ -36,7 +43,7 @@ const LeaderboardResponseSchema = z.object({
 
 export const GetLeaderboardQuerySchema = LanguageAndModeQuerySchema.merge(
   PaginationQuerySchema
-);
+).merge(FriendsOnlyQuerySchema);
 export type GetLeaderboardQuery = z.infer<typeof GetLeaderboardQuerySchema>;
 
 export const GetLeaderboardResponseSchema = responseWithData(

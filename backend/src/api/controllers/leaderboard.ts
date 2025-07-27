@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
+import * as FriendsDAL from "../../dal/friends";
 import MonkeyError from "../../utils/error";
 import * as DailyLeaderboards from "../../utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
@@ -30,7 +31,8 @@ import { MonkeyRequest } from "../types";
 export async function getLeaderboard(
   req: MonkeyRequest<GetLeaderboardQuery>
 ): Promise<GetLeaderboardResponse> {
-  const { language, mode, mode2, page, pageSize } = req.query;
+  const { language, mode, mode2, page, pageSize, friendsOnly } = req.query;
+  const { uid } = req.ctx.decodedToken;
 
   if (
     mode !== "time" ||
@@ -40,13 +42,19 @@ export async function getLeaderboard(
     throw new MonkeyError(404, "There is no leaderboard for this mode");
   }
 
+  let friendUids: string[] | undefined;
+  if (friendsOnly === true) {
+    friendUids = await FriendsDAL.getFriendsUids(uid);
+  }
+
   const leaderboard = await LeaderboardsDAL.get(
     mode,
     mode2,
     language,
     page,
     pageSize,
-    req.ctx.configuration.users.premium.enabled
+    req.ctx.configuration.users.premium.enabled,
+    friendUids
   );
 
   if (leaderboard === false) {
@@ -56,7 +64,12 @@ export async function getLeaderboard(
     );
   }
 
-  const count = await LeaderboardsDAL.getCount(mode, mode2, language);
+  const count = await LeaderboardsDAL.getCount(
+    mode,
+    mode2,
+    language,
+    friendUids
+  );
   const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
 
   return new MonkeyResponse("Leaderboard retrieved", {

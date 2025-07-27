@@ -417,6 +417,10 @@ describe("FriendsDal", () => {
           name: "Me",
         },
       ]);
+
+      expect((await FriendsDal.getFriendsUids(uid)).sort()).toEqual(
+        [me.uid, friendOne.uid, friendTwo.uid, friendThree.uid].sort()
+      );
     });
   });
 });

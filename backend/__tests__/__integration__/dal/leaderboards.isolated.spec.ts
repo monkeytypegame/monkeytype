@@ -275,6 +275,70 @@ describe("LeaderboardsDal", () => {
       expect(result[0]?.isPremium).toBeUndefined();
     });
   });
+  describe("get", () => {
+    it("should get for friends only", async () => {
+      //GIVEN
+      const rank1 = await createUser(lbBests(pb(90), pb(100, 90, 2)));
+      const _rank2 = await createUser(lbBests(undefined, pb(100, 90, 1)));
+      const _rank3 = await createUser(lbBests(undefined, pb(100, 80, 2)));
+      const rank4 = await createUser(lbBests(undefined, pb(90, 100, 1)));
+      await LeaderboardsDal.update("time", "60", "english");
+
+      //WHEN
+
+      const result = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        0,
+        50,
+        [rank1.uid, rank4.uid]
+      )) as LeaderboardsDal.DBLeaderboardEntry[];
+
+      //THEN
+      const lb = result.map((it) => _.omit(it, ["_id"]));
+
+      expect(lb).toEqual([
+        expectedLbEntry("60", { rank: 1, user: rank1 }),
+        expectedLbEntry("60", { rank: 4, user: rank4 }),
+      ]);
+    });
+  });
+  describe("getCount", () => {
+    it("should get count", async () => {
+      //GIVEN
+      await createUser(lbBests(undefined, pb(90)));
+      await createUser(lbBests(undefined, pb(90)));
+      await createUser(lbBests(undefined, pb(90)));
+      await createUser(lbBests(undefined, pb(90)));
+      await LeaderboardsDal.update("time", "60", "english");
+
+      //WHEN
+
+      const result = await LeaderboardsDal.getCount("time", "60", "english");
+
+      //THEN
+      expect(result).toEqual(4);
+    });
+    it("should get for friends only", async () => {
+      //GIVEN
+      const friendOne = await createUser(lbBests(undefined, pb(90)));
+      await createUser(lbBests(undefined, pb(90)));
+      await createUser(lbBests(undefined, pb(90)));
+      const friendTwo = await createUser(lbBests(undefined, pb(90)));
+      await LeaderboardsDal.update("time", "60", "english");
+
+      //WHEN
+
+      const result = await LeaderboardsDal.getCount("time", "60", "english", [
+        friendOne.uid,
+        friendTwo.uid,
+      ]);
+
+      //THEN
+      expect(result).toEqual(2);
+    });
+  });
 });
 
 function expectedLbEntry(

@@ -385,6 +385,28 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
     .toArray()) as DBFriend[];
 }
 
+export async function getFriendsUids(uid: string): Promise<string[]> {
+  return Array.from(
+    new Set(
+      (
+        await getCollection()
+          .find(
+            {
+              $and: [
+                {
+                  $or: [{ initiatorUid: uid }, { friendUid: uid }],
+                  status: "accepted",
+                },
+              ],
+            },
+            { projection: { initiatorUid: true, friendUid: true } }
+          )
+          .toArray()
+      ).flatMap((it) => [it.initiatorUid, it.friendUid])
+    )
+  );
+}
+
 export async function createIndicies(): Promise<void> {
   //index used for search
   await getCollection().createIndex({ initiatorUid: 1 });

@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import request from "supertest";
 import app from "../../../src/app";
 import * as LeaderboardDal from "../../../src/dal/leaderboards";
+import * as FriendDal from "../../../src/dal/friends";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as Configuration from "../../../src/init/configuration";
@@ -38,10 +39,13 @@ describe("Loaderboard Controller", () => {
   describe("get leaderboard", () => {
     const getLeaderboardMock = vi.spyOn(LeaderboardDal, "get");
     const getLeaderboardCountMock = vi.spyOn(LeaderboardDal, "getCount");
+    const getFriendsUidsMock = vi.spyOn(FriendDal, "getFriendsUids");
 
     beforeEach(() => {
       getLeaderboardMock.mockClear();
       getLeaderboardCountMock.mockClear();
+      getFriendsUidsMock.mockClear();
+      getLeaderboardCountMock.mockResolvedValue(42);
     });
 
     it("should get for english time 60", async () => {
@@ -103,6 +107,15 @@ describe("Loaderboard Controller", () => {
         0,
         50,
         false
+
+      );
+
+      expect(getLeaderboardCountMock).toHaveBeenCalledWith(
+        "time",
+        "60",
+        "english",
+        undefined
+
       );
     });
 
@@ -130,7 +143,7 @@ describe("Loaderboard Controller", () => {
       expect(body).toEqual({
         message: "Leaderboard retrieved",
         data: {
-          count: 0,
+          count: 42,
           pageSize: 25,
           entries: [],
         },
@@ -143,6 +156,44 @@ describe("Loaderboard Controller", () => {
         page,
         pageSize,
         false
+      );
+    });
+
+    it("should get for friendsOnly", async () => {
+      //GIVEN
+      getLeaderboardMock.mockResolvedValue([]);
+      getFriendsUidsMock.mockResolvedValue(["uidOne", "uidTwo"]);
+      getLeaderboardCountMock.mockResolvedValue(2);
+
+      //WHEN
+
+      const { body } = await mockApp
+        .get("/leaderboards")
+        .query({
+          language: "english",
+          mode: "time",
+          mode2: "60",
+          friendsOnly: true,
+        })
+        .expect(200);
+
+      //THEN
+      expect(body.data.count).toEqual(2);
+
+      expect(getLeaderboardMock).toHaveBeenCalledWith(
+        "time",
+        "60",
+        "english",
+        0,
+        50,
+        ["uidOne", "uidTwo"]
+      );
+      expect(getLeaderboardCountMock).toHaveBeenCalledWith(
+        "time",
+        "60",
+        "english",
+        ["uidOne", "uidTwo"]
+>>>>>>> 7e96c814c (feat(leaderboard): add friends leaderboards (@fehmer))
       );
     });
 
