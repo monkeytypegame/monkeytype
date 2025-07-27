@@ -10,7 +10,7 @@ import {
 } from "./commandline-metadata";
 import { Command } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { z, ZodSchema, ZodType } from "zod";
+import { z, ZodSchema } from "zod";
 
 function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
   if (schema instanceof z.ZodLiteral) {
@@ -45,7 +45,7 @@ function _buildCommandForConfigKey<
   commandMeta:
     | CommandlineConfigMetadata<K, keyof ConfigSchemas.Config>
     | undefined,
-  schema: ZodType //TODO better type
+  schema: ZodSchema
 ): Command {
   if (commandMeta === undefined || commandMeta === null) {
     throw new Error(`No commandline metadata found for config key "${key}".`);
@@ -97,7 +97,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   rootAlias: string | undefined,
   subgroupProps: SubgroupProps<K>,
   configMeta: ConfigMetadata<K>,
-  schema: ZodType //TODO better type
+  schema: ZodSchema
 ): Command {
   if (subgroupProps === null) {
     throw new Error(`No commandline metadata found for config key "${key}".`);
@@ -206,7 +206,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   isPartOfSubgruop: boolean;
   inputProps?: InputProps<K>;
   configMeta: ConfigMetadata<K>;
-  schema?: ZodType; //TODO better type
+  schema?: ZodSchema;
 }): Command {
   const validation = inputProps?.validation ?? { schema: true };
 
