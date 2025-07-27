@@ -205,7 +205,7 @@ export async function readyFunction(
   authInitialisedAndConnected: boolean,
   user: UserType | null
 ): Promise<void> {
-  console.log("auth callback", user);
+  console.log("auth callback", authInitialisedAndConnected, user);
   const search = window.location.search;
   const hash = window.location.hash;
   console.debug(`account controller ready`);
@@ -220,10 +220,14 @@ export async function readyFunction(
         window.history.replaceState("", "", "/login");
       }
 
+      Sentry.clearUser();
       Settings.hideAccountSection();
       AccountButton.update(undefined);
+
       DB.setSnapshot(undefined);
-      Sentry.clearUser();
+      setTimeout(() => {
+        hideFavoriteQuoteLength();
+      }, 125);
       PageTransition.set(false);
       navigate();
     }
@@ -433,7 +437,8 @@ export function signOut(): void {
     return;
   }
   if (!isAuthenticated()) return;
-  authSignOut()
+  void authSignOut();
+  /*
     .then(function () {
       Notifications.add("Signed out", 0, {
         duration: 2,
@@ -451,6 +456,7 @@ export function signOut(): void {
       const message = Misc.createErrorMessage(error, `Failed to sign out`);
       Notifications.add(message, -1);
     });
+*/
 }
 
 async function signUp(): Promise<void> {

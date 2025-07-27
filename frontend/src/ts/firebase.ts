@@ -27,11 +27,14 @@ import {
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
 
+let wasAuthenticated = false;
+
+type ReadyCallback = (success: boolean, user: User | null) => Promise<void>;
+let readyCallback: ReadyCallback | undefined;
 let logoutTimout = setTimeout(() => {}, 0);
-export async function init(
-  callback: (success: boolean, user: User | null) => Promise<void>
-): Promise<void> {
+export async function init(callback: ReadyCallback): Promise<void> {
   try {
+    readyCallback = callback;
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
     Auth = getAuth(app);
     await firebaseSetPersistence(Auth, browserLocalPersistence);
@@ -40,8 +43,20 @@ export async function init(
       console.log("### authstate", user);
       clearTimeout(logoutTimout);
       if (user === null) {
-        logoutTimout = setTimeout(async () => callback(true, null), 5000);
+        if (wasAuthenticated) {
+          logoutTimout = setTimeout(async () => {
+            console.log("auth debounced logout");
+            wasAuthenticated = false;
+            await callback(true, null);
+          }, 2500);
+        } else {
+          await callback(true, null);
+        }
       } else {
+        if (wasAuthenticated) {
+          return;
+        }
+        wasAuthenticated = true;
         await callback(true, user);
       }
       console.log("### authstate  done");
@@ -142,3 +157,5 @@ async function setPersistence(
 
   await firebaseSetPersistence(Auth, persistence);
 }
+
+window["user"] = getAuthenticatedUser;
