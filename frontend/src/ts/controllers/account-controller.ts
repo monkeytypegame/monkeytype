@@ -217,6 +217,9 @@ async function readyFunction(
       if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
+      Settings.hideAccountSection();
+      AccountButton.update(undefined);
+      DB.setSnapshot(undefined);
       Sentry.clearUser();
       PageTransition.set(false);
       navigate();
