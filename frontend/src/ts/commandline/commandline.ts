@@ -162,6 +162,9 @@ export function show(
             value: showInputCommand.defaultValue?.() ?? "",
             icon: showInputCommand.icon ?? "fa-chevron-right",
           };
+          InputValidationHandler(
+            showInputCommand as CommandWithValidation<unknown>
+          );
           void updateInput(inputModeParams.value as string);
           hideCommands();
         }
@@ -619,17 +622,7 @@ async function runActiveCommand(): Promise<void> {
       value: command.defaultValue?.() ?? "",
       icon: command.icon ?? "fa-chevron-right",
     };
-    if ("validation" in command && !handlersCache.has(command.id)) {
-      const commandWithValidation = command as CommandWithValidation<unknown>;
-      const handler = createInputEventHandler(
-        updateValidationResult,
-        commandWithValidation.validation,
-        "inputValueConvert" in commandWithValidation
-          ? commandWithValidation.inputValueConvert
-          : undefined
-      );
-      handlersCache.set(command.id, handler);
-    }
+    InputValidationHandler(command as CommandWithValidation<unknown>);
 
     await updateInput(inputModeParams.value as string);
     hideCommands();
@@ -805,6 +798,18 @@ function updateValidationResult(
  * Handlers needs to be created only once per command to ensure they debounce with the given delay
  */
 const handlersCache = new Map<string, (e: Event) => Promise<void>>();
+
+// handles input validation for commands.
+function InputValidationHandler(command: CommandWithValidation<unknown>): void {
+  if ("validation" in command && !handlersCache.has(command.id)) {
+    const handler = createInputEventHandler(
+      updateValidationResult,
+      command.validation,
+      "inputValueConvert" in command ? command.inputValueConvert : undefined
+    );
+    handlersCache.set(command.id, handler);
+  }
+}
 
 const modal = new AnimatedModal({
   dialogId: "commandLine",
