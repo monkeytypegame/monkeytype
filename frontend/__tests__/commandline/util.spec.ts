@@ -227,7 +227,7 @@ describe("CommandlineUtils", () => {
       expect(cmd.display).toEqual("My Setting...");
     });
 
-    it("uses displayString from config for display ", () => {
+    it("uses input props display string if provided", () => {
       //GIVEN
 
       //WHEN
