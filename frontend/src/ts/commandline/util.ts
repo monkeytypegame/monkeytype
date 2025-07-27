@@ -210,9 +210,11 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
 }): Command {
   const validation = inputProps?.validation ?? { schema: true };
 
-  const displayString = isPartOfSubgruop
-    ? inputProps?.display ?? "custom..."
-    : capitalizeFirstLetter(configMeta.displayString ?? key) + "...";
+  const displayString =
+    inputProps?.display ??
+    (isPartOfSubgruop
+      ? "custom..."
+      : `${capitalizeFirstLetter(configMeta.displayString ?? key)}...`);
 
   const result = {
     id: `set${capitalizeFirstLetter(key)}Custom`,

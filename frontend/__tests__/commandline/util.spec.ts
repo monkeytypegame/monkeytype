@@ -227,6 +227,63 @@ describe("CommandlineUtils", () => {
       expect(cmd.display).toEqual("My Setting...");
     });
 
+    it("uses displayString from config for display ", () => {
+      //GIVEN
+
+      //WHEN
+      const cmd = buildCommand({
+        cmdMeta: {
+          input: {
+            display: "Input setting...",
+          },
+        },
+        configMeta: { displayString: "My Setting" },
+      });
+
+      //THEN
+      expect(cmd.display).toEqual("Input setting...");
+    });
+
+    it("display is custom... if part of subgroup (without display override)", () => {
+      //GIVEN
+
+      //WHEN
+      const cmd = buildCommand({
+        cmdMeta: {
+          input: {
+            // display: "Input setting...",
+          },
+          subgroup: {
+            options: [],
+          },
+        },
+        configMeta: { displayString: "My Setting" },
+      });
+
+      //THEN
+      expect(cmd.subgroup?.list[0]?.display).toEqual("custom...");
+    });
+
+    it("display is is using display override if part of subgroup", () => {
+      //GIVEN
+
+      //WHEN
+      const cmd = buildCommand({
+        cmdMeta: {
+          input: {
+            display: "Input setting...",
+          },
+          subgroup: {
+            options: [],
+          },
+        },
+        configMeta: { displayString: "My Setting" },
+      });
+
+      //THEN
+      expect(cmd.subgroup?.list[0]?.display).toEqual("Input setting...");
+    });
+
     it("uses inputValueConvert", () => {
       //GIVEN
       const schema = z.number().int();
