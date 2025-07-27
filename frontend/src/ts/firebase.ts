@@ -27,18 +27,24 @@ import {
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
 
+let logoutTimout = setTimeout(() => {}, 0);
 export async function init(
   callback: (success: boolean, user: User | null) => Promise<void>
 ): Promise<void> {
   try {
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
     Auth = getAuth(app);
-    await setPersistence(
-      window.localStorage.getItem("firebasePersistance") === "LOCAL"
-    );
+    await firebaseSetPersistence(Auth, browserLocalPersistence);
 
     onAuthStateChanged(Auth, async (user) => {
-      await callback(true, user);
+      console.log("### authstate", user);
+      clearTimeout(logoutTimout);
+      if (user === null) {
+        logoutTimout = setTimeout(async () => callback(true, null), 5000);
+      } else {
+        await callback(true, user);
+      }
+      console.log("### authstate  done");
     });
   } catch (e) {
     app = undefined;
