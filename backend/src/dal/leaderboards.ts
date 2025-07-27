@@ -9,7 +9,7 @@ import {
 } from "../init/configuration";
 
 import { addLog } from "./logs";
-import { Collection, ObjectId } from "mongodb";
+import { Collection, Filter, ObjectId } from "mongodb";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import { omit } from "lodash";
 import { DBUser, getUsersCollection } from "./user";
@@ -34,7 +34,8 @@ export async function get(
   language: string,
   page: number,
   pageSize: number,
-  premiumFeaturesEnabled: boolean = false
+  premiumFeaturesEnabled: boolean = false,
+  userIds?: string[]
 ): Promise<DBLeaderboardEntry[] | false> {
   if (page < 0 || pageSize < 0) {
     throw new MonkeyError(500, "Invalid page or pageSize");
@@ -43,9 +44,15 @@ export async function get(
   const skip = page * pageSize;
   const limit = pageSize;
 
+  let filter: Filter<DBLeaderboardEntry> = {};
+
+  if (userIds !== undefined) {
+    filter.uid = { $in: userIds };
+  }
+
   try {
     const preset = await getCollection({ language, mode, mode2 })
-      .find()
+      .find(filter)
       .sort({ rank: 1 })
       .skip(skip)
       .limit(limit)
@@ -71,19 +78,25 @@ const cachedCounts = new Map<string, number>();
 export async function getCount(
   mode: string,
   mode2: string,
-  language: string
+  language: string,
+  userIds?: string[]
 ): Promise<number> {
   const key = `${language}_${mode}_${mode2}`;
-  if (cachedCounts.has(key)) {
+  if (userIds === undefined && cachedCounts.has(key)) {
     return cachedCounts.get(key) as number;
   } else {
-    const count = await getCollection({
+    const lb = await getCollection({
       language,
       mode,
       mode2,
-    }).estimatedDocumentCount();
-    cachedCounts.set(key, count);
-    return count;
+    });
+    if (userIds === undefined) {
+      const count = await lb.estimatedDocumentCount();
+      cachedCounts.set(key, count);
+      return count;
+    } else {
+      return lb.countDocuments({ uid: { $in: userIds } });
+    }
   }
 }
 
