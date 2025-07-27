@@ -1,7 +1,12 @@
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import Ape from ".";
+import { promiseWithResolvers } from "../utils/misc";
 
 let config: Configuration | undefined = undefined;
+
+const { promise: configPromise, resolve } = promiseWithResolvers<boolean>();
+
+export { configPromise };
 
 export function get(): Configuration | undefined {
   return config;
@@ -15,5 +20,6 @@ export async function sync(): Promise<void> {
     return;
   } else {
     config = response.body.data ?? undefined;
+    resolve(true);
   }
 }

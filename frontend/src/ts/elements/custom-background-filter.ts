@@ -1,4 +1,4 @@
-import { CustomBackgroundFilter } from "@monkeytype/contracts/schemas/configs";
+import { CustomBackgroundFilter } from "@monkeytype/schemas/configs";
 import * as UpdateConfig from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import { debounce } from "throttle-debounce";
@@ -146,7 +146,7 @@ $(".section[data-config-name='customBackgroundFilter'] .opacity input").on(
 $(".section[data-config-name='customBackgroundFilter'] input").on(
   "input",
   () => {
-    void debouncedSave();
+    debouncedSave();
   }
 );
 

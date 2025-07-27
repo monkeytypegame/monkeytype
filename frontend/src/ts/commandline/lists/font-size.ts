@@ -1,8 +1,9 @@
+import { FontSizeSchema } from "@monkeytype/schemas/configs";
 import Config, * as UpdateConfig from "../../config";
-import { Command } from "../types";
+import { Command, withValidation } from "../types";
 
 const commands: Command[] = [
-  {
+  withValidation({
     id: "changeFontSize",
     display: "Font size...",
     icon: "fa-font",
@@ -10,10 +11,15 @@ const commands: Command[] = [
     defaultValue: (): string => {
       return Config.fontSize.toString();
     },
-    exec: ({ input }): void => {
-      if (input === undefined || input === "") return;
-      UpdateConfig.setFontSize(parseFloat(input));
+    inputValueConvert: Number,
+    validation: {
+      schema: FontSizeSchema,
     },
-  },
+    exec: ({ input }): void => {
+      if (input === undefined) return;
+      UpdateConfig.setFontSize(input);
+    },
+  }),
 ];
+
 export default commands;

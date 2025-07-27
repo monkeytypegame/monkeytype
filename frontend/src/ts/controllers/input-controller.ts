@@ -454,32 +454,32 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   return false;
 }
 
-function handleChar(
+async function handleChar(
   char: string,
   charIndex: number,
   realInputValue?: string
-): void {
+): Promise<void> {
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
   }
 
   if (char === "…" && TestWords.words.getCurrent()[charIndex] !== "…") {
     for (let i = 0; i < 3; i++) {
-      handleChar(".", charIndex + i);
+      await handleChar(".", charIndex + i);
     }
 
     return;
   }
 
   if (char === "œ" && TestWords.words.getCurrent()[charIndex] !== "œ") {
-    handleChar("o", charIndex);
-    handleChar("e", charIndex + 1);
+    await handleChar("o", charIndex);
+    await handleChar("e", charIndex + 1);
     return;
   }
 
   if (char === "æ" && TestWords.words.getCurrent()[charIndex] !== "æ") {
-    handleChar("a", charIndex);
-    handleChar("e", charIndex + 1);
+    await handleChar("a", charIndex);
+    await handleChar("e", charIndex + 1);
     return;
   }
 
@@ -725,20 +725,31 @@ function handleChar(
   }
 
   const activeWordTopBeforeJump = activeWord?.offsetTop;
-  void TestUI.updateActiveWordLetters();
+  await TestUI.updateActiveWordLetters();
 
   const newActiveTop = activeWord?.offsetTop;
   //stop the word jump by slicing off the last character, update word again
+  // dont do it in replace typos, because it might trigger in the middle of a wrd
+  // when using non monospace fonts
+  /**
+   * NOTE: this input length > 1 guard, added in commit bc94a64,
+   * aimed to prevent some input blocking issue after test restarts.
+   *
+   * This check was found to cause a jump to a hidden 3rd line bug in zen mode (#6697)
+   * So commented due to the zen bug and the original issue not being reproducible,
+   *
+   * REVISIT this logic if any INPUT or WORD JUMP issues reappear.
+   */
   if (
     activeWordTopBeforeJump < newActiveTop &&
-    !TestUI.lineTransition &&
-    TestInput.input.current.length > 1
+    !TestUI.lineTransition
+    // TestInput.input.current.length > 1
   ) {
-    if (Config.mode === "zen") {
+    if (Config.mode === "zen" || Config.indicateTypos === "replace") {
       if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
-      void TestUI.updateActiveWordLetters();
+      await TestUI.updateActiveWordLetters();
     }
   }
 
@@ -775,7 +786,10 @@ function handleChar(
   }
 }
 
-function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
+async function handleTab(
+  event: JQuery.KeyDownEvent,
+  popupVisible: boolean
+): Promise<void> {
   if (TestUI.resultCalculating) {
     event.preventDefault();
     return;
@@ -803,7 +817,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     event.preventDefault();
     // insert tab character if needed (only during the test)
     if (!TestUI.resultVisible && shouldInsertTabCharacter) {
-      handleChar("\t", TestInput.input.current.length);
+      await handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       return;
     }
@@ -830,7 +844,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // insert tab character if needed (only during the test)
     if (!TestUI.resultVisible && shouldInsertTabCharacter) {
       event.preventDefault();
-      handleChar("\t", TestInput.input.current.length);
+      await handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       return;
     }
@@ -849,7 +863,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // insert tab character if needed
     if (shouldInsertTabCharacter) {
       event.preventDefault();
-      handleChar("\t", TestInput.input.current.length);
+      await handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       return;
     }
@@ -932,7 +946,7 @@ $(document).on("keydown", async (event) => {
 
   //tab
   if (event.key === "Tab") {
-    handleTab(event, popupVisible);
+    await handleTab(event, popupVisible);
   }
 
   //esc
@@ -1101,7 +1115,7 @@ $(document).on("keydown", async (event) => {
         }
       }
     } else {
-      handleChar("\n", TestInput.input.current.length);
+      await handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       updateUI();
     }
@@ -1167,7 +1181,7 @@ $(document).on("keydown", async (event) => {
       )
     ) {
       event.preventDefault();
-      handleChar(event.key, TestInput.input.current.length);
+      await handleChar(event.key, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
     }
@@ -1183,7 +1197,7 @@ $(document).on("keydown", async (event) => {
     const char: string | null = await LayoutEmulator.getCharFromEvent(event);
     if (char !== null) {
       event.preventDefault();
-      handleChar(char, TestInput.input.current.length);
+      await handleChar(char, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
     }
@@ -1271,7 +1285,7 @@ $("#wordsInput").on("beforeinput", (event) => {
   }
 });
 
-$("#wordsInput").on("input", (event) => {
+$("#wordsInput").on("input", async (event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     (event.target as HTMLInputElement).value = " ";
     return;
@@ -1335,6 +1349,7 @@ $("#wordsInput").on("input", (event) => {
     inputValue.length >= currTestInput.length
   ) {
     setWordsInput(" " + currTestInput);
+    updateUI();
     return;
   }
 
@@ -1360,7 +1375,11 @@ $("#wordsInput").on("input", (event) => {
           iOffset = inputValue.indexOf(" ") + 1;
         }
         for (let i = diffStart; i < inputValue.length; i++) {
-          handleChar(inputValue[i] as string, i - iOffset, realInputValue);
+          await handleChar(
+            inputValue[i] as string,
+            i - iOffset,
+            realInputValue
+          );
         }
       }
     } else if (containsKorean) {
@@ -1397,7 +1416,7 @@ $("#wordsInput").on("input", (event) => {
     }
     for (let i = diffStart; i < inputValue.length; i++) {
       // passing realInput to allow for correct Korean character compilation
-      handleChar(inputValue[i] as string, i - iOffset, realInputValue);
+      await handleChar(inputValue[i] as string, i - iOffset, realInputValue);
     }
   }
 

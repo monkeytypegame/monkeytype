@@ -24,6 +24,7 @@ import QuickEndCommands from "./lists/quick-end";
 import OppositeShiftModeCommands from "./lists/opposite-shift-mode";
 import SoundOnErrorCommands from "./lists/sound-on-error";
 import SoundVolumeCommands from "./lists/sound-volume";
+import TimeWarningCommands from "./lists/time-warning";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
 import SmoothLineScrollCommands from "./lists/smooth-line-scroll";
 import AlwaysShowDecimalCommands from "./lists/always-show-decimal";
@@ -81,9 +82,7 @@ import ThemesCommands from "./lists/themes";
 import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
-import FontFamilyCommands, {
-  update as updateFontFamilyCommands,
-} from "./lists/font-family";
+import FontFamilyCommands from "./lists/font-family";
 import LanguagesCommands from "./lists/languages";
 import KeymapLayoutsCommands from "./lists/keymap-layouts";
 
@@ -101,22 +100,13 @@ import * as FPSCounter from "../elements/fps-counter";
 import {
   CustomBackgroundSchema,
   CustomLayoutFluid,
-} from "@monkeytype/contracts/schemas/configs";
-import { Command, CommandsSubgroup } from "./types";
+  CustomLayoutFluidSchema,
+  CustomPolyglot,
+  CustomPolyglotSchema,
+} from "@monkeytype/schemas/configs";
+import { Command, CommandsSubgroup, withValidation } from "./types";
 import * as TestLogic from "../test/test-logic";
 import * as ActivePage from "../states/active-page";
-import { Language } from "@monkeytype/contracts/schemas/languages";
-
-const fontsPromise = JSONData.getFontsList();
-fontsPromise
-  .then((fonts) => {
-    updateFontFamilyCommands(fonts);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update fonts commands")
-    );
-  });
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -189,7 +179,7 @@ export const commands: CommandsSubgroup = {
     ...LanguagesCommands,
     ...BritishEnglishCommands,
     ...FunboxCommands,
-    {
+    withValidation({
       id: "changeCustomLayoutfluid",
       display: "Custom layoutfluid...",
       defaultValue: (): string => {
@@ -197,14 +187,14 @@ export const commands: CommandsSubgroup = {
       },
       input: true,
       icon: "fa-tint",
+      inputValueConvert: (val) => val.trim().split(" ") as CustomLayoutFluid,
+      validation: { schema: CustomLayoutFluidSchema },
       exec: ({ input }): void => {
         if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(
-          input.split(" ") as CustomLayoutFluid
-        );
+        UpdateConfig.setCustomLayoutfluid(input);
       },
-    },
-    {
+    }),
+    withValidation({
       id: "changeCustomPolyglot",
       display: "Polyglot languages...",
       defaultValue: (): string => {
@@ -212,14 +202,16 @@ export const commands: CommandsSubgroup = {
       },
       input: true,
       icon: "fa-language",
+      inputValueConvert: (val) => val.trim().split(" ") as CustomPolyglot,
+      validation: { schema: CustomPolyglotSchema },
       exec: ({ input }): void => {
         if (input === undefined) return;
-        void UpdateConfig.setCustomPolyglot(input.split(" ") as Language[]);
+        void UpdateConfig.setCustomPolyglot(input);
         if (ActivePage.get() === "test") {
           TestLogic.restart();
         }
       },
-    },
+    }),
 
     //input
     ...FreedomModeCommands,
@@ -238,6 +230,7 @@ export const commands: CommandsSubgroup = {
     ...SoundVolumeCommands,
     ...SoundOnClickCommands,
     ...SoundOnErrorCommands,
+    ...TimeWarningCommands,
 
     //caret
     ...SmoothCaretCommands,
@@ -478,7 +471,7 @@ export function doesListExist(listName: string): boolean {
 export async function getList(
   listName: ListsObjectKeys
 ): Promise<CommandsSubgroup> {
-  await Promise.allSettled([fontsPromise, challengesPromise]);
+  await Promise.allSettled([challengesPromise]);
 
   const list = lists[listName];
   if (!list) {
@@ -520,7 +513,7 @@ export function getTopOfStack(): CommandsSubgroup {
 
 let singleList: CommandsSubgroup | undefined;
 export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
-  await Promise.allSettled([fontsPromise, challengesPromise]);
+  await Promise.allSettled([challengesPromise]);
   const singleCommands: Command[] = [];
   for (const command of commands.list) {
     const ret = buildSingleListCommands(command);
@@ -528,7 +521,7 @@ export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
   }
 
   singleList = {
-    title: "All commands",
+    title: "",
     list: singleCommands,
   };
   return singleList;

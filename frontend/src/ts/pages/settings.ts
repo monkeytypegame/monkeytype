@@ -3,7 +3,6 @@ import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
@@ -13,428 +12,468 @@ import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import Page from "./page";
+import { PageWithUrlParams } from "./page";
 import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import SlimSelect from "slim-select";
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
-  ConfigValue,
   CustomBackgroundSchema,
   ThemeName,
   CustomLayoutFluid,
   FunboxName,
-} from "@monkeytype/contracts/schemas/configs";
+  ConfigKeySchema,
+  ConfigKey,
+} from "@monkeytype/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
-import { tryCatch } from "@monkeytype/util/trycatch";
 import { Theme, ThemesList } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
-import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
+import { LayoutName } from "@monkeytype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 import FileStorage from "../utils/file-storage";
 import { LocalBackgroundFile } from "../constants/default-config";
+import { z } from "zod";
+import { handleConfigInput } from "../elements/input-validation";
+import { Fonts } from "../constants/fonts";
 
 let settingsInitialized = false;
 
-type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
+type SettingsGroups = Partial<{ [K in ConfigKey]: SettingsGroup<K> }>;
 let customLayoutFluidSelect: SlimSelect | undefined;
 let customPolyglotSelect: SlimSelect | undefined;
 
-export const groups: SettingsGroups<ConfigValue> = {};
+export const groups: SettingsGroups = {};
+
+const HighlightSchema = ConfigKeySchema.or(
+  z.enum([
+    "resetSettings",
+    "updateCookiePreferences",
+    "importexportSettings",
+    "theme",
+    "presets",
+    "tags",
+  ])
+);
+type Highlight = z.infer<typeof HighlightSchema>;
+
+const StateSchema = z
+  .object({
+    highlight: HighlightSchema,
+  })
+  .partial();
 
 async function initGroups(): Promise<void> {
   groups["smoothCaret"] = new SettingsGroup(
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["codeUnindentOnBackspace"] = new SettingsGroup(
     "codeUnindentOnBackspace",
     UpdateConfig.setCodeUnindentOnBackspace,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["difficulty"] = new SettingsGroup(
     "difficulty",
     UpdateConfig.setDifficulty,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["quickRestart"] = new SettingsGroup(
     "quickRestart",
     UpdateConfig.setQuickRestartMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["showAverage"] = new SettingsGroup(
     "showAverage",
     UpdateConfig.setShowAverage,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["keymapMode"] = new SettingsGroup(
     "keymapMode",
     UpdateConfig.setKeymapMode,
     "button",
-    () => {
-      groups["showLiveWpm"]?.updateUI();
-    },
-    () => {
-      if (Config.keymapMode === "off") {
-        $(".pageSettings .section[data-config-name='keymapStyle']").addClass(
-          "hidden"
-        );
-        $(".pageSettings .section[data-config-name='keymapLayout']").addClass(
-          "hidden"
-        );
-        $(
-          ".pageSettings .section[data-config-name='keymapLegendStyle']"
-        ).addClass("hidden");
-        $(
-          ".pageSettings .section[data-config-name='keymapShowTopRow']"
-        ).addClass("hidden");
-        $(".pageSettings .section[data-config-name='keymapSize']").addClass(
-          "hidden"
-        );
-      } else {
-        $(".pageSettings .section[data-config-name='keymapStyle']").removeClass(
-          "hidden"
-        );
-        $(
-          ".pageSettings .section[data-config-name='keymapLayout']"
-        ).removeClass("hidden");
-        $(
-          ".pageSettings .section[data-config-name='keymapLegendStyle']"
-        ).removeClass("hidden");
-        $(
-          ".pageSettings .section[data-config-name='keymapShowTopRow']"
-        ).removeClass("hidden");
-        $(".pageSettings .section[data-config-name='keymapSize']").removeClass(
-          "hidden"
-        );
-      }
+    {
+      updateCallback: () => {
+        if (Config.keymapMode === "off") {
+          $(".pageSettings .section[data-config-name='keymapStyle']").addClass(
+            "hidden"
+          );
+          $(".pageSettings .section[data-config-name='keymapLayout']").addClass(
+            "hidden"
+          );
+          $(
+            ".pageSettings .section[data-config-name='keymapLegendStyle']"
+          ).addClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapShowTopRow']"
+          ).addClass("hidden");
+          $(".pageSettings .section[data-config-name='keymapSize']").addClass(
+            "hidden"
+          );
+        } else {
+          $(
+            ".pageSettings .section[data-config-name='keymapStyle']"
+          ).removeClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapLayout']"
+          ).removeClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapLegendStyle']"
+          ).removeClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapShowTopRow']"
+          ).removeClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapSize']"
+          ).removeClass("hidden");
+        }
+      },
     }
-  ) as SettingsGroup<ConfigValue>;
-  groups["keymapMatrix"] = new SettingsGroup(
+  );
+  groups["keymapStyle"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["keymapLayout"] = new SettingsGroup(
     "keymapLayout",
     UpdateConfig.setKeymapLayout,
     "select"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["keymapLegendStyle"] = new SettingsGroup(
     "keymapLegendStyle",
     UpdateConfig.setKeymapLegendStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["keymapShowTopRow"] = new SettingsGroup(
     "keymapShowTopRow",
     UpdateConfig.setKeymapShowTopRow,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["keymapSize"] = new SettingsGroup(
     "keymapSize",
     UpdateConfig.setKeymapSize,
     "range"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["freedomMode"] = new SettingsGroup(
     "freedomMode",
     UpdateConfig.setFreedomMode,
     "button",
-    () => {
-      groups["confidenceMode"]?.updateUI();
+    {
+      setCallback: () => {
+        groups["confidenceMode"]?.updateUI();
+      },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["strictSpace"] = new SettingsGroup(
     "strictSpace",
     UpdateConfig.setStrictSpace,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["oppositeShiftMode"] = new SettingsGroup(
     "oppositeShiftMode",
     UpdateConfig.setOppositeShiftMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["confidenceMode"] = new SettingsGroup(
     "confidenceMode",
     UpdateConfig.setConfidenceMode,
     "button",
-    () => {
-      groups["freedomMode"]?.updateUI();
-      groups["stopOnError"]?.updateUI();
+    {
+      setCallback: () => {
+        groups["freedomMode"]?.updateUI();
+        groups["stopOnError"]?.updateUI();
+      },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["indicateTypos"] = new SettingsGroup(
     "indicateTypos",
     UpdateConfig.setIndicateTypos,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["hideExtraLetters"] = new SettingsGroup(
     "hideExtraLetters",
     UpdateConfig.setHideExtraLetters,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["blindMode"] = new SettingsGroup(
     "blindMode",
     UpdateConfig.setBlindMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["quickEnd"] = new SettingsGroup(
     "quickEnd",
     UpdateConfig.setQuickEnd,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["repeatQuotes"] = new SettingsGroup(
     "repeatQuotes",
     UpdateConfig.setRepeatQuotes,
     "button"
-  ) as SettingsGroup<ConfigValue>;
-  groups["ads"] = new SettingsGroup(
-    "ads",
-    UpdateConfig.setAds,
-    "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
+  groups["ads"] = new SettingsGroup("ads", UpdateConfig.setAds, "button");
   groups["alwaysShowWordsHistory"] = new SettingsGroup(
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["britishEnglish"] = new SettingsGroup(
     "britishEnglish",
     UpdateConfig.setBritishEnglish,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["singleListCommandLine"] = new SettingsGroup(
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["capsLockWarning"] = new SettingsGroup(
     "capsLockWarning",
     UpdateConfig.setCapsLockWarning,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["flipTestColors"] = new SettingsGroup(
     "flipTestColors",
     UpdateConfig.setFlipTestColors,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["showOutOfFocusWarning"] = new SettingsGroup(
     "showOutOfFocusWarning",
     UpdateConfig.setShowOutOfFocusWarning,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["colorfulMode"] = new SettingsGroup(
     "colorfulMode",
     UpdateConfig.setColorfulMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["startGraphsAtZero"] = new SettingsGroup(
     "startGraphsAtZero",
     UpdateConfig.setStartGraphsAtZero,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["autoSwitchTheme"] = new SettingsGroup(
     "autoSwitchTheme",
     UpdateConfig.setAutoSwitchTheme,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["randomTheme"] = new SettingsGroup(
     "randomTheme",
     UpdateConfig.setRandomTheme,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["stopOnError"] = new SettingsGroup(
     "stopOnError",
     UpdateConfig.setStopOnError,
     "button",
-    () => {
-      groups["confidenceMode"]?.updateUI();
+    {
+      setCallback: () => {
+        groups["confidenceMode"]?.updateUI();
+      },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["soundVolume"] = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
     "range"
-  ) as SettingsGroup<ConfigValue>;
+  );
+  groups["playTimeWarning"] = new SettingsGroup(
+    "playTimeWarning",
+    UpdateConfig.setPlayTimeWarning,
+    "button",
+    {
+      setCallback: () => {
+        if (Config.playTimeWarning !== "off") void Sound.playTimeWarning();
+      },
+    }
+  );
   groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
     UpdateConfig.setPlaySoundOnError,
     "button",
-    () => {
-      if (Config.playSoundOnError !== "off") void Sound.playError();
+    {
+      setCallback: () => {
+        if (Config.playSoundOnError !== "off") void Sound.playError();
+      },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["playSoundOnClick"] = new SettingsGroup(
     "playSoundOnClick",
     UpdateConfig.setPlaySoundOnClick,
     "button",
-    () => {
-      if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
+    {
+      setCallback: () => {
+        if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
+      },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["showAllLines"] = new SettingsGroup(
     "showAllLines",
     UpdateConfig.setShowAllLines,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["paceCaret"] = new SettingsGroup(
     "paceCaret",
     UpdateConfig.setPaceCaret,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["repeatedPace"] = new SettingsGroup(
     "repeatedPace",
     UpdateConfig.setRepeatedPace,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["minWpm"] = new SettingsGroup(
     "minWpm",
     UpdateConfig.setMinWpm,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["minAcc"] = new SettingsGroup(
     "minAcc",
     UpdateConfig.setMinAcc,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["minBurst"] = new SettingsGroup(
     "minBurst",
     UpdateConfig.setMinBurst,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["smoothLineScroll"] = new SettingsGroup(
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["lazyMode"] = new SettingsGroup(
     "lazyMode",
     UpdateConfig.setLazyMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["layout"] = new SettingsGroup(
     "layout",
     UpdateConfig.setLayout,
     "select"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["language"] = new SettingsGroup(
     "language",
     UpdateConfig.setLanguage,
     "select"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["fontSize"] = new SettingsGroup(
     "fontSize",
     UpdateConfig.setFontSize,
-    "button"
-  ) as SettingsGroup<ConfigValue>;
+    "input",
+    { validation: { schema: true, inputValueConvert: Number } }
+  );
   groups["maxLineWidth"] = new SettingsGroup(
     "maxLineWidth",
     UpdateConfig.setMaxLineWidth,
-    "button"
-  ) as SettingsGroup<ConfigValue>;
+    "input",
+    { validation: { schema: true, inputValueConvert: Number } }
+  );
   groups["caretStyle"] = new SettingsGroup(
     "caretStyle",
     UpdateConfig.setCaretStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["paceCaretStyle"] = new SettingsGroup(
     "paceCaretStyle",
     UpdateConfig.setPaceCaretStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["liveSpeedStyle"] = new SettingsGroup(
     "liveSpeedStyle",
     UpdateConfig.setLiveSpeedStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["liveAccStyle"] = new SettingsGroup(
     "liveAccStyle",
     UpdateConfig.setLiveAccStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["liveBurstStyle"] = new SettingsGroup(
     "liveBurstStyle",
     UpdateConfig.setLiveBurstStyle,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["highlightMode"] = new SettingsGroup(
     "highlightMode",
     UpdateConfig.setHighlightMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["tapeMode"] = new SettingsGroup(
     "tapeMode",
     UpdateConfig.setTapeMode,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["tapeMargin"] = new SettingsGroup(
     "tapeMargin",
     UpdateConfig.setTapeMargin,
-    "button"
-  ) as SettingsGroup<ConfigValue>;
+    "input",
+    { validation: { schema: true, inputValueConvert: Number } }
+  );
   groups["timerOpacity"] = new SettingsGroup(
     "timerOpacity",
     UpdateConfig.setTimerOpacity,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["timerColor"] = new SettingsGroup(
     "timerColor",
     UpdateConfig.setTimerColor,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["fontFamily"] = new SettingsGroup(
     "fontFamily",
     UpdateConfig.setFontFamily,
     "button",
-    undefined,
-    () => {
-      const customButton = $(
-        ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']"
-      );
+    {
+      updateCallback: () => {
+        const customButton = $(
+          ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']"
+        );
 
-      if (
-        $(
-          ".pageSettings .section[data-config-name='fontFamily'] .buttons .active"
-        ).length === 0
-      ) {
-        customButton.addClass("active");
-        customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
-      } else {
-        customButton.text("Custom");
-      }
+        if (
+          $(
+            ".pageSettings .section[data-config-name='fontFamily'] .buttons .active"
+          ).length === 0
+        ) {
+          customButton.addClass("active");
+          customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
+        } else {
+          customButton.text("Custom");
+        }
+      },
     }
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["alwaysShowDecimalPlaces"] = new SettingsGroup(
     "alwaysShowDecimalPlaces",
     UpdateConfig.setAlwaysShowDecimalPlaces,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["typingSpeedUnit"] = new SettingsGroup(
     "typingSpeedUnit",
     UpdateConfig.setTypingSpeedUnit,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
   groups["customBackgroundSize"] = new SettingsGroup(
     "customBackgroundSize",
     UpdateConfig.setCustomBackgroundSize,
     "button"
-  ) as SettingsGroup<ConfigValue>;
+  );
 }
 
 async function fillSettingsPage(): Promise<void> {
@@ -542,41 +581,23 @@ async function fillSettingsPage(): Promise<void> {
   if (fontsEl.innerHTML === "") {
     let fontsElHTML = "";
 
-    const { data: fontsList, error: getFontsListError } = await tryCatch(
-      JSONData.getFontsList()
-    );
-    if (getFontsListError) {
-      console.error(
-        Misc.createErrorMessage(
-          getFontsListError,
-          "Failed to update fonts settings buttons"
-        )
-      );
-    }
+    for (const name of Misc.typedKeys(Fonts).sort()) {
+      const font = Fonts[name];
+      let fontFamily = name.replace(/_/g, " ");
 
-    if (fontsList) {
-      for (const font of fontsList) {
-        let fontFamily = font.name;
-        if (fontFamily === "Helvetica") {
-          fontFamily = "Comic Sans MS";
-        }
-        if ((font.systemFont ?? false) === false) {
-          fontFamily += " Preview";
-        }
-        const activeClass = Config.fontFamily === font.name ? " active" : "";
-        const display = font.display !== undefined ? font.display : font.name;
-
-        fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${font.name.replace(
-          / /g,
-          "_"
-        )}">${display}</button>`;
+      if (!font.systemFont) {
+        fontFamily += " Preview";
       }
+      const activeClass = Config.fontFamily === name ? " active" : "";
+      const display = font.display ?? name.replace(/_/g, " ");
 
-      fontsElHTML +=
-        '<button class="no-auto-handle" data-config-value="custom"">Custom</button>';
-
-      fontsEl.innerHTML = fontsElHTML;
+      fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${name}">${display}</button>`;
     }
+
+    fontsElHTML +=
+      '<button class="no-auto-handle" data-config-value="custom"">Custom</button>';
+
+    fontsEl.innerHTML = fontsElHTML;
   }
 
   customLayoutFluidSelect = new SlimSelect({
@@ -615,6 +636,55 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
+  handleConfigInput({
+    input: document.querySelector(
+      ".pageSettings .section[data-config-name='minWpm'] input"
+    ),
+    configName: "minWpmCustomSpeed",
+    validation: {
+      schema: true,
+      inputValueConvert: (it) =>
+        getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+          new Number(it).valueOf()
+        ),
+    },
+  });
+
+  handleConfigInput({
+    input: document.querySelector(
+      ".pageSettings .section[data-config-name='minAcc'] input"
+    ),
+    configName: "minAccCustom",
+    validation: {
+      schema: true,
+      inputValueConvert: Number,
+    },
+  });
+
+  handleConfigInput({
+    input: document.querySelector(
+      ".pageSettings .section[data-config-name='minBurst'] input"
+    ),
+    configName: "minBurstCustomSpeed",
+    validation: {
+      schema: true,
+      inputValueConvert: (it) =>
+        getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+          new Number(it).valueOf()
+        ),
+    },
+  });
+
+  handleConfigInput({
+    input: document.querySelector(
+      ".pageSettings .section[data-config-name='paceCaret'] input"
+    ),
+    configName: "paceCaretCustomSpeed",
+    validation: {
+      schema: true,
+      inputValueConvert: Number,
+    },
+  });
   setEventDisabled(true);
 
   await initGroups();
@@ -723,15 +793,25 @@ function refreshPresetsSettingsSection(): void {
   }
 }
 
-export async function update(): Promise<void> {
+export async function update(
+  options: {
+    eventKey?: ConfigEvent.ConfigEventKey;
+  } = {}
+): Promise<void> {
+  if (ActivePage.get() !== "settings") {
+    return;
+  }
+
   if (Config.showKeyTips) {
     $(".pageSettings .tip").removeClass("hidden");
   } else {
     $(".pageSettings .tip").addClass("hidden");
   }
 
-  for (const group of Object.keys(groups)) {
-    groups[group]?.updateUI();
+  for (const group of Object.values(groups)) {
+    if ("updateUI" in group) {
+      group.updateUI();
+    }
   }
 
   refreshTagsSettingsSection();
@@ -743,25 +823,45 @@ export async function update(): Promise<void> {
   ThemePicker.setCustomInputs(true);
   // ThemePicker.updateActiveButton();
 
-  $(
-    ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed"
-  ).val(
+  const setInputValue = (
+    key: ConfigKey,
+    query: string,
+    value: string | number
+  ): void => {
+    if (options.eventKey === undefined || options.eventKey === key) {
+      const element = document.querySelector(query) as HTMLInputElement;
+      if (element === null) {
+        throw new Error("Unknown input element " + query);
+      }
+
+      element.value = new String(value).toString();
+      element.dispatchEvent(new Event("input"));
+    }
+  };
+
+  setInputValue(
+    "paceCaret",
+    ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed",
     getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
       Config.paceCaretCustomSpeed
     )
   );
 
-  $(
-    ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed"
-  ).val(
+  setInputValue(
+    "minWpmCustomSpeed",
+    ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed",
     getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(Config.minWpmCustomSpeed)
   );
-  $(".pageSettings .section[data-config-name='minAcc'] input.customMinAcc").val(
+
+  setInputValue(
+    "minAccCustom",
+    ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc",
     Config.minAccCustom
   );
-  $(
-    ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst"
-  ).val(
+
+  setInputValue(
+    "minBurstCustomSpeed",
+    ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst",
     getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
       Config.minBurstCustomSpeed
     )
@@ -788,23 +888,35 @@ export async function update(): Promise<void> {
   }
   void updateCustomBackgroundRemoveButtonVisibility();
 
-  $(".pageSettings .section[data-config-name='fontSize'] input").val(
+  setInputValue(
+    "fontSize",
+    ".pageSettings .section[data-config-name='fontSize'] input",
     Config.fontSize
   );
 
-  $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
+  setInputValue(
+    "maxLineWidth",
+    ".pageSettings .section[data-config-name='maxLineWidth'] input",
     Config.maxLineWidth
   );
 
-  $(".pageSettings .section[data-config-name='keymapSize'] input").val(
+  setInputValue(
+    "keymapSize",
+    ".pageSettings .section[data-config-name='keymapSize'] input",
     Config.keymapSize
   );
 
-  $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
+  setInputValue(
+    "tapeMargin",
+    ".pageSettings .section[data-config-name='tapeMargin'] input",
     Config.tapeMargin
   );
 
-  $("#customBackgroundInput").val(Config.customBackground);
+  setInputValue(
+    "customBackground",
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input",
+    Config.customBackground
+  );
 
   if (isAuthenticated()) {
     showAccountSection();
@@ -849,6 +961,9 @@ export async function update(): Promise<void> {
   }
 }
 function toggleSettingsGroup(groupName: string): void {
+  //The highlight is repeated/broken when toggling the group
+  handleHighlightSection(undefined);
+
   const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
   groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
   if (groupEl.hasClass("slideup")) {
@@ -875,7 +990,6 @@ async function updateCustomBackgroundRemoveButtonVisibility(): Promise<void> {
   } else {
     button.addClass("hidden");
   }
-
   /* Todo mio
   const urlInput = $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input.input"
@@ -894,132 +1008,8 @@ async function updateCustomBackgroundRemoveButtonVisibility(): Promise<void> {
     */
 }
 
-$(".pageSettings .section[data-config-name='paceCaret']").on(
-  "focusout",
-  "input.customPaceCaretSpeed",
-  () => {
-    const inputValue = parseInt(
-      $(
-        ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed"
-      ).val() as string
-    );
-    const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-      inputValue
-    );
-    UpdateConfig.setPaceCaretCustomSpeed(newConfigValue);
-  }
-);
-
-$(".pageSettings .section[data-config-name='paceCaret']").on(
-  "click",
-  "button.save",
-  () => {
-    const inputValue = parseInt(
-      $(
-        ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed"
-      ).val() as string
-    );
-    const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-      inputValue
-    );
-    UpdateConfig.setPaceCaretCustomSpeed(newConfigValue);
-  }
-);
-
-$(".pageSettings .section[data-config-name='minWpm']").on(
-  "focusout",
-  "input.customMinWpmSpeed",
-  () => {
-    const inputValue = parseInt(
-      $(
-        ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed"
-      ).val() as string
-    );
-    const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-      inputValue
-    );
-    UpdateConfig.setMinWpmCustomSpeed(newConfigValue);
-  }
-);
-
-$(".pageSettings .section[data-config-name='minWpm']").on(
-  "click",
-  "button.save",
-  () => {
-    const inputValue = parseInt(
-      $(
-        ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed"
-      ).val() as string
-    );
-    const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-      inputValue
-    );
-    UpdateConfig.setMinWpmCustomSpeed(newConfigValue);
-  }
-);
-
-$(".pageSettings .section[data-config-name='minAcc']").on(
-  "focusout",
-  "input.customMinAcc",
-  () => {
-    UpdateConfig.setMinAccCustom(
-      parseInt(
-        $(
-          ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc"
-        ).val() as string
-      )
-    );
-  }
-);
-
-$(".pageSettings .section[data-config-name='minAcc']").on(
-  "click",
-  "button.save",
-  () => {
-    UpdateConfig.setMinAccCustom(
-      parseInt(
-        $(
-          ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc"
-        ).val() as string
-      )
-    );
-  }
-);
-
-$(".pageSettings .section[data-config-name='minBurst']").on(
-  "focusout",
-  "input.customMinBurst",
-  () => {
-    const inputValue = parseInt(
-      $(
-        ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst"
-      ).val() as string
-    );
-    const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-      inputValue
-    );
-    UpdateConfig.setMinBurstCustomSpeed(newConfigValue);
-  }
-);
-
-$(".pageSettings .section[data-config-name='minBurst']").on(
-  "click",
-  "button.save",
-  () => {
-    const inputValue = parseInt(
-      $(
-        ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst"
-      ).val() as string
-    );
-    const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-      inputValue
-    );
-    UpdateConfig.setMinBurstCustomSpeed(newConfigValue);
-  }
-);
-
 //funbox
-$(".pageSettings .section[data-config-name='funbox']").on(
+$(".pageSettings .section[data-config-name='funbox'] .buttons").on(
   "click",
   "button",
   (e) => {
@@ -1163,131 +1153,6 @@ $(
 });
 
 $(
-  ".pageSettings .section[data-config-name='fontSize'] .inputAndButton button.save"
-).on("click", () => {
-  const didConfigSave = UpdateConfig.setFontSize(
-    parseFloat(
-      $(
-        ".pageSettings .section[data-config-name='fontSize'] .inputAndButton input"
-      ).val() as string
-    )
-  );
-  if (didConfigSave) {
-    Notifications.add("Saved", 1, {
-      duration: 1,
-    });
-  }
-});
-
-$(
-  ".pageSettings .section[data-config-name='fontSize'] .inputAndButton input"
-).on("keypress", (e) => {
-  if (e.key === "Enter") {
-    const didConfigSave = UpdateConfig.setFontSize(
-      parseFloat(
-        $(
-          ".pageSettings .section[data-config-name='fontSize'] .inputAndButton input"
-        ).val() as string
-      )
-    );
-    if (didConfigSave) {
-      Notifications.add("Saved", 1, {
-        duration: 1,
-      });
-    }
-  }
-});
-
-$(
-  ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton button.save"
-).on("click", () => {
-  const didConfigSave = UpdateConfig.setTapeMargin(
-    parseFloat(
-      $(
-        ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton input"
-      ).val() as string
-    )
-  );
-  if (didConfigSave) {
-    Notifications.add("Saved", 1, {
-      duration: 1,
-    });
-  }
-});
-
-$(
-  ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton input"
-).on("keypress", (e) => {
-  if (e.key === "Enter") {
-    const didConfigSave = UpdateConfig.setTapeMargin(
-      parseFloat(
-        $(
-          ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton input"
-        ).val() as string
-      )
-    );
-    if (didConfigSave) {
-      Notifications.add("Saved", 1, {
-        duration: 1,
-      });
-    }
-  }
-});
-
-$(
-  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton button.save"
-).on("click", () => {
-  const didConfigSave = UpdateConfig.setMaxLineWidth(
-    parseFloat(
-      $(
-        ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
-      ).val() as string
-    )
-  );
-  if (didConfigSave) {
-    Notifications.add("Saved", 1, {
-      duration: 1,
-    });
-  }
-});
-
-$(
-  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
-).on("focusout", () => {
-  const didConfigSave = UpdateConfig.setMaxLineWidth(
-    parseFloat(
-      $(
-        ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
-      ).val() as string
-    )
-  );
-  if (didConfigSave) {
-    Notifications.add("Saved", 1, {
-      duration: 1,
-    });
-  }
-});
-
-$(
-  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
-).on("keypress", (e) => {
-  if (e.key === "Enter") {
-    const didConfigSave = UpdateConfig.setMaxLineWidth(
-      parseFloat(
-        $(
-          ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
-        ).val() as string
-      )
-    );
-    if (didConfigSave) {
-      Notifications.add("Saved", 1, {
-        duration: 1,
-      });
-    }
-  }
-});
-
-$(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton button.save"
 ).on("click", () => {
   const didConfigSave = UpdateConfig.setKeymapSize(
@@ -1393,6 +1258,48 @@ function getThemeDropdownData(
   }));
 }
 
+function handleHighlightSection(highlight: Highlight | undefined): void {
+  if (highlight === undefined) {
+    const element = document.querySelector(".section.highlight");
+    if (element !== null) {
+      element.classList.remove("highlight");
+    }
+    return;
+  }
+
+  const element = document.querySelector(
+    `[data-config-name="${highlight}"] .groupTitle,[data-section-id="${highlight}"] .groupTitle`
+  );
+
+  if (element !== null) {
+    setTimeout(() => {
+      element.scrollIntoView({ block: "center", behavior: "auto" });
+      element.parentElement?.classList.remove("highlight");
+      element.parentElement?.classList.add("highlight");
+    }, 250);
+  }
+}
+
+$(".pageSettings .section .groupTitle button").on("click", (e) => {
+  const section = e.target.parentElement?.parentElement;
+  const configName = (section?.dataset?.["configName"] ??
+    section?.dataset?.["sectionId"]) as Highlight | undefined;
+  if (configName === undefined) {
+    return;
+  }
+
+  page.setUrlParams({ highlight: configName });
+
+  navigator.clipboard
+    .writeText(window.location.toString())
+    .then(() => {
+      Notifications.add("Link copied to clipboard", 1);
+    })
+    .catch((e: unknown) => {
+      Notifications.add("Failed to copy to clipboard: " + e, -1);
+    });
+});
+
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChange") setEventDisabled(true);
   if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
@@ -1408,22 +1315,25 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings" && eventKey !== "theme") {
-    void update();
+    void update({ eventKey });
   }
 });
 
-export const page = new Page({
+export const page = new PageWithUrlParams({
   id: "settings",
   element: $(".page.pageSettings"),
   path: "/settings",
+  urlParamsSchema: StateSchema,
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageSettings");
   },
-  beforeShow: async (): Promise<void> => {
+  beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageSettings", "main");
     await UpdateConfig.loadPromise;
     await fillSettingsPage();
     await update();
+
+    handleHighlightSection(options.urlParams?.highlight);
   },
 });
 

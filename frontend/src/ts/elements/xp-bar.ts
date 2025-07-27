@@ -2,7 +2,7 @@ import * as Misc from "../utils/misc";
 import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
-import { XpBreakdown } from "@monkeytype/contracts/schemas/results";
+import { XpBreakdown } from "@monkeytype/schemas/results";
 import { isSafeNumber, mapRange } from "@monkeytype/util/numbers";
 
 let breakdownVisible = false;
@@ -322,7 +322,7 @@ async function animateXpBreakdown(
 
   if (skip) return;
 
-  if (isSafeNumber(breakdown.accPenalty)) {
+  if (isSafeNumber(breakdown.accPenalty) && breakdown.accPenalty > 0) {
     await Misc.sleep(delay);
     total -= breakdown.accPenalty;
     void flashTotalXp(total);
@@ -331,7 +331,7 @@ async function animateXpBreakdown(
 
   if (skip) return;
 
-  if (isSafeNumber(breakdown.incomplete)) {
+  if (isSafeNumber(breakdown.incomplete) && breakdown.incomplete > 0) {
     await Misc.sleep(delay);
     total += breakdown.incomplete;
     void flashTotalXp(total);

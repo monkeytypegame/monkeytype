@@ -1,4 +1,4 @@
-import { KeymapLayout } from "@monkeytype/contracts/schemas/configs";
+import { KeymapLayout } from "@monkeytype/schemas/configs";
 import * as UpdateConfig from "../../config";
 import { LayoutsList } from "../../constants/layouts";
 import * as TestLogic from "../../test/test-logic";
@@ -6,7 +6,7 @@ import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
-  title: "Change keymap layout...",
+  title: "Keymap layout...",
   configKey: "keymapLayout",
   list: [
     {

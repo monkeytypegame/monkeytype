@@ -10,7 +10,7 @@ import {
 
 import { addLog } from "./logs";
 import { Collection, ObjectId } from "mongodb";
-import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import { omit } from "lodash";
 import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";
@@ -121,6 +121,8 @@ export async function update(
 }> {
   const key = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
+  const minTimeTyping = (await getCachedConfiguration(true)).leaderboards
+    .minTimeTyping;
   const lb = db.collection<DBUser>("users").aggregate<LeaderboardEntry>(
     [
       {
@@ -144,7 +146,7 @@ export async function update(
             $ne: true,
           },
           timeTyping: {
-            $gt: isDevEnvironment() ? 0 : 7200,
+            $gt: isDevEnvironment() ? 0 : minTimeTyping,
           },
         },
       },

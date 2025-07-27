@@ -9,7 +9,7 @@ import * as ConnectionState from "../states/connection";
 import { escapeHTML } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
 import { updateXp as accountPageUpdateProfile } from "./profile";
-import { MonkeyMail } from "@monkeytype/contracts/schemas/users";
+import { MonkeyMail } from "@monkeytype/schemas/users";
 import * as XPBar from "../elements/xp-bar";
 
 let accountAlerts: MonkeyMail[] = [];
@@ -29,6 +29,7 @@ const state: State = {
 
 function hide(): void {
   setNotificationBubbleVisible(false);
+  DB.updateInboxUnreadSize(0);
   void modal.hide({
     afterAnimation: async () => {
       $("#alertsPopup .notificationHistory .list").empty();
@@ -301,8 +302,9 @@ export function setNotificationBubbleVisible(tf: boolean): void {
 }
 
 function updateInboxSize(): void {
+  const remainingItems = accountAlerts.length - mailToDelete.length;
   $("#alertsPopup .accountAlerts .title .right").text(
-    `${accountAlerts.length}/${maxMail}`
+    `${remainingItems}/${maxMail}`
   );
 }
 

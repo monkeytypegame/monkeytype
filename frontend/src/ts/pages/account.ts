@@ -27,18 +27,19 @@ import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
-import { ChartData } from "@monkeytype/contracts/schemas/results";
+import { ChartData } from "@monkeytype/schemas/results";
 import {
   Difficulty,
   Mode,
   Mode2,
   Mode2Custom,
-} from "@monkeytype/contracts/schemas/shared";
-import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
+} from "@monkeytype/schemas/shared";
+import { ResultFiltersGroupItem } from "@monkeytype/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
+import { AccountChart } from "@monkeytype/schemas/configs";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1122,25 +1123,25 @@ function sortAndRefreshHistory(
 }
 
 $(".pageAccount button.toggleResultsOnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[0] = newValue[0] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[1] = newValue[1] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage10OnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[2] = newValue[2] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage100OnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[3] = newValue[3] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
@@ -1156,14 +1157,19 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const windowHeight = $(window).height() ?? 0;
   const offset = $(`#result-${index}`).offset()?.top ?? 0;
   const scrollTo = offset - windowHeight / 2;
-  $([document.documentElement, document.body]).animate(
-    {
-      scrollTop: scrollTo,
-    },
-    Misc.applyReducedMotion(500)
-  );
-  $(".resultRow").removeClass("active");
-  $(`#result-${index}`).addClass("active");
+  $([document.documentElement, document.body])
+    .stop(true)
+    .animate(
+      { scrollTop: scrollTo },
+      {
+        duration: Misc.applyReducedMotion(500),
+        done: () => {
+          const element = $(`#result-${index}`);
+          $(".resultRow").removeClass("active");
+          requestAnimationFrame(() => element.addClass("active"));
+        },
+      }
+    );
 });
 
 $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {

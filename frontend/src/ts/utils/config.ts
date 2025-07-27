@@ -3,9 +3,9 @@ import {
   ConfigValue,
   PartialConfig,
   FunboxName,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
 import { sanitize, typedKeys } from "./misc";
-import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
+import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 /**
  * migrates possible outdated config and merges with the default config values
@@ -140,6 +140,62 @@ export function replaceLegacyValues(
   if (typeof configObj.indicateTypos === "boolean") {
     configObj.indicateTypos =
       configObj.indicateTypos === false ? "off" : "replace";
+  }
+
+  if (typeof configObj.fontSize === "string") {
+    //legacy values use strings
+    const oldValue = configObj.fontSize;
+    let newValue = parseInt(oldValue);
+
+    if (oldValue === "125") {
+      newValue = 1.25;
+    } else if (oldValue === "15") {
+      newValue = 1.5;
+    }
+
+    configObj.fontSize = newValue;
+  }
+
+  if (
+    Array.isArray(configObj.accountChart) &&
+    configObj.accountChart.length !== 4
+  ) {
+    configObj.accountChart = ["on", "on", "on", "on"];
+  }
+
+  if (
+    typeof configObj.minAccCustom === "number" &&
+    configObj.minAccCustom > 100
+  ) {
+    configObj.minAccCustom = 100;
+  }
+
+  if (
+    Array.isArray(configObj.customThemeColors) &&
+    //@ts-expect-error legacy configs
+    configObj.customThemeColors.length === 9
+  ) {
+    // migrate existing configs missing sub alt color
+    const colors = configObj.customThemeColors;
+    colors.splice(4, 0, "#000000");
+    configObj.customThemeColors = colors;
+  }
+
+  if (
+    Array.isArray(configObj.customBackgroundFilter) &&
+    //@ts-expect-error legacy configs
+    configObj.customBackgroundFilter.length === 5
+  ) {
+    const arr = configObj.customBackgroundFilter;
+    configObj.customBackgroundFilter = [arr[0], arr[1], arr[2], arr[3]];
+  }
+
+  if (typeof configObj.quoteLength === "number") {
+    if (configObj.quoteLength === -1) {
+      configObj.quoteLength = [0, 1, 2, 3];
+    } else {
+      configObj.quoteLength = [configObj.quoteLength];
+    }
   }
 
   return configObj;

@@ -25,7 +25,7 @@ import {
 } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
-import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
+import { CustomThemeColors } from "@monkeytype/schemas/configs";
 import * as AccountSettings from "../pages/account-settings";
 import {
   ExecReturn,
@@ -480,6 +480,7 @@ list.updateName = new SimpleModal({
 
           return checkNameResponse === 200 ? true : "Name not available";
         },
+        debounceDelay: 1000,
       },
     },
   ],
@@ -1022,7 +1023,7 @@ list.unlinkDiscord = new SimpleModal({
 
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
-    AccountButton.updateAvatar(undefined, undefined);
+    AccountButton.updateAvatar();
     DB.setSnapshot(snap);
     AccountSettings.updateUI();
 

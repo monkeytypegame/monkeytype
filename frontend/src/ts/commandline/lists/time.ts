@@ -8,7 +8,7 @@ const commands: Command[] = [
     display: "Time...",
     icon: "fa-clock",
     subgroup: {
-      title: "Change time config...",
+      title: "Time...",
       configKey: "time",
       list: [
         {

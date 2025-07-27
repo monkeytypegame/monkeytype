@@ -10,10 +10,7 @@ import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
 import * as ActivePage from "../../states/active-page";
-import {
-  CustomThemeColors,
-  ThemeName,
-} from "@monkeytype/contracts/schemas/configs";
+import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
 import { ThemesListSorted } from "../../constants/themes";
 
@@ -59,6 +56,7 @@ function updateColors(
     }
     colorPicker.find("input.input").val(color);
     colorPicker.find("input.color").attr("value", color);
+    colorPicker.find("input.color").val(color);
     return;
   }
   const colorREGEX = [
@@ -114,6 +112,7 @@ function updateColors(
   }
   colorPicker.find("input.input").val(color);
   colorPicker.find("input.color").attr("value", color);
+  colorPicker.find("input.color").val(color);
 }
 
 export async function refreshPresetButtons(): Promise<void> {

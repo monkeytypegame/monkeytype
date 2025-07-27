@@ -10,7 +10,7 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import { debounce } from "throttle-debounce";
-import { ThemeName } from "@monkeytype/contracts/schemas/configs";
+import { ThemeName } from "@monkeytype/schemas/configs";
 import { ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { LocalBackgroundFile } from "../constants/default-config";
@@ -155,7 +155,9 @@ async function apply(
     customColorsOverride,
     isPreview
   );
-  clearCustomTheme();
+  if (!Config.customTheme) {
+    clearCustomTheme();
+  }
   const name = customColorsOverride ? "custom" : themeName;
 
   ThemeColors.reset();
@@ -426,7 +428,36 @@ window
     }
   });
 
+let ignoreConfigEvent = false;
+
 ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
+  if (eventKey === "fullConfigChange") {
+    ignoreConfigEvent = true;
+  }
+  if (eventKey === "fullConfigChangeFinished") {
+    ignoreConfigEvent = false;
+
+    await clearRandom();
+    await clearPreview(false);
+    if (Config.autoSwitchTheme) {
+      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+        await set(Config.themeDark, true);
+      } else {
+        await set(Config.themeLight, true);
+      }
+    } else {
+      if (Config.customTheme) {
+        await set("custom");
+      } else {
+        await set(Config.theme);
+      }
+    }
+  }
+
+  // this is here to prevent calling set / preview multiple times during a full config loading
+  // once the full config is loaded, we can apply everything once
+  if (ignoreConfigEvent) return;
+
   if (eventKey === "randomTheme") {
     void changeThemeList();
   }
@@ -440,23 +471,6 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     await clearRandom();
     await clearPreview(false);
     await set(eventValue as string);
-  }
-  if (eventKey === "setThemes") {
-    await clearRandom();
-    await clearPreview(false);
-    if (Config.autoSwitchTheme) {
-      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-        await set(Config.themeDark, true);
-      } else {
-        await set(Config.themeLight, true);
-      }
-    } else {
-      if (eventValue as boolean) {
-        await set("custom");
-      } else {
-        await set(Config.theme);
-      }
-    }
   }
   if (eventKey === "randomTheme" && eventValue === "off") await clearRandom();
   if (eventKey === "customBackground") await applyCustomBackground();

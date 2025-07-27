@@ -37,6 +37,7 @@ export const LanguageSchema = z.enum(
     "arabic_10k",
     "arabic_egypt",
     "arabic_egypt_1k",
+    "arabic_morocco",
     "malagasy",
     "malagasy_1k",
     "malay",
@@ -397,6 +398,7 @@ export const LanguageSchema = z.enum(
     "code_arduino",
     "code_systemverilog",
     "code_elixir",
+    "code_gleam",
     "code_zig",
     "code_gdscript",
     "code_gdscript_2",
@@ -414,6 +416,7 @@ export const LanguageSchema = z.enum(
     "docker_file",
     "code_fortran",
     "viossa",
+    "viossa_njutro",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),

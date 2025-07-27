@@ -1,4 +1,4 @@
-import { PSA } from "@monkeytype/contracts/schemas/psas";
+import { PSA } from "@monkeytype/schemas/psas";
 import * as db from "../init/db";
 import { WithObjectId } from "../utils/misc";
 

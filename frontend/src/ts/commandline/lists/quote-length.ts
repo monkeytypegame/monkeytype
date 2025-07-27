@@ -10,7 +10,7 @@ const commands: Command[] = [
     icon: "fa-quote-right",
     alias: "quotes",
     subgroup: {
-      title: "Change quote length...",
+      title: "Quote length...",
       configKey: "quoteLength",
       list: [
         {
@@ -19,7 +19,7 @@ const commands: Command[] = [
           configValue: [0, 1, 2, 3],
           exec: (): void => {
             UpdateConfig.setMode("quote");
-            UpdateConfig.setQuoteLength([0, 1, 2, 3]);
+            UpdateConfig.setQuoteLengthAll();
             TestLogic.restart();
           },
         },
@@ -30,7 +30,7 @@ const commands: Command[] = [
           configValueMode: "include",
           exec: (): void => {
             UpdateConfig.setMode("quote");
-            UpdateConfig.setQuoteLength(0);
+            UpdateConfig.setQuoteLength([0]);
             TestLogic.restart();
           },
         },
@@ -41,7 +41,7 @@ const commands: Command[] = [
           configValueMode: "include",
           exec: (): void => {
             UpdateConfig.setMode("quote");
-            UpdateConfig.setQuoteLength(1);
+            UpdateConfig.setQuoteLength([1]);
             TestLogic.restart();
           },
         },
@@ -52,7 +52,7 @@ const commands: Command[] = [
           configValueMode: "include",
           exec: (): void => {
             UpdateConfig.setMode("quote");
-            UpdateConfig.setQuoteLength(2);
+            UpdateConfig.setQuoteLength([2]);
             TestLogic.restart();
           },
         },
@@ -63,7 +63,7 @@ const commands: Command[] = [
           configValueMode: "include",
           exec: (): void => {
             UpdateConfig.setMode("quote");
-            UpdateConfig.setQuoteLength(3);
+            UpdateConfig.setQuoteLength([3]);
             TestLogic.restart();
           },
         },
@@ -77,7 +77,7 @@ const commands: Command[] = [
           },
           exec: (): void => {
             UpdateConfig.setMode("quote");
-            UpdateConfig.setQuoteLength(-3);
+            UpdateConfig.setQuoteLength([-3]);
             TestLogic.restart();
           },
         },
