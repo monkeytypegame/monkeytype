@@ -5,7 +5,6 @@ import {
   Auth as AuthType,
   User,
   setPersistence as firebaseSetPersistence,
-  browserLocalPersistence,
   browserSessionPersistence,
   signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
   signInWithPopup as firebaseSignInWithPopup,
@@ -31,14 +30,18 @@ let Auth: AuthType | undefined;
 let wasAuthenticated = false;
 
 type ReadyCallback = (success: boolean, user: User | null) => Promise<void>;
-let readyCallback: ReadyCallback | undefined;
-let logoutTimout = setTimeout(() => {}, 0);
+
+let logoutTimout = setTimeout(() => {
+  //nothing
+}, 0);
 export async function init(callback: ReadyCallback): Promise<void> {
   try {
-    readyCallback = callback;
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
     Auth = getAuth(app);
-    await firebaseSetPersistence(Auth, indexedDBLocalPersistence);
+
+    const rememberMe =
+      window.localStorage.getItem("firebasePersistence") === "LOCAL";
+    await setPersistence(rememberMe, false);
 
     onAuthStateChanged(Auth, async (user) => {
       console.log("### authstate", user);

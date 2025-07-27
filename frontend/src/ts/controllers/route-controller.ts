@@ -83,11 +83,10 @@ const routes: Route[] = [
   {
     path: "/login",
     load: (): void => {
-      /*
       if (!isAuthAvailable()) {
         navigate("/");
         return;
-      }*/
+      }
 
       if (isAuthenticated()) {
         navigate("/account");
@@ -99,10 +98,10 @@ const routes: Route[] = [
   {
     path: "/account",
     load: (_params, options): void => {
-      /* if (!isAuthAvailable()) {
+      if (!isAuthAvailable()) {
         navigate("/");
         return;
-      }*/
+      }
 
       void PageController.change("account", {
         data: options.data,
@@ -112,10 +111,10 @@ const routes: Route[] = [
   {
     path: "/account-settings",
     load: (_params, options): void => {
-      /*if (!isAuthAvailable()) {
+      if (!isAuthAvailable()) {
         navigate("/");
         return;
-      }*/
+      }
 
       if (!isAuthenticated()) {
         navigate("/login");
