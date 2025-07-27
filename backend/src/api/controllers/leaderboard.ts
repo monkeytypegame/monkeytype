@@ -43,7 +43,7 @@ export async function getLeaderboard(
   }
 
   let friendUids: string[] | undefined;
-  if (friendsOnly === true) {
+  if (uid !== "" && friendsOnly === true) {
     friendUids = await FriendsDAL.getFriendsUids(uid);
   }
 
