@@ -27,13 +27,8 @@ import {
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
 
-let wasAuthenticated = false;
-
 type ReadyCallback = (success: boolean, user: User | null) => Promise<void>;
 
-let logoutTimout = setTimeout(() => {
-  //nothing
-}, 0);
 export async function init(callback: ReadyCallback): Promise<void> {
   try {
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
@@ -45,24 +40,8 @@ export async function init(callback: ReadyCallback): Promise<void> {
 
     onAuthStateChanged(Auth, async (user) => {
       console.log("### authstate", user);
-      clearTimeout(logoutTimout);
-      if (user === null) {
-        if (wasAuthenticated) {
-          logoutTimout = setTimeout(() => {
-            console.log("auth debounced logout");
-            wasAuthenticated = false;
-            void callback(true, null);
-          }, 5000);
-        } else {
-          await callback(true, null);
-        }
-      } else {
-        if (wasAuthenticated) {
-          return;
-        }
-        wasAuthenticated = true;
-        await callback(true, user);
-      }
+
+      await callback(true, user);
       console.log("### authstate  done");
     });
   } catch (e) {
