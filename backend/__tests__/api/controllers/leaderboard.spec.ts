@@ -169,6 +169,7 @@ describe("Loaderboard Controller", () => {
 
       const { body } = await mockApp
         .get("/leaderboards")
+        .set("Authorization", `Bearer ${uid}`)
         .query({
           language: "english",
           mode: "time",
