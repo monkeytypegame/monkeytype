@@ -13,6 +13,7 @@ import {
   UserCredential,
   AuthProvider,
   onAuthStateChanged,
+  indexedDBLocalPersistence,
 } from "firebase/auth";
 import { firebaseConfig } from "./constants/firebase-config";
 import * as Notifications from "./elements/notifications";
@@ -37,18 +38,18 @@ export async function init(callback: ReadyCallback): Promise<void> {
     readyCallback = callback;
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
     Auth = getAuth(app);
-    await firebaseSetPersistence(Auth, browserLocalPersistence);
+    await firebaseSetPersistence(Auth, indexedDBLocalPersistence);
 
     onAuthStateChanged(Auth, async (user) => {
       console.log("### authstate", user);
       clearTimeout(logoutTimout);
       if (user === null) {
         if (wasAuthenticated) {
-          logoutTimout = setTimeout(async () => {
+          logoutTimout = setTimeout(() => {
             console.log("auth debounced logout");
             wasAuthenticated = false;
-            await callback(true, null);
-          }, 2500);
+            void callback(true, null);
+          }, 5000);
         } else {
           await callback(true, null);
         }
@@ -145,7 +146,7 @@ async function setPersistence(
 ): Promise<void> {
   if (Auth === undefined) throw new Error("Authentication uninitialized");
   const persistence = rememberMe
-    ? browserLocalPersistence
+    ? indexedDBLocalPersistence
     : browserSessionPersistence;
 
   if (store) {
