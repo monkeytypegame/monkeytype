@@ -1042,59 +1042,6 @@ $(".pageSettings .sectionGroupTitle").on("click", (e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group") as string);
 });
 
-// $(
-//   ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.save"
-// ).on("click", () => {
-//   const newVal = $(
-//     ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
-//   ).val() as string;
-
-//   const parsed = CustomBackgroundSchema.safeParse(newVal);
-
-//   if (!parsed.success) {
-//     Notifications.add(
-//       `Invalid custom background URL (${parsed.error.issues[0]?.message})`,
-//       0
-//     );
-//     return;
-//   }
-
-//   UpdateConfig.setCustomBackground(newVal);
-// });
-
-// $(
-//   ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.remove"
-// ).on("click", async () => {
-//   await FileStorage.deleteFile(LocalBackgroundFile);
-
-//   UpdateConfig.setCustomBackground("");
-//   $(
-//     ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input.input"
-//   ).val("");
-// });
-
-// $(
-//   ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
-// ).on("keypress", (e) => {
-//   if (e.key === "Enter") {
-//     const newVal = $(
-//       ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
-//     ).val() as string;
-
-//     const parsed = CustomBackgroundSchema.safeParse(newVal);
-
-//     if (!parsed.success) {
-//       Notifications.add(
-//         `Invalid custom background URL (${parsed.error.issues[0]?.message})`,
-//         0
-//       );
-//       return;
-//     }
-
-//     UpdateConfig.setCustomBackground(newVal);
-//   }
-// });
-
 $(
   ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton button.save"
 ).on("click", () => {
