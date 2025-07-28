@@ -15,6 +15,7 @@ import {
   signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
   signInWithPopup as firebaseSignInWithPopup,
   createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword,
+  getIdToken as firebaseGetIdToken,
   UserCredential,
   AuthProvider,
   onAuthStateChanged,
@@ -138,6 +139,9 @@ export async function createUserWithEmailAndPassword(
   return firebaseCreateUserWithEmailAndPassword(Auth, email, password);
 }
 
+export async function getIdToken(): Promise<string> {
+  return firebaseGetIdToken(await getAuthenticatedUser());
+}
 async function setPersistence(
   rememberMe: boolean,
   store = false
