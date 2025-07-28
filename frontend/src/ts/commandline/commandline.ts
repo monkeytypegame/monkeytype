@@ -525,7 +525,7 @@ async function showCommands(): Promise<void> {
           fontFamily += " Preview";
         }
 
-        html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="font-family: ${fontFamily}"><div class="icon">${finalIconHtml}</div><div>${display}</div></div>`;
+        html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="font-family: '${fontFamily}'"><div class="icon">${finalIconHtml}</div><div>${display}</div></div>`;
       }
     } else {
       html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="${customStyle}"><div class="icon">${finalIconHtml}</div><div>${display}</div></div>`;
