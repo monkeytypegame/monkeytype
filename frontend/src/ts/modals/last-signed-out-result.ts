@@ -99,9 +99,10 @@ export function show(): void {
     );
     return;
   }
-  reset();
+
   void modal.show({
     beforeAnimation: async (): Promise<void> => {
+      reset();
       fillData();
     },
   });

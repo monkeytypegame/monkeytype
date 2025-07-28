@@ -205,7 +205,6 @@ export async function readyFunction(
   authInitialisedAndConnected: boolean,
   user: UserType | null
 ): Promise<void> {
-  console.log("auth callback", authInitialisedAndConnected, user);
   const search = window.location.search;
   const hash = window.location.hash;
   console.debug(`account controller ready`);
