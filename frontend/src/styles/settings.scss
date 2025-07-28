@@ -110,12 +110,19 @@
       }
 
       .statusIndicator {
-        opacity: 0;
+        visibility: hidden;
+      }
+
+      input {
+        padding-right: 0.5em !important;
       }
       &:has(input:focus),
       &:has([data-indicator-status="failed"]) {
         .statusIndicator {
-          opacity: 1;
+          visibility: visible;
+        }
+        input {
+          padding-right: 2.2em !important;
         }
       }
     }
