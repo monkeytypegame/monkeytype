@@ -137,7 +137,7 @@ function isUsingGoogleAuthentication(): boolean {
 
 function isUsingAuthentication(authProvider: AuthMethod): boolean {
   return (
-    getAuthenticatedUser().providerData.some(
+    getAuthenticatedUser()?.providerData.some(
       (p) => p.providerId === authProvider
     ) || false
   );

@@ -118,7 +118,10 @@ const modal = new AnimatedModal({
     modalEl
       .querySelector("button.save")
       ?.addEventListener("click", async () => {
-        void syncNotSignedInLastResult(getAuthenticatedUser().uid);
+        const user = getAuthenticatedUser();
+        if (user !== null) {
+          void syncNotSignedInLastResult(user.uid);
+        }
         hide();
       });
     modalEl.querySelector("button.discard")?.addEventListener("click", () => {

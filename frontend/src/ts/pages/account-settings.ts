@@ -29,8 +29,8 @@ function updateAuthenticationSections(): void {
   pageElement.find(".section.googleAuthSettings button").addClass("hidden");
   pageElement.find(".section.githubAuthSettings button").addClass("hidden");
 
-  if (!isAuthenticated()) return;
   const user = getAuthenticatedUser();
+  if (user === null) return;
 
   const passwordProvider = user.providerData.some(
     (provider) => provider.providerId === "password"

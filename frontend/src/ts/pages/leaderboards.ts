@@ -532,8 +532,6 @@ function fillTable(): void {
   const table = $(".page.pageLeaderboards table tbody");
   table.empty();
 
-  const myUid = isAuthenticated() ? getAuthenticatedUser().uid : undefined;
-
   $(".page.pageLeaderboards table thead").addClass("hidden");
   if (state.type === "allTime" || state.type === "daily") {
     $(".page.pageLeaderboards table thead.allTimeAndDaily").removeClass(
@@ -551,12 +549,12 @@ function fillTable(): void {
 
   if (state.type === "allTime" || state.type === "daily") {
     for (const entry of state.data) {
-      const me = myUid === entry.uid;
+      const me = getAuthenticatedUser()?.uid === entry.uid;
       table.append(buildTableRow(entry, me));
     }
   } else if (state.type === "weekly") {
     for (const entry of state.data) {
-      const me = myUid === entry.uid;
+      const me = getAuthenticatedUser()?.uid === entry.uid;
       table.append(buildWeeklyTableRow(entry, me));
     }
   }

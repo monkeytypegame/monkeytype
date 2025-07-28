@@ -70,13 +70,12 @@ export function isAuthenticated(): boolean {
   return Auth?.currentUser !== undefined && Auth?.currentUser !== null;
 }
 
-export function getAuthenticatedUser(): User {
-  const user = Auth?.currentUser;
-  if (user === undefined || user === null)
-    throw new Error(
-      "User authentication is required but no user is logged in."
-    );
-  return user;
+/**
+ *
+ * @returns the current user if authenticated, else `null`
+ */
+export function getAuthenticatedUser(): User | null {
+  return Auth?.currentUser ?? null;
 }
 
 export function getAnalytics(): AnalyticsType {
@@ -139,8 +138,10 @@ export async function createUserWithEmailAndPassword(
   return firebaseCreateUserWithEmailAndPassword(Auth, email, password);
 }
 
-export async function getIdToken(): Promise<string> {
-  return firebaseGetIdToken(await getAuthenticatedUser());
+export async function getIdToken(): Promise<string | null> {
+  const user = await getAuthenticatedUser();
+  if (user === null) return null;
+  return firebaseGetIdToken(user);
 }
 async function setPersistence(
   rememberMe: boolean,

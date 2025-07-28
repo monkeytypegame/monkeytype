@@ -365,8 +365,9 @@ async function addAuthProvider(
     return;
   }
   Loader.show();
-  if (!isAuthenticated()) return;
-  linkWithPopup(getAuthenticatedUser(), provider)
+  const user = getAuthenticatedUser();
+  if (!user) return;
+  linkWithPopup(user, provider)
     .then(function () {
       Loader.hide();
       Notifications.add(`${providerName} authentication added`, 1);
