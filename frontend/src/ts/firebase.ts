@@ -197,3 +197,6 @@ function translateFirebaseError(
 
   return new Error(message, { cause: error });
 }
+
+//TODO refactor email-handler
+export const _Auth = Auth;
