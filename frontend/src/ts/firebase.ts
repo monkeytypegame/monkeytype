@@ -1,5 +1,11 @@
 // Import the functions you need from the SDKs you need
-import { FirebaseApp, getApp, getApps, initializeApp } from "firebase/app";
+import {
+  FirebaseApp,
+  FirebaseError,
+  getApp,
+  getApps,
+  initializeApp,
+} from "firebase/app";
 import {
   getAuth,
   Auth as AuthType,
@@ -22,6 +28,7 @@ import {
   Analytics as AnalyticsType,
   getAnalytics as firebaseGetAnalytics,
 } from "firebase/analytics";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 // Initialize Firebase
 let app: FirebaseApp | undefined;
@@ -92,11 +99,16 @@ export async function signInWithEmailAndPassword(
   if (Auth === undefined) throw new Error("Authentication uninitialized");
   await setPersistence(rememberMe, true);
 
-  const result = await firebaseSignInWithEmailAndPassword(
-    Auth,
-    email,
-    password
+  const { data: result, error } = await tryCatch(
+    firebaseSignInWithEmailAndPassword(Auth, email, password)
   );
+  if (error !== null) {
+    console.error(error);
+    throw translateFirebaseError(
+      error,
+      "Failed to sign in with email and password"
+    );
+  }
 
   return result;
 }
@@ -108,7 +120,14 @@ export async function signInWithPopup(
   if (Auth === undefined) throw new Error("Authentication uninitialized");
   await setPersistence(rememberMe, true);
 
-  return firebaseSignInWithPopup(Auth, provider);
+  const { data: result, error } = await tryCatch(
+    firebaseSignInWithPopup(Auth, provider)
+  );
+  if (error !== null) {
+    console.log(error);
+    throw translateFirebaseError(error, "Failed to sign in with popup");
+  }
+  return result;
 }
 
 export async function createUserWithEmailAndPassword(
@@ -136,4 +155,41 @@ async function setPersistence(
   }
 
   await firebaseSetPersistence(Auth, persistence);
+}
+
+function translateFirebaseError(
+  error: Error | FirebaseError,
+  defaultMessage: string
+): Error {
+  let message = createErrorMessage(error, defaultMessage);
+
+  if (error instanceof FirebaseError) {
+    if (error.code === "auth/wrong-password") {
+      message = "Incorrect password";
+    } else if (error.code === "auth/user-not-found") {
+      message = "User not found";
+    } else if (error.code === "auth/invalid-email") {
+      message =
+        "Invalid email format (make sure you are using your email to login - not your username)";
+    } else if (error.code === "auth/invalid-credential") {
+      message =
+        "Email/password is incorrect or your account does not have password authentication enabled.";
+    } else if (error.code === "auth/popup-closed-by-user") {
+      message = "";
+      // message = "Popup closed by user";
+      // return;
+    } else if (error.code === "auth/popup-blocked") {
+      message =
+        "Sign in popup was blocked by the browser. Check the address bar for a blocked popup icon, or update your browser settings to allow popups.";
+    } else if (error.code === "auth/user-cancelled") {
+      message = "";
+      // message = "User refused to sign in";
+      // return;
+    } else if (error.code === "auth/account-exists-with-different-credential") {
+      message =
+        "Account already exists, but its using a different authentication method. Try signing in with a different method";
+    }
+  }
+
+  return new Error(message, { cause: error });
 }

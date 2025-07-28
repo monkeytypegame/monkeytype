@@ -44,11 +44,11 @@ import {
 } from "../test/test-config";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
-import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
 import { getActiveFunboxesWithFunction } from "../test/funbox/list";
 import { Snapshot } from "../constants/default-snapshot";
 import * as Sentry from "../sentry";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -276,35 +276,18 @@ export async function signIn(email: string, password: string): Promise<void> {
     "checked"
   ) as boolean;
 
-  //TODO move error mapping to signinWIthPopup
-  return signInWithEmailAndPassword(email, password, rememberMe)
-    .then(async (e) => {
-      await loadUser(e.user);
-    })
-    .catch(function (error: unknown) {
-      console.error(error);
-      let message = Misc.createErrorMessage(
-        error,
-        "Failed to sign in with email and password"
-      );
-      if (error instanceof FirebaseError) {
-        if (error.code === "auth/wrong-password") {
-          message = "Incorrect password";
-        } else if (error.code === "auth/user-not-found") {
-          message = "User not found";
-        } else if (error.code === "auth/invalid-email") {
-          message =
-            "Invalid email format (make sure you are using your email to login - not your username)";
-        } else if (error.code === "auth/invalid-credential") {
-          message =
-            "Email/password is incorrect or your account does not have password authentication enabled.";
-        }
-      }
-      Notifications.add(message, -1);
-      LoginPage.hidePreloader();
-      LoginPage.enableInputs();
-      LoginPage.updateSignupButton();
-    });
+  const { data, error } = await tryCatch(
+    signInWithEmailAndPassword(email, password, rememberMe)
+  );
+
+  if (error !== null) {
+    Notifications.add(error.message, -1);
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
+    return;
+  }
+  await loadUser(data.user);
 }
 
 async function signInWithProvider(provider: AuthProvider): Promise<void> {
@@ -328,54 +311,25 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
     "checked"
   ) as boolean;
 
-  //TODO move error mapping to signinWIthPopup
-  signInWithPopup(provider, rememberMe)
-    .then(async (signedInUser) => {
-      if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
-        dispatchSignUpEvent(signedInUser, true);
-      } else {
-        await loadUser(signedInUser.user);
-      }
-    })
-    .catch((error: unknown) => {
-      console.log(error);
-      let message = Misc.createErrorMessage(
-        error,
-        "Failed to sign in with popup"
-      );
-      if (error instanceof FirebaseError) {
-        if (error.code === "auth/wrong-password") {
-          message = "Incorrect password";
-        } else if (error.code === "auth/user-not-found") {
-          message = "User not found";
-        } else if (error.code === "auth/invalid-email") {
-          message =
-            "Invalid email format (make sure you are using your email to login - not your username)";
-        } else if (error.code === "auth/popup-closed-by-user") {
-          message = "";
-          // message = "Popup closed by user";
-          // return;
-        } else if (error.code === "auth/popup-blocked") {
-          message =
-            "Sign in popup was blocked by the browser. Check the address bar for a blocked popup icon, or update your browser settings to allow popups.";
-        } else if (error.code === "auth/user-cancelled") {
-          message = "";
-          // message = "User refused to sign in";
-          // return;
-        } else if (
-          error.code === "auth/account-exists-with-different-credential"
-        ) {
-          message =
-            "Account already exists, but its using a different authentication method. Try signing in with a different method";
-        }
-      }
-      if (message !== "") {
-        Notifications.add(message, -1);
-      }
-      LoginPage.hidePreloader();
-      LoginPage.enableInputs();
-      LoginPage.updateSignupButton();
-    });
+  const { data: signedInUser, error } = await tryCatch(
+    signInWithPopup(provider, rememberMe)
+  );
+
+  if (error !== null) {
+    if (error.message !== "") {
+      Notifications.add(error.message, -1);
+    }
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
+    return;
+  }
+
+  if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
+    dispatchSignUpEvent(signedInUser, true);
+  } else {
+    await loadUser(signedInUser.user);
+  }
 }
 
 async function signInWithGoogle(): Promise<void> {
