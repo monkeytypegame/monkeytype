@@ -10,6 +10,7 @@ import { isDevEnvironment } from "./utils/misc";
 import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
+import { applyFontFamily } from "./controllers/theme-controller";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -118,7 +119,7 @@ $(window).on("resize", () => {
   debouncedEvent();
 });
 
-ConfigEvent.subscribe((eventKey, value) => {
+ConfigEvent.subscribe(async (eventKey) => {
   if (eventKey === "quickRestart") updateKeytips();
   if (eventKey === "showKeyTips") {
     if (Config.showKeyTips) {
@@ -128,12 +129,6 @@ ConfigEvent.subscribe((eventKey, value) => {
     }
   }
   if (eventKey === "fontFamily") {
-    document.documentElement.style.setProperty(
-      "--font",
-      `"${(value as string).replace(
-        /_/g,
-        " "
-      )}", "Roboto Mono", "Vazirmatn", monospace`
-    );
+    await applyFontFamily();
   }
 });

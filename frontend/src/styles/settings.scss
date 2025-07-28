@@ -151,7 +151,9 @@
       }
     }
 
-    &[data-config-name="customBackgroundSize"] {
+    &[data-config-name="customBackgroundSize"],
+    &[data-config-name="fontFamily"] {
+      //TOOD
       .uploadContainer {
         grid-column: span 2;
         margin-bottom: 0.5em;
