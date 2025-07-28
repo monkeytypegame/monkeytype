@@ -439,6 +439,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
         await set(Config.theme);
       }
     }
+    applyCustomBackground();
   }
 
   // this is here to prevent calling set / preview multiple times during a full config loading
