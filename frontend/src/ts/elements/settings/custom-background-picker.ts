@@ -1,4 +1,3 @@
-import { LocalBackgroundFile } from "../../constants/default-config";
 import FileStorage from "../../utils/file-storage";
 import * as Notifications from "../notifications";
 import { applyCustomBackground } from "../../controllers/theme-controller";
@@ -21,7 +20,7 @@ async function readFileAsDataURL(file: File): Promise<string> {
 }
 
 export async function updateUI(): Promise<void> {
-  if (await FileStorage.hasFile(LocalBackgroundFile)) {
+  if (await FileStorage.hasFile("LocalBackgroundFile")) {
     usingLocalImageEl?.classList.remove("hidden");
     separatorEl?.classList.add("hidden");
     uploadContainerEl?.classList.add("hidden");
@@ -37,7 +36,7 @@ export async function updateUI(): Promise<void> {
 usingLocalImageEl
   ?.querySelector("button")
   ?.addEventListener("click", async () => {
-    await FileStorage.deleteFile(LocalBackgroundFile);
+    await FileStorage.deleteFile("LocalBackgroundFile");
     await updateUI();
     await applyCustomBackground();
   });
@@ -60,7 +59,7 @@ uploadContainerEl
     }
 
     const dataUrl = await readFileAsDataURL(file);
-    await FileStorage.storeFile(LocalBackgroundFile, dataUrl);
+    await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
 
     await updateUI();
     await applyCustomBackground();

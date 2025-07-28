@@ -107,5 +107,3 @@ const obj = {
 export function getDefaultConfig(): Config {
   return deepClone(obj);
 }
-
-export const LocalBackgroundFile = "LocalBackgroundFile";

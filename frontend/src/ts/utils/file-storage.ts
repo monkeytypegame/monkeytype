@@ -7,6 +7,8 @@ type FileDB = DBSchema & {
   };
 };
 
+type Filename = "LocalBackgroundFile";
+
 class FileStorage {
   private dbPromise: Promise<IDBPDatabase<FileDB>>;
 
@@ -20,27 +22,27 @@ class FileStorage {
     });
   }
 
-  async storeFile(filename: string, dataUrl: string): Promise<void> {
+  async storeFile(filename: Filename, dataUrl: string): Promise<void> {
     const db = await this.dbPromise;
     await db.put("files", dataUrl, filename);
   }
 
-  async getFile(filename: string): Promise<string | undefined> {
+  async getFile(filename: Filename): Promise<string | undefined> {
     const db = await this.dbPromise;
     return db.get("files", filename);
   }
 
-  async deleteFile(filename: string): Promise<void> {
+  async deleteFile(filename: Filename): Promise<void> {
     const db = await this.dbPromise;
     await db.delete("files", filename);
   }
 
-  async listFilenames(): Promise<string[]> {
+  async listFilenames(): Promise<Filename[]> {
     const db = await this.dbPromise;
-    return db.getAllKeys("files");
+    return db.getAllKeys("files") as Promise<Filename[]>;
   }
 
-  async hasFile(filename: string): Promise<boolean> {
+  async hasFile(filename: Filename): Promise<boolean> {
     return (await this.getFile(filename)) !== undefined;
   }
 }

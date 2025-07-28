@@ -36,7 +36,6 @@ import { LayoutName } from "@monkeytype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
 import FileStorage from "../utils/file-storage";
-import { LocalBackgroundFile } from "../constants/default-config";
 import { z } from "zod";
 import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
@@ -889,7 +888,7 @@ export async function update(
 
   if (
     Config.customBackground !== "" ||
-    (await FileStorage.hasFile(LocalBackgroundFile))
+    (await FileStorage.hasFile("LocalBackgroundFile"))
   ) {
     $(
       ".pageSettings .section[data-config-name='customBackgroundFilter']"

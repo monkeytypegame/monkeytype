@@ -13,7 +13,6 @@ import { debounce } from "throttle-debounce";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
-import { LocalBackgroundFile } from "../constants/default-config";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
@@ -387,7 +386,7 @@ export async function applyCustomBackground(): Promise<void> {
   let backgroundUrl = Config.customBackground;
 
   //if there is a localBackgroundFile available, use it.
-  const localBackgroundFile = await fileStorage.getFile(LocalBackgroundFile);
+  const localBackgroundFile = await fileStorage.getFile("LocalBackgroundFile");
 
   if (localBackgroundFile !== undefined) {
     backgroundUrl = localBackgroundFile;
