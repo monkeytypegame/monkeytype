@@ -153,13 +153,14 @@ async function reauthenticate(
     };
   }
 
-  if (!isAuthenticated()) {
+  const user = getAuthenticatedUser();
+  if (user === null) {
     return {
       status: -1,
       message: "User is not signed in",
     };
   }
-  const user = getAuthenticatedUser();
+
   const authMethod = getPreferredAuthenticationMethod(options.excludeMethod);
 
   try {
