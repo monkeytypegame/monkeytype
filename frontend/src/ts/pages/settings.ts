@@ -692,6 +692,7 @@ async function fillSettingsPage(): Promise<void> {
     configName: "customBackground",
     validation: {
       schema: true,
+      resetIfEmpty: false,
     },
   });
 
