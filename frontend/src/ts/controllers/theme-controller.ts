@@ -378,7 +378,7 @@ function applyCustomBackgroundSize(): void {
   }
 }
 
-async function applyCustomBackground(): Promise<void> {
+export async function applyCustomBackground(): Promise<void> {
   // $(".customBackground").css({
   //   backgroundImage: `url(${Config.customBackground})`,
   //   backgroundAttachment: "fixed",
