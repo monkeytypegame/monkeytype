@@ -887,15 +887,10 @@ export async function update(
     ).addClass("hidden");
   }
 
-  //show filters if only using local file
-  let backgroundUrl = Config.customBackground;
-  const localBackgroundFile = await FileStorage.getFile(LocalBackgroundFile);
-
-  if (localBackgroundFile !== undefined) {
-    backgroundUrl = localBackgroundFile;
-  }
-
-  if (backgroundUrl !== "") {
+  if (
+    Config.customBackground !== "" ||
+    (await FileStorage.hasFile(LocalBackgroundFile))
+  ) {
     $(
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).removeClass("hidden");
