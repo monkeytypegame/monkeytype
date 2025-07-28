@@ -19,7 +19,6 @@ import SlimSelect from "slim-select";
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 import {
-  CustomBackgroundSchema,
   ThemeName,
   CustomLayoutFluid,
   FunboxName,
@@ -36,9 +35,11 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
+import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
+import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
 
 let settingsInitialized = false;
 
@@ -589,7 +590,7 @@ async function fillSettingsPage(): Promise<void> {
       const activeClass = Config.fontFamily === name ? " active" : "";
       const display = font.display ?? name.replace(/_/g, " ");
 
-      fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${name}">${display}</button>`;
+      fontsElHTML += `<button class="${activeClass}" style="font-family:'${fontFamily}'" data-config-value="${name}">${display}</button>`;
     }
 
     fontsElHTML +=
@@ -683,11 +684,22 @@ async function fillSettingsPage(): Promise<void> {
       inputValueConvert: Number,
     },
   });
+
+  handleConfigInput({
+    input: document.querySelector(
+      ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']"
+    ),
+    configName: "customBackground",
+    validation: {
+      schema: true,
+      resetIfEmpty: false,
+    },
+  });
+
   setEventDisabled(true);
 
   await initGroups();
-  await ThemePicker.refreshCustomButtons();
-  await ThemePicker.refreshPresetButtons();
+  await ThemePicker.fillCustomButtons();
 
   setEventDisabled(false);
   settingsInitialized = true;
@@ -819,7 +831,7 @@ export async function update(
   await Misc.sleep(0);
   ThemePicker.updateActiveTab();
   ThemePicker.setCustomInputs(true);
-  // ThemePicker.updateActiveButton();
+  await CustomBackgroundPicker.updateUI();
 
   const setInputValue = (
     key: ConfigKey,
@@ -875,7 +887,10 @@ export async function update(
     ).addClass("hidden");
   }
 
-  if (Config.customBackground !== "") {
+  if (
+    Config.customBackground !== "" ||
+    (await FileStorage.hasFile("LocalBackgroundFile"))
+  ) {
     $(
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).removeClass("hidden");
@@ -884,7 +899,6 @@ export async function update(
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).addClass("hidden");
   }
-  updateCustomBackgroundRemoveButtonVisibility();
 
   setInputValue(
     "fontSize",
@@ -912,7 +926,7 @@ export async function update(
 
   setInputValue(
     "customBackground",
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input",
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']",
     Config.customBackground
   );
 
@@ -975,20 +989,6 @@ function toggleSettingsGroup(groupName: string): void {
   }
 }
 
-function updateCustomBackgroundRemoveButtonVisibility(): void {
-  const button = $(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] button.remove"
-  );
-  if (
-    Config.customBackground !== undefined &&
-    Config.customBackground.length > 0
-  ) {
-    button.removeClass("hidden");
-  } else {
-    button.addClass("hidden");
-  }
-}
-
 //funbox
 $(".pageSettings .section[data-config-name='funbox'] .buttons").on(
   "click",
@@ -1041,54 +1041,6 @@ $("#exportSettingsButton").on("click", () => {
 
 $(".pageSettings .sectionGroupTitle").on("click", (e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group") as string);
-});
-
-$(
-  ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.save"
-).on("click", () => {
-  const newVal = $(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
-  ).val() as string;
-
-  const parsed = CustomBackgroundSchema.safeParse(newVal);
-
-  if (!parsed.success) {
-    Notifications.add(
-      `Invalid custom background URL (${parsed.error.issues[0]?.message})`,
-      0
-    );
-    return;
-  }
-
-  UpdateConfig.setCustomBackground(newVal);
-});
-
-$(
-  ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.remove"
-).on("click", () => {
-  UpdateConfig.setCustomBackground("");
-});
-
-$(
-  ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
-).on("keypress", (e) => {
-  if (e.key === "Enter") {
-    const newVal = $(
-      ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
-    ).val() as string;
-
-    const parsed = CustomBackgroundSchema.safeParse(newVal);
-
-    if (!parsed.success) {
-      Notifications.add(
-        `Invalid custom background URL (${parsed.error.issues[0]?.message})`,
-        0
-      );
-      return;
-    }
-
-    UpdateConfig.setCustomBackground(newVal);
-  }
 });
 
 $(
@@ -1271,6 +1223,8 @@ export const page = new PageWithUrlParams({
     await UpdateConfig.loadPromise;
     await fillSettingsPage();
     await update();
+    // theme UI updates manually to avoid duplication
+    await ThemePicker.updateThemeUI();
 
     handleHighlightSection(options.urlParams?.highlight);
   },

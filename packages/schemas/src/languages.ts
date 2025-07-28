@@ -417,6 +417,8 @@ export const LanguageSchema = z.enum(
     "code_fortran",
     "viossa",
     "viossa_njutro",
+    "code_abap",
+    "code_abap_1k",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
