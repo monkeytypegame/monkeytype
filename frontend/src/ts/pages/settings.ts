@@ -590,7 +590,7 @@ async function fillSettingsPage(): Promise<void> {
       const activeClass = Config.fontFamily === name ? " active" : "";
       const display = font.display ?? name.replace(/_/g, " ");
 
-      fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${name}">${display}</button>`;
+      fontsElHTML += `<button class="${activeClass}" style="font-family:'${fontFamily}'" data-config-value="${name}">${display}</button>`;
     }
 
     fontsElHTML +=
