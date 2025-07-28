@@ -163,9 +163,7 @@ export function show(
             value: showInputCommand.defaultValue?.() ?? "",
             icon: showInputCommand.icon ?? "fa-chevron-right",
           };
-          InputValidationHandler(
-            showInputCommand as CommandWithValidation<unknown>
-          );
+          createValidationHandler(showInputCommand);
           void updateInput(inputModeParams.value as string);
           hideCommands();
         }
@@ -630,7 +628,7 @@ async function runActiveCommand(): Promise<void> {
       value: command.defaultValue?.() ?? "",
       icon: command.icon ?? "fa-chevron-right",
     };
-    InputValidationHandler(command as CommandWithValidation<unknown>);
+    createValidationHandler(command);
 
     await updateInput(inputModeParams.value as string);
     hideCommands();
@@ -807,13 +805,15 @@ function updateValidationResult(
  */
 const handlersCache = new Map<string, (e: Event) => Promise<void>>();
 
-// handles input validation for commands.
-function InputValidationHandler(command: CommandWithValidation<unknown>): void {
+function createValidationHandler(command: Command): void {
   if ("validation" in command && !handlersCache.has(command.id)) {
+    const commandWithValidation = command as CommandWithValidation<unknown>;
     const handler = createInputEventHandler(
       updateValidationResult,
-      command.validation,
-      "inputValueConvert" in command ? command.inputValueConvert : undefined
+      commandWithValidation.validation,
+      "inputValueConvert" in commandWithValidation
+        ? commandWithValidation.inputValueConvert
+        : undefined
     );
     handlersCache.set(command.id, handler);
   }
