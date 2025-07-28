@@ -39,10 +39,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     await setPersistence(rememberMe, false);
 
     onAuthStateChanged(Auth, async (user) => {
-      console.log("### authstate", user);
-
       await callback(true, user);
-      console.log("### authstate  done");
     });
   } catch (e) {
     app = undefined;
@@ -140,5 +137,3 @@ async function setPersistence(
 
   await firebaseSetPersistence(Auth, persistence);
 }
-
-window["user"] = getAuthenticatedUser;
