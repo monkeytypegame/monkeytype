@@ -219,11 +219,10 @@ export async function readyFunction(
         window.history.replaceState("", "", "/login");
       }
 
-      Sentry.clearUser();
       Settings.hideAccountSection();
       AccountButton.update(undefined);
-
       DB.setSnapshot(undefined);
+      Sentry.clearUser();
       setTimeout(() => {
         hideFavoriteQuoteLength();
       }, 125);
