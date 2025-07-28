@@ -1,6 +1,7 @@
 import FileStorage from "../../utils/file-storage";
 import * as Notifications from "../notifications";
 import { applyCustomBackground } from "../../controllers/theme-controller";
+import * as Settings from "../../pages/settings";
 
 const parentEl = document.querySelector(
   ".pageSettings .section[data-config-name='customBackgroundSize']"
@@ -39,6 +40,7 @@ usingLocalImageEl
     await FileStorage.deleteFile("LocalBackgroundFile");
     await updateUI();
     await applyCustomBackground();
+    await Settings.update();
   });
 
 uploadContainerEl
@@ -63,6 +65,7 @@ uploadContainerEl
 
     await updateUI();
     await applyCustomBackground();
+    await Settings.update();
 
     fileInput.value = "";
   });
