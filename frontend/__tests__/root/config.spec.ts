@@ -1042,9 +1042,6 @@ describe("Config", () => {
   it("setFontSize", () => {
     expect(Config.setFontSize(1)).toBe(true);
 
-    //gets converted
-    expect(Config.setFontSize(-1)).toBe(true);
-
     expect(Config.setFontSize(0)).toBe(false);
     expect(Config.setFontSize("5" as any)).toBe(false);
     expect(Config.setFontSize("invalid" as any)).toBe(false);
@@ -1053,11 +1050,6 @@ describe("Config", () => {
     expect(Config.setMaxLineWidth(0)).toBe(true);
     expect(Config.setMaxLineWidth(50)).toBe(true);
     expect(Config.setMaxLineWidth(50.5)).toBe(true);
-
-    //gets converted
-    expect(Config.setMaxLineWidth(10)).toBe(true);
-    expect(Config.setMaxLineWidth(10_000)).toBe(true);
-    expect(Config.setMaxLineWidth("invalid" as any)).toBe(false);
   });
   it("setCustomBackground", () => {
     expect(Config.setCustomBackground("http://example.com/test.png")).toBe(

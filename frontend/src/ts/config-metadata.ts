@@ -500,16 +500,6 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-tape",
     displayString: "tape margin",
     changeRequiresRestart: false,
-    overrideValue: ({ value }) => {
-      //TODO move to migration after settings validation
-      if (value < 10) {
-        value = 10;
-      }
-      if (value > 90) {
-        value = 90;
-      }
-      return value;
-    },
   },
   smoothLineScroll: {
     icon: "fa-align-left",
@@ -548,29 +538,12 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "max line width",
-    overrideValue: ({ value }) => {
-      //TODO move to migration after settings validation
-      if (value < 20 && value !== 0) {
-        value = 20;
-      }
-      if (value > 1000) {
-        value = 1000;
-      }
-      return value;
-    },
   },
   fontSize: {
     icon: "fa-font",
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "font size",
-    overrideValue: ({ value }) => {
-      //TODO move to migration after settings validation
-      if (value < 0) {
-        value = 1;
-      }
-      return value;
-    },
   },
   fontFamily: {
     icon: "fa-font",
