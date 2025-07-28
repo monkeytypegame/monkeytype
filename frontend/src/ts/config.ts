@@ -173,7 +173,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     return false;
   }
 
-  if (metadata.overrideConfig) {
+  if (!nosave && metadata.overrideConfig) {
     const targetConfig = metadata.overrideConfig({
       value,
       currentConfig: config,
