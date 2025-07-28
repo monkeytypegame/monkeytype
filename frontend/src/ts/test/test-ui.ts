@@ -64,7 +64,9 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   }
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
-    updateWordWrapperClasses();
+    requestAnimationFrame(() => {
+      updateWordWrapperClasses();
+    });
   }
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
