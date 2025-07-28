@@ -11,10 +11,6 @@ const separatorEl = parentEl?.querySelector(".separator");
 const uploadContainerEl = parentEl?.querySelector(".uploadContainer");
 const inputAndButtonEl = parentEl?.querySelector(".inputAndButton");
 
-async function isUsingLocalImage(): Promise<boolean> {
-  return await FileStorage.hasFile(LocalBackgroundFile);
-}
-
 async function readFileAsDataURL(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -25,8 +21,7 @@ async function readFileAsDataURL(file: File): Promise<string> {
 }
 
 export async function updateUI(): Promise<void> {
-  const usingLocalImage = await isUsingLocalImage();
-  if (usingLocalImage) {
+  if (await FileStorage.hasFile(LocalBackgroundFile)) {
     usingLocalImageEl?.classList.remove("hidden");
     separatorEl?.classList.add("hidden");
     uploadContainerEl?.classList.add("hidden");
