@@ -127,12 +127,6 @@ ConfigEvent.subscribe((eventKey, value) => {
       $("footer .keyTips").addClass("hidden");
     }
   }
-  if (eventKey === "fontSize") {
-    $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
-      "fontSize",
-      value + "rem"
-    );
-  }
   if (eventKey === "fontFamily") {
     document.documentElement.style.setProperty(
       "--font",
