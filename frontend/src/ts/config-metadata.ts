@@ -1,3 +1,4 @@
+import { checkCompatibility } from "@monkeytype/funbox";
 import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
 import { isAuthenticated } from "./firebase";
@@ -261,6 +262,11 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-gamepad",
     changeRequiresRestart: true,
     isBlocked: ({ value, currentConfig }) => {
+      if (!checkCompatibility(value)) {
+        Notifications.add(`${value}" is invalid combination of  funboxes `, 0);
+        return true;
+      }
+
       for (const funbox of value) {
         if (!canSetFunboxWithConfig(funbox, currentConfig)) {
           Notifications.add(
@@ -270,6 +276,7 @@ export const configMetadata: ConfigMetadataObject = {
           return true;
         }
       }
+
       return false;
     },
   },
