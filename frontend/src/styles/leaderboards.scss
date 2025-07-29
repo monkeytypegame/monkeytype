@@ -161,7 +161,16 @@
           padding: var(--padding);
         }
 
+        &.friendsOnly {
+          td:first-child {
+            display: table-cell;
+          }
+        }
         td:first-child {
+          display: none;
+        }
+        td:first-child,
+        td:nth-child(2) {
           // padding: 0;
           width: 0;
           text-align: center;

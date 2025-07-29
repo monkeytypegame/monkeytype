@@ -438,10 +438,10 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
   }
   element.dataset["uid"] = entry.uid;
   element.innerHTML = `
-    
+      <td>${entry.friendsRank ?? ""}</td>
       <td>${
         entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
-      }</td>
+      }</td>      
       <td>
         <div class="avatarNameBadge">
           <div class="avatarPlaceholder"></div>
@@ -546,6 +546,12 @@ function buildWeeklyTableRow(
 function fillTable(): void {
   const table = $(".page.pageLeaderboards table tbody");
   table.empty();
+
+  if (state.friendsOnly) {
+    table.parent().addClass("friendsOnly");
+  } else {
+    table.parent().removeClass("friendsOnly");
+  }
 
   $(".page.pageLeaderboards table thead").addClass("hidden");
   if (state.type === "allTime" || state.type === "daily") {
