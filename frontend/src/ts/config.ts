@@ -105,6 +105,14 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     throw new Error(`Config metadata for key "${key}" is not defined.`);
   }
 
+  if (metadata.overrideValue) {
+    value = metadata.overrideValue({
+      value,
+      currentValue: config[key],
+      currentConfig: config,
+    });
+  }
+
   const previousValue = config[key];
 
   if (
@@ -121,14 +129,6 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
       )}" - no quit funbox active.`
     );
     return false;
-  }
-
-  if (metadata.overrideValue) {
-    value = metadata.overrideValue({
-      value,
-      currentValue: config[key],
-      currentConfig: config,
-    });
   }
 
   if (metadata.isBlocked?.({ value, currentConfig: config })) {
