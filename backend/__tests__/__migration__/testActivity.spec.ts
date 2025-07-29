@@ -1,17 +1,26 @@
-import * as Migration from "../../__migration__/testActivity";
+import TestActivityMigration from "../../__migration__/testActivity";
 import * as UserTestData from "../__testData__/users";
 import * as UserDal from "../../src/dal/user";
 import * as ResultDal from "../../src/dal/result";
 import { DBResult } from "../../src/utils/result";
+import { getDb } from "../../src/init/db";
+import { Db } from "mongodb";
 
 describe("testActivity migration", () => {
+  const migration = new TestActivityMigration();
+
+  beforeAll(async () => {
+    migration.setup(getDb() as Db);
+  });
+
   it("migrates users without results", async () => {
     //given
+
     const user1 = await UserTestData.createUser();
     const user2 = await UserTestData.createUser();
 
     //when
-    await Migration.migrate();
+    await migration.migrate({ batchSize: 1 });
 
     //then
     const readUser1 = await UserDal.getUser(user1.uid, "");
@@ -42,7 +51,7 @@ describe("testActivity migration", () => {
     await createResult(uid, 1704243600000);
 
     //when
-    await Migration.migrate();
+    await migration.migrate({ batchSize: 1 });
 
     //then
     const readWithResults = await UserDal.getUser(withResults.uid, "");
@@ -52,7 +61,7 @@ describe("testActivity migration", () => {
     });
 
     const readWithoutResults = await UserDal.getUser(withoutResults.uid, "");
-    expect(readWithoutResults.testActivity).toEqual({});
+    expect(readWithoutResults.testActivity).toEqual(undefined);
   });
 });
 

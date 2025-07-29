@@ -23,7 +23,7 @@ const configLegacyProperties = [
   "enableAds",
 ];
 
-type DBConfig = {
+export type DBConfig = {
   _id: ObjectId;
   uid: string;
   config: PartialConfig;
