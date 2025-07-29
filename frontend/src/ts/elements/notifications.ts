@@ -193,7 +193,7 @@ class Notification {
         });
       }
       // NOTE: This need to be changed if the update banner text is changed
-      if (this.message.includes("please refresh")) {
+      if (/please (<a.*>)?refresh/i.test(this.message)) {
         // add pointer when refresh is needed
         $(
           `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
