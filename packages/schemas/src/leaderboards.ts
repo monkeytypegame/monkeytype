@@ -11,6 +11,12 @@ export const LeaderboardEntrySchema = z.object({
   discordId: z.string().optional(),
   discordAvatar: z.string().optional(),
   rank: z.number().nonnegative().int(),
+  friendsRank: z
+    .number()
+    .nonnegative()
+    .int()
+    .optional()
+    .describe("only available on friendsOnly leaderboard"),
   badgeId: z.number().int().optional(),
   isPremium: z.boolean().optional(),
 });

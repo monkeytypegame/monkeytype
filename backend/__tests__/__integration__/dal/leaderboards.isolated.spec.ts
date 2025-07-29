@@ -299,8 +299,8 @@ describe("LeaderboardsDal", () => {
       const lb = result.map((it) => _.omit(it, ["_id"]));
 
       expect(lb).toEqual([
-        expectedLbEntry("60", { rank: 1, user: rank1 }),
-        expectedLbEntry("60", { rank: 4, user: rank4 }),
+        expectedLbEntry("60", { rank: 1, user: rank1, friendsRank: 1 }),
+        expectedLbEntry("60", { rank: 4, user: rank4, friendsRank: 2 }),
       ]);
     });
   });
@@ -343,7 +343,7 @@ describe("LeaderboardsDal", () => {
 
 function expectedLbEntry(
   time: string,
-  { rank, user, badgeId, isPremium }: ExpectedLbEntry
+  { rank, user, badgeId, isPremium, friendsRank }: ExpectedLbEntry
 ) {
   // @ts-expect-error
   const lbBest: PersonalBest =
@@ -363,6 +363,7 @@ function expectedLbEntry(
     discordAvatar: user.discordAvatar,
     badgeId,
     isPremium,
+    friendsRank,
   };
 }
 
@@ -415,4 +416,5 @@ type ExpectedLbEntry = {
   user: UserDal.DBUser;
   badgeId?: number;
   isPremium?: boolean;
+  friendsRank?: number;
 };
