@@ -35,11 +35,13 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
-import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
-import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
+import {
+  updateFilterSectionVisibility,
+  updateUI,
+} from "../elements/settings/custom-background-picker";
 
 let settingsInitialized = false;
 
@@ -831,7 +833,7 @@ export async function update(
   await Misc.sleep(0);
   ThemePicker.updateActiveTab();
   ThemePicker.setCustomInputs(true);
-  await CustomBackgroundPicker.updateUI();
+  await updateUI();
 
   const setInputValue = (
     key: ConfigKey,
@@ -887,18 +889,7 @@ export async function update(
     ).addClass("hidden");
   }
 
-  if (
-    Config.customBackground !== "" ||
-    (await FileStorage.hasFile("LocalBackgroundFile"))
-  ) {
-    $(
-      ".pageSettings .section[data-config-name='customBackgroundFilter']"
-    ).removeClass("hidden");
-  } else {
-    $(
-      ".pageSettings .section[data-config-name='customBackgroundFilter']"
-    ).addClass("hidden");
-  }
+  await updateFilterSectionVisibility();
 
   setInputValue(
     "fontSize",
