@@ -85,20 +85,6 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
-// type ConfigMetadata = Partial<
-//   Record<
-//     ConfigSchemas.ConfigKey,
-//     {
-//       configKey: ConfigSchemas.ConfigKey;
-//       schema: z.ZodTypeAny;
-//       displayString?: string;
-//       preventSet: (
-//         value: ConfigSchemas.Config[keyof ConfigSchemas.Config]
-//       ) => boolean;
-//     }
-//   >
-// >;
-
 function isConfigChangeBlocked(): boolean {
   if (TestState.isActive && config.funbox.includes("no_quit")) {
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
@@ -131,25 +117,6 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     });
     return false;
   }
-
-  // if (metadata.setBlock) {
-  //   let block = false;
-  //   for (const blockKey of typedKeys(metadata.setBlock)) {
-  //     const blockValues = metadata.setBlock[blockKey] ?? [];
-  //     if (
-  //       config[blockKey] !== undefined &&
-  //       (blockValues as Array<(typeof config)[typeof blockKey]>).includes(
-  //         config[blockKey]
-  //       )
-  //     ) {
-  //       block = true;
-  //       break;
-  //     }
-  //   }
-  //   if (block) {
-  //     return false;
-  //   }
-  // }
 
   if (metadata.isBlocked?.({ value, currentConfig: config })) {
     return false;
