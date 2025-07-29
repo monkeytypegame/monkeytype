@@ -800,6 +800,16 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
   return genericSet("burstHeatmap", value, nosave);
 }
 
+const lastConfigsToApply: Set<keyof Config> = new Set([
+  "punctuation",
+  "numbers",
+  "quoteLength",
+  "time",
+  "words",
+  "mode",
+  "funbox",
+]);
+
 export async function apply(
   configToApply: Config | Partial<Config>
 ): Promise<void> {
@@ -807,16 +817,24 @@ export async function apply(
 
   ConfigEvent.dispatch("fullConfigChange");
 
-  const configObj = configToApply as Config;
-  (Object.keys(getDefaultConfig()) as (keyof Config)[]).forEach((configKey) => {
-    if (configObj[configKey] === undefined) {
-      const newValue = getDefaultConfig()[configKey];
-      (configObj[configKey] as typeof newValue) = newValue;
+  const defaultConfig = getDefaultConfig();
+  for (const key of typedKeys(defaultConfig)) {
+    //@ts-expect-error this is fine, both are of type config
+    config[key] = defaultConfig[key];
+  }
+
+  if (configToApply !== undefined && configToApply !== null) {
+    for (const configKey of typedKeys(configToApply)) {
+      if (lastConfigsToApply.has(configKey)) continue;
+      const configValue = configToApply[
+        configKey
+      ] as ConfigSchemas.Config[keyof Config];
+      genericSet(configKey, configValue, true);
     }
-  });
-  if (configObj !== undefined && configObj !== null) {
-    for (const configKey of typedKeys(configObj)) {
-      const configValue = configObj[configKey];
+    for (const configKey of lastConfigsToApply) {
+      const configValue = configToApply[
+        configKey
+      ] as ConfigSchemas.Config[keyof Config];
       genericSet(configKey, configValue, true);
     }
 
