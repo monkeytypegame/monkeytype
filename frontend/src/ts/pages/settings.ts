@@ -35,13 +35,11 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { LayoutName } from "@monkeytype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
+import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
-import {
-  updateFilterSectionVisibility,
-  updateUI,
-} from "../elements/settings/custom-background-picker";
+import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
 
 let settingsInitialized = false;
 
@@ -805,6 +803,21 @@ function refreshPresetsSettingsSection(): void {
   }
 }
 
+export async function updateFilterSectionVisibility(): Promise<void> {
+  if (
+    Config.customBackground !== "" ||
+    (await FileStorage.hasFile("LocalBackgroundFile"))
+  ) {
+    $(
+      ".pageSettings .section[data-config-name='customBackgroundFilter']"
+    ).removeClass("hidden");
+  } else {
+    $(
+      ".pageSettings .section[data-config-name='customBackgroundFilter']"
+    ).addClass("hidden");
+  }
+}
+
 export async function update(
   options: {
     eventKey?: ConfigEvent.ConfigEventKey;
@@ -833,7 +846,8 @@ export async function update(
   await Misc.sleep(0);
   ThemePicker.updateActiveTab();
   ThemePicker.setCustomInputs(true);
-  await updateUI();
+  await CustomBackgroundPicker.updateUI();
+  await updateFilterSectionVisibility();
 
   const setInputValue = (
     key: ConfigKey,
@@ -888,8 +902,6 @@ export async function update(
       ".pageSettings .section[data-config-name='autoSwitchThemeInputs']"
     ).addClass("hidden");
   }
-
-  await updateFilterSectionVisibility();
 
   setInputValue(
     "fontSize",
@@ -1197,7 +1209,9 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings" && eventKey !== "theme") {
-    void update({ eventKey });
+    void (eventKey === "customBackground"
+      ? updateFilterSectionVisibility()
+      : update({ eventKey }));
   }
 });
 

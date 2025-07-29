@@ -1,7 +1,7 @@
 import FileStorage from "../../utils/file-storage";
 import * as Notifications from "../notifications";
 import { applyCustomBackground } from "../../controllers/theme-controller";
-import Config from "../../config";
+import { updateFilterSectionVisibility } from "../../pages/settings";
 
 const parentEl = document.querySelector(
   ".pageSettings .section[data-config-name='customBackgroundSize']"
@@ -18,21 +18,6 @@ async function readFileAsDataURL(file: File): Promise<string> {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
-}
-
-export async function updateFilterSectionVisibility(): Promise<void> {
-  if (
-    Config.customBackground !== "" ||
-    (await FileStorage.hasFile("LocalBackgroundFile"))
-  ) {
-    $(
-      ".pageSettings .section[data-config-name='customBackgroundFilter']"
-    ).removeClass("hidden");
-  } else {
-    $(
-      ".pageSettings .section[data-config-name='customBackgroundFilter']"
-    ).addClass("hidden");
-  }
 }
 
 export async function updateUI(): Promise<void> {
