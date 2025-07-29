@@ -261,7 +261,7 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-gamepad",
     changeRequiresRestart: true,
     isBlocked: ({ value, currentConfig }) => {
-      for (const funbox of currentConfig.funbox) {
+      for (const funbox of value) {
         if (!canSetFunboxWithConfig(funbox, currentConfig)) {
           Notifications.add(
             `${value}" cannot be enabled with the current config`,
