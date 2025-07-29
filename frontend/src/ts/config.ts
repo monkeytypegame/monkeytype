@@ -42,7 +42,7 @@ const configLS = new LocalStorageWithSchema({
   },
 });
 
-let config = {
+let config: Config = {
   ...getDefaultConfig(),
 };
 
