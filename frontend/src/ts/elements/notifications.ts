@@ -198,6 +198,9 @@ class Notification {
         $(
           `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
         ).css("cursor", "pointer");
+        $(
+          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+        ).addClass("clickable");
         // refresh on clicking banner
         $(
           `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
