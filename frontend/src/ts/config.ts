@@ -123,6 +123,14 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     return false;
   }
 
+  if (metadata.overrideValue) {
+    value = metadata.overrideValue({
+      value,
+      currentValue: config[key],
+      currentConfig: config,
+    });
+  }
+
   if (metadata.isBlocked?.({ value, currentConfig: config })) {
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
@@ -130,14 +138,6 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
       )}" - blocked.`
     );
     return false;
-  }
-
-  if (metadata.overrideValue) {
-    value = metadata.overrideValue({
-      value,
-      currentValue: config[key],
-      currentConfig: config,
-    });
   }
 
   const schema = ConfigSchemas.ConfigSchema.shape[key] as ZodSchema;

@@ -757,6 +757,12 @@ export const configMetadata: ConfigMetadataObject = {
   ads: {
     icon: "fa-ad",
     changeRequiresRestart: false,
+    overrideValue: ({ value }) => {
+      if (isDevEnvironment()) {
+        return "off";
+      }
+      return value;
+    },
     isBlocked: ({ value }) => {
       if (value !== "off" && isDevEnvironment()) {
         Notifications.add("Ads are disabled in development mode.", 0);
