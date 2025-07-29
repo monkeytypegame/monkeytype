@@ -115,10 +115,20 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
       important: true,
     });
+    console.warn(
+      `Could not set config key "${key}" with value "${JSON.stringify(
+        value
+      )}" - no quit funbox active.`
+    );
     return false;
   }
 
   if (metadata.isBlocked?.({ value, currentConfig: config })) {
+    console.warn(
+      `Could not set config key "${key}" with value "${JSON.stringify(
+        value
+      )}" - blocked.`
+    );
     return false;
   }
 
@@ -133,10 +143,20 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   const schema = ConfigSchemas.ConfigSchema.shape[key] as ZodSchema;
 
   if (!isConfigValueValid(metadata.displayString ?? key, value, schema)) {
+    console.warn(
+      `Could not set config key "${key}" with value "${JSON.stringify(
+        value
+      )}" - invalid value.`
+    );
     return false;
   }
 
   if (!canSetConfigWithCurrentFunboxes(key, value, config.funbox)) {
+    console.warn(
+      `Could not set config key "${key}" with value "${JSON.stringify(
+        value
+      )}" - funbox conflict.`
+    );
     return false;
   }
 
