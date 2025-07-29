@@ -50,7 +50,7 @@ export async function get(
   }
 
   try {
-    const preset = await getCollection({ language, mode, mode2 })
+    let leaderboard = await getCollection({ language, mode, mode2 })
       .find(filter)
       .sort({ rank: 1 })
       .skip(skip)
@@ -61,10 +61,15 @@ export async function get(
       .premium.enabled;
 
     if (!premiumFeaturesEnabled) {
-      return preset.map((it) => omit(it, "isPremium"));
+      leaderboard = leaderboard.map((it) => omit(it, "isPremium"));
     }
 
-    return preset;
+    if (userIds !== undefined) {
+      let friendsRank = skip + 1;
+      leaderboard.forEach((it) => (it.friendsRank = friendsRank++));
+    }
+
+    return leaderboard;
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {
