@@ -197,9 +197,6 @@ class Notification {
         // add pointer when refresh is needed
         $(
           `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
-        ).css("cursor", "pointer");
-        $(
-          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
         ).addClass("clickable");
         // refresh on clicking banner
         $(
