@@ -824,19 +824,29 @@ export async function apply(
   }
 
   if (configToApply !== undefined && configToApply !== null) {
+    const configKeysToReset: (keyof Config)[] = [];
+
     for (const configKey of typedKeys(configToApply)) {
       if (lastConfigsToApply.has(configKey)) continue;
       const configValue = configToApply[
         configKey
       ] as ConfigSchemas.Config[keyof Config];
-      genericSet(configKey, configValue, true);
+      const set = genericSet(configKey, configValue, true);
+      if (!set) {
+        configKeysToReset.push(configKey);
+      }
     }
     for (const configKey of lastConfigsToApply) {
       const configValue = configToApply[
         configKey
       ] as ConfigSchemas.Config[keyof Config];
-      genericSet(configKey, configValue, true);
+      const set = genericSet(configKey, configValue, true);
+      if (!set) {
+        configKeysToReset.push(configKey);
+      }
     }
+
+    configKeysToReset.map((key) => saveToLocalStorage(key));
 
     ConfigEvent.dispatch(
       "configApplied",
