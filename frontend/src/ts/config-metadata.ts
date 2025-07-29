@@ -6,6 +6,7 @@ import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
 import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
+import { capitalizeFirstLetter } from "./utils/strings";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -263,7 +264,12 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
     isBlocked: ({ value, currentConfig }) => {
       if (!checkCompatibility(value)) {
-        Notifications.add(`${value}" is invalid combination of  funboxes `, 0);
+        Notifications.add(
+          `${capitalizeFirstLetter(
+            value.join(", ")
+          )} is an invalid combination of funboxes`,
+          0
+        );
         return true;
       }
 
