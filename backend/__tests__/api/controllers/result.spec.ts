@@ -5,6 +5,7 @@ import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
 import * as LogsDal from "../../../src/dal/logs";
+import * as PublicDal from "../../../src/dal/public";
 import { ObjectId } from "mongodb";
 import {
   mockAuthenticateWithApeKey,
@@ -504,6 +505,7 @@ describe("result controller test", () => {
     it("should delete", async () => {
       //GIVEN
       mockAuth.modifyToken({ iat: Date.now() - 1000 });
+      deleteAllMock.mockResolvedValue(undefined as any);
 
       //WHEN
       const { body } = await mockApp
@@ -672,22 +674,34 @@ describe("result controller test", () => {
   describe("addResult", () => {
     //TODO improve test coverage for addResult
     const insertedId = new ObjectId();
-    const getUserMock = vi.spyOn(UserDal, "getUser");
-    const updateStreakMock = vi.spyOn(UserDal, "updateStreak");
-    const checkIfTagPbMock = vi.spyOn(UserDal, "checkIfTagPb");
-    const addResultMock = vi.spyOn(ResultDal, "addResult");
+    const userGetMock = vi.spyOn(UserDal, "getUser");
+    const userUpdateStreakMock = vi.spyOn(UserDal, "updateStreak");
+    const userCheckIfTagPbMock = vi.spyOn(UserDal, "checkIfTagPb");
+    const userCheckIfPbMock = vi.spyOn(UserDal, "checkIfPb");
+    const userIncrementXpMock = vi.spyOn(UserDal, "incrementXp");
+    const userUpdateTypingStatsMock = vi.spyOn(UserDal, "updateTypingStats");
+    const resultAddMock = vi.spyOn(ResultDal, "addResult");
+    const publicUpdateStatsMock = vi.spyOn(PublicDal, "updateStats");
 
     beforeEach(async () => {
       await enableResultsSaving(true);
 
-      [getUserMock, updateStreakMock, checkIfTagPbMock, addResultMock].forEach(
-        (it) => it.mockReset()
-      );
+      [
+        userGetMock,
+        userUpdateStreakMock,
+        userCheckIfTagPbMock,
+        userCheckIfPbMock,
+        userIncrementXpMock,
+        userUpdateTypingStatsMock,
+        resultAddMock,
+        publicUpdateStatsMock,
+      ].forEach((it) => it.mockReset());
 
-      getUserMock.mockResolvedValue({ name: "bob" } as any);
-      updateStreakMock.mockResolvedValue(0);
-      checkIfTagPbMock.mockResolvedValue([]);
-      addResultMock.mockResolvedValue({ insertedId });
+      userGetMock.mockResolvedValue({ name: "bob" } as any);
+      userUpdateStreakMock.mockResolvedValue(0);
+      userCheckIfTagPbMock.mockResolvedValue([]);
+      userCheckIfPbMock.mockResolvedValue(true);
+      resultAddMock.mockResolvedValue({ insertedId });
     });
 
     it("should add result", async () => {
@@ -749,7 +763,7 @@ describe("result controller test", () => {
         insertedId: insertedId.toHexString(),
       });
 
-      expect(addResultMock).toHaveBeenCalledWith(
+      expect(resultAddMock).toHaveBeenCalledWith(
         uid,
         expect.objectContaining({
           acc: 86,
@@ -782,6 +796,17 @@ describe("result controller test", () => {
           uid: uid,
           wpm: 80,
         })
+      );
+
+      expect(publicUpdateStatsMock).toHaveBeenCalledWith(
+        4,
+        15.1 + 2 - 5 //duration + incompleteTestSeconds-afk
+      );
+      expect(userIncrementXpMock).toHaveBeenCalledWith(uid, 0);
+      expect(userUpdateTypingStatsMock).toHaveBeenCalledWith(
+        uid,
+        4,
+        15.1 + 2 - 5 //duration + incompleteTestSeconds-afk
       );
     });
     it("should fail if result saving is disabled", async () => {

@@ -1,17 +1,19 @@
 import _ from "lodash";
 import { ObjectId } from "mongodb";
-import * as UserDal from "../../src/dal/user";
-import * as LeaderboardsDal from "../../src/dal/leaderboards";
-import * as PublicDal from "../../src/dal/public";
-import * as Configuration from "../../src/init/configuration";
-import type { DBLeaderboardEntry } from "../../src/dal/leaderboards";
+import * as UserDal from "../../../src/dal/user";
+import * as LeaderboardsDal from "../../../src/dal/leaderboards";
+import * as PublicDal from "../../../src/dal/public";
+import * as Configuration from "../../../src/init/configuration";
+import type { DBLeaderboardEntry } from "../../../src/dal/leaderboards";
 import type { PersonalBest } from "@monkeytype/schemas/shared";
 const configuration = Configuration.getCachedConfiguration();
 
-import * as DB from "../../src/init/db";
-import { LbPersonalBests } from "../../src/utils/pb";
+import * as DB from "../../../src/init/db";
+import { LbPersonalBests } from "../../../src/utils/pb";
+import { describeIntegration } from "..";
+import { pb } from "../../__testData__/users";
 
-describe("LeaderboardsDal", () => {
+describeIntegration()("LeaderboardsDal", () => {
   describe("update", () => {
     it("should ignore unapplicable users on leaderboard", async () => {
       //GIVEN
@@ -326,24 +328,6 @@ function lbBests(pb15?: PersonalBest, pb60?: PersonalBest): LbPersonalBests {
   if (pb15) result.time["15"] = { english: pb15 };
   if (pb60) result.time["60"] = { english: pb60 };
   return result;
-}
-
-export function pb(
-  wpm: number,
-  acc: number = 90,
-  timestamp: number = 1
-): PersonalBest {
-  return {
-    acc,
-    consistency: 100,
-    difficulty: "normal",
-    lazyMode: false,
-    language: "english",
-    punctuation: false,
-    raw: wpm + 1,
-    wpm,
-    timestamp,
-  };
 }
 
 function premium(expirationDeltaSeconds: number) {
