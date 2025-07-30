@@ -1,7 +1,6 @@
 import FileStorage from "../../utils/file-storage";
 import * as Notifications from "../notifications";
 import { applyCustomBackground } from "../../controllers/theme-controller";
-import { updateFilterSectionVisibility } from "../../pages/settings";
 
 const parentEl = document.querySelector(
   ".pageSettings .section[data-config-name='customBackgroundSize']"
@@ -40,7 +39,6 @@ usingLocalImageEl
     await FileStorage.deleteFile("LocalBackgroundFile");
     await updateUI();
     await applyCustomBackground();
-    await updateFilterSectionVisibility();
   });
 
 uploadContainerEl
@@ -65,7 +63,6 @@ uploadContainerEl
 
     await updateUI();
     await applyCustomBackground();
-    await updateFilterSectionVisibility();
 
     fileInput.value = "";
   });

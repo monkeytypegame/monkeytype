@@ -804,10 +804,12 @@ function refreshPresetsSettingsSection(): void {
 }
 
 export async function updateFilterSectionVisibility(): Promise<void> {
-  if (
+  const hasBackgroundUrl =
     Config.customBackground !== "" ||
-    (await FileStorage.hasFile("LocalBackgroundFile"))
-  ) {
+    (await FileStorage.hasFile("LocalBackgroundFile"));
+  const isImageVisible = $(".customBackground img").is(":visible");
+
+  if (hasBackgroundUrl && isImageVisible) {
     $(
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).removeClass("hidden");

@@ -392,6 +392,11 @@ export async function applyCustomBackground(): Promise<void> {
     backgroundUrl = localBackgroundFile;
   }
 
+  // hide the filter section initially and always
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundFilter']"
+  ).addClass("hidden");
+
   if (backgroundUrl === "") {
     $("#words").removeClass("noErrorBorder");
     $("#resultWordsHistory").removeClass("noErrorBorder");
@@ -409,6 +414,13 @@ export async function applyCustomBackground(): Promise<void> {
       "onError",
       "javascript:this.style.display='none'; window.dispatchEvent(new Event('customBackgroundFailed'))"
     );
+    img.onload = () => {
+      // show the filter section only if the image loads successfully
+      $(
+        ".pageSettings .section[data-config-name='customBackgroundFilter']"
+      ).removeClass("hidden");
+    };
+
     container?.replaceChildren(img);
 
     BackgroundFilter.apply();
