@@ -6,7 +6,6 @@ import * as PublicDal from "../../../src/dal/public";
 import * as Configuration from "../../../src/init/configuration";
 import type { DBLeaderboardEntry } from "../../../src/dal/leaderboards";
 import type { PersonalBest } from "@monkeytype/schemas/shared";
-const configuration = Configuration.getCachedConfiguration();
 
 import * as DB from "../../../src/init/db";
 import { LbPersonalBests } from "../../../src/utils/pb";
@@ -219,7 +218,7 @@ describeIntegration()("LeaderboardsDal", () => {
       ]);
     });
 
-    it.skip("should create leaderboard with premium", async () => {
+    it("should create leaderboard with premium", async () => {
       //GIVEN
       const noPremium = await createUser(lbBests(pb(4)));
       const lifetime = await createUser(lbBests(pb(3)), premium(-1));
@@ -353,11 +352,7 @@ type ExpectedLbEntry = {
 };
 
 async function enablePremiumFeatures(premium: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
+  await Configuration.patchConfiguration({
     users: { premium: { enabled: premium } },
   });
-
-  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
-  );
 }
