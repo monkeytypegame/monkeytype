@@ -19,10 +19,15 @@ if (!process.env["REDIS_URI"]) {
 beforeAll(async () => {
   //don't add any configuration here, add to global-setup.ts instead.
 
-  vi.mock("../src/dal/logs", () => ({ addLog: vi.fn() }));
+  vi.mock("../src/dal/logs", () => ({
+    addLog: vi.fn(),
+    addImportantLog: vi.fn(),
+    deleteUserLogs: vi.fn(),
+  }));
   vi.mock("../src/init/configuration", () => ({
     getLiveConfiguration: () => BASE_CONFIGURATION,
     getCachedConfiguration: () => BASE_CONFIGURATION,
+    patchConfiguration: vi.fn(),
   }));
 
   vi.mock("../src/init/db", () => ({
