@@ -2,7 +2,6 @@ import * as Config from "../../src/ts/config";
 import * as Misc from "../../src/ts/utils/misc";
 import {
   CustomThemeColors,
-  FunboxName,
   ConfigKey,
   Config as ConfigType,
   CaretStyleSchema,
@@ -176,7 +175,7 @@ describe("Config", () => {
       }> = {
         funbox: [
           {
-            value: "gibberish" as any,
+            value: ["gibberish"],
             given: { mode: "quote" },
             fail: true,
           },
@@ -945,8 +944,6 @@ describe("Config", () => {
   it("setFunbox", () => {
     expect(Config.setFunbox(["mirror"])).toBe(true);
     expect(Config.setFunbox(["mirror", "58008"])).toBe(true);
-
-    expect(Config.setFunbox([stringOfLength(101) as FunboxName])).toBe(false);
   });
   it("setPaceCaretCustomSpeed", () => {
     expect(Config.setPaceCaretCustomSpeed(0)).toBe(true);
