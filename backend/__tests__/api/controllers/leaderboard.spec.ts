@@ -100,7 +100,8 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         0,
-        50
+        50,
+        false
       );
     });
 
@@ -139,7 +140,8 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         page,
-        pageSize
+        pageSize,
+        false
       );
     });
 
