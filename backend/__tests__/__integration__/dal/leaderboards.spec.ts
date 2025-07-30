@@ -1,17 +1,18 @@
 import _ from "lodash";
 import { ObjectId } from "mongodb";
-import * as UserDal from "../../src/dal/user";
-import * as LeaderboardsDal from "../../src/dal/leaderboards";
-import * as PublicDal from "../../src/dal/public";
-import * as Configuration from "../../src/init/configuration";
-import type { DBLeaderboardEntry } from "../../src/dal/leaderboards";
+import * as UserDal from "../../../src/dal/user";
+import * as LeaderboardsDal from "../../../src/dal/leaderboards";
+import * as PublicDal from "../../../src/dal/public";
+import * as Configuration from "../../../src/init/configuration";
+import type { DBLeaderboardEntry } from "../../../src/dal/leaderboards";
 import type { PersonalBest } from "@monkeytype/schemas/shared";
 const configuration = Configuration.getCachedConfiguration();
 
-import * as DB from "../../src/init/db";
-import { LbPersonalBests } from "../../src/utils/pb";
+import * as DB from "../../../src/init/db";
+import { LbPersonalBests } from "../../../src/utils/pb";
+import { describeIntegration } from "..";
 
-describe("LeaderboardsDal", () => {
+describeIntegration()("LeaderboardsDal", () => {
   describe("update", () => {
     it("should ignore unapplicable users on leaderboard", async () => {
       //GIVEN

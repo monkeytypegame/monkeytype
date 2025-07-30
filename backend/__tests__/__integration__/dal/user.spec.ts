@@ -1,10 +1,11 @@
 import _ from "lodash";
-import * as UserDAL from "../../src/dal/user";
-import * as UserTestData from "../__testData__/users";
+import * as UserDAL from "../../../src/dal/user";
+import * as UserTestData from "../../__testData__/users";
 import { ObjectId } from "mongodb";
 import { MonkeyMail, ResultFilters } from "@monkeytype/schemas/users";
 import { PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
 import { CustomThemeColors } from "@monkeytype/schemas/configs";
+import { describeIntegration } from "..";
 
 const mockPersonalBest = {
   acc: 1,
@@ -85,7 +86,7 @@ const mockResultFilter: ResultFilters = {
 
 const mockDbResultFilter = { ...mockResultFilter, _id: new ObjectId() };
 
-describe("UserDal", () => {
+describeIntegration()("UserDal", () => {
   it("should be able to insert users", async () => {
     // given
     const newUser = {

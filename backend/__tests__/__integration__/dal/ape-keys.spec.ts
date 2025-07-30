@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
-import { addApeKey } from "../../src/dal/ape-keys";
+import { addApeKey } from "../../../src/dal/ape-keys";
+import { describeIntegration } from "..";
 
-describe("ApeKeysDal", () => {
+describeIntegration()("ApeKeysDal", () => {
   it("should be able to add a new ape key", async () => {
     const apeKey = {
       _id: new ObjectId(),
