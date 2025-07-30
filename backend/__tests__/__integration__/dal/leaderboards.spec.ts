@@ -13,11 +13,8 @@ import { LbPersonalBests } from "../../../src/utils/pb";
 import { describeIntegration } from "..";
 import { pb } from "../../__testData__/users";
 
-// Disabled for now
-// This test needs to cleanup all existing users from mongo before running
-// I was not able to figure out how to run this test after all other tests and not in parallel
-describeIntegration().skip("LeaderboardsDal", () => {
-  beforeEach(async () => {
+describeIntegration()("LeaderboardsDal", () => {
+  afterEach(async () => {
     await DB.collection("users").deleteMany({});
   });
   describe("update", () => {
@@ -222,8 +219,7 @@ describeIntegration().skip("LeaderboardsDal", () => {
       ]);
     });
 
-    it("should create leaderboard with premium", async () => {
-      await enablePremiumFeatures(true);
+    it.skip("should create leaderboard with premium", async () => {
       //GIVEN
       const noPremium = await createUser(lbBests(pb(4)));
       const lifetime = await createUser(lbBests(pb(3)), premium(-1));
@@ -232,6 +228,7 @@ describeIntegration().skip("LeaderboardsDal", () => {
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
+      await enablePremiumFeatures(true);
       const result = (await LeaderboardsDal.get(
         "time",
         "15",
@@ -259,12 +256,12 @@ describeIntegration().skip("LeaderboardsDal", () => {
       ]);
     });
     it("should create leaderboard without premium if feature disabled", async () => {
-      await enablePremiumFeatures(false);
       //GIVEN
       // const lifetime = await createUser(lbBests(pb(3)), premium(-1));
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
+      await enablePremiumFeatures(false);
       const result = (await LeaderboardsDal.get(
         "time",
         "15",
