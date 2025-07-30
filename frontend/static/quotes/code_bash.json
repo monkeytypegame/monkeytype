@@ -1,0 +1,101 @@
+{
+  "language": "bash",
+  "groups": [
+    [80, 100],
+    [101, 120],
+    [121, 150],
+    [151, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "find /var/log -name \"*.log\" -type f -mtime +30 -exec rm {} \\; 2>/dev/null || echo \"Cleanup completed\"",
+      "source": "GNU Findutils Manual",
+      "length": 102,
+      "id": 1
+    },
+    {
+      "text": "tar -czf backup_$(date +%Y%m%d_%H%M%S).tar.gz /home/user/documents --exclude='*.tmp' --exclude='node_modules'",
+      "source": "GNU Tar Manual",
+      "length": 107,
+      "id": 2
+    },
+    {
+      "text": "rsync -avz --progress --delete --dry-run /local/path/ user@remote.server.com:/remote/backup/",
+      "source": "rsync Manual",
+      "length": 92,
+      "id": 3
+    },
+    {
+      "text": "grep -r \"ERROR\\|CRITICAL\\|FATAL\" /var/log/ | grep $(date +%Y-%m-%d) | sort | uniq -c | sort -nr",
+      "source": "GNU Grep Manual",
+      "length": 96,
+      "id": 4
+    },
+    {
+      "text": "awk -F',' 'NR>1 {sum+=$3; count++} END {print \"Total:\", sum, \"Average:\", sum/count}' sales_data.csv",
+      "source": "GNU Awk Manual",
+      "length": 96,
+      "id": 5
+    },
+    {
+      "text": "sed -i.bak 's/old_server_name/new_server_name/g' /etc/nginx/sites-available/default && nginx -t",
+      "source": "GNU Sed Manual",
+      "length": 97,
+      "id": 6
+    },
+    {
+      "text": "curl -X POST -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"secret\"}' https://api.example.com/login",
+      "source": "cURL Manual",
+      "length": 124,
+      "id": 7
+    },
+    {
+      "text": "docker run -d --name webapp --restart=unless-stopped -p 8080:80 -v /host/data:/container/data nginx:latest",
+      "source": "Docker Documentation",
+      "length": 105,
+      "id": 8
+    },
+    {
+      "text": "ssh -L 8080:localhost:80 -L 3306:localhost:3306 -N -f user@remote.server.com -i ~/.ssh/id_rsa",
+      "source": "OpenSSH Manual",
+      "length": 95,
+      "id": 9
+    },
+    {
+      "text": "for file in *.txt; do echo \"Processing $file\" && mv \"$file\" \"backup_${file%.txt}_$(date +%s).txt\"; done",
+      "source": "Bash Reference Manual",
+      "length": 106,
+      "id": 10
+    },
+    {
+      "text": "ps aux | sort -k 3 -nr | head -10 | awk '{printf \"%-8s %-6s %-6s %s\\n\", $1, $2, $3, $11}'",
+      "source": "Process Status Manual",
+      "length": 89,
+      "id": 11
+    },
+    {
+      "text": "git log --oneline --graph --all --since=\"2 weeks ago\" --author=\"john@example.com\"",
+      "source": "Git Documentation",
+      "length": 80,
+      "id": 12
+    },
+    {
+      "text": "kubectl get pods --all-namespaces -o wide | grep -v Running | awk '{print $1, $2, $4}'",
+      "source": "Kubernetes Documentation",
+      "length": 86,
+      "id": 13
+    },
+    {
+      "text": "ffmpeg -i input.mp4 -vcodec libx264 -acodec aac -b:v 2M -b:a 128k output.mp4",
+      "source": "FFmpeg Documentation",
+      "length": 77,
+      "id": 14
+    },
+    {
+      "text": "mysql -u root -p -e \"SELECT table_name, table_rows FROM information_schema.tables WHERE table_schema='mydb';\"",
+      "source": "MySQL Documentation",
+      "length": 109,
+      "id": 15
+    }
+  ]
+}
