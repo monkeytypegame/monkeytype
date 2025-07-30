@@ -2,7 +2,7 @@ name: Monkey CI
 
 env:
   PNPM_VERSION: "9.6.0"
-  NODE_VERSION: "20.16.0"
+  NODE_VERSION: "20.19.4"
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
 permissions:
