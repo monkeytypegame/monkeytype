@@ -1099,6 +1099,81 @@ describe("Config", () => {
     expect(Config.setCustomLayoutfluid("qwerty#qwertz" as any)).toBe(false);
     expect(Config.setCustomLayoutfluid("invalid" as any)).toBe(false);
   });
+
+  describe("apply", () => {
+    it("should fill missing values with defaults", () => {
+      //GIVEN
+      Config.apply({
+        numbers: true,
+        punctuation: true,
+      });
+      const config = getConfig();
+      expect(config.mode).toBe("time");
+      expect(config.numbers).toBe(true);
+      expect(config.punctuation).toBe(true);
+    });
+
+    describe("should reset to default if setting failed", () => {
+      const testCases: {
+        display: string;
+        value: Partial<ConfigType>;
+        expected: Partial<ConfigType>;
+      }[] = [
+        {
+          // invalid funbox
+          display: "invalid funbox",
+          value: { funbox: ["invalid_funbox"] as any },
+          expected: { funbox: [] },
+        },
+        {
+          display: "mode incompatible with funbox",
+          value: { mode: "quote", funbox: ["58008"] as any },
+          expected: { funbox: [] },
+        },
+        {
+          display: "invalid customLayoutfluid",
+          value: { funbox: ["58008", "gibberish"] as any },
+          expected: { funbox: [] },
+        },
+      ];
+
+      it.each(testCases)("$display", ({ value, expected }) => {
+        Config.apply(value);
+        const config = getConfig();
+        const applied = Object.fromEntries(
+          Object.entries(config).filter(([key]) =>
+            Object.keys(expected).includes(key)
+          )
+        );
+        expect(applied).toEqual(expected);
+      });
+    });
+
+    describe("should apply keys in an order to avoid overrides", () => {
+      const testCases: {
+        display: string;
+        value: Partial<ConfigType>;
+        expected: Partial<ConfigType>;
+      }[] = [
+        {
+          display: "quote length shouldnt override mode",
+          value: { quoteLength: [0], mode: "time" },
+          expected: { quoteLength: [0], mode: "time" },
+        },
+      ];
+
+      it.each(testCases)("$display", ({ value, expected }) => {
+        Config.apply(value);
+        const config = getConfig();
+        const applied = Object.fromEntries(
+          Object.entries(config).filter(([key]) =>
+            Object.keys(expected).includes(key)
+          )
+        );
+        expect(applied).toEqual(expected);
+      });
+    });
+  });
 });
 
 function customThemeColors(n: number): CustomThemeColors {
