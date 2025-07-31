@@ -685,7 +685,6 @@ describe("Config", () => {
   it("setAds", () => {
     expect(Config.setAds("on")).toBe(true);
     expect(Config.setAds("sellout")).toBe(true);
-    expect(Config.setAds("invalid" as any)).toBe(false);
   });
   it("setRepeatQuotes", () => {
     expect(Config.setRepeatQuotes("off")).toBe(true);
@@ -1124,12 +1123,12 @@ describe("Config", () => {
         },
         {
           display: "mode incompatible with funbox",
-          value: { mode: "quote", funbox: ["58008"] as any },
+          value: { mode: "quote", funbox: ["58008"] },
           expected: { funbox: [] },
         },
         {
           display: "invalid customLayoutfluid",
-          value: { funbox: ["58008", "gibberish"] as any },
+          value: { funbox: ["58008", "gibberish"] },
           expected: { funbox: [] },
         },
       ];

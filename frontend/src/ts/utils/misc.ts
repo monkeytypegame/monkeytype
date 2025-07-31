@@ -723,8 +723,9 @@ export function sanitize<T extends z.ZodTypeAny>(
   const validate = schema.safeParse(obj);
 
   if (validate.success) {
+    //use the parsed data, not the obj. keys might been removed
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return obj;
+    return validate.data;
   }
 
   const errors: Map<string, number[] | undefined> = new Map();
@@ -739,24 +740,29 @@ export function sanitize<T extends z.ZodTypeAny>(
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => {
-      if (!errors.has(key)) {
-        return [key, value];
-      }
+    Object.entries(obj)
+      .map(([key, value]) => {
+        if (!errors.has(key)) {
+          return [key, value];
+        }
 
-      const error = errors.get(key);
+        const error = errors.get(key);
 
-      if (
-        Array.isArray(value) &&
-        error !== undefined && //error is not on the array itself
-        error.length < value.length //not all items in the array are invalid
-      ) {
-        //some items of the array are invalid
-        return [key, value.filter((_element, index) => !error.includes(index))];
-      } else {
-        return [key, undefined];
-      }
-    })
+        if (
+          Array.isArray(value) &&
+          error !== undefined && //error is not on the array itself
+          error.length < value.length //not all items in the array are invalid
+        ) {
+          //some items of the array are invalid
+          return [
+            key,
+            value.filter((_element, index) => !error.includes(index)),
+          ];
+        } else {
+          return [key, undefined];
+        }
+      })
+      .filter((it) => it[1] !== undefined)
   ) as z.infer<T>;
 }
 

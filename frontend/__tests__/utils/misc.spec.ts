@@ -266,20 +266,33 @@ describe("misc.ts", () => {
 
     it("should remove entire property if all array elements are invalid", () => {
       const obj = { name: "Alice", age: 30, tags: [123, 456] as any };
-      expect(sanitize(schema, obj)).toEqual({
+      const sanitized = sanitize(schema, obj);
+      expect(sanitized).toEqual({
         name: "Alice",
         age: 30,
-        tags: undefined,
       });
+      expect(sanitized).not.toHaveProperty("tags");
     });
 
     it("should remove object properties if they are invalid", () => {
       const obj = { name: 123 as any, age: 30, tags: ["developer", "coder"] };
-      expect(sanitize(schema, obj)).toEqual({
+      const sanitized = sanitize(schema, obj);
+      expect(sanitized).toEqual({
         age: 30,
         tags: ["developer", "coder"],
-        name: undefined,
       });
+      expect(sanitized).not.toHaveProperty("name");
+    });
+
+    it("should strip extra keys", () => {
+      const obj = {
+        name: "bob",
+        age: 30,
+        tags: ["developer", "coder"],
+        powerLevel: 9001,
+      } as any;
+      const stripped = sanitize(schema.strip(), obj);
+      expect(stripped).not.toHaveProperty("powerLevel");
     });
   });
 });
