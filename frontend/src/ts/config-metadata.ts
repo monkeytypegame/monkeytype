@@ -1,3 +1,4 @@
+import { checkCompatibility } from "@monkeytype/funbox";
 import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
 import { isAuthenticated } from "./firebase";
@@ -5,6 +6,7 @@ import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
 import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
+import { capitalizeFirstLetter } from "./utils/strings";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -261,7 +263,17 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-gamepad",
     changeRequiresRestart: true,
     isBlocked: ({ value, currentConfig }) => {
-      for (const funbox of currentConfig.funbox) {
+      if (!checkCompatibility(value)) {
+        Notifications.add(
+          `${capitalizeFirstLetter(
+            value.join(", ")
+          )} is an invalid combination of funboxes`,
+          0
+        );
+        return true;
+      }
+
+      for (const funbox of value) {
         if (!canSetFunboxWithConfig(funbox, currentConfig)) {
           Notifications.add(
             `${value}" cannot be enabled with the current config`,
@@ -270,6 +282,7 @@ export const configMetadata: ConfigMetadataObject = {
           return true;
         }
       }
+
       return false;
     },
   },
@@ -750,6 +763,12 @@ export const configMetadata: ConfigMetadataObject = {
   ads: {
     icon: "fa-ad",
     changeRequiresRestart: false,
+    overrideValue: ({ value }) => {
+      if (isDevEnvironment()) {
+        return "off";
+      }
+      return value;
+    },
     isBlocked: ({ value }) => {
       if (value !== "off" && isDevEnvironment()) {
         Notifications.add("Ads are disabled in development mode.", 0);
