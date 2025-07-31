@@ -15,15 +15,12 @@ export async function apply(_id: string): Promise<void> {
   if (presetToApply === undefined) {
     return;
   }
-  if (isPartialPreset(presetToApply)) {
-    const combinedConfig = {
-      ...UpdateConfig.getConfigChanges(),
-      ...replaceLegacyValues(presetToApply.config),
-    };
-    await UpdateConfig.apply(migrateConfig(combinedConfig));
-  } else {
-    await UpdateConfig.apply(migrateConfig(presetToApply.config));
-  }
+
+  await UpdateConfig.apply(
+    migrateConfig(replaceLegacyValues(presetToApply.config)),
+    !isPartialPreset(presetToApply)
+  );
+
   if (
     !isPartialPreset(presetToApply) ||
     presetToApply.settingGroups?.includes("behavior")
