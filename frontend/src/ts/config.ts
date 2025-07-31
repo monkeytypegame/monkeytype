@@ -801,6 +801,7 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
 }
 
 const lastConfigsToApply: Set<keyof Config> = new Set([
+  "keymapMode",
   "minWpm",
   "minAcc",
   "minBurst",
