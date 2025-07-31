@@ -17,6 +17,7 @@
   --untyped-letter-animation: choochoo 2s infinite linear;
 }
 
-#words letter {
-    display: inline-block;
+#words letter,
+#words.withLigatures .word letter {
+  display: inline-block;
 }
