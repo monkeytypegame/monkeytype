@@ -13,7 +13,7 @@
     "ts-check": "tsc --noEmit",
     "start": "node ./dist/server.js",
     "test": "vitest run --project=unit",
-    "integration-test": "INTEGRATION_TESTS=true vitest run --project=integration --project=integration-isolated",
+    "integration-test": "vitest run --project=integration --project=integration-isolated",
     "test-coverage": "vitest run --coverage",
     "dev": "concurrently -p none \"tsx watch --clear-screen=false --inspect ./src/server.ts\" \"tsc --preserveWatchOutput --noEmit --watch\"  \"esw src/ -w --ext .ts --cache --color\"",
     "knip": "knip",

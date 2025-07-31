@@ -22,7 +22,7 @@
     "build-fe": "turbo run build --filter @monkeytype/frontend",
     "build-pkg": "turbo run build --filter=\"./packages/*\"",
     "test": "turbo run test",
-    "test-be": "turbo run test --filter @monkeytype/backend && turbo run integration-test --filter @monkeytype/backend",
+    "test-be": "turbo run test integration-test --filter @monkeytype/backend",
     "test-fe": "turbo run test --filter @monkeytype/frontend",
     "test-pkg": "turbo run test --filter=\"./packages/*\"",
     "dev": "turbo run dev --force",
