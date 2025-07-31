@@ -1097,9 +1097,9 @@ describe("Config", () => {
   });
 
   describe("apply", () => {
-    it("should fill missing values with defaults", () => {
+    it("should fill missing values with defaults", async () => {
       //GIVEN
-      Config.apply({
+      await Config.apply({
         numbers: true,
         punctuation: true,
       });
@@ -1127,14 +1127,25 @@ describe("Config", () => {
           expected: { funbox: [] },
         },
         {
-          display: "invalid customLayoutfluid",
+          display: "invalid combination of funboxes",
           value: { funbox: ["58008", "gibberish"] },
           expected: { funbox: [] },
         },
+        {
+          display: "sanitizes config, remove extra keys",
+          value: { mode: "zen", unknownKey: true, unknownArray: [1, 2] } as any,
+          expected: { mode: "zen" },
+        },
+        {
+          display: "applies config migration",
+          value: { mode: "zen", swapEscAndTab: true } as any,
+          expected: { mode: "zen", quickRestart: "esc" },
+        },
       ];
 
-      it.each(testCases)("$display", ({ value, expected }) => {
-        Config.apply(value);
+      it.each(testCases)("$display", async ({ value, expected }) => {
+        await Config.apply(value);
+
         const config = getConfig();
         const applied = Object.fromEntries(
           Object.entries(config).filter(([key]) =>
@@ -1158,8 +1169,8 @@ describe("Config", () => {
         },
       ];
 
-      it.each(testCases)("$display", ({ value, expected }) => {
-        Config.apply(value);
+      it.each(testCases)("$display", async ({ value, expected }) => {
+        await Config.apply(value);
         const config = getConfig();
         const applied = Object.fromEntries(
           Object.entries(config).filter(([key]) =>
@@ -1170,22 +1181,23 @@ describe("Config", () => {
       });
     });
 
-    it("should apply a partial config but keep the rest unchanged", () => {
+    it("should apply a partial config but keep the rest unchanged", async () => {
       replaceConfig({
         numbers: true,
       });
-      Config.apply({
+      await Config.apply({
         punctuation: true,
       });
       const config = getConfig();
       expect(config.numbers).toBe(true);
     });
 
-    it("should reset all values to default if fullReset is true", () => {
+    it("should reset all values to default if fullReset is true", async () => {
       replaceConfig({
         numbers: true,
+        theme: "serika",
       });
-      Config.apply(
+      await Config.apply(
         {
           punctuation: true,
         },
@@ -1193,6 +1205,7 @@ describe("Config", () => {
       );
       const config = getConfig();
       expect(config.numbers).toBe(false);
+      expect(config.theme).toEqual("serika_dark");
     });
   });
 });
