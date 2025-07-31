@@ -247,7 +247,7 @@ async function filterSubgroup(): Promise<void> {
 
   const matchCounts: number[] = [];
   for (const command of list) {
-    const isAvailable = command.available?.() ?? true;
+    const isAvailable = (await command.available?.()) ?? true;
     if (!isAvailable) {
       matches.push({
         matchCount: -1,

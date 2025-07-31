@@ -30,7 +30,7 @@ export type Command = {
   configValueMode?: "include";
   exec?: (options: CommandExecOptions<string>) => void;
   hover?: () => void;
-  available?: () => boolean;
+  available?: () => boolean | Promise<boolean>;
   active?: () => boolean;
   shouldFocusTestUI?: boolean;
   customData?: Record<string, string | boolean>;
