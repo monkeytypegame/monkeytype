@@ -10,6 +10,7 @@ module.exports = {
     "node_modules/",
     "dist/",
     "build/",
+    "vitest.config.ts",
   ],
   extends: [
     "eslint:recommended",

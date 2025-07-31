@@ -8,7 +8,7 @@ describe("PublicController", () => {
     const getSpeedHistogramMock = vi.spyOn(PublicDal, "getSpeedHistogram");
 
     afterEach(() => {
-      getSpeedHistogramMock.mockReset();
+      getSpeedHistogramMock.mockClear();
     });
 
     it("gets for english time 60", async () => {
@@ -115,7 +115,7 @@ describe("PublicController", () => {
     const getTypingStatsMock = vi.spyOn(PublicDal, "getTypingStats");
 
     afterEach(() => {
-      getTypingStatsMock.mockReset();
+      getTypingStatsMock.mockClear();
     });
 
     it("gets without authentication", async () => {

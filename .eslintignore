@@ -3,4 +3,4 @@ backend/__migration__
 docker
 backend/scripts
 backend/private
-**/vitest.config.js
+**/vitest.config.ts

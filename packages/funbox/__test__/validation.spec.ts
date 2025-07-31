@@ -7,7 +7,7 @@ describe("validation", () => {
     const getFunboxMock = vi.spyOn(List, "getFunbox");
 
     beforeEach(() => {
-      getFunboxMock.mockReset();
+      getFunboxMock.mockClear();
     });
 
     it("should pass without funboxNames", () => {

@@ -16,8 +16,8 @@ describe("WebhooksController", () => {
     beforeEach(() => {
       vi.stubEnv("GITHUB_WEBHOOK_SECRET", "GITHUB_WEBHOOK_SECRET");
 
-      georgeSendReleaseAnnouncementMock.mockReset();
-      timingSafeEqualMock.mockReset().mockReturnValue(true);
+      georgeSendReleaseAnnouncementMock.mockClear();
+      timingSafeEqualMock.mockClear().mockReturnValue(true);
     });
 
     it("should announce release", async () => {

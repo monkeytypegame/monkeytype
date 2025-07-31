@@ -32,9 +32,9 @@ describe("local-storage-with-schema.ts", () => {
     });
 
     afterEach(() => {
-      getItemMock.mockReset();
-      setItemMock.mockReset();
-      removeItemMock.mockReset();
+      getItemMock.mockClear();
+      setItemMock.mockClear();
+      removeItemMock.mockClear();
     });
 
     beforeEach(() => {
