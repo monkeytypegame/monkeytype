@@ -88,7 +88,7 @@
     align-items: center;
 
     &.fullWidth {
-      grid-template-columns: 2fr 1fr;
+      // grid-template-columns: 2fr 1fr;
       grid-template-areas:
         "title tabs"
         "text text"
@@ -194,7 +194,7 @@
         "buttons buttons";
       .topRight {
         grid-area: tabs;
-        align-self: start;
+        align-self: end;
         .separator {
           margin-bottom: 0;
         }
