@@ -5,6 +5,7 @@ import * as Configuration from "../../../src/init/configuration";
 import * as AdminUuidDal from "../../../src/dal/admin-uids";
 import * as UserDal from "../../../src/dal/user";
 import * as ReportDal from "../../../src/dal/report";
+import * as LogsDal from "../../../src/dal/logs";
 import GeorgeQueue from "../../../src/queues/george-queue";
 import * as AuthUtil from "../../../src/utils/auth";
 import _ from "lodash";
@@ -19,12 +20,14 @@ enableRateLimitExpects();
 
 describe("AdminController", () => {
   const isAdminMock = vi.spyOn(AdminUuidDal, "isAdmin");
+  const logsAddImportantLog = vi.spyOn(LogsDal, "addImportantLog");
 
   beforeEach(async () => {
-    isAdminMock.mockReset();
+    isAdminMock.mockClear();
     await enableAdminEndpoints(true);
     isAdminMock.mockResolvedValue(true);
     mockAuth.beforeEach();
+    logsAddImportantLog.mockClear().mockResolvedValue();
   });
 
   describe("check for admin", () => {
@@ -69,8 +72,9 @@ describe("AdminController", () => {
 
     beforeEach(() => {
       [userBannedMock, georgeBannedMock, getUserMock].forEach((it) =>
-        it.mockReset()
+        it.mockClear()
       );
+      userBannedMock.mockResolvedValue();
     });
 
     it("should ban user with discordId", async () => {
@@ -199,7 +203,8 @@ describe("AdminController", () => {
     const clearStreakHourOffset = vi.spyOn(UserDal, "clearStreakHourOffset");
 
     beforeEach(() => {
-      [clearStreakHourOffset].forEach((it) => it.mockReset());
+      clearStreakHourOffset.mockClear();
+      clearStreakHourOffset.mockResolvedValue();
     });
 
     it("should clear streak hour offset for user", async () => {
@@ -290,8 +295,9 @@ describe("AdminController", () => {
 
     beforeEach(() => {
       [getReportsMock, deleteReportsMock, addToInboxMock].forEach((it) =>
-        it.mockReset()
+        it.mockClear()
       );
+      deleteReportsMock.mockResolvedValue();
     });
 
     it("should accept reports", async () => {
@@ -403,9 +409,10 @@ describe("AdminController", () => {
     const addToInboxMock = vi.spyOn(UserDal, "addToInbox");
 
     beforeEach(() => {
-      [getReportsMock, deleteReportsMock, addToInboxMock].forEach((it) =>
-        it.mockReset()
-      );
+      [getReportsMock, deleteReportsMock, addToInboxMock].forEach((it) => {
+        it.mockClear();
+        deleteReportsMock.mockResolvedValue();
+      });
     });
 
     it("should reject reports", async () => {
@@ -521,7 +528,7 @@ describe("AdminController", () => {
     );
 
     beforeEach(() => {
-      sendForgotPasswordEmailMock.mockReset();
+      sendForgotPasswordEmailMock.mockClear();
     });
 
     it("should send forgot password link", async () => {

@@ -3,15 +3,10 @@ import { BASE_CONFIGURATION } from "../src/constants/base-configuration";
 import { setupCommonMocks } from "./setup-common-mocks";
 
 process.env["MODE"] = "dev";
-
+process.env.TZ = "UTC";
 beforeAll(async () => {
   //don't add any configuration here, add to global-setup.ts instead.
 
-  vi.mock("../src/dal/logs", () => ({
-    addLog: vi.fn(),
-    addImportantLog: vi.fn(),
-    deleteUserLogs: vi.fn(),
-  }));
   vi.mock("../src/init/configuration", () => ({
     getLiveConfiguration: () => BASE_CONFIGURATION,
     getCachedConfiguration: () => BASE_CONFIGURATION,

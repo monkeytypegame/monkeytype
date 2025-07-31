@@ -48,7 +48,7 @@ describe("url-handler", () => {
         setFunboxMock,
         restartTestMock,
         addNotificationMock,
-      ].forEach((it) => it.mockReset());
+      ].forEach((it) => it.mockClear());
 
       findGetParameterMock.mockImplementation((override) => override);
     });

@@ -86,7 +86,7 @@ const mockResultFilter: ResultFilters = {
 
 const mockDbResultFilter = { ...mockResultFilter, _id: new ObjectId() };
 
-describeIntegration().sequential("UserDal", () => {
+describeIntegration()("UserDal", () => {
   it("should be able to insert users", async () => {
     // given
     const uid = new ObjectId().toHexString();

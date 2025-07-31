@@ -4,14 +4,16 @@ import { Configuration } from "@monkeytype/schemas/configuration";
 import { Response } from "express";
 import MonkeyError from "../../src/utils/error";
 import { TsRestRequest } from "../../src/api/types";
+import { enableMonkeyErrorExpects } from "../__testData__/monkey-error";
 
+enableMonkeyErrorExpects();
 describe("configuration middleware", () => {
   const handler = verifyRequiredConfiguration();
   const res: Response = {} as any;
   const next = vi.fn();
 
   beforeEach(() => {
-    next.mockReset();
+    next.mockClear();
   });
   afterEach(() => {
     //next function must only be called once
@@ -60,7 +62,9 @@ describe("configuration middleware", () => {
 
     //THEN
     expect(next).toHaveBeenCalledWith(
-      new MonkeyError(503, "This endpoint is currently unavailable.")
+      expect.toMatchMonkeyError(
+        new MonkeyError(503, "This endpoint is currently unavailable.")
+      )
     );
   });
   it("should fail for disabled configuration and custom message", async () => {
@@ -75,7 +79,7 @@ describe("configuration middleware", () => {
 
     //THEN
     expect(next).toHaveBeenCalledWith(
-      new MonkeyError(503, "Feature not enabled.")
+      expect.toMatchMonkeyError(new MonkeyError(503, "Feature not enabled."))
     );
   });
   it("should fail for invalid path", async () => {
@@ -87,7 +91,9 @@ describe("configuration middleware", () => {
 
     //THEN
     expect(next).toHaveBeenCalledWith(
-      new MonkeyError(503, 'Invalid configuration path: "invalid.path"')
+      expect.toMatchMonkeyError(
+        new MonkeyError(500, 'Invalid configuration path: "invalid.path"')
+      )
     );
   });
   it("should fail for undefined value", async () => {
@@ -102,9 +108,11 @@ describe("configuration middleware", () => {
 
     //THEN
     expect(next).toHaveBeenCalledWith(
-      new MonkeyError(
-        500,
-        'Required configuration doesnt exist: "admin.endpointsEnabled"'
+      expect.toMatchMonkeyError(
+        new MonkeyError(
+          500,
+          'Required configuration doesnt exist: "admin.endpointsEnabled"'
+        )
       )
     );
   });
@@ -120,9 +128,11 @@ describe("configuration middleware", () => {
 
     //THEN
     expect(next).toHaveBeenCalledWith(
-      new MonkeyError(
-        500,
-        'Required configuration doesnt exist: "admin.endpointsEnabled"'
+      expect.toMatchMonkeyError(
+        new MonkeyError(
+          500,
+          'Required configuration doesnt exist: "admin.endpointsEnabled"'
+        )
       )
     );
   });
@@ -138,9 +148,11 @@ describe("configuration middleware", () => {
 
     //THEN
     expect(next).toHaveBeenCalledWith(
-      new MonkeyError(
-        500,
-        'Required configuration is not a boolean: "admin.endpointsEnabled"'
+      expect.toMatchMonkeyError(
+        new MonkeyError(
+          500,
+          'Required configuration is not a boolean: "admin.endpointsEnabled"'
+        )
       )
     );
   });
@@ -171,7 +183,9 @@ describe("configuration middleware", () => {
     await handler(req, res, next);
 
     //THEN
-    expect(next).toHaveBeenCalledWith(new MonkeyError(503, "admin disabled"));
+    expect(next).toHaveBeenCalledWith(
+      expect.toMatchMonkeyError(new MonkeyError(503, "admin disabled"))
+    );
   });
 });
 

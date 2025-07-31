@@ -1,5 +1,6 @@
 import type { Assertion, AsymmetricMatchersContaining } from "vitest";
 import type { Test as SuperTest } from "supertest";
+import MonkeyError from "../src/utils/error";
 
 type ExpectedRateLimit = {
   /** max calls */
@@ -10,10 +11,18 @@ type ExpectedRateLimit = {
 interface RestRequestMatcher<R = Supertest> {
   toBeRateLimited: (expected: ExpectedRateLimit) => RestRequestMatcher<R>;
 }
+interface ThrowMatcher {
+  toMatchMonkeyError: (expected: {
+    status: number;
+    message: string;
+  }) => MatcherResult;
+}
 
 declare module "vitest" {
-  interface Assertion<T = any> extends RestRequestMatcher<T> {}
-  interface AsymmetricMatchersContaining extends RestRequestMatcher {}
+  interface Assertion<T = any> extends RestRequestMatcher<T>, ThrowMatcher {}
+  interface AsymmetricMatchersContaining
+    extends RestRequestMatcher,
+      ThrowMatcher {}
 }
 
 interface MatcherResult {

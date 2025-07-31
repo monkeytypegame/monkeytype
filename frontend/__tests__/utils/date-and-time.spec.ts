@@ -17,8 +17,8 @@ describe("date-and-time", () => {
     const localeMock = vi.spyOn(Intl, "Locale");
 
     beforeEach(() => {
-      languageMock.mockReset();
-      localeMock.mockReset();
+      languageMock.mockClear();
+      localeMock.mockClear();
     });
 
     it("fallback to sunday for missing language", () => {
