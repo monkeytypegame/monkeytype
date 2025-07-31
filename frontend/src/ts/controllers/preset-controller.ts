@@ -3,7 +3,6 @@ import * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";
-import { migrateConfig, replaceLegacyValues } from "../utils/config";
 import * as TagController from "./tag-controller";
 import { SnapshotPreset } from "../constants/default-snapshot";
 
@@ -17,7 +16,7 @@ export async function apply(_id: string): Promise<void> {
   }
 
   await UpdateConfig.apply(
-    migrateConfig(replaceLegacyValues(presetToApply.config)),
+    presetToApply.config,
     !isPartialPreset(presetToApply)
   );
 
