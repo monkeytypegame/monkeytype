@@ -1170,6 +1170,31 @@ describe("Config", () => {
         expect(applied).toEqual(expected);
       });
     });
+
+    it("should apply a partial config but keep the rest unchanged", () => {
+      replaceConfig({
+        numbers: true,
+      });
+      Config.apply({
+        punctuation: true,
+      });
+      const config = getConfig();
+      expect(config.numbers).toBe(true);
+    });
+
+    it("should reset all values to default if fullReset is true", () => {
+      replaceConfig({
+        numbers: true,
+      });
+      Config.apply(
+        {
+          punctuation: true,
+        },
+        true
+      );
+      const config = getConfig();
+      expect(config.numbers).toBe(false);
+    });
   });
 });
 

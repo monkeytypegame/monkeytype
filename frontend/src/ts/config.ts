@@ -811,14 +811,15 @@ const lastConfigsToApply: Set<keyof Config> = new Set([
 ]);
 
 export async function apply(
-  configToApply: Config | Partial<Config>
+  configToApply: Config | Partial<Config>,
+  fullReset = false
 ): Promise<void> {
   if (configToApply === undefined || configToApply === null) return;
 
   ConfigEvent.dispatch("fullConfigChange");
 
   const defaultConfig = getDefaultConfig();
-  for (const key of typedKeys(defaultConfig)) {
+  for (const key of typedKeys(fullReset ? defaultConfig : configToApply)) {
     //@ts-expect-error this is fine, both are of type config
     config[key] = defaultConfig[key];
   }
@@ -875,7 +876,7 @@ export async function loadFromLocalStorage(): Promise<void> {
   if (newConfig === undefined) {
     await reset();
   } else {
-    await apply(newConfig);
+    await apply(newConfig, true);
     saveFullConfigToLocalStorage(true);
   }
   loadDone();
@@ -908,7 +909,7 @@ export async function applyFromJson(json: string): Promise<void> {
         },
       }
     );
-    await apply(parsedConfig);
+    await apply(parsedConfig, true);
     saveFullConfigToLocalStorage();
     Notifications.add("Done", 1);
   } catch (e) {
