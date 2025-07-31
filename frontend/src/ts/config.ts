@@ -813,7 +813,7 @@ const lastConfigsToApply: Set<keyof Config> = new Set([
 export async function apply(
   configToApply: Config | Partial<Config>
 ): Promise<void> {
-  if (configToApply === undefined) return;
+  if (configToApply === undefined || configToApply === null) return;
 
   ConfigEvent.dispatch("fullConfigChange");
 
@@ -823,43 +823,39 @@ export async function apply(
     config[key] = defaultConfig[key];
   }
 
-  if (configToApply !== undefined && configToApply !== null) {
-    const keysToAppy = typedKeys(configToApply);
-    const configKeysToReset: (keyof Config)[] = [];
+  const keysToAppy = typedKeys(configToApply);
+  const configKeysToReset: (keyof Config)[] = [];
 
-    const firstToApply = keysToAppy.filter(
-      (key) => !lastConfigsToApply.has(key)
-    );
+  const firstToApply = keysToAppy.filter((key) => !lastConfigsToApply.has(key));
 
-    //keep the order from lastConfigsToApply
-    const lastToApplySorted = Array.from(lastConfigsToApply.values()).filter(
-      (key) => keysToAppy.includes(key)
-    );
+  //keep the order from lastConfigsToApply
+  const lastToApplySorted = Array.from(lastConfigsToApply.values()).filter(
+    (key) => keysToAppy.includes(key)
+  );
 
-    for (const configKey of [...firstToApply, ...lastToApplySorted]) {
-      const configValue = configToApply[
-        configKey
-      ] as ConfigSchemas.Config[keyof Config];
+  for (const configKey of [...firstToApply, ...lastToApplySorted]) {
+    const configValue = configToApply[
+      configKey
+    ] as ConfigSchemas.Config[keyof Config];
 
-      const set = genericSet(configKey, configValue, true);
+    const set = genericSet(configKey, configValue, true);
 
-      if (!set) {
-        configKeysToReset.push(configKey);
-      }
+    if (!set) {
+      configKeysToReset.push(configKey);
     }
-
-    for (const key of configKeysToReset) {
-      saveToLocalStorage(key);
-    }
-
-    ConfigEvent.dispatch(
-      "configApplied",
-      undefined,
-      undefined,
-      undefined,
-      config
-    );
   }
+
+  for (const key of configKeysToReset) {
+    saveToLocalStorage(key);
+  }
+
+  ConfigEvent.dispatch(
+    "configApplied",
+    undefined,
+    undefined,
+    undefined,
+    config
+  );
   ConfigEvent.dispatch("fullConfigChangeFinished");
 }
 
