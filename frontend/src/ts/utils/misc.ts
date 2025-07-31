@@ -739,7 +739,7 @@ export function sanitize<T extends z.ZodTypeAny>(
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return Object.fromEntries(
+  const cleanedObject = Object.fromEntries(
     Object.entries(obj)
       .map(([key, value]) => {
         if (!errors.has(key)) {
@@ -764,6 +764,15 @@ export function sanitize<T extends z.ZodTypeAny>(
       })
       .filter((it) => it[1] !== undefined)
   ) as z.infer<T>;
+
+  const cleanValidate = schema.safeParse(cleanedObject);
+  if (cleanValidate.success) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return cleanValidate.data;
+  }
+  throw new Error(
+    "unable to sanitize:  " + cleanValidate.error.errors.join(",")
+  );
 }
 
 export function triggerResize(): void {

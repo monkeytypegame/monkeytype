@@ -231,11 +231,14 @@ describe("misc.ts", () => {
     });
   });
   describe("sanitize function", () => {
-    const schema = z.object({
-      name: z.string(),
-      age: z.number().positive(),
-      tags: z.array(z.string()),
-    });
+    const schema = z
+      .object({
+        name: z.string(),
+        age: z.number().positive(),
+        tags: z.array(z.string()),
+      })
+      .partial()
+      .strip();
 
     it("should return the same object if it is valid", () => {
       const obj = { name: "Alice", age: 30, tags: ["developer", "coder"] };
@@ -289,6 +292,15 @@ describe("misc.ts", () => {
         name: "bob",
         age: 30,
         tags: ["developer", "coder"],
+        powerLevel: 9001,
+      } as any;
+      const stripped = sanitize(schema.strip(), obj);
+      expect(stripped).not.toHaveProperty("powerLevel");
+    });
+    it("should strip extra keys on error", () => {
+      const obj = {
+        name: "bob",
+        age: 30,
         powerLevel: 9001,
       } as any;
       const stripped = sanitize(schema.strip(), obj);
