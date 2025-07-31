@@ -823,17 +823,21 @@ export async function apply(
     config[key] = defaultConfig[key];
   }
 
-  const keysToAppy = typedKeys(configToApply);
+  const partialKeys = typedKeys(configToApply);
+  const partialKeysToApplyFirst = partialKeys.filter(
+    (key) => !lastConfigsToApply.has(key)
+  );
+  const partialKeysToApplyLast = Array.from(lastConfigsToApply.values()).filter(
+    (key) => partialKeys.includes(key)
+  );
+  const partialKeysToApply = [
+    ...partialKeysToApplyFirst,
+    ...partialKeysToApplyLast,
+  ];
+
   const configKeysToReset: (keyof Config)[] = [];
 
-  const firstToApply = keysToAppy.filter((key) => !lastConfigsToApply.has(key));
-
-  //keep the order from lastConfigsToApply
-  const lastToApplySorted = Array.from(lastConfigsToApply.values()).filter(
-    (key) => keysToAppy.includes(key)
-  );
-
-  for (const configKey of [...firstToApply, ...lastToApplySorted]) {
+  for (const configKey of partialKeysToApply) {
     const configValue = configToApply[
       configKey
     ] as ConfigSchemas.Config[keyof Config];
