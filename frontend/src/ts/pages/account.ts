@@ -22,7 +22,7 @@ import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import { Auth } from "../firebase";
+import { getAuthenticatedUser } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
@@ -1370,7 +1370,7 @@ export const page = new Page({
     void update().then(() => {
       void updateChartColors();
       $(".pageAccount .content .accountVerificatinNotice").remove();
-      if (Auth?.currentUser?.emailVerified === false) {
+      if (getAuthenticatedUser()?.emailVerified === false) {
         $(".pageAccount .content").prepend(
           `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`
         );

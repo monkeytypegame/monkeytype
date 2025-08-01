@@ -4,9 +4,8 @@ import {
   tsRestFetchApi,
   type ApiFetcherArgs,
 } from "@ts-rest/core";
-import { getIdToken } from "firebase/auth";
 import { envConfig } from "../../constants/env-config";
-import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
+import { getIdToken } from "../../firebase";
 import {
   COMPATIBILITY_CHECK,
   COMPATIBILITY_CHECK_HEADER,
@@ -30,8 +29,8 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
 }> {
   return async (request: ApiFetcherArgs) => {
     try {
-      if (isAuthenticated()) {
-        const token = await getIdToken(getAuthenticatedUser());
+      const token = await getIdToken();
+      if (token !== null) {
         request.headers["Authorization"] = `Bearer ${token}`;
       }
 

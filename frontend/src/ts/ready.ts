@@ -8,8 +8,12 @@ import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
 import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { loadPromise } from "./config";
+import { init } from "./firebase";
+import { readyFunction } from "./controllers/account-controller";
 
 $(async (): Promise<void> => {
+  await init(readyFunction);
+
   await loadPromise;
 
   //this line goes back to pretty much the beginning of the project and im pretty sure its here

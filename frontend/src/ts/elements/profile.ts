@@ -14,7 +14,7 @@ import Format from "../utils/format";
 import { UserProfile, RankAndCount } from "@monkeytype/schemas/users";
 import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
 import { secondsToString } from "../utils/date-and-time";
-import { Auth } from "../firebase";
+import { getAuthenticatedUser } from "../firebase";
 import { Snapshot } from "../constants/default-snapshot";
 import { getAvatarElement } from "../utils/discord-avatar";
 
@@ -320,7 +320,7 @@ export async function update(
     }
   }
 
-  if (profile.uid === Auth?.currentUser?.uid) {
+  if (profile.uid === getAuthenticatedUser()?.uid) {
     profileElement.find(".userReportButton").addClass("hidden");
   } else {
     profileElement.find(".userReportButton").removeClass("hidden");
