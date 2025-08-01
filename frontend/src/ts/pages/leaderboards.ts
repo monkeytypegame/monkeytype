@@ -272,7 +272,8 @@ async function requestData(update = false): Promise<void> {
     rank: undefined | (() => Promise<TRank>);
     data: () => Promise<TData>;
   } => ({
-    rank: async () => rank({ query: baseQuery }),
+    rank: async () =>
+      rank({ query: { ...baseQuery, friendsOnly: state.friendsOnly } }),
     data: async () =>
       data({
         query: {
@@ -668,9 +669,12 @@ function fillUser(): void {
     }
 
     const userData = state.userData;
-    const percentile = (userData.rank / state.count) * 100;
+    const rank = state.friendsOnly
+      ? (userData.friendsRank as number)
+      : userData.rank;
+    const percentile = (rank / state.count) * 100;
     let percentileString = `Top ${percentile.toFixed(2)}%`;
-    if (userData.rank === 1) {
+    if (rank === 1) {
       percentileString = "GOAT";
     }
 
@@ -702,9 +706,7 @@ function fillUser(): void {
 
     const html = `
           <div class="rank">${
-            userData.rank === 1
-              ? '<i class="fas fa-fw fa-crown"></i>'
-              : userData.rank
+            rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : rank
           }</div>
         <div class="userInfo">
           <div class="top">You (${percentileString})</div>
@@ -757,6 +759,8 @@ function fillUser(): void {
     }
 
     const userData = state.userData;
+
+    //todo use friend rank
     const percentile = (userData.rank / state.count) * 100;
     let percentileString = `Top ${percentile.toFixed(2)}%`;
     if (userData.rank === 1) {
@@ -916,6 +920,15 @@ function updateTypeButtons(): void {
 }
 
 function updateFriendsOnlyButton(): void {
+  const friendsOnlyGroup = $(
+    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons"
+  );
+  if (ServerConfiguration.get()?.friends.enabled ?? false) {
+    friendsOnlyGroup.removeClass("hidden");
+  } else {
+    friendsOnlyGroup.addClass("hidden");
+  }
+
   const friendsOnlyButton = $(
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .friendsOnly"
   );

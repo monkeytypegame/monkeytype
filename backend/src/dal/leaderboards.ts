@@ -9,7 +9,7 @@ import {
 } from "../init/configuration";
 
 import { addLog } from "./logs";
-import { Collection, Filter, ObjectId } from "mongodb";
+import { Collection, Document, ObjectId } from "mongodb";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import { omit } from "lodash";
 import { DBUser, getUsersCollection } from "./user";
@@ -44,27 +44,25 @@ export async function get(
   const skip = page * pageSize;
   const limit = pageSize;
 
-  let filter: Filter<DBLeaderboardEntry> = {};
+  const pipeline: Document[] = [{ $skip: skip }, { $limit: limit }];
 
   if (userIds !== undefined) {
-    filter.uid = { $in: userIds };
+    pipeline.splice(0, 0, { $match: { uid: { $in: userIds } } });
+    pipeline.splice(1, 0, {
+      $setWindowFields: {
+        sortBy: { rank: 1 },
+        output: { friendsRank: { $documentNumber: {} } },
+      },
+    });
   }
 
   try {
-    let leaderboard = await getCollection({ language, mode, mode2 })
-      .find(filter)
-      .sort({ rank: 1 })
-      .skip(skip)
-      .limit(limit)
-      .toArray();
+    let leaderboard = (await getCollection({ language, mode, mode2 })
+      .aggregate(pipeline)
+      .toArray()) as DBLeaderboardEntry[];
 
     if (!premiumFeaturesEnabled) {
       leaderboard = leaderboard.map((it) => omit(it, "isPremium"));
-    }
-
-    if (userIds !== undefined) {
-      let friendsRank = skip + 1;
-      leaderboard.forEach((it) => (it.friendsRank = friendsRank++));
     }
 
     return leaderboard;
@@ -109,14 +107,34 @@ export async function getRank(
   mode: string,
   mode2: string,
   language: string,
-  uid: string
-): Promise<LeaderboardEntry | null | false> {
+  uid: string,
+  userIds?: string[]
+): Promise<DBLeaderboardEntry | null | false> {
   try {
-    const entry = await getCollection({ language, mode, mode2 }).findOne({
-      uid,
-    });
+    if (userIds === undefined) {
+      const entry = await getCollection({ language, mode, mode2 }).findOne({
+        uid,
+      });
 
-    return entry;
+      return entry;
+    } else if (userIds.length === 0) {
+      return null;
+    } else {
+      const entry = await getCollection({ language, mode, mode2 })
+        .aggregate([
+          { $match: { uid: { $in: userIds } } },
+          {
+            $setWindowFields: {
+              sortBy: { rank: 1 },
+              output: { friendsRank: { $documentNumber: {} } },
+            },
+          },
+          { $match: { uid } },
+        ])
+        .toArray();
+
+      return entry[0] as DBLeaderboardEntry;
+    }
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {
