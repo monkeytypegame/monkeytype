@@ -126,16 +126,17 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   for (const button of quoteGroupButtons) {
     button.addEventListener("click", (e) => {
       const target = e.currentTarget as HTMLElement;
-      const len = parseInt(
-        target.getAttribute("data-quoteLength") ?? "0",
-        10
-      ) as QuoteLength;
+      const lenAttr = target.getAttribute("data-quoteLength") ?? "0";
 
-      if (len === -2) {
+      if (lenAttr === "all") {
+        UpdateConfig.setQuoteLengthAll();
+      } else if (lenAttr === "-2") {
         void QuoteSearchModal.show({
           modalChain: modal,
         });
+        return;
       } else {
+        const len = parseInt(lenAttr, 10) as QuoteLength;
         let arr: QuoteLengthConfig = [];
 
         if ((e as MouseEvent).shiftKey) {
@@ -145,9 +146,9 @@ async function setup(modalEl: HTMLElement): Promise<void> {
         }
 
         UpdateConfig.setQuoteLength(arr, false);
-        ManualRestart.set();
-        TestLogic.restart();
       }
+      ManualRestart.set();
+      TestLogic.restart();
     });
   }
 
