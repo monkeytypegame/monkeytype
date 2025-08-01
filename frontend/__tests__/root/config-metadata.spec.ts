@@ -145,7 +145,7 @@ describe("ConfigMeta", () => {
     }> = {
       funbox: [
         {
-          value: "gibberish" as any,
+          value: ["gibberish"],
           given: { mode: "quote" },
           fail: true,
         },
