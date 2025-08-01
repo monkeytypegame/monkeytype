@@ -45,7 +45,8 @@ export async function getLeaderboard(
     mode2,
     language,
     page,
-    pageSize
+    pageSize,
+    req.ctx.configuration.users.premium.enabled
   );
 
   if (leaderboard === false) {

@@ -1,15 +1,8 @@
 import { afterAll, beforeAll, afterEach } from "vitest";
-import { isIntegrationTest } from "./__integration__";
 import { BASE_CONFIGURATION } from "../src/constants/base-configuration";
 import { setupCommonMocks } from "./setup-common-mocks";
 
 process.env["MODE"] = "dev";
-//process.env["MONGOMS_DISTRO"] = "ubuntu-22.04";
-
-if (isIntegrationTest) {
-  console.error("wrong environment");
-  process.exit();
-}
 
 if (!process.env["REDIS_URI"]) {
   // use mock if not set
@@ -43,7 +36,7 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  //noting
+  //nothing
 });
 
 afterAll(async () => {

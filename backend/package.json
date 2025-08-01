@@ -98,9 +98,9 @@
     "oxlint": "1.8.0",
     "readline-sync": "1.4.10",
     "supertest": "6.2.3",
+    "testcontainers": "11.4.0",
     "tsx": "4.16.2",
     "typescript": "5.5.4",
-    "vitest": "2.1.9",
-    "vitest-mongodb": "1.0.0"
+    "vitest": "2.1.9"
   }
 }
