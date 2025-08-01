@@ -21,11 +21,13 @@ export function init(
   }
   $("#testActivity").removeClass("hidden");
 
-  yearSelector = getYearSelector();
-  initYearSelector(
-    "current",
-    safeNumber(userSignUpDate?.getFullYear()) ?? 2022
-  );
+  if (document.querySelector("#testActivity .yearSelect") !== null) {
+    yearSelector = getYearSelector();
+    initYearSelector(
+      "current",
+      safeNumber(userSignUpDate?.getFullYear()) ?? 2022
+    );
+  }
   updateLabels(calendar.firstDayOfWeek);
   update(calendar);
 }
