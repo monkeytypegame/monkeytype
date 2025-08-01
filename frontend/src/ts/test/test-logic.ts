@@ -1470,23 +1470,26 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "1");
-
-  if (len === -2) return; // -2 is handled elsewhere (search)
-
-  let arr: QuoteLengthConfig = [];
-  if (len === -1) {
-    arr = [0, 1, 2, 3];
-  } else if (e.shiftKey) {
-    arr = [...Config.quoteLength, len as QuoteLength];
+  const lenAttr = $(e.currentTarget).attr("quoteLength");
+  if (lenAttr === "all") {
+    UpdateConfig.setQuoteLengthAll();
   } else {
-    arr = [len as QuoteLength];
-  }
+    const len = parseInt(lenAttr ?? "1") as QuoteLength;
+    if (len === -2) return; // -2 is handled elsewhere (search)
 
-  if (UpdateConfig.setQuoteLength(arr, false)) {
-    ManualRestart.set();
-    restart();
+    let arr: QuoteLengthConfig = [];
+    if (e.shiftKey) {
+      arr = [...Config.quoteLength, len];
+    } else {
+      arr = [len];
+    }
+
+    if (!UpdateConfig.setQuoteLength(arr, false)) {
+      return;
+    }
   }
+  ManualRestart.set();
+  restart();
 });
 
 $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
