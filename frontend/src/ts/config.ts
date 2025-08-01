@@ -20,7 +20,11 @@ import { Config, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Language } from "@monkeytype/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
-import { migrateConfig } from "./utils/config";
+import {
+  migrateConfig,
+  replaceLegacyValues,
+  sanitizeConfig,
+} from "./utils/config";
 import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
@@ -820,6 +824,9 @@ export async function apply(
   fullReset = false
 ): Promise<void> {
   if (configToApply === undefined || configToApply === null) return;
+
+  //remove additional keys, migrate old values if needed
+  configToApply = sanitizeConfig(replaceLegacyValues(configToApply));
 
   ConfigEvent.dispatch("fullConfigChange");
 
