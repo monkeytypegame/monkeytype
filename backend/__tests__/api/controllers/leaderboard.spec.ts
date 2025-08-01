@@ -161,6 +161,7 @@ describe("Loaderboard Controller", () => {
 
     it("should get for friendsOnly", async () => {
       //GIVEN
+      await enableFriendsFeature(true);
       getLeaderboardMock.mockResolvedValue([]);
       getFriendsUidsMock.mockResolvedValue(["uidOne", "uidTwo"]);
       getLeaderboardCountMock.mockResolvedValue(2);
@@ -311,7 +312,7 @@ describe("Loaderboard Controller", () => {
 
       const entryId = new ObjectId();
       const resultEntry = {
-        _id: entryId.toHexString(),
+        _id: entryId,
         wpm: 10,
         acc: 80,
         timestamp: 1200,
@@ -333,14 +334,15 @@ describe("Loaderboard Controller", () => {
       //THEN
       expect(body).toEqual({
         message: "Rank retrieved",
-        data: resultEntry,
+        data: { ...resultEntry, _id: undefined },
       });
 
       expect(getLeaderboardRankMock).toHaveBeenCalledWith(
         "time",
         "60",
         "english",
-        uid
+        uid,
+        undefined
       );
     });
     it("should get with ape key", async () => {
@@ -1299,6 +1301,16 @@ async function dailyLeaderboardEnabled(enabled: boolean): Promise<void> {
 async function weeklyLeaderboardEnabled(enabled: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {
     leaderboards: { weeklyXp: { enabled } },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}
+
+async function enableFriendsFeature(enabled: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    friends: { enabled: { enabled } },
   });
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
