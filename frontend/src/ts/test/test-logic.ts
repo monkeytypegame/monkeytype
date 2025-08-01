@@ -1442,23 +1442,22 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  const len = parseInt(
-    $(e.currentTarget).attr("quoteLength") ?? "1"
-  ) as QuoteLength;
+  const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "1");
 
-  if (len !== -2) {
-    let arr: QuoteLengthConfig = [];
+  if (len === -2) return; // -2 is handled elsewhere (search)
 
-    if (e.shiftKey) {
-      arr = [...Config.quoteLength, len];
-    } else {
-      arr = [len];
-    }
+  let arr: QuoteLengthConfig = [];
+  if (len === -1) {
+    arr = [0, 1, 2, 3];
+  } else if (e.shiftKey) {
+    arr = [...Config.quoteLength, len as QuoteLength];
+  } else {
+    arr = [len as QuoteLength];
+  }
 
-    if (UpdateConfig.setQuoteLength(arr, false)) {
-      ManualRestart.set();
-      restart();
-    }
+  if (UpdateConfig.setQuoteLength(arr, false)) {
+    ManualRestart.set();
+    restart();
   }
 });
 
