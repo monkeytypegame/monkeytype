@@ -4,11 +4,6 @@ import { setupCommonMocks } from "./setup-common-mocks";
 
 process.env["MODE"] = "dev";
 
-if (!process.env["REDIS_URI"]) {
-  // use mock if not set
-  process.env["REDIS_URI"] = "redis://mock";
-}
-
 beforeAll(async () => {
   //don't add any configuration here, add to global-setup.ts instead.
 
