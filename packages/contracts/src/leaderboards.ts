@@ -57,7 +57,9 @@ export type GetLeaderboardResponse = z.infer<
 
 //--------------------------------------------------------------------------
 
-export const GetLeaderboardRankQuerySchema = LanguageAndModeQuerySchema;
+export const GetLeaderboardRankQuerySchema = LanguageAndModeQuerySchema.merge(
+  FriendsOnlyQuerySchema
+);
 export type GetLeaderboardRankQuery = z.infer<
   typeof GetLeaderboardRankQuerySchema
 >;
