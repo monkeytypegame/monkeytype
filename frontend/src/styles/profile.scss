@@ -505,10 +505,7 @@
 #testActivity {
   margin-top: 2rem;
 
-  .year {
-    text-align: right;
-    font-size: var(--font-size);
-    color: var(--sub-color);
-    align-self: center;
+  .top {
+    grid-template-areas: "title title legend";
   }
 }

@@ -51,7 +51,7 @@ const githubInput = $("#editProfileModal .github");
 const websiteInput = $("#editProfileModal .website");
 const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
 const showActivityOnPublicProfileInput = document.querySelector(
-  "#editProfileShowActivityOnPublicProfile"
+  "#editProfileModal .editProfileShowActivityOnPublicProfile"
 ) as HTMLInputElement;
 
 const indicators = [

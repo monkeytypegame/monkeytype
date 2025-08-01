@@ -202,6 +202,9 @@ async function update(options: UpdateOptions): Promise<void> {
           firstDayOfTheWeek
         );
         TestActivity.init(calendar);
+        $("#testActivity .top .title").html(
+          $("#testActivity .top .title").html() + " in last 12 months"
+        );
       } else {
         document.getElementById("testActivity")?.classList.add("hidden");
       }
