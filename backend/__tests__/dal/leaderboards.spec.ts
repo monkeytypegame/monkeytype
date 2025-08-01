@@ -269,11 +269,144 @@ describe("LeaderboardsDal", () => {
       expect(result[0]?.isPremium).toBeUndefined();
     });
   });
+  describe("get", () => {
+    it("should get for page", async () => {
+      //GIVEN
+      const _rank1 = await createUser(lbBests(pb(90), pb(105, 90, 2)));
+      const _rank2 = await createUser(lbBests(undefined, pb(100, 90, 1)));
+      const rank3 = await createUser(lbBests(undefined, pb(95, 80, 2)));
+      const rank4 = await createUser(lbBests(undefined, pb(90, 100, 1)));
+      await LeaderboardsDal.update("time", "60", "english");
+
+      //WHEN
+
+      const result = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        1,
+        2
+      )) as LeaderboardsDal.DBLeaderboardEntry[];
+
+      //THEN
+      const lb = result.map((it) => _.omit(it, ["_id"]));
+
+      expect(lb).toEqual([
+        expectedLbEntry("60", { rank: 3, user: rank3 }),
+        expectedLbEntry("60", { rank: 4, user: rank4 }),
+      ]);
+    });
+    it("should get for friends only", async () => {
+      //GIVEN
+      const rank1 = await createUser(lbBests(pb(90), pb(100, 90, 2)));
+      const _rank2 = await createUser(lbBests(undefined, pb(100, 90, 1)));
+      const _rank3 = await createUser(lbBests(undefined, pb(100, 80, 2)));
+      const rank4 = await createUser(lbBests(undefined, pb(90, 100, 1)));
+      await LeaderboardsDal.update("time", "60", "english");
+
+      //WHEN
+
+      const result = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        0,
+        50,
+        [rank1.uid, rank4.uid]
+      )) as LeaderboardsDal.DBLeaderboardEntry[];
+
+      //THEN
+      const lb = result.map((it) => _.omit(it, ["_id"]));
+
+      expect(lb).toEqual([
+        expectedLbEntry("60", { rank: 1, user: rank1, friendsRank: 1 }),
+        expectedLbEntry("60", { rank: 4, user: rank4, friendsRank: 2 }),
+      ]);
+    });
+    it("should get for friends only with page", async () => {
+      //GIVEN
+      const rank1 = await createUser(lbBests(pb(90), pb(105, 90, 2)));
+      const rank2 = await createUser(lbBests(undefined, pb(100, 90, 1)));
+      const _rank3 = await createUser(lbBests(undefined, pb(95, 80, 2)));
+      const rank4 = await createUser(lbBests(undefined, pb(90, 100, 1)));
+      await LeaderboardsDal.update("time", "60", "english");
+
+      //WHEN
+
+      const result = (await LeaderboardsDal.get("time", "60", "english", 1, 2, [
+        rank1.uid,
+        rank2.uid,
+        rank4.uid,
+      ])) as LeaderboardsDal.DBLeaderboardEntry[];
+
+      //THEN
+      const lb = result.map((it) => _.omit(it, ["_id"]));
+
+      expect(lb).toEqual([
+        expectedLbEntry("60", { rank: 4, user: rank4, friendsRank: 3 }),
+      ]);
+    });
+  });
+  describe("getCount / getRank", () => {
+    it("should get count", async () => {
+      //GIVEN
+      await createUser(lbBests(undefined, pb(105)));
+      await createUser(lbBests(undefined, pb(100)));
+      const me = await createUser(lbBests(undefined, pb(95)));
+      await createUser(lbBests(undefined, pb(90)));
+      await LeaderboardsDal.update("time", "60", "english");
+
+      //WHEN / THEN
+
+      expect(await LeaderboardsDal.getCount("time", "60", "english")) //
+        .toEqual(4);
+      expect(await LeaderboardsDal.getRank("time", "60", "english", me.uid)) //
+        .toEqual(
+          expect.objectContaining({
+            wpm: 95,
+            rank: 3,
+            name: me.name,
+            uid: me.uid,
+          })
+        );
+    });
+    it("should get for friends only", async () => {
+      //GIVEN
+      const friendOne = await createUser(lbBests(undefined, pb(105)));
+      await createUser(lbBests(undefined, pb(100)));
+      await createUser(lbBests(undefined, pb(95)));
+      const friendTwo = await createUser(lbBests(undefined, pb(90)));
+      const me = await createUser(lbBests(undefined, pb(99)));
+
+      console.log("me", me.uid);
+
+      await LeaderboardsDal.update("time", "60", "english");
+
+      const friends = [friendOne.uid, friendTwo.uid, me.uid];
+
+      //WHEN / THEN
+
+      expect(await LeaderboardsDal.getCount("time", "60", "english", friends)) //
+        .toEqual(3);
+      expect(
+        await LeaderboardsDal.getRank("time", "60", "english", me.uid, friends)
+      ) //
+        .toEqual(
+          expect.objectContaining({
+            wpm: 99,
+            rank: 3,
+            friendsRank: 2,
+            name: me.name,
+            uid: me.uid,
+          })
+        );
+    });
+  });
 });
 
 function expectedLbEntry(
   time: string,
-  { rank, user, badgeId, isPremium }: ExpectedLbEntry
+  { rank, user, badgeId, isPremium, friendsRank }: ExpectedLbEntry
 ) {
   // @ts-expect-error
   const lbBest: PersonalBest =
@@ -293,6 +426,7 @@ function expectedLbEntry(
     discordAvatar: user.discordAvatar,
     badgeId,
     isPremium,
+    friendsRank,
   };
 }
 
@@ -363,6 +497,7 @@ type ExpectedLbEntry = {
   user: UserDal.DBUser;
   badgeId?: number;
   isPremium?: boolean;
+  friendsRank?: number;
 };
 
 async function enablePremiumFeatures(premium: boolean): Promise<void> {
