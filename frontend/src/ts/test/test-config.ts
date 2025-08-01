@@ -225,7 +225,7 @@ export function updateExtras(key: string, value: ConfigValue): void {
     $("#testConfig .quoteLength .textButton").removeClass("active");
 
     if (areUnsortedArraysEqual(value as QuoteLength[], [0, 1, 2, 3])) {
-      $("#testConfig .quoteLength .textButton[quoteLength='-1']").addClass(
+      $("#testConfig .quoteLength .textButton[quoteLength='all']").addClass(
         "active"
       );
     } else {
