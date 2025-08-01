@@ -8,7 +8,11 @@ import * as UserReportModal from "../modals/user-report";
 import * as Skeleton from "../utils/skeleton";
 import { UserProfile } from "@monkeytype/schemas/users";
 import { PersonalBests } from "@monkeytype/schemas/shared";
+import * as TestActivity from "../elements/test-activity";
+import { TestActivityCalendar } from "../elements/test-activity-calendar";
+import { getFirstDayOfTheWeek } from "../utils/date-and-time";
 
+const firstDayOfTheWeek = getFirstDayOfTheWeek();
 function reset(): void {
   $(".page.pageProfile .error").addClass("hidden");
   $(".page.pageProfile .preloader").removeClass("hidden");
@@ -149,7 +153,8 @@ function reset(): void {
             <div class="acc">-</div>
           </div>
         </div>
-      </div><div class="lbOptOutReminder hidden"></div>`);
+      </div><div class="lbOptOutReminder hidden"></div>
+      `);
 }
 
 type UpdateOptions = {
@@ -183,17 +188,23 @@ async function update(options: UpdateOptions): Promise<void> {
       $(".page.pageProfile .error").removeClass("hidden");
       $(".page.pageProfile .error .message").text(message);
     } else if (response.status === 200) {
-      window.history.replaceState(
-        null,
-        "",
-        `/profile/${response.body.data.name}`
-      );
-      await Profile.update("profile", response.body.data);
+      const profile = response.body.data;
+      window.history.replaceState(null, "", `/profile/${profile.name}`);
+      await Profile.update("profile", profile);
       // this cast is fine because pb tables can handle the partial data inside user profiles
-      PbTables.update(
-        response.body.data.personalBests as unknown as PersonalBests,
-        true
-      );
+      PbTables.update(profile.personalBests as unknown as PersonalBests, true);
+
+      if (profile.testActivity !== undefined) {
+        document.getElementById("testActivity")?.classList.remove("hidden");
+        const calendar = new TestActivityCalendar(
+          profile.testActivity.testsByDays,
+          new Date(profile.testActivity.lastDay),
+          firstDayOfTheWeek
+        );
+        TestActivity.init(calendar);
+      } else {
+        document.getElementById("testActivity")?.classList.add("hidden");
+      }
     } else {
       // $(".page.pageProfile .failedToLoad").removeClass("hidden");
       Notifications.add("Failed to load profile: " + response.body.message, -1);
