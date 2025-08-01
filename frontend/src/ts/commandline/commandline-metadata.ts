@@ -586,7 +586,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   fontFamily: {
     subgroup: {
-      options: typedKeys(Fonts).sort(),
+      options: typedKeys(Fonts).sort((a, b) => {
+        const displayA = Fonts[a]?.display ?? a.replace(/_/g, " ");
+        const displayB = Fonts[b]?.display ?? b.replace(/_/g, " ");
+        return displayA.localeCompare(displayB);
+      }),
       display: (name) =>
         Fonts[name as KnownFontName]?.display ?? name.replaceAll(/_/g, " "),
       customData: (name) => {
