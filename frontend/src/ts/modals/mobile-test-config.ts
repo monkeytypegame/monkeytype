@@ -129,7 +129,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       const lenAttr = target.getAttribute("data-quoteLength") ?? "0";
 
       if (lenAttr === "all") {
-        UpdateConfig.setQuoteLengthAll();
+        if (!UpdateConfig.setQuoteLengthAll()) return;
       } else if (lenAttr === "-2") {
         void QuoteSearchModal.show({
           modalChain: modal,
@@ -145,7 +145,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
           arr = [len];
         }
 
-        UpdateConfig.setQuoteLength(arr, false);
+        if (!UpdateConfig.setQuoteLength(arr, false)) return;
       }
       ManualRestart.set();
       TestLogic.restart();

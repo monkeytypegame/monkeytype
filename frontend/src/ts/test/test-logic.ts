@@ -1472,7 +1472,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const lenAttr = $(e.currentTarget).attr("quoteLength");
   if (lenAttr === "all") {
-    UpdateConfig.setQuoteLengthAll();
+    if (!UpdateConfig.setQuoteLengthAll()) return;
   } else {
     const len = parseInt(lenAttr ?? "1") as QuoteLength;
     if (len === -2) return; // -2 is handled elsewhere (search)
@@ -1484,9 +1484,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
       arr = [len];
     }
 
-    if (!UpdateConfig.setQuoteLength(arr, false)) {
-      return;
-    }
+    if (!UpdateConfig.setQuoteLength(arr, false)) return;
   }
   ManualRestart.set();
   restart();
