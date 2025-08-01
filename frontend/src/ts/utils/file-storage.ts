@@ -7,7 +7,7 @@ type FileDB = DBSchema & {
   };
 };
 
-type Filename = "LocalBackgroundFile";
+type Filename = "LocalBackgroundFile" | "LocalFontFamilyFile";
 
 class FileStorage {
   private dbPromise: Promise<IDBPDatabase<FileDB>>;
