@@ -79,7 +79,7 @@
     display: grid;
     // gap: .5rem;
     grid-template-areas:
-      "title empty"
+      "title title"
       "text buttons";
     grid-template-columns: 2fr 1fr;
     grid-template-rows: auto 1fr;
