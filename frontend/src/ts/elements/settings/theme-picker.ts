@@ -13,6 +13,7 @@ import * as ActivePage from "../../states/active-page";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
 import { ThemesListSorted } from "../../constants/themes";
+import { Vibrant } from "node-vibrant/browser";
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
@@ -478,6 +479,45 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
     Loader.hide();
   }
   void fillCustomButtons();
+});
+$(".pageSettings #swatchFromBackground").on("click", async () => {
+  const image = document.querySelector(".customBackground img");
+  if (image === null) {
+    throw new Error("no image found.");
+  }
+
+  const palette = await new Vibrant(image as HTMLImageElement, {
+    maxDimension: 256,
+  }).getPalette();
+
+  ThemeController.colorVars.forEach((colorName) => {
+    let color;
+    if (colorName === "--bg-color") {
+      color = palette.DarkMuted?.hex ?? "#323437";
+    } else if (colorName === "--main-color") {
+      color = palette.Vibrant?.hex ?? "#e2b714";
+    } else if (colorName === "--sub-color") {
+      color = palette.LightVibrant?.hex ?? " #646669";
+    } else if (colorName === "--sub-alt-color") {
+      color = palette.DarkVibrant?.hex ?? "#2c2e31";
+    } else if (colorName === "--caret-color") {
+      color = palette.Vibrant?.hex ?? "#e2b714";
+    } else if (colorName === "--text-color") {
+      color = palette.DarkMuted?.titleTextColor ?? "#d1d0c5";
+    } else if (colorName === "--error-color") {
+      color = "#f13322";
+    } else if (colorName === "--error-extra-color") {
+      color = "#8a120c";
+    } else if (colorName === "--colorful-error-color") {
+      color = palette.Vibrant?.hex ?? "#ca4754";
+    } else if (colorName === "--colorful-error-extra-color") {
+      color = palette.Vibrant?.hex ?? "#7e2a33";
+    }
+
+    if (color !== undefined) {
+      updateColors($(".colorPicker #" + colorName).parent(), color);
+    }
+  });
 });
 
 ConfigEvent.subscribe((eventKey) => {
