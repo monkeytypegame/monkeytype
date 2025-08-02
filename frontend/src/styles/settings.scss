@@ -515,6 +515,20 @@
           }
         }
       }
+      .colorPicker {
+        input[type="text"] {
+          border-top-left-radius: var(--roundness);
+          border-bottom-left-radius: var(--roundness);
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+        label {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+          border-top-right-radius: var(--roundness);
+          border-bottom-right-radius: var(--roundness);
+        }
+      }
     }
 
     &.fullWidth {
