@@ -13,6 +13,8 @@ import * as ActivePage from "../../states/active-page";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { captureException } from "../../sentry";
 import { ThemesListSorted } from "../../constants/themes";
+import { Vibrant } from "node-vibrant/browser";
+import { shuffle } from "../../utils/arrays";
 
 function updateActiveButton(): void {
   let activeThemeName: string = Config.theme;
@@ -478,6 +480,63 @@ $(".pageSettings #saveCustomThemeButton").on("click", async () => {
     Loader.hide();
   }
   void fillCustomButtons();
+});
+
+type Swatch = {
+  hex: string;
+  bodyTextColor: string;
+};
+
+let backgroundSwatches: Swatch[] | undefined;
+
+$(".pageSettings #swatchFromBackground").on("click", async () => {
+  const image = document.querySelector(".customBackground img");
+  if (image === null) {
+    throw new Error("no image found.");
+  }
+
+  if (backgroundSwatches === undefined) {
+    const palette = await new Vibrant(image as HTMLImageElement, {
+      maxDimension: 256,
+    }).getPalette();
+    backgroundSwatches = Array.from(Object.values(palette)).filter(
+      (it) => it !== null
+    );
+  }
+  shuffle(backgroundSwatches);
+
+  ThemeController.colorVars.forEach((colorName) => {
+    let color;
+    if (colorName === "--bg-color") {
+      color = backgroundSwatches?.[0]?.hex ?? "#323437";
+    } else if (colorName === "--main-color") {
+      color = backgroundSwatches?.[1]?.hex ?? "#e2b714";
+    } else if (colorName === "--sub-color") {
+      color = backgroundSwatches?.[2]?.hex ?? " #646669";
+    } else if (colorName === "--sub-alt-color") {
+      color = backgroundSwatches?.[3]?.hex ?? "#2c2e31";
+    } else if (colorName === "--caret-color") {
+      color = backgroundSwatches?.[4]?.hex ?? "#e2b714";
+    } else if (colorName === "--text-color") {
+      color = backgroundSwatches?.[0]?.bodyTextColor ?? "#d1d0c5";
+    } else if (colorName === "--error-color") {
+      color = "#f13322";
+    } else if (colorName === "--error-extra-color") {
+      color = "#8a120c";
+    } else if (colorName === "--colorful-error-color") {
+      color = backgroundSwatches?.[5]?.hex ?? "#ca4754";
+    } else if (colorName === "--colorful-error-extra-color") {
+      color = backgroundSwatches?.[5]?.hex ?? "#7e2a33";
+    }
+
+    if (color !== undefined) {
+      updateColors($(".colorPicker #" + colorName).parent(), color);
+    }
+  });
+});
+
+$(".pageSettings .usingLocalImage button").on("click", () => {
+  backgroundSwatches = undefined;
 });
 
 ConfigEvent.subscribe((eventKey) => {

@@ -9,6 +9,7 @@ const usingLocalImageEl = parentEl?.querySelector(".usingLocalImage");
 const separatorEl = parentEl?.querySelector(".separator");
 const uploadContainerEl = parentEl?.querySelector(".uploadContainer");
 const inputAndButtonEl = parentEl?.querySelector(".inputAndButton");
+const swatchFromBackgroundEl = document.querySelector("#swatchFromBackground");
 
 async function readFileAsDataURL(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -25,11 +26,13 @@ export async function updateUI(): Promise<void> {
     separatorEl?.classList.add("hidden");
     uploadContainerEl?.classList.add("hidden");
     inputAndButtonEl?.classList.add("hidden");
+    swatchFromBackgroundEl?.classList.remove("hidden");
   } else {
     usingLocalImageEl?.classList.add("hidden");
     separatorEl?.classList.remove("hidden");
     uploadContainerEl?.classList.remove("hidden");
     inputAndButtonEl?.classList.remove("hidden");
+    swatchFromBackgroundEl?.classList.add("hidden");
   }
 }
 
@@ -52,7 +55,7 @@ uploadContainerEl
     }
 
     // check type
-    if (!file.type.match(/image\/(jpeg|jpg|png|gif)/)) {
+    if (!file.type.match(/image\/(jpeg|jpg|png|gif|webp)/)) {
       Notifications.add("Unsupported image format", 0);
       fileInput.value = "";
       return;
