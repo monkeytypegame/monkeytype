@@ -30,10 +30,11 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
 /**
  * remove all values from the config which are not valid
  */
-function sanitizeConfig(
+export function sanitizeConfig(
   config: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
-  return sanitize(ConfigSchemas.PartialConfigSchema, config);
+  //make sure to use strip()
+  return sanitize(ConfigSchemas.PartialConfigSchema.strip(), config);
 }
 
 export function replaceLegacyValues(
