@@ -5,7 +5,7 @@ import { updateUI } from "../../elements/settings/custom-background-picker";
 
 const commands: Command[] = [
   {
-    id: "customBackgroundLocal",
+    id: "customLocalBackground",
     display: "Custom local background...",
     icon: "fa-image",
     alias: "upload background image",
