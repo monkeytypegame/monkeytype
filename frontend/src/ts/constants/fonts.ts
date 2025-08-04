@@ -16,7 +16,7 @@ export type FontConfig = {
 
 export const Fonts: Record<KnownFontName, FontConfig> = {
   Roboto_Mono: {
-    fileName: "Roboto-Regular.woff2",
+    fileName: "RobotoMono-Regular.woff2",
   },
   Noto_Naskh_Arabic: {
     fileName: "NotoNaskhArabic-Regular.woff2",
@@ -38,7 +38,7 @@ export const Fonts: Record<KnownFontName, FontConfig> = {
     fileName: "JetBrainsMono-Regular.woff2",
   },
   Roboto: {
-    fileName: "RobotoMono-Regular.woff2",
+    fileName: "Roboto-Regular.woff2",
   },
   Montserrat: {
     fileName: "Montserrat-Regular.woff2",
@@ -133,7 +133,8 @@ export const Fonts: Record<KnownFontName, FontConfig> = {
   Iosevka: {
     fileName: "Iosevka-Regular.woff2",
   },
-  "0xProto": {
+  Proto: {
+    display: "0xProto",
     fileName: "0xProto-Regular.woff2",
   },
 };

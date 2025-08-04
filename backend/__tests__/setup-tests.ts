@@ -3,7 +3,7 @@ import { BASE_CONFIGURATION } from "../src/constants/base-configuration";
 import { setupCommonMocks } from "./setup-common-mocks";
 
 process.env["MODE"] = "dev";
-
+  
 beforeAll(async () => {
   //don't add any configuration here, add to global-setup.ts instead.
 
