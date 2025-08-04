@@ -1163,9 +1163,20 @@ describe("Config", () => {
         expected: Partial<ConfigType>;
       }[] = [
         {
-          display: "quote length shouldnt override mode",
-          value: { quoteLength: [0], mode: "time" },
-          expected: { quoteLength: [0], mode: "time" },
+          display:
+            "quote length shouldnt override mode, punctuation and numbers",
+          value: {
+            punctuation: true,
+            numbers: true,
+            quoteLength: [0],
+            mode: "time",
+          },
+          expected: {
+            punctuation: true,
+            numbers: true,
+            quoteLength: [0],
+            mode: "time",
+          },
         },
       ];
 
