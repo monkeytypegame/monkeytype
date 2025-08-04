@@ -36,7 +36,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
 } from "../firebase";
-import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
@@ -309,9 +308,7 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
     "checked"
   ) as boolean;
 
-  const { data: signedInUser, error } = await tryCatch(
-    signInWithPopup(provider, rememberMe)
-  );
+  const { error } = await tryCatch(signInWithPopup(provider, rememberMe));
 
   if (error !== null) {
     if (error.message !== "") {
@@ -321,12 +318,6 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
     LoginPage.enableInputs();
     LoginPage.updateSignupButton();
     return;
-  }
-
-  if (signedInUser.isNewUser) {
-    dispatchSignUpEvent(signedInUser, true);
-  } else {
-    await loadUser(signedInUser.user);
   }
 }
 

@@ -31,6 +31,7 @@ import {
   getAnalytics as firebaseGetAnalytics,
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
 
 // Initialize Firebase
 let app: FirebaseApp | undefined;
@@ -42,9 +43,11 @@ let Auth: AuthType | undefined;
 let ignoreAuthCallback: boolean = false;
 
 type ReadyCallback = (success: boolean, user: User | null) => Promise<void>;
+let readyCallback: ReadyCallback | undefined;
 
 export async function init(callback: ReadyCallback): Promise<void> {
   try {
+    readyCallback = callback;
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
     Auth = getAuth(app);
 
@@ -124,23 +127,25 @@ export async function signInWithEmailAndPassword(
 export async function signInWithPopup(
   provider: AuthProvider,
   rememberMe: boolean
-): Promise<UserCredential & { isNewUser: boolean }> {
+): Promise<void> {
   if (Auth === undefined) throw new Error("Authentication uninitialized");
   await setPersistence(rememberMe, true);
   ignoreAuthCallback = true;
 
-  const { data: result, error } = await tryCatch(
+  const { data: signedInUser, error } = await tryCatch(
     firebaseSignInWithPopup(Auth, provider)
   );
   if (error !== null) {
     console.log(error);
     throw translateFirebaseError(error, "Failed to sign in with popup");
   }
-  const additionalUserInfo = getAdditionalUserInfo(result);
-  if (!additionalUserInfo?.isNewUser) {
+  const additionalUserInfo = getAdditionalUserInfo(signedInUser);
+  if (additionalUserInfo?.isNewUser) {
+    dispatchSignUpEvent(signedInUser, true);
+  } else {
     ignoreAuthCallback = false;
+    await readyCallback?.(true, signedInUser.user);
   }
-  return { ...result, isNewUser: additionalUserInfo?.isNewUser ?? false };
 }
 
 export async function createUserWithEmailAndPassword(
