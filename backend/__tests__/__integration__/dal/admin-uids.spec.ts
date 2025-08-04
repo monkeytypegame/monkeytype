@@ -1,8 +1,7 @@
 import { ObjectId } from "mongodb";
 import * as AdminUidsDal from "../../../src/dal/admin-uids";
-import { describeIntegration } from "..";
 
-describeIntegration()("AdminUidsDal", () => {
+describe("AdminUidsDal", () => {
   describe("isAdmin", () => {
     it("should return true for existing admin user", async () => {
       //GIVEN

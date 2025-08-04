@@ -3,9 +3,8 @@ import * as UserTestData from "../../__testData__/users";
 import * as UserDal from "../../../src/dal/user";
 import * as ResultDal from "../../../src/dal/result";
 import { DBResult } from "../../../src/utils/result";
-import { describeIntegration } from "..";
 
-describeIntegration()("testActivity migration", () => {
+describe("testActivity migration", () => {
   it("migrates users without results", async () => {
     //given
     const user1 = await UserTestData.createUser();
