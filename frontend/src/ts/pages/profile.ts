@@ -155,6 +155,7 @@ function reset(): void {
         </div>
       </div><div class="lbOptOutReminder hidden"></div>
       `);
+  $("#testActivity").addClass("hidden");
 }
 
 type UpdateOptions = {

@@ -1638,6 +1638,10 @@ body.darkMode {
     .badgeSelectionItem:hover {
       opacity: 100%;
     }
+
+    span {
+      color: var(--text-color);
+    }
   }
 }
 
