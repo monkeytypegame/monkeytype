@@ -106,8 +106,8 @@ describe("Loaderboard Controller", () => {
         "english",
         0,
         50,
-        false
-
+        false,
+        undefined
       );
 
       expect(getLeaderboardCountMock).toHaveBeenCalledWith(
@@ -115,14 +115,13 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         undefined
-
       );
     });
 
     it("should get for english time 60 with page", async () => {
       //GIVEN
       getLeaderboardMock.mockResolvedValue([]);
-      getLeaderboardCountMock.mockResolvedValue(0);
+      getLeaderboardCountMock.mockResolvedValue(42);
       const page = 0;
       const pageSize = 25;
 
@@ -155,7 +154,8 @@ describe("Loaderboard Controller", () => {
         "english",
         page,
         pageSize,
-        false
+        false,
+        undefined
       );
     });
 
@@ -188,6 +188,7 @@ describe("Loaderboard Controller", () => {
         "english",
         0,
         50,
+        false,
         ["uidOne", "uidTwo"]
       );
       expect(getLeaderboardCountMock).toHaveBeenCalledWith(
@@ -195,7 +196,6 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         ["uidOne", "uidTwo"]
->>>>>>> 7e96c814c (feat(leaderboard): add friends leaderboards (@fehmer))
       );
     });
 
