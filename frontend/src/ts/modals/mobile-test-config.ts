@@ -129,12 +129,14 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       const lenAttr = target.getAttribute("data-quoteLength") ?? "0";
 
       if (lenAttr === "all") {
-        if (!UpdateConfig.setQuoteLengthAll()) return;
+        if (UpdateConfig.setQuoteLengthAll()) {
+          ManualRestart.set();
+          TestLogic.restart();
+        }
       } else if (lenAttr === "-2") {
         void QuoteSearchModal.show({
           modalChain: modal,
         });
-        return;
       } else {
         const len = parseInt(lenAttr, 10) as QuoteLength;
         let arr: QuoteLengthConfig = [];
@@ -145,10 +147,11 @@ async function setup(modalEl: HTMLElement): Promise<void> {
           arr = [len];
         }
 
-        if (!UpdateConfig.setQuoteLength(arr, false)) return;
+        if (UpdateConfig.setQuoteLength(arr, false)) {
+          ManualRestart.set();
+          TestLogic.restart();
+        }
       }
-      ManualRestart.set();
-      TestLogic.restart();
     });
   }
 
