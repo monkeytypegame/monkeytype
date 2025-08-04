@@ -207,6 +207,11 @@ async function update(options: UpdateOptions): Promise<void> {
           $("#testActivity .top .title").html() + " in last 12 months"
         );
       } else {
+        //todo extract testactivity element into a const, stop using id
+        document
+          .getElementById("testActivity")
+          ?.querySelector(".activity")
+          ?.replaceChildren();
         document.getElementById("testActivity")?.classList.add("hidden");
       }
     } else {
