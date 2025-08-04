@@ -1479,18 +1479,18 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   } else {
     const len = parseInt(lenAttr ?? "1") as QuoteLength;
 
-  if (len !== -2) {
-    let arr: QuoteLengthConfig = [];
+    if (len !== -2) {
+      let arr: QuoteLengthConfig = [];
 
-    if (e.shiftKey) {
-      arr = [...Config.quoteLength, len];
-    } else {
-      arr = [len];
-    }
+      if (e.shiftKey) {
+        arr = [...Config.quoteLength, len];
+      } else {
+        arr = [len];
+      }
 
-    if (UpdateConfig.setQuoteLength(arr, false)) {
-      ManualRestart.set();
-      restart();
+      if (UpdateConfig.setQuoteLength(arr, false)) {
+        ManualRestart.set();
+        restart();
       }
     }
   }
