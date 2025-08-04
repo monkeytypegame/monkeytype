@@ -189,7 +189,7 @@
 
     &[data-config-name="fontFamily"] {
       grid-template-areas:
-        "title tabs"
+        "title title"
         "text tabs"
         "buttons buttons";
       .topRight {
