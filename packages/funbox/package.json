@@ -22,7 +22,7 @@
     "oxlint": "1.8.0",
     "tsup": "8.4.0",
     "typescript": "5.5.4",
-    "vitest": "2.1.9"
+    "vitest": "3.2.4"
   },
   "dependencies": {
     "@monkeytype/util": "workspace:*"

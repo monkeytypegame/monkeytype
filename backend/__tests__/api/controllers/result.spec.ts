@@ -35,7 +35,7 @@ describe("result controller test", () => {
     });
 
     afterEach(() => {
-      resultMock.mockReset();
+      resultMock.mockClear();
     });
 
     it("should get results", async () => {
@@ -338,7 +338,7 @@ describe("result controller test", () => {
     const getResultMock = vi.spyOn(ResultDal, "getResult");
 
     afterEach(() => {
-      getResultMock.mockReset();
+      getResultMock.mockClear();
     });
 
     it("should get result", async () => {
@@ -419,7 +419,7 @@ describe("result controller test", () => {
     const getLastResultMock = vi.spyOn(ResultDal, "getLastResult");
 
     afterEach(() => {
-      getLastResultMock.mockReset();
+      getLastResultMock.mockClear();
     });
 
     it("should get last result", async () => {
@@ -498,8 +498,8 @@ describe("result controller test", () => {
     const deleteAllMock = vi.spyOn(ResultDal, "deleteAll");
     const logToDbMock = vi.spyOn(LogsDal, "addLog");
     afterEach(() => {
-      deleteAllMock.mockReset();
-      logToDbMock.mockReset();
+      deleteAllMock.mockClear();
+      logToDbMock.mockClear();
     });
 
     it("should delete", async () => {
@@ -545,7 +545,7 @@ describe("result controller test", () => {
         updateTagsMock,
         getUserPartialMock,
         checkIfTagPbMock,
-      ].forEach((it) => it.mockReset());
+      ].forEach((it) => it.mockClear());
     });
 
     it("should update tags", async () => {
@@ -695,13 +695,14 @@ describe("result controller test", () => {
         userUpdateTypingStatsMock,
         resultAddMock,
         publicUpdateStatsMock,
-      ].forEach((it) => it.mockReset());
+      ].forEach((it) => it.mockClear());
 
       userGetMock.mockResolvedValue({ name: "bob" } as any);
       userUpdateStreakMock.mockResolvedValue(0);
       userCheckIfTagPbMock.mockResolvedValue([]);
       userCheckIfPbMock.mockResolvedValue(true);
       resultAddMock.mockResolvedValue({ insertedId });
+      userIncrementXpMock.mockResolvedValue();
     });
 
     it("should add result", async () => {

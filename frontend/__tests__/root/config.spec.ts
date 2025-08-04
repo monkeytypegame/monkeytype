@@ -24,7 +24,7 @@ const { configMetadata, replaceConfig, getConfig } = Config.__testing;
 describe("Config", () => {
   const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
   beforeEach(() => {
-    isDevEnvironmentMock.mockReset();
+    isDevEnvironmentMock.mockClear();
     replaceConfig({});
   });
 
@@ -395,7 +395,7 @@ describe("Config", () => {
 
       beforeEach(async () => {
         vi.useFakeTimers();
-        mocks.forEach((it) => it.mockReset());
+        mocks.forEach((it) => it.mockClear());
 
         vi.mock("../../src/ts/test/test-state", () => ({
           isActive: true,
@@ -413,7 +413,7 @@ describe("Config", () => {
         vi.useRealTimers();
       });
 
-      beforeEach(() => isDevEnvironmentMock.mockReset());
+      beforeEach(() => isDevEnvironmentMock.mockClear());
 
       it("should throw if config key in not found in metadata", () => {
         expect(() => {

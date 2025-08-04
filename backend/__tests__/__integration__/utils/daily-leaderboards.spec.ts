@@ -2,7 +2,7 @@ import { Mode, Mode2 } from "@monkeytype/schemas/shared";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import { getConnection, connect as redisSetup } from "../../../src/init/redis";
 import { Language } from "@monkeytype/schemas/languages";
-import { describeIntegration } from "..";
+
 import { RedisDailyLeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import { ObjectId } from "mongodb";
 
@@ -27,7 +27,7 @@ const dailyLeaderboardsConfig = {
   scheduleRewardsModeRules: [],
 };
 
-describeIntegration()("Daily Leaderboards", () => {
+describe("Daily Leaderboards", () => {
   beforeAll(async () => {
     await redisSetup();
   });

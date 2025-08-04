@@ -8,10 +8,10 @@ import type { PersonalBest } from "@monkeytype/schemas/shared";
 
 import * as DB from "../../../src/init/db";
 import { LbPersonalBests } from "../../../src/utils/pb";
-import { describeIntegration } from "..";
+
 import { pb } from "../../__testData__/users";
 
-describeIntegration()("LeaderboardsDal", () => {
+describe("LeaderboardsDal", () => {
   afterEach(async () => {
     await DB.collection("users").deleteMany({});
   });

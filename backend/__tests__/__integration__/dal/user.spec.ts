@@ -5,7 +5,6 @@ import { ObjectId } from "mongodb";
 import { MonkeyMail, ResultFilters } from "@monkeytype/schemas/users";
 import { PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
 import { CustomThemeColors } from "@monkeytype/schemas/configs";
-import { describeIntegration } from "..";
 
 const mockPersonalBest: PersonalBest = {
   acc: 1,
@@ -86,7 +85,7 @@ const mockResultFilter: ResultFilters = {
 
 const mockDbResultFilter = { ...mockResultFilter, _id: new ObjectId() };
 
-describeIntegration().sequential("UserDal", () => {
+describe("UserDal", () => {
   it("should be able to insert users", async () => {
     // given
     const uid = new ObjectId().toHexString();
