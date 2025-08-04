@@ -581,7 +581,11 @@ async function fillSettingsPage(): Promise<void> {
   if (fontsEl.innerHTML === "") {
     let fontsElHTML = "";
 
-    for (const name of Misc.typedKeys(Fonts).sort()) {
+    for (const name of Misc.typedKeys(Fonts).sort((a, b) =>
+      (Fonts[a].display ?? a.replace(/_/g, " ")).localeCompare(
+        Fonts[b].display ?? b.replace(/_/g, " ")
+      )
+    )) {
       const font = Fonts[name];
       let fontFamily = name.replace(/_/g, " ");
 

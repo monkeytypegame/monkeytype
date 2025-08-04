@@ -133,7 +133,8 @@ export const Fonts: Record<KnownFontName, FontConfig> = {
   Iosevka: {
     fileName: "Iosevka-Regular.woff2",
   },
-  "0xProto": {
+  Proto: {
+    display: "0xProto",
     fileName: "0xProto-Regular.woff2",
   },
 };
