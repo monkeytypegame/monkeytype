@@ -16,14 +16,14 @@ const mockApp = request(app);
 describe("DevController", () => {
   const verifyIdTokenMock = vi.spyOn(AuthUtils, "verifyIdToken");
   beforeEach(() => {
-    verifyIdTokenMock.mockReset().mockResolvedValue(mockDecodedToken);
+    verifyIdTokenMock.mockClear().mockResolvedValue(mockDecodedToken);
   });
 
   describe("generate testData", () => {
     const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
 
     beforeEach(() => {
-      isDevEnvironmentMock.mockReset();
+      isDevEnvironmentMock.mockClear();
       isDevEnvironmentMock.mockReturnValue(true);
     });
 

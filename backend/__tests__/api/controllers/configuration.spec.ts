@@ -20,9 +20,9 @@ describe("Configuration Controller", () => {
   const isAdminMock = vi.spyOn(AdminUuids, "isAdmin");
 
   beforeEach(() => {
-    isAdminMock.mockReset();
+    isAdminMock.mockClear();
     mockAuth.beforeEach();
-    isDevEnvironmentMock.mockReset();
+    isDevEnvironmentMock.mockClear();
 
     isDevEnvironmentMock.mockReturnValue(true);
     isAdminMock.mockResolvedValue(true);
@@ -106,7 +106,7 @@ describe("Configuration Controller", () => {
       "patchConfiguration"
     );
     beforeEach(() => {
-      patchConfigurationMock.mockReset();
+      patchConfigurationMock.mockClear();
       patchConfigurationMock.mockResolvedValue(true);
     });
 

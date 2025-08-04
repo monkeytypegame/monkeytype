@@ -23,7 +23,7 @@ export async function instantUpdate(): Promise<void> {
   );
 
   $("#testConfig .puncAndNum").addClass("hidden");
-  $("#testConfig .spacer").addClass("scrolled");
+  $("#testConfig .spacer").css("transition", "none").addClass("scrolled");
   $("#testConfig .time").addClass("hidden");
   $("#testConfig .wordCount").addClass("hidden");
   $("#testConfig .customText").addClass("hidden");
@@ -36,19 +36,19 @@ export async function instantUpdate(): Promise<void> {
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .time").removeClass("hidden");
 
-    updateExtras("time", Config.time);
+    updateActiveExtraButtons("time", Config.time);
   } else if (Config.mode === "words") {
     $("#testConfig .puncAndNum").removeClass("hidden");
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .wordCount").removeClass("hidden");
 
-    updateExtras("words", Config.words);
+    updateActiveExtraButtons("words", Config.words);
   } else if (Config.mode === "quote") {
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .quoteLength").removeClass("hidden");
 
-    updateExtras("quoteLength", Config.quoteLength);
+    updateActiveExtraButtons("quoteLength", Config.quoteLength);
   } else if (Config.mode === "custom") {
     $("#testConfig .puncAndNum").removeClass("hidden");
     $("#testConfig .leftSpacer").removeClass("scrolled");
@@ -56,14 +56,29 @@ export async function instantUpdate(): Promise<void> {
     $("#testConfig .customText").removeClass("hidden");
   }
 
-  updateExtras("numbers", Config.numbers);
-  updateExtras("punctuation", Config.punctuation);
+  updateActiveExtraButtons("numbers", Config.numbers);
+  updateActiveExtraButtons("punctuation", Config.punctuation);
+
+  setTimeout(() => {
+    $("#testConfig .spacer").css("transition", "");
+  }, 125);
 }
 
-export async function update(previous: Mode, current: Mode): Promise<void> {
+async function update(previous: Mode, current: Mode): Promise<void> {
   if (previous === current) return;
-  $("#testConfig .mode .textButton").removeClass("active");
-  $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
+  updateActiveModeButtons(current);
+
+  let m2;
+
+  if (Config.mode === "time") {
+    m2 = Config.time;
+  } else if (Config.mode === "words") {
+    m2 = Config.words;
+  } else if (Config.mode === "quote") {
+    m2 = Config.quoteLength;
+  }
+
+  if (m2 !== undefined) updateActiveExtraButtons(Config.mode, m2);
 
   const submenu = {
     time: "time",
@@ -202,7 +217,12 @@ export async function update(previous: Mode, current: Mode): Promise<void> {
     );
 }
 
-export function updateExtras(key: string, value: ConfigValue): void {
+function updateActiveModeButtons(mode: Mode): void {
+  $("#testConfig .mode .textButton").removeClass("active");
+  $("#testConfig .mode .textButton[mode='" + mode + "']").addClass("active");
+}
+
+function updateActiveExtraButtons(key: string, value: ConfigValue): void {
   if (key === "time") {
     $("#testConfig .time .textButton").removeClass("active");
     const timeCustom = ![15, 30, 60, 120].includes(value as number)
@@ -258,27 +278,31 @@ export function hideFavoriteQuoteLength(): void {
   $("#testConfig .quoteLength .favorite").addClass("hidden");
 }
 
+let ignoreConfigEvent = false;
+
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
+  if (eventKey === "fullConfigChange") {
+    ignoreConfigEvent = true;
+  }
+  if (eventKey === "fullConfigChangeFinished") {
+    ignoreConfigEvent = false;
+
+    void instantUpdate();
+  }
+
+  // this is here to prevent calling set / preview multiple times during a full config loading
+  // once the full config is loaded, we can apply everything once
+  if (ignoreConfigEvent) return;
+
   if (ActivePage.get() !== "test") return;
   if (eventKey === "mode") {
     void update(eventPreviousValue as Mode, eventValue as Mode);
-
-    let m2;
-
-    if (Config.mode === "time") {
-      m2 = Config.time;
-    } else if (Config.mode === "words") {
-      m2 = Config.words;
-    } else if (Config.mode === "quote") {
-      m2 = Config.quoteLength;
-    }
-
-    if (m2 !== undefined) updateExtras(Config.mode, m2);
   } else if (
     ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
       eventKey
     )
   ) {
-    if (eventValue !== undefined) updateExtras(eventKey, eventValue);
+    if (eventValue !== undefined)
+      updateActiveExtraButtons(eventKey, eventValue);
   }
 });

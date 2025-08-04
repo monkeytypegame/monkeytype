@@ -79,13 +79,30 @@
     display: grid;
     // gap: .5rem;
     grid-template-areas:
-      "title buttons"
+      "title title"
       "text buttons";
     grid-template-columns: 2fr 1fr;
     grid-template-rows: auto 1fr;
     column-gap: 2rem;
     row-gap: 0.5rem;
-    align-items: center;
+    align-items: start;
+
+    &.fullWidth {
+      // grid-template-columns: 2fr 1fr;
+      grid-template-areas:
+        "title tabs"
+        "text text"
+        "buttons buttons";
+      column-gap: 2rem;
+      // row-gap: 0.5rem;
+
+      .buttons {
+        margin-left: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
+        gap: 0.5rem;
+      }
+    }
 
     .inputAndButton {
       display: grid;
@@ -151,15 +168,8 @@
       }
     }
 
+    &[data-config-name="fontFamily"],
     &[data-config-name="customBackgroundSize"] {
-      .uploadContainer {
-        grid-column: span 2;
-        margin-bottom: 0.5em;
-        margin-top: 0.5em;
-      }
-      label.button {
-        width: 100%;
-      }
       .separator {
         margin-bottom: 0.5rem;
         grid-column: span 2;
@@ -175,6 +185,44 @@
         border-radius: 0.25em;
         background: var(--sub-alt-color);
       }
+    }
+
+    &[data-config-name="fontFamily"] {
+      grid-template-areas:
+        "title title"
+        "text tabs"
+        "buttons buttons";
+      .topRight {
+        grid-area: tabs;
+        align-self: end;
+        .separator {
+          margin-bottom: 0;
+        }
+        .usingLocalFont {
+          button {
+            width: 100%;
+          }
+        }
+        .uploadContainer {
+          label {
+            width: 100%;
+            margin-bottom: 0.5em;
+          }
+        }
+      }
+    }
+
+    &[data-config-name="customBackgroundSize"] {
+      //TOOD
+      .uploadContainer {
+        grid-column: span 2;
+        margin-bottom: 0.5em;
+        margin-top: 0.5em;
+      }
+      label.button {
+        width: 100%;
+      }
+
       .usingLocalImage {
         display: grid;
         grid-template-columns: 1fr;
@@ -251,6 +299,7 @@
       label {
         display: grid;
         place-content: center start;
+        margin-left: 0.5rem;
       }
 
       & .spacer {
@@ -467,7 +516,6 @@
     }
 
     &.themes {
-      grid-template-columns: 2fr 1fr;
       grid-template-areas:
         "title tabs"
         "text text"
@@ -514,23 +562,6 @@
             }
           }
         }
-      }
-    }
-
-    &.fullWidth {
-      grid-template-columns: 2fr 1fr;
-      grid-template-areas:
-        "title tabs"
-        "text text"
-        "buttons buttons";
-      column-gap: 2rem;
-      // row-gap: 0.5rem;
-
-      .buttons {
-        margin-left: 0;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
-        gap: 0.5rem;
       }
     }
 

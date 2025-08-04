@@ -419,6 +419,7 @@ export const LanguageSchema = z.enum(
     "viossa_njutro",
     "code_abap",
     "code_abap_1k",
+    "code_yoptascript",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
