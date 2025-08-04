@@ -20,6 +20,7 @@ import {
   AuthProvider,
   onAuthStateChanged,
   indexedDBLocalPersistence,
+  getAdditionalUserInfo,
 } from "firebase/auth";
 import { firebaseConfig } from "./constants/firebase-config";
 import * as Notifications from "./elements/notifications";
@@ -30,10 +31,16 @@ import {
   getAnalytics as firebaseGetAnalytics,
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { subscribe as subscribeToSignUpEvent } from "./observables/google-sign-up-event";
 
 // Initialize Firebase
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
+
+/**
+ * ignore auth callback. This is used during signup with google/github where we need to create the user on the backend first.
+ */
+let ignoreAuthCallback: boolean = false;
 
 type ReadyCallback = (success: boolean, user: User | null) => Promise<void>;
 
@@ -47,7 +54,9 @@ export async function init(callback: ReadyCallback): Promise<void> {
     await setPersistence(rememberMe, false);
 
     onAuthStateChanged(Auth, async (user) => {
-      await callback(true, user);
+      if (!ignoreAuthCallback) {
+        await callback(true, user);
+      }
     });
   } catch (e) {
     app = undefined;
@@ -116,9 +125,10 @@ export async function signInWithEmailAndPassword(
 export async function signInWithPopup(
   provider: AuthProvider,
   rememberMe: boolean
-): Promise<UserCredential> {
+): Promise<UserCredential & { isNewUser: boolean }> {
   if (Auth === undefined) throw new Error("Authentication uninitialized");
   await setPersistence(rememberMe, true);
+  ignoreAuthCallback = true;
 
   const { data: result, error } = await tryCatch(
     firebaseSignInWithPopup(Auth, provider)
@@ -127,7 +137,11 @@ export async function signInWithPopup(
     console.log(error);
     throw translateFirebaseError(error, "Failed to sign in with popup");
   }
-  return result;
+  const additionalUserInfo = getAdditionalUserInfo(result);
+  if (!additionalUserInfo?.isNewUser) {
+    ignoreAuthCallback = false;
+  }
+  return { ...result, isNewUser: additionalUserInfo?.isNewUser ?? false };
 }
 
 export async function createUserWithEmailAndPassword(
@@ -198,6 +212,10 @@ function translateFirebaseError(
 
   return new Error(message, { cause: error });
 }
+
+subscribeToSignUpEvent(() => {
+  ignoreAuthCallback = false;
+});
 
 //TODO refactor email-handler
 export const _Auth = Auth;

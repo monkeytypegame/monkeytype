@@ -24,7 +24,6 @@ import {
   GithubAuthProvider,
   updateProfile,
   linkWithPopup,
-  getAdditionalUserInfo,
   User as UserType,
   AuthProvider,
 } from "firebase/auth";
@@ -324,7 +323,7 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
     return;
   }
 
-  if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
+  if (signedInUser.isNewUser) {
     dispatchSignUpEvent(signedInUser, true);
   } else {
     await loadUser(signedInUser.user);
