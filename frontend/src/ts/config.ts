@@ -20,12 +20,17 @@ import { Config, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Language } from "@monkeytype/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
-import { migrateConfig } from "./utils/config";
+import {
+  migrateConfig,
+  replaceLegacyValues,
+  sanitizeConfig,
+} from "./utils/config";
 import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
-import { ConfigMetadata, configMetadata } from "./config-metadata";
+import { ConfigMetadataObject, configMetadata } from "./config-metadata";
+import { FontName } from "@monkeytype/schemas/fonts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -41,7 +46,7 @@ const configLS = new LocalStorageWithSchema({
   },
 });
 
-let config = {
+let config: Config = {
   ...getDefaultConfig(),
 };
 
@@ -84,20 +89,6 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
-// type ConfigMetadata = Partial<
-//   Record<
-//     ConfigSchemas.ConfigKey,
-//     {
-//       configKey: ConfigSchemas.ConfigKey;
-//       schema: z.ZodTypeAny;
-//       displayString?: string;
-//       preventSet: (
-//         value: ConfigSchemas.Config[keyof ConfigSchemas.Config]
-//       ) => boolean;
-//     }
-//   >
-// >;
-
 function isConfigChangeBlocked(): boolean {
   if (TestState.isActive && config.funbox.includes("no_quit")) {
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
@@ -113,9 +104,17 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
   value: ConfigSchemas.Config[T],
   nosave: boolean = false
 ): boolean {
-  const metadata = configMetadata[key] as ConfigMetadata[T];
+  const metadata = configMetadata[key] as ConfigMetadataObject[T];
   if (metadata === undefined) {
     throw new Error(`Config metadata for key "${key}" is not defined.`);
+  }
+
+  if (metadata.overrideValue) {
+    value = metadata.overrideValue({
+      value,
+      currentValue: config[key],
+      currentConfig: config,
+    });
   }
 
   const previousValue = config[key];
@@ -128,47 +127,40 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
       important: true,
     });
+    console.warn(
+      `Could not set config key "${key}" with value "${JSON.stringify(
+        value
+      )}" - no quit funbox active.`
+    );
     return false;
   }
-
-  // if (metadata.setBlock) {
-  //   let block = false;
-  //   for (const blockKey of typedKeys(metadata.setBlock)) {
-  //     const blockValues = metadata.setBlock[blockKey] ?? [];
-  //     if (
-  //       config[blockKey] !== undefined &&
-  //       (blockValues as Array<(typeof config)[typeof blockKey]>).includes(
-  //         config[blockKey]
-  //       )
-  //     ) {
-  //       block = true;
-  //       break;
-  //     }
-  //   }
-  //   if (block) {
-  //     return false;
-  //   }
-  // }
 
   if (metadata.isBlocked?.({ value, currentConfig: config })) {
+    console.warn(
+      `Could not set config key "${key}" with value "${JSON.stringify(
+        value
+      )}" - blocked.`
+    );
     return false;
-  }
-
-  if (metadata.overrideValue) {
-    value = metadata.overrideValue({
-      value,
-      currentValue: config[key],
-      currentConfig: config,
-    });
   }
 
   const schema = ConfigSchemas.ConfigSchema.shape[key] as ZodSchema;
 
   if (!isConfigValueValid(metadata.displayString ?? key, value, schema)) {
+    console.warn(
+      `Could not set config key "${key}" with value "${JSON.stringify(
+        value
+      )}" - invalid value.`
+    );
     return false;
   }
 
   if (!canSetConfigWithCurrentFunboxes(key, value, config.funbox)) {
+    console.warn(
+      `Could not set config key "${key}" with value "${JSON.stringify(
+        value
+      )}" - funbox conflict.`
+    );
     return false;
   }
 
@@ -618,10 +610,7 @@ export function setQuickRestartMode(
 }
 
 //font family
-export function setFontFamily(
-  font: ConfigSchemas.FontFamily,
-  nosave?: boolean
-): boolean {
+export function setFontFamily(font: FontName, nosave?: boolean): boolean {
   return genericSet("fontFamily", font, nosave);
 }
 
@@ -815,34 +804,75 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
   return genericSet("burstHeatmap", value, nosave);
 }
 
+const lastConfigsToApply: Set<keyof Config> = new Set([
+  "keymapMode",
+  "minWpm",
+  "minAcc",
+  "minBurst",
+  "paceCaret",
+  "quoteLength", //quote length sets mode,
+  "words",
+  "time",
+  "mode", // mode sets punctuation and numbers
+  "numbers",
+  "punctuation",
+  "funbox",
+]);
+
 export async function apply(
-  configToApply: Config | Partial<Config>
+  configToApply: Config | Partial<Config>,
+  fullReset = false
 ): Promise<void> {
-  if (configToApply === undefined) return;
+  if (configToApply === undefined || configToApply === null) return;
+
+  //remove additional keys, migrate old values if needed
+  configToApply = sanitizeConfig(replaceLegacyValues(configToApply));
 
   ConfigEvent.dispatch("fullConfigChange");
 
-  const configObj = configToApply as Config;
-  (Object.keys(getDefaultConfig()) as (keyof Config)[]).forEach((configKey) => {
-    if (configObj[configKey] === undefined) {
-      const newValue = getDefaultConfig()[configKey];
-      (configObj[configKey] as typeof newValue) = newValue;
-    }
-  });
-  if (configObj !== undefined && configObj !== null) {
-    for (const configKey of typedKeys(configObj)) {
-      const configValue = configObj[configKey];
-      genericSet(configKey, configValue, true);
-    }
-
-    ConfigEvent.dispatch(
-      "configApplied",
-      undefined,
-      undefined,
-      undefined,
-      config
-    );
+  const defaultConfig = getDefaultConfig();
+  for (const key of typedKeys(fullReset ? defaultConfig : configToApply)) {
+    //@ts-expect-error this is fine, both are of type config
+    config[key] = defaultConfig[key];
   }
+
+  const partialKeys = typedKeys(configToApply);
+  const partialKeysToApplyFirst = partialKeys.filter(
+    (key) => !lastConfigsToApply.has(key)
+  );
+  const partialKeysToApplyLast = Array.from(lastConfigsToApply.values()).filter(
+    (key) => partialKeys.includes(key)
+  );
+  const partialKeysToApply = [
+    ...partialKeysToApplyFirst,
+    ...partialKeysToApplyLast,
+  ];
+
+  const configKeysToReset: (keyof Config)[] = [];
+
+  for (const configKey of partialKeysToApply) {
+    const configValue = configToApply[
+      configKey
+    ] as ConfigSchemas.Config[keyof Config];
+
+    const set = genericSet(configKey, configValue, true);
+
+    if (!set) {
+      configKeysToReset.push(configKey);
+    }
+  }
+
+  for (const key of configKeysToReset) {
+    saveToLocalStorage(key);
+  }
+
+  ConfigEvent.dispatch(
+    "configApplied",
+    undefined,
+    undefined,
+    undefined,
+    config
+  );
   ConfigEvent.dispatch("fullConfigChangeFinished");
 }
 
@@ -858,7 +888,7 @@ export async function loadFromLocalStorage(): Promise<void> {
   if (newConfig === undefined) {
     await reset();
   } else {
-    await apply(newConfig);
+    await apply(newConfig, true);
     saveFullConfigToLocalStorage(true);
   }
   loadDone();
@@ -891,7 +921,7 @@ export async function applyFromJson(json: string): Promise<void> {
         },
       }
     );
-    await apply(parsedConfig);
+    await apply(parsedConfig, true);
     saveFullConfigToLocalStorage();
     Notifications.add("Done", 1);
   } catch (e) {

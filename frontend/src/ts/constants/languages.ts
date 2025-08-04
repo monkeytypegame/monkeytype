@@ -39,6 +39,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   ],
   arabic: ["arabic", "arabic_10k"],
   arabic_egypt: ["arabic_egypt", "arabic_egypt_1k"],
+  arabic_morocco: ["arabic_morocco"],
   italian: [
     "italian",
     "italian_1k",
@@ -340,6 +341,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_arduino",
     "code_systemverilog",
     "code_elixir",
+    "code_gleam",
     "code_zig",
     "code_gdscript",
     "code_gdscript_2",
@@ -351,6 +353,9 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_common_lisp",
     "code_odin",
     "code_fortran",
+    "code_abap",
+    "code_abap_1k",
+    "code_yoptascript",
   ],
   viossa: ["viossa", "viossa_njutro"],
 };

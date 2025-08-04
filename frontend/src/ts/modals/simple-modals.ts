@@ -37,6 +37,7 @@ import { ShowOptions } from "../utils/animated-modal";
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 import { UserEmailSchema, UserNameSchema } from "@monkeytype/contracts/users";
 import { goToPage } from "../pages/leaderboards";
+import FileStorage from "../utils/file-storage";
 
 type PopupKey =
   | "updateEmail"
@@ -478,6 +479,7 @@ list.updateName = new SimpleModal({
 
           return checkNameResponse === 200 ? true : "Name not available";
         },
+        debounceDelay: 1000,
       },
     },
   ],
@@ -783,6 +785,7 @@ list.resetAccount = new SimpleModal({
 
     Notifications.add("Resetting settings...", 0);
     await UpdateConfig.reset();
+    await FileStorage.deleteFile("LocalBackgroundFile");
 
     Notifications.add("Resetting account...", 0);
     const response = await Ape.users.reset();
@@ -938,6 +941,7 @@ list.resetSettings = new SimpleModal({
   onlineOnly: true,
   execFn: async (): Promise<ExecReturn> => {
     await UpdateConfig.reset();
+    await FileStorage.deleteFile("LocalBackgroundFile");
     return {
       status: 1,
       message: "Settings reset",
@@ -1151,7 +1155,7 @@ list.updateCustomTheme = new SimpleModal({
       };
     }
     UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
-    void ThemePicker.refreshCustomButtons();
+    void ThemePicker.fillCustomButtons();
 
     return {
       status: 1,
@@ -1178,7 +1182,7 @@ list.deleteCustomTheme = new SimpleModal({
   onlineOnly: true,
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
-    void ThemePicker.refreshCustomButtons();
+    void ThemePicker.fillCustomButtons();
 
     return {
       status: 1,

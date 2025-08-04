@@ -8,7 +8,7 @@
     "moduleResolution": "Bundler",
     "module": "ES6",
     "target": "ES2015",
-    "lib": ["es2019"]
+    "lib": ["es2019", "dom"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

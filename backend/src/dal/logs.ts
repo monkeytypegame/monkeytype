@@ -56,6 +56,7 @@ export async function addImportantLog(
   message: string | Record<string, unknown>,
   uid = ""
 ): Promise<void> {
+  console.log("log", event, message, uid);
   await insertIntoDb(event, message, uid, true);
 }
 

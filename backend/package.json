@@ -12,7 +12,8 @@
     "clean": "tsc --build --clean",
     "ts-check": "tsc --noEmit",
     "start": "node ./dist/server.js",
-    "test": "vitest run",
+    "test": "vitest run --project=unit",
+    "integration-test": "vitest run --project=integration --project=integration-isolated",
     "test-coverage": "vitest run --coverage",
     "dev": "concurrently -p none \"tsx watch --clear-screen=false --inspect ./src/server.ts\" \"tsc --preserveWatchOutput --noEmit --watch\"  \"esw src/ -w --ext .ts --cache --color\"",
     "knip": "knip",
@@ -21,7 +22,7 @@
     "gen-docs": "tsx scripts/openapi.ts dist/static/api/openapi.json && redocly build-docs -o dist/static/api/internal.html internal@v2 && redocly bundle -o dist/static/api/public.json public-filter && redocly build-docs -o dist/static/api/public.html public@v2"
   },
   "engines": {
-    "node": "20.16.0"
+    "node": "20.19.4"
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
@@ -88,7 +89,7 @@
     "@types/swagger-stats": "0.95.11",
     "@types/ua-parser-js": "0.7.36",
     "@types/uuid": "10.0.0",
-    "@vitest/coverage-v8": "2.1.9",
+    "@vitest/coverage-v8": "3.2.4",
     "concurrently": "8.2.2",
     "eslint": "8.57.1",
     "eslint-watch": "8.0.0",
@@ -97,9 +98,9 @@
     "oxlint": "1.8.0",
     "readline-sync": "1.4.10",
     "supertest": "6.2.3",
+    "testcontainers": "11.4.0",
     "tsx": "4.16.2",
     "typescript": "5.5.4",
-    "vitest": "2.1.9",
-    "vitest-mongodb": "1.0.0"
+    "vitest": "3.2.4"
   }
 }

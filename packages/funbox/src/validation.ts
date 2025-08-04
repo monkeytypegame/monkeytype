@@ -1,5 +1,5 @@
 import { intersect } from "@monkeytype/util/arrays";
-import { FunboxForcedConfig } from "./types";
+import { FunboxForcedConfig, FunboxMetadata } from "./types";
 import { getFunbox } from "./list";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { safeNumber } from "@monkeytype/util/numbers";
@@ -9,10 +9,22 @@ export function checkCompatibility(
   withFunbox?: FunboxName
 ): boolean {
   if (funboxNames.length === 0) return true;
-  let funboxesToCheck = getFunbox(funboxNames);
 
-  if (withFunbox !== undefined) {
-    funboxesToCheck = funboxesToCheck.concat(getFunbox(withFunbox));
+  let funboxesToCheck: FunboxMetadata[];
+
+  try {
+    funboxesToCheck = getFunbox(funboxNames);
+
+    if (withFunbox !== undefined) {
+      const toAdd = getFunbox(withFunbox);
+      funboxesToCheck = funboxesToCheck.concat(toAdd);
+    }
+  } catch (error) {
+    console.error(
+      "Error when getting funboxes for a compatibility check:",
+      error
+    );
+    return false;
   }
 
   const allFunboxesAreValid = funboxesToCheck.every((f) => f !== undefined);

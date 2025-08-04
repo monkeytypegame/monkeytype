@@ -18,7 +18,9 @@ ConfigEvent.subscribe((eventKey) => {
     "stopOnError",
     "paceCaret",
     "minWpm",
+    "minWpmCustomSpeed",
     "minAcc",
+    "minAccCustom",
     "minBurst",
     "confidenceMode",
     "layout",
@@ -113,7 +115,7 @@ export async function update(): Promise<void> {
       .join(", ");
 
     $(".pageTest #testModesNotice").append(
-      `<button class="textButton" commandId="changeCustomPolyglot"><i class="fas fa-globe-americas"></i>${languages}</button>`
+      `<button class="textButton" commandId="setCustomPolyglotCustom"><i class="fas fa-globe-americas"></i>${languages}</button>`
     );
   }
 

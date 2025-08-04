@@ -3,6 +3,7 @@ import * as Shared from "./shared";
 import * as Themes from "./themes";
 import * as Layouts from "./layouts";
 import { LanguageSchema } from "./languages";
+import { FontNameSchema } from "./fonts";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -325,12 +326,6 @@ export type TimeConfig = z.infer<typeof TimeConfigSchema>;
 export const WordCountSchema = z.number().int().nonnegative();
 export type WordCount = z.infer<typeof WordCountSchema>;
 
-export const FontFamilySchema = z
-  .string()
-  .max(50)
-  .regex(/^[a-zA-Z0-9_\-+.]+$/);
-export type FontFamily = z.infer<typeof FontFamilySchema>;
-
 export const KeymapLayoutSchema = z
   .literal("overrideSync")
   .or(Layouts.LayoutNameSchema);
@@ -436,7 +431,7 @@ export const ConfigSchema = z
     startGraphsAtZero: z.boolean(),
     maxLineWidth: MaxLineWidthSchema,
     fontSize: FontSizeSchema,
-    fontFamily: FontFamilySchema,
+    fontFamily: FontNameSchema,
     keymapMode: KeymapModeSchema,
     keymapLayout: KeymapLayoutSchema,
     keymapStyle: KeymapStyleSchema,

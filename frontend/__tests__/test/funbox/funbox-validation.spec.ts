@@ -6,7 +6,7 @@ describe("funbox-validation", () => {
   describe("canSetConfigWithCurrentFunboxes", () => {
     const addNotificationMock = vi.spyOn(Notifications, "add");
     afterEach(() => {
-      addNotificationMock.mockReset();
+      addNotificationMock.mockClear();
     });
 
     const testCases = [

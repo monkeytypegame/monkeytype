@@ -1,3 +1,4 @@
+import { checkCompatibility } from "@monkeytype/funbox";
 import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
 import { isAuthenticated } from "./firebase";
@@ -5,7 +6,7 @@ import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
 import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
-
+import { capitalizeFirstLetter } from "./utils/strings";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -14,69 +15,83 @@ import { roundTo1 } from "@monkeytype/util/numbers";
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K];
 // };
 
-export type ConfigMetadata = {
-  [K in keyof ConfigSchemas.Config]: {
-    /**
-     * Optional display string for the config key.
-     */
-    displayString?: string;
-    /**
-     * Should the config change trigger a resize event? handled in ui.ts:108
-     */
-    triggerResize?: true;
+export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
+  /**
+   * Optional display string for the config key.
+   */
+  displayString?: string;
+  /**
+   * Should the config change trigger a resize event? handled in ui.ts:108
+   */
+  triggerResize?: true;
 
-    /**
-     * Is a test restart required after this config change?
-     */
-    changeRequiresRestart: boolean;
-    /**
-     * Optional function that checks if the config value is blocked from being set.
-     * Returns true if setting the config value should be blocked.
-     * @param options - The options object containing the value being set and the current config.
-     */
-    isBlocked?: (options: {
-      value: ConfigSchemas.Config[K];
-      currentConfig: Readonly<ConfigSchemas.Config>;
-    }) => boolean;
-    /**
-     * Optional function to override the value before setting it.
-     * Returns the modified value.
-     * @param options - The options object containing the value being set, the current value, and the current config.
-     * @returns The modified value to be set for the config key.
-     */
-    overrideValue?: (options: {
-      value: ConfigSchemas.Config[K];
-      currentValue: ConfigSchemas.Config[K];
-      currentConfig: Readonly<ConfigSchemas.Config>;
-    }) => ConfigSchemas.Config[K];
-    /**
-     * Optional function to override other config values before this one is set.
-     * Returns an object with the config keys and their new values.
-     * @param options - The options object containing the value being set and the current config.
-     */
-    overrideConfig?: (options: {
-      value: ConfigSchemas.Config[K];
-      currentConfig: Readonly<ConfigSchemas.Config>;
-    }) => Partial<ConfigSchemas.Config>;
-    /**
-     * Optional function that is called after the config value is set.
-     * It can be used to perform additional actions, like reloading the page.
-     * @param options - The options object containing the nosave flag and the current config.
-     */
-    afterSet?: (options: {
-      nosave: boolean;
-      currentConfig: Readonly<ConfigSchemas.Config>;
-    }) => void;
-  };
+  /**
+   * Icon to display in the commandline and settings
+   */
+  icon: string;
+
+  // commandline?: {
+  //   displayValues?: ConfigSchemas.Config[K] extends string | number | symbol
+  //     ? Partial<Record<ConfigSchemas.Config[K], string>>
+  //     : never;
+  // };
+
+  /**
+   * Is a test restart required after this config change?
+   */
+  changeRequiresRestart: boolean;
+  /**
+   * Optional function that checks if the config value is blocked from being set.
+   * Returns true if setting the config value should be blocked.
+   * @param options - The options object containing the value being set and the current config.
+   */
+  isBlocked?: (options: {
+    value: ConfigSchemas.Config[K];
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => boolean;
+  /**
+   * Optional function to override the value before setting it.
+   * Returns the modified value.
+   * @param options - The options object containing the value being set, the current value, and the current config.
+   * @returns The modified value to be set for the config key.
+   */
+  overrideValue?: (options: {
+    value: ConfigSchemas.Config[K];
+    currentValue: ConfigSchemas.Config[K];
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => ConfigSchemas.Config[K];
+  /**
+   * Optional function to override other config values before this one is set.
+   * Returns an object with the config keys and their new values.
+   * @param options - The options object containing the value being set and the current config.
+   */
+  overrideConfig?: (options: {
+    value: ConfigSchemas.Config[K];
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => Partial<ConfigSchemas.Config>;
+  /**
+   * Optional function that is called after the config value is set.
+   * It can be used to perform additional actions, like reloading the page.
+   * @param options - The options object containing the nosave flag and the current config.
+   */
+  afterSet?: (options: {
+    nosave: boolean;
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => void;
+};
+
+export type ConfigMetadataObject = {
+  [K in keyof ConfigSchemas.Config]: ConfigMetadata<K>;
 };
 
 //todo:
 // maybe have generic set somehow handle test restarting
 // maybe add config group to each metadata object? all though its already defined in ConfigGroupsLiteral
 
-export const configMetadata: ConfigMetadata = {
+export const configMetadata: ConfigMetadataObject = {
   // test
   punctuation: {
+    icon: "fa-at",
     changeRequiresRestart: true,
     overrideValue: ({ value, currentConfig }) => {
       if (currentConfig.mode === "quote") {
@@ -86,6 +101,7 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   numbers: {
+    icon: "fa-hashtag",
     changeRequiresRestart: true,
     overrideValue: ({ value, currentConfig }) => {
       if (currentConfig.mode === "quote") {
@@ -95,14 +111,33 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   words: {
+    icon: "fa-font",
     displayString: "word count",
     changeRequiresRestart: true,
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.mode !== "words") {
+        return {
+          mode: "words",
+        };
+      }
+      return {};
+    },
   },
   time: {
+    icon: "fa-clock",
     changeRequiresRestart: true,
     displayString: "time",
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.mode !== "time") {
+        return {
+          mode: "time",
+        };
+      }
+      return {};
+    },
   },
   mode: {
+    icon: "fa-bars",
     changeRequiresRestart: true,
     overrideConfig: ({ value }) => {
       if (value === "custom" || value === "quote" || value === "zen") {
@@ -120,74 +155,125 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   quoteLength: {
+    icon: "fa-quote-right",
     displayString: "quote length",
     changeRequiresRestart: true,
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.mode !== "quote") {
+        return {
+          mode: "quote",
+        };
+      }
+      return {};
+    },
   },
   language: {
+    icon: "fa-language",
     displayString: "language",
     changeRequiresRestart: true,
   },
   burstHeatmap: {
+    icon: "fa-fire",
     displayString: "burst heatmap",
     changeRequiresRestart: false,
   },
 
   // behavior
   difficulty: {
+    icon: "fa-star",
     changeRequiresRestart: true,
   },
   quickRestart: {
+    icon: "fa-redo-alt",
     displayString: "quick restart",
     changeRequiresRestart: false,
   },
   repeatQuotes: {
+    icon: "fa-sync-alt",
     displayString: "repeat quotes",
     changeRequiresRestart: false,
   },
   blindMode: {
+    icon: "fa-eye-slash",
     displayString: "blind mode",
     changeRequiresRestart: false,
   },
   alwaysShowWordsHistory: {
+    icon: "fa-align-left",
     displayString: "always show words history",
     changeRequiresRestart: false,
   },
   singleListCommandLine: {
+    icon: "fa-list",
     displayString: "single list command line",
     changeRequiresRestart: false,
   },
   minWpm: {
+    icon: "fa-bomb",
     displayString: "min speed",
     changeRequiresRestart: true,
   },
   minWpmCustomSpeed: {
+    icon: "fa-bomb",
     displayString: "min speed custom",
     changeRequiresRestart: true,
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.minWpm !== "custom") {
+        return {
+          minWpm: "custom",
+        };
+      }
+      return {};
+    },
   },
   minAcc: {
+    icon: "fa-bomb",
     displayString: "min accuracy",
     changeRequiresRestart: true,
   },
   minAccCustom: {
+    icon: "fa-bomb",
     displayString: "min accuracy custom",
     changeRequiresRestart: true,
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.minAcc !== "custom") {
+        return {
+          minAcc: "custom",
+        };
+      }
+      return {};
+    },
   },
   minBurst: {
+    icon: "fa-bomb",
     displayString: "min burst",
     changeRequiresRestart: true,
   },
   minBurstCustomSpeed: {
+    icon: "fa-bomb",
     displayString: "min burst custom speed",
     changeRequiresRestart: true,
   },
   britishEnglish: {
+    icon: "fa-language",
     displayString: "british english",
     changeRequiresRestart: true,
   },
   funbox: {
+    icon: "fa-gamepad",
     changeRequiresRestart: true,
     isBlocked: ({ value, currentConfig }) => {
-      for (const funbox of currentConfig.funbox) {
+      if (!checkCompatibility(value)) {
+        Notifications.add(
+          `${capitalizeFirstLetter(
+            value.join(", ")
+          )} is an invalid combination of funboxes`,
+          0
+        );
+        return true;
+      }
+
+      for (const funbox of value) {
         if (!canSetFunboxWithConfig(funbox, currentConfig)) {
           Notifications.add(
             `${value}" cannot be enabled with the current config`,
@@ -196,10 +282,12 @@ export const configMetadata: ConfigMetadata = {
           return true;
         }
       }
+
       return false;
     },
   },
   customLayoutfluid: {
+    icon: "fa-tint",
     displayString: "custom layoutfluid",
     changeRequiresRestart: true,
     overrideValue: ({ value }) => {
@@ -207,6 +295,7 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   customPolyglot: {
+    icon: "fa-language",
     displayString: "custom polyglot",
     changeRequiresRestart: false,
     overrideValue: ({ value }) => {
@@ -216,6 +305,7 @@ export const configMetadata: ConfigMetadata = {
 
   // input
   freedomMode: {
+    icon: "fa-feather-alt",
     changeRequiresRestart: false,
     displayString: "freedom mode",
     overrideConfig: ({ value }) => {
@@ -228,14 +318,17 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   strictSpace: {
+    icon: "fa-minus",
     displayString: "strict space",
     changeRequiresRestart: true,
   },
   oppositeShiftMode: {
+    icon: "fa-exchange-alt",
     displayString: "opposite shift mode",
     changeRequiresRestart: false,
   },
   stopOnError: {
+    icon: "fa-hand-paper",
     displayString: "stop on error",
     changeRequiresRestart: true,
     overrideConfig: ({ value }) => {
@@ -248,6 +341,7 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   confidenceMode: {
+    icon: "fa-backspace",
     displayString: "confidence mode",
     changeRequiresRestart: false,
     overrideConfig: ({ value }) => {
@@ -261,58 +355,71 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   quickEnd: {
+    icon: "fa-step-forward",
     displayString: "quick end",
     changeRequiresRestart: false,
   },
   indicateTypos: {
+    icon: "fa-exclamation",
     displayString: "indicate typos",
     changeRequiresRestart: false,
   },
   hideExtraLetters: {
+    icon: "fa-eye-slash",
     displayString: "hide extra letters",
     changeRequiresRestart: false,
   },
   lazyMode: {
+    icon: "fa-couch",
     displayString: "lazy mode",
     changeRequiresRestart: true,
   },
   layout: {
+    icon: "fa-keyboard",
     displayString: "layout",
     changeRequiresRestart: true,
   },
   codeUnindentOnBackspace: {
+    icon: "fa-code",
     displayString: "code unindent on backspace",
     changeRequiresRestart: true,
   },
 
   // sound
   soundVolume: {
+    icon: "fa-volume-down",
     displayString: "sound volume",
     changeRequiresRestart: false,
   },
   playSoundOnClick: {
+    icon: "fa-volume-up",
     displayString: "play sound on click",
     changeRequiresRestart: false,
   },
   playSoundOnError: {
+    icon: "fa-volume-mute",
     displayString: "play sound on error",
     changeRequiresRestart: false,
   },
   playTimeWarning: {
+    icon: "fa-exclamation-triangle",
     displayString: "play time warning",
     changeRequiresRestart: false,
   },
 
   // caret
   smoothCaret: {
+    icon: "fa-i-cursor",
     displayString: "smooth caret",
     changeRequiresRestart: false,
   },
   caretStyle: {
+    icon: "fa-i-cursor",
     displayString: "caret style",
     changeRequiresRestart: false,
   },
   paceCaret: {
+    icon: "fa-i-cursor",
     displayString: "pace caret",
     changeRequiresRestart: false,
     isBlocked: ({ value }) => {
@@ -329,48 +436,67 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   paceCaretCustomSpeed: {
+    icon: "fa-i-cursor",
     displayString: "pace caret custom speed",
     changeRequiresRestart: false,
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.paceCaret !== "custom") {
+        return {
+          paceCaret: "custom",
+        };
+      }
+      return {};
+    },
   },
   paceCaretStyle: {
+    icon: "fa-i-cursor",
     displayString: "pace caret style",
     changeRequiresRestart: false,
   },
   repeatedPace: {
+    icon: "fa-i-cursor",
     displayString: "repeated pace",
     changeRequiresRestart: false,
   },
 
   // appearance
   timerStyle: {
+    icon: "fa-chart-pie",
     displayString: "timer style",
     changeRequiresRestart: false,
   },
   liveSpeedStyle: {
+    icon: "fa-tachometer-alt",
     displayString: "live speed style",
     changeRequiresRestart: false,
   },
   liveAccStyle: {
+    icon: "fa-tachometer-alt",
     displayString: "live accuracy style",
     changeRequiresRestart: false,
   },
   liveBurstStyle: {
+    icon: "fa-tachometer-alt",
     displayString: "live burst style",
     changeRequiresRestart: false,
   },
   timerColor: {
+    icon: "fa-chart-pie",
     displayString: "timer color",
     changeRequiresRestart: false,
   },
   timerOpacity: {
+    icon: "fa-chart-pie",
     displayString: "timer opacity",
     changeRequiresRestart: false,
   },
   highlightMode: {
+    icon: "fa-highlighter",
     displayString: "highlight mode",
     changeRequiresRestart: false,
   },
   tapeMode: {
+    icon: "fa-tape",
     triggerResize: true,
     changeRequiresRestart: false,
     displayString: "tape mode",
@@ -384,24 +510,17 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   tapeMargin: {
+    icon: "fa-tape",
     displayString: "tape margin",
     changeRequiresRestart: false,
-    overrideValue: ({ value }) => {
-      //TODO move to migration after settings validation
-      if (value < 10) {
-        value = 10;
-      }
-      if (value > 90) {
-        value = 90;
-      }
-      return value;
-    },
   },
   smoothLineScroll: {
+    icon: "fa-align-left",
     displayString: "smooth line scroll",
     changeRequiresRestart: false,
   },
   showAllLines: {
+    icon: "fa-align-left",
     changeRequiresRestart: false,
     displayString: "show all lines",
     isBlocked: ({ value, currentConfig }) => {
@@ -413,69 +532,72 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   alwaysShowDecimalPlaces: {
+    icon: "00",
     displayString: "always show decimal places",
     changeRequiresRestart: false,
   },
   typingSpeedUnit: {
+    icon: "fa-tachometer-alt",
     displayString: "typing speed unit",
     changeRequiresRestart: false,
   },
   startGraphsAtZero: {
+    icon: "fa-chart-line",
     displayString: "start graphs at zero",
     changeRequiresRestart: false,
   },
   maxLineWidth: {
+    icon: "fa-text-width",
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "max line width",
-    overrideValue: ({ value }) => {
-      //TODO move to migration after settings validation
-      if (value < 20 && value !== 0) {
-        value = 20;
-      }
-      if (value > 1000) {
-        value = 1000;
-      }
-      return value;
-    },
   },
   fontSize: {
+    icon: "fa-font",
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "font size",
-    overrideValue: ({ value }) => {
-      //TODO move to migration after settings validation
-      if (value < 0) {
-        value = 1;
-      }
-      return value;
-    },
   },
   fontFamily: {
+    icon: "fa-font",
     displayString: "font family",
     changeRequiresRestart: false,
   },
   keymapMode: {
+    icon: "fa-keyboard",
     displayString: "keymap mode",
     changeRequiresRestart: false,
   },
   keymapLayout: {
+    icon: "fa-keyboard",
     displayString: "keymap layout",
     changeRequiresRestart: false,
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapStyle: {
+    icon: "fa-keyboard",
     displayString: "keymap style",
     changeRequiresRestart: false,
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapLegendStyle: {
+    icon: "fa-keyboard",
     displayString: "keymap legend style",
     changeRequiresRestart: false,
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapShowTopRow: {
+    icon: "fa-keyboard",
     displayString: "keymap show top row",
     changeRequiresRestart: false,
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
   keymapSize: {
+    icon: "fa-keyboard",
     triggerResize: true,
     changeRequiresRestart: false,
     displayString: "keymap size",
@@ -484,18 +606,23 @@ export const configMetadata: ConfigMetadata = {
       if (value > 3.5) value = 3.5;
       return roundTo1(value);
     },
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
 
   // theme
   flipTestColors: {
+    icon: "fa-adjust",
     displayString: "flip test colors",
     changeRequiresRestart: false,
   },
   colorfulMode: {
+    icon: "fa-fill-drip",
     displayString: "colorful mode",
     changeRequiresRestart: false,
   },
   customBackground: {
+    icon: "fa-image",
     displayString: "custom background",
     changeRequiresRestart: false,
     overrideValue: ({ value }) => {
@@ -503,26 +630,32 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   customBackgroundSize: {
+    icon: "fa-image",
     displayString: "custom background size",
     changeRequiresRestart: false,
   },
   customBackgroundFilter: {
+    icon: "fa-image",
     displayString: "custom background filter",
     changeRequiresRestart: false,
   },
   autoSwitchTheme: {
+    icon: "fa-palette",
     displayString: "auto switch theme",
     changeRequiresRestart: false,
   },
   themeLight: {
+    icon: "fa-palette",
     displayString: "theme light",
     changeRequiresRestart: false,
   },
   themeDark: {
+    icon: "fa-palette",
     displayString: "theme dark",
     changeRequiresRestart: false,
   },
   randomTheme: {
+    icon: "fa-palette",
     changeRequiresRestart: false,
     displayString: "random theme",
     isBlocked: ({ value }) => {
@@ -554,10 +687,12 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   favThemes: {
+    icon: "fa-palette",
     displayString: "favorite themes",
     changeRequiresRestart: false,
   },
   theme: {
+    icon: "fa-palette",
     changeRequiresRestart: false,
     overrideConfig: () => {
       return {
@@ -566,34 +701,41 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   customTheme: {
+    icon: "fa-palette",
     displayString: "custom theme",
     changeRequiresRestart: false,
   },
   customThemeColors: {
+    icon: "fa-palette",
     displayString: "custom theme colors",
     changeRequiresRestart: false,
   },
 
   // hide elements
   showKeyTips: {
+    icon: "fa-question",
     displayString: "show key tips",
     changeRequiresRestart: false,
   },
   showOutOfFocusWarning: {
+    icon: "fa-exclamation",
     displayString: "show out of focus warning",
     changeRequiresRestart: false,
   },
   capsLockWarning: {
+    icon: "fa-exclamation-triangle",
     displayString: "caps lock warning",
     changeRequiresRestart: false,
   },
   showAverage: {
+    icon: "fa-chart-bar",
     displayString: "show average",
     changeRequiresRestart: false,
   },
 
   // other (hidden)
   accountChart: {
+    icon: "fa-chart-line",
     displayString: "account chart",
     changeRequiresRestart: false,
     overrideValue: ({ value, currentValue }) => {
@@ -607,17 +749,26 @@ export const configMetadata: ConfigMetadata = {
     },
   },
   monkey: {
+    icon: "fa-egg",
     displayString: "monkey",
     changeRequiresRestart: false,
   },
   monkeyPowerLevel: {
+    icon: "fa-egg",
     displayString: "monkey power level",
     changeRequiresRestart: false,
   },
 
   // ads
   ads: {
+    icon: "fa-ad",
     changeRequiresRestart: false,
+    overrideValue: ({ value }) => {
+      if (isDevEnvironment()) {
+        return "off";
+      }
+      return value;
+    },
     isBlocked: ({ value }) => {
       if (value !== "off" && isDevEnvironment()) {
         Notifications.add("Ads are disabled in development mode.", 0);
