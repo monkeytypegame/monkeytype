@@ -31,7 +31,6 @@ import {
   getAnalytics as firebaseGetAnalytics,
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { subscribe as subscribeToSignUpEvent } from "./observables/google-sign-up-event";
 
 // Initialize Firebase
 let app: FirebaseApp | undefined;
@@ -213,9 +212,9 @@ function translateFirebaseError(
   return new Error(message, { cause: error });
 }
 
-subscribeToSignUpEvent(() => {
+export function resetIgnoreAuthCallback(): void {
   ignoreAuthCallback = false;
-});
+}
 
 //TODO refactor email-handler
 export const _Auth = Auth;
