@@ -14,8 +14,8 @@ describe("Psa Controller", () => {
     const recordClientVersionMock = vi.spyOn(Prometheus, "recordClientVersion");
 
     afterEach(() => {
-      getPsaMock.mockReset();
-      recordClientVersionMock.mockReset();
+      getPsaMock.mockClear();
+      recordClientVersionMock.mockClear();
       mockAuth.beforeEach();
     });
 

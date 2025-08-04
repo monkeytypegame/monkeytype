@@ -1,7 +1,6 @@
-import { describeIntegration } from "..";
 import * as PublicDAL from "../../../src/dal/public";
 
-describeIntegration()("PublicDAL", function () {
+describe("PublicDAL", function () {
   it("should be able to update stats", async function () {
     // checks it doesn't throw an error. the actual values are checked in another test.
     await PublicDAL.updateStats(1, 15);

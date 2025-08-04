@@ -40,6 +40,7 @@ import { z } from "zod";
 import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
+import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 
 let settingsInitialized = false;
 
@@ -580,7 +581,11 @@ async function fillSettingsPage(): Promise<void> {
   if (fontsEl.innerHTML === "") {
     let fontsElHTML = "";
 
-    for (const name of Misc.typedKeys(Fonts).sort()) {
+    for (const name of Misc.typedKeys(Fonts).sort((a, b) =>
+      (Fonts[a].display ?? a.replace(/_/g, " ")).localeCompare(
+        Fonts[b].display ?? b.replace(/_/g, " ")
+      )
+    )) {
       const font = Fonts[name];
       let fontFamily = name.replace(/_/g, " ");
 
@@ -850,6 +855,7 @@ export async function update(
   ThemePicker.setCustomInputs(true);
   await CustomBackgroundPicker.updateUI();
   await updateFilterSectionVisibility();
+  await CustomFontPicker.updateUI();
 
   const setInputValue = (
     key: ConfigKey,

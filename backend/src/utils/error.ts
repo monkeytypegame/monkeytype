@@ -55,7 +55,7 @@ class MonkeyError extends Error implements MonkeyServerErrorType {
   uid?: string;
 
   constructor(status: number, message?: string, stack?: string, uid?: string) {
-    super();
+    super(message);
     this.status = status ?? 500;
     this.errorId = uuidv4();
     this.stack = stack;

@@ -39,8 +39,8 @@ describe("Loaderboard Controller", () => {
     const getLeaderboardCountMock = vi.spyOn(LeaderboardDal, "getCount");
 
     beforeEach(() => {
-      getLeaderboardMock.mockReset();
-      getLeaderboardCountMock.mockReset();
+      getLeaderboardMock.mockClear();
+      getLeaderboardCountMock.mockClear();
     });
 
     it("should get for english time 60", async () => {
@@ -100,7 +100,8 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         0,
-        50
+        50,
+        false
       );
     });
 
@@ -139,7 +140,8 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         page,
-        pageSize
+        pageSize,
+        false
       );
     });
 
@@ -241,7 +243,7 @@ describe("Loaderboard Controller", () => {
     const getLeaderboardRankMock = vi.spyOn(LeaderboardDal, "getRank");
 
     afterEach(() => {
-      getLeaderboardRankMock.mockReset();
+      getLeaderboardRankMock.mockClear();
     });
 
     it("fails withouth authentication", async () => {
@@ -400,7 +402,7 @@ describe("Loaderboard Controller", () => {
     );
 
     beforeEach(async () => {
-      getDailyLeaderboardMock.mockReset();
+      getDailyLeaderboardMock.mockClear();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await dailyLeaderboardEnabled(true);
@@ -706,7 +708,7 @@ describe("Loaderboard Controller", () => {
     );
 
     beforeEach(async () => {
-      getDailyLeaderboardMock.mockReset();
+      getDailyLeaderboardMock.mockClear();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await dailyLeaderboardEnabled(true);
@@ -883,7 +885,7 @@ describe("Loaderboard Controller", () => {
     const getXpWeeklyLeaderboardMock = vi.spyOn(WeeklyXpLeaderboard, "get");
 
     beforeEach(async () => {
-      getXpWeeklyLeaderboardMock.mockReset();
+      getXpWeeklyLeaderboardMock.mockClear();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await weeklyLeaderboardEnabled(true);
@@ -1077,7 +1079,7 @@ describe("Loaderboard Controller", () => {
     const getXpWeeklyLeaderboardMock = vi.spyOn(WeeklyXpLeaderboard, "get");
 
     beforeEach(async () => {
-      getXpWeeklyLeaderboardMock.mockReset();
+      getXpWeeklyLeaderboardMock.mockClear();
       await weeklyLeaderboardEnabled(true);
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);

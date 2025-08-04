@@ -810,12 +810,12 @@ const lastConfigsToApply: Set<keyof Config> = new Set([
   "minAcc",
   "minBurst",
   "paceCaret",
-  "punctuation",
-  "numbers",
-  "quoteLength",
-  "time",
+  "quoteLength", //quote length sets mode,
   "words",
-  "mode",
+  "time",
+  "mode", // mode sets punctuation and numbers
+  "numbers",
+  "punctuation",
   "funbox",
 ]);
 
