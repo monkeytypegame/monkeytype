@@ -24,7 +24,7 @@ describe("FriendsController", () => {
     const getFriendsMock = vi.spyOn(FriendsDal, "getRequests");
 
     beforeEach(() => {
-      getFriendsMock.mockReset();
+      getFriendsMock.mockClear();
     });
 
     it("should get for the current user", async () => {
@@ -175,7 +175,7 @@ describe("FriendsController", () => {
 
     beforeEach(() => {
       [getUserByNameMock, getPartialUserMock, createUserMock].forEach((it) =>
-        it.mockReset()
+        it.mockClear()
       );
     });
 
@@ -289,7 +289,7 @@ describe("FriendsController", () => {
     const deleteByIdMock = vi.spyOn(FriendsDal, "deleteById");
 
     beforeEach(() => {
-      deleteByIdMock.mockReset();
+      deleteByIdMock.mockClear().mockResolvedValue();
     });
 
     it("should delete by id", async () => {
@@ -319,7 +319,7 @@ describe("FriendsController", () => {
     const updateStatusMock = vi.spyOn(FriendsDal, "updateStatus");
 
     beforeEach(() => {
-      updateStatusMock.mockReset();
+      updateStatusMock.mockClear().mockResolvedValue();
     });
 
     it("should accept", async () => {
@@ -379,7 +379,7 @@ describe("FriendsController", () => {
     const getFriendsMock = vi.spyOn(FriendsDal, "getFriends");
 
     beforeEach(() => {
-      getFriendsMock.mockReset();
+      getFriendsMock.mockClear();
     });
 
     it("gets with premium enabled", async () => {
