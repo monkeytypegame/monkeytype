@@ -122,6 +122,8 @@ export const ThemeNameSchema = z.enum(
     "nord",
     "nord_light",
     "norse",
+    "nushu_dark",
+    "nushu_light",
     "oblivion",
     "olive",
     "olivia",

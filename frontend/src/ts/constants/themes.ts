@@ -1114,6 +1114,18 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#5b578e",
     textColor: "#f4e0c9",
   },
+  nushu_dark: {
+    bgColor: "#25211d",
+    mainColor: "#79c0ff",
+    subColor: "#e3b341",
+    textColor: "#a5d6ff",
+  },
+  nushu_light: {
+    bgColor: "#f8f6f1",
+    mainColor: "#0550ae",
+    subColor: "#633c01",
+    textColor: "#0a3069",
+  },
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
