@@ -36,16 +36,18 @@ describe("Loaderboard Controller", () => {
   });
   describe("get leaderboard", () => {
     const getLeaderboardMock = vi.spyOn(LeaderboardDal, "get");
+    const getLeaderboardCountMock = vi.spyOn(LeaderboardDal, "getCount");
 
     beforeEach(() => {
       getLeaderboardMock.mockReset();
+      getLeaderboardCountMock.mockReset();
     });
 
     it("should get for english time 60", async () => {
       //GIVEN
 
       const resultData = {
-        count: 0,
+        count: 42,
         pageSize: 50,
         entries: [
           {
@@ -78,6 +80,7 @@ describe("Loaderboard Controller", () => {
         _id: new ObjectId(),
       }));
       getLeaderboardMock.mockResolvedValue(mockData);
+      getLeaderboardCountMock.mockResolvedValue(42);
 
       //WHEN
 
@@ -97,13 +100,15 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         0,
-        50
+        50,
+        false
       );
     });
 
     it("should get for english time 60 with page", async () => {
       //GIVEN
       getLeaderboardMock.mockResolvedValue([]);
+      getLeaderboardCountMock.mockResolvedValue(0);
       const page = 0;
       const pageSize = 25;
 
@@ -135,7 +140,8 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         page,
-        pageSize
+        pageSize,
+        false
       );
     });
 

@@ -106,19 +106,21 @@ export const commands: CommandsSubgroup = {
     ...ResultSavingCommands,
 
     //behavior
-    difficultyCommand,
-    buildCommandForConfigKey("quickRestart"),
-    buildCommandForConfigKey("repeatQuotes"),
-    blindModeCommand,
-    buildCommandForConfigKey("alwaysShowWordsHistory"),
-    buildCommandForConfigKey("singleListCommandLine"),
-    minSpeedCommand,
-    minAccCommand,
-    ...MinBurstCommands,
-    buildCommandForConfigKey("britishEnglish"),
-    ...FunboxCommands,
-    buildCommandForConfigKey("customLayoutfluid"),
-    buildCommandForConfigKey("customPolyglot"),
+    ...buildCommands(
+      difficultyCommand,
+      "quickRestart",
+      "repeatQuotes",
+      blindModeCommand,
+      "alwaysShowWordsHistory",
+      "singleListCommandLine",
+      minSpeedCommand,
+      minAccCommand,
+      ...MinBurstCommands,
+      "britishEnglish",
+      ...FunboxCommands,
+      "customLayoutfluid",
+      "customPolyglot"
+    ),
 
     //input
     ...buildCommands(

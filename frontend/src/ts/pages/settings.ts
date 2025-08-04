@@ -580,7 +580,11 @@ async function fillSettingsPage(): Promise<void> {
   if (fontsEl.innerHTML === "") {
     let fontsElHTML = "";
 
-    for (const name of Misc.typedKeys(Fonts).sort()) {
+    for (const name of Misc.typedKeys(Fonts).sort((a, b) =>
+      (Fonts[a].display ?? a.replace(/_/g, " ")).localeCompare(
+        Fonts[b].display ?? b.replace(/_/g, " ")
+      )
+    )) {
       const font = Fonts[name];
       let fontFamily = name.replace(/_/g, " ");
 
@@ -590,7 +594,7 @@ async function fillSettingsPage(): Promise<void> {
       const activeClass = Config.fontFamily === name ? " active" : "";
       const display = font.display ?? name.replace(/_/g, " ");
 
-      fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${name}">${display}</button>`;
+      fontsElHTML += `<button class="${activeClass}" style="font-family:'${fontFamily}'" data-config-value="${name}">${display}</button>`;
     }
 
     fontsElHTML +=
@@ -803,6 +807,23 @@ function refreshPresetsSettingsSection(): void {
   }
 }
 
+export async function updateFilterSectionVisibility(): Promise<void> {
+  const hasBackgroundUrl =
+    Config.customBackground !== "" ||
+    (await FileStorage.hasFile("LocalBackgroundFile"));
+  const isImageVisible = $(".customBackground img").is(":visible");
+
+  if (hasBackgroundUrl && isImageVisible) {
+    $(
+      ".pageSettings .section[data-config-name='customBackgroundFilter']"
+    ).removeClass("hidden");
+  } else {
+    $(
+      ".pageSettings .section[data-config-name='customBackgroundFilter']"
+    ).addClass("hidden");
+  }
+}
+
 export async function update(
   options: {
     eventKey?: ConfigEvent.ConfigEventKey;
@@ -832,6 +853,7 @@ export async function update(
   ThemePicker.updateActiveTab();
   ThemePicker.setCustomInputs(true);
   await CustomBackgroundPicker.updateUI();
+  await updateFilterSectionVisibility();
 
   const setInputValue = (
     key: ConfigKey,
@@ -884,19 +906,6 @@ export async function update(
   } else {
     $(
       ".pageSettings .section[data-config-name='autoSwitchThemeInputs']"
-    ).addClass("hidden");
-  }
-
-  if (
-    Config.customBackground !== "" ||
-    (await FileStorage.hasFile("LocalBackgroundFile"))
-  ) {
-    $(
-      ".pageSettings .section[data-config-name='customBackgroundFilter']"
-    ).removeClass("hidden");
-  } else {
-    $(
-      ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).addClass("hidden");
   }
 
@@ -997,6 +1006,7 @@ $(".pageSettings .section[data-config-name='funbox'] .buttons").on(
     const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
+    $(e.currentTarget).blur();
   }
 );
 
@@ -1206,7 +1216,9 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings" && eventKey !== "theme") {
-    void update({ eventKey });
+    void (eventKey === "customBackground"
+      ? updateFilterSectionVisibility()
+      : update({ eventKey }));
   }
 });
 

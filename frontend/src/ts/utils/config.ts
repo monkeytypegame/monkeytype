@@ -30,10 +30,11 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
 /**
  * remove all values from the config which are not valid
  */
-function sanitizeConfig(
+export function sanitizeConfig(
   config: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
-  return sanitize(ConfigSchemas.PartialConfigSchema, config);
+  //make sure to use strip()
+  return sanitize(ConfigSchemas.PartialConfigSchema.strip(), config);
 }
 
 export function replaceLegacyValues(
@@ -154,6 +155,8 @@ export function replaceLegacyValues(
     }
 
     configObj.fontSize = newValue;
+  } else if (configObj.fontSize !== undefined && configObj.fontSize < 0) {
+    configObj.fontSize = 1;
   }
 
   if (
@@ -195,6 +198,22 @@ export function replaceLegacyValues(
       configObj.quoteLength = [0, 1, 2, 3];
     } else {
       configObj.quoteLength = [configObj.quoteLength];
+    }
+  }
+
+  if (configObj.tapeMargin !== undefined) {
+    if (configObj.tapeMargin < 10) {
+      configObj.tapeMargin = 10;
+    } else if (configObj.tapeMargin > 90) {
+      configObj.tapeMargin = 90;
+    }
+  }
+
+  if (configObj.maxLineWidth !== undefined) {
+    if (configObj.maxLineWidth < 20 && configObj.maxLineWidth !== 0) {
+      configObj.maxLineWidth = 20;
+    } else if (configObj.maxLineWidth > 1000) {
+      configObj.maxLineWidth = 1000;
     }
   }
 

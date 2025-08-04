@@ -52,6 +52,10 @@ Stop the running docker containers using `docker compose down` before making any
   - open the [firebase console](https://console.firebase.google.com/) and open your project
   - go to `Authentication > Sign-in method`  
   - enable `Email/Password` and save
+- whitelist your domain
+  - In the Firebase console, go to `Authentication > Sign-in method`
+  - Scroll to `Authorized domains`
+  - Click `Add domain` and enter the domain where you’ll host the Monkeytype frontend (e.g. `localhost`)
 - generate service account
   - go to your project settings by clicking the `⚙` icon in the sidebar, then `Project settings`
   - navigate to the `Service accounts` tab

@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
-import * as BlacklistDal from "../../src/dal/blocklist";
+import * as BlacklistDal from "../../../src/dal/blocklist";
+import { describeIntegration } from "..";
 
-describe("BlocklistDal", () => {
+describeIntegration()("BlocklistDal", () => {
   describe("add", () => {
     beforeEach(() => {
       vitest.useFakeTimers();

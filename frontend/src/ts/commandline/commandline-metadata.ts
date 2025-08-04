@@ -493,10 +493,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
 
   //appearence
-  timerStyle: {
-    subgroup: { options: "fromSchema" },
-    alias: "timer",
-  },
   liveSpeedStyle: {
     subgroup: {
       options: "fromSchema",
@@ -515,7 +511,13 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
     alias: "wpm",
   },
+  timerStyle: {
+    display: "Live progress style...",
+    subgroup: { options: "fromSchema" },
+    alias: "timer",
+  },
   timerColor: {
+    display: "Live progress color...",
     alias: "timer speed wpm burst acc",
     subgroup: {
       options: "fromSchema",
@@ -523,6 +525,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   timerOpacity: {
+    display: "Live progress opacity...",
     alias: "timer speed wpm burst acc",
     subgroup: {
       options: "fromSchema",
@@ -583,7 +586,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   fontFamily: {
     subgroup: {
-      options: typedKeys(Fonts).sort(),
+      options: typedKeys(Fonts).sort((a, b) =>
+        (Fonts[a]?.display ?? a.replace(/_/g, " ")).localeCompare(
+          Fonts[b]?.display ?? b.replace(/_/g, " ")
+        )
+      ),
       display: (name) =>
         Fonts[name as KnownFontName]?.display ?? name.replaceAll(/_/g, " "),
       customData: (name) => {

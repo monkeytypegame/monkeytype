@@ -1,7 +1,8 @@
-import * as ResultDal from "../../src/dal/result";
+import * as ResultDal from "../../../src/dal/result";
 import { ObjectId } from "mongodb";
-import * as UserDal from "../../src/dal/user";
-import { DBResult } from "../../src/utils/result";
+import * as UserDal from "../../../src/dal/user";
+import { DBResult } from "../../../src/utils/result";
+import { describeIntegration } from "..";
 
 let uid: string;
 const timestamp = Date.now() - 60000;
@@ -62,7 +63,7 @@ async function createDummyData(
     });
   }
 }
-describe("ResultDal", () => {
+describeIntegration()("ResultDal", () => {
   beforeEach(() => {
     uid = new ObjectId().toHexString();
   });

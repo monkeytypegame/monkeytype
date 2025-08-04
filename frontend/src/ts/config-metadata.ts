@@ -1,3 +1,4 @@
+import { checkCompatibility } from "@monkeytype/funbox";
 import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
 import { isAuthenticated } from "./firebase";
@@ -5,6 +6,7 @@ import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
 import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
+import { capitalizeFirstLetter } from "./utils/strings";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -261,7 +263,17 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-gamepad",
     changeRequiresRestart: true,
     isBlocked: ({ value, currentConfig }) => {
-      for (const funbox of currentConfig.funbox) {
+      if (!checkCompatibility(value)) {
+        Notifications.add(
+          `${capitalizeFirstLetter(
+            value.join(", ")
+          )} is an invalid combination of funboxes`,
+          0
+        );
+        return true;
+      }
+
+      for (const funbox of value) {
         if (!canSetFunboxWithConfig(funbox, currentConfig)) {
           Notifications.add(
             `${value}" cannot be enabled with the current config`,
@@ -270,6 +282,7 @@ export const configMetadata: ConfigMetadataObject = {
           return true;
         }
       }
+
       return false;
     },
   },
@@ -500,16 +513,6 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-tape",
     displayString: "tape margin",
     changeRequiresRestart: false,
-    overrideValue: ({ value }) => {
-      //TODO move to migration after settings validation
-      if (value < 10) {
-        value = 10;
-      }
-      if (value > 90) {
-        value = 90;
-      }
-      return value;
-    },
   },
   smoothLineScroll: {
     icon: "fa-align-left",
@@ -548,29 +551,12 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "max line width",
-    overrideValue: ({ value }) => {
-      //TODO move to migration after settings validation
-      if (value < 20 && value !== 0) {
-        value = 20;
-      }
-      if (value > 1000) {
-        value = 1000;
-      }
-      return value;
-    },
   },
   fontSize: {
     icon: "fa-font",
     changeRequiresRestart: false,
     triggerResize: true,
     displayString: "font size",
-    overrideValue: ({ value }) => {
-      //TODO move to migration after settings validation
-      if (value < 0) {
-        value = 1;
-      }
-      return value;
-    },
   },
   fontFamily: {
     icon: "fa-font",
@@ -777,6 +763,12 @@ export const configMetadata: ConfigMetadataObject = {
   ads: {
     icon: "fa-ad",
     changeRequiresRestart: false,
+    overrideValue: ({ value }) => {
+      if (isDevEnvironment()) {
+        return "off";
+      }
+      return value;
+    },
     isBlocked: ({ value }) => {
       if (value !== "off" && isDevEnvironment()) {
         Notifications.add("Ads are disabled in development mode.", 0);

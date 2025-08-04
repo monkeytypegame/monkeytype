@@ -1,8 +1,9 @@
 import { ObjectId } from "mongodb";
-import * as PresetDal from "../../src/dal/preset";
+import * as PresetDal from "../../../src/dal/preset";
 import _ from "lodash";
+import { describeIntegration } from "..";
 
-describe("PresetDal", () => {
+describeIntegration()("PresetDal", () => {
   describe("readPreset", () => {
     it("should read", async () => {
       //GIVEN

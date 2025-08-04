@@ -79,13 +79,13 @@
     display: grid;
     // gap: .5rem;
     grid-template-areas:
-      "title buttons"
+      "title title"
       "text buttons";
     grid-template-columns: 2fr 1fr;
     grid-template-rows: auto 1fr;
     column-gap: 2rem;
     row-gap: 0.5rem;
-    align-items: center;
+    align-items: start;
 
     .inputAndButton {
       display: grid;
@@ -251,6 +251,7 @@
       label {
         display: grid;
         place-content: center start;
+        margin-left: 0.5rem;
       }
 
       & .spacer {

@@ -155,7 +155,7 @@ async function getDataAndInit(): Promise<boolean> {
     console.log(
       "no local config or local and db configs are different - applying db"
     );
-    await UpdateConfig.apply(snapshot.config);
+    await UpdateConfig.apply(snapshot.config, true);
     UpdateConfig.saveFullConfigToLocalStorage(true);
 
     //funboxes might be different and they wont activate on the account page

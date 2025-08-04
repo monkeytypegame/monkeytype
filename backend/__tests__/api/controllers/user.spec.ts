@@ -20,7 +20,6 @@ import * as ApeKeysDal from "../../../src/dal/ape-keys";
 import * as LogDal from "../../../src/dal/logs";
 import { ObjectId } from "mongodb";
 import { PersonalBest } from "@monkeytype/schemas/shared";
-import { pb } from "../../dal/leaderboards.spec";
 import {
   mockAuthenticateWithApeKey,
   mockBearerAuthentication,
@@ -31,6 +30,7 @@ import { MonkeyMail, UserStreak } from "@monkeytype/schemas/users";
 import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
+import { pb } from "../../__testData__/users";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -41,43 +41,7 @@ describe("user controller test", () => {
   beforeEach(() => {
     mockAuth.beforeEach();
   });
-  describe("user creation flow", () => {
-    beforeEach(async () => {
-      await enableSignup(true);
-    });
-    it("should be able to check name, sign up, and get user data", async () => {
-      await mockApp.get("/users/checkName/NewUser").expect(200);
 
-      const newUser = {
-        name: "NewUser",
-        uid,
-        email: "newuser@mail.com",
-        captcha: "captcha",
-      };
-
-      await mockApp
-        .post("/users/signup")
-        .set("Authorization", `Bearer ${uid}`)
-        .send(newUser)
-        .expect(200);
-
-      const response = await mockApp
-        .get("/users")
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(200);
-
-      const {
-        body: { data: userData },
-      } = response;
-
-      expect(userData.name).toBe(newUser.name);
-      expect(userData.email).toBe(newUser.email);
-      expect(userData.uid).toBe(newUser.uid);
-
-      await mockApp.get("/users/checkName/NewUser").expect(409);
-    });
-  });
   describe("user signup", () => {
     const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
     const firebaseDeleteUserMock = vi.spyOn(AuthUtils, "deleteUser");
@@ -251,6 +215,64 @@ describe("user controller test", () => {
           '"name" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
         ],
       });
+    });
+  });
+  describe("checkName", () => {
+    const userIsNameAvailableMock = vi.spyOn(UserDal, "isNameAvailable");
+
+    beforeEach(() => {
+      userIsNameAvailableMock.mockReset();
+    });
+
+    it("returns ok if name is available", async () => {
+      //GIVEN
+      userIsNameAvailableMock.mockResolvedValue(true);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/users/checkName/bob")
+        //no authentication required
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Username available",
+        data: null,
+      });
+      expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", "");
+    });
+
+    it("returns 409 if name is not available", async () => {
+      //GIVEN
+      userIsNameAvailableMock.mockResolvedValue(false);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/users/checkName/bob")
+        //no authentication required
+        .expect(409);
+
+      //THEN
+      expect(body.message).toEqual("Username unavailable");
+
+      expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", "");
+    });
+    it("returns ok if name is our own", async () => {
+      //GIVEN
+      userIsNameAvailableMock.mockResolvedValue(true);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/users/checkName/bob")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Username available",
+        data: null,
+      });
+      expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", uid);
     });
   });
   describe("sendVerificationEmail", () => {
@@ -602,6 +624,7 @@ describe("user controller test", () => {
       "purgeUserFromXpLeaderboards"
     );
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
+    const logsDeleteUserMock = vi.spyOn(LogDal, "deleteUserLogs");
 
     beforeEach(() => {
       mockAuth.beforeEach();
@@ -631,6 +654,7 @@ describe("user controller test", () => {
         deleteAllPresetsMock,
         purgeUserFromDailyLeaderboardsMock,
         purgeUserFromXpLeaderboardsMock,
+        logsDeleteUserMock,
       ].forEach((it) => it.mockReset());
     });
 
@@ -668,6 +692,7 @@ describe("user controller test", () => {
         uid,
         (await configuration).leaderboards.weeklyXp
       );
+      expect(logsDeleteUserMock).toHaveBeenCalledWith(uid);
     });
     it("should delete user without adding to blocklist if not banned", async () => {
       //GIVEN
@@ -702,6 +727,7 @@ describe("user controller test", () => {
         uid,
         (await configuration).leaderboards.weeklyXp
       );
+      expect(logsDeleteUserMock).toHaveBeenCalledWith(uid);
     });
 
     it("should not fail if userInfo cannot be found", async () => {
@@ -731,6 +757,7 @@ describe("user controller test", () => {
         uid,
         (await configuration).leaderboards.weeklyXp
       );
+      expect(logsDeleteUserMock).toHaveBeenCalledWith(uid);
     });
 
     it("should fail for unknown error from UserDal", async () => {
@@ -759,6 +786,7 @@ describe("user controller test", () => {
         uid,
         (await configuration).leaderboards.weeklyXp
       );
+      expect(logsDeleteUserMock).not.toHaveBeenCalled();
     });
     it("should not fail if firebase user cannot be found", async () => {
       //GIVEN
@@ -798,6 +826,7 @@ describe("user controller test", () => {
         uid,
         (await configuration).leaderboards.weeklyXp
       );
+      expect(logsDeleteUserMock).toHaveBeenCalledWith(uid);
     });
 
     it("should fail for unknown error from firebase", async () => {
@@ -3392,9 +3421,8 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/inbox")
-        .set("Authorization", `Bearer ${uid}`);
-      //.expect(200);
-      console.log(body);
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
 
       //THEN
       expect(body).toEqual({

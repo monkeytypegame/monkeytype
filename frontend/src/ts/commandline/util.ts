@@ -74,8 +74,12 @@ function _buildCommandForConfigKey<
       configMeta: configMeta as unknown as ConfigMetadata<
         keyof ConfigSchemas.Config
       >,
-      schema,
+      schema:
+        "secondKey" in inputProps
+          ? ConfigSchemas.ConfigSchema.shape[inputProps.secondKey]
+          : schema,
     });
+
     if (result === undefined) {
       return inputCommand;
     }

@@ -2,7 +2,6 @@ import * as Config from "../../src/ts/config";
 import * as Misc from "../../src/ts/utils/misc";
 import {
   CustomThemeColors,
-  FunboxName,
   ConfigKey,
   Config as ConfigType,
   CaretStyleSchema,
@@ -176,7 +175,7 @@ describe("Config", () => {
       }> = {
         funbox: [
           {
-            value: "gibberish" as any,
+            value: ["gibberish"],
             given: { mode: "quote" },
             fail: true,
           },
@@ -686,7 +685,6 @@ describe("Config", () => {
   it("setAds", () => {
     expect(Config.setAds("on")).toBe(true);
     expect(Config.setAds("sellout")).toBe(true);
-    expect(Config.setAds("invalid" as any)).toBe(false);
   });
   it("setRepeatQuotes", () => {
     expect(Config.setRepeatQuotes("off")).toBe(true);
@@ -945,8 +943,6 @@ describe("Config", () => {
   it("setFunbox", () => {
     expect(Config.setFunbox(["mirror"])).toBe(true);
     expect(Config.setFunbox(["mirror", "58008"])).toBe(true);
-
-    expect(Config.setFunbox([stringOfLength(101) as FunboxName])).toBe(false);
   });
   it("setPaceCaretCustomSpeed", () => {
     expect(Config.setPaceCaretCustomSpeed(0)).toBe(true);
@@ -1042,9 +1038,6 @@ describe("Config", () => {
   it("setFontSize", () => {
     expect(Config.setFontSize(1)).toBe(true);
 
-    //gets converted
-    expect(Config.setFontSize(-1)).toBe(true);
-
     expect(Config.setFontSize(0)).toBe(false);
     expect(Config.setFontSize("5" as any)).toBe(false);
     expect(Config.setFontSize("invalid" as any)).toBe(false);
@@ -1053,11 +1046,6 @@ describe("Config", () => {
     expect(Config.setMaxLineWidth(0)).toBe(true);
     expect(Config.setMaxLineWidth(50)).toBe(true);
     expect(Config.setMaxLineWidth(50.5)).toBe(true);
-
-    //gets converted
-    expect(Config.setMaxLineWidth(10)).toBe(true);
-    expect(Config.setMaxLineWidth(10_000)).toBe(true);
-    expect(Config.setMaxLineWidth("invalid" as any)).toBe(false);
   });
   it("setCustomBackground", () => {
     expect(Config.setCustomBackground("http://example.com/test.png")).toBe(
@@ -1106,6 +1094,130 @@ describe("Config", () => {
     expect(Config.setCustomLayoutfluid([])).toBe(false);
     expect(Config.setCustomLayoutfluid("qwerty#qwertz" as any)).toBe(false);
     expect(Config.setCustomLayoutfluid("invalid" as any)).toBe(false);
+  });
+
+  describe("apply", () => {
+    it("should fill missing values with defaults", async () => {
+      //GIVEN
+      await Config.apply({
+        numbers: true,
+        punctuation: true,
+      });
+      const config = getConfig();
+      expect(config.mode).toBe("time");
+      expect(config.numbers).toBe(true);
+      expect(config.punctuation).toBe(true);
+    });
+
+    describe("should reset to default if setting failed", () => {
+      const testCases: {
+        display: string;
+        value: Partial<ConfigType>;
+        expected: Partial<ConfigType>;
+      }[] = [
+        {
+          // invalid funbox
+          display: "invalid funbox",
+          value: { funbox: ["invalid_funbox"] as any },
+          expected: { funbox: [] },
+        },
+        {
+          display: "mode incompatible with funbox",
+          value: { mode: "quote", funbox: ["58008"] },
+          expected: { funbox: [] },
+        },
+        {
+          display: "invalid combination of funboxes",
+          value: { funbox: ["58008", "gibberish"] },
+          expected: { funbox: [] },
+        },
+        {
+          display: "sanitizes config, remove extra keys",
+          value: { mode: "zen", unknownKey: true, unknownArray: [1, 2] } as any,
+          expected: { mode: "zen" },
+        },
+        {
+          display: "applies config migration",
+          value: { mode: "zen", swapEscAndTab: true } as any,
+          expected: { mode: "zen", quickRestart: "esc" },
+        },
+      ];
+
+      it.each(testCases)("$display", async ({ value, expected }) => {
+        await Config.apply(value);
+
+        const config = getConfig();
+        const applied = Object.fromEntries(
+          Object.entries(config).filter(([key]) =>
+            Object.keys(expected).includes(key)
+          )
+        );
+        expect(applied).toEqual(expected);
+      });
+    });
+
+    describe("should apply keys in an order to avoid overrides", () => {
+      const testCases: {
+        display: string;
+        value: Partial<ConfigType>;
+        expected: Partial<ConfigType>;
+      }[] = [
+        {
+          display:
+            "quote length shouldnt override mode, punctuation and numbers",
+          value: {
+            punctuation: true,
+            numbers: true,
+            quoteLength: [0],
+            mode: "time",
+          },
+          expected: {
+            punctuation: true,
+            numbers: true,
+            quoteLength: [0],
+            mode: "time",
+          },
+        },
+      ];
+
+      it.each(testCases)("$display", async ({ value, expected }) => {
+        await Config.apply(value);
+        const config = getConfig();
+        const applied = Object.fromEntries(
+          Object.entries(config).filter(([key]) =>
+            Object.keys(expected).includes(key)
+          )
+        );
+        expect(applied).toEqual(expected);
+      });
+    });
+
+    it("should apply a partial config but keep the rest unchanged", async () => {
+      replaceConfig({
+        numbers: true,
+      });
+      await Config.apply({
+        punctuation: true,
+      });
+      const config = getConfig();
+      expect(config.numbers).toBe(true);
+    });
+
+    it("should reset all values to default if fullReset is true", async () => {
+      replaceConfig({
+        numbers: true,
+        theme: "serika",
+      });
+      await Config.apply(
+        {
+          punctuation: true,
+        },
+        true
+      );
+      const config = getConfig();
+      expect(config.numbers).toBe(false);
+      expect(config.theme).toEqual("serika_dark");
+    });
   });
 });
 
