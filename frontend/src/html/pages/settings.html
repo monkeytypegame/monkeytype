@@ -1147,7 +1147,44 @@
           <i class="fas fa-fw fa-link"></i>
         </button>
       </div>
-      <!-- <div class="text">Change the font family for the site</div> -->
+      <div class="text">
+        Change the font family used by the website. Using a local font will
+        override your choice.
+        <br />
+        Note: Local fonts are not sent to the server and will not persist across
+        devices.
+      </div>
+      <div class="topRight">
+        <div class="usingLocalFont">
+          <button class="no-auto-handle">
+            <i class="fas fa-trash fa-fw"></i>
+            remove local font
+          </button>
+        </div>
+        <div class="uploadContainer">
+          <label
+            for="customFontUpload"
+            class="button"
+            aria-label="Select custom font"
+            data-balloon-pos="left"
+          >
+            <i class="fas fa-file-import fa-fw"></i>
+            use local font
+          </label>
+
+          <input
+            type="file"
+            id="customFontUpload"
+            accept="font/woff,font/woff2,font/ttf,font/otf"
+            style="display: none"
+          />
+        </div>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
+      </div>
       <div class="buttons"></div>
     </div>
     <div class="section" data-config-name="keymapMode">
@@ -1307,11 +1344,47 @@
         </button>
       </div>
       <div class="text">
-        Set an image url to be a custom background image. Cover fits the image
-        to cover the screen. Contain fits the image to be fully visible. Max
-        fits the image corner to corner.
+        Set an image url or local image to be a custom background image. Local
+        image always take priority over the image url. Cover fits the image to
+        cover the screen. Contain fits the image to be fully visible. Max fits
+        the image corner to corner.
+        <br />
+        <br />
+        Note: The local image is stored in your browser's local storage and will
+        not be uploaded to the server. This means that if you clear your
+        browser's local storage or use a different browser, the local image will
+        be lost.
       </div>
       <div class="inputs">
+        <div class="usingLocalImage">
+          <button class="no-auto-handle">
+            <i class="fas fa-trash fa-fw"></i>
+            remove local image
+          </button>
+        </div>
+        <div class="uploadContainer">
+          <label
+            for="customBackgroundUpload"
+            class="button"
+            aria-label="Select custom background image"
+            data-balloon-pos="left"
+          >
+            <i class="fas fa-file-import fa-fw"></i>
+            use local image
+          </label>
+
+          <input
+            type="file"
+            id="customBackgroundUpload"
+            accept="image/png,image/jpeg,image/jpg,image/gif"
+            style="display: none"
+          />
+        </div>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
         <div class="inputAndButton">
           <input
             type="text"
@@ -1320,14 +1393,6 @@
             tabindex="0"
             onClick="this.select();"
           />
-          <span>
-            <button class="hidden remove no-auto-handle">
-              <i class="fas fa-trash fa-fw"></i>
-            </button>
-            <button class="save no-auto-handle">
-              <i class="fas fa-save fa-fw"></i>
-            </button>
-          </span>
         </div>
         <div class="buttons">
           <button data-config-value="cover">cover</button>
@@ -1364,7 +1429,7 @@
         <div class="group opacity">
           <div class="title">opacity</div>
           <div class="value"></div>
-          <input type="range" min="0" max="1" value="1" step="0.1" />
+          <input type="range" min="0.1" max="1" value="1" step="0.1" />
         </div>
       </div>
     </div>

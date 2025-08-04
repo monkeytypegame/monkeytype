@@ -1,25 +1,25 @@
 @use "sass:map";
 
 @each $font, $config in $fonts {
-  $src: "/webfonts/" + map-get($config, "src");
+  $dir: "webfonts";
   $previewDir: "webfonts-preview";
   @if variable-exists(previewFontsPath) {
     $previewDir: $previewFontsPath;
   }
 
   @font-face {
-    font-family: $font;
+    font-family: "#{$font}";
     font-style: normal;
     font-weight: map-get($config, "weight");
     font-display: block;
-    src: url($src) format("woff2");
+    src: url("/#{$dir}/#{map-get($config, 'src')}") format("woff2");
   }
 
   @font-face {
-    font-family: $font + " Preview";
+    font-family: "#{$font} Preview";
     font-style: normal;
     font-weight: map-get($config, "weight");
     font-display: block;
-    src: url("/" + $previewDir + "/" + map-get($config, "src")) format("woff2");
+    src: url("/#{$previewDir}/#{map-get($config, 'src')}") format("woff2");
   }
 }

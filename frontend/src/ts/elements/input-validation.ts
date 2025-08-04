@@ -32,6 +32,9 @@ export type Validation<T> = {
 
   /** custom debounce delay for `isValid` call. defaults to 100 */
   debounceDelay?: number;
+
+  /** Resets the value to the current config if empty */
+  resetIfEmpty?: false;
 };
 /**
  * Create input handler for validated input element.
@@ -213,7 +216,7 @@ export function handleConfigInput<T extends ConfigKey>({
   }
 
   const handleStore = (): void => {
-    if (input.value === "") {
+    if (input.value === "" && (validation?.resetIfEmpty ?? true)) {
       //use last config value, clear validation
       input.value = new String(Config[configName]).toString();
       input.dispatchEvent(new Event("input"));

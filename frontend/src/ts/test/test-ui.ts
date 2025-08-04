@@ -62,9 +62,15 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   ) {
     debouncedZipfCheck();
   }
-  if (eventKey === "fontSize" && !nosave) {
-    OutOfFocus.hide();
-    updateWordWrapperClasses();
+  if (eventKey === "fontSize") {
+    $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
+      "fontSize",
+      eventValue + "rem"
+    );
+    if (!nosave) {
+      OutOfFocus.hide();
+      updateWordWrapperClasses();
+    }
   }
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
