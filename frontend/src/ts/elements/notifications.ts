@@ -265,7 +265,8 @@ function updateClearAllButton(): void {
   }
 }
 
-function removeOldNotificaation(): void {
+function removeOldNotification(): void {
+  console.log(visibleStickyNotifications, id);
   if (visibleStickyNotifications >= 4) {
     const oldNotifications = id - visibleStickyNotifications;
     $(`#notificationCenter .notif[id='${oldNotifications}']`).remove();
@@ -301,7 +302,7 @@ export function add(
     options.allowHTML
   ).show();
 
-  removeOldNotificaation();
+  removeOldNotification();
 }
 
 export function addBanner(
