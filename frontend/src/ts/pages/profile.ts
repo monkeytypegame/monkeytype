@@ -13,6 +13,8 @@ import { TestActivityCalendar } from "../elements/test-activity-calendar";
 import { getFirstDayOfTheWeek } from "../utils/date-and-time";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
+let testActivity: HTMLElement | undefined;
+
 function reset(): void {
   $(".page.pageProfile .error").addClass("hidden");
   $(".page.pageProfile .preloader").removeClass("hidden");
@@ -155,7 +157,7 @@ function reset(): void {
         </div>
       </div><div class="lbOptOutReminder hidden"></div>
       `);
-  $("#testActivity").addClass("hidden");
+  testActivity?.classList.add("hidden");
 }
 
 type UpdateOptions = {
@@ -195,24 +197,22 @@ async function update(options: UpdateOptions): Promise<void> {
       // this cast is fine because pb tables can handle the partial data inside user profiles
       PbTables.update(profile.personalBests as unknown as PersonalBests, true);
 
+      testActivity = document.querySelector(
+        ".page.pageProfile .testActivity"
+      ) as HTMLElement;
+
       if (profile.testActivity !== undefined) {
-        document.getElementById("testActivity")?.classList.remove("hidden");
         const calendar = new TestActivityCalendar(
           profile.testActivity.testsByDays,
           new Date(profile.testActivity.lastDay),
           firstDayOfTheWeek
         );
-        TestActivity.init(calendar);
-        $("#testActivity .top .title").html(
-          $("#testActivity .top .title").html() + " in last 12 months"
+        TestActivity.init(testActivity, calendar);
+        $(".testActivity .top .title").html(
+          $(".testActivity .top .title").html() + " in last 12 months"
         );
       } else {
-        //todo extract testactivity element into a const, stop using id
-        document
-          .getElementById("testActivity")
-          ?.querySelector(".activity")
-          ?.replaceChildren();
-        document.getElementById("testActivity")?.classList.add("hidden");
+        TestActivity.init(testActivity);
       }
     } else {
       // $(".page.pageProfile .failedToLoad").removeClass("hidden");
