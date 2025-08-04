@@ -17,8 +17,7 @@ export function init(
   userSignUpDate?: Date
 ): void {
   if (calendar === undefined) {
-    element.classList.add("hidden");
-    element.querySelector(".activity")?.replaceChildren();
+    clear(element);
     return;
   }
   element.classList.remove("hidden");
@@ -33,6 +32,11 @@ export function init(
   }
   updateLabels(element, calendar.firstDayOfWeek);
   update(element, calendar);
+}
+
+export function clear(element: HTMLElement): void {
+  element.classList.add("hidden");
+  element.querySelector(".activity")?.replaceChildren();
 }
 
 function update(element: HTMLElement, calendar?: TestActivityCalendar): void {

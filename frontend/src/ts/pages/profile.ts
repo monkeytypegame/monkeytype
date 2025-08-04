@@ -13,7 +13,6 @@ import { TestActivityCalendar } from "../elements/test-activity-calendar";
 import { getFirstDayOfTheWeek } from "../utils/date-and-time";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
-let testActivity: HTMLElement | undefined;
 
 function reset(): void {
   $(".page.pageProfile .error").addClass("hidden");
@@ -157,7 +156,13 @@ function reset(): void {
         </div>
       </div><div class="lbOptOutReminder hidden"></div>
       `);
-  testActivity?.classList.add("hidden");
+
+  const testActivityEl = document.querySelector(
+    ".page.pageProfile .testActivity"
+  );
+  if (testActivityEl !== null) {
+    TestActivity.clear(testActivityEl as HTMLElement);
+  }
 }
 
 type UpdateOptions = {
@@ -197,7 +202,7 @@ async function update(options: UpdateOptions): Promise<void> {
       // this cast is fine because pb tables can handle the partial data inside user profiles
       PbTables.update(profile.personalBests as unknown as PersonalBests, true);
 
-      testActivity = document.querySelector(
+      const testActivity = document.querySelector(
         ".page.pageProfile .testActivity"
       ) as HTMLElement;
 
@@ -208,11 +213,10 @@ async function update(options: UpdateOptions): Promise<void> {
           firstDayOfTheWeek
         );
         TestActivity.init(testActivity, calendar);
-        $(".testActivity .top .title").html(
-          $(".testActivity .top .title").html() + " in last 12 months"
-        );
+        const title = testActivity.querySelector(".top .title") as HTMLElement;
+        title.innerHTML = title?.innerHTML + " in last 12 months";
       } else {
-        TestActivity.init(testActivity);
+        TestActivity.clear(testActivity);
       }
     } else {
       // $(".page.pageProfile .failedToLoad").removeClass("hidden");
