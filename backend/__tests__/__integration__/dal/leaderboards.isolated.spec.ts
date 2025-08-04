@@ -290,7 +290,8 @@ describe("LeaderboardsDal", () => {
         "60",
         "english",
         1,
-        2
+        2,
+        true
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
@@ -317,6 +318,7 @@ describe("LeaderboardsDal", () => {
         "english",
         0,
         50,
+        false,
         [rank1.uid, rank4.uid]
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
@@ -338,11 +340,15 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
 
-      const result = (await LeaderboardsDal.get("time", "60", "english", 1, 2, [
-        rank1.uid,
-        rank2.uid,
-        rank4.uid,
-      ])) as LeaderboardsDal.DBLeaderboardEntry[];
+      const result = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        1,
+        2,
+        false,
+        [rank1.uid, rank2.uid, rank4.uid]
+      )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
       const lb = result.map((it) => _.omit(it, ["_id"]));
