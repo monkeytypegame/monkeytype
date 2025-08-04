@@ -2,6 +2,7 @@ import { Command } from "../types";
 import FileStorage from "../../utils/file-storage";
 import { applyCustomBackground } from "../../controllers/theme-controller";
 import { updateUI } from "../../elements/settings/custom-background-picker";
+import * as Notifications from "../../elements/notifications";
 
 const commands: Command[] = [
   {
@@ -30,6 +31,13 @@ const commands: Command[] = [
           return;
         }
 
+        // check type
+        if (!file.type.match(/image\//)) {
+          Notifications.add("Unsupported file format, must be an image.", 0);
+          cleanup();
+          return;
+        }
+
         const reader = new FileReader();
         reader.onload = async (readerEvent) => {
           const dataUrl = readerEvent.target?.result as string;
@@ -37,7 +45,12 @@ const commands: Command[] = [
             await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
             await applyCustomBackground();
             await updateUI();
-          } catch (e) {}
+          } catch (e) {
+            Notifications.add(
+              "Error uploading background: " + (e as Error).message,
+              0
+            );
+          }
           cleanup();
         };
         reader.onerror = cleanup;
@@ -55,9 +68,16 @@ const commands: Command[] = [
       return await FileStorage.hasFile("LocalBackgroundFile");
     },
     exec: async (): Promise<void> => {
-      await FileStorage.deleteFile("LocalBackgroundFile");
-      await updateUI();
-      await applyCustomBackground();
+      try {
+        await FileStorage.deleteFile("LocalBackgroundFile");
+        await updateUI();
+        await applyCustomBackground();
+      } catch (e) {
+        Notifications.add(
+          "Error removing background: " + (e as Error).message,
+          0
+        );
+      }
     },
   },
 ];
