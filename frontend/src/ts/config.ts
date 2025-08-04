@@ -812,10 +812,10 @@ const lastConfigsToApply: Set<keyof Config> = new Set([
   "paceCaret",
   "quoteLength", //quote length sets mode,
   "words",
+  "time",
   "mode", // mode sets punctuation and numbers
   "numbers",
   "punctuation",
-  "time",
   "funbox",
 ]);
 
