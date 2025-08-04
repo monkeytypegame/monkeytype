@@ -7,12 +7,12 @@ import { PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
 import { CustomThemeColors } from "@monkeytype/schemas/configs";
 import { describeIntegration } from "..";
 
-const mockPersonalBest = {
+const mockPersonalBest: PersonalBest = {
   acc: 1,
   consistency: 1,
   difficulty: "normal" as const,
   lazyMode: true,
-  language: "no",
+  language: "polish",
   punctuation: false,
   raw: 230,
   wpm: 215,
@@ -86,18 +86,19 @@ const mockResultFilter: ResultFilters = {
 
 const mockDbResultFilter = { ...mockResultFilter, _id: new ObjectId() };
 
-describeIntegration()("UserDal", () => {
+describeIntegration().sequential("UserDal", () => {
   it("should be able to insert users", async () => {
     // given
+    const uid = new ObjectId().toHexString();
     const newUser = {
       name: "Test",
       email: "mockemail@email.com",
-      uid: "userId",
+      uid,
     };
 
     // when
     await UserDAL.addUser(newUser.name, newUser.email, newUser.uid);
-    const insertedUser = await UserDAL.getUser("userId", "test");
+    const insertedUser = await UserDAL.getUser(newUser.uid, "test");
 
     // then
     expect(insertedUser.email).toBe(newUser.email);
@@ -107,10 +108,11 @@ describeIntegration()("UserDal", () => {
 
   it("should error if the user already exists", async () => {
     // given
+    const uid = new ObjectId().toHexString();
     const newUser = {
       name: "Test",
       email: "mockemail@email.com",
-      uid: "userId",
+      uid: uid,
     };
 
     // when
@@ -125,23 +127,23 @@ describeIntegration()("UserDal", () => {
 
   it("isNameAvailable should correctly check if a username is available", async () => {
     // given
-    await UserDAL.addUser("user1", "user1@email.com", "userId1");
-    await UserDAL.addUser("user2", "user2@email.com", "userId2");
+    const { uid: user1 } = await UserTestData.createUser({ name: "user1" });
+    await UserTestData.createUser({ name: "user2" });
 
     const testCases = [
       {
         name: "user1",
-        whosChecking: "userId1",
+        whosChecking: user1,
         expected: true,
       },
       {
         name: "USER1",
-        whosChecking: "userId1",
+        whosChecking: user1,
         expected: true,
       },
       {
         name: "user2",
-        whosChecking: "userId1",
+        whosChecking: user1,
         expected: false,
       },
     ];
@@ -155,57 +157,35 @@ describeIntegration()("UserDal", () => {
 
   it("updatename should not allow unavailable usernames", async () => {
     // given
-    const mockUsers = [...Array(3).keys()]
-      .map((id) => ({
-        name: `Test${id}`,
-        email: `mockemail@email.com${id}`,
-        uid: `userId${id}`,
-      }))
-      .map(({ name, email, uid }) => UserDAL.addUser(name, email, uid));
-    await Promise.all(mockUsers);
-
-    const userToUpdateNameFor = await UserDAL.getUser("userId0", "test");
-    const userWithNameTaken = await UserDAL.getUser("userId1", "test");
+    const user1 = await UserTestData.createUser({ name: "bob" });
+    const user2 = await UserTestData.createUser({ name: "kevin" });
+    const _decoy = await UserTestData.createUser();
 
     // when, then
     await expect(
-      UserDAL.updateName(
-        userToUpdateNameFor.uid,
-        userWithNameTaken.name,
-        userToUpdateNameFor.name
-      )
+      UserDAL.updateName(user1.uid, user2.name, user1.name)
     ).rejects.toThrow("Username already taken");
   });
 
   it("same usernames (different casing) should be available only for the same user", async () => {
-    await UserDAL.addUser("User1", "user1@test.com", "uid1");
+    const user1 = await UserTestData.createUser({ name: "bob" });
+    const user2 = await UserTestData.createUser({ name: "kevin" });
 
-    await UserDAL.addUser("User2", "user2@test.com", "uid2");
+    await UserDAL.updateName(user1.uid, "BOB", user1.name);
 
-    const user1 = await UserDAL.getUser("uid1", "test");
-    const user2 = await UserDAL.getUser("uid2", "test");
-
-    await UserDAL.updateName(user1.uid, "user1", user1.name);
-
-    const updatedUser1 = await UserDAL.getUser("uid1", "test");
+    const updatedUser1 = await UserDAL.getUser(user1.uid, "test");
 
     // when, then
-    expect(updatedUser1.name).toBe("user1");
+    expect(updatedUser1.name).toBe("BOB");
 
     await expect(
-      UserDAL.updateName(user2.uid, "USER1", user2.name)
+      UserDAL.updateName(user2.uid, "bob", user2.name)
     ).rejects.toThrow("Username already taken");
   });
 
   it("UserDAL.updateName should change the name of a user", async () => {
     // given
-    const testUser = {
-      name: "Test",
-      email: "mockemail@email.com",
-      uid: "userId",
-    };
-
-    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
+    const testUser = await UserTestData.createUser({ name: "bob" });
 
     // when
     await UserDAL.updateName(testUser.uid, "renamedTestUser", testUser.name);
@@ -217,12 +197,7 @@ describeIntegration()("UserDal", () => {
 
   it("clearPb should clear the personalBests of a user", async () => {
     // given
-    const testUser = {
-      name: "Test",
-      email: "mockemail@email.com",
-      uid: "userId",
-    };
-    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
+    const testUser = await UserTestData.createUser({ name: "bob" });
     await UserDAL.getUsersCollection().updateOne(
       { uid: testUser.uid },
       {
@@ -259,13 +234,7 @@ describeIntegration()("UserDal", () => {
 
   it("autoBan should automatically ban after configured anticheat triggers", async () => {
     // given
-    const testUser = {
-      name: "Test",
-      email: "mockemail@email.com",
-      uid: "userId",
-    };
-
-    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
+    const testUser = await UserTestData.createUser({ name: "bob" });
 
     // when
     Date.now = vi.fn(() => 0);
@@ -281,13 +250,7 @@ describeIntegration()("UserDal", () => {
 
   it("autoBan should not ban ban if triggered once", async () => {
     // given
-    const testUser = {
-      name: "Test",
-      email: "mockemail@email.com",
-      uid: "userId",
-    };
-
-    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
+    const testUser = await UserTestData.createUser({ name: "bob" });
 
     // when
     Date.now = vi.fn(() => 0);
@@ -301,13 +264,7 @@ describeIntegration()("UserDal", () => {
 
   it("autoBan should correctly remove old anticheat triggers", async () => {
     // given
-    const testUser = {
-      name: "Test",
-      email: "mockemail@email.com",
-      uid: "userId",
-    };
-
-    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
+    const testUser = await UserTestData.createUser({ name: "bob" });
 
     // when
     Date.now = vi.fn(() => 0);
@@ -656,10 +613,11 @@ describeIntegration()("UserDal", () => {
   });
 
   it("updateProfile should appropriately handle multiple profile updates", async () => {
-    await UserDAL.addUser("test name", "test email", "TestID");
+    const uid = new ObjectId().toHexString();
+    await UserDAL.addUser("test name", "test email", uid);
 
     await UserDAL.updateProfile(
-      "TestID",
+      uid,
       {
         bio: "test bio",
       },
@@ -668,7 +626,7 @@ describeIntegration()("UserDal", () => {
       }
     );
 
-    const user = await UserDAL.getUser("TestID", "test add result filters");
+    const user = await UserDAL.getUser(uid, "test add result filters");
     expect(user.profileDetails).toStrictEqual({
       bio: "test bio",
     });
@@ -677,7 +635,7 @@ describeIntegration()("UserDal", () => {
     });
 
     await UserDAL.updateProfile(
-      "TestID",
+      uid,
       {
         keyboard: "test keyboard",
         socialProfiles: {
@@ -694,10 +652,7 @@ describeIntegration()("UserDal", () => {
       }
     );
 
-    const updatedUser = await UserDAL.getUser(
-      "TestID",
-      "test add result filters"
-    );
+    const updatedUser = await UserDAL.getUser(uid, "test add result filters");
     expect(updatedUser.profileDetails).toStrictEqual({
       bio: "test bio",
       keyboard: "test keyboard",
@@ -715,7 +670,7 @@ describeIntegration()("UserDal", () => {
     });
 
     await UserDAL.updateProfile(
-      "TestID",
+      uid,
       {
         bio: "test bio 2",
         socialProfiles: {
@@ -732,10 +687,7 @@ describeIntegration()("UserDal", () => {
       }
     );
 
-    const updatedUser2 = await UserDAL.getUser(
-      "TestID",
-      "test add result filters"
-    );
+    const updatedUser2 = await UserDAL.getUser(uid, "test add result filters");
     expect(updatedUser2.profileDetails).toStrictEqual({
       bio: "test bio 2",
       keyboard: "test keyboard",
@@ -755,10 +707,11 @@ describeIntegration()("UserDal", () => {
   });
 
   it("resetUser should reset user", async () => {
-    await UserDAL.addUser("test name", "test email", "TestID");
+    const uid = new ObjectId().toHexString();
+    await UserDAL.addUser("test name", "test email", uid);
 
     await UserDAL.updateProfile(
-      "TestID",
+      uid,
       {
         bio: "test bio",
         keyboard: "test keyboard",
@@ -772,14 +725,11 @@ describeIntegration()("UserDal", () => {
       }
     );
 
-    await UserDAL.incrementBananas("TestID", 100);
-    await UserDAL.incrementXp("TestID", 15);
+    await UserDAL.incrementBananas(uid, 100);
+    await UserDAL.incrementXp(uid, 15);
 
-    await UserDAL.resetUser("TestID");
-    const resetUser = await UserDAL.getUser(
-      "TestID",
-      "test add result filters"
-    );
+    await UserDAL.resetUser(uid);
+    const resetUser = await UserDAL.getUser(uid, "test add result filters");
 
     expect(resetUser.profileDetails).toStrictEqual({
       bio: "",
@@ -801,14 +751,15 @@ describeIntegration()("UserDal", () => {
   });
 
   it("getInbox should return the user's inbox", async () => {
-    await UserDAL.addUser("test name", "test email", "TestID");
+    const uid = new ObjectId().toHexString();
+    await UserDAL.addUser("test name", "test email", uid);
 
-    const emptyInbox = await UserDAL.getInbox("TestID");
+    const emptyInbox = await UserDAL.getInbox(uid);
 
     expect(emptyInbox).toStrictEqual([]);
 
     await UserDAL.addToInbox(
-      "TestID",
+      uid,
       [
         {
           subject: `Hello!`,
@@ -820,7 +771,7 @@ describeIntegration()("UserDal", () => {
       }
     );
 
-    const inbox = await UserDAL.getInbox("TestID");
+    const inbox = await UserDAL.getInbox(uid);
 
     expect(inbox).toStrictEqual([
       {
@@ -830,7 +781,8 @@ describeIntegration()("UserDal", () => {
   });
 
   it("addToInbox discards mail if inbox is full", async () => {
-    await UserDAL.addUser("test name", "test email", "TestID");
+    const uid = new ObjectId().toHexString();
+    await UserDAL.addUser("test name", "test email", uid);
 
     const config = {
       enabled: true,
@@ -838,7 +790,7 @@ describeIntegration()("UserDal", () => {
     };
 
     await UserDAL.addToInbox(
-      "TestID",
+      uid,
       [
         {
           subject: "Hello 1!",
@@ -848,7 +800,7 @@ describeIntegration()("UserDal", () => {
     );
 
     await UserDAL.addToInbox(
-      "TestID",
+      uid,
       [
         {
           subject: "Hello 2!",
@@ -857,7 +809,7 @@ describeIntegration()("UserDal", () => {
       config
     );
 
-    const inbox = await UserDAL.getInbox("TestID");
+    const inbox = await UserDAL.getInbox(uid);
 
     expect(inbox).toStrictEqual([
       {
@@ -867,13 +819,13 @@ describeIntegration()("UserDal", () => {
   });
 
   it("addToInboxBulk should add mail to multiple users", async () => {
-    await UserDAL.addUser("test name", "test email", "TestID");
-    await UserDAL.addUser("test name 2", "test email 2", "TestID2");
+    const { uid: user1 } = await UserTestData.createUser();
+    const { uid: user2 } = await UserTestData.createUser();
 
     await UserDAL.addToInboxBulk(
       [
         {
-          uid: "TestID",
+          uid: user1,
           mail: [
             {
               subject: `Hello!`,
@@ -881,7 +833,7 @@ describeIntegration()("UserDal", () => {
           ],
         },
         {
-          uid: "TestID2",
+          uid: user2,
           mail: [
             {
               subject: `Hello 2!`,
@@ -895,8 +847,8 @@ describeIntegration()("UserDal", () => {
       }
     );
 
-    const inbox = await UserDAL.getInbox("TestID");
-    const inbox2 = await UserDAL.getInbox("TestID2");
+    const inbox = await UserDAL.getInbox(user1);
+    const inbox2 = await UserDAL.getInbox(user2);
 
     expect(inbox).toStrictEqual([
       {
@@ -955,7 +907,7 @@ describeIntegration()("UserDal", () => {
 
         const streak = await UserDAL.updateStreak(uid, milis);
 
-        await expect(streak).toBe(expectedStreak);
+        expect(streak).toBe(expectedStreak);
       }
     });
 
@@ -1013,7 +965,7 @@ describeIntegration()("UserDal", () => {
 
         const streak = await UserDAL.updateStreak(uid, milis);
 
-        await expect(streak).toBe(expectedStreak);
+        expect(streak).toBe(expectedStreak);
       }
     });
 
@@ -1055,7 +1007,7 @@ describeIntegration()("UserDal", () => {
 
         const streak = await UserDAL.updateStreak(uid, milis);
 
-        await expect(streak).toBe(expectedStreak);
+        expect(streak).toBe(expectedStreak);
       }
     });
   });
