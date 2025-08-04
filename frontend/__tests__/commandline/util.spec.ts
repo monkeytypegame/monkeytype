@@ -386,7 +386,6 @@ describe("CommandlineUtils", () => {
         schema,
       });
 
-      console.log(cmd);
       expect(cmd).toEqual(
         expect.objectContaining({
           id: "setMySecondKeyCustom",
