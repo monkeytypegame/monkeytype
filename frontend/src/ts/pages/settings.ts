@@ -40,6 +40,7 @@ import { z } from "zod";
 import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
+import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 
 let settingsInitialized = false;
 
@@ -854,6 +855,7 @@ export async function update(
   ThemePicker.setCustomInputs(true);
   await CustomBackgroundPicker.updateUI();
   await updateFilterSectionVisibility();
+  await CustomFontPicker.updateUI();
 
   const setInputValue = (
     key: ConfigKey,
