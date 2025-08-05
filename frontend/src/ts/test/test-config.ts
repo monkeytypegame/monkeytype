@@ -56,6 +56,7 @@ export async function instantUpdate(): Promise<void> {
     $("#testConfig .customText").removeClass("hidden");
   }
 
+  updateActiveExtraButtons("quoteLength", Config.quoteLength);
   updateActiveExtraButtons("numbers", Config.numbers);
   updateActiveExtraButtons("punctuation", Config.punctuation);
 
