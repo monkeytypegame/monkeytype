@@ -1594,8 +1594,11 @@ body.darkMode {
       margin-bottom: 0.25em;
       display: block;
     }
-    input {
+    input:not([type="checkbox"]) {
       width: 100%;
+    }
+    input[type="checkbox"] {
+      vertical-align: text-bottom;
     }
     textarea {
       resize: vertical;
@@ -1634,6 +1637,10 @@ body.darkMode {
     .badgeSelectionItem.selected,
     .badgeSelectionItem:hover {
       opacity: 100%;
+    }
+
+    span {
+      color: var(--text-color);
     }
   }
 }

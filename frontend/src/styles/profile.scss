@@ -65,6 +65,14 @@
     color: var(--sub-color);
     font-size: 0.8em;
   }
+
+  .testActivity {
+    margin-top: 2rem;
+
+    .top {
+      grid-template-areas: "title title legend";
+    }
+  }
 }
 
 .profile {
