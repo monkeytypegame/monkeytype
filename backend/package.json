@@ -93,7 +93,6 @@
     "concurrently": "8.2.2",
     "eslint": "8.57.1",
     "eslint-watch": "8.0.0",
-    "ioredis-mock": "7.4.0",
     "openapi3-ts": "2.0.2",
     "oxlint": "1.8.0",
     "readline-sync": "1.4.10",

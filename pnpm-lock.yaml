@@ -246,9 +246,6 @@ importers:
       eslint-watch:
         specifier: 8.0.0
         version: 8.0.0(eslint@8.57.1)
-      ioredis-mock:
-        specifier: 7.4.0
-        version: 7.4.0(ioredis@4.28.5)
       openapi3-ts:
         specifier: 2.0.2
         version: 2.0.2
@@ -5171,14 +5168,6 @@ packages:
   fecha@4.2.3:
     resolution: {integrity: sha512-OP2IUU6HeYKJi3i0z4A19kHMQoLVs4Hc+DPqqxI2h/DPZHTm/vjsfC6P0b4jCMy14XizLBqvndQ+UilD7707Jw==}
 
-  fengari-interop@0.1.3:
-    resolution: {integrity: sha512-EtZ+oTu3kEwVJnoymFPBVLIbQcCoy9uWCVnMA6h3M/RqHkUBsLYp29+RRHf9rKr6GwjubWREU1O7RretFIXjHw==}
-    peerDependencies:
-      fengari: ^0.1.0
-
-  fengari@0.1.4:
-    resolution: {integrity: sha512-6ujqUuiIYmcgkGz8MGAdERU57EIluGGPSUgGPTsco657EHa+srq0S3/YUl/r9kx1+D+d4rGfYObd+m8K22gB1g==}
-
   figures@3.2.0:
     resolution: {integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==}
     engines: {node: '>=8'}
@@ -5974,12 +5963,6 @@ packages:
   invert-kv@1.0.0:
     resolution: {integrity: sha512-xgs2NH9AE66ucSq4cNG1nhSFghr5l6tdL15Pk+jl46bmmBapgoaY/AacXyaDznAqmGL99TiLSQgO/XazFSKYeQ==}
     engines: {node: '>=0.10.0'}
-
-  ioredis-mock@7.4.0:
-    resolution: {integrity: sha512-jcNG+9YjjBA1p6Hb1nYaC1yhW+n9S5VOgbGZXt59ZmtI2WrPWH+lSD4gE017uaGitPqW7tquFdAfcBPvFEQbew==}
-    engines: {node: '>=12'}
-    peerDependencies:
-      ioredis: 4.x || 5.x
 
   ioredis@4.28.5:
     resolution: {integrity: sha512-3GYo0GJtLqgNXj4YhrisLaNNvWSNwSS2wS4OELGfGxH8I69+XfNdnmV1AyN+ZqMh0i7eX+SWjrwFKDBDgfBC1A==}
@@ -15761,16 +15744,6 @@ snapshots:
 
   fecha@4.2.3: {}
 
-  fengari-interop@0.1.3(fengari@0.1.4):
-    dependencies:
-      fengari: 0.1.4
-
-  fengari@0.1.4:
-    dependencies:
-      readline-sync: 1.4.10
-      sprintf-js: 1.1.3
-      tmp: 0.0.33
-
   figures@3.2.0:
     dependencies:
       escape-string-regexp: 1.0.5
@@ -16895,14 +16868,6 @@ snapshots:
   interpret@1.4.0: {}
 
   invert-kv@1.0.0: {}
-
-  ioredis-mock@7.4.0(ioredis@4.28.5):
-    dependencies:
-      fengari: 0.1.4
-      fengari-interop: 0.1.3(fengari@0.1.4)
-      ioredis: 4.28.5
-      redis-commands: 1.7.0
-      standard-as-callback: 2.1.0
 
   ioredis@4.28.5:
     dependencies:
