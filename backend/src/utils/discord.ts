@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { isDevEnvironment } from "./misc";
 import * as RedisClient from "../init/redis";
 import { randomBytes } from "crypto";
