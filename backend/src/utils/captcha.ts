@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { isDevEnvironment } from "./misc";
 
 type CaptchaData = {

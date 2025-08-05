@@ -122,9 +122,6 @@ importers:
       mustache:
         specifier: 4.2.0
         version: 4.2.0
-      node-fetch:
-        specifier: 2.6.7
-        version: 2.6.7(encoding@0.1.13)
       nodemailer:
         specifier: 6.9.14
         version: 6.9.14
@@ -207,9 +204,6 @@ importers:
       '@types/node':
         specifier: 20.14.11
         version: 20.14.11
-      '@types/node-fetch':
-        specifier: 2.6.1
-        version: 2.6.1
       '@types/nodemailer':
         specifier: 6.4.15
         version: 6.4.15
@@ -2884,9 +2878,6 @@ packages:
   '@types/mustache@4.2.2':
     resolution: {integrity: sha512-MUSpfpW0yZbTgjekDbH0shMYBUD+X/uJJJMm9LXN1d5yjl5lCY1vN/eWKD6D1tOtjA6206K0zcIPnUaFMurdNA==}
 
-  '@types/node-fetch@2.6.1':
-    resolution: {integrity: sha512-oMqjURCaxoSIsHSr1E47QHzbmzNR5rK8McHuNb11BOM9cHcIK3Avy0s/b2JlXHoQGTYS3NsvWzV1M0iK7l0wbA==}
-
   '@types/node@18.19.121':
     resolution: {integrity: sha512-bHOrbyztmyYIi4f1R0s17QsPs1uyyYnGcXeZoGEd227oZjry0q6XQBQxd82X1I57zEfwO8h9Xo+Kl5gX1d9MwQ==}
 
@@ -5341,10 +5332,6 @@ packages:
   form-data@2.5.1:
     resolution: {integrity: sha512-m21N3WOmEEURgk6B9GLOE4RuWOFf28Lhh9qGYeNlGq4VDXUlJy2th2slBNU8Gp8EzloYZOibZJ7t5ecIrFSjVA==}
     engines: {node: '>= 0.12'}
-
-  form-data@3.0.1:
-    resolution: {integrity: sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==}
-    engines: {node: '>= 6'}
 
   form-data@4.0.0:
     resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
@@ -12903,11 +12890,6 @@ snapshots:
 
   '@types/mustache@4.2.2': {}
 
-  '@types/node-fetch@2.6.1':
-    dependencies:
-      '@types/node': 20.14.11
-      form-data: 3.0.1
-
   '@types/node@18.19.121':
     dependencies:
       undici-types: 5.26.5
@@ -16085,12 +16067,6 @@ snapshots:
   fork-stream@0.0.4: {}
 
   form-data@2.5.1:
-    dependencies:
-      asynckit: 0.4.0
-      combined-stream: 1.0.8
-      mime-types: 2.1.35
-
-  form-data@3.0.1:
     dependencies:
       asynckit: 0.4.0
       combined-stream: 1.0.8
