@@ -5,6 +5,7 @@ import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import ResultScreenCommands from "./lists/result-screen";
 import CustomLocalBackgroundCommands from "./lists/custom-local-background";
+import CustomLocalFontCommands from "./lists/custom-local-font";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 import TagsCommands from "./lists/tags";
@@ -194,6 +195,7 @@ export const commands: CommandsSubgroup = {
       "colorfulMode",
       ...AddOrRemoveThemeToFavorite,
       ...CustomLocalBackgroundCommands,
+      ...CustomLocalFontCommands,
       "customBackground",
       "customBackgroundSize",
       ...CustomBackgroundFilterCommands,
