@@ -20,7 +20,6 @@
     "@monkeytype/schemas": "workspace:*",
     "@monkeytype/tsup-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
-    "chokidar": "3.6.0",
     "eslint": "8.57.1",
     "madge": "8.0.0",
     "oxlint": "1.8.0",
