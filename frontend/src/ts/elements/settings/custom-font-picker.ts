@@ -52,7 +52,10 @@ uploadContainerEl
     }
 
     // check type
-    if (!file.type.match(/font\/(woff|woff2|ttf|otf)/)) {
+    if (
+      !file.type.match(/font\/(woff|woff2|ttf|otf)/) &&
+      !file.name.match(/\.(woff|woff2|ttf|otf)$/i)
+    ) {
       Notifications.add(
         "Unsupported font format, must be woff, woff2, ttf or otf.",
         0
