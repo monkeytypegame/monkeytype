@@ -8,6 +8,7 @@ import * as CustomTextPopup from "./custom-text";
 import AnimatedModal from "../utils/animated-modal";
 import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
+import { areUnsortedArraysEqual } from "../utils/arrays";
 
 function update(): void {
   const el = $("#mobileTestConfigModal");
@@ -43,10 +44,14 @@ function update(): void {
     el.find(".punctuation").removeClass("disabled");
     el.find(".numbers").removeClass("disabled");
   } else if (Config.mode === "quote") {
-    for (const ql of Config.quoteLength) {
-      el.find(`.quoteGroup button[data-quoteLength='${ql}']`).addClass(
-        "active"
-      );
+    if (areUnsortedArraysEqual(Config.quoteLength, [0, 1, 2, 3])) {
+      el.find(`.quoteGroup button[data-quoteLength='all']`).addClass("active");
+    } else {
+      for (const ql of Config.quoteLength) {
+        el.find(`.quoteGroup button[data-quoteLength='${ql}']`).addClass(
+          "active"
+        );
+      }
     }
     el.find(".punctuation").addClass("disabled");
     el.find(".numbers").addClass("disabled");

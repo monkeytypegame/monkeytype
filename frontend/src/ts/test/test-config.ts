@@ -244,18 +244,17 @@ function updateActiveExtraButtons(key: string, value: ConfigValue): void {
   } else if (key === "quoteLength") {
     $("#testConfig .quoteLength .textButton").removeClass("active");
 
-    const lengthsToHighlight = areUnsortedArraysEqual(
-      value as QuoteLength[],
-      [0, 1, 2, 3]
-    )
-      ? [0, 1, 2, 3]
-      : (value as QuoteLength[]);
-
-    lengthsToHighlight.forEach((ql) => {
-      $(
-        "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
-      ).addClass("active");
-    });
+    if (areUnsortedArraysEqual(value as QuoteLength[], [0, 1, 2, 3])) {
+      $("#testConfig .quoteLength .textButton[quotelength='all']").addClass(
+        "active"
+      );
+    } else {
+      (value as QuoteLength[]).forEach((ql) => {
+        $(
+          "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
+        ).addClass("active");
+      });
+    }
   } else if (key === "numbers") {
     if (value === false) {
       $("#testConfig .numbersMode.textButton").removeClass("active");
