@@ -249,7 +249,7 @@ describe("Daily Leaderboards", () => {
           5,
           dailyLeaderboardsConfig,
           true,
-          [user2.uid, user4.uid]
+          [user2.uid, user4.uid, new ObjectId().toHexString()]
         );
         //THEN
         expect(results).toEqual({
@@ -277,7 +277,7 @@ describe("Daily Leaderboards", () => {
           2,
           dailyLeaderboardsConfig,
           true,
-          [user1.uid, user2.uid, user4.uid]
+          [user1.uid, user2.uid, user4.uid, new ObjectId().toHexString()]
         );
 
         //THEN
