@@ -160,16 +160,10 @@ export async function getDailyLeaderboard(
     friendUids
   );
 
-  const minWpm = await dailyLeaderboard.getMinWpm(
-    req.ctx.configuration.dailyLeaderboards
-  );
-
-  const count = await dailyLeaderboard.getCount();
-
   return new MonkeyResponse("Daily leaderboard retrieved", {
-    entries: results,
-    minWpm,
-    count,
+    entries: results?.entries ?? [],
+    count: results?.count ?? 0,
+    minWpm: results?.minWpm ?? 0,
     pageSize,
   });
 }
