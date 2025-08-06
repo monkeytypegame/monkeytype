@@ -1,13 +1,9 @@
 import { Collection, Db, MongoClient, WithId } from "mongodb";
 import { afterAll, beforeAll, afterEach } from "vitest";
 import { setupCommonMocks } from "../setup-common-mocks";
+import { getConnection } from "../../src/init/redis";
 
 process.env["MODE"] = "dev";
-
-if (!process.env["REDIS_URI"]) {
-  // use mock if not set
-  process.env["REDIS_URI"] = "redis://mock";
-}
 
 let db: Db;
 let client: MongoClient;
@@ -40,5 +36,8 @@ afterAll(async () => {
   db = undefined;
   //@ts-ignore
   client = undefined;
+
+  await getConnection()?.quit();
+
   vi.resetAllMocks();
 });

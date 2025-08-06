@@ -1,8 +1,4 @@
 import { GenericContainer, StartedTestContainer, Wait } from "testcontainers";
-import { getConnection } from "../../src/init/redis";
-
-//enable the test, will be skipped otherwise
-process.env["INTEGRATION_TESTS"] = "true";
 
 let startedMongoContainer: StartedTestContainer | undefined;
 let startedRedisContainer: StartedTestContainer | undefined;
@@ -41,7 +37,5 @@ export async function setup(): Promise<void> {
 
 export async function teardown(): Promise<void> {
   await startedMongoContainer?.stop();
-
-  await getConnection()?.quit();
   await startedRedisContainer?.stop();
 }
