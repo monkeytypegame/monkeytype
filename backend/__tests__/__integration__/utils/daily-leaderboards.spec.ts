@@ -1,12 +1,13 @@
 import { Mode, Mode2 } from "@monkeytype/schemas/shared";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
-import { getConnection, connect as redisSetup } from "../../../src/init/redis";
+import { cleanupKeys, redisSetup } from "../redis";
 import { Language } from "@monkeytype/schemas/languages";
 
 import { RedisDailyLeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import { ObjectId } from "mongodb";
+import { Configuration } from "@monkeytype/schemas/configuration";
 
-const dailyLeaderboardsConfig = {
+const dailyLeaderboardsConfig: Configuration["dailyLeaderboards"] = {
   enabled: true,
   maxResults: 10,
   leaderboardExpirationTimeInDays: 1,
@@ -32,7 +33,7 @@ describe("Daily Leaderboards", () => {
     await redisSetup();
   });
   afterEach(async () => {
-    await getConnection()?.flushall();
+    await cleanupKeys(DailyLeaderboards.__testing.namespace);
   });
   describe("should properly handle valid and invalid modes", () => {
     const testCases: {
@@ -256,8 +257,7 @@ describe("Daily Leaderboards", () => {
     it("purgeUserFromDailyLeaderboards", async () => {
       //GIVEN
       const cheater = await givenResult({ wpm: 50 });
-      await givenResult({ wpm: 60 });
-      await givenResult({ wpm: 40 });
+      const validUser = await givenResult();
 
       //WHEN
       await DailyLeaderboards.purgeUserFromDailyLeaderboards(
@@ -266,15 +266,13 @@ describe("Daily Leaderboards", () => {
       );
       //THEN
       expect(await lb.getRank(cheater.uid, dailyLeaderboardsConfig)).toBeNull();
-      expect(
-        (await lb.getResults(0, 50, dailyLeaderboardsConfig, false)).filter(
-          (it) => it.uid === cheater.uid
-        )
-      ).toEqual([]);
+      expect(await lb.getResults(0, 50, dailyLeaderboardsConfig, true)).toEqual(
+        [{ rank: 1, ...validUser }]
+      );
     });
 
     async function givenResult(
-      entry: Partial<RedisDailyLeaderboardEntry>
+      entry?: Partial<RedisDailyLeaderboardEntry>
     ): Promise<RedisDailyLeaderboardEntry> {
       const uid = new ObjectId().toHexString();
       const result = {
