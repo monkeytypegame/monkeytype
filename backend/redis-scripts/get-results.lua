@@ -18,9 +18,11 @@ local user_ids_csv = ARGV[4]
 local results = {}
 local scores = {}
 local ranks = {}
+local count = nil
+local min_score = {user_id = nil, score = nil}
 
 
--- Filtered leaderboard
+-- filtered leaderboard
 if user_ids_csv ~= "" then  
 
     local filtered_user_ids = split_csv(user_ids_csv)
@@ -28,12 +30,17 @@ if user_ids_csv ~= "" then
     for _, user_id in ipairs(filtered_user_ids) do
         local score = redis_call('ZSCORE', leaderboard_scores_key, user_id)
         if score then
-            table.insert(scored_users, {user_id = user_id, score = tonumber(score)})
+            local number_score = tonumber(score)            
+            table.insert(scored_users, {user_id = user_id, score = number_score})
         end
     end
     table.sort(scored_users, function(a, b) return a.score > b.score end)
 
 
+    if #scored_users > 0 then
+        min_score = {scored_users[#scored_users].user_id, scored_users[#scored_users].score}
+    end
+    count = #scored_users
 
     for i = min_rank + 1, math.min(max_rank + 1, #scored_users) do
         local entry = scored_users[i]
@@ -54,10 +61,12 @@ if user_ids_csv ~= "" then
         end
    
     end 
--- Global leaderboard
-else
 
+else
+-- global leaderboard
     local scores_in_range = redis_call('ZRANGE', leaderboard_scores_key, min_rank, max_rank, 'REV')
+    min_score = redis_call('ZRANGE', leaderboard_scores_key, 0, 0, 'WITHSCORES')
+    count = redis_call('ZCARD', leaderboard_scores_key)
 
     for _, user_id in ipairs(scores_in_range) do
         local result_data = redis_call('HGET', leaderboard_results_key, user_id)
@@ -72,4 +81,4 @@ else
     end
 end
 
-return {results, scores, ranks}
+return {results, scores, count, min_score, ranks}

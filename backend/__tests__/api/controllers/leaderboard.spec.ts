@@ -458,17 +458,11 @@ describe("Loaderboard Controller", () => {
     const getFriendsUidsMock = vi.spyOn(FriendDal, "getFriendsUids");
 
     const getResultMock = vi.fn();
-    const getCountMock = vi.fn();
-    const getMinWpmMock = vi.fn();
 
     beforeEach(async () => {
-      [
-        getDailyLeaderboardMock,
-        getFriendsUidsMock,
-        getResultMock,
-        getCountMock,
-        getMinWpmMock,
-      ].forEach((it) => it.mockClear());
+      [getDailyLeaderboardMock, getFriendsUidsMock, getResultMock].forEach(
+        (it) => it.mockClear()
+      );
 
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
@@ -476,13 +470,9 @@ describe("Loaderboard Controller", () => {
 
       getDailyLeaderboardMock.mockReturnValue({
         getResults: getResultMock,
-        getCount: getCountMock,
-        getMinWpm: getMinWpmMock,
       } as any);
 
-      getResultMock.mockResolvedValue([]);
-      getCountMock.mockResolvedValue(0);
-      getMinWpmMock.mockResolvedValue(0);
+      getResultMock.mockResolvedValue(null);
     });
 
     afterEach(() => {
@@ -522,9 +512,11 @@ describe("Loaderboard Controller", () => {
         ],
       };
 
-      getResultMock.mockResolvedValue(resultData);
-      getCountMock.mockResolvedValue(2);
-      getMinWpmMock.mockResolvedValue(10);
+      getResultMock.mockResolvedValue({
+        count: 2,
+        minWpm: 10,
+        entries: resultData,
+      });
 
       //WHEN
       const { body } = await mockApp
@@ -601,9 +593,7 @@ describe("Loaderboard Controller", () => {
       const page = 2;
       const pageSize = 25;
 
-      getResultMock.mockResolvedValue([]);
-      getCountMock.mockResolvedValue(0);
-      getMinWpmMock.mockResolvedValue(0);
+      getResultMock.mockResolvedValue({ entries: [] });
 
       //WHEN
       const { body } = await mockApp

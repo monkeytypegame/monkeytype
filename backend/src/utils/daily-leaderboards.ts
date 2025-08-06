@@ -114,10 +114,14 @@ export class DailyLeaderboard {
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
     premiumFeaturesEnabled: boolean,
     userIds?: string[]
-  ): Promise<LeaderboardEntry[]> {
+  ): Promise<{
+    entries: LeaderboardEntry[];
+    count: number;
+    minWpm: number;
+  } | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      return [];
+      return null;
     }
 
     if (page < 0 || pageSize < 0) {
@@ -125,7 +129,7 @@ export class DailyLeaderboard {
     }
 
     if (userIds?.length === 0) {
-      return [];
+      return { entries: [], count: 0, minWpm: 0 };
     }
 
     const isFriends = userIds !== undefined;
@@ -135,15 +139,21 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    const [results, _, ranks] = await connection.getResults(
-      2,
-      leaderboardScoresKey,
-      leaderboardResultsKey,
-      minRank,
-      maxRank,
-      "false",
-      userIds?.join(",") ?? ""
-    );
+    const [results, _, count, [_uid, minScore], ranks] =
+      await connection.getResults(
+        2,
+        leaderboardScoresKey,
+        leaderboardResultsKey,
+        minRank,
+        maxRank,
+        "false",
+        userIds?.join(",") ?? ""
+      );
+
+    const minWpm =
+      minScore !== undefined
+        ? parseInt(minScore.toString()?.slice(1, 6)) / 100
+        : 0;
 
     if (results === undefined) {
       throw new Error(
@@ -151,7 +161,7 @@ export class DailyLeaderboard {
       );
     }
 
-    const resultsWithRanks: LeaderboardEntry[] = results.map(
+    let resultsWithRanks: LeaderboardEntry[] = results.map(
       (resultJSON, index) => {
         try {
           const parsed = parseJsonWithSchema(
@@ -177,33 +187,10 @@ export class DailyLeaderboard {
     );
 
     if (!premiumFeaturesEnabled) {
-      return resultsWithRanks.map((it) => omit(it, "isPremium"));
+      resultsWithRanks = resultsWithRanks.map((it) => omit(it, "isPremium"));
     }
 
-    return resultsWithRanks;
-  }
-
-  public async getMinWpm(
-    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
-  ): Promise<number> {
-    const connection = RedisClient.getConnection();
-    if (!connection || !dailyLeaderboardsConfig.enabled) {
-      return 0;
-    }
-
-    const { leaderboardScoresKey } = this.getTodaysLeaderboardKeys();
-
-    const [_uid, minScore] = (await connection.zrange(
-      leaderboardScoresKey,
-      0,
-      0,
-      "WITHSCORES"
-    )) as [string, string];
-
-    const minWpm =
-      minScore !== undefined ? parseInt(minScore?.slice(1, 6)) / 100 : 0;
-
-    return minWpm;
+    return { entries: resultsWithRanks, count: parseInt(count), minWpm };
   }
 
   public async getRank(
@@ -250,17 +237,6 @@ export class DailyLeaderboard {
         }`
       );
     }
-  }
-
-  public async getCount(): Promise<number> {
-    const connection = RedisClient.getConnection();
-    if (!connection) {
-      throw new Error("Redis connection is unavailable");
-    }
-
-    const { leaderboardScoresKey } = this.getTodaysLeaderboardKeys();
-
-    return connection.zcard(leaderboardScoresKey);
   }
 }
 
