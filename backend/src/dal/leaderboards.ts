@@ -40,6 +40,9 @@ export async function get(
   if (page < 0 || pageSize < 0) {
     throw new MonkeyError(500, "Invalid page or pageSize");
   }
+  if (userIds?.length === 0) {
+    return [];
+  }
 
   const skip = page * pageSize;
   const limit = pageSize;

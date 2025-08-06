@@ -190,7 +190,7 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
-      const result = (await LeaderboardsDal.get(
+      const results = (await LeaderboardsDal.get(
         "time",
         "15",
         "english",
@@ -199,7 +199,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = results.map((it) => _.omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noBadge }),
@@ -228,7 +228,7 @@ describe("LeaderboardsDal", () => {
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
 
-      const result = (await LeaderboardsDal.get(
+      const results = (await LeaderboardsDal.get(
         "time",
         "15",
         "english",
@@ -238,7 +238,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = results.map((it) => _.omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noPremium }),
@@ -261,7 +261,7 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
-      const result = (await LeaderboardsDal.get(
+      const results = (await LeaderboardsDal.get(
         "time",
         "15",
         "english",
@@ -271,7 +271,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      expect(result[0]?.isPremium).toBeUndefined();
+      expect(results[0]?.isPremium).toBeUndefined();
     });
   });
   describe("get", () => {
@@ -285,7 +285,7 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
 
-      const result = (await LeaderboardsDal.get(
+      const results = (await LeaderboardsDal.get(
         "time",
         "60",
         "english",
@@ -295,7 +295,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = results.map((it) => _.omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 3, user: rank3 }),
@@ -312,7 +312,7 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
 
-      const result = (await LeaderboardsDal.get(
+      const results = (await LeaderboardsDal.get(
         "time",
         "60",
         "english",
@@ -323,7 +323,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = results.map((it) => _.omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 1, user: rank1, friendsRank: 1 }),
@@ -339,8 +339,7 @@ describe("LeaderboardsDal", () => {
       await LeaderboardsDal.update("time", "60", "english");
 
       //WHEN
-
-      const result = (await LeaderboardsDal.get(
+      const results = (await LeaderboardsDal.get(
         "time",
         "60",
         "english",
@@ -351,11 +350,27 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = results.map((it) => _.omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 4, user: rank4, friendsRank: 3 }),
       ]);
+    });
+    it("should return empty list if no friends", async () => {
+      //GIVEN
+
+      //WHEN
+      const results = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        1,
+        2,
+        false,
+        []
+      )) as LeaderboardsDal.DBLeaderboardEntry[];
+      //THEN
+      expect(results).toEqual([]);
     });
   });
   describe("getCount / getRank", () => {

@@ -5,7 +5,7 @@ import { createUser, pb } from "../../__testData__/users";
 
 describe("FriendsDal", () => {
   beforeAll(async () => {
-    FriendsDal.createIndicies();
+    await FriendsDal.createIndicies();
   });
 
   describe("getRequests", () => {
