@@ -33,8 +33,9 @@ export type RedisConnectionWithCustomMethods = Redis & {
     resultsKey: string,
     minRank: number,
     maxRank: number,
-    withScores: string
-  ) => Promise<[string[], string[]]>;
+    withScores: string,
+    userIds: string
+  ) => Promise<[string[], string[], string[]]>; //entries, scores(optional), ranks(optional)
   purgeResults: (
     keyCount: number,
     uid: string,

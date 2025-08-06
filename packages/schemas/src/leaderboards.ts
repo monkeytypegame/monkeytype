@@ -24,6 +24,7 @@ export type LeaderboardEntry = z.infer<typeof LeaderboardEntrySchema>;
 
 export const RedisDailyLeaderboardEntrySchema = LeaderboardEntrySchema.omit({
   rank: true,
+  friendsRank: true,
 });
 export type RedisDailyLeaderboardEntry = z.infer<
   typeof RedisDailyLeaderboardEntrySchema

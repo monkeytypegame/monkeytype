@@ -137,7 +137,15 @@ function getDailyLeaderboardWithError(
 export async function getDailyLeaderboard(
   req: MonkeyRequest<GetDailyLeaderboardQuery>
 ): Promise<GetDailyLeaderboardResponse> {
-  const { page, pageSize } = req.query;
+  const { page, pageSize, friendsOnly } = req.query;
+  const { uid } = req.ctx.decodedToken;
+  const friendConfig = req.ctx.configuration.friends;
+
+  const friendUids = await getFriendsUids(
+    uid,
+    friendsOnly === true,
+    friendConfig
+  );
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
     req.query,
@@ -148,7 +156,8 @@ export async function getDailyLeaderboard(
     page,
     pageSize,
     req.ctx.configuration.dailyLeaderboards,
-    req.ctx.configuration.users.premium.enabled
+    req.ctx.configuration.users.premium.enabled,
+    friendUids
   );
 
   const minWpm = await dailyLeaderboard.getMinWpm(

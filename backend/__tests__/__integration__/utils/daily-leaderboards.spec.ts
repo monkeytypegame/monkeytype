@@ -214,9 +214,67 @@ describe("Daily Leaderboards", () => {
           { rank: 3, ...user3, isPremium: undefined },
         ]);
       });
+
+      it("should get for friends only", async () => {
+        //GIVEN
+        const _user1 = await givenResult({ wpm: 90 });
+        const user2 = await givenResult({ wpm: 80 });
+        const _user3 = await givenResult({ wpm: 70 });
+        const user4 = await givenResult({ wpm: 60 });
+
+        //WHEN
+        const results = await lb.getResults(
+          0,
+          5,
+          dailyLeaderboardsConfig,
+          true,
+          [user2.uid, user4.uid]
+        );
+        //THEN
+        expect(results).toEqual([
+          { rank: 2, friendsRank: 1, ...user2 },
+          { rank: 4, friendsRank: 2, ...user4 },
+        ]);
+      });
+
+      it("should get for friends only with page", async () => {
+        //GIVEN
+        const user1 = await givenResult({ wpm: 105 });
+        const user2 = await givenResult({ wpm: 100 });
+        const _user3 = await givenResult({ wpm: 95 });
+        const user4 = await givenResult({ wpm: 90 });
+
+        //WHEN
+
+        const results = await lb.getResults(
+          1,
+          2,
+          dailyLeaderboardsConfig,
+          true,
+          [user1.uid, user2.uid, user4.uid]
+        );
+
+        //THEN
+        expect(results).toEqual([{ rank: 4, friendsRank: 3, ...user4 }]);
+      });
+
+      it("should return empty list if no friends", async () => {
+        //GIVEN
+
+        //WHEN
+        const results = await lb.getResults(
+          0,
+          5,
+          dailyLeaderboardsConfig,
+          true,
+          []
+        );
+        //THEN
+        expect(results).toEqual([]);
+      });
     });
 
-    describe("minWPm", () => {
+    describe("minWpm", () => {
       it("gets min wpm", async () => {
         //GIVEN
         await givenResult({ wpm: 50 });

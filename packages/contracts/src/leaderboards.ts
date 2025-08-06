@@ -74,15 +74,16 @@ export type GetLeaderboardRankResponse = z.infer<
 
 export const DailyLeaderboardQuerySchema = LanguageAndModeQuerySchema.extend({
   daysBefore: z.literal(1).optional(),
-});
+}).merge(FriendsOnlyQuerySchema);
 export type DailyLeaderboardQuery = z.infer<typeof DailyLeaderboardQuerySchema>;
 
 export const GetDailyLeaderboardQuerySchema = DailyLeaderboardQuerySchema.merge(
   PaginationQuerySchema
-);
+).merge(FriendsOnlyQuerySchema);
 export type GetDailyLeaderboardQuery = z.infer<
   typeof GetDailyLeaderboardQuerySchema
 >;
+
 export const GetDailyLeaderboardResponseSchema = responseWithData(
   LeaderboardResponseSchema.extend({
     entries: z.array(LeaderboardEntrySchema),

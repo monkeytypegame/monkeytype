@@ -112,7 +112,8 @@ export class DailyLeaderboard {
     page: number,
     pageSize: number,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
-    premiumFeaturesEnabled: boolean
+    premiumFeaturesEnabled: boolean,
+    userIds?: string[]
   ): Promise<LeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -123,19 +124,25 @@ export class DailyLeaderboard {
       throw new MonkeyError(500, "Invalid page or pageSize");
     }
 
+    if (userIds?.length === 0) {
+      return [];
+    }
+
+    const isFriends = userIds !== undefined;
     const minRank = page * pageSize;
     const maxRank = minRank + pageSize - 1;
 
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    const [results, _] = await connection.getResults(
+    const [results, _, ranks] = await connection.getResults(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
       minRank,
       maxRank,
-      "false"
+      "false",
+      userIds?.join(",") ?? ""
     );
 
     if (results === undefined) {
@@ -154,7 +161,10 @@ export class DailyLeaderboard {
 
           return {
             ...parsed,
-            rank: minRank + index + 1,
+            rank: isFriends
+              ? new Number(ranks[index]).valueOf() + 1
+              : minRank + index + 1,
+            friendsRank: isFriends ? minRank + index + 1 : undefined,
           };
         } catch (error) {
           throw new Error(
