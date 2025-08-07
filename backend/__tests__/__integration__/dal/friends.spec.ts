@@ -5,7 +5,7 @@ import { createUser, pb } from "../../__testData__/users";
 
 describe("FriendsDal", () => {
   beforeAll(async () => {
-    FriendsDal.createIndicies();
+    await FriendsDal.createIndicies();
   });
 
   describe("getRequests", () => {
@@ -408,6 +408,10 @@ describe("FriendsDal", () => {
           name: "Me",
         },
       ]);
+
+      expect((await FriendsDal.getFriendsUids(uid)).sort()).toEqual(
+        [me.uid, friendOne.uid, friendTwo.uid, friendThree.uid].sort()
+      );
     });
   });
 });
