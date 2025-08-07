@@ -35,7 +35,7 @@ if (fromMeta.subgroup) {
         {
           id: "customLocalFont",
           display: "Local font...",
-          icon: "fa-upload",
+          icon: "fa-file-import fa-fw",
           alias: "upload font",
           available: async (): Promise<boolean> => {
             return !(await FileStorage.hasFile("LocalFontFamilyFile"));

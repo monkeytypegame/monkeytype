@@ -17,7 +17,7 @@ const customBackgroundCommand: Command = {
       {
         id: "customLocalBackground",
         display: "Local background...",
-        icon: "fa-upload",
+        icon: "fa-file-import fa-fw",
         alias: "upload background",
         available: async (): Promise<boolean> => {
           return !(await FileStorage.hasFile("LocalBackgroundFile"));
