@@ -15,6 +15,7 @@ local include_scores = ARGV[2]
 local user_ids_csv = ARGV[3]
 
 local rank = nil
+local friendsRank = nil
 local result = {}   
 local score = ''
 
@@ -35,20 +36,16 @@ if user_ids_csv ~= "" then
 
     for i = 1, #scored_users do
         if scored_users[i].user_id == user_id then
-            rank = i - 1
+            friendsRank = i - 1
         end
     end
 
-else
--- global leaderboarc
-    
-    rank = redis_call('ZREVRANK', leaderboard_scores_key, user_id)
-    
 end
 
+rank = redis_call('ZREVRANK', leaderboard_scores_key, user_id)
 if (include_scores == "true") then
     score = redis_call('ZSCORE', leaderboard_scores_key, user_id)
 end
 result = redis_call('HGET', leaderboard_results_key, user_id)
 
-return {rank, score, result}
+return {rank, score, result, friendsRank}

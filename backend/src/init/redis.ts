@@ -43,7 +43,7 @@ export type RedisConnectionWithCustomMethods = Redis & {
     uid: string,
     withScores: string,
     userIds: string
-  ) => Promise<[number, string, string]>; //rank, score(optional), entry json
+  ) => Promise<[number, string, string, number]>; //rank, score(optional), entry json, friendsRank(optional)
   purgeResults: (
     keyCount: number,
     uid: string,

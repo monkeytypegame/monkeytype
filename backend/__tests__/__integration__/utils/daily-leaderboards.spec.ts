@@ -345,11 +345,11 @@ describe("Daily Leaderboards", () => {
         //WHEN / THEN
         expect(
           await lb.getRank(user2.uid, dailyLeaderboardsConfig, friends)
-        ).toEqual({ rank: 1, ...user2 });
+        ).toEqual({ rank: 2, friendsRank: 1, ...user2 });
 
         expect(
           await lb.getRank(user1.uid, dailyLeaderboardsConfig, friends)
-        ).toEqual({ rank: 2, ...user1 });
+        ).toEqual({ rank: 3, friendsRank: 2, ...user1 });
       });
     });
 
