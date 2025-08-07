@@ -209,7 +209,7 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    const [rank, _score, result] = await connection.getRank(
+    const [rank, _score, result, friendsRank] = await connection.getRank(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
@@ -229,6 +229,7 @@ export class DailyLeaderboard {
           RedisDailyLeaderboardEntrySchema
         ),
         rank: rank + 1,
+        friendsRank: friendsRank !== undefined ? friendsRank + 1 : undefined,
       };
     } catch (error) {
       throw new Error(
