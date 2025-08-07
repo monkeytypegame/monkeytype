@@ -163,7 +163,14 @@ export async function createUserWithEmailAndPassword(
   password: string
 ): Promise<UserCredential> {
   if (Auth === undefined) throw new Error("Authentication uninitialized");
-  return firebaseCreateUserWithEmailAndPassword(Auth, email, password);
+  ignoreAuthCallback = true;
+  const result = await firebaseCreateUserWithEmailAndPassword(
+    Auth,
+    email,
+    password
+  );
+
+  return result;
 }
 
 export async function getIdToken(): Promise<string | null> {

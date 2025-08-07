@@ -35,6 +35,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  resetIgnoreAuthCallback,
 } from "../firebase";
 import {
   hideFavoriteQuoteLength,
@@ -507,6 +508,7 @@ async function signUp(): Promise<void> {
     await sendVerificationEmail();
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
+    resetIgnoreAuthCallback();
 
     Notifications.add("Account created", 1);
   } catch (e) {
