@@ -68,7 +68,6 @@ export async function init(callback: ReadyCallback): Promise<void> {
       }
     });
 
-    console.log("init ready", performance.now());
     resolveAuthPromise();
   } catch (e) {
     app = undefined;
