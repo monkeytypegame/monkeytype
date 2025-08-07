@@ -13,7 +13,7 @@ import { omit } from "lodash";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 
-type AddResultOpts = {
+export type AddResultOpts = {
   entry: RedisXpLeaderboardEntry;
   xpGained: RedisXpLeaderboardScore;
 };
@@ -285,3 +285,7 @@ export async function purgeUserFromXpLeaderboards(
     weeklyXpLeaderboardLeaderboardNamespace
   );
 }
+
+export const __testing = {
+  namespace: weeklyXpLeaderboardLeaderboardNamespace,
+};
