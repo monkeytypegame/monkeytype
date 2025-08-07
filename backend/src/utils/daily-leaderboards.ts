@@ -195,30 +195,30 @@ export class DailyLeaderboard {
 
   public async getRank(
     uid: string,
-    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
+    userIds?: string[]
   ): Promise<LeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       throw new Error("Redis connection is unavailable");
     }
+    if (userIds?.length === 0) {
+      return null;
+    }
 
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    const redisExecResult = (await connection
-      .multi()
-      .zrevrank(leaderboardScoresKey, uid)
-      .zcard(leaderboardScoresKey)
-      .hget(leaderboardResultsKey, uid)
-      .exec()) as [
-      [null, number | null],
-      [null, number | null],
-      [null, string | null]
-    ];
+    const [rank, _score, result] = await connection.getRank(
+      2,
+      leaderboardScoresKey,
+      leaderboardResultsKey,
+      uid,
+      "false",
+      userIds?.join(",") ?? ""
+    );
 
-    const [[, rank], [, _count], [, result]] = redisExecResult;
-
-    if (rank === null) {
+    if (rank === null || rank === undefined) {
       return null;
     }
 

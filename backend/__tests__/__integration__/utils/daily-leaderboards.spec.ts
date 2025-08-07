@@ -312,12 +312,44 @@ describe("Daily Leaderboards", () => {
       it("gets rank", async () => {
         //GIVEN
         const user1 = await givenResult({ wpm: 50 });
-        const _user2 = await givenResult({ wpm: 60 });
+        const user2 = await givenResult({ wpm: 60 });
 
-        //WHEN
-        const rank = await lb.getRank(user1.uid, dailyLeaderboardsConfig);
-        //THEN
-        expect(rank).toEqual({ rank: 2, ...user1 });
+        //WHEN / THEN
+        expect(await lb.getRank(user1.uid, dailyLeaderboardsConfig)).toEqual({
+          rank: 2,
+          ...user1,
+        });
+        expect(await lb.getRank(user2.uid, dailyLeaderboardsConfig)).toEqual({
+          rank: 1,
+          ...user2,
+        });
+      });
+
+      it("should return null for unknown user", async () => {
+        expect(await lb.getRank("decoy", dailyLeaderboardsConfig)).toBeNull();
+        expect(
+          await lb.getRank("decoy", dailyLeaderboardsConfig, [
+            "unknown",
+            "unknown2",
+          ])
+        ).toBeNull();
+      });
+
+      it("gets rank for friends", async () => {
+        //GIVEN
+        const user1 = await givenResult({ wpm: 50 });
+        const user2 = await givenResult({ wpm: 60 });
+        const _user3 = await givenResult({ wpm: 70 });
+        const friends = [user1.uid, user2.uid, "decoy"];
+
+        //WHEN / THEN
+        expect(
+          await lb.getRank(user2.uid, dailyLeaderboardsConfig, friends)
+        ).toEqual({ rank: 1, ...user2 });
+
+        expect(
+          await lb.getRank(user1.uid, dailyLeaderboardsConfig, friends)
+        ).toEqual({ rank: 2, ...user1 });
       });
     });
 

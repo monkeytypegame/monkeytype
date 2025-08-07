@@ -171,7 +171,15 @@ export async function getDailyLeaderboard(
 export async function getDailyLeaderboardRank(
   req: MonkeyRequest<GetDailyLeaderboardRankQuery>
 ): Promise<GetLeaderboardDailyRankResponse> {
+  const { friendsOnly } = req.query;
   const { uid } = req.ctx.decodedToken;
+  const friendConfig = req.ctx.configuration.friends;
+
+  const friendUids = await getFriendsUids(
+    uid,
+    friendsOnly === true,
+    friendConfig
+  );
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
     req.query,
@@ -180,7 +188,8 @@ export async function getDailyLeaderboardRank(
 
   const rank = await dailyLeaderboard.getRank(
     uid,
-    req.ctx.configuration.dailyLeaderboards
+    req.ctx.configuration.dailyLeaderboards,
+    friendUids
   );
 
   return new MonkeyResponse("Daily leaderboard rank retrieved", rank);
