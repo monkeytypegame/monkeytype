@@ -2,6 +2,9 @@ import { ObjectId } from "mongodb";
 import * as BlacklistDal from "../../../src/dal/blocklist";
 
 describe("BlocklistDal", () => {
+  beforeAll(async () => {
+    await BlacklistDal.createIndicies();
+  });
   describe("add", () => {
     beforeEach(() => {
       vitest.useFakeTimers();

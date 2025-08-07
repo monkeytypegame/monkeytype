@@ -1,8 +1,4 @@
 import { GenericContainer, StartedTestContainer, Wait } from "testcontainers";
-import { getConnection } from "../../src/init/redis";
-
-//enable the test, will be skipped otherwise
-process.env["INTEGRATION_TESTS"] = "true";
 
 let startedMongoContainer: StartedTestContainer | undefined;
 let startedRedisContainer: StartedTestContainer | undefined;
@@ -11,12 +7,8 @@ export async function setup(): Promise<void> {
   process.env.TZ = "UTC";
 
   //use testcontainer to start mongodb
-  //const network = await new Network(new RandomUuid()).start();
   const mongoContainer = new GenericContainer("mongo:5.0.13")
-    //.withName("monkeytype-mongo-test")
     .withExposedPorts(27017)
-    // .withNetwork(network)
-    //.withNetworkMode(network.getName())
     .withWaitStrategy(Wait.forListeningPorts());
 
   startedMongoContainer = await mongoContainer.start();
@@ -41,7 +33,5 @@ export async function setup(): Promise<void> {
 
 export async function teardown(): Promise<void> {
   await startedMongoContainer?.stop();
-
-  await getConnection()?.quit();
   await startedRedisContainer?.stop();
 }
