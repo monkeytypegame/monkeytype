@@ -122,21 +122,12 @@ importers:
       mustache:
         specifier: 4.2.0
         version: 4.2.0
-      node-fetch:
-        specifier: 2.6.7
-        version: 2.6.7(encoding@0.1.13)
       nodemailer:
         specifier: 6.9.14
         version: 6.9.14
-      nodemon:
-        specifier: 3.1.4
-        version: 3.1.4
       object-hash:
         specifier: 3.0.0
         version: 3.0.0
-      path:
-        specifier: 0.12.7
-        version: 0.12.7
       prom-client:
         specifier: 15.1.3
         version: 15.1.3
@@ -207,9 +198,6 @@ importers:
       '@types/node':
         specifier: 20.14.11
         version: 20.14.11
-      '@types/node-fetch':
-        specifier: 2.6.1
-        version: 2.6.1
       '@types/nodemailer':
         specifier: 6.4.15
         version: 6.4.15
@@ -527,9 +515,6 @@ importers:
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      chokidar:
-        specifier: 3.6.0
-        version: 3.6.0
       eslint:
         specifier: 8.57.1
         version: 8.57.1
@@ -594,9 +579,6 @@ importers:
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      chokidar:
-        specifier: 3.6.0
-        version: 3.6.0
       eslint:
         specifier: 8.57.1
         version: 8.57.1
@@ -658,9 +640,6 @@ importers:
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      chokidar:
-        specifier: 3.6.0
-        version: 3.6.0
       eslint:
         specifier: 8.57.1
         version: 8.57.1
@@ -709,9 +688,6 @@ importers:
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      chokidar:
-        specifier: 3.6.0
-        version: 3.6.0
       eslint:
         specifier: 8.57.1
         version: 8.57.1
@@ -2880,9 +2856,6 @@ packages:
 
   '@types/mustache@4.2.2':
     resolution: {integrity: sha512-MUSpfpW0yZbTgjekDbH0shMYBUD+X/uJJJMm9LXN1d5yjl5lCY1vN/eWKD6D1tOtjA6206K0zcIPnUaFMurdNA==}
-
-  '@types/node-fetch@2.6.1':
-    resolution: {integrity: sha512-oMqjURCaxoSIsHSr1E47QHzbmzNR5rK8McHuNb11BOM9cHcIK3Avy0s/b2JlXHoQGTYS3NsvWzV1M0iK7l0wbA==}
 
   '@types/node@18.19.121':
     resolution: {integrity: sha512-bHOrbyztmyYIi4f1R0s17QsPs1uyyYnGcXeZoGEd227oZjry0q6XQBQxd82X1I57zEfwO8h9Xo+Kl5gX1d9MwQ==}
@@ -5331,10 +5304,6 @@ packages:
     resolution: {integrity: sha512-m21N3WOmEEURgk6B9GLOE4RuWOFf28Lhh9qGYeNlGq4VDXUlJy2th2slBNU8Gp8EzloYZOibZJ7t5ecIrFSjVA==}
     engines: {node: '>= 0.12'}
 
-  form-data@3.0.1:
-    resolution: {integrity: sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==}
-    engines: {node: '>= 6'}
-
   form-data@4.0.0:
     resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
     engines: {node: '>= 6'}
@@ -5920,9 +5889,6 @@ packages:
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
     deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
-
-  inherits@2.0.3:
-    resolution: {integrity: sha512-x00IRNXNy63jwGkJmzPigoySHbaqpNuzKbBOmzK+g2OdZpQ9w+sxCN+VSB3ja7IAge2OP2qpfxTjeNcyjmW1uw==}
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
@@ -7869,9 +7835,6 @@ packages:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
 
-  path@0.12.7:
-    resolution: {integrity: sha512-aXXC6s+1w7otVF9UletFkFcDsJeO7lSZBPUQhtb5O0xJe8LtYhj/GxldoL09bBj9+ZmE2hNoHqQSFMN5fikh4Q==}
-
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
 
@@ -9816,9 +9779,6 @@ packages:
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
-
-  util@0.10.4:
-    resolution: {integrity: sha512-0Pm9hTQ3se5ll1XihRic3FDIku70C+iHUdT/W926rSgHV5QgXsYbKZN8MSC3tJtSkhuROzvsQjAaFENRXr+19A==}
 
   utils-merge@1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
@@ -12885,11 +12845,6 @@ snapshots:
       '@types/mjml-core': 4.15.0
 
   '@types/mustache@4.2.2': {}
-
-  '@types/node-fetch@2.6.1':
-    dependencies:
-      '@types/node': 20.14.11
-      form-data: 3.0.1
 
   '@types/node@18.19.121':
     dependencies:
@@ -16063,12 +16018,6 @@ snapshots:
       combined-stream: 1.0.8
       mime-types: 2.1.35
 
-  form-data@3.0.1:
-    dependencies:
-      asynckit: 0.4.0
-      combined-stream: 1.0.8
-      mime-types: 2.1.35
-
   form-data@4.0.0:
     dependencies:
       asynckit: 0.4.0
@@ -16814,8 +16763,6 @@ snapshots:
     dependencies:
       once: 1.4.0
       wrappy: 1.0.2
-
-  inherits@2.0.3: {}
 
   inherits@2.0.4: {}
 
@@ -19006,11 +18953,6 @@ snapshots:
       pinkie-promise: 2.0.1
 
   path-type@4.0.0: {}
-
-  path@0.12.7:
-    dependencies:
-      process: 0.11.10
-      util: 0.10.4
 
   pathe@2.0.3: {}
 
@@ -21311,10 +21253,6 @@ snapshots:
   use@3.1.1: {}
 
   util-deprecate@1.0.2: {}
-
-  util@0.10.4:
-    dependencies:
-      inherits: 2.0.3
 
   utils-merge@1.0.1: {}
 
