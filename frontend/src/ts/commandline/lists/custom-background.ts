@@ -41,11 +41,8 @@ const customBackgroundCommand: Command = {
             }
 
             // check type
-            if (!file.type.startsWith("image/")) {
-              Notifications.add(
-                "Unsupported file format, must be an image.",
-                0
-              );
+            if (!file.type.match(/image\/(jpeg|jpg|png|gif)/)) {
+              Notifications.add("Unsupported image format", 0);
               cleanup();
               return;
             }
