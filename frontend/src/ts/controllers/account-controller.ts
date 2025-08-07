@@ -199,7 +199,7 @@ export async function loadUser(_user: UserType): Promise<void> {
   }
 }
 
-export async function readyFunction(
+export async function onAuthStateChanged(
   authInitialisedAndConnected: boolean,
   user: UserType | null
 ): Promise<void> {

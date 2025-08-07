@@ -9,10 +9,10 @@ import * as ServerConfiguration from "./ape/server-configuration";
 import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { loadPromise } from "./config";
 import { init } from "./firebase";
-import { readyFunction } from "./controllers/account-controller";
+import { onAuthStateChanged } from "./controllers/account-controller";
 
 $(async (): Promise<void> => {
-  await init(readyFunction);
+  await init(onAuthStateChanged);
 
   await loadPromise;
 
