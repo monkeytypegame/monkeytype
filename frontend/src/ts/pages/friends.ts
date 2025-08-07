@@ -3,10 +3,10 @@ import * as Skeleton from "../utils/skeleton";
 import { SimpleModal } from "../utils/simple-modal";
 import Ape from "../ape";
 import {
-  FormatDurationOptions,
   intervalToDuration,
   format as dateFormat,
   formatDuration,
+  DurationUnit,
 } from "date-fns";
 import * as Notifications from "../elements/notifications";
 import { isSafeNumber } from "@monkeytype/util/numbers";
@@ -155,7 +155,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
             </div>
           </div>
         </td>
-        <td>${formatAge(entry.addedAt, ["years", "days"])}</td>
+        <td>${formatAge(entry.addedAt, "short")}</td>
         <td aria-label="total xp: ${
           isSafeNumber(entry.xp) ? formatXp(entry.xp) : ""
         }" data-balloon-pos="top">
@@ -205,13 +205,32 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
 
 function formatAge(
   timestamp: number | undefined,
-  format: FormatDurationOptions["format"] = ["days", "hours", "minutes"]
+  format?: "short" | "full"
 ): string {
+  const units: Array<DurationUnit> = [
+    "years",
+    "months",
+    "days",
+    "hours",
+    "minutes",
+  ];
+
   if (timestamp === undefined) return "";
-  const formatted = formatDuration(
-    intervalToDuration({ start: timestamp, end: Date.now() }),
-    { format }
-  );
+  let formatted = "";
+  const duration = intervalToDuration({ start: timestamp, end: Date.now() });
+
+  if (format === undefined || format === "full") {
+    formatted = formatDuration(duration, { format: units });
+  } else {
+    for (const unit of units) {
+      const value = duration[unit];
+      if (value !== undefined && value > 0) {
+        formatted = `${value} ${unit}`;
+        break;
+      }
+    }
+  }
+
   return formatted !== "" ? formatted : "less then a minute";
 }
 
