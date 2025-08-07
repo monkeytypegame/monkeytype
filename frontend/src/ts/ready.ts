@@ -8,13 +8,11 @@ import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
 import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { loadPromise } from "./config";
-import { init } from "./firebase";
-import { onAuthStateChanged } from "./controllers/account-controller";
+import { authPromise } from "./firebase";
 
 $(async (): Promise<void> => {
-  await init(onAuthStateChanged);
-
   await loadPromise;
+  await authPromise;
 
   //this line goes back to pretty much the beginning of the project and im pretty sure its here
   //to make sure the initial theme application doesnt animate the background color

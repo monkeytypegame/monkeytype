@@ -24,7 +24,11 @@ import {
 } from "firebase/auth";
 import { firebaseConfig } from "./constants/firebase-config";
 import * as Notifications from "./elements/notifications";
-import { createErrorMessage, isDevEnvironment } from "./utils/misc";
+import {
+  createErrorMessage,
+  isDevEnvironment,
+  promiseWithResolvers,
+} from "./utils/misc";
 
 import {
   Analytics as AnalyticsType,
@@ -45,6 +49,9 @@ let ignoreAuthCallback: boolean = false;
 type ReadyCallback = (success: boolean, user: User | null) => Promise<void>;
 let readyCallback: ReadyCallback | undefined;
 
+const { promise: authPromise, resolve: resolveAuthPromise } =
+  promiseWithResolvers();
+
 export async function init(callback: ReadyCallback): Promise<void> {
   try {
     readyCallback = callback;
@@ -60,6 +67,9 @@ export async function init(callback: ReadyCallback): Promise<void> {
         await callback(true, user);
       }
     });
+
+    console.log("init ready", performance.now());
+    resolveAuthPromise();
   } catch (e) {
     app = undefined;
     Auth = undefined;
@@ -220,6 +230,8 @@ function translateFirebaseError(
 export function resetIgnoreAuthCallback(): void {
   ignoreAuthCallback = false;
 }
+
+export { authPromise };
 
 //TODO refactor email-handler
 export const _Auth = Auth;
