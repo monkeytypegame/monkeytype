@@ -5,6 +5,7 @@ import { Auth, isAuthenticated } from "../firebase";
 import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import * as Notifications from "../elements/notifications";
+import { get } from "../ape/server-configuration";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -136,6 +137,26 @@ const routes: Route[] = [
         params: {
           uidOrName: params["uidOrName"] as string,
         },
+        data: options.data,
+      });
+    },
+  },
+  {
+    path: "/friends",
+    load: (_params, options): void => {
+      if (!Auth) {
+        navigate("/");
+        return;
+      }
+      if (!isAuthenticated()) {
+        navigate("/friends");
+        return;
+      }
+
+      if (!get()?.friends.enabled) {
+        return;
+      }
+      void PageController.change("friends", {
         data: options.data,
       });
     },
