@@ -902,6 +902,7 @@ describe("Loaderboard Controller", () => {
 
     it("should get for english time 60 friends only", async () => {
       //GIVEN
+      await enableFriendsFeature(true);
       const lbConf = (await configuration).dailyLeaderboards;
       getRankMock.mockResolvedValue({});
       const friends = ["friendOne", "friendTwo"];
