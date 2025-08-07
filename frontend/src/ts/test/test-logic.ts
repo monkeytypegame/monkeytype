@@ -1182,12 +1182,17 @@ export async function finish(difficultyFailed = false): Promise<void> {
     return;
   }
 
+  // because of the dont save check above, we know the user is signed in
+  // we check here again so that typescript doesnt complain
+  const user = getAuthenticatedUser();
+  if (!user) {
+    return;
+  }
+
   // user is logged in
   TestStats.resetIncomplete();
 
-  //TODO  why do we knowwe have a user here?
-  // oxlint-disable-next-line no-non-null-assertion
-  completedEvent.uid = getAuthenticatedUser()!.uid;
+  completedEvent.uid = user.uid;
 
   Result.updateRateQuote(TestWords.currentQuote);
 
