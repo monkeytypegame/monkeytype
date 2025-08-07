@@ -225,7 +225,7 @@ export async function readyFunction(
         hideFavoriteQuoteLength();
       }, 125);
       PageTransition.set(false);
-      navigate("/");
+      navigate();
     }
   } else {
     console.debug(`auth not initialised or not connected`);
