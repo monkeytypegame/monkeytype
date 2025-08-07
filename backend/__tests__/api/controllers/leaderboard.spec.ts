@@ -294,9 +294,11 @@ describe("Loaderboard Controller", () => {
 
   describe("get rank", () => {
     const getLeaderboardRankMock = vi.spyOn(LeaderboardDal, "getRank");
+    const getFriendsUidsMock = vi.spyOn(FriendDal, "getFriendsUids");
 
     afterEach(() => {
       getLeaderboardRankMock.mockClear();
+      getFriendsUidsMock.mockClear();
     });
 
     it("fails withouth authentication", async () => {
@@ -308,7 +310,6 @@ describe("Loaderboard Controller", () => {
 
     it("should get for english time 60", async () => {
       //GIVEN
-
       const entryId = new ObjectId();
       const resultEntry = {
         _id: entryId,
@@ -323,7 +324,6 @@ describe("Loaderboard Controller", () => {
       getLeaderboardRankMock.mockResolvedValue(resultEntry);
 
       //WHEN
-
       const { body } = await mockApp
         .get("/leaderboards/rank")
         .query({ language: "english", mode: "time", mode2: "60" })
@@ -344,6 +344,37 @@ describe("Loaderboard Controller", () => {
         undefined
       );
     });
+
+    it("should get for english time 60 friends only", async () => {
+      //GIVEN
+      await enableFriendsFeature(true);
+      const friends = ["friendOne", "friendTwo"];
+      getFriendsUidsMock.mockResolvedValue(friends);
+      getLeaderboardRankMock.mockResolvedValue({} as any);
+
+      //WHEN
+      await mockApp
+        .get("/leaderboards/rank")
+        .query({
+          language: "english",
+          mode: "time",
+          mode2: "60",
+          friendsOnly: true,
+        })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(getLeaderboardRankMock).toHaveBeenCalledWith(
+        "time",
+        "60",
+        "english",
+        uid,
+        friends
+      );
+      expect(getFriendsUidsMock).toHaveBeenCalledWith(uid);
+    });
+
     it("should get with ape key", async () => {
       await acceptApeKeys(true);
       const apeKey = await mockAuthenticateWithApeKey(uid, await configuration);
@@ -795,10 +826,12 @@ describe("Loaderboard Controller", () => {
     );
 
     const getRankMock = vi.fn();
+    const getFriendsUidsMock = vi.spyOn(FriendDal, "getFriendsUids");
 
     beforeEach(async () => {
       getDailyLeaderboardMock.mockClear();
       getRankMock.mockClear();
+      getFriendsUidsMock.mockClear();
 
       getDailyLeaderboardMock.mockReturnValue({
         getRank: getRankMock,
@@ -820,6 +853,7 @@ describe("Loaderboard Controller", () => {
         .query({ language: "english", mode: "time", mode2: "60" })
         .expect(401);
     });
+
     it("should get for english time 60", async () => {
       //GIVEN
       const lbConf = (await configuration).dailyLeaderboards;
@@ -862,8 +896,42 @@ describe("Loaderboard Controller", () => {
         -1
       );
 
-      expect(getRankMock).toHaveBeenCalledWith(uid, lbConf);
+      expect(getRankMock).toHaveBeenCalledWith(uid, lbConf, undefined);
     });
+
+    it("should get for english time 60 friends only", async () => {
+      //GIVEN
+      const lbConf = (await configuration).dailyLeaderboards;
+      getRankMock.mockResolvedValue({});
+      const friends = ["friendOne", "friendTwo"];
+      getFriendsUidsMock.mockResolvedValue(friends);
+
+      //WHEN
+      await mockApp
+        .get("/leaderboards/daily/rank")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({
+          language: "english",
+          mode: "time",
+          mode2: "60",
+          friendsOnly: true,
+        })
+        .expect(200);
+
+      //THEN
+
+      expect(getDailyLeaderboardMock).toHaveBeenCalledWith(
+        "english",
+        "time",
+        "60",
+        lbConf,
+        -1
+      );
+
+      expect(getRankMock).toHaveBeenCalledWith(uid, lbConf, friends);
+      expect(getFriendsUidsMock).toHaveBeenCalledWith(uid);
+    });
+
     it("fails if daily leaderboards are disabled", async () => {
       await dailyLeaderboardEnabled(false);
 
@@ -876,6 +944,7 @@ describe("Loaderboard Controller", () => {
         "Daily leaderboards are not available at this time."
       );
     });
+
     it("should get for mode", async () => {
       for (const mode of ["time", "words", "quote", "zen", "custom"]) {
         const response = await mockApp
@@ -885,6 +954,7 @@ describe("Loaderboard Controller", () => {
         expect(response.status, "for mode " + mode).toEqual(200);
       }
     });
+
     it("should get for mode2", async () => {
       for (const mode2 of allModes) {
         const response = await mockApp
