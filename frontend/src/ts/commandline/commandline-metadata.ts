@@ -604,13 +604,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       },
       hover: (name) => UI.previewFontFamily(name),
     },
-    input: {
-      inputValueConvert: (name) => name.replaceAll(/ /g, "_"),
-      defaultValue: () => Config.fontFamily.replace(/_/g, " "),
-      hover: (): void => {
-        UI.clearFontPreview();
-      },
-    },
   },
   keymapMode: {
     alias: "keyboard",

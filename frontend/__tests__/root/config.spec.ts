@@ -1089,8 +1089,9 @@ describe("Config", () => {
     expect(Config.setQuoteLength([-4 as any, 5 as any])).toBe(false);
   });
   it("setCustomLayoutfluid", () => {
-    expect(Config.setCustomLayoutfluid(["qwerty"])).toBe(true);
+    expect(Config.setCustomLayoutfluid(["qwerty", "qwertz"])).toBe(true);
 
+    expect(Config.setCustomLayoutfluid(["qwerty"])).toBe(false);
     expect(Config.setCustomLayoutfluid([])).toBe(false);
     expect(Config.setCustomLayoutfluid("qwerty#qwertz" as any)).toBe(false);
     expect(Config.setCustomLayoutfluid("invalid" as any)).toBe(false);

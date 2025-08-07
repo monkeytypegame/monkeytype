@@ -217,9 +217,9 @@ describe("LeaderboardsDal", () => {
       ]);
     });
 
-    //TODO figure out why premium with expireTimestamp is not working
-    it.skip("should create leaderboard with premium", async () => {
+    it("should create leaderboard with premium", async () => {
       //GIVEN
+      vi.useRealTimers(); //timestamp for premium is calculated in mongo
       const noPremium = await createUser(lbBests(pb(4)));
       const lifetime = await createUser(lbBests(pb(3)), premium(-1));
       const validPremium = await createUser(lbBests(pb(2)), premium(1000));
