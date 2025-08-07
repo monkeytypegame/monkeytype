@@ -145,6 +145,7 @@ export async function signInWithPopup(
     firebaseSignInWithPopup(Auth, provider)
   );
   if (error !== null) {
+    ignoreAuthCallback = false;
     console.log(error);
     throw translateFirebaseError(error, "Failed to sign in with popup");
   }
