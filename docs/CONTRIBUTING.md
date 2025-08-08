@@ -17,9 +17,9 @@ When contributing to Monkeytype, it's good to know our best practices, tips, and
 
 ## How to Contribute
 
-We have two separate contribution guides based on what you're looking to contribute. If you're simply looking to help us augment our language or quotes data, please refer to [CONTRIBUTING_BASIC.md](./CONTRIBUTING_BASIC.md). This guide will go over how to do so easily and without the need to set up a local development server.
+We have two separate contribution guides based on what you're looking to contribute. If you're simply looking to help us augment our language or quotes data, please refer to [CONTRIBUTING_BASIC.md](./docs/CONTRIBUTING_BASIC.md). This guide will go over how to do so easily and without the need to set up a local development server.
 
-If you're looking to make deeper code changes that affect functionality, or will require screenshots of the changes, please refer to [CONTRIBUTING_ADVANCED.md](./CONTRIBUTING_ADVANCED.md).
+If you're looking to make deeper code changes that affect functionality, or will require screenshots of the changes, please refer to [CONTRIBUTING_ADVANCED.md](./docs/CONTRIBUTING_ADVANCED.md).
 
 ## Standards and Guidelines
 
