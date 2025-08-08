@@ -1,4 +1,3 @@
-// Import the functions you need from the SDKs you need
 import {
   FirebaseApp,
   FirebaseError,
@@ -37,7 +36,6 @@ import {
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
 
-// Initialize Firebase
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
 
