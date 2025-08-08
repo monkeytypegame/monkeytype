@@ -268,6 +268,22 @@ describe("misc.ts", () => {
       });
     });
 
+    it("should remove invalid array elements with min size", () => {
+      const schema = z
+        .object({
+          name: z.string(),
+          tags: z.array(z.enum(["coder", "developer"])).min(2),
+        })
+        .partial();
+      const obj = {
+        name: "Alice",
+        tags: ["developer", "unknown"] as any,
+      };
+      expect(sanitize(schema, obj)).toEqual({
+        name: "Alice",
+      });
+    });
+
     it("should remove entire property if all array elements are invalid", () => {
       const obj = { name: "Alice", age: 30, tags: [123, 456] as any };
       const sanitized = sanitize(schema, obj);
@@ -312,9 +328,9 @@ describe("misc.ts", () => {
         arrayOneTwo: ["one", "nonexistent"],
       } as any;
       expect(() => {
-        sanitize(schema.strip(), obj);
+        sanitize(schema.required().strip(), obj);
       }).toThrowError(
-        "unable to sanitize: arrayOneTwo: Array must contain at least 2 element(s)"
+        "unable to sanitize: name: Required, age: Required, tags: Required, enumArray: Required"
       );
     });
   });
