@@ -754,10 +754,17 @@ export function sanitize<T extends z.ZodTypeAny>(
           error.length < value.length //not all items in the array are invalid
         ) {
           //some items of the array are invalid
-          return [
-            key,
-            value.filter((_element, index) => !error.includes(index)),
-          ];
+          const cleanedArray = value.filter(
+            (_element, index) => !error.includes(index)
+          );
+          const cleanedArrayValidation = schema.safeParse(
+            Object.fromEntries([[key, cleanedArray]])
+          );
+          if (cleanedArrayValidation.success) {
+            return [key, cleanedArray];
+          } else {
+            return [key, undefined];
+          }
         } else {
           return [key, undefined];
         }
