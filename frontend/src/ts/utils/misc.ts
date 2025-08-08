@@ -770,9 +770,11 @@ export function sanitize<T extends z.ZodTypeAny>(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return cleanValidate.data;
   }
-  throw new Error(
-    "unable to sanitize:  " + cleanValidate.error.errors.join(",")
-  );
+
+  const errorsString = cleanValidate.error.errors
+    .map((e) => e.path.join(".") + ": " + e.message)
+    .join(", ");
+  throw new Error("unable to sanitize: " + errorsString);
 }
 
 export function triggerResize(): void {

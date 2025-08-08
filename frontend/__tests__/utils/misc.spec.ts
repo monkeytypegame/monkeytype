@@ -236,6 +236,7 @@ describe("misc.ts", () => {
         name: z.string(),
         age: z.number().positive(),
         tags: z.array(z.string()),
+        enumArray: z.array(z.enum(["one", "two"])).min(2),
       })
       .partial()
       .strip();
@@ -305,6 +306,16 @@ describe("misc.ts", () => {
       } as any;
       const stripped = sanitize(schema.strip(), obj);
       expect(stripped).not.toHaveProperty("powerLevel");
+    });
+    it("should provide a readable error message", () => {
+      const obj = {
+        arrayOneTwo: ["one", "nonexistent"],
+      } as any;
+      expect(() => {
+        sanitize(schema.strip(), obj);
+      }).toThrowError(
+        "unable to sanitize: arrayOneTwo: Array must contain at least 2 element(s)"
+      );
     });
   });
 });
