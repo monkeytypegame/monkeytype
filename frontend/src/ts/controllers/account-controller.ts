@@ -274,7 +274,7 @@ export async function signIn(email: string, password: string): Promise<void> {
     "checked"
   ) as boolean;
 
-  const { data, error } = await tryCatch(
+  const { error } = await tryCatch(
     signInWithEmailAndPassword(email, password, rememberMe)
   );
 
@@ -285,7 +285,6 @@ export async function signIn(email: string, password: string): Promise<void> {
     LoginPage.updateSignupButton();
     return;
   }
-  await loadUser(data.user);
 }
 
 async function signInWithProvider(provider: AuthProvider): Promise<void> {
