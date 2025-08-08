@@ -1114,6 +1114,12 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#5b578e",
     textColor: "#f4e0c9",
   },
+  catppuccin_latte: {
+    bgColor: "#ejf1f5",
+    mainColor: "#8839ef",
+    subColor: "#8c8fa1",
+    textColor: "#4c4f69",
+  },
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
