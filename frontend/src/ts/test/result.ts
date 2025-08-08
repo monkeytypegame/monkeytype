@@ -233,17 +233,29 @@ function updateWpmAndAcc(): void {
     inf = true;
   }
 
-  $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
-
-  if (inf) {
-    $("#result .stats .wpm .bottom").text("Infinite");
-  } else {
-    $("#result .stats .wpm .bottom").text(Format.typingSpeed(result.wpm));
+  const $wpmTopText = $("#result .stats .wpm .top .text");
+  if ($wpmTopText.length) {
+    $wpmTopText.text(Config.typingSpeedUnit);
   }
-  $("#result .stats .raw .bottom").text(Format.typingSpeed(result.rawWpm));
-  $("#result .stats .acc .bottom").text(
-    result.acc === 100 ? "100%" : Format.accuracy(result.acc)
-  );
+
+  const $wpmBottom = $("#result .stats .wpm .bottom");
+  if ($wpmBottom.length) {
+    if (inf) {
+      $wpmBottom.text("Infinite");
+    } else {
+      $wpmBottom.text(Format.typingSpeed(result.wpm));
+    }
+  }
+
+  const $rawBottom = $("#result .stats .raw .bottom");
+  if ($rawBottom.length) {
+    $rawBottom.text(Format.typingSpeed(result.rawWpm));
+  }
+
+  const $accBottom = $("#result .stats .acc .bottom");
+  if ($accBottom.length) {
+    $accBottom.text(result.acc === 100 ? "100%" : Format.accuracy(result.acc));
+  }
 
   if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit !== "wpm") {
