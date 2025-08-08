@@ -506,7 +506,7 @@ async function signUp(): Promise<void> {
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendVerificationEmail();
     LoginPage.hidePreloader();
-    await loadUser(createdAuthUser.user);
+    await onAuthStateChanged(true, createdAuthUser.user);
     resetIgnoreAuthCallback();
 
     Notifications.add("Account created", 1);
