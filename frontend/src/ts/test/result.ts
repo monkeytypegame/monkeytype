@@ -233,56 +233,74 @@ function updateWpmAndAcc(): void {
     inf = true;
   }
 
-  const $wpmTopText = $("#result .stats .wpm .top .text");
-  if ($wpmTopText.length) {
-    $wpmTopText.text(Config.typingSpeedUnit);
+  const wpmTopText = document.querySelector("#result .stats .wpm .top .text");
+  if (wpmTopText) {
+    wpmTopText.textContent = Config.typingSpeedUnit;
   }
 
-  const $wpmBottom = $("#result .stats .wpm .bottom");
-  if ($wpmBottom.length) {
+  const wpmBottom = document.querySelector("#result .stats .wpm .bottom");
+  if (wpmBottom) {
     if (inf) {
-      $wpmBottom.text("Infinite");
+      wpmBottom.textContent = "Infinite";
     } else {
-      $wpmBottom.text(Format.typingSpeed(result.wpm));
+      wpmBottom.textContent = Format.typingSpeed(result.wpm);
     }
   }
 
-  const $rawBottom = $("#result .stats .raw .bottom");
-  if ($rawBottom.length) {
-    $rawBottom.text(Format.typingSpeed(result.rawWpm));
+  const rawBottom = document.querySelector("#result .stats .raw .bottom");
+  if (rawBottom) {
+    rawBottom.textContent = Format.typingSpeed(result.rawWpm);
   }
 
-  const $accBottom = $("#result .stats .acc .bottom");
-  if ($accBottom.length) {
-    $accBottom.text(result.acc === 100 ? "100%" : Format.accuracy(result.acc));
+  const accBottom = document.querySelector("#result .stats .acc .bottom");
+  if (accBottom) {
+    accBottom.textContent =
+      result.acc === 100 ? "100%" : Format.accuracy(result.acc);
   }
 
   if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit !== "wpm") {
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        result.wpm.toFixed(2) + " wpm"
-      );
-      $("#result .stats .raw .bottom").attr(
-        "aria-label",
-        result.rawWpm.toFixed(2) + " wpm"
-      );
+      const wpmBottomEl = document.querySelector("#result .stats .wpm .bottom");
+      if (wpmBottomEl) {
+        wpmBottomEl.setAttribute("aria-label", result.wpm.toFixed(2) + " wpm");
+      }
+      const rawBottomEl = document.querySelector("#result .stats .raw .bottom");
+      if (rawBottomEl) {
+        rawBottomEl.setAttribute(
+          "aria-label",
+          result.rawWpm.toFixed(2) + " wpm"
+        );
+      }
     } else {
-      $("#result .stats .wpm .bottom").removeAttr("aria-label");
-      $("#result .stats .raw .bottom").removeAttr("aria-label");
+      const wpmBottomEl = document.querySelector("#result .stats .wpm .bottom");
+      if (wpmBottomEl) {
+        wpmBottomEl.removeAttribute("aria-label");
+      }
+      const rawBottomEl = document.querySelector("#result .stats .raw .bottom");
+      if (rawBottomEl) {
+        rawBottomEl.removeAttribute("aria-label");
+      }
     }
 
     let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
-    $("#result .stats .time .bottom .text").text(time);
+    const timeBottomText = document.querySelector(
+      "#result .stats .time .bottom .text"
+    );
+    if (timeBottomText) {
+      timeBottomText.textContent = time;
+    }
     // $("#result .stats .acc .bottom").removeAttr("aria-label");
 
-    $("#result .stats .acc .bottom").attr(
-      "aria-label",
-      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`
-    );
+    const accBottomEl = document.querySelector("#result .stats .acc .bottom");
+    if (accBottomEl) {
+      accBottomEl.setAttribute(
+        "aria-label",
+        `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`
+      );
+    }
   } else {
     //not showing decimal places
     const decimalsAndSuffix = {
@@ -297,11 +315,18 @@ function updateWpmAndAcc(): void {
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
     }
 
-    $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
-    $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
+    const wpmBottomEl = document.querySelector("#result .stats .wpm .bottom");
+    if (wpmBottomEl) {
+      wpmBottomEl.setAttribute("aria-label", wpmHover);
+    }
+    const rawBottomEl = document.querySelector("#result .stats .raw .bottom");
+    if (rawBottomEl) {
+      rawBottomEl.setAttribute("aria-label", rawWpmHover);
+    }
 
-    $("#result .stats .acc .bottom")
-      .attr(
+    const accBottomEl = document.querySelector("#result .stats .acc .bottom");
+    if (accBottomEl) {
+      accBottomEl.setAttribute(
         "aria-label",
         `${
           result.acc === 100
@@ -310,8 +335,9 @@ function updateWpmAndAcc(): void {
         }\n${TestInput.accuracy.correct} correct\n${
           TestInput.accuracy.incorrect
         } incorrect`
-      )
-      .attr("data-balloon-break", "");
+      );
+      accBottomEl.setAttribute("data-balloon-break", "");
+    }
   }
 }
 
