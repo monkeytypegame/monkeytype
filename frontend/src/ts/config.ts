@@ -104,7 +104,8 @@ function isConfigChangeBlocked(): boolean {
 export function genericSet<T extends keyof ConfigSchemas.Config>(
   key: T,
   value: ConfigSchemas.Config[T],
-  nosave: boolean = false
+  nosave: boolean = false,
+  tribeOverride: boolean = false
 ): boolean {
   const metadata = configMetadata[key] as ConfigMetadataObject[T];
   if (metadata === undefined) {
@@ -786,10 +787,9 @@ export function setLayout(
 
 export function setFontSize(
   fontSize: ConfigSchemas.FontSize,
-  nosave?: boolean,
-  tribeOverride = false
+  nosave?: boolean
 ): boolean {
-  return genericSet("fontSize", fontSize, nosave, tribeOverride);
+  return genericSet("fontSize", fontSize, nosave);
 }
 
 export function setMaxLineWidth(
@@ -849,34 +849,14 @@ export function setTribeDelta(
   value: ConfigSchemas.TribeDelta,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("tribe delta", value, ConfigSchemas.TribeDeltaSchema)
-  ) {
-    return false;
-  }
-
-  config.tribeDelta = value;
-  saveToLocalStorage("tribeDelta", nosave);
-  ConfigEvent.dispatch("tribeDelta", config.tribeDelta, nosave);
-
-  return true;
+  return genericSet("tribeDelta", value, nosave);
 }
 
 export function setTribeCarets(
   value: ConfigSchemas.TribeCarets,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("tribe carets", value, ConfigSchemas.TribeCaretsSchema)
-  ) {
-    return false;
-  }
-
-  config.tribeCarets = value;
-  saveToLocalStorage("tribeCarets", nosave);
-  ConfigEvent.dispatch("tribeCarets", config.tribeCarets, nosave);
-
-  return true;
+  return genericSet("tribeCarets", value, nosave);
 }
 
 const lastConfigsToApply: Set<keyof Config> = new Set([

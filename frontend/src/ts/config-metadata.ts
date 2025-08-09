@@ -40,6 +40,12 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    * Is a test restart required after this config change?
    */
   changeRequiresRestart: boolean;
+
+  /**
+   * Is blocked in tribe lobbies? Meaning it can only be changed if tribeOverride is true
+   */
+  tribeBlocked?: boolean;
+
   /**
    * Optional function that checks if the config value is blocked from being set.
    * Returns true if setting the config value should be blocked.
@@ -114,6 +120,7 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-font",
     displayString: "word count",
     changeRequiresRestart: true,
+    tribeBlocked: true,
     overrideConfig: ({ currentConfig }) => {
       if (currentConfig.mode !== "words") {
         return {
@@ -127,6 +134,7 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-clock",
     changeRequiresRestart: true,
     displayString: "time",
+    tribeBlocked: true,
     overrideConfig: ({ currentConfig }) => {
       if (currentConfig.mode !== "time") {
         return {
@@ -139,6 +147,8 @@ export const configMetadata: ConfigMetadataObject = {
   mode: {
     icon: "fa-bars",
     changeRequiresRestart: true,
+    tribeBlocked: true,
+
     overrideConfig: ({ value }) => {
       if (value === "custom" || value === "quote" || value === "zen") {
         return {
@@ -158,6 +168,7 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-quote-right",
     displayString: "quote length",
     changeRequiresRestart: true,
+    tribeBlocked: true,
     overrideConfig: ({ currentConfig }) => {
       if (currentConfig.mode !== "quote") {
         return {
@@ -171,6 +182,7 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-language",
     displayString: "language",
     changeRequiresRestart: true,
+    tribeBlocked: true,
   },
   burstHeatmap: {
     icon: "fa-fire",
@@ -178,10 +190,23 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
 
+  //tribe
+  tribeDelta: {
+    icon: "fa-users",
+    displayString: "tribe delta",
+    changeRequiresRestart: false,
+  },
+  tribeCarets: {
+    icon: "fa-users",
+    displayString: "tribe carets",
+    changeRequiresRestart: false,
+  },
+
   // behavior
   difficulty: {
     icon: "fa-star",
     changeRequiresRestart: true,
+    tribeBlocked: true,
   },
   quickRestart: {
     icon: "fa-redo-alt",
@@ -212,10 +237,12 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-bomb",
     displayString: "min speed",
     changeRequiresRestart: true,
+    tribeBlocked: true,
   },
   minWpmCustomSpeed: {
     icon: "fa-bomb",
     displayString: "min speed custom",
+    tribeBlocked: true,
     changeRequiresRestart: true,
     overrideConfig: ({ currentConfig }) => {
       if (currentConfig.minWpm !== "custom") {
@@ -230,11 +257,13 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-bomb",
     displayString: "min accuracy",
     changeRequiresRestart: true,
+    tribeBlocked: true,
   },
   minAccCustom: {
     icon: "fa-bomb",
     displayString: "min accuracy custom",
     changeRequiresRestart: true,
+    tribeBlocked: true,
     overrideConfig: ({ currentConfig }) => {
       if (currentConfig.minAcc !== "custom") {
         return {
@@ -248,11 +277,13 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-bomb",
     displayString: "min burst",
     changeRequiresRestart: true,
+    tribeBlocked: true,
   },
   minBurstCustomSpeed: {
     icon: "fa-bomb",
     displayString: "min burst custom speed",
     changeRequiresRestart: true,
+    tribeBlocked: true,
   },
   britishEnglish: {
     icon: "fa-language",
@@ -262,6 +293,7 @@ export const configMetadata: ConfigMetadataObject = {
   funbox: {
     icon: "fa-gamepad",
     changeRequiresRestart: true,
+    tribeBlocked: true,
     isBlocked: ({ value, currentConfig }) => {
       if (!checkCompatibility(value)) {
         Notifications.add(
@@ -330,6 +362,7 @@ export const configMetadata: ConfigMetadataObject = {
   stopOnError: {
     icon: "fa-hand-paper",
     displayString: "stop on error",
+    tribeBlocked: true,
     changeRequiresRestart: true,
     overrideConfig: ({ value }) => {
       if (value !== "off") {
@@ -373,6 +406,7 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-couch",
     displayString: "lazy mode",
     changeRequiresRestart: true,
+    tribeBlocked: true,
   },
   layout: {
     icon: "fa-keyboard",
