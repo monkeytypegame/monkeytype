@@ -9,7 +9,7 @@ import { capitalizeFirstLetter } from "../utils/strings";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import Format from "../utils/format";
-import { Auth, isAuthenticated } from "../firebase";
+import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import {
   endOfDay,
@@ -549,12 +549,12 @@ function fillTable(): void {
 
   if (state.type === "allTime" || state.type === "daily") {
     for (const entry of state.data) {
-      const me = Auth?.currentUser?.uid === entry.uid;
+      const me = getAuthenticatedUser()?.uid === entry.uid;
       table.append(buildTableRow(entry, me));
     }
   } else if (state.type === "weekly") {
     for (const entry of state.data) {
-      const me = Auth?.currentUser?.uid === entry.uid;
+      const me = getAuthenticatedUser()?.uid === entry.uid;
       table.append(buildWeeklyTableRow(entry, me));
     }
   }
@@ -1187,20 +1187,17 @@ function handleJumpButton(action: Action, page?: number): void {
     state.page = page;
   } else if (action === "userPage") {
     if (isAuthenticated()) {
-      const user = Auth?.currentUser;
-      if (user) {
-        const rank = state.userData?.rank;
-        if (isSafeNumber(rank)) {
-          // - 1 to make sure position 50 with page size 50 is on the first page (page 0)
-          const page = Math.floor((rank - 1) / state.pageSize);
+      const rank = state.userData?.rank;
+      if (isSafeNumber(rank)) {
+        // - 1 to make sure position 50 with page size 50 is on the first page (page 0)
+        const page = Math.floor((rank - 1) / state.pageSize);
 
-          if (state.page === page) {
-            return;
-          }
-
-          state.page = page;
-          state.scrollToUserAfterFill = true;
+        if (state.page === page) {
+          return;
         }
+
+        state.page = page;
+        state.scrollToUserAfterFill = true;
       }
     }
   } else {
