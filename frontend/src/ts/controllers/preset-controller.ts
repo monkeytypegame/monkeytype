@@ -5,9 +5,6 @@ import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";
 import * as TagController from "./tag-controller";
 import { SnapshotPreset } from "../constants/default-snapshot";
-import { getDefaultConfig } from "../constants/default-config";
-import { ConfigGroupsLiteral } from "@monkeytype/schemas/configs";
-import { migrateConfig } from "../utils/config";
 
 export async function apply(_id: string): Promise<void> {
   const snapshot = DB.getSnapshot();
@@ -18,24 +15,14 @@ export async function apply(_id: string): Promise<void> {
     return;
   }
 
-  let configToApply = presetToApply.config;
-
   if (isPartialPreset(presetToApply)) {
-    //fill default values for the partial preset
-    const defaultConfig = getDefaultConfig();
-    Object.entries(ConfigGroupsLiteral)
-      .filter(([_key, group]) => presetToApply.settingGroups?.includes(group))
-      .map(([key]) => key)
-      .forEach((configKey) => {
-        //@ts-expect-error this is fine, both are of type config
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        configToApply[configKey] = defaultConfig[configKey];
-      });
+    await UpdateConfig.apply({
+      ...UpdateConfig.getConfigChanges(),
+      ...presetToApply.config,
+    });
+  } else {
+    await UpdateConfig.apply(presetToApply.config);
   }
-  if (!isPartialPreset(presetToApply)) {
-    configToApply = migrateConfig(configToApply);
-  }
-  await UpdateConfig.apply(configToApply);
 
   if (
     !isPartialPreset(presetToApply) ||

@@ -48,7 +48,6 @@ import * as PSA from "../elements/psa";
 import { getActiveFunboxesWithFunction } from "../test/funbox/list";
 import { Snapshot } from "../constants/default-snapshot";
 import * as Sentry from "../sentry";
-import { migrateConfig } from "../utils/config";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -155,7 +154,7 @@ async function getDataAndInit(): Promise<boolean> {
     console.log(
       "no local config or local and db configs are different - applying db"
     );
-    await UpdateConfig.apply(migrateConfig(snapshot.config));
+    await UpdateConfig.apply(snapshot.config);
     UpdateConfig.saveFullConfigToLocalStorage(true);
 
     //funboxes might be different and they wont activate on the account page

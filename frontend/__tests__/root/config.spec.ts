@@ -1198,6 +1198,7 @@ describe("Config", () => {
         numbers: true,
       });
       await Config.apply({
+        ...Config.getConfigChanges(),
         punctuation: true,
       });
       const config = getConfig();

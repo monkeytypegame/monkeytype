@@ -21,6 +21,7 @@ import { Mode } from "@monkeytype/schemas/shared";
 import { Language } from "@monkeytype/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import {
+  mergeWithDefaultConfig,
   migrateConfig,
   replaceLegacyValues,
   sanitizeConfig,
@@ -819,11 +820,13 @@ const lastConfigsToApply: Set<keyof Config> = new Set([
   "funbox",
 ]);
 
-export async function apply(configToApply: Config): Promise<void> {
-  if (configToApply === undefined || configToApply === null) return;
+export async function apply(partialConfig: Partial<Config>): Promise<void> {
+  if (partialConfig === undefined || partialConfig === null) return;
 
-  //remove additional keys, migrate old values if needed
-  configToApply = sanitizeConfig(replaceLegacyValues(configToApply)) as Config;
+  //migrate old values if needed, remove additional keys and merge with default config
+  const configToApply = mergeWithDefaultConfig(
+    sanitizeConfig(replaceLegacyValues(partialConfig))
+  );
 
   ConfigEvent.dispatch("fullConfigChange");
 
@@ -833,21 +836,15 @@ export async function apply(configToApply: Config): Promise<void> {
     config[key] = defaultConfig[key];
   }
 
-  const partialKeys = typedKeys(configToApply);
-  const partialKeysToApplyFirst = partialKeys.filter(
-    (key) => !lastConfigsToApply.has(key)
-  );
-  const partialKeysToApplyLast = Array.from(lastConfigsToApply.values()).filter(
-    (key) => partialKeys.includes(key)
-  );
-  const partialKeysToApply = [
-    ...partialKeysToApplyFirst,
-    ...partialKeysToApplyLast,
-  ];
-
   const configKeysToReset: (keyof Config)[] = [];
 
-  for (const configKey of partialKeysToApply) {
+  const partialKeys = typedKeys(configToApply);
+  const firstKeys = partialKeys.filter((key) => !lastConfigsToApply.has(key));
+  const lastKeys = Array.from(lastConfigsToApply.values()).filter((key) =>
+    partialKeys.includes(key)
+  );
+
+  for (const configKey of [...firstKeys, ...lastKeys]) {
     const configValue = configToApply[configKey];
 
     const set = genericSet(configKey, configValue, true);
@@ -893,7 +890,7 @@ export async function loadFromLocalStorage(): Promise<void> {
   if (newConfig === undefined) {
     await reset();
   } else {
-    await apply(migrateConfig(newConfig));
+    await apply(newConfig);
     saveFullConfigToLocalStorage(true);
   }
   loadDone();
@@ -926,7 +923,7 @@ export async function applyFromJson(json: string): Promise<void> {
         },
       }
     );
-    await apply(migrateConfig(parsedConfig));
+    await apply(parsedConfig);
     saveFullConfigToLocalStorage();
     Notifications.add("Done", 1);
   } catch (e) {
