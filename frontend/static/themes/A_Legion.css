@@ -1,33 +1,33 @@
 :root {
-  --bg-color: #f0f8ff; /* Alice Blue – soft and pleasant background */
-  --main-color: #ffb6c1; /* Light Pink – vibrant but not harsh */
-  --caret-color: #fdd835; /* Golden Yellow – eye-catching */
-  --sub-color: #ba68c8; /* Soft Purple – elegant sub-color */
-  --sub-alt-color: #2e294e; /* Deep Indigo – good contrast */
-  --text-color: #007acc; /* Azure Blue – clear and readable */
-  --error-color: #ff4c4c; /* Brighter Red – strong error signal */
+  --bg-color: #000000; /* Pure Black background */
+  --main-color: #ffffff; /* White for main UI elements */
+  --caret-color: #fdd835; /* Golden Yellow – still visible on black */
+  --sub-color: #bbbbbb; /* Light Gray for secondary text */
+  --sub-alt-color: #888888; /* Medium Gray for contrast */
+  --text-color: #ffffff; /* White – readable on black */
+  --error-color: #ff4c4c; /* Bright Red for errors */
   --error-extra-color: #c62828; /* Deep Red – secondary error */
   --colorful-error-color: #ff4c4c;
   --colorful-error-extra-color: #c62828;
 }
 
 nav > .textButton:nth-child(1) {
-  color: #ff6f61; /* Coral Red */
+  color: #ff6f61; /* Coral Red – visible on black */
 }
 
 nav > .textButton:nth-child(2) {
-  color: #ec407a; /* Rosy Pink */
+  color: #ec407a; /* Rosy Pink – visible */
 }
 
 nav > .textButton:nth-child(3) {
-  color: #ab47bc; /* Soft Purple */
+  color: #ab47bc; /* Soft Purple – readable on black */
 }
 
 nav > .textButton:nth-child(4) {
-  color: #5c6bc0; /* Calm Blue-Violet */
+  color: #5c6bc0; /* Calm Blue-Violet – good contrast */
 }
 
 nav > .textButton:nth-child(5),
 nav > .textButton:nth-child(6) {
-  color: #37474f; /* Deep Slate – dark but neutral */
+  color: #cccccc; /* Light Gray for neutral buttons */
 }
