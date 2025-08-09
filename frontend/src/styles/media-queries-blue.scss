@@ -131,6 +131,17 @@
         }
       }
     }
+    .section[data-config-name="fontFamily"] {
+      grid-template-areas:
+        "title"
+        "text"
+        "tabs"
+        "buttons";
+      .topRight {
+        grid-area: tabs;
+        align-self: start;
+      }
+    }
   }
   .profile {
     grid-template-columns: 1fr;
