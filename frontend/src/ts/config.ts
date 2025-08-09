@@ -833,7 +833,7 @@ export async function apply(
   const defaultConfig = getDefaultConfig();
   for (const key of typedKeys(fullReset ? defaultConfig : configToApply)) {
     //@ts-expect-error this is fine, both are of type config
-    configToApply[key] = defaultConfig[key];
+    config[key] = defaultConfig[key];
   }
 
   const partialKeys = typedKeys(configToApply);
@@ -859,6 +859,16 @@ export async function apply(
 
     if (!set) {
       configKeysToReset.push(configKey);
+    }
+  }
+
+  if (fullReset) {
+    const lastToApplyMissing: (keyof Config)[] = Array.from(
+      lastConfigsToApply.values()
+    ).filter((it) => !partialKeysToApply.includes(it));
+    for (const configKey of lastToApplyMissing) {
+      //@ts-expect-error this is fine, both are of type config
+      config[configKey] = defaultConfig[configKey];
     }
   }
 

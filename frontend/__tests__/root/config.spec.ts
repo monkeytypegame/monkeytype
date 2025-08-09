@@ -1219,6 +1219,37 @@ describe("Config", () => {
       expect(config.numbers).toBe(false);
       expect(config.theme).toEqual("serika_dark");
     });
+
+    it("should apply minWpm if not part of the full config", async () => {
+      replaceConfig({
+        minWpm: "off",
+      });
+      await Config.apply(
+        {
+          minWpmCustomSpeed: 100,
+        },
+        true
+      );
+      const config = getConfig();
+      expect(config.minWpm).toBe("off");
+      expect(config.minWpmCustomSpeed).toEqual(100);
+    });
+
+    it("should apply minWpm if part of the full config", async () => {
+      replaceConfig({
+        minWpm: "off",
+      });
+      await Config.apply(
+        {
+          minWpm: "custom",
+          minWpmCustomSpeed: 100,
+        },
+        true
+      );
+      const config = getConfig();
+      expect(config.minWpm).toBe("custom");
+      expect(config.minWpmCustomSpeed).toEqual(100);
+    });
   });
 });
 
