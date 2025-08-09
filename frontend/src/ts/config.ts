@@ -833,7 +833,7 @@ export async function apply(
   const defaultConfig = getDefaultConfig();
   for (const key of typedKeys(fullReset ? defaultConfig : configToApply)) {
     //@ts-expect-error this is fine, both are of type config
-    config[key] = defaultConfig[key];
+    configToApply[key] = defaultConfig[key];
   }
 
   const partialKeys = typedKeys(configToApply);
