@@ -1250,6 +1250,16 @@ describe("Config", () => {
       expect(config.minWpm).toBe("custom");
       expect(config.minWpmCustomSpeed).toEqual(100);
     });
+
+    it("should keep the keymap off when applying keymapLayout", async () => {
+      replaceConfig({});
+      await Config.apply({
+        keymapLayout: "qwerty",
+      });
+      const config = getConfig();
+      expect(config.keymapLayout).toEqual("qwerty");
+      expect(config.keymapMode).toEqual("off");
+    });
   });
 });
 
