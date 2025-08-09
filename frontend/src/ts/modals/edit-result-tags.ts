@@ -27,7 +27,6 @@ export function show(
   tags: string[],
   source: "accountPage" | "resultPage"
 ): void {
-  (document.activeElement as HTMLElement)?.blur();
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
       duration: 2,

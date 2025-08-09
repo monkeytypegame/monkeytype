@@ -1002,7 +1002,6 @@ $(".pageSettings .section[data-config-name='funbox'] .buttons").on(
     const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
-    $(e.currentTarget).blur();
   }
 );
 
