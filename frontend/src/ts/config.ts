@@ -819,19 +819,16 @@ const lastConfigsToApply: Set<keyof Config> = new Set([
   "funbox",
 ]);
 
-export async function apply(
-  configToApply: Config | Partial<Config>,
-  fullReset = false
-): Promise<void> {
+export async function apply(configToApply: Config): Promise<void> {
   if (configToApply === undefined || configToApply === null) return;
 
   //remove additional keys, migrate old values if needed
-  configToApply = sanitizeConfig(replaceLegacyValues(configToApply));
+  configToApply = sanitizeConfig(replaceLegacyValues(configToApply)) as Config;
 
   ConfigEvent.dispatch("fullConfigChange");
 
   const defaultConfig = getDefaultConfig();
-  for (const key of typedKeys(fullReset ? defaultConfig : configToApply)) {
+  for (const key of typedKeys(configToApply)) {
     //@ts-expect-error this is fine, both are of type config
     config[key] = defaultConfig[key];
   }
@@ -851,9 +848,7 @@ export async function apply(
   const configKeysToReset: (keyof Config)[] = [];
 
   for (const configKey of partialKeysToApply) {
-    const configValue = configToApply[
-      configKey
-    ] as ConfigSchemas.Config[keyof Config];
+    const configValue = configToApply[configKey];
 
     const set = genericSet(configKey, configValue, true);
 
@@ -862,15 +857,15 @@ export async function apply(
     }
   }
 
-  if (fullReset) {
-    const lastToApplyMissing: (keyof Config)[] = Array.from(
-      lastConfigsToApply.values()
-    ).filter((it) => !partialKeysToApply.includes(it));
-    for (const configKey of lastToApplyMissing) {
-      //@ts-expect-error this is fine, both are of type config
-      config[configKey] = defaultConfig[configKey];
-    }
-  }
+  // if (fullReset) {
+  //   const lastToApplyMissing: (keyof Config)[] = Array.from(
+  //     lastConfigsToApply.values()
+  //   ).filter((it) => !partialKeysToApply.includes(it));
+  //   for (const configKey of lastToApplyMissing) {
+  //     //@ts-expect-error this is fine, both are of type config
+  //     config[configKey] = defaultConfig[configKey];
+  //   }
+  // }
 
   for (const key of configKeysToReset) {
     saveToLocalStorage(key);
@@ -898,7 +893,7 @@ export async function loadFromLocalStorage(): Promise<void> {
   if (newConfig === undefined) {
     await reset();
   } else {
-    await apply(newConfig, true);
+    await apply(migrateConfig(newConfig));
     saveFullConfigToLocalStorage(true);
   }
   loadDone();
@@ -931,7 +926,7 @@ export async function applyFromJson(json: string): Promise<void> {
         },
       }
     );
-    await apply(parsedConfig, true);
+    await apply(migrateConfig(parsedConfig));
     saveFullConfigToLocalStorage();
     Notifications.add("Done", 1);
   } catch (e) {

@@ -7,6 +7,7 @@ import * as TagController from "./tag-controller";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { getDefaultConfig } from "../constants/default-config";
 import { ConfigGroupsLiteral } from "@monkeytype/schemas/configs";
+import { migrateConfig } from "../utils/config";
 
 export async function apply(_id: string): Promise<void> {
   const snapshot = DB.getSnapshot();
@@ -31,7 +32,10 @@ export async function apply(_id: string): Promise<void> {
         configToApply[configKey] = defaultConfig[configKey];
       });
   }
-  await UpdateConfig.apply(configToApply, !isPartialPreset(presetToApply));
+  if (!isPartialPreset(presetToApply)) {
+    configToApply = migrateConfig(configToApply);
+  }
+  await UpdateConfig.apply(configToApply);
 
   if (
     !isPartialPreset(presetToApply) ||

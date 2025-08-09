@@ -1209,12 +1209,9 @@ describe("Config", () => {
         numbers: true,
         theme: "serika",
       });
-      await Config.apply(
-        {
-          punctuation: true,
-        },
-        true
-      );
+      await Config.apply({
+        punctuation: true,
+      });
       const config = getConfig();
       expect(config.numbers).toBe(false);
       expect(config.theme).toEqual("serika_dark");
@@ -1224,12 +1221,9 @@ describe("Config", () => {
       replaceConfig({
         minWpm: "off",
       });
-      await Config.apply(
-        {
-          minWpmCustomSpeed: 100,
-        },
-        true
-      );
+      await Config.apply({
+        minWpmCustomSpeed: 100,
+      });
       const config = getConfig();
       expect(config.minWpm).toBe("off");
       expect(config.minWpmCustomSpeed).toEqual(100);
@@ -1239,13 +1233,10 @@ describe("Config", () => {
       replaceConfig({
         minWpm: "off",
       });
-      await Config.apply(
-        {
-          minWpm: "custom",
-          minWpmCustomSpeed: 100,
-        },
-        true
-      );
+      await Config.apply({
+        minWpm: "custom",
+        minWpmCustomSpeed: 100,
+      });
       const config = getConfig();
       expect(config.minWpm).toBe("custom");
       expect(config.minWpmCustomSpeed).toEqual(100);
