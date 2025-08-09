@@ -74,7 +74,13 @@ describe("Config", () => {
         .sort();
 
       expect(configsWithTriggeResize).toEqual(
-        ["fontSize", "keymapSize", "maxLineWidth", "tapeMode"].sort()
+        [
+          "fontSize",
+          "keymapSize",
+          "maxLineWidth",
+          "tapeMode",
+          "tapeMargin",
+        ].sort()
       );
     });
 
