@@ -6,7 +6,7 @@ import * as DB from "../db";
 import Ape from "../ape";
 import Config from "../config";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 
 export type Quote = {
   text: string;

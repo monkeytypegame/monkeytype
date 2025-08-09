@@ -1,4 +1,4 @@
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
 import { ObjectId } from "mongodb";
@@ -51,14 +51,14 @@ export function mockBearerAuthentication(uid: string) {
      * Reset the mock and return a default token. Call this method in the `beforeEach` of all tests.
      */
     beforeEach: (): void => {
-      verifyIdTokenMock.mockReset();
+      verifyIdTokenMock.mockClear();
       verifyIdTokenMock.mockResolvedValue(mockDecodedToken);
     },
     /**
      * Reset the mock results in the authentication to fail.
      */
     noAuth: (): void => {
-      verifyIdTokenMock.mockReset();
+      verifyIdTokenMock.mockClear();
     },
     /**
      * verify the authentication has been called
@@ -71,7 +71,7 @@ export function mockBearerAuthentication(uid: string) {
      * @param customize
      */
     modifyToken: (customize: Partial<DecodedIdToken>): void => {
-      verifyIdTokenMock.mockReset();
+      verifyIdTokenMock.mockClear();
       verifyIdTokenMock.mockResolvedValue({
         ...mockDecodedToken,
         ...customize,

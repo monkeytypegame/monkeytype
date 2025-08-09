@@ -64,18 +64,12 @@
   }
 }
 
-@keyframes flashHighlight {
+@keyframes accountRowHighlight {
   0% {
-    background-color: var(--bg-color) !important;
-  }
-  10% {
-    background-color: var(--main-color) !important;
-  }
-  40% {
-    background-color: var(--main-color) !important;
+    outline: 0.25em solid var(--main-color);
   }
   100% {
-    background-color: var(--bg-color) !important;
+    outline: 0.25em solid transparent;
   }
 }
 

@@ -5,7 +5,7 @@ import {
   CONFIGURATION_FORM_SCHEMA,
 } from "../../../src/constants/base-configuration";
 import * as Configuration from "../../../src/init/configuration";
-import type { Configuration as ConfigurationType } from "@monkeytype/contracts/schemas/configuration";
+import type { Configuration as ConfigurationType } from "@monkeytype/schemas/configuration";
 import { ObjectId } from "mongodb";
 import * as Misc from "../../../src/utils/misc";
 import * as AdminUuids from "../../../src/dal/admin-uids";
@@ -20,9 +20,9 @@ describe("Configuration Controller", () => {
   const isAdminMock = vi.spyOn(AdminUuids, "isAdmin");
 
   beforeEach(() => {
-    isAdminMock.mockReset();
+    isAdminMock.mockClear();
     mockAuth.beforeEach();
-    isDevEnvironmentMock.mockReset();
+    isDevEnvironmentMock.mockClear();
 
     isDevEnvironmentMock.mockReturnValue(true);
     isAdminMock.mockResolvedValue(true);
@@ -106,7 +106,7 @@ describe("Configuration Controller", () => {
       "patchConfiguration"
     );
     beforeEach(() => {
-      patchConfigurationMock.mockReset();
+      patchConfigurationMock.mockClear();
       patchConfigurationMock.mockResolvedValue(true);
     });
 

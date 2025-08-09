@@ -1,5 +1,5 @@
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { FunboxName } from "@monkeytype/schemas/configs";
+import { Language } from "@monkeytype/schemas/languages";
 import { Accents } from "../test/lazy-mode";
 
 //pin implementation
@@ -156,35 +156,6 @@ export class Section {
 }
 
 export type FunboxWordOrder = "normal" | "reverse";
-
-export type FontObject = {
-  name: string;
-  display?: string;
-  systemFont?: string;
-};
-
-let fontsList: FontObject[] | undefined;
-
-/**
- * Fetches the list of font objects from the server.
- * @returns A promise that resolves to the list of font objects.
- */
-export async function getFontsList(): Promise<FontObject[]> {
-  if (!fontsList) {
-    let list = await cachedFetchJson<FontObject[]>("/fonts/_list.json");
-    list = list.sort((a, b) => {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-    fontsList = list;
-    return fontsList;
-  } else {
-    return fontsList;
-  }
-}
 
 export type Challenge = {
   name: string;

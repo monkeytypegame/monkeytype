@@ -1,0 +1,6 @@
+{
+  "extends": [
+    "../oxlint-config/index.json"
+    // "@monkeytype/oxlint-config"
+  ]
+}

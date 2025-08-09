@@ -36,9 +36,9 @@ export function set(foc: boolean, withCursor = false): void {
     Caret.startAnimation();
     $("header").removeClass("focus");
     $("footer").removeClass("focus");
-    $("body").css("cursor", "default");
-    $("button").css("cursor", "default");
-    $("a").css("cursor", "default");
+    $("body").css("cursor", "");
+    $("button").css("cursor", "");
+    $("a").css("cursor", "");
     $("main").removeClass("focus");
     $("#bannerCenter").removeClass("focus");
     $("#notificationCenter").removeClass("focus");

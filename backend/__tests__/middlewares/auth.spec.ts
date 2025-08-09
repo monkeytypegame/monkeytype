@@ -12,10 +12,12 @@ import crypto from "crypto";
 import {
   EndpointMetadata,
   RequestAuthenticationOptions,
-} from "@monkeytype/contracts/schemas/api";
+} from "@monkeytype/schemas/api";
 import * as Prometheus from "../../src/utils/prometheus";
 import { TsRestRequestWithContext } from "../../src/api/types";
+import { enableMonkeyErrorExpects } from "../__testData__/monkey-error";
 
+enableMonkeyErrorExpects();
 const mockDecodedToken: DecodedIdToken = {
   uid: "123456789",
   email: "newuser@mail.com",
@@ -77,7 +79,7 @@ describe("middlewares/auth", () => {
   });
 
   afterEach(() => {
-    isDevModeMock.mockReset();
+    isDevModeMock.mockClear();
   });
 
   describe("authenticateTsRestRequest", () => {
@@ -86,27 +88,30 @@ describe("middlewares/auth", () => {
     const timingSafeEqualMock = vi.spyOn(crypto, "timingSafeEqual");
 
     beforeEach(() => {
-      timingSafeEqualMock.mockReset().mockReturnValue(true);
+      timingSafeEqualMock.mockClear().mockReturnValue(true);
       [prometheusIncrementAuthMock, prometheusRecordAuthTimeMock].forEach(
-        (it) => it.mockReset()
+        (it) => it.mockClear()
       );
     });
 
     it("should fail if token is not fresh", async () => {
       //GIVEN
       Date.now = vi.fn(() => 60001);
-      const expectedError = new Error(
+      const expectedError = new MonkeyError(
+        401,
         "Unauthorized\nStack: This endpoint requires a fresh token"
       );
 
       //WHEN
       await expect(() =>
         authenticate({}, { requireFreshToken: true })
-      ).rejects.toThrowError(expectedError);
+      ).rejects.toMatchMonkeyError(expectedError);
 
       //THEN
 
-      expect(nextFunction).toHaveBeenLastCalledWith(expectedError);
+      expect(nextFunction).toHaveBeenLastCalledWith(
+        expect.toMatchMonkeyError(expectedError)
+      );
       expect(prometheusIncrementAuthMock).not.toHaveBeenCalled();
       expect(prometheusRecordAuthTimeMock).toHaveBeenCalledOnce();
     });
@@ -242,7 +247,7 @@ describe("middlewares/auth", () => {
       //WHEN / THEN
       await expect(() =>
         authenticate({ headers: { authorization: "Uid 123" } })
-      ).rejects.toThrow(
+      ).rejects.toMatchMonkeyError(
         new MonkeyError(401, "Baerer type uid is not supported")
       );
     });

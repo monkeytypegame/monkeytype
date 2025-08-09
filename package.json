@@ -21,8 +21,8 @@
     "build-be": "turbo run build --filter @monkeytype/backend",
     "build-fe": "turbo run build --filter @monkeytype/frontend",
     "build-pkg": "turbo run build --filter=\"./packages/*\"",
-    "test": "turbo run test",
-    "test-be": "turbo run test --filter @monkeytype/backend",
+    "test": "turbo run test integration-test",
+    "test-be": "turbo run test integration-test --filter @monkeytype/backend",
     "test-fe": "turbo run test --filter @monkeytype/frontend",
     "test-pkg": "turbo run test --filter=\"./packages/*\"",
     "dev": "turbo run dev --force",
@@ -57,26 +57,25 @@
     "pr-check-lint-json": "cd frontend && eslint './static/**/*.json'",
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
     "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json && turbo test -- constants/languages",
-    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json && turbo test -- constants/layouts constants/themes"
+    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json && turbo test -- constants/layouts constants/themes constants/fonts",
+    "knip": "knip"
   },
   "engines": {
-    "node": "20.16.0"
+    "node": "20.19.4"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "19.2.2",
     "@monkeytype/release": "workspace:*",
-    "@vitest/coverage-v8": "2.1.9",
     "conventional-changelog": "6.0.0",
     "eslint": "8.57.1",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "oxlint": "1.1.0",
+    "oxlint": "1.8.0",
     "prettier": "2.8.8",
-    "turbo": "2.3.3",
-    "vitest": "2.1.9"
+    "turbo": "2.3.3"
   },
   "lint-staged": {
     "*.{json,scss,css,html}": [
@@ -88,6 +87,6 @@
       "eslint"
     ]
   },
-  "version": "25.27.0",
+  "version": "25.32.0",
   "packageManager": "pnpm@9.6.0"
 }

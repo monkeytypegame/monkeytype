@@ -16,7 +16,8 @@ import * as TestState from "./test-state";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
-import { KeymapLayout, Layout } from "@monkeytype/contracts/schemas/configs";
+import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
+import * as SoundController from "../controllers/sound-controller";
 
 type TimerStats = {
   dateNow: number;
@@ -200,6 +201,26 @@ function checkIfTimeIsUp(): void {
 //   if (timerDebug) console.timeEnd("tribe progress");
 // }
 
+function playTimeWarning(): void {
+  if (timerDebug) console.time("play timer warning");
+
+  let maxTime = undefined;
+
+  if (Config.mode === "time") {
+    maxTime = Config.time;
+  } else if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
+    maxTime = CustomText.getLimitValue();
+  }
+
+  if (
+    maxTime !== undefined &&
+    Time.get() === maxTime - parseInt(Config.playTimeWarning, 10)
+  ) {
+    void SoundController.playTimeWarning();
+  }
+  if (timerDebug) console.timeEnd("play timer warning");
+}
+
 // ---------------------------------------
 
 let timerStats: TimerStats[] = [];
@@ -213,6 +234,7 @@ async function timerStep(): Promise<void> {
   Time.increment();
   premid();
   updateTimer();
+  if (Config.playTimeWarning !== "off") playTimeWarning();
   const wpmAndRaw = calculateWpmRaw();
   const acc = calculateAcc();
   monkey(wpmAndRaw);

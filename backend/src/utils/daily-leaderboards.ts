@@ -6,14 +6,14 @@ import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import {
   Configuration,
   ValidModeRule,
-} from "@monkeytype/contracts/schemas/configuration";
+} from "@monkeytype/schemas/configuration";
 import {
   LeaderboardEntry,
   RedisDailyLeaderboardEntry,
   RedisDailyLeaderboardEntrySchema,
-} from "@monkeytype/contracts/schemas/leaderboards";
+} from "@monkeytype/schemas/leaderboards";
 import MonkeyError from "./error";
-import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import { Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { getCurrentDayTimestamp } from "@monkeytype/util/date-and-time";
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
@@ -298,3 +298,7 @@ export function getDailyLeaderboard(
 
   return new DailyLeaderboard(modeRule, customTimestamp);
 }
+
+export const __testing = {
+  namespace: dailyLeaderboardNamespace,
+};

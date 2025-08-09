@@ -1,12 +1,12 @@
 import { canSetConfigWithCurrentFunboxes } from "../../../src/ts/test/funbox/funbox-validation";
 
 import * as Notifications from "../../../src/ts/elements/notifications";
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 describe("funbox-validation", () => {
   describe("canSetConfigWithCurrentFunboxes", () => {
     const addNotificationMock = vi.spyOn(Notifications, "add");
     afterEach(() => {
-      addNotificationMock.mockReset();
+      addNotificationMock.mockClear();
     });
 
     const testCases = [

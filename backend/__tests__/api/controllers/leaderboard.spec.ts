@@ -10,7 +10,7 @@ import {
   mockAuthenticateWithApeKey,
   mockBearerAuthentication,
 } from "../../__testData__/auth";
-import { XpLeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import { XpLeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -36,16 +36,18 @@ describe("Loaderboard Controller", () => {
   });
   describe("get leaderboard", () => {
     const getLeaderboardMock = vi.spyOn(LeaderboardDal, "get");
+    const getLeaderboardCountMock = vi.spyOn(LeaderboardDal, "getCount");
 
     beforeEach(() => {
-      getLeaderboardMock.mockReset();
+      getLeaderboardMock.mockClear();
+      getLeaderboardCountMock.mockClear();
     });
 
     it("should get for english time 60", async () => {
       //GIVEN
 
       const resultData = {
-        count: 0,
+        count: 42,
         pageSize: 50,
         entries: [
           {
@@ -78,6 +80,7 @@ describe("Loaderboard Controller", () => {
         _id: new ObjectId(),
       }));
       getLeaderboardMock.mockResolvedValue(mockData);
+      getLeaderboardCountMock.mockResolvedValue(42);
 
       //WHEN
 
@@ -97,13 +100,15 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         0,
-        50
+        50,
+        false
       );
     });
 
     it("should get for english time 60 with page", async () => {
       //GIVEN
       getLeaderboardMock.mockResolvedValue([]);
+      getLeaderboardCountMock.mockResolvedValue(0);
       const page = 0;
       const pageSize = 25;
 
@@ -135,7 +140,8 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         page,
-        pageSize
+        pageSize,
+        false
       );
     });
 
@@ -237,7 +243,7 @@ describe("Loaderboard Controller", () => {
     const getLeaderboardRankMock = vi.spyOn(LeaderboardDal, "getRank");
 
     afterEach(() => {
-      getLeaderboardRankMock.mockReset();
+      getLeaderboardRankMock.mockClear();
     });
 
     it("fails withouth authentication", async () => {
@@ -396,7 +402,7 @@ describe("Loaderboard Controller", () => {
     );
 
     beforeEach(async () => {
-      getDailyLeaderboardMock.mockReset();
+      getDailyLeaderboardMock.mockClear();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await dailyLeaderboardEnabled(true);
@@ -702,7 +708,7 @@ describe("Loaderboard Controller", () => {
     );
 
     beforeEach(async () => {
-      getDailyLeaderboardMock.mockReset();
+      getDailyLeaderboardMock.mockClear();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await dailyLeaderboardEnabled(true);
@@ -879,7 +885,7 @@ describe("Loaderboard Controller", () => {
     const getXpWeeklyLeaderboardMock = vi.spyOn(WeeklyXpLeaderboard, "get");
 
     beforeEach(async () => {
-      getXpWeeklyLeaderboardMock.mockReset();
+      getXpWeeklyLeaderboardMock.mockClear();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await weeklyLeaderboardEnabled(true);
@@ -1073,7 +1079,7 @@ describe("Loaderboard Controller", () => {
     const getXpWeeklyLeaderboardMock = vi.spyOn(WeeklyXpLeaderboard, "get");
 
     beforeEach(async () => {
-      getXpWeeklyLeaderboardMock.mockReset();
+      getXpWeeklyLeaderboardMock.mockClear();
       await weeklyLeaderboardEnabled(true);
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);

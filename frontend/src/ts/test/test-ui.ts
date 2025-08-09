@@ -21,10 +21,7 @@ import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
-import {
-  TimerColor,
-  TimerOpacity,
-} from "@monkeytype/contracts/schemas/configs";
+import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
@@ -67,9 +64,15 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   ) {
     debouncedZipfCheck();
   }
-  if (eventKey === "fontSize" && !nosave) {
-    OutOfFocus.hide();
-    updateWordWrapperClasses();
+  if (eventKey === "fontSize") {
+    $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
+      "fontSize",
+      eventValue + "rem"
+    );
+    if (!nosave) {
+      OutOfFocus.hide();
+      updateWordWrapperClasses();
+    }
   }
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
@@ -1759,5 +1762,8 @@ ConfigEvent.subscribe((key, value) => {
   }
   if (key === "timerColor") {
     updateLiveStatsColor(value as TimerColor);
+  }
+  if (key === "showOutOfFocusWarning" && value === false) {
+    OutOfFocus.hide();
   }
 });

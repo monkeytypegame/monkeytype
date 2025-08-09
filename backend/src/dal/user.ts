@@ -26,15 +26,11 @@ import {
   UserTag,
   User,
   CountByYearAndDay,
-} from "@monkeytype/contracts/schemas/users";
-import {
-  Mode,
-  Mode2,
-  PersonalBest,
-} from "@monkeytype/contracts/schemas/shared";
+} from "@monkeytype/schemas/users";
+import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
 import { addImportantLog } from "./logs";
-import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Result as ResultType } from "@monkeytype/schemas/results";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
 import GeorgeQueue from "../queues/george-queue";
 

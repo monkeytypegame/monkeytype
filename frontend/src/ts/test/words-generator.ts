@@ -525,7 +525,7 @@ async function getQuoteWordList(
       TestState.selectedQuoteId
     );
     if (targetQuote === undefined) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
       throw new WordGenError(
         `Quote ${TestState.selectedQuoteId} does not exist`
       );
@@ -536,7 +536,7 @@ async function getQuoteWordList(
       Config.language
     );
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
       throw new WordGenError("No favorite quotes found");
     }
     rq = randomQuote;
@@ -545,7 +545,7 @@ async function getQuoteWordList(
       TribeState.getState() >= 5
     );
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
       throw new WordGenError("No quotes found for selected quote length");
     }
     rq = randomQuote;

@@ -7,7 +7,7 @@ import {
   MonkeyResponseSchema,
   responseWithData,
   responseWithNullableData,
-} from "./schemas/api";
+} from "./util/api";
 import {
   CountByYearAndDaySchema,
   CustomThemeNameSchema,
@@ -24,12 +24,16 @@ import {
   UserSchema,
   UserStreakSchema,
   UserTagSchema,
-} from "./schemas/users";
-import { Mode2Schema, ModeSchema, PersonalBestSchema } from "./schemas/shared";
-import { IdSchema, StringNumberSchema } from "./schemas/util";
-import { LanguageSchema } from "./schemas/languages";
-import { CustomThemeColorsSchema } from "./schemas/configs";
-import { doesNotContainProfanity } from "./validation/validation";
+} from "@monkeytype/schemas/users";
+import {
+  Mode2Schema,
+  ModeSchema,
+  PersonalBestSchema,
+} from "@monkeytype/schemas/shared";
+import { IdSchema, StringNumberSchema } from "@monkeytype/schemas/util";
+import { LanguageSchema } from "@monkeytype/schemas/languages";
+import { CustomThemeColorsSchema } from "@monkeytype/schemas/configs";
+import { doesNotContainProfanity } from "@monkeytype/schemas/validation/validation";
 
 export const UserEmailSchema = z.string().email();
 

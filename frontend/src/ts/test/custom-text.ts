@@ -1,13 +1,10 @@
 import * as TribeState from "../tribe/tribe-state";
 import * as TribeConfigSyncEvent from "../observables/tribe-config-sync-event";
 
-import {
-  CustomTextLimitMode,
-  CustomTextMode,
-} from "@monkeytype/contracts/schemas/util";
+import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import { CompletedEventCustomTextSchema } from "@monkeytype/contracts/schemas/results";
+import { CompletedEventCustomTextSchema } from "@monkeytype/schemas/results";
 import { deepClone } from "../utils/misc";
 
 const CustomTextObjectSchema = z.record(z.string(), z.string());
@@ -125,8 +122,10 @@ export function setLimitValue(val: number, tribeOverride = false): void {
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
-export function setLimitMode(val: CustomTextLimitMode,
-  tribeOverride = false): void {
+export function setLimitMode(
+  val: CustomTextLimitMode,
+  tribeOverride = false
+): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
 
   const currentSettings = customTextSettings.get();
@@ -149,7 +148,6 @@ export function setPipeDelimiter(val: boolean, tribeOverride = false): void {
     pipeDelimiter: val,
   });
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
-
 }
 
 export function getData(): CustomTextSettings {

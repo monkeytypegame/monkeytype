@@ -19,7 +19,7 @@ import {
   GetWeeklyXpLeaderboardRankResponse,
   GetWeeklyXpLeaderboardResponse,
 } from "@monkeytype/contracts/leaderboards";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import {
   getCurrentDayTimestamp,
   getCurrentWeekTimestamp,
@@ -45,7 +45,8 @@ export async function getLeaderboard(
     mode2,
     language,
     page,
-    pageSize
+    pageSize,
+    req.ctx.configuration.users.premium.enabled
   );
 
   if (leaderboard === false) {

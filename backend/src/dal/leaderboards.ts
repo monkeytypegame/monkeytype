@@ -10,7 +10,7 @@ import {
 
 import { addLog } from "./logs";
 import { Collection, ObjectId } from "mongodb";
-import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import { omit } from "lodash";
 import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";
@@ -33,7 +33,8 @@ export async function get(
   mode2: string,
   language: string,
   page: number,
-  pageSize: number
+  pageSize: number,
+  premiumFeaturesEnabled: boolean = false
 ): Promise<DBLeaderboardEntry[] | false> {
   if (page < 0 || pageSize < 0) {
     throw new MonkeyError(500, "Invalid page or pageSize");
@@ -49,9 +50,6 @@ export async function get(
       .skip(skip)
       .limit(limit)
       .toArray();
-
-    const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
-      .premium.enabled;
 
     if (!premiumFeaturesEnabled) {
       return preset.map((it) => omit(it, "isPremium"));

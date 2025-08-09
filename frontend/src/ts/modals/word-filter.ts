@@ -10,7 +10,7 @@ import AnimatedModal, {
 import { LayoutsList } from "../constants/layouts";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { LanguageList } from "../constants/languages";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 
 type FilterPreset = {
   display: string;

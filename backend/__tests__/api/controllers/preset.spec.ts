@@ -16,7 +16,7 @@ describe("PresetController", () => {
     const getPresetsMock = vi.spyOn(PresetDal, "getPresets");
 
     afterEach(() => {
-      getPresetsMock.mockReset();
+      getPresetsMock.mockClear();
     });
 
     it("should get the users presets", async () => {
@@ -97,7 +97,7 @@ describe("PresetController", () => {
     const addPresetMock = vi.spyOn(PresetDal, "addPreset");
 
     afterEach(() => {
-      addPresetMock.mockReset();
+      addPresetMock.mockClear();
     });
 
     it("should add the users full preset", async () => {
@@ -249,8 +249,8 @@ describe("PresetController", () => {
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          `"config.autoSwitchTheme" Expected boolean, received string`,
           `"config.confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
+          `"config.autoSwitchTheme" Expected boolean, received string`,
           `"config" Unrecognized key(s) in object: 'extra'`,
           `Unrecognized key(s) in object: '_id', 'extra'`,
         ],
@@ -290,7 +290,7 @@ describe("PresetController", () => {
     const editPresetMock = vi.spyOn(PresetDal, "editPreset");
 
     afterEach(() => {
-      editPresetMock.mockReset();
+      editPresetMock.mockClear();
     });
 
     it("should update the users preset", async () => {
@@ -427,9 +427,9 @@ describe("PresetController", () => {
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          `"settingGroups.0" Invalid enum value. Expected 'test' | 'behavior' | 'input' | 'sound' | 'caret' | 'appearance' | 'theme' | 'hideElements' | 'ads' | 'hidden', received 'mappers'`,
-          `"config.autoSwitchTheme" Expected boolean, received string`,
+          `"settingGroups.0" Invalid enum value. Expected 'test' | 'behavior' | 'input' | 'sound' | 'caret' | 'appearance' | 'theme' | 'hideElements' | 'hidden' | 'ads', received 'mappers'`,
           `"config.confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
+          `"config.autoSwitchTheme" Expected boolean, received string`,
           `"config" Unrecognized key(s) in object: 'extra'`,
           `Unrecognized key(s) in object: 'extra'`,
         ],
@@ -469,7 +469,7 @@ describe("PresetController", () => {
     const deletePresetMock = vi.spyOn(PresetDal, "removePreset");
 
     afterEach(() => {
-      deletePresetMock.mockReset();
+      deletePresetMock.mockClear();
     });
 
     it("should delete the users preset", async () => {

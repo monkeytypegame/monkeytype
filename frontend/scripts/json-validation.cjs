@@ -20,33 +20,6 @@ function findDuplicates(words) {
 
 function validateOthers() {
   return new Promise((resolve, reject) => {
-    //fonts
-    const fontsData = JSON.parse(
-      fs.readFileSync("./static/fonts/_list.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-    const fontsSchema = {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          name: {
-            type: "string",
-          },
-        },
-        required: ["name"],
-      },
-    };
-    const fontsValidator = ajv.compile(fontsSchema);
-    if (fontsValidator(fontsData)) {
-      console.log("Fonts JSON schema is \u001b[32mvalid\u001b[0m");
-    } else {
-      console.log("Fonts JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(fontsValidator.errors[0].message));
-    }
-
     //challenges
     const challengesSchema = {
       type: "array",

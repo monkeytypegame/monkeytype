@@ -15,7 +15,7 @@ describe("ConfigController", () => {
     const getConfigMock = vi.spyOn(ConfigDal, "getConfig");
 
     afterEach(() => {
-      getConfigMock.mockReset();
+      getConfigMock.mockClear();
     });
 
     it("should get the users config", async () => {
@@ -45,7 +45,7 @@ describe("ConfigController", () => {
     const saveConfigMock = vi.spyOn(ConfigDal, "saveConfig");
 
     afterEach(() => {
-      saveConfigMock.mockReset();
+      saveConfigMock.mockClear();
     });
 
     it("should update the users config", async () => {
@@ -100,8 +100,8 @@ describe("ConfigController", () => {
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          `"autoSwitchTheme" Expected boolean, received string`,
           `"confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
+          `"autoSwitchTheme" Expected boolean, received string`,
         ],
       });
 
@@ -112,7 +112,7 @@ describe("ConfigController", () => {
     const deleteConfigMock = vi.spyOn(ConfigDal, "deleteConfig");
 
     afterEach(() => {
-      deleteConfigMock.mockReset();
+      deleteConfigMock.mockClear();
     });
 
     it("should delete the users config", async () => {

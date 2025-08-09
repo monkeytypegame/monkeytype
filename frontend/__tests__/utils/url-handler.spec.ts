@@ -1,5 +1,5 @@
 // eslint-disable no-useless-escape
-import { Difficulty, Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { compressToURI } from "lz-ts";
 import * as UpdateConfig from "../../src/ts/config";
 import * as Notifications from "../../src/ts/elements/notifications";
@@ -8,7 +8,7 @@ import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TestState from "../../src/ts/test/test-state";
 import * as Misc from "../../src/ts/utils/misc";
 import { loadTestSettingsFromUrl } from "../../src/ts/utils/url-handler";
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 
 //mock modules to avoid dependencies
 vi.mock("../../src/ts/test/test-logic", () => ({
@@ -48,7 +48,7 @@ describe("url-handler", () => {
         setFunboxMock,
         restartTestMock,
         addNotificationMock,
-      ].forEach((it) => it.mockReset());
+      ].forEach((it) => it.mockClear());
 
       findGetParameterMock.mockImplementation((override) => override);
     });
@@ -119,7 +119,7 @@ describe("url-handler", () => {
 
       //THEN
       expect(setModeMock).toHaveBeenCalledWith("quote", true);
-      expect(setQuoteLengthMock).toHaveBeenCalledWith(-2, false);
+      expect(setQuoteLengthMock).toHaveBeenCalledWith([-2], false);
       expect(setSelectedQuoteIdMock).toHaveBeenCalledWith(512);
       expect(restartTestMock).toHaveBeenCalled();
     });

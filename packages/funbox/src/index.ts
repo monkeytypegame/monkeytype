@@ -1,4 +1,4 @@
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 import { getList, getFunbox, getObject, getFunboxNames } from "./list";
 import { FunboxMetadata, FunboxProperty } from "./types";
 import { checkCompatibility } from "./validation";

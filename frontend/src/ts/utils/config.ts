@@ -3,9 +3,9 @@ import {
   ConfigValue,
   PartialConfig,
   FunboxName,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
 import { sanitize, typedKeys } from "./misc";
-import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
+import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 /**
  * migrates possible outdated config and merges with the default config values
@@ -30,10 +30,11 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
 /**
  * remove all values from the config which are not valid
  */
-function sanitizeConfig(
+export function sanitizeConfig(
   config: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
-  return sanitize(ConfigSchemas.PartialConfigSchema, config);
+  //make sure to use strip()
+  return sanitize(ConfigSchemas.PartialConfigSchema.strip(), config);
 }
 
 export function replaceLegacyValues(
@@ -154,6 +155,66 @@ export function replaceLegacyValues(
     }
 
     configObj.fontSize = newValue;
+  } else if (configObj.fontSize !== undefined && configObj.fontSize < 0) {
+    configObj.fontSize = 1;
+  }
+
+  if (
+    Array.isArray(configObj.accountChart) &&
+    configObj.accountChart.length !== 4
+  ) {
+    configObj.accountChart = ["on", "on", "on", "on"];
+  }
+
+  if (
+    typeof configObj.minAccCustom === "number" &&
+    configObj.minAccCustom > 100
+  ) {
+    configObj.minAccCustom = 100;
+  }
+
+  if (
+    Array.isArray(configObj.customThemeColors) &&
+    //@ts-expect-error legacy configs
+    configObj.customThemeColors.length === 9
+  ) {
+    // migrate existing configs missing sub alt color
+    const colors = configObj.customThemeColors;
+    colors.splice(4, 0, "#000000");
+    configObj.customThemeColors = colors;
+  }
+
+  if (
+    Array.isArray(configObj.customBackgroundFilter) &&
+    //@ts-expect-error legacy configs
+    configObj.customBackgroundFilter.length === 5
+  ) {
+    const arr = configObj.customBackgroundFilter;
+    configObj.customBackgroundFilter = [arr[0], arr[1], arr[2], arr[3]];
+  }
+
+  if (typeof configObj.quoteLength === "number") {
+    if (configObj.quoteLength === -1) {
+      configObj.quoteLength = [0, 1, 2, 3];
+    } else {
+      configObj.quoteLength = [configObj.quoteLength];
+    }
+  }
+
+  if (configObj.tapeMargin !== undefined) {
+    if (configObj.tapeMargin < 10) {
+      configObj.tapeMargin = 10;
+    } else if (configObj.tapeMargin > 90) {
+      configObj.tapeMargin = 90;
+    }
+  }
+
+  if (configObj.maxLineWidth !== undefined) {
+    if (configObj.maxLineWidth < 20 && configObj.maxLineWidth !== 0) {
+      configObj.maxLineWidth = 20;
+    } else if (configObj.maxLineWidth > 1000) {
+      configObj.maxLineWidth = 1000;
+    }
   }
 
   return configObj;

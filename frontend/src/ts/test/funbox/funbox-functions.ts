@@ -22,12 +22,8 @@ import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
-import {
-  FunboxName,
-  KeymapLayout,
-  Layout,
-} from "@monkeytype/contracts/schemas/configs";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
+import { Language } from "@monkeytype/schemas/languages";
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;

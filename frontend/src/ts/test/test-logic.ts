@@ -69,13 +69,13 @@ import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer
 import tribeSocket from "../tribe/tribe-socket";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
-import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
 import {
   ChartData,
   CompletedEvent,
   CompletedEventCustomText,
-} from "@monkeytype/contracts/schemas/results";
+} from "@monkeytype/schemas/results";
 import * as XPBar from "../elements/xp-bar";
 import {
   findSingleActiveFunboxWithFunction,
@@ -496,7 +496,7 @@ export async function init(): Promise<void | null> {
 
   if (Config.mode === "quote") {
     if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
     }
   }
 
@@ -1245,6 +1245,34 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.keyDuration = "toolong";
   }
 
+  if (
+    completedEvent.wpm === 0 &&
+    !difficultyFailed &&
+    completedEvent.testDuration >= 5
+  ) {
+    const roundedTime = Math.round(completedEvent.testDuration);
+
+    const messages = [
+      `Congratulations. You just wasted ${roundedTime} seconds of your life by typing nothing. Be proud of yourself.`,
+      `Bravo! You've managed to waste ${roundedTime} seconds and accomplish exactly zero. A true productivity icon.`,
+      `That was ${roundedTime} seconds of absolutely legendary idleness. History will remember this moment.`,
+      `Wow, ${roundedTime} seconds of typing... nothing. Bold. Mysterious. Completely useless.`,
+      `Thank you for those ${roundedTime} seconds of utter nothingness. The keyboard needed the break.`,
+      `A breathtaking display of inactivity. ${roundedTime} seconds of absolutely nothing. Powerful.`,
+      `You just gave ${roundedTime} seconds of your life to the void. And the void says thanks.`,
+      `Stunning. ${roundedTime} seconds of intense... whatever that wasn't. Keep it up, champ.`,
+      `Is it performance art? A protest? Or just ${roundedTime} seconds of glorious nothing? We may never know.`,
+      `You typed nothing for ${roundedTime} seconds. And in that moment, you became legend.`,
+    ];
+
+    Result.showConfetti();
+    Notifications.add(Arrays.randomElementFromArray(messages), 0, {
+      customTitle: "Nice",
+      duration: 15,
+      important: true,
+    });
+  }
+
   if (dontSave) {
     void AnalyticsController.log("testCompletedInvalid");
     resolveTestSavePromise(resolve);
@@ -1635,16 +1663,28 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  let len: QuoteLength | QuoteLength[] = parseInt(
-    $(e.currentTarget).attr("quoteLength") ?? "1"
-  ) as QuoteLength;
-  if (len !== -2) {
-    if (len === -1) {
-      len = [0, 1, 2, 3];
-    }
-    if (UpdateConfig.setQuoteLength(len, false, e.shiftKey)) {
+  const lenAttr = $(e.currentTarget).attr("quoteLength");
+  if (lenAttr === "all") {
+    if (UpdateConfig.setQuoteLengthAll()) {
       ManualRestart.set();
       restart();
+    }
+  } else {
+    const len = parseInt(lenAttr ?? "1") as QuoteLength;
+
+    if (len !== -2) {
+      let arr: QuoteLengthConfig = [];
+
+      if (e.shiftKey) {
+        arr = [...Config.quoteLength, len];
+      } else {
+        arr = [len];
+      }
+
+      if (UpdateConfig.setQuoteLength(arr, false)) {
+        ManualRestart.set();
+        restart();
+      }
     }
   }
 });

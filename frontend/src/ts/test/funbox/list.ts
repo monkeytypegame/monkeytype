@@ -6,7 +6,7 @@ import {
 } from "@monkeytype/funbox";
 
 import { FunboxFunctions, getFunboxFunctions } from "./funbox-functions";
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 
 type FunboxMetadataWithFunctions = FunboxMetadata & {
   functions?: FunboxFunctions;

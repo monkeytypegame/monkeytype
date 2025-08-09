@@ -31,7 +31,7 @@ import {
   DBResult,
   replaceLegacyValues,
 } from "../../utils/result";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import { addImportantLog, addLog } from "../../dal/logs";
 import {
   AddResultRequest,
@@ -50,8 +50,8 @@ import {
   Result,
   PostResultResponse,
   XpBreakdown,
-} from "@monkeytype/contracts/schemas/results";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+} from "@monkeytype/schemas/results";
+import { Mode } from "@monkeytype/schemas/shared";
 import {
   isSafeNumber,
   mapRange,
@@ -554,11 +554,9 @@ export async function addResult(
 
   const streak = await UserDAL.updateStreak(uid, completedEvent.timestamp);
   const badgeWaitingInInbox = (
-    user.inbox
-      ?.map((i) =>
-        (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
-      )
-      .flat() ?? []
+    user.inbox?.flatMap((i) =>
+      (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
+    ) ?? []
   ).includes(14);
 
   const shouldGetBadge =

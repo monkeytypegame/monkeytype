@@ -1,6 +1,6 @@
 import { getDefaultConfig } from "../../src/ts/constants/default-config";
 import { Formatting } from "../../src/ts/utils/format";
-import { Config } from "@monkeytype/contracts/schemas/configs";
+import { Config } from "@monkeytype/schemas/configs";
 
 describe("format.ts", () => {
   describe("typingsSpeed", () => {

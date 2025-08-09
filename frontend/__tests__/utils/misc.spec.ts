@@ -231,11 +231,15 @@ describe("misc.ts", () => {
     });
   });
   describe("sanitize function", () => {
-    const schema = z.object({
-      name: z.string(),
-      age: z.number().positive(),
-      tags: z.array(z.string()),
-    });
+    const schema = z
+      .object({
+        name: z.string(),
+        age: z.number().positive(),
+        tags: z.array(z.string()),
+        enumArray: z.array(z.enum(["one", "two"])).min(2),
+      })
+      .partial()
+      .strip();
 
     it("should return the same object if it is valid", () => {
       const obj = { name: "Alice", age: 30, tags: ["developer", "coder"] };
@@ -264,22 +268,70 @@ describe("misc.ts", () => {
       });
     });
 
-    it("should remove entire property if all array elements are invalid", () => {
-      const obj = { name: "Alice", age: 30, tags: [123, 456] as any };
+    it("should remove invalid array elements with min size", () => {
+      const schema = z
+        .object({
+          name: z.string(),
+          tags: z.array(z.enum(["coder", "developer"])).min(2),
+        })
+        .partial();
+      const obj = {
+        name: "Alice",
+        tags: ["developer", "unknown"] as any,
+      };
       expect(sanitize(schema, obj)).toEqual({
         name: "Alice",
-        age: 30,
-        tags: undefined,
       });
+    });
+
+    it("should remove entire property if all array elements are invalid", () => {
+      const obj = { name: "Alice", age: 30, tags: [123, 456] as any };
+      const sanitized = sanitize(schema, obj);
+      expect(sanitized).toEqual({
+        name: "Alice",
+        age: 30,
+      });
+      expect(sanitized).not.toHaveProperty("tags");
     });
 
     it("should remove object properties if they are invalid", () => {
       const obj = { name: 123 as any, age: 30, tags: ["developer", "coder"] };
-      expect(sanitize(schema, obj)).toEqual({
+      const sanitized = sanitize(schema, obj);
+      expect(sanitized).toEqual({
         age: 30,
         tags: ["developer", "coder"],
-        name: undefined,
       });
+      expect(sanitized).not.toHaveProperty("name");
+    });
+
+    it("should strip extra keys", () => {
+      const obj = {
+        name: "bob",
+        age: 30,
+        tags: ["developer", "coder"],
+        powerLevel: 9001,
+      } as any;
+      const stripped = sanitize(schema.strip(), obj);
+      expect(stripped).not.toHaveProperty("powerLevel");
+    });
+    it("should strip extra keys on error", () => {
+      const obj = {
+        name: "bob",
+        age: 30,
+        powerLevel: 9001,
+      } as any;
+      const stripped = sanitize(schema.strip(), obj);
+      expect(stripped).not.toHaveProperty("powerLevel");
+    });
+    it("should provide a readable error message", () => {
+      const obj = {
+        arrayOneTwo: ["one", "nonexistent"],
+      } as any;
+      expect(() => {
+        sanitize(schema.required().strip(), obj);
+      }).toThrowError(
+        "unable to sanitize: name: Required, age: Required, tags: Required, enumArray: Required"
+      );
     });
   });
 });
