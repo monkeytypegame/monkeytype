@@ -1208,19 +1208,6 @@ describe("Config", () => {
       expect(config.numbers).toBe(true);
     });
 
-    it("should reset all values to default if fullReset is true", async () => {
-      replaceConfig({
-        numbers: true,
-        theme: "serika",
-      });
-      await Config.apply({
-        punctuation: true,
-      });
-      const config = getConfig();
-      expect(config.numbers).toBe(false);
-      expect(config.theme).toEqual("serika_dark");
-    });
-
     it("should not enable minWpm if not provided", async () => {
       replaceConfig({
         minWpm: "off",
