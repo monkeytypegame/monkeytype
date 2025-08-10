@@ -1100,6 +1100,9 @@ describe("Config", () => {
   describe("apply", () => {
     it("should fill missing values with defaults", async () => {
       //GIVEN
+      replaceConfig({
+        mode: "words",
+      });
       await Config.apply({
         numbers: true,
         punctuation: true,
