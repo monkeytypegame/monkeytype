@@ -756,6 +756,9 @@ describe("Config", () => {
   describe("apply", () => {
     it("should fill missing values with defaults", async () => {
       //GIVEN
+      replaceConfig({
+        mode: "words",
+      });
       await Config.apply({
         numbers: true,
         punctuation: true,
@@ -854,26 +857,46 @@ describe("Config", () => {
         numbers: true,
       });
       await Config.apply({
+        ...Config.getConfigChanges(),
         punctuation: true,
       });
       const config = getConfig();
       expect(config.numbers).toBe(true);
     });
 
-    it("should reset all values to default if fullReset is true", async () => {
+    it("should not enable minWpm if not provided", async () => {
       replaceConfig({
-        numbers: true,
-        theme: "serika",
+        minWpm: "off",
       });
-      await Config.apply(
-        {
-          punctuation: true,
-        },
-        true
-      );
+      await Config.apply({
+        minWpmCustomSpeed: 100,
+      });
       const config = getConfig();
-      expect(config.numbers).toBe(false);
-      expect(config.theme).toEqual("serika_dark");
+      expect(config.minWpm).toBe("off");
+      expect(config.minWpmCustomSpeed).toEqual(100);
+    });
+
+    it("should apply minWpm if part of the full config", async () => {
+      replaceConfig({
+        minWpm: "off",
+      });
+      await Config.apply({
+        minWpm: "custom",
+        minWpmCustomSpeed: 100,
+      });
+      const config = getConfig();
+      expect(config.minWpm).toBe("custom");
+      expect(config.minWpmCustomSpeed).toEqual(100);
+    });
+
+    it("should keep the keymap off when applying keymapLayout", async () => {
+      replaceConfig({});
+      await Config.apply({
+        keymapLayout: "qwerty",
+      });
+      const config = getConfig();
+      expect(config.keymapLayout).toEqual("qwerty");
+      expect(config.keymapMode).toEqual("off");
     });
   });
 });
