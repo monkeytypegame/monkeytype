@@ -5,9 +5,7 @@ import * as UpdateConfig from "../../src/ts/config";
 import * as Notifications from "../../src/ts/elements/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TagController from "../../src/ts/controllers/tag-controller";
-import { getDefaultConfig } from "../../src/ts/constants/default-config";
-
-const { replaceConfig, getConfig } = UpdateConfig.__testing;
+import { deepClone } from "../../src/ts/utils/misc";
 
 describe("PresetController", () => {
   describe("apply", () => {
@@ -106,16 +104,16 @@ describe("PresetController", () => {
         config: { punctuation: true },
         settingGroups: ["test"],
       });
-      replaceConfig({
-        numbers: true,
-      });
+
+      UpdateConfig.setNumbers(true);
+      const oldConfig = deepClone(UpdateConfig.default);
 
       //WHEN
       await PresetController.apply(preset._id);
 
       //THEN
       expect(configApplyMock).toHaveBeenCalledWith({
-        ...getDefaultConfig(),
+        ...oldConfig,
         numbers: true,
         punctuation: true,
       });
