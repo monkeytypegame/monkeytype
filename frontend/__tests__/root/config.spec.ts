@@ -1221,7 +1221,7 @@ describe("Config", () => {
       expect(config.theme).toEqual("serika_dark");
     });
 
-    it("should apply minWpm if not part of the full config", async () => {
+    it("should not enable minWpm if not provided", async () => {
       replaceConfig({
         minWpm: "off",
       });
