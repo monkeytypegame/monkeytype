@@ -79,12 +79,10 @@
     "eqeqeq": "error",
     "ban-ts-comment": "error",
     "no-unassigned-vars": "error",
-
-    "todo-lowerthis": "off",
     "max-depth": [
       "error",
       {
-        "max": 6
+        "max": 5
       }
     ],
 
