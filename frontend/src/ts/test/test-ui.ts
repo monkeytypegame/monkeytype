@@ -1297,7 +1297,7 @@ async function loadWordsHistory(): Promise<boolean> {
       }
 
       const inputCharacters = Strings.splitIntoCharacters(input);
-      const wordCharacters = Strings.splitIntoCharacters(word);
+      const wordCharacters = Strings.splitIntoCharacters(word ?? "");
       const correctedCharacters = Strings.splitIntoCharacters(corrected ?? "");
 
       let loop;
