@@ -1279,7 +1279,8 @@ async function loadWordsHistory(): Promise<boolean> {
         throw new Error("empty input word");
       }
 
-      const errorClass = input !== word ? "error" : "";
+      const errorClass =
+        Config.mode === "zen" ? "" : input !== word ? "error" : "";
 
       if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean
