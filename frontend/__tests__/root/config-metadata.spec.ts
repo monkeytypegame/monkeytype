@@ -255,6 +255,66 @@ describe("ConfigMeta", () => {
           expected: { customTheme: false },
         },
       ],
+      keymapLayout: [
+        {
+          value: "3l",
+          given: { keymapMode: "react" },
+          expected: { keymapMode: "react" },
+        },
+        {
+          value: "3l",
+          given: { keymapMode: "off" },
+          expected: { keymapMode: "static" },
+        },
+      ],
+      keymapStyle: [
+        {
+          value: "alice",
+          given: { keymapMode: "react" },
+          expected: { keymapMode: "react" },
+        },
+        {
+          value: "alice",
+          given: { keymapMode: "off" },
+          expected: { keymapMode: "static" },
+        },
+      ],
+      keymapLegendStyle: [
+        {
+          value: "dynamic",
+          given: { keymapMode: "react" },
+          expected: { keymapMode: "react" },
+        },
+        {
+          value: "dynamic",
+          given: { keymapMode: "off" },
+          expected: { keymapMode: "static" },
+        },
+      ],
+      keymapShowTopRow: [
+        {
+          value: "always",
+          given: { keymapMode: "react" },
+          expected: { keymapMode: "react" },
+        },
+        {
+          value: "always",
+          given: { keymapMode: "off" },
+          expected: { keymapMode: "static" },
+        },
+      ],
+      keymapSize: [
+        {
+          value: 2,
+          given: { keymapMode: "react" },
+          expected: { keymapMode: "react" },
+        },
+        {
+          value: 2,
+          given: { keymapMode: "off" },
+          expected: { keymapMode: "static" },
+        },
+      ],
     };
 
     it.for(
