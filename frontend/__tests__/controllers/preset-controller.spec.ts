@@ -5,6 +5,9 @@ import * as UpdateConfig from "../../src/ts/config";
 import * as Notifications from "../../src/ts/elements/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TagController from "../../src/ts/controllers/tag-controller";
+import { getDefaultConfig } from "../../src/ts/constants/default-config";
+
+const { replaceConfig, getConfig } = UpdateConfig.__testing;
 
 describe("PresetController", () => {
   describe("apply", () => {
@@ -103,8 +106,7 @@ describe("PresetController", () => {
         config: { punctuation: true },
         settingGroups: ["test"],
       });
-      configGetConfigChangesMock.mockReturnValue({
-        punctuation: false,
+      replaceConfig({
         numbers: true,
       });
 
@@ -113,8 +115,9 @@ describe("PresetController", () => {
 
       //THEN
       expect(configApplyMock).toHaveBeenCalledWith({
-        punctuation: true,
+        ...getDefaultConfig(),
         numbers: true,
+        punctuation: true,
       });
       expect(testRestartMock).toHaveBeenCalled();
       expect(notificationAddMock).toHaveBeenCalledWith("Preset applied", 1, {
