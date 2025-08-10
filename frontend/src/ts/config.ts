@@ -854,16 +854,6 @@ export async function apply(partialConfig: Partial<Config>): Promise<void> {
     }
   }
 
-  // if (fullReset) {
-  //   const lastToApplyMissing: (keyof Config)[] = Array.from(
-  //     lastConfigsToApply.values()
-  //   ).filter((it) => !partialKeysToApply.includes(it));
-  //   for (const configKey of lastToApplyMissing) {
-  //     //@ts-expect-error this is fine, both are of type config
-  //     config[configKey] = defaultConfig[configKey];
-  //   }
-  // }
-
   for (const key of configKeysToReset) {
     saveToLocalStorage(key);
   }
