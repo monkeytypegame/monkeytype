@@ -838,10 +838,10 @@ export async function apply(partialConfig: Partial<Config>): Promise<void> {
 
   const configKeysToReset: (keyof Config)[] = [];
 
-  const partialKeys = typedKeys(fullConfig);
-  const firstKeys = partialKeys.filter((key) => !lastConfigsToApply.has(key));
+  const configKeys = typedKeys(fullConfig);
+  const firstKeys = configKeys.filter((key) => !lastConfigsToApply.has(key));
   const lastKeys = Array.from(lastConfigsToApply.values()).filter((key) =>
-    partialKeys.includes(key)
+    configKeys.includes(key)
   );
 
   for (const configKey of [...firstKeys, ...lastKeys]) {
