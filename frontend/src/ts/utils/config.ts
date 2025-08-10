@@ -16,7 +16,7 @@ export function migrateConfig(config: PartialConfig | object): Config {
   return mergeWithDefaultConfig(sanitizeConfig(replaceLegacyValues(config)));
 }
 
-export function mergeWithDefaultConfig(config: PartialConfig): Config {
+function mergeWithDefaultConfig(config: PartialConfig): Config {
   const defaultConfig = getDefaultConfig();
   const mergedConfig = {} as Config;
   for (const key of typedKeys(defaultConfig)) {
