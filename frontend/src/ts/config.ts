@@ -824,28 +824,28 @@ export async function apply(partialConfig: Partial<Config>): Promise<void> {
   if (partialConfig === undefined || partialConfig === null) return;
 
   //migrate old values if needed, remove additional keys and merge with default config
-  const configToApply = mergeWithDefaultConfig(
+  const fullConfig = mergeWithDefaultConfig(
     sanitizeConfig(replaceLegacyValues(partialConfig))
   );
 
   ConfigEvent.dispatch("fullConfigChange");
 
   const defaultConfig = getDefaultConfig();
-  for (const key of typedKeys(configToApply)) {
+  for (const key of typedKeys(fullConfig)) {
     //@ts-expect-error this is fine, both are of type config
     config[key] = defaultConfig[key];
   }
 
   const configKeysToReset: (keyof Config)[] = [];
 
-  const partialKeys = typedKeys(configToApply);
+  const partialKeys = typedKeys(fullConfig);
   const firstKeys = partialKeys.filter((key) => !lastConfigsToApply.has(key));
   const lastKeys = Array.from(lastConfigsToApply.values()).filter((key) =>
     partialKeys.includes(key)
   );
 
   for (const configKey of [...firstKeys, ...lastKeys]) {
-    const configValue = configToApply[configKey];
+    const configValue = fullConfig[configKey];
 
     const set = genericSet(configKey, configValue, true);
 
