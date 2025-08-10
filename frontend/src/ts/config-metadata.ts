@@ -622,8 +622,8 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
   },
   customBackground: {
-    icon: "fa-image",
-    displayString: "custom background",
+    icon: "fa-link",
+    displayString: "URL background",
     changeRequiresRestart: false,
     overrideValue: ({ value }) => {
       return value.trim();

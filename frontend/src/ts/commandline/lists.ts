@@ -4,6 +4,8 @@ import QuoteFavoriteCommands from "./lists/quote-favorites";
 import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import ResultScreenCommands from "./lists/result-screen";
+import CustomBackgroundCommands from "./lists/custom-background";
+import FontFamilyCommands from "./lists/font-family";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 import TagsCommands from "./lists/tags";
@@ -174,7 +176,7 @@ export const commands: CommandsSubgroup = {
       "startGraphsAtZero",
       "maxLineWidth",
       "fontSize",
-      "fontFamily",
+      ...FontFamilyCommands,
       "keymapMode",
       "keymapStyle",
       "keymapLegendStyle",
@@ -192,7 +194,7 @@ export const commands: CommandsSubgroup = {
       "flipTestColors",
       "colorfulMode",
       ...AddOrRemoveThemeToFavorite,
-      "customBackground",
+      ...CustomBackgroundCommands,
       "customBackgroundSize",
       ...CustomBackgroundFilterCommands,
       "randomTheme"
@@ -473,10 +475,10 @@ function buildSingleListCommands(
         icon: parentCommand.icon,
         alias: newAlias,
         visible: (parentCommand.visible ?? true) && (command.visible ?? true),
-        available: (): boolean => {
+        available: async (): Promise<boolean> => {
           return (
-            (parentCommand?.available?.() ?? true) &&
-            (command?.available?.() ?? true)
+            ((await parentCommand?.available?.()) ?? true) &&
+            ((await command?.available?.()) ?? true)
           );
         },
       };

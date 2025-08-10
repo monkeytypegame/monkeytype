@@ -298,3 +298,7 @@ export function getDailyLeaderboard(
 
   return new DailyLeaderboard(modeRule, customTimestamp);
 }
+
+export const __testing = {
+  namespace: dailyLeaderboardNamespace,
+};

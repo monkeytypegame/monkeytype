@@ -56,6 +56,7 @@ export async function instantUpdate(): Promise<void> {
     $("#testConfig .customText").removeClass("hidden");
   }
 
+  updateActiveExtraButtons("quoteLength", Config.quoteLength);
   updateActiveExtraButtons("numbers", Config.numbers);
   updateActiveExtraButtons("punctuation", Config.punctuation);
 
@@ -245,7 +246,7 @@ function updateActiveExtraButtons(key: string, value: ConfigValue): void {
     $("#testConfig .quoteLength .textButton").removeClass("active");
 
     if (areUnsortedArraysEqual(value as QuoteLength[], [0, 1, 2, 3])) {
-      $("#testConfig .quoteLength .textButton[quoteLength='-1']").addClass(
+      $("#testConfig .quoteLength .textButton[quotelength='all']").addClass(
         "active"
       );
     } else {

@@ -56,7 +56,8 @@
     "pr-check-lint-json": "cd frontend && eslint './static/**/*.json'",
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
     "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json && turbo test -- constants/languages",
-    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json && turbo test -- constants/layouts constants/themes constants/fonts"
+    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json && turbo test -- constants/layouts constants/themes constants/fonts",
+    "knip": "knip"
   },
   "engines": {
     "node": "20.19.4"
@@ -85,6 +86,6 @@
       "eslint"
     ]
   },
-  "version": "25.31.0",
+  "version": "25.32.0",
   "packageManager": "pnpm@9.6.0"
 }

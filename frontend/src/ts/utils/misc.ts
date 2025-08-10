@@ -734,6 +734,11 @@ export function sanitize<T extends z.ZodTypeAny>(
     let val = errors.get(element);
     if (typeof error.path[1] === "number") {
       val = [...(val ?? []), error.path[1]];
+    } else if (error.path.length > 1) {
+      throw new Error(
+        "sanitize does not support nested objects yet. path: " +
+          error.path.join(".")
+      );
     }
     errors.set(element, val);
   }
@@ -754,10 +759,17 @@ export function sanitize<T extends z.ZodTypeAny>(
           error.length < value.length //not all items in the array are invalid
         ) {
           //some items of the array are invalid
-          return [
-            key,
-            value.filter((_element, index) => !error.includes(index)),
-          ];
+          const cleanedArray = value.filter(
+            (_element, index) => !error.includes(index)
+          );
+          const cleanedArrayValidation = schema.safeParse(
+            Object.fromEntries([[key, cleanedArray]])
+          );
+          if (cleanedArrayValidation.success) {
+            return [key, cleanedArray];
+          } else {
+            return [key, undefined];
+          }
         } else {
           return [key, undefined];
         }
@@ -770,9 +782,11 @@ export function sanitize<T extends z.ZodTypeAny>(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return cleanValidate.data;
   }
-  throw new Error(
-    "unable to sanitize:  " + cleanValidate.error.errors.join(",")
-  );
+
+  const errorsString = cleanValidate.error.errors
+    .map((e) => e.path.join(".") + ": " + e.message)
+    .join(", ");
+  throw new Error("unable to sanitize: " + errorsString);
 }
 
 export function triggerResize(): void {

@@ -211,11 +211,11 @@ export type CustomBackgroundFilter = z.infer<
 
 export const CustomLayoutFluidSchema = z
   .array(Layouts.LayoutNameSchema)
-  .min(1)
+  .min(2)
   .max(15);
 export type CustomLayoutFluid = z.infer<typeof CustomLayoutFluidSchema>;
 
-export const CustomPolyglotSchema = z.array(LanguageSchema).min(1);
+export const CustomPolyglotSchema = z.array(LanguageSchema).min(2);
 export type CustomPolyglot = z.infer<typeof CustomPolyglotSchema>;
 
 export const MonkeyPowerLevelSchema = z.enum(["off", "1", "2", "3", "4"]);
