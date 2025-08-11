@@ -39,7 +39,7 @@ import {
 } from "../utils/simple-modal";
 import { ShowOptions } from "../utils/animated-modal";
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
-import { UserEmailSchema, UserNameSchema } from "@monkeytype/contracts/users";
+import { UserEmailSchema, UserNameSchema } from "@monkeytype/schemas/users";
 import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 
