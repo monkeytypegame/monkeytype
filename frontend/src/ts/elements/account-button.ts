@@ -5,8 +5,9 @@ import {
 } from "../controllers/user-flag-controller";
 import { isAuthenticated } from "../firebase";
 import * as XpBar from "./xp-bar";
-import { Snapshot } from "../constants/default-snapshot";
 import { getAvatarElement } from "../utils/discord-avatar";
+import * as AuthEvent from "../observables/auth-event";
+import { getSnapshot } from "../db";
 
 export function hide(): void {
   $("nav .accountButtonAndMenu").addClass("hidden");
@@ -38,11 +39,15 @@ export function updateAvatar(avatar?: {
   $("header nav .view-account .avatar").replaceWith(element);
 }
 
-export function update(snapshot: Snapshot | undefined): void {
+export function update(): void {
   if (isAuthenticated()) {
-    // this function is called after the snapshot is loaded (awaited), so it should be fine
-    const { xp, name } = snapshot as Snapshot;
+    const snapshot = getSnapshot();
 
+    if (snapshot === undefined) return;
+
+    const { xp, name } = snapshot;
+
+    loading(false);
     updateName(name);
     updateFlags(snapshot ?? {});
     XpBar.setXp(xp);
@@ -76,3 +81,12 @@ const coarse = window.matchMedia("(pointer:coarse)")?.matches;
 if (coarse) {
   $("nav .accountButtonAndMenu .textButton.view-account").attr("href", "");
 }
+
+AuthEvent.subscribe((event) => {
+  if (event === "authStateTrue") {
+    loading(true);
+  }
+  if (event === "snapshotLoaded" || event === "authStateFalse") {
+    update();
+  }
+});

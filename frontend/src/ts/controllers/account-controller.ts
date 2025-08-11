@@ -1,7 +1,6 @@
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
-import * as AccountButton from "../elements/account-button";
 import * as Misc from "../utils/misc";
 import * as Settings from "../pages/settings";
 import * as DB from "../db";
@@ -37,10 +36,6 @@ import {
   signInWithPopup,
   resetIgnoreAuthCallback,
 } from "../firebase";
-import {
-  hideFavoriteQuoteLength,
-  showFavoriteQuoteLength,
-} from "../test/test-config";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
 import * as PSA from "../elements/psa";
@@ -48,6 +43,7 @@ import { getActiveFunboxesWithFunction } from "../test/funbox/list";
 import { Snapshot } from "../constants/default-snapshot";
 import * as Sentry from "../sentry";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import * as AuthEvent from "../observables/auth-event";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -92,7 +88,6 @@ async function getDataAndInit(): Promise<boolean> {
     }
   } catch (error) {
     console.error(error);
-    AccountButton.loading(false);
     LoginPage.enableInputs();
     $("header nav .view-account").css("opacity", 1);
     if (error instanceof DB.SnapshotInitError) {
@@ -127,9 +122,7 @@ async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as Snapshot;
-  AccountButton.update(snapshot);
   Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
-  showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
 
@@ -162,7 +155,6 @@ async function getDataAndInit(): Promise<boolean> {
       fb.functions.applyGlobalCSS();
     }
   }
-  AccountButton.loading(false);
   TagController.loadActiveFromLocalStorage();
   if (window.location.pathname === "/account") {
     LoadingPage.updateBar(90);
@@ -179,10 +171,11 @@ async function getDataAndInit(): Promise<boolean> {
 export async function loadUser(_user: UserType): Promise<void> {
   // User is signed in.
   PageTransition.set(false);
-  AccountButton.loading(true);
   if (!(await getDataAndInit())) {
     signOut();
   }
+
+  AuthEvent.dispatch("snapshotLoaded");
 
   // var displayName = user.displayName;
   // var email = user.email;
@@ -212,19 +205,17 @@ export async function onAuthStateChanged(
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     console.debug(user);
     if (user) {
+      AuthEvent.dispatch("authStateTrue");
       await loadUser(user);
     } else {
+      AuthEvent.dispatch("authStateFalse");
       if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
 
       Settings.hideAccountSection();
-      AccountButton.update(undefined);
       DB.setSnapshot(undefined);
       Sentry.clearUser();
-      setTimeout(() => {
-        hideFavoriteQuoteLength();
-      }, 125);
       PageTransition.set(false);
       navigate();
     }
