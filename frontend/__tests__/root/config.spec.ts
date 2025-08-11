@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as Config from "../../src/ts/config";
 import * as Misc from "../../src/ts/utils/misc";
 import {
@@ -7,7 +8,6 @@ import {
   CaretStyleSchema,
 } from "@monkeytype/schemas/configs";
 import { randomBytes } from "crypto";
-import { vi } from "vitest";
 import * as FunboxValidation from "../../src/ts/test/funbox/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config-validation";
 import * as ConfigEvent from "../../src/ts/observables/config-event";
