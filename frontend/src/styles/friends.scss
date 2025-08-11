@@ -22,7 +22,7 @@
         background: var(--sub-alt-color);
       }
 
-      tbody td:nth-child(1) {
+      tbody td:first-child {
         border-radius: var(--roundness) 0 0 var(--roundness);
       }
       tbody td:last-child {
@@ -31,16 +31,23 @@
 
       td {
         padding: var(--padding);
-        -webkit-appearance: unset;
+        appearance: unset;
 
-        &.actions {
-          display: flex;
-          gap: 0.5rem;
+        &:last-child {
+          text-align: right;
         }
       }
 
       .sub {
         opacity: 0.5;
+      }
+    }
+  }
+  .pendingRequests {
+    table tr {
+      td:first-child a {
+        text-decoration: none;
+        color: var(--text-color);
       }
     }
   }
