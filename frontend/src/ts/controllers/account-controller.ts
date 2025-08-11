@@ -223,7 +223,7 @@ export async function onAuthStateChanged(
     navigate();
   }
 
-  AuthEvent.dispatch("authStateUpdated");
+  AuthEvent.dispatch("authStateChanged");
 }
 
 export async function signIn(email: string, password: string): Promise<void> {

@@ -307,7 +307,7 @@ export function loadChallengeFromUrl(getOverride?: string): void {
 }
 
 AuthEvent.subscribe((event) => {
-  if (event === "authStateUpdated") {
+  if (event === "authStateChanged") {
     const search = window.location.search;
     const hash = window.location.hash;
     loadCustomThemeFromUrl(search);
