@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getAuthenticatedUser } from "../firebase";
 import { syncNotSignedInLastResult } from "../utils/results";
+import * as AuthEvent from "../observables/auth-event";
 
 function reset(): void {
   (modal.getModal().querySelector(".result") as HTMLElement).innerHTML = `
@@ -111,6 +112,14 @@ export function show(): void {
 function hide(): void {
   void modal.hide();
 }
+
+AuthEvent.subscribe((event) => {
+  if (event === "snapshotLoaded") {
+    if (TestLogic.notSignedInLastResult !== null) {
+      show();
+    }
+  }
+});
 
 const modal = new AnimatedModal({
   dialogId: "lastSignedOutResult",

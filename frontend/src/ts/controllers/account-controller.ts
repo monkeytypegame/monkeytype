@@ -3,7 +3,6 @@ import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
 import * as DB from "../db";
-import * as TestLogic from "../test/test-logic";
 import * as Loader from "../elements/loader";
 import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
@@ -11,7 +10,6 @@ import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as TagController from "./tag-controller";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
-import * as LastSignedOutResultModal from "../modals/last-signed-out-result";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
 import {
@@ -179,10 +177,6 @@ export async function loadUser(_user: UserType): Promise<void> {
   LoginPage.hidePreloader();
 
   // showFavouriteThemesAtTheTop();
-
-  if (TestLogic.notSignedInLastResult !== null) {
-    LastSignedOutResultModal.show();
-  }
 }
 
 export async function onAuthStateChanged(
