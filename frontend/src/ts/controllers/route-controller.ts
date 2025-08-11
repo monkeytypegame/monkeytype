@@ -1,7 +1,7 @@
 import * as PageController from "./page-controller";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-import { Auth, isAuthenticated } from "../firebase";
+import { isAuthAvailable, isAuthenticated } from "../firebase";
 import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import * as Notifications from "../elements/notifications";
@@ -83,10 +83,11 @@ const routes: Route[] = [
   {
     path: "/login",
     load: (): void => {
-      if (!Auth) {
+      if (!isAuthAvailable()) {
         navigate("/");
         return;
       }
+
       if (isAuthenticated()) {
         navigate("/account");
         return;
@@ -97,10 +98,11 @@ const routes: Route[] = [
   {
     path: "/account",
     load: (_params, options): void => {
-      if (!Auth) {
+      if (!isAuthAvailable()) {
         navigate("/");
         return;
       }
+
       void PageController.change("account", {
         data: options.data,
       });
@@ -109,10 +111,11 @@ const routes: Route[] = [
   {
     path: "/account-settings",
     load: (_params, options): void => {
-      if (!Auth) {
+      if (!isAuthAvailable()) {
         navigate("/");
         return;
       }
+
       if (!isAuthenticated()) {
         navigate("/login");
         return;

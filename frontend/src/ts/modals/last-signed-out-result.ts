@@ -3,7 +3,7 @@ import AnimatedModal from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
-import { Auth } from "../firebase";
+import { getAuthenticatedUser } from "../firebase";
 import { syncNotSignedInLastResult } from "../utils/results";
 
 function reset(): void {
@@ -99,9 +99,10 @@ export function show(): void {
     );
     return;
   }
-  reset();
+
   void modal.show({
     beforeAnimation: async (): Promise<void> => {
+      reset();
       fillData();
     },
   });
@@ -117,7 +118,10 @@ const modal = new AnimatedModal({
     modalEl
       .querySelector("button.save")
       ?.addEventListener("click", async () => {
-        void syncNotSignedInLastResult(Auth?.currentUser?.uid as string);
+        const user = getAuthenticatedUser();
+        if (user !== null) {
+          void syncNotSignedInLastResult(user.uid);
+        }
         hide();
       });
     modalEl.querySelector("button.discard")?.addEventListener("click", () => {
