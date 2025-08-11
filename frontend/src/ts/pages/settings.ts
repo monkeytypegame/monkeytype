@@ -1225,8 +1225,12 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
 });
 
 AuthEvent.subscribe((event) => {
-  if (event === "authStateFalse") {
-    hideAccountSection();
+  if (event.type === "authStateChanged") {
+    if (event.data.isUserSignedIn) {
+      showAccountSection();
+    } else {
+      hideAccountSection();
+    }
   }
 });
 

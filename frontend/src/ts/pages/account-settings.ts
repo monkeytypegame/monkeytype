@@ -213,7 +213,7 @@ $(".page.pageAccountSettings #setStreakHourOffset").on("click", () => {
 });
 
 AuthEvent.subscribe((event) => {
-  if (event === "authUpdated") {
+  if (event.type === "authConfigUpdated") {
     updateUI();
   }
 });
