@@ -68,18 +68,18 @@ async function updatePendingRequests(): Promise<void> {
       const html = result.body.data
         .map(
           (item) => `<tr data-id="${item._id}">
-        <td> <a href="${location.origin}/profile/${
+        <td><a href="${location.origin}/profile/${
             item.initiatorUid
           }?isUid" router-link>${item.initiatorName}</a></td>
         <td>${formatAge(item.addedAt)} ago</td>
         <td class="actions">
-          <button class="accepted" aria-label="accept friend" data-balloon-pos="top">
+          <button class="accepted" aria-label="accept friend" data-balloon-pos="up">
             <i class="fas fa-check fa-fw"></i>
           </button> 
-          <button class="rejected" aria-label="reject friend" data-balloon-pos="top">
+          <button class="rejected" aria-label="reject friend" data-balloon-pos="up">
             <i class="fas fa-times fa-fw"></i>
           </button> 
-          <button class="blocked" aria-label="block user from sending friend requests" data-balloon-pos="top">
+          <button class="blocked" aria-label="block user from sending friend requests" data-balloon-pos="up">
             <i class="fas fa-shield-alt fa-fw"></i>
           </button>
         </td>
@@ -158,12 +158,12 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         <td>${formatAge(entry.addedAt, "short")}</td>
         <td aria-label="total xp: ${
           isSafeNumber(entry.xp) ? formatXp(entry.xp) : ""
-        }" data-balloon-pos="top">
+        }" data-balloon-pos="up">
           ${xpDetails.level}
         </td>
         <td aria-label="${testStats.completedPercentage}% (${
     testStats.restartRatio
-  } restarts per completed test)" data-balloon-pos="top">${
+  } restarts per completed test)" data-balloon-pos="up">${
     entry.completedTests
   }/${entry.startedTests}</td>
         <td>${secondsToString(
@@ -174,24 +174,24 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         <td aria-label="${formatStreak(
           entry.streak?.maxLength,
           "max streak"
-        )}" data-balloon-pos="top">
+        )}" data-balloon-pos="up">
           ${formatStreak(entry.streak?.length)} 
         </td>
         <td aria-label="${
           top15?.details
-        }" data-balloon-pos="top" data-balloon-break="">${
+        }" data-balloon-pos="up" data-balloon-break="">${
     top15?.wpm
   }<div class="sub">${top15?.acc}</div></td>
         <td aria-label="${
           top60?.details
-        }" data-balloon-pos="top" data-balloon-break="">${
+        }" data-balloon-pos="up" data-balloon-break="">${
     top60?.wpm
   }<div class="sub">${top60?.acc}</div></td>
         <td class="actions">
-            <button class="rejected" aria-label="reject friend" data-balloon-pos="top">
+            <button class="rejected" aria-label="reject friend" data-balloon-pos="up">
             <i class="fas fa-user-times fa-fw"></i>
           </button> 
-          <button class="blocked" aria-label="block user from sending friend requests" data-balloon-pos="top">
+          <button class="blocked" aria-label="block user from sending friend requests" data-balloon-pos="up">
             <i class="fas fa-user-shield fa-fw"></i>
           </button>
         </td>
