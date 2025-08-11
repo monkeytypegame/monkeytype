@@ -356,20 +356,19 @@ async function addAuthProvider(
   Loader.show();
   const user = getAuthenticatedUser();
   if (!user) return;
-  linkWithPopup(user, provider)
-    .then(function () {
-      Loader.hide();
-      Notifications.add(`${providerName} authentication added`, 1);
-      AccountSettings.updateUI();
-    })
-    .catch(function (error: unknown) {
-      Loader.hide();
-      const message = Misc.createErrorMessage(
-        error,
-        `Failed to add ${providerName} authentication`
-      );
-      Notifications.add(message, -1);
-    });
+  try {
+    await linkWithPopup(user, provider);
+    Loader.hide();
+    Notifications.add(`${providerName} authentication added`, 1);
+    AccountSettings.updateUI();
+  } catch (error) {
+    Loader.hide();
+    const message = Misc.createErrorMessage(
+      error,
+      `Failed to add ${providerName} authentication`
+    );
+    Notifications.add(message, -1);
+  }
 }
 
 export function signOut(): void {
