@@ -72,7 +72,7 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
     dbSnapshot.lbOptOut = lbOptOut;
   }
 
-  AuthEvent.dispatch("snapshotUpdated");
+  AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
 }
 
 export async function initSnapshot(): Promise<Snapshot | false> {

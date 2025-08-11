@@ -78,7 +78,7 @@ export function loadActiveFromLocalStorage(): void {
 }
 
 AuthEvent.subscribe((event) => {
-  if (event === "snapshotLoaded") {
+  if (event.type === "snapshotUpdated" && event.data.isInitial) {
     loadActiveFromLocalStorage();
   }
 });

@@ -161,7 +161,7 @@ export async function loadUser(_user: UserType): Promise<void> {
     signOut();
   }
 
-  AuthEvent.dispatch("snapshotLoaded");
+  AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
 
   // var displayName = user.displayName;
   // var email = user.email;
@@ -184,10 +184,8 @@ export async function onAuthStateChanged(
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     console.debug(user);
     if (user) {
-      AuthEvent.dispatch("authStateTrue");
       await loadUser(user);
     } else {
-      AuthEvent.dispatch("authStateFalse");
       if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
@@ -207,7 +205,10 @@ export async function onAuthStateChanged(
     navigate();
   }
 
-  AuthEvent.dispatch("authStateChanged");
+  AuthEvent.dispatch({
+    type: "authStateChanged",
+    data: { isUserSignedIn: !!user },
+  });
 }
 
 export async function signIn(email: string, password: string): Promise<void> {
@@ -324,7 +325,7 @@ async function addAuthProvider(
     await linkWithPopup(user, provider);
     Loader.hide();
     Notifications.add(`${providerName} authentication added`, 1);
-    AuthEvent.dispatch("authUpdated");
+    AuthEvent.dispatch({ type: "authConfigUpdated" });
   } catch (error) {
     Loader.hide();
     const message = Misc.createErrorMessage(

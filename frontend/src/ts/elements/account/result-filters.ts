@@ -939,7 +939,7 @@ function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
 }
 
 AuthEvent.subscribe((event) => {
-  if (event === "snapshotLoaded") {
+  if (event.type === "snapshotUpdated" && event.data.isInitial) {
     loadTags();
     void load();
   }

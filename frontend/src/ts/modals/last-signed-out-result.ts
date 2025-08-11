@@ -114,7 +114,7 @@ function hide(): void {
 }
 
 AuthEvent.subscribe((event) => {
-  if (event === "snapshotLoaded") {
+  if (event.type === "snapshotUpdated" && event.data.isInitial) {
     if (TestLogic.notSignedInLastResult !== null) {
       show();
     }

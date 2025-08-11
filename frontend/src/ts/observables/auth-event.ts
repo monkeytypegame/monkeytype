@@ -1,12 +1,9 @@
-type EventType =
-  | "authStateTrue"
-  | "authStateFalse"
-  | "authStateChanged"
-  | "authUpdated"
-  | "snapshotLoaded"
-  | "snapshotUpdated";
+type AuthEvent =
+  | { type: "authStateChanged"; data: { isUserSignedIn: boolean } }
+  | { type: "snapshotUpdated"; data: { isInitial: boolean } }
+  | { type: "authConfigUpdated"; data?: undefined };
 
-type SubscribeFunction = (event: EventType) => void;
+type SubscribeFunction = (event: AuthEvent) => void;
 
 const subscribers: SubscribeFunction[] = [];
 
@@ -14,7 +11,7 @@ export function subscribe(fn: SubscribeFunction): void {
   subscribers.push(fn);
 }
 
-export function dispatch(event: EventType): void {
+export function dispatch(event: AuthEvent): void {
   subscribers.forEach((fn) => {
     try {
       fn(event);

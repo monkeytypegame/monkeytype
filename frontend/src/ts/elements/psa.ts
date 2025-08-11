@@ -180,7 +180,7 @@ export async function show(): Promise<void> {
 }
 
 AuthEvent.subscribe((event) => {
-  if (event === "authStateChanged") {
+  if (event.type === "authStateChanged") {
     void show();
   }
 });

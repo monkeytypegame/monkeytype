@@ -390,7 +390,7 @@ NotificationEvent.subscribe((message, level, customTitle) => {
 });
 
 AuthEvent.subscribe((event) => {
-  if (event === "snapshotLoaded") {
+  if (event.type === "snapshotUpdated" && event.data.isInitial) {
     const snapshot = DB.getSnapshot();
     setNotificationBubbleVisible((snapshot?.inboxUnreadSize ?? 0) > 0);
   }

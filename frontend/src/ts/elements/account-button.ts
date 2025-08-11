@@ -83,13 +83,9 @@ if (coarse) {
 }
 
 AuthEvent.subscribe((event) => {
-  if (event === "authStateTrue") {
-    loading(true);
-  }
   if (
-    event === "snapshotLoaded" ||
-    event === "authStateFalse" ||
-    event === "snapshotUpdated"
+    (event.type === "authStateChanged" && !event.data.isUserSignedIn) ||
+    event.type === "snapshotUpdated"
   ) {
     update();
   }
