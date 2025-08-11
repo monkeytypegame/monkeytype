@@ -381,25 +381,6 @@ export function signOut(): void {
   }
   if (!isAuthenticated()) return;
   void authSignOut();
-  /*
-    .then(function () {
-      Notifications.add("Signed out", 0, {
-        duration: 2,
-      });
-      Sentry.clearUser();
-      Settings.hideAccountSection();
-      AccountButton.update(undefined);
-      navigate("/login");
-      DB.setSnapshot(undefined);
-      setTimeout(() => {
-        hideFavoriteQuoteLength();
-      }, 125);
-    })
-    .catch(function (error: unknown) {
-      const message = Misc.createErrorMessage(error, `Failed to sign out`);
-      Notifications.add(message, -1);
-    });
-*/
 }
 
 async function signUp(): Promise<void> {
