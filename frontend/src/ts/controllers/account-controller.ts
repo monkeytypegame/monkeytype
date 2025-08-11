@@ -37,7 +37,6 @@ import {
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
 import { getActiveFunboxesWithFunction } from "../test/funbox/list";
-import { Snapshot } from "../constants/default-snapshot";
 import * as Sentry from "../sentry";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as AuthEvent from "../observables/auth-event";
@@ -80,9 +79,62 @@ async function getDataAndInit(): Promise<boolean> {
     LoadingPage.updateText("Downloading user data...");
     await LoadingPage.showBar();
     const snapshot = await DB.initSnapshot();
-    if (snapshot !== false) {
-      Sentry.setUser(snapshot.uid, snapshot.name);
+
+    if (snapshot === false) {
+      throw new Error(
+        "Snapshot didn't initialize due to lacking authentication even though user is authenticated"
+      );
     }
+
+    Sentry.setUser(snapshot.uid, snapshot.name);
+    Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
+    ResultFilters.loadTags(snapshot.tags);
+    if (snapshot.needsToChangeName) {
+      Notifications.addPSA(
+        "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
+        -1,
+        undefined,
+        true,
+        undefined,
+        true
+      );
+    }
+    if (ActivePage.get() === "loading") {
+      LoadingPage.updateBar(100);
+    } else {
+      LoadingPage.updateBar(45);
+    }
+    LoadingPage.updateText("Applying settings...");
+
+    // filters = defaultResultFilters;
+    void ResultFilters.load();
+
+    const areConfigsEqual =
+      JSON.stringify(Config) === JSON.stringify(snapshot.config);
+
+    if (Config === undefined || !areConfigsEqual) {
+      console.log(
+        "no local config or local and db configs are different - applying db"
+      );
+      await UpdateConfig.apply(snapshot.config);
+      UpdateConfig.saveFullConfigToLocalStorage(true);
+
+      //funboxes might be different and they wont activate on the account page
+      for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
+        fb.functions.applyGlobalCSS();
+      }
+    }
+    TagController.loadActiveFromLocalStorage();
+    if (window.location.pathname === "/account") {
+      LoadingPage.updateBar(90);
+      await Account.downloadResults();
+    }
+    if (window.location.pathname === "/login") {
+      navigate("/account");
+    } else {
+      navigate();
+    }
+    return true;
   } catch (error) {
     console.error(error);
     LoginPage.enableInputs();
@@ -112,57 +164,6 @@ async function getDataAndInit(): Promise<boolean> {
     }
     return false;
   }
-  if (ActivePage.get() === "loading") {
-    LoadingPage.updateBar(100);
-  } else {
-    LoadingPage.updateBar(45);
-  }
-  LoadingPage.updateText("Applying settings...");
-  const snapshot = DB.getSnapshot() as Snapshot;
-  Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
-
-  ResultFilters.loadTags(snapshot.tags);
-
-  // filters = defaultResultFilters;
-  void ResultFilters.load();
-
-  if (snapshot.needsToChangeName) {
-    Notifications.addPSA(
-      "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
-      -1,
-      undefined,
-      true,
-      undefined,
-      true
-    );
-  }
-
-  const areConfigsEqual =
-    JSON.stringify(Config) === JSON.stringify(snapshot.config);
-
-  if (Config === undefined || !areConfigsEqual) {
-    console.log(
-      "no local config or local and db configs are different - applying db"
-    );
-    await UpdateConfig.apply(snapshot.config);
-    UpdateConfig.saveFullConfigToLocalStorage(true);
-
-    //funboxes might be different and they wont activate on the account page
-    for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
-      fb.functions.applyGlobalCSS();
-    }
-  }
-  TagController.loadActiveFromLocalStorage();
-  if (window.location.pathname === "/account") {
-    LoadingPage.updateBar(90);
-    await Account.downloadResults();
-  }
-  if (window.location.pathname === "/login") {
-    navigate("/account");
-  } else {
-    navigate();
-  }
-  return true;
 }
 
 export async function loadUser(_user: UserType): Promise<void> {
