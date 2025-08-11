@@ -166,7 +166,6 @@
   </body>
   <script type="module">
     import $ from "jquery";
-    import { _Auth as Auth } from "./ts/firebase";
     import {
       applyActionCode,
       verifyPasswordResetCode,
@@ -174,7 +173,13 @@
       checkActionCode,
       sendPasswordResetEmail,
       signInWithEmailAndPassword,
+      getAuth,
     } from "firebase/auth";
+    import { initializeApp } from "firebase/app";
+    import { firebaseConfig } from "./ts/constants/firebase-config";
+
+    const app = initializeApp(firebaseConfig);
+    const Auth = getAuth(app);
 
     function isPasswordStrong(password) {
       const hasCapital = !!password.match(/[A-Z]/);
@@ -199,9 +204,11 @@
           $("main .preloader .subText").text(`You can now close this tab`);
         })
         .catch((error) => {
+          console.error(error);
           $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-          $("main .preloader .text").text(error.message);
-
+          $("main .preloader .text").text(
+            `Fatal error: ${error.message}. If this issue persists, please report it.`
+          );
           // Code is invalid or expired. Ask the user to verify their email address
           // again.
         });
@@ -255,17 +262,24 @@
               signInWithEmailAndPassword(Auth, accountEmail, newPassword);
             })
             .catch((error) => {
+              console.error(error);
               $("main .preloader .icon").html(
                 `<i class="fas fa-fw fa-times"></i>`
               );
-              $("main .preloader .text").text(error.message);
+              $("main .preloader .text").text(
+                `Fatal error: ${error.message}. If this issue persists, please report it.`
+              );
               // Error occurred during confirmation. The code might have expired or the
               // password is too weak.
             });
         })
         .catch((error) => {
+          console.error(error);
           $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-          $("main .preloader .text").text(error.message);
+          $("main .preloader .text").text(
+            `Fatal error: ${error.message}. If this issue persists, please report it.`
+          );
+
           // $("main .preloader .subText").text(error);
 
           // Invalid or expired action code. Ask user to try to reset the password
@@ -308,6 +322,7 @@
           // in case the account was compromised:
         })
         .catch((error) => {
+          console.error(error);
           $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
           $("main .preloader .text").text(error.message);
         });
@@ -321,6 +336,7 @@
           $("main .preloader .subText").text(`Please check your inbox`);
         })
         .catch((error) => {
+          console.error(error);
           $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
           $("main .preloader .text").text(error.message);
         });
