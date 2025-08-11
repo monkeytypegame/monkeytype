@@ -156,37 +156,37 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
           </div>
         </td>
         <td>${formatAge(entry.addedAt, "short")}</td>
-        <td aria-label="total xp: ${
+        <td><span aria-label="total xp: ${
           isSafeNumber(entry.xp) ? formatXp(entry.xp) : ""
         }" data-balloon-pos="up">
           ${xpDetails.level}
-        </td>
-        <td aria-label="${testStats.completedPercentage}% (${
+        </span></td>
+        <td><span aria-label="${testStats.completedPercentage}% (${
     testStats.restartRatio
   } restarts per completed test)" data-balloon-pos="up">${
     entry.completedTests
-  }/${entry.startedTests}</td>
+  }/${entry.startedTests}</span></td>
         <td>${secondsToString(
           Math.round(entry.timeTyping ?? 0),
           true,
           true
         )}</td>
-        <td aria-label="${formatStreak(
+        <td><span aria-label="${formatStreak(
           entry.streak?.maxLength,
           "max streak"
         )}" data-balloon-pos="up">
           ${formatStreak(entry.streak?.length)} 
-        </td>
-        <td aria-label="${
+        </span></td>
+        <td><span aria-label="${
           top15?.details
         }" data-balloon-pos="up" data-balloon-break="">${
     top15?.wpm
-  }<div class="sub">${top15?.acc}</div></td>
-        <td aria-label="${
+  }<div class="sub">${top15?.acc}</div><span></td>
+        <td><span aria-label="${
           top60?.details
         }" data-balloon-pos="up" data-balloon-break="">${
     top60?.wpm
-  }<div class="sub">${top60?.acc}</div></td>
+  }<div class="sub">${top60?.acc}</div></span></td>
         <td class="actions">
             <button class="rejected" aria-label="reject friend" data-balloon-pos="up">
             <i class="fas fa-user-times fa-fw"></i>
