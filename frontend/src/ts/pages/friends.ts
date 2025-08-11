@@ -47,8 +47,10 @@ const addFriendModal = new SimpleModal({
 });
 
 async function updatePendingRequests(): Promise<void> {
-  $(".pageFriends .pendingRequests .loading").removeClass("hidden");
+  $(".pageFriends .pendingRequests .loading  ").removeClass("hidden");
   $(".pageFriends .pendingRequests .nodata").addClass("hidden");
+  $(".pageFriends .pendingRequests .error").addClass("hidden");
+  $(".pageFriends .pendingRequests table").addClass("hidden");
 
   const result = await Ape.friends.getRequests({
     query: { status: "pending", type: "incoming" },
@@ -96,6 +98,10 @@ async function updatePendingRequests(): Promise<void> {
 
 async function fetchFriends(): Promise<void> {
   $(".pageFriends .friends .loading").removeClass("hidden");
+  $(".pageFriends .friends .nodata").addClass("hidden");
+  $(".pageFriends .friends .error").addClass("hidden");
+  $(".pageFriends .friends table").addClass("hidden");
+
   const result = await Ape.friends.getFriends();
   $(".pageFriends .friends .loading").addClass("hidden");
 
@@ -332,8 +338,8 @@ export const page = new Page<undefined>({
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageFriends", "main");
 
-    await updatePendingRequests();
-    await fetchFriends();
+    void updatePendingRequests();
+    void fetchFriends();
   },
 });
 
