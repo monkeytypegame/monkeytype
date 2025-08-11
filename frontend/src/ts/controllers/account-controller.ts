@@ -10,7 +10,6 @@ import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as Account from "../pages/account";
-import * as Alerts from "../elements/alerts";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -82,7 +81,6 @@ async function getDataAndInit(): Promise<boolean> {
     }
 
     Sentry.setUser(snapshot.uid, snapshot.name);
-    Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
     if (snapshot.needsToChangeName) {
       Notifications.addPSA(
         "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",

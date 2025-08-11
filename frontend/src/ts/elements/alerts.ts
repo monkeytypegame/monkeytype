@@ -11,6 +11,7 @@ import AnimatedModal from "../utils/animated-modal";
 import { updateXp as accountPageUpdateProfile } from "./profile";
 import { MonkeyMail } from "@monkeytype/schemas/users";
 import * as XPBar from "../elements/xp-bar";
+import * as AuthEvent from "../observables/auth-event";
 
 let accountAlerts: MonkeyMail[] = [];
 let maxMail = 0;
@@ -385,6 +386,13 @@ NotificationEvent.subscribe((message, level, customTitle) => {
   });
   if (state.notifications.length > 25) {
     state.notifications.shift();
+  }
+});
+
+AuthEvent.subscribe((event) => {
+  if (event === "snapshotLoaded") {
+    const snapshot = DB.getSnapshot();
+    setNotificationBubbleVisible(snapshot?.inboxUnreadSize > 0);
   }
 });
 
