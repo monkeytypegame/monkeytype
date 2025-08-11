@@ -49,7 +49,7 @@ import * as Last10Average from "../elements/last-10-average";
 import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
-import { Auth, isAuthenticated } from "../firebase";
+import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
@@ -904,6 +904,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Replay.replayGetWordsList(TestInput.input.getHistory());
   }
 
+  // in zen mode, ensure the replay words list reflects the typed input history
+  // even if the current input was empty at finish (e.g., after submitting a word).
+  if (Config.mode === "zen") {
+    Replay.replayGetWordsList(TestInput.input.getHistory());
+  }
+
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
   const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
@@ -1182,10 +1188,18 @@ export async function finish(difficultyFailed = false): Promise<void> {
     return;
   }
 
+  // because of the dont save check above, we know the user is signed in
+  // we check here again so that typescript doesnt complain
+  const user = getAuthenticatedUser();
+  if (!user) {
+    return;
+  }
+
   // user is logged in
   TestStats.resetIncomplete();
 
-  completedEvent.uid = Auth?.currentUser?.uid as string;
+  completedEvent.uid = user.uid;
+
   Result.updateRateQuote(TestWords.currentQuote);
 
   AccountButton.loading(true);

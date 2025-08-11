@@ -7,7 +7,7 @@ export NVM_DIR="$HOME/.nvm"
 
 
 if [ $(git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/') = "master" ] && [ $(git remote get-url origin) = "https://github.com/monkeytypegame/monkeytype" ]; then
-  nvm use
+  nvm install
   echo "Running a full check before pushing to master..."
   npm run full-check
   if [ $? -ne 0 ]; then

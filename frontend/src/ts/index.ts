@@ -14,7 +14,7 @@ import "./event-handlers/login";
 
 import "./modals/google-sign-up";
 
-import "./firebase";
+import { init } from "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
@@ -25,7 +25,7 @@ import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
-import "./controllers/account-controller";
+import { onAuthStateChanged } from "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
 import "./modals/simple-modals";
@@ -78,6 +78,7 @@ function addToGlobal(items: Record<string, unknown>): void {
 void loadFromLocalStorage();
 void VersionButton.update();
 Focus.set(true, true);
+void init(onAuthStateChanged);
 
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {

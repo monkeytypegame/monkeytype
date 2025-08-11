@@ -22,38 +22,38 @@ import * as AccountSettings from "../pages/account-settings";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
-  browserSessionPersistence,
-  browserLocalPersistence,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  setPersistence,
   updateProfile,
   linkWithPopup,
-  getAdditionalUserInfo,
   User as UserType,
-  Unsubscribe,
   AuthProvider,
 } from "firebase/auth";
-import { Auth, getAuthenticatedUser, isAuthenticated } from "../firebase";
-import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
+import {
+  isAuthAvailable,
+  getAuthenticatedUser,
+  isAuthenticated,
+  signOut as authSignOut,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  resetIgnoreAuthCallback,
+} from "../firebase";
 import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
-import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
 import { getActiveFunboxesWithFunction } from "../test/funbox/list";
 import { Snapshot } from "../constants/default-snapshot";
 import * as Sentry from "../sentry";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
 
 async function sendVerificationEmail(): Promise<void> {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
@@ -154,7 +154,7 @@ async function getDataAndInit(): Promise<boolean> {
     console.log(
       "no local config or local and db configs are different - applying db"
     );
-    await UpdateConfig.apply(snapshot.config, true);
+    await UpdateConfig.apply(snapshot.config);
     UpdateConfig.saveFullConfigToLocalStorage(true);
 
     //funboxes might be different and they wont activate on the account page
@@ -200,7 +200,7 @@ export async function loadUser(_user: UserType): Promise<void> {
   }
 }
 
-async function readyFunction(
+export async function onAuthStateChanged(
   authInitialisedAndConnected: boolean,
   user: UserType | null
 ): Promise<void> {
@@ -217,10 +217,14 @@ async function readyFunction(
       if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
+
       Settings.hideAccountSection();
       AccountButton.update(undefined);
       DB.setSnapshot(undefined);
       Sentry.clearUser();
+      setTimeout(() => {
+        hideFavoriteQuoteLength();
+      }, 125);
       PageTransition.set(false);
       navigate();
     }
@@ -242,20 +246,8 @@ async function readyFunction(
   AccountSettings.updateUI();
 }
 
-let disableAuthListener: Unsubscribe;
-
-if (Auth && ConnectionState.get()) {
-  disableAuthListener = Auth?.onAuthStateChanged(function (user) {
-    void readyFunction(true, user);
-  });
-} else {
-  $((): void => {
-    void readyFunction(false, null);
-  });
-}
-
 export async function signIn(email: string, password: string): Promise<void> {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1);
     return;
   }
@@ -266,7 +258,6 @@ export async function signIn(email: string, password: string): Promise<void> {
     return;
   }
 
-  disableAuthListener();
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
@@ -279,45 +270,25 @@ export async function signIn(email: string, password: string): Promise<void> {
     return;
   }
 
-  const persistence = ($(".pageLogin .login #rememberMe input").prop(
+  const rememberMe = $(".pageLogin .login #rememberMe input").prop(
     "checked"
-  ) as boolean)
-    ? browserLocalPersistence
-    : browserSessionPersistence;
+  ) as boolean;
 
-  await setPersistence(Auth, persistence);
-  return signInWithEmailAndPassword(Auth, email, password)
-    .then(async (e) => {
-      await loadUser(e.user);
-    })
-    .catch(function (error: unknown) {
-      console.error(error);
-      let message = Misc.createErrorMessage(
-        error,
-        "Failed to sign in with email and password"
-      );
-      if (error instanceof FirebaseError) {
-        if (error.code === "auth/wrong-password") {
-          message = "Incorrect password";
-        } else if (error.code === "auth/user-not-found") {
-          message = "User not found";
-        } else if (error.code === "auth/invalid-email") {
-          message =
-            "Invalid email format (make sure you are using your email to login - not your username)";
-        } else if (error.code === "auth/invalid-credential") {
-          message =
-            "Email/password is incorrect or your account does not have password authentication enabled.";
-        }
-      }
-      Notifications.add(message, -1);
-      LoginPage.hidePreloader();
-      LoginPage.enableInputs();
-      LoginPage.updateSignupButton();
-    });
+  const { error } = await tryCatch(
+    signInWithEmailAndPassword(email, password, rememberMe)
+  );
+
+  if (error !== null) {
+    Notifications.add(error.message, -1);
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
+    return;
+  }
 }
 
 async function signInWithProvider(provider: AuthProvider): Promise<void> {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
@@ -333,61 +304,21 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  disableAuthListener();
-  const persistence = ($(".pageLogin .login #rememberMe input").prop(
+  const rememberMe = $(".pageLogin .login #rememberMe input").prop(
     "checked"
-  ) as boolean)
-    ? browserLocalPersistence
-    : browserSessionPersistence;
+  ) as boolean;
 
-  await setPersistence(Auth, persistence);
-  signInWithPopup(Auth, provider)
-    .then(async (signedInUser) => {
-      if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
-        dispatchSignUpEvent(signedInUser, true);
-      } else {
-        await loadUser(signedInUser.user);
-      }
-    })
-    .catch((error: unknown) => {
-      console.log(error);
-      let message = Misc.createErrorMessage(
-        error,
-        "Failed to sign in with popup"
-      );
-      if (error instanceof FirebaseError) {
-        if (error.code === "auth/wrong-password") {
-          message = "Incorrect password";
-        } else if (error.code === "auth/user-not-found") {
-          message = "User not found";
-        } else if (error.code === "auth/invalid-email") {
-          message =
-            "Invalid email format (make sure you are using your email to login - not your username)";
-        } else if (error.code === "auth/popup-closed-by-user") {
-          message = "";
-          // message = "Popup closed by user";
-          // return;
-        } else if (error.code === "auth/popup-blocked") {
-          message =
-            "Sign in popup was blocked by the browser. Check the address bar for a blocked popup icon, or update your browser settings to allow popups.";
-        } else if (error.code === "auth/user-cancelled") {
-          message = "";
-          // message = "User refused to sign in";
-          // return;
-        } else if (
-          error.code === "auth/account-exists-with-different-credential"
-        ) {
-          message =
-            "Account already exists, but its using a different authentication method. Try signing in with a different method";
-        }
-      }
-      if (message !== "") {
-        Notifications.add(message, -1);
-      }
-      LoginPage.hidePreloader();
-      LoginPage.enableInputs();
-      LoginPage.updateSignupButton();
-    });
+  const { error } = await tryCatch(signInWithPopup(provider, rememberMe));
+
+  if (error !== null) {
+    if (error.message !== "") {
+      Notifications.add(error.message, -1);
+    }
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
+    return;
+  }
 }
 
 async function signInWithGoogle(): Promise<void> {
@@ -416,60 +347,43 @@ async function addAuthProvider(
     });
     return;
   }
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
     return;
   }
   Loader.show();
-  if (!isAuthenticated()) return;
-  linkWithPopup(getAuthenticatedUser(), provider)
-    .then(function () {
-      Loader.hide();
-      Notifications.add(`${providerName} authentication added`, 1);
-      AccountSettings.updateUI();
-    })
-    .catch(function (error: unknown) {
-      Loader.hide();
-      const message = Misc.createErrorMessage(
-        error,
-        `Failed to add ${providerName} authentication`
-      );
-      Notifications.add(message, -1);
-    });
+  const user = getAuthenticatedUser();
+  if (!user) return;
+  try {
+    await linkWithPopup(user, provider);
+    Loader.hide();
+    Notifications.add(`${providerName} authentication added`, 1);
+    AccountSettings.updateUI();
+  } catch (error) {
+    Loader.hide();
+    const message = Misc.createErrorMessage(
+      error,
+      `Failed to add ${providerName} authentication`
+    );
+    Notifications.add(message, -1);
+  }
 }
 
 export function signOut(): void {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
     return;
   }
   if (!isAuthenticated()) return;
-  Auth.signOut()
-    .then(function () {
-      Notifications.add("Signed out", 0, {
-        duration: 2,
-      });
-      Sentry.clearUser();
-      Settings.hideAccountSection();
-      AccountButton.update(undefined);
-      navigate("/login");
-      DB.setSnapshot(undefined);
-      setTimeout(() => {
-        hideFavoriteQuoteLength();
-      }, 125);
-    })
-    .catch(function (error: unknown) {
-      const message = Misc.createErrorMessage(error, `Failed to sign out`);
-      Notifications.add(message, -1);
-    });
+  void authSignOut();
 }
 
 async function signUp(): Promise<void> {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
@@ -551,11 +465,8 @@ async function signUp(): Promise<void> {
     return;
   }
 
-  disableAuthListener();
-
   try {
     const createdAuthUser = await createUserWithEmailAndPassword(
-      Auth,
       email,
       password
     );
@@ -575,7 +486,8 @@ async function signUp(): Promise<void> {
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendVerificationEmail();
     LoginPage.hidePreloader();
-    await loadUser(createdAuthUser.user);
+    await onAuthStateChanged(true, createdAuthUser.user);
+    resetIgnoreAuthCallback();
 
     Notifications.add("Account created", 1);
   } catch (e) {
@@ -617,7 +529,7 @@ $(".pageLogin .login button.signInWithGitHub").on("click", () => {
 });
 
 $("nav .accountButtonAndMenu .menu button.signOut").on("click", () => {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });

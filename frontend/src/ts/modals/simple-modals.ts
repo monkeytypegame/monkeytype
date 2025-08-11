@@ -8,7 +8,11 @@ import * as ThemePicker from "../elements/settings/theme-picker";
 import * as CustomText from "../test/custom-text";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
-import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
+import {
+  isAuthenticated,
+  getAuthenticatedUser,
+  isAuthAvailable,
+} from "../firebase";
 import {
   EmailAuthProvider,
   User,
@@ -133,7 +137,7 @@ function isUsingGoogleAuthentication(): boolean {
 
 function isUsingAuthentication(authProvider: AuthMethod): boolean {
   return (
-    Auth?.currentUser?.providerData.some(
+    getAuthenticatedUser()?.providerData.some(
       (p) => p.providerId === authProvider
     ) || false
   );
@@ -142,20 +146,21 @@ function isUsingAuthentication(authProvider: AuthMethod): boolean {
 async function reauthenticate(
   options: ReauthenticateOptions
 ): Promise<ReauthSuccess | ReauthFailed> {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     return {
       status: -1,
       message: "Authentication is not initialized",
     };
   }
 
-  if (!isAuthenticated()) {
+  const user = getAuthenticatedUser();
+  if (user === null) {
     return {
       status: -1,
       message: "User is not signed in",
     };
   }
-  const user = getAuthenticatedUser();
+
   const authMethod = getPreferredAuthenticationMethod(options.excludeMethod);
 
   try {
