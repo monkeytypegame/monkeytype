@@ -8,7 +8,6 @@ import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
 import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
-import * as TagController from "./tag-controller";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
@@ -116,7 +115,6 @@ async function getDataAndInit(): Promise<boolean> {
         fb.functions.applyGlobalCSS();
       }
     }
-    TagController.loadActiveFromLocalStorage();
     if (window.location.pathname === "/account") {
       LoadingPage.updateBar(90);
       await Account.downloadResults();
