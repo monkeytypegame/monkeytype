@@ -10,7 +10,6 @@ import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
 import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
-import * as ResultFilters from "../elements/account/result-filters";
 import * as TagController from "./tag-controller";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as LastSignedOutResultModal from "../modals/last-signed-out-result";
@@ -88,7 +87,6 @@ async function getDataAndInit(): Promise<boolean> {
 
     Sentry.setUser(snapshot.uid, snapshot.name);
     Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
-    ResultFilters.loadTags(snapshot.tags);
     if (snapshot.needsToChangeName) {
       Notifications.addPSA(
         "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
@@ -105,9 +103,6 @@ async function getDataAndInit(): Promise<boolean> {
       LoadingPage.updateBar(45);
     }
     LoadingPage.updateText("Applying settings...");
-
-    // filters = defaultResultFilters;
-    void ResultFilters.load();
 
     const areConfigsEqual =
       JSON.stringify(Config) === JSON.stringify(snapshot.config);
