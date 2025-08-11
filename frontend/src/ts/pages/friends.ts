@@ -278,10 +278,6 @@ $("#friendAdd").on("click", () => {
   addFriendModal.show(undefined, {});
 });
 
-$(".pageFriends .pendingRequests button.refresh").on("click", async () => {
-  void updatePendingRequests();
-});
-
 // need to set the listener for action buttons on the table because the table content is getting replaced
 $(".pageFriends .pendingRequests table").on("click", async (e) => {
   const action = Array.from(e.target.classList).find((it) =>
