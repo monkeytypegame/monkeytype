@@ -182,11 +182,20 @@
             }
           }
         }
-      }
 
-      &[data-tab="apeKeys"] {
-        tr td:first-child {
-          text-align: center;
+        &[data-tab="apeKeys"] {
+          tr td:first-child {
+            text-align: center;
+          }
+        }
+        &[data-tab="blockedUsers"] {
+          tr td:first-child a {
+            text-decoration: none;
+            color: var(--text-color);
+          }
+          tr td:last-child {
+            text-align: right;
+          }
         }
       }
     }

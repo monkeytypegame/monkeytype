@@ -2,12 +2,18 @@ import * as Notifications from "../../elements/notifications";
 import { FriendRequest } from "@monkeytype/schemas/friends";
 import Ape from "../../ape";
 import { format } from "date-fns/format";
+import { isAuthenticated } from "../../firebase";
 
 let blockedUsers: FriendRequest[] = [];
 const element = $("#pageAccountSettings .tab[data-tab='blockedUsers']");
 
 async function getData(): Promise<boolean> {
   showLoaderRow();
+
+  if (!isAuthenticated()) {
+    blockedUsers = [];
+    return false;
+  }
 
   const response = await Ape.friends.getRequests({
     query: { status: "blocked", type: "incoming" },
