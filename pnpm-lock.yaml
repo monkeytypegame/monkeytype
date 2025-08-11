@@ -658,6 +658,9 @@ importers:
       typescript:
         specifier: 5.5.4
         version: 5.5.4
+      vitest:
+        specifier: 3.2.4
+        version: 3.2.4(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.43.1)(tsx@4.16.2)(yaml@2.5.0)
 
   packages/tsup-config:
     dependencies:
