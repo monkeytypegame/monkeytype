@@ -2,7 +2,6 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
-import * as Settings from "../pages/settings";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
 import * as Loader from "../elements/loader";
@@ -203,7 +202,6 @@ export async function onAuthStateChanged(
         window.history.replaceState("", "", "/login");
       }
 
-      Settings.hideAccountSection();
       DB.setSnapshot(undefined);
       Sentry.clearUser();
       PageTransition.set(false);

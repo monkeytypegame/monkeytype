@@ -41,6 +41,7 @@ import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
+import * as AuthEvent from "../observables/auth-event";
 
 let settingsInitialized = false;
 
@@ -1220,6 +1221,12 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
     void (eventKey === "customBackground"
       ? updateFilterSectionVisibility()
       : update({ eventKey }));
+  }
+});
+
+AuthEvent.subscribe((event) => {
+  if (event === "authStateFalse") {
+    hideAccountSection();
   }
 });
 
