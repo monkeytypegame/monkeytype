@@ -489,6 +489,13 @@
     // font-size: 0.75rem;
   }
 
+  .note {
+    grid-column: span 2;
+    text-align: center;
+    font-size: 0.6em;
+    color: var(--sub-color);
+  }
+
   .top {
     grid-area: top;
     display: grid;

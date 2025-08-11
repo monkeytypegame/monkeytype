@@ -385,9 +385,12 @@ function buildRow(options: {
   return rowHtml;
 }
 
-export async function refresh(
-  layoutName: string = Config.layout
-): Promise<void> {
+export async function refresh(): Promise<void> {
+  const layoutName =
+    Config.keymapLayout === "overrideSync"
+      ? Config.keymapLayout
+      : Config.layout;
+
   if (Config.keymapMode === "off") return;
   if (ActivePage.get() !== "test") return;
   if (!layoutName) return;
@@ -581,29 +584,19 @@ async function updateLegends(): Promise<void> {
     key.textContent = character ?? "";
   }
 }
+let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe((eventKey, newValue) => {
-  if (eventKey === "layout" && Config.keymapLayout === "overrideSync") {
-    void refresh(Config.keymapLayout);
-  }
-  if (
-    eventKey === "keymapLayout" ||
-    eventKey === "keymapStyle" ||
-    eventKey === "keymapShowTopRow" ||
-    eventKey === "keymapMode"
-  ) {
-    void refresh();
-  }
-  if (eventKey === "keymapMode") {
+ConfigEvent.subscribe((eventKey) => {
+  const handleMode = (): void => {
     $(".activeKey").removeClass("activeKey");
     $(".keymapKey").attr("style", "");
-    newValue === "off" ? hide() : show();
-  }
-  if (eventKey === "keymapSize") {
-    $("#keymap").css("zoom", newValue as string);
-  }
-  if (eventKey === "keymapLegendStyle") {
-    let style = newValue as string;
+    Config.keymapMode === "off" ? hide() : show();
+  };
+  const handleSize = (): void => {
+    $("#keymap").css("zoom", Config.keymapSize);
+  };
+  const handleLegendStyle = (): void => {
+    let style = Config.keymapLegendStyle;
 
     // Remove existing styles
     const keymapLegendStyles = ["lowercase", "uppercase", "blank", "dynamic"];
@@ -628,6 +621,37 @@ ConfigEvent.subscribe((eventKey, newValue) => {
 
     // Update and save to cookie for persistence
     $(".keymapLegendStyle").addClass(style);
+  };
+
+  if (eventKey === "fullConfigChange") {
+    ignoreConfigEvent = true;
+  }
+  if (eventKey === "fullConfigChangeFinished") {
+    ignoreConfigEvent = false;
+    void refresh();
+    handleMode();
+    handleSize();
+    handleLegendStyle();
+  }
+  if (ignoreConfigEvent) return;
+
+  if (
+    (eventKey === "layout" && Config.keymapLayout === "overrideSync") ||
+    eventKey === "keymapLayout" ||
+    eventKey === "keymapStyle" ||
+    eventKey === "keymapShowTopRow" ||
+    eventKey === "keymapMode"
+  ) {
+    void refresh();
+  }
+  if (eventKey === "keymapMode") {
+    handleMode();
+  }
+  if (eventKey === "keymapSize") {
+    handleSize();
+  }
+  if (eventKey === "keymapLegendStyle") {
+    handleLegendStyle();
   }
 });
 

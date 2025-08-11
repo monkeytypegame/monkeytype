@@ -9,42 +9,47 @@ import {
   getLanguageDisplayString,
   removeLanguageSize,
 } from "../../src/ts/utils/strings";
+import { Language } from "@monkeytype/schemas/languages";
 
 //todo this file is in the wrong place
 
 describe("misc.ts", () => {
   describe("getLanguageDisplayString", () => {
     it("should return correctly formatted strings", () => {
-      const tests = [
+      const tests: {
+        input: Language;
+        noSizeString: boolean;
+        expected: string;
+      }[] = [
         {
-          input: "language",
+          input: "english",
           noSizeString: false,
-          expected: "language",
+          expected: "english",
         },
         {
-          input: "language_1k",
+          input: "english_1k",
           noSizeString: false,
-          expected: "language 1k",
+          expected: "english 1k",
         },
         {
-          input: "language_1k",
+          input: "english_1k",
           noSizeString: true,
-          expected: "language",
+          expected: "english",
         },
         {
-          input: "language_lang",
+          input: "english_medical",
           noSizeString: false,
-          expected: "language lang",
+          expected: "english medical",
         },
         {
-          input: "language_lang_1k",
+          input: "arabic_egypt_1k",
           noSizeString: false,
-          expected: "language lang 1k",
+          expected: "arabic egypt 1k",
         },
         {
-          input: "language_lang_1k",
+          input: "arabic_egypt_1k",
           noSizeString: true,
-          expected: "language lang",
+          expected: "arabic egypt",
         },
       ];
 
@@ -56,22 +61,22 @@ describe("misc.ts", () => {
   });
   describe("removeLanguageSize", () => {
     it("should remove language size", () => {
-      const tests = [
+      const tests: { input: Language; expected: Language }[] = [
         {
-          input: "language",
-          expected: "language",
+          input: "english",
+          expected: "english",
         },
         {
-          input: "language_1k",
-          expected: "language",
+          input: "english_1k",
+          expected: "english",
         },
         {
-          input: "language_lang",
-          expected: "language_lang",
+          input: "arabic_egypt",
+          expected: "arabic_egypt",
         },
         {
-          input: "language_lang_1k",
-          expected: "language_lang",
+          input: "arabic_egypt_1k",
+          expected: "arabic_egypt",
         },
       ];
 
@@ -282,6 +287,25 @@ describe("misc.ts", () => {
       expect(sanitize(schema, obj)).toEqual({
         name: "Alice",
       });
+    });
+
+    it("should throw on nested objects", () => {
+      const schema = z
+        .object({
+          name: z.string(),
+          info: z.object({ age: z.number() }).partial(),
+        })
+        .partial();
+      const obj = {
+        name: "Alice",
+        info: { age: "42" as any },
+      };
+
+      expect(() => {
+        sanitize(schema, obj);
+      }).toThrowError(
+        "sanitize does not support nested objects yet. path: info.age"
+      );
     });
 
     it("should remove entire property if all array elements are invalid", () => {

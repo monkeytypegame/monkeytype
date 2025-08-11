@@ -1,10 +1,11 @@
 import { Preset } from "@monkeytype/schemas/presets";
-import * as UpdateConfig from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";
 import * as TagController from "./tag-controller";
 import { SnapshotPreset } from "../constants/default-snapshot";
+import { deepClone } from "../utils/misc";
 
 export async function apply(_id: string): Promise<void> {
   const snapshot = DB.getSnapshot();
@@ -15,10 +16,14 @@ export async function apply(_id: string): Promise<void> {
     return;
   }
 
-  await UpdateConfig.apply(
-    presetToApply.config,
-    !isPartialPreset(presetToApply)
-  );
+  if (isPartialPreset(presetToApply)) {
+    await UpdateConfig.apply({
+      ...deepClone(Config),
+      ...presetToApply.config,
+    });
+  } else {
+    await UpdateConfig.apply(presetToApply.config);
+  }
 
   if (
     !isPartialPreset(presetToApply) ||
