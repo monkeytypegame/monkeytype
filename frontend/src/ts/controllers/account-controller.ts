@@ -207,7 +207,7 @@ export async function onAuthStateChanged(
 
   AuthEvent.dispatch({
     type: "authStateChanged",
-    data: { isUserSignedIn: !!user },
+    data: { isUserSignedIn: user !== null },
   });
 }
 
