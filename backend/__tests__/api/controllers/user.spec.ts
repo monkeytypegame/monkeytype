@@ -1,3 +1,13 @@
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  beforeAll,
+  afterAll,
+  vi,
+} from "vitest";
 import request from "supertest";
 import app from "../../../src/app";
 import * as Configuration from "../../../src/init/configuration";
@@ -1577,8 +1587,6 @@ describe("user controller test", () => {
       getDiscordUserMock.mockResolvedValue({
         id: "discordUserId",
         avatar: "discordUserAvatar",
-        username: "discordUserName",
-        discriminator: "discordUserDiscriminator",
       });
       isDiscordIdAvailableMock.mockResolvedValue(true);
       blocklistContainsMock.mockResolvedValue(false);

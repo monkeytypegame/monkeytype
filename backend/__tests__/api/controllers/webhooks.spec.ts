@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import GeorgeQueue from "../../../src/queues/george-queue";
 import crypto from "crypto";
 import request from "supertest";
