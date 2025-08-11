@@ -586,7 +586,11 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   fontFamily: {
     subgroup: {
-      options: typedKeys(Fonts).sort(),
+      options: typedKeys(Fonts).sort((a, b) =>
+        (Fonts[a]?.display ?? a.replace(/_/g, " ")).localeCompare(
+          Fonts[b]?.display ?? b.replace(/_/g, " ")
+        )
+      ),
       display: (name) =>
         Fonts[name as KnownFontName]?.display ?? name.replaceAll(/_/g, " "),
       customData: (name) => {
@@ -599,13 +603,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
         } as Record<string, string | boolean>;
       },
       hover: (name) => UI.previewFontFamily(name),
-    },
-    input: {
-      inputValueConvert: (name) => name.replaceAll(/ /g, "_"),
-      defaultValue: () => Config.fontFamily.replace(/_/g, " "),
-      hover: (): void => {
-        UI.clearFontPreview();
-      },
     },
   },
   keymapMode: {

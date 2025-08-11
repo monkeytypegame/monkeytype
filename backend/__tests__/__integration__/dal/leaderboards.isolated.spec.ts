@@ -3,17 +3,18 @@ import { ObjectId } from "mongodb";
 import * as UserDal from "../../../src/dal/user";
 import * as LeaderboardsDal from "../../../src/dal/leaderboards";
 import * as PublicDal from "../../../src/dal/public";
-import * as Configuration from "../../../src/init/configuration";
 import type { DBLeaderboardEntry } from "../../../src/dal/leaderboards";
 import type { PersonalBest } from "@monkeytype/schemas/shared";
-const configuration = Configuration.getCachedConfiguration();
 
 import * as DB from "../../../src/init/db";
 import { LbPersonalBests } from "../../../src/utils/pb";
-import { describeIntegration } from "..";
+
 import { pb } from "../../__testData__/users";
 
-describeIntegration()("LeaderboardsDal", () => {
+describe("LeaderboardsDal", () => {
+  afterEach(async () => {
+    await DB.collection("users").deleteMany({});
+  });
   describe("update", () => {
     it("should ignore unapplicable users on leaderboard", async () => {
       //GIVEN
@@ -217,21 +218,23 @@ describeIntegration()("LeaderboardsDal", () => {
     });
 
     it("should create leaderboard with premium", async () => {
-      await enablePremiumFeatures(true);
       //GIVEN
+      vi.useRealTimers(); //timestamp for premium is calculated in mongo
       const noPremium = await createUser(lbBests(pb(4)));
       const lifetime = await createUser(lbBests(pb(3)), premium(-1));
-      const validPremium = await createUser(lbBests(pb(2)), premium(10));
+      const validPremium = await createUser(lbBests(pb(2)), premium(1000));
       const expiredPremium = await createUser(lbBests(pb(1)), premium(-10));
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
+
       const result = (await LeaderboardsDal.get(
         "time",
         "15",
         "english",
         0,
-        50
+        50,
+        true
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -253,7 +256,6 @@ describeIntegration()("LeaderboardsDal", () => {
       ]);
     });
     it("should create leaderboard without premium if feature disabled", async () => {
-      await enablePremiumFeatures(false);
       //GIVEN
       // const lifetime = await createUser(lbBests(pb(3)), premium(-1));
 
@@ -264,7 +266,8 @@ describeIntegration()("LeaderboardsDal", () => {
         "15",
         "english",
         0,
-        50
+        50,
+        false
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -348,13 +351,3 @@ type ExpectedLbEntry = {
   badgeId?: number;
   isPremium?: boolean;
 };
-
-async function enablePremiumFeatures(premium: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    users: { premium: { enabled: premium } },
-  });
-
-  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
-  );
-}

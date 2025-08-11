@@ -385,6 +385,10 @@ export async function applyCustomBackground(): Promise<void> {
 
   let backgroundUrl = Config.customBackground;
 
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']"
+  ).val(backgroundUrl);
+
   //if there is a localBackgroundFile available, use it.
   const localBackgroundFile = await fileStorage.getFile("LocalBackgroundFile");
 
@@ -426,6 +430,32 @@ export async function applyCustomBackground(): Promise<void> {
     BackgroundFilter.apply();
     applyCustomBackgroundSize();
   }
+}
+
+export async function applyFontFamily(): Promise<void> {
+  let font = Config.fontFamily.replace(/_/g, " ");
+
+  const localFont = await fileStorage.getFile("LocalFontFamilyFile");
+  if (localFont === undefined) {
+    //use config font
+    $(".customFont").empty();
+  } else {
+    font = "LOCALCUSTOM";
+
+    $(".customFont").html(`
+      @font-face{ 
+        font-family: LOCALCUSTOM;
+        src: url(${localFont});
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }`);
+  }
+
+  document.documentElement.style.setProperty(
+    "--font",
+    `"${font}", "Roboto Mono", "Vazirmatn", monospace`
+  );
 }
 
 window

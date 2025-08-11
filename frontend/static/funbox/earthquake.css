@@ -40,3 +40,8 @@
   --incorrect-letter-animation: shake_dat_ass 0.25s infinite linear;
   --extra-letter-animation: shake_dat_ass 0.25s infinite linear;
 }
+
+#words letter,
+#words.withLigatures .word letter {
+  display: inline-block;
+}

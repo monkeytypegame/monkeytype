@@ -40,6 +40,7 @@ import { z } from "zod";
 import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
+import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 
 let settingsInitialized = false;
 
@@ -580,7 +581,11 @@ async function fillSettingsPage(): Promise<void> {
   if (fontsEl.innerHTML === "") {
     let fontsElHTML = "";
 
-    for (const name of Misc.typedKeys(Fonts).sort()) {
+    for (const name of Misc.typedKeys(Fonts).sort((a, b) =>
+      (Fonts[a].display ?? a.replace(/_/g, " ")).localeCompare(
+        Fonts[b].display ?? b.replace(/_/g, " ")
+      )
+    )) {
       const font = Fonts[name];
       let fontFamily = name.replace(/_/g, " ");
 
@@ -602,7 +607,7 @@ async function fillSettingsPage(): Promise<void> {
   customLayoutFluidSelect = new SlimSelect({
     select:
       ".pageSettings .section[data-config-name='customLayoutfluid'] select",
-    settings: { keepOrder: true, minSelected: 1 },
+    settings: { keepOrder: true, minSelected: 2 },
     events: {
       afterChange: (newVal): void => {
         const customLayoutfluid = newVal.map(
@@ -620,7 +625,7 @@ async function fillSettingsPage(): Promise<void> {
 
   customPolyglotSelect = new SlimSelect({
     select: ".pageSettings .section[data-config-name='customPolyglot'] select",
-    settings: { minSelected: 1 },
+    settings: { minSelected: 2 },
     data: getLanguageDropdownData((language) =>
       Config.customPolyglot.includes(language)
     ),
@@ -850,6 +855,7 @@ export async function update(
   ThemePicker.setCustomInputs(true);
   await CustomBackgroundPicker.updateUI();
   await updateFilterSectionVisibility();
+  await CustomFontPicker.updateUI();
 
   const setInputValue = (
     key: ConfigKey,
@@ -1002,7 +1008,6 @@ $(".pageSettings .section[data-config-name='funbox'] .buttons").on(
     const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
-    $(e.currentTarget).blur();
   }
 );
 

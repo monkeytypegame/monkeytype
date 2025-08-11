@@ -904,6 +904,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Replay.replayGetWordsList(TestInput.input.getHistory());
   }
 
+  // in zen mode, ensure the replay words list reflects the typed input history
+  // even if the current input was empty at finish (e.g., after submitting a word).
+  if (Config.mode === "zen") {
+    Replay.replayGetWordsList(TestInput.input.getHistory());
+  }
+
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
   const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
@@ -1470,22 +1476,28 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  const len = parseInt(
-    $(e.currentTarget).attr("quoteLength") ?? "1"
-  ) as QuoteLength;
-
-  if (len !== -2) {
-    let arr: QuoteLengthConfig = [];
-
-    if (e.shiftKey) {
-      arr = [...Config.quoteLength, len];
-    } else {
-      arr = [len];
-    }
-
-    if (UpdateConfig.setQuoteLength(arr, false)) {
+  const lenAttr = $(e.currentTarget).attr("quoteLength");
+  if (lenAttr === "all") {
+    if (UpdateConfig.setQuoteLengthAll()) {
       ManualRestart.set();
       restart();
+    }
+  } else {
+    const len = parseInt(lenAttr ?? "1") as QuoteLength;
+
+    if (len !== -2) {
+      let arr: QuoteLengthConfig = [];
+
+      if (e.shiftKey) {
+        arr = [...Config.quoteLength, len];
+      } else {
+        arr = [len];
+      }
+
+      if (UpdateConfig.setQuoteLength(arr, false)) {
+        ManualRestart.set();
+        restart();
+      }
     }
   }
 });
