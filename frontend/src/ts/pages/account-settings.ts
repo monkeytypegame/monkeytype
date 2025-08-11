@@ -10,6 +10,7 @@ import * as Loader from "../elements/loader";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
+import * as AuthEvent from "../observables/auth-event";
 
 const pageElement = $(".page.pageAccountSettings");
 
@@ -209,6 +210,12 @@ $(
 
 $(".page.pageAccountSettings #setStreakHourOffset").on("click", () => {
   StreakHourOffsetModal.show();
+});
+
+AuthEvent.subscribe((event) => {
+  if (event === "authUpdated") {
+    updateUI();
+  }
 });
 
 export const page = new PageWithUrlParams({

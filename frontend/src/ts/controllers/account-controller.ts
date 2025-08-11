@@ -17,7 +17,6 @@ import * as LastSignedOutResultModal from "../modals/last-signed-out-result";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
-import * as AccountSettings from "../pages/account-settings";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -233,8 +232,6 @@ export async function onAuthStateChanged(
   URLHandler.loadTestSettingsFromUrl(search);
   URLHandler.loadChallengeFromUrl(search);
   void URLHandler.linkDiscord(hash);
-
-  AccountSettings.updateUI();
 }
 
 export async function signIn(email: string, password: string): Promise<void> {
@@ -351,7 +348,7 @@ async function addAuthProvider(
     await linkWithPopup(user, provider);
     Loader.hide();
     Notifications.add(`${providerName} authentication added`, 1);
-    AccountSettings.updateUI();
+    AuthEvent.dispatch("authUpdated");
   } catch (error) {
     Loader.hide();
     const message = Misc.createErrorMessage(

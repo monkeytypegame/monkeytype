@@ -1,6 +1,7 @@
 type EventType =
   | "authStateTrue"
   | "authStateFalse"
+  | "authUpdated"
   | "snapshotLoaded"
   | "snapshotUpdated";
 
