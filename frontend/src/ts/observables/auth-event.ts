@@ -1,4 +1,8 @@
-type EventType = "authStateTrue" | "authStateFalse" | "snapshotLoaded";
+type EventType =
+  | "authStateTrue"
+  | "authStateFalse"
+  | "snapshotLoaded"
+  | "snapshotUpdated";
 
 type SubscribeFunction = (event: EventType) => void;
 

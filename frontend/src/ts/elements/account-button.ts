@@ -86,7 +86,11 @@ AuthEvent.subscribe((event) => {
   if (event === "authStateTrue") {
     loading(true);
   }
-  if (event === "snapshotLoaded" || event === "authStateFalse") {
+  if (
+    event === "snapshotLoaded" ||
+    event === "authStateFalse" ||
+    event === "snapshotUpdated"
+  ) {
     update();
   }
 });

@@ -31,6 +31,7 @@ import { getDefaultConfig } from "./constants/default-config";
 import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
+import * as AuthEvent from "./observables/auth-event";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -70,6 +71,8 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
     dbSnapshot.verified = originalVerified;
     dbSnapshot.lbOptOut = lbOptOut;
   }
+
+  AuthEvent.dispatch("snapshotUpdated");
 }
 
 export async function initSnapshot(): Promise<Snapshot | false> {
