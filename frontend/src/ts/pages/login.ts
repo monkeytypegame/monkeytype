@@ -149,7 +149,7 @@ validateWithIndicator(passwordInputEl, {
   debounceDelay: 10,
   callback: (result) => {
     if (result.status === "success") {
-      //re-validate the verify email
+      //re-validate the verify password
       passwordVerifyInputEl.dispatchEvent(new Event("input"));
     }
   },
@@ -177,12 +177,13 @@ export const page = new Page({
   element: $(".page.pageLogin"),
   path: "/login",
   afterHide: async (): Promise<void> => {
-    $(".pageLogin input").val("");
     Skeleton.remove("pageLogin");
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLogin", "main");
     registerForm = {};
+    $(".pageLogin input").val("");
+    $(".pageLogin .register .indicator").addClass("hidden");
     enableInputs();
     disableSignUpButton();
   },
