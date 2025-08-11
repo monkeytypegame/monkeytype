@@ -37,7 +37,6 @@ import {
 } from "../firebase";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
-import * as PSA from "../elements/psa";
 import { getActiveFunboxesWithFunction } from "../test/funbox/list";
 import { Snapshot } from "../constants/default-snapshot";
 import * as Sentry from "../sentry";
@@ -200,7 +199,6 @@ export async function onAuthStateChanged(
   const hash = window.location.hash;
   console.debug(`account controller ready`);
   if (authInitialisedAndConnected) {
-    void PSA.show();
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     console.debug(user);
     if (user) {
@@ -232,6 +230,7 @@ export async function onAuthStateChanged(
   URLHandler.loadTestSettingsFromUrl(search);
   URLHandler.loadChallengeFromUrl(search);
   void URLHandler.linkDiscord(hash);
+  AuthEvent.dispatch("authStateUpdated");
 }
 
 export async function signIn(email: string, password: string): Promise<void> {
