@@ -88,14 +88,19 @@ validateWithIndicator(emailInputEl, {
     const educationRegex =
       /@.*(student|education|school|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
     if (educationRegex.test(email)) {
-      return "Some education emails will fail to receive our messages, or disable the account as soon as you graduate. Consider using a personal email address.";
+      return {
+        warning:
+          "Some education emails will fail to receive our messages, or disable the account as soon as you graduate. Consider using a personal email address.",
+      };
     }
 
     const emailHasTypo = TypoList.some((typo) => {
       return email.endsWith(typo);
     });
     if (emailHasTypo) {
-      return "Please check your email address, it may contain a typo.";
+      return {
+        warning: "Please check your email address, it may contain a typo.",
+      };
     }
     return true;
   },
