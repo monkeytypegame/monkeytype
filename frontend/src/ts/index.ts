@@ -49,6 +49,7 @@ import { getDevOptionsModal } from "./utils/async-modules";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
 import "./elements/psa";
+import "./utils/url-handler";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {

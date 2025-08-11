@@ -14,7 +14,6 @@ import * as ResultFilters from "../elements/account/result-filters";
 import * as TagController from "./tag-controller";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as LastSignedOutResultModal from "../modals/last-signed-out-result";
-import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
 import {
@@ -195,8 +194,6 @@ export async function onAuthStateChanged(
   authInitialisedAndConnected: boolean,
   user: UserType | null
 ): Promise<void> {
-  const search = window.location.search;
-  const hash = window.location.hash;
   console.debug(`account controller ready`);
   if (authInitialisedAndConnected) {
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
@@ -226,10 +223,6 @@ export async function onAuthStateChanged(
     navigate();
   }
 
-  URLHandler.loadCustomThemeFromUrl(search);
-  URLHandler.loadTestSettingsFromUrl(search);
-  URLHandler.loadChallengeFromUrl(search);
-  void URLHandler.linkDiscord(hash);
   AuthEvent.dispatch("authStateUpdated");
 }
 

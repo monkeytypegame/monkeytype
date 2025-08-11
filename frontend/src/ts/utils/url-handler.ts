@@ -30,6 +30,7 @@ import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
+import * as AuthEvent from "../observables/auth-event";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -304,3 +305,14 @@ export function loadChallengeFromUrl(getOverride?: string): void {
       console.error(e);
     });
 }
+
+AuthEvent.subscribe((event) => {
+  if (event === "authStateUpdated") {
+    const search = window.location.search;
+    const hash = window.location.hash;
+    loadCustomThemeFromUrl(search);
+    loadTestSettingsFromUrl(search);
+    loadChallengeFromUrl(search);
+    void linkDiscord(hash);
+  }
+});
