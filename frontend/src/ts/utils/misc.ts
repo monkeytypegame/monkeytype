@@ -5,6 +5,8 @@ import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
 import { z } from "zod";
+import { RankAndCount } from "@monkeytype/schemas/users";
+import { roundTo2 } from "@monkeytype/util/numbers";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -778,4 +780,32 @@ export function sanitize<T extends z.ZodTypeAny>(
 export function triggerResize(): void {
   $(window).trigger("resize");
 }
+
+export function formatTopPercentage(lbRank: RankAndCount): string {
+  if (lbRank.rank === undefined) return "-";
+  if (lbRank.rank === 1) return "GOAT";
+  return "Top " + roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+}
+
+export function formatTypingStatsRatio(stats: {
+  startedTests?: number;
+  completedTests?: number;
+}): {
+  completedPercentage: string;
+  restartRatio: string;
+} {
+  if (stats.completedTests === undefined || stats.startedTests === undefined) {
+    return { completedPercentage: "", restartRatio: "" };
+  }
+  return {
+    completedPercentage: Math.floor(
+      (stats.completedTests / stats.startedTests) * 100
+    ).toString(),
+    restartRatio: (
+      (stats.startedTests - stats.completedTests) /
+      stats.completedTests
+    ).toFixed(1),
+  };
+}
+
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
