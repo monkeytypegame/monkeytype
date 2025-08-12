@@ -710,6 +710,30 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
   };
 }
 
+function removeProblems<T extends object | unknown[]>(
+  obj: T,
+  problems: (number | string)[]
+): T | undefined {
+  if (Array.isArray(obj)) {
+    if (problems.length === obj.length) return undefined;
+
+    return obj.filter((_, index) => !problems.includes(index)) as T;
+  } else {
+    const entries = Object.entries(obj);
+    if (problems.length === entries.length) return undefined;
+
+    return Object.fromEntries(
+      entries.filter(([key]) => !problems.includes(key))
+    ) as T;
+  }
+}
+
+function getNestedValue(obj: [] | object, path: string[]): [] | object {
+  //@ts-expect-error can be array or object
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return path.slice(0, -1).reduce((acc, it: string) => acc[it], obj);
+}
+
 /**
  * Sanitize object. Remove invalid values based on the schema.
  * @param schema zod schema
@@ -718,66 +742,74 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
  */
 export function sanitize<T extends z.ZodTypeAny>(
   schema: T,
-  obj: z.infer<T>
+  obj: z.infer<T>,
+  stop: boolean = false
 ): z.infer<T> {
   const validate = schema.safeParse(obj);
 
   if (validate.success) {
     //use the parsed data, not the obj. keys might been removed
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return validate.data;
+    return validate.data as z.infer<T>;
   }
 
-  const errors: Map<string, number[] | undefined> = new Map();
-  for (const error of validate.error.errors) {
-    const element = error.path[0] as string;
-    let val = errors.get(element);
-    if (typeof error.path[1] === "number") {
-      val = [...(val ?? []), error.path[1]];
+  let cleanedObject = deepClone(obj);
+
+  const pathsWithProblems = validate.error.errors.reduce((acc, { path }) => {
+    const parent = path.slice(0, -1).join(".");
+    const element = path.at(-1);
+
+    if (element !== undefined) {
+      acc.set(parent, [...(acc.get(parent) ?? []), element]);
     }
-    errors.set(element, val);
+    return acc;
+  }, new Map<string, Array<string | number>>()) as Map<
+    string,
+    string[] | number[]
+  >;
+
+  //console.log("check ", pathsWithProblems);
+
+  for (const [pathString, problems] of pathsWithProblems.entries()) {
+    if (pathString === "") {
+      cleanedObject =
+        removeProblems(cleanedObject, problems) ??
+        (Array.isArray(cleanedObject) ? [] : {});
+    } else {
+      const path = pathString.split(".");
+      const parent = getNestedValue(cleanedObject, path);
+
+      // oxlint-disable-next-line no-non-null-assertion
+      const valuePath = path[path.length - 1]!;
+
+      //@ts-expect-error can be object or array
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const value = parent[valuePath];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const cleaned = removeProblems(value, problems);
+
+      if (cleaned === undefined) {
+        //@ts-expect-error can be object or array
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete parent[valuePath];
+      } else {
+        //@ts-expect-error can be object or array
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        parent[valuePath] = cleaned;
+      }
+    }
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  const cleanedObject = Object.fromEntries(
-    Object.entries(obj)
-      .map(([key, value]) => {
-        if (!errors.has(key)) {
-          return [key, value];
-        }
-
-        const error = errors.get(key);
-
-        if (
-          Array.isArray(value) &&
-          error !== undefined && //error is not on the array itself
-          error.length < value.length //not all items in the array are invalid
-        ) {
-          //some items of the array are invalid
-          const cleanedArray = value.filter(
-            (_element, index) => !error.includes(index)
-          );
-          const cleanedArrayValidation = schema.safeParse(
-            Object.fromEntries([[key, cleanedArray]])
-          );
-          if (cleanedArrayValidation.success) {
-            return [key, cleanedArray];
-          } else {
-            return [key, undefined];
-          }
-        } else {
-          return [key, undefined];
-        }
-      })
-      .filter((it) => it[1] !== undefined)
-  ) as z.infer<T>;
 
   const cleanValidate = schema.safeParse(cleanedObject);
+
   if (cleanValidate.success) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return cleanValidate.data;
+  } else if (!stop) {
+    //object can still have errors after cleanup, like mandatory values or arrays  with min value, sanitize once more
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return sanitize(schema, cleanedObject, true);
   }
-
   const errorsString = cleanValidate.error.errors
     .map((e) => e.path.join(".") + ": " + e.message)
     .join(", ");

@@ -234,6 +234,212 @@ describe("misc.ts", () => {
     });
   });
   describe("sanitize function", () => {
+    describe("arrays", () => {
+      const numberArraySchema = z.array(z.number());
+      const numbersArrayMin2Schema = numberArraySchema.min(2);
+
+      const testCases: {
+        input: number[];
+        expected: {
+          numbers: number[] | boolean;
+          numbersMin: number[] | boolean;
+        };
+      }[] = [
+        { input: [], expected: { numbers: true, numbersMin: false } },
+        { input: [1, 2], expected: { numbers: true, numbersMin: true } },
+        {
+          input: [1, "2" as any],
+          expected: { numbers: [1], numbersMin: false },
+        },
+        {
+          input: ["one", "two"] as any,
+          expected: { numbers: [], numbersMin: false },
+        },
+      ];
+      it.for(testCases)("number array with $input", ({ input, expected }) => {
+        const sanitized = expect(
+          expected.numbers === false
+            ? () => sanitize(numberArraySchema, input)
+            : sanitize(numberArraySchema, input)
+        );
+
+        if (expected.numbers === false) {
+          sanitized.toThrowError();
+        } else if (expected.numbers === true) {
+          sanitized.toEqual(input);
+        } else {
+          sanitized.toEqual(expected.numbers);
+        }
+      });
+      it.for(testCases)(
+        "number array.min(2) with $input",
+        ({ input, expected }) => {
+          const sanitized = expect(
+            expected.numbersMin === false
+              ? () => sanitize(numbersArrayMin2Schema, input)
+              : sanitize(numbersArrayMin2Schema, input)
+          );
+
+          if (expected.numbersMin === false) {
+            sanitized.toThrowError();
+          } else if (expected.numbersMin === true) {
+            sanitized.toEqual(input);
+          } else {
+            sanitized.toEqual(expected.numbersMin);
+          }
+        }
+      );
+    });
+    describe("objects", () => {
+      const objectSchema = z.object({
+        name: z.string(),
+        age: z.number().positive(),
+        tags: z.array(z.string()),
+        enumArray: z.array(z.enum(["one", "two"])).min(2),
+      });
+      const objectSchemaFullPartial = objectSchema.partial().strip();
+      const objectSchemaWithOptional = objectSchema.partial({
+        tags: true,
+        enumArray: true,
+      });
+
+      const testCases: {
+        input: z.infer<typeof objectSchemaFullPartial>;
+        expected: {
+          mandatory: z.infer<typeof objectSchema> | boolean;
+          partial: z.infer<typeof objectSchemaFullPartial> | boolean;
+          optional: z.infer<typeof objectSchemaWithOptional> | boolean;
+        };
+      }[] = [
+        {
+          input: {},
+          expected: { mandatory: false, partial: true, optional: false },
+        },
+        {
+          input: {
+            name: "Alice",
+            age: 23,
+            tags: ["one", "two"],
+            enumArray: ["one", "two"],
+          },
+          expected: { mandatory: true, partial: true, optional: true },
+        },
+        {
+          input: {
+            name: "Alice",
+            age: 23,
+          },
+          expected: { mandatory: false, partial: true, optional: true },
+        },
+        {
+          input: {
+            name: "Alice",
+            age: "sixty" as any,
+          },
+          expected: {
+            mandatory: false,
+            partial: { name: "Alice" },
+            optional: false,
+          },
+        },
+        {
+          input: {
+            name: "Alice",
+            age: 23,
+            tags: ["one", 2 as any],
+            enumArray: "one" as any,
+          },
+          expected: {
+            mandatory: false,
+            partial: { name: "Alice", age: 23, tags: ["one"] },
+            optional: { name: "Alice", age: 23, tags: ["one"] },
+          },
+        },
+        {
+          input: {
+            name: "Alice",
+            age: 23,
+            tags: [1, 2] as any,
+            enumArray: [1, 2] as any,
+          },
+          expected: {
+            mandatory: false,
+            partial: { name: "Alice", age: 23 },
+            optional: { name: "Alice", age: 23 },
+          },
+        },
+        {
+          input: {
+            name: "Alice",
+            age: 23,
+            extraArray: [],
+            extraObject: {},
+            extraString: "",
+          } as any,
+          expected: {
+            mandatory: false,
+            partial: { name: "Alice", age: 23 },
+            optional: { name: "Alice", age: 23 },
+          },
+        },
+      ];
+
+      it.for(testCases)(
+        "object mandatory with $input",
+        ({ input, expected }) => {
+          const sanitized = expect(
+            expected.mandatory === false
+              ? () => sanitize(objectSchema, input as any)
+              : sanitize(objectSchema, input as any)
+          );
+
+          if (expected.mandatory === false) {
+            sanitized.toThrowError();
+          } else if (expected.mandatory === true) {
+            sanitized.toEqual(input);
+          } else {
+            sanitized.toEqual(expected.mandatory);
+          }
+        }
+      );
+      it.for(testCases)(
+        "object full partial with $input",
+        ({ input, expected }) => {
+          const sanitized = expect(
+            expected.partial === false
+              ? () => sanitize(objectSchemaFullPartial, input as any)
+              : sanitize(objectSchemaFullPartial, input as any)
+          );
+
+          if (expected.partial === false) {
+            sanitized.toThrowError();
+          } else if (expected.partial === true) {
+            sanitized.toEqual(input);
+          } else {
+            sanitized.toEqual(expected.partial);
+          }
+        }
+      );
+      it.for(testCases)(
+        "object optional with $input",
+        ({ input, expected }) => {
+          const sanitized = expect(
+            expected.optional === false
+              ? () => sanitize(objectSchemaWithOptional, input as any)
+              : sanitize(objectSchemaWithOptional, input as any)
+          );
+
+          if (expected.optional === false) {
+            sanitized.toThrowError();
+          } else if (expected.optional === true) {
+            sanitized.toEqual(input);
+          } else {
+            sanitized.toEqual(expected.optional);
+          }
+        }
+      );
+    });
+
     const schema = z
       .object({
         name: z.string(),
@@ -243,69 +449,6 @@ describe("misc.ts", () => {
       })
       .partial()
       .strip();
-
-    it("should return the same object if it is valid", () => {
-      const obj = { name: "Alice", age: 30, tags: ["developer", "coder"] };
-      expect(sanitize(schema, obj)).toEqual(obj);
-    });
-
-    it("should remove properties with invalid values", () => {
-      const obj = { name: "Alice", age: -5, tags: ["developer", "coder"] };
-      expect(sanitize(schema, obj)).toEqual({
-        name: "Alice",
-        tags: ["developer", "coder"],
-        age: undefined,
-      });
-    });
-
-    it("should remove invalid array elements", () => {
-      const obj = {
-        name: "Alice",
-        age: 30,
-        tags: ["developer", 123, "coder"] as any,
-      };
-      expect(sanitize(schema, obj)).toEqual({
-        name: "Alice",
-        age: 30,
-        tags: ["developer", "coder"],
-      });
-    });
-
-    it("should remove invalid array elements with min size", () => {
-      const schema = z
-        .object({
-          name: z.string(),
-          tags: z.array(z.enum(["coder", "developer"])).min(2),
-        })
-        .partial();
-      const obj = {
-        name: "Alice",
-        tags: ["developer", "unknown"] as any,
-      };
-      expect(sanitize(schema, obj)).toEqual({
-        name: "Alice",
-      });
-    });
-
-    it("should remove entire property if all array elements are invalid", () => {
-      const obj = { name: "Alice", age: 30, tags: [123, 456] as any };
-      const sanitized = sanitize(schema, obj);
-      expect(sanitized).toEqual({
-        name: "Alice",
-        age: 30,
-      });
-      expect(sanitized).not.toHaveProperty("tags");
-    });
-
-    it("should remove object properties if they are invalid", () => {
-      const obj = { name: 123 as any, age: 30, tags: ["developer", "coder"] };
-      const sanitized = sanitize(schema, obj);
-      expect(sanitized).toEqual({
-        age: 30,
-        tags: ["developer", "coder"],
-      });
-      expect(sanitized).not.toHaveProperty("name");
-    });
 
     it("should remove nested objects if not valid", () => {
       //GIVEN
@@ -323,6 +466,33 @@ describe("misc.ts", () => {
       //WHEN / THEN
       expect(sanitize(schema, obj)).toEqual({
         name: "Alice",
+      });
+    });
+
+    it("should sanitize nested objects", () => {
+      //GIVEN
+      const nestedSchema = z
+        .object({
+          id: z.string(),
+          nested: schema.partial(),
+        })
+        .partial();
+
+      const obj = {
+        id: "1",
+        nested: {
+          name: "Alice",
+          tags: ["developer", 99, 55] as any,
+          enumArray: ["one", "unknown", 66] as any,
+        },
+      };
+      //WHEN / THEN
+      expect(sanitize(nestedSchema, obj)).toEqual({
+        id: "1",
+        nested: {
+          name: "Alice",
+          tags: ["developer"],
+        },
       });
     });
 
