@@ -734,11 +734,6 @@ export function sanitize<T extends z.ZodTypeAny>(
     let val = errors.get(element);
     if (typeof error.path[1] === "number") {
       val = [...(val ?? []), error.path[1]];
-    } else if (error.path.length > 1) {
-      throw new Error(
-        "sanitize does not support nested objects yet. path: " +
-          error.path.join(".")
-      );
     }
     errors.set(element, val);
   }
