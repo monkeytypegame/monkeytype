@@ -56,7 +56,10 @@ const resultFiltersLS = new LocalStorageWithSchema({
       return defaultResultFilters;
     }
     return mergeWithDefaultFilters(
-      Misc.sanitize(ResultFiltersSchema, unknown as ResultFilters)
+      Misc.sanitize(
+        ResultFiltersSchema.partial().strip(),
+        unknown as ResultFilters
+      )
     );
   },
 });
@@ -927,7 +930,10 @@ $(".group.presetFilterButtons .filterBtns").on(
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   const filter = mergeWithDefaultFilters(
-    Misc.sanitize(ResultFiltersSchema, Misc.deepClone(filterIn))
+    Misc.sanitize(
+      ResultFiltersSchema.partial().strip(),
+      Misc.deepClone(filterIn)
+    )
   );
 
   return filter;
