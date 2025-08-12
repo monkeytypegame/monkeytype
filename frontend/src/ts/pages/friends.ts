@@ -47,10 +47,8 @@ const addFriendModal = new SimpleModal({
 });
 
 async function updatePendingRequests(): Promise<void> {
-  $(".pageFriends .pendingRequests .loading  ").removeClass("hidden");
-  $(".pageFriends .pendingRequests .nodata").addClass("hidden");
+  $(".pageFriends .pendingRequests").addClass("hidden");
   $(".pageFriends .pendingRequests .error").addClass("hidden");
-  $(".pageFriends .pendingRequests table").addClass("hidden");
 
   const result = await Ape.friends.getRequests({
     query: { status: "pending", type: "incoming" },
@@ -62,11 +60,10 @@ async function updatePendingRequests(): Promise<void> {
   } else {
     $(".pageFriends .pendingRequests .error").addClass("hidden");
     if (result.body.data.length === 0) {
-      $(".pageFriends .pendingRequests table").addClass("hidden");
-      $(".pageFriends .pendingRequests .nodata").removeClass("hidden");
+      $(".pageFriends .pendingRequests").addClass("hidden");
     } else {
-      $(".pageFriends .pendingRequests table").removeClass("hidden");
-      $(".pageFriends .pendingRequests .nodata").addClass("hidden");
+      $(".pageFriends .pendingRequests").removeClass("hidden");
+
       const html = result.body.data
         .map(
           (item) => `<tr data-id="${item._id}">
@@ -92,8 +89,6 @@ async function updatePendingRequests(): Promise<void> {
       $(".pageFriends .pendingRequests tbody").html(html);
     }
   }
-
-  $(".pageFriends .pendingRequests .loading").addClass("hidden");
 }
 
 async function fetchFriends(): Promise<void> {
@@ -297,32 +292,27 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
     throw new Error("Cannot find id of target.");
   }
 
-  if (action === "rejected") {
-    const result = await Ape.friends.deleteRequest({
-      params: { id },
-    });
+  const result =
+    action === "rejected"
+      ? await Ape.friends.deleteRequest({
+          params: { id },
+        })
+      : await Ape.friends.updateRequest({
+          params: { id },
+          body: { status: action as "accepted" | "blocked" },
+        });
 
-    if (result.status !== 200) {
-      Notifications.add(
-        `Cannot reject friend request: ${result.body.message}`,
-        -1
-      );
-    } else {
-      e.target.parentElement?.parentElement?.remove();
-    }
+  if (result.status !== 200) {
+    Notifications.add(
+      `Cannot update friend request: ${result.body.message}`,
+      -1
+    );
   } else {
-    const result = await Ape.friends.updateRequest({
-      params: { id },
-      body: { status: action as "accepted" | "blocked" },
-    });
-
-    if (result.status !== 200) {
-      Notifications.add(
-        `Cannot update friend request: ${result.body.message}`,
-        -1
-      );
-    } else {
-      e.target.parentElement?.parentElement?.remove();
+    const row = e.target.parentElement?.parentElement;
+    const count = row?.parentElement?.childElementCount;
+    row?.remove();
+    if (count === 1) {
+      $(".pageFriends .pendingRequests").addClass("hidden");
     }
   }
 });
