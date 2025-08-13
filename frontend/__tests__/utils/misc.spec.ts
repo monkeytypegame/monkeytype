@@ -12,8 +12,6 @@ import {
 } from "../../src/ts/utils/strings";
 import { Language } from "@monkeytype/schemas/languages";
 
-//todo this file is in the wrong place
-
 describe("misc.ts", () => {
   describe("getLanguageDisplayString", () => {
     it("should return correctly formatted strings", () => {
@@ -290,25 +288,6 @@ describe("misc.ts", () => {
       });
     });
 
-    it("should throw on nested objects", () => {
-      const schema = z
-        .object({
-          name: z.string(),
-          info: z.object({ age: z.number() }).partial(),
-        })
-        .partial();
-      const obj = {
-        name: "Alice",
-        info: { age: "42" as any },
-      };
-
-      expect(() => {
-        sanitize(schema, obj);
-      }).toThrowError(
-        "sanitize does not support nested objects yet. path: info.age"
-      );
-    });
-
     it("should remove entire property if all array elements are invalid", () => {
       const obj = { name: "Alice", age: 30, tags: [123, 456] as any };
       const sanitized = sanitize(schema, obj);
@@ -327,6 +306,25 @@ describe("misc.ts", () => {
         tags: ["developer", "coder"],
       });
       expect(sanitized).not.toHaveProperty("name");
+    });
+
+    it("should remove nested objects if not valid", () => {
+      //GIVEN
+      const schema = z
+        .object({
+          name: z.string(),
+          info: z.object({ age: z.number() }).partial(),
+        })
+        .partial();
+
+      const obj = {
+        name: "Alice",
+        info: { age: "42" as any },
+      };
+      //WHEN / THEN
+      expect(sanitize(schema, obj)).toEqual({
+        name: "Alice",
+      });
     });
 
     it("should strip extra keys", () => {
