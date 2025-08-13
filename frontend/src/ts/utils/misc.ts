@@ -742,75 +742,64 @@ function getNestedValue(obj: [] | object, path: string[]): [] | object {
  */
 export function sanitize<T extends z.ZodTypeAny>(
   schema: T,
-  obj: z.infer<T>,
-  stop: boolean = false
+  obj: z.infer<T>
 ): z.infer<T> {
-  const validate = schema.safeParse(obj);
-
-  if (validate.success) {
-    //use the parsed data, not the obj. keys might been removed
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return validate.data as z.infer<T>;
-  }
-
+  const maxRounds = 2;
+  let validate;
   let cleanedObject = deepClone(obj);
 
-  const pathsWithProblems = validate.error.errors.reduce((acc, { path }) => {
-    const parent = path.slice(0, -1).join(".");
-    const element = path.at(-1);
+  for (let round = 0; round <= maxRounds; round++) {
+    validate = schema.safeParse(cleanedObject);
 
-    if (element !== undefined) {
-      acc.set(parent, [...(acc.get(parent) ?? []), element]);
+    if (validate.success) {
+      //use the parsed data, not the obj. keys might been removed
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return validate.data as z.infer<T>;
     }
-    return acc;
-  }, new Map<string, Array<string | number>>()) as Map<
-    string,
-    string[] | number[]
-  >;
+    if (round === maxRounds) {
+      //exit loop and throw error
+      break;
+    }
+    const pathsWithProblems = validate.error.errors.reduce((acc, { path }) => {
+      const parent = path.slice(0, -1).join(".");
+      const element = path.at(-1);
 
-  //console.log("check ", pathsWithProblems);
+      if (element !== undefined) {
+        acc.set(parent, [...(acc.get(parent) ?? []), element]);
+      }
+      return acc;
+    }, new Map<string, Array<string | number>>()) as Map<
+      string,
+      string[] | number[]
+    >;
 
-  for (const [pathString, problems] of pathsWithProblems.entries()) {
-    if (pathString === "") {
-      cleanedObject =
-        removeProblems(cleanedObject, problems) ??
-        (Array.isArray(cleanedObject) ? [] : {});
-    } else {
-      const path = pathString.split(".");
-      const parent = getNestedValue(cleanedObject, path);
-
-      // oxlint-disable-next-line no-non-null-assertion
-      const valuePath = path[path.length - 1]!;
-
-      //@ts-expect-error can be object or array
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const value = parent[valuePath];
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const cleaned = removeProblems(value, problems);
-
-      if (cleaned === undefined) {
-        //@ts-expect-error can be object or array
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete parent[valuePath];
+    for (const [pathString, problems] of pathsWithProblems.entries()) {
+      if (pathString === "") {
+        cleanedObject =
+          removeProblems(cleanedObject, problems) ??
+          (Array.isArray(cleanedObject) ? [] : {});
       } else {
+        const path = pathString.split(".");
+        const parent = getNestedValue(cleanedObject, path);
+        const valuePath = path.at(-1);
+
         //@ts-expect-error can be object or array
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        parent[valuePath] = cleaned;
+        const cleaned = removeProblems(parent[valuePath], problems);
+
+        if (cleaned === undefined) {
+          //@ts-expect-error can be object or array
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+          delete parent[valuePath];
+        } else {
+          //@ts-expect-error can be object or array
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          parent[valuePath] = cleaned;
+        }
       }
     }
   }
-
-  const cleanValidate = schema.safeParse(cleanedObject);
-
-  if (cleanValidate.success) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return cleanValidate.data;
-  } else if (!stop) {
-    //object can still have errors after cleanup, like mandatory values or arrays  with min value, sanitize once more
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return sanitize(schema, cleanedObject, true);
-  }
-  const errorsString = cleanValidate.error.errors
+  const errorsString = validate?.error.errors
     .map((e) => e.path.join(".") + ": " + e.message)
     .join(", ");
   throw new Error("unable to sanitize: " + errorsString);

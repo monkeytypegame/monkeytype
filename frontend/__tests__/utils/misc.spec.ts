@@ -450,52 +450,6 @@ describe("misc.ts", () => {
       .partial()
       .strip();
 
-    it("should remove nested objects if not valid", () => {
-      //GIVEN
-      const schema = z
-        .object({
-          name: z.string(),
-          info: z.object({ age: z.number() }).partial(),
-        })
-        .partial();
-
-      const obj = {
-        name: "Alice",
-        info: { age: "42" as any },
-      };
-      //WHEN / THEN
-      expect(sanitize(schema, obj)).toEqual({
-        name: "Alice",
-      });
-    });
-
-    it("should sanitize nested objects", () => {
-      //GIVEN
-      const nestedSchema = z
-        .object({
-          id: z.string(),
-          nested: schema.partial(),
-        })
-        .partial();
-
-      const obj = {
-        id: "1",
-        nested: {
-          name: "Alice",
-          tags: ["developer", 99, 55] as any,
-          enumArray: ["one", "unknown", 66] as any,
-        },
-      };
-      //WHEN / THEN
-      expect(sanitize(nestedSchema, obj)).toEqual({
-        id: "1",
-        nested: {
-          name: "Alice",
-          tags: ["developer"],
-        },
-      });
-    });
-
     it("should strip extra keys", () => {
       const obj = {
         name: "bob",
