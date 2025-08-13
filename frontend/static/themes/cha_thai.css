@@ -1,0 +1,12 @@
+:root {
+  --bg-color: #f9efe5; /* พื้นหลัง Cha Thai */
+  --main-color: #c97135; /* สีหลัก เช่น ปุ่ม, highlight */
+  --caret-color: #5a2a00; /* สีเคอร์เซอร์ */
+  --sub-color: #ab6526; /* สีรอง */
+  --sub-alt-color: #f4e3d0; /* สีรองอ่อน */
+  --text-color: #5a2a00; /* สีข้อความหลัก */
+  --error-color: #e51400; /* สี error */
+  --error-extra-color: #e9a700; /* สี warning */
+  --colorful-error-color: #e51400; /* error vivid */
+  --colorful-error-extra-color: #f28500; /* accent warning */
+}

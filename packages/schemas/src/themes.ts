@@ -27,6 +27,7 @@ export const ThemeNameSchema = z.enum(
     "camping",
     "carbon",
     "catppuccin",
+    "cha_thai",
     "chaos_theory",
     "cheesecake",
     "cherry_blossom",
