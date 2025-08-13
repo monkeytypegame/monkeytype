@@ -582,6 +582,9 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   fontSize: {
     input: {
       inputValueConvert: Number,
+      validation: {
+        isValid: async (number: number) => number < 100,
+      },
     },
   },
   fontFamily: {

@@ -36,6 +36,18 @@ export type Validation<T> = {
   /** Resets the value to the current config if empty */
   resetIfEmpty?: false;
 };
+
+// oxlint-disable-next-line no-explicit-any
+export function debounceIfNeeded<T extends (...args: any[]) => any>(
+  delay: number,
+  callback: T
+): T | debounce<T> {
+  if (delay === undefined || delay <= 0) {
+    return callback;
+  }
+  return debounce(delay, callback);
+}
+
 /**
  * Create input handler for validated input element.
  * the `callback` is called for each validation state change, including "checking".
@@ -51,7 +63,7 @@ export function createInputEventHandler<T>(
 ): (e: Event) => Promise<void> {
   let callIsValid =
     validation.isValid !== undefined
-      ? debounce(
+      ? debounceIfNeeded(
           validation.debounceDelay ?? 100,
           async (
             originalInput: HTMLInputElement,
@@ -105,7 +117,7 @@ export function createInputEventHandler<T>(
       return;
     }
 
-    callIsValid(originalInput, currentValue, checkValue as T);
+    await callIsValid(originalInput, currentValue, checkValue as T);
     //call original handler if defined
     originalInput.oninput?.(e);
   };

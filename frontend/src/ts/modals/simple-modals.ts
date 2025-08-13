@@ -247,6 +247,7 @@ list.updateEmail = new SimpleModal({
         isValid: async (currentValue, thisPopup) =>
           currentValue === thisPopup.inputs?.[1]?.currentValue() ||
           "Emails don't match",
+        debounceDelay: 0,
       },
     },
   ],
