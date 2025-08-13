@@ -5,6 +5,7 @@ import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
 import { UserEmailSchema, UserNameSchema } from "@monkeytype/schemas/users";
 import { validateWithIndicator } from "../elements/input-validation";
+import { z } from "zod";
 
 let registerForm: {
   name?: string;
@@ -134,6 +135,7 @@ const passwordInputEl = document.querySelector(
   ".page.pageLogin .register.side .passwordInput"
 ) as HTMLInputElement;
 validateWithIndicator(passwordInputEl, {
+  schema: z.string().min(6), //firebase requires min 6 chars, we apply stricter rules on prod
   isValid: async (password: string) => {
     if (!Misc.isDevEnvironment() && !Misc.isPasswordStrong(password)) {
       if (password.length < 8) {
