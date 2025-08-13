@@ -266,9 +266,9 @@ describe("misc.ts", () => {
         if (expected.numbers === false) {
           sanitized.toThrowError();
         } else if (expected.numbers === true) {
-          sanitized.toEqual(input);
+          sanitized.toStrictEqual(input);
         } else {
-          sanitized.toEqual(expected.numbers);
+          sanitized.toStrictEqual(expected.numbers);
         }
       });
       it.for(testCases)(
@@ -283,9 +283,9 @@ describe("misc.ts", () => {
           if (expected.numbersMin === false) {
             sanitized.toThrowError();
           } else if (expected.numbersMin === true) {
-            sanitized.toEqual(input);
+            sanitized.toStrictEqual(input);
           } else {
-            sanitized.toEqual(expected.numbersMin);
+            sanitized.toStrictEqual(expected.numbersMin);
           }
         }
       );
@@ -396,9 +396,9 @@ describe("misc.ts", () => {
           if (expected.mandatory === false) {
             sanitized.toThrowError();
           } else if (expected.mandatory === true) {
-            sanitized.toEqual(input);
+            sanitized.toStrictEqual(input);
           } else {
-            sanitized.toEqual(expected.mandatory);
+            sanitized.toStrictEqual(expected.mandatory);
           }
         }
       );
@@ -414,9 +414,9 @@ describe("misc.ts", () => {
           if (expected.partial === false) {
             sanitized.toThrowError();
           } else if (expected.partial === true) {
-            sanitized.toEqual(input);
+            sanitized.toStrictEqual(input);
           } else {
-            sanitized.toEqual(expected.partial);
+            sanitized.toStrictEqual(expected.partial);
           }
         }
       );
@@ -432,9 +432,139 @@ describe("misc.ts", () => {
           if (expected.optional === false) {
             sanitized.toThrowError();
           } else if (expected.optional === true) {
-            sanitized.toEqual(input);
+            sanitized.toStrictEqual(input);
           } else {
-            sanitized.toEqual(expected.optional);
+            sanitized.toStrictEqual(expected.optional);
+          }
+        }
+      );
+    });
+
+    describe("nested", () => {
+      const itemSchema = z.object({
+        name: z.string(),
+        enumArray: z.array(z.enum(["one", "two"])).min(2),
+      });
+      const nestedSchema = z.object({
+        nested: z.array(itemSchema),
+      });
+
+      const nestedSchemaFullPartial = z
+        .object({
+          nested: z.array(itemSchema.partial()),
+        })
+        .partial();
+      const nestedSchemaWithMin2Array = z.object({
+        nested: z.array(itemSchema).min(2),
+      });
+
+      const testCases: {
+        input: z.infer<typeof nestedSchema>;
+        expected: {
+          mandatory: z.infer<typeof nestedSchema> | boolean;
+          partial: z.infer<typeof nestedSchemaFullPartial> | boolean;
+          minArray: z.infer<typeof nestedSchemaWithMin2Array> | boolean;
+        };
+      }[] = [
+        {
+          input: {} as any,
+          expected: {
+            mandatory: false,
+            partial: true,
+            minArray: false,
+          },
+        },
+        {
+          input: {
+            nested: [
+              { name: "Alice", enumArray: ["one", "two"] },
+              { name: "Bob", enumArray: ["one", "two"] },
+            ],
+          },
+          expected: {
+            mandatory: true,
+            partial: true,
+            minArray: true,
+          },
+        },
+        {
+          input: {
+            nested: [
+              { name: "Alice", enumArray: ["one", "two"] },
+              { name: "Bob" } as any,
+            ],
+          },
+          expected: {
+            mandatory: {
+              nested: [{ name: "Alice", enumArray: ["one", "two"] }],
+            },
+            partial: true,
+            minArray: false,
+          },
+        },
+        {
+          input: {
+            nested: [
+              { enumArray: ["one", "two"] } as any,
+              { name: "Bob" } as any,
+            ],
+          },
+          expected: {
+            mandatory: false,
+            partial: true,
+            minArray: false,
+          },
+        },
+      ];
+
+      it.for(testCases)(
+        "nested mandatory with $input",
+        ({ input, expected }) => {
+          const sanitized = expect(
+            expected.mandatory === false
+              ? () => sanitize(nestedSchema, input as any)
+              : sanitize(nestedSchema, input as any)
+          );
+
+          if (expected.mandatory === false) {
+            sanitized.toThrowError();
+          } else if (expected.mandatory === true) {
+            sanitized.toStrictEqual(input);
+          } else {
+            sanitized.toStrictEqual(expected.mandatory);
+          }
+        }
+      );
+      it.for(testCases)("nested partial with $input", ({ input, expected }) => {
+        const sanitized = expect(
+          expected.partial === false
+            ? () => sanitize(nestedSchemaFullPartial, input as any)
+            : sanitize(nestedSchemaFullPartial, input as any)
+        );
+
+        if (expected.partial === false) {
+          sanitized.toThrowError();
+        } else if (expected.partial === true) {
+          sanitized.toStrictEqual(input);
+        } else {
+          sanitized.toStrictEqual(expected.partial);
+        }
+      });
+      it.for(testCases)(
+        "nested array min(2) with $input",
+        ({ input, expected }) => {
+          const sanitized = expect(
+            expected.minArray === false
+              ? () => sanitize(nestedSchemaWithMin2Array, input as any)
+              : sanitize(nestedSchemaWithMin2Array, input as any)
+          );
+
+          if (expected.minArray === false) {
+            sanitized.toThrowError();
+          } else if (expected.minArray === true) {
+            sanitized.toStrictEqual(input);
+          } else {
+            sanitized.toStrictEqual(expected.minArray);
           }
         }
       );

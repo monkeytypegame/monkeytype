@@ -744,23 +744,23 @@ export function sanitize<T extends z.ZodTypeAny>(
   schema: T,
   obj: z.infer<T>
 ): z.infer<T> {
-  const maxRounds = 2;
-  let validate;
-  let cleanedObject = deepClone(obj);
+  const maxAttempts = 2;
+  let result;
+  let current = deepClone(obj);
 
-  for (let round = 0; round <= maxRounds; round++) {
-    validate = schema.safeParse(cleanedObject);
+  for (let attempt = 0; attempt <= maxAttempts; attempt++) {
+    result = schema.safeParse(current);
 
-    if (validate.success) {
+    if (result.success) {
       //use the parsed data, not the obj. keys might been removed
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return validate.data as z.infer<T>;
+      return result.data as z.infer<T>;
     }
-    if (round === maxRounds) {
+    if (attempt === maxAttempts) {
       //exit loop and throw error
       break;
     }
-    const pathsWithProblems = validate.error.errors.reduce((acc, { path }) => {
+    const pathsWithProblems = result.error.errors.reduce((acc, { path }) => {
       const parent = path.slice(0, -1).join(".");
       const element = path.at(-1);
 
@@ -769,38 +769,38 @@ export function sanitize<T extends z.ZodTypeAny>(
       }
       return acc;
     }, new Map<string, Array<string | number>>()) as Map<
-      string,
-      string[] | number[]
+      string, //parent path
+      string[] | number[] //childs with problems
     >;
 
     for (const [pathString, problems] of pathsWithProblems.entries()) {
       if (pathString === "") {
-        cleanedObject =
-          removeProblems(cleanedObject, problems) ??
-          (Array.isArray(cleanedObject) ? [] : {});
+        current =
+          removeProblems(current, problems) ??
+          (Array.isArray(current) ? [] : {});
       } else {
         const path = pathString.split(".");
-        const parent = getNestedValue(cleanedObject, path);
-        const valuePath = path.at(-1);
+        const parent = getNestedValue(current, path);
+        const key = path.at(-1) as string;
 
         //@ts-expect-error can be object or array
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const cleaned = removeProblems(parent[valuePath], problems);
+        const cleaned = removeProblems(parent[key], problems);
 
         if (cleaned === undefined) {
           //@ts-expect-error can be object or array
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-          delete parent[valuePath];
+          delete parent[key];
         } else {
           //@ts-expect-error can be object or array
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          parent[valuePath] = cleaned;
+          parent[key] = cleaned;
         }
       }
     }
   }
-  const errorsString = validate?.error.errors
-    .map((e) => e.path.join(".") + ": " + e.message)
+  const errorsString = result?.error.errors
+    .map((e) => `${e.path.join(".")}: ${e.message}`)
     .join(", ");
   throw new Error("unable to sanitize: " + errorsString);
 }
