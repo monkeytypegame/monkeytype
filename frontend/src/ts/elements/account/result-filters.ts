@@ -18,6 +18,7 @@ import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
 import { Snapshot, SnapshotUserTag } from "../../constants/default-snapshot";
 import { LanguageList } from "../../constants/languages";
+import { sanitize } from "../../utils/sanitize";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>
@@ -56,10 +57,7 @@ const resultFiltersLS = new LocalStorageWithSchema({
       return defaultResultFilters;
     }
     return mergeWithDefaultFilters(
-      Misc.sanitize(
-        ResultFiltersSchema.partial().strip(),
-        unknown as ResultFilters
-      )
+      sanitize(ResultFiltersSchema.partial().strip(), unknown as ResultFilters)
     );
   },
 });
@@ -930,10 +928,7 @@ $(".group.presetFilterButtons .filterBtns").on(
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   const filter = mergeWithDefaultFilters(
-    Misc.sanitize(
-      ResultFiltersSchema.partial().strip(),
-      Misc.deepClone(filterIn)
-    )
+    sanitize(ResultFiltersSchema.partial().strip(), Misc.deepClone(filterIn))
   );
 
   return filter;
