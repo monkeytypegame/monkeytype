@@ -4,7 +4,6 @@ import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
-import { z } from "zod";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -708,80 +707,6 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
     // no running instances, run immediately
     return run(...args);
   };
-}
-
-/**
- * Sanitize object. Remove invalid values based on the schema.
- * @param schema zod schema
- * @param obj object
- * @returns sanitized object
- */
-export function sanitize<T extends z.ZodTypeAny>(
-  schema: T,
-  obj: z.infer<T>
-): z.infer<T> {
-  const validate = schema.safeParse(obj);
-
-  if (validate.success) {
-    //use the parsed data, not the obj. keys might been removed
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return validate.data;
-  }
-
-  const errors: Map<string, number[] | undefined> = new Map();
-  for (const error of validate.error.errors) {
-    const element = error.path[0] as string;
-    let val = errors.get(element);
-    if (typeof error.path[1] === "number") {
-      val = [...(val ?? []), error.path[1]];
-    }
-    errors.set(element, val);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  const cleanedObject = Object.fromEntries(
-    Object.entries(obj)
-      .map(([key, value]) => {
-        if (!errors.has(key)) {
-          return [key, value];
-        }
-
-        const error = errors.get(key);
-
-        if (
-          Array.isArray(value) &&
-          error !== undefined && //error is not on the array itself
-          error.length < value.length //not all items in the array are invalid
-        ) {
-          //some items of the array are invalid
-          const cleanedArray = value.filter(
-            (_element, index) => !error.includes(index)
-          );
-          const cleanedArrayValidation = schema.safeParse(
-            Object.fromEntries([[key, cleanedArray]])
-          );
-          if (cleanedArrayValidation.success) {
-            return [key, cleanedArray];
-          } else {
-            return [key, undefined];
-          }
-        } else {
-          return [key, undefined];
-        }
-      })
-      .filter((it) => it[1] !== undefined)
-  ) as z.infer<T>;
-
-  const cleanValidate = schema.safeParse(cleanedObject);
-  if (cleanValidate.success) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return cleanValidate.data;
-  }
-
-  const errorsString = cleanValidate.error.errors
-    .map((e) => e.path.join(".") + ": " + e.message)
-    .join(", ");
-  throw new Error("unable to sanitize: " + errorsString);
 }
 
 export function triggerResize(): void {
