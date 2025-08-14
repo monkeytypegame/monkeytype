@@ -105,7 +105,7 @@ validateWithIndicator(emailInputEl, {
     }
     return true;
   },
-  debounceDelay: 10,
+  debounceDelay: 0,
   callback: (result) => {
     if (result.status === "success") {
       //re-validate the verify email
@@ -123,7 +123,7 @@ validateWithIndicator(emailVerifyInputEl, {
       ? true
       : "verify email not matching email";
   },
-  debounceDelay: 10,
+  debounceDelay: 0,
   callback: (result) => {
     registerForm.email =
       result.status === "success" ? emailInputEl.value : undefined;
@@ -148,7 +148,7 @@ validateWithIndicator(passwordInputEl, {
     }
     return true;
   },
-  debounceDelay: 10,
+  debounceDelay: 0,
   callback: (result) => {
     if (result.status === "success") {
       //re-validate the verify password
@@ -166,7 +166,7 @@ validateWithIndicator(passwordVerifyInputEl, {
       ? true
       : "verify password not matching password";
   },
-  debounceDelay: 10,
+  debounceDelay: 0,
   callback: (result) => {
     registerForm.password =
       result.status === "success" ? passwordInputEl.value : undefined;
