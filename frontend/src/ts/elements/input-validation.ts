@@ -10,7 +10,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 
 export type ValidationResult = {
-  status: "checking" | "success" | "failed";
+  status: "checking" | "success" | "failed" | "warning";
   errorMessage?: string;
 };
 
@@ -28,7 +28,7 @@ export type Validation<T> = {
    * @param thisPopup the current modal
    * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
    */
-  isValid?: (value: T) => Promise<true | string>;
+  isValid?: (value: T) => Promise<true | string | { warning: string }>;
 
   /** custom debounce delay for `isValid` call. defaults to 100 */
   debounceDelay?: number;
@@ -36,6 +36,18 @@ export type Validation<T> = {
   /** Resets the value to the current config if empty */
   resetIfEmpty?: false;
 };
+
+// oxlint-disable-next-line no-explicit-any
+export function debounceIfNeeded<T extends (...args: any[]) => any>(
+  delay: number,
+  callback: T
+): T | debounce<T> {
+  if (delay <= 0) {
+    return callback;
+  }
+  return debounce(delay, callback);
+}
+
 /**
  * Create input handler for validated input element.
  * the `callback` is called for each validation state change, including "checking".
@@ -51,8 +63,8 @@ export function createInputEventHandler<T>(
 ): (e: Event) => Promise<void> {
   let callIsValid =
     validation.isValid !== undefined
-      ? debounce(
-          validation.debounceDelay ?? 100,
+      ? debounceIfNeeded(
+          validation.debounceDelay ?? 250,
           async (
             originalInput: HTMLInputElement,
             currentValue: string,
@@ -67,7 +79,17 @@ export function createInputEventHandler<T>(
             if (result === true) {
               callback({ status: "success" });
             } else {
-              callback({ status: "failed", errorMessage: result });
+              if (typeof result === "object" && "warning" in result) {
+                callback({
+                  status: "warning",
+                  errorMessage: result.warning,
+                });
+              } else {
+                callback({
+                  status: "failed",
+                  errorMessage: result,
+                });
+              }
             }
           }
         )
@@ -105,7 +127,7 @@ export function createInputEventHandler<T>(
       return;
     }
 
-    callIsValid(originalInput, currentValue, checkValue as T);
+    await callIsValid(originalInput, currentValue, checkValue as T);
     //call original handler if defined
     originalInput.oninput?.(e);
   };
@@ -140,6 +162,10 @@ export function validateWithIndicator<T>(
       icon: "fa-times",
       level: -1,
     },
+    warning: {
+      icon: "fa-exclamation-triangle",
+      level: 1,
+    },
     checking: {
       icon: "fa-circle-notch",
       spinIcon: true,
@@ -147,7 +173,7 @@ export function validateWithIndicator<T>(
     },
   });
   const callback = (result: ValidationResult): void => {
-    if (result.status === "failed") {
+    if (result.status === "failed" || result.status === "warning") {
       indicator.show(result.status, result.errorMessage);
     } else {
       indicator.show(result.status);
