@@ -1,5 +1,5 @@
+import { afterAll, beforeAll, afterEach, vi } from "vitest";
 import { Collection, Db, MongoClient, WithId } from "mongodb";
-import { afterAll, beforeAll, afterEach } from "vitest";
 import { setupCommonMocks } from "../setup-common-mocks";
 import { getConnection } from "../../src/init/redis";
 

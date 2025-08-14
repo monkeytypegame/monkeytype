@@ -1,3 +1,4 @@
+import { describe, it, expect, afterEach, vi } from "vitest";
 import { canSetConfigWithCurrentFunboxes } from "../../../src/ts/test/funbox/funbox-validation";
 
 import * as Notifications from "../../../src/ts/elements/notifications";

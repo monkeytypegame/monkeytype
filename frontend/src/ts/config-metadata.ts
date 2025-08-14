@@ -512,6 +512,7 @@ export const configMetadata: ConfigMetadataObject = {
   tapeMargin: {
     icon: "fa-tape",
     displayString: "tape margin",
+    triggerResize: true,
     changeRequiresRestart: false,
   },
   smoothLineScroll: {

@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from "vitest";
 import _ from "lodash";
 import * as UserDAL from "../../../src/dal/user";
 import * as UserTestData from "../../__testData__/users";

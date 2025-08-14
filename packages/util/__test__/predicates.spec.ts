@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { not } from "../src/predicates";
 
 describe("predicates", () => {

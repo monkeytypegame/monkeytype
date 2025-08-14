@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import * as IpAddresses from "../../src/ts/utils/ip-addresses";
 
 const IP_GENERATE_COUNT = 1000;
