@@ -170,14 +170,12 @@ export function splitIntoCharacters(s: string): string[] {
 
 /**
  * Cache for word direction to avoid repeated calculations per word
- * clear the cache when language settings change
+ * Keyed by the stripped core of the word; can be manually cleared when needed
  */
 let wordDirectionCache: Map<string, boolean> = new Map();
-let lastLanguageRTL: boolean | null = null;
 
 export function clearWordDirectionCache(): void {
   wordDirectionCache.clear();
-  lastLanguageRTL = null;
 }
 
 /**
@@ -195,7 +193,7 @@ export function clearWordDirectionCache(): void {
  * hasRTLCharacters("123") // false
  * hasRTLCharacters("") // false
  */
-export function hasRTLCharacters(word: string): boolean {
+function hasRTLCharacters(word: string): boolean {
   if (!word || word.length === 0) {
     return false;
   }
@@ -213,11 +211,6 @@ export function getWordDirection(
   languageRTL: boolean
 ): boolean {
   if (word === undefined || word.length === 0) return languageRTL;
-  // clear cache if language direction changed
-  if (lastLanguageRTL !== languageRTL) {
-    clearWordDirectionCache();
-    lastLanguageRTL = languageRTL;
-  }
 
   // Strip leading/trailing punctuation and whitespace so attached opposite-direction
   // punctuation like "word؟" or "،word" doesn't flip the direction detection
@@ -226,7 +219,7 @@ export function getWordDirection(
   if (core.length === 0) return languageRTL;
 
   // with the stripped core to avoid duplicating entries for variants like "word" vs "word؟"
-  const cacheKey = `${core}:${languageRTL}`;
+  const cacheKey = `${core}`;
   const cached = wordDirectionCache.get(cacheKey);
   if (cached !== undefined) return cached;
 
