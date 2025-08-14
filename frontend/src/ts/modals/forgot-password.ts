@@ -3,7 +3,7 @@ import AnimatedModal from "../utils/animated-modal";
 import Ape from "../ape/index";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
-import { z } from "zod";
+import { UserEmailSchema } from "@monkeytype/schemas/users";
 
 export function show(): void {
   if (!CaptchaController.isCaptchaAvailable()) {
@@ -47,9 +47,7 @@ async function submit(): Promise<void> {
     return;
   }
 
-  const emailSchema = z.string().email();
-
-  const validation = emailSchema.safeParse(email);
+  const validation = UserEmailSchema.safeParse(email);
   if (!validation.success) {
     Notifications.add("Please enter a valid email address");
     CaptchaController.reset("forgotPasswordModal");
