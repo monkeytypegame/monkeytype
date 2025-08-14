@@ -167,6 +167,19 @@ export function splitIntoCharacters(s: string): string[] {
 
   return result;
 }
+
+/**
+ * Cache for word direction to avoid repeated calculations per word
+ * clear the cache when language settings change
+ */
+let wordDirectionCache: Map<string, boolean> = new Map();
+let lastLanguageRTL: boolean | null = null;
+
+export function clearWordDirectionCache(): void {
+  wordDirectionCache.clear();
+  lastLanguageRTL = null;
+}
+
 /**
  * Detect if a word contains RTL (Right-to-Left) characters.
  * This is for mixed language scenarios where individual words may have different directions.
@@ -200,7 +213,26 @@ export function getWordDirection(
   languageRTL: boolean
 ): boolean {
   if (word === undefined || word.length === 0) return languageRTL;
-  // if only punctuation or symbols, use main language direction
-  if (/^[\p{P}\p{S}]+$/u.test(word)) return languageRTL;
-  return hasRTLCharacters(word);
+  // clear cache if language direction changed
+  if (lastLanguageRTL !== languageRTL) {
+    clearWordDirectionCache();
+    lastLanguageRTL = languageRTL;
+  }
+
+  // Strip leading/trailing punctuation and whitespace so attached opposite-direction
+  // punctuation like "word؟" or "،word" doesn't flip the direction detection
+  // and if only punctuation/symbols/whitespace, use main language direction
+  const core = word.replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "");
+  if (core.length === 0) return languageRTL;
+
+  // with the stripped core to avoid duplicating entries for variants like "word" vs "word؟"
+  const cacheKey = `${core}:${languageRTL}`;
+  const cached = wordDirectionCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
+  // cache based on the core letters only
+  const result = hasRTLCharacters(core);
+  wordDirectionCache.set(cacheKey, result);
+
+  return result;
 }
