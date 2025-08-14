@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { hexToRgb } from "../../src/ts/utils/colors";
 
 describe("colors.ts", () => {

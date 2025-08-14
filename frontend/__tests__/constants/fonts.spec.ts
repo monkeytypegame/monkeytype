@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { Fonts } from "../../src/ts/constants/fonts";
 import { readdirSync } from "fs";
 const ignoredFonts = new Set([

@@ -1,3 +1,4 @@
+import { describe, it, expect, afterAll, vi } from "vitest";
 import { configMetadata } from "../../src/ts/config-metadata";
 import * as Config from "../../src/ts/config";
 import { ConfigKey, Config as ConfigType } from "@monkeytype/schemas/configs";
