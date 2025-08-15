@@ -48,7 +48,7 @@ function revert(): void {
 let firefoxClipboardNotificatoinShown = false;
 
 /**
- * Prepares UI, generates screenshot canvas using html2canvas, and reverts UI changes.
+ * Prepares UI, generates screenshot canvas using modern-screenshot, and reverts UI changes.
  * Returns the generated canvas element or null on failure.
  * Handles its own loader and basic error notifications for canvas generation.
  */
