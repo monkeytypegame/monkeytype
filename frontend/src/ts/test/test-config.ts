@@ -319,10 +319,11 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
 });
 
 AuthEvent.subscribe((event) => {
-  if (event.type === "snapshotUpdated" && event.data.isInitial) {
-    showFavoriteQuoteLength();
-  }
-  if (event.type === "authStateChanged" && !event.data.isUserSignedIn) {
-    hideFavoriteQuoteLength();
+  if (event.type === "authStateChanged") {
+    if (!event.data.isUserSignedIn) {
+      hideFavoriteQuoteLength();
+    } else {
+      showFavoriteQuoteLength();
+    }
   }
 });
