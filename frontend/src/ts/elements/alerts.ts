@@ -394,6 +394,13 @@ AuthEvent.subscribe((event) => {
     const snapshot = DB.getSnapshot();
     setNotificationBubbleVisible((snapshot?.inboxUnreadSize ?? 0) > 0);
   }
+  if (event.type === "authStateChanged" && !event.data.isUserSignedIn) {
+    setNotificationBubbleVisible(false);
+    accountAlerts = [];
+    mailToMarkRead = [];
+    mailToDelete = [];
+    $("#alertsPopup .accountAlerts .list").empty();
+  }
 });
 
 const modal = new AnimatedModal({
