@@ -9,6 +9,7 @@ import AnimatedModal from "../utils/animated-modal";
 import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { areUnsortedArraysEqual } from "../utils/arrays";
+import * as ShareTestSettingsPopup from "./share-test-settings";
 
 function update(): void {
   const el = $("#mobileTestConfigModal");
@@ -176,6 +177,12 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     UpdateConfig.setNumbers(!Config.numbers);
     ManualRestart.set();
     TestLogic.restart();
+  });
+
+  modalEl.querySelector(".shareButton")?.addEventListener("click", () => {
+    ShareTestSettingsPopup.show({
+      modalChain: modal,
+    });
   });
 
   const buttons = modalEl.querySelectorAll("button");

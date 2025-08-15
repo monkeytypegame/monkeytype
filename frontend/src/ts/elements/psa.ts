@@ -10,6 +10,7 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/schemas/util";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import * as AuthEvent from "../observables/auth-event";
 
 const confirmedPSAs = new LocalStorageWithSchema({
   key: "confirmedPSAs",
@@ -177,3 +178,9 @@ export async function show(): Promise<void> {
     );
   });
 }
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    void show();
+  }
+});
