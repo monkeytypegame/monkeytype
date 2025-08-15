@@ -850,7 +850,7 @@ export async function update(
   dontSave: boolean
 ): Promise<void> {
   resultAnnotation = [];
-  result = Misc.deepClone(res);
+  result = structuredClone(res);
   hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");

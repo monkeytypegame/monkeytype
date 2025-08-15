@@ -4,7 +4,6 @@ import {
   UserProfileDetails,
   UserTag,
 } from "@monkeytype/schemas/users";
-import { deepClone } from "../utils/misc";
 import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
@@ -135,5 +134,5 @@ const defaultSnap = {
 } as Snapshot;
 
 export function getDefaultSnapshot(): Snapshot {
-  return deepClone(defaultSnap);
+  return structuredClone(defaultSnap);
 }
