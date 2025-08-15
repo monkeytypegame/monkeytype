@@ -118,6 +118,7 @@ export const UserProfileDetailsSchema = z
       })
       .strict()
       .optional(),
+    showActivityOnPublicProfile: z.boolean().optional(),
   })
   .strict();
 export type UserProfileDetails = z.infer<typeof UserProfileDetailsSchema>;
@@ -317,6 +318,7 @@ export const UserProfileSchema = UserSchema.pick({
   isPremium: true,
   inventory: true,
   allTimeLbs: true,
+  testActivity: true,
 })
   .extend({
     typingStats: TypingStatsSchema,

@@ -972,6 +972,11 @@ export async function getProfile(
     uid: user.uid,
   } as UserProfile;
 
+  if (user.profileDetails?.showActivityOnPublicProfile) {
+    profileData.testActivity = generateCurrentTestActivity(user.testActivity);
+  } else {
+    delete profileData.testActivity;
+  }
   return new MonkeyResponse("Profile retrieved", profileData);
 }
 
@@ -979,7 +984,13 @@ export async function updateProfile(
   req: MonkeyRequest<undefined, UpdateUserProfileRequest>
 ): Promise<UpdateUserProfileResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { bio, keyboard, socialProfiles, selectedBadgeId } = req.body;
+  const {
+    bio,
+    keyboard,
+    socialProfiles,
+    selectedBadgeId,
+    showActivityOnPublicProfile,
+  } = req.body;
 
   const user = await UserDAL.getPartialUser(uid, "update user profile", [
     "banned",
@@ -1005,6 +1016,7 @@ export async function updateProfile(
       socialProfiles,
       sanitizeString
     ) as UserProfileDetails["socialProfiles"],
+    showActivityOnPublicProfile,
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
