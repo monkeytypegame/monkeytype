@@ -1,3 +1,4 @@
+import { describe, it, expect, afterAll, vi } from "vitest";
 import { configMetadata } from "../../src/ts/config-metadata";
 import * as Config from "../../src/ts/config";
 import { ConfigKey, Config as ConfigType } from "@monkeytype/schemas/configs";
@@ -54,7 +55,13 @@ describe("ConfigMeta", () => {
       .sort();
 
     expect(configsWithTriggeResize).toEqual(
-      ["fontSize", "keymapSize", "maxLineWidth", "tapeMode"].sort()
+      [
+        "fontSize",
+        "keymapSize",
+        "maxLineWidth",
+        "tapeMode",
+        "tapeMargin",
+      ].sort()
     );
   });
   describe("overrideValue", () => {

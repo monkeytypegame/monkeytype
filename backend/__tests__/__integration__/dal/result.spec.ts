@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as ResultDal from "../../../src/dal/result";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../../src/dal/user";

@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, afterEach } from "vitest";
 import { Mode, Mode2 } from "@monkeytype/schemas/shared";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import { cleanupKeys, redisSetup } from "../redis";

@@ -19,6 +19,7 @@ import { getAllFunboxes } from "@monkeytype/funbox";
 import { Snapshot } from "../../constants/default-snapshot";
 import { LanguageList } from "../../constants/languages";
 import * as AuthEvent from "../../observables/auth-event";
+import { sanitize } from "../../utils/sanitize";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>
@@ -57,7 +58,7 @@ const resultFiltersLS = new LocalStorageWithSchema({
       return defaultResultFilters;
     }
     return mergeWithDefaultFilters(
-      Misc.sanitize(ResultFiltersSchema, unknown as ResultFilters)
+      sanitize(ResultFiltersSchema.partial().strip(), unknown as ResultFilters)
     );
   },
 });
@@ -173,7 +174,7 @@ function addFilterPresetToSnapshot(filter: ResultFilters): void {
   if (!snapshot) return;
   DB.setSnapshot({
     ...snapshot,
-    filterPresets: [...snapshot.filterPresets, Misc.deepClone(filter)],
+    filterPresets: [...snapshot.filterPresets, structuredClone(filter)],
   });
 }
 
@@ -932,7 +933,7 @@ $(".group.presetFilterButtons .filterBtns").on(
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   const filter = mergeWithDefaultFilters(
-    Misc.sanitize(ResultFiltersSchema, Misc.deepClone(filterIn))
+    sanitize(ResultFiltersSchema.partial().strip(), structuredClone(filterIn))
   );
 
   return filter;

@@ -237,6 +237,3 @@ export function resetIgnoreAuthCallback(): void {
 }
 
 export { authPromise };
-
-//TODO refactor email-handler
-export const _Auth = Auth;

@@ -155,10 +155,17 @@ export default {
       : null,
     replace([
       {
-        filter: /firebase\.ts$/,
+        filter: ["src/ts/firebase.ts"],
         replace: {
-          from: /\.\/constants\/firebase-config/gi,
-          to: "./constants/firebase-config-live",
+          from: `"./constants/firebase-config"`,
+          to: `"./constants/firebase-config-live"`,
+        },
+      },
+      {
+        filter: ["src/email-handler.html"],
+        replace: {
+          from: `"./ts/constants/firebase-config"`,
+          to: `"./ts/constants/firebase-config-live"`,
         },
       },
     ]),

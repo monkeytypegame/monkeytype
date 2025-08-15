@@ -369,66 +369,16 @@ async function signUp(): Promise<void> {
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
   LoginPage.showPreloader();
-  const nname = ($(".pageLogin .register input")[0] as HTMLInputElement).value;
-  const email = ($(".pageLogin .register input")[1] as HTMLInputElement).value;
-  const emailVerify = ($(".pageLogin .register input")[2] as HTMLInputElement)
-    .value;
-  const password = ($(".pageLogin .register input")[3] as HTMLInputElement)
-    .value;
-  const passwordVerify = (
-    $(".pageLogin .register input")[4] as HTMLInputElement
-  ).value;
 
-  if (nname === "" || email === "" || emailVerify === "" || password === "") {
+  const signupData = LoginPage.getSignupData();
+  if (signupData === false) {
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.updateSignupButton();
     Notifications.add("Please fill in all fields", 0);
     return;
   }
-
-  if (
-    !email.match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    )
-  ) {
-    Notifications.add("Invalid email", 0);
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
-    return;
-  }
-
-  if (email !== emailVerify) {
-    Notifications.add("Emails do not match", 0);
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
-    return;
-  }
-
-  if (password !== passwordVerify) {
-    Notifications.add("Passwords do not match", 0);
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
-    return;
-  }
-
-  // Force user to use a capital letter, number, special character and reasonable length when setting up an account and changing password
-  if (!Misc.isDevEnvironment() && !Misc.isPasswordStrong(password)) {
-    Notifications.add(
-      "Password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
-      0,
-      {
-        duration: 4,
-      }
-    );
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
-    return;
-  }
+  const { name: nname, email, password } = signupData;
 
   try {
     const createdAuthUser = await createUserWithEmailAndPassword(

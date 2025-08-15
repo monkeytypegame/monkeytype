@@ -971,7 +971,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   }
 
-  const completedEvent = Misc.deepClone(ce) as CompletedEvent;
+  const completedEvent = structuredClone(ce) as CompletedEvent;
 
   ///////// completed event ready
 
@@ -1127,7 +1127,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
-  TestStats.setLastResult(Misc.deepClone(completedEvent));
+  TestStats.setLastResult(structuredClone(completedEvent));
 
   if (!ConnectionState.get()) {
     ConnectionState.showOfflineBanner();
@@ -1297,7 +1297,7 @@ async function saveResult(
     //TODO - this type cast was not needed before because we were using JSON cloning
     // but now with the stronger types it shows that we are forcing completed event
     // into a snapshot result - might not cuase issues but worth investigating
-    const result = Misc.deepClone(
+    const result = structuredClone(
       completedEvent
     ) as unknown as SnapshotResult<Mode>;
     result._id = data.insertedId;
