@@ -146,7 +146,6 @@ export async function change(
 
   //between
   updateTitle(nextPage);
-  Focus.set(false);
   ActivePage.set(nextPage.id);
   updateOpenGraphUrl();
 
@@ -195,6 +194,8 @@ export async function change(
     await pages.loading.afterHide();
     pages.loading.element.addClass("hidden");
   }
+
+  Focus.set(false);
 
   //next page
   await nextPage?.beforeShow({
