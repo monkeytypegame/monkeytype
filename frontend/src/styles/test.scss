@@ -1233,7 +1233,7 @@
   &:hover {
     .shareButton {
       opacity: 1;
-      right: -3.25em;
+      right: calc((1.25em + (var(--horizontalPadding) * 2)) * -1);
     }
   }
 }
