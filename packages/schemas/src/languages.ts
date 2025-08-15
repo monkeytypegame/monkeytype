@@ -420,6 +420,8 @@ export const LanguageSchema = z.enum(
     "code_abap",
     "code_abap_1k",
     "code_yoptascript",
+    "hawaiian",
+    "hawaiian_1k",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
