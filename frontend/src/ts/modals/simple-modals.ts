@@ -6,7 +6,6 @@ import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import * as CustomText from "../test/custom-text";
-import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
 import {
   isAuthenticated,
@@ -1027,7 +1026,6 @@ list.unlinkDiscord = new SimpleModal({
 
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
-    AccountButton.updateAvatar();
     DB.setSnapshot(snap);
     AccountSettings.updateUI();
 
