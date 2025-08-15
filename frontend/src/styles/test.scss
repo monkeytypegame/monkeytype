@@ -1144,6 +1144,10 @@
   transition: opacity 0.125s;
   justify-content: space-around;
   margin-bottom: 1rem;
+  width: max-content;
+  justify-self: center;
+  position: relative;
+
   .puncAndNum {
     // transition: 0.25s cubic-bezier(0.37, 0, 0.63, 1);
     // overflow: hidden;
@@ -1154,6 +1158,7 @@
     // padding: 0 0.5rem;
     background: var(--sub-alt-color);
     border-radius: var(--roundness);
+    z-index: 2;
     // width: max-content;
   }
   .spacer {
@@ -1216,6 +1221,20 @@
   }
   .customText {
     display: grid;
+  }
+  .shareButton {
+    position: absolute;
+    right: 0;
+    padding: var(--verticalPadding) var(--horizontalPadding);
+    z-index: 1;
+    transition: opacity 0.25s, right 0.25s;
+    opacity: 0;
+  }
+  &:hover {
+    .shareButton {
+      opacity: 1;
+      right: -3.25em;
+    }
   }
 }
 
