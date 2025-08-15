@@ -48,6 +48,9 @@ import * as Focus from "./test/focus";
 import { getDevOptionsModal } from "./utils/async-modules";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
+import "./elements/psa";
+import "./utils/url-handler";
+import "./modals/last-signed-out-result";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {

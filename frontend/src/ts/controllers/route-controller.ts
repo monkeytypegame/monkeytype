@@ -146,7 +146,9 @@ const routes: Route[] = [
 ];
 
 export function navigate(
-  url = window.location.pathname + window.location.search,
+  url = window.location.pathname +
+    window.location.search +
+    window.location.hash,
   options = {} as NavigateOptions
 ): void {
   if (
