@@ -4,7 +4,8 @@ import {
   PartialConfig,
   FunboxName,
 } from "@monkeytype/schemas/configs";
-import { sanitize, typedKeys } from "./misc";
+import { typedKeys } from "./misc";
+import { sanitize } from "./sanitize";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 /**

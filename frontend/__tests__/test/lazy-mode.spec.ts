@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { replaceAccents } from "../../src/ts/test/lazy-mode";
 
 let germanAccents = [

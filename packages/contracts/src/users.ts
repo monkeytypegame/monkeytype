@@ -24,6 +24,8 @@ import {
   UserSchema,
   UserStreakSchema,
   UserTagSchema,
+  UserEmailSchema,
+  UserNameSchema,
 } from "@monkeytype/schemas/users";
 import {
   Mode2Schema,
@@ -33,9 +35,6 @@ import {
 import { IdSchema, StringNumberSchema } from "@monkeytype/schemas/util";
 import { LanguageSchema } from "@monkeytype/schemas/languages";
 import { CustomThemeColorsSchema } from "@monkeytype/schemas/configs";
-import { doesNotContainProfanity } from "@monkeytype/schemas/validation/validation";
-
-export const UserEmailSchema = z.string().email();
 
 export const GetUserResponseSchema = responseWithData(
   UserSchema.extend({
@@ -43,18 +42,6 @@ export const GetUserResponseSchema = responseWithData(
   })
 );
 export type GetUserResponse = z.infer<typeof GetUserResponseSchema>;
-
-export const UserNameSchema = doesNotContainProfanity(
-  "substring",
-  z
-    .string()
-    .min(1)
-    .max(16)
-    .regex(
-      /^[\da-zA-Z_-]+$/,
-      "Can only contain lower/uppercase letters, underscore and minus."
-    )
-);
 
 export const CreateUserRequestSchema = z.object({
   email: UserEmailSchema.optional(),

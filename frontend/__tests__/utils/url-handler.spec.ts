@@ -1,4 +1,4 @@
-// eslint-disable no-useless-escape
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { compressToURI } from "lz-ts";
 import * as UpdateConfig from "../../src/ts/config";
@@ -51,9 +51,6 @@ describe("url-handler", () => {
       ].forEach((it) => it.mockClear());
 
       findGetParameterMock.mockImplementation((override) => override);
-    });
-    afterEach(() => {
-      //
     });
 
     it("handles null", () => {
@@ -251,7 +248,7 @@ describe("url-handler", () => {
 
       //THEN
       expect(addNotificationMock).toHaveBeenCalledWith(
-        `Failed to load test settings from URL: JSON does not match schema: \"0\" invalid enum value. expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'invalidmode', \"1\" needs to be a number or a number represented as a string e.g. \"10\"., \"2.mode\" invalid enum value. expected 'repeat' | 'random' | 'shuffle', received 'invalid', \"2.pipeDelimiter\" expected boolean, received string, \"2.limit\" expected object, received string, \"2.text\" expected array, received string, \"3\" expected boolean, received string, \"4\" expected boolean, received string, \"6\" invalid enum value. expected 'normal' | 'expert' | 'master', received 'invalid', \"7\" invalid input`,
+        `Failed to load test settings from URL: JSON does not match schema: "0" invalid enum value. expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'invalidmode', "1" needs to be a number or a number represented as a string e.g. "10"., "2.mode" invalid enum value. expected 'repeat' | 'random' | 'shuffle', received 'invalid', "2.pipeDelimiter" expected boolean, received string, "2.limit" expected object, received string, "2.text" expected array, received string, "3" expected boolean, received string, "4" expected boolean, received string, "6" invalid enum value. expected 'normal' | 'expert' | 'master', received 'invalid', "7" invalid input`,
         0
       );
     });

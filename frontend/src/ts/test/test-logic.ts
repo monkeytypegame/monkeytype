@@ -49,7 +49,7 @@ import * as Last10Average from "../elements/last-10-average";
 import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
-import { Auth, isAuthenticated } from "../firebase";
+import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
@@ -971,7 +971,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   }
 
-  const completedEvent = Misc.deepClone(ce) as CompletedEvent;
+  const completedEvent = structuredClone(ce) as CompletedEvent;
 
   ///////// completed event ready
 
@@ -1127,7 +1127,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
-  TestStats.setLastResult(Misc.deepClone(completedEvent));
+  TestStats.setLastResult(structuredClone(completedEvent));
 
   if (!ConnectionState.get()) {
     ConnectionState.showOfflineBanner();
@@ -1188,10 +1188,18 @@ export async function finish(difficultyFailed = false): Promise<void> {
     return;
   }
 
+  // because of the dont save check above, we know the user is signed in
+  // we check here again so that typescript doesnt complain
+  const user = getAuthenticatedUser();
+  if (!user) {
+    return;
+  }
+
   // user is logged in
   TestStats.resetIncomplete();
 
-  completedEvent.uid = Auth?.currentUser?.uid as string;
+  completedEvent.uid = user.uid;
+
   Result.updateRateQuote(TestWords.currentQuote);
 
   AccountButton.loading(true);
@@ -1289,7 +1297,7 @@ async function saveResult(
     //TODO - this type cast was not needed before because we were using JSON cloning
     // but now with the stronger types it shows that we are forcing completed event
     // into a snapshot result - might not cuase issues but worth investigating
-    const result = Misc.deepClone(
+    const result = structuredClone(
       completedEvent
     ) as unknown as SnapshotResult<Mode>;
     result._id = data.insertedId;

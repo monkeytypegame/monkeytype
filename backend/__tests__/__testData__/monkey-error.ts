@@ -1,3 +1,4 @@
+import { expect } from "vitest";
 import MonkeyError from "../../src/utils/error";
 import { MatcherResult } from "../vitest";
 

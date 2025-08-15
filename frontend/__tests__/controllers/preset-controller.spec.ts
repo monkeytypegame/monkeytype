@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as PresetController from "../../src/ts/controllers/preset-controller";
 import { Preset } from "@monkeytype/schemas/presets";
 import * as DB from "../../src/ts/db";
@@ -5,7 +6,6 @@ import * as UpdateConfig from "../../src/ts/config";
 import * as Notifications from "../../src/ts/elements/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TagController from "../../src/ts/controllers/tag-controller";
-import { deepClone } from "../../src/ts/utils/misc";
 
 describe("PresetController", () => {
   describe("apply", () => {
@@ -106,7 +106,7 @@ describe("PresetController", () => {
       });
 
       UpdateConfig.setNumbers(true);
-      const oldConfig = deepClone(UpdateConfig.default);
+      const oldConfig = structuredClone(UpdateConfig.default);
 
       //WHEN
       await PresetController.apply(preset._id);

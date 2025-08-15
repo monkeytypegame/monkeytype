@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import * as Strings from "../../src/ts/utils/strings";
 
 describe("string utils", () => {

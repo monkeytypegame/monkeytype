@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { parseWithSchema } from "../src/json";
 import { z } from "zod";
 
