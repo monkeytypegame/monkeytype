@@ -173,7 +173,7 @@ function addFilterPresetToSnapshot(filter: ResultFilters): void {
   if (!snapshot) return;
   DB.setSnapshot({
     ...snapshot,
-    filterPresets: [...snapshot.filterPresets, Misc.deepClone(filter)],
+    filterPresets: [...snapshot.filterPresets, structuredClone(filter)],
   });
 }
 
@@ -928,7 +928,7 @@ $(".group.presetFilterButtons .filterBtns").on(
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   const filter = mergeWithDefaultFilters(
-    sanitize(ResultFiltersSchema.partial().strip(), Misc.deepClone(filterIn))
+    sanitize(ResultFiltersSchema.partial().strip(), structuredClone(filterIn))
   );
 
   return filter;

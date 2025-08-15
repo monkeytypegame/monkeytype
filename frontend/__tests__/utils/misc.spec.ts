@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { deepClone, getErrorMessage, isObject } from "../../src/ts/utils/misc";
+import { getErrorMessage, isObject } from "../../src/ts/utils/misc";
 import {
   getLanguageDisplayString,
   removeLanguageSize,
@@ -122,57 +122,7 @@ describe("misc.ts", () => {
       });
     });
   });
-  describe("deepClone", () => {
-    it("should correctly clone objects", () => {
-      const tests = [
-        {
-          input: {},
-          expected: {},
-        },
-        {
-          input: { a: 1 },
-          expected: { a: 1 },
-        },
-        {
-          input: { a: { b: 2 } },
-          expected: { a: { b: 2 } },
-        },
-        {
-          input: { a: { b: 2 }, c: [1, 2, 3] },
-          expected: { a: { b: 2 }, c: [1, 2, 3] },
-        },
-        {
-          input: [],
-          expected: [],
-        },
-        {
-          input: [1, 2, 3],
-          expected: [1, 2, 3],
-        },
-        {
-          input: "string",
-          expected: "string",
-        },
-        {
-          input: 1,
-          expected: 1,
-        },
-        {
-          input: null,
-          expected: null,
-        },
-        {
-          input: undefined,
-          expected: undefined,
-        },
-      ];
 
-      tests.forEach((test) => {
-        const result = deepClone(test.input);
-        expect(result).toStrictEqual(test.expected);
-      });
-    });
-  });
   describe("getErrorMesssage", () => {
     it("should correctly get the error message", () => {
       const tests = [
