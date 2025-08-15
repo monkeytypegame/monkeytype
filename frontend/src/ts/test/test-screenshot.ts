@@ -11,10 +11,7 @@ import * as ActivePage from "../states/active-page";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
-
-async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
-  return (await import("html2canvas")).default;
-}
+import { domToPng } from "modern-screenshot";
 
 let revealReplay = false;
 let revertCookie = false;
@@ -120,32 +117,92 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     revert();
     return null;
   }
-  // Ensure offset calculations happen *after* potential layout shifts from UI prep
   await new Promise((resolve) => setTimeout(resolve, 50)); // Small delay for render updates
 
   const sourceX = src.offset()?.left ?? 0;
   const sourceY = src.offset()?.top ?? 0;
   const sourceWidth = src.outerWidth(true) as number;
   const sourceHeight = src.outerHeight(true) as number;
+  const paddingX = convertRemToPixels(2);
+  const paddingY = convertRemToPixels(2);
 
-  // --- Canvas Generation ---
   try {
-    const paddingX = convertRemToPixels(2);
-    const paddingY = convertRemToPixels(2);
-
-    const canvas = await (
-      await gethtml2canvas()
-    )(document.body, {
+    // Target the HTML root to include .customBackground
+    const dataUrl = await domToPng(document.documentElement, {
       backgroundColor: await ThemeColors.get("bg"),
-      width: sourceWidth + paddingX * 2,
-      height: sourceHeight + paddingY * 2,
-      x: sourceX - paddingX,
-      y: sourceY - paddingY,
-      logging: false, // Suppress html2canvas logs in console
-      useCORS: true, // May be needed if user flags/icons are external
+      // Sharp output
+      scale: window.devicePixelRatio || 1,
+      // TODO not the best
+      style: {
+        width: `${document.documentElement.clientWidth}px`,
+        height: `${document.documentElement.clientHeight}px`,
+      },
+      // TODD find out why not working and if possible to make it work
+      // Help remote image fetching (for custom background URLs)
+      /*fetch: {
+        requestInit: { mode: "cors", credentials: "omit" },
+        bypassingCache: true,
+      },*/
+      // Normalize the background layer so its negative z-index doesn't get hidden
+      onCloneEachNode: (cloned) => {
+        if ((cloned as Element)?.nodeType === 1) {
+          const el = cloned as HTMLElement;
+          if (el.classList?.contains("customBackground")) {
+            el.style.zIndex = "0";
+            el.style.position = "fixed";
+            el.style.left = "0";
+            el.style.top = "0";
+            el.style.width = `${document.documentElement.clientWidth}px`;
+            el.style.height = `${document.documentElement.clientHeight}px`;
+          }
+        }
+      },
+    });
+    // Cropping using canvas
+    const img = new window.Image();
+    img.src = dataUrl;
+    await new Promise((resolve) => {
+      img.onload = resolve;
     });
 
-    revert(); // Revert UI *after* canvas is successfully generated
+    // Scale
+    const viewportWidth =
+      document.documentElement.clientWidth || window.innerWidth;
+    const viewportHeight =
+      document.documentElement.clientHeight || window.innerHeight;
+    const scaleX = img.naturalWidth / Math.max(1, viewportWidth);
+    const scaleY = img.naturalHeight / Math.max(1, viewportHeight);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = sourceWidth + paddingX * 2;
+    canvas.height = sourceHeight + paddingY * 2;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      Notifications.add("Failed to get canvas context for screenshot", -1);
+      revert();
+      return null;
+    }
+
+    // Enable smoothing
+    ctx.imageSmoothingEnabled = true;
+
+    const srcCropX = Math.max(0, (sourceX - paddingX) * scaleX);
+    const srcCropY = Math.max(0, (sourceY - paddingY) * scaleY);
+    const srcCropW = Math.max(1, (sourceWidth + paddingX * 2) * scaleX);
+    const srcCropH = Math.max(1, (sourceHeight + paddingY * 2) * scaleY);
+
+    ctx.drawImage(
+      img,
+      srcCropX,
+      srcCropY,
+      srcCropW,
+      srcCropH,
+      0,
+      0,
+      sourceWidth + paddingX * 2,
+      sourceHeight + paddingY * 2
+    );
+    revert();
     return canvas;
   } catch (e) {
     Notifications.add(

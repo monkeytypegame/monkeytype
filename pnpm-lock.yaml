@@ -339,6 +339,9 @@ importers:
       lz-ts:
         specifier: 1.1.2
         version: 1.1.2
+      modern-screenshot:
+        specifier: 4.6.5
+        version: 4.6.5
       object-hash:
         specifier: 3.0.0
         version: 3.0.0
@@ -7228,6 +7231,9 @@ packages:
 
   mobx@6.13.1:
     resolution: {integrity: sha512-ekLRxgjWJr8hVxj9ZKuClPwM/iHckx3euIJ3Np7zLVNtqJvfbbq7l370W/98C8EabdQ1pB5Jd3BbDWxJPNnaOg==}
+
+  modern-screenshot@4.6.5:
+    resolution: {integrity: sha512-0sDePJ9ssXWDO7V+yW9lwAxAu8jmVp4CXlBbjskSqrDxkIrcZO2EGqwD2mLtfTTinqZjmP4X/V6INOvNM1K7CQ==}
 
   module-definition@6.0.0:
     resolution: {integrity: sha512-sEGP5nKEXU7fGSZUML/coJbrO+yQtxcppDAYWRE9ovWsTbFoUHB2qDUx564WUzDaBHXsD46JBbIK5WVTwCyu3w==}
@@ -18321,6 +18327,8 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
 
   mobx@6.13.1: {}
+
+  modern-screenshot@4.6.5: {}
 
   module-definition@6.0.0:
     dependencies:
