@@ -111,7 +111,11 @@ export function initYearSelector(
 }
 
 function updateMonths(months: TestActivityMonth[]): void {
-  const element = document.querySelector(".testActivity .months") as Element;
+  const element = document.querySelector(".testActivity .months");
+
+  if (element === null) {
+    return;
+  }
 
   element.innerHTML = months
     .map(
