@@ -5,6 +5,7 @@ import { isAuthAvailable, isAuthenticated } from "../firebase";
 import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import * as Notifications from "../elements/notifications";
+import { LoadingOptions } from "../pages/page";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -13,6 +14,7 @@ import * as Notifications from "../elements/notifications";
 type NavigateOptions = {
   empty?: boolean;
   data?: unknown;
+  overrideLoadingOptions?: LoadingOptions;
 };
 
 function pathToRegex(path: string): RegExp {
@@ -52,89 +54,86 @@ const route404: Route = {
 const routes: Route[] = [
   {
     path: "/",
-    load: (): void => {
-      void PageController.change("test");
+    load: (_params, options): void => {
+      void PageController.change("test", options);
     },
   },
   {
     path: "/verify",
-    load: (): void => {
-      void PageController.change("test");
+    load: (_params, options): void => {
+      void PageController.change("test", options);
     },
   },
   {
     path: "/leaderboards",
-    load: (): void => {
-      void PageController.change("leaderboards");
+    load: (_params, options): void => {
+      void PageController.change("leaderboards", options);
     },
   },
   {
     path: "/about",
-    load: (): void => {
-      void PageController.change("about");
+    load: (_params, options): void => {
+      void PageController.change("about", options);
     },
   },
   {
     path: "/settings",
-    load: (): void => {
-      void PageController.change("settings");
+    load: (_params, options): void => {
+      void PageController.change("settings", options);
     },
   },
   {
     path: "/login",
-    load: (): void => {
+    load: (_params, options): void => {
       if (!isAuthAvailable()) {
-        navigate("/");
+        navigate("/", options);
         return;
       }
 
       if (isAuthenticated()) {
-        navigate("/account");
+        navigate("/account", options);
         return;
       }
-      void PageController.change("login");
+      void PageController.change("login", options);
     },
   },
   {
     path: "/account",
     load: (_params, options): void => {
       if (!isAuthAvailable()) {
-        navigate("/");
+        navigate("/", options);
         return;
       }
 
-      void PageController.change("account", {
-        data: options.data,
-      });
+      void PageController.change("account", options);
     },
   },
   {
     path: "/account-settings",
     load: (_params, options): void => {
       if (!isAuthAvailable()) {
-        navigate("/");
+        navigate("/", options);
         return;
       }
 
       if (!isAuthenticated()) {
-        navigate("/login");
+        navigate("/login", options);
         return;
       }
-      void PageController.change("accountSettings", {
-        data: options.data,
-      });
+      void PageController.change("accountSettings", options);
     },
   },
   {
     path: "/profile",
-    load: (_params): void => {
-      void PageController.change("profileSearch");
+    load: (_params, options): void => {
+      void PageController.change("profileSearch", options);
     },
   },
   {
     path: "/profile/:uidOrName",
     load: (params, options): void => {
       void PageController.change("profile", {
+        ...options,
         force: true,
         params: {
           uidOrName: params["uidOrName"] as string,

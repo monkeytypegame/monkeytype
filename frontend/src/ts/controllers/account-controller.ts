@@ -5,8 +5,6 @@ import * as Misc from "../utils/misc";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as PageTransition from "../states/page-transition";
-import * as ActivePage from "../states/active-page";
-import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as Account from "../pages/account";
@@ -65,13 +63,6 @@ async function sendVerificationEmail(): Promise<void> {
 async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
-    if (window.location.pathname !== "/account") {
-      LoadingPage.updateBar(90);
-    } else {
-      LoadingPage.updateBar(45);
-    }
-    LoadingPage.updateText("Downloading user data...");
-    await LoadingPage.showBar();
     const snapshot = await DB.initSnapshot();
 
     if (snapshot === false) {
@@ -91,12 +82,6 @@ async function getDataAndInit(): Promise<boolean> {
         true
       );
     }
-    if (ActivePage.get() === "loading") {
-      LoadingPage.updateBar(100);
-    } else {
-      LoadingPage.updateBar(45);
-    }
-    LoadingPage.updateText("Applying settings...");
 
     const areConfigsEqual =
       JSON.stringify(Config) === JSON.stringify(snapshot.config);
@@ -114,13 +99,7 @@ async function getDataAndInit(): Promise<boolean> {
       }
     }
     if (window.location.pathname === "/account") {
-      LoadingPage.updateBar(90);
       await Account.downloadResults();
-    }
-    if (window.location.pathname === "/login") {
-      navigate("/account");
-    } else {
-      navigate();
     }
     return true;
   } catch (error) {
@@ -157,6 +136,7 @@ async function getDataAndInit(): Promise<boolean> {
 export async function loadUser(_user: UserType): Promise<void> {
   // User is signed in.
   PageTransition.set(false);
+
   if (!(await getDataAndInit())) {
     signOut();
   }
@@ -180,30 +160,62 @@ export async function onAuthStateChanged(
   user: UserType | null
 ): Promise<void> {
   console.debug(`account controller ready`);
+
+  let userPromise: Promise<void> = Promise.resolve();
+  let path = undefined;
+
   if (authInitialisedAndConnected) {
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     console.debug(user);
     if (user) {
-      await loadUser(user);
+      userPromise = loadUser(user);
     } else {
-      if (window.location.pathname === "/account") {
-        window.history.replaceState("", "", "/login");
-      }
-
       DB.setSnapshot(undefined);
-      Sentry.clearUser();
-      PageTransition.set(false);
-      navigate();
     }
-  } else {
-    console.debug(`auth not initialised or not connected`);
-    if (window.location.pathname === "/account") {
-      window.history.replaceState("", "", "/login");
-    }
+  }
+
+  if (!authInitialisedAndConnected || !user) {
     Sentry.clearUser();
     PageTransition.set(false);
-    navigate();
+    if (window.location.pathname === "/account") {
+      path = "/login";
+    }
   }
+
+  let keyframes = [
+    {
+      percentage: 90,
+      duration: 2000,
+      text: "Downloading user data...",
+    },
+  ];
+
+  if (window.location.pathname === "/account") {
+    keyframes = [
+      {
+        percentage: 40,
+        duration: 1000,
+        text: "Downloading user data...",
+      },
+      {
+        percentage: 90,
+        duration: 1000,
+        text: "Downloading results...",
+      },
+    ];
+  }
+
+  navigate(path, {
+    overrideLoadingOptions: {
+      shouldLoad: () => {
+        return user !== null;
+      },
+      promise: async () => {
+        await userPromise;
+      },
+      barKeyframes: keyframes,
+    },
+  });
 
   AuthEvent.dispatch({
     type: "authStateChanged",

@@ -201,6 +201,19 @@ export const page = new Page({
   id: "about",
   element: $(".page.pageAbout"),
   path: "/about",
+  loading: {
+    shouldLoad: () => true,
+    promise: async () => {
+      return Misc.sleep(3000);
+    },
+    barKeyframes: [
+      { percentage: 25, duration: 950, text: "Loading contributors..." },
+      { percentage: 50, duration: 950, text: "Loading supporters..." },
+      { percentage: 75, duration: 950, text: "Loading global stats..." },
+      { percentage: 90, duration: 950, text: "Loading speed histogram..." },
+      { percentage: 90, duration: 2000, text: "Loading speed histogram..." },
+    ],
+  },
   afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageAbout");

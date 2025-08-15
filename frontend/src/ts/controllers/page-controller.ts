@@ -15,12 +15,13 @@ import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
-import { PageName } from "../pages/page";
+import Page, { PageName, LoadingOptions } from "../pages/page";
 
 type ChangeOptions = {
   force?: boolean;
   params?: Record<string, string>;
   data?: unknown;
+  overrideLoadingOptions?: LoadingOptions;
 };
 
 function updateOpenGraphUrl(): void {
@@ -47,6 +48,39 @@ function updateTitle(nextPage: { id: string; display?: string }): void {
       nextPage.display ?? Strings.capitalizeFirstLetterOfEachWord(nextPage.id);
     Misc.updateTitle(`${titleString} | Monkeytype`);
   }
+}
+
+async function getLoadingPromiseWithBarKeyframes(
+  loadingOptions: NonNullable<Page<unknown>["loading"]>
+): Promise<void> {
+  let aborted = false;
+  let loadingPromise = loadingOptions.promise();
+
+  // Animate bar keyframes, but allow aborting if loading.promise finishes first
+  const keyframePromise = (async () => {
+    if (loadingOptions?.barKeyframes !== undefined) {
+      for (const keyframe of loadingOptions.barKeyframes) {
+        if (aborted) break;
+        if (keyframe.text !== undefined) {
+          PageLoading.updateText(keyframe.text);
+        }
+        await PageLoading.updateBar(keyframe.percentage, keyframe.duration);
+      }
+    }
+  })();
+
+  // Wait for either the keyframes or the loading.promise to finish
+  await Promise.race([
+    keyframePromise,
+    (async () => {
+      await loadingPromise;
+      aborted = true;
+    })(),
+  ]);
+
+  // Always wait for loading.promise to finish before continuing
+  await loadingPromise;
+  return;
 }
 
 export async function change(
@@ -115,6 +149,52 @@ export async function change(
   Focus.set(false);
   ActivePage.set(nextPage.id);
   updateOpenGraphUrl();
+
+  const loadingOptions = options.overrideLoadingOptions ?? nextPage.loading;
+
+  //show loading page if needed
+  if (loadingOptions && loadingOptions.shouldLoad()) {
+    pages.loading.element.removeClass("hidden").css("opacity", 0);
+    await pages.loading.beforeShow({});
+
+    if (loadingOptions.barKeyframes !== undefined) {
+      await PageLoading.showBar();
+      await PageLoading.updateBar(0, 0);
+      PageLoading.updateText("");
+    } else {
+      PageLoading.showSpinner();
+    }
+
+    //void here to run the loading promise as soon as possible
+    void Misc.promiseAnimation(
+      pages.loading.element,
+      {
+        opacity: "1",
+      },
+      totalDuration / 2,
+      easingMethod
+    );
+
+    if (loadingOptions.barKeyframes !== undefined) {
+      await getLoadingPromiseWithBarKeyframes(loadingOptions);
+      await PageLoading.updateBar(100, 0);
+      PageLoading.updateText("Done");
+    } else {
+      await loadingOptions.promise();
+    }
+
+    await Misc.promiseAnimation(
+      pages.loading.element,
+      {
+        opacity: "0",
+      },
+      totalDuration / 2,
+      easingMethod
+    );
+
+    await pages.loading.afterHide();
+    pages.loading.element.addClass("hidden");
+  }
 
   //next page
   await nextPage?.beforeShow({

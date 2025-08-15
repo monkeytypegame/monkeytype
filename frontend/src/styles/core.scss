@@ -220,11 +220,15 @@ key {
       gap: 1rem;
       grid-row: 1;
       grid-column: 1;
+      .text {
+        height: 1.25em;
+      }
       .bar {
         width: 20rem;
         height: 0.5rem;
         background: var(--sub-alt-color);
         border-radius: var(--roundness);
+        justify-self: center;
         .fill {
           height: 100%;
           width: 0%;
