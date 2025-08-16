@@ -992,7 +992,7 @@ function showError(message: string): void {
 }
 
 async function update(): Promise<void> {
-  if (DB.getSnapshot() !== null) {
+  if (DB.getSnapshot() === null) {
     showError(
       "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."
     );
