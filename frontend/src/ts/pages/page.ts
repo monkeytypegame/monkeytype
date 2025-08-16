@@ -23,11 +23,31 @@ type Options<T> = {
 };
 
 export type LoadingOptions = {
+  /**
+   * Should the loading screen be shown?
+   */
   shouldLoad: () => boolean;
+  /**
+   * When this promise resolves, the loading screen will be hidden.
+   */
   promise: () => Promise<void>;
+  /**
+   * Keyframes for the loading bar.
+   * Each keyframe will be shown in order, with the specified percentage and duration.
+   * If not provided, a loading spinner will be shown instead.
+   */
   barKeyframes?: {
+    /**
+     * Percentage of the loading bar to fill.
+     */
     percentage: number;
+    /**
+     * Duration in milliseconds for the keyframe animation.
+     */
     duration: number;
+    /**
+     * Text to display below the loading bar.
+     */
     text?: string;
   }[];
 };
