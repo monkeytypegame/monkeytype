@@ -1340,7 +1340,7 @@ export const page = new Page({
   id: "account",
   element: $(".page.pageAccount"),
   path: "/account",
-  loading: {
+  loadingOptions: {
     shouldLoad: () => {
       return DB.getSnapshot()?.results === undefined;
     },

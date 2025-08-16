@@ -52,7 +52,7 @@ function updateTitle(nextPage: { id: string; display?: string }): void {
 
 async function getLoadingPromiseWithBarKeyframes(
   loadingOptions: Extract<
-    NonNullable<Page<unknown>["loading"]>,
+    NonNullable<Page<unknown>["loadingOptions"]>,
     { style: "bar" }
   >
 ): Promise<void> {
@@ -150,7 +150,8 @@ export async function change(
   ActivePage.set(nextPage.id);
   updateOpenGraphUrl();
 
-  const loadingOptions = options.overrideLoadingOptions ?? nextPage.loading;
+  const loadingOptions =
+    options.overrideLoadingOptions ?? nextPage.loadingOptions;
 
   //show loading page if needed
   if (loadingOptions && loadingOptions.shouldLoad()) {

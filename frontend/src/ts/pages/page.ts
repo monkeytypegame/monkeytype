@@ -64,7 +64,7 @@ type PageProperties<T> = {
   display?: string;
   element: JQuery;
   path: string;
-  loading?: LoadingOptions;
+  loadingOptions?: LoadingOptions;
   beforeHide?: () => Promise<void>;
   afterHide?: () => Promise<void>;
   beforeShow?: (options: Options<T>) => Promise<void>;
@@ -79,7 +79,7 @@ export default class Page<T> {
   public display: string | undefined;
   public element: JQuery;
   public pathname: string;
-  public loading: LoadingOptions | undefined;
+  public loadingOptions: LoadingOptions | undefined;
 
   public beforeHide: () => Promise<void>;
   public afterHide: () => Promise<void>;
@@ -91,7 +91,7 @@ export default class Page<T> {
     this.display = props.display;
     this.element = props.element;
     this.pathname = props.path;
-    this.loading = props.loading;
+    this.loadingOptions = props.loadingOptions;
     this.beforeHide = props.beforeHide ?? empty;
     this.afterHide = props.afterHide ?? empty;
     this._beforeShow = props.beforeShow ?? empty;
