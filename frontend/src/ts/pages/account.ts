@@ -966,19 +966,8 @@ async function fillContent(): Promise<void> {
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
   Focus.set(false);
-  void Misc.swapElements(
-    $(".pageAccount .preloader"),
-    $(".pageAccount .content"),
-    250,
-    async () => {
-      $(".page.pageAccount").css("height", "unset"); //weird safari fix
-    },
-    async () => {
-      setTimeout(() => {
-        Profile.updateNameFontSize("account");
-      }, 10);
-    }
-  );
+  $(".page.pageAccount").css("height", "unset"); //weird safari fix
+  Profile.updateNameFontSize("account");
 }
 
 export async function downloadResults(offset?: number): Promise<void> {
@@ -997,9 +986,12 @@ export async function downloadResults(offset?: number): Promise<void> {
 }
 
 async function update(): Promise<void> {
-  if (DB.getSnapshot() === null) {
-    Notifications.add(`Missing account data. Please refresh.`, -1);
-    $(".pageAccount .preloader").html("Missing account data. Please refresh.");
+  if (DB.getSnapshot() !== null) {
+    $(".pageAccount .error .text").html(
+      "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."
+    );
+    $(".pageAccount .error").removeClass("hidden");
+    $(".pageAccount .content").remove();
   } else {
     await downloadResults();
     try {

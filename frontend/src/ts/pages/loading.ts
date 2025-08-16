@@ -6,7 +6,7 @@ export async function updateBar(
   duration: number
 ): Promise<void> {
   return new Promise((resolve) => {
-    $(".pageLoading .fill, .pageAccount .preloader .fill")
+    $(".pageLoading .fill")
       .stop(true, false)
       .animate(
         {
@@ -21,7 +21,7 @@ export async function updateBar(
 }
 
 export function updateText(text: string): void {
-  $(".pageLoading .text, .pageAccount .preloader .text").text(text);
+  $(".pageLoading .text").text(text);
 }
 
 export function showSpinner(): void {
