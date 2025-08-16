@@ -6,7 +6,6 @@ module.exports = {
   globals: {
     $: "readonly",
     jQuery: "readonly",
-    html2canvas: "readonly",
     ClipboardItem: "readonly",
     grecaptcha: "readonly",
   },
