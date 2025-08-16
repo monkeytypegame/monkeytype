@@ -50,7 +50,7 @@ export type LoadingOptions = {
         /**
          * Duration in milliseconds for the keyframe animation.
          */
-        duration: number;
+        durationMs: number;
         /**
          * Text to display below the loading bar.
          */

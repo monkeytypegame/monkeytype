@@ -66,7 +66,7 @@ async function getLoadingPromiseWithBarKeyframes(
       if (keyframe.text !== undefined) {
         PageLoading.updateText(keyframe.text);
       }
-      await PageLoading.updateBar(keyframe.percentage, keyframe.duration);
+      await PageLoading.updateBar(keyframe.percentage, keyframe.durationMs);
     }
   })();
 
