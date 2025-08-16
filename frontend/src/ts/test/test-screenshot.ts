@@ -107,7 +107,8 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   }
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
-  window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior }); // Use instant scroll
+  // not necessary when rendering full document size, but keep a quick jump to top just in case
+  window.scrollTo({ top: 0, behavior: "auto" });
 
   // --- Target Element Calculation ---
   const src = $("#result .wrapper");
@@ -127,15 +128,24 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   const paddingY = convertRemToPixels(2);
 
   try {
+    // Compute full-document render size to keep the target area in frame on small viewports
+    const targetWidth = Math.max(
+      document.documentElement.scrollWidth,
+      document.documentElement.clientWidth
+    );
+    const targetHeight = Math.max(
+      document.documentElement.scrollHeight,
+      document.documentElement.clientHeight
+    );
+
     // Target the HTML root to include .customBackground
     const dataUrl = await domToPng(document.documentElement, {
       backgroundColor: await ThemeColors.get("bg"),
       // Sharp output
       scale: window.devicePixelRatio || 1,
-      // TODO not the best
       style: {
-        width: `${document.documentElement.clientWidth}px`,
-        height: `${document.documentElement.clientHeight}px`,
+        width: `${targetWidth}px`,
+        height: `${targetHeight}px`,
       },
       // TODD find out why not working and if possible to make it work
       // Help remote image fetching (for custom background URLs)
@@ -152,24 +162,23 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
             el.style.position = "fixed";
             el.style.left = "0";
             el.style.top = "0";
-            el.style.width = `${document.documentElement.clientWidth}px`;
-            el.style.height = `${document.documentElement.clientHeight}px`;
+            el.style.width = `${targetWidth}px`;
+            el.style.height = `${targetHeight}px`;
           }
         }
       },
     });
     // Cropping using canvas
-    const img = new window.Image();
+    const img: HTMLImageElement = new Image();
     img.src = dataUrl;
-    await new Promise((resolve) => {
-      img.onload = resolve;
+    await new Promise<void>((resolve) => {
+      img.addEventListener("load", () => resolve(), { once: true });
+      img.addEventListener("error", () => resolve(), { once: true });
     });
 
     // Scale
-    const viewportWidth =
-      document.documentElement.clientWidth || window.innerWidth;
-    const viewportHeight =
-      document.documentElement.clientHeight || window.innerHeight;
+    const viewportWidth = targetWidth;
+    const viewportHeight = targetHeight;
     const scaleX = img.naturalWidth / Math.max(1, viewportWidth);
     const scaleY = img.naturalHeight / Math.max(1, viewportHeight);
 
