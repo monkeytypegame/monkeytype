@@ -90,7 +90,6 @@ const routes: Route[] = [
         navigate("/", options);
         return;
       }
-
       if (isAuthenticated()) {
         navigate("/account", options);
         return;
@@ -105,7 +104,10 @@ const routes: Route[] = [
         navigate("/", options);
         return;
       }
-
+      if (!isAuthenticated()) {
+        navigate("/login", options);
+        return;
+      }
       void PageController.change("account", options);
     },
   },
@@ -116,7 +118,6 @@ const routes: Route[] = [
         navigate("/", options);
         return;
       }
-
       if (!isAuthenticated()) {
         navigate("/login", options);
         return;
