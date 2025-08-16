@@ -967,7 +967,9 @@ async function fillContent(): Promise<void> {
   ChartController.accountHistogram.update();
   Focus.set(false);
   $(".page.pageAccount").css("height", "unset"); //weird safari fix
-  Profile.updateNameFontSize("account");
+  setTimeout(() => {
+    Profile.updateNameFontSize("account");
+  }, 0);
 }
 
 export async function downloadResults(offset?: number): Promise<void> {
