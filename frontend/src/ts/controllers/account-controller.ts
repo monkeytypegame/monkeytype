@@ -171,7 +171,10 @@ export async function onAuthStateChanged(
     },
   ];
 
-  if (window.location.pathname === "/account") {
+  if (
+    window.location.pathname === "/account" ||
+    window.location.pathname === "/login"
+  ) {
     keyframes = [
       {
         percentage: 40,
