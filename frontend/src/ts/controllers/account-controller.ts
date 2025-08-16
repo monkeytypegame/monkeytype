@@ -162,9 +162,6 @@ export async function onAuthStateChanged(
 
   if (!authInitialisedAndConnected || !user) {
     Sentry.clearUser();
-    if (window.location.pathname === "/account") {
-      targetPage = "/login";
-    }
   }
 
   let keyframes = [
