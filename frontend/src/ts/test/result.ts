@@ -51,9 +51,16 @@ let useUnsmoothedRaw = false;
 let quoteLang: Language | undefined;
 let quoteId = "";
 
+// DOM element cache for performance optimization
+let resultStatsEl: HTMLElement | null = null;
+
 export function toggleUnsmoothedRaw(): void {
   useUnsmoothedRaw = !useUnsmoothedRaw;
   Notifications.add(useUnsmoothedRaw ? "on" : "off", 1);
+}
+
+function initializeResultElements(): void {
+  resultStatsEl = document.querySelector("#result .stats");
 }
 
 let resultAnnotation: AnnotationOptions<"line">[] = [];
@@ -233,44 +240,74 @@ function updateWpmAndAcc(): void {
     inf = true;
   }
 
-  $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
+  if (!resultStatsEl) return;
 
-  if (inf) {
-    $("#result .stats .wpm .bottom").text("Infinite");
-  } else {
-    $("#result .stats .wpm .bottom").text(Format.typingSpeed(result.wpm));
+  const wpmTopText = resultStatsEl.querySelector(".wpm .top .text");
+  if (wpmTopText) {
+    wpmTopText.textContent = Config.typingSpeedUnit;
   }
-  $("#result .stats .raw .bottom").text(Format.typingSpeed(result.rawWpm));
-  $("#result .stats .acc .bottom").text(
-    result.acc === 100 ? "100%" : Format.accuracy(result.acc)
-  );
+
+  const wpmBottom = resultStatsEl.querySelector(".wpm .bottom");
+  if (wpmBottom) {
+    if (inf) {
+      wpmBottom.textContent = "Infinite";
+    } else {
+      wpmBottom.textContent = Format.typingSpeed(result.wpm);
+    }
+  }
+
+  const rawBottom = resultStatsEl.querySelector(".raw .bottom");
+  if (rawBottom) {
+    rawBottom.textContent = Format.typingSpeed(result.rawWpm);
+  }
+
+  const accBottom = resultStatsEl.querySelector(".acc .bottom");
+  if (accBottom) {
+    accBottom.textContent =
+      result.acc === 100 ? "100%" : Format.accuracy(result.acc);
+  }
 
   if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit !== "wpm") {
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        result.wpm.toFixed(2) + " wpm"
-      );
-      $("#result .stats .raw .bottom").attr(
-        "aria-label",
-        result.rawWpm.toFixed(2) + " wpm"
-      );
+      const wpmBottomEl = resultStatsEl.querySelector(".wpm .bottom");
+      if (wpmBottomEl) {
+        wpmBottomEl.setAttribute("aria-label", result.wpm.toFixed(2) + " wpm");
+      }
+      const rawBottomEl = resultStatsEl.querySelector(".raw .bottom");
+      if (rawBottomEl) {
+        rawBottomEl.setAttribute(
+          "aria-label",
+          result.rawWpm.toFixed(2) + " wpm"
+        );
+      }
     } else {
-      $("#result .stats .wpm .bottom").removeAttr("aria-label");
-      $("#result .stats .raw .bottom").removeAttr("aria-label");
+      const wpmBottomEl = resultStatsEl.querySelector(".wpm .bottom");
+      if (wpmBottomEl) {
+        wpmBottomEl.removeAttribute("aria-label");
+      }
+      const rawBottomEl = resultStatsEl.querySelector(".raw .bottom");
+      if (rawBottomEl) {
+        rawBottomEl.removeAttribute("aria-label");
+      }
     }
 
     let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
-    $("#result .stats .time .bottom .text").text(time);
+    const timeBottomText = resultStatsEl.querySelector(".time .bottom .text");
+    if (timeBottomText) {
+      timeBottomText.textContent = time;
+    }
     // $("#result .stats .acc .bottom").removeAttr("aria-label");
 
-    $("#result .stats .acc .bottom").attr(
-      "aria-label",
-      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`
-    );
+    const accBottomEl = resultStatsEl.querySelector(".acc .bottom");
+    if (accBottomEl) {
+      accBottomEl.setAttribute(
+        "aria-label",
+        `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`
+      );
+    }
   } else {
     //not showing decimal places
     const decimalsAndSuffix = {
@@ -285,11 +322,18 @@ function updateWpmAndAcc(): void {
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
     }
 
-    $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
-    $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
+    const wpmBottomEl = resultStatsEl.querySelector(".wpm .bottom");
+    if (wpmBottomEl) {
+      wpmBottomEl.setAttribute("aria-label", wpmHover);
+    }
+    const rawBottomEl = resultStatsEl.querySelector(".raw .bottom");
+    if (rawBottomEl) {
+      rawBottomEl.setAttribute("aria-label", rawWpmHover);
+    }
 
-    $("#result .stats .acc .bottom")
-      .attr(
+    const accBottomEl = resultStatsEl.querySelector(".acc .bottom");
+    if (accBottomEl) {
+      accBottomEl.setAttribute(
         "aria-label",
         `${
           result.acc === 100
@@ -298,79 +342,108 @@ function updateWpmAndAcc(): void {
         }\n${TestInput.accuracy.correct} correct\n${
           TestInput.accuracy.incorrect
         } incorrect`
-      )
-      .attr("data-balloon-break", "");
+      );
+      accBottomEl.setAttribute("data-balloon-break", "");
+    }
   }
 }
 
 function updateConsistency(): void {
-  $("#result .stats .consistency .bottom").text(
-    Format.percentage(result.consistency)
-  );
-  if (Config.alwaysShowDecimalPlaces) {
-    $("#result .stats .consistency .bottom").attr(
-      "aria-label",
-      Format.percentage(result.keyConsistency, {
-        showDecimalPlaces: true,
-        suffix: " key",
-      })
-    );
-  } else {
-    $("#result .stats .consistency .bottom").attr(
-      "aria-label",
-      `${result.consistency}% (${result.keyConsistency}% key)`
-    );
+  if (!resultStatsEl) return;
+
+  const consistencyBottom = resultStatsEl.querySelector(".consistency .bottom");
+  if (consistencyBottom) {
+    consistencyBottom.textContent = Format.percentage(result.consistency);
+
+    if (Config.alwaysShowDecimalPlaces) {
+      consistencyBottom.setAttribute(
+        "aria-label",
+        Format.percentage(result.keyConsistency, {
+          showDecimalPlaces: true,
+          suffix: " key",
+        })
+      );
+    } else {
+      consistencyBottom.setAttribute(
+        "aria-label",
+        `${result.consistency}% (${result.keyConsistency}% key)`
+      );
+    }
   }
 }
 
 function updateTime(): void {
+  if (!resultStatsEl) return;
+
   const afkSecondsPercent = Numbers.roundTo2(
     (result.afkDuration / result.testDuration) * 100
   );
-  $("#result .stats .time .bottom .afk").text("");
-  if (afkSecondsPercent > 0) {
-    $("#result .stats .time .bottom .afk").text(afkSecondsPercent + "% afk");
-  }
-  $("#result .stats .time .bottom").attr(
-    "aria-label",
-    `${result.afkDuration}s afk ${afkSecondsPercent}%`
-  );
 
-  if (Config.alwaysShowDecimalPlaces) {
-    let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
-    if (result.testDuration > 61) {
-      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
+  const timeBottomAfk = resultStatsEl.querySelector(".time .bottom .afk");
+  if (timeBottomAfk) {
+    timeBottomAfk.textContent = "";
+    if (afkSecondsPercent > 0) {
+      timeBottomAfk.textContent = afkSecondsPercent + "% afk";
     }
-    $("#result .stats .time .bottom .text").text(time);
-  } else {
-    let time = Math.round(result.testDuration) + "s";
-    if (result.testDuration > 61) {
-      time = DateTime.secondsToString(Math.round(result.testDuration));
-    }
-    $("#result .stats .time .bottom .text").text(time);
-    $("#result .stats .time .bottom").attr(
+  }
+
+  const timeBottom = resultStatsEl.querySelector(".time .bottom");
+  if (timeBottom) {
+    timeBottom.setAttribute(
       "aria-label",
-      `${Numbers.roundTo2(result.testDuration)}s (${
-        result.afkDuration
-      }s afk ${afkSecondsPercent}%)`
+      `${result.afkDuration}s afk ${afkSecondsPercent}%`
     );
+  }
+
+  const timeBottomText = resultStatsEl.querySelector(".time .bottom .text");
+  if (timeBottomText) {
+    if (Config.alwaysShowDecimalPlaces) {
+      let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
+      if (result.testDuration > 61) {
+        time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
+      }
+      timeBottomText.textContent = time;
+    } else {
+      let time = Math.round(result.testDuration) + "s";
+      if (result.testDuration > 61) {
+        time = DateTime.secondsToString(Math.round(result.testDuration));
+      }
+      timeBottomText.textContent = time;
+      if (timeBottom) {
+        timeBottom.setAttribute(
+          "aria-label",
+          `${Numbers.roundTo2(result.testDuration)}s (${
+            result.afkDuration
+          }s afk ${afkSecondsPercent}%)`
+        );
+      }
+    }
   }
 }
 
 export function updateTodayTracker(): void {
-  $("#result .stats .time .bottom .timeToday").text(TodayTracker.getString());
+  if (!resultStatsEl) return;
+
+  const timeTodayEl = resultStatsEl.querySelector(".time .bottom .timeToday");
+  if (timeTodayEl) {
+    timeTodayEl.textContent = TodayTracker.getString();
+  }
 }
 
 function updateKey(): void {
-  $("#result .stats .key .bottom").text(
-    result.charStats[0] +
+  if (!resultStatsEl) return;
+
+  const keyBottom = resultStatsEl.querySelector(".key .bottom");
+  if (keyBottom) {
+    keyBottom.textContent =
+      result.charStats[0] +
       "/" +
       result.charStats[1] +
       "/" +
       result.charStats[2] +
       "/" +
-      result.charStats[3]
-  );
+      result.charStats[3];
+  }
 }
 
 export function showCrown(type: PbCrown.CrownType): void {
@@ -379,11 +452,13 @@ export function showCrown(type: PbCrown.CrownType): void {
 }
 
 export function updateCrownText(text: string, wide = false): void {
-  $("#result .stats .wpm .crown").attr("aria-label", text);
-  $("#result .stats .wpm .crown").attr(
-    "data-balloon-length",
-    wide ? "medium" : ""
-  );
+  if (!resultStatsEl) return;
+
+  const crownEl = resultStatsEl.querySelector(".wpm .crown");
+  if (crownEl) {
+    crownEl.setAttribute("aria-label", text);
+    crownEl.setAttribute("data-balloon-length", wide ? "medium" : "");
+  }
 }
 
 export async function updateCrown(dontSave: boolean): Promise<void> {
@@ -551,6 +626,8 @@ export function showConfetti(): void {
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
+  if (!resultStatsEl) return;
+
   const activeTags: SnapshotUserTag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
@@ -561,22 +638,33 @@ async function updateTags(dontSave: boolean): Promise<void> {
     });
   } catch (e) {}
 
-  if (userTagsCount === 0) {
-    $("#result .stats .tags").addClass("hidden");
-  } else {
-    $("#result .stats .tags").removeClass("hidden");
+  const tagsEl = resultStatsEl.querySelector(".tags");
+  if (tagsEl) {
+    if (userTagsCount === 0) {
+      tagsEl.classList.add("hidden");
+    } else {
+      tagsEl.classList.remove("hidden");
+    }
   }
-  if (activeTags.length === 0) {
-    $("#result .stats .tags .bottom").html("<div class='noTags'>no tags</div>");
-  } else {
-    $("#result .stats .tags .bottom").text("");
+
+  const tagsBottomEl = resultStatsEl.querySelector(".tags .bottom");
+  if (tagsBottomEl) {
+    if (activeTags.length === 0) {
+      tagsBottomEl.innerHTML = "<div class='noTags'>no tags</div>";
+    } else {
+      tagsBottomEl.textContent = "";
+    }
   }
-  $("#result .stats .tags .editTagsButton").attr("data-result-id", "");
-  $("#result .stats .tags .editTagsButton").attr(
-    "data-active-tag-ids",
-    activeTags.map((t) => t._id).join(",")
-  );
-  $("#result .stats .tags .editTagsButton").addClass("invisible");
+
+  const editTagsButton = resultStatsEl.querySelector(".tags .editTagsButton");
+  if (editTagsButton) {
+    editTagsButton.setAttribute("data-result-id", "");
+    editTagsButton.setAttribute(
+      "data-active-tag-ids",
+      activeTags.map((t) => t._id).join(",")
+    );
+    editTagsButton.classList.add("invisible");
+  }
 
   let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
@@ -591,9 +679,16 @@ async function updateTags(dontSave: boolean): Promise<void> {
       Config.difficulty,
       Config.lazyMode
     );
-    $("#result .stats .tags .bottom").append(`
-      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
-    `);
+
+    if (tagsBottomEl) {
+      const tagDiv = document.createElement("div");
+      tagDiv.setAttribute("tagid", tag._id);
+      tagDiv.setAttribute("aria-label", `PB: ${tpb}`);
+      tagDiv.setAttribute("data-balloon-pos", "up");
+      tagDiv.innerHTML = `${tag.display}<i class="fas fa-crown hidden"></i>`;
+      tagsBottomEl.appendChild(tagDiv);
+    }
+
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     if (
       Config.mode !== "quote" &&
@@ -616,13 +711,22 @@ async function updateTags(dontSave: boolean): Promise<void> {
           result.rawWpm,
           result.consistency
         );
-        $(
-          `#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`
-        ).removeClass("hidden");
-        $(`#result .stats .tags .bottom div[tagid="${tag._id}"]`).attr(
-          "aria-label",
-          "+" + Numbers.roundTo2(result.wpm - tpb)
-        );
+
+        if (tagsBottomEl) {
+          const tagCrown = tagsBottomEl.querySelector(
+            `div[tagid="${tag._id}"] .fas`
+          );
+          if (tagCrown) {
+            tagCrown.classList.remove("hidden");
+          }
+          const tagDiv = tagsBottomEl.querySelector(`div[tagid="${tag._id}"]`);
+          if (tagDiv) {
+            tagDiv.setAttribute(
+              "aria-label",
+              "+" + Numbers.roundTo2(result.wpm - tpb)
+            );
+          }
+        }
         // console.log("new pb for tag " + tag.display);
       } else {
         const themecolors = await ThemeColors.getAll();
@@ -710,7 +814,10 @@ function updateTestType(randomQuote: Quote | null): void {
     testType += `<br>stop on ${Config.stopOnError}`;
   }
 
-  $("#result .stats .testType .bottom").html(testType);
+  const testTypeBottomEl = resultStatsEl?.querySelector(".testType .bottom");
+  if (testTypeBottomEl) {
+    testTypeBottomEl.innerHTML = testType;
+  }
 }
 
 function updateOther(
@@ -764,11 +871,20 @@ function updateOther(
   }
 
   if (otherText === "") {
-    $("#result .stats .info").addClass("hidden");
+    const infoEl = resultStatsEl?.querySelector(".info");
+    if (infoEl) {
+      infoEl.classList.add("hidden");
+    }
   } else {
-    $("#result .stats .info").removeClass("hidden");
-    otherText = otherText.substring(4);
-    $("#result .stats .info .bottom").html(otherText);
+    const infoEl = resultStatsEl?.querySelector(".info");
+    if (infoEl) {
+      infoEl.classList.remove("hidden");
+      otherText = otherText.substring(4);
+      const infoBottomEl = infoEl.querySelector(".bottom");
+      if (infoBottomEl) {
+        infoBottomEl.innerHTML = otherText;
+      }
+    }
   }
 }
 
@@ -829,13 +945,20 @@ function updateQuoteFavorite(randomQuote: Quote | null): void {
 }
 
 function updateQuoteSource(randomQuote: Quote | null): void {
+  const sourceEl = resultStatsEl?.querySelector(".source");
   if (Config.mode === "quote") {
-    $("#result .stats .source").removeClass("hidden");
-    $("#result .stats .source .bottom").html(
-      randomQuote?.source ?? "Error: Source unknown"
-    );
+    if (sourceEl) {
+      sourceEl.classList.remove("hidden");
+      const sourceBottomEl = sourceEl.querySelector(".bottom");
+      if (sourceBottomEl) {
+        sourceBottomEl.innerHTML =
+          randomQuote?.source ?? "Error: Source unknown";
+      }
+    }
   } else {
-    $("#result .stats .source").addClass("hidden");
+    if (sourceEl) {
+      sourceEl.classList.add("hidden");
+    }
   }
 }
 
@@ -849,6 +972,9 @@ export async function update(
   randomQuote: Quote | null,
   dontSave: boolean
 ): Promise<void> {
+  // Initialize DOM element cache
+  initializeResultElements();
+
   resultAnnotation = [];
   result = structuredClone(res);
   hideCrown();
@@ -862,7 +988,10 @@ export async function update(
   $(".pageTest #result #rateQuoteButton").addClass("hidden");
   $("#words").removeClass("blurred");
   $("#wordsInput").trigger("blur");
-  $("#result .stats .time .bottom .afk").text("");
+  const afkEl = resultStatsEl?.querySelector(".time .bottom .afk");
+  if (afkEl) {
+    afkEl.textContent = "";
+  }
   if (isAuthenticated()) {
     $("#result .loginTip").addClass("hidden");
   } else {
@@ -893,12 +1022,18 @@ export async function update(
   ChartController.result.resize();
 
   if (
-    $("#result .stats .tags").hasClass("hidden") &&
-    $("#result .stats .info").hasClass("hidden")
+    resultStatsEl?.querySelector(".tags")?.classList.contains("hidden") &&
+    resultStatsEl?.querySelector(".info")?.classList.contains("hidden")
   ) {
-    $("#result .stats .infoAndTags").addClass("hidden");
+    const infoAndTagsEl = resultStatsEl?.querySelector(".infoAndTags");
+    if (infoAndTagsEl) {
+      infoAndTagsEl.classList.add("hidden");
+    }
   } else {
-    $("#result .stats .infoAndTags").removeClass("hidden");
+    const infoAndTagsEl = resultStatsEl?.querySelector(".infoAndTags");
+    if (infoAndTagsEl) {
+      infoAndTagsEl.classList.remove("hidden");
+    }
   }
 
   if (GlarsesMode.get()) {
@@ -915,7 +1050,13 @@ export async function update(
       </div>
 
     `);
-    $("main #result .stats").addClass("hidden");
+    const mainResultEl = document.querySelector("main #result");
+    if (mainResultEl) {
+      const statsEl = mainResultEl.querySelector(".stats");
+      if (statsEl) {
+        statsEl.classList.add("hidden");
+      }
+    }
     $("main #result .chart").addClass("hidden");
     $("main #result #resultWordsHistory").addClass("hidden");
     $("main #result #resultReplay").addClass("hidden");
@@ -928,7 +1069,13 @@ export async function update(
       `Test Completed: ${result.wpm} wpm ${result.acc}% acc ${result.rawWpm} raw ${result.consistency}% consistency`
     );
   } else {
-    $("main #result .stats").removeClass("hidden");
+    const mainResultEl = document.querySelector("main #result");
+    if (mainResultEl) {
+      const statsEl = mainResultEl.querySelector(".stats");
+      if (statsEl) {
+        statsEl.classList.remove("hidden");
+      }
+    }
     $("main #result .chart").removeClass("hidden");
     // $("main #result #resultWordsHistory").removeClass("hidden");
     if (!isAuthenticated()) {
