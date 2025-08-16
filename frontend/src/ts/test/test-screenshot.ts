@@ -19,6 +19,124 @@ async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
 let revealReplay = false;
 let revertCookie = false;
 
+/**
+ * If a local custom background image is present with CSS filters applied, html2canvas
+ * may omit those filters. To preserve the visual appearance, this function renders
+ * the background image with filters into a temporary canvas overlay positioned
+ * exactly over the original image, hides the original, and returns a cleanup
+ * function to restore the DOM.
+ */
+function prepareFilteredBackgroundOverlay(): () => void {
+  const img = document.querySelector<HTMLImageElement>(".customBackground img");
+  if (!img) return () => undefined;
+
+  const src = img.currentSrc || img.src || "";
+  // only handle local backgrounds (data URLs) to avoid tainting the canvas
+  if (!src.startsWith("data:")) return () => undefined;
+
+  const cs = getComputedStyle(img);
+  // no filter? nothing to do
+  const filterCss = cs.filter || "none";
+  if (!filterCss || filterCss === "none") return () => undefined;
+
+  const rect = img.getBoundingClientRect();
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(rect.width));
+  canvas.height = Math.max(1, Math.round(rect.height));
+
+  // position
+  const styleKeys = [
+    "position",
+    "left",
+    "top",
+    "right",
+    "bottom",
+    "width",
+    "height",
+    "zIndex",
+    "opacity",
+    "pointerEvents",
+  ] as const;
+  const canvasStyle = canvas.style as CSSStyleDeclaration & {
+    [key in (typeof styleKeys)[number]]: string;
+  };
+  canvasStyle.position = cs.position || "absolute";
+  canvasStyle.left = cs.left;
+  canvasStyle.top = cs.top;
+  canvasStyle.right = cs.right;
+  canvasStyle.bottom = cs.bottom;
+  canvasStyle.width = cs.width;
+  canvasStyle.height = cs.height;
+  canvasStyle.zIndex = cs.zIndex;
+  canvasStyle.opacity = ""; // use filter's opacity instead
+  canvasStyle.pointerEvents = "none"; // ensure it doesn't block UI
+
+  // normalize filter for Canvas2D: convert blur from rem to px if needed
+  const rootFontSizePx = parseFloat(
+    getComputedStyle(document.documentElement).fontSize || "16"
+  );
+  const normalizedFilter = filterCss.replace(
+    /blur\(([^)]+)\)/,
+    (_match, rawVal: string) => {
+      const trimmed = rawVal.trim();
+      const num = parseFloat(trimmed);
+      if (Number.isNaN(num)) return `blur(0px)`;
+      if (trimmed.endsWith("rem")) {
+        return `blur(${num * rootFontSizePx}px)`;
+      }
+      if (trimmed.endsWith("px")) {
+        return `blur(${trimmed})`;
+      }
+      return `blur(${num}px)`;
+    }
+  );
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return () => undefined;
+  ctx.filter = normalizedFilter;
+
+  const naturalW = img.naturalWidth || 0;
+  const naturalH = img.naturalHeight || 0;
+  const destW = canvas.width;
+  const destH = canvas.height;
+
+  // Draw according to object-fit to match CSS rendering as closely as possible
+  const objectFit = cs.objectFit || "fill";
+  if (naturalW > 0 && naturalH > 0) {
+    if (objectFit === "cover") {
+      const scale = Math.max(destW / naturalW, destH / naturalH);
+      const drawW = naturalW * scale;
+      const drawH = naturalH * scale;
+      const dx = (destW - drawW) / 2;
+      const dy = (destH - drawH) / 2;
+      ctx.drawImage(img, dx, dy, drawW, drawH);
+    } else if (objectFit === "contain") {
+      const scale = Math.min(destW / naturalW, destH / naturalH);
+      const drawW = naturalW * scale;
+      const drawH = naturalH * scale;
+      const dx = (destW - drawW) / 2;
+      const dy = (destH - drawH) / 2;
+      ctx.drawImage(img, dx, dy, drawW, drawH);
+    } else {
+      // fill or default: stretch to element size
+      ctx.drawImage(img, 0, 0, destW, destH);
+    }
+  }
+
+  // insert overlay
+  img.after(canvas);
+  const prevDisplay = img.style.display;
+  img.style.display = "none";
+
+  return () => {
+    // cleanup overlay
+    try {
+      img.style.display = prevDisplay;
+      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+    } catch {}
+  };
+}
+
 function revert(): void {
   Loader.hide();
   $("#ad-result-wrapper").removeClass("hidden");
@@ -129,10 +247,13 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   const sourceHeight = src.outerHeight(true) as number;
 
   // --- Canvas Generation ---
+  let cleanupBgOverlay: () => void = () => undefined;
   try {
     const paddingX = convertRemToPixels(2);
     const paddingY = convertRemToPixels(2);
 
+    // prepare background overlay
+    cleanupBgOverlay = prepareFilteredBackgroundOverlay();
     const canvas = await (
       await gethtml2canvas()
     )(document.body, {
@@ -154,6 +275,11 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     );
     revert(); // Ensure UI is reverted on error
     return null;
+  } finally {
+    // cleanup overlay
+    try {
+      cleanupBgOverlay();
+    } catch {}
   }
 }
 
