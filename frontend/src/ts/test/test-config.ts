@@ -5,6 +5,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { applyReducedMotion } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
+import * as AuthEvent from "../observables/auth-event";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
@@ -314,5 +315,15 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
   ) {
     if (eventValue !== undefined)
       updateActiveExtraButtons(eventKey, eventValue);
+  }
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    if (!event.data.isUserSignedIn) {
+      hideFavoriteQuoteLength();
+    } else {
+      showFavoriteQuoteLength();
+    }
   }
 });
