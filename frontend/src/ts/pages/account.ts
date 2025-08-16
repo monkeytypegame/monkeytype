@@ -1378,7 +1378,7 @@ export const page = new Page({
       snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
     );
 
-    void update().then(() => {
+    await update().then(() => {
       void updateChartColors();
       $(".pageAccount .content .accountVerificatinNotice").remove();
       if (getAuthenticatedUser()?.emailVerified === false) {
