@@ -176,7 +176,7 @@ export async function change(
 
     if (loadingOptions.barKeyframes !== undefined) {
       await getLoadingPromiseWithBarKeyframes(loadingOptions);
-      await PageLoading.updateBar(100, 0);
+      void PageLoading.updateBar(100, 125);
       PageLoading.updateText("Done");
     } else {
       await loadingOptions.promise();
