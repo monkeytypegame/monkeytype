@@ -185,7 +185,7 @@ export async function onAuthStateChanged(
   let keyframes = [
     {
       percentage: 90,
-      duration: 2000,
+      duration: 1000,
       text: "Downloading user data...",
     },
   ];
