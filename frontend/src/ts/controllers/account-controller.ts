@@ -148,7 +148,7 @@ export async function onAuthStateChanged(
   console.debug(`account controller ready`);
 
   let userPromise: Promise<void> = Promise.resolve();
-  let path = undefined;
+  let targetPage = undefined; //if it remains undefined, it will go to the current window.location.pathname
 
   if (authInitialisedAndConnected) {
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
@@ -163,7 +163,7 @@ export async function onAuthStateChanged(
   if (!authInitialisedAndConnected || !user) {
     Sentry.clearUser();
     if (window.location.pathname === "/account") {
-      path = "/login";
+      targetPage = "/login";
     }
   }
 
@@ -190,7 +190,7 @@ export async function onAuthStateChanged(
     ];
   }
 
-  navigate(path, {
+  navigate(targetPage, {
     overrideLoadingOptions: {
       shouldLoad: () => {
         return user !== null;
