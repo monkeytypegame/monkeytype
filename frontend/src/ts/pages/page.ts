@@ -30,27 +30,34 @@ export type LoadingOptions = {
   /**
    * When this promise resolves, the loading screen will be hidden.
    */
-  promise: () => Promise<void>;
-  /**
-   * Keyframes for the loading bar.
-   * Each keyframe will be shown in order, with the specified percentage and duration.
-   * If not provided, a loading spinner will be shown instead.
-   */
-  barKeyframes?: {
-    /**
-     * Percentage of the loading bar to fill.
-     */
-    percentage: number;
-    /**
-     * Duration in milliseconds for the keyframe animation.
-     */
-    duration: number;
-    /**
-     * Text to display below the loading bar.
-     */
-    text?: string;
-  }[];
-};
+  waitFor: () => Promise<void>;
+} & (
+  | {
+      style: "spinner";
+    }
+  | {
+      style: "bar";
+      /**
+       * Keyframes for the loading bar.
+       * Each keyframe will be shown in order, with the specified percentage and duration.
+       * If not provided, a loading spinner will be shown instead.
+       */
+      keyframes: {
+        /**
+         * Percentage of the loading bar to fill.
+         */
+        percentage: number;
+        /**
+         * Duration in milliseconds for the keyframe animation.
+         */
+        duration: number;
+        /**
+         * Text to display below the loading bar.
+         */
+        text?: string;
+      }[];
+    }
+);
 
 type PageProperties<T> = {
   id: PageName;

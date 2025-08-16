@@ -1344,8 +1344,9 @@ export const page = new Page({
     shouldLoad: () => {
       return DB.getSnapshot()?.results === undefined;
     },
-    promise: downloadResults,
-    barKeyframes: [
+    waitFor: downloadResults,
+    style: "bar",
+    keyframes: [
       {
         percentage: 100,
         duration: 3000,

@@ -51,21 +51,22 @@ function updateTitle(nextPage: { id: string; display?: string }): void {
 }
 
 async function getLoadingPromiseWithBarKeyframes(
-  loadingOptions: NonNullable<Page<unknown>["loading"]>
+  loadingOptions: Extract<
+    NonNullable<Page<unknown>["loading"]>,
+    { style: "bar" }
+  >
 ): Promise<void> {
   let aborted = false;
-  let loadingPromise = loadingOptions.promise();
+  let loadingPromise = loadingOptions.waitFor();
 
   // Animate bar keyframes, but allow aborting if loading.promise finishes first
   const keyframePromise = (async () => {
-    if (loadingOptions?.barKeyframes !== undefined) {
-      for (const keyframe of loadingOptions.barKeyframes) {
-        if (aborted) break;
-        if (keyframe.text !== undefined) {
-          PageLoading.updateText(keyframe.text);
-        }
-        await PageLoading.updateBar(keyframe.percentage, keyframe.duration);
+    for (const keyframe of loadingOptions.keyframes) {
+      if (aborted) break;
+      if (keyframe.text !== undefined) {
+        PageLoading.updateText(keyframe.text);
       }
+      await PageLoading.updateBar(keyframe.percentage, keyframe.duration);
     }
   })();
 
@@ -156,7 +157,7 @@ export async function change(
     pages.loading.element.removeClass("hidden").css("opacity", 0);
     await pages.loading.beforeShow({});
 
-    if (loadingOptions.barKeyframes !== undefined) {
+    if (loadingOptions.style === "bar") {
       await PageLoading.showBar();
       await PageLoading.updateBar(0, 0);
       PageLoading.updateText("");
@@ -174,12 +175,12 @@ export async function change(
       easingMethod
     );
 
-    if (loadingOptions.barKeyframes !== undefined) {
+    if (loadingOptions.style === "bar") {
       await getLoadingPromiseWithBarKeyframes(loadingOptions);
       void PageLoading.updateBar(100, 125);
       PageLoading.updateText("Done");
     } else {
-      await loadingOptions.promise();
+      await loadingOptions.waitFor();
     }
 
     await Misc.promiseAnimation(

@@ -195,10 +195,11 @@ export async function onAuthStateChanged(
       shouldLoad: () => {
         return user !== null;
       },
-      promise: async () => {
+      waitFor: async () => {
         await userPromise;
       },
-      barKeyframes: keyframes,
+      style: "bar",
+      keyframes: keyframes,
     },
   });
 
