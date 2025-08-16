@@ -148,7 +148,6 @@ export async function onAuthStateChanged(
   console.debug(`account controller ready`);
 
   let userPromise: Promise<void> = Promise.resolve();
-  let targetPage = undefined; //if it remains undefined, it will go to the current window.location.pathname
 
   if (authInitialisedAndConnected) {
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
@@ -187,7 +186,8 @@ export async function onAuthStateChanged(
     ];
   }
 
-  navigate(targetPage, {
+  //undefined means navigate to whatever the current window.location.pathname is
+  navigate(undefined, {
     force: true,
     overrideLoadingOptions: {
       shouldLoad: () => {
