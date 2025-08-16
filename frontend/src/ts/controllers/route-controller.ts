@@ -12,6 +12,7 @@ import { LoadingOptions } from "../pages/page";
 
 //this will be used in tribe
 type NavigateOptions = {
+  force?: boolean;
   empty?: boolean;
   data?: unknown;
   overrideLoadingOptions?: LoadingOptions;
@@ -151,9 +152,8 @@ export function navigate(
   options = {} as NavigateOptions
 ): void {
   if (
-    TestUI.testRestarting ||
-    TestUI.resultCalculating ||
-    PageTransition.get()
+    !options.force &&
+    (TestUI.testRestarting || TestUI.resultCalculating || PageTransition.get())
   ) {
     console.debug(
       `navigate: ${url} ignored, page is busy (testRestarting: ${

@@ -191,6 +191,7 @@ export async function onAuthStateChanged(
   }
 
   navigate(targetPage, {
+    force: true,
     overrideLoadingOptions: {
       shouldLoad: () => {
         return user !== null;

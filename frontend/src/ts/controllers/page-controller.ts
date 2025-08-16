@@ -93,7 +93,7 @@ export async function change(
 
   options = { ...defaultOptions, ...options };
 
-  if (PageTransition.get()) {
+  if (PageTransition.get() && !options.force) {
     console.debug(
       `change page to ${pageName} stopped, page transition is true`
     );
