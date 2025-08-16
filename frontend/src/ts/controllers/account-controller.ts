@@ -134,25 +134,12 @@ async function getDataAndInit(): Promise<boolean> {
 }
 
 export async function loadUser(_user: UserType): Promise<void> {
-  // User is signed in.
-  PageTransition.set(false);
-
+  LoginPage.hidePreloader();
   if (!(await getDataAndInit())) {
     signOut();
+    return;
   }
-
   AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
-
-  // var displayName = user.displayName;
-  // var email = user.email;
-  // var emailVerified = user.emailVerified;
-  // var photoURL = user.photoURL;
-  // var isAnonymous = user.isAnonymous;
-  // var uid = user.uid;
-  // var providerData = user.providerData;
-  LoginPage.hidePreloader();
-
-  // showFavouriteThemesAtTheTop();
 }
 
 export async function onAuthStateChanged(
