@@ -358,12 +358,12 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_yoptascript",
   ],
   viossa: ["viossa", "viossa_njutro"],
-  hawaiian: ["hawaiian", "hawaiian_1k"]
+  hawaiian: ["hawaiian", "hawaiian_1k"],
 };
 
 export type LanguageGroupName = keyof typeof LanguageGroups;
 export const LanguageGroupNames: LanguageGroupName[] = Array.from(
-  Object.keys(LanguageGroups)
+  Object.keys(LanguageGroups),
 );
 
 /**
@@ -372,7 +372,7 @@ export const LanguageGroupNames: LanguageGroupName[] = Array.from(
  * @returns the language group.
  */
 export function getGroupForLanguage(
-  language: Language
+  language: Language,
 ): LanguageGroupName | undefined {
   return LanguageGroupNames.find((group) => group.includes(language));
 }
