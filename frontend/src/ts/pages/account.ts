@@ -985,13 +985,17 @@ export async function downloadResults(offset?: number): Promise<void> {
   }
 }
 
+function showError(message: string): void {
+  $(".pageAccount .error .text").html(message);
+  $(".pageAccount .error").removeClass("hidden");
+  $(".pageAccount .content").remove();
+}
+
 async function update(): Promise<void> {
   if (DB.getSnapshot() !== null) {
-    $(".pageAccount .error .text").html(
+    showError(
       "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."
     );
-    $(".pageAccount .error").removeClass("hidden");
-    $(".pageAccount .content").remove();
   } else {
     await downloadResults();
     try {
@@ -999,7 +1003,7 @@ async function update(): Promise<void> {
       await fillContent();
     } catch (e) {
       console.error(e);
-      Notifications.add(`Something went wrong: ${e}`, -1);
+      showError(`Something went wrong: ${e}`);
     }
   }
 }
