@@ -1003,7 +1003,7 @@ async function update(): Promise<void> {
       await fillContent();
     } catch (e) {
       console.error(e);
-      showError(`Something went wrong: ${e}`);
+      Notifications.add(`Something went wrong: ${e}`, -1);
     }
   }
 }
