@@ -133,7 +133,6 @@ async function getDataAndInit(): Promise<boolean> {
 }
 
 export async function loadUser(_user: UserType): Promise<void> {
-  LoginPage.hidePreloader();
   if (!(await getDataAndInit())) {
     signOut();
     return;
