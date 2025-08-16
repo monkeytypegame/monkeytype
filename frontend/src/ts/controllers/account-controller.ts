@@ -4,7 +4,6 @@ import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
-import * as PageTransition from "../states/page-transition";
 import * as LoginPage from "../pages/login";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as Account from "../pages/account";
@@ -163,7 +162,6 @@ export async function onAuthStateChanged(
 
   if (!authInitialisedAndConnected || !user) {
     Sentry.clearUser();
-    PageTransition.set(false);
     if (window.location.pathname === "/account") {
       path = "/login";
     }
