@@ -190,7 +190,7 @@ export async function onAuthStateChanged(
   }
 
   //undefined means navigate to whatever the current window.location.pathname is
-  navigate(undefined, {
+  await navigate(undefined, {
     force: true,
     overrideLoadingOptions: {
       shouldLoad: () => {

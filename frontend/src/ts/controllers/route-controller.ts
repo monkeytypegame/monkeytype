@@ -42,99 +42,99 @@ type Route = {
   load: (
     params: Record<string, string>,
     navigateOptions: NavigateOptions
-  ) => void;
+  ) => Promise<void>;
 };
 
 const route404: Route = {
   path: "404",
-  load: (): void => {
-    void PageController.change("404");
+  load: async () => {
+    await PageController.change("404");
   },
 };
 
 const routes: Route[] = [
   {
     path: "/",
-    load: (_params, options): void => {
-      void PageController.change("test", options);
+    load: async (_params, options) => {
+      await PageController.change("test", options);
     },
   },
   {
     path: "/verify",
-    load: (_params, options): void => {
-      void PageController.change("test", options);
+    load: async (_params, options) => {
+      await PageController.change("test", options);
     },
   },
   {
     path: "/leaderboards",
-    load: (_params, options): void => {
-      void PageController.change("leaderboards", options);
+    load: async (_params, options) => {
+      await PageController.change("leaderboards", options);
     },
   },
   {
     path: "/about",
-    load: (_params, options): void => {
-      void PageController.change("about", options);
+    load: async (_params, options) => {
+      await PageController.change("about", options);
     },
   },
   {
     path: "/settings",
-    load: (_params, options): void => {
-      void PageController.change("settings", options);
+    load: async (_params, options) => {
+      await PageController.change("settings", options);
     },
   },
   {
     path: "/login",
-    load: (_params, options): void => {
+    load: async (_params, options) => {
       if (!isAuthAvailable()) {
-        navigate("/", options);
+        await navigate("/", options);
         return;
       }
       if (isAuthenticated()) {
-        navigate("/account", options);
+        await navigate("/account", options);
         return;
       }
-      void PageController.change("login", options);
+      await PageController.change("login", options);
     },
   },
   {
     path: "/account",
-    load: (_params, options): void => {
+    load: async (_params, options) => {
       if (!isAuthAvailable()) {
-        navigate("/", options);
+        await navigate("/", options);
         return;
       }
       if (!isAuthenticated()) {
-        navigate("/login", options);
+        await navigate("/login", options);
         return;
       }
-      void PageController.change("account", options);
+      await PageController.change("account", options);
     },
   },
   {
     path: "/account-settings",
-    load: (_params, options): void => {
+    load: async (_params, options) => {
       if (!isAuthAvailable()) {
-        navigate("/", options);
+        await navigate("/", options);
         return;
       }
       if (!isAuthenticated()) {
-        navigate("/login", options);
+        await navigate("/login", options);
         return;
       }
-      void PageController.change("accountSettings", options);
+      await PageController.change("accountSettings", options);
     },
   },
   {
     path: "/profile",
-    load: (_params, options): void => {
-      void PageController.change("profileSearch", options);
+    load: async (_params, options) => {
+      await PageController.change("profileSearch", options);
     },
   },
   {
     path: "/profile/:uidOrName",
-    load: (params, options): void => {
-      void PageController.change("profile", {
+    load: async (params, options) => {
+      await PageController.change("profile", {
         ...options,
         force: true,
         params: {
@@ -146,12 +146,12 @@ const routes: Route[] = [
   },
 ];
 
-export function navigate(
+export async function navigate(
   url = window.location.pathname +
     window.location.search +
     window.location.hash,
   options = {} as NavigateOptions
-): void {
+): Promise<void> {
   if (
     !options.force &&
     (TestUI.testRestarting || TestUI.resultCalculating || PageTransition.get())
@@ -189,7 +189,7 @@ export function navigate(
     history.pushState(null, "", url);
   }
 
-  void router(options);
+  await router(options);
 }
 
 async function router(options = {} as NavigateOptions): Promise<void> {
@@ -206,11 +206,11 @@ async function router(options = {} as NavigateOptions): Promise<void> {
   };
 
   if (match === undefined) {
-    route404.load({}, {});
+    await route404.load({}, {});
     return;
   }
 
-  match.route.load(getParams(match), options);
+  await match.route.load(getParams(match), options);
 }
 
 window.addEventListener("popstate", () => {
@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const target = e?.target as HTMLLinkElement;
     if (target.matches("[router-link]") && target?.href) {
       e.preventDefault();
-      navigate(target.href);
+      void navigate(target.href);
     }
   });
 });
