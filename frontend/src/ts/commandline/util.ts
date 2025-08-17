@@ -68,6 +68,7 @@ function _buildCommandForConfigKey<
     const inputProps = commandMeta.input;
 
     const inputCommand = buildInputCommand({
+      rootKey: key,
       key: "secondKey" in inputProps ? inputProps.secondKey : key,
       isPartOfSubgruop: "subgroup" in commandMeta,
       inputProps: inputProps as InputProps<keyof ConfigSchemas.Config>,
@@ -200,12 +201,14 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
 }
 
 function buildInputCommand<K extends keyof ConfigSchemas.Config>({
+  rootKey,
   key,
   isPartOfSubgruop,
   inputProps,
   configMeta,
   schema,
 }: {
+  rootKey: keyof ConfigSchemas.Config;
   key: K;
   isPartOfSubgruop: boolean;
   inputProps?: InputProps<K>;
@@ -236,6 +239,13 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
     //@ts-expect-error this is fine
     exec: ({ input }): void => {
       if (input === undefined) return;
+      if (
+        inputProps !== undefined &&
+        "secondKey" in inputProps &&
+        inputProps.configValue !== undefined
+      ) {
+        genericSet(rootKey, inputProps.configValue);
+      }
       genericSet(key, input as ConfigSchemas.Config[K]);
       inputProps?.afterExec?.(input as ConfigSchemas.Config[K]);
     },
