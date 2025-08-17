@@ -165,7 +165,7 @@ export async function onAuthStateChanged(
   let keyframes = [
     {
       percentage: 90,
-      duration: 1000,
+      durationMs: 1000,
       text: "Downloading user data...",
     },
   ];
@@ -177,12 +177,12 @@ export async function onAuthStateChanged(
     keyframes = [
       {
         percentage: 40,
-        duration: 1000,
+        durationMs: 1000,
         text: "Downloading user data...",
       },
       {
         percentage: 90,
-        duration: 1000,
+        durationMs: 1000,
         text: "Downloading results...",
       },
     ];
