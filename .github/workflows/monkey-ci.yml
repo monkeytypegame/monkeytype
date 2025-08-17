@@ -238,16 +238,20 @@ jobs:
         id: filter
         with:
           filters: |
-            language-json:
+            languages:
               - 'frontend/static/languages/*.json'
-            quotes-json:
+            quotes:
               - 'frontend/static/quotes/*.json'
-            other-json:
-              - 'frontend/static/funbox/*.json'
-              - 'frontend/static/fonts/*.json'
-              - 'frontend/static/themes/*.json'
-              - 'frontend/static/challenges/*.json'
+            layouts:
               - 'frontend/static/layouts/*.json'
+            themes:
+              - 'frontend/static/themes/*.json'
+            challenges:
+              - 'frontend/static/challenges/*.json'
+            fonts:
+              - 'frontend/static/fonts/*.json'
+            funbox:
+              - 'frontend/static/funbox/*.json'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -279,17 +283,9 @@ jobs:
       - name: Lint JSON
         run: npm run pr-check-lint-json
 
-      - name: Validate languages JSON
-        if: steps.filter.outputs.language-json == 'true'
-        run: npm run pr-check-language-json
-
-      - name: Validate quotes JSON
-        if: steps.filter.outputs.quotes-json == 'true'
-        run: npm run pr-check-quote-json
-
-      - name: Validate other JSON
-        if: steps.filter.outputs.other-json == 'true'
-        run: npm run pr-check-other-json
+      - name: Validate JSON
+#        if: steps.filter.outputs.changes
+        run: echo ${{ steps.filter.outputs.changes }} && npm run pr-check-json -- --passWithNoTests ${{ steps.filter.outputs.changes }}
 
   ci-pkg:
     name: ci-pkg

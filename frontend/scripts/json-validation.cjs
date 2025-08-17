@@ -18,9 +18,8 @@ function findDuplicates(words) {
   return duplicates;
 }
 
-function validateOthers() {
+function validateChallenges() {
   return new Promise((resolve, reject) => {
-    //challenges
     const challengesSchema = {
       type: "array",
       items: {
@@ -105,7 +104,12 @@ function validateOthers() {
       console.log("Challenges list JSON schema is \u001b[31minvalid\u001b[0m");
       return reject(new Error(challengesValidator.errors[0].message));
     }
+    resolve();
+  });
+}
 
+function validateLayouts() {
+  return new Promise((resolve, reject) => {
     const charDefinitionSchema = {
       type: "array",
       minItems: 1,
@@ -118,7 +122,7 @@ function validateOthers() {
       maxItems: 2,
       items: { type: "string", minLength: 1, maxLength: 1 },
     };
-    //layouts
+
     const layoutsSchema = {
       ansi: {
         type: "object",
@@ -469,13 +473,23 @@ function validateLanguages() {
   });
 }
 
-function validateAll() {
-  return Promise.all([validateOthers(), validateLanguages(), validateQuotes()]);
+function main() {
+  const validators = {
+    quotes: validateQuotes,
+    languages: validateLanguages,
+    layouts: validateLayouts,
+    challenges: validateChallenges,
+  };
+
+  const tasks = [];
+  const args = process.argv.slice(2);
+  for (const [key, validator] of Object.entries(validators)) {
+    if (args.includes(key)) tasks.push(validator());
+  }
+  if (args.length < 1) {
+    tasks.push(Object.values(validators).map((validator) => validator()));
+  }
+  return Promise.all(tasks);
 }
 
-module.exports = {
-  validateAll,
-  validateOthers,
-  validateLanguages,
-  validateQuotes,
-};
+main();

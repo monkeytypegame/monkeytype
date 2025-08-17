@@ -53,10 +53,9 @@
     "pretty-fix-fe": "prettier --write ./frontend/src",
     "pretty-fix-assets": "prettier --write ./frontend/static",
     "pretty-fix-pkg": "prettier --write ./packages",
-    "pr-check-lint-json": "cd frontend && eslint './static/**/*.json'",
-    "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
-    "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json && turbo test -- constants/languages",
-    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json && turbo test -- constants/layouts constants/themes constants/fonts",
+    "validate-json": "turbo run validate-json",
+    "pr-check-lint-json": "cd frontend && eslint \"./static/**/*.json\"",
+    "pr-check-json": "turbo run validate-json test --filter @monkeytype/frontend",
     "knip": "knip"
   },
   "engines": {
