@@ -3,7 +3,6 @@ import { customEnumErrorHandler } from "./util";
 
 export const ThemeNameSchema = z.enum(
   [
-    "8008",
     "80s_after_dark",
     "9009",
     "aether",
