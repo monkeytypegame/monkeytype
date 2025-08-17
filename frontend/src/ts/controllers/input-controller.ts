@@ -831,7 +831,7 @@ async function handleTab(
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      navigate("/");
+      await navigate("/");
       return;
     }
 
@@ -959,7 +959,7 @@ $(document).on("keydown", async (event) => {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      navigate("/");
+      await navigate("/");
       return;
     }
 
@@ -998,7 +998,7 @@ $(document).on("keydown", async (event) => {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      navigate("/");
+      await navigate("/");
       return;
     }
 
