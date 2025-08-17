@@ -171,11 +171,16 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
             el.style.zIndex = "0";
             el.style.width = `${targetWidth}px`;
             el.style.height = `${targetHeight}px`;
-            // for the inner image scales (<= 720px viewport width)
+            // for the inner image scales
             const img = el.querySelector("img");
-            if (img && window.innerWidth <= 720) {
-              img.style.width = "103%"; //103 cuz somehow the scrollbar shows in smaller sizes with blur
-              img.style.height = "135%";
+            if (img) {
+              // (<= 720px viewport width)
+              if (window.innerWidth <= 720) {
+                img.style.width = "103%"; // 103 cuz somehow the scrollbar shows in smaller sizes with blur
+                img.style.height = "135%";
+              } else {
+                img.style.height = "100%"; // image fit full screen even when words history is opened with many lines
+              }
             }
           }
         }
