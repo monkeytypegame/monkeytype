@@ -2,7 +2,7 @@ import { z } from "zod";
 import { customEnumErrorHandler } from "./util";
 
 export const LayoutNameSchema = z.enum([
-    "qwertyy",
+    "qwerty",
     "dvorak",
     "colemak",
     "colemak_wide",
