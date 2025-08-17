@@ -146,6 +146,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       style: {
         width: `${targetWidth}px`,
         height: `${targetHeight}px`,
+        overflow: "hidden", // for scrollbar in small viewports
       },
       // skipping hidden elements (THAT IS SO IMPORTANT!)
       filter: (el: Node): boolean => {
@@ -168,11 +169,14 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
           const el = cloned as HTMLElement;
           if (el.classList?.contains("customBackground")) {
             el.style.zIndex = "0";
-            el.style.position = "fixed";
-            el.style.left = "0";
-            el.style.top = "0";
             el.style.width = `${targetWidth}px`;
             el.style.height = `${targetHeight}px`;
+            // for the inner image scales
+            const img = el.querySelector("img");
+            if (img) {
+              img.style.width = "103%"; //103 cuz somehow the scrollbar shows in smaller sizes with blur
+              img.style.height = "100%";
+            }
           }
         }
       },
