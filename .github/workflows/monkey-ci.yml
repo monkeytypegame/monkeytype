@@ -45,7 +45,6 @@ jobs:
           filters: |
             json:
               - 'frontend/**/*.json'
-              - 'packages/schemas/src/{quotes,languages,layout,themes,fonts}.ts'
             be-src:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
               - 'backend/package.json'
@@ -241,19 +240,14 @@ jobs:
           filters: |
             languages:
               - 'frontend/static/languages/*.json'
-              - 'packages/schemas/src/languages.ts'
             quotes:
               - 'frontend/static/quotes/*.json'
-              - 'packages/schemas/src/quotes.ts'
             layouts:
               - 'frontend/static/layouts/*.json'
-              - 'packages/schemas/src/layouts.ts'
             themes:
               - 'frontend/static/themes/**'
-              - 'packages/schemas/src/themes.ts'
             fonts:
               - 'frontend/static/webfonts/**'
-              - 'packages/schemas/src/fonts.ts'
             challenges:
               - 'frontend/static/challenges/*.json'
 
