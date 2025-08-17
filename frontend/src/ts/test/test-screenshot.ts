@@ -171,11 +171,11 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
             el.style.zIndex = "0";
             el.style.width = `${targetWidth}px`;
             el.style.height = `${targetHeight}px`;
-            // for the inner image scales
+            // for the inner image scales (<= 720px viewport width)
             const img = el.querySelector("img");
-            if (img) {
+            if (img && window.innerWidth <= 720) {
               img.style.width = "103%"; //103 cuz somehow the scrollbar shows in smaller sizes with blur
-              img.style.height = "100%";
+              img.style.height = "135%";
             }
           }
         }
