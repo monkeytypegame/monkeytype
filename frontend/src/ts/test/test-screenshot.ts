@@ -11,7 +11,7 @@ import * as ActivePage from "../states/active-page";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
-import { domToPng } from "modern-screenshot";
+import { domToCanvas } from "modern-screenshot";
 
 let revealReplay = false;
 let revertCookie = false;
@@ -139,13 +139,22 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     );
 
     // Target the HTML root to include .customBackground
-    const dataUrl = await domToPng(document.documentElement, {
+    const fullCanvas = await domToCanvas(document.documentElement, {
       backgroundColor: await ThemeColors.get("bg"),
       // Sharp output
       scale: window.devicePixelRatio || 1,
       style: {
         width: `${targetWidth}px`,
         height: `${targetHeight}px`,
+      },
+      // skipping hidden elements (THAT IS SO IMPORTANT!)
+      filter: (el: Node): boolean => {
+        if (el instanceof HTMLElement) {
+          if (el.classList.contains("hidden")) {
+            return false;
+          }
+        }
+        return true;
       },
       // TODD find out why not working and if possible to make it work
       // Help remote image fetching (for custom background URLs)
@@ -168,19 +177,12 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
         }
       },
     });
-    // Cropping using canvas
-    const img: HTMLImageElement = new Image();
-    img.src = dataUrl;
-    await new Promise<void>((resolve) => {
-      img.addEventListener("load", () => resolve(), { once: true });
-      img.addEventListener("error", () => resolve(), { once: true });
-    });
 
     // Scale
     const viewportWidth = targetWidth;
     const viewportHeight = targetHeight;
-    const scaleX = img.naturalWidth / Math.max(1, viewportWidth);
-    const scaleY = img.naturalHeight / Math.max(1, viewportHeight);
+    const scaleX = fullCanvas.width / Math.max(1, viewportWidth);
+    const scaleY = fullCanvas.height / Math.max(1, viewportHeight);
 
     const canvas = document.createElement("canvas");
     canvas.width = sourceWidth + paddingX * 2;
@@ -201,7 +203,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     const srcCropH = Math.max(1, (sourceHeight + paddingY * 2) * scaleY);
 
     ctx.drawImage(
-      img,
+      fullCanvas,
       srcCropX,
       srcCropY,
       srcCropW,
