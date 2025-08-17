@@ -285,7 +285,7 @@ jobs:
 
       - name: Validate JSON
 #        if: steps.filter.outputs.changes
-        run: echo ${{ steps.filter.outputs.changes }} && npm run pr-check-json -- -- --passWithNoTests ${{ steps.filter.outputs.changes }}
+        run: echo ${{ join(steps.filter.outputs.changes, ' ') }} && npm run pr-check-json -- -- --passWithNoTests ${{ join(steps.filter.outputs.changes, ' ') }}
 
   ci-pkg:
     name: ci-pkg
