@@ -10,8 +10,9 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import { debounce } from "throttle-debounce";
-import { ThemeName } from "@monkeytype/contracts/schemas/configs";
+import { ThemeName } from "@monkeytype/schemas/configs";
 import { ThemesList } from "../constants/themes";
+import fileStorage from "../utils/file-storage";
 
 export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
@@ -153,7 +154,9 @@ async function apply(
     customColorsOverride,
     isPreview
   );
-  clearCustomTheme();
+  if (!Config.customTheme) {
+    clearCustomTheme();
+  }
   const name = customColorsOverride ? "custom" : themeName;
 
   ThemeColors.reset();
@@ -231,20 +234,27 @@ function updateFooterIndicator(nameOverride?: string): void {
   }
 }
 
+type PreviewState = {
+  theme: string;
+  colors?: string[];
+} | null;
+
+let previewState: PreviewState = null;
+
 export function preview(
   themeIdentifier: string,
   customColorsOverride?: string[]
 ): void {
-  debouncedPreview(themeIdentifier, customColorsOverride);
+  previewState = { theme: themeIdentifier, colors: customColorsOverride };
+  debouncedPreview();
 }
 
-const debouncedPreview = debounce<(t: string, c?: string[]) => void>(
-  250,
-  (themeIdenfitier, customColorsOverride) => {
+const debouncedPreview = debounce<() => void>(250, () => {
+  if (previewState) {
     isPreviewingTheme = true;
-    void apply(themeIdenfitier, customColorsOverride, true);
+    void apply(previewState.theme, previewState.colors, true);
   }
-);
+});
 
 async function set(
   themeIdentifier: string,
@@ -264,6 +274,8 @@ async function set(
 }
 
 export async function clearPreview(applyTheme = true): Promise<void> {
+  previewState = null;
+
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     if (applyTheme) {
@@ -365,12 +377,31 @@ function applyCustomBackgroundSize(): void {
   }
 }
 
-function applyCustomBackground(): void {
+export async function applyCustomBackground(): Promise<void> {
   // $(".customBackground").css({
   //   backgroundImage: `url(${Config.customBackground})`,
   //   backgroundAttachment: "fixed",
   // });
-  if (Config.customBackground === "") {
+
+  let backgroundUrl = Config.customBackground;
+
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']"
+  ).val(backgroundUrl);
+
+  //if there is a localBackgroundFile available, use it.
+  const localBackgroundFile = await fileStorage.getFile("LocalBackgroundFile");
+
+  if (localBackgroundFile !== undefined) {
+    backgroundUrl = localBackgroundFile;
+  }
+
+  // hide the filter section initially and always
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundFilter']"
+  ).addClass("hidden");
+
+  if (backgroundUrl === "") {
     $("#words").removeClass("noErrorBorder");
     $("#resultWordsHistory").removeClass("noErrorBorder");
     $(".customBackground img").remove();
@@ -381,16 +412,50 @@ function applyCustomBackground(): void {
     //use setAttribute for possible unsafe customBackground value
     const container = document.querySelector(".customBackground");
     const img = document.createElement("img");
-    img.setAttribute("src", Config.customBackground);
+
+    img.setAttribute("src", backgroundUrl);
     img.setAttribute(
       "onError",
       "javascript:this.style.display='none'; window.dispatchEvent(new Event('customBackgroundFailed'))"
     );
+    img.onload = () => {
+      // show the filter section only if the image loads successfully
+      $(
+        ".pageSettings .section[data-config-name='customBackgroundFilter']"
+      ).removeClass("hidden");
+    };
+
     container?.replaceChildren(img);
 
     BackgroundFilter.apply();
     applyCustomBackgroundSize();
   }
+}
+
+export async function applyFontFamily(): Promise<void> {
+  let font = Config.fontFamily.replace(/_/g, " ");
+
+  const localFont = await fileStorage.getFile("LocalFontFamilyFile");
+  if (localFont === undefined) {
+    //use config font
+    $(".customFont").empty();
+  } else {
+    font = "LOCALCUSTOM";
+
+    $(".customFont").html(`
+      @font-face{ 
+        font-family: LOCALCUSTOM;
+        src: url(${localFont});
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }`);
+  }
+
+  document.documentElement.style.setProperty(
+    "--font",
+    `"${font}", "Roboto Mono", "Vazirmatn", monospace`
+  );
 }
 
 window
@@ -404,7 +469,37 @@ window
     }
   });
 
+let ignoreConfigEvent = false;
+
 ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
+  if (eventKey === "fullConfigChange") {
+    ignoreConfigEvent = true;
+  }
+  if (eventKey === "fullConfigChangeFinished") {
+    ignoreConfigEvent = false;
+
+    await clearRandom();
+    await clearPreview(false);
+    if (Config.autoSwitchTheme) {
+      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+        await set(Config.themeDark, true);
+      } else {
+        await set(Config.themeLight, true);
+      }
+    } else {
+      if (Config.customTheme) {
+        await set("custom");
+      } else {
+        await set(Config.theme);
+      }
+    }
+    await applyCustomBackground();
+  }
+
+  // this is here to prevent calling set / preview multiple times during a full config loading
+  // once the full config is loaded, we can apply everything once
+  if (ignoreConfigEvent) return;
+
   if (eventKey === "randomTheme") {
     void changeThemeList();
   }
@@ -419,25 +514,9 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     await clearPreview(false);
     await set(eventValue as string);
   }
-  if (eventKey === "setThemes") {
-    await clearRandom();
-    await clearPreview(false);
-    if (Config.autoSwitchTheme) {
-      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-        await set(Config.themeDark, true);
-      } else {
-        await set(Config.themeLight, true);
-      }
-    } else {
-      if (eventValue as boolean) {
-        await set("custom");
-      } else {
-        await set(Config.theme);
-      }
-    }
-  }
   if (eventKey === "randomTheme" && eventValue === "off") await clearRandom();
-  if (eventKey === "customBackground") applyCustomBackground();
+  if (eventKey === "customBackground") await applyCustomBackground();
+
   if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
   if (eventKey === "autoSwitchTheme") {
     if (eventValue as boolean) {

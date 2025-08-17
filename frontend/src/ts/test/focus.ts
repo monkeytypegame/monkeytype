@@ -14,7 +14,11 @@ export function set(foc: boolean, withCursor = false): void {
     Caret.stopAnimation();
     $("header").addClass("focus");
     $("footer").addClass("focus");
-    if (!withCursor) $("body").css("cursor", "none");
+    if (!withCursor) {
+      $("body").css("cursor", "none");
+      $("button").css("cursor", "none");
+      $("a").css("cursor", "none");
+    }
     $("main").addClass("focus");
     $("#bannerCenter").addClass("focus");
     $("#notificationCenter").addClass("focus");
@@ -32,7 +36,9 @@ export function set(foc: boolean, withCursor = false): void {
     Caret.startAnimation();
     $("header").removeClass("focus");
     $("footer").removeClass("focus");
-    $("body").css("cursor", "default");
+    $("body").css("cursor", "");
+    $("button").css("cursor", "");
+    $("a").css("cursor", "");
     $("main").removeClass("focus");
     $("#bannerCenter").removeClass("focus");
     $("#notificationCenter").removeClass("focus");

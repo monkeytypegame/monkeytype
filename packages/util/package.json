@@ -14,13 +14,12 @@
     "@monkeytype/eslint-config": "workspace:*",
     "@monkeytype/tsup-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
-    "chokidar": "3.6.0",
     "eslint": "8.57.1",
     "madge": "8.0.0",
-    "oxlint": "0.16.12",
+    "oxlint": "1.11.1",
     "tsup": "8.4.0",
     "typescript": "5.5.4",
-    "vitest": "2.1.9",
+    "vitest": "3.2.4",
     "zod": "3.23.8"
   },
   "exports": {

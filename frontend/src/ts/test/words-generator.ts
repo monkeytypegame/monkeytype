@@ -25,6 +25,9 @@ import {
 import { WordGenError } from "../utils/word-gen-error";
 import * as Loader from "../elements/loader";
 
+//pin implementation
+const random = Math.random;
+
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
 }
@@ -60,7 +63,7 @@ export async function punctuateWord(
     }
 
     if (currentLanguage === "spanish") {
-      const rand = Math.random();
+      const rand = random();
       if (rand > 0.9) {
         word = "¿" + word;
         spanishSentenceTracker = "?";
@@ -70,7 +73,7 @@ export async function punctuateWord(
       }
     }
   } else if (
-    (Math.random() < 0.1 &&
+    (random() < 0.1 &&
       lastChar !== "." &&
       lastChar !== "," &&
       index !== maxindex - 2) ||
@@ -82,7 +85,7 @@ export async function punctuateWord(
         spanishSentenceTracker = "";
       }
     } else {
-      const rand = Math.random();
+      const rand = random();
       if (rand <= 0.8) {
         if (currentLanguage === "kurdish") {
           word += ".";
@@ -134,14 +137,14 @@ export async function punctuateWord(
       }
     }
   } else if (
-    Math.random() < 0.01 &&
+    random() < 0.01 &&
     lastChar !== "," &&
     lastChar !== "." &&
     currentLanguage !== "russian"
   ) {
     word = `"${word}"`;
   } else if (
-    Math.random() < 0.011 &&
+    random() < 0.011 &&
     lastChar !== "," &&
     lastChar !== "." &&
     currentLanguage !== "russian" &&
@@ -149,9 +152,9 @@ export async function punctuateWord(
     currentLanguage !== "slovak"
   ) {
     word = `'${word}'`;
-  } else if (Math.random() < 0.012 && lastChar !== "," && lastChar !== ".") {
+  } else if (random() < 0.012 && lastChar !== "," && lastChar !== ".") {
     if (currentLanguage === "code") {
-      const r = Math.random();
+      const r = random();
       const brackets = ["()", "{}", "[]", "<>"];
 
       // add `word` in javascript
@@ -172,7 +175,7 @@ export async function punctuateWord(
       word = `(${word})`;
     }
   } else if (
-    Math.random() < 0.013 &&
+    random() < 0.013 &&
     lastChar !== "," &&
     lastChar !== "." &&
     lastChar !== ";" &&
@@ -189,14 +192,14 @@ export async function punctuateWord(
       word += ":";
     }
   } else if (
-    Math.random() < 0.014 &&
+    random() < 0.014 &&
     lastChar !== "," &&
     lastChar !== "." &&
     previousWord !== "-"
   ) {
     word = "-";
   } else if (
-    Math.random() < 0.015 &&
+    random() < 0.015 &&
     lastChar !== "," &&
     lastChar !== "." &&
     lastChar !== ";" &&
@@ -218,7 +221,7 @@ export async function punctuateWord(
     } else {
       word += ";";
     }
-  } else if (Math.random() < 0.2 && lastChar !== ",") {
+  } else if (random() < 0.2 && lastChar !== ",") {
     if (
       currentLanguage === "arabic" ||
       currentLanguage === "urdu" ||
@@ -233,7 +236,7 @@ export async function punctuateWord(
     } else {
       word += ",";
     }
-  } else if (Math.random() < 0.25 && currentLanguage === "code") {
+  } else if (random() < 0.25 && currentLanguage === "code") {
     const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
     const specialsC = [
       "{",
@@ -284,7 +287,7 @@ export async function punctuateWord(
       }
     }
   } else if (
-    Math.random() < 0.5 &&
+    random() < 0.5 &&
     currentLanguage === "english" &&
     (await EnglishPunctuation.check(word))
   ) {
@@ -522,7 +525,7 @@ async function getQuoteWordList(
       TestState.selectedQuoteId
     );
     if (targetQuote === undefined) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
       throw new WordGenError(
         `Quote ${TestState.selectedQuoteId} does not exist`
       );
@@ -533,14 +536,14 @@ async function getQuoteWordList(
       Config.language
     );
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
       throw new WordGenError("No favorite quotes found");
     }
     rq = randomQuote;
   } else {
     const randomQuote = QuotesController.getRandomQuote();
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
       throw new WordGenError("No quotes found for selected quote length");
     }
     rq = randomQuote;
@@ -749,6 +752,9 @@ export async function getNextWord(
         (Config.mode === "custom" &&
           CustomText.getLimitMode() === "word" &&
           wordIndex < CustomText.getLimitValue()) ||
+        (Config.mode === "custom" &&
+          CustomText.getLimitMode() === "section" &&
+          sectionIndex < CustomText.getLimitValue()) ||
         (Config.mode === "words" && wordIndex < Config.words)
       ) {
         continueRandomGeneration = true;
@@ -904,7 +910,7 @@ export async function getNextWord(
     );
   }
   if (Config.numbers) {
-    if (Math.random() < 0.1) {
+    if (random() < 0.1) {
       randomWord = GetText.getNumbers(4);
 
       if (Config.language.startsWith("kurdish")) {

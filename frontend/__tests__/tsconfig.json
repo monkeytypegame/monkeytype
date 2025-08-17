@@ -3,8 +3,7 @@
   "compilerOptions": {
     "moduleResolution": "Bundler",
     "module": "ESNext",
-    "noEmit": true,
-    "types": ["vitest/globals"]
+    "noEmit": true
   },
   "files": ["vitest.d.ts"],
   "include": ["./**/*.spec.ts", "./setup-tests.ts"]

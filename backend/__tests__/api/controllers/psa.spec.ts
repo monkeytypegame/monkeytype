@@ -1,3 +1,4 @@
+import { describe, it, expect, afterEach, vi } from "vitest";
 import request from "supertest";
 import app from "../../../src/app";
 import * as PsaDal from "../../../src/dal/psa";
@@ -14,8 +15,8 @@ describe("Psa Controller", () => {
     const recordClientVersionMock = vi.spyOn(Prometheus, "recordClientVersion");
 
     afterEach(() => {
-      getPsaMock.mockReset();
-      recordClientVersionMock.mockReset();
+      getPsaMock.mockClear();
+      recordClientVersionMock.mockClear();
       mockAuth.beforeEach();
     });
 

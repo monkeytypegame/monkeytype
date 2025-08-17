@@ -6,7 +6,8 @@ import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as DB from "../db";
 import * as ThemeColors from "../elements/theme-colors";
 import { format } from "date-fns/format";
-
+import * as TestUI from "./test-ui";
+import * as ActivePage from "../states/active-page";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
@@ -281,4 +282,25 @@ $(".pageTest").on("click", "#saveScreenshotButton", (event) => {
   } else {
     void copyToClipboard();
   }
+
+  // reset save screenshot button icon
+  $("#saveScreenshotButton i")
+    .removeClass("fas fa-download")
+    .addClass("far fa-image");
+});
+
+$(document).on("keydown", (event) => {
+  if (!(TestUI.resultVisible && ActivePage.get() === "test")) return;
+  if (event.key !== "Shift") return;
+  $("#typingTest #result #saveScreenshotButton i")
+    .removeClass("far fa-image")
+    .addClass("fas fa-download");
+});
+
+$(document).on("keyup", (event) => {
+  if (!(TestUI.resultVisible && ActivePage.get() === "test")) return;
+  if (event.key !== "Shift") return;
+  $("#typingTest #result #saveScreenshotButton i")
+    .removeClass("fas fa-download")
+    .addClass("far fa-image");
 });

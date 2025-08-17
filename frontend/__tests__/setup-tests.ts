@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import $ from "jquery";
 //@ts-expect-error add to globl
 global["$"] = $;

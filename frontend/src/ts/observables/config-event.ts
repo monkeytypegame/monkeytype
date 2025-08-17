@@ -1,8 +1,4 @@
-import {
-  Config,
-  ConfigKey,
-  ConfigValue,
-} from "@monkeytype/contracts/schemas/configs";
+import { Config, ConfigKey, ConfigValue } from "@monkeytype/schemas/configs";
 
 export type ConfigEventKey =
   | ConfigKey

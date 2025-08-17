@@ -239,7 +239,7 @@ export function layoutKeyToKeycode(
   key: string,
   layout: JSONData.Layout
 ): Keycode | undefined {
-  const rows: string[][] = Object.values(layout.keys);
+  const rows: string[][][] = Object.values(layout.keys);
 
   const rowIndex = rows.findIndex((row) => row.find((k) => k.includes(key)));
   const row = rows[rowIndex];

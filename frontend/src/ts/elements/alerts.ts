@@ -9,8 +9,9 @@ import * as ConnectionState from "../states/connection";
 import { escapeHTML } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
 import { updateXp as accountPageUpdateProfile } from "./profile";
-import { MonkeyMail } from "@monkeytype/contracts/schemas/users";
+import { MonkeyMail } from "@monkeytype/schemas/users";
 import * as XPBar from "../elements/xp-bar";
+import * as AuthEvent from "../observables/auth-event";
 
 let accountAlerts: MonkeyMail[] = [];
 let maxMail = 0;
@@ -29,6 +30,7 @@ const state: State = {
 
 function hide(): void {
   setNotificationBubbleVisible(false);
+  DB.updateInboxUnreadSize(0);
   void modal.hide({
     afterAnimation: async () => {
       $("#alertsPopup .notificationHistory .list").empty();
@@ -301,8 +303,9 @@ export function setNotificationBubbleVisible(tf: boolean): void {
 }
 
 function updateInboxSize(): void {
+  const remainingItems = accountAlerts.length - mailToDelete.length;
   $("#alertsPopup .accountAlerts .title .right").text(
-    `${accountAlerts.length}/${maxMail}`
+    `${remainingItems}/${maxMail}`
   );
 }
 
@@ -383,6 +386,20 @@ NotificationEvent.subscribe((message, level, customTitle) => {
   });
   if (state.notifications.length > 25) {
     state.notifications.shift();
+  }
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "snapshotUpdated" && event.data.isInitial) {
+    const snapshot = DB.getSnapshot();
+    setNotificationBubbleVisible((snapshot?.inboxUnreadSize ?? 0) > 0);
+  }
+  if (event.type === "authStateChanged" && !event.data.isUserSignedIn) {
+    setNotificationBubbleVisible(false);
+    accountAlerts = [];
+    mailToMarkRead = [];
+    mailToDelete = [];
+    $("#alertsPopup .accountAlerts .list").empty();
   }
 });
 

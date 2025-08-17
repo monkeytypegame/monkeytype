@@ -125,6 +125,25 @@ const badges: Record<number, UserBadge> = {
     color: "var(--bg-color)",
     background: "var(--main-color)",
   },
+  15: {
+    id: 15,
+    name: "Insane",
+    description: "I typed for 69 hours straight",
+    icon: "fa-bomb",
+    color: "white",
+    background: "#093d79",
+    customStyle:
+      "animation: gold-shimmer 10s cubic-bezier(0.5, 0, 0.5, 1) infinite; background: linear-gradient(90deg, rgb(8 31 84) 0%, rgb(18 134 158) 100%); background-size: 200% 200%;",
+  },
+  16: {
+    id: 16,
+    name: "Perfection",
+    description: "Longest test with zero mistakes - 4 hours and 1 minute",
+    icon: "fa-bullseye",
+    color: "white",
+    customStyle:
+      "animation: gold-shimmer 10s cubic-bezier(0.5, -0.15, 0.5, 1.15) infinite; background: linear-gradient(45deg, #b8860b 0%, #daa520 25%, #ffd700 50%, #daa520 75%, #b8860b 100%); background-size: 200% 200%;",
+  },
 };
 
 export function getHTMLById(

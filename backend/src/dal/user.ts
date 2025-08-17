@@ -26,15 +26,11 @@ import {
   UserTag,
   User,
   CountByYearAndDay,
-} from "@monkeytype/contracts/schemas/users";
-import {
-  Mode,
-  Mode2,
-  PersonalBest,
-} from "@monkeytype/contracts/schemas/shared";
+} from "@monkeytype/schemas/users";
+import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
 import { addImportantLog } from "./logs";
-import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Result as ResultType } from "@monkeytype/schemas/results";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
 import GeorgeQueue from "../queues/george-queue";
 
@@ -62,6 +58,7 @@ export type DBUser = Omit<
   canManageApeKeys?: boolean;
   bananas?: number;
   testActivity?: CountByYearAndDay;
+  suspicious?: boolean;
 };
 
 const SECONDS_PER_HOUR = 3600;
@@ -454,7 +451,12 @@ export async function checkIfPb(
   const { mode } = result;
 
   if (!canFunboxGetPb(result)) return false;
-  if ("stopOnLetter" in result && result.stopOnLetter === true) return false;
+  if (
+    "stopOnLetter" in result &&
+    result.stopOnLetter === true &&
+    result.acc < 100
+  )
+    return false;
 
   if (mode === "quote") {
     return false;
@@ -500,7 +502,12 @@ export async function checkIfTagPb(
 
   const { mode, tags: resultTags } = result;
   if (!canFunboxGetPb(result)) return [];
-  if ("stopOnLetter" in result && result.stopOnLetter === true) return [];
+  if (
+    "stopOnLetter" in result &&
+    result.stopOnLetter === true &&
+    result.acc < 100
+  )
+    return [];
 
   if (mode === "quote") {
     return [];

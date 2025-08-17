@@ -86,7 +86,7 @@ body:
       value: |
         # Issue details
         ```
-        Please provide a detailed decription of what's happening, and most importantly - solid steps to reproduce the issue. This will help us find it quicker.
+        Please provide a detailed description of what's happening, and most importantly - solid steps to reproduce the issue. This will help us find it quicker.
         ```
 
   - type: textarea

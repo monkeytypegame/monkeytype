@@ -1,14 +1,9 @@
 import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
-import { Config } from "@monkeytype/contracts/schemas/configs";
-import {
-  Mode,
-  Mode2,
-  PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
-import { Result } from "@monkeytype/contracts/schemas/results";
-import { z } from "zod";
+import { Config } from "@monkeytype/schemas/configs";
+import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
+import { Result } from "@monkeytype/schemas/results";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -223,36 +218,6 @@ type LastIndex = {
 };
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
-
-export async function getDiscordAvatarUrl(
-  discordId?: string,
-  discordAvatar?: string,
-  discordAvatarSize = 32
-): Promise<string | null> {
-  if (
-    discordId === undefined ||
-    discordId === "" ||
-    discordAvatar === undefined ||
-    discordAvatar === ""
-  ) {
-    return null;
-  }
-  // An invalid request to this URL will return a 404.
-  try {
-    const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
-
-    const response = await fetch(avatarUrl, {
-      method: "HEAD",
-    });
-    if (!response.ok) {
-      return null;
-    }
-
-    return avatarUrl;
-  } catch (error) {}
-
-  return null;
-}
 
 export async function swapElements(
   el1: JQuery,
@@ -484,11 +449,45 @@ export function isAnyPopupVisible(): boolean {
   return popupVisible;
 }
 
+export type JQueryEasing =
+  | "linear"
+  | "swing"
+  | "easeInSine"
+  | "easeOutSine"
+  | "easeInOutSine"
+  | "easeInQuad"
+  | "easeOutQuad"
+  | "easeInOutQuad"
+  | "easeInCubic"
+  | "easeOutCubic"
+  | "easeInOutCubic"
+  | "easeInQuart"
+  | "easeOutQuart"
+  | "easeInOutQuart"
+  | "easeInQuint"
+  | "easeOutQuint"
+  | "easeInOutQuint"
+  | "easeInExpo"
+  | "easeOutExpo"
+  | "easeInOutExpo"
+  | "easeInCirc"
+  | "easeOutCirc"
+  | "easeInOutCirc"
+  | "easeInBack"
+  | "easeOutBack"
+  | "easeInOutBack"
+  | "easeInElastic"
+  | "easeOutElastic"
+  | "easeInOutElastic"
+  | "easeInBounce"
+  | "easeOutBounce"
+  | "easeInOutBounce";
+
 export async function promiseAnimation(
   el: JQuery,
   animation: Record<string, string>,
   duration: number,
-  easing: string
+  easing: JQueryEasing = "swing"
 ): Promise<void> {
   return new Promise((resolve) => {
     el.animate(animation, applyReducedMotion(duration), easing, resolve);
@@ -621,32 +620,6 @@ export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && !Array.isArray(obj) && obj !== null;
 }
 
-export function deepClone<T>(obj: T[]): T[];
-export function deepClone<T extends object>(obj: T): T;
-export function deepClone<T>(obj: T): T;
-export function deepClone<T>(obj: T | T[]): T | T[] {
-  // Check if the value is a primitive (not an object or array)
-  if (obj === null || typeof obj !== "object") {
-    return obj;
-  }
-
-  // Handle arrays
-  if (Array.isArray(obj)) {
-    return obj.map((item) => deepClone(item));
-  }
-
-  // Handle objects
-  const clonedObj = {} as { [K in keyof T]: T[K] };
-
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      clonedObj[key] = deepClone((obj as { [K in keyof T]: T[K] })[key]);
-    }
-  }
-
-  return clonedObj;
-}
-
 export function prefersReducedMotion(): boolean {
   return matchMedia?.("(prefers-reduced-motion)")?.matches;
 }
@@ -679,53 +652,72 @@ export function promiseWithResolvers<T = void>(): {
 }
 
 /**
- * Sanitize object. Remove invalid values based on the schema.
- * @param schema zod schema
- * @param obj object
- * @returns sanitized object
+ * Wrap a function so only one call runs at a time. While a call is running, new
+ * calls will not run and only the latest one will be queued, any prior queued
+ * calls are skipped. Once the running call finishes, the queued call runs.
+ * @param fn the function to debounce
+ * @param options - `rejectSkippedCalls`: if false, promises returned by skipped
+ * calls will be resolved to null, otherwise will be rejected (defaults to true).
+ * @returns debounced version of the original function. This debounced function
+ * returns a promise that resolves to the original return value. Promises of skipped
+ * calls will be rejected, (or resolved to null if `options.rejectSkippedCalls` was false).
  */
-export function sanitize<T extends z.ZodTypeAny>(
-  schema: T,
-  obj: z.infer<T>
-): z.infer<T> {
-  const validate = schema.safeParse(obj);
+export function debounceUntilResolved<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => TResult,
+  options?: { rejectSkippedCalls?: true }
+): (...args: TArgs) => Promise<TResult>;
+export function debounceUntilResolved<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => TResult,
+  options: { rejectSkippedCalls: false }
+): (...args: TArgs) => Promise<TResult | null>;
+export function debounceUntilResolved<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => TResult,
+  { rejectSkippedCalls = true }: { rejectSkippedCalls?: boolean } = {}
+): (...args: TArgs) => Promise<TResult | null> {
+  let isLocked = false;
+  let next: {
+    args: TArgs;
+    resolve: (value: TResult | null) => void;
+    reject: (reason?: unknown) => void;
+  } | null = null;
 
-  if (validate.success) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return obj;
-  }
+  async function run(...args: TArgs): Promise<TResult> {
+    isLocked = true;
+    try {
+      return await Promise.resolve(fn(...args));
+    } finally {
+      isLocked = false;
 
-  const errors: Map<string, number[] | undefined> = new Map();
-  for (const error of validate.error.errors) {
-    const element = error.path[0] as string;
-    let val = errors.get(element);
-    if (typeof error.path[1] === "number") {
-      val = [...(val ?? []), error.path[1]];
+      const queued = next;
+      next = null;
+      if (queued) run(...queued.args).then(queued.resolve, queued.reject);
     }
-    errors.set(element, val);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => {
-      if (!errors.has(key)) {
-        return [key, value];
+  return async function debounced(...args: TArgs): Promise<TResult | null> {
+    if (isLocked) {
+      // drop previously queued call
+      if (next) {
+        if (rejectSkippedCalls) {
+          next.reject(
+            new Error("skipped call: call was superseded by a more recent one")
+          );
+        } else {
+          next.resolve(null);
+        }
       }
 
-      const error = errors.get(key);
-
-      if (
-        Array.isArray(value) &&
-        error !== undefined && //error is not on the array itself
-        error.length < value.length //not all items in the array are invalid
-      ) {
-        //some items of the array are invalid
-        return [key, value.filter((_element, index) => !error.includes(index))];
-      } else {
-        return [key, undefined];
-      }
-    })
-  ) as z.infer<T>;
+      // queue the new call
+      return new Promise<TResult | null>((resolve, reject) => {
+        next = { args, resolve, reject };
+      });
+    }
+    // no running instances, run immediately
+    return run(...args);
+  };
 }
 
+export function triggerResize(): void {
+  $(window).trigger("resize");
+}
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

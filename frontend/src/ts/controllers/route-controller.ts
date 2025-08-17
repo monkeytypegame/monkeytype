@@ -1,7 +1,10 @@
 import * as PageController from "./page-controller";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-import { Auth, isAuthenticated } from "../firebase";
+import { isAuthAvailable, isAuthenticated } from "../firebase";
+import { isFunboxActive } from "../test/funbox/list";
+import * as TestState from "../test/test-state";
+import * as Notifications from "../elements/notifications";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -80,10 +83,11 @@ const routes: Route[] = [
   {
     path: "/login",
     load: (): void => {
-      if (!Auth) {
+      if (!isAuthAvailable()) {
         navigate("/");
         return;
       }
+
       if (isAuthenticated()) {
         navigate("/account");
         return;
@@ -94,10 +98,11 @@ const routes: Route[] = [
   {
     path: "/account",
     load: (_params, options): void => {
-      if (!Auth) {
+      if (!isAuthAvailable()) {
         navigate("/");
         return;
       }
+
       void PageController.change("account", {
         data: options.data,
       });
@@ -106,10 +111,11 @@ const routes: Route[] = [
   {
     path: "/account-settings",
     load: (_params, options): void => {
-      if (!Auth) {
+      if (!isAuthAvailable()) {
         navigate("/");
         return;
       }
+
       if (!isAuthenticated()) {
         navigate("/login");
         return;
@@ -140,7 +146,9 @@ const routes: Route[] = [
 ];
 
 export function navigate(
-  url = window.location.pathname + window.location.search,
+  url = window.location.pathname +
+    window.location.search +
+    window.location.hash,
   options = {} as NavigateOptions
 ): void {
   if (
@@ -157,9 +165,30 @@ export function navigate(
     );
     return;
   }
+
+  const noQuit = isFunboxActive("no_quit");
+  if (TestState.isActive && noQuit) {
+    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
+      important: true,
+    });
+    event?.preventDefault();
+    return;
+  }
+
   url = url.replace(/\/$/, "");
   if (url === "") url = "/";
-  history.pushState(null, "", url);
+
+  // only push to history if we're navigating to a different URL
+  const currentUrl = new URL(window.location.href);
+  const targetUrl = new URL(url, window.location.origin);
+
+  if (
+    currentUrl.pathname + currentUrl.search + currentUrl.hash !==
+    targetUrl.pathname + targetUrl.search + targetUrl.hash
+  ) {
+    history.pushState(null, "", url);
+  }
+
   void router(options);
 }
 

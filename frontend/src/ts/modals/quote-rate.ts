@@ -1,4 +1,4 @@
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 import Ape from "../ape";
 import { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";

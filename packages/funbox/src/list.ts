@@ -1,4 +1,4 @@
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 import { FunboxMetadata } from "./types";
 
 const list: Record<FunboxName, FunboxMetadata> = {
@@ -133,7 +133,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   layout_mirror: {
     description: "Mirror the keyboard layout",
     canGetPb: true,
-    difficultyLevel: 1,
+    difficultyLevel: 3,
     properties: ["changesLayout"],
     frontendFunctions: ["applyConfig", "rememberSettings"],
     name: "layout_mirror",
@@ -424,7 +424,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   instant_messaging: {
     description: "Who needs shift anyway?",
     canGetPb: false,
-    difficultyLevel: 1,
+    difficultyLevel: 0,
     properties: ["changesCapitalisation"],
     frontendFunctions: ["alterText"],
     name: "instant_messaging",
@@ -432,7 +432,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   underscore_spaces: {
     description: "Underscores_are_better.",
     canGetPb: false,
-    difficultyLevel: 0,
+    difficultyLevel: 1,
     properties: ["ignoresLanguage", "ignoresLayout", "nospace"],
     frontendFunctions: ["alterText"],
     name: "underscore_spaces",
@@ -460,6 +460,12 @@ const list: Record<FunboxName, FunboxMetadata> = {
     properties: ["hasCssFile", "noLigatures"],
     name: "asl",
     cssModifications: ["words"],
+  },
+  no_quit: {
+    description: "You can't restart the test.",
+    canGetPb: true,
+    difficultyLevel: 0,
+    name: "no_quit",
   },
 };
 

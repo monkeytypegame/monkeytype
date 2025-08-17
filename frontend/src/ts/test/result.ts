@@ -36,11 +36,11 @@ import type {
   LabelPosition,
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 
 let result: CompletedEvent;
@@ -483,10 +483,12 @@ async function resultCanGetPb(): Promise<CanGetPbObject> {
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
 
   const funboxesOk = funboxes.length === 0 || allFunboxesCanGetPb;
-  const notUsingStopOnLetter = Config.stopOnError !== "letter";
+  // allow stopOnError:letter to be PB only if 100% accuracy, since it doesn't affect gameplay
+  const stopOnLetterTriggered =
+    Config.stopOnError === "letter" && result.acc < 100;
   const notBailedOut = !result.bailedOut;
 
-  if (funboxesOk && notUsingStopOnLetter && notBailedOut) {
+  if (funboxesOk && !stopOnLetterTriggered && notBailedOut) {
     return {
       value: true,
     };
@@ -497,7 +499,7 @@ async function resultCanGetPb(): Promise<CanGetPbObject> {
         reason: "funbox",
       };
     }
-    if (!notUsingStopOnLetter) {
+    if (stopOnLetterTriggered) {
       return {
         value: false,
         reason: "stop on letter",
@@ -848,7 +850,7 @@ export async function update(
   dontSave: boolean
 ): Promise<void> {
   resultAnnotation = [];
-  result = Misc.deepClone(res);
+  result = structuredClone(res);
   hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");

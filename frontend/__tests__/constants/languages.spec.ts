@@ -1,6 +1,7 @@
+import { describe, it, expect } from "vitest";
 import { readdirSync } from "fs";
 import { LanguageGroups, LanguageList } from "../../src/ts/constants/languages";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 
 describe("languages", () => {
   describe("LanguageList", () => {

@@ -6,12 +6,29 @@
   "overrides": [
     {
       "files": ["__tests__/**/*.ts"],
+      "plugins": [
+        "typescript",
+        "unicorn",
+        "oxc",
+        "import",
+        "node",
+        "promise",
+        "jest",
+        "vitest"
+      ],
       "rules": {
         "no-explicit-any": "allow",
         "explicit-function-return-type": "off",
         "no-array-for-each": "off",
         "eqeqeq": "off",
         "ban-ts-comment": "off"
+      }
+    },
+    {
+      "files": ["__tests__/**/*.d.ts"],
+      "rules": {
+        "typescript/consistent-type-definitions": "off",
+        "typescript/no-empty-object-type": "off"
       }
     }
   ]

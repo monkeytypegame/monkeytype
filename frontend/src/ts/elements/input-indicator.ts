@@ -74,6 +74,7 @@ export class InputIndicator {
     }
 
     $(this.inputElement).css("padding-right", "2.1em");
+    this.parentElement.attr("data-indicator-status", optionId);
   }
 
   get(): keyof typeof this.options | null {

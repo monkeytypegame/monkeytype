@@ -6,18 +6,20 @@ import * as Notifications from "../notifications";
 import Ape from "../../ape/index";
 import * as Loader from "../loader";
 import SlimSelect from "slim-select";
-import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
+import { QuoteLength } from "@monkeytype/schemas/configs";
 import {
   ResultFilters,
   ResultFiltersSchema,
   ResultFiltersGroup,
   ResultFiltersGroupItem,
-} from "@monkeytype/contracts/schemas/users";
+} from "@monkeytype/schemas/users";
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
-import { Snapshot, SnapshotUserTag } from "../../constants/default-snapshot";
+import { Snapshot } from "../../constants/default-snapshot";
 import { LanguageList } from "../../constants/languages";
+import * as AuthEvent from "../../observables/auth-event";
+import { sanitize } from "../../utils/sanitize";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>
@@ -56,7 +58,7 @@ const resultFiltersLS = new LocalStorageWithSchema({
       return defaultResultFilters;
     }
     return mergeWithDefaultFilters(
-      Misc.sanitize(ResultFiltersSchema, unknown as ResultFilters)
+      sanitize(ResultFiltersSchema.partial().strip(), unknown as ResultFilters)
     );
   },
 });
@@ -90,7 +92,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    filters = resultFiltersLS.get();
+    filters = mergeWithDefaultFilters(resultFiltersLS.get());
 
     const newTags: Record<string, boolean> = { none: false };
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
@@ -172,7 +174,7 @@ function addFilterPresetToSnapshot(filter: ResultFilters): void {
   if (!snapshot) return;
   DB.setSnapshot({
     ...snapshot,
-    filterPresets: [...snapshot.filterPresets, Misc.deepClone(filter)],
+    filterPresets: [...snapshot.filterPresets, structuredClone(filter)],
   });
 }
 
@@ -271,8 +273,12 @@ function setAllFilters(group: ResultFiltersGroup, value: boolean): void {
   });
 }
 
-export function loadTags(tags: SnapshotUserTag[]): void {
-  tags.forEach((tag) => {
+export function loadTags(): void {
+  const snapshot = DB.getSnapshot();
+
+  if (snapshot === undefined) return;
+
+  snapshot.tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
 }
@@ -743,17 +749,36 @@ let selectChangeCallbackFn: () => void = () => {
 };
 
 export function updateTagsDropdownOptions(): void {
-  const el = document.querySelector<HTMLElement>(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select select"
-  );
-
-  if (!(el instanceof HTMLElement)) return;
-
   const snapshot = DB.getSnapshot();
 
   if (snapshot === undefined) {
     return;
   }
+
+  const newTags = snapshot.tags.filter(
+    (it) => defaultResultFilters.tags[it._id] === undefined
+  );
+  if (newTags.length > 0) {
+    const everythingSelected = Object.values(filters.tags).every((v) => v);
+
+    defaultResultFilters.tags = {
+      ...defaultResultFilters.tags,
+      ...Object.fromEntries(newTags.map((tag) => [tag._id, true])),
+    };
+
+    filters.tags = {
+      ...filters.tags,
+      ...Object.fromEntries(
+        newTags.map((tag) => [tag._id, everythingSelected])
+      ),
+    };
+  }
+
+  const el = document.querySelector<HTMLElement>(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select select"
+  );
+
+  if (!(el instanceof HTMLElement)) return;
 
   let html = "";
 
@@ -907,15 +932,16 @@ $(".group.presetFilterButtons .filterBtns").on(
 );
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
-  const filter = Misc.sanitize(ResultFiltersSchema, Misc.deepClone(filterIn));
+  const filter = mergeWithDefaultFilters(
+    sanitize(ResultFiltersSchema.partial().strip(), structuredClone(filterIn))
+  );
 
-  Object.entries(defaultResultFilters).forEach((entry) => {
-    const key = entry[0] as ResultFiltersGroup;
-    const value = entry[1];
-    if (filter[key] === undefined) {
-      // @ts-expect-error key and value is based on default filter so this is safe to ignore
-      filter[key] = value;
-    }
-  });
   return filter;
 }
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "snapshotUpdated" && event.data.isInitial) {
+    loadTags();
+    void load();
+  }
+});

@@ -49,7 +49,7 @@ import * as Last10Average from "../elements/last-10-average";
 import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
-import { Auth, isAuthenticated } from "../firebase";
+import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
@@ -58,17 +58,18 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
-import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
 import {
   CompletedEvent,
   CompletedEventCustomText,
-} from "@monkeytype/contracts/schemas/results";
+} from "@monkeytype/schemas/results";
 import * as XPBar from "../elements/xp-bar";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
+  isFunboxActive,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
@@ -162,6 +163,15 @@ export function restart(options = {} as RestartOptions): void {
 
   options = { ...defaultOptions, ...options };
   const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
+
+  const noQuit = isFunboxActive("no_quit");
+  if (TestState.isActive && noQuit) {
+    Notifications.add("No quit funbox is active. Please finish the test.", 0, {
+      important: true,
+    });
+    event?.preventDefault();
+    return;
+  }
 
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     event?.preventDefault();
@@ -310,7 +320,7 @@ export function restart(options = {} as RestartOptions): void {
     async () => {
       $("#result").addClass("hidden");
       $("#typingTest").css("opacity", 0).removeClass("hidden");
-      $("#wordsInput").val(" ");
+      $("#wordsInput").css({ left: 0 }).val(" ");
 
       if (Config.language.startsWith("korean")) {
         koInputVisual.innerText = " ";
@@ -423,7 +433,7 @@ export async function init(): Promise<void | null> {
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
-  TestUI.setActiveWordElementOffset(0);
+  TestState.setRemovedUIWordCount(0);
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
@@ -451,15 +461,8 @@ export async function init(): Promise<void | null> {
 
   if (Config.mode === "quote") {
     if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
     }
-  }
-
-  if (Config.tapeMode !== "off" && language.rightToLeft) {
-    Notifications.add("This language does not support tape mode.", 0, {
-      important: true,
-    });
-    UpdateConfig.setTapeMode("off");
   }
 
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
@@ -663,7 +666,10 @@ export async function addWord(): Promise<void> {
         e,
         "Error while getting next word. Please try again later"
       ),
-      -1
+      -1,
+      {
+        important: true,
+      }
     );
   }
 }
@@ -898,6 +904,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Replay.replayGetWordsList(TestInput.input.getHistory());
   }
 
+  // in zen mode, ensure the replay words list reflects the typed input history
+  // even if the current input was empty at finish (e.g., after submitting a word).
+  if (Config.mode === "zen") {
+    Replay.replayGetWordsList(TestInput.input.getHistory());
+  }
+
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
   const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
@@ -959,7 +971,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   }
 
-  const completedEvent = Misc.deepClone(ce) as CompletedEvent;
+  const completedEvent = structuredClone(ce) as CompletedEvent;
 
   ///////// completed event ready
 
@@ -1115,7 +1127,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
-  TestStats.setLastResult(Misc.deepClone(completedEvent));
+  TestStats.setLastResult(structuredClone(completedEvent));
 
   if (!ConnectionState.get()) {
     ConnectionState.showOfflineBanner();
@@ -1143,15 +1155,51 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.keyDuration = "toolong";
   }
 
+  if (
+    completedEvent.wpm === 0 &&
+    !difficultyFailed &&
+    completedEvent.testDuration >= 5
+  ) {
+    const roundedTime = Math.round(completedEvent.testDuration);
+
+    const messages = [
+      `Congratulations. You just wasted ${roundedTime} seconds of your life by typing nothing. Be proud of yourself.`,
+      `Bravo! You've managed to waste ${roundedTime} seconds and accomplish exactly zero. A true productivity icon.`,
+      `That was ${roundedTime} seconds of absolutely legendary idleness. History will remember this moment.`,
+      `Wow, ${roundedTime} seconds of typing... nothing. Bold. Mysterious. Completely useless.`,
+      `Thank you for those ${roundedTime} seconds of utter nothingness. The keyboard needed the break.`,
+      `A breathtaking display of inactivity. ${roundedTime} seconds of absolutely nothing. Powerful.`,
+      `You just gave ${roundedTime} seconds of your life to the void. And the void says thanks.`,
+      `Stunning. ${roundedTime} seconds of intense... whatever that wasn't. Keep it up, champ.`,
+      `Is it performance art? A protest? Or just ${roundedTime} seconds of glorious nothing? We may never know.`,
+      `You typed nothing for ${roundedTime} seconds. And in that moment, you became legend.`,
+    ];
+
+    Result.showConfetti();
+    Notifications.add(Arrays.randomElementFromArray(messages), 0, {
+      customTitle: "Nice",
+      duration: 15,
+      important: true,
+    });
+  }
+
   if (dontSave) {
     void AnalyticsController.log("testCompletedInvalid");
+    return;
+  }
+
+  // because of the dont save check above, we know the user is signed in
+  // we check here again so that typescript doesnt complain
+  const user = getAuthenticatedUser();
+  if (!user) {
     return;
   }
 
   // user is logged in
   TestStats.resetIncomplete();
 
-  completedEvent.uid = Auth?.currentUser?.uid as string;
+  completedEvent.uid = user.uid;
+
   Result.updateRateQuote(TestWords.currentQuote);
 
   AccountButton.loading(true);
@@ -1249,7 +1297,7 @@ async function saveResult(
     //TODO - this type cast was not needed before because we were using JSON cloning
     // but now with the stronger types it shows that we are forcing completed event
     // into a snapshot result - might not cuase issues but worth investigating
-    const result = Misc.deepClone(
+    const result = structuredClone(
       completedEvent
     ) as unknown as SnapshotResult<Mode>;
     result._id = data.insertedId;
@@ -1406,18 +1454,20 @@ $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as Mode;
   if (mode === undefined) return;
-  UpdateConfig.setMode(mode);
-  ManualRestart.set();
-  restart();
+  if (UpdateConfig.setMode(mode)) {
+    ManualRestart.set();
+    restart();
+  }
 });
 
 $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd !== "custom") {
-    UpdateConfig.setWordCount(parseInt(wrd));
-    ManualRestart.set();
-    restart();
+    if (UpdateConfig.setWordCount(parseInt(wrd))) {
+      ManualRestart.set();
+      restart();
+    }
   }
 });
 
@@ -1425,39 +1475,55 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode !== "custom") {
-    UpdateConfig.setTimeConfig(parseInt(mode));
-    ManualRestart.set();
-    restart();
+    if (UpdateConfig.setTimeConfig(parseInt(mode))) {
+      ManualRestart.set();
+      restart();
+    }
   }
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  let len: QuoteLength | QuoteLength[] = parseInt(
-    $(e.currentTarget).attr("quoteLength") ?? "1"
-  ) as QuoteLength;
-  if (len !== -2) {
-    if (len === -1) {
-      len = [0, 1, 2, 3];
+  const lenAttr = $(e.currentTarget).attr("quoteLength");
+  if (lenAttr === "all") {
+    if (UpdateConfig.setQuoteLengthAll()) {
+      ManualRestart.set();
+      restart();
     }
-    UpdateConfig.setQuoteLength(len, false, e.shiftKey);
-    ManualRestart.set();
-    restart();
+  } else {
+    const len = parseInt(lenAttr ?? "1") as QuoteLength;
+
+    if (len !== -2) {
+      let arr: QuoteLengthConfig = [];
+
+      if (e.shiftKey) {
+        arr = [...Config.quoteLength, len];
+      } else {
+        arr = [len];
+      }
+
+      if (UpdateConfig.setQuoteLength(arr, false)) {
+        ManualRestart.set();
+        restart();
+      }
+    }
   }
 });
 
 $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
   if (TestUI.testRestarting) return;
-  UpdateConfig.setPunctuation(!Config.punctuation);
-  ManualRestart.set();
-  restart();
+  if (UpdateConfig.setPunctuation(!Config.punctuation)) {
+    ManualRestart.set();
+    restart();
+  }
 });
 
 $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   if (TestUI.testRestarting) return;
-  UpdateConfig.setNumbers(!Config.numbers);
-  ManualRestart.set();
-  restart();
+  if (UpdateConfig.setNumbers(!Config.numbers)) {
+    ManualRestart.set();
+    restart();
+  }
 });
 
 $("header").on("click", "nav #startTestButton, #logo", () => {

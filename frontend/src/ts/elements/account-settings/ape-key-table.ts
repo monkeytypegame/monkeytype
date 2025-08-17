@@ -1,10 +1,10 @@
 import * as Loader from "../../elements/loader";
 import * as Notifications from "../../elements/notifications";
 import Ape from "../../ape";
-import { ApeKey, ApeKeys } from "@monkeytype/contracts/schemas/ape-keys";
+import { ApeKey, ApeKeys } from "@monkeytype/schemas/ape-keys";
 import { format } from "date-fns/format";
 import { SimpleModal, TextArea } from "../../utils/simple-modal";
-
+import { isAuthenticated } from "../../firebase";
 const editApeKey = new SimpleModal({
   id: "editApeKey",
   title: "Edit Ape key",
@@ -157,9 +157,11 @@ const generateApeKey = new SimpleModal({
 
 let apeKeys: ApeKeys | null = {};
 
-const element = $("#pageAccountSettings .tab[data-tab='api']");
+const element = $("#pageAccountSettings .tab[data-tab='apeKeys']");
 
 async function getData(): Promise<boolean> {
+  if (!isAuthenticated()) return false;
+
   showLoaderRow();
   const response = await Ape.apeKeys.get();
 
@@ -277,7 +279,7 @@ let lostAccess = false;
 
 export async function update(onApeKeyChangee?: () => void): Promise<void> {
   if (lostAccess) {
-    $(".pageAccountSettings .tab[data-tab='api'] table").remove();
+    $(".pageAccountSettings .tab[data-tab='apeKeys'] table").remove();
     $(".pageAccountSettings .section.apeKeys .buttons").remove();
     $(".pageAccountSettings .section.apeKeys .lostAccess").removeClass(
       "hidden"

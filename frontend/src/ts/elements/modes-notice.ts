@@ -18,7 +18,9 @@ ConfigEvent.subscribe((eventKey) => {
     "stopOnError",
     "paceCaret",
     "minWpm",
+    "minWpmCustomSpeed",
     "minAcc",
+    "minAccCustom",
     "minBurst",
     "confidenceMode",
     "layout",
@@ -26,6 +28,7 @@ ConfigEvent.subscribe((eventKey) => {
     "typingSpeedUnit",
     "quickRestart",
     "customPolyglot",
+    "alwaysShowDecimalPlaces",
   ];
   if (configKeys.includes(eventKey)) {
     void update();
@@ -112,7 +115,7 @@ export async function update(): Promise<void> {
       .join(", ");
 
     $(".pageTest #testModesNotice").append(
-      `<button class="textButton" commandId="changeCustomPolyglot"><i class="fas fa-globe-americas"></i>${languages}</button>`
+      `<button class="textButton" commandId="setCustomPolyglotCustom"><i class="fas fa-globe-americas"></i>${languages}</button>`
     );
   }
 
@@ -170,14 +173,11 @@ export async function update(): Promise<void> {
 
     if (isAuthenticated() && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
-        ? Format.typingSpeed(avgWPM, {
-            suffix: ` ${Config.typingSpeedUnit}`,
-            showDecimalPlaces: false,
-          })
+        ? Format.typingSpeed(avgWPM, { suffix: ` ${Config.typingSpeedUnit}` })
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
-        ? Format.accuracy(avgAcc, { suffix: " acc", showDecimalPlaces: false })
+        ? Format.accuracy(avgAcc, { suffix: " acc" })
         : "";
 
       const text = `${avgWPMText} ${avgAccText}`.trim();

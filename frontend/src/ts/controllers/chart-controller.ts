@@ -298,6 +298,8 @@ export type OtherChartData = {
 export type ActivityChartDataPoint = {
   x: number;
   y: number;
+  maxWpm?: number;
+  restarts?: number;
   amount?: number;
   avgWpm?: number;
   avgAcc?: number;
@@ -722,7 +724,11 @@ export const accountActivity = new ChartWithUpdateColors<
                 true
               )}\nTests Completed: ${
                 resultData.amount
-              }\nAverage ${Config.typingSpeedUnit.toUpperCase()}: ${Numbers.roundTo2(
+              }\nRestarts per test: ${Numbers.roundTo2(
+                (resultData.restarts ?? 0) / (resultData.amount ?? 0)
+              )}\nHighest ${Config.typingSpeedUnit.toUpperCase()}: ${Numbers.roundTo2(
+                typingSpeedUnit.fromWpm(resultData.maxWpm ?? 0)
+              )}\nAverage ${Config.typingSpeedUnit.toUpperCase()}: ${Numbers.roundTo2(
                 typingSpeedUnit.fromWpm(resultData.avgWpm ?? 0)
               )}\nAverage Accuracy: ${Numbers.roundTo2(
                 resultData.avgAcc ?? 0

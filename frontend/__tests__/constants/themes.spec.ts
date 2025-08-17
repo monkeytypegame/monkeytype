@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { readdirSync } from "fs";
 import { ThemesList } from "../../src/ts/constants/themes";
 

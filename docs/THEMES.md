@@ -37,7 +37,7 @@ Here is an image showing what all the properties correspond to:
 <img width="1552" alt="Screenshot showing the page elements controlled by each color property" src="https://user-images.githubusercontent.com/83455454/149196967-abb69795-0d38-466b-a867-5aaa46452976.png">
 
 Change the corresponding hex codes to create your theme. 
-Then, go to `./packages/contracts/src/schemas/themes.ts` and add your new theme name at the _end_ of the `ThemeNameSchema` enum. Make sure to end the line with a comma. 
+Then, go to `./packages/schemas/src/themes.ts` and add your new theme name at the _end_ of the `ThemeNameSchema` enum. Make sure to end the line with a comma. 
 
 ```typescript
 export const ThemeNameSchema = z.enum([
@@ -53,10 +53,10 @@ Then, go to `./frontend/src/ts/constants/themes.ts` and add the following code t
 export const themes: Record<ThemeName, Omit<Theme, "name">> = {
   ...
   your_theme_name: {
-    bgColor "#ffffff",
-    mainColor "#ffffff",
-    subColor "#ffffff",
-    textColor "#ffffff"
+    bgColor: "#ffffff",
+    mainColor: "#ffffff",
+    subColor: "#ffffff",
+    textColor: "#ffffff",
   },
 }
 ```

@@ -9,14 +9,16 @@ import { get as getActivePage } from "./states/active-page";
 import { isDevEnvironment } from "./utils/misc";
 import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
+import { FontName } from "@monkeytype/schemas/fonts";
+import { applyFontFamily } from "./controllers/theme-controller";
 
 let isPreviewingFont = false;
-export function previewFontFamily(font: string): void {
+export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
+    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
   );
-  void TestUI.updateHintsPosition();
+  void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
 }
 
@@ -92,17 +94,17 @@ window.addEventListener("beforeunload", (event) => {
 });
 
 const debouncedEvent = debounce(250, () => {
-  void Caret.updatePosition();
   if (getActivePage() === "test" && !TestUI.resultVisible) {
     if (Config.tapeMode !== "off") {
       void TestUI.scrollTape();
     } else {
       void TestUI.centerActiveLine();
+      void TestUI.updateHintsPositionDebounced();
     }
     setTimeout(() => {
       void TestUI.updateWordsInputPosition();
       if ($("#wordsInput").is(":focus")) {
-        Caret.show();
+        Caret.show(true);
       }
     }, 250);
   }
@@ -117,6 +119,16 @@ $(window).on("resize", () => {
   debouncedEvent();
 });
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe(async (eventKey) => {
   if (eventKey === "quickRestart") updateKeytips();
+  if (eventKey === "showKeyTips") {
+    if (Config.showKeyTips) {
+      $("footer .keyTips").removeClass("hidden");
+    } else {
+      $("footer .keyTips").addClass("hidden");
+    }
+  }
+  if (eventKey === "fontFamily") {
+    await applyFontFamily();
+  }
 });

@@ -1,4 +1,4 @@
-import { TypingSpeedUnit } from "@monkeytype/contracts/schemas/configs";
+import { TypingSpeedUnit } from "@monkeytype/schemas/configs";
 
 type TypingSpeedUnitSettings = {
   fromWpm: (number: number) => number;

@@ -4,12 +4,13 @@ import { secondsToString } from "../utils/date-and-time";
 import * as Notifications from "./notifications";
 import { format } from "date-fns/format";
 import * as Alerts from "./alerts";
-import { PSA } from "@monkeytype/contracts/schemas/psas";
+import { PSA } from "@monkeytype/schemas/psas";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
-import { IdSchema } from "@monkeytype/contracts/schemas/util";
+import { IdSchema } from "@monkeytype/schemas/util";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import * as AuthEvent from "../observables/auth-event";
 
 const confirmedPSAs = new LocalStorageWithSchema({
   key: "confirmedPSAs",
@@ -177,3 +178,9 @@ export async function show(): Promise<void> {
     );
   });
 }
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    void show();
+  }
+});

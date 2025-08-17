@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import * as generate from "../../src/ts/utils/generate";
 
 describe("hexadecimal", () => {

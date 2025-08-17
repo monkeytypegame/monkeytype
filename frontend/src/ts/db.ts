@@ -12,14 +12,14 @@ import {
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
-import { Badge, CustomTheme } from "@monkeytype/contracts/schemas/users";
-import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
+import { Badge, CustomTheme } from "@monkeytype/schemas/users";
+import { Config, Difficulty } from "@monkeytype/schemas/configs";
 import {
   Mode,
   Mode2,
   PersonalBest,
   PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
+} from "@monkeytype/schemas/shared";
 import {
   getDefaultSnapshot,
   Snapshot,
@@ -30,7 +30,8 @@ import {
 import { getDefaultConfig } from "./constants/default-config";
 import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
+import * as AuthEvent from "./observables/auth-event";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -70,6 +71,8 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
     dbSnapshot.verified = originalVerified;
     dbSnapshot.lbOptOut = lbOptOut;
   }
+
+  AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
 }
 
 export async function initSnapshot(): Promise<Snapshot | false> {
@@ -930,7 +933,7 @@ export async function updateLbMemory<M extends Mode>(
   }
 }
 
-export async function saveConfig(config: Config): Promise<void> {
+export async function saveConfig(config: Partial<Config>): Promise<void> {
   if (isAuthenticated()) {
     const response = await Ape.configs.save({ body: config });
     if (response.status !== 200) {
@@ -990,6 +993,14 @@ export function addXp(xp: number): void {
     snapshot.xp = 0;
   }
   snapshot.xp += xp;
+  setSnapshot(snapshot);
+}
+
+export function updateInboxUnreadSize(newSize: number): void {
+  const snapshot = getSnapshot();
+  if (!snapshot) return;
+
+  snapshot.inboxUnreadSize = newSize;
   setSnapshot(snapshot);
 }
 

@@ -31,8 +31,8 @@ import {
   DBResult,
   replaceLegacyValues,
 } from "../../utils/result";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
-import { addLog } from "../../dal/logs";
+import { Configuration } from "@monkeytype/schemas/configuration";
+import { addImportantLog, addLog } from "../../dal/logs";
 import {
   AddResultRequest,
   AddResultResponse,
@@ -50,8 +50,8 @@ import {
   Result,
   PostResultResponse,
   XpBreakdown,
-} from "@monkeytype/contracts/schemas/results";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+} from "@monkeytype/schemas/results";
+import { Mode } from "@monkeytype/schemas/shared";
 import {
   isSafeNumber,
   mapRange,
@@ -65,6 +65,7 @@ import {
 import { MonkeyRequest } from "../types";
 import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { getCachedConfiguration } from "../../init/configuration";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -279,6 +280,10 @@ export async function addResult(
     };
   }
 
+  if (user.suspicious && completedEvent.testDuration <= 120) {
+    await addImportantLog("suspicious_user_result", completedEvent, uid);
+  }
+
   if (anticheatImplemented()) {
     if (
       !validateResult(
@@ -488,13 +493,22 @@ export async function addResult(
 
   let dailyLeaderboardRank = -1;
 
+  const stopOnLetterTriggered =
+    completedEvent.stopOnLetter && completedEvent.acc < 100;
+
+  const minTimeTyping = (await getCachedConfiguration(true)).leaderboards
+    .minTimeTyping;
+
+  const userEligibleForLeaderboard =
+    user.banned !== true &&
+    user.lbOptOut !== true &&
+    (isDevEnvironment() || (user.timeTyping ?? 0) > minTimeTyping);
+
   const validResultCriteria =
     canFunboxGetPb(completedEvent) &&
     !completedEvent.bailedOut &&
-    user.banned !== true &&
-    user.lbOptOut !== true &&
-    (isDevEnvironment() || (user.timeTyping ?? 0) > 7200) &&
-    !completedEvent.stopOnLetter;
+    userEligibleForLeaderboard &&
+    !stopOnLetterTriggered;
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
   const isPremium =
@@ -522,15 +536,25 @@ export async function addResult(
       },
       dailyLeaderboardsConfig
     );
+    if (
+      dailyLeaderboardRank >= 1 &&
+      dailyLeaderboardRank <= 10 &&
+      completedEvent.testDuration <= 120
+    ) {
+      const now = Date.now();
+      const reset = getCurrentDayTimestamp();
+      const limit = 6 * 60 * 60 * 1000;
+      if (now - reset >= limit) {
+        await addLog("daily_leaderboard_top_10_result", completedEvent, uid);
+      }
+    }
   }
 
   const streak = await UserDAL.updateStreak(uid, completedEvent.timestamp);
   const badgeWaitingInInbox = (
-    user.inbox
-      ?.map((i) =>
-        (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
-      )
-      .flat() ?? []
+    user.inbox?.flatMap((i) =>
+      (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
+    ) ?? []
   ).includes(14);
 
   const shouldGetBadge =
@@ -576,19 +600,11 @@ export async function addResult(
 
   const weeklyXpLeaderboardConfig = req.ctx.configuration.leaderboards.weeklyXp;
   let weeklyXpLeaderboardRank = -1;
-  const eligibleForWeeklyXpLeaderboard =
-    user.banned !== true &&
-    user.lbOptOut !== true &&
-    (isDevEnvironment() || (user.timeTyping ?? 0) > 7200);
 
   const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
     weeklyXpLeaderboardConfig
   );
-  if (
-    eligibleForWeeklyXpLeaderboard &&
-    xpGained.xp > 0 &&
-    weeklyXpLeaderboard
-  ) {
+  if (userEligibleForLeaderboard && xpGained.xp > 0 && weeklyXpLeaderboard) {
     weeklyXpLeaderboardRank = await weeklyXpLeaderboard.addResult(
       weeklyXpLeaderboardConfig,
       {

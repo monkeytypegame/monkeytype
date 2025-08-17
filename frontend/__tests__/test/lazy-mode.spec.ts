@@ -1,9 +1,16 @@
+import { describe, it, expect } from "vitest";
 import { replaceAccents } from "../../src/ts/test/lazy-mode";
 
 let germanAccents = [
   ["ö", "oe"],
   ["ä", "ae"],
   ["ü", "ue"],
+] as [string, string][];
+
+let multicharAccents = [
+  ["a", "bc"],
+  ["de", "f"],
+  ["gh", "ij"],
 ] as [string, string][];
 
 describe("lazy-mode", () => {
@@ -36,6 +43,24 @@ describe("lazy-mode", () => {
       it("should replace common accents", () => {
         const result = replaceAccents("äße", germanAccents);
         expect(result).toBe("aesse");
+      });
+    });
+    describe("multicharacter accents", () => {
+      it("should correctly replace multicharacter accents", () => {
+        const tests = [
+          { input: "a", expected: "bc" },
+          { input: "aa", expected: "bcbc" },
+          { input: "de", expected: "f" },
+          { input: "dede", expected: "ff" },
+          { input: "gh", expected: "ij" },
+          { input: "ghgh", expected: "ijij" },
+          { input: "abcdefgh", expected: "bcbcffij" },
+        ];
+
+        tests.forEach(({ input, expected }) => {
+          const result = replaceAccents(input, multicharAccents);
+          expect(result).toBe(expected);
+        });
       });
     });
   });

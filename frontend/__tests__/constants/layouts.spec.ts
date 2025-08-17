@@ -1,6 +1,7 @@
+import { describe, it, expect } from "vitest";
 import { readdirSync } from "fs";
 import { LayoutsList } from "../../src/ts/constants/layouts";
-import { LayoutName } from "@monkeytype/contracts/schemas/layouts";
+import { LayoutName } from "@monkeytype/schemas/layouts";
 
 describe("layouts", () => {
   it("should not have duplicates", () => {

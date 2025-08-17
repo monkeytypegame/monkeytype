@@ -22,23 +22,24 @@ import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import { Auth } from "../firebase";
+import { getAuthenticatedUser } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
-import { ChartData } from "@monkeytype/contracts/schemas/results";
+import { ChartData } from "@monkeytype/schemas/results";
 import {
   Difficulty,
   Mode,
   Mode2,
   Mode2Custom,
-} from "@monkeytype/contracts/schemas/shared";
-import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
+} from "@monkeytype/schemas/shared";
+import { ResultFiltersGroupItem } from "@monkeytype/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
+import { AccountChart } from "@monkeytype/schemas/configs";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -51,6 +52,7 @@ export function toggleFilterDebug(): void {
 
 let filteredResults: SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
+let testActivityEl: HTMLElement | null;
 
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults === undefined || filteredResults.length === 0) return;
@@ -222,7 +224,11 @@ async function fillContent(): Promise<void> {
   PbTables.update(snapshot.personalBests);
   void Profile.update("account", snapshot);
 
-  TestActivity.init(snapshot.testActivity, new Date(snapshot.addedAt));
+  TestActivity.init(
+    testActivityEl as HTMLElement,
+    snapshot.testActivity,
+    new Date(snapshot.addedAt)
+  );
   void ResultBatches.update();
 
   chartData = [];
@@ -264,8 +270,10 @@ async function fillContent(): Promise<void> {
   type ActivityChartData = Record<
     number,
     {
+      restarts: number;
       amount: number;
       time: number;
+      maxWpm: number;
       totalWpm: number;
       totalAcc: number;
       totalCon: number;
@@ -523,20 +531,26 @@ async function fillContent(): Promise<void> {
 
     if (dataForTimestamp !== undefined) {
       dataForTimestamp.amount++;
+      dataForTimestamp.restarts += result.restartCount ?? 0;
       dataForTimestamp.time +=
         result.testDuration +
         (result.incompleteTestSeconds ?? 0) -
         (result.afkDuration ?? 0);
+      if (result.wpm > dataForTimestamp.maxWpm) {
+        dataForTimestamp.maxWpm = result.wpm;
+      }
       dataForTimestamp.totalWpm += result.wpm;
       dataForTimestamp.totalAcc += result.acc;
       dataForTimestamp.totalCon += result.consistency ?? 0;
     } else {
       activityChartData[resultTimestamp] = {
         amount: 1,
+        restarts: result.restartCount ?? 0,
         time:
           result.testDuration +
           (result.incompleteTestSeconds ?? 0) -
           (result.afkDuration ?? 0),
+        maxWpm: result.wpm,
         totalWpm: result.wpm,
         totalAcc: result.acc,
         totalCon: result.consistency ?? 0,
@@ -685,6 +699,8 @@ async function fillContent(): Promise<void> {
       x: dateInt,
       y: dataPoint.time / 60,
       amount: dataPoint.amount,
+      restarts: dataPoint.restarts,
+      maxWpm: Numbers.roundTo2(typingSpeedUnit.fromWpm(dataPoint.maxWpm)),
       avgWpm: Numbers.roundTo2(dataPoint.totalWpm / dataPoint.amount),
       avgAcc: Numbers.roundTo2(dataPoint.totalAcc / dataPoint.amount),
       avgCon: Numbers.roundTo2(dataPoint.totalCon / dataPoint.amount),
@@ -1112,25 +1128,25 @@ function sortAndRefreshHistory(
 }
 
 $(".pageAccount button.toggleResultsOnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[0] = newValue[0] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[1] = newValue[1] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage10OnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[2] = newValue[2] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage100OnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[3] = newValue[3] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
@@ -1146,14 +1162,19 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const windowHeight = $(window).height() ?? 0;
   const offset = $(`#result-${index}`).offset()?.top ?? 0;
   const scrollTo = offset - windowHeight / 2;
-  $([document.documentElement, document.body]).animate(
-    {
-      scrollTop: scrollTo,
-    },
-    Misc.applyReducedMotion(500)
-  );
-  $(".resultRow").removeClass("active");
-  $(`#result-${index}`).addClass("active");
+  $([document.documentElement, document.body])
+    .stop(true)
+    .animate(
+      { scrollTop: scrollTo },
+      {
+        duration: Misc.applyReducedMotion(500),
+        done: () => {
+          const element = $(`#result-${index}`);
+          $(".resultRow").removeClass("active");
+          requestAnimationFrame(() => element.addClass("active"));
+        },
+      }
+    );
 });
 
 $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
@@ -1346,7 +1367,12 @@ export const page = new Page({
     ResultFilters.updateActive();
     await Misc.sleep(0);
 
+    testActivityEl = document.querySelector(
+      ".page.pageAccount .testActivity"
+    ) as HTMLElement;
+
     TestActivity.initYearSelector(
+      testActivityEl,
       "current",
       snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
     );
@@ -1354,7 +1380,7 @@ export const page = new Page({
     void update().then(() => {
       void updateChartColors();
       $(".pageAccount .content .accountVerificatinNotice").remove();
-      if (Auth?.currentUser?.emailVerified === false) {
+      if (getAuthenticatedUser()?.emailVerified === false) {
         $(".pageAccount .content").prepend(
           `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`
         );

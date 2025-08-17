@@ -43,7 +43,11 @@
     "testing.automaticallyOpenTestResults": "neverOpen",
     "[json]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "vitest.maximumConfigs": 10
   },
 
   "launch": {

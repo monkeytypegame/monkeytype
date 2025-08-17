@@ -71,10 +71,13 @@
     <span>behavior</span>
   </button>
   <div class="settingsGroup behavior">
-    <div class="section tags needsAccount">
+    <div class="section tags needsAccount" data-section-id="tags">
       <div class="groupTitle">
         <i class="fas fa-tag"></i>
         <span>tags</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         With tags, you can compare how fast you're typing in different
@@ -86,10 +89,13 @@
         <button class="addTagButton fullWidth">add tag</button>
       </div>
     </div>
-    <div class="section presets needsAccount">
+    <div class="section presets needsAccount" data-section-id="presets">
       <div class="groupTitle">
         <i class="fas fa-sliders-h"></i>
         <span>presets</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Create settings presets that can be applied with one click. Remember to
@@ -104,6 +110,9 @@
       <div class="groupTitle">
         <i class="fas fa-star"></i>
         <span>test difficulty</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Normal is the classic typing test experience. Expert fails the test if
@@ -120,6 +129,9 @@
       <div class="groupTitle">
         <i class="fas fa-redo-alt"></i>
         <span>quick restart</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Press
@@ -146,6 +158,9 @@
       <div class="groupTitle">
         <i class="fas fa-sync-alt"></i>
         <span>repeat quotes</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         This setting changes the restarting behavior when typing in quote mode.
@@ -166,6 +181,9 @@
       <div class="groupTitle">
         <i class="fas fa-eye-slash"></i>
         <span>blind mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         No errors or incorrect words are highlighted. Helps you to focus on raw
@@ -183,6 +201,9 @@
       <div class="groupTitle">
         <i class="fas fa-align-left"></i>
         <span>always show words history</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         This option will automatically show the words history at the end of the
@@ -197,6 +218,9 @@
       <div class="groupTitle">
         <i class="fas fa-list"></i>
         <span>single list command line</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         When enabled, it will show the command line with all commands in a
@@ -214,6 +238,9 @@
       <div class="groupTitle">
         <i class="fas fa-bomb"></i>
         <span>min speed</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Automatically fails a test if your speed falls below a threshold.
@@ -229,9 +256,6 @@
             step="1"
             value=""
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
         <div class="buttons">
           <button data-config-value="off">off</button>
@@ -243,6 +267,9 @@
       <div class="groupTitle">
         <i class="fas fa-bomb"></i>
         <span>min accuracy</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Automatically fails a test if your accuracy falls below a threshold.
@@ -258,9 +285,6 @@
             step="1"
             value=""
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
         <div class="buttons">
           <button data-config-value="off">off</button>
@@ -272,6 +296,9 @@
       <div class="groupTitle">
         <i class="fas fa-bomb"></i>
         <span>min burst</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Automatically fails a test if your raw for a single word falls below
@@ -289,9 +316,6 @@
             step="1"
             value=""
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
         <div class="buttons">
           <button data-config-value="off">off</button>
@@ -304,6 +328,9 @@
       <div class="groupTitle">
         <i class="fas fa-language"></i>
         <span>british english</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         When enabled, the website will use the British spelling instead of
@@ -319,6 +346,9 @@
       <div class="groupTitle">
         <i class="fas fa-language"></i>
         <span>language</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Change in which language you want to type.</div>
       <div class="inputs">
@@ -329,6 +359,9 @@
       <div class="groupTitle">
         <i class="fas fa-gamepad"></i>
         <span>funbox</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         These are special modes that change the website in some special way (by
@@ -342,6 +375,9 @@
       <div class="groupTitle">
         <i class="fas fa-tint"></i>
         <span>custom layoutfluid</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Select which layouts you want the layoutfluid funbox to cycle through.
@@ -355,6 +391,9 @@
       <div class="groupTitle">
         <i class="fas fa-language"></i>
         <span>polyglot languages</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Select which languages you want the polyglot funbox to use.
@@ -374,6 +413,9 @@
       <div class="groupTitle">
         <i class="fas fa-feather-alt"></i>
         <span>freedom mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Allows you to delete any word, even if it was typed correctly.
@@ -387,6 +429,9 @@
       <div class="groupTitle">
         <i class="fas fa-minus"></i>
         <span>strict space</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Pressing space at the beginning of a word will insert a space character
@@ -401,6 +446,9 @@
       <div class="groupTitle">
         <i class="fas fa-exchange-alt"></i>
         <span>opposite shift mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         This mode will force you to use opposite
@@ -427,6 +475,9 @@
       <div class="groupTitle">
         <i class="fas fa-hand-paper"></i>
         <span>stop on error</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Letter mode will stop input when pressing any incorrect letters. Word
@@ -443,6 +494,9 @@
       <div class="groupTitle">
         <i class="fas fa-backspace"></i>
         <span>confidence mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         When enabled, you will not be able to go back to previous words to fix
@@ -460,6 +514,9 @@
       <div class="groupTitle">
         <i class="fas fa-step-forward"></i>
         <span>quick end</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         This only applies to the words mode - when enabled, the test will end as
@@ -476,6 +533,9 @@
       <div class="groupTitle">
         <i class="fas fa-exclamation"></i>
         <span>indicate typos</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Shows typos that you've made. Below shows what you typed below the
@@ -491,6 +551,9 @@
       <div class="groupTitle">
         <i class="fas fa-eye-slash"></i>
         <span>hide extra letters</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Hides extra letters. This will completely avoid words jumping lines (due
@@ -506,6 +569,9 @@
       <div class="groupTitle">
         <i class="fas fa-couch"></i>
         <span>lazy mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Replaces accents / diacritics / special characters with their normal
@@ -520,6 +586,9 @@
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>layout emulator</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         With this setting you can emulate other layouts. This setting is best
@@ -533,6 +602,9 @@
       <div class="groupTitle">
         <i class="fas fa-code"></i>
         <span>code unindent on backspace</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Automatically go back to the previous line when deleting line leading
@@ -564,6 +636,9 @@
       <div class="groupTitle">
         <i class="fas fa-volume-down"></i>
         <span>sound volume</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Change the volume of the sound effects.</div>
       <div class="inputs">
@@ -577,6 +652,9 @@
       <div class="groupTitle">
         <i class="fas fa-volume-up"></i>
         <span>play sound on click</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Plays a short sound when you press a key.</div>
       <div class="buttons">
@@ -602,6 +680,9 @@
       <div class="groupTitle">
         <i class="fas fa-volume-mute"></i>
         <span>play sound on error</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Plays a short sound if you press an incorrect key or press space too
@@ -613,6 +694,25 @@
         <button data-config-value="2">triangle</button>
         <button data-config-value="3">square</button>
         <button data-config-value="4">missed punch</button>
+      </div>
+    </div>
+    <div class="section fullWidth" data-config-name="playTimeWarning">
+      <div class="groupTitle">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>play time warning</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Play a short warning sound if you are close to the end of a timed test.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="1">1 second</button>
+        <button data-config-value="3">3 seconds</button>
+        <button data-config-value="5">5 seconds</button>
+        <button data-config-value="10">10 seconds</button>
       </div>
     </div>
     <div class="sectionSpacer"></div>
@@ -627,6 +727,9 @@
       <div class="groupTitle">
         <i class="fas fa-i-cursor"></i>
         <span>smooth caret</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         The caret will move smoothly between letters and words.
@@ -642,6 +745,9 @@
       <div class="groupTitle">
         <i class="fas fa-i-cursor"></i>
         <span>caret style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Change the style of the caret during the test.</div>
       <div class="buttons">
@@ -656,6 +762,9 @@
       <div class="groupTitle">
         <i class="fas fa-i-cursor"></i>
         <span>pace caret</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Displays a second caret that moves at constant speed. The 'average'
@@ -674,9 +783,6 @@
             step="1"
             value=""
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
         <div class="buttons">
           <button data-config-value="off">off</button>
@@ -693,6 +799,9 @@
       <div class="groupTitle">
         <i class="fas fa-i-cursor"></i>
         <span>repeated pace</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         When repeating a test, a pace caret will automatically be enabled for
@@ -708,6 +817,9 @@
       <div class="groupTitle">
         <i class="fas fa-i-cursor"></i>
         <span>pace caret style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Change the style of the pace caret during the test.
@@ -736,6 +848,9 @@
       <div class="groupTitle">
         <i class="fas fa-chart-pie"></i>
         <span>live progress style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Change the style of the timer/word count during a test.
@@ -751,6 +866,9 @@
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
         <span>live speed style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Change the style of the live speed displayed during the test.
@@ -765,6 +883,9 @@
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
         <span>live accuracy style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Change the style of the live accuracy displayed during the test.
@@ -779,6 +900,9 @@
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
         <span>live burst style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Change the style of the live burst speed displayed during the test.
@@ -793,6 +917,9 @@
       <div class="groupTitle">
         <i class="fas fa-chart-pie"></i>
         <span>live stats color</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Change the color of the progress, live speed, accuracy and burst text.
@@ -808,6 +935,9 @@
       <div class="groupTitle">
         <i class="fas fa-chart-pie"></i>
         <span>live stats opacity</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Change the opacity of the progress, live speed, burst and accuracy text.
@@ -823,6 +953,9 @@
       <div class="groupTitle">
         <i class="fas fa-highlighter"></i>
         <span>highlight mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Change what is highlighted during the test.</div>
       <div class="buttons">
@@ -838,6 +971,9 @@
       <div class="groupTitle">
         <i class="fas fa-tape"></i>
         <span>tape mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Only shows one line which scrolls horizontally. Setting this to 'word'
@@ -855,6 +991,9 @@
       <div class="groupTitle">
         <i class="fas fa-tape"></i>
         <span>tape margin</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         When in tape mode, set the carets position from the left edge of the
@@ -869,9 +1008,6 @@
             min="10"
             max="90"
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
       </div>
     </div>
@@ -879,6 +1015,9 @@
       <div class="groupTitle">
         <i class="fas fa-align-left"></i>
         <span>smooth line scroll</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         When enabled, the line transition will be animated.
@@ -892,6 +1031,9 @@
       <div class="groupTitle">
         <i class="fas fa-align-left"></i>
         <span>show all lines</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         When enabled, the website will show all lines for word, custom and quote
@@ -908,6 +1050,9 @@
       <div class="groupTitle">
         <div class="textIcon">00</div>
         <span>always show decimal places</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Always shows decimal places for values on the result page, without the
@@ -922,6 +1067,9 @@
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
         <span>typing speed unit</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Display typing speed in the specified unit.</div>
       <div class="buttons">
@@ -935,6 +1083,9 @@
       <div class="groupTitle">
         <i class="fas fa-chart-line"></i>
         <span>start graphs at zero</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Force graph axis to always start at zero, no matter what the data is.
@@ -949,6 +1100,9 @@
       <div class="groupTitle">
         <i class="fas fa-text-width"></i>
         <span>max line width</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Change the maximum width of the typing test, measured in characters.
@@ -962,9 +1116,6 @@
             class="input"
             min="0"
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
       </div>
     </div>
@@ -972,6 +1123,9 @@
       <div class="groupTitle">
         <i class="fas fa-font"></i>
         <span>font size</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Change the font size of the test words.</div>
       <div class="inputs">
@@ -982,9 +1136,6 @@
             class="input"
             tabindex="0"
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
         </div>
       </div>
     </div>
@@ -992,14 +1143,57 @@
       <div class="groupTitle">
         <i class="fas fa-font"></i>
         <span>font family</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
-      <!-- <div class="text">Change the font family for the site</div> -->
+      <div class="text">
+        Change the font family used by the website. Using a local font will
+        override your choice.
+        <br />
+        Note: Local fonts are not sent to the server and will not persist across
+        devices.
+      </div>
+      <div class="topRight">
+        <div class="usingLocalFont">
+          <button class="no-auto-handle">
+            <i class="fas fa-trash fa-fw"></i>
+            remove local font
+          </button>
+        </div>
+        <div class="uploadContainer">
+          <label
+            for="customFontUpload"
+            class="button"
+            aria-label="Select custom font"
+            data-balloon-pos="left"
+          >
+            <i class="fas fa-file-import fa-fw"></i>
+            use local font
+          </label>
+
+          <input
+            type="file"
+            id="customFontUpload"
+            accept="font/woff,font/woff2,font/ttf,font/otf"
+            style="display: none"
+          />
+        </div>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
+      </div>
       <div class="buttons"></div>
     </div>
     <div class="section" data-config-name="keymapMode">
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>keymap</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Displays your current layout while taking a test. React shows what you
@@ -1016,6 +1210,9 @@
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>keymap layout</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Controls which layout is displayed on the keymap.</div>
       <div class="inputs">
@@ -1026,6 +1223,9 @@
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>keymap style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <!-- <div class="text">Displays the keymap in a different style.</div> -->
       <div class="buttons">
@@ -1042,6 +1242,9 @@
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>keymap legend style</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="buttons">
         <button data-config-value="lowercase">lowercase</button>
@@ -1054,6 +1257,9 @@
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>keymap show top row</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="buttons">
         <button data-config-value="always">always</button>
@@ -1065,6 +1271,9 @@
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>keymap size</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Change the size of the keymap.</div>
       <div class="inputs">
@@ -1095,6 +1304,9 @@
       <div class="groupTitle">
         <i class="fas fa-adjust"></i>
         <span>flip test colors</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         By default, typed text is brighter than the future text. When enabled,
@@ -1110,6 +1322,9 @@
       <div class="groupTitle">
         <i class="fas fa-fill-drip"></i>
         <span>colorful mode</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         When enabled, the test words will use the main color, instead of the
@@ -1124,13 +1339,52 @@
       <div class="groupTitle">
         <i class="fas fa-image"></i>
         <span>custom background</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
-        Set an image url to be a custom background image. Cover fits the image
-        to cover the screen. Contain fits the image to be fully visible. Max
-        fits the image corner to corner.
+        Set an image url or local image to be a custom background image. Local
+        image always take priority over the image url. Cover fits the image to
+        cover the screen. Contain fits the image to be fully visible. Max fits
+        the image corner to corner.
+        <br />
+        <br />
+        Note: The local image is stored in your browser's local storage and will
+        not be uploaded to the server. This means that if you clear your
+        browser's local storage or use a different browser, the local image will
+        be lost.
       </div>
       <div class="inputs">
+        <div class="usingLocalImage">
+          <button class="no-auto-handle">
+            <i class="fas fa-trash fa-fw"></i>
+            remove local image
+          </button>
+        </div>
+        <div class="uploadContainer">
+          <label
+            for="customBackgroundUpload"
+            class="button"
+            aria-label="Select custom background image"
+            data-balloon-pos="left"
+          >
+            <i class="fas fa-file-import fa-fw"></i>
+            use local image
+          </label>
+
+          <input
+            type="file"
+            id="customBackgroundUpload"
+            accept="image/png,image/jpeg,image/jpg,image/gif"
+            style="display: none"
+          />
+        </div>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
         <div class="inputAndButton">
           <input
             type="text"
@@ -1139,14 +1393,6 @@
             tabindex="0"
             onClick="this.select();"
           />
-          <span>
-            <button class="hidden remove no-auto-handle">
-              <i class="fas fa-trash fa-fw"></i>
-            </button>
-            <button class="save no-auto-handle">
-              <i class="fas fa-save fa-fw"></i>
-            </button>
-          </span>
         </div>
         <div class="buttons">
           <button data-config-value="cover">cover</button>
@@ -1159,6 +1405,9 @@
       <div class="groupTitle">
         <i class="fas fa-sliders-h"></i>
         <span>custom background filter</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Apply various effects to the custom background.</div>
       <div class="groups">
@@ -1180,7 +1429,7 @@
         <div class="group opacity">
           <div class="title">opacity</div>
           <div class="value"></div>
-          <input type="range" min="0" max="1" value="1" step="0.1" />
+          <input type="range" min="0.1" max="1" value="1" step="0.1" />
         </div>
       </div>
     </div>
@@ -1188,6 +1437,9 @@
       <div class="groupTitle">
         <i class="fas fa-palette"></i>
         <span>auto switch theme</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Enabling this will automatically switch the theme between light and dark
@@ -1208,6 +1460,9 @@
       <div class="groupTitle">
         <i class="fas fa-random"></i>
         <span>randomize theme</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         After completing a test, the theme will be set to a random one. The
@@ -1225,10 +1480,13 @@
         <button data-config-value="custom">custom</button>
       </div>
     </div>
-    <div class="section themes fullWidth">
+    <div class="section themes fullWidth" data-section-id="theme">
       <div class="groupTitle">
         <i class="fas fa-palette"></i>
         <span>theme</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="tabs">
         <button data-tab="preset">preset</button>
@@ -1474,6 +1732,9 @@
       <div class="groupTitle">
         <i class="fas fa-question"></i>
         <span>key tips</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Shows the keybind tips at the bottom of the page.</div>
       <div class="buttons">
@@ -1485,6 +1746,9 @@
       <div class="groupTitle">
         <i class="fas fa-exclamation"></i>
         <span>out of focus warning</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Shows an out of focus reminder after 1 second of being 'out of focus'
@@ -1499,6 +1763,9 @@
       <div class="groupTitle">
         <i class="fas fa-exclamation-triangle"></i>
         <span>caps lock warning</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Displays a warning when caps lock is on.</div>
       <div class="buttons">
@@ -1510,6 +1777,9 @@
       <div class="groupTitle">
         <i class="fas fa-chart-bar"></i>
         <span>average</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         Displays your average speed and/or accuracy over the last 10 tests.
@@ -1533,10 +1803,16 @@
     danger zone
   </button>
   <div class="settingsGroup dangerZone">
-    <div class="section importexportSettings">
+    <div
+      class="section importexportSettings"
+      data-section-id="importexportSettings"
+    >
       <div class="groupTitle">
         <i class="fas fa-sliders-h"></i>
         <span>import/export settings</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">Import or export the settings as JSON.</div>
       <div class="buttons">
@@ -1548,6 +1824,9 @@
       <div class="groupTitle">
         <i class="fas fa-ad"></i>
         <span>ads</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         You can disable or enable ads at any time. "Result" will show one ad on
@@ -1564,10 +1843,16 @@
         <button data-config-value="sellout">sellout</button>
       </div>
     </div>
-    <div class="section updateCookiePreferences">
+    <div
+      class="section updateCookiePreferences"
+      data-section-id="updateCookiePreferences"
+    >
       <div class="groupTitle">
         <i class="fas fa-cookie-bite"></i>
         <span>update cookie preferences</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
         If you changed your mind about which cookies you consent to, you can
@@ -1577,13 +1862,17 @@
         <button>open</button>
       </div>
     </div>
-    <div class="section resetSettings">
+    <div class="section resetSettings" data-section-id="resetSettings">
       <div class="groupTitle">
         <i class="fas fa-redo-alt"></i>
         <span>reset settings</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
       </div>
       <div class="text">
-        Resets settings to the default (but doesn't touch your tags).
+        Resets settings to the default (but doesn't touch your tags and
+        presets).
         <br />
         <span class="red">You can't undo this action!</span>
       </div>

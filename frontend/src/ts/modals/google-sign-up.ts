@@ -15,6 +15,7 @@ import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import { InputIndicator } from "../elements/input-indicator";
 import AnimatedModal from "../utils/animated-modal";
+import { resetIgnoreAuthCallback } from "../firebase";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -51,6 +52,7 @@ function show(credential: UserCredential): void {
 async function hide(): Promise<void> {
   void modal.hide({
     afterAnimation: async () => {
+      resetIgnoreAuthCallback();
       if (signedInUser !== undefined) {
         Notifications.add("Sign up process cancelled", 0, {
           duration: 5,
@@ -202,7 +204,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       return;
     } else {
       nameIndicator.show("checking");
-      void checkNameDebounced();
+      checkNameDebounced();
     }
   });
 }

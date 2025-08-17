@@ -13,6 +13,7 @@ import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
+import { getFontsConig } from "./vite.config";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -154,10 +155,17 @@ export default {
       : null,
     replace([
       {
-        filter: /firebase\.ts$/,
+        filter: ["src/ts/firebase.ts"],
         replace: {
-          from: /\.\/constants\/firebase-config/gi,
-          to: "./constants/firebase-config-live",
+          from: `"./constants/firebase-config"`,
+          to: `"./constants/firebase-config-live"`,
+        },
+      },
+      {
+        filter: ["src/email-handler.html"],
+        replace: {
+          from: `"./ts/constants/firebase-config"`,
+          to: `"./ts/constants/firebase-config-live"`,
         },
       },
     ]),
@@ -287,24 +295,33 @@ export default {
     QUICK_LOGIN_EMAIL: undefined,
     QUICK_LOGIN_PASSWORD: undefined,
   },
-  /** Enable for font awesome v6 */
-  /*preprocessorOptions: {
-    scss: {
-      additionalData(source, fp) {
-        if (fp.endsWith("index.scss")) {
+
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData(source, fp) {
+          if (fp.endsWith("index.scss")) {
+            /** Enable for font awesome v6 */
+            /*
           const fontawesomeClasses = getFontawesomeConfig();
-          return `
+
           //inject variables into sass context
           $fontawesomeBrands: ${sassList(
             fontawesomeClasses.brands
           )};             
           $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
-
-          ${source}`;
-        } else {
-          return source;
-        }
+        */
+            const fonts = `$fonts: (${getFontsConig()});`;
+            return `
+              //inject variables into sass context
+              ${fonts}
+            
+              ${source}`;
+          } else {
+            return source;
+          }
+        },
       },
     },
-  },*/
+  },
 };
