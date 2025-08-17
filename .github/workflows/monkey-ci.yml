@@ -240,18 +240,22 @@ jobs:
           filters: |
             languages:
               - 'frontend/static/languages/*.json'
+              - 'packages/schemas/src/languages.ts'
             quotes:
               - 'frontend/static/quotes/*.json'
             layouts:
               - 'frontend/static/layouts/*.json'
+              - 'packages/schemas/src/layouts.ts'
             themes:
-              - 'frontend/static/themes/*.json'
+              - 'frontend/static/themes/**'
+              - 'frontend/src/ts/constants/themes.ts'
+              - 'packages/schemas/src/themes.ts'
+            fonts:
+              - 'frontend/static/webfonts/**'
+              - 'frontend/src/ts/constants/fonts.ts'
+              - 'packages/schemas/src/fonts.ts'
             challenges:
               - 'frontend/static/challenges/*.json'
-            fonts:
-              - 'frontend/static/fonts/*.json'
-            funbox:
-              - 'frontend/static/funbox/*.json'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -284,8 +288,8 @@ jobs:
         run: npm run pr-check-lint-json
 
       - name: Validate JSON
-#        if: steps.filter.outputs.changes
-        run: echo ${{ join(fromJSON(steps.filter.outputs.changes), ' ') }} && npm run pr-check-json -- -- --passWithNoTests ${{ join(fromJSON(steps.filter.outputs.changes), ' ') }}
+        if: steps.filter.outputs.changes != '[]'
+        run: npm run pr-check-json -- -- --passWithNoTests ${{ join(fromJSON(steps.filter.outputs.changes), ' ') }}
 
   ci-pkg:
     name: ci-pkg
