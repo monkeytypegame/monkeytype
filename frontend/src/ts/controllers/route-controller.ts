@@ -6,7 +6,7 @@ import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import * as Notifications from "../elements/notifications";
 import { LoadingOptions } from "../pages/page";
-import { get as getServerOptions } from "../ape/server-configuration";
+//import { get as getServerOptions } from "../ape/server-configuration";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -156,10 +156,13 @@ const routes: Route[] = [
         await navigate("/login", options);
         return;
       }
-      if (!getServerOptions()?.friends.enabled) {
+      //timing issue, not there yet
+      /* if (!getServerOptions()?.friends.enabled) {
+        console.log("### route friends not enabled");
         await navigate("/", options);
         return;
       }
+        */
       await PageController.change("friends", options);
     },
   },
