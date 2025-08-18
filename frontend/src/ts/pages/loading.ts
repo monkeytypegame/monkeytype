@@ -1,42 +1,37 @@
-import * as Misc from "../utils/misc";
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
 
-export function updateBar(percentage: number, fast = false): void {
-  const speed = fast ? 100 : 1000;
-  $(".pageLoading .fill, .pageAccount .preloader .fill")
-    .stop(true, fast)
-    .animate(
-      {
-        width: percentage + "%",
-      },
-      speed
-    );
+export async function updateBar(
+  percentage: number,
+  duration: number
+): Promise<void> {
+  return new Promise((resolve) => {
+    $(".pageLoading .fill")
+      .stop(true, false)
+      .animate(
+        {
+          width: percentage + "%",
+        },
+        duration,
+        () => {
+          resolve();
+        }
+      );
+  });
 }
 
 export function updateText(text: string): void {
-  $(".pageLoading .text, .pageAccount .preloader .text").text(text);
+  $(".pageLoading .text").text(text);
+}
+
+export function showSpinner(): void {
+  $(".pageLoading .preloader .icon").removeClass("hidden");
+  $(".pageLoading .preloader .barWrapper").addClass("hidden");
 }
 
 export async function showBar(): Promise<void> {
-  return new Promise((resolve) => {
-    void Misc.swapElements(
-      $(".pageLoading .preloader .icon"),
-      $(".pageLoading .preloader .barWrapper"),
-      125,
-      async () => {
-        resolve();
-      }
-    );
-    void Misc.swapElements(
-      $(".pageAccount .preloader .icon"),
-      $(".pageAccount .preloader .barWrapper"),
-      125,
-      async () => {
-        resolve();
-      }
-    );
-  });
+  $(".pageLoading .preloader .icon").addClass("hidden");
+  $(".pageLoading .preloader .barWrapper").removeClass("hidden");
 }
 
 export const page = new Page({

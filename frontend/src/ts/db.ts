@@ -1,6 +1,5 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
-import * as LoadingPage from "./pages/loading";
 import { isAuthenticated } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
@@ -80,12 +79,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   const snap = getDefaultSnapshot();
   try {
     if (!isAuthenticated()) return false;
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(22.5);
-    // } else {
-    //   LoadingPage.updateBar(16);
-    // }
-    // LoadingPage.updateText("Downloading user...");
 
     const [userResponse, configResponse, presetsResponse] = await Promise.all([
       Ape.users.get(),
@@ -183,12 +176,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
     }
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(45);
-    // } else {
-    //   LoadingPage.updateBar(32);
-    // }
-    // LoadingPage.updateText("Downloading config...");
+
     if (configData === undefined || configData === null) {
       snap.config = {
         ...getDefaultConfig(),
@@ -196,12 +184,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     } else {
       snap.config = migrateConfig(configData);
     }
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(67.5);
-    // } else {
-    //   LoadingPage.updateBar(48);
-    // }
-    // LoadingPage.updateText("Downloading tags...");
+
     snap.customThemes = userData.customThemes ?? [];
 
     // const userDataTags: MonkeyTypes.UserTagWithDisplay[] = userData.tags ?? [];
@@ -238,13 +221,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         return 0;
       }
     });
-
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(90);
-    // } else {
-    //   LoadingPage.updateBar(64);
-    // }
-    // LoadingPage.updateText("Downloading presets...");
 
     if (presetsData !== undefined && presetsData !== null) {
       const presetsWithDisplay = presetsData.map((preset) => {
@@ -289,11 +265,6 @@ export async function getUserResults(offset?: number): Promise<boolean> {
 
   if (!ConnectionState.get()) {
     return false;
-  }
-
-  if (dbSnapshot.results === undefined) {
-    LoadingPage.updateText("Downloading results...");
-    LoadingPage.updateBar(90);
   }
 
   const response = await Ape.results.get({ query: { offset } });

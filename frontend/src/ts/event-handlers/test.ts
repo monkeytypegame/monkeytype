@@ -99,7 +99,7 @@ $(".pageTest").on("click", "#practiseWordsButton", () => {
 });
 
 $(".pageTest #dailyLeaderboardRank").on("click", async () => {
-  navigate(
+  void navigate(
     `/leaderboards?type=daily&language=${Config.language}&mode2=${getMode2(
       Config,
       null

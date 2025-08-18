@@ -157,7 +157,7 @@ describe("Config", () => {
       expect(dispatchConfigEventMock).toHaveBeenCalledWith(
         "stopOnError",
         "off",
-        true,
+        false,
         "letter"
       );
 
@@ -195,6 +195,35 @@ describe("Config", () => {
         expect.stringContaining("numbers")
       );
     });
+
+    it("saves configOverride values to localstorage if nosave=false", async () => {
+      //GIVEN
+      replaceConfig({});
+
+      //WHEN
+      Config.genericSet("minWpmCustomSpeed", 120);
+
+      //THEN
+      //wait for debounce
+      await vi.advanceTimersByTimeAsync(2500);
+
+      //save
+      expect(dbSaveConfigMock).toHaveBeenCalledWith({
+        minWpmCustomSpeed: 120,
+        minWpm: "custom",
+      });
+
+      //send event
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+        "saveToLocalStorage",
+        expect.stringContaining("minWpmCustomSpeed")
+      );
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith(
+        "saveToLocalStorage",
+        expect.stringContaining("minWpm")
+      );
+    });
+
     it("does not save to localstorage if nosave=true", async () => {
       //GIVEN
 
