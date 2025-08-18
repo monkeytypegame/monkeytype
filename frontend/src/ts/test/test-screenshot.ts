@@ -145,7 +145,12 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       },
       // skipping hidden elements (THAT IS SO IMPORTANT!)
       filter: (el: Node): boolean => {
-        return !(el instanceof HTMLElement && el.classList.contains("hidden"));
+        return !(
+          el instanceof HTMLElement &&
+          (el.classList.contains("hidden") ||
+            //el.classList.contains("invisible") || // cuz issues
+            el.classList.contains("none"))
+        );
       },
       // TODO find out why not working and if possible to make it work
       // Help remote image fetching (for custom background URLs)
