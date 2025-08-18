@@ -22,11 +22,49 @@ type Options<T> = {
   data?: T;
 };
 
+export type LoadingOptions = {
+  /**
+   * Should the loading screen be shown?
+   */
+  shouldLoad: () => boolean;
+  /**
+   * When this promise resolves, the loading screen will be hidden.
+   */
+  waitFor: () => Promise<void>;
+} & (
+  | {
+      style: "spinner";
+    }
+  | {
+      style: "bar";
+      /**
+       * Keyframes for the loading bar.
+       * Each keyframe will be shown in order, with the specified percentage and duration.
+       * If not provided, a loading spinner will be shown instead.
+       */
+      keyframes: {
+        /**
+         * Percentage of the loading bar to fill.
+         */
+        percentage: number;
+        /**
+         * Duration in milliseconds for the keyframe animation.
+         */
+        durationMs: number;
+        /**
+         * Text to display below the loading bar.
+         */
+        text?: string;
+      }[];
+    }
+);
+
 type PageProperties<T> = {
   id: PageName;
   display?: string;
   element: JQuery;
   path: string;
+  loadingOptions?: LoadingOptions;
   beforeHide?: () => Promise<void>;
   afterHide?: () => Promise<void>;
   beforeShow?: (options: Options<T>) => Promise<void>;
@@ -41,6 +79,7 @@ export default class Page<T> {
   public display: string | undefined;
   public element: JQuery;
   public pathname: string;
+  public loadingOptions: LoadingOptions | undefined;
 
   public beforeHide: () => Promise<void>;
   public afterHide: () => Promise<void>;
@@ -52,6 +91,7 @@ export default class Page<T> {
     this.display = props.display;
     this.element = props.element;
     this.pathname = props.path;
+    this.loadingOptions = props.loadingOptions;
     this.beforeHide = props.beforeHide ?? empty;
     this.afterHide = props.afterHide ?? empty;
     this._beforeShow = props.beforeShow ?? empty;
