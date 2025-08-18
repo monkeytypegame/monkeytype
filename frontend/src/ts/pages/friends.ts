@@ -28,6 +28,9 @@ const pageElement = $(".page.pageFriends");
 
 let friendsTable: SortedTable<Friend> | undefined = undefined;
 
+let pendingRequests: FriendRequest[] | undefined;
+let friendsList: Friend[] | undefined;
+
 export function getFriendUid(
   friendRequest: Pick<FriendRequest, "initiatorUid" | "friendUid">
 ): string {
@@ -75,32 +78,38 @@ const addFriendModal = new SimpleModal({
   },
 });
 
-async function updatePendingRequests(): Promise<void> {
-  $(".pageFriends .pendingRequests").addClass("hidden");
-  $(".pageFriends .pendingRequests .error").addClass("hidden");
-
+async function fetchPendingRequests(): Promise<void> {
   const result = await Ape.friends.getRequests({
     query: { status: "pending", type: "incoming" },
   });
 
   if (result.status !== 200) {
-    $(".pageFriends .pendingRequests .error").removeClass("hidden");
-    $(".pageFriends .pendingRequests .error p").html(result.body.message);
+    Notifications.add(
+      "Error getting friend requests: " + result.body.message,
+      -1
+    );
+    pendingRequests = undefined;
   } else {
-    $(".pageFriends .pendingRequests .error").addClass("hidden");
-    if (result.body.data.length === 0) {
-      $(".pageFriends .pendingRequests").addClass("hidden");
-    } else {
-      $(".pageFriends .pendingRequests").removeClass("hidden");
+    pendingRequests = result.body.data;
+  }
+}
 
-      const html = result.body.data
-        .map(
-          (item) => `<tr data-id="${item._id}" data-friend-uid="${getFriendUid(
-            item
-          )}">
+async function updatePendingRequests(): Promise<void> {
+  $(".pageFriends .pendingRequests").addClass("hidden");
+
+  if (pendingRequests === undefined || pendingRequests.length === 0) {
+    $(".pageFriends .pendingRequests").addClass("hidden");
+  } else {
+    $(".pageFriends .pendingRequests").removeClass("hidden");
+
+    const html = pendingRequests
+      .map(
+        (item) => `<tr data-id="${item._id}" data-friend-uid="${getFriendUid(
+          item
+        )}">
         <td><a href="${location.origin}/profile/${
-            item.initiatorUid
-          }?isUid" router-link>${item.initiatorName}</a></td>
+          item.initiatorUid
+        }?isUid" router-link>${item.initiatorName}</a></td>
         <td>${formatAge(item.addedAt)} ago</td>
         <td class="actions">
           <button class="accepted" aria-label="accept friend" data-balloon-pos="up">
@@ -114,32 +123,29 @@ async function updatePendingRequests(): Promise<void> {
           </button>
         </td>
       </tr>`
-        )
-        .join("\n");
+      )
+      .join("\n");
 
-      $(".pageFriends .pendingRequests tbody").html(html);
-    }
+    $(".pageFriends .pendingRequests tbody").html(html);
   }
 }
 
 async function fetchFriends(): Promise<void> {
-  $(".pageFriends .friends .loading").removeClass("hidden");
+  const result = await Ape.friends.getFriends();
+  if (result.status !== 200) {
+    Notifications.add("Error getting friends: " + result.body.message, -1);
+    friendsList = undefined;
+  } else {
+    friendsList = result.body.data;
+  }
+}
+async function updateFriends(): Promise<void> {
   $(".pageFriends .friends .nodata").addClass("hidden");
-  $(".pageFriends .friends .error").addClass("hidden");
   $(".pageFriends .friends table").addClass("hidden");
 
-  const result = await Ape.friends.getFriends();
-  $(".pageFriends .friends .loading").addClass("hidden");
-
-  if (result.status !== 200) {
-    $(".pageFriends .friends .error").removeClass("hidden");
-    $(".pageFriends .friends .error p").html(result.body.message);
-    return;
-  }
-
   $(".pageFriends .friends .error").addClass("hidden");
 
-  if (result.body.data.length === 0) {
+  if (friendsList === undefined || friendsList.length === 0) {
     $(".pageFriends .friends table").addClass("hidden");
     $(".pageFriends .friends .nodata").removeClass("hidden");
   } else {
@@ -149,12 +155,12 @@ async function fetchFriends(): Promise<void> {
     if (friendsTable === undefined) {
       friendsTable = new SortedTable<Friend>({
         table: ".pageFriends .friends table",
-        data: result.body.data,
+        data: friendsList,
         buildRow: buildFriendRow,
         initialSort: { property: "name", descending: false },
       });
     } else {
-      friendsTable.setData(result.body.data);
+      friendsTable.setData(friendsList);
     }
     friendsTable.updateBody();
   }
@@ -366,6 +372,22 @@ export const page = new Page<undefined>({
   display: "Friends",
   element: pageElement,
   path: "/friends",
+  loadingOptions: {
+    shouldLoad: () => getAuthenticatedUser() !== null,
+    waitFor: async () => {
+      await Promise.all([fetchPendingRequests(), fetchFriends()]);
+    },
+    style: "bar",
+    keyframes: [
+      { percentage: 50, durationMs: 1500, text: "Downloading friends..." },
+      {
+        percentage: 50,
+        durationMs: 1500,
+        text: "Downloading friend requests...",
+      },
+    ],
+  },
+
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageFriends");
   },
@@ -373,7 +395,7 @@ export const page = new Page<undefined>({
     Skeleton.append("pageFriends", "main");
 
     void updatePendingRequests();
-    void fetchFriends();
+    void updateFriends();
   },
 });
 
