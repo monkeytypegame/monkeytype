@@ -1,3 +1,12 @@
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeAll,
+  beforeEach,
+  afterEach,
+} from "vitest";
 import { ObjectId } from "mongodb";
 
 import * as FriendsDal from "../../../src/dal/friends";
@@ -5,7 +14,7 @@ import { createUser, pb } from "../../__testData__/users";
 
 describe("FriendsDal", () => {
   beforeAll(async () => {
-    FriendsDal.createIndicies();
+    await FriendsDal.createIndicies();
   });
 
   describe("getRequests", () => {
@@ -66,11 +75,11 @@ describe("FriendsDal", () => {
   describe("create", () => {
     const now = 1715082588;
     beforeEach(() => {
-      vitest.useFakeTimers();
-      vitest.setSystemTime(now);
+      vi.useFakeTimers();
+      vi.setSystemTime(now);
     });
     afterEach(() => {
-      vitest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it("should fail creating duplicates", async () => {

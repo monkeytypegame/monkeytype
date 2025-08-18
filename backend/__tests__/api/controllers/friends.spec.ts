@@ -1,3 +1,4 @@
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import request, { Test as SuperTest } from "supertest";
 import app from "../../../src/app";
 import { mockBearerAuthentication } from "../../__testData__/auth";
