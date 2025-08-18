@@ -107,7 +107,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   }
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
-  // not necessary when rendering full document size, but keep a quick jump to top just in case
   window.scrollTo({ top: 0, behavior: "auto" });
 
   // --- Target Element Calculation ---
@@ -171,15 +170,16 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
             el.style.zIndex = "0";
             el.style.width = `${targetWidth}px`;
             el.style.height = `${targetHeight}px`;
-            // for the inner image scales
+            // for the inner image scales ( visual hacking )
             const img = el.querySelector("img");
             if (img) {
               // (<= 720px viewport width)
               if (window.innerWidth <= 720) {
                 img.style.width = "103%"; // 103 cuz somehow the scrollbar shows in smaller sizes with blur
-                img.style.height = "135%";
+                img.style.height = "140%"; // this center the image in contain
               } else {
-                img.style.height = "100%"; // image fit full screen even when words history is opened with many lines
+                img.style.width = "100%"; // safty nothing more
+                img.style.height = "100%"; // for image fit full screen even when words history is opened with many lines
               }
             }
           }
@@ -187,15 +187,14 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       },
     });
 
-    // Scale
-    const viewportWidth = targetWidth;
-    const viewportHeight = targetHeight;
-    const scaleX = fullCanvas.width / Math.max(1, viewportWidth);
-    const scaleY = fullCanvas.height / Math.max(1, viewportHeight);
+    // Scale and create output canvas
+    const scale = fullCanvas.width / targetWidth;
+    const paddedWidth = sourceWidth + paddingX * 2;
+    const paddedHeight = sourceHeight + paddingY * 2;
 
     const canvas = document.createElement("canvas");
-    canvas.width = sourceWidth + paddingX * 2;
-    canvas.height = sourceHeight + paddingY * 2;
+    canvas.width = Math.round(paddedWidth * scale);
+    canvas.height = Math.round(paddedHeight * scale);
     const ctx = canvas.getContext("2d");
     if (!ctx) {
       Notifications.add("Failed to get canvas context for screenshot", -1);
@@ -203,24 +202,31 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       return null;
     }
 
-    // Enable smoothing
     ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
 
-    const srcCropX = Math.max(0, (sourceX - paddingX) * scaleX);
-    const srcCropY = Math.max(0, (sourceY - paddingY) * scaleY);
-    const srcCropW = Math.max(1, (sourceWidth + paddingX * 2) * scaleX);
-    const srcCropH = Math.max(1, (sourceHeight + paddingY * 2) * scaleY);
+    // Calculate crop coordinates with proper clamping
+    const cropX = Math.max(0, Math.floor((sourceX - paddingX) * scale));
+    const cropY = Math.max(0, Math.floor((sourceY - paddingY) * scale));
+    const cropW = Math.min(
+      Math.ceil(paddedWidth * scale),
+      fullCanvas.width - cropX
+    );
+    const cropH = Math.min(
+      Math.ceil(paddedHeight * scale),
+      fullCanvas.height - cropY
+    );
 
     ctx.drawImage(
       fullCanvas,
-      srcCropX,
-      srcCropY,
-      srcCropW,
-      srcCropH,
+      cropX,
+      cropY,
+      cropW,
+      cropH,
       0,
       0,
-      sourceWidth + paddingX * 2,
-      sourceHeight + paddingY * 2
+      canvas.width,
+      canvas.height
     );
     revert();
     return canvas;
