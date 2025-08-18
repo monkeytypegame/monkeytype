@@ -5,6 +5,7 @@ export const LanguageList: Language[] = LanguageSchema._def.values;
 export const LanguageGroups: Record<string, Language[]> = {
   english: [
     "english",
+    "english",
     "english_1k",
     "english_5k",
     "english_10k",
