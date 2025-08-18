@@ -363,7 +363,7 @@ export const LanguageGroups: Record<string, Language[]> = {
 
 export type LanguageGroupName = keyof typeof LanguageGroups;
 export const LanguageGroupNames: LanguageGroupName[] = Array.from(
-  Object.keys(LanguageGroups),
+  Object.keys(LanguageGroups)
 );
 
 /**
@@ -372,7 +372,7 @@ export const LanguageGroupNames: LanguageGroupName[] = Array.from(
  * @returns the language group.
  */
 export function getGroupForLanguage(
-  language: Language,
+  language: Language
 ): LanguageGroupName | undefined {
   return LanguageGroupNames.find((group) => group.includes(language));
 }
