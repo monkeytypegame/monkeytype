@@ -1,6 +1,6 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
-import { isAuthenticated } from "./firebase";
+import { isAuthenticated, getAuthenticatedUser } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { migrateConfig } from "./utils/config";
@@ -85,11 +85,13 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   try {
     if (!isAuthenticated()) return false;
 
-    const [userResponse, configResponse, presetsResponse] = await Promise.all([
-      Ape.users.get(),
-      Ape.configs.get(),
-      Ape.presets.get(),
-    ]);
+    const [userResponse, configResponse, presetsResponse, friendsResponse] =
+      await Promise.all([
+        Ape.users.get(),
+        Ape.configs.get(),
+        Ape.presets.get(),
+        Ape.friends.getRequests(),
+      ]);
 
     if (userResponse.status !== 200) {
       throw new SnapshotInitError(
@@ -109,10 +111,17 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         presetsResponse.status
       );
     }
+    if (friendsResponse.status !== 200) {
+      throw new SnapshotInitError(
+        `${friendsResponse.body.message} (friendRequests)`,
+        friendsResponse.status
+      );
+    }
 
     const userData = userResponse.body.data;
     const configData = configResponse.body.data;
     const presetsData = presetsResponse.body.data;
+    const friendsData = friendsResponse.body.data;
 
     if (userData === null) {
       throw new SnapshotInitError(
@@ -248,6 +257,16 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         }
       );
     }
+
+    snap.friends = Object.fromEntries(
+      friendsData.map((friend) => [
+        // oxlint-disable-next-line no-non-null-assertion
+        friend.initiatorUid === getAuthenticatedUser()!.uid
+          ? friend.friendUid
+          : friend.initiatorUid,
+        friend.status,
+      ])
+    );
 
     dbSnapshot = snap;
     return dbSnapshot;

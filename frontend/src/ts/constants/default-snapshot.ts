@@ -14,6 +14,7 @@ import {
 } from "../elements/test-activity-calendar";
 import { Preset } from "@monkeytype/schemas/presets";
 import { Language } from "@monkeytype/schemas/languages";
+import { FriendRequestStatus } from "@monkeytype/schemas/friends";
 
 export type SnapshotUserTag = UserTag & {
   active?: boolean;
@@ -84,6 +85,7 @@ export type Snapshot = Omit<
   xp: number;
   testActivity?: ModifiableTestActivityCalendar;
   testActivityByYear?: { [key: string]: TestActivityCalendar };
+  friends: Record<string, FriendRequestStatus>;
 };
 
 export type SnapshotPreset = Preset & {
@@ -131,6 +133,7 @@ const defaultSnap = {
       60: { english: { count: 0, rank: 0 } },
     },
   },
+  friends: {},
 } as Snapshot;
 
 export function getDefaultSnapshot(): Snapshot {

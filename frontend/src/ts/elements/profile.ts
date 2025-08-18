@@ -313,8 +313,18 @@ export async function update(
 
   if (profile.uid === getAuthenticatedUser()?.uid) {
     profileElement.find(".userReportButton").addClass("hidden");
+    profileElement.find(".addFriendButton").addClass("hidden");
   } else {
     profileElement.find(".userReportButton").removeClass("hidden");
+  }
+  if (
+    profile.uid !== undefined &&
+    (profile.uid === getAuthenticatedUser()?.uid ||
+      DB.getSnapshot()?.friends[profile.uid] !== undefined)
+  ) {
+    profileElement.find(".addFriendButton").addClass("hidden");
+  } else {
+    profileElement.find(".addFriendButton").removeClass("hidden");
   }
 
   //structure
