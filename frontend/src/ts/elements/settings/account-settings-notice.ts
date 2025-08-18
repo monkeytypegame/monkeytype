@@ -14,6 +14,6 @@ if (ls.get()) {
 
 $(".pageSettings .accountSettingsNotice .dismissAndGo").on("click", () => {
   ls.set(true);
-  navigate("/account-settings");
+  void navigate("/account-settings");
   $(".pageSettings .accountSettingsNotice").remove();
 });
