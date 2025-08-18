@@ -179,6 +179,7 @@ export const page = new Page({
   element: $(".page.pageLogin"),
   path: "/login",
   afterHide: async (): Promise<void> => {
+    hidePreloader();
     Skeleton.remove("pageLogin");
   },
   beforeShow: async (): Promise<void> => {

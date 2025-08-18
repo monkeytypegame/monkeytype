@@ -43,6 +43,7 @@ import {
 } from "../test/funbox/list";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 import { canQuickRestart } from "../utils/quick-restart";
+import * as PageTransition from "../states/page-transition";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -830,7 +831,7 @@ async function handleTab(
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      navigate("/");
+      await navigate("/");
       return;
     }
 
@@ -899,8 +900,8 @@ $("#wordsInput").on("keydown", (event) => {
 let lastBailoutAttempt = -1;
 
 $(document).on("keydown", async (event) => {
-  if (ActivePage.get() === "loading") {
-    console.debug("Ignoring keydown event on loading page.");
+  if (PageTransition.get()) {
+    console.debug("Ignoring keydown during page transition.");
     return;
   }
 
@@ -958,7 +959,7 @@ $(document).on("keydown", async (event) => {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      navigate("/");
+      await navigate("/");
       return;
     }
 
@@ -997,7 +998,7 @@ $(document).on("keydown", async (event) => {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      navigate("/");
+      await navigate("/");
       return;
     }
 

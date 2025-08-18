@@ -4,9 +4,6 @@ import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
-import * as PageTransition from "../states/page-transition";
-import * as ActivePage from "../states/active-page";
-import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as Account from "../pages/account";
@@ -65,13 +62,6 @@ async function sendVerificationEmail(): Promise<void> {
 async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
-    if (window.location.pathname !== "/account") {
-      LoadingPage.updateBar(90);
-    } else {
-      LoadingPage.updateBar(45);
-    }
-    LoadingPage.updateText("Downloading user data...");
-    await LoadingPage.showBar();
     const snapshot = await DB.initSnapshot();
 
     if (snapshot === false) {
@@ -91,12 +81,6 @@ async function getDataAndInit(): Promise<boolean> {
         true
       );
     }
-    if (ActivePage.get() === "loading") {
-      LoadingPage.updateBar(100);
-    } else {
-      LoadingPage.updateBar(45);
-    }
-    LoadingPage.updateText("Applying settings...");
 
     const areConfigsEqual =
       JSON.stringify(Config) === JSON.stringify(snapshot.config);
@@ -114,13 +98,7 @@ async function getDataAndInit(): Promise<boolean> {
       }
     }
     if (window.location.pathname === "/account") {
-      LoadingPage.updateBar(90);
       await Account.downloadResults();
-    }
-    if (window.location.pathname === "/login") {
-      navigate("/account");
-    } else {
-      navigate();
     }
     return true;
   } catch (error) {
@@ -155,24 +133,11 @@ async function getDataAndInit(): Promise<boolean> {
 }
 
 export async function loadUser(_user: UserType): Promise<void> {
-  // User is signed in.
-  PageTransition.set(false);
   if (!(await getDataAndInit())) {
     signOut();
+    return;
   }
-
   AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
-
-  // var displayName = user.displayName;
-  // var email = user.email;
-  // var emailVerified = user.emailVerified;
-  // var photoURL = user.photoURL;
-  // var isAnonymous = user.isAnonymous;
-  // var uid = user.uid;
-  // var providerData = user.providerData;
-  LoginPage.hidePreloader();
-
-  // showFavouriteThemesAtTheTop();
 }
 
 export async function onAuthStateChanged(
@@ -180,30 +145,63 @@ export async function onAuthStateChanged(
   user: UserType | null
 ): Promise<void> {
   console.debug(`account controller ready`);
+
+  let userPromise: Promise<void> = Promise.resolve();
+
   if (authInitialisedAndConnected) {
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     console.debug(user);
     if (user) {
-      await loadUser(user);
+      userPromise = loadUser(user);
     } else {
-      if (window.location.pathname === "/account") {
-        window.history.replaceState("", "", "/login");
-      }
-
       DB.setSnapshot(undefined);
-      Sentry.clearUser();
-      PageTransition.set(false);
-      navigate();
     }
-  } else {
-    console.debug(`auth not initialised or not connected`);
-    if (window.location.pathname === "/account") {
-      window.history.replaceState("", "", "/login");
-    }
-    Sentry.clearUser();
-    PageTransition.set(false);
-    navigate();
   }
+
+  if (!authInitialisedAndConnected || !user) {
+    Sentry.clearUser();
+  }
+
+  let keyframes = [
+    {
+      percentage: 90,
+      durationMs: 1000,
+      text: "Downloading user data...",
+    },
+  ];
+
+  if (
+    window.location.pathname === "/account" ||
+    window.location.pathname === "/login"
+  ) {
+    keyframes = [
+      {
+        percentage: 40,
+        durationMs: 1000,
+        text: "Downloading user data...",
+      },
+      {
+        percentage: 90,
+        durationMs: 1000,
+        text: "Downloading results...",
+      },
+    ];
+  }
+
+  //undefined means navigate to whatever the current window.location.pathname is
+  await navigate(undefined, {
+    force: true,
+    overrideLoadingOptions: {
+      shouldLoad: () => {
+        return user !== null;
+      },
+      waitFor: async () => {
+        await userPromise;
+      },
+      style: "bar",
+      keyframes: keyframes,
+    },
+  });
 
   AuthEvent.dispatch({
     type: "authStateChanged",
