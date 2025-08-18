@@ -128,43 +128,44 @@ export function getASCII(): string {
  * Generates a random string of special characters.
  * @returns The generated string of special characters.
  */
+const specials = [
+  "`",
+  "~",
+  "!",
+  "@",
+  "#",
+  "$",
+  "%",
+  "^",
+  "&",
+  "*",
+  "(",
+  ")",
+  "-",
+  "_",
+  "=",
+  "+",
+  "{",
+  "}",
+  "[",
+  "]",
+  "'",
+  '"',
+  "/",
+  "\\",
+  "|",
+  "?",
+  ";",
+  ":",
+  ">",
+  "<",
+  ",",
+  ".",
+];
+
 export function getSpecials(): string {
   const randLen = randomIntFromRange(1, 7);
   let ret = "";
-  const specials = [
-    "`",
-    "~",
-    "!",
-    "@",
-    "#",
-    "$",
-    "%",
-    "^",
-    "&",
-    "*",
-    "(",
-    ")",
-    "-",
-    "_",
-    "=",
-    "+",
-    "{",
-    "}",
-    "[",
-    "]",
-    "'",
-    '"',
-    "/",
-    "\\",
-    "|",
-    "?",
-    ";",
-    ":",
-    ">",
-    "<",
-    ",",
-    ".",
-  ];
   for (let i = 0; i < randLen; i++) {
     ret += Arrays.randomElementFromArray(specials);
   }
@@ -190,3 +191,7 @@ export function getNumbers(len: number): string {
   }
   return ret;
 }
+
+export const __testing = {
+  specials,
+};
