@@ -22,7 +22,7 @@ import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import { Auth } from "../firebase";
+import { getAuthenticatedUser } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
@@ -52,6 +52,7 @@ export function toggleFilterDebug(): void {
 
 let filteredResults: SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
+let testActivityEl: HTMLElement | null;
 
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults === undefined || filteredResults.length === 0) return;
@@ -223,7 +224,11 @@ async function fillContent(): Promise<void> {
   PbTables.update(snapshot.personalBests);
   void Profile.update("account", snapshot);
 
-  TestActivity.init(snapshot.testActivity, new Date(snapshot.addedAt));
+  TestActivity.init(
+    testActivityEl as HTMLElement,
+    snapshot.testActivity,
+    new Date(snapshot.addedAt)
+  );
   void ResultBatches.update();
 
   chartData = [];
@@ -1362,7 +1367,12 @@ export const page = new Page({
     ResultFilters.updateActive();
     await Misc.sleep(0);
 
+    testActivityEl = document.querySelector(
+      ".page.pageAccount .testActivity"
+    ) as HTMLElement;
+
     TestActivity.initYearSelector(
+      testActivityEl,
       "current",
       snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
     );
@@ -1370,7 +1380,7 @@ export const page = new Page({
     void update().then(() => {
       void updateChartColors();
       $(".pageAccount .content .accountVerificatinNotice").remove();
-      if (Auth?.currentUser?.emailVerified === false) {
+      if (getAuthenticatedUser()?.emailVerified === false) {
         $(".pageAccount .content").prepend(
           `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`
         );

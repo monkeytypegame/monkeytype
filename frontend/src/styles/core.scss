@@ -466,3 +466,15 @@ key {
   font-size: var(--balloon-font-size);
   line-height: var(--balloon-font-size);
 }
+
+// this here to prevent tooltips from showing when an element is focused via mouse click
+// to avoid reappearing popups after clicks, WITHOUT breaking keyboard nav.
+// so shortly we show balloon tooltips on hover and keyboard focus only. not on mouse focus!
+@supports selector(:focus-visible) {
+  [aria-label][data-balloon-pos]:focus:not(:focus-visible):not(:hover)::before,
+  [aria-label][data-balloon-pos]:focus:not(:focus-visible):not(:hover)::after {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}

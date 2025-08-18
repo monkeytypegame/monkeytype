@@ -78,12 +78,11 @@
     "typescript/no-namespace": "error",
     "eqeqeq": "error",
     "ban-ts-comment": "error",
-
-    "todo-lowerthis": "off",
+    "no-unassigned-vars": "error",
     "max-depth": [
       "error",
       {
-        "max": 6
+        "max": 5
       }
     ],
 

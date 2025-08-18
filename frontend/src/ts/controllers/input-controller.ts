@@ -1113,6 +1113,10 @@ $(document).on("keydown", async (event) => {
           TestState.setBailedOut(true);
           void TestLogic.finish();
         }
+      } else {
+        await handleChar("\n", TestInput.input.current.length);
+        setWordsInput(" " + TestInput.input.current);
+        updateUI();
       }
     } else {
       await handleChar("\n", TestInput.input.current.length);

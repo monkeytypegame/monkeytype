@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { ObjectId } from "mongodb";
 import * as AdminUidsDal from "../../../src/dal/admin-uids";
 

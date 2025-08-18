@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { CustomBackgroundSchema } from "@monkeytype/schemas/configs";
 
 describe("config schema", () => {

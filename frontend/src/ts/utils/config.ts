@@ -4,7 +4,8 @@ import {
   PartialConfig,
   FunboxName,
 } from "@monkeytype/schemas/configs";
-import { sanitize, typedKeys } from "./misc";
+import { typedKeys } from "./misc";
+import { sanitize } from "./sanitize";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 /**
@@ -30,14 +31,14 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
 /**
  * remove all values from the config which are not valid
  */
-export function sanitizeConfig(
+function sanitizeConfig(
   config: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
   //make sure to use strip()
   return sanitize(ConfigSchemas.PartialConfigSchema.strip(), config);
 }
 
-export function replaceLegacyValues(
+function replaceLegacyValues(
   configObj: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
   //@ts-expect-error legacy configs

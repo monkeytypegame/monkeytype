@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { getDefaultConfig } from "../../src/ts/constants/default-config";
 import { migrateConfig } from "../../src/ts/utils/config";
 import { PartialConfig } from "@monkeytype/schemas/configs";

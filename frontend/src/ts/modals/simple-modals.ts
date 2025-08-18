@@ -6,9 +6,12 @@ import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import * as CustomText from "../test/custom-text";
-import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
-import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
+import {
+  isAuthenticated,
+  getAuthenticatedUser,
+  isAuthAvailable,
+} from "../firebase";
 import {
   EmailAuthProvider,
   User,
@@ -35,7 +38,7 @@ import {
 } from "../utils/simple-modal";
 import { ShowOptions } from "../utils/animated-modal";
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
-import { UserEmailSchema, UserNameSchema } from "@monkeytype/contracts/users";
+import { UserEmailSchema, UserNameSchema } from "@monkeytype/schemas/users";
 import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 
@@ -133,7 +136,7 @@ function isUsingGoogleAuthentication(): boolean {
 
 function isUsingAuthentication(authProvider: AuthMethod): boolean {
   return (
-    Auth?.currentUser?.providerData.some(
+    getAuthenticatedUser()?.providerData.some(
       (p) => p.providerId === authProvider
     ) || false
   );
@@ -142,20 +145,21 @@ function isUsingAuthentication(authProvider: AuthMethod): boolean {
 async function reauthenticate(
   options: ReauthenticateOptions
 ): Promise<ReauthSuccess | ReauthFailed> {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     return {
       status: -1,
       message: "Authentication is not initialized",
     };
   }
 
-  if (!isAuthenticated()) {
+  const user = getAuthenticatedUser();
+  if (user === null) {
     return {
       status: -1,
       message: "User is not signed in",
     };
   }
-  const user = getAuthenticatedUser();
+
   const authMethod = getPreferredAuthenticationMethod(options.excludeMethod);
 
   try {
@@ -242,6 +246,7 @@ list.updateEmail = new SimpleModal({
         isValid: async (currentValue, thisPopup) =>
           currentValue === thisPopup.inputs?.[1]?.currentValue() ||
           "Emails don't match",
+        debounceDelay: 0,
       },
     },
   ],
@@ -511,7 +516,6 @@ list.updateName = new SimpleModal({
       if (snapshot.needsToChangeName) {
         reloadAfter(2);
       }
-      AccountButton.update(snapshot);
     }
 
     return {
@@ -1022,7 +1026,6 @@ list.unlinkDiscord = new SimpleModal({
 
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
-    AccountButton.updateAvatar();
     DB.setSnapshot(snap);
     AccountSettings.updateUI();
 

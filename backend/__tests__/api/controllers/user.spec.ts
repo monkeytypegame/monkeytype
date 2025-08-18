@@ -1,3 +1,13 @@
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  beforeAll,
+  afterAll,
+  vi,
+} from "vitest";
 import request from "supertest";
 import app from "../../../src/app";
 import * as Configuration from "../../../src/init/configuration";
@@ -2952,6 +2962,9 @@ describe("user controller test", () => {
       streak: { length: 2, lastResultTimestamp: 2000, maxLength: 5 },
       lbOptOut: false,
       bananas: 47, //should get removed
+      testActivity: {
+        "2024": fillYearWithDay(94),
+      },
     };
 
     beforeEach(async () => {
@@ -2965,6 +2978,7 @@ describe("user controller test", () => {
 
     it("should get by name without authentication", async () => {
       //GIVEN
+
       getUserByNameMock.mockResolvedValue(foundUser as any);
 
       const rank = { rank: 24 } as LeaderboardEntry;
@@ -3022,6 +3036,46 @@ describe("user controller test", () => {
       expect(getUserByNameMock).toHaveBeenCalledWith("bob", "get user profile");
       expect(getUserMock).not.toHaveBeenCalled();
     });
+    it("should get testActivity if enabled", async () => {
+      //GIVEN
+      vi.useFakeTimers().setSystemTime(1712102400000);
+      getUserByNameMock.mockResolvedValue({
+        ...foundUser,
+        profileDetails: { showActivityOnPublicProfile: true },
+      } as any);
+      const rank = { rank: 24 } as LeaderboardEntry;
+      leaderboardGetRankMock.mockResolvedValue(rank);
+      leaderboardGetCountMock.mockResolvedValue(100);
+
+      //WHEN
+      const { body } = await mockApp.get("/users/bob/profile").expect(200);
+
+      //THEN
+      expect(body.data.testActivity).toEqual(
+        expect.objectContaining({
+          lastDay: 1712102400000,
+          testsByDays: expect.arrayContaining([]),
+        })
+      );
+    });
+    it("should not get testActivity if disabled", async () => {
+      //GIVEN
+      vi.useFakeTimers().setSystemTime(1712102400000);
+      getUserByNameMock.mockResolvedValue({
+        ...foundUser,
+        profileDetails: { showActivityOnPublicProfile: false },
+      } as any);
+      const rank = { rank: 24 } as LeaderboardEntry;
+      leaderboardGetRankMock.mockResolvedValue(rank);
+      leaderboardGetCountMock.mockResolvedValue(100);
+
+      //WHEN
+      const { body } = await mockApp.get("/users/bob/profile").expect(200);
+
+      //THEN
+      expect(body.data.testActivity).toBeUndefined();
+    });
+
     it("should get base profile for banned user", async () => {
       //GIVEN
       getUserByNameMock.mockResolvedValue({
@@ -3136,6 +3190,7 @@ describe("user controller test", () => {
           twitter: "twitter",
           website: "https://monkeytype.com",
         },
+        showActivityOnPublicProfile: false,
       };
 
       //WHEN
@@ -3163,6 +3218,7 @@ describe("user controller test", () => {
             twitter: "twitter",
             website: "https://monkeytype.com",
           },
+          showActivityOnPublicProfile: false,
         },
         {
           badges: [{ id: 4 }, { id: 2, selected: true }, { id: 3 }],

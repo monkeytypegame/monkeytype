@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import request from "supertest";
 import app from "../../../src/app";
 import * as Configuration from "../../../src/init/configuration";
@@ -524,7 +525,7 @@ describe("QuotesController", () => {
         ratings: 100,
         totalRating: 122,
       };
-      getRatingMock.mockResolvedValue(quoteRating);
+      getRatingMock.mockResolvedValue(quoteRating as any);
 
       //WHEN
       const { body } = await mockApp

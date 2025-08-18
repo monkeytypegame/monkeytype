@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { buildTag } from "../../src/ts/utils/tag-builder";
 
 describe("simple-modals", () => {

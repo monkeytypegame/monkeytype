@@ -1,3 +1,4 @@
+import { describe, it, expect, afterAll, vi } from "vitest";
 import { configMetadata } from "../../src/ts/config-metadata";
 import * as Config from "../../src/ts/config";
 import { ConfigKey, Config as ConfigType } from "@monkeytype/schemas/configs";
@@ -54,7 +55,13 @@ describe("ConfigMeta", () => {
       .sort();
 
     expect(configsWithTriggeResize).toEqual(
-      ["fontSize", "keymapSize", "maxLineWidth", "tapeMode"].sort()
+      [
+        "fontSize",
+        "keymapSize",
+        "maxLineWidth",
+        "tapeMode",
+        "tapeMargin",
+      ].sort()
     );
   });
   describe("overrideValue", () => {
@@ -253,6 +260,66 @@ describe("ConfigMeta", () => {
           value: "8008",
           given: { customTheme: true },
           expected: { customTheme: false },
+        },
+      ],
+      keymapLayout: [
+        {
+          value: "3l",
+          given: { keymapMode: "react" },
+          expected: { keymapMode: "react" },
+        },
+        {
+          value: "3l",
+          given: { keymapMode: "off" },
+          expected: { keymapMode: "static" },
+        },
+      ],
+      keymapStyle: [
+        {
+          value: "alice",
+          given: { keymapMode: "react" },
+          expected: { keymapMode: "react" },
+        },
+        {
+          value: "alice",
+          given: { keymapMode: "off" },
+          expected: { keymapMode: "static" },
+        },
+      ],
+      keymapLegendStyle: [
+        {
+          value: "dynamic",
+          given: { keymapMode: "react" },
+          expected: { keymapMode: "react" },
+        },
+        {
+          value: "dynamic",
+          given: { keymapMode: "off" },
+          expected: { keymapMode: "static" },
+        },
+      ],
+      keymapShowTopRow: [
+        {
+          value: "always",
+          given: { keymapMode: "react" },
+          expected: { keymapMode: "react" },
+        },
+        {
+          value: "always",
+          given: { keymapMode: "off" },
+          expected: { keymapMode: "static" },
+        },
+      ],
+      keymapSize: [
+        {
+          value: 2,
+          given: { keymapMode: "react" },
+          expected: { keymapMode: "react" },
+        },
+        {
+          value: 2,
+          given: { keymapMode: "off" },
+          expected: { keymapMode: "static" },
         },
       ],
     };
