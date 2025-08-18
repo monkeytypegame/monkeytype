@@ -3,6 +3,8 @@ import { FriendRequest } from "@monkeytype/schemas/friends";
 import Ape from "../../ape";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../../firebase";
+import { getFriendUid } from "../../pages/friends";
+import * as DB from "../../db";
 
 let blockedUsers: FriendRequest[] = [];
 const element = $("#pageAccountSettings .tab[data-tab='blockedUsers']");
@@ -56,7 +58,7 @@ function refreshList(): void {
   }
   const content = blockedUsers.map(
     (blocked) => `
-    <tr data-id="${blocked._id}">
+    <tr data-id="${blocked._id}" data-uid="${getFriendUid(blocked)}">
        <td><a href="${location.origin}/profile/${
       blocked.initiatorUid
     }?isUid" router-link>${blocked.initiatorName}</a></td>
@@ -86,5 +88,17 @@ element.on("click", "table button.delete", async (e) => {
   } else {
     blockedUsers = blockedUsers.filter((it) => it._id !== id);
     refreshList();
+
+    const snapshot = DB.getSnapshot();
+    if (snapshot) {
+      const uid = (e.target as HTMLElement).parentElement?.parentElement
+        ?.dataset["uid"];
+      if (uid === undefined) {
+        throw new Error("Cannot find uid of target.");
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
+      delete snapshot.friends[uid];
+    }
   }
 });
