@@ -45,7 +45,7 @@ function revert(): void {
   }
 }
 
-let firefoxClipboardNotificatoinShown = false;
+let firefoxClipboardNotificationShown = false;
 
 /**
  * Prepares UI, generates screenshot canvas using modern-screenshot, and reverts UI changes.
@@ -267,9 +267,9 @@ export async function copyToClipboard(): Promise<void> {
       // Firefox specific message (only show once)
       if (
         navigator.userAgent.toLowerCase().includes("firefox") &&
-        !firefoxClipboardNotificatoinShown
+        !firefoxClipboardNotificationShown
       ) {
-        firefoxClipboardNotificatoinShown = true;
+        firefoxClipboardNotificationShown = true;
         Notifications.add(
           "On Firefox you can enable the asyncClipboard.clipboardItem permission in about:config to enable copying straight to the clipboard",
           0,
