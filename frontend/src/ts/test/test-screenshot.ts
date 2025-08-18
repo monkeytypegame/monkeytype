@@ -128,20 +128,19 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
 
   try {
     // Compute full-document render size to keep the target area in frame on small viewports
-    const targetWidth = Math.max(
-      document.documentElement.scrollWidth,
-      document.documentElement.clientWidth
-    );
-    const targetHeight = Math.max(
-      document.documentElement.scrollHeight,
-      document.documentElement.clientHeight
-    );
+    const root = document.documentElement;
+    const { scrollWidth, clientWidth, scrollHeight, clientHeight } = root;
+    const targetWidth = Math.max(scrollWidth, clientWidth);
+    const targetHeight = Math.max(scrollHeight, clientHeight);
+
+    const bg = await ThemeColors.get("bg");
+    const isSmallViewport = window.innerWidth <= 720;
 
     // Target the HTML root to include .customBackground
-    const fullCanvas = await domToCanvas(document.documentElement, {
-      backgroundColor: await ThemeColors.get("bg"),
+    const fullCanvas = await domToCanvas(root, {
+      backgroundColor: bg,
       // Sharp output
-      scale: window.devicePixelRatio || 1,
+      scale: window.devicePixelRatio ?? 1,
       style: {
         width: `${targetWidth}px`,
         height: `${targetHeight}px`,
@@ -149,14 +148,9 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       },
       // skipping hidden elements (THAT IS SO IMPORTANT!)
       filter: (el: Node): boolean => {
-        if (el instanceof HTMLElement) {
-          if (el.classList.contains("hidden")) {
-            return false;
-          }
-        }
-        return true;
+        return !(el instanceof HTMLElement && el.classList.contains("hidden"));
       },
-      // TODD find out why not working and if possible to make it work
+      // TODO find out why not working and if possible to make it work
       // Help remote image fetching (for custom background URLs)
       /*fetch: {
         requestInit: { mode: "cors", credentials: "omit" },
@@ -164,9 +158,9 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       },*/
       // Normalize the background layer so its negative z-index doesn't get hidden
       onCloneEachNode: (cloned) => {
-        if ((cloned as Element)?.nodeType === 1) {
-          const el = cloned as HTMLElement;
-          if (el.classList?.contains("customBackground")) {
+        if (cloned instanceof HTMLElement) {
+          const el = cloned;
+          if (el.classList.contains("customBackground")) {
             el.style.zIndex = "0";
             el.style.width = `${targetWidth}px`;
             el.style.height = `${targetHeight}px`;
@@ -174,11 +168,11 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
             const img = el.querySelector("img");
             if (img) {
               // (<= 720px viewport width)
-              if (window.innerWidth <= 720) {
+              if (isSmallViewport) {
                 img.style.width = "103%"; // 103 cuz somehow the scrollbar shows in smaller sizes with blur
                 img.style.height = "140%"; // this center the image in contain
               } else {
-                img.style.width = "100%"; // safty nothing more
+                img.style.width = "100%"; // safety nothing more
                 img.style.height = "100%"; // for image fit full screen even when words history is opened with many lines
               }
             }
@@ -192,13 +186,17 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     const paddedWidth = sourceWidth + paddingX * 2;
     const paddedHeight = sourceHeight + paddingY * 2;
 
+    const scaledPaddedWCanvas = Math.round(paddedWidth * scale);
+    const scaledPaddedHCanvas = Math.round(paddedHeight * scale);
+    const scaledPaddedWForCrop = Math.ceil(paddedWidth * scale);
+    const scaledPaddedHForCrop = Math.ceil(paddedHeight * scale);
+
     const canvas = document.createElement("canvas");
-    canvas.width = Math.round(paddedWidth * scale);
-    canvas.height = Math.round(paddedHeight * scale);
+    canvas.width = scaledPaddedWCanvas;
+    canvas.height = scaledPaddedHCanvas;
     const ctx = canvas.getContext("2d");
     if (!ctx) {
       Notifications.add("Failed to get canvas context for screenshot", -1);
-      revert();
       return null;
     }
 
@@ -208,14 +206,8 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     // Calculate crop coordinates with proper clamping
     const cropX = Math.max(0, Math.floor((sourceX - paddingX) * scale));
     const cropY = Math.max(0, Math.floor((sourceY - paddingY) * scale));
-    const cropW = Math.min(
-      Math.ceil(paddedWidth * scale),
-      fullCanvas.width - cropX
-    );
-    const cropH = Math.min(
-      Math.ceil(paddedHeight * scale),
-      fullCanvas.height - cropY
-    );
+    const cropW = Math.min(scaledPaddedWForCrop, fullCanvas.width - cropX);
+    const cropH = Math.min(scaledPaddedHForCrop, fullCanvas.height - cropY);
 
     ctx.drawImage(
       fullCanvas,
@@ -228,15 +220,15 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
       canvas.width,
       canvas.height
     );
-    revert();
     return canvas;
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Error creating screenshot canvas"),
       -1
     );
-    revert(); // Ensure UI is reverted on error
     return null;
+  } finally {
+    revert(); // Ensure UI is reverted on both success and error
   }
 }
 
