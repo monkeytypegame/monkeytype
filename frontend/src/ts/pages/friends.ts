@@ -16,15 +16,40 @@ import { secondsToString } from "../utils/date-and-time";
 import { PersonalBest } from "@monkeytype/schemas/shared";
 import Format from "../utils/format";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
-import { Friend } from "@monkeytype/schemas/friends";
+import { Friend, FriendRequest } from "@monkeytype/schemas/friends";
 import { SortedTable } from "../utils/sorted-table";
 import { getAvatarElement } from "../utils/discord-avatar";
 import { formatTypingStatsRatio } from "../utils/misc";
 import { getLanguageDisplayString } from "../utils/strings";
+import * as DB from "../db";
+import { Auth } from "../firebase";
 
 const pageElement = $(".page.pageFriends");
 
 let friendsTable: SortedTable<Friend> | undefined = undefined;
+
+export function getFriendUid(
+  friendRequest: Pick<FriendRequest, "initiatorUid" | "friendUid">
+): string {
+  if (Auth?.currentUser?.uid === friendRequest.initiatorUid)
+    return friendRequest.friendUid;
+  return friendRequest.initiatorUid;
+}
+
+export async function addFriend(friendName: string): Promise<true | string> {
+  const result = await Ape.friends.createRequest({ body: { friendName } });
+
+  if (result.status !== 200) {
+    return `Friend request failed: ${result.body.message}`;
+  } else {
+    const snapshot = DB.getSnapshot();
+    if (snapshot !== undefined) {
+      const friendUid = getFriendUid(result.body.data);
+      snapshot.friends[friendUid] = result.body.data.status;
+    }
+    return true;
+  }
+}
 
 const addFriendModal = new SimpleModal({
   id: "addFriend",
@@ -33,12 +58,12 @@ const addFriendModal = new SimpleModal({
   buttonText: "request",
   onlineOnly: true,
   execFn: async (_thisPopup, friendName) => {
-    const result = await Ape.friends.createRequest({ body: { friendName } });
+    const result = await addFriend(friendName);
 
-    if (result.status !== 200) {
+    if (result !== true) {
       return {
         status: -1,
-        message: `Friend request failed: ${result.body.message}`,
+        message: result,
       };
     } else {
       return { status: 1, message: `Request send to ${friendName}` };
@@ -66,7 +91,9 @@ async function updatePendingRequests(): Promise<void> {
 
       const html = result.body.data
         .map(
-          (item) => `<tr data-id="${item._id}">
+          (item) => `<tr data-id="${item._id}" data-friend-uid="${getFriendUid(
+            item
+          )}">
         <td><a href="${location.origin}/profile/${
             item.initiatorUid
           }?isUid" router-link>${item.initiatorName}</a></td>
@@ -311,9 +338,22 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
     const row = e.target.parentElement?.parentElement;
     const count = row?.parentElement?.childElementCount;
     row?.remove();
+
+    const snapshot = DB.getSnapshot();
+    if (action === "rejected" && snapshot) {
+      const friendUid =
+        e.target.parentElement?.parentElement?.dataset["friendUid"];
+      if (friendUid === undefined) {
+        throw new Error("Cannot find friendUid of target.");
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
+      delete snapshot.friends[friendUid];
+    }
     if (count === 1) {
       $(".pageFriends .pendingRequests").addClass("hidden");
     }
+    DB.getSnapshot();
   }
 });
 
