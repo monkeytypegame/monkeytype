@@ -133,12 +133,9 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     const targetWidth = Math.max(scrollWidth, clientWidth);
     const targetHeight = Math.max(scrollHeight, clientHeight);
 
-    const bg = await ThemeColors.get("bg");
-    const isSmallViewport = window.innerWidth <= 720;
-
     // Target the HTML root to include .customBackground
     const fullCanvas = await domToCanvas(root, {
-      backgroundColor: bg,
+      backgroundColor: await ThemeColors.get("bg"),
       // Sharp output
       scale: window.devicePixelRatio ?? 1,
       style: {
@@ -168,7 +165,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
             const img = el.querySelector("img");
             if (img) {
               // (<= 720px viewport width)
-              if (isSmallViewport) {
+              if (window.innerWidth <= 720) {
                 img.style.width = "103%"; // 103 cuz somehow the scrollbar shows in smaller sizes with blur
                 img.style.height = "140%"; // this center the image in contain
               } else {
