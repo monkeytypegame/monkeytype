@@ -19,6 +19,10 @@
       "dependsOn": ["^build"],
       "cache": false
     },
+    "test:assets": {
+      "dependsOn": ["@monkeytype/schemas#build"],
+      "cache": false
+    },
     "integration-test": {
       "dependsOn": ["^build"],
       "cache": false

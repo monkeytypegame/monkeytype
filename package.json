@@ -53,9 +53,9 @@
     "pretty-fix-fe": "prettier --write ./frontend/src",
     "pretty-fix-assets": "prettier --write ./frontend/static",
     "pretty-fix-pkg": "prettier --write ./packages",
+    "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
     "validate-json": "turbo run validate-json",
-    "pr-check-lint-json": "cd frontend && eslint \"./static/**/*.json\"",
-    "pr-check-json": "turbo run validate-json test --filter @monkeytype/frontend",
+    "check-assets": "turbo run validate-json test:assets -- --passWithNoTests",
     "knip": "knip"
   },
   "engines": {

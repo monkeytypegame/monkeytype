@@ -474,6 +474,8 @@ function validateLanguages() {
 }
 
 function main() {
+  const args = process.argv.slice(2).filter((arg) => !arg.startsWith("-"));
+
   const validators = {
     quotes: validateQuotes,
     languages: validateLanguages,
@@ -482,14 +484,12 @@ function main() {
   };
 
   const tasks = [];
-  const args = process.argv.slice(2);
   for (const [key, validator] of Object.entries(validators)) {
-    if (args.includes(key)) tasks.push(validator());
+    if (args.length < 1 || args.includes("all") || args.includes(key)) {
+      tasks.push(validator());
+    }
   }
-  if (args.length < 1) {
-    tasks.push(Object.values(validators).map((validator) => validator()));
-  }
-  return Promise.all(tasks);
+  if (tasks.length > 0) return Promise.all(tasks);
 }
 
 main();

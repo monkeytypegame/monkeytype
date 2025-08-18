@@ -18,6 +18,7 @@
     "deploy-live": "npm run validate-json && npm run build && firebase deploy -P live --only hosting",
     "deploy-preview": "npm run validate-json && npm run build && firebase hosting:channel:deploy preview -P live --expires 2h",
     "test": "vitest run",
+    "test:assets": "vitest run --project=assets",
     "test-coverage": "vitest run --coverage",
     "dev-test": "concurrently --kill-others \"vite dev\" \"vitest\"",
     "tsc": "tsc",

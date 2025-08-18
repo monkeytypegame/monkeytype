@@ -44,7 +44,7 @@ jobs:
         with:
           filters: |
             json:
-              - 'frontend/**/*.json'
+              - 'frontend/static/**/*'
             be-src:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
               - 'backend/package.json'
@@ -237,6 +237,7 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
+          # names of the filters are the test file names that should run on change of the corresponding pattern
           filters: |
             languages:
               - 'frontend/static/languages/*.json'
@@ -250,7 +251,7 @@ jobs:
               - 'frontend/static/webfonts/**'
             challenges:
               - 'frontend/static/challenges/*.json'
-
+            
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -279,11 +280,11 @@ jobs:
         run: pnpm install
 
       - name: Lint JSON
-        run: npm run pr-check-lint-json
+        run: npm run lint-json-assets
 
       - name: Validate JSON
         if: steps.filter.outputs.changes != '[]'
-        run: npm run pr-check-json -- -- --passWithNoTests ${{ join(fromJSON(steps.filter.outputs.changes), ' ') }}
+        run: npm run check-assets -- ${{ join(fromJSON(steps.filter.outputs.changes), ' ') }}
 
   ci-pkg:
     name: ci-pkg
@@ -325,10 +326,10 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-pkg
+        run: npm run lint
 
       - name: Build
-        run: npm run build-pkg
+        run: npm run build
 
       - name: Test
         run: npm run test-pkg
