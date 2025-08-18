@@ -22,7 +22,7 @@ import { getAvatarElement } from "../utils/discord-avatar";
 import { formatTypingStatsRatio } from "../utils/misc";
 import { getLanguageDisplayString } from "../utils/strings";
 import * as DB from "../db";
-import { Auth } from "../firebase";
+import { getAuthenticatedUser } from "../firebase";
 
 const pageElement = $(".page.pageFriends");
 
@@ -31,8 +31,11 @@ let friendsTable: SortedTable<Friend> | undefined = undefined;
 export function getFriendUid(
   friendRequest: Pick<FriendRequest, "initiatorUid" | "friendUid">
 ): string {
-  if (Auth?.currentUser?.uid === friendRequest.initiatorUid)
-    return friendRequest.friendUid;
+  const me = getAuthenticatedUser();
+  if (me === null)
+    throw new Error("expected to be authenticated in getFriendUid");
+
+  if (me.uid === friendRequest.initiatorUid) return friendRequest.friendUid;
   return friendRequest.initiatorUid;
 }
 
@@ -45,6 +48,7 @@ export async function addFriend(friendName: string): Promise<true | string> {
     const snapshot = DB.getSnapshot();
     if (snapshot !== undefined) {
       const friendUid = getFriendUid(result.body.data);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       snapshot.friends[friendUid] = result.body.data.status;
     }
     return true;
