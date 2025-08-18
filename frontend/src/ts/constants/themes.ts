@@ -10,7 +10,7 @@ export type Theme = {
 };
 
 export const themes: Record<ThemeName, Omit<Theme, "name">> = {
-  "80008": {
+  "8008": {
     bgColor: "#333a45",
     mainColor: "#f44c7f",
     subColor: "#939eae",
