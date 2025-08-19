@@ -237,21 +237,17 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
-          # names of the filters are the test file names that should run on change of the corresponding pattern
           filters: |
             languages:
               - 'frontend/static/languages/*.json'
             quotes:
               - 'frontend/static/quotes/*.json'
-            layouts:
+            others:
               - 'frontend/static/layouts/*.json'
-            themes:
               - 'frontend/static/themes/**'
-            fonts:
               - 'frontend/static/webfonts/**'
-            challenges:
               - 'frontend/static/challenges/*.json'
-            
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -282,9 +278,17 @@ jobs:
       - name: Lint JSON
         run: npm run lint-json-assets
 
-      - name: Validate JSON
-        if: steps.filter.outputs.changes != '[]'
-        run: npm run check-assets -- ${{ join(fromJSON(steps.filter.outputs.changes), ' ') }}
+      - name: Validate language assets
+        if: steps.filter.outputs.languages == 'true'
+        run: npm run check-language-assets
+
+      - name: Validate quote assets
+        if: steps.filter.outputs.quotes == 'true'
+        run: npm run check-quotes-assets
+
+      - name: Validate other assets
+        if: steps.filter.outputs.others == 'true'
+        run: npm run check-other-assets
 
   ci-pkg:
     name: ci-pkg
@@ -326,10 +330,10 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint
+        run: npm run lint-pkg
 
       - name: Build
-        run: npm run build
+        run: npm run build-pkg
 
       - name: Test
         run: npm run test-pkg

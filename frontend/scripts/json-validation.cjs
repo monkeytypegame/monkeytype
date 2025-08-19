@@ -1,3 +1,10 @@
+/**
+ * Example usage in root or frontend:
+ * pnpm validate-json (npm run validate-json)
+ * pnpm vaildate-json quotes others(npm run vaildate-json quotes others)
+ * pnpm validate-json challenges fonts -p (npm run validate-json challenges fonts -- -p)
+ */
+
 // eslint-disable no-require-imports
 const fs = require("fs");
 const Ajv = require("ajv");
@@ -474,22 +481,48 @@ function validateLanguages() {
 }
 
 function main() {
-  const args = process.argv.slice(2).filter((arg) => !arg.startsWith("-"));
+  const args = process.argv.slice(2);
+  const flags = args.filter((arg) => arg.startsWith("-"));
+  const keys = args.filter((arg) => !arg.startsWith("-"));
 
-  const validators = {
+  const mainValidators = {
     quotes: validateQuotes,
     languages: validateLanguages,
     layouts: validateLayouts,
     challenges: validateChallenges,
   };
 
-  const tasks = [];
-  for (const [key, validator] of Object.entries(validators)) {
-    if (args.length < 1 || args.includes("all") || args.includes(key)) {
-      tasks.push(validator());
+  const validatorsIndex = {
+    ...Object.fromEntries(
+      Object.entries(mainValidators).map(([k, v]) => [k, [v]])
+    ),
+    // add arbitrary keys and validator groupings down here
+    others: [validateChallenges, validateLayouts],
+  };
+
+  // flags
+  const validateAll =
+    keys.length < 1 || flags.includes("--all") || flags.includes("-a")
+      ? true
+      : false;
+  const passWithNoValidators =
+    flags.includes("--pass-with-no-validators") || flags.includes("-p")
+      ? true
+      : false;
+
+  const tasks = validateAll ? Object.values(mainValidators) : [];
+  for (const key of keys) {
+    if (!Object.keys(validatorsIndex).includes(key)) {
+      console.error(`There is no validator for key '${key}'.`);
+      if (!passWithNoValidators) process.exit(1);
+    } else if (!validateAll) {
+      tasks.push(...validatorsIndex[key]);
     }
   }
-  if (tasks.length > 0) return Promise.all(tasks);
+
+  if (tasks.length > 0) {
+    return Promise.all(tasks.map((validator) => validator()));
+  }
 }
 
 main();
