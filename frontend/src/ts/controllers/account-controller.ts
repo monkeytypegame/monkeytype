@@ -6,7 +6,6 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as LoginPage from "../pages/login";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
-import * as Account from "../pages/account";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -97,9 +96,6 @@ async function getDataAndInit(): Promise<boolean> {
         fb.functions.applyGlobalCSS();
       }
     }
-    if (window.location.pathname === "/account") {
-      await Account.downloadResults();
-    }
     return true;
   } catch (error) {
     console.error(error);
@@ -170,28 +166,10 @@ export async function onAuthStateChanged(
     },
   ];
 
-  if (
-    window.location.pathname === "/account" ||
-    window.location.pathname === "/login"
-  ) {
-    keyframes = [
-      {
-        percentage: 40,
-        durationMs: 1000,
-        text: "Downloading user data...",
-      },
-      {
-        percentage: 90,
-        durationMs: 1000,
-        text: "Downloading results...",
-      },
-    ];
-  }
-
   //undefined means navigate to whatever the current window.location.pathname is
   await navigate(undefined, {
     force: true,
-    overrideLoadingOptions: {
+    loadingOptions: {
       shouldLoad: () => {
         return user !== null;
       },
