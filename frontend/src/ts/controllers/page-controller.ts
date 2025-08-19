@@ -176,12 +176,23 @@ export async function change(
       easingMethod
     );
 
-    if (loadingOptions.style === "bar") {
-      await getLoadingPromiseWithBarKeyframes(loadingOptions);
-      void PageLoading.updateBar(100, 125);
-      PageLoading.updateText("Done");
-    } else {
-      await loadingOptions.waitFor();
+    try {
+      if (loadingOptions.style === "bar") {
+        await getLoadingPromiseWithBarKeyframes(loadingOptions);
+        void PageLoading.updateBar(100, 125);
+        PageLoading.updateText("Done");
+      } else {
+        await loadingOptions.waitFor();
+      }
+    } catch (error) {
+      PageLoading.showError();
+      PageLoading.updateText(
+        `Failed to load the ${nextPage.id} page: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+      PageTransition.set(false);
+      return false;
     }
 
     await Misc.promiseAnimation(

@@ -1,38 +1,40 @@
 .pageLoading {
-  .preloader {
-    text-align: center;
+  text-align: center;
+  place-self: center;
+  align-content: center;
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+
+  .spinner,
+  .error {
+    font-size: 2rem;
+  }
+
+  .spinner {
+    color: var(--main-color);
+  }
+
+  .error {
+    color: var(--error-color);
+  }
+
+  .text {
+    height: 1.25em;
+  }
+
+  .bar {
+    max-width: 20rem;
+    width: 100%;
+    height: 0.5rem;
+    background: var(--sub-alt-color);
+    border-radius: var(--roundness);
     justify-self: center;
-    display: grid;
-    .barWrapper {
-      justify-content: center;
-      display: grid;
-      gap: 1rem;
-      grid-row: 1;
-      grid-column: 1;
-      .text {
-        height: 1.25em;
-      }
-      .bar {
-        width: 20rem;
-        height: 0.5rem;
-        background: var(--sub-alt-color);
-        border-radius: var(--roundness);
-        justify-self: center;
-        .fill {
-          height: 100%;
-          width: 0%;
-          background: var(--main-color);
-          border-radius: var(--roundness);
-          // transition: 1s;
-        }
-      }
-    }
-    .icon {
-      grid-row: 1;
-      grid-column: 1;
-      font-size: 2rem;
-      color: var(--main-color);
-      margin-bottom: 1rem;
+    .fill {
+      height: 100%;
+      width: 50%;
+      background: var(--main-color);
+      border-radius: var(--roundness);
     }
   }
 }
