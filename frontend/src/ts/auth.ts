@@ -1,11 +1,11 @@
-import Ape from "../ape";
-import * as Notifications from "../elements/notifications";
-import Config, * as UpdateConfig from "../config";
-import * as Misc from "../utils/misc";
-import * as DB from "../db";
-import * as Loader from "../elements/loader";
-import * as LoginPage from "../pages/login";
-import * as RegisterCaptchaModal from "../modals/register-captcha";
+import Ape from "./ape";
+import * as Notifications from "./elements/notifications";
+import Config, * as UpdateConfig from "./config";
+import * as Misc from "./utils/misc";
+import * as DB from "./db";
+import * as Loader from "./elements/loader";
+import * as LoginPage from "./pages/login";
+import * as RegisterCaptchaModal from "./modals/register-captcha";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -23,13 +23,13 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   resetIgnoreAuthCallback,
-} from "../firebase";
-import * as ConnectionState from "../states/connection";
-import { navigate } from "./route-controller";
-import { getActiveFunboxesWithFunction } from "../test/funbox/list";
-import * as Sentry from "../sentry";
+} from "./firebase";
+import * as ConnectionState from "./states/connection";
+import { navigate } from "./controllers/route-controller";
+import { getActiveFunboxesWithFunction } from "./test/funbox/list";
+import * as Sentry from "./sentry";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import * as AuthEvent from "../observables/auth-event";
+import * as AuthEvent from "./observables/auth-event";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();

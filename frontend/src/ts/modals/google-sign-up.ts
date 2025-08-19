@@ -9,7 +9,7 @@ import {
 import Ape from "../ape";
 import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
-import * as AccountController from "../controllers/auth";
+import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
