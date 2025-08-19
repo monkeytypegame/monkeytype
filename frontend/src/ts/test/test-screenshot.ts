@@ -143,18 +143,18 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
         height: `${targetHeight}px`,
         overflow: "hidden", // for scrollbar in small viewports
       },
+      // Fetch (for custom background URLs)
+      fetch: {
+        requestInit: { mode: "cors", credentials: "omit" },
+        bypassingCache: true,
+      },
+
       // skipping hidden elements (THAT IS SO IMPORTANT!)
       filter: (el: Node): boolean => {
         if (!(el instanceof HTMLElement)) return true;
         const cs = getComputedStyle(el);
         return !(el.classList.contains("hidden") || cs.display === "none");
       },
-      // TODO find out why not working and if possible to make it work
-      // Help remote image fetching (for custom background URLs)
-      /*fetch: {
-        requestInit: { mode: "cors", credentials: "omit" },
-        bypassingCache: true,
-      },*/
       // Normalize the background layer so its negative z-index doesn't get hidden
       onCloneEachNode: (cloned) => {
         if (cloned instanceof HTMLElement) {
