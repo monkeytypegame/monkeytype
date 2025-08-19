@@ -987,26 +987,14 @@ export async function downloadResults(offset?: number): Promise<void> {
   }
 }
 
-function showError(message: string): void {
-  $(".pageAccount .error .text").html(message);
-  $(".pageAccount .error").removeClass("hidden");
-  $(".pageAccount .content").remove();
-}
-
 async function update(): Promise<void> {
-  if (DB.getSnapshot() === null) {
-    showError(
-      "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."
-    );
-  } else {
-    await downloadResults();
-    try {
-      await Misc.sleep(0);
-      await fillContent();
-    } catch (e) {
-      console.error(e);
-      Notifications.add(`Something went wrong: ${e}`, -1);
-    }
+  await downloadResults();
+  try {
+    await Misc.sleep(0);
+    await fillContent();
+  } catch (e) {
+    console.error(e);
+    Notifications.add(`Something went wrong: ${e}`, -1);
   }
 }
 
@@ -1344,7 +1332,14 @@ export const page = new Page({
     shouldLoad: () => {
       return DB.getSnapshot()?.results === undefined;
     },
-    waitFor: downloadResults,
+    waitFor: async () => {
+      if (DB.getSnapshot() !== null) {
+        throw new Error(
+          "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."
+        );
+      }
+      return downloadResults();
+    },
     style: "bar",
     keyframes: [
       {

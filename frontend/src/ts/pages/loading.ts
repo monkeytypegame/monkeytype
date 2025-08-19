@@ -28,7 +28,7 @@ export async function updateBar(
 }
 
 export function updateText(text: string): void {
-  textEl.removeClass("hidden").text(text);
+  textEl.removeClass("hidden").html(text);
 }
 
 export function showSpinner(): void {
