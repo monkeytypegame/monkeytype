@@ -163,13 +163,13 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
             el.style.zIndex = "0";
             el.style.width = `${targetWidth}px`;
             el.style.height = `${targetHeight}px`;
-            // for the inner image scales ( visual hacking )
+            // for the inner image scales
             const img = el.querySelector("img");
             if (img) {
-              // (<= 720px viewport width)
+              // (<= 720px viewport width) wpm & acc text wrapper!!
               if (window.innerWidth <= 720) {
-                img.style.width = "103%"; // 103 cuz somehow the scrollbar shows in smaller sizes with blur
-                img.style.height = "140%"; // this center the image in contain
+                img.style.transform = "translateY(20vh)";
+                img.style.height = "100%";
               } else {
                 img.style.width = "100%"; // safety nothing more
                 img.style.height = "100%"; // for image fit full screen even when words history is opened with many lines
