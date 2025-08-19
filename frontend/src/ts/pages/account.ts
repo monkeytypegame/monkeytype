@@ -1333,7 +1333,7 @@ export const page = new Page({
       return DB.getSnapshot()?.results === undefined;
     },
     waitFor: async () => {
-      if (DB.getSnapshot() !== null) {
+      if (DB.getSnapshot() === null) {
         throw new Error(
           "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."
         );
