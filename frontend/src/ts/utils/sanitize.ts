@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { deepClone } from "./misc";
 
 function removeProblems<T extends object | unknown[]>(
   obj: T,
@@ -37,7 +36,7 @@ export function sanitize<T extends z.ZodTypeAny>(
 ): z.infer<T> {
   const maxAttempts = 2;
   let result;
-  let current = deepClone(obj);
+  let current = structuredClone(obj);
 
   for (let attempt = 0; attempt <= maxAttempts; attempt++) {
     result = schema.safeParse(current);

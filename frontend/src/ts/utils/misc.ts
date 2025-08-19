@@ -449,11 +449,45 @@ export function isAnyPopupVisible(): boolean {
   return popupVisible;
 }
 
+export type JQueryEasing =
+  | "linear"
+  | "swing"
+  | "easeInSine"
+  | "easeOutSine"
+  | "easeInOutSine"
+  | "easeInQuad"
+  | "easeOutQuad"
+  | "easeInOutQuad"
+  | "easeInCubic"
+  | "easeOutCubic"
+  | "easeInOutCubic"
+  | "easeInQuart"
+  | "easeOutQuart"
+  | "easeInOutQuart"
+  | "easeInQuint"
+  | "easeOutQuint"
+  | "easeInOutQuint"
+  | "easeInExpo"
+  | "easeOutExpo"
+  | "easeInOutExpo"
+  | "easeInCirc"
+  | "easeOutCirc"
+  | "easeInOutCirc"
+  | "easeInBack"
+  | "easeOutBack"
+  | "easeInOutBack"
+  | "easeInElastic"
+  | "easeOutElastic"
+  | "easeInOutElastic"
+  | "easeInBounce"
+  | "easeOutBounce"
+  | "easeInOutBounce";
+
 export async function promiseAnimation(
   el: JQuery,
   animation: Record<string, string>,
   duration: number,
-  easing: string
+  easing: JQueryEasing = "swing"
 ): Promise<void> {
   return new Promise((resolve) => {
     el.animate(animation, applyReducedMotion(duration), easing, resolve);
@@ -584,32 +618,6 @@ export function updateTitle(title?: string): void {
 
 export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && !Array.isArray(obj) && obj !== null;
-}
-
-export function deepClone<T>(obj: T[]): T[];
-export function deepClone<T extends object>(obj: T): T;
-export function deepClone<T>(obj: T): T;
-export function deepClone<T>(obj: T | T[]): T | T[] {
-  // Check if the value is a primitive (not an object or array)
-  if (obj === null || typeof obj !== "object") {
-    return obj;
-  }
-
-  // Handle arrays
-  if (Array.isArray(obj)) {
-    return obj.map((item) => deepClone(item));
-  }
-
-  // Handle objects
-  const clonedObj = {} as { [K in keyof T]: T[K] };
-
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      clonedObj[key] = deepClone((obj as { [K in keyof T]: T[K] })[key]);
-    }
-  }
-
-  return clonedObj;
 }
 
 export function prefersReducedMotion(): boolean {

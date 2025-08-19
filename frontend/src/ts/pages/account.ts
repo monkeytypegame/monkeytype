@@ -5,7 +5,6 @@ import * as ChartController from "../controllers/chart-controller";
 import Config, * as UpdateConfig from "../config";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
 import * as PbTables from "../elements/account/pb-tables";
-import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
@@ -52,6 +51,7 @@ export function toggleFilterDebug(): void {
 
 let filteredResults: SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
+let testActivityEl: HTMLElement | null;
 
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults === undefined || filteredResults.length === 0) return;
@@ -212,8 +212,6 @@ let chartData: ChartController.HistoryChartData[] = [];
 let accChartData: ChartController.AccChartData[] = [];
 
 async function fillContent(): Promise<void> {
-  LoadingPage.updateText("Displaying stats...");
-  LoadingPage.updateBar(100);
   console.log("updating account page");
   ThemeColors.update();
 
@@ -223,7 +221,11 @@ async function fillContent(): Promise<void> {
   PbTables.update(snapshot.personalBests);
   void Profile.update("account", snapshot);
 
-  TestActivity.init(snapshot.testActivity, new Date(snapshot.addedAt));
+  TestActivity.init(
+    testActivityEl as HTMLElement,
+    snapshot.testActivity,
+    new Date(snapshot.addedAt)
+  );
   void ResultBatches.update();
 
   chartData = [];
@@ -963,21 +965,11 @@ async function fillContent(): Promise<void> {
   await Misc.sleep(0);
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
-  LoadingPage.updateBar(100, true);
   Focus.set(false);
-  void Misc.swapElements(
-    $(".pageAccount .preloader"),
-    $(".pageAccount .content"),
-    250,
-    async () => {
-      $(".page.pageAccount").css("height", "unset"); //weird safari fix
-    },
-    async () => {
-      setTimeout(() => {
-        Profile.updateNameFontSize("account");
-      }, 10);
-    }
-  );
+  $(".page.pageAccount").css("height", "unset"); //weird safari fix
+  setTimeout(() => {
+    Profile.updateNameFontSize("account");
+  }, 0);
 }
 
 export async function downloadResults(offset?: number): Promise<void> {
@@ -995,13 +987,18 @@ export async function downloadResults(offset?: number): Promise<void> {
   }
 }
 
+function showError(message: string): void {
+  $(".pageAccount .error .text").html(message);
+  $(".pageAccount .error").removeClass("hidden");
+  $(".pageAccount .content").remove();
+}
+
 async function update(): Promise<void> {
-  LoadingPage.updateBar(0, true);
   if (DB.getSnapshot() === null) {
-    Notifications.add(`Missing account data. Please refresh.`, -1);
-    $(".pageAccount .preloader").html("Missing account data. Please refresh.");
+    showError(
+      "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."
+    );
   } else {
-    LoadingPage.updateBar(90);
     await downloadResults();
     try {
       await Misc.sleep(0);
@@ -1343,6 +1340,20 @@ export const page = new Page({
   id: "account",
   element: $(".page.pageAccount"),
   path: "/account",
+  loadingOptions: {
+    shouldLoad: () => {
+      return DB.getSnapshot()?.results === undefined;
+    },
+    waitFor: downloadResults,
+    style: "bar",
+    keyframes: [
+      {
+        percentage: 100,
+        durationMs: 3000,
+        text: "Downloading results...",
+      },
+    ],
+  },
   afterHide: async (): Promise<void> => {
     reset();
     ResultFilters.removeButtons();
@@ -1351,23 +1362,22 @@ export const page = new Page({
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
     const snapshot = DB.getSnapshot();
-    if (snapshot?.results === undefined) {
-      $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
-      $(".pageAccount .content").addClass("hidden");
-      $(".pageAccount .preloader").removeClass("hidden");
-      await LoadingPage.showBar();
-    }
     ResultFilters.updateTagsDropdownOptions();
     await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
 
+    testActivityEl = document.querySelector(
+      ".page.pageAccount .testActivity"
+    ) as HTMLElement;
+
     TestActivity.initYearSelector(
+      testActivityEl,
       "current",
       snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
     );
 
-    void update().then(() => {
+    await update().then(() => {
       void updateChartColors();
       $(".pageAccount .content .accountVerificatinNotice").remove();
       if (getAuthenticatedUser()?.emailVerified === false) {

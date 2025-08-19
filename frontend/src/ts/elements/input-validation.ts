@@ -42,7 +42,7 @@ export function debounceIfNeeded<T extends (...args: any[]) => any>(
   delay: number,
   callback: T
 ): T | debounce<T> {
-  if (delay === undefined || delay <= 0) {
+  if (delay <= 0) {
     return callback;
   }
   return debounce(delay, callback);
@@ -64,7 +64,7 @@ export function createInputEventHandler<T>(
   let callIsValid =
     validation.isValid !== undefined
       ? debounceIfNeeded(
-          validation.debounceDelay ?? 100,
+          validation.debounceDelay ?? 250,
           async (
             originalInput: HTMLInputElement,
             currentValue: string,

@@ -1,24 +1,12 @@
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
-import * as AccountButton from "../elements/account-button";
 import * as Misc from "../utils/misc";
-import * as Settings from "../pages/settings";
 import * as DB from "../db";
-import * as TestLogic from "../test/test-logic";
 import * as Loader from "../elements/loader";
-import * as PageTransition from "../states/page-transition";
-import * as ActivePage from "../states/active-page";
-import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
-import * as ResultFilters from "../elements/account/result-filters";
-import * as TagController from "./tag-controller";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
-import * as LastSignedOutResultModal from "../modals/last-signed-out-result";
-import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
-import * as Alerts from "../elements/alerts";
-import * as AccountSettings from "../pages/account-settings";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -37,17 +25,12 @@ import {
   signInWithPopup,
   resetIgnoreAuthCallback,
 } from "../firebase";
-import {
-  hideFavoriteQuoteLength,
-  showFavoriteQuoteLength,
-} from "../test/test-config";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
-import * as PSA from "../elements/psa";
 import { getActiveFunboxesWithFunction } from "../test/funbox/list";
-import { Snapshot } from "../constants/default-snapshot";
 import * as Sentry from "../sentry";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import * as AuthEvent from "../observables/auth-event";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -79,20 +62,47 @@ async function sendVerificationEmail(): Promise<void> {
 async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
-    if (window.location.pathname !== "/account") {
-      LoadingPage.updateBar(90);
-    } else {
-      LoadingPage.updateBar(45);
-    }
-    LoadingPage.updateText("Downloading user data...");
-    await LoadingPage.showBar();
     const snapshot = await DB.initSnapshot();
-    if (snapshot !== false) {
-      Sentry.setUser(snapshot.uid, snapshot.name);
+
+    if (snapshot === false) {
+      throw new Error(
+        "Snapshot didn't initialize due to lacking authentication even though user is authenticated"
+      );
     }
+
+    Sentry.setUser(snapshot.uid, snapshot.name);
+    if (snapshot.needsToChangeName) {
+      Notifications.addPSA(
+        "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
+        -1,
+        undefined,
+        true,
+        undefined,
+        true
+      );
+    }
+
+    const areConfigsEqual =
+      JSON.stringify(Config) === JSON.stringify(snapshot.config);
+
+    if (Config === undefined || !areConfigsEqual) {
+      console.log(
+        "no local config or local and db configs are different - applying db"
+      );
+      await UpdateConfig.apply(snapshot.config);
+      UpdateConfig.saveFullConfigToLocalStorage(true);
+
+      //funboxes might be different and they wont activate on the account page
+      for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
+        fb.functions.applyGlobalCSS();
+      }
+    }
+    if (window.location.pathname === "/account") {
+      await Account.downloadResults();
+    }
+    return true;
   } catch (error) {
     console.error(error);
-    AccountButton.loading(false);
     LoginPage.enableInputs();
     $("header nav .view-account").css("opacity", 1);
     if (error instanceof DB.SnapshotInitError) {
@@ -120,130 +130,83 @@ async function getDataAndInit(): Promise<boolean> {
     }
     return false;
   }
-  if (ActivePage.get() === "loading") {
-    LoadingPage.updateBar(100);
-  } else {
-    LoadingPage.updateBar(45);
-  }
-  LoadingPage.updateText("Applying settings...");
-  const snapshot = DB.getSnapshot() as Snapshot;
-  AccountButton.update(snapshot);
-  Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
-  showFavoriteQuoteLength();
-
-  ResultFilters.loadTags(snapshot.tags);
-
-  // filters = defaultResultFilters;
-  void ResultFilters.load();
-
-  if (snapshot.needsToChangeName) {
-    Notifications.addPSA(
-      "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
-      -1,
-      undefined,
-      true,
-      undefined,
-      true
-    );
-  }
-
-  const areConfigsEqual =
-    JSON.stringify(Config) === JSON.stringify(snapshot.config);
-
-  if (Config === undefined || !areConfigsEqual) {
-    console.log(
-      "no local config or local and db configs are different - applying db"
-    );
-    await UpdateConfig.apply(snapshot.config);
-    UpdateConfig.saveFullConfigToLocalStorage(true);
-
-    //funboxes might be different and they wont activate on the account page
-    for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
-      fb.functions.applyGlobalCSS();
-    }
-  }
-  AccountButton.loading(false);
-  TagController.loadActiveFromLocalStorage();
-  if (window.location.pathname === "/account") {
-    LoadingPage.updateBar(90);
-    await Account.downloadResults();
-  }
-  if (window.location.pathname === "/login") {
-    navigate("/account");
-  } else {
-    navigate();
-  }
-  return true;
 }
 
 export async function loadUser(_user: UserType): Promise<void> {
-  // User is signed in.
-  PageTransition.set(false);
-  AccountButton.loading(true);
   if (!(await getDataAndInit())) {
     signOut();
+    return;
   }
-
-  // var displayName = user.displayName;
-  // var email = user.email;
-  // var emailVerified = user.emailVerified;
-  // var photoURL = user.photoURL;
-  // var isAnonymous = user.isAnonymous;
-  // var uid = user.uid;
-  // var providerData = user.providerData;
-  LoginPage.hidePreloader();
-
-  // showFavouriteThemesAtTheTop();
-
-  if (TestLogic.notSignedInLastResult !== null) {
-    LastSignedOutResultModal.show();
-  }
+  AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
 }
 
 export async function onAuthStateChanged(
   authInitialisedAndConnected: boolean,
   user: UserType | null
 ): Promise<void> {
-  const search = window.location.search;
-  const hash = window.location.hash;
   console.debug(`account controller ready`);
+
+  let userPromise: Promise<void> = Promise.resolve();
+
   if (authInitialisedAndConnected) {
-    void PSA.show();
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     console.debug(user);
     if (user) {
-      await loadUser(user);
+      userPromise = loadUser(user);
     } else {
-      if (window.location.pathname === "/account") {
-        window.history.replaceState("", "", "/login");
-      }
-
-      Settings.hideAccountSection();
-      AccountButton.update(undefined);
       DB.setSnapshot(undefined);
-      Sentry.clearUser();
-      setTimeout(() => {
-        hideFavoriteQuoteLength();
-      }, 125);
-      PageTransition.set(false);
-      navigate();
     }
-  } else {
-    console.debug(`auth not initialised or not connected`);
-    if (window.location.pathname === "/account") {
-      window.history.replaceState("", "", "/login");
-    }
-    Sentry.clearUser();
-    PageTransition.set(false);
-    navigate();
   }
 
-  URLHandler.loadCustomThemeFromUrl(search);
-  URLHandler.loadTestSettingsFromUrl(search);
-  URLHandler.loadChallengeFromUrl(search);
-  void URLHandler.linkDiscord(hash);
+  if (!authInitialisedAndConnected || !user) {
+    Sentry.clearUser();
+  }
 
-  AccountSettings.updateUI();
+  let keyframes = [
+    {
+      percentage: 90,
+      durationMs: 1000,
+      text: "Downloading user data...",
+    },
+  ];
+
+  if (
+    window.location.pathname === "/account" ||
+    window.location.pathname === "/login"
+  ) {
+    keyframes = [
+      {
+        percentage: 40,
+        durationMs: 1000,
+        text: "Downloading user data...",
+      },
+      {
+        percentage: 90,
+        durationMs: 1000,
+        text: "Downloading results...",
+      },
+    ];
+  }
+
+  //undefined means navigate to whatever the current window.location.pathname is
+  await navigate(undefined, {
+    force: true,
+    overrideLoadingOptions: {
+      shouldLoad: () => {
+        return user !== null;
+      },
+      waitFor: async () => {
+        await userPromise;
+      },
+      style: "bar",
+      keyframes: keyframes,
+    },
+  });
+
+  AuthEvent.dispatch({
+    type: "authStateChanged",
+    data: { isUserSignedIn: user !== null },
+  });
 }
 
 export async function signIn(email: string, password: string): Promise<void> {
@@ -360,7 +323,7 @@ async function addAuthProvider(
     await linkWithPopup(user, provider);
     Loader.hide();
     Notifications.add(`${providerName} authentication added`, 1);
-    AccountSettings.updateUI();
+    AuthEvent.dispatch({ type: "authConfigUpdated" });
   } catch (error) {
     Loader.hide();
     const message = Misc.createErrorMessage(

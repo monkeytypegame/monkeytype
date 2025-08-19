@@ -1,5 +1,4 @@
 import { Config, CustomThemeColors } from "@monkeytype/schemas/configs";
-import { deepClone } from "../utils/misc";
 
 const obj = {
   theme: "serika_dark",
@@ -105,5 +104,5 @@ const obj = {
 } as Config;
 
 export function getDefaultConfig(): Config {
-  return deepClone(obj);
+  return structuredClone(obj);
 }

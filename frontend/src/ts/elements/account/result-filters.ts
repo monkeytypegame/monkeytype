@@ -16,8 +16,9 @@ import {
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
-import { Snapshot, SnapshotUserTag } from "../../constants/default-snapshot";
+import { Snapshot } from "../../constants/default-snapshot";
 import { LanguageList } from "../../constants/languages";
+import * as AuthEvent from "../../observables/auth-event";
 import { sanitize } from "../../utils/sanitize";
 
 export function mergeWithDefaultFilters(
@@ -173,7 +174,7 @@ function addFilterPresetToSnapshot(filter: ResultFilters): void {
   if (!snapshot) return;
   DB.setSnapshot({
     ...snapshot,
-    filterPresets: [...snapshot.filterPresets, Misc.deepClone(filter)],
+    filterPresets: [...snapshot.filterPresets, structuredClone(filter)],
   });
 }
 
@@ -272,8 +273,12 @@ function setAllFilters(group: ResultFiltersGroup, value: boolean): void {
   });
 }
 
-export function loadTags(tags: SnapshotUserTag[]): void {
-  tags.forEach((tag) => {
+export function loadTags(): void {
+  const snapshot = DB.getSnapshot();
+
+  if (snapshot === undefined) return;
+
+  snapshot.tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
 }
@@ -928,8 +933,15 @@ $(".group.presetFilterButtons .filterBtns").on(
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   const filter = mergeWithDefaultFilters(
-    sanitize(ResultFiltersSchema.partial().strip(), Misc.deepClone(filterIn))
+    sanitize(ResultFiltersSchema.partial().strip(), structuredClone(filterIn))
   );
 
   return filter;
 }
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "snapshotUpdated" && event.data.isInitial) {
+    loadTags();
+    void load();
+  }
+});

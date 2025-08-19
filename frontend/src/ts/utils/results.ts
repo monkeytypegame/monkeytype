@@ -2,7 +2,6 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
-import { deepClone } from "./misc";
 import { Mode } from "@monkeytype/schemas/shared";
 import { SnapshotResult } from "../constants/default-snapshot";
 
@@ -25,7 +24,7 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
   //TODO - this type cast was not needed before because we were using JSON cloning
   // but now with the stronger types it shows that we are forcing completed event
   // into a snapshot result - might not cuase issues but worth investigating
-  const result = deepClone(
+  const result = structuredClone(
     notSignedInLastResult
   ) as unknown as SnapshotResult<Mode>;
   result._id = response.body.data.insertedId;
