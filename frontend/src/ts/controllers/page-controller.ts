@@ -185,6 +185,9 @@ export async function change(
         await loadingOptions.waitFor();
       }
     } catch (error) {
+      pages.loading.element.addClass("active");
+      ActivePage.set(pages.loading.id);
+      Focus.set(false);
       PageLoading.showError();
       PageLoading.updateText(
         `Failed to load the ${nextPage.id} page: ${
