@@ -1,21 +1,6 @@
 .pageAccount {
   height: 100%;
 
-  .error {
-    display: grid;
-    place-items: center;
-    align-content: center;
-    height: 100%;
-    .icon {
-      font-size: 2rem;
-      color: var(--error-color);
-    }
-    .text {
-      font-size: 1rem;
-      text-align: center;
-    }
-  }
-
   .accountVerificatinNotice {
     background: var(--bg-color);
     border-radius: var(--roundness);

@@ -15,7 +15,7 @@ type NavigateOptions = {
   force?: boolean;
   empty?: boolean;
   data?: unknown;
-  overrideLoadingOptions?: LoadingOptions;
+  loadingOptions?: LoadingOptions;
 };
 
 function pathToRegex(path: string): RegExp {
