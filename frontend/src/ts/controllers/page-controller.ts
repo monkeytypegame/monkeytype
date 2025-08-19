@@ -214,11 +214,6 @@ export async function change(
   previousPage.element.addClass("hidden");
   await previousPage?.afterHide();
 
-  //between
-  updateTitle(nextPage);
-  ActivePage.set(nextPage.id);
-  updateOpenGraphUrl();
-
   //show loading page if needed
   try {
     let loadingOptions: LoadingOptions[] = [];
@@ -256,6 +251,10 @@ export async function change(
     return false;
   }
 
+  //between
+  updateTitle(nextPage);
+  ActivePage.set(nextPage.id);
+  updateOpenGraphUrl();
   Focus.set(false);
 
   //next page
