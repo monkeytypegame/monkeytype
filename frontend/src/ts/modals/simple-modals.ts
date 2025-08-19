@@ -1,5 +1,5 @@
 import Ape from "../ape";
-import * as AccountController from "../controllers/account-controller";
+import * as AccountController from "../controllers/auth";
 import * as DB from "../db";
 import * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
