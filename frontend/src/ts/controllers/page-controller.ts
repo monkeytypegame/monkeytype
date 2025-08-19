@@ -21,7 +21,7 @@ type ChangeOptions = {
   force?: boolean;
   params?: Record<string, string>;
   data?: unknown;
-  overrideLoadingOptions?: LoadingOptions;
+  loadingOptions?: LoadingOptions;
 };
 
 function updateOpenGraphUrl(): void {
@@ -50,11 +50,77 @@ function updateTitle(nextPage: { id: string; display?: string }): void {
   }
 }
 
+async function showLoading({
+  loadingOptions,
+  totalDuration,
+  easingMethod,
+}: {
+  loadingOptions: LoadingOptions[];
+  totalDuration: number;
+  easingMethod: Misc.JQueryEasing;
+}): Promise<void> {
+  PageLoading.page.element.removeClass("hidden").css("opacity", 0);
+  await PageLoading.page.beforeShow({});
+
+  const fillDivider = loadingOptions.length;
+  const fillOffset = 100 / fillDivider;
+
+  //void here to run the loading promise as soon as possible
+  void Misc.promiseAnimation(
+    PageLoading.page.element,
+    {
+      opacity: "1",
+    },
+    totalDuration / 2,
+    easingMethod
+  );
+
+  for (let i = 0; i < loadingOptions.length; i++) {
+    const currentOffset = fillOffset * i;
+    const options = loadingOptions[i] as LoadingOptions;
+    if (options.style === "bar") {
+      await PageLoading.showBar();
+      if (i === 0) {
+        await PageLoading.updateBar(0, 0);
+        PageLoading.updateText("");
+      }
+    } else {
+      PageLoading.showSpinner();
+    }
+
+    if (options.style === "bar") {
+      await getLoadingPromiseWithBarKeyframes(
+        options,
+        fillDivider,
+        currentOffset
+      );
+      void PageLoading.updateBar(100, 125);
+      PageLoading.updateText("Done");
+    } else {
+      await options.waitFor();
+    }
+  }
+
+  await Misc.promiseAnimation(
+    PageLoading.page.element,
+    {
+      opacity: "0",
+    },
+    totalDuration / 2,
+    easingMethod
+  );
+
+  await PageLoading.page.afterHide();
+  PageLoading.page.element.addClass("hidden");
+}
+
 async function getLoadingPromiseWithBarKeyframes(
   loadingOptions: Extract<
     NonNullable<Page<unknown>["loadingOptions"]>,
     { style: "bar" }
-  >
+  >,
+  fillDivider: number,
+  fillOffset: number
 ): Promise<void> {
   let aborted = false;
   let loadingPromise = loadingOptions.waitFor();
@@ -66,7 +132,10 @@ async function getLoadingPromiseWithBarKeyframes(
       if (keyframe.text !== undefined) {
         PageLoading.updateText(keyframe.text);
       }
-      await PageLoading.updateBar(keyframe.percentage, keyframe.durationMs);
+      await PageLoading.updateBar(
+        fillOffset + keyframe.percentage / fillDivider,
+        keyframe.durationMs
+      );
     }
   })();
 
@@ -150,65 +219,41 @@ export async function change(
   ActivePage.set(nextPage.id);
   updateOpenGraphUrl();
 
-  const loadingOptions =
-    options.overrideLoadingOptions ?? nextPage.loadingOptions;
-
   //show loading page if needed
-  if (loadingOptions && loadingOptions.shouldLoad()) {
-    pages.loading.element.removeClass("hidden").css("opacity", 0);
-    await pages.loading.beforeShow({});
-
-    if (loadingOptions.style === "bar") {
-      await PageLoading.showBar();
-      await PageLoading.updateBar(0, 0);
-      PageLoading.updateText("");
-    } else {
-      PageLoading.showSpinner();
+  try {
+    let loadingOptions: LoadingOptions[] = [];
+    if (options.loadingOptions) {
+      loadingOptions.push(options.loadingOptions);
+    }
+    if (nextPage.loadingOptions) {
+      loadingOptions.push(nextPage.loadingOptions);
     }
 
-    //void here to run the loading promise as soon as possible
-    void Misc.promiseAnimation(
-      pages.loading.element,
-      {
-        opacity: "1",
-      },
-      totalDuration / 2,
-      easingMethod
-    );
+    if (loadingOptions.length > 0) {
+      const shouldShowLoading =
+        options.loadingOptions?.shouldLoad() ||
+        nextPage.loadingOptions?.shouldLoad();
 
-    try {
-      if (loadingOptions.style === "bar") {
-        await getLoadingPromiseWithBarKeyframes(loadingOptions);
-        void PageLoading.updateBar(100, 125);
-        PageLoading.updateText("Done");
-      } else {
-        await loadingOptions.waitFor();
+      if (shouldShowLoading === true) {
+        await showLoading({
+          loadingOptions,
+          totalDuration,
+          easingMethod,
+        });
       }
-    } catch (error) {
-      pages.loading.element.addClass("active");
-      ActivePage.set(pages.loading.id);
-      Focus.set(false);
-      PageLoading.showError();
-      PageLoading.updateText(
-        `Failed to load the ${nextPage.id} page: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
-      PageTransition.set(false);
-      return false;
     }
-
-    await Misc.promiseAnimation(
-      pages.loading.element,
-      {
-        opacity: "0",
-      },
-      totalDuration / 2,
-      easingMethod
+  } catch (error) {
+    pages.loading.element.addClass("active");
+    ActivePage.set(pages.loading.id);
+    Focus.set(false);
+    PageLoading.showError();
+    PageLoading.updateText(
+      `Failed to load the ${nextPage.id} page: ${
+        error instanceof Error ? error.message : String(error)
+      }`
     );
-
-    await pages.loading.afterHide();
-    pages.loading.element.addClass("hidden");
+    PageTransition.set(false);
+    return false;
   }
 
   Focus.set(false);
