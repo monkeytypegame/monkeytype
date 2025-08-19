@@ -175,7 +175,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
         continue; // no need to set if the value is already the same
       }
 
-      const set = genericSet(targetKey, targetValue, true);
+      const set = genericSet(targetKey, targetValue, nosave);
       if (!set) {
         throw new Error(
           `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`

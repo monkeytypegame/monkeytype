@@ -25,7 +25,7 @@ import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
-import { onAuthStateChanged } from "./controllers/account-controller";
+import { onAuthStateChanged } from "./auth";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
 import "./modals/simple-modals";
