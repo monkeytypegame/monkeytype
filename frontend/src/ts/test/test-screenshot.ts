@@ -11,7 +11,6 @@ import * as ActivePage from "../states/active-page";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
-import { domToCanvas } from "modern-screenshot";
 
 let revealReplay = false;
 let revertCookie = false;
@@ -53,6 +52,7 @@ let firefoxClipboardNotificationShown = false;
  * Handles its own loader and basic error notifications for canvas generation.
  */
 async function generateCanvas(): Promise<HTMLCanvasElement | null> {
+  const { domToCanvas } = await import("modern-screenshot");
   Loader.show();
 
   if (!$("#resultReplay").hasClass("hidden")) {
