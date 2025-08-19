@@ -1348,8 +1348,8 @@ export const page = new Page({
     style: "bar",
     keyframes: [
       {
-        percentage: 100,
-        durationMs: 3000,
+        percentage: 90,
+        durationMs: 2000,
         text: "Downloading results...",
       },
     ],
