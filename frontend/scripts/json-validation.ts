@@ -9,6 +9,8 @@ import * as fs from "fs";
 import Ajv from "ajv";
 import { LanguageGroups, LanguageList } from "../src/ts/constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
+import { Layout } from "@monkeytype/schemas/configs";
+import { LayoutsList } from "../src/ts/constants/layouts";
 
 const ajv = new Ajv();
 
@@ -118,6 +120,11 @@ async function validateChallenges(): Promise<void> {
 
 async function validateLayouts(): Promise<void> {
   return new Promise((resolve, reject) => {
+    const problems: Partial<Record<Layout | "_additional", string[]>> = {};
+    const addProblem = (layout: keyof typeof problems, error: string): void => {
+      problems[layout] = [...(problems[layout] ?? []), error];
+    };
+
     const charDefinitionSchema = {
       type: "array",
       minItems: 1,
@@ -222,48 +229,72 @@ async function validateLayouts(): Promise<void> {
       },
     };
 
-    let layoutsErrors = [];
-
-    const layouts = fs
-      .readdirSync("./static/layouts")
-      .map((it) => it.substring(0, it.length - 5));
-
-    for (let layoutName of layouts) {
+    for (let layoutName of LayoutsList) {
       let layoutData = undefined;
+      if (!fs.existsSync(`./static/layouts/${layoutName}.json`)) {
+        addProblem(
+          layoutName,
+          `missing json file frontend/static/layouts/${layoutName}.json`
+        );
+        continue;
+      }
       try {
         layoutData = JSON.parse(
           fs.readFileSync(`./static/layouts/${layoutName}.json`, "utf-8")
         ) as object & { type: "ansi" | "iso" };
       } catch (e) {
-        layoutsErrors.push(
-          `Layout ${layoutName} has error: ${
-            e instanceof Error ? e.message : e
-          }`
+        addProblem(
+          layoutName,
+          `Unable to parse ${e instanceof Error ? e.message : e}`
         );
         continue;
       }
 
       if (layoutsSchema[layoutData.type] === undefined) {
-        const msg = `Layout ${layoutName} has an invalid type: ${layoutData.type}`;
-        console.log(msg);
-        layoutsErrors.push(msg);
+        addProblem(layoutName, `invalid type: ${layoutData.type}`);
       } else {
         const layoutsValidator = ajv.compile(layoutsSchema[layoutData.type]);
         if (!layoutsValidator(layoutData)) {
-          console.log(
-            `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`
+          addProblem(
+            layoutName,
+            layoutsValidator.errors?.[0]?.message ?? "unknown"
           );
-          layoutsErrors.push(layoutsValidator.errors?.[0]?.message);
         }
       }
     }
 
-    if (layoutsErrors.length === 0) {
-      console.log(`Layout JSON schemas are \u001b[32mvalid\u001b[0m`);
-    } else {
-      console.log(`Layout JSON schemas are \u001b[31minvalid\u001b[0m`);
-      reject(new Error(layoutsErrors.join("\n")));
+    //no files not defined in LayoutsList
+
+    const additionalLayoutFiles = fs
+      .readdirSync("./static/layouts")
+      .map((it) => it.substring(0, it.length - 5))
+      .filter((it) => !LayoutsList.some((layout) => layout === it))
+      .map((it) => `frontend/static/layouts/${it}.json`);
+    if (additionalLayoutFiles.length !== 0) {
+      problems._additional = additionalLayoutFiles;
     }
+
+    if (Object.keys(problems).length === 0) {
+      console.log(`Layouts are all \u001b[32mvalid\u001b[0m`);
+    } else {
+      console.log(`Layouts are \u001b[31minvalid\u001b[0m`);
+      console.log(
+        Object.entries(problems)
+          .map(([layout, problems]) => {
+            let label = `${layout}.json`;
+            if (layout === "_additional")
+              label =
+                "Additional layout files not declared in frontend/src/ts/constants/layouts.ts";
+
+            return `${label}:\n ${problems
+              .map((error) => "\t- " + error)
+              .join("\n")}`;
+          })
+          .join("\n")
+      );
+      reject(new Error("layouts with errors"));
+    }
+
     resolve();
   });
 }
@@ -398,6 +429,14 @@ async function validateLanguages(): Promise<void> {
     const problems: Partial<
       Record<Language | "_additional" | "_groups", string[]>
     > = {};
+
+    const addProblem = (
+      language: keyof typeof problems,
+      error: string
+    ): void => {
+      problems[language] = [...(problems[language] ?? []), error];
+    };
+
     //language files
     const languageFileSchema = {
       type: "object",
@@ -434,18 +473,19 @@ async function validateLanguages(): Promise<void> {
           })
         ) as object & { name: string; words: string[] };
       } catch (e) {
-        problems[language] = [
-          ...(problems[language] ?? []),
-          `missing json file frontend/static/languages/${language}.json`,
-        ];
+        addProblem(
+          language,
+          `missing json file frontend/static/languages/${language}.json`
+        );
+
         continue;
       }
       const languageFileValidator = ajv.compile(languageFileSchema);
       if (!languageFileValidator(languageFileData)) {
-        problems[language] = [
-          ...(problems[language] ?? []),
-          languageFileValidator.errors?.[0]?.message ?? "unknown",
-        ];
+        addProblem(
+          language,
+          languageFileValidator.errors?.[0]?.message ?? "unknown"
+        );
         continue;
       }
       if (languageFileData.name !== language) {
@@ -458,12 +498,12 @@ async function validateLanguages(): Promise<void> {
       const duplicatePercentage =
         (duplicates.length / languageFileData.words.length) * 100;
       if (duplicatePercentage >= duplicatePercentageThreshold) {
-        problems[language] = [
-          ...(problems[language] ?? []),
+        addProblem(
+          language,
           `contains ${duplicates.length} (${Math.round(
             duplicatePercentage
-          )}%) duplicates:\n ${duplicates.join(",")}`,
-        ];
+          )}%) duplicates:\n ${duplicates.join(",")}`
+        );
       }
     }
 
@@ -477,7 +517,7 @@ async function validateLanguages(): Promise<void> {
       problems._additional = additionalLanguageFiles;
     }
 
-    //check grounps
+    //check groups
     const languagesWithMultipleGroups = [];
     const groupByLanguage = new Map<Language, string>();
 
@@ -490,12 +530,13 @@ async function validateLanguages(): Promise<void> {
       }
     }
     if (languagesWithMultipleGroups.length !== 0) {
-      problems._groups = [
-        ...(problems._groups ?? []),
+      addProblem(
+        "_groups",
+
         `languages with multiple groups: ${languagesWithMultipleGroups.join(
           ", "
-        )}`,
-      ];
+        )}`
+      );
     }
 
     const languagesMissingGroup = LanguageList.filter(

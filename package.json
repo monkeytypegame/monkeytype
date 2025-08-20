@@ -57,7 +57,7 @@
     "validate-json": "cd frontend && pnpm validate-json",
     "check-quote-assets": "cd frontend && npm run validate-json quotes",
     "check-language-assets": "cd frontend && npm run validate-json languages",
-    "check-other-assets": "cd frontend && npm run validate-json others && turbo run test -- constants/layouts constants/themes constants/fonts",
+    "check-other-assets": "cd frontend && npm run validate-json others && turbo run test -- constants/themes constants/fonts",
     "knip": "knip"
   },
   "engines": {
