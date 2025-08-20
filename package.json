@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "full-check": "turbo lint ts-check build test validate-json",
+    "full-check": "turbo lint ts-check build test integration-test validate-json --force",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "ts-check": "turbo run ts-check",
