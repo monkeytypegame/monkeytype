@@ -53,7 +53,7 @@ let firefoxClipboardNotificationShown = false;
  */
 async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   const { domToCanvas } = await import("modern-screenshot");
-  Loader.show();
+  Loader.show(true);
 
   if (!$("#resultReplay").hasClass("hidden")) {
     revealReplay = true;
