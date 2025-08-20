@@ -12,10 +12,6 @@ import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import * as Notifications from "../elements/notifications";
 import { convertRemToPixels } from "../utils/numbers";
 
-async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
-  return (await import("html2canvas")).default;
-}
-
 let revealReplay = false;
 let revertCookie = false;
 
@@ -48,15 +44,16 @@ function revert(): void {
   }
 }
 
-let firefoxClipboardNotificatoinShown = false;
+let firefoxClipboardNotificationShown = false;
 
 /**
- * Prepares UI, generates screenshot canvas using html2canvas, and reverts UI changes.
+ * Prepares UI, generates screenshot canvas using modern-screenshot, and reverts UI changes.
  * Returns the generated canvas element or null on failure.
  * Handles its own loader and basic error notifications for canvas generation.
  */
 async function generateCanvas(): Promise<HTMLCanvasElement | null> {
-  Loader.show();
+  const { domToCanvas } = await import("modern-screenshot");
+  Loader.show(true);
 
   if (!$("#resultReplay").hasClass("hidden")) {
     revealReplay = true;
@@ -110,7 +107,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   }
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
-  window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior }); // Use instant scroll
+  window.scrollTo({ top: 0, behavior: "auto" });
 
   // --- Target Element Calculation ---
   const src = $("#result .wrapper");
@@ -120,40 +117,117 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     revert();
     return null;
   }
-  // Ensure offset calculations happen *after* potential layout shifts from UI prep
-  await new Promise((resolve) => setTimeout(resolve, 50)); // Small delay for render updates
+  await Misc.sleep(50); // Small delay for render updates
 
   const sourceX = src.offset()?.left ?? 0;
   const sourceY = src.offset()?.top ?? 0;
   const sourceWidth = src.outerWidth(true) as number;
   const sourceHeight = src.outerHeight(true) as number;
+  const paddingX = convertRemToPixels(2);
+  const paddingY = convertRemToPixels(2);
 
-  // --- Canvas Generation ---
   try {
-    const paddingX = convertRemToPixels(2);
-    const paddingY = convertRemToPixels(2);
+    // Compute full-document render size to keep the target area in frame on small viewports
+    const root = document.documentElement;
+    const { scrollWidth, clientWidth, scrollHeight, clientHeight } = root;
+    const targetWidth = Math.max(scrollWidth, clientWidth);
+    const targetHeight = Math.max(scrollHeight, clientHeight);
 
-    const canvas = await (
-      await gethtml2canvas()
-    )(document.body, {
+    // Target the HTML root to include .customBackground
+    const fullCanvas = await domToCanvas(root, {
       backgroundColor: await ThemeColors.get("bg"),
-      width: sourceWidth + paddingX * 2,
-      height: sourceHeight + paddingY * 2,
-      x: sourceX - paddingX,
-      y: sourceY - paddingY,
-      logging: false, // Suppress html2canvas logs in console
-      useCORS: true, // May be needed if user flags/icons are external
+      // Sharp output
+      scale: window.devicePixelRatio ?? 1,
+      style: {
+        width: `${targetWidth}px`,
+        height: `${targetHeight}px`,
+        overflow: "hidden", // for scrollbar in small viewports
+      },
+      // Fetch (for custom background URLs)
+      fetch: {
+        requestInit: { mode: "cors", credentials: "omit" },
+        bypassingCache: true,
+      },
+
+      // skipping hidden elements (THAT IS SO IMPORTANT!)
+      filter: (el: Node): boolean => {
+        if (!(el instanceof HTMLElement)) return true;
+        const cs = getComputedStyle(el);
+        return !(el.classList.contains("hidden") || cs.display === "none");
+      },
+      // Normalize the background layer so its negative z-index doesn't get hidden
+      onCloneEachNode: (cloned) => {
+        if (cloned instanceof HTMLElement) {
+          const el = cloned;
+          if (el.classList.contains("customBackground")) {
+            el.style.zIndex = "0";
+            el.style.width = `${targetWidth}px`;
+            el.style.height = `${targetHeight}px`;
+            // for the inner image scales
+            const img = el.querySelector("img");
+            if (img) {
+              // (<= 720px viewport width) wpm & acc text wrapper!!
+              if (window.innerWidth <= 720) {
+                img.style.transform = "translateY(20vh)";
+                img.style.height = "100%";
+              } else {
+                img.style.width = "100%"; // safety nothing more
+                img.style.height = "100%"; // for image fit full screen even when words history is opened with many lines
+              }
+            }
+          }
+        }
+      },
     });
 
-    revert(); // Revert UI *after* canvas is successfully generated
+    // Scale and create output canvas
+    const scale = fullCanvas.width / targetWidth;
+    const paddedWidth = sourceWidth + paddingX * 2;
+    const paddedHeight = sourceHeight + paddingY * 2;
+
+    const scaledPaddedWCanvas = Math.round(paddedWidth * scale);
+    const scaledPaddedHCanvas = Math.round(paddedHeight * scale);
+    const scaledPaddedWForCrop = Math.ceil(paddedWidth * scale);
+    const scaledPaddedHForCrop = Math.ceil(paddedHeight * scale);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = scaledPaddedWCanvas;
+    canvas.height = scaledPaddedHCanvas;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      Notifications.add("Failed to get canvas context for screenshot", -1);
+      return null;
+    }
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
+    // Calculate crop coordinates with proper clamping
+    const cropX = Math.max(0, Math.floor((sourceX - paddingX) * scale));
+    const cropY = Math.max(0, Math.floor((sourceY - paddingY) * scale));
+    const cropW = Math.min(scaledPaddedWForCrop, fullCanvas.width - cropX);
+    const cropH = Math.min(scaledPaddedHForCrop, fullCanvas.height - cropY);
+
+    ctx.drawImage(
+      fullCanvas,
+      cropX,
+      cropY,
+      cropW,
+      cropH,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
     return canvas;
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Error creating screenshot canvas"),
       -1
     );
-    revert(); // Ensure UI is reverted on error
     return null;
+  } finally {
+    revert(); // Ensure UI is reverted on both success and error
   }
 }
 
@@ -192,9 +266,9 @@ export async function copyToClipboard(): Promise<void> {
       // Firefox specific message (only show once)
       if (
         navigator.userAgent.toLowerCase().includes("firefox") &&
-        !firefoxClipboardNotificatoinShown
+        !firefoxClipboardNotificationShown
       ) {
-        firefoxClipboardNotificatoinShown = true;
+        firefoxClipboardNotificationShown = true;
         Notifications.add(
           "On Firefox you can enable the asyncClipboard.clipboardItem permission in about:config to enable copying straight to the clipboard",
           0,
