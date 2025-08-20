@@ -11,6 +11,8 @@ import { LanguageGroups, LanguageList } from "../src/ts/constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
 import { Layout } from "@monkeytype/schemas/configs";
 import { LayoutsList } from "../src/ts/constants/layouts";
+import { KnownFontName } from "@monkeytype/schemas/fonts";
+import { Fonts } from "../src/ts/constants/fonts";
 
 const ajv = new Ajv();
 
@@ -532,7 +534,6 @@ async function validateLanguages(): Promise<void> {
     if (languagesWithMultipleGroups.length !== 0) {
       addProblem(
         "_groups",
-
         `languages with multiple groups: ${languagesWithMultipleGroups.join(
           ", "
         )}`
@@ -576,6 +577,71 @@ async function validateLanguages(): Promise<void> {
   });
 }
 
+async function validateFonts(): Promise<void> {
+  const problems: Partial<Record<KnownFontName | "_additional", string[]>> = {};
+
+  const addProblem = (fontName: keyof typeof problems, error: string): void => {
+    problems[fontName] = [...(problems[fontName] ?? []), error];
+  };
+
+  //no missing files
+  const ignoredFonts = new Set([
+    "GallaudetRegular.woff2", //used for asl
+    "Vazirmatn-Regular.woff2", //default font
+  ]);
+
+  const fontFiles = fs
+    .readdirSync("./static/webfonts")
+    .filter((it) => !ignoredFonts.has(it));
+
+  //missing font files
+  Object.entries(Fonts)
+    .filter(([_name, config]) => !config.systemFont)
+    .filter(([_name, config]) => !fontFiles.includes(config.fileName as string))
+    .forEach(([name, config]) =>
+      addProblem(
+        name as KnownFontName,
+        ` missing file frontend/static/webfonts/${config.fileName}`
+      )
+    );
+
+  //additional font files
+  const expectedFontFiles = new Set(
+    Object.entries(Fonts)
+      .filter(([_name, config]) => !config.systemFont)
+      .map(([_name, config]) => config.fileName as string)
+  );
+
+  const additionalFontFiles = fontFiles
+    .filter((name) => !expectedFontFiles.has(name))
+    .map((name) => `frontend/static/webfonts/${name}`);
+
+  if (additionalFontFiles.length !== 0) {
+    additionalFontFiles.forEach((file) => addProblem("_additional", file));
+  }
+
+  if (Object.keys(problems).length === 0) {
+    console.log(`Fonts are all \u001b[32mvalid\u001b[0m`);
+  } else {
+    console.log(`Fonts are \u001b[31minvalid\u001b[0m`);
+    console.log(
+      Object.entries(problems)
+        .map(([fontName, problems]) => {
+          let label = `${fontName}`;
+          if (fontName === "_additional")
+            label =
+              "Additional font files not declared in frontend/src/ts/constants/fonts.ts";
+
+          return `${label}:\n ${problems
+            .map((error) => "\t- " + error)
+            .join("\n")}`;
+        })
+        .join("\n")
+    );
+    throw new Error("layouts with errors");
+  }
+}
+
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
@@ -588,6 +654,7 @@ async function main(): Promise<void> {
     languages: validateLanguages,
     layouts: validateLayouts,
     challenges: validateChallenges,
+    fonts: validateFonts,
   };
 
   const validatorsIndex = {
@@ -595,7 +662,7 @@ async function main(): Promise<void> {
       Object.entries(mainValidators).map(([k, v]) => [k, [v]])
     ),
     // add arbitrary keys and validator groupings down here
-    others: [validateChallenges, validateLayouts],
+    others: [validateChallenges, validateLayouts, validateFonts],
   };
 
   // flags
