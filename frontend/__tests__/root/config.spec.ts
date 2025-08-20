@@ -751,7 +751,7 @@ describe("Config", () => {
       Config.setCustomBackground("     http://example.com/test.png   ")
     ).toBe(true);
 
-    expect(Config.setCustomBackground("http://www.example.com/test.webp")).toBe(
+    expect(Config.setCustomBackground("http://www.example.com/test.tiff")).toBe(
       false
     );
     expect(
