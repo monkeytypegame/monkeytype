@@ -366,7 +366,7 @@ $(".pageTest").on("click", "#saveScreenshotButton", (event) => {
 $(document).on("keydown", (event) => {
   if (!(TestUI.resultVisible && ActivePage.get() === "test")) return;
   if (event.key !== "Shift") return;
-  $("#typingTest #result #saveScreenshotButton i")
+  $("#result #saveScreenshotButton i")
     .removeClass("far fa-image")
     .addClass("fas fa-download");
 });
@@ -374,7 +374,7 @@ $(document).on("keydown", (event) => {
 $(document).on("keyup", (event) => {
   if (!(TestUI.resultVisible && ActivePage.get() === "test")) return;
   if (event.key !== "Shift") return;
-  $("#typingTest #result #saveScreenshotButton i")
+  $("#result #saveScreenshotButton i")
     .removeClass("fas fa-download")
     .addClass("far fa-image");
 });
