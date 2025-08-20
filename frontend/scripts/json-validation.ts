@@ -5,18 +5,16 @@
  * pnpm validate-json challenges fonts -p (npm run validate-json challenges fonts -- -p)
  */
 
-// eslint-disable no-require-imports
-const fs = require("fs");
-const Ajv = require("ajv");
+import * as fs from "fs";
+import Ajv from "ajv";
 const ajv = new Ajv();
 
-function findDuplicates(words) {
-  const wordFrequencies = {};
-  const duplicates = [];
+function findDuplicates(words: string[]): string[] {
+  const wordFrequencies: Record<string, number> = {};
+  const duplicates: string[] = [];
 
   words.forEach((word) => {
-    wordFrequencies[word] =
-      word in wordFrequencies ? wordFrequencies[word] + 1 : 1;
+    wordFrequencies[word] = (wordFrequencies[word] ?? 0) + 1;
 
     if (wordFrequencies[word] === 2) {
       duplicates.push(word);
@@ -25,7 +23,7 @@ function findDuplicates(words) {
   return duplicates;
 }
 
-function validateChallenges() {
+async function validateChallenges(): Promise<void> {
   return new Promise((resolve, reject) => {
     const challengesSchema = {
       type: "array",
@@ -103,19 +101,19 @@ function validateChallenges() {
         encoding: "utf8",
         flag: "r",
       })
-    );
+    ) as object;
     const challengesValidator = ajv.compile(challengesSchema);
     if (challengesValidator(challengesData)) {
       console.log("Challenges list JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Challenges list JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(challengesValidator.errors[0].message));
+      reject(new Error(challengesValidator?.errors?.[0]?.message));
     }
     resolve();
   });
 }
 
-function validateLayouts() {
+async function validateLayouts(): Promise<void> {
   return new Promise((resolve, reject) => {
     const charDefinitionSchema = {
       type: "array",
@@ -228,17 +226,21 @@ function validateLayouts() {
       .map((it) => it.substring(0, it.length - 5));
 
     for (let layoutName of layouts) {
-      let layoutData = "";
+      let layoutData = undefined;
       try {
         layoutData = JSON.parse(
           fs.readFileSync(`./static/layouts/${layoutName}.json`, "utf-8")
-        );
+        ) as object & { type: "ansi" | "iso" };
       } catch (e) {
-        layoutsErrors.push(`Layout ${layoutName} has error: ${e.message}`);
+        layoutsErrors.push(
+          `Layout ${layoutName} has error: ${
+            e instanceof Error ? e.message : e
+          }`
+        );
         continue;
       }
 
-      if (!layoutsSchema[layoutData.type]) {
+      if (layoutsSchema[layoutData.type] === undefined) {
         const msg = `Layout ${layoutName} has an invalid type: ${layoutData.type}`;
         console.log(msg);
         layoutsErrors.push(msg);
@@ -248,7 +250,7 @@ function validateLayouts() {
           console.log(
             `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`
           );
-          layoutsErrors.push(layoutsValidator.errors[0].message);
+          layoutsErrors.push(layoutsValidator.errors?.[0]?.message);
         }
       }
     }
@@ -257,13 +259,13 @@ function validateLayouts() {
       console.log(`Layout JSON schemas are \u001b[32mvalid\u001b[0m`);
     } else {
       console.log(`Layout JSON schemas are \u001b[31minvalid\u001b[0m`);
-      return reject(new Error(layoutsErrors.join("\n")));
+      reject(new Error(layoutsErrors.join("\n")));
     }
     resolve();
   });
 }
 
-function validateQuotes() {
+async function validateQuotes(): Promise<void> {
   return new Promise((resolve, reject) => {
     //quotes
     const quoteSchema = {
@@ -309,16 +311,19 @@ function validateQuotes() {
     let quoteIdsAllGood = true;
     let quoteIdsErrors;
     let quoteLengthsAllGood = true;
-    let quoteLengthErrors = [];
+    let quoteLengthErrors: string[] = [];
     const quotesFiles = fs.readdirSync("./static/quotes/");
-    quotesFiles.forEach((quotefilename) => {
-      quotefilename = quotefilename.split(".")[0];
+    quotesFiles.forEach((quotefilename: string) => {
+      quotefilename = quotefilename.split(".")[0] as string;
       const quoteData = JSON.parse(
         fs.readFileSync(`./static/quotes/${quotefilename}.json`, {
           encoding: "utf8",
           flag: "r",
         })
-      );
+      ) as object & {
+        language: string;
+        quotes: { id: number; text: string; length: number }[];
+      };
       if (quoteData.language !== quotefilename) {
         quoteFilesAllGood = false;
         quoteFilesErrors = "Name is not " + quotefilename;
@@ -330,7 +335,7 @@ function validateQuotes() {
         );
         quoteFilesAllGood = false;
         quoteFilesErrors =
-          quoteValidator.errors[0].message +
+          quoteValidator.errors?.[0]?.message +
           ` (at static/quotes/${quotefilename}.json)`;
         return;
       }
@@ -342,7 +347,7 @@ function validateQuotes() {
         );
         quoteIdsAllGood = false;
         quoteIdsErrors =
-          quoteIdsValidator.errors[0].message +
+          quoteIdsValidator.errors?.[0]?.message +
           ` (at static/quotes/${quotefilename}.json)`;
       }
       const incorrectQuoteLength = quoteData.quotes.filter(
@@ -367,25 +372,25 @@ function validateQuotes() {
       console.log(`Quote file JSON schemas are \u001b[32mvalid\u001b[0m`);
     } else {
       console.log(`Quote file JSON schemas are \u001b[31minvalid\u001b[0m`);
-      return reject(new Error(quoteFilesErrors));
+      reject(new Error(quoteFilesErrors));
     }
     if (quoteIdsAllGood) {
       console.log(`Quote IDs are \u001b[32munique\u001b[0m`);
     } else {
       console.log(`Quote IDs are \u001b[31mnot unique\u001b[0m`);
-      return reject(new Error(quoteIdsErrors));
+      reject(new Error(quoteIdsErrors));
     }
     if (quoteLengthsAllGood) {
       console.log(`Quote length fields are \u001b[32mcorrect\u001b[0m`);
     } else {
       console.log(`Quote length fields are \u001b[31mincorrect\u001b[0m`);
-      return reject(new Error(quoteLengthErrors));
+      reject(new Error(quoteLengthErrors.join(",")));
     }
     resolve();
   });
 }
 
-function validateLanguages() {
+async function validateLanguages(): Promise<void> {
   return new Promise((resolve, reject) => {
     const languages = fs
       .readdirSync("./static/languages")
@@ -416,7 +421,7 @@ function validateLanguages() {
     };
     let languageFilesAllGood = true;
     let languageWordListsAllGood = true;
-    let languageFilesErrors;
+    let languageFilesErrors = "";
     const duplicatePercentageThreshold = 0.0001;
     let langsWithDuplicates = 0;
     languages.forEach((language) => {
@@ -425,7 +430,7 @@ function validateLanguages() {
           encoding: "utf8",
           flag: "r",
         })
-      );
+      ) as object & { name: string; words: string[] };
       const languageFileValidator = ajv.compile(languageFileSchema);
       if (!languageFileValidator(languageFileData)) {
         console.log(
@@ -433,7 +438,7 @@ function validateLanguages() {
         );
         languageFilesAllGood = false;
         languageFilesErrors =
-          languageFileValidator.errors[0].message +
+          languageFileValidator.errors?.[0]?.message +
           ` (at static/languages/${language}.json`;
         return;
       }
@@ -462,7 +467,7 @@ function validateLanguages() {
       console.log(
         `Language word list JSON schemas are \u001b[31minvalid\u001b[0m`
       );
-      return reject(new Error(languageFilesErrors));
+      reject(new Error(languageFilesErrors));
     }
 
     if (languageWordListsAllGood) {
@@ -473,21 +478,21 @@ function validateLanguages() {
       console.log(
         `Language word lists duplicate check is \u001b[31minvalid\u001b[0m (${langsWithDuplicates} languages contain duplicates)`
       );
-      return reject(new Error(languageFilesErrors));
+      reject(new Error(languageFilesErrors));
     }
 
     resolve();
   });
 }
 
-function main() {
+async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
   // oxlint-disable-next-line prefer-set-has this error doesnt make sense
   const flags = args.filter((arg) => arg.startsWith("-"));
   const keys = args.filter((arg) => !arg.startsWith("-"));
 
-  const mainValidators = {
+  const mainValidators: Record<string, () => Promise<void>> = {
     quotes: validateQuotes,
     languages: validateLanguages,
     layouts: validateLayouts,
@@ -514,13 +519,22 @@ function main() {
       console.error(`There is no validator for key '${key}'.`);
       if (!passWithNoValidators) process.exit(1);
     } else if (!validateAll) {
+      //@ts-expect-error magic
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
       validatorsIndex[key].forEach((validator) => tasks.add(validator));
     }
   }
 
   if (tasks.size > 0) {
-    return Promise.all([...tasks].map((validator) => validator()));
+    await Promise.all([...tasks].map(async (validator) => validator()));
+    return;
   }
 }
-
-main();
+void (async () => {
+  try {
+    await main();
+  } catch (err) {
+    console.error("Error in main:", err);
+    process.exit(1); // Optional: exit with error code
+  }
+})();
