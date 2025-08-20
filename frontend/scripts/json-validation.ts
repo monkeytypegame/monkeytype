@@ -7,6 +7,9 @@
 
 import * as fs from "fs";
 import Ajv from "ajv";
+import { LanguageGroups, LanguageList } from "../src/ts/constants/languages";
+import { Language } from "@monkeytype/schemas/languages";
+
 const ajv = new Ajv();
 
 function findDuplicates(words: string[]): string[] {
@@ -392,9 +395,9 @@ async function validateQuotes(): Promise<void> {
 
 async function validateLanguages(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const languages = fs
-      .readdirSync("./static/languages")
-      .map((it) => it.substring(0, it.length - 5));
+    const problems: Partial<
+      Record<Language | "_additional" | "_groups", string[]>
+    > = {};
     //language files
     const languageFileSchema = {
       type: "object",
@@ -419,66 +422,113 @@ async function validateLanguages(): Promise<void> {
       },
       required: ["name", "words"],
     };
-    let languageFilesAllGood = true;
-    let languageWordListsAllGood = true;
-    let languageFilesErrors = "";
+
     const duplicatePercentageThreshold = 0.0001;
-    let langsWithDuplicates = 0;
-    languages.forEach((language) => {
-      const languageFileData = JSON.parse(
-        fs.readFileSync(`./static/languages/${language}.json`, {
-          encoding: "utf8",
-          flag: "r",
-        })
-      ) as object & { name: string; words: string[] };
+    for (const language of LanguageList) {
+      let languageFileData;
+      try {
+        languageFileData = JSON.parse(
+          fs.readFileSync(`./static/languages/${language}.json`, {
+            encoding: "utf8",
+            flag: "r",
+          })
+        ) as object & { name: string; words: string[] };
+      } catch (e) {
+        problems[language] = [
+          ...(problems[language] ?? []),
+          `missing json file frontend/static/languages/${language}.json`,
+        ];
+        continue;
+      }
       const languageFileValidator = ajv.compile(languageFileSchema);
       if (!languageFileValidator(languageFileData)) {
-        console.log(
-          `Language ${language} JSON schema is \u001b[31minvalid\u001b[0m`
-        );
-        languageFilesAllGood = false;
-        languageFilesErrors =
-          languageFileValidator.errors?.[0]?.message +
-          ` (at static/languages/${language}.json`;
-        return;
+        problems[language] = [
+          ...(problems[language] ?? []),
+          languageFileValidator.errors?.[0]?.message ?? "unknown",
+        ];
+        continue;
       }
       if (languageFileData.name !== language) {
-        languageFilesAllGood = false;
-        languageFilesErrors = "Name is not " + language;
+        problems[language] = [
+          ...(problems[language] ?? []),
+          "Name is not " + language,
+        ];
       }
       const duplicates = findDuplicates(languageFileData.words);
       const duplicatePercentage =
         (duplicates.length / languageFileData.words.length) * 100;
       if (duplicatePercentage >= duplicatePercentageThreshold) {
-        langsWithDuplicates++;
-        languageWordListsAllGood = false;
-        languageFilesErrors = `Language '${languageFileData.name}' contains ${
-          duplicates.length
-        } (${Math.round(duplicatePercentage)}%) duplicates:`;
-        console.log(languageFilesErrors);
-        console.log(duplicates);
+        problems[language] = [
+          ...(problems[language] ?? []),
+          `contains ${duplicates.length} (${Math.round(
+            duplicatePercentage
+          )}%) duplicates:\n ${duplicates.join(",")}`,
+        ];
       }
-    });
-    if (languageFilesAllGood) {
-      console.log(
-        `Language word list JSON schemas are \u001b[32mvalid\u001b[0m`
-      );
-    } else {
-      console.log(
-        `Language word list JSON schemas are \u001b[31minvalid\u001b[0m`
-      );
-      reject(new Error(languageFilesErrors));
     }
 
-    if (languageWordListsAllGood) {
-      console.log(
-        `Language word lists duplicate check is \u001b[32mvalid\u001b[0m`
-      );
+    //no files not defined in LanguageList
+    const additionalLanguageFiles = fs
+      .readdirSync("./static/languages")
+      .map((it) => it.substring(0, it.length - 5))
+      .filter((it) => !LanguageList.some((language) => language === it))
+      .map((it) => `frontend/static/languages/${it}.json`);
+    if (additionalLanguageFiles.length !== 0) {
+      problems._additional = additionalLanguageFiles;
+    }
+
+    //check grounps
+    const languagesWithMultipleGroups = [];
+    const groupByLanguage = new Map<Language, string>();
+
+    for (const group of Object.keys(LanguageGroups)) {
+      for (const language of LanguageGroups[group] as Language[]) {
+        if (groupByLanguage.has(language)) {
+          languagesWithMultipleGroups.push(language);
+        }
+        groupByLanguage.set(language, group);
+      }
+    }
+    if (languagesWithMultipleGroups.length !== 0) {
+      problems._groups = [
+        ...(problems._groups ?? []),
+        `languages with multiple groups: ${languagesWithMultipleGroups.join(
+          ", "
+        )}`,
+      ];
+    }
+
+    const languagesMissingGroup = LanguageList.filter(
+      (lang) => !groupByLanguage.has(lang)
+    );
+    if (languagesMissingGroup.length !== 0) {
+      problems._groups = [
+        ...(problems._groups ?? []),
+        `languages missing group: ${languagesMissingGroup.join(", ")}`,
+      ];
+    }
+
+    if (Object.keys(problems).length === 0) {
+      console.log(`Languages are all \u001b[32mvalid\u001b[0m`);
     } else {
+      console.log(`Languages are \u001b[31minvalid\u001b[0m`);
       console.log(
-        `Language word lists duplicate check is \u001b[31minvalid\u001b[0m (${langsWithDuplicates} languages contain duplicates)`
+        Object.entries(problems)
+          .map(([language, problems]) => {
+            let label = `${language}.json`;
+            if (language === "_additional")
+              label =
+                "Additional language files not declared in frontend/src/ts/constants/languages.ts";
+            else if (language === "_groups")
+              label =
+                "Problems in LanguageGroups on frontend/src/ts/constants/languages.ts";
+            return `${label}:\n ${problems
+              .map((error) => "\t- " + error)
+              .join("\n")}`;
+          })
+          .join("\n")
       );
-      reject(new Error(languageFilesErrors));
+      reject(new Error("languages with errors"));
     }
 
     resolve();
@@ -531,10 +581,5 @@ async function main(): Promise<void> {
   }
 }
 void (async () => {
-  try {
-    await main();
-  } catch (err) {
-    console.error("Error in main:", err);
-    process.exit(1); // Optional: exit with error code
-  }
+  await main();
 })();
