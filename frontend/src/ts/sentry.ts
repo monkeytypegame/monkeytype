@@ -1,17 +1,22 @@
-import * as Sentry from "@sentry/browser";
 import { envConfig } from "./constants/env-config";
+
+async function getSentry(): Promise<typeof import("@sentry/browser")> {
+  return await import("@sentry/browser");
+}
 
 let debug = false;
 
 let activated = false;
 
-export function activateSentry(): void {
+export async function activateSentry(): Promise<void> {
   if (activated) {
     console.warn("Sentry already activated");
     return;
   }
   activated = true;
   console.log("Activating Sentry");
+
+  const Sentry = await getSentry();
   Sentry.init({
     release: envConfig.clientVersion,
     dsn: "https://f50c25dc9dd75304a63776063896a39b@o4509236448133120.ingest.us.sentry.io/4509237217394688",
@@ -105,18 +110,24 @@ export function activateSentry(): void {
   });
 }
 
-export function setUser(uid: string, name: string): void {
+export async function setUser(uid: string, name: string): Promise<void> {
+  if (!activated) return;
+  const Sentry = await getSentry();
   Sentry.setUser({
     id: uid,
     username: name,
   });
 }
 
-export function clearUser(): void {
+export async function clearUser(): Promise<void> {
+  if (!activated) return;
+  const Sentry = await getSentry();
   Sentry.setUser(null);
 }
 
-export function captureException(error: Error): void {
+export async function captureException(error: Error): Promise<void> {
+  if (!activated) return;
+  const Sentry = await getSentry();
   Sentry.captureException(error);
 }
 
