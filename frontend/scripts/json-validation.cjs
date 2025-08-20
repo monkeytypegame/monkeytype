@@ -482,8 +482,8 @@ function validateLanguages() {
 
 function main() {
   const args = process.argv.slice(2);
-  const flags = args.filter((arg) => arg.startsWith("-"));
-  const keys = args.filter((arg) => !arg.startsWith("-"));
+  const flags = new Set(args.filter((arg) => arg.startsWith("-")));
+  const keys = new Set(args.filter((arg) => !flags.has(arg)));
 
   const mainValidators = {
     quotes: validateQuotes,
@@ -501,14 +501,9 @@ function main() {
   };
 
   // flags
-  const validateAll =
-    keys.length < 1 || flags.includes("--all") || flags.includes("-a")
-      ? true
-      : false;
+  const validateAll = keys.length < 1 || flags.has("--all") || flags.has("-a");
   const passWithNoValidators =
-    flags.includes("--pass-with-no-validators") || flags.includes("-p")
-      ? true
-      : false;
+    flags.has("--pass-with-no-validators") || flags.has("-p");
 
   const tasks = validateAll ? Object.values(mainValidators) : [];
   for (const key of keys) {
