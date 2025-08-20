@@ -9,10 +9,11 @@ import * as fs from "fs";
 import Ajv from "ajv";
 import { LanguageGroups, LanguageList } from "../src/ts/constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
-import { Layout } from "@monkeytype/schemas/configs";
+import { Layout, ThemeName } from "@monkeytype/schemas/configs";
 import { LayoutsList } from "../src/ts/constants/layouts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import { Fonts } from "../src/ts/constants/fonts";
+import { ThemesList } from "../src/ts/constants/themes";
 
 const ajv = new Ajv();
 
@@ -266,7 +267,6 @@ async function validateLayouts(): Promise<void> {
     }
 
     //no files not defined in LayoutsList
-
     const additionalLayoutFiles = fs
       .readdirSync("./static/layouts")
       .map((it) => it.substring(0, it.length - 5))
@@ -601,7 +601,7 @@ async function validateFonts(): Promise<void> {
     .forEach(([name, config]) =>
       addProblem(
         name as KnownFontName,
-        ` missing file frontend/static/webfonts/${config.fileName}`
+        `missing file frontend/static/webfonts/${config.fileName}`
       )
     );
 
@@ -642,6 +642,57 @@ async function validateFonts(): Promise<void> {
   }
 }
 
+async function validateThemes(): Promise<void> {
+  const problems: Partial<Record<ThemeName | "_additional", string[]>> = {};
+
+  const addProblem = (
+    themeName: keyof typeof problems,
+    error: string
+  ): void => {
+    problems[themeName] = [...(problems[themeName] ?? []), error];
+  };
+
+  //no missing files
+  const themeFiles = fs
+    .readdirSync("./static/themes")
+    .map((it) => it.substring(0, it.length - 4));
+
+  //missing theme files
+  ThemesList.filter((it) => !themeFiles.includes(it.name)).forEach((it) =>
+    addProblem(it.name, `missing file frontend/static/themes/${it.name}.css`)
+  );
+
+  //additional font files
+  const additionalThemeFiles = themeFiles
+    .filter((it) => !ThemesList.some((theme) => theme.name === it))
+    .map((it) => `frontend/static/layouts/${it}.json`);
+
+  if (additionalThemeFiles.length !== 0) {
+    problems._additional = additionalThemeFiles;
+  }
+
+  if (Object.keys(problems).length === 0) {
+    console.log(`Themes are all \u001b[32mvalid\u001b[0m`);
+  } else {
+    console.log(`Themes are \u001b[31minvalid\u001b[0m`);
+    console.log(
+      Object.entries(problems)
+        .map(([fontName, problems]) => {
+          let label = `${fontName}`;
+          if (fontName === "_additional")
+            label =
+              "Additional font files not declared in frontend/src/ts/constants/fonts.ts";
+
+          return `${label}:\n ${problems
+            .map((error) => "\t- " + error)
+            .join("\n")}`;
+        })
+        .join("\n")
+    );
+    throw new Error("themes with errors");
+  }
+}
+
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
@@ -655,6 +706,7 @@ async function main(): Promise<void> {
     layouts: validateLayouts,
     challenges: validateChallenges,
     fonts: validateFonts,
+    themes: validateThemes,
   };
 
   const validatorsIndex = {
@@ -662,7 +714,12 @@ async function main(): Promise<void> {
       Object.entries(mainValidators).map(([k, v]) => [k, [v]])
     ),
     // add arbitrary keys and validator groupings down here
-    others: [validateChallenges, validateLayouts, validateFonts],
+    others: [
+      validateChallenges,
+      validateLayouts,
+      validateFonts,
+      validateThemes,
+    ],
   };
 
   // flags
