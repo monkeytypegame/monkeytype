@@ -5,18 +5,24 @@
  * pnpm validate-json challenges fonts -p (npm run validate-json challenges fonts -- -p)
  */
 
-// eslint-disable no-require-imports
-const fs = require("fs");
-const Ajv = require("ajv");
+import * as fs from "fs";
+import Ajv from "ajv";
+import { LanguageGroups, LanguageList } from "../src/ts/constants/languages";
+import { Language } from "@monkeytype/schemas/languages";
+import { Layout, ThemeName } from "@monkeytype/schemas/configs";
+import { LayoutsList } from "../src/ts/constants/layouts";
+import { KnownFontName } from "@monkeytype/schemas/fonts";
+import { Fonts } from "../src/ts/constants/fonts";
+import { ThemesList } from "../src/ts/constants/themes";
+
 const ajv = new Ajv();
 
-function findDuplicates(words) {
-  const wordFrequencies = {};
-  const duplicates = [];
+function findDuplicates(words: string[]): string[] {
+  const wordFrequencies: Record<string, number> = {};
+  const duplicates: string[] = [];
 
   words.forEach((word) => {
-    wordFrequencies[word] =
-      word in wordFrequencies ? wordFrequencies[word] + 1 : 1;
+    wordFrequencies[word] = (wordFrequencies[word] ?? 0) + 1;
 
     if (wordFrequencies[word] === 2) {
       duplicates.push(word);
@@ -25,7 +31,7 @@ function findDuplicates(words) {
   return duplicates;
 }
 
-function validateChallenges() {
+async function validateChallenges(): Promise<void> {
   return new Promise((resolve, reject) => {
     const challengesSchema = {
       type: "array",
@@ -103,20 +109,25 @@ function validateChallenges() {
         encoding: "utf8",
         flag: "r",
       })
-    );
+    ) as object;
     const challengesValidator = ajv.compile(challengesSchema);
     if (challengesValidator(challengesData)) {
       console.log("Challenges list JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Challenges list JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(challengesValidator.errors[0].message));
+      reject(new Error(challengesValidator?.errors?.[0]?.message));
     }
     resolve();
   });
 }
 
-function validateLayouts() {
+async function validateLayouts(): Promise<void> {
   return new Promise((resolve, reject) => {
+    const problems: Partial<Record<Layout | "_additional", string[]>> = {};
+    const addProblem = (layout: keyof typeof problems, error: string): void => {
+      problems[layout] = [...(problems[layout] ?? []), error];
+    };
+
     const charDefinitionSchema = {
       type: "array",
       minItems: 1,
@@ -221,49 +232,76 @@ function validateLayouts() {
       },
     };
 
-    let layoutsErrors = [];
-
-    const layouts = fs
-      .readdirSync("./static/layouts")
-      .map((it) => it.substring(0, it.length - 5));
-
-    for (let layoutName of layouts) {
-      let layoutData = "";
+    for (let layoutName of LayoutsList) {
+      let layoutData = undefined;
+      if (!fs.existsSync(`./static/layouts/${layoutName}.json`)) {
+        addProblem(
+          layoutName,
+          `missing json file frontend/static/layouts/${layoutName}.json`
+        );
+        continue;
+      }
       try {
         layoutData = JSON.parse(
           fs.readFileSync(`./static/layouts/${layoutName}.json`, "utf-8")
-        );
+        ) as object & { type: "ansi" | "iso" };
       } catch (e) {
-        layoutsErrors.push(`Layout ${layoutName} has error: ${e.message}`);
+        addProblem(
+          layoutName,
+          `Unable to parse ${e instanceof Error ? e.message : e}`
+        );
         continue;
       }
 
-      if (!layoutsSchema[layoutData.type]) {
-        const msg = `Layout ${layoutName} has an invalid type: ${layoutData.type}`;
-        console.log(msg);
-        layoutsErrors.push(msg);
+      if (layoutsSchema[layoutData.type] === undefined) {
+        addProblem(layoutName, `invalid type: ${layoutData.type}`);
       } else {
         const layoutsValidator = ajv.compile(layoutsSchema[layoutData.type]);
         if (!layoutsValidator(layoutData)) {
-          console.log(
-            `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`
+          addProblem(
+            layoutName,
+            layoutsValidator.errors?.[0]?.message ?? "unknown"
           );
-          layoutsErrors.push(layoutsValidator.errors[0].message);
         }
       }
     }
 
-    if (layoutsErrors.length === 0) {
-      console.log(`Layout JSON schemas are \u001b[32mvalid\u001b[0m`);
-    } else {
-      console.log(`Layout JSON schemas are \u001b[31minvalid\u001b[0m`);
-      return reject(new Error(layoutsErrors.join("\n")));
+    //no files not defined in LayoutsList
+    const additionalLayoutFiles = fs
+      .readdirSync("./static/layouts")
+      .map((it) => it.substring(0, it.length - 5))
+      .filter((it) => !LayoutsList.some((layout) => layout === it))
+      .map((it) => `frontend/static/layouts/${it}.json`);
+    if (additionalLayoutFiles.length !== 0) {
+      problems._additional = additionalLayoutFiles;
     }
+
+    if (Object.keys(problems).length === 0) {
+      console.log(`Layouts are all \u001b[32mvalid\u001b[0m`);
+    } else {
+      console.log(`Layouts are \u001b[31minvalid\u001b[0m`);
+      console.log(
+        Object.entries(problems)
+          .map(([layout, problems]) => {
+            let label = `${layout}.json`;
+            if (layout === "_additional")
+              label =
+                "Additional layout files not declared in frontend/src/ts/constants/layouts.ts";
+
+            return `${label}:\n ${problems
+              .map((error) => "\t- " + error)
+              .join("\n")}`;
+          })
+          .join("\n")
+      );
+      reject(new Error("layouts with errors"));
+    }
+
     resolve();
   });
 }
 
-function validateQuotes() {
+async function validateQuotes(): Promise<void> {
   return new Promise((resolve, reject) => {
     //quotes
     const quoteSchema = {
@@ -309,16 +347,19 @@ function validateQuotes() {
     let quoteIdsAllGood = true;
     let quoteIdsErrors;
     let quoteLengthsAllGood = true;
-    let quoteLengthErrors = [];
+    let quoteLengthErrors: string[] = [];
     const quotesFiles = fs.readdirSync("./static/quotes/");
-    quotesFiles.forEach((quotefilename) => {
-      quotefilename = quotefilename.split(".")[0];
+    quotesFiles.forEach((quotefilename: string) => {
+      quotefilename = quotefilename.split(".")[0] as string;
       const quoteData = JSON.parse(
         fs.readFileSync(`./static/quotes/${quotefilename}.json`, {
           encoding: "utf8",
           flag: "r",
         })
-      );
+      ) as object & {
+        language: string;
+        quotes: { id: number; text: string; length: number }[];
+      };
       if (quoteData.language !== quotefilename) {
         quoteFilesAllGood = false;
         quoteFilesErrors = "Name is not " + quotefilename;
@@ -330,7 +371,7 @@ function validateQuotes() {
         );
         quoteFilesAllGood = false;
         quoteFilesErrors =
-          quoteValidator.errors[0].message +
+          quoteValidator.errors?.[0]?.message +
           ` (at static/quotes/${quotefilename}.json)`;
         return;
       }
@@ -342,7 +383,7 @@ function validateQuotes() {
         );
         quoteIdsAllGood = false;
         quoteIdsErrors =
-          quoteIdsValidator.errors[0].message +
+          quoteIdsValidator.errors?.[0]?.message +
           ` (at static/quotes/${quotefilename}.json)`;
       }
       const incorrectQuoteLength = quoteData.quotes.filter(
@@ -367,29 +408,37 @@ function validateQuotes() {
       console.log(`Quote file JSON schemas are \u001b[32mvalid\u001b[0m`);
     } else {
       console.log(`Quote file JSON schemas are \u001b[31minvalid\u001b[0m`);
-      return reject(new Error(quoteFilesErrors));
+      reject(new Error(quoteFilesErrors));
     }
     if (quoteIdsAllGood) {
       console.log(`Quote IDs are \u001b[32munique\u001b[0m`);
     } else {
       console.log(`Quote IDs are \u001b[31mnot unique\u001b[0m`);
-      return reject(new Error(quoteIdsErrors));
+      reject(new Error(quoteIdsErrors));
     }
     if (quoteLengthsAllGood) {
       console.log(`Quote length fields are \u001b[32mcorrect\u001b[0m`);
     } else {
       console.log(`Quote length fields are \u001b[31mincorrect\u001b[0m`);
-      return reject(new Error(quoteLengthErrors));
+      reject(new Error(quoteLengthErrors.join(",")));
     }
     resolve();
   });
 }
 
-function validateLanguages() {
+async function validateLanguages(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const languages = fs
-      .readdirSync("./static/languages")
-      .map((it) => it.substring(0, it.length - 5));
+    const problems: Partial<
+      Record<Language | "_additional" | "_groups", string[]>
+    > = {};
+
+    const addProblem = (
+      language: keyof typeof problems,
+      error: string
+    ): void => {
+      problems[language] = [...(problems[language] ?? []), error];
+    };
+
     //language files
     const languageFileSchema = {
       type: "object",
@@ -414,84 +463,250 @@ function validateLanguages() {
       },
       required: ["name", "words"],
     };
-    let languageFilesAllGood = true;
-    let languageWordListsAllGood = true;
-    let languageFilesErrors;
+
     const duplicatePercentageThreshold = 0.0001;
-    let langsWithDuplicates = 0;
-    languages.forEach((language) => {
-      const languageFileData = JSON.parse(
-        fs.readFileSync(`./static/languages/${language}.json`, {
-          encoding: "utf8",
-          flag: "r",
-        })
-      );
+    for (const language of LanguageList) {
+      let languageFileData;
+      try {
+        languageFileData = JSON.parse(
+          fs.readFileSync(`./static/languages/${language}.json`, {
+            encoding: "utf8",
+            flag: "r",
+          })
+        ) as object & { name: string; words: string[] };
+      } catch (e) {
+        addProblem(
+          language,
+          `missing json file frontend/static/languages/${language}.json`
+        );
+
+        continue;
+      }
       const languageFileValidator = ajv.compile(languageFileSchema);
       if (!languageFileValidator(languageFileData)) {
-        console.log(
-          `Language ${language} JSON schema is \u001b[31minvalid\u001b[0m`
+        addProblem(
+          language,
+          languageFileValidator.errors?.[0]?.message ?? "unknown"
         );
-        languageFilesAllGood = false;
-        languageFilesErrors =
-          languageFileValidator.errors[0].message +
-          ` (at static/languages/${language}.json`;
-        return;
+        continue;
       }
       if (languageFileData.name !== language) {
-        languageFilesAllGood = false;
-        languageFilesErrors = "Name is not " + language;
+        problems[language] = [
+          ...(problems[language] ?? []),
+          "Name is not " + language,
+        ];
       }
       const duplicates = findDuplicates(languageFileData.words);
       const duplicatePercentage =
         (duplicates.length / languageFileData.words.length) * 100;
       if (duplicatePercentage >= duplicatePercentageThreshold) {
-        langsWithDuplicates++;
-        languageWordListsAllGood = false;
-        languageFilesErrors = `Language '${languageFileData.name}' contains ${
-          duplicates.length
-        } (${Math.round(duplicatePercentage)}%) duplicates:`;
-        console.log(languageFilesErrors);
-        console.log(duplicates);
+        addProblem(
+          language,
+          `contains ${duplicates.length} (${Math.round(
+            duplicatePercentage
+          )}%) duplicates:\n ${duplicates.join(",")}`
+        );
       }
-    });
-    if (languageFilesAllGood) {
-      console.log(
-        `Language word list JSON schemas are \u001b[32mvalid\u001b[0m`
-      );
-    } else {
-      console.log(
-        `Language word list JSON schemas are \u001b[31minvalid\u001b[0m`
-      );
-      return reject(new Error(languageFilesErrors));
     }
 
-    if (languageWordListsAllGood) {
-      console.log(
-        `Language word lists duplicate check is \u001b[32mvalid\u001b[0m`
+    //no files not defined in LanguageList
+    const additionalLanguageFiles = fs
+      .readdirSync("./static/languages")
+      .map((it) => it.substring(0, it.length - 5))
+      .filter((it) => !LanguageList.some((language) => language === it))
+      .map((it) => `frontend/static/languages/${it}.json`);
+    if (additionalLanguageFiles.length !== 0) {
+      problems._additional = additionalLanguageFiles;
+    }
+
+    //check groups
+    const languagesWithMultipleGroups = [];
+    const groupByLanguage = new Map<Language, string>();
+
+    for (const group of Object.keys(LanguageGroups)) {
+      for (const language of LanguageGroups[group] as Language[]) {
+        if (groupByLanguage.has(language)) {
+          languagesWithMultipleGroups.push(language);
+        }
+        groupByLanguage.set(language, group);
+      }
+    }
+    if (languagesWithMultipleGroups.length !== 0) {
+      addProblem(
+        "_groups",
+        `languages with multiple groups: ${languagesWithMultipleGroups.join(
+          ", "
+        )}`
       );
+    }
+
+    const languagesMissingGroup = LanguageList.filter(
+      (lang) => !groupByLanguage.has(lang)
+    );
+    if (languagesMissingGroup.length !== 0) {
+      problems._groups = [
+        ...(problems._groups ?? []),
+        `languages missing group: ${languagesMissingGroup.join(", ")}`,
+      ];
+    }
+
+    if (Object.keys(problems).length === 0) {
+      console.log(`Languages are all \u001b[32mvalid\u001b[0m`);
     } else {
+      console.log(`Languages are \u001b[31minvalid\u001b[0m`);
       console.log(
-        `Language word lists duplicate check is \u001b[31minvalid\u001b[0m (${langsWithDuplicates} languages contain duplicates)`
+        Object.entries(problems)
+          .map(([language, problems]) => {
+            let label = `${language}.json`;
+            if (language === "_additional")
+              label =
+                "Additional language files not declared in frontend/src/ts/constants/languages.ts";
+            else if (language === "_groups")
+              label =
+                "Problems in LanguageGroups on frontend/src/ts/constants/languages.ts";
+            return `${label}:\n ${problems
+              .map((error) => "\t- " + error)
+              .join("\n")}`;
+          })
+          .join("\n")
       );
-      return reject(new Error(languageFilesErrors));
+      reject(new Error("languages with errors"));
     }
 
     resolve();
   });
 }
 
-function main() {
+async function validateFonts(): Promise<void> {
+  const problems: Partial<Record<KnownFontName | "_additional", string[]>> = {};
+
+  const addProblem = (fontName: keyof typeof problems, error: string): void => {
+    problems[fontName] = [...(problems[fontName] ?? []), error];
+  };
+
+  //no missing files
+  const ignoredFonts = new Set([
+    "GallaudetRegular.woff2", //used for asl
+    "Vazirmatn-Regular.woff2", //default font
+  ]);
+
+  const fontFiles = fs
+    .readdirSync("./static/webfonts")
+    .filter((it) => !ignoredFonts.has(it));
+
+  //missing font files
+  Object.entries(Fonts)
+    .filter(([_name, config]) => !config.systemFont)
+    .filter(([_name, config]) => !fontFiles.includes(config.fileName as string))
+    .forEach(([name, config]) =>
+      addProblem(
+        name as KnownFontName,
+        `missing file frontend/static/webfonts/${config.fileName}`
+      )
+    );
+
+  //additional font files
+  const expectedFontFiles = new Set(
+    Object.entries(Fonts)
+      .filter(([_name, config]) => !config.systemFont)
+      .map(([_name, config]) => config.fileName as string)
+  );
+
+  const additionalFontFiles = fontFiles
+    .filter((name) => !expectedFontFiles.has(name))
+    .map((name) => `frontend/static/webfonts/${name}`);
+
+  if (additionalFontFiles.length !== 0) {
+    additionalFontFiles.forEach((file) => addProblem("_additional", file));
+  }
+
+  if (Object.keys(problems).length === 0) {
+    console.log(`Fonts are all \u001b[32mvalid\u001b[0m`);
+  } else {
+    console.log(`Fonts are \u001b[31minvalid\u001b[0m`);
+    console.log(
+      Object.entries(problems)
+        .map(([fontName, problems]) => {
+          let label = `${fontName}`;
+          if (fontName === "_additional")
+            label =
+              "Additional font files not declared in frontend/src/ts/constants/fonts.ts";
+
+          return `${label}:\n ${problems
+            .map((error) => "\t- " + error)
+            .join("\n")}`;
+        })
+        .join("\n")
+    );
+    throw new Error("layouts with errors");
+  }
+}
+
+async function validateThemes(): Promise<void> {
+  const problems: Partial<Record<ThemeName | "_additional", string[]>> = {};
+
+  const addProblem = (
+    themeName: keyof typeof problems,
+    error: string
+  ): void => {
+    problems[themeName] = [...(problems[themeName] ?? []), error];
+  };
+
+  //no missing files
+  const themeFiles = fs
+    .readdirSync("./static/themes")
+    .map((it) => it.substring(0, it.length - 4));
+
+  //missing theme files
+  ThemesList.filter((it) => !themeFiles.includes(it.name)).forEach((it) =>
+    addProblem(it.name, `missing file frontend/static/themes/${it.name}.css`)
+  );
+
+  //additional font files
+  const additionalThemeFiles = themeFiles
+    .filter((it) => !ThemesList.some((theme) => theme.name === it))
+    .map((it) => `frontend/static/layouts/${it}.json`);
+
+  if (additionalThemeFiles.length !== 0) {
+    problems._additional = additionalThemeFiles;
+  }
+
+  if (Object.keys(problems).length === 0) {
+    console.log(`Themes are all \u001b[32mvalid\u001b[0m`);
+  } else {
+    console.log(`Themes are \u001b[31minvalid\u001b[0m`);
+    console.log(
+      Object.entries(problems)
+        .map(([fontName, problems]) => {
+          let label = `${fontName}`;
+          if (fontName === "_additional")
+            label =
+              "Additional font files not declared in frontend/src/ts/constants/fonts.ts";
+
+          return `${label}:\n ${problems
+            .map((error) => "\t- " + error)
+            .join("\n")}`;
+        })
+        .join("\n")
+    );
+    throw new Error("themes with errors");
+  }
+}
+
+async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
   // oxlint-disable-next-line prefer-set-has this error doesnt make sense
   const flags = args.filter((arg) => arg.startsWith("-"));
   const keys = args.filter((arg) => !arg.startsWith("-"));
 
-  const mainValidators = {
+  const mainValidators: Record<string, () => Promise<void>> = {
     quotes: validateQuotes,
     languages: validateLanguages,
     layouts: validateLayouts,
     challenges: validateChallenges,
+    fonts: validateFonts,
+    themes: validateThemes,
   };
 
   const validatorsIndex = {
@@ -499,7 +714,12 @@ function main() {
       Object.entries(mainValidators).map(([k, v]) => [k, [v]])
     ),
     // add arbitrary keys and validator groupings down here
-    others: [validateChallenges, validateLayouts],
+    others: [
+      validateChallenges,
+      validateLayouts,
+      validateFonts,
+      validateThemes,
+    ],
   };
 
   // flags
@@ -514,13 +734,15 @@ function main() {
       console.error(`There is no validator for key '${key}'.`);
       if (!passWithNoValidators) process.exit(1);
     } else if (!validateAll) {
+      //@ts-expect-error magic
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
       validatorsIndex[key].forEach((validator) => tasks.add(validator));
     }
   }
 
   if (tasks.size > 0) {
-    return Promise.all([...tasks].map((validator) => validator()));
+    await Promise.all([...tasks].map(async (validator) => validator()));
+    return;
   }
 }
-
-main();
+void main();

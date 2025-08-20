@@ -173,7 +173,7 @@ importers:
         version: link:../packages/typescript-config
       '@redocly/cli':
         specifier: 2.0.5
-        version: 2.0.5(@opentelemetry/api@1.8.0)(ajv@8.12.0)(core-js@3.37.1)(encoding@0.1.13)
+        version: 2.0.5(@opentelemetry/api@1.8.0)(ajv@8.17.1)(core-js@3.37.1)(encoding@0.1.13)
       '@types/bcrypt':
         specifier: 5.0.2
         version: 5.0.2
@@ -454,6 +454,9 @@ importers:
       subset-font:
         specifier: 2.3.0
         version: 2.3.0
+      tsx:
+        specifier: 4.16.2
+        version: 4.16.2
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -3381,6 +3384,9 @@ packages:
   ajv@8.12.0:
     resolution: {integrity: sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA==}
 
+  ajv@8.17.1:
+    resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
+
   ansi-align@3.0.1:
     resolution: {integrity: sha512-IOfwwBF5iczOjp/WeY4YxyjqAFMQoZufdQWDd19SEExbVLNXqvpzSJ/M7Za4/sCPmQ0+GRquoA7bGcINcxew6w==}
 
@@ -3743,11 +3749,6 @@ packages:
 
   browserslist@4.24.4:
     resolution: {integrity: sha512-KDi1Ny1gSePi1vm0q4oxSF8b4DR44GF4BbmS2YdhPLOEqd8pDviZOGH/GsmRwoWJ2+5Lr085X7naowMwKHDG1A==}
-    engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
-    hasBin: true
-
-  browserslist@4.25.1:
-    resolution: {integrity: sha512-KGj0KoOMXLpSNkkEI6Z6mShmQy0bc1I+T7K9N81k4WWMrfz+6fQ6es80B/YLAeRoKvjYE1YSHHOW1qe9xIVzHw==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
@@ -5074,6 +5075,9 @@ packages:
 
   fast-safe-stringify@2.1.1:
     resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
+
+  fast-uri@3.0.6:
+    resolution: {integrity: sha512-Atfo14OibSv5wAp4VWNsFYE1AchQRTv9cBGWET4pZWHzYshFSS9NQI6I57rdKn9croWVMbYFbLhJ+yJvmZIIHw==}
 
   fast-url-parser@1.1.3:
     resolution: {integrity: sha512-5jOCVXADYNuRkKFzNJ0dCCewsZiYo0dz8QNYljkOpFC6r2U4OBmKtvm/Tsuh4w1YYdDqDb31a8TVhBJ2OJKdqQ==}
@@ -8615,7 +8619,7 @@ packages:
   superagent@7.1.6:
     resolution: {integrity: sha512-gZkVCQR1gy/oUXr+kxJMLDjla434KmSOKbx5iGD30Ql+AkJQ/YlPKECJy2nhqOsHLjGHzoDTXNSjhnvWhzKk7g==}
     engines: {node: '>=6.4.0 <13 || >=14'}
-    deprecated: Please upgrade to v9.0.0+ as we have fixed a public vulnerability with formidable dependency. Note that v9.0.0+ requires Node.js v14.18.0+. See https://github.com/ladjs/superagent/pull/1800 for insight. This project is supported and maintained by the team at Forward Email @ https://forwardemail.net
+    deprecated: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
 
   superstatic@9.0.3:
     resolution: {integrity: sha512-e/tmW0bsnQ/33ivK6y3CapJT0Ovy4pk/ohNPGhIAGU2oasoNLRQ1cv6enua09NU9w6Y0H/fBu07cjzuiWvLXxw==}
@@ -8625,6 +8629,7 @@ packages:
   supertest@6.2.3:
     resolution: {integrity: sha512-3GSdMYTMItzsSYjnIcljxMVZKPW1J9kYHZY+7yLfD0wpPwww97GeImZC1oOk0S5+wYl2niJwuFusBJqwLqYM3g==}
     engines: {node: '>=6.0.0'}
+    deprecated: Please upgrade to supertest v7.1.3+, see release notes at https://github.com/forwardemail/supertest/releases/tag/v7.1.3 - maintenance is supported by Forward Email @ https://forwardemail.net
 
   supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
@@ -9810,7 +9815,7 @@ snapshots:
     dependencies:
       '@babel/compat-data': 7.28.0
       '@babel/helper-validator-option': 7.27.1
-      browserslist: 4.25.1
+      browserslist: 4.25.3
       lru-cache: 5.1.1
       semver: 6.3.1
 
@@ -11924,14 +11929,14 @@ snapshots:
       require-from-string: 2.0.2
       uri-js-replace: 1.0.1
 
-  '@redocly/cli@2.0.5(@opentelemetry/api@1.8.0)(ajv@8.12.0)(core-js@3.37.1)(encoding@0.1.13)':
+  '@redocly/cli@2.0.5(@opentelemetry/api@1.8.0)(ajv@8.17.1)(core-js@3.37.1)(encoding@0.1.13)':
     dependencies:
       '@opentelemetry/exporter-trace-otlp-http': 0.202.0(@opentelemetry/api@1.8.0)
       '@opentelemetry/resources': 2.0.1(@opentelemetry/api@1.8.0)
       '@opentelemetry/sdk-trace-node': 2.0.1(@opentelemetry/api@1.8.0)
       '@opentelemetry/semantic-conventions': 1.34.0
-      '@redocly/openapi-core': 2.0.5(ajv@8.12.0)
-      '@redocly/respect-core': 2.0.5(ajv@8.12.0)
+      '@redocly/openapi-core': 2.0.5(ajv@8.17.1)
+      '@redocly/respect-core': 2.0.5(ajv@8.17.1)
       abort-controller: 3.0.0
       chokidar: 3.6.0
       colorette: 1.4.0
@@ -11982,11 +11987,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@redocly/openapi-core@2.0.5(ajv@8.12.0)':
+  '@redocly/openapi-core@2.0.5(ajv@8.17.1)':
     dependencies:
       '@redocly/ajv': 8.11.2
       '@redocly/config': 0.28.0
-      ajv-formats: 2.1.1(ajv@8.12.0)
+      ajv-formats: 2.1.1(ajv@8.17.1)
       colorette: 1.4.0
       js-levenshtein: 1.1.6
       js-yaml: 4.1.0
@@ -11996,13 +12001,13 @@ snapshots:
     transitivePeerDependencies:
       - ajv
 
-  '@redocly/respect-core@2.0.5(ajv@8.12.0)':
+  '@redocly/respect-core@2.0.5(ajv@8.17.1)':
     dependencies:
       '@faker-js/faker': 7.6.0
       '@noble/hashes': 1.8.0
       '@redocly/ajv': 8.11.2
-      '@redocly/openapi-core': 2.0.5(ajv@8.12.0)
-      better-ajv-errors: 1.2.0(ajv@8.12.0)
+      '@redocly/openapi-core': 2.0.5(ajv@8.17.1)
+      better-ajv-errors: 1.2.0(ajv@8.17.1)
       colorette: 2.0.20
       jest-diff: 29.7.0
       jest-matcher-utils: 29.7.0
@@ -12812,6 +12817,10 @@ snapshots:
     optionalDependencies:
       ajv: 8.12.0
 
+  ajv-formats@2.1.1(ajv@8.17.1):
+    optionalDependencies:
+      ajv: 8.17.1
+
   ajv@6.12.6:
     dependencies:
       fast-deep-equal: 3.1.3
@@ -12825,6 +12834,13 @@ snapshots:
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
       uri-js: 4.4.1
+
+  ajv@8.17.1:
+    dependencies:
+      fast-deep-equal: 3.1.3
+      fast-uri: 3.0.6
+      json-schema-traverse: 1.0.0
+      require-from-string: 2.0.2
 
   ansi-align@3.0.1:
     dependencies:
@@ -13149,11 +13165,11 @@ snapshots:
 
   before-after-hook@3.0.2: {}
 
-  better-ajv-errors@1.2.0(ajv@8.12.0):
+  better-ajv-errors@1.2.0(ajv@8.17.1):
     dependencies:
       '@babel/code-frame': 7.27.1
       '@humanwhocodes/momoa': 2.0.4
-      ajv: 8.12.0
+      ajv: 8.17.1
       chalk: 4.1.2
       jsonpointer: 5.0.1
       leven: 3.1.0
@@ -13259,13 +13275,6 @@ snapshots:
       electron-to-chromium: 1.5.144
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.4)
-
-  browserslist@4.25.1:
-    dependencies:
-      caniuse-lite: 1.0.30001735
-      electron-to-chromium: 1.5.207
-      node-releases: 2.0.19
-      update-browserslist-db: 1.1.3(browserslist@4.25.1)
 
   browserslist@4.25.3:
     dependencies:
@@ -14901,6 +14910,8 @@ snapshots:
   fast-redact@3.5.0: {}
 
   fast-safe-stringify@2.1.1: {}
+
+  fast-uri@3.0.6: {}
 
   fast-url-parser@1.1.3:
     dependencies:
@@ -19781,12 +19792,6 @@ snapshots:
   update-browserslist-db@1.1.3(browserslist@4.24.4):
     dependencies:
       browserslist: 4.24.4
-      escalade: 3.2.0
-      picocolors: 1.1.1
-
-  update-browserslist-db@1.1.3(browserslist@4.25.1):
-    dependencies:
-      browserslist: 4.25.1
       escalade: 3.2.0
       picocolors: 1.1.1
 
