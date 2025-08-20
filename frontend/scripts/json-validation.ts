@@ -745,6 +745,4 @@ async function main(): Promise<void> {
     return;
   }
 }
-void (async () => {
-  await main();
-})();
+void main();

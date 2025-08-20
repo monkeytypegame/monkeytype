@@ -7,7 +7,7 @@
     "eslint": "eslint \"./**/*.ts\"",
     "oxlint": "oxlint .",
     "lint": "npm run oxlint && npm run eslint",
-    "validate-json": "node  --import tsx ./scripts/json-validation.ts",
+    "validate-json": "tsx ./scripts/json-validation.ts",
     "audit": "vite-bundle-visualizer",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
     "ts-check": "tsc --noEmit",
