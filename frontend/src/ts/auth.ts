@@ -1,12 +1,11 @@
-import Ape from "../ape";
-import * as Notifications from "../elements/notifications";
-import Config, * as UpdateConfig from "../config";
-import * as Misc from "../utils/misc";
-import * as DB from "../db";
-import * as Loader from "../elements/loader";
-import * as LoginPage from "../pages/login";
-import * as RegisterCaptchaModal from "../modals/register-captcha";
-import * as Account from "../pages/account";
+import Ape from "./ape";
+import * as Notifications from "./elements/notifications";
+import Config, * as UpdateConfig from "./config";
+import * as Misc from "./utils/misc";
+import * as DB from "./db";
+import * as Loader from "./elements/loader";
+import * as LoginPage from "./pages/login";
+import * as RegisterCaptchaModal from "./modals/register-captcha";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -24,13 +23,13 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   resetIgnoreAuthCallback,
-} from "../firebase";
-import * as ConnectionState from "../states/connection";
-import { navigate } from "./route-controller";
-import { getActiveFunboxesWithFunction } from "../test/funbox/list";
-import * as Sentry from "../sentry";
+} from "./firebase";
+import * as ConnectionState from "./states/connection";
+import { navigate } from "./controllers/route-controller";
+import { getActiveFunboxesWithFunction } from "./test/funbox/list";
+import * as Sentry from "./sentry";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import * as AuthEvent from "../observables/auth-event";
+import * as AuthEvent from "./observables/auth-event";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -96,9 +95,6 @@ async function getDataAndInit(): Promise<boolean> {
       for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
         fb.functions.applyGlobalCSS();
       }
-    }
-    if (window.location.pathname === "/account") {
-      await Account.downloadResults();
     }
     return true;
   } catch (error) {
@@ -170,28 +166,10 @@ export async function onAuthStateChanged(
     },
   ];
 
-  if (
-    window.location.pathname === "/account" ||
-    window.location.pathname === "/login"
-  ) {
-    keyframes = [
-      {
-        percentage: 40,
-        durationMs: 1000,
-        text: "Downloading user data...",
-      },
-      {
-        percentage: 90,
-        durationMs: 1000,
-        text: "Downloading results...",
-      },
-    ];
-  }
-
   //undefined means navigate to whatever the current window.location.pathname is
   await navigate(undefined, {
     force: true,
-    overrideLoadingOptions: {
+    loadingOptions: {
       shouldLoad: () => {
         return user !== null;
       },
