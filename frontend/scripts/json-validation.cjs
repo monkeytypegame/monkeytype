@@ -483,7 +483,7 @@ function validateLanguages() {
 function main() {
   const args = process.argv.slice(2);
   const flags = new Set(args.filter((arg) => arg.startsWith("-")));
-  const keys = new Set(args.filter((arg) => !flags.has(arg)));
+  const keys = new Set(args.filter((arg) => !arg.startsWith("-")));
 
   const mainValidators = {
     quotes: validateQuotes,
@@ -501,22 +501,22 @@ function main() {
   };
 
   // flags
-  const validateAll = keys.length < 1 || flags.has("--all") || flags.has("-a");
+  const validateAll = keys.size < 1 || flags.has("--all") || flags.has("-a");
   const passWithNoValidators =
     flags.has("--pass-with-no-validators") || flags.has("-p");
 
-  const tasks = validateAll ? Object.values(mainValidators) : [];
+  const tasks = new Set(validateAll ? Object.values(mainValidators) : []);
   for (const key of keys) {
     if (!Object.keys(validatorsIndex).includes(key)) {
       console.error(`There is no validator for key '${key}'.`);
       if (!passWithNoValidators) process.exit(1);
     } else if (!validateAll) {
-      tasks.push(...validatorsIndex[key]);
+      validatorsIndex[key].forEach((validator) => tasks.add(validator));
     }
   }
 
-  if (tasks.length > 0) {
-    return Promise.all(tasks.map((validator) => validator()));
+  if (tasks.size > 0) {
+    return Promise.all([...tasks].map((validator) => validator()));
   }
 }
 
