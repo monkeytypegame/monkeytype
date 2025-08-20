@@ -373,9 +373,22 @@ export async function update(
   }
 }
 
-export function updateXp(xp: number): void {
+export function updateXp(xp: number, sameUserCheck = false): void {
   const details = $(" .profile .details .levelAndBar");
   if (details === undefined || details === null) return;
+
+  if (sameUserCheck) {
+    const isAccountPage = ActivePage.get() === "account";
+    if (!isAccountPage) {
+      const profileElement = details.closest(".profile");
+      const profileUid = profileElement.attr("uid") ?? "";
+
+      if (profileUid !== getAuthenticatedUser()?.uid) {
+        return;
+      }
+    }
+  }
+
   const xpDetails = Levels.getXpDetails(xp);
   const xpForLevel = xpDetails.levelMaxXp;
   const xpToDisplay = xpDetails.levelCurrentXp;
