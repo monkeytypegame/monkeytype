@@ -482,8 +482,10 @@ function validateLanguages() {
 
 function main() {
   const args = process.argv.slice(2);
-  const flags = new Set(args.filter((arg) => arg.startsWith("-")));
-  const keys = new Set(args.filter((arg) => !arg.startsWith("-")));
+
+  // oxlint-disable-next-line prefer-set-has this error doesnt make sense
+  const flags = args.filter((arg) => arg.startsWith("-"));
+  const keys = args.filter((arg) => !arg.startsWith("-"));
 
   const mainValidators = {
     quotes: validateQuotes,
@@ -501,9 +503,10 @@ function main() {
   };
 
   // flags
-  const validateAll = keys.size < 1 || flags.has("--all") || flags.has("-a");
+  const validateAll =
+    keys.length < 1 || flags.includes("--all") || flags.includes("-a");
   const passWithNoValidators =
-    flags.has("--pass-with-no-validators") || flags.has("-p");
+    flags.includes("--pass-with-no-validators") || flags.includes("-p");
 
   const tasks = new Set(validateAll ? Object.values(mainValidators) : []);
   for (const key of keys) {
