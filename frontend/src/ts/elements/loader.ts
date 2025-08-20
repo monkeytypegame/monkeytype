@@ -1,5 +1,5 @@
+const element = $("#backgroundLoader");
 let timeout: NodeJS.Timeout | null = null;
-let element = $("#backgroundLoader");
 let visible = false;
 
 function clearTimeout(): void {
