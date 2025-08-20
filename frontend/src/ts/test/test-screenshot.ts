@@ -117,7 +117,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     revert();
     return null;
   }
-  await new Promise((resolve) => setTimeout(resolve, 50)); // Small delay for render updates
+  await Misc.sleep(50); // Small delay for render updates
 
   const sourceX = src.offset()?.left ?? 0;
   const sourceY = src.offset()?.top ?? 0;
