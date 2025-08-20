@@ -39,8 +39,8 @@ For types, we use the following:
 - `refactor`: A code change that neither fixes a bug nor adds a feature, but makes the code easier to read, understand, or improve
 - `perf`: A code change that improves performance
 - `test`: Adding missing tests or correcting existing tests
-- `build`: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
-- `ci`: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+- `build`: Changes that affect the build system or external dependencies (example scopes: vite, tsup-node, npm)
+- `ci`: Changes to our CI configuration files and scripts (example scopes: GitHub Workflows)
 - `revert`: Reverts a previous commit
 - `chore`: Other changes that don't apply to any of the above
 
