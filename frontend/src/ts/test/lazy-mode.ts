@@ -1,3 +1,6 @@
+import { LanguageObject } from "@monkeytype/schemas/languages";
+export type Accents = LanguageObject["additionalAccents"];
+
 const accents: Accents = [
   ["áàâäåãąą́āą̄ă", "a"],
   ["éèêëẽęę́ēę̄ėě", "e"],
@@ -45,8 +48,6 @@ const accents: Accents = [
 const accentsMap = new Map<string, string>(
   accents.flatMap((rule) => [...rule[0]].map((accent) => [accent, rule[1]]))
 );
-
-export type Accents = [string, string][];
 
 function findAccent(
   wordSlice: string,

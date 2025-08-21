@@ -8,12 +8,17 @@
 import * as fs from "fs";
 import Ajv from "ajv";
 import { LanguageGroups, LanguageList } from "../src/ts/constants/languages";
-import { Language } from "@monkeytype/schemas/languages";
+import {
+  Language,
+  LanguageObject,
+  LanguageObjectSchema,
+} from "@monkeytype/schemas/languages";
 import { Layout, ThemeName } from "@monkeytype/schemas/configs";
 import { LayoutsList } from "../src/ts/constants/layouts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import { Fonts } from "../src/ts/constants/fonts";
 import { ThemesList } from "../src/ts/constants/themes";
+import { z } from "zod";
 
 const ajv = new Ajv();
 
@@ -29,6 +34,16 @@ class Problems<K extends string, T extends string> {
 
   public add(key: K | T, problem: string): void {
     this.problems[key] = [...(this.problems[key] ?? []), problem];
+  }
+
+  public addValidation(
+    key: K | T,
+    validationResult: z.SafeParseReturnType<unknown, unknown>
+  ): void {
+    if (validationResult.success) return;
+    validationResult.error.errors.forEach((e) =>
+      this.add(key, `${e.path.join(".")}: ${e.message}`)
+    );
   }
 
   public hasError(): boolean {
@@ -432,41 +447,16 @@ async function validateLanguages(): Promise<void> {
     }
   );
 
-  //language files
-  const languageFileSchema = {
-    type: "object",
-    properties: {
-      name: { type: "string" },
-      rightToLeft: { type: "boolean" },
-      noLazyMode: { type: "boolean" },
-      bcp47: { type: "string" },
-      words: {
-        type: "array",
-        items: { type: "string", minLength: 1 },
-      },
-      additionalAccents: {
-        type: "array",
-        items: {
-          type: "array",
-          items: { type: "string", minLength: 1 },
-          minItems: 2,
-          maxItems: 2,
-        },
-      },
-    },
-    required: ["name", "words"],
-  };
-
   const duplicatePercentageThreshold = 0.0001;
   for (const language of LanguageList) {
-    let languageFileData;
+    let languageFileData: LanguageObject;
     try {
       languageFileData = JSON.parse(
         fs.readFileSync(`./static/languages/${language}.json`, {
           encoding: "utf8",
           flag: "r",
         })
-      ) as object & { name: string; words: string[] };
+      ) as LanguageObject;
     } catch (e) {
       problems.add(
         language,
@@ -475,14 +465,11 @@ async function validateLanguages(): Promise<void> {
 
       continue;
     }
-    const languageFileValidator = ajv.compile(languageFileSchema);
-    if (!languageFileValidator(languageFileData)) {
-      problems.add(
-        language,
-        languageFileValidator.errors?.[0]?.message ?? "unknown"
-      );
-      continue;
-    }
+    problems.addValidation(
+      language,
+      LanguageObjectSchema.safeParse(languageFileData)
+    );
+
     if (languageFileData.name !== language) {
       problems.add(language, "Name is not " + language);
     }

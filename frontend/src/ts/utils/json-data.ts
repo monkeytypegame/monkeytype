@@ -1,6 +1,5 @@
 import { FunboxName } from "@monkeytype/schemas/configs";
-import { Language } from "@monkeytype/schemas/languages";
-import { Accents } from "../test/lazy-mode";
+import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 
 //pin implementation
 const fetch = window.fetch;
@@ -94,18 +93,6 @@ export type Layout = {
 export async function getLayout(layoutName: string): Promise<Layout> {
   return await cachedFetchJson<Layout>(`/layouts/${layoutName}.json`);
 }
-
-export type LanguageObject = {
-  name: Language;
-  rightToLeft: boolean;
-  noLazyMode?: boolean;
-  ligatures?: boolean;
-  orderedByFrequency?: boolean;
-  words: string[];
-  additionalAccents: Accents;
-  bcp47?: string;
-  originalPunctuation?: boolean;
-};
 
 let currentLanguage: LanguageObject;
 

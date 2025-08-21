@@ -429,3 +429,18 @@ export const LanguageSchema = z.enum(
 );
 
 export type Language = z.infer<typeof LanguageSchema>;
+
+export const LanguageObjectSchema = z.object({
+  name: LanguageSchema,
+  rightToLeft: z.boolean().optional(),
+  noLazyMode: z.boolean().optional(),
+  ligatures: z.boolean().optional(),
+  orderedByFrequency: z.boolean().optional(),
+  words: z.array(z.string()).min(1),
+  additionalAccents: z
+    .array(z.tuple([z.string().min(1), z.string().min(1)]))
+    .optional(),
+  bcp47: z.string().optional(),
+  originalPunctuation: z.boolean().optional(),
+});
+export type LanguageObject = z.infer<typeof LanguageObjectSchema>;
