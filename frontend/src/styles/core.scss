@@ -208,42 +208,6 @@ key {
   align-items: center;
 }
 
-.pageLoading,
-.pageAccount {
-  .preloader {
-    text-align: center;
-    justify-self: center;
-    display: grid;
-    .barWrapper {
-      justify-content: center;
-      display: grid;
-      gap: 1rem;
-      grid-row: 1;
-      grid-column: 1;
-      .bar {
-        width: 20rem;
-        height: 0.5rem;
-        background: var(--sub-alt-color);
-        border-radius: var(--roundness);
-        .fill {
-          height: 100%;
-          width: 0%;
-          background: var(--main-color);
-          border-radius: var(--roundness);
-          // transition: 1s;
-        }
-      }
-    }
-    .icon {
-      grid-row: 1;
-      grid-column: 1;
-      font-size: 2rem;
-      color: var(--main-color);
-      margin-bottom: 1rem;
-    }
-  }
-}
-
 .devIndicator {
   position: fixed;
   font-size: 3rem;
@@ -493,4 +457,16 @@ key {
   font-family: var(--font);
   font-size: var(--balloon-font-size);
   line-height: var(--balloon-font-size);
+}
+
+// this here to prevent tooltips from showing when an element is focused via mouse click
+// to avoid reappearing popups after clicks, WITHOUT breaking keyboard nav.
+// so shortly we show balloon tooltips on hover and keyboard focus only. not on mouse focus!
+@supports selector(:focus-visible) {
+  [aria-label][data-balloon-pos]:focus:not(:focus-visible):not(:hover)::before,
+  [aria-label][data-balloon-pos]:focus:not(:focus-visible):not(:hover)::after {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
 }

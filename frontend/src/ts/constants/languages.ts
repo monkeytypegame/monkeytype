@@ -292,6 +292,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   occitan: ["occitan", "occitan_1k", "occitan_2k", "occitan_5k", "occitan_10k"],
   kabyle: ["kabyle", "kabyle_1k", "kabyle_2k", "kabyle_5k", "kabyle_10k"],
   zulu: ["zulu"],
+  hawaiian: ["hawaiian", "hawaiian_1k"],
   code: [
     "code_python",
     "code_python_1k",

@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import request from "supertest";
 import app from "../../../src/app";
 import * as AuthUtils from "../../../src/utils/auth";

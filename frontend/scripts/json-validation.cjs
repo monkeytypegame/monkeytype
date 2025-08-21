@@ -1,3 +1,10 @@
+/**
+ * Example usage in root or frontend:
+ * pnpm validate-json (npm run validate-json)
+ * pnpm vaildate-json quotes others(npm run vaildate-json quotes others)
+ * pnpm validate-json challenges fonts -p (npm run validate-json challenges fonts -- -p)
+ */
+
 // eslint-disable no-require-imports
 const fs = require("fs");
 const Ajv = require("ajv");
@@ -18,9 +25,8 @@ function findDuplicates(words) {
   return duplicates;
 }
 
-function validateOthers() {
+function validateChallenges() {
   return new Promise((resolve, reject) => {
-    //challenges
     const challengesSchema = {
       type: "array",
       items: {
@@ -105,7 +111,12 @@ function validateOthers() {
       console.log("Challenges list JSON schema is \u001b[31minvalid\u001b[0m");
       return reject(new Error(challengesValidator.errors[0].message));
     }
+    resolve();
+  });
+}
 
+function validateLayouts() {
+  return new Promise((resolve, reject) => {
     const charDefinitionSchema = {
       type: "array",
       minItems: 1,
@@ -118,7 +129,7 @@ function validateOthers() {
       maxItems: 2,
       items: { type: "string", minLength: 1, maxLength: 1 },
     };
-    //layouts
+
     const layoutsSchema = {
       ansi: {
         type: "object",
@@ -469,13 +480,47 @@ function validateLanguages() {
   });
 }
 
-function validateAll() {
-  return Promise.all([validateOthers(), validateLanguages(), validateQuotes()]);
+function main() {
+  const args = process.argv.slice(2);
+
+  // oxlint-disable-next-line prefer-set-has this error doesnt make sense
+  const flags = args.filter((arg) => arg.startsWith("-"));
+  const keys = args.filter((arg) => !arg.startsWith("-"));
+
+  const mainValidators = {
+    quotes: validateQuotes,
+    languages: validateLanguages,
+    layouts: validateLayouts,
+    challenges: validateChallenges,
+  };
+
+  const validatorsIndex = {
+    ...Object.fromEntries(
+      Object.entries(mainValidators).map(([k, v]) => [k, [v]])
+    ),
+    // add arbitrary keys and validator groupings down here
+    others: [validateChallenges, validateLayouts],
+  };
+
+  // flags
+  const validateAll =
+    keys.length < 1 || flags.includes("--all") || flags.includes("-a");
+  const passWithNoValidators =
+    flags.includes("--pass-with-no-validators") || flags.includes("-p");
+
+  const tasks = new Set(validateAll ? Object.values(mainValidators) : []);
+  for (const key of keys) {
+    if (!Object.keys(validatorsIndex).includes(key)) {
+      console.error(`There is no validator for key '${key}'.`);
+      if (!passWithNoValidators) process.exit(1);
+    } else if (!validateAll) {
+      validatorsIndex[key].forEach((validator) => tasks.add(validator));
+    }
+  }
+
+  if (tasks.size > 0) {
+    return Promise.all([...tasks].map((validator) => validator()));
+  }
 }
 
-module.exports = {
-  validateAll,
-  validateOthers,
-  validateLanguages,
-  validateQuotes,
-};
+main();

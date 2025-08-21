@@ -210,18 +210,18 @@ async function insertImageEmoji(text: string): Promise<string> {
   for (let i = 0; i < textSplit.length; i++) {
     if (/&#58;.+&#58;/g.test(textSplit[i] as string)) {
       const emoji = await getEmojiList();
-      const result = emoji.filter(
+      const result = emoji.find(
         (e) =>
           Misc.escapeHTML(e.from).toLowerCase() ===
           textSplit[i]?.replace(/&#58;/g, "").toLowerCase()
       );
-      if (result[0] !== undefined) {
-        if (result[0].type === "image") {
+      if (result !== undefined) {
+        if (result.type === "image") {
           textSplit[
             i
-          ] = `<div class="imageemoji ${big}" style="background-image: url('${result[0].to}')"></div>`;
-        } else if (result[0].type === "emoji") {
-          textSplit[i] = `<div class="emoji ${big}">${result[0].to}</div>`;
+          ] = `<div class="imageemoji ${big}" style="background-image: url('${result.to}')"></div>`;
+        } else if (result.type === "emoji") {
+          textSplit[i] = `<div class="emoji ${big}">${result.to}</div>`;
         }
       }
     }

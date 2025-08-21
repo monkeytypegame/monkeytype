@@ -16,12 +16,13 @@ import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
-import { PageName } from "../pages/page";
+import Page, { PageName, LoadingOptions } from "../pages/page";
 
 type ChangeOptions = {
   force?: boolean;
   params?: Record<string, string>;
   data?: unknown;
+  loadingOptions?: LoadingOptions;
   tribeOverride?: boolean;
 };
 
@@ -41,6 +42,119 @@ function updateOpenGraphUrl(): void {
   }
 }
 
+function updateTitle(nextPage: { id: string; display?: string }): void {
+  if (nextPage.id === "test") {
+    Misc.updateTitle();
+  } else {
+    const titleString =
+      nextPage.display ?? Strings.capitalizeFirstLetterOfEachWord(nextPage.id);
+    Misc.updateTitle(`${titleString} | Monkeytype`);
+  }
+}
+
+async function showLoading({
+  loadingOptions,
+  totalDuration,
+  easingMethod,
+}: {
+  loadingOptions: LoadingOptions[];
+  totalDuration: number;
+  easingMethod: Misc.JQueryEasing;
+}): Promise<void> {
+  PageLoading.page.element.removeClass("hidden").css("opacity", 0);
+  await PageLoading.page.beforeShow({});
+
+  const fillDivider = loadingOptions.length;
+  const fillOffset = 100 / fillDivider;
+
+  //void here to run the loading promise as soon as possible
+  void Misc.promiseAnimation(
+    PageLoading.page.element,
+    {
+      opacity: "1",
+    },
+    totalDuration / 2,
+    easingMethod
+  );
+
+  for (let i = 0; i < loadingOptions.length; i++) {
+    const currentOffset = fillOffset * i;
+    const options = loadingOptions[i] as LoadingOptions;
+    if (options.style === "bar") {
+      await PageLoading.showBar();
+      if (i === 0) {
+        await PageLoading.updateBar(0, 0);
+        PageLoading.updateText("");
+      }
+    } else {
+      PageLoading.showSpinner();
+    }
+
+    if (options.style === "bar") {
+      await getLoadingPromiseWithBarKeyframes(
+        options,
+        fillDivider,
+        currentOffset
+      );
+      void PageLoading.updateBar(100, 125);
+      PageLoading.updateText("Done");
+    } else {
+      await options.waitFor();
+    }
+  }
+
+  await Misc.promiseAnimation(
+    PageLoading.page.element,
+    {
+      opacity: "0",
+    },
+    totalDuration / 2,
+    easingMethod
+  );
+
+  await PageLoading.page.afterHide();
+  PageLoading.page.element.addClass("hidden");
+}
+
+async function getLoadingPromiseWithBarKeyframes(
+  loadingOptions: Extract<
+    NonNullable<Page<unknown>["loadingOptions"]>,
+    { style: "bar" }
+  >,
+  fillDivider: number,
+  fillOffset: number
+): Promise<void> {
+  let aborted = false;
+  let loadingPromise = loadingOptions.waitFor();
+
+  // Animate bar keyframes, but allow aborting if loading.promise finishes first
+  const keyframePromise = (async () => {
+    for (const keyframe of loadingOptions.keyframes) {
+      if (aborted) break;
+      if (keyframe.text !== undefined) {
+        PageLoading.updateText(keyframe.text);
+      }
+      await PageLoading.updateBar(
+        fillOffset + keyframe.percentage / fillDivider,
+        keyframe.durationMs
+      );
+    }
+  })();
+
+  // Wait for either the keyframes or the loading.promise to finish
+  await Promise.race([
+    keyframePromise,
+    (async () => {
+      await loadingPromise;
+      aborted = true;
+    })(),
+  ]);
+
+  // Always wait for loading.promise to finish before continuing
+  await loadingPromise;
+  return;
+}
+
 export async function change(
   pageName: PageName,
   options = {} as ChangeOptions
@@ -52,81 +166,124 @@ export async function change(
 
   options = { ...defaultOptions, ...options };
 
-  return new Promise((resolve) => {
-    if (PageTransition.get()) {
-      console.debug(
-        `change page to ${pageName} stopped, page transition is true`
-      );
-      resolve(false);
-      return;
-    }
+  if (PageTransition.get() && !options.force) {
+    console.debug(
+      `change page to ${pageName} stopped, page transition is true`
+    );
+    return false;
+  }
 
-    if (!options.force && ActivePage.get() === pageName) {
-      console.debug(`change page ${pageName} stoped, page already active`);
-      resolve(false);
-      return;
-    } else {
-      console.log(`changing page ${pageName}`);
-    }
+  if (!options.force && ActivePage.get() === pageName) {
+    console.debug(`change page ${pageName} stoped, page already active`);
+    return false;
+  } else {
+    console.log(`changing page ${pageName}`);
+  }
 
-    const pages = {
-      loading: PageLoading.page,
-      test: PageTest.page,
-      settings: Settings.page,
-      about: PageAbout.page,
-      account: Account.page,
-      login: PageLogin.page,
-      tribe: PageTribe.page,
-      profile: PageProfile.page,
-      profileSearch: PageProfileSearch.page,
-      404: Page404.page,
-      accountSettings: PageAccountSettings.page,
-      leaderboards: PageLeaderboards.page,
-    };
+  const pages = {
+    loading: PageLoading.page,
+    test: PageTest.page,
+    settings: Settings.page,
+    about: PageAbout.page,
+    account: Account.page,
+    login: PageLogin.page,
+    tribe: PageTribe.page,
+    profile: PageProfile.page,
+    profileSearch: PageProfileSearch.page,
+    404: Page404.page,
+    accountSettings: PageAccountSettings.page,
+    leaderboards: PageLeaderboards.page,
+  };
 
-    const previousPage = pages[ActivePage.get()];
-    const nextPage = pages[pageName];
+  const previousPage = pages[ActivePage.get()];
+  const nextPage = pages[pageName];
+  const totalDuration = Misc.applyReducedMotion(250);
+  const easingMethod: Misc.JQueryEasing = "swing";
 
-    void previousPage?.beforeHide({
-      tribeOverride: options.tribeOverride ?? false,
-    }).then(() => {
-      PageTransition.set(true);
-      $(".page").removeClass("active");
-      void Misc.swapElements(
-        previousPage.element,
-        nextPage.element,
-        250,
-        async () => {
-          PageTransition.set(false);
-          nextPage.element.addClass("active");
-          resolve(true);
-          await nextPage?.afterShow();
-          void AdController.reinstate();
-        },
-        async () => {
-          if (nextPage.id === "test") {
-            Misc.updateTitle();
-          } else {
-            const titleString =
-              nextPage.display ??
-              Strings.capitalizeFirstLetterOfEachWord(nextPage.id);
-            Misc.updateTitle(`${titleString} | Monkeytype`);
-          }
-          Focus.set(false);
-          ActivePage.set(nextPage.id);
+  //start
+  PageTransition.set(true);
+  $(".page").removeClass("active");
 
-          await previousPage?.afterHide();
-
-          await nextPage?.beforeShow({
-            params: options.params,
-            // @ts-expect-error for the future (i think)
-            data: options.data,
-            tribeOverride: options.tribeOverride ?? false,
-          });
-
-          updateOpenGraphUrl();
-        }
-      );
-    });
+  //previous page
+  await previousPage?.beforeHide?.({
+    tribeOverride: options.tribeOverride ?? false,
   });
+  previousPage.element.removeClass("hidden").css("opacity", 1);
+  await Misc.promiseAnimation(
+    previousPage.element,
+    {
+      opacity: "0",
+    },
+    totalDuration / 2,
+    easingMethod
+  );
+  previousPage.element.addClass("hidden");
+  await previousPage?.afterHide();
+
+  //show loading page if needed
+  try {
+    let loadingOptions: LoadingOptions[] = [];
+    if (options.loadingOptions) {
+      loadingOptions.push(options.loadingOptions);
+    }
+    if (nextPage.loadingOptions) {
+      loadingOptions.push(nextPage.loadingOptions);
+    }
+
+    if (loadingOptions.length > 0) {
+      const shouldShowLoading =
+        options.loadingOptions?.shouldLoad() ||
+        nextPage.loadingOptions?.shouldLoad();
+
+      if (shouldShowLoading === true) {
+        await showLoading({
+          loadingOptions,
+          totalDuration,
+          easingMethod,
+        });
+      }
+    }
+  } catch (error) {
+    pages.loading.element.addClass("active");
+    ActivePage.set(pages.loading.id);
+    Focus.set(false);
+    PageLoading.showError();
+    PageLoading.updateText(
+      `Failed to load the ${nextPage.id} page: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+    PageTransition.set(false);
+    return false;
+  }
+
+  //between
+  updateTitle(nextPage);
+  ActivePage.set(nextPage.id);
+  updateOpenGraphUrl();
+  Focus.set(false);
+
+  //next page
+  await nextPage?.beforeShow({
+    params: options.params,
+    tribeOverride: options.tribeOverride ?? false,
+    // @ts-expect-error for the future (i think)
+    data: options.data,
+  });
+  nextPage.element.removeClass("hidden").css("opacity", 0);
+  await Misc.promiseAnimation(
+    nextPage.element,
+    {
+      opacity: "1",
+    },
+    totalDuration / 2,
+    easingMethod
+  );
+  nextPage.element.addClass("active");
+  await nextPage?.afterShow();
+
+  //wrapup
+  PageTransition.set(false);
+  void AdController.reinstate();
+  return true;
 }

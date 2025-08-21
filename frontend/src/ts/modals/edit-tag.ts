@@ -21,7 +21,7 @@ const actionModals: Record<Action, SimpleModal> = {
       {
         placeholder: "tag name",
         type: "text",
-        validation: { isValid: tagNameValidation },
+        validation: { isValid: tagNameValidation, debounceDelay: 0 },
       },
     ],
     onlineOnly: true,
@@ -63,7 +63,7 @@ const actionModals: Record<Action, SimpleModal> = {
       {
         placeholder: "tag name",
         type: "text",
-        validation: { isValid: tagNameValidation },
+        validation: { isValid: tagNameValidation, debounceDelay: 0 },
       },
     ],
     onlineOnly: true,

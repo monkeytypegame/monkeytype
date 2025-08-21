@@ -1,17 +1,12 @@
 @keyframes loader {
   0% {
-    width: 0;
-    left: 0;
+    transform: translateX(-100%) scaleX(0);
   }
-
   50% {
-    width: 100%;
-    left: 0;
+    transform: translateX(0) scaleX(1);
   }
-
   100% {
-    width: 0;
-    left: 100%;
+    transform: translateX(100%) scaleX(0);
   }
 }
 

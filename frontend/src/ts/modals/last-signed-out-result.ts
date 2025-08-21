@@ -3,8 +3,9 @@ import AnimatedModal from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
-import { Auth } from "../firebase";
+import { getAuthenticatedUser } from "../firebase";
 import { syncNotSignedInLastResult } from "../utils/results";
+import * as AuthEvent from "../observables/auth-event";
 
 function reset(): void {
   (modal.getModal().querySelector(".result") as HTMLElement).innerHTML = `
@@ -99,9 +100,10 @@ export function show(): void {
     );
     return;
   }
-  reset();
+
   void modal.show({
     beforeAnimation: async (): Promise<void> => {
+      reset();
       fillData();
     },
   });
@@ -111,13 +113,24 @@ function hide(): void {
   void modal.hide();
 }
 
+AuthEvent.subscribe((event) => {
+  if (event.type === "snapshotUpdated" && event.data.isInitial) {
+    if (TestLogic.notSignedInLastResult !== null) {
+      show();
+    }
+  }
+});
+
 const modal = new AnimatedModal({
   dialogId: "lastSignedOutResult",
   setup: async (modalEl): Promise<void> => {
     modalEl
       .querySelector("button.save")
       ?.addEventListener("click", async () => {
-        void syncNotSignedInLastResult(Auth?.currentUser?.uid as string);
+        const user = getAuthenticatedUser();
+        if (user !== null) {
+          void syncNotSignedInLastResult(user.uid);
+        }
         hide();
       });
     modalEl.querySelector("button.discard")?.addEventListener("click", () => {

@@ -10,6 +10,7 @@ import * as Loader from "../elements/loader";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
+import * as AuthEvent from "../observables/auth-event";
 
 const pageElement = $(".page.pageAccountSettings");
 
@@ -29,8 +30,8 @@ function updateAuthenticationSections(): void {
   pageElement.find(".section.googleAuthSettings button").addClass("hidden");
   pageElement.find(".section.githubAuthSettings button").addClass("hidden");
 
-  if (!isAuthenticated()) return;
   const user = getAuthenticatedUser();
+  if (user === null) return;
 
   const passwordProvider = user.providerData.some(
     (provider) => provider.providerId === "password"
@@ -209,6 +210,12 @@ $(
 
 $(".page.pageAccountSettings #setStreakHourOffset").on("click", () => {
   StreakHourOffsetModal.show();
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authConfigUpdated") {
+    updateUI();
+  }
 });
 
 export const page = new PageWithUrlParams({

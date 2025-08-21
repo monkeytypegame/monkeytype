@@ -14,7 +14,7 @@ import "./event-handlers/login";
 
 import "./modals/google-sign-up";
 
-import "./firebase";
+import { init } from "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
@@ -30,7 +30,7 @@ import * as TribeState from "./tribe/tribe-state";
 import * as TribeCarets from "./tribe/tribe-carets";
 import * as TribeSocket from "./tribe/tribe-socket";
 
-import "./controllers/account-controller";
+import { onAuthStateChanged } from "./auth";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
 import "./modals/simple-modals";
@@ -55,6 +55,9 @@ import * as Focus from "./test/focus";
 import { getDevOptionsModal } from "./utils/async-modules";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
+import "./elements/psa";
+import "./utils/url-handler";
+import "./modals/last-signed-out-result";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -85,6 +88,7 @@ function addToGlobal(items: Record<string, unknown>): void {
 void loadFromLocalStorage();
 void VersionButton.update();
 Focus.set(true, true);
+void init(onAuthStateChanged);
 
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {

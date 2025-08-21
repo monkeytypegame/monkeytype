@@ -23,13 +23,6 @@
     }
   }
 
-  .preloader {
-    align-self: center;
-    text-align: center;
-    align-items: center;
-    height: 100%;
-  }
-
   .content {
     gap: 2rem;
   }
@@ -459,7 +452,7 @@
   background-color: var(--sub-alt-color);
 }
 
-#testActivity {
+.testActivity {
   // width: max-content;
   // justify-self: center;
   background: var(--sub-alt-color);
@@ -487,6 +480,13 @@
     //   "day chart"
     //   "top top";
     // font-size: 0.75rem;
+  }
+
+  .note {
+    grid-column: span 2;
+    text-align: center;
+    font-size: 0.6em;
+    color: var(--sub-color);
   }
 
   .top {

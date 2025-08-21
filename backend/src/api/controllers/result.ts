@@ -286,6 +286,15 @@ export async function addResult(
     await addImportantLog("suspicious_user_result", completedEvent, uid);
   }
 
+  if (
+    completedEvent.mode === "time" &&
+    (completedEvent.mode2 === "60" || completedEvent.mode2 === "15") &&
+    completedEvent.wpm > 250 &&
+    user.lbOptOut !== true
+  ) {
+    await addImportantLog("highwpm_user_result", completedEvent, uid);
+  }
+
   if (anticheatImplemented()) {
     if (
       !validateResult(

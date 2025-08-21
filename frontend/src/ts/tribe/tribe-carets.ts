@@ -1,5 +1,4 @@
 import * as TestWords from "../test/test-words";
-import * as TestUI from "../test/test-ui";
 import Config from "../config";
 import * as SlowTimer from "../states/slow-timer";
 import { getRoom } from "./tribe-state";
@@ -115,7 +114,7 @@ export class TribeCaret {
         const newIndex =
           animationWordIndex -
           //todo this will break
-          (TestState.activeWordIndex - TestUI.activeWordElementOffset);
+          (TestState.activeWordIndex - TestState.removedUIWordCount);
         currentWord = <HTMLElement>(
           document.querySelectorAll("#words .word")[newIndex]
         );
@@ -203,7 +202,7 @@ export class TribeCaret {
               SlowTimer.get() ? 0 : 125,
               "linear",
               () => {
-                if (!this.element || !newLeft || !newTop) {
+                if (!this.element || newLeft === undefined || !newTop) {
                   return;
                 }
                 this.element.stop(true, false).animate(

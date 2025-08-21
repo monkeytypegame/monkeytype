@@ -65,7 +65,7 @@ async function lookupProfile(): Promise<void> {
     return;
   }
   searchIndicator.hide();
-  navigate(`/profile/${name}`, {
+  await navigate(`/profile/${name}`, {
     data: response.body.data,
   });
 }

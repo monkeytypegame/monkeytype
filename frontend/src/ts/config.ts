@@ -22,11 +22,7 @@ import { Config, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Language } from "@monkeytype/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
-import {
-  migrateConfig,
-  replaceLegacyValues,
-  sanitizeConfig,
-} from "./utils/config";
+import { migrateConfig } from "./utils/config";
 import { getDefaultConfig } from "./constants/default-config";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { ZodSchema } from "zod";
@@ -190,7 +186,7 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
         continue; // no need to set if the value is already the same
       }
 
-      const set = genericSet(targetKey, targetValue, true);
+      const set = genericSet(targetKey, targetValue, nosave);
       if (!set) {
         throw new Error(
           `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`
@@ -874,41 +870,28 @@ const lastConfigsToApply: Set<keyof Config> = new Set([
   "funbox",
 ]);
 
-export async function apply(
-  configToApply: Config | Partial<Config>,
-  fullReset = false
-): Promise<void> {
-  if (configToApply === undefined || configToApply === null) return;
+export async function apply(partialConfig: Partial<Config>): Promise<void> {
+  if (partialConfig === undefined || partialConfig === null) return;
 
-  //remove additional keys, migrate old values if needed
-  configToApply = sanitizeConfig(replaceLegacyValues(configToApply));
+  //migrate old values if needed, remove additional keys and merge with default config
+  const fullConfig: Config = migrateConfig(partialConfig);
 
   ConfigEvent.dispatch("fullConfigChange");
 
   const defaultConfig = getDefaultConfig();
-  for (const key of typedKeys(fullReset ? defaultConfig : configToApply)) {
+  for (const key of typedKeys(fullConfig)) {
     //@ts-expect-error this is fine, both are of type config
     config[key] = defaultConfig[key];
   }
 
-  const partialKeys = typedKeys(configToApply);
-  const partialKeysToApplyFirst = partialKeys.filter(
-    (key) => !lastConfigsToApply.has(key)
-  );
-  const partialKeysToApplyLast = Array.from(lastConfigsToApply.values()).filter(
-    (key) => partialKeys.includes(key)
-  );
-  const partialKeysToApply = [
-    ...partialKeysToApplyFirst,
-    ...partialKeysToApplyLast,
-  ];
-
   const configKeysToReset: (keyof Config)[] = [];
 
-  for (const configKey of partialKeysToApply) {
-    const configValue = configToApply[
-      configKey
-    ] as ConfigSchemas.Config[keyof Config];
+  const firstKeys = typedKeys(fullConfig).filter(
+    (key) => !lastConfigsToApply.has(key)
+  );
+
+  for (const configKey of [...firstKeys, ...lastConfigsToApply]) {
+    const configValue = fullConfig[configKey];
 
     const set = genericSet(configKey, configValue, true);
 
@@ -943,7 +926,7 @@ export async function loadFromLocalStorage(): Promise<void> {
   if (newConfig === undefined) {
     await reset();
   } else {
-    await apply(newConfig, true);
+    await apply(newConfig);
     saveFullConfigToLocalStorage(true);
   }
   loadDone();
@@ -976,7 +959,7 @@ export async function applyFromJson(json: string): Promise<void> {
         },
       }
     );
-    await apply(parsedConfig, true);
+    await apply(parsedConfig);
     saveFullConfigToLocalStorage();
     Notifications.add("Done", 1);
   } catch (e) {

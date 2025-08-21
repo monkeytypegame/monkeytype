@@ -219,7 +219,9 @@ export const LayoutNameSchema = z.enum([
     "tarmak_3",
     "tarmak_4",
     "rulemak",
-  ], 
+    "persian_farsi_colemak",
+    "persian_standard_colemak",
+  ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),
   }

@@ -118,6 +118,7 @@ export const UserProfileDetailsSchema = z
       })
       .strict()
       .optional(),
+    showActivityOnPublicProfile: z.boolean().optional(),
   })
   .strict();
 export type UserProfileDetails = z.infer<typeof UserProfileDetailsSchema>;
@@ -236,9 +237,22 @@ export const FavoriteQuotesSchema = z.record(
 );
 export type FavoriteQuotes = z.infer<typeof FavoriteQuotesSchema>;
 
+export const UserEmailSchema = z.string().email();
+export const UserNameSchema = doesNotContainProfanity(
+  "substring",
+  z
+    .string()
+    .min(1)
+    .max(16)
+    .regex(
+      /^[\da-zA-Z_-]+$/,
+      "Can only contain lower/uppercase letters, underscore and minus."
+    )
+);
+
 export const UserSchema = z.object({
-  name: z.string(),
-  email: z.string().email(),
+  name: UserNameSchema,
+  email: UserEmailSchema,
   uid: z.string(), //defined by firebase, no validation should be applied
   addedAt: z.number().int().nonnegative(),
   personalBests: PersonalBestsSchema,
@@ -304,6 +318,7 @@ export const UserProfileSchema = UserSchema.pick({
   isPremium: true,
   inventory: true,
   allTimeLbs: true,
+  testActivity: true,
 })
   .extend({
     typingStats: TypingStatsSchema,

@@ -5,6 +5,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { applyReducedMotion } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
+import * as AuthEvent from "../observables/auth-event";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
@@ -31,14 +32,20 @@ export async function instantUpdate(): Promise<void> {
   $("#testConfig .zen").addClass("hidden");
 
   if (Config.mode === "time") {
-    $("#testConfig .puncAndNum").removeClass("hidden");
+    $("#testConfig .puncAndNum").removeClass("hidden").css({
+      width: "",
+      opacity: "",
+    });
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .time").removeClass("hidden");
 
     updateActiveExtraButtons("time", Config.time);
   } else if (Config.mode === "words") {
-    $("#testConfig .puncAndNum").removeClass("hidden");
+    $("#testConfig .puncAndNum").removeClass("hidden").css({
+      width: "",
+      opacity: "",
+    });
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .wordCount").removeClass("hidden");
@@ -50,7 +57,10 @@ export async function instantUpdate(): Promise<void> {
 
     updateActiveExtraButtons("quoteLength", Config.quoteLength);
   } else if (Config.mode === "custom") {
-    $("#testConfig .puncAndNum").removeClass("hidden");
+    $("#testConfig .puncAndNum").removeClass("hidden").css({
+      width: "",
+      opacity: "",
+    });
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .customText").removeClass("hidden");
@@ -305,5 +315,15 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
   ) {
     if (eventValue !== undefined)
       updateActiveExtraButtons(eventKey, eventValue);
+  }
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    if (!event.data.isUserSignedIn) {
+      hideFavoriteQuoteLength();
+    } else {
+      showFavoriteQuoteLength();
+    }
   }
 });
