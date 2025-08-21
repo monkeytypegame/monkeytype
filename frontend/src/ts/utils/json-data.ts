@@ -1,5 +1,6 @@
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 import { Challenge } from "@monkeytype/schemas/challenges";
+import { LayoutObject } from "@monkeytype/schemas/layouts";
 
 //pin implementation
 const fetch = window.fetch;
@@ -69,29 +70,14 @@ export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
   fetchJson
 );
 
-export type Keys = {
-  row1: string[][];
-  row2: string[][];
-  row3: string[][];
-  row4: string[][];
-  row5: string[][];
-};
-
-export type Layout = {
-  keymapShowTopRow: boolean;
-  matrixShowRightColumn?: boolean;
-  type: "iso" | "ansi" | "ortho" | "matrix";
-  keys: Keys;
-};
-
 /**
  * Fetches a layout by name from the server.
  * @param layoutName The name of the layout to fetch.
  * @returns A promise that resolves to the layout object.
  * @throws {Error} If the layout list or layout doesn't exist.
  */
-export async function getLayout(layoutName: string): Promise<Layout> {
-  return await cachedFetchJson<Layout>(`/layouts/${layoutName}.json`);
+export async function getLayout(layoutName: string): Promise<LayoutObject> {
+  return await cachedFetchJson<LayoutObject>(`/layouts/${layoutName}.json`);
 }
 
 let currentLanguage: LanguageObject;

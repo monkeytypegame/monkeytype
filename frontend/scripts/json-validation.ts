@@ -20,6 +20,7 @@ import { Fonts } from "../src/ts/constants/fonts";
 import { ThemesList } from "../src/ts/constants/themes";
 import { z } from "zod";
 import { ChallengeSchema } from "@monkeytype/schemas/challenges";
+import { LayoutObjectSchema } from "@monkeytype/schemas/layouts";
 
 const ajv = new Ajv();
 
@@ -109,110 +110,6 @@ async function validateLayouts(): Promise<void> {
       "Additional layout files not declared in frontend/src/ts/constants/layouts.ts",
   });
 
-  const charDefinitionSchema = {
-    type: "array",
-    minItems: 1,
-    maxItems: 4,
-    items: { type: "string", minLength: 1, maxLength: 1 },
-  };
-  const charDefinitionSchemaRow5 = {
-    type: "array",
-    minItems: 1,
-    maxItems: 2,
-    items: { type: "string", minLength: 1, maxLength: 1 },
-  };
-
-  const layoutsSchema = {
-    ansi: {
-      type: "object",
-      properties: {
-        keymapShowTopRow: { type: "boolean" },
-        type: { type: "string", pattern: "^ansi$" },
-        keys: {
-          type: "object",
-          properties: {
-            row1: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 13,
-              maxItems: 13,
-            },
-            row2: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 13,
-              maxItems: 13,
-            },
-            row3: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 11,
-              maxItems: 11,
-            },
-            row4: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 10,
-              maxItems: 10,
-            },
-            row5: {
-              type: "array",
-              items: charDefinitionSchemaRow5,
-              minItems: 1,
-              maxItems: 2,
-            },
-          },
-          required: ["row1", "row2", "row3", "row4", "row5"],
-        },
-      },
-      required: ["keymapShowTopRow", "type", "keys"],
-    },
-    iso: {
-      type: "object",
-      properties: {
-        keymapShowTopRow: { type: "boolean" },
-        type: { type: "string", pattern: "^iso$" },
-        keys: {
-          type: "object",
-          properties: {
-            row1: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 13,
-              maxItems: 13,
-            },
-            row2: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 12,
-              maxItems: 12,
-            },
-            row3: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 12,
-              maxItems: 12,
-            },
-            row4: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 11,
-              maxItems: 11,
-            },
-            row5: {
-              type: "array",
-              items: charDefinitionSchemaRow5,
-              minItems: 1,
-              maxItems: 2,
-            },
-          },
-          required: ["row1", "row2", "row3", "row4", "row5"],
-        },
-      },
-      required: ["keymapShowTopRow", "type", "keys"],
-    },
-  };
-
   for (let layoutName of LayoutsList) {
     let layoutData = undefined;
     if (!fs.existsSync(`./static/layouts/${layoutName}.json`)) {
@@ -234,17 +131,8 @@ async function validateLayouts(): Promise<void> {
       continue;
     }
 
-    if (layoutsSchema[layoutData.type] === undefined) {
-      problems.add(layoutName, `invalid type: ${layoutData.type}`);
-    } else {
-      const layoutsValidator = ajv.compile(layoutsSchema[layoutData.type]);
-      if (!layoutsValidator(layoutData)) {
-        problems.add(
-          layoutName,
-          layoutsValidator.errors?.[0]?.message ?? "unknown"
-        );
-      }
-    }
+    const validationResult = LayoutObjectSchema.safeParse(layoutData);
+    problems.addValidation(layoutName, validationResult);
   }
 
   //no files not defined in LayoutsList
@@ -399,7 +287,9 @@ async function validateLanguages(): Promise<void> {
     }
     problems.addValidation(
       language,
-      LanguageObjectSchema.safeParse(languageFileData)
+      LanguageObjectSchema.extend({
+        _comment: z.string().optional(),
+      }).safeParse(languageFileData)
     );
 
     if (languageFileData.name !== language) {
