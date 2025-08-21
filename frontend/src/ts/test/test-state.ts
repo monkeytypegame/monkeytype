@@ -1,4 +1,4 @@
-import { Challenge } from "../utils/json-data";
+import { Challenge } from "@monkeytype/schemas/challenges";
 
 export let isRepeated = false;
 export let isPaceRepeat = false;

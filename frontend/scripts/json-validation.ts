@@ -19,6 +19,7 @@ import { KnownFontName } from "@monkeytype/schemas/fonts";
 import { Fonts } from "../src/ts/constants/fonts";
 import { ThemesList } from "../src/ts/constants/themes";
 import { z } from "zod";
+import { ChallengeSchema } from "@monkeytype/schemas/challenges";
 
 const ajv = new Ajv();
 
@@ -85,89 +86,20 @@ function findDuplicates(words: string[]): string[] {
 }
 
 async function validateChallenges(): Promise<void> {
-  const challengesSchema = {
-    type: "array",
-    items: {
-      type: "object",
-      properties: {
-        name: { type: "string" },
-        display: { type: "string" },
-        autoRole: { type: "boolean" },
-        type: { type: "string" },
-        message: { type: "string" },
-        parameters: {
-          type: "array",
-        },
-        requirements: {
-          type: "object",
-          properties: {
-            wpm: {
-              type: "object",
-              properties: {
-                min: { type: "number" },
-                max: { type: "number" },
-                exact: { type: "number" },
-              },
-            },
-            time: {
-              type: "object",
-              properties: {
-                min: { type: "number" },
-                max: { type: "number" },
-                exact: { type: "number" },
-              },
-            },
-            acc: {
-              type: "object",
-              properties: {
-                min: { type: "number" },
-                max: { type: "number" },
-                exact: { type: "number" },
-              },
-            },
-            raw: {
-              type: "object",
-              properties: {
-                min: { type: "number" },
-                max: { type: "number" },
-                exact: { type: "number" },
-              },
-            },
-            con: {
-              type: "object",
-              properties: {
-                min: { type: "number" },
-                max: { type: "number" },
-                exact: { type: "number" },
-              },
-            },
-            config: {
-              type: "object",
-            },
-            funbox: {
-              type: "object",
-              properties: {
-                exact: { type: "array" },
-              },
-            },
-          },
-        },
-      },
-      required: ["name", "display", "type", "parameters"],
-    },
-  };
+  const problems = new Problems<"_list.json", never>("Challenges", {});
+
   const challengesData = JSON.parse(
     fs.readFileSync("./static/challenges/_list.json", {
       encoding: "utf8",
       flag: "r",
     })
   ) as object;
-  const challengesValidator = ajv.compile(challengesSchema);
-  if (challengesValidator(challengesData)) {
-    console.log("Challenges list JSON schema is \u001b[32mvalid\u001b[0m");
-  } else {
-    console.log("Challenges list JSON schema is \u001b[31minvalid\u001b[0m");
-    throw new Error(challengesValidator?.errors?.[0]?.message);
+  const validationResult = z.array(ChallengeSchema).safeParse(challengesData);
+  problems.addValidation("_list.json", validationResult);
+
+  console.log(problems.toString());
+  if (problems.hasError()) {
+    throw new Error("challenges with errors");
   }
 }
 

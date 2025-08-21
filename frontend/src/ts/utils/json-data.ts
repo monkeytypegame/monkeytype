@@ -1,5 +1,5 @@
-import { FunboxName } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
+import { Challenge } from "@monkeytype/schemas/challenges";
 
 //pin implementation
 const fetch = window.fetch;
@@ -143,16 +143,6 @@ export class Section {
 }
 
 export type FunboxWordOrder = "normal" | "reverse";
-
-export type Challenge = {
-  name: string;
-  display: string;
-  autoRole: boolean;
-  type: string;
-  parameters: (string | number | boolean | FunboxName[])[];
-  message: string;
-  requirements: Record<string, Record<string, string | number | boolean>>;
-};
 
 /**
  * Fetches the list of challenges from the server.

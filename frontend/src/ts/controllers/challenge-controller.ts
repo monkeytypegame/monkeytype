@@ -15,11 +15,13 @@ import {
   Difficulty,
   ThemeName,
   FunboxName,
+  PartialConfig,
 } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { Challenge, NumberRequirement } from "@monkeytype/schemas/challenges";
 
 let challengeLoading = false;
 
@@ -36,24 +38,24 @@ export function clearActive(): void {
 
 function verifyRequirement(
   result: CompletedEvent,
-  requirements: Record<
-    string,
-    Record<string, string | number | boolean | FunboxName[]>
-  >,
-  requirementType: string
+  requirements: NonNullable<Challenge["requirements"]>,
+  requirementType: keyof NonNullable<Challenge["requirements"]>
 ): [boolean, string[]] {
   let requirementsMet = true;
   let failReasons: string[] = [];
 
   const afk = (result.afkDuration / result.testDuration) * 100;
 
-  const requirementValue = requirements[requirementType];
+  const requirementValueRaw = requirements[requirementType] as NonNullable<
+    Challenge["requirements"]
+  >;
 
-  if (requirementValue === undefined) {
+  if (requirementValueRaw === undefined) {
     throw new Error("Requirement value is undefined");
   }
 
   if (requirementType === "wpm") {
+    const requirementValue = requirementValueRaw as NumberRequirement;
     const wpmMode = Object.keys(requirementValue)[0];
     if (wpmMode === "exact") {
       if (Math.round(result.wpm) !== requirementValue["exact"]) {
@@ -67,6 +69,7 @@ function verifyRequirement(
       }
     }
   } else if (requirementType === "acc") {
+    const requirementValue = requirementValueRaw as NumberRequirement;
     const accMode = Object.keys(requirementValue)[0];
     if (accMode === "exact") {
       if (result.acc !== requirementValue["exact"]) {
@@ -80,6 +83,7 @@ function verifyRequirement(
       }
     }
   } else if (requirementType === "afk") {
+    const requirementValue = requirementValueRaw as NumberRequirement;
     const afkMode = Object.keys(requirementValue)[0];
     if (afkMode === "max") {
       if (Math.round(afk) > Number(requirementValue["max"])) {
@@ -88,6 +92,7 @@ function verifyRequirement(
       }
     }
   } else if (requirementType === "time") {
+    const requirementValue = requirementValueRaw as NumberRequirement;
     const timeMode = Object.keys(requirementValue)[0];
     if (timeMode === "min") {
       if (Math.round(result.testDuration) < Number(requirementValue["min"])) {
@@ -96,7 +101,7 @@ function verifyRequirement(
       }
     }
   } else if (requirementType === "funbox") {
-    const funboxMode = requirementValue["exact"] as FunboxName[];
+    const funboxMode = (requirementValueRaw as { exact: FunboxName[] }).exact;
     if (funboxMode === undefined) {
       throw new Error("Funbox mode is undefined");
     }
@@ -117,6 +122,7 @@ function verifyRequirement(
       }
     }
   } else if (requirementType === "raw") {
+    const requirementValue = requirementValueRaw as NumberRequirement;
     const rawMode = Object.keys(requirementValue)[0];
     if (rawMode === "exact") {
       if (Math.round(result.rawWpm) !== requirementValue["exact"]) {
@@ -125,6 +131,7 @@ function verifyRequirement(
       }
     }
   } else if (requirementType === "con") {
+    const requirementValue = requirementValueRaw as NumberRequirement;
     const conMode = Object.keys(requirementValue)[0];
     if (conMode === "exact") {
       if (Math.round(result.consistency) !== requirementValue["exact"]) {
@@ -133,7 +140,8 @@ function verifyRequirement(
       }
     }
   } else if (requirementType === "config") {
-    for (const configKey in requirementValue) {
+    const requirementValue = requirementValueRaw as PartialConfig;
+    for (const configKey of Misc.typedKeys(requirementValue)) {
       const configValue = requirementValue[configKey];
       if (Config[configKey as keyof ConfigType] !== configValue) {
         requirementsMet = false;
@@ -164,7 +172,9 @@ export function verify(result: CompletedEvent): string | null {
     } else {
       let requirementsMet = true;
       const failReasons: string[] = [];
-      for (const requirementType in TestState.activeChallenge.requirements) {
+      for (const requirementType of Misc.typedKeys(
+        TestState.activeChallenge.requirements
+      )) {
         const [passed, requirementFailReasons] = verifyRequirement(
           result,
           TestState.activeChallenge.requirements,
