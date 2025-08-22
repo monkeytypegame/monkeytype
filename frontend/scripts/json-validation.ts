@@ -6,12 +6,12 @@
  */
 
 import * as fs from "fs";
-import Ajv from "ajv";
 import { LanguageGroups, LanguageList } from "../src/ts/constants/languages";
 import {
   Language,
   LanguageObject,
   LanguageObjectSchema,
+  LanguageSchema,
 } from "@monkeytype/schemas/languages";
 import { Layout, ThemeName } from "@monkeytype/schemas/configs";
 import { LayoutsList } from "../src/ts/constants/layouts";
@@ -19,10 +19,9 @@ import { KnownFontName } from "@monkeytype/schemas/fonts";
 import { Fonts } from "../src/ts/constants/fonts";
 import { ThemesList } from "../src/ts/constants/themes";
 import { z } from "zod";
-import { ChallengeSchema } from "@monkeytype/schemas/challenges";
-import { LayoutObjectSchema } from "@monkeytype/schemas/layouts";
-
-const ajv = new Ajv();
+import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
+import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
+import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
 
 class Problems<K extends string, T extends string> {
   private type: string;
@@ -71,15 +70,15 @@ class Problems<K extends string, T extends string> {
   }
 }
 
-function findDuplicates(words: string[]): string[] {
-  const seen = new Set<string>();
-  const duplicates = new Set<string>();
+function findDuplicates<T>(items: T[]): T[] {
+  const seen = new Set<T>();
+  const duplicates = new Set<T>();
 
-  for (const word of words) {
-    if (seen.has(word)) {
-      duplicates.add(word);
+  for (const item of items) {
+    if (seen.has(item)) {
+      duplicates.add(item);
     } else {
-      seen.add(word);
+      seen.add(item);
     }
   }
 
@@ -94,7 +93,7 @@ async function validateChallenges(): Promise<void> {
       encoding: "utf8",
       flag: "r",
     })
-  ) as object;
+  ) as Challenge;
   const validationResult = z.array(ChallengeSchema).safeParse(challengesData);
   problems.addValidation("_list.json", validationResult);
 
@@ -122,7 +121,7 @@ async function validateLayouts(): Promise<void> {
     try {
       layoutData = JSON.parse(
         fs.readFileSync(`./static/layouts/${layoutName}.json`, "utf-8")
-      ) as object & { type: "ansi" | "iso" };
+      ) as LayoutObject;
     } catch (e) {
       problems.add(
         layoutName,
@@ -155,46 +154,6 @@ async function validateLayouts(): Promise<void> {
 async function validateQuotes(): Promise<void> {
   const problems = new Problems<string, never>("Quotes", {});
 
-  //quotes
-  const quoteSchema = {
-    type: "object",
-    properties: {
-      language: { type: "string" },
-      groups: {
-        type: "array",
-        items: {
-          type: "array",
-          items: {
-            type: "number",
-          },
-          minItems: 2,
-          maxItems: 2,
-        },
-      },
-      quotes: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            text: { type: "string" },
-            source: { type: "string" },
-            length: { type: "number" },
-            id: { type: "number" },
-          },
-          required: ["text", "source", "length", "id"],
-        },
-      },
-    },
-    required: ["language", "groups", "quotes"],
-  };
-  const quoteIdsSchema = {
-    type: "array",
-    items: {
-      type: "number",
-    },
-    uniqueItems: true,
-  };
-
   const quotesFiles = fs.readdirSync("./static/quotes/");
   for (let quotefilename of quotesFiles) {
     quotefilename = quotefilename.split(".")[0] as string;
@@ -206,10 +165,7 @@ async function validateQuotes(): Promise<void> {
           encoding: "utf8",
           flag: "r",
         })
-      ) as object & {
-        language: string;
-        quotes: { id: number; text: string; length: number }[];
-      };
+      ) as QuoteData;
     } catch (e) {
       problems.add(
         quotefilename,
@@ -223,23 +179,21 @@ async function validateQuotes(): Promise<void> {
         `Name not matching language ${quoteData.language}`
       );
     }
-    const quoteValidator = ajv.compile(quoteSchema);
-    if (!quoteValidator(quoteData)) {
-      problems.add(
-        quotefilename,
-        quoteValidator.errors?.[0]?.message ?? "unknown"
-      );
-      continue;
-    }
-    const quoteIds = quoteData.quotes.map((quote) => quote.id);
-    const quoteIdsValidator = ajv.compile(quoteIdsSchema);
-    if (!quoteIdsValidator(quoteIds)) {
-      problems.add(
-        quotefilename,
-        `IDs not unique: ${quoteIdsValidator.errors?.[0]?.message}`
-      );
-    }
 
+    const schema = QuoteDataSchema.extend({
+      language: LanguageSchema
+        //icelandic only exists as icelandic_1k, language in quote file is stipped of its size
+        .or(z.literal("icelandic")),
+    });
+    problems.addValidation(quotefilename, schema.safeParse(quoteData));
+
+    const duplicates = findDuplicates(quoteData.quotes.map((it) => it.id));
+    if (duplicates.length !== 0) {
+      problems.add(
+        quotefilename,
+        `contains ${duplicates.length} duplicates:\n ${duplicates.join(",")}`
+      );
+    }
     quoteData.quotes
       .filter((quote) => quote.text.length !== quote.length)
       .forEach((quote) =>

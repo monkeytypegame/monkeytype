@@ -720,4 +720,7 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
 export function triggerResize(): void {
   $(window).trigger("resize");
 }
+
+export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
+  Required<Pick<T, K>>;
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
