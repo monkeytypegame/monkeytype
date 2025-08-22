@@ -55,17 +55,18 @@ class Problems<K extends string, T extends string> {
 }
 
 function findDuplicates(words: string[]): string[] {
-  const wordFrequencies: Record<string, number> = {};
-  const duplicates: string[] = [];
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
 
-  words.forEach((word) => {
-    wordFrequencies[word] = (wordFrequencies[word] ?? 0) + 1;
-
-    if (wordFrequencies[word] === 2) {
-      duplicates.push(word);
+  for (const word of words) {
+    if (seen.has(word)) {
+      duplicates.add(word);
+    } else {
+      seen.add(word);
     }
-  });
-  return duplicates;
+  }
+
+  return Array.from(duplicates);
 }
 
 async function validateChallenges(): Promise<void> {
