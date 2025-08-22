@@ -532,6 +532,13 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       alias: () => "timer",
     },
   },
+  hideTimerWhileTyping: {
+    display: "Hide timer while typing...",
+    alias: "timer hide",
+    subgroup: {
+      options: "fromSchema",
+    },
+  },
   highlightMode: {
     subgroup: {
       options: "fromSchema",

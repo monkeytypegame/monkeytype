@@ -50,6 +50,7 @@ const obj = {
   randomTheme: "off",
   timerColor: "main",
   timerOpacity: "1",
+  hideTimerWhileTyping: false,
   stopOnError: "off",
   showAllLines: false,
   keymapMode: "off",

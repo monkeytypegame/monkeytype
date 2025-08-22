@@ -464,6 +464,9 @@ async function handleChar(
     return;
   }
 
+  // Call timer hiding functionality on typing
+  TimerProgress.onTyping();
+
   if (char === "…" && TestWords.words.getCurrent()[charIndex] !== "…") {
     for (let i = 0; i < 3; i++) {
       await handleChar(".", charIndex + i);

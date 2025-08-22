@@ -542,6 +542,13 @@ export function setTimerOpacity(
   return genericSet("timerOpacity", opacity, nosave);
 }
 
+export function setHideTimerWhileTyping(
+  hide: boolean,
+  nosave?: boolean
+): boolean {
+  return genericSet("hideTimerWhileTyping", hide, nosave);
+}
+
 //key tips
 export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
   return genericSet("showKeyTips", keyTips, nosave);

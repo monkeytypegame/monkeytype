@@ -13,7 +13,20 @@ const barOpacityEl = $("#barTimerProgress .opacityWrapper");
 const textEl = $("#liveStatsTextTop .timerProgress");
 const miniEl = $("#liveStatsMini .time");
 
+// Timer hiding while typing state
+let isHiddenWhileTyping = false;
+let hideTimeout: NodeJS.Timeout | null = null;
+
 export function show(): void {
+  // Don't show if we're hiding due to typing and config is enabled
+  if (
+    Config.hideTimerWhileTyping &&
+    isHiddenWhileTyping &&
+    Config.timerStyle !== "off"
+  ) {
+    return;
+  }
+
   if (Config.mode !== "zen" && Config.timerStyle === "bar") {
     barOpacityEl
       .stop(true, true)
@@ -58,6 +71,13 @@ export function reset(): void {
   );
   miniEl.text("0");
   textEl.text("0");
+
+  // Reset timer hiding state
+  isHiddenWhileTyping = false;
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+    hideTimeout = null;
+  }
 }
 
 export function hide(): void {
@@ -82,6 +102,13 @@ export function hide(): void {
     },
     125
   );
+
+  // Reset timer hiding state when manually hiding
+  isHiddenWhileTyping = false;
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+    hideTimeout = null;
+  }
 }
 
 const timerNumberElement = textEl[0] as HTMLElement;
@@ -209,6 +236,49 @@ export function updateStyle(): void {
   setTimeout(() => {
     show();
   }, 125);
+}
+
+// Timer hiding while typing functionality
+
+/**
+ * Handle typing events - hide timer immediately and set up delayed show
+ */
+export function onTyping(): void {
+  if (!Config.hideTimerWhileTyping || Config.timerStyle === "off") return;
+
+  // Hide timer immediately on first keystroke
+  if (!isHiddenWhileTyping) {
+    isHiddenWhileTyping = true;
+
+    if (Config.mode !== "zen" && Config.timerStyle === "bar") {
+      barOpacityEl.stop(true, true).animate({ opacity: 0 }, 125);
+    } else if (Config.timerStyle === "text") {
+      textEl.stop(true, true).animate({ opacity: 0 }, 125);
+    } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
+      miniEl.stop(true, true).animate({ opacity: 0 }, 125);
+    }
+  }
+
+  // Clear existing timeout and set new one
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+  }
+
+  // Show timer after 3 seconds of inactivity
+  hideTimeout = setTimeout(() => {
+    if (isHiddenWhileTyping) {
+      isHiddenWhileTyping = false;
+
+      if (Config.mode !== "zen" && Config.timerStyle === "bar") {
+        barOpacityEl.stop(true, true).animate({ opacity: 1 }, 125);
+      } else if (Config.timerStyle === "text") {
+        textEl.stop(true, true).animate({ opacity: 1 }, 125);
+      } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
+        miniEl.stop(true, true).animate({ opacity: 1 }, 125);
+      }
+    }
+    hideTimeout = null;
+  }, 3000);
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
