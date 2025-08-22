@@ -54,10 +54,10 @@
     "pretty-fix-assets": "prettier --write ./frontend/static",
     "pretty-fix-pkg": "prettier --write ./packages",
     "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
-    "validate-json": "cd frontend && pnpm validate-json",
-    "check-quote-assets": "cd frontend && npm run validate-json quotes",
-    "check-language-assets": "cd frontend && npm run validate-json languages",
-    "check-other-assets": "cd frontend && npm run validate-json others",
+    "validate-json": "turbo validate-json --filter @monkeytype/frontend",
+    "check-quote-assets": "turbo validate-json --force --filter @monkeytype/frontend  -- quotes",
+    "check-language-assets": "turbo validate-json --force --filter @monkeytype/frontend  -- languages",
+    "check-other-assets": "turbo validate-json --force --filter @monkeytype/frontend  -- others",
     "knip": "knip"
   },
   "engines": {
