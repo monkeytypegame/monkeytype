@@ -1,14 +1,9 @@
 import { z } from "zod";
 import { FunboxNameSchema, PartialConfigSchema } from "./configs";
 
-const NumberRequirementSchema = z
-  .object({
-    min: z.number(),
-    max: z.number(),
-    exact: z.number(),
-  })
-  .partial();
-export type NumberRequirement = z.infer<typeof NumberRequirementSchema>;
+const MinRequiredNumber = z.object({ min: z.number() }).strict();
+const MaxRequiredNumber = z.object({ max: z.number() }).strict();
+const ExactRequiredNumber = z.object({ exact: z.number() }).strict();
 
 export const ChallengeSchema = z
   .object({
@@ -34,18 +29,18 @@ export const ChallengeSchema = z
     ),
     requirements: z
       .object({
-        wpm: NumberRequirementSchema,
-        time: NumberRequirementSchema,
-        acc: NumberRequirementSchema,
-        raw: NumberRequirementSchema,
-        con: NumberRequirementSchema,
-        afk: NumberRequirementSchema,
-        config: PartialConfigSchema,
+        wpm: ExactRequiredNumber.or(MinRequiredNumber),
+        acc: ExactRequiredNumber.or(MinRequiredNumber),
+        afk: MaxRequiredNumber,
+        time: MinRequiredNumber,
         funbox: z
           .object({
             exact: z.array(FunboxNameSchema),
           })
           .partial(),
+        raw: ExactRequiredNumber,
+        con: ExactRequiredNumber,
+        config: PartialConfigSchema,
       })
       .partial()
       .strict()
