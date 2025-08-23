@@ -3,7 +3,7 @@ import * as ChallengeController from "../../controllers/challenge-controller";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import { Command, CommandsSubgroup } from "../types";
-import { Challenge } from "../../utils/json-data";
+import { Challenge } from "@monkeytype/schemas/challenges";
 
 const subgroup: CommandsSubgroup = {
   title: "Load challenge...",

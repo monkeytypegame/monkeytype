@@ -565,7 +565,7 @@ export async function init(): Promise<void | null> {
     );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
-  TestUI.setRightToLeft(language.rightToLeft);
+  TestUI.setRightToLeft(language.rightToLeft ?? false);
   TestUI.setLigatures(language.ligatures ?? false);
   TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);

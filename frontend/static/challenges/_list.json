@@ -173,22 +173,6 @@
     }
   }
   ,{
-    "name": "accuracy",
-    "display": "Accuracy",
-    "autoRole": false,
-    "type": "accuracy",
-    "parameters": [],
-    "message": "Minimum 60wpm and 100% accuracy required.",
-    "requirements" : {
-      "wpm": {
-        "min": 60
-      },
-      "accuracy": {
-        "min": 100
-      }
-    }
-  }
-  ,{
     "name": "accuracyExpert",
     "display": "Accuracy Expert",
     "autoRole": true,

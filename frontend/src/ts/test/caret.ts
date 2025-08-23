@@ -181,7 +181,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const lastWordLetter = currentWordNodeList[wordLen - 1];
 
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRightToLeft = currentLanguage.rightToLeft;
+  const isLanguageRightToLeft = currentLanguage.rightToLeft ?? false;
 
   // in blind mode, and hide extra letters, extra letters have zero offsets
   // offsetHeight is the same for all visible letters

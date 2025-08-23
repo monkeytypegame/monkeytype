@@ -121,6 +121,7 @@ export function getLanguageDisplayString(
  * @returns The language string with the size indicator removed.
  */
 export function removeLanguageSize(language: Language): Language {
+  console.log("lang", language);
   return language.replace(/_\d*k$/g, "") as Language;
 }
 

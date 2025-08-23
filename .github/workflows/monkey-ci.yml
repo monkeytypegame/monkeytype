@@ -280,7 +280,7 @@ jobs:
 
       - name: Validate language assets
         if: steps.filter.outputs.languages == 'true'
-        run: npm run check-language-assets
+        run: npm run check-languages-assets
 
       - name: Validate quote assets
         if: steps.filter.outputs.quotes == 'true'

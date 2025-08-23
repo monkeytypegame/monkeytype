@@ -6,16 +6,22 @@
  */
 
 import * as fs from "fs";
-import Ajv from "ajv";
 import { LanguageGroups, LanguageList } from "../src/ts/constants/languages";
-import { Language } from "@monkeytype/schemas/languages";
+import {
+  Language,
+  LanguageObject,
+  LanguageObjectSchema,
+  LanguageSchema,
+} from "@monkeytype/schemas/languages";
 import { Layout, ThemeName } from "@monkeytype/schemas/configs";
 import { LayoutsList } from "../src/ts/constants/layouts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import { Fonts } from "../src/ts/constants/fonts";
 import { ThemesList } from "../src/ts/constants/themes";
-
-const ajv = new Ajv();
+import { z } from "zod";
+import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
+import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
+import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
 
 class Problems<K extends string, T extends string> {
   private type: string;
@@ -29,6 +35,16 @@ class Problems<K extends string, T extends string> {
 
   public add(key: K | T, problem: string): void {
     this.problems[key] = [...(this.problems[key] ?? []), problem];
+  }
+
+  public addValidation(
+    key: K | T,
+    validationResult: z.SafeParseReturnType<unknown, unknown>
+  ): void {
+    if (validationResult.success) return;
+    validationResult.error.errors.forEach((e) =>
+      this.add(key, `${e.path.join(".")}: ${e.message}`)
+    );
   }
 
   public hasError(): boolean {
@@ -54,15 +70,15 @@ class Problems<K extends string, T extends string> {
   }
 }
 
-function findDuplicates(words: string[]): string[] {
-  const seen = new Set<string>();
-  const duplicates = new Set<string>();
+function findDuplicates<T>(items: T[]): T[] {
+  const seen = new Set<T>();
+  const duplicates = new Set<T>();
 
-  for (const word of words) {
-    if (seen.has(word)) {
-      duplicates.add(word);
+  for (const item of items) {
+    if (seen.has(item)) {
+      duplicates.add(item);
     } else {
-      seen.add(word);
+      seen.add(item);
     }
   }
 
@@ -70,89 +86,20 @@ function findDuplicates(words: string[]): string[] {
 }
 
 async function validateChallenges(): Promise<void> {
-  const challengesSchema = {
-    type: "array",
-    items: {
-      type: "object",
-      properties: {
-        name: { type: "string" },
-        display: { type: "string" },
-        autoRole: { type: "boolean" },
-        type: { type: "string" },
-        message: { type: "string" },
-        parameters: {
-          type: "array",
-        },
-        requirements: {
-          type: "object",
-          properties: {
-            wpm: {
-              type: "object",
-              properties: {
-                min: { type: "number" },
-                max: { type: "number" },
-                exact: { type: "number" },
-              },
-            },
-            time: {
-              type: "object",
-              properties: {
-                min: { type: "number" },
-                max: { type: "number" },
-                exact: { type: "number" },
-              },
-            },
-            acc: {
-              type: "object",
-              properties: {
-                min: { type: "number" },
-                max: { type: "number" },
-                exact: { type: "number" },
-              },
-            },
-            raw: {
-              type: "object",
-              properties: {
-                min: { type: "number" },
-                max: { type: "number" },
-                exact: { type: "number" },
-              },
-            },
-            con: {
-              type: "object",
-              properties: {
-                min: { type: "number" },
-                max: { type: "number" },
-                exact: { type: "number" },
-              },
-            },
-            config: {
-              type: "object",
-            },
-            funbox: {
-              type: "object",
-              properties: {
-                exact: { type: "array" },
-              },
-            },
-          },
-        },
-      },
-      required: ["name", "display", "type", "parameters"],
-    },
-  };
+  const problems = new Problems<"_list.json", never>("Challenges", {});
+
   const challengesData = JSON.parse(
     fs.readFileSync("./static/challenges/_list.json", {
       encoding: "utf8",
       flag: "r",
     })
-  ) as object;
-  const challengesValidator = ajv.compile(challengesSchema);
-  if (challengesValidator(challengesData)) {
-    console.log("Challenges list JSON schema is \u001b[32mvalid\u001b[0m");
-  } else {
-    console.log("Challenges list JSON schema is \u001b[31minvalid\u001b[0m");
-    throw new Error(challengesValidator?.errors?.[0]?.message);
+  ) as Challenge;
+  const validationResult = z.array(ChallengeSchema).safeParse(challengesData);
+  problems.addValidation("_list.json", validationResult);
+
+  console.log(problems.toString());
+  if (problems.hasError()) {
+    throw new Error("challenges with errors");
   }
 }
 
@@ -161,110 +108,6 @@ async function validateLayouts(): Promise<void> {
     _additional:
       "Additional layout files not declared in frontend/src/ts/constants/layouts.ts",
   });
-
-  const charDefinitionSchema = {
-    type: "array",
-    minItems: 1,
-    maxItems: 4,
-    items: { type: "string", minLength: 1, maxLength: 1 },
-  };
-  const charDefinitionSchemaRow5 = {
-    type: "array",
-    minItems: 1,
-    maxItems: 2,
-    items: { type: "string", minLength: 1, maxLength: 1 },
-  };
-
-  const layoutsSchema = {
-    ansi: {
-      type: "object",
-      properties: {
-        keymapShowTopRow: { type: "boolean" },
-        type: { type: "string", pattern: "^ansi$" },
-        keys: {
-          type: "object",
-          properties: {
-            row1: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 13,
-              maxItems: 13,
-            },
-            row2: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 13,
-              maxItems: 13,
-            },
-            row3: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 11,
-              maxItems: 11,
-            },
-            row4: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 10,
-              maxItems: 10,
-            },
-            row5: {
-              type: "array",
-              items: charDefinitionSchemaRow5,
-              minItems: 1,
-              maxItems: 2,
-            },
-          },
-          required: ["row1", "row2", "row3", "row4", "row5"],
-        },
-      },
-      required: ["keymapShowTopRow", "type", "keys"],
-    },
-    iso: {
-      type: "object",
-      properties: {
-        keymapShowTopRow: { type: "boolean" },
-        type: { type: "string", pattern: "^iso$" },
-        keys: {
-          type: "object",
-          properties: {
-            row1: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 13,
-              maxItems: 13,
-            },
-            row2: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 12,
-              maxItems: 12,
-            },
-            row3: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 12,
-              maxItems: 12,
-            },
-            row4: {
-              type: "array",
-              items: charDefinitionSchema,
-              minItems: 11,
-              maxItems: 11,
-            },
-            row5: {
-              type: "array",
-              items: charDefinitionSchemaRow5,
-              minItems: 1,
-              maxItems: 2,
-            },
-          },
-          required: ["row1", "row2", "row3", "row4", "row5"],
-        },
-      },
-      required: ["keymapShowTopRow", "type", "keys"],
-    },
-  };
 
   for (let layoutName of LayoutsList) {
     let layoutData = undefined;
@@ -278,7 +121,7 @@ async function validateLayouts(): Promise<void> {
     try {
       layoutData = JSON.parse(
         fs.readFileSync(`./static/layouts/${layoutName}.json`, "utf-8")
-      ) as object & { type: "ansi" | "iso" };
+      ) as LayoutObject;
     } catch (e) {
       problems.add(
         layoutName,
@@ -287,17 +130,8 @@ async function validateLayouts(): Promise<void> {
       continue;
     }
 
-    if (layoutsSchema[layoutData.type] === undefined) {
-      problems.add(layoutName, `invalid type: ${layoutData.type}`);
-    } else {
-      const layoutsValidator = ajv.compile(layoutsSchema[layoutData.type]);
-      if (!layoutsValidator(layoutData)) {
-        problems.add(
-          layoutName,
-          layoutsValidator.errors?.[0]?.message ?? "unknown"
-        );
-      }
-    }
+    const validationResult = LayoutObjectSchema.safeParse(layoutData);
+    problems.addValidation(layoutName, validationResult);
   }
 
   //no files not defined in LayoutsList
@@ -320,46 +154,6 @@ async function validateLayouts(): Promise<void> {
 async function validateQuotes(): Promise<void> {
   const problems = new Problems<string, never>("Quotes", {});
 
-  //quotes
-  const quoteSchema = {
-    type: "object",
-    properties: {
-      language: { type: "string" },
-      groups: {
-        type: "array",
-        items: {
-          type: "array",
-          items: {
-            type: "number",
-          },
-          minItems: 2,
-          maxItems: 2,
-        },
-      },
-      quotes: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            text: { type: "string" },
-            source: { type: "string" },
-            length: { type: "number" },
-            id: { type: "number" },
-          },
-          required: ["text", "source", "length", "id"],
-        },
-      },
-    },
-    required: ["language", "groups", "quotes"],
-  };
-  const quoteIdsSchema = {
-    type: "array",
-    items: {
-      type: "number",
-    },
-    uniqueItems: true,
-  };
-
   const quotesFiles = fs.readdirSync("./static/quotes/");
   for (let quotefilename of quotesFiles) {
     quotefilename = quotefilename.split(".")[0] as string;
@@ -371,10 +165,7 @@ async function validateQuotes(): Promise<void> {
           encoding: "utf8",
           flag: "r",
         })
-      ) as object & {
-        language: string;
-        quotes: { id: number; text: string; length: number }[];
-      };
+      ) as QuoteData;
     } catch (e) {
       problems.add(
         quotefilename,
@@ -382,29 +173,33 @@ async function validateQuotes(): Promise<void> {
       );
       continue;
     }
+
+    //check filename matching language
     if (quoteData.language !== quotefilename) {
       problems.add(
         quotefilename,
         `Name not matching language ${quoteData.language}`
       );
     }
-    const quoteValidator = ajv.compile(quoteSchema);
-    if (!quoteValidator(quoteData)) {
+
+    //check schema
+    const schema = QuoteDataSchema.extend({
+      language: LanguageSchema
+        //icelandic only exists as icelandic_1k, language in quote file is stipped of its size
+        .or(z.literal("icelandic")),
+    });
+    problems.addValidation(quotefilename, schema.safeParse(quoteData));
+
+    //check for duplicate ids
+    const duplicates = findDuplicates(quoteData.quotes.map((it) => it.id));
+    if (duplicates.length !== 0) {
       problems.add(
         quotefilename,
-        quoteValidator.errors?.[0]?.message ?? "unknown"
-      );
-      continue;
-    }
-    const quoteIds = quoteData.quotes.map((quote) => quote.id);
-    const quoteIdsValidator = ajv.compile(quoteIdsSchema);
-    if (!quoteIdsValidator(quoteIds)) {
-      problems.add(
-        quotefilename,
-        `IDs not unique: ${quoteIdsValidator.errors?.[0]?.message}`
+        `contains ${duplicates.length} duplicates:\n ${duplicates.join(",")}`
       );
     }
 
+    //check quote length
     quoteData.quotes
       .filter((quote) => quote.text.length !== quote.length)
       .forEach((quote) =>
@@ -413,7 +208,25 @@ async function validateQuotes(): Promise<void> {
           `ID ${quote.id}: expected length ${quote.text.length}`
         )
       );
+
+    //check groups
+    let last = -1;
+    for (const group of quoteData.groups) {
+      if (group[0] !== last + 1) {
+        problems.add(
+          quotefilename,
+          `error in  group ${group}: expect to start at ${last + 1}`
+        );
+      } else if (group[0] >= group[1]) {
+        problems.add(
+          quotefilename,
+          `error in  group ${group}: second number to be greater than first number`
+        );
+      }
+      last = group[1];
+    }
   }
+
   console.log(problems.toString());
 
   if (problems.hasError()) {
@@ -432,41 +245,16 @@ async function validateLanguages(): Promise<void> {
     }
   );
 
-  //language files
-  const languageFileSchema = {
-    type: "object",
-    properties: {
-      name: { type: "string" },
-      rightToLeft: { type: "boolean" },
-      noLazyMode: { type: "boolean" },
-      bcp47: { type: "string" },
-      words: {
-        type: "array",
-        items: { type: "string", minLength: 1 },
-      },
-      additionalAccents: {
-        type: "array",
-        items: {
-          type: "array",
-          items: { type: "string", minLength: 1 },
-          minItems: 2,
-          maxItems: 2,
-        },
-      },
-    },
-    required: ["name", "words"],
-  };
-
   const duplicatePercentageThreshold = 0.0001;
   for (const language of LanguageList) {
-    let languageFileData;
+    let languageFileData: LanguageObject;
     try {
       languageFileData = JSON.parse(
         fs.readFileSync(`./static/languages/${language}.json`, {
           encoding: "utf8",
           flag: "r",
         })
-      ) as object & { name: string; words: string[] };
+      ) as LanguageObject;
     } catch (e) {
       problems.add(
         language,
@@ -475,14 +263,13 @@ async function validateLanguages(): Promise<void> {
 
       continue;
     }
-    const languageFileValidator = ajv.compile(languageFileSchema);
-    if (!languageFileValidator(languageFileData)) {
-      problems.add(
-        language,
-        languageFileValidator.errors?.[0]?.message ?? "unknown"
-      );
-      continue;
-    }
+    problems.addValidation(
+      language,
+      LanguageObjectSchema.extend({
+        _comment: z.string().optional(),
+      }).safeParse(languageFileData)
+    );
+
     if (languageFileData.name !== language) {
       problems.add(language, "Name is not " + language);
     }
