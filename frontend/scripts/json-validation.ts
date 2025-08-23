@@ -173,6 +173,8 @@ async function validateQuotes(): Promise<void> {
       );
       continue;
     }
+
+    //check filename matching language
     if (quoteData.language !== quotefilename) {
       problems.add(
         quotefilename,
@@ -180,6 +182,7 @@ async function validateQuotes(): Promise<void> {
       );
     }
 
+    //check schema
     const schema = QuoteDataSchema.extend({
       language: LanguageSchema
         //icelandic only exists as icelandic_1k, language in quote file is stipped of its size
@@ -187,6 +190,7 @@ async function validateQuotes(): Promise<void> {
     });
     problems.addValidation(quotefilename, schema.safeParse(quoteData));
 
+    //check for duplicate ids
     const duplicates = findDuplicates(quoteData.quotes.map((it) => it.id));
     if (duplicates.length !== 0) {
       problems.add(
@@ -194,6 +198,8 @@ async function validateQuotes(): Promise<void> {
         `contains ${duplicates.length} duplicates:\n ${duplicates.join(",")}`
       );
     }
+
+    //check quote length
     quoteData.quotes
       .filter((quote) => quote.text.length !== quote.length)
       .forEach((quote) =>
@@ -202,7 +208,25 @@ async function validateQuotes(): Promise<void> {
           `ID ${quote.id}: expected length ${quote.text.length}`
         )
       );
+
+    //check groups
+    let last = -1;
+    for (const group of quoteData.groups) {
+      if (group[0] !== last + 1) {
+        problems.add(
+          quotefilename,
+          `error in  group ${group}: expect to start at ${last + 1}`
+        );
+      } else if (group[0] >= group[1]) {
+        problems.add(
+          quotefilename,
+          `error in  group ${group}: second number to be greater than first number`
+        );
+      }
+      last = group[1];
+    }
   }
+
   console.log(problems.toString());
 
   if (problems.hasError()) {
