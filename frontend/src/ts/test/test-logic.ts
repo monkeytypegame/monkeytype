@@ -914,6 +914,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   PaceCaret.setLastTestWpm(stats.wpm);
 
+  // if the last second was not rounded, add another data point to the history
+  if (TestStats.lastSecondNotRound && !difficultyFailed) {
+    const wpmAndRaw = TestStats.calculateWpmAndRaw();
+    TestInput.pushToWpmHistory(wpmAndRaw.wpm);
+    TestInput.pushToRawHistory(wpmAndRaw.raw);
+    TestInput.pushKeypressesToHistory();
+    TestInput.pushErrorToHistory();
+    TestInput.pushAfkToHistory();
+  }
+
   const rawPerSecond = TestInput.keypressCountHistory.map((count) =>
     Math.round((count / 5) * 60)
   );
@@ -931,16 +941,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     rawPerSecond[rawPerSecond.length - 1] = Math.round(
       (rawPerSecond[rawPerSecond.length - 1] as number) * timescale
     );
-  }
-
-  // if the last second was not rounded, add another data point to the history
-  if (TestStats.lastSecondNotRound && !difficultyFailed) {
-    const wpmAndRaw = TestStats.calculateWpmAndRaw();
-    TestInput.pushToWpmHistory(wpmAndRaw.wpm);
-    TestInput.pushToRawHistory(wpmAndRaw.raw);
-    TestInput.pushKeypressesToHistory();
-    TestInput.pushErrorToHistory();
-    TestInput.pushAfkToHistory();
   }
 
   const ce = buildCompletedEvent(stats, rawPerSecond);
