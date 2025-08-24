@@ -77,6 +77,9 @@ export type TimerColor = z.infer<typeof TimerColorSchema>;
 export const TimerOpacitySchema = z.enum(["0.25", "0.5", "0.75", "1"]);
 export type TimerOpacity = z.infer<typeof TimerOpacitySchema>;
 
+export const HideTimerWhileTypingSchema = z.boolean();
+export type HideTimerWhileTyping = z.infer<typeof HideTimerWhileTypingSchema>;
+
 export const StopOnErrorSchema = z.enum(["off", "word", "letter"]);
 export type StopOnError = z.infer<typeof StopOnErrorSchema>;
 
@@ -421,6 +424,7 @@ export const ConfigSchema = z
     liveBurstStyle: LiveSpeedAccBurstStyleSchema,
     timerColor: TimerColorSchema,
     timerOpacity: TimerOpacitySchema,
+    hideTimerWhileTyping: HideTimerWhileTypingSchema,
     highlightMode: HighlightModeSchema,
     tapeMode: TapeModeSchema,
     tapeMargin: TapeMarginSchema,
@@ -556,6 +560,7 @@ export const ConfigGroupsLiteral = {
   liveBurstStyle: "appearance",
   timerColor: "appearance",
   timerOpacity: "appearance",
+  hideTimerWhileTyping: "appearance",
   highlightMode: "appearance",
   tapeMode: "appearance",
   tapeMargin: "appearance",

@@ -490,6 +490,11 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "timer opacity",
     changeRequiresRestart: false,
   },
+  hideTimerWhileTyping: {
+    icon: "fa-eye-slash",
+    displayString: "hide timer while typing",
+    changeRequiresRestart: false,
+  },
   highlightMode: {
     icon: "fa-highlighter",
     displayString: "highlight mode",

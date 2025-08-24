@@ -76,6 +76,20 @@ export function show(showOptions?: ShowOptions): void {
       (
         modalEl.querySelector("input") as HTMLInputElement
       ).value = `${Config.time}`;
+
+      // Set the toggle state based on current config
+      const toggleCheckbox = modalEl.querySelector(
+        ".checkbox.hideTimerWhileTyping input[type='checkbox']"
+      );
+      if (toggleCheckbox !== null) {
+        const configWithNewProp = Config as typeof Config & {
+          hideTimerWhileTyping?: boolean;
+        };
+        (toggleCheckbox as HTMLInputElement).checked = Boolean(
+          configWithNewProp.hideTimerWhileTyping
+        );
+      }
+
       previewDuration();
     },
   });
@@ -90,8 +104,17 @@ function hide(clearChain = false): void {
 function apply(): void {
   const val = parseInput($("#customTestDurationModal input").val() as string);
 
+  // Get the toggle state
+  const hideTimerToggle = $(
+    "#customTestDurationModal .checkbox.hideTimerWhileTyping input[type='checkbox']"
+  ).prop("checked") as boolean;
+
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
     UpdateConfig.setTimeConfig(val);
+
+    // Update the hide timer while typing config
+    UpdateConfig.setHideTimerWhileTyping(hideTimerToggle);
+
     ManualRestart.set();
     TestLogic.restart();
     if (val >= 1800) {
