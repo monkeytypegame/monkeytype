@@ -25,6 +25,10 @@
       color: var(--text-color);
       --padding: 1em 1.5rem;
 
+      .small {
+        font-size: 0.75em;
+      }
+
       thead {
         color: var(--sub-color);
         font-size: 0.75rem;
@@ -93,6 +97,9 @@
       .avatar {
         grid-row: 1/2;
         grid-column: 1/2;
+        .userIcon {
+          color: var(--sub-color);
+        }
       }
       .badge {
         font-size: 0.6em;
