@@ -35,7 +35,7 @@ export function blendTwoHexColors(
     const blended = normalBlend(rgba1, rgba2);
     return rgbToHex(blended.r, blended.g, blended.b);
   } else {
-    return "#000000";
+    return "#ff00ffff";
   }
 }
 
