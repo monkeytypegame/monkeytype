@@ -78,6 +78,32 @@ const addFriendModal = new SimpleModal({
   },
 });
 
+const removeFriendModal = new SimpleModal({
+  id: "confirmUnfriend",
+  title: "Remove friend",
+  buttonText: "remove friend",
+  text: "Are you sure you want to remove as a friend?",
+  beforeInitFn: (thisPopup) => {
+    thisPopup.text = `Are you sure you want to remove ${thisPopup.parameters[1]} as a friend?`;
+  },
+  execFn: async (thisPopup) => {
+    const friendRequestId = thisPopup.parameters[0] as string;
+    const result = await Ape.friends.deleteRequest({
+      params: { id: friendRequestId },
+    });
+    if (result.status !== 200) {
+      return { status: -1, message: result.body.message };
+    } else {
+      friendsList = friendsList?.filter(
+        (it) => it.friendRequestId !== friendRequestId
+      );
+      friendsTable?.setData(friendsList ?? []);
+      friendsTable?.updateBody();
+      return { status: 1, message: `Removed friend.` };
+    }
+  },
+});
+
 async function fetchPendingRequests(): Promise<void> {
   const result = await Ape.friends.getRequests({
     query: { status: "pending", type: "incoming" },
@@ -174,7 +200,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
   const top60 = formatPb(entry.top60);
 
   const element = document.createElement("tr");
-  element.dataset["id"] = entry.uid;
+  element.dataset["friendRequestId"] = entry.friendRequestId;
 
   const isMe = entry.uid === getAuthenticatedUser()?.uid;
 
@@ -182,7 +208,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
   if (isMe) {
     element.classList.add("me");
   } else {
-    actions = `<button class="reject">
+    actions = `<button class="remove">
             <i class="fas fa-trash fa-fw"></i>
           </button>`;
   }
@@ -372,6 +398,33 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
       $(".pageFriends .pendingRequests").addClass("hidden");
     }
     DB.getSnapshot();
+
+    if (action === "accepted") {
+      await fetchFriends();
+      await updateFriends();
+    }
+  }
+});
+// need to set the listener for action buttons on the table because the table content is getting replaced
+$(".pageFriends .friends table").on("click", async (e) => {
+  const action = Array.from(e.target.classList).find((it) =>
+    ["remove"].includes(it)
+  );
+
+  if (action === undefined) return;
+
+  if (action === "remove") {
+    const friendRequestId =
+      e.target.parentElement?.parentElement?.dataset["friendRequestId"];
+    if (friendRequestId === undefined) {
+      throw new Error("Cannot find id of target.");
+    }
+
+    const name =
+      e.target.parentElement?.parentElement?.querySelector("a.entryName")
+        ?.textContent ?? "";
+
+    removeFriendModal.show([friendRequestId, name], {});
   }
 });
 
