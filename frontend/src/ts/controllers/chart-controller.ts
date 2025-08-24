@@ -971,7 +971,7 @@ export const miniResult = new ChartWithUpdateColors<
         borderWidth: 3,
         yAxisID: "wpm",
         order: 2,
-        pointRadius: 2,
+        pointRadius: 1,
       },
       {
         label: "burst",
@@ -980,14 +980,14 @@ export const miniResult = new ChartWithUpdateColors<
         borderWidth: 3,
         yAxisID: "burst",
         order: 3,
-        pointRadius: 2,
+        pointRadius: 1,
       },
       {
         label: "errors",
         data: [],
         borderColor: "rgba(255, 125, 125, 1)",
         pointBackgroundColor: "rgba(255, 125, 125, 1)",
-        borderWidth: 3,
+        borderWidth: 2,
         order: 1,
         yAxisID: "error",
         type: "scatter",
@@ -1038,7 +1038,7 @@ export const miniResult = new ChartWithUpdateColors<
           display: true,
         },
       },
-      raw: {
+      burst: {
         axis: "y",
         display: false,
         title: {
@@ -1206,7 +1206,7 @@ async function updateColors<
     scale.title.color = subcolor;
   }
 
-  if (chart.canvas.id === "wpmChart") {
+  if (chart.id === result.id) {
     const c = chart as unknown as typeof result;
 
     const wpm = c.getDataset("wpm");
@@ -1220,6 +1220,35 @@ async function updateColors<
     raw.borderColor = maincolor + "99";
     raw.pointBackgroundColor = maincolor + "99";
     raw.pointBorderColor = maincolor + "99";
+
+    const error = c.getDataset("error");
+    error.backgroundColor = errorcolor;
+    error.borderColor = errorcolor;
+    error.pointBackgroundColor = errorcolor;
+    error.pointBorderColor = errorcolor;
+
+    const burst = c.getDataset("burst");
+    burst.backgroundColor = blendTwoHexColors(
+      subaltcolor,
+      subaltcolor + "00",
+      0.75
+    );
+    burst.borderColor = subcolor;
+    burst.pointBackgroundColor = subcolor;
+    burst.pointBorderColor = subcolor;
+
+    chart.update("resize");
+    return;
+  }
+
+  if (chart.id === miniResult.id) {
+    const c = chart as unknown as typeof miniResult;
+
+    const wpm = c.getDataset("wpm");
+    wpm.backgroundColor = "transparent";
+    wpm.borderColor = maincolor;
+    wpm.pointBackgroundColor = maincolor;
+    wpm.pointBorderColor = maincolor;
 
     const error = c.getDataset("error");
     error.backgroundColor = errorcolor;
