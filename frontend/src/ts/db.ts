@@ -31,6 +31,7 @@ import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
 import * as AuthEvent from "./observables/auth-event";
+import { get as getServerConfiguration } from "./ape/server-configuration";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -90,7 +91,9 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         Ape.users.get(),
         Ape.configs.get(),
         Ape.presets.get(),
-        Ape.friends.getRequests(),
+        getServerConfiguration()?.friends.enabled
+          ? Ape.friends.getRequests()
+          : { status: 200, body: { message: "", data: [] } },
       ]);
 
     if (userResponse.status !== 200) {
