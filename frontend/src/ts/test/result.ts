@@ -46,21 +46,29 @@ import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 let result: CompletedEvent;
 let maxChartVal: number;
 
-let useUnsmoothedRaw = false;
+let useSmoothedBurst = true;
 
 let quoteLang: Language | undefined;
 let quoteId = "";
 
-export function toggleUnsmoothedRaw(): void {
-  useUnsmoothedRaw = !useUnsmoothedRaw;
-  Notifications.add(useUnsmoothedRaw ? "on" : "off", 1);
+export function toggleSmoothedBurst(): void {
+  useSmoothedBurst = !useSmoothedBurst;
+  Notifications.add(useSmoothedBurst ? "on" : "off", 1);
+  void updateGraph().then(() => {
+    ChartController.result.update("resize");
+  });
 }
 
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
 async function updateGraph(): Promise<void> {
+  if (result.chartData === "toolong") return;
+
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  const labels = [];
+  ChartController.result.getScale("wpm").title.text =
+    typingSpeedUnit.fullUnitString;
+
+  let labels = [];
 
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
@@ -70,20 +78,78 @@ async function updateGraph(): Promise<void> {
     }
   }
 
-  ChartController.result.getScale("wpm").title.text =
-    typingSpeedUnit.fullUnitString;
+  // const fakeChartData = {
+  //   wpm: [
+  //     108, 120, 116, 114, 113, 120, 118, 121, 119, 120, 116, 118, 113, 110, 108,
+  //     110, 107, 107, 108, 109, 110, 112, 114, 112, 111, 109, 110, 108, 108, 109,
+  //   ],
+  //   raw: [
+  //     108, 120, 116, 114, 113, 120, 123, 127, 131, 131, 131, 132, 130, 133, 134,
+  //     134, 131, 129, 129, 128, 129, 130, 131, 129, 129, 127, 127, 128, 127, 127,
+  //   ],
+  //   burst: [
+  //     108, 132, 108, 108, 108, 156, 144, 156, 156, 132, 132, 144, 108, 168, 156,
+  //     132, 96, 108, 120, 120, 144, 156, 144, 84, 132, 84, 132, 156, 108, 120,
+  //   ],
+  //   err: [
+  //     0, 0, 0, 0, 0, 0, 3, 1, 3, 0, 5, 0, 3, 5, 4, 0, 2, 0, 0, 0, 0, 0, 0, 1, 2,
+  //     1, 0, 4, 0, 0,
+  //   ],
+  // };
+
+  // labels = [
+  //   (1).toString(),
+  //   (2).toString(),
+  //   (3).toString(),
+  //   (4).toString(),
+  //   (5).toString(),
+  //   (6).toString(),
+  //   (7).toString(),
+  //   (8).toString(),
+  //   (9).toString(),
+  //   (10).toString(),
+  //   (11).toString(),
+  //   (12).toString(),
+  //   (13).toString(),
+  //   (14).toString(),
+  //   (15).toString(),
+  //   (16).toString(),
+  //   (17).toString(),
+  //   (18).toString(),
+  //   (19).toString(),
+  //   (20).toString(),
+  //   (21).toString(),
+  //   (22).toString(),
+  //   (23).toString(),
+  //   (24).toString(),
+  //   (25).toString(),
+  //   (26).toString(),
+  //   (27).toString(),
+  //   (28).toString(),
+  //   (29).toString(),
+  // ];
 
   const chartData1 = [
-    ...TestInput.wpmHistory.map((a) =>
+    ...result.chartData["wpm"].map((a) =>
       Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
     ),
   ];
-  if (result.chartData === "toolong") return;
 
   const chartData2 = [
-    ...result.chartData.raw.map((a) =>
+    ...TestInput.rawHistory.map((a) =>
       Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
     ),
+  ];
+
+  const valueWindow = Math.max(...result.chartData["burst"]) * 0.25;
+  let smoothedBurst = Arrays.smoothWithValueWindow(
+    result.chartData["burst"],
+    1,
+    useSmoothedBurst ? valueWindow : 0
+  );
+
+  const chartData3 = [
+    ...smoothedBurst.map((a) => Numbers.roundTo2(typingSpeedUnit.fromWpm(a))),
   ];
 
   if (
@@ -96,36 +162,31 @@ async function updateGraph(): Promise<void> {
     chartData2.pop();
   }
 
-  let smoothedRawData = chartData2;
-  if (!useUnsmoothedRaw) {
-    smoothedRawData = Arrays.smooth(smoothedRawData, 1);
-    smoothedRawData = smoothedRawData.map((a) => Math.round(a));
-  }
-
-  ChartController.result.data.labels = labels;
-  ChartController.result.getDataset("wpm").data = chartData1;
-  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
-  ChartController.result.getDataset("raw").data = smoothedRawData;
-
   maxChartVal = Math.max(
-    ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
+    ...[
+      Math.max(...chartData1),
+      Math.max(...chartData2),
+      Math.max(...chartData3),
+    ]
   );
 
+  let minChartVal = 0;
+
   if (!Config.startGraphsAtZero) {
-    const minChartVal = Math.min(
-      ...[Math.min(...smoothedRawData), Math.min(...chartData1)]
+    minChartVal = Math.min(
+      ...[
+        Math.min(...chartData1),
+        Math.min(...chartData2),
+        Math.min(...chartData3),
+      ]
     );
 
-    ChartController.result.getScale("wpm").min = minChartVal;
-    ChartController.result.getScale("raw").min = minChartVal;
-  } else {
-    ChartController.result.getScale("wpm").min = 0;
-    ChartController.result.getScale("raw").min = 0;
+    // Round down to nearest multiple of 10
+    minChartVal = Math.floor(minChartVal / 10) * 10;
   }
 
-  ChartController.result.getDataset("error").data = result.chartData.err;
+  const subcolor = await ThemeColors.get("sub");
 
-  const fc = await ThemeColors.get("sub");
   if (Config.funbox.length > 0) {
     let content = "";
     for (const fb of getActiveFunboxes()) {
@@ -154,7 +215,7 @@ async function updateGraph(): Promise<void> {
           weight: Chart.defaults.font.weight as string,
           lineHeight: Chart.defaults.font.lineHeight as number,
         },
-        color: fc,
+        color: subcolor,
         padding: 3,
         borderRadius: 3,
         position: "start",
@@ -164,11 +225,45 @@ async function updateGraph(): Promise<void> {
     });
   }
 
+  ChartController.result.data.labels = labels;
+
+  ChartController.result.getDataset("wpm").data = chartData1;
+  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
+  ChartController.result.getScale("wpm").min = minChartVal;
   ChartController.result.getScale("wpm").max = maxChartVal;
+
+  ChartController.result.getDataset("raw").data = chartData2;
+  ChartController.result.getScale("raw").min = minChartVal;
   ChartController.result.getScale("raw").max = maxChartVal;
+
+  ChartController.result.getDataset("burst").data = chartData3;
+  ChartController.result.getScale("burst").min = minChartVal;
+  ChartController.result.getScale("burst").max = maxChartVal;
+
+  ChartController.result.getDataset("error").data = result.chartData.err;
   ChartController.result.getScale("error").max = Math.max(
     ...result.chartData.err
   );
+
+  // const chartData1 = [
+  //   ...fakeChartData["wpm"].map((a) =>
+  //     Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+  //   ),
+  // ];
+
+  // const chartData2 = [
+  //   ...fakeChartData["raw"].map((a) =>
+  //     Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+  //   ),
+  // ];
+
+  // const chartData3 = [
+  //   ...fakeChartData["burst"].map((a) =>
+  //     Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+  //   ),
+  // ];
+
+  // ChartController.result.getDataset("error").data = fakeChartData["err"];
 }
 
 export async function updateGraphPBLine(): Promise<void> {
@@ -195,9 +290,9 @@ export async function updateGraphPBLine(): Promise<void> {
     id: "lpb",
     scaleID: "wpm",
     value: chartlpb,
-    borderColor: themecolors.sub,
+    borderColor: themecolors.sub + "55",
     borderWidth: 1,
-    borderDash: [2, 2],
+    // borderDash: [4, 16],
     label: {
       backgroundColor: themecolors.sub,
       font: {
@@ -211,7 +306,7 @@ export async function updateGraphPBLine(): Promise<void> {
       padding: 3,
       borderRadius: 3,
       position: "center",
-      content: `PB: ${chartlpb}`,
+      content: ` PB: ${chartlpb} `,
       display: true,
     },
   });
