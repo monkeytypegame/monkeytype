@@ -182,11 +182,11 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
   if (isMe) {
     element.classList.add("me");
   } else {
-    actions = `<button class="rejected" aria-label="reject friend" data-balloon-pos="up">
-            <i class="fas fa-user-times fa-fw"></i>
+    actions = `<button class="rejected" aria-label="unfriend" data-balloon-pos="up">
+            <i class="fas fa-trash fa-fw"></i>
           </button> 
-          <button class="blocked" aria-label="block user from sending friend requests" data-balloon-pos="up">
-            <i class="fas fa-user-shield fa-fw"></i>
+          <button class="blocked" aria-label="block" data-balloon-pos="up">
+            <i class="fas fa-shield-alt fa-fw"></i>
           </button>`;
   }
   element.innerHTML = `<tr>
