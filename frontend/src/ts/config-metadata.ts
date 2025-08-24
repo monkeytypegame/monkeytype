@@ -174,7 +174,7 @@ export const configMetadata: ConfigMetadataObject = {
   },
   burstHeatmap: {
     icon: "fa-fire",
-    displayString: "burst heatmap",
+    displayString: "word burst heatmap",
     changeRequiresRestart: false,
   },
 
@@ -246,12 +246,12 @@ export const configMetadata: ConfigMetadataObject = {
   },
   minBurst: {
     icon: "fa-bomb",
-    displayString: "min burst",
+    displayString: "min word burst",
     changeRequiresRestart: true,
   },
   minBurstCustomSpeed: {
     icon: "fa-bomb",
-    displayString: "min burst custom speed",
+    displayString: "min word burst custom speed",
     changeRequiresRestart: true,
   },
   britishEnglish: {
@@ -477,7 +477,7 @@ export const configMetadata: ConfigMetadataObject = {
   },
   liveBurstStyle: {
     icon: "fa-tachometer-alt",
-    displayString: "live burst style",
+    displayString: "live word burst style",
     changeRequiresRestart: false,
   },
   timerColor: {
