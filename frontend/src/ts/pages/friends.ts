@@ -231,12 +231,12 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         )}" data-balloon-pos="up">
           ${formatStreak(entry.streak?.length)} 
         </span></td>
-        <td><span aria-label="${
+        <td class="small"><span aria-label="${
           top15?.details
         }" data-balloon-pos="up" data-balloon-break="">${
     top15?.wpm ?? "-"
   }<div class="sub">${top15?.acc ?? "-"}</div><span></td>
-        <td><span aria-label="${
+        <td class="small"><span aria-label="${
           top60?.details
         }" data-balloon-pos="up" data-balloon-break="">${
     top60?.wpm ?? "-"
