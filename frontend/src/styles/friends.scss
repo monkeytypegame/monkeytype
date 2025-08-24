@@ -1,12 +1,24 @@
 .pageFriends {
-  h2 {
+  .bigTitle {
+    color: var(--sub-color);
     font-size: 2rem;
-    margin-bottom: 1rem;
-    font-weight: normal;
   }
+
+  .titleAndButton {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    margin-bottom: 1rem;
+  }
+
+  .nodata {
+    color: var(--sub-color);
+    padding: 5rem 0;
+    text-align: center;
+  }
+
   .pendingRequests,
   .friends {
-    margin-bottom: 1rem;
+    margin-bottom: 4rem;
     table {
       border-spacing: 0;
       border-collapse: collapse;
@@ -16,6 +28,10 @@
       thead {
         color: var(--sub-color);
         font-size: 0.75rem;
+      }
+
+      tr.me {
+        color: var(--main-color);
       }
 
       tbody tr:nth-child(odd) td {
@@ -70,7 +86,7 @@
       }
       .entryName {
         text-decoration: none;
-        color: var(--text-color);
+        color: inherit;
         cursor: pointer;
       }
       .avatarPlaceholder,
