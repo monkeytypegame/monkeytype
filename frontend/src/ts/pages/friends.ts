@@ -182,8 +182,8 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
   if (isMe) {
     element.classList.add("me");
   } else {
-    actions = `<button>
-            <i class="fas fa-cog fa-fw"></i>
+    actions = `<button class="reject">
+            <i class="fas fa-trash fa-fw"></i>
           </button>`;
   }
   element.innerHTML = `<tr>
@@ -314,11 +314,10 @@ function formatPb(entry?: PersonalBest):
 }
 
 function formatStreak(length?: number, prefix?: string): string {
+  if (length === 1) return "-";
   return isSafeNumber(length)
-    ? `${prefix !== undefined ? prefix + " " : ""}${length} ${
-        length === 1 ? "day" : "days"
-      } `
-    : "";
+    ? `${prefix !== undefined ? prefix + " " : ""}${length} days`
+    : "-";
 }
 
 $(".pageFriends button.friendAdd").on("click", () => {
