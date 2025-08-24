@@ -2,12 +2,10 @@
  * Utility functions for color conversions and operations.
  */
 
-import { normal as normalBlend } from "color-blend";
-
 /**
  * Blends two hexadecimal colors with a given opacity.
- * @param color1 The first hexadecimal color value.
- * @param color2 The second hexadecimal color value.
+ * @param color1 The first hexadecimal color value (supports alpha channel).
+ * @param color2 The second hexadecimal color value (supports alpha channel).
  * @param opacity The opacity value between 0 and 1.
  * @returns A new hexadecimal color value representing the blend of color1 and color2.
  */
@@ -20,97 +18,158 @@ export function blendTwoHexColors(
   const rgb2 = hexToRgb(color2);
 
   if (rgb1 && rgb2) {
-    const rgba1 = {
-      r: rgb1.r,
-      g: rgb1.g,
-      b: rgb1.b,
-      a: 1,
-    };
-    const rgba2 = {
-      r: rgb2.r,
-      g: rgb2.g,
-      b: rgb2.b,
-      a: opacity,
-    };
-    const blended = normalBlend(rgba1, rgba2);
-    return rgbToHex(blended.r, blended.g, blended.b);
+    // Simple alpha blending: result = color1 * (1 - opacity) + color2 * opacity
+    const alpha1 = rgb1.a ?? 1;
+    const alpha2 = rgb2.a ?? 1;
+
+    // Blend the colors
+    const blendedR = Math.round(rgb1.r * (1 - opacity) + rgb2.r * opacity);
+    const blendedG = Math.round(rgb1.g * (1 - opacity) + rgb2.g * opacity);
+    const blendedB = Math.round(rgb1.b * (1 - opacity) + rgb2.b * opacity);
+
+    // Blend the alpha channels
+    const blendedA = alpha1 * (1 - opacity) + alpha2 * opacity;
+
+    // If either color had alpha or the blended alpha is not 1, include alpha in result
+    if (rgb1.a !== undefined || rgb2.a !== undefined || blendedA !== 1) {
+      return rgbToHex(blendedR, blendedG, blendedB, blendedA);
+    } else {
+      return rgbToHex(blendedR, blendedG, blendedB);
+    }
   } else {
-    return "#000000";
+    return "#ff00ffff";
   }
 }
 
 /**
- * Converts a hexadecimal color string to an RGB object.
- * @param hex The hexadecimal color string (e.g., "#ff0000" or "#f00").
- * @returns An object with 'r', 'g', and 'b' properties representing the red, green, and blue components of the color, or undefined if the input is invalid.
+ * Converts a hexadecimal color string to an RGB/RGBA object.
+ * @param hex The hexadecimal color string (e.g., "#ff0000", "#f00", "#ff0000ff", or "#f00f").
+ * @returns An object with 'r', 'g', 'b', and optionally 'a' properties representing the red, green, blue, and alpha components of the color, or undefined if the input is invalid.
  */
 export function hexToRgb(hex: string):
   | {
       r: number;
       g: number;
       b: number;
+      a?: number;
     }
   | undefined {
-  if ((hex.length !== 4 && hex.length !== 7) || !hex.startsWith("#")) {
+  if (
+    (hex.length !== 4 &&
+      hex.length !== 5 &&
+      hex.length !== 7 &&
+      hex.length !== 9) ||
+    !hex.startsWith("#")
+  ) {
     return undefined;
   }
   let r: number;
   let g: number;
   let b: number;
+  let a: number | undefined;
+
   if (hex.length === 4) {
+    // #RGB format
     r = Number("0x" + hex[1] + hex[1]);
     g = Number("0x" + hex[2] + hex[2]);
     b = Number("0x" + hex[3] + hex[3]);
+  } else if (hex.length === 5) {
+    // #RGBA format
+    r = Number("0x" + hex[1] + hex[1]);
+    g = Number("0x" + hex[2] + hex[2]);
+    b = Number("0x" + hex[3] + hex[3]);
+    a = Number("0x" + hex[4] + hex[4]) / 255;
   } else if (hex.length === 7) {
+    // #RRGGBB format
     r = Number("0x" + hex[1] + hex[2]);
     g = Number("0x" + hex[3] + hex[4]);
     b = Number("0x" + hex[5] + hex[6]);
+  } else if (hex.length === 9) {
+    // #RRGGBBAA format
+    r = Number("0x" + hex[1] + hex[2]);
+    g = Number("0x" + hex[3] + hex[4]);
+    b = Number("0x" + hex[5] + hex[6]);
+    a = Number("0x" + hex[7] + hex[8]) / 255;
   } else {
     return undefined;
   }
 
-  return { r, g, b };
+  const result: { r: number; g: number; b: number; a?: number } = { r, g, b };
+  if (a !== undefined) {
+    result.a = a;
+  }
+  return result;
 }
 
 /**
- * Converts RGB values to a hexadecimal color string.
+ * Converts RGB/RGBA values to a hexadecimal color string.
  * @param r The red component (0-255).
  * @param g The green component (0-255).
  * @param b The blue component (0-255).
- * @returns The hexadecimal color string (e.g., "#ff0000" for red).
+ * @param a The alpha component (0-1), optional.
+ * @returns The hexadecimal color string (e.g., "#ff0000" for red or "#ff0000ff" for red with full opacity).
  */
-function rgbToHex(r: number, g: number, b: number): string {
-  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+function rgbToHex(r: number, g: number, b: number, a?: number): string {
+  const hexR = Math.round(r).toString(16).padStart(2, "0");
+  const hexG = Math.round(g).toString(16).padStart(2, "0");
+  const hexB = Math.round(b).toString(16).padStart(2, "0");
+
+  if (a !== undefined) {
+    const hexA = Math.round(a * 255)
+      .toString(16)
+      .padStart(2, "0");
+    return `#${hexR}${hexG}${hexB}${hexA}`;
+  }
+
+  return `#${hexR}${hexG}${hexB}`;
 }
 
 /**
  * Converts a hexadecimal color string to its HSL (Hue, Saturation, Lightness) representation.
- * @param hex The hexadecimal color string (e.g., "#ff0000" or "#f00").
- * @returns An object with 'hue', 'sat', 'lgt', and 'string' properties representing the HSL values and an HSL string representation.
+ * @param hex The hexadecimal color string (e.g., "#ff0000", "#f00", "#ff0000ff", or "#f00f").
+ * @returns An object with 'hue', 'sat', 'lgt', 'alpha', and 'string' properties representing the HSL values and an HSL string representation.
  */
 export function hexToHSL(hex: string): {
   hue: number;
   sat: number;
   lgt: number;
+  alpha?: number;
   string: string;
 } {
   // Convert hex to RGB first
   let r: number;
   let g: number;
   let b: number;
+  let a: number | undefined;
+
   if (hex.length === 4) {
+    // #RGB format
     r = ("0x" + hex[1] + hex[1]) as unknown as number;
     g = ("0x" + hex[2] + hex[2]) as unknown as number;
     b = ("0x" + hex[3] + hex[3]) as unknown as number;
+  } else if (hex.length === 5) {
+    // #RGBA format
+    r = ("0x" + hex[1] + hex[1]) as unknown as number;
+    g = ("0x" + hex[2] + hex[2]) as unknown as number;
+    b = ("0x" + hex[3] + hex[3]) as unknown as number;
+    a = (("0x" + hex[4] + hex[4]) as unknown as number) / 255;
   } else if (hex.length === 7) {
+    // #RRGGBB format
     r = ("0x" + hex[1] + hex[2]) as unknown as number;
     g = ("0x" + hex[3] + hex[4]) as unknown as number;
     b = ("0x" + hex[5] + hex[6]) as unknown as number;
+  } else if (hex.length === 9) {
+    // #RRGGBBAA format
+    r = ("0x" + hex[1] + hex[2]) as unknown as number;
+    g = ("0x" + hex[3] + hex[4]) as unknown as number;
+    b = ("0x" + hex[5] + hex[6]) as unknown as number;
+    a = (("0x" + hex[7] + hex[8]) as unknown as number) / 255;
   } else {
     r = 0x00;
     g = 0x00;
     b = 0x00;
   }
+
   // Then to HSL
   r /= 255;
   g /= 255;
@@ -136,12 +195,27 @@ export function hexToHSL(hex: string): {
   s = +(s * 100).toFixed(1);
   l = +(l * 100).toFixed(1);
 
-  return {
+  const result: {
+    hue: number;
+    sat: number;
+    lgt: number;
+    alpha?: number;
+    string: string;
+  } = {
     hue: h,
     sat: s,
     lgt: l,
-    string: "hsl(" + h + "," + s + "%," + l + "%)",
+    string:
+      a !== undefined
+        ? `hsla(${h}, ${s}%, ${l}%, ${a.toFixed(3)})`
+        : `hsl(${h}, ${s}%, ${l}%)`,
   };
+
+  if (a !== undefined) {
+    result.alpha = a;
+  }
+
+  return result;
 }
 
 /**

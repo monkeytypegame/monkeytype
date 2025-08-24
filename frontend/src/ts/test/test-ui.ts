@@ -1395,7 +1395,9 @@ async function loadWordsHistory(): Promise<boolean> {
           wordEl += "<letter>" + char + "</letter>";
         }
         wordEl += "</div>";
-      } catch {}
+      } catch {
+        wordEl += "</div>";
+      }
     }
     wordsHTML += wordEl;
   }
