@@ -112,13 +112,13 @@ async function updatePendingRequests(): Promise<void> {
         }?isUid" router-link>${item.initiatorName}</a></td>
         <td>${formatAge(item.addedAt)} ago</td>
         <td class="actions">
-          <button class="accepted" aria-label="accept friend" data-balloon-pos="up">
+          <button class="accepted" aria-label="accept" data-balloon-pos="up">
             <i class="fas fa-check fa-fw"></i>
           </button> 
-          <button class="rejected" aria-label="reject friend" data-balloon-pos="up">
+          <button class="rejected" aria-label="reject" data-balloon-pos="up">
             <i class="fas fa-times fa-fw"></i>
           </button> 
-          <button class="blocked" aria-label="block user from sending friend requests" data-balloon-pos="up">
+          <button class="blocked" aria-label="block" data-balloon-pos="up">
             <i class="fas fa-shield-alt fa-fw"></i>
           </button>
         </td>
@@ -174,8 +174,22 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
   const top60 = formatPb(entry.top60);
 
   const element = document.createElement("tr");
-  element.dataset["id"] = entry.friendRequestId;
-  element.innerHTML = `<tr data-id="${entry.friendRequestId}">
+  element.dataset["id"] = entry.uid;
+
+  const isMe = entry.uid === getAuthenticatedUser()?.uid;
+
+  let actions = "";
+  if (isMe) {
+    element.classList.add("me");
+  } else {
+    actions = `<button class="rejected" aria-label="reject friend" data-balloon-pos="up">
+            <i class="fas fa-user-times fa-fw"></i>
+          </button> 
+          <button class="blocked" aria-label="block user from sending friend requests" data-balloon-pos="up">
+            <i class="fas fa-user-shield fa-fw"></i>
+          </button>`;
+  }
+  element.innerHTML = `<tr>
         <td>
           <div class="avatarNameBadge">
             <div class="avatarPlaceholder"></div>
@@ -193,7 +207,9 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
             </div>
           </div>
         </td>
-        <td>${formatAge(entry.addedAt, "short")}</td>
+        <td>${
+          entry.addedAt !== undefined ? formatAge(entry.addedAt, "short") : "-"
+        }</td>
         <td><span aria-label="total xp: ${
           isSafeNumber(entry.xp) ? formatXp(entry.xp) : ""
         }" data-balloon-pos="up">
@@ -218,20 +234,16 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         <td><span aria-label="${
           top15?.details
         }" data-balloon-pos="up" data-balloon-break="">${
-    top15?.wpm
-  }<div class="sub">${top15?.acc}</div><span></td>
+    top15?.wpm ?? "-"
+  }<div class="sub">${top15?.acc ?? "-"}</div><span></td>
         <td><span aria-label="${
           top60?.details
         }" data-balloon-pos="up" data-balloon-break="">${
-    top60?.wpm
-  }<div class="sub">${top60?.acc}</div></span></td>
-        <td class="actions">
-            <button class="rejected" aria-label="reject friend" data-balloon-pos="up">
-            <i class="fas fa-user-times fa-fw"></i>
-          </button> 
-          <button class="blocked" aria-label="block user from sending friend requests" data-balloon-pos="up">
-            <i class="fas fa-user-shield fa-fw"></i>
-          </button>
+    top60?.wpm ?? "-"
+  }<div class="sub">${top60?.acc ?? "-"}</div></span></td>
+  <td class="actions">
+  ${actions}
+            
         </td>
       </tr>`;
 
@@ -312,7 +324,7 @@ function formatStreak(length?: number, prefix?: string): string {
     : "";
 }
 
-$("#friendAdd").on("click", () => {
+$(".pageFriends button.friendAdd").on("click", () => {
   addFriendModal.show(undefined, {});
 });
 

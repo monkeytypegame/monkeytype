@@ -13,8 +13,9 @@
 
   <div class="content">
     <div class="pendingRequests">
-      <div class="bigtitle">
-        <h2>Pending Friend Requests</h2>
+      <div class="bigTitle">
+        <i class="fas fa-user-plus fa-fw"></i>
+        Incoming Requests
       </div>
       <div class="error hidden">
         <i class="fas fa-times"></i>
@@ -33,18 +34,22 @@
     </div>
 
     <div class="friends">
-      <h2>
-        Friends
-
+      <div class="titleAndButton">
+        <div class="bigTitle">
+          <i class="fas fa-user-friends fa-fw"></i>
+          Friends
+        </div>
         <button
-          id="friendAdd"
-          class="button"
+          class="button friendAdd"
           aria-label="add friend"
-          data-balloon-pos="right"
+          data-balloon-pos="left"
         >
-          <i class="fas fa-user-plus fa-fw"></i>
+          <i class="fas fa-plus fa-fw"></i>
+
+          add friend
         </button>
-      </h2>
+      </div>
+
       <div class="loading hidden">
         <i class="fas fa-circle-notch fa-spin"></i>
       </div>
@@ -58,7 +63,7 @@
         <thead>
           <tr>
             <td data-sort-property="name">name</td>
-            <td data-sort-property="addedAt">friend since</td>
+            <td data-sort-property="addedAt">friends for</td>
             <td data-sort-property="xp">level</td>
             <td
               data-sort-property="completedTests"
