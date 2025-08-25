@@ -1,7 +1,7 @@
 import {
   COMPATIBILITY_CHECK,
   COMPATIBILITY_CHECK_HEADER,
-} from "@monkeytype/contracts";
+} from "@aitype/contracts";
 import type { Response, NextFunction, Request } from "express";
 
 /**

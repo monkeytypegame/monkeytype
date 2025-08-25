@@ -6,9 +6,9 @@ import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
-import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";
-import { Mode } from "@monkeytype/schemas/shared";
-import { checkCompatibility } from "@monkeytype/funbox";
+import { HighlightMode, FunboxName } from "@aitype/schemas/configs";
+import { Mode } from "@aitype/schemas/shared";
+import { checkCompatibility } from "@aitype/funbox";
 import {
   getActiveFunboxes,
   getActiveFunboxNames,
@@ -18,7 +18,7 @@ import {
   getActiveFunboxesWithProperty,
 } from "./list";
 import { checkForcedConfig } from "./funbox-validation";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { tryCatch } from "@aitype/util/trycatch";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox.length === 0) return;

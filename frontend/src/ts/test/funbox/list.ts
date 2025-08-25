@@ -3,10 +3,10 @@ import {
   FunboxMetadata,
   getFunboxObject,
   FunboxProperty,
-} from "@monkeytype/funbox";
+} from "@aitype/funbox";
 
 import { FunboxFunctions, getFunboxFunctions } from "./funbox-functions";
-import { FunboxName } from "@monkeytype/schemas/configs";
+import { FunboxName } from "@aitype/schemas/configs";
 
 type FunboxMetadataWithFunctions = FunboxMetadata & {
   functions?: FunboxFunctions;

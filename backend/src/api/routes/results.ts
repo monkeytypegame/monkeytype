@@ -1,4 +1,4 @@
-import { resultsContract } from "@monkeytype/contracts/results";
+import { resultsContract } from "@aitype/contracts/results";
 import { initServer } from "@ts-rest/express";
 import * as ResultController from "../controllers/result";
 import { callController } from "../ts-rest-adapter";

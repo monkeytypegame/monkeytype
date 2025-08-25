@@ -10,7 +10,7 @@ import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
 import * as ActivePage from "../../states/active-page";
-import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
+import { CustomThemeColors, ThemeName } from "@aitype/schemas/configs";
 import { captureException } from "../../sentry";
 import { ThemesListSorted } from "../../constants/themes";
 

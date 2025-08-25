@@ -2,7 +2,7 @@ import AnimatedModal from "../utils/animated-modal";
 
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
-import { CompletedEvent } from "@monkeytype/schemas/results";
+import { CompletedEvent } from "@aitype/schemas/results";
 import { getAuthenticatedUser } from "../firebase";
 import { syncNotSignedInLastResult } from "../utils/results";
 import * as AuthEvent from "../observables/auth-event";

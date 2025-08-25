@@ -8,7 +8,7 @@ import {
   Collection,
 } from "mongodb";
 import MonkeyError from "../utils/error";
-import { ApeKey } from "@monkeytype/schemas/ape-keys";
+import { ApeKey } from "@aitype/schemas/ape-keys";
 
 export type DBApeKey = ApeKey & {
   _id: ObjectId;

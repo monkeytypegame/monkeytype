@@ -1,4 +1,4 @@
-import { publicContract } from "@monkeytype/contracts/public";
+import { publicContract } from "@aitype/contracts/public";
 import { initServer } from "@ts-rest/express";
 import * as PublicController from "../controllers/public";
 import { callController } from "../ts-rest-adapter";

@@ -3,11 +3,11 @@ import {
   AddPresetResponse,
   DeletePresetsParams,
   GetPresetResponse,
-} from "@monkeytype/contracts/presets";
+} from "@aitype/contracts/presets";
 import * as PresetDAL from "../../dal/preset";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { replaceObjectId } from "../../utils/misc";
-import { EditPresetRequest } from "@monkeytype/schemas/presets";
+import { EditPresetRequest } from "@aitype/schemas/presets";
 import { MonkeyRequest } from "../types";
 
 export async function getPresets(

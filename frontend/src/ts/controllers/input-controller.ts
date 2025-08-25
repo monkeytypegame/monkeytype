@@ -5,7 +5,7 @@ import * as Monkey from "../test/monkey";
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "@monkeytype/util/numbers";
+import * as Numbers from "@aitype/util/numbers";
 import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";
 import * as Funbox from "../test/funbox/funbox";
@@ -41,7 +41,7 @@ import {
   isFunboxActiveWithProperty,
   getActiveFunboxNames,
 } from "../test/funbox/list";
-import { tryCatchSync } from "@monkeytype/util/trycatch";
+import { tryCatchSync } from "@aitype/util/trycatch";
 import { canQuickRestart } from "../utils/quick-restart";
 import * as PageTransition from "../states/page-transition";
 

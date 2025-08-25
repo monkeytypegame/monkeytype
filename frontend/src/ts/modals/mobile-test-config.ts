@@ -6,8 +6,8 @@ import * as CustomTestDurationPopup from "./custom-test-duration";
 import * as QuoteSearchModal from "./quote-search";
 import * as CustomTextPopup from "./custom-text";
 import AnimatedModal from "../utils/animated-modal";
-import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
-import { Mode } from "@monkeytype/schemas/shared";
+import { QuoteLength, QuoteLengthConfig } from "@aitype/schemas/configs";
+import { Mode } from "@aitype/schemas/shared";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as ShareTestSettingsPopup from "./share-test-settings";
 

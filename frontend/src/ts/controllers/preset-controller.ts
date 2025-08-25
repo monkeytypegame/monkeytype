@@ -1,4 +1,4 @@
-import { Preset } from "@monkeytype/schemas/presets";
+import { Preset } from "@aitype/schemas/presets";
 import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";

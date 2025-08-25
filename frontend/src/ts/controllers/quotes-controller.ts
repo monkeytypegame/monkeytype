@@ -4,8 +4,8 @@ import { cachedFetchJson } from "../utils/json-data";
 import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
 import Ape from "../ape";
-import { tryCatch } from "@monkeytype/util/trycatch";
-import { Language } from "@monkeytype/schemas/languages";
+import { tryCatch } from "@aitype/util/trycatch";
+import { Language } from "@aitype/schemas/languages";
 
 export type Quote = {
   text: string;

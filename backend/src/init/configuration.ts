@@ -4,16 +4,16 @@ import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
 import { identity } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
-import { Configuration } from "@monkeytype/schemas/configuration";
+import { Configuration } from "@aitype/schemas/configuration";
 import { addLog } from "../dal/logs";
 import {
   PartialConfiguration,
   PartialConfigurationSchema,
-} from "@monkeytype/contracts/configuration";
+} from "@aitype/contracts/configuration";
 import { getErrorMessage } from "../utils/error";
 import { join } from "path";
 import { existsSync, readFileSync } from "fs";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { parseWithSchema as parseJsonWithSchema } from "@aitype/util/json";
 import { z } from "zod";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes

@@ -8,7 +8,7 @@ import {
   EndpointMetadata,
   RequestAuthenticationOptions,
   PermissionId,
-} from "@monkeytype/contracts/util/api";
+} from "@aitype/contracts/util/api";
 import { isDevEnvironment } from "../utils/misc";
 import { getMetadata } from "./utility";
 import { TsRestRequestWithContext } from "../api/types";

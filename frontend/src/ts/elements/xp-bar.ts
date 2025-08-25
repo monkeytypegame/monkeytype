@@ -2,8 +2,8 @@ import * as Misc from "../utils/misc";
 import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
-import { XpBreakdown } from "@monkeytype/schemas/results";
-import { isSafeNumber, mapRange } from "@monkeytype/util/numbers";
+import { XpBreakdown } from "@aitype/schemas/results";
+import { isSafeNumber, mapRange } from "@aitype/util/numbers";
 
 let breakdownVisible = false;
 let skip = false;

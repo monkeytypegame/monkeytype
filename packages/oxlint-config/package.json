@@ -1,5 +1,5 @@
 {
-  "name": "@monkeytype/oxlint-config",
+  "name": "@aitype/oxlint-config",
   "private": true,
   "exports": {
     ".": "./index.json"

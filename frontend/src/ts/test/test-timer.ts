@@ -8,7 +8,7 @@ import * as LiveWpm from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as Monkey from "./monkey";
-import * as Numbers from "@monkeytype/util/numbers";
+import * as Numbers from "@aitype/util/numbers";
 import * as Notifications from "../elements/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
@@ -16,7 +16,7 @@ import * as TestState from "./test-state";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
-import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
+import { KeymapLayout, Layout } from "@aitype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 
 type TimerStats = {

@@ -9,17 +9,17 @@ import * as TestUI from "../test/test-ui";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as Loader from "../elements/loader";
-import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
+import { CustomTextLimitMode, CustomTextMode } from "@aitype/schemas/util";
 import {
   Config as ConfigType,
   Difficulty,
   ThemeName,
   FunboxName,
-} from "@monkeytype/schemas/configs";
-import { Mode } from "@monkeytype/schemas/shared";
-import { CompletedEvent } from "@monkeytype/schemas/results";
+} from "@aitype/schemas/configs";
+import { Mode } from "@aitype/schemas/shared";
+import { CompletedEvent } from "@aitype/schemas/results";
 import { areUnsortedArraysEqual } from "../utils/arrays";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { tryCatch } from "@aitype/util/trycatch";
 
 let challengeLoading = false;
 

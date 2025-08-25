@@ -8,7 +8,7 @@ import { removeLanguageSize } from "../utils/strings";
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
-import { QuoteReportReason } from "@monkeytype/schemas/quotes";
+import { QuoteReportReason } from "@aitype/schemas/quotes";
 
 type State = {
   quoteToReport?: Quote;

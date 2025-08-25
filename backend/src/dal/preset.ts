@@ -1,7 +1,7 @@
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 import { ObjectId, type Filter, Collection, type WithId } from "mongodb";
-import { EditPresetRequest, Preset } from "@monkeytype/schemas/presets";
+import { EditPresetRequest, Preset } from "@aitype/schemas/presets";
 import { omit } from "lodash";
 import { WithObjectId } from "../utils/misc";
 

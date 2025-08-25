@@ -3,7 +3,7 @@ import { getMiddleware as getSwaggerMiddleware } from "swagger-stats";
 import { isDevEnvironment } from "../../utils/misc";
 import { readFileSync } from "fs";
 import Logger from "../../utils/logger";
-import { tryCatchSync } from "@monkeytype/util/trycatch";
+import { tryCatchSync } from "@aitype/util/trycatch";
 
 function addSwaggerMiddlewares(app: Application): void {
   const openApiSpec = __dirname + "/../../../dist/static/api/openapi.json";

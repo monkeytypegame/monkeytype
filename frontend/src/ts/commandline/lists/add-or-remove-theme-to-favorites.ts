@@ -1,4 +1,4 @@
-import { ThemeName } from "@monkeytype/schemas/configs";
+import { ThemeName } from "@aitype/schemas/configs";
 import Config, * as UpdateConfig from "../../config";
 import { randomTheme } from "../../controllers/theme-controller";
 import { Command } from "../types";

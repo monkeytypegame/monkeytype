@@ -7,7 +7,7 @@ import * as SupportPopup from "../modals/support";
 import * as ContactModal from "../modals/contact";
 import * as VersionHistoryModal from "../modals/version-history";
 import { envConfig } from "../constants/env-config";
-import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
+import { COMPATIBILITY_CHECK } from "@aitype/contracts";
 import { lastSeenServerCompatibility } from "../ape/adapters/ts-rest-adapter";
 
 document

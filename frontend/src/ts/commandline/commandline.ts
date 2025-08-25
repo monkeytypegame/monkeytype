@@ -14,7 +14,7 @@ import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
-import { intersect } from "@monkeytype/util/arrays";
+import { intersect } from "@aitype/util/arrays";
 import {
   createInputEventHandler,
   ValidationResult,

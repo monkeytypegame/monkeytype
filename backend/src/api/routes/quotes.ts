@@ -1,4 +1,4 @@
-import { quotesContract } from "@monkeytype/contracts/quotes";
+import { quotesContract } from "@aitype/contracts/quotes";
 import { initServer } from "@ts-rest/express";
 import * as QuoteController from "../controllers/quote";
 import { callController } from "../ts-rest-adapter";

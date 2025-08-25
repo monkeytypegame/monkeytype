@@ -6,7 +6,7 @@ import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
-import { PresetType, PresetTypeSchema } from "@monkeytype/schemas/presets";
+import { PresetType, PresetTypeSchema } from "@aitype/schemas/presets";
 import { getPreset } from "../controllers/preset-controller";
 import {
   ConfigGroupName,
@@ -14,7 +14,7 @@ import {
   ConfigGroupsLiteral,
   ConfigKey,
   Config as ConfigType,
-} from "@monkeytype/schemas/configs";
+} from "@aitype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
 

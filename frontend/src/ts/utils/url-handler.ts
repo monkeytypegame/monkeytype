@@ -15,7 +15,7 @@ import {
   DifficultySchema,
   Mode2Schema,
   ModeSchema,
-} from "@monkeytype/schemas/shared";
+} from "@aitype/schemas/shared";
 import {
   CustomBackgroundFilter,
   CustomBackgroundFilterSchema,
@@ -25,11 +25,11 @@ import {
   CustomThemeColorsSchema,
   FunboxSchema,
   FunboxName,
-} from "@monkeytype/schemas/configs";
+} from "@aitype/schemas/configs";
 import { z } from "zod";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-import { tryCatchSync } from "@monkeytype/util/trycatch";
-import { Language } from "@monkeytype/schemas/languages";
+import { parseWithSchema as parseJsonWithSchema } from "@aitype/util/json";
+import { tryCatchSync } from "@aitype/util/trycatch";
+import { Language } from "@aitype/schemas/languages";
 import * as AuthEvent from "../observables/auth-event";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {

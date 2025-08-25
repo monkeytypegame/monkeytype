@@ -15,7 +15,7 @@ import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-
 import AnimatedModal from "../utils/animated-modal";
 import { resetIgnoreAuthCallback } from "../firebase";
 import { validateWithIndicator } from "../elements/input-validation";
-import { UserNameSchema } from "@monkeytype/schemas/users";
+import { UserNameSchema } from "@aitype/schemas/users";
 
 let signedInUser: UserCredential | undefined = undefined;
 

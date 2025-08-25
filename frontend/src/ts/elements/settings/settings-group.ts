@@ -1,4 +1,4 @@
-import { Config as ConfigType, ConfigKey } from "@monkeytype/schemas/configs";
+import { Config as ConfigType, ConfigKey } from "@aitype/schemas/configs";
 
 import Config from "../../config";
 import * as Notifications from "../notifications";

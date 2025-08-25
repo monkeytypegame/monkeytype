@@ -3,7 +3,7 @@ import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
 import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
-import { UserEmailSchema, UserNameSchema } from "@monkeytype/schemas/users";
+import { UserEmailSchema, UserNameSchema } from "@aitype/schemas/users";
 import { validateWithIndicator } from "../elements/input-validation";
 import { z } from "zod";
 

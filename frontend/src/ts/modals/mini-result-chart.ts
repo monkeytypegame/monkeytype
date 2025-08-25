@@ -1,4 +1,4 @@
-import { ChartData } from "@monkeytype/schemas/results";
+import { ChartData } from "@aitype/schemas/results";
 import AnimatedModal from "../utils/animated-modal";
 import * as ChartController from "../controllers/chart-controller";
 import Config from "../config";

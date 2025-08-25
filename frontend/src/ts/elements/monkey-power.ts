@@ -1,7 +1,7 @@
 import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import Config from "../config";
-import { isSafeNumber } from "@monkeytype/util/numbers";
+import { isSafeNumber } from "@aitype/util/numbers";
 
 type Particle = {
   x: number;

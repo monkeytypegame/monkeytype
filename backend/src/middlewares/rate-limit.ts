@@ -14,7 +14,7 @@ import {
   RateLimiterId,
   RateLimitOptions,
   Window,
-} from "@monkeytype/contracts/rate-limit/index";
+} from "@aitype/contracts/rate-limit/index";
 import statuses from "../constants/monkey-status-codes";
 import { getMetadata } from "./utility";
 import {

@@ -1,4 +1,4 @@
-import { apeKeysContract } from "@monkeytype/contracts/ape-keys";
+import { apeKeysContract } from "@aitype/contracts/ape-keys";
 import { initServer } from "@ts-rest/express";
 import * as ApeKeyController from "../controllers/ape-key";
 import { callController } from "../ts-rest-adapter";

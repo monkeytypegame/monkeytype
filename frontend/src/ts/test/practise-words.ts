@@ -5,7 +5,7 @@ import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
 import { setCustomTextName } from "../states/custom-text-name";
-import { Mode } from "@monkeytype/schemas/shared";
+import { Mode } from "@aitype/schemas/shared";
 
 type Before = {
   mode: Mode | null;

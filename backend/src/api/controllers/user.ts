@@ -39,7 +39,7 @@ import {
   CountByYearAndDay,
   TestActivity,
   UserProfileDetails,
-} from "@monkeytype/schemas/users";
+} from "@aitype/schemas/users";
 import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 import {
@@ -85,10 +85,10 @@ import {
   UpdateUserNameRequest,
   UpdateUserProfileRequest,
   UpdateUserProfileResponse,
-} from "@monkeytype/contracts/users";
-import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
+} from "@aitype/contracts/users";
+import { MILLISECONDS_IN_DAY } from "@aitype/util/date-and-time";
 import { MonkeyRequest } from "../types";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { tryCatch } from "@aitype/util/trycatch";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   const { data: verified, error } = await tryCatch(verify(captcha));

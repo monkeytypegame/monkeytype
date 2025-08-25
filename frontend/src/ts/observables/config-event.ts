@@ -1,4 +1,4 @@
-import { Config, ConfigKey, ConfigValue } from "@monkeytype/schemas/configs";
+import { Config, ConfigKey, ConfigValue } from "@aitype/schemas/configs";
 
 export type ConfigEventKey =
   | ConfigKey

@@ -3,10 +3,10 @@ import {
   ConfigValue,
   PartialConfig,
   FunboxName,
-} from "@monkeytype/schemas/configs";
+} from "@aitype/schemas/configs";
 import { typedKeys } from "./misc";
 import { sanitize } from "./sanitize";
-import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import * as ConfigSchemas from "@aitype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 /**
  * migrates possible outdated config and merges with the default config values

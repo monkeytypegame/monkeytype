@@ -330,7 +330,7 @@ async function main() {
     const filtered = l.usernames.filter((u) => {
       const lowerCased = u.toLowerCase();
       return (
-        lowerCased !== "monkeytype-bot" &&
+        lowerCased !== "aitype-bot" &&
         lowerCased !== "dependabot" &&
         lowerCased !== "miodec"
       );

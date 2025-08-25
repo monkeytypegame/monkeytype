@@ -12,7 +12,7 @@ import Page from "./page";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
-import * as Numbers from "@monkeytype/util/numbers";
+import * as Numbers from "@aitype/util/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
 import { format } from "date-fns/format";
@@ -26,19 +26,19 @@ import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
-import { ChartData } from "@monkeytype/schemas/results";
+import { ChartData } from "@aitype/schemas/results";
 import {
   Difficulty,
   Mode,
   Mode2,
   Mode2Custom,
-} from "@monkeytype/schemas/shared";
-import { ResultFiltersGroupItem } from "@monkeytype/schemas/users";
+} from "@aitype/schemas/shared";
+import { ResultFiltersGroupItem } from "@aitype/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
-import { AccountChart } from "@monkeytype/schemas/configs";
+import { AccountChart } from "@aitype/schemas/configs";
 
 let filterDebug = false;
 //toggle filterdebug

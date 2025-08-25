@@ -1,11 +1,11 @@
-import { checkCompatibility } from "@monkeytype/funbox";
+import { checkCompatibility } from "@aitype/funbox";
 import * as DB from "./db";
 import * as Notifications from "./elements/notifications";
 import { isAuthenticated } from "./firebase";
 import { canSetFunboxWithConfig } from "./test/funbox/funbox-validation";
 import { isDevEnvironment, reloadAfter } from "./utils/misc";
-import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { roundTo1 } from "@monkeytype/util/numbers";
+import * as ConfigSchemas from "@aitype/schemas/configs";
+import { roundTo1 } from "@aitype/util/numbers";
 import { capitalizeFirstLetter } from "./utils/strings";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];

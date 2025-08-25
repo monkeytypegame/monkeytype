@@ -1,4 +1,4 @@
-import { ThemeName } from "@monkeytype/schemas/configs";
+import { ThemeName } from "@aitype/schemas/configs";
 import { hexToHSL } from "../utils/colors";
 
 export type Theme = {

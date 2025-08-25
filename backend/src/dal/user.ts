@@ -26,12 +26,12 @@ import {
   UserTag,
   User,
   CountByYearAndDay,
-} from "@monkeytype/schemas/users";
-import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
+} from "@aitype/schemas/users";
+import { Mode, Mode2, PersonalBest } from "@aitype/schemas/shared";
 import { addImportantLog } from "./logs";
-import { Result as ResultType } from "@monkeytype/schemas/results";
-import { Configuration } from "@monkeytype/schemas/configuration";
-import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
+import { Result as ResultType } from "@aitype/schemas/results";
+import { Configuration } from "@aitype/schemas/configuration";
+import { isToday, isYesterday } from "@aitype/util/date-and-time";
 import GeorgeQueue from "../queues/george-queue";
 
 export type DBUserTag = WithObjectId<UserTag>;

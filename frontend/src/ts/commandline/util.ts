@@ -9,7 +9,7 @@ import {
   SubgroupProps,
 } from "./commandline-metadata";
 import { Command } from "./types";
-import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import * as ConfigSchemas from "@aitype/schemas/configs";
 import { z, ZodSchema } from "zod";
 
 function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {

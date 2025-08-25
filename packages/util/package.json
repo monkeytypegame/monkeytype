@@ -1,5 +1,5 @@
 {
-  "name": "@monkeytype/util",
+  "name": "@aitype/util",
   "scripts": {
     "dev": "tsup-node --watch",
     "build": "npm run madge && tsup-node",
@@ -11,9 +11,9 @@
     "lint": "npm run oxlint && npm run eslint"
   },
   "devDependencies": {
-    "@monkeytype/eslint-config": "workspace:*",
-    "@monkeytype/tsup-config": "workspace:*",
-    "@monkeytype/typescript-config": "workspace:*",
+    "@aitype/eslint-config": "workspace:*",
+    "@aitype/tsup-config": "workspace:*",
+    "@aitype/typescript-config": "workspace:*",
     "eslint": "8.57.1",
     "madge": "8.0.0",
     "oxlint": "1.12.0",

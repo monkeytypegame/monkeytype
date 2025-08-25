@@ -1,5 +1,5 @@
 {
-  "name": "@monkeytype/schemas",
+  "name": "@aitype/schemas",
   "private": true,
   "scripts": {
     "dev": "tsup-node --watch",
@@ -15,9 +15,9 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@monkeytype/eslint-config": "workspace:*",
-    "@monkeytype/tsup-config": "workspace:*",
-    "@monkeytype/typescript-config": "workspace:*",
+    "@aitype/eslint-config": "workspace:*",
+    "@aitype/tsup-config": "workspace:*",
+    "@aitype/typescript-config": "workspace:*",
     "eslint": "8.57.1",
     "madge": "8.0.0",
     "oxlint": "1.12.0",

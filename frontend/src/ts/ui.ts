@@ -9,7 +9,7 @@ import { get as getActivePage } from "./states/active-page";
 import { isDevEnvironment } from "./utils/misc";
 import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
-import { FontName } from "@monkeytype/schemas/fonts";
+import { FontName } from "@aitype/schemas/fonts";
 import { applyFontFamily } from "./controllers/theme-controller";
 
 let isPreviewingFont = false;

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { CompletedEvent } from "@monkeytype/schemas/results";
+import { CompletedEvent } from "@aitype/schemas/results";
 
 export function isTestTooShort(result: CompletedEvent): boolean {
   const { mode, mode2, customText, testDuration, bailedOut } = result;

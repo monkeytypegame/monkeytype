@@ -1,7 +1,7 @@
 // import joi from "joi";
 
 import * as AdminController from "../controllers/admin";
-import { adminContract } from "@monkeytype/contracts/admin";
+import { adminContract } from "@aitype/contracts/admin";
 import { initServer } from "@ts-rest/express";
 import { callController } from "../ts-rest-adapter";
 

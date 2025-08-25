@@ -1,5 +1,5 @@
 {
-  "name": "@monkeytype/eslint-config",
+  "name": "@aitype/eslint-config",
   "private": true,
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "8.0.1",

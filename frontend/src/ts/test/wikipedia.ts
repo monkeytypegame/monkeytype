@@ -3,9 +3,9 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import { z } from "zod";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { parseWithSchema as parseJsonWithSchema } from "@aitype/util/json";
 import { getGroupForLanguage, LanguageGroupName } from "../constants/languages";
-import { Language } from "@monkeytype/schemas/languages";
+import { Language } from "@aitype/schemas/languages";
 
 export async function getTLD(
   languageGroup: LanguageGroupName

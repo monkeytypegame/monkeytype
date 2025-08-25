@@ -1,4 +1,4 @@
-import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import * as ConfigSchemas from "@aitype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
@@ -11,7 +11,7 @@ import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { Validation } from "../elements/input-validation";
 import * as ActivePage from "../states/active-page";
 import { Fonts } from "../constants/fonts";
-import { KnownFontName } from "@monkeytype/schemas/fonts";
+import { KnownFontName } from "@aitype/schemas/fonts";
 import * as UI from "../ui";
 import { typedKeys } from "../utils/misc";
 

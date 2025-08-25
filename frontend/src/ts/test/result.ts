@@ -15,7 +15,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as Numbers from "@monkeytype/util/numbers";
+import * as Numbers from "@aitype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as PbCrown from "./pb-crown";
@@ -36,11 +36,11 @@ import type {
   LabelPosition,
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import { CompletedEvent } from "@monkeytype/schemas/results";
+import { CompletedEvent } from "@aitype/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
-import { getFunbox } from "@monkeytype/funbox";
+import { getFunbox } from "@aitype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
-import { Language } from "@monkeytype/schemas/languages";
+import { Language } from "@aitype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 
 let result: CompletedEvent;

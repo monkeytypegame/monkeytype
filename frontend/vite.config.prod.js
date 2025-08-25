@@ -92,8 +92,8 @@ export default {
       injectRegister: null,
       registerType: "autoUpdate",
       manifest: {
-        short_name: "Monkeytype",
-        name: "Monkeytype",
+        short_name: "Aitype",
+        name: "Aitype",
         start_url: "/",
         icons: [
           {
@@ -123,7 +123,7 @@ export default {
         runtimeCaching: [
           {
             urlPattern: (options) => {
-              const isApi = options.url.hostname === "api.monkeytype.com";
+              const isApi = options.url.hostname === "api.aitype.com";
               return options.sameOrigin && !isApi;
             },
             handler: "NetworkFirst",
@@ -148,7 +148,7 @@ export default {
           release: {
             name: CLIENT_VERSION,
           },
-          applicationKey: "monkeytype-frontend",
+          applicationKey: "aitype-frontend",
         })
       : null,
     replace([
@@ -302,7 +302,7 @@ export default {
   },
   define: {
     BACKEND_URL: JSON.stringify(
-      process.env.BACKEND_URL || "https://api.monkeytype.com"
+      process.env.BACKEND_URL || "https://api.aitype.com"
     ),
     IS_DEVELOPMENT: JSON.stringify(false),
     CLIENT_VERSION: JSON.stringify(CLIENT_VERSION),

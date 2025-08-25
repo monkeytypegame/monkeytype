@@ -1,4 +1,4 @@
-import { randomIntFromRange } from "@monkeytype/util/numbers";
+import { randomIntFromRange } from "@aitype/util/numbers";
 
 /**
  * Applies a smoothing algorithm to an array of numbers.

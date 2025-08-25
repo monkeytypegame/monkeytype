@@ -3,7 +3,7 @@ import AnimatedModal from "../utils/animated-modal";
 import Ape from "../ape/index";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
-import { UserEmailSchema } from "@monkeytype/schemas/users";
+import { UserEmailSchema } from "@aitype/schemas/users";
 
 export function show(): void {
   if (!CaptchaController.isCaptchaAvailable()) {

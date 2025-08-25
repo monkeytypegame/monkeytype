@@ -1,4 +1,4 @@
-import { MonkeyResponseType } from "@monkeytype/contracts/util/api";
+import { MonkeyResponseType } from "@aitype/contracts/util/api";
 
 export type MonkeyDataAware<T> = {
   data: T | null;

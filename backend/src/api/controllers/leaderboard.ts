@@ -18,13 +18,13 @@ import {
   GetWeeklyXpLeaderboardRankQuery,
   GetWeeklyXpLeaderboardRankResponse,
   GetWeeklyXpLeaderboardResponse,
-} from "@monkeytype/contracts/leaderboards";
-import { Configuration } from "@monkeytype/schemas/configuration";
+} from "@aitype/contracts/leaderboards";
+import { Configuration } from "@aitype/schemas/configuration";
 import {
   getCurrentDayTimestamp,
   getCurrentWeekTimestamp,
   MILLISECONDS_IN_DAY,
-} from "@monkeytype/util/date-and-time";
+} from "@aitype/util/date-and-time";
 import { MonkeyRequest } from "../types";
 
 export async function getLeaderboard(

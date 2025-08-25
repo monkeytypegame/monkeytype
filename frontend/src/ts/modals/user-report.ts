@@ -6,7 +6,7 @@ import SlimSelect from "slim-select";
 import AnimatedModal from "../utils/animated-modal";
 import { isAuthenticated } from "../firebase";
 import { CharacterCounter } from "../elements/character-counter";
-import { ReportUserReason } from "@monkeytype/schemas/users";
+import { ReportUserReason } from "@aitype/schemas/users";
 
 type State = {
   userUid?: string;

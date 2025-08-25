@@ -3,17 +3,17 @@ import {
   User,
   UserProfileDetails,
   UserTag,
-} from "@monkeytype/schemas/users";
+} from "@aitype/schemas/users";
 import { getDefaultConfig } from "./default-config";
-import { Mode } from "@monkeytype/schemas/shared";
-import { Result } from "@monkeytype/schemas/results";
-import { Config, FunboxName } from "@monkeytype/schemas/configs";
+import { Mode } from "@aitype/schemas/shared";
+import { Result } from "@aitype/schemas/results";
+import { Config, FunboxName } from "@aitype/schemas/configs";
 import {
   ModifiableTestActivityCalendar,
   TestActivityCalendar,
 } from "../elements/test-activity-calendar";
-import { Preset } from "@monkeytype/schemas/presets";
-import { Language } from "@monkeytype/schemas/languages";
+import { Preset } from "@aitype/schemas/presets";
+import { Language } from "@aitype/schemas/languages";
 
 export type SnapshotUserTag = UserTag & {
   active?: boolean;

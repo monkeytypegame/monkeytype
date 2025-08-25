@@ -3,7 +3,7 @@ import * as RedisClient from "../init/redis";
 import { randomBytes } from "crypto";
 import MonkeyError from "./error";
 import { z } from "zod";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { parseWithSchema as parseJsonWithSchema } from "@aitype/util/json";
 
 const BASE_URL = "https://discord.com/api";
 

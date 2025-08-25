@@ -3,7 +3,7 @@ import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";
 import { Theme, ThemesList } from "../../constants/themes";
-import { not } from "@monkeytype/util/predicates";
+import { not } from "@aitype/util/predicates";
 import * as ConfigEvent from "../../observables/config-event";
 import * as Misc from "../../utils/misc";
 

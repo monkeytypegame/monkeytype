@@ -2,7 +2,7 @@ import {
   GetSpeedHistogramQuery,
   GetSpeedHistogramResponse,
   GetTypingStatsResponse,
-} from "@monkeytype/contracts/public";
+} from "@aitype/contracts/public";
 import * as PublicDAL from "../../dal/public";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { MonkeyRequest } from "../types";

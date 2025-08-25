@@ -1,9 +1,9 @@
 import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
-import { Config } from "@monkeytype/schemas/configs";
-import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
-import { Result } from "@monkeytype/schemas/results";
+import { Config } from "@aitype/schemas/configs";
+import { Mode, Mode2, PersonalBests } from "@aitype/schemas/shared";
+import { Result } from "@aitype/schemas/results";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -610,7 +610,7 @@ export function updateTitle(title?: string): void {
 
   if (title === undefined || title === "") {
     document.title =
-      local + "Monkeytype | A minimalistic, customizable typing test";
+      local + "Aitype | A minimalistic, customizable typing test";
   } else {
     document.title = local + title;
   }

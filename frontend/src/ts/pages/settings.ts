@@ -24,17 +24,17 @@ import {
   FunboxName,
   ConfigKeySchema,
   ConfigKey,
-} from "@monkeytype/schemas/configs";
-import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
+} from "@aitype/schemas/configs";
+import { getAllFunboxes, checkCompatibility } from "@aitype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { SnapshotPreset } from "../constants/default-snapshot";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
 import { Theme, ThemesList } from "../constants/themes";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
-import { LayoutName } from "@monkeytype/schemas/layouts";
+import { LayoutName } from "@aitype/schemas/layouts";
 import { LanguageGroupNames, LanguageGroups } from "../constants/languages";
-import { Language } from "@monkeytype/schemas/languages";
+import { Language } from "@aitype/schemas/languages";
 import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { handleConfigInput } from "../elements/input-validation";

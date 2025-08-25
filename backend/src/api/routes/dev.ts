@@ -1,4 +1,4 @@
-import { devContract } from "@monkeytype/contracts/dev";
+import { devContract } from "@aitype/contracts/dev";
 import { initServer } from "@ts-rest/express";
 
 import * as DevController from "../controllers/dev";

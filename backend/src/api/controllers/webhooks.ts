@@ -1,4 +1,4 @@
-import { PostGithubReleaseRequest } from "@monkeytype/contracts/webhooks";
+import { PostGithubReleaseRequest } from "@aitype/contracts/webhooks";
 import GeorgeQueue from "../../queues/george-queue";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";

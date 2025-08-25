@@ -1,4 +1,4 @@
-import { presetsContract } from "@monkeytype/contracts/presets";
+import { presetsContract } from "@aitype/contracts/presets";
 import { initServer } from "@ts-rest/express";
 import * as PresetController from "../controllers/preset";
 import { callController } from "../ts-rest-adapter";

@@ -33,7 +33,7 @@ import {
   Analytics as AnalyticsType,
   getAnalytics as firebaseGetAnalytics,
 } from "firebase/analytics";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { tryCatch } from "@aitype/util/trycatch";
 import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
 
 let app: FirebaseApp | undefined;

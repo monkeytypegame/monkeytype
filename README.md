@@ -1,4 +1,4 @@
-[![](https://github.com/monkeytypegame/monkeytype/blob/master/frontend/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
+[![](https://github.com/monkeytypegame/monkeytype/blob/master/frontend/static/images/githubbanner2.png?raw=true)](https://aitype.com/)
 <br />
 
 ![ChartJs](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
@@ -22,7 +22,7 @@
 
 # About
 
-Monkeytype is a minimalistic and customizable [typing test](https://www.monkeytype.com). It features many test modes, an account system to save your typing speed history, and user-configurable features such as themes, sounds, a smooth caret, and more. Monkeytype attempts to emulate a natural typing experience during a typing test by unobtrusively presenting the text prompts and displaying typed characters in place, providing straightforward, real-time feedback on typos, speed, and accuracy.
+Aitype is a minimalistic and customizable [typing test](https://www.aitype.com). It features many test modes, an account system to save your typing speed history, and user-configurable features such as themes, sounds, a smooth caret, and more. Aitype attempts to emulate a natural typing experience during a typing test by unobtrusively presenting the text prompts and displaying typed characters in place, providing straightforward, real-time feedback on typos, speed, and accuracy.
 
 # Features
 
@@ -68,4 +68,4 @@ All of the [contributors](https://github.com/monkeytypegame/monkeytype/graphs/co
 
 # Support
 
-If you wish to support further development and feel extra awesome, you can [donate](https://ko-fi.com/monkeytype), [become a Patron](https://www.patreon.com/monkeytype) or [buy a t-shirt](https://www.monkeytype.store/).
+If you wish to support further development and feel extra awesome, you can [donate](https://ko-fi.com/aitype), [become a Patron](https://www.patreon.com/aitype) or [buy a t-shirt](https://www.aitype.store/).

@@ -1,4 +1,4 @@
-import { Config, CustomThemeColors } from "@monkeytype/schemas/configs";
+import { Config, CustomThemeColors } from "@aitype/schemas/configs";
 
 const obj = {
   theme: "serika_dark",

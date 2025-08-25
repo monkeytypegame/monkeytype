@@ -9,16 +9,16 @@ import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
 
-import { Mode, PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
+import { Mode, PersonalBest, PersonalBests } from "@aitype/schemas/shared";
 import {
   GenerateDataRequest,
   GenerateDataResponse,
-} from "@monkeytype/contracts/dev";
-import { roundTo2 } from "@monkeytype/util/numbers";
+} from "@aitype/contracts/dev";
+import { roundTo2 } from "@aitype/util/numbers";
 import { MonkeyRequest } from "../types";
 import { DBResult } from "../../utils/result";
 import { LbPersonalBests } from "../../utils/pb";
-import { Language } from "@monkeytype/schemas/languages";
+import { Language } from "@aitype/schemas/languages";
 
 const CREATE_RESULT_DEFAULT_OPTIONS = {
   firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),

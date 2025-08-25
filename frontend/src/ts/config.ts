@@ -15,18 +15,18 @@ import {
   triggerResize,
   typedKeys,
 } from "./utils/misc";
-import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { Config, FunboxName } from "@monkeytype/schemas/configs";
-import { Mode } from "@monkeytype/schemas/shared";
-import { Language } from "@monkeytype/schemas/languages";
+import * as ConfigSchemas from "@aitype/schemas/configs";
+import { Config, FunboxName } from "@aitype/schemas/configs";
+import { Mode } from "@aitype/schemas/shared";
+import { Language } from "@aitype/schemas/languages";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { getDefaultConfig } from "./constants/default-config";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { parseWithSchema as parseJsonWithSchema } from "@aitype/util/json";
 import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
-import { FontName } from "@monkeytype/schemas/fonts";
+import { FontName } from "@aitype/schemas/fonts";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",

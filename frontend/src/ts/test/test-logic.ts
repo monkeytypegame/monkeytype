@@ -6,7 +6,7 @@ import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "@monkeytype/util/numbers";
+import * as Numbers from "@aitype/util/numbers";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
@@ -58,12 +58,12 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
-import { QuoteLength, QuoteLengthConfig } from "@monkeytype/schemas/configs";
-import { Mode } from "@monkeytype/schemas/shared";
+import { QuoteLength, QuoteLengthConfig } from "@aitype/schemas/configs";
+import { Mode } from "@aitype/schemas/shared";
 import {
   CompletedEvent,
   CompletedEventCustomText,
-} from "@monkeytype/schemas/results";
+} from "@aitype/schemas/results";
 import * as XPBar from "../elements/xp-bar";
 import {
   findSingleActiveFunboxWithFunction,
@@ -71,11 +71,11 @@ import {
   getActiveFunboxesWithFunction,
   isFunboxActive,
 } from "./funbox/list";
-import { getFunbox } from "@monkeytype/funbox";
+import { getFunbox } from "@aitype/funbox";
 import * as CompositionState from "../states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { tryCatch } from "@aitype/util/trycatch";
 import * as Sentry from "../sentry";
 import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";

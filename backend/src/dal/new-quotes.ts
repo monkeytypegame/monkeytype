@@ -6,12 +6,12 @@ import { readFile } from "node:fs/promises";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { compareTwoStrings } from "string-similarity";
-import { ApproveQuote, Quote } from "@monkeytype/schemas/quotes";
+import { ApproveQuote, Quote } from "@aitype/schemas/quotes";
 import { WithObjectId } from "../utils/misc";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { parseWithSchema as parseJsonWithSchema } from "@aitype/util/json";
 import { z } from "zod";
-import { tryCatchSync } from "@monkeytype/util/trycatch";
-import { Language } from "@monkeytype/schemas/languages";
+import { tryCatchSync } from "@aitype/util/trycatch";
+import { Language } from "@aitype/schemas/languages";
 
 const JsonQuoteSchema = z.object({
   text: z.string(),

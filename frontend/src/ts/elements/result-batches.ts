@@ -2,7 +2,7 @@ import * as DB from "../db";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { blendTwoHexColors } from "../utils/colors";
 import * as ThemeColors from "../elements/theme-colors";
-import { mapRange } from "@monkeytype/util/numbers";
+import { mapRange } from "@aitype/util/numbers";
 
 export function hide(): void {
   $(".pageAccount .resultBatches").addClass("hidden");

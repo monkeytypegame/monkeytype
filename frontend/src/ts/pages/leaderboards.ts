@@ -4,7 +4,7 @@ import Config from "../config";
 import {
   LeaderboardEntry,
   XpLeaderboardEntry,
-} from "@monkeytype/schemas/leaderboards";
+} from "@aitype/schemas/leaderboards";
 import { capitalizeFirstLetter } from "../utils/strings";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
@@ -35,10 +35,10 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import { PaginationQuery } from "@monkeytype/contracts/leaderboards";
-import { Language, LanguageSchema } from "@monkeytype/schemas/languages";
-import { isSafeNumber } from "@monkeytype/util/numbers";
-import { Mode, Mode2, ModeSchema } from "@monkeytype/schemas/shared";
+import { PaginationQuery } from "@aitype/contracts/leaderboards";
+import { Language, LanguageSchema } from "@aitype/schemas/languages";
+import { isSafeNumber } from "@aitype/util/numbers";
+import { Mode, Mode2, ModeSchema } from "@aitype/schemas/shared";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { getAvatarElement } from "../utils/discord-avatar";
 

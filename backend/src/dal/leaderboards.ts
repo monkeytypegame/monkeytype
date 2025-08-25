@@ -10,7 +10,7 @@ import {
 
 import { addLog } from "./logs";
 import { Collection, ObjectId } from "mongodb";
-import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
+import { LeaderboardEntry } from "@aitype/schemas/leaderboards";
 import { omit } from "lodash";
 import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";

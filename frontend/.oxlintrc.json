@@ -1,7 +1,7 @@
 {
   "extends": [
     "../packages/oxlint-config/index.json"
-    // "@monkeytype/oxlint-config"
+    // "@aitype/oxlint-config"
   ],
   "overrides": [
     {

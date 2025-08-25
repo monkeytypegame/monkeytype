@@ -1,11 +1,11 @@
-import { Language } from "@monkeytype/schemas/languages";
+import { Language } from "@aitype/schemas/languages";
 import Ape from "../ape";
 import { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { isSafeNumber } from "@monkeytype/util/numbers";
+import { isSafeNumber } from "@aitype/util/numbers";
 
 let rating = 0;
 

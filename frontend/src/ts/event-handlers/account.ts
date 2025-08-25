@@ -5,7 +5,7 @@ import { isAuthenticated } from "../firebase";
 import * as Notifications from "../elements/notifications";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as AddFilterPresetModal from "../modals/new-filter-preset";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { parseWithSchema as parseJsonWithSchema } from "@aitype/util/json";
 import { z } from "zod";
 
 const accountPage = document.querySelector("#pageAccount") as HTMLElement;

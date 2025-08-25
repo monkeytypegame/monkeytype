@@ -1,7 +1,7 @@
 import * as Funbox from "../../test/funbox/funbox";
 import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
-import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
+import { getAllFunboxes, checkCompatibility } from "@aitype/funbox";
 import { Command, CommandsSubgroup } from "../types";
 import { getActiveFunboxNames } from "../../test/funbox/list";
 

@@ -179,11 +179,11 @@ const buildProject = () => {
 
   if (isFrontend && !isBackend) {
     runProjectRootCommand(
-      "SENTRY=1 npx turbo lint test validate-json build --filter @monkeytype/frontend --force"
+      "SENTRY=1 npx turbo lint test validate-json build --filter @aitype/frontend --force"
     );
   } else if (isBackend && !isFrontend) {
     runProjectRootCommand(
-      "SENTRY=1 npx turbo lint test build --filter @monkeytype/backend --force"
+      "SENTRY=1 npx turbo lint test build --filter @aitype/backend --force"
     );
   } else {
     runProjectRootCommand(

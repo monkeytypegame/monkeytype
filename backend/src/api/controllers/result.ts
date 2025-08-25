@@ -31,7 +31,7 @@ import {
   DBResult,
   replaceLegacyValues,
 } from "../../utils/result";
-import { Configuration } from "@monkeytype/schemas/configuration";
+import { Configuration } from "@aitype/schemas/configuration";
 import { addImportantLog, addLog } from "../../dal/logs";
 import {
   AddResultRequest,
@@ -43,28 +43,28 @@ import {
   GetResultsResponse,
   UpdateResultTagsRequest,
   UpdateResultTagsResponse,
-} from "@monkeytype/contracts/results";
+} from "@aitype/contracts/results";
 import {
   CompletedEvent,
   KeyStats,
   Result,
   PostResultResponse,
   XpBreakdown,
-} from "@monkeytype/schemas/results";
-import { Mode } from "@monkeytype/schemas/shared";
+} from "@aitype/schemas/results";
+import { Mode } from "@aitype/schemas/shared";
 import {
   isSafeNumber,
   mapRange,
   roundTo2,
   stdDev,
-} from "@monkeytype/util/numbers";
+} from "@aitype/util/numbers";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
-} from "@monkeytype/util/date-and-time";
+} from "@aitype/util/date-and-time";
 import { MonkeyRequest } from "../types";
-import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { getFunbox, checkCompatibility } from "@aitype/funbox";
+import { tryCatch } from "@aitype/util/trycatch";
 import { getCachedConfiguration } from "../../init/configuration";
 
 try {

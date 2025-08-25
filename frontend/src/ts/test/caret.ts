@@ -7,7 +7,7 @@ import * as TestWords from "./test-words";
 import { prefersReducedMotion } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
 import { splitIntoCharacters } from "../utils/strings";
-import { safeNumber } from "@monkeytype/util/numbers";
+import { safeNumber } from "@aitype/util/numbers";
 import { subscribe } from "../observables/config-event";
 
 export let caretAnimating = true;

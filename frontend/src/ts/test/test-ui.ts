@@ -19,7 +19,7 @@ import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
-import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
+import { TimerColor, TimerOpacity } from "@aitype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";

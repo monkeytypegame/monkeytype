@@ -65,7 +65,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as TestInput from "../test/test-input";
 import * as DateTime from "../utils/date-and-time";
 import * as Arrays from "../utils/arrays";
-import * as Numbers from "@monkeytype/util/numbers";
+import * as Numbers from "@aitype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { typedKeys } from "../utils/misc";
 

@@ -1,4 +1,4 @@
-import { configsContract } from "@monkeytype/contracts/configs";
+import { configsContract } from "@aitype/contracts/configs";
 import { initServer } from "@ts-rest/express";
 import * as ConfigController from "../controllers/config";
 import { callController } from "../ts-rest-adapter";

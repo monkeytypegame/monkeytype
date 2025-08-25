@@ -7,7 +7,7 @@ import {
   TestActivityCalendar,
   TestActivityMonth,
 } from "./test-activity-calendar";
-import { safeNumber } from "@monkeytype/util/numbers";
+import { safeNumber } from "@aitype/util/numbers";
 
 let yearSelector: SlimSelect | undefined = undefined;
 

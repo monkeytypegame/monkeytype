@@ -11,9 +11,9 @@ import {
   SendForgotPasswordEmailRequest,
   ToggleBanRequest,
   ToggleBanResponse,
-} from "@monkeytype/contracts/admin";
+} from "@aitype/contracts/admin";
 import MonkeyError, { getErrorMessage } from "../../utils/error";
-import { Configuration } from "@monkeytype/schemas/configuration";
+import { Configuration } from "@aitype/schemas/configuration";
 import { addImportantLog } from "../../dal/logs";
 import { MonkeyRequest } from "../types";
 

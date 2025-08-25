@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { contract } from "@monkeytype/contracts/index";
+import { contract } from "@aitype/contracts/index";
 import psas from "./psas";
 import publicStats from "./public";
 import users from "./users";
@@ -31,7 +31,7 @@ import { getLiveConfiguration } from "../../init/configuration";
 import Logger from "../../utils/logger";
 import { createExpressEndpoints, initServer } from "@ts-rest/express";
 import { ZodIssue } from "zod";
-import { MonkeyValidationError } from "@monkeytype/contracts/util/api";
+import { MonkeyValidationError } from "@aitype/contracts/util/api";
 import { authenticateTsRestRequest } from "../../middlewares/auth";
 import { rateLimitRequest } from "../../middlewares/rate-limit";
 import { verifyPermissions } from "../../middlewares/permission";

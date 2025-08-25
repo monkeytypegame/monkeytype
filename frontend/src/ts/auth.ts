@@ -28,7 +28,7 @@ import * as ConnectionState from "./states/connection";
 import { navigate } from "./controllers/route-controller";
 import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import * as Sentry from "./sentry";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { tryCatch } from "@aitype/util/trycatch";
 import * as AuthEvent from "./observables/auth-event";
 
 export const gmailProvider = new GoogleAuthProvider();

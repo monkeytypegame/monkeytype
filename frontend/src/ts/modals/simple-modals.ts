@@ -28,7 +28,7 @@ import {
 } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
-import { CustomThemeColors } from "@monkeytype/schemas/configs";
+import { CustomThemeColors } from "@aitype/schemas/configs";
 import * as AccountSettings from "../pages/account-settings";
 import {
   ExecReturn,
@@ -37,8 +37,8 @@ import {
   TextInput,
 } from "../utils/simple-modal";
 import { ShowOptions } from "../utils/animated-modal";
-import { GenerateDataRequest } from "@monkeytype/contracts/dev";
-import { UserEmailSchema, UserNameSchema } from "@monkeytype/schemas/users";
+import { GenerateDataRequest } from "@aitype/contracts/dev";
+import { UserEmailSchema, UserNameSchema } from "@aitype/schemas/users";
 import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 

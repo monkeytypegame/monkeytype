@@ -1,7 +1,7 @@
 import * as Loader from "../../elements/loader";
 import * as Notifications from "../../elements/notifications";
 import Ape from "../../ape";
-import { ApeKey, ApeKeys } from "@monkeytype/schemas/ape-keys";
+import { ApeKey, ApeKeys } from "@aitype/schemas/ape-keys";
 import { format } from "date-fns/format";
 import { SimpleModal, TextArea } from "../../utils/simple-modal";
 import { isAuthenticated } from "../../firebase";

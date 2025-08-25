@@ -1,5 +1,5 @@
 {
-  "extends": "@monkeytype/typescript-config/base.json",
+  "extends": "@aitype/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "dist",
     "target": "ES6",

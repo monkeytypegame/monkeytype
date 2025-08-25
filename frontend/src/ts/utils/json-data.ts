@@ -1,5 +1,5 @@
-import { FunboxName } from "@monkeytype/schemas/configs";
-import { Language } from "@monkeytype/schemas/languages";
+import { FunboxName } from "@aitype/schemas/configs";
+import { Language } from "@aitype/schemas/languages";
 import { Accents } from "../test/lazy-mode";
 
 //pin implementation

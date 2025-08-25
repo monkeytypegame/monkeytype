@@ -9,7 +9,7 @@ import {
   rootRateLimiter,
 } from "./middlewares/rate-limit";
 import { compatibilityCheckMiddleware } from "./middlewares/compatibilityCheck";
-import { COMPATIBILITY_CHECK_HEADER } from "@monkeytype/contracts";
+import { COMPATIBILITY_CHECK_HEADER } from "@aitype/contracts";
 import { createETagGenerator } from "./utils/etag";
 import { v4RequestBody } from "./middlewares/utility";
 

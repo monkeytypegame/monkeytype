@@ -1,4 +1,4 @@
-import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
+import { LeaderboardEntry } from "@aitype/schemas/leaderboards";
 import { MonkeyQueue } from "./monkey-queue";
 
 const QUEUE_NAME = "george-tasks";

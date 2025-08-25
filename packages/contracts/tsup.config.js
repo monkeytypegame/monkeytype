@@ -1,3 +1,3 @@
-import { extendConfig } from "@monkeytype/tsup-config";
+import { extendConfig } from "@aitype/tsup-config";
 
 export default extendConfig();

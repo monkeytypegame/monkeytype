@@ -1,5 +1,5 @@
 import { lastElementFromArray } from "../utils/arrays";
-import { mean, roundTo2 } from "@monkeytype/util/numbers";
+import { mean, roundTo2 } from "@aitype/util/numbers";
 import * as TestState from "./test-state";
 
 const keysToTrack = new Set([

@@ -1,4 +1,4 @@
-import { Config } from "@monkeytype/schemas/configs";
+import { Config } from "@aitype/schemas/configs";
 import AnimatedModal from "../utils/animated-modal";
 import { Validation } from "../elements/input-validation";
 

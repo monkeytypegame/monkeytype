@@ -1,5 +1,5 @@
 {
-  "name": "@monkeytype/tsup-config",
+  "name": "@aitype/tsup-config",
   "private": true,
   "scripts": {
     "dev": "tsup-node --watch",
@@ -13,7 +13,7 @@
     "tsup": "8.4.0"
   },
   "devDependencies": {
-    "@monkeytype/typescript-config": "workspace:*",
+    "@aitype/typescript-config": "workspace:*",
     "eslint": "8.57.1",
     "oxlint": "1.12.0",
     "typescript": "5.5.4"

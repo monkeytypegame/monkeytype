@@ -1,4 +1,4 @@
-import { GetPsaResponse } from "@monkeytype/contracts/psas";
+import { GetPsaResponse } from "@aitype/contracts/psas";
 import * as PsaDAL from "../../dal/psa";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { replaceObjectIds } from "../../utils/misc";

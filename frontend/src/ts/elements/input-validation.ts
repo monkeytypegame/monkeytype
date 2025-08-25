@@ -5,7 +5,7 @@ import {
   ConfigKey,
   ConfigSchema,
   Config as ConfigType,
-} from "@monkeytype/schemas/configs";
+} from "@aitype/schemas/configs";
 import Config, * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 

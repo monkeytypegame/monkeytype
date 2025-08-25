@@ -1,8 +1,8 @@
 import * as Notifications from "../../elements/notifications";
 import * as Strings from "../../utils/strings";
-import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
-import { FunboxMetadata, getFunbox } from "@monkeytype/funbox";
-import { intersect } from "@monkeytype/util/arrays";
+import { Config, ConfigValue, FunboxName } from "@aitype/schemas/configs";
+import { FunboxMetadata, getFunbox } from "@aitype/funbox";
+import { intersect } from "@aitype/util/arrays";
 
 export function checkForcedConfig(
   key: string,

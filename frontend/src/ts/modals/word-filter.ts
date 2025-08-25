@@ -8,9 +8,9 @@ import AnimatedModal, {
   ShowOptions,
 } from "../utils/animated-modal";
 import { LayoutsList } from "../constants/layouts";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { tryCatch } from "@aitype/util/trycatch";
 import { LanguageList } from "../constants/languages";
-import { Language } from "@monkeytype/schemas/languages";
+import { Language } from "@aitype/schemas/languages";
 
 type FilterPreset = {
   display: string;

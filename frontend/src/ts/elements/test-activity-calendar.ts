@@ -1,5 +1,5 @@
 import { UTCDateMini } from "@date-fns/utc/date/mini";
-import { safeNumber } from "@monkeytype/util/numbers";
+import { safeNumber } from "@aitype/util/numbers";
 import {
   format,
   endOfMonth,

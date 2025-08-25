@@ -13,7 +13,7 @@ import {
   TwitterProfileSchema,
   UserProfileDetails,
   WebsiteSchema,
-} from "@monkeytype/schemas/users";
+} from "@aitype/schemas/users";
 import { InputIndicator } from "../elements/input-indicator";
 
 export function show(): void {
