@@ -94,7 +94,7 @@ function hide(): void {
       if (totalXpClaimed > 0) {
         const snapxp = DB.getSnapshot()?.xp ?? 0;
         void XPBar.update(snapxp, totalXpClaimed);
-        accountPageUpdateProfile(snapxp + totalXpClaimed);
+        accountPageUpdateProfile(snapxp + totalXpClaimed, true);
         DB.addXp(totalXpClaimed);
       }
     },
