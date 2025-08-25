@@ -287,7 +287,7 @@ function cleanUpText(): string[] {
   }
 
   text = text.replace(/ +/gm, " ");
-  text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n");
+  text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   if (state.removeFancyTypographyEnabled) {
     text = Strings.cleanTypographySymbols(text);
   }
