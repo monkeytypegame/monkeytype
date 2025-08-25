@@ -69,7 +69,7 @@ async function getDataAndInit(): Promise<boolean> {
       );
     }
 
-    Sentry.setUser(snapshot.uid, snapshot.name);
+    void Sentry.setUser(snapshot.uid, snapshot.name);
     if (snapshot.needsToChangeName) {
       Notifications.addPSA(
         "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
@@ -155,7 +155,7 @@ export async function onAuthStateChanged(
   }
 
   if (!authInitialisedAndConnected || !user) {
-    Sentry.clearUser();
+    void Sentry.clearUser();
   }
 
   let keyframes = [

@@ -32,7 +32,7 @@
       "dependsOn": ["build"]
     },
     "@monkeytype/frontend#validate-json": {
-      "dependsOn": ["^parallel"]
+      "dependsOn": ["^parallel", "@monkeytype/schemas#build"]
     },
     "@monkeytype/frontend#build": {
       "dependsOn": ["^build"],

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "full-check": "turbo lint ts-check build test validate-json",
+    "full-check": "turbo lint ts-check build test integration-test validate-json --force",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "ts-check": "turbo run ts-check",
@@ -53,10 +53,11 @@
     "pretty-fix-fe": "prettier --write ./frontend/src",
     "pretty-fix-assets": "prettier --write ./frontend/static",
     "pretty-fix-pkg": "prettier --write ./packages",
-    "pr-check-lint-json": "cd frontend && eslint './static/**/*.json'",
-    "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
-    "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json && turbo test -- constants/languages",
-    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json && turbo test -- constants/layouts constants/themes constants/fonts",
+    "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
+    "validate-json": "turbo validate-json --filter @monkeytype/frontend",
+    "check-quote-assets": "turbo validate-json --filter @monkeytype/frontend  -- quotes",
+    "check-language-assets": "turbo validate-json --filter @monkeytype/frontend  -- languages",
+    "check-other-assets": "turbo validate-json --filter @monkeytype/frontend  -- others",
     "knip": "knip"
   },
   "engines": {

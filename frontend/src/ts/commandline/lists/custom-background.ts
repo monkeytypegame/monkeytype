@@ -42,7 +42,7 @@ const customBackgroundCommand: Command = {
             }
 
             // check type
-            if (!file.type.match(/image\/(jpeg|jpg|png|gif)/)) {
+            if (!file.type.match(/image\/(jpeg|jpg|png|gif|webp)/)) {
               Notifications.add("Unsupported image format", 0);
               cleanup();
               return;

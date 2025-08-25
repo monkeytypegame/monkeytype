@@ -128,7 +128,7 @@ export async function fillPresetButtons(): Promise<void> {
     const msg =
       "Failed to fill preset theme buttons: favThemes or allThemes element not found";
     Notifications.add(msg, -1);
-    captureException(new Error(msg));
+    void captureException(new Error(msg));
     console.error(msg, { favThemesEl, themesEl });
     return;
   }
