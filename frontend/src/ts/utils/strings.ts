@@ -167,3 +167,13 @@ export function splitIntoCharacters(s: string): string[] {
 
   return result;
 }
+
+export function replaceControlCharacters(textToClear: string): string {
+  textToClear = textToClear.replace(/(?<!\\)\\t/g, "\t");
+  textToClear = textToClear.replace(/\\n/g, " \n");
+  textToClear = textToClear.replace(/([^\\]|^)\\n/gm, "$1\n");
+  textToClear = textToClear.replace(/\\\\t/gm, "\\t");
+  textToClear = textToClear.replace(/\\\\n/gm, "\\n");
+
+  return textToClear;
+}

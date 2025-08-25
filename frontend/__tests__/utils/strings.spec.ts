@@ -10,4 +10,12 @@ describe("string utils", () => {
       expect(Strings.splitIntoCharacters("t𐑩e")).toEqual(["t", "𐑩", "e"]);
     });
   });
+  describe("replaceControlCharacters", () => {
+    it("converts \\t\\t\\t to literal tabs", () => {
+      expect(Strings.replaceControlCharacters("\\t\\t\\t")).toEqual("\t\t\t");
+    });
+    it("converts \\t to literal tab", () => {
+      expect(Strings.replaceControlCharacters("\\t")).toEqual("\t");
+    });
+  });
 });
