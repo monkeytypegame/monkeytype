@@ -153,12 +153,6 @@ export function cleanTypographySymbols(textToClean: string): string {
   );
 }
 
-/**
- * Split a string into characters. This supports multi-byte characters outside of the [Basic Multilinugal Plane](https://en.wikipedia.org/wiki/Plane_(Unicode).
- * Using  `string.length` and `string[index]` does not work.
- * @param s string to be tokenized into characters
- * @returns array of characters
- */
 export function splitIntoCharacters(s: string): string[] {
   const result: string[] = [];
   for (const t of s) {
@@ -168,6 +162,13 @@ export function splitIntoCharacters(s: string): string[] {
   return result;
 }
 
+/**
+ * Replaces escaped control characters with their literal equivalents.
+ * Converts \t to tab characters, \n to newlines (with a space prefix),
+ * and handles double-escaped sequences (\\t, \\n) by converting them back to single escaped versions.
+ * @param textToClear The input string containing escaped control characters.
+ * @returns A new string with control characters properly converted.
+ */
 export function replaceControlCharacters(textToClear: string): string {
   textToClear = textToClear.replace(/(?<!\\)\\t/g, "\t");
   textToClear = textToClear.replace(/\\n/g, " \n");
