@@ -85,6 +85,12 @@
         "max": 5
       }
     ],
+    "always-return": [
+      "error",
+      {
+        "ignoreLastCallback": true
+      }
+    ],
 
     "todo": "off",
     "no-array-for-each": "off",
