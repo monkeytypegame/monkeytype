@@ -4,3 +4,4 @@ docker
 backend/scripts
 backend/private
 **/vitest.config.ts
+node_modules
