@@ -413,8 +413,8 @@ export function getLimit(): number {
 
   const funboxToPush =
     getActiveFunboxes()
-      .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-      ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
+      .flatMap((fb) => fb.properties ?? [])
+      .find((prop) => prop.startsWith("toPush:")) ?? "";
 
   if (Config.showAllLines) {
     if (Config.mode === "custom") {
