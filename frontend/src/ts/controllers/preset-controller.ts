@@ -1,5 +1,5 @@
 import { Preset } from "@monkeytype/schemas/presets";
-import * as UpdateConfig from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";
@@ -15,10 +15,14 @@ export async function apply(_id: string): Promise<void> {
     return;
   }
 
-  await UpdateConfig.apply(
-    presetToApply.config,
-    !isPartialPreset(presetToApply)
-  );
+  if (isPartialPreset(presetToApply)) {
+    await UpdateConfig.apply({
+      ...structuredClone(Config),
+      ...presetToApply.config,
+    });
+  } else {
+    await UpdateConfig.apply(presetToApply.config);
+  }
 
   if (
     !isPartialPreset(presetToApply) ||

@@ -1,3 +1,12 @@
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  beforeEach,
+  afterEach,
+  vi,
+} from "vitest";
 import { ObjectId } from "mongodb";
 import * as BlacklistDal from "../../../src/dal/blocklist";
 
@@ -7,15 +16,15 @@ describe("BlocklistDal", () => {
   });
   describe("add", () => {
     beforeEach(() => {
-      vitest.useFakeTimers();
+      vi.useFakeTimers();
     });
     afterEach(() => {
-      vitest.useRealTimers();
+      vi.useRealTimers();
     });
     it("adds user", async () => {
       //GIVEN
       const now = 1715082588;
-      vitest.setSystemTime(now);
+      vi.setSystemTime(now);
 
       const name = "user" + new ObjectId().toHexString();
       const email = `${name}@example.com`;
@@ -45,7 +54,7 @@ describe("BlocklistDal", () => {
     it("adds user with discordId", async () => {
       //GIVEN
       const now = 1715082588;
-      vitest.setSystemTime(now);
+      vi.setSystemTime(now);
 
       const name = "user" + new ObjectId().toHexString();
       const email = `${name}@example.com`;
@@ -67,7 +76,7 @@ describe("BlocklistDal", () => {
     it("adds user should not create duplicate name", async () => {
       //GIVEN
       const now = 1715082588;
-      vitest.setSystemTime(now);
+      vi.setSystemTime(now);
 
       const name = "user" + new ObjectId().toHexString();
       const email = `${name}@example.com`;
@@ -103,7 +112,7 @@ describe("BlocklistDal", () => {
     it("adds user should not create duplicate email", async () => {
       //GIVEN
       const now = 1715082588;
-      vitest.setSystemTime(now);
+      vi.setSystemTime(now);
 
       const name = "user" + new ObjectId().toHexString();
       const email = `${name}@example.com`;
@@ -125,7 +134,7 @@ describe("BlocklistDal", () => {
     it("adds user should not create duplicate discordId", async () => {
       //GIVEN
       const now = 1715082588;
-      vitest.setSystemTime(now);
+      vi.setSystemTime(now);
 
       const name = "user" + new ObjectId().toHexString();
       const name2 = "user" + new ObjectId().toHexString();

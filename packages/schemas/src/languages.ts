@@ -350,6 +350,8 @@ export const LanguageSchema = z.enum(
     "kabyle_2k",
     "kabyle_5k",
     "kabyle_10k",
+    "hawaiian",
+    "hawaiian_1k",
     "code_python",
     "code_python_1k",
     "code_python_2k",

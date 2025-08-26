@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { RequireConfiguration } from "@monkeytype/contracts/require-configuration/index";
 import { verifyRequiredConfiguration } from "../../src/middlewares/configuration";
 import { Configuration } from "@monkeytype/schemas/configuration";

@@ -1,5 +1,6 @@
 //import type { ConfigMetadata } from "../../src/ts/config-metadata";
 
+import { describe, it, expect, afterAll, vi } from "vitest";
 import * as Util from "../../src/ts/commandline/util";
 
 import type { CommandlineConfigMetadata } from "../../src/ts/commandline/commandline-metadata";

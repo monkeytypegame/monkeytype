@@ -1,6 +1,7 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { Response } from "express";
 import { verifyPermissions } from "../../src/middlewares/permission";
-import { EndpointMetadata } from "@monkeytype/schemas/api";
+import { EndpointMetadata } from "@monkeytype/contracts/util/api";
 import * as Misc from "../../src/utils/misc";
 import * as AdminUids from "../../src/dal/admin-uids";
 import * as UserDal from "../../src/dal/user";

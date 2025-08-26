@@ -4,7 +4,6 @@ import { generatePreviewFonts } from "./scripts/font-preview";
 import { VitePWA } from "vite-plugin-pwa";
 import replace from "vite-plugin-filter-replace";
 import path from "node:path";
-import { splitVendorChunkPlugin } from "vite";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
 import { writeFileSync } from "fs";
@@ -87,7 +86,6 @@ export default {
         tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
       },
     }),
-    splitVendorChunkPlugin(),
     ViteMinifyPlugin({}),
     VitePWA({
       // injectRegister: "networkfirst",
@@ -155,10 +153,17 @@ export default {
       : null,
     replace([
       {
-        filter: /firebase\.ts$/,
+        filter: ["src/ts/firebase.ts"],
         replace: {
-          from: /\.\/constants\/firebase-config/gi,
-          to: "./constants/firebase-config-live",
+          from: `"./constants/firebase-config"`,
+          to: `"./constants/firebase-config-live"`,
+        },
+      },
+      {
+        filter: ["src/email-handler.html"],
+        replace: {
+          from: `"./ts/constants/firebase-config"`,
+          to: `"./ts/constants/firebase-config-live"`,
         },
       },
     ]),
@@ -275,6 +280,23 @@ export default {
         },
         chunkFileNames: "js/[name].[hash].js",
         entryFileNames: "js/[name].[hash].js",
+        manualChunks: (id) => {
+          if (id.includes("@sentry")) {
+            return "vendor-sentry";
+          }
+          if (id.includes("jquery")) {
+            return "vendor-jquery";
+          }
+          if (id.includes("@firebase")) {
+            return "vendor-firebase";
+          }
+          if (id.includes("monkeytype/packages")) {
+            return "monkeytype-packages";
+          }
+          if (id.includes("node_modules")) {
+            return "vendor";
+          }
+        },
       },
     },
   },

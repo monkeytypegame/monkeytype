@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import _ from "lodash";
 import * as pb from "../../src/utils/pb";
 import { Mode, PersonalBests } from "@monkeytype/schemas/shared";

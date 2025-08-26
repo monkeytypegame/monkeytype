@@ -15,7 +15,10 @@ import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
 import { intersect } from "@monkeytype/util/arrays";
-import { createInputEventHandler } from "../elements/input-validation";
+import {
+  createInputEventHandler,
+  ValidationResult,
+} from "../elements/input-validation";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -23,10 +26,7 @@ type InputModeParams = {
   placeholder: string | null;
   value: string | null;
   icon: string | null;
-  validation?: {
-    status: "checking" | "success" | "failed";
-    errorMessage?: string;
-  };
+  validation?: ValidationResult;
 };
 
 let activeIndex = 0;

@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { getAllFunboxes } from "../../src/ts/test/funbox/list";
 
 describe("funbox", () => {

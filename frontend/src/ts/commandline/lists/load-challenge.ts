@@ -25,7 +25,7 @@ function update(challenges: Challenge[]): void {
       id: "loadChallenge" + capitalizeFirstLetterOfEachWord(challenge.name),
       display: challenge.display,
       exec: async (): Promise<void> => {
-        navigate("/");
+        await navigate("/");
         await ChallengeController.setup(challenge.name);
         TestLogic.restart({
           nosave: true,

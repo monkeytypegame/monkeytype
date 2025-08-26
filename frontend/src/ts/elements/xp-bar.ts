@@ -404,7 +404,7 @@ async function animateXpBar(
 
     let firstOneDone = false;
     let animationDuration = quickSpeed;
-    let animationEasing = "linear";
+    let animationEasing: Misc.JQueryEasing = "linear";
     let decrement = 1 - (startingLevel % 1);
 
     do {

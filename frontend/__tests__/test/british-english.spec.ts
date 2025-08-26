@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest";
 import { replace } from "../../src/ts/test/british-english";
 import Config from "../../src/ts/config";
 

@@ -41,6 +41,7 @@ import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
+import * as AuthEvent from "../observables/auth-event";
 
 let settingsInitialized = false;
 
@@ -1008,7 +1009,6 @@ $(".pageSettings .section[data-config-name='funbox'] .buttons").on(
     const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
-    $(e.currentTarget).blur();
   }
 );
 
@@ -1221,6 +1221,16 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
     void (eventKey === "customBackground"
       ? updateFilterSectionVisibility()
       : update({ eventKey }));
+  }
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    if (event.data.isUserSignedIn) {
+      showAccountSection();
+    } else {
+      hideAccountSection();
+    }
   }
 });
 
