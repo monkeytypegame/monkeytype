@@ -98,6 +98,9 @@ module.exports = {
         "@typescript-eslint/switch-exhaustiveness-check": "off",
         "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/unbound-method": "off",
+        //unnecessary, might aswell keep template strings in case a string might be added in the future
+        "@typescript-eslint/no-unnecessary-template-expression": "off",
+        "@typescript-eslint/prefer-promise-reject-errors": "off",
 
         //super strict
         //todo: consider?
@@ -106,9 +109,7 @@ module.exports = {
         // all though performance impact probably minimal
         // anything that needs to be absolutely as fast as possible should not be async (if not using await)
         "@typescript-eslint/require-await": "off",
-        "@typescript-eslint/no-unnecessary-template-expression": "off",
-        "@typescript-eslint/prefer-promise-reject-errors": "off",
-        "@typescript-eslint/no-unnecessary-type-arguments": "off",
+        //--
         "@typescript-eslint/restrict-template-expressions": "off",
         "@typescript-eslint/no-redundant-type-constituents": "off",
         "@typescript-eslint/restrict-plus-operands": "off",
@@ -155,6 +156,7 @@ module.exports = {
         "@typescript-eslint/return-await": "error",
         "@typescript-eslint/use-unknown-in-catch-callback-variable": "error",
         "@typescript-eslint/await-thenable": "error",
+        "@typescript-eslint/no-unnecessary-type-arguments": "error",
 
         //handled by oxlint
         "@typescript-eslint/no-non-null-assertion": "off",
