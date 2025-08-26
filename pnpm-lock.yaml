@@ -312,6 +312,9 @@ importers:
       date-fns:
         specifier: 3.6.0
         version: 3.6.0
+      disposable-email-domains-js:
+        specifier: ^1.0.35
+        version: 1.16.0
       firebase:
         specifier: 12.0.0
         version: 12.0.0
@@ -4611,6 +4614,9 @@ packages:
 
   discontinuous-range@1.0.0:
     resolution: {integrity: sha512-c68LpLbO+7kP/b1Hr1qs8/BJ09F5khZGTxqxZuhzxpmwJKOgRFHJWIb9/KmqnqHhLdO55aOxFH/EGBvUQbL/RQ==}
+
+  disposable-email-domains-js@1.16.0:
+    resolution: {integrity: sha512-5BTVWEfUO1xeJ/jQdt+bIeOFYlgKuN5wGUtiMlkj0rqqpeO8LwiIH+7sKYvob87yMBjDKJWD8eqSSHFVM0g2pQ==}
 
   docker-compose@1.2.0:
     resolution: {integrity: sha512-wIU1eHk3Op7dFgELRdmOYlPYS4gP8HhH1ZmZa13QZF59y0fblzFDFmKPhyc05phCy2hze9OEvNZAsoljrs+72w==}
@@ -14148,6 +14154,8 @@ snapshots:
       path-type: 4.0.0
 
   discontinuous-range@1.0.0: {}
+
+  disposable-email-domains-js@1.16.0: {}
 
   docker-compose@1.2.0:
     dependencies:

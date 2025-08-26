@@ -80,7 +80,8 @@ validateWithIndicator(nameInputEl, {
   },
 });
 
-let disposableEmailModule: any = null;
+let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
+  null;
 let moduleLoadAttempted = false;
 
 const emailInputEl = document.querySelector(
@@ -119,11 +120,15 @@ validateWithIndicator(emailInputEl, {
       };
     }
 
-    if (disposableEmailModule && disposableEmailModule.isDisposableEmail) {
+    if (
+      disposableEmailModule &&
+      disposableEmailModule.isDisposableEmail !== undefined
+    ) {
       try {
         if (disposableEmailModule.isDisposableEmail(email)) {
           return {
-            warning: "Be careful when using temporary emails - you will need it to log into your account",
+            warning:
+              "Be careful when using temporary emails - you will need it to log into your account",
           };
         }
       } catch (e) {
