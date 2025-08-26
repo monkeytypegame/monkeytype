@@ -80,7 +80,6 @@ validateWithIndicator(nameInputEl, {
   },
 });
 
-// Variable to store the disposable email module and loading state
 let disposableEmailModule: any = null;
 let moduleLoadAttempted = false;
 
@@ -88,14 +87,13 @@ const emailInputEl = document.querySelector(
   ".page.pageLogin .register.side input.emailInput"
 ) as HTMLInputElement;
 
-// Add focus event listener to dynamically import disposable email package
 emailInputEl.addEventListener("focus", async () => {
   if (!moduleLoadAttempted) {
     moduleLoadAttempted = true;
     try {
       disposableEmailModule = await import("disposable-email-domains-js");
     } catch (e) {
-      // Silent failure as requested - don't throw or notify user
+      // Silent failure
     }
   }
 });
@@ -121,7 +119,6 @@ validateWithIndicator(emailInputEl, {
       };
     }
 
-    // Check for temporary/disposable email
     if (disposableEmailModule && disposableEmailModule.isDisposableEmail) {
       try {
         if (disposableEmailModule.isDisposableEmail(email)) {
@@ -130,7 +127,7 @@ validateWithIndicator(emailInputEl, {
           };
         }
       } catch (e) {
-        // Silent failure - if the check fails, continue with validation
+        // Silent failure
       }
     }
 
