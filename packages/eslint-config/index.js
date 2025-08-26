@@ -97,12 +97,15 @@ module.exports = {
         "@typescript-eslint/no-unnecessary-condition": "off",
         "@typescript-eslint/switch-exhaustiveness-check": "off",
         "@typescript-eslint/no-this-alias": "off",
+        "@typescript-eslint/unbound-method": "off",
 
         //super strict
         //todo: consider?
+        //224 errors, very easy to fix.
+        // adds unnecessary promise overhead and pushing the function to the microtask queue, creating a delay
+        // all though performance impact probably minimal
+        // anything that needs to be absolutely as fast as possible should not be async (if not using await)
         "@typescript-eslint/require-await": "off",
-        "@typescript-eslint/unbound-method": "off",
-        "@typescript-eslint/await-thenable": "off",
         "@typescript-eslint/no-unnecessary-template-expression": "off",
         "@typescript-eslint/prefer-promise-reject-errors": "off",
         "@typescript-eslint/no-unnecessary-type-arguments": "off",
@@ -151,6 +154,7 @@ module.exports = {
         "@typescript-eslint/require-array-sort-compare": "error",
         "@typescript-eslint/return-await": "error",
         "@typescript-eslint/use-unknown-in-catch-callback-variable": "error",
+        "@typescript-eslint/await-thenable": "error",
 
         //handled by oxlint
         "@typescript-eslint/no-non-null-assertion": "off",
