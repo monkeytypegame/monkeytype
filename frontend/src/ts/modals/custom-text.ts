@@ -279,11 +279,7 @@ function cleanUpText(): string[] {
   }
 
   if (state.replaceControlCharactersEnabled) {
-    text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
-    text = text.replace(/\\n/g, " \n");
-    text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
-    text = text.replace(/\\\\t/gm, "\\t");
-    text = text.replace(/\\\\n/gm, "\\n");
+    text = Strings.replaceControlCharacters(text);
   }
 
   text = text.replace(/ +/gm, " ");
