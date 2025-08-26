@@ -85,6 +85,7 @@
         "max": 5
       }
     ],
+    "always-return": "off",
 
     "todo": "off",
     "no-array-for-each": "off",
