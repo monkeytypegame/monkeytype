@@ -169,17 +169,17 @@ export function restart(options = {} as RestartOptions): void {
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
       important: true,
     });
-    event?.preventDefault();
+    options.event?.preventDefault();
     return;
   }
 
   if (TestUI.testRestarting || TestUI.resultCalculating) {
-    event?.preventDefault();
+    options.event?.preventDefault();
     return;
   }
   if (ActivePage.get() === "test") {
     if (!ManualRestart.get()) {
-      if (Config.mode !== "zen") event?.preventDefault();
+      if (Config.mode !== "zen") options.event?.preventDefault();
       if (
         !canQuickRestart(
           Config.mode,
@@ -603,9 +603,12 @@ export async function addWord(): Promise<void> {
   }
 
   let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = getActiveFunboxes()
-    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+
+  const funboxToPush =
+    getActiveFunboxes()
+      .flatMap((fb) => fb.properties ?? [])
+      .find((prop) => prop.startsWith("toPush:")) ?? "";
+
   const toPushCount = funboxToPush?.split(":")[1];
   if (toPushCount !== undefined) bound = +toPushCount - 1;
 

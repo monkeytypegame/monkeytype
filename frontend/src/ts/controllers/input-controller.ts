@@ -1214,6 +1214,8 @@ $("#wordsInput").on("keydown", (event) => {
       "spacing debug keydown STOPPED - repeat",
       event.key,
       event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       event.which
     );
     return;
@@ -1233,7 +1235,7 @@ $("#wordsInput").on("keydown", (event) => {
   const now = performance.now();
   setTimeout(() => {
     const eventCode =
-      event.code === "" || event.which === 231 ? "NoCode" : event.code;
+      event.code === "" || event.key === "Unidentified" ? "NoCode" : event.code;
     TestInput.recordKeydownTime(now, eventCode);
   }, 0);
 });
@@ -1244,6 +1246,8 @@ $("#wordsInput").on("keyup", (event) => {
       "spacing debug keydown STOPPED - repeat",
       event.key,
       event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       event.which
     );
     return;
@@ -1262,7 +1266,7 @@ $("#wordsInput").on("keyup", (event) => {
   const now = performance.now();
   setTimeout(() => {
     const eventCode =
-      event.code === "" || event.which === 231 ? "NoCode" : event.code;
+      event.code === "" || event.key === "Unidentified" ? "NoCode" : event.code;
     TestInput.recordKeyupTime(now, eventCode);
   }, 0);
 });
