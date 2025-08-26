@@ -101,6 +101,7 @@ module.exports = {
         //unnecessary, might aswell keep template strings in case a string might be added in the future
         "@typescript-eslint/no-unnecessary-template-expression": "off",
         "@typescript-eslint/prefer-promise-reject-errors": "off",
+        "@typescript-eslint/no-redundant-type-constituents": "off",
 
         //todo: consider some of these?
         //936, no options on this one. super strict, it doesnt allow casting to a narrower type
@@ -119,8 +120,6 @@ module.exports = {
             allowArray: true,
           },
         ],
-        //only 4 but i don't really understand this rule
-        "@typescript-eslint/no-redundant-type-constituents": "off",
         //162, 31 when allowing numbers and strings, kinda related to restrict-template-expressions
         "@typescript-eslint/restrict-plus-operands": [
           "off",
