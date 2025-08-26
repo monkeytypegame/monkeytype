@@ -80,9 +80,26 @@ validateWithIndicator(nameInputEl, {
   },
 });
 
+// Variable to store the disposable email module and loading state
+let disposableEmailModule: any = null;
+let moduleLoadAttempted = false;
+
 const emailInputEl = document.querySelector(
   ".page.pageLogin .register.side input.emailInput"
 ) as HTMLInputElement;
+
+// Add focus event listener to dynamically import disposable email package
+emailInputEl.addEventListener("focus", async () => {
+  if (!moduleLoadAttempted) {
+    moduleLoadAttempted = true;
+    try {
+      disposableEmailModule = await import("disposable-email-domains-js");
+    } catch (e) {
+      // Silent failure as requested - don't throw or notify user
+    }
+  }
+});
+
 validateWithIndicator(emailInputEl, {
   schema: UserEmailSchema,
   isValid: async (email: string) => {
@@ -103,6 +120,20 @@ validateWithIndicator(emailInputEl, {
         warning: "Please check your email address, it may contain a typo.",
       };
     }
+
+    // Check for temporary/disposable email
+    if (disposableEmailModule && disposableEmailModule.isDisposableEmail) {
+      try {
+        if (disposableEmailModule.isDisposableEmail(email)) {
+          return {
+            warning: "Be careful when using temporary emails - you will need it to log into your account",
+          };
+        }
+      } catch (e) {
+        // Silent failure - if the check fails, continue with validation
+      }
+    }
+
     return true;
   },
   debounceDelay: 0,
