@@ -555,21 +555,21 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
   modalEl.querySelector(".button.wordfilter")?.addEventListener("click", () => {
     void WordFilterPopup.show({
-      modalChain: modal as AnimatedModal<unknown, unknown>,
+      modalChain: modal as AnimatedModal,
     });
   });
   modalEl
     .querySelector(".button.showSavedTexts")
     ?.addEventListener("click", () => {
       void SavedTextsPopup.show({
-        modalChain: modal as AnimatedModal<unknown, unknown>,
+        modalChain: modal as AnimatedModal,
       });
     });
   modalEl
     .querySelector(".button.saveCustomText")
     ?.addEventListener("click", () => {
       void SaveCustomTextPopup.show({
-        modalChain: modal as AnimatedModal<unknown, unknown>,
+        modalChain: modal as AnimatedModal,
         modalChainData: { text: cleanUpText() },
       });
     });

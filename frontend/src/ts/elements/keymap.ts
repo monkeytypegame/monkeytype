@@ -477,7 +477,7 @@ export async function refresh(): Promise<void> {
   }
 }
 
-const isMacLike = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+const isMacLike = Misc.isMacLike();
 const symbolsPattern = /^[^\p{L}\p{N}]{1}$/u;
 type KeymapLegendStates = [letters: 0 | 1 | 2 | 3, symbols: 0 | 1 | 2 | 3];
 let keymapLegendStates: KeymapLegendStates = [0, 0];

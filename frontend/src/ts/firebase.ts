@@ -172,7 +172,7 @@ export async function createUserWithEmailAndPassword(
 }
 
 export async function getIdToken(): Promise<string | null> {
-  const user = await getAuthenticatedUser();
+  const user = getAuthenticatedUser();
   if (user === null) return null;
   return firebaseGetIdToken(user);
 }

@@ -316,7 +316,7 @@ BannerEvent.subscribe(() => {
   updateVerticalMargin();
 });
 
-$(document).ready(() => {
+$(() => {
   updateBreakpoint(true);
   updateBreakpoint2();
 });

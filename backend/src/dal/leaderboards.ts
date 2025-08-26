@@ -226,7 +226,7 @@ export async function update(
   //update speedStats
   const boundaries = [...Array(32).keys()].map((it) => it * 10);
   const statsKey = `${language}_${mode}_${mode2}`;
-  const src = await db.collection(lbCollectionName);
+  const src = db.collection(lbCollectionName);
   const histogram = src.aggregate(
     [
       {

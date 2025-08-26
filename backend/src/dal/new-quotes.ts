@@ -187,6 +187,7 @@ export async function approve(
       if (compareTwoStrings(old.text, quote.text) > 0.8) {
         throw new MonkeyError(409, "Duplicate quote");
       }
+      return true;
     });
     let maxid = 0;
     quoteObject.quotes.map(function (q) {
