@@ -72,10 +72,7 @@ function updateUI(): void {
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     if (!Config.language.startsWith("korean")) {
       void KeymapEvent.highlight(
-        TestWords.words
-          .getCurrent()
-          .charAt(TestInput.input.current.length)
-          .toString()
+        TestWords.words.getCurrent().charAt(TestInput.input.current.length)
       );
     } else {
       //word [가다]
@@ -1196,7 +1193,7 @@ $(document).on("keydown", async (event) => {
     Config.layout !== "default" &&
     !(
       event.ctrlKey ||
-      (event.altKey && window.navigator.platform.search("Linux") > -1)
+      (event.altKey && navigator.platform.search("Linux") > -1)
     )
   ) {
     const char: string | null = await LayoutEmulator.getCharFromEvent(event);
