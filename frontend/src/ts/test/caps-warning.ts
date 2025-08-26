@@ -1,7 +1,8 @@
 import Config from "../config";
+import * as Misc from "../utils/misc";
 
 const el = document.querySelector("#capsWarning") as HTMLElement;
-const isMacOs = navigator.platform.startsWith("Mac");
+const isMacOs = Misc.isPlatform("Mac");
 
 export let capsState = false;
 

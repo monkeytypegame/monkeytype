@@ -720,4 +720,15 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
 export function triggerResize(): void {
   $(window).trigger("resize");
 }
+
+export function isPlatform(searchTerm: string | RegExp): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const platform = navigator.platform;
+  if (typeof searchTerm === "string") {
+    return platform.includes(searchTerm);
+  } else {
+    return searchTerm.test(platform);
+  }
+}
+
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

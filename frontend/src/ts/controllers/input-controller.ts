@@ -1191,10 +1191,7 @@ $(document).on("keydown", async (event) => {
 
   if (
     Config.layout !== "default" &&
-    !(
-      event.ctrlKey ||
-      (event.altKey && navigator.platform.search("Linux") > -1)
-    )
+    !(event.ctrlKey || (event.altKey && Misc.isPlatform("Linux")))
   ) {
     const char: string | null = await LayoutEmulator.getCharFromEvent(event);
     if (char !== null) {
