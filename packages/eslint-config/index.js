@@ -102,18 +102,32 @@ module.exports = {
         "@typescript-eslint/no-unnecessary-template-expression": "off",
         "@typescript-eslint/prefer-promise-reject-errors": "off",
 
-        //super strict
-        //todo: consider?
+        //todo: consider some of these?
+        //936, no options on this one. super strict, it doesnt allow casting to a narrower type
+        "@typescript-eslint/no-unsafe-type-assertion": "error",
         //224 errors, very easy to fix.
         // adds unnecessary promise overhead and pushing the function to the microtask queue, creating a delay
         // all though performance impact probably minimal
         // anything that needs to be absolutely as fast as possible should not be async (if not using await)
         "@typescript-eslint/require-await": "off",
-        //--
-        "@typescript-eslint/restrict-template-expressions": "off",
+        //388, when allowing numbers only 27, when also allowing arrays 12
+        // could be nice to avoid some weird things showing up in templated strings
+        "@typescript-eslint/restrict-template-expressions": [
+          "off",
+          {
+            allowNumber: true,
+            allowArray: true,
+          },
+        ],
+        //only 4 but i don't really understand this rule
         "@typescript-eslint/no-redundant-type-constituents": "off",
-        "@typescript-eslint/restrict-plus-operands": "off",
-        "@typescript-eslint/no-unsafe-type-assertion": "off",
+        //162, 31 when allowing numbers and strings, kinda related to restrict-template-expressions
+        "@typescript-eslint/restrict-plus-operands": [
+          "off",
+          {
+            allowNumberAndString: true,
+          },
+        ],
 
         //using
         "@typescript-eslint/no-unsafe-member-access": "error",
