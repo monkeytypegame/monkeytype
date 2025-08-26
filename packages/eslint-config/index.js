@@ -91,7 +91,13 @@ module.exports = {
         "plugin:oxlint/recommended",
       ],
       rules: {
-        //strict type checked
+        //not using
+        "@typescript-eslint/non-nullable-type-assertion-style": "off",
+        "import/namespace": "off",
+        "@typescript-eslint/no-unnecessary-condition": "off",
+
+        //super strict
+        //todo: consider?
         "@typescript-eslint/require-await": "off",
         "@typescript-eslint/unbound-method": "off",
         "@typescript-eslint/await-thenable": "off",
@@ -101,7 +107,9 @@ module.exports = {
         "@typescript-eslint/restrict-template-expressions": "off",
         "@typescript-eslint/no-redundant-type-constituents": "off",
         "@typescript-eslint/restrict-plus-operands": "off",
+        "@typescript-eslint/no-unsafe-type-assertion": "off",
 
+        //using
         "@typescript-eslint/no-unsafe-member-access": "error",
         "@typescript-eslint/no-unsafe-call": "error",
         "@typescript-eslint/no-unsafe-argument": "error",
@@ -124,12 +132,33 @@ module.exports = {
           "error",
           { allowNullableBoolean: true },
         ],
-        "@typescript-eslint/non-nullable-type-assertion-style": "off",
-        "@typescript-eslint/no-unnecessary-condition": "off",
-        "@typescript-eslint/no-invalid-void-type": "off",
-        "import/namespace": "off",
-        //todo: consider
-        "@typescript-eslint/no-unsafe-type-assertion": "off",
+        "@typescript-eslint/no-invalid-void-type": "error",
+        // "@typescript-eslint/await-thenable": "error",
+        // "@typescript-eslint/no-array-delete": "error",
+        // "@typescript-eslint/no-base-to-string": "error",
+        // "@typescript-eslint/no-duplicate-type-constituents": "error",
+        // "@typescript-eslint/no-for-in-array": "error",
+        // "@typescript-eslint/no-implied-eval": "error",
+        // "@typescript-eslint/no-meaningless-void-operator": "error",
+        // "@typescript-eslint/no-mixed-enums": "error",
+        // "@typescript-eslint/no-redundant-type-constituents": "error",
+        // "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
+        // "@typescript-eslint/no-unnecessary-template-expression": "error",
+        // "@typescript-eslint/no-unnecessary-type-arguments": "error",
+        // "@typescript-eslint/no-unsafe-enum-comparison": "error",
+        // "@typescript-eslint/no-unsafe-return": "error",
+        // "@typescript-eslint/no-unsafe-unary-minus": "error",
+        // "@typescript-eslint/prefer-reduce-type-parameter": "error",
+        // "@typescript-eslint/prefer-return-this-type": "error",
+        // "@typescript-eslint/related-getter-setter-pairs": "error",
+        // "@typescript-eslint/require-array-sort-compare": "error",
+        // "@typescript-eslint/require-await": "error",
+        // "@typescript-eslint/restrict-plus-operands": "error",
+        // "@typescript-eslint/restrict-template-expressions": "error",
+        // "@typescript-eslint/return-await": "error",
+        // "@typescript-eslint/switch-exhaustiveness-check": "error",
+        // "@typescript-eslint/unbound-method": "error",
+        // "@typescript-eslint/use-unknown-in-catch-callback-variable": "error",
 
         //handled by oxlint
         "@typescript-eslint/no-non-null-assertion": "off",

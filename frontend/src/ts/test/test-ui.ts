@@ -540,7 +540,7 @@ export async function centerActiveLine(): Promise<void> {
     return;
   }
 
-  const { resolve, promise } = Misc.promiseWithResolvers<void>();
+  const { resolve, promise } = Misc.promiseWithResolvers();
   centeringActiveLine = promise;
 
   const wordElements = document.querySelectorAll<HTMLElement>("#words .word");
@@ -1128,7 +1128,7 @@ export async function lineJump(
   currentTop: number,
   force = false
 ): Promise<void> {
-  const { resolve, promise } = Misc.promiseWithResolvers<void>();
+  const { resolve, promise } = Misc.promiseWithResolvers();
 
   //last word of the line
   if (currentTestLine > 0 || force) {

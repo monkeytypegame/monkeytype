@@ -405,7 +405,9 @@ export function restart(options = {} as RestartOptions): void {
 let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
-export async function init(): Promise<void | null> {
+
+// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+export async function init(): Promise<null | void> {
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
