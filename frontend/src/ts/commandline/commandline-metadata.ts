@@ -331,6 +331,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   lazyMode: {
     subgroup: {
       options: "fromSchema",
+      afterExec: () => TestLogic.restart(),
     },
   },
   layout: {
