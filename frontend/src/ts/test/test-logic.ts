@@ -354,7 +354,7 @@ export function restart(options = {} as RestartOptions): void {
       TestState.setTestInitSuccess(true);
       const initResult = await init();
 
-      if (initResult === null) {
+      if (!initResult) {
         TestUI.setTestRestarting(false);
         return;
       }
@@ -406,8 +406,7 @@ let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
 
-// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-export async function init(): Promise<null | void> {
+export async function init(): Promise<boolean> {
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
@@ -428,7 +427,7 @@ export async function init(): Promise<null | void> {
     //     important: true,
     //   }
     // );
-    return null;
+    return false;
   }
 
   MonkeyPower.reset();
@@ -577,6 +576,7 @@ export async function init(): Promise<null | void> {
     "Test initialized with section indexes",
     generatedSectionIndexes
   );
+  return true;
 }
 
 export function areAllTestWordsGenerated(): boolean {
