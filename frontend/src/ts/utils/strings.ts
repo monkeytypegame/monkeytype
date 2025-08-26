@@ -186,16 +186,6 @@ export function replaceControlCharacters(textToClear: string): string {
 }
 
 /**
- * Cache for word direction to avoid repeated calculations per word
- * Keyed by the stripped core of the word; can be manually cleared when needed
- */
-let wordDirectionCache: Map<string, boolean> = new Map();
-
-export function clearWordDirectionCache(): void {
-  wordDirectionCache.clear();
-}
-
-/**
  * Detect if a word contains RTL (Right-to-Left) characters.
  * This is for test scenarios where individual words may have different directions.
  * Uses a simple regex pattern that covers all common RTL scripts.
@@ -212,6 +202,16 @@ function hasRTLCharacters(word: string): boolean {
     /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
 
   return rtlPattern.test(word);
+}
+
+/**
+ * Cache for word direction to avoid repeated calculations per word
+ * Keyed by the stripped core of the word; can be manually cleared when needed
+ */
+let wordDirectionCache: Map<string, boolean> = new Map();
+
+export function clearWordDirectionCache(): void {
+  wordDirectionCache.clear();
 }
 
 export function getWordDirection(
