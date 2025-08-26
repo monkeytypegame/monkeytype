@@ -721,7 +721,7 @@ export function triggerResize(): void {
   $(window).trigger("resize");
 }
 
-export function isPlatform(searchTerm: string | RegExp): boolean {
+function isPlatform(searchTerm: string | RegExp): boolean {
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   const platform = navigator.platform;
   if (typeof searchTerm === "string") {
@@ -729,6 +729,18 @@ export function isPlatform(searchTerm: string | RegExp): boolean {
   } else {
     return searchTerm.test(platform);
   }
+}
+
+export function isLinux(): boolean {
+  return isPlatform("Linux");
+}
+
+export function isMac(): boolean {
+  return isPlatform("Mac");
+}
+
+export function isMacLike(): boolean {
+  return isPlatform(/Mac|iPod|iPhone|iPad/);
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

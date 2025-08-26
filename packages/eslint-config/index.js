@@ -104,7 +104,7 @@ module.exports = {
 
         //todo: consider some of these?
         //936, no options on this one. super strict, it doesnt allow casting to a narrower type
-        "@typescript-eslint/no-unsafe-type-assertion": "error",
+        "@typescript-eslint/no-unsafe-type-assertion": "off",
         //224 errors, very easy to fix.
         // adds unnecessary promise overhead and pushing the function to the microtask queue, creating a delay
         // all though performance impact probably minimal
