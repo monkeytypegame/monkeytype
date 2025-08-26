@@ -1531,8 +1531,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       ) {
         UpdateConfig.setLazyMode(true, true);
       }
-
-      Strings.clearWordDirectionCache();
       restart();
     }
     if (eventKey === "difficulty" && !nosave) restart();

@@ -180,25 +180,16 @@ export function clearWordDirectionCache(): void {
 
 /**
  * Detect if a word contains RTL (Right-to-Left) characters.
- * This is for mixed language scenarios where individual words may have different directions.
- * Uses a simple regex pattern for efficiency and reliability.
+ * This is for test scenarios where individual words may have different directions.
+ * Uses a simple regex pattern that covers all common RTL scripts.
  * @param word the word to check for RTL characters
  * @returns true if the word contains RTL characters, false otherwise
- *
- * @example
- * hasRTLCharacters("hello") // false
- * hasRTLCharacters("مرحبا") // true (Arabic)
- * hasRTLCharacters("שלום") // true (Hebrew)
- * hasRTLCharacters("helloمرحبا") // true (mixed)
- * hasRTLCharacters("123") // false
- * hasRTLCharacters("") // false
  */
 function hasRTLCharacters(word: string): boolean {
   if (!word || word.length === 0) {
     return false;
   }
 
-  // Simple regex pattern for common RTL scripts
   // This covers Arabic, Farsi, Urdu, and other RTL scripts
   const rtlPattern =
     /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
@@ -218,12 +209,11 @@ export function getWordDirection(
   const core = word.replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "");
   if (core.length === 0) return languageRTL;
 
-  // with the stripped core to avoid duplicating entries for variants like "word" vs "word؟"
+  // cache by core to handle variants like "word" vs "word؟"
   const cacheKey = `${core}`;
   const cached = wordDirectionCache.get(cacheKey);
   if (cached !== undefined) return cached;
 
-  // cache based on the core letters only
   const result = hasRTLCharacters(core);
   wordDirectionCache.set(cacheKey, result);
 

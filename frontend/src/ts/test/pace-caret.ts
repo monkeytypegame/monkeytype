@@ -54,10 +54,8 @@ async function resetCaretPosition(): Promise<void> {
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
 
-  // use the current word for direction detection (at start, this is the first word btw)
   const currentWord = TestWords.words.get(settings?.currentWordIndex ?? 0);
 
-  // use word-specific direction if available and different from language direction
   const isWordRightToLeft = getWordDirection(
     currentWord,
     isLanguageRightToLeft
@@ -241,10 +239,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
       );
       const isLanguageRightToLeft = currentLanguage.rightToLeft;
 
-      // get the current word for direction detection
       const currentWord = TestWords.words.get(settings.currentWordIndex);
 
-      // use word-specific direction if available and different from language direction
       const isWordRightToLeft = getWordDirection(
         currentWord,
         isLanguageRightToLeft
