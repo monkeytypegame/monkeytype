@@ -128,7 +128,7 @@ validateWithIndicator(emailInputEl, {
         if (disposableEmailModule.isDisposableEmail(email)) {
           return {
             warning:
-              "Be careful when using temporary emails - you will need it to log into your account",
+              "Using a temporary email may cause issues with logging in, password resets and support. Consider using a permanent email address. Don't worry, we don't send spam.",
           };
         }
       } catch (e) {
