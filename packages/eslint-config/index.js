@@ -95,6 +95,8 @@ module.exports = {
         "@typescript-eslint/non-nullable-type-assertion-style": "off",
         "import/namespace": "off",
         "@typescript-eslint/no-unnecessary-condition": "off",
+        "@typescript-eslint/switch-exhaustiveness-check": "off",
+        "@typescript-eslint/no-this-alias": "off",
 
         //super strict
         //todo: consider?
@@ -119,7 +121,6 @@ module.exports = {
           "error",
           { ignoreArrowShorthand: true },
         ],
-        "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/no-misused-promises": [
           "error",
           {
@@ -149,7 +150,6 @@ module.exports = {
         // "@typescript-eslint/related-getter-setter-pairs": "error",
         // "@typescript-eslint/require-array-sort-compare": "error",
         // "@typescript-eslint/return-await": "error",
-        // "@typescript-eslint/switch-exhaustiveness-check": "error",
         // "@typescript-eslint/use-unknown-in-catch-callback-variable": "error",
 
         //handled by oxlint
