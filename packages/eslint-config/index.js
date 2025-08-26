@@ -128,6 +128,8 @@ module.exports = {
         "@typescript-eslint/no-unnecessary-condition": "off",
         "@typescript-eslint/no-invalid-void-type": "off",
         "import/namespace": "off",
+        //todo: consider
+        "@typescript-eslint/no-unsafe-type-assertion": "off",
 
         //handled by oxlint
         "@typescript-eslint/no-non-null-assertion": "off",
