@@ -637,7 +637,7 @@ async function handleChar(
     if (charIndex >= currCorrectedTestInputLength) {
       TestInput.corrected.current += !isCharKorean
         ? char
-        : Hangul.disassemble(char).concat();
+        : Hangul.disassemble(char).concat().join("");
     } else if (!thisCharCorrect) {
       TestInput.corrected.current =
         TestInput.corrected.current.substring(0, charIndex) +

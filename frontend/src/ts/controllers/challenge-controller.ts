@@ -264,7 +264,9 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "script") {
       Loader.show();
-      const response = await fetch("/challenges/" + challenge.parameters[0]);
+      const response = await fetch(
+        "/challenges/" + (challenge.parameters[0] as string)
+      );
       Loader.hide();
       if (response.status !== 200) {
         throw new Error(`${response.status} ${response.statusText}`);

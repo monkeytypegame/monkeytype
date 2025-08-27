@@ -65,7 +65,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "fontSize") {
     $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
       "fontSize",
-      eventValue + "rem"
+      (eventValue as number) + "rem"
     );
     if (!nosave) {
       OutOfFocus.hide();
@@ -1688,7 +1688,8 @@ async function copyToClipboard(content: string): Promise<void> {
       duration: 2,
     });
   } catch (e) {
-    Notifications.add("Could not copy to clipboard: " + e, -1);
+    const msg = Misc.createErrorMessage(e, "Could not copy to clipboard");
+    Notifications.add(msg, -1);
   }
 }
 

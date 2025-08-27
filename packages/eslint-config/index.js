@@ -120,13 +120,6 @@ module.exports = {
             allowArray: true,
           },
         ],
-        //162, 31 when allowing numbers and strings, kinda related to restrict-template-expressions
-        "@typescript-eslint/restrict-plus-operands": [
-          "off",
-          {
-            allowNumberAndString: true,
-          },
-        ],
 
         //using
         "@typescript-eslint/no-unsafe-member-access": "error",
@@ -170,6 +163,12 @@ module.exports = {
         "@typescript-eslint/use-unknown-in-catch-callback-variable": "error",
         "@typescript-eslint/await-thenable": "error",
         "@typescript-eslint/no-unnecessary-type-arguments": "error",
+        "@typescript-eslint/restrict-plus-operands": [
+          "error",
+          {
+            allowNumberAndString: true,
+          },
+        ],
 
         //handled by oxlint
         "@typescript-eslint/no-non-null-assertion": "off",
@@ -179,7 +178,7 @@ module.exports = {
         "@typescript-eslint/no-unused-expressions": "off",
         "@typescript-eslint/no-empty-function": "off",
         "no-empty": "off",
-        "@typescript-eslint/only-throw-error": "off",
+        "@typescript-eslint/only-throw-error": "error",
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-unsafe-function-type": "off",
         "@typescript-eslint/consistent-type-definitions": "off",
