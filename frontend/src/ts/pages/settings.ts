@@ -1199,7 +1199,8 @@ $(".pageSettings .section .groupTitle button").on("click", (e) => {
       Notifications.add("Link copied to clipboard", 1);
     })
     .catch((e: unknown) => {
-      Notifications.add("Failed to copy to clipboard: " + e, -1);
+      const msg = Misc.createErrorMessage(e, "Failed to copy to clipboard");
+      Notifications.add(msg, -1);
     });
 });
 

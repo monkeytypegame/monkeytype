@@ -697,7 +697,7 @@ function selectBeforeChangeFn(
   group: ResultFiltersGroup,
   selectedOptions: Option[],
   oldSelectedOptions: Option[]
-): void | boolean {
+): boolean {
   const includesAllNow = selectedOptions.some(
     (option) => option.value === "all"
   );
@@ -819,7 +819,7 @@ export async function appendButtons(
       closeOnSelect: false,
     },
     events: {
-      beforeChange: (selectedOptions, oldSelectedOptions): void | boolean => {
+      beforeChange: (selectedOptions, oldSelectedOptions): boolean => {
         return selectBeforeChangeFn(
           "language",
           selectedOptions,
@@ -851,7 +851,7 @@ export async function appendButtons(
       closeOnSelect: false,
     },
     events: {
-      beforeChange: (selectedOptions, oldSelectedOptions): void | boolean => {
+      beforeChange: (selectedOptions, oldSelectedOptions): boolean => {
         return selectBeforeChangeFn(
           "funbox",
           selectedOptions,
@@ -889,10 +889,7 @@ export async function appendButtons(
           closeOnSelect: false,
         },
         events: {
-          beforeChange: (
-            selectedOptions,
-            oldSelectedOptions
-          ): void | boolean => {
+          beforeChange: (selectedOptions, oldSelectedOptions): boolean => {
             return selectBeforeChangeFn(
               "tags",
               selectedOptions,

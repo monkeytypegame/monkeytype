@@ -171,7 +171,8 @@ export async function navigate(
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
       important: true,
     });
-    event?.preventDefault();
+    //todo: figure out if this was ever used
+    // event?.preventDefault();
     return;
   }
 

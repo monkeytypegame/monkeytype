@@ -152,7 +152,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "norwegian_nynorsk_400k",
   ],
   hebrew: ["hebrew", "hebrew_1k", "hebrew_5k", "hebrew_10k"],
-  icelandic: ["icelandic_1k"],
+  icelandic: ["icelandic", "icelandic_1k"],
   malagasy: ["malagasy", "malagasy_1k"],
   malay: ["malay", "malay_1k"],
   romanian: [
@@ -357,6 +357,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_abap",
     "code_abap_1k",
     "code_yoptascript",
+    "code_cuda",
   ],
   viossa: ["viossa", "viossa_njutro"],
 };
