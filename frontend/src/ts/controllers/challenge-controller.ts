@@ -57,7 +57,7 @@ function verifyRequirement(
         failReasons.push(`WPM not ${requirementValue.exact}`);
       }
     } else if ("min" in requirementValue) {
-      if (result.wpm < Number(requirementValue.min)) {
+      if (result.wpm < requirementValue.min) {
         requirementsMet = false;
         failReasons.push(`WPM below ${requirementValue.min}`);
       }
@@ -70,7 +70,7 @@ function verifyRequirement(
         failReasons.push(`Accuracy not ${requirementValue.exact}`);
       }
     } else if ("min" in requirementValue) {
-      if (result.acc < Number(requirementValue.min)) {
+      if (result.acc < requirementValue.min) {
         requirementsMet = false;
         failReasons.push(`Accuracy below ${requirementValue.min}`);
       }
@@ -78,7 +78,7 @@ function verifyRequirement(
   } else if (requirementType === "afk" && requirements.afk) {
     const requirementValue = requirements.afk;
     if (requirementValue.max) {
-      if (Math.round(afk) > Number(requirementValue.max)) {
+      if (Math.round(afk) > requirementValue.max) {
         requirementsMet = false;
         failReasons.push(`AFK percentage above ${requirementValue.max}`);
       }
@@ -86,7 +86,7 @@ function verifyRequirement(
   } else if (requirementType === "time" && requirements.time) {
     const requirementValue = requirements.time;
     if (requirementValue.min) {
-      if (Math.round(result.testDuration) < Number(requirementValue.min)) {
+      if (Math.round(result.testDuration) < requirementValue.min) {
         requirementsMet = false;
         failReasons.push(`Test time below ${requirementValue.min}`);
       }
