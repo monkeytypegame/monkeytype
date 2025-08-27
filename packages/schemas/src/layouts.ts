@@ -222,6 +222,7 @@ export const LayoutNameSchema = z.enum(
     "rulemak",
     "persian_farsi_colemak",
     "persian_standard_colemak",
+    "ergo_split46",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),

@@ -386,10 +386,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }
         setTimeout(() => {
           void KeymapEvent.highlight(
-            TestWords.words
-              .getCurrent()
-              .charAt(TestInput.input.current.length)
-              .toString()
+            TestWords.words.getCurrent().charAt(TestInput.input.current.length)
           );
         }, 1);
       }
@@ -407,7 +404,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
               TestInput.input.current.length,
               TestInput.input.current.length + 1
             )
-            .toString()
         );
       }, 1);
     },

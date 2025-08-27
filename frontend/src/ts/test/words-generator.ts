@@ -392,16 +392,11 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
 }
 
 export function getWordOrder(): FunboxWordOrder {
-  const wordOrder =
-    getActiveFunboxes()
-      .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
-      ?.properties?.find((fp) => fp.startsWith("wordOrder")) ?? "";
+  const wordOrderProperty = getActiveFunboxes()
+    .flatMap((fb) => fb.properties ?? [])
+    .find((prop) => prop.startsWith("wordOrder:"));
 
-  if (!wordOrder) {
-    return "normal";
-  } else {
-    return wordOrder.split(":")[1] as FunboxWordOrder;
-  }
+  return (wordOrderProperty?.split(":")[1] as FunboxWordOrder) ?? "normal";
 }
 
 export function getLimit(): number {
@@ -419,8 +414,8 @@ export function getLimit(): number {
 
   const funboxToPush =
     getActiveFunboxes()
-      .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-      ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
+      .flatMap((fb) => fb.properties ?? [])
+      .find((prop) => prop.startsWith("toPush:")) ?? "";
 
   if (Config.showAllLines) {
     if (Config.mode === "custom") {

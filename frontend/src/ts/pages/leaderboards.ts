@@ -1022,8 +1022,8 @@ function convertRuleOption(rule: string): string[] {
 }
 
 async function updateValidDailyLeaderboards(): Promise<void> {
-  const dailyRulesConfig = await ServerConfiguration.get()?.dailyLeaderboards
-    .validModeRules;
+  const dailyRulesConfig =
+    ServerConfiguration.get()?.dailyLeaderboards.validModeRules;
 
   if (dailyRulesConfig === undefined) {
     throw new Error(

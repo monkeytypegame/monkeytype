@@ -38,12 +38,12 @@ export function smooth(
  * This function mutates the input array.
  * @param elements
  */
-export function shuffle<T>(elements: T[]): void {
+export function shuffle(elements: unknown[]): void {
   for (let i = elements.length - 1; i > 0; --i) {
     const j = randomIntFromRange(0, i);
     const temp = elements[j];
-    elements[j] = elements[i] as T;
-    elements[i] = temp as T;
+    elements[j] = elements[i];
+    elements[i] = temp;
   }
 }
 
