@@ -55,9 +55,9 @@
     "pretty-fix-pkg": "prettier --write ./packages",
     "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
     "validate-json": "turbo validate-json --filter @monkeytype/frontend",
-    "check-quote-assets": "turbo validate-json --filter @monkeytype/frontend  -- quotes",
-    "check-language-assets": "turbo validate-json --filter @monkeytype/frontend  -- languages",
-    "check-other-assets": "turbo validate-json --filter @monkeytype/frontend  -- others",
+    "check-assets-quotes": "turbo validate-json --filter @monkeytype/frontend  -- quotes",
+    "check-assets-languages": "turbo validate-json --filter @monkeytype/frontend  -- languages",
+    "check-assets-others": "turbo validate-json --filter @monkeytype/frontend  -- others",
     "knip": "knip"
   },
   "engines": {

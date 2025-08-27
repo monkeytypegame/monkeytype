@@ -15,7 +15,7 @@ import * as Strings from "../utils/strings";
 import * as Arrays from "../utils/arrays";
 import * as TestState from "../test/test-state";
 import * as GetText from "../utils/generate";
-import { FunboxWordOrder, LanguageObject } from "../utils/json-data";
+import { FunboxWordOrder } from "../utils/json-data";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
@@ -24,6 +24,7 @@ import {
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
 import * as Loader from "../elements/loader";
+import { LanguageObject } from "@monkeytype/schemas/languages";
 
 //pin implementation
 const random = Math.random;

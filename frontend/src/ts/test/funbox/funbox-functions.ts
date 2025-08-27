@@ -23,7 +23,7 @@ import * as IPAddresses from "../../utils/ip-addresses";
 import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
-import { Language } from "@monkeytype/schemas/languages";
+import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
@@ -664,7 +664,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
 
       if (languages.length === 1) {
-        const lang = languages[0] as JSONData.LanguageObject;
+        const lang = languages[0] as LanguageObject;
         UpdateConfig.setLanguage(lang.name, true);
         UpdateConfig.toggleFunbox("polyglot", true);
         Notifications.add(

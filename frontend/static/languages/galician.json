@@ -1,7 +1,7 @@
 {
   "name": "galician",
   "bcp47": "gl-ES",
-  "orderedByFrequency": "true",
+  "orderedByFrequency": true,
   "words": [
     "que",
     "e",

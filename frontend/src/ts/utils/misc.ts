@@ -721,6 +721,9 @@ export function triggerResize(): void {
   $(window).trigger("resize");
 }
 
+export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
+  Required<Pick<T, K>>;
+
 function isPlatform(searchTerm: string | RegExp): boolean {
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   const platform = navigator.platform;
