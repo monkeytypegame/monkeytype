@@ -8,6 +8,7 @@ import Ape from "../ape";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import * as Loader from "../elements/loader";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
+import * as BlockedUserTable from "../elements/account-settings/blocked-user-table";
 import * as Notifications from "../elements/notifications";
 import { z } from "zod";
 import * as AuthEvent from "../observables/auth-event";
@@ -15,7 +16,13 @@ import * as AuthEvent from "../observables/auth-event";
 const pageElement = $(".page.pageAccountSettings");
 
 const StateSchema = z.object({
-  tab: z.enum(["authentication", "account", "apeKeys", "dangerZone"]),
+  tab: z.enum([
+    "authentication",
+    "account",
+    "apeKeys",
+    "dangerZone",
+    "blockedUsers",
+  ]),
 });
 type State = z.infer<typeof StateSchema>;
 
@@ -182,6 +189,7 @@ export function updateUI(): void {
   updateIntegrationSections();
   updateAccountSections();
   void ApeKeyTable.update(updateUI);
+  void BlockedUserTable.update();
   updateTabs();
   page.setUrlParams(state);
 }
