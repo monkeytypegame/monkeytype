@@ -1231,7 +1231,7 @@ async function updateColors<
     burst.backgroundColor = blendTwoHexColors(
       subaltcolor,
       subaltcolor + "00",
-      0.75
+      0.5
     );
     burst.borderColor = subcolor;
     burst.pointBackgroundColor = subcolor;
