@@ -13,6 +13,18 @@ import { DBResult } from "../utils/result";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { tryCatch } from "@monkeytype/util/trycatch";
 
+function renameRawToBurstInChartData(dbresult: DBResult): DBResult {
+  if (dbresult.chartData !== "toolong" && "raw" in dbresult.chartData) {
+    const temp = dbresult.chartData;
+    dbresult.chartData = {
+      wpm: temp.wpm,
+      burst: temp.raw,
+      err: temp.err,
+    };
+  }
+  return dbresult;
+}
+
 export const getResultCollection = (): Collection<DBResult> =>
   db.collection<DBResult>("results");
 
@@ -65,6 +77,7 @@ export async function getResult(uid: string, id: string): Promise<DBResult> {
     _id: new ObjectId(id),
     uid,
   });
+
   if (!result) throw new MonkeyError(404, "Result not found");
   return convert(result);
 }
@@ -141,6 +154,7 @@ function convert<T extends DBResult | DBResult[] | null>(results: T): T {
         result.funbox = (result.funbox as string).split("#") as FunboxName[];
       }
     }
+    result = renameRawToBurstInChartData(result);
     return result;
   };
 

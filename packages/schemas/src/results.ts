@@ -17,6 +17,13 @@ export const IncompleteTestSchema = z.object({
 });
 export type IncompleteTest = z.infer<typeof IncompleteTestSchema>;
 
+export const OldChartDataSchema = z.object({
+  wpm: z.array(z.number().nonnegative()).max(122),
+  raw: z.array(z.number().int().nonnegative()).max(122),
+  err: z.array(z.number().nonnegative()).max(122),
+});
+export type OldChartData = z.infer<typeof OldChartDataSchema>;
+
 export const ChartDataSchema = z.object({
   wpm: z.array(z.number().nonnegative()).max(122),
   burst: z.array(z.number().int().nonnegative()).max(122),
