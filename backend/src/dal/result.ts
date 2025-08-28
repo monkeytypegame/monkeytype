@@ -14,7 +14,11 @@ import { FunboxName } from "@monkeytype/schemas/configs";
 import { tryCatch } from "@monkeytype/util/trycatch";
 
 function renameRawToBurstInChartData(dbresult: DBResult): DBResult {
-  if (dbresult.chartData !== "toolong" && "raw" in dbresult.chartData) {
+  if (
+    dbresult.chartData !== undefined &&
+    dbresult.chartData !== "toolong" &&
+    "raw" in dbresult.chartData
+  ) {
     const temp = dbresult.chartData;
     dbresult.chartData = {
       wpm: temp.wpm,
