@@ -75,8 +75,18 @@ export async function getLastResult(uid: string): Promise<DBResult> {
     .sort({ timestamp: -1 })
     .limit(1)
     .toArray();
-  if (!lastResult) throw new MonkeyError(404, "No results found");
+  if (!lastResult) throw new MonkeyError(404, "No last result found");
   return convert(lastResult);
+}
+
+export async function getLastResultTimestamp(uid: string): Promise<number> {
+  const [lastResult] = await getResultCollection()
+    .find({ uid }, { projection: { timestamp: 1, _id: 0 } })
+    .sort({ timestamp: -1 })
+    .limit(1)
+    .toArray();
+  if (!lastResult) throw new MonkeyError(404, "No last result found");
+  return lastResult.timestamp;
 }
 
 export async function getResultByTimestamp(
