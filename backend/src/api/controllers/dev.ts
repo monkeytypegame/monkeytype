@@ -137,7 +137,7 @@ function createResult(
     keyConsistency: 33.18,
     chartData: {
       wpm: createArray(testDuration, () => random(80, 120)),
-      raw: createArray(testDuration, () => random(80, 120)),
+      burst: createArray(testDuration, () => random(80, 120)),
       err: createArray(testDuration, () => (Math.random() < 0.1 ? 1 : 0)),
     },
     keySpacingStats: {
