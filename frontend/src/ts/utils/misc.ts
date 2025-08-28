@@ -720,4 +720,30 @@ export function debounceUntilResolved<TArgs extends unknown[], TResult>(
 export function triggerResize(): void {
   $(window).trigger("resize");
 }
+
+export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
+  Required<Pick<T, K>>;
+
+function isPlatform(searchTerm: string | RegExp): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const platform = navigator.platform;
+  if (typeof searchTerm === "string") {
+    return platform.includes(searchTerm);
+  } else {
+    return searchTerm.test(platform);
+  }
+}
+
+export function isLinux(): boolean {
+  return isPlatform("Linux");
+}
+
+export function isMac(): boolean {
+  return isPlatform("Mac");
+}
+
+export function isMacLike(): boolean {
+  return isPlatform(/Mac|iPod|iPhone|iPad/);
+}
+
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

@@ -87,7 +87,8 @@ window.addEventListener("beforeunload", (event) => {
   } else {
     if (TestState.isActive) {
       event.preventDefault();
-      // Chrome requires returnValue to be set.
+      // Included for legacy support, e.g. Chrome/Edge < 119
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       event.returnValue = "";
     }
   }
