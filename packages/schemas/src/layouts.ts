@@ -51,6 +51,7 @@ export const LayoutNameSchema = z.enum(
     "hungarian",
     "handsdown_alt",
     "handsdown_promethium",
+    "handsdown_neu_inverted",
     "typehack",
     "MTGAP",
     "MTGAP_full",
@@ -223,7 +224,6 @@ export const LayoutNameSchema = z.enum(
     "persian_farsi_colemak",
     "persian_standard_colemak",
     "ergo_split46",
-    "handsdown_neu_inverted",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),
