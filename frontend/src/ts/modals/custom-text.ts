@@ -279,11 +279,7 @@ function cleanUpText(): string[] {
   }
 
   if (state.replaceControlCharactersEnabled) {
-    text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
-    text = text.replace(/\\n/g, " \n");
-    text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
-    text = text.replace(/\\\\t/gm, "\\t");
-    text = text.replace(/\\\\n/gm, "\\n");
+    text = Strings.replaceControlCharacters(text);
   }
 
   text = text.replace(/ +/gm, " ");
@@ -559,21 +555,21 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
   modalEl.querySelector(".button.wordfilter")?.addEventListener("click", () => {
     void WordFilterPopup.show({
-      modalChain: modal as AnimatedModal<unknown, unknown>,
+      modalChain: modal as AnimatedModal,
     });
   });
   modalEl
     .querySelector(".button.showSavedTexts")
     ?.addEventListener("click", () => {
       void SavedTextsPopup.show({
-        modalChain: modal as AnimatedModal<unknown, unknown>,
+        modalChain: modal as AnimatedModal,
       });
     });
   modalEl
     .querySelector(".button.saveCustomText")
     ?.addEventListener("click", () => {
       void SaveCustomTextPopup.show({
-        modalChain: modal as AnimatedModal<unknown, unknown>,
+        modalChain: modal as AnimatedModal,
         modalChainData: { text: cleanUpText() },
       });
     });

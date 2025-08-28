@@ -67,6 +67,7 @@ import * as DateTime from "../utils/date-and-time";
 import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
+import { typedKeys } from "../utils/misc";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -1158,8 +1159,17 @@ async function updateColors<
   const maincolor = await ThemeColors.get("main");
   const errorcolor = await ThemeColors.get("error");
   const textcolor = await ThemeColors.get("text");
+  const gridcolor = subaltcolor;
 
-  const gridcolor = blendTwoHexColors(bgcolor, subaltcolor, 0.75);
+  for (const scaleKey of typedKeys(chart.scales)) {
+    //@ts-expect-error cant figure out this type but it works fine
+    const scale = chart.getScale(scaleKey) as CartesianScaleOptions;
+    scale.grid.color = gridcolor;
+    scale.grid.tickColor = gridcolor;
+    scale.grid.borderColor = gridcolor;
+    scale.ticks.color = subcolor;
+    scale.title.color = subcolor;
+  }
 
   //@ts-expect-error its too difficult to figure out these types, but this works
   chart.data.datasets[0].borderColor = (ctx): string => {

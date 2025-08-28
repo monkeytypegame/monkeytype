@@ -280,15 +280,15 @@ jobs:
 
       - name: Validate language assets
         if: steps.filter.outputs.languages == 'true'
-        run: npm run check-language-assets
+        run: npm run check-assets-languages
 
       - name: Validate quote assets
         if: steps.filter.outputs.quotes == 'true'
-        run: npm run check-quotes-assets
+        run: npm run check-assets-quotes
 
       - name: Validate other assets
         if: steps.filter.outputs.others == 'true'
-        run: npm run check-other-assets
+        run: npm run check-assets-others
 
   ci-pkg:
     name: ci-pkg
