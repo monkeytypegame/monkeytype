@@ -202,6 +202,7 @@ export const LayoutNameSchema = z.enum(
     "kuntum",
     "anishtro",
     "Kuntem",
+    "kuntem-jq",
     "BEAKL_Zi",
     "snorkle",
     "MALTRON",
