@@ -51,6 +51,8 @@ export const LayoutNameSchema = z.enum(
     "hungarian",
     "handsdown_alt",
     "handsdown_promethium",
+    "handsdown_neu",
+    "handsdown_neu_inverted",
     "typehack",
     "MTGAP",
     "MTGAP_full",
