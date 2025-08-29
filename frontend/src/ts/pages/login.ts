@@ -80,9 +80,25 @@ validateWithIndicator(nameInputEl, {
   },
 });
 
+let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
+  null;
+let moduleLoadAttempted = false;
+
 const emailInputEl = document.querySelector(
   ".page.pageLogin .register.side input.emailInput"
 ) as HTMLInputElement;
+
+emailInputEl.addEventListener("focus", async () => {
+  if (!moduleLoadAttempted) {
+    moduleLoadAttempted = true;
+    try {
+      disposableEmailModule = await import("disposable-email-domains-js");
+    } catch (e) {
+      // Silent failure
+    }
+  }
+});
+
 validateWithIndicator(emailInputEl, {
   schema: UserEmailSchema,
   isValid: async (email: string) => {
@@ -103,6 +119,23 @@ validateWithIndicator(emailInputEl, {
         warning: "Please check your email address, it may contain a typo.",
       };
     }
+
+    if (
+      disposableEmailModule &&
+      disposableEmailModule.isDisposableEmail !== undefined
+    ) {
+      try {
+        if (disposableEmailModule.isDisposableEmail(email)) {
+          return {
+            warning:
+              "Using a temporary email may cause issues with logging in, password resets and support. Consider using a permanent email address. Don't worry, we don't send spam.",
+          };
+        }
+      } catch (e) {
+        // Silent failure
+      }
+    }
+
     return true;
   },
   debounceDelay: 0,

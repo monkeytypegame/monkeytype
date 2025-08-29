@@ -38,8 +38,9 @@ export function checkCompatibility(
         f.frontendFunctions?.includes("withWords")
     ).length <= 1;
   const oneWordOrderMax =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp.startsWith("wordOrder"))
+    funboxesToCheck.filter(
+      (f) =>
+        f.properties?.find((fp) => fp.startsWith("wordOrder")) !== undefined
     ).length <= 1;
   const layoutUsability =
     funboxesToCheck.filter((f) =>
@@ -49,8 +50,11 @@ export function checkCompatibility(
       f.properties?.find((fp) => fp === "ignoresLayout" || fp === "usesLayout")
     ).length === 0;
   const oneNospaceOrToPushMax =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "nospace" || fp.startsWith("toPush"))
+    funboxesToCheck.filter(
+      (f) =>
+        f.properties?.find(
+          (fp) => fp === "nospace" || fp.startsWith("toPush")
+        ) !== undefined
     ).length <= 1;
   const oneChangesWordsVisibilityMax =
     funboxesToCheck.filter((f) =>
@@ -98,7 +102,7 @@ export function checkCompatibility(
   const oneToPushOrPullSectionMax =
     funboxesToCheck.filter(
       (f) =>
-        (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
+        f.properties?.find((fp) => fp.startsWith("toPush:")) !== undefined ||
         f.frontendFunctions?.includes("pullSection")
     ).length <= 1;
   const onePunctuateWordMax =

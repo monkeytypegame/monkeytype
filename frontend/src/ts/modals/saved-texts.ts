@@ -55,7 +55,7 @@ async function fill(): Promise<void> {
       return;
     }
     showPopup("deleteCustomText", [name], {
-      modalChain: modal as AnimatedModal<unknown, unknown>,
+      modalChain: modal as AnimatedModal,
     });
   });
 
@@ -70,7 +70,7 @@ async function fill(): Promise<void> {
         return;
       }
       showPopup("deleteCustomTextLong", [name], {
-        modalChain: modal as AnimatedModal<unknown, unknown>,
+        modalChain: modal as AnimatedModal,
       });
     }
   );
@@ -86,7 +86,7 @@ async function fill(): Promise<void> {
         return;
       }
       showPopup("resetProgressCustomTextLong", [name], {
-        modalChain: modal as AnimatedModal<unknown, unknown>,
+        modalChain: modal as AnimatedModal,
       });
     }
   );
