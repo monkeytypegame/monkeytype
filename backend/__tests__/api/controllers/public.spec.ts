@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
-import request from "supertest";
-import app from "../../../src/app";
+import { setup } from "../../__testData__/controller-test";
 import * as PublicDal from "../../../src/dal/public";
-const mockApp = request(app);
+
+const { mockApp } = setup();
 
 describe("PublicController", () => {
   describe("get speed histogram", () => {

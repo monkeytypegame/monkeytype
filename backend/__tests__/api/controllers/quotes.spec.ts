@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import request from "supertest";
-import app from "../../../src/app";
+import { setup } from "../../__testData__/controller-test";
 import * as Configuration from "../../../src/init/configuration";
 import * as UserDal from "../../../src/dal/user";
 import * as NewQuotesDal from "../../../src/dal/new-quotes";
@@ -12,13 +11,9 @@ import * as Captcha from "../../../src/utils/captcha";
 import { ObjectId } from "mongodb";
 import _ from "lodash";
 import { ApproveQuote } from "@monkeytype/schemas/quotes";
-import { mockBearerAuthentication } from "../../__testData__/auth";
 
-const mockApp = request(app);
+const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
-
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 
 describe("QuotesController", () => {
   const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
@@ -29,7 +24,6 @@ describe("QuotesController", () => {
 
     const user = { quoteMod: true, name: "Bob" } as any;
     getPartialUserMock.mockClear().mockResolvedValue(user);
-    mockAuth.beforeEach();
     logsAddLogMock.mockClear().mockResolvedValue();
   });
 

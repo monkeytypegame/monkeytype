@@ -1,28 +1,24 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import request from "supertest";
-import app from "../../../src/app";
+import { setup } from "../../__testData__/controller-test";
 import {
   BASE_CONFIGURATION,
   CONFIGURATION_FORM_SCHEMA,
 } from "../../../src/constants/base-configuration";
 import * as Configuration from "../../../src/init/configuration";
 import type { Configuration as ConfigurationType } from "@monkeytype/schemas/configuration";
-import { ObjectId } from "mongodb";
 import * as Misc from "../../../src/utils/misc";
 import * as AdminUuids from "../../../src/dal/admin-uids";
-import { mockBearerAuthentication } from "../../__testData__/auth";
 
-const mockApp = request(app);
-const uid = new ObjectId().toHexString();
+const { mockApp, uid, mockAuth } = setup();
 
 describe("Configuration Controller", () => {
   const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
-  const mockAuth = mockBearerAuthentication(uid);
+
   const isAdminMock = vi.spyOn(AdminUuids, "isAdmin");
 
   beforeEach(() => {
     isAdminMock.mockClear();
-    mockAuth.beforeEach();
+
     isDevEnvironmentMock.mockClear();
 
     isDevEnvironmentMock.mockReturnValue(true);
@@ -143,7 +139,7 @@ describe("Configuration Controller", () => {
       isDevEnvironmentMock.mockReturnValue(false);
 
       //WHEN
-      await request(app)
+      await mockApp
         .patch("/configuration")
         .send({ configuration: {} })
         .expect(401);

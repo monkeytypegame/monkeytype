@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import request from "supertest";
-import app from "../../../src/app";
+import { setup } from "../../__testData__/controller-test";
 import _, { omit } from "lodash";
 import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
@@ -8,24 +7,15 @@ import * as UserDal from "../../../src/dal/user";
 import * as LogsDal from "../../../src/dal/logs";
 import * as PublicDal from "../../../src/dal/public";
 import { ObjectId } from "mongodb";
-import {
-  mockAuthenticateWithApeKey,
-  mockBearerAuthentication,
-} from "../../__testData__/auth";
+import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import { DBResult } from "../../../src/utils/result";
 
-const mockApp = request(app);
+const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
 enableRateLimitExpects();
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 
 describe("result controller test", () => {
-  beforeEach(() => {
-    mockAuth.beforeEach();
-  });
-
   describe("getResults", () => {
     const resultMock = vi.spyOn(ResultDal, "getResults");
 

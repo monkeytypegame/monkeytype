@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import request, { Test as SuperTest } from "supertest";
-import app from "../../../src/app";
+import { setup } from "../../__testData__/controller-test";
 import { ObjectId } from "mongodb";
 import * as Configuration from "../../../src/init/configuration";
 import * as AdminUuidDal from "../../../src/dal/admin-uids";
@@ -11,12 +10,9 @@ import GeorgeQueue from "../../../src/queues/george-queue";
 import * as AuthUtil from "../../../src/utils/auth";
 import _ from "lodash";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
-import { mockBearerAuthentication } from "../../__testData__/auth";
 
-const mockApp = request(app);
+const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 enableRateLimitExpects();
 
 describe("AdminController", () => {
@@ -27,7 +23,6 @@ describe("AdminController", () => {
     isAdminMock.mockClear();
     await enableAdminEndpoints(true);
     isAdminMock.mockResolvedValue(true);
-    mockAuth.beforeEach();
     logsAddImportantLog.mockClear().mockResolvedValue();
   });
 
