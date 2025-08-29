@@ -42,6 +42,8 @@ import { getFunbox } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
 import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { z } from "zod";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -244,6 +246,8 @@ async function updateGraph(): Promise<void> {
   ChartController.result.getScale("error").max = Math.max(
     ...result.chartData.err
   );
+
+  updateResultChartDataVisibility();
 
   // const chartData1 = [
   //   ...fakeChartData["wpm"].map((a) =>
@@ -1085,6 +1089,40 @@ export async function update(
   );
 }
 
+const resultChartDataVisibility = new LocalStorageWithSchema({
+  key: "resultChartDataVisibility",
+  schema: z
+    .object({
+      raw: z.boolean(),
+      burst: z.boolean(),
+      errors: z.boolean(),
+    })
+    .strict(),
+  fallback: {
+    raw: true,
+    burst: true,
+    errors: true,
+  },
+});
+
+function updateResultChartDataVisibility(update = false): void {
+  const vis = resultChartDataVisibility.get();
+  ChartController.result.getDataset("raw").hidden = !vis.raw;
+  ChartController.result.getDataset("burst").hidden = !vis.burst;
+  ChartController.result.getDataset("error").hidden = !vis.errors;
+
+  if (update) ChartController.result.update();
+
+  const buttons = $(".pageTest #result .chart .chartLegend button");
+
+  for (const button of buttons) {
+    const id = $(button).data("id") as string;
+    if (id === "raw" || id === "burst" || id === "errors") {
+      $(button).toggleClass("active", vis[id]);
+    }
+  }
+}
+
 export function updateTagsAfterEdit(
   tagIds: string[],
   tagPbIds: string[]
@@ -1138,6 +1176,21 @@ export function updateTagsAfterEdit(
     );
   }
 }
+
+$(".pageTest #result .chart .chartLegend button").on("click", (event) => {
+  const $target = $(event.target);
+  const id = $target.data("id") as string;
+
+  if (id === "raw" || id === "burst" || id === "errors") {
+    const vis = resultChartDataVisibility.get();
+
+    vis[id] = !vis[id];
+
+    resultChartDataVisibility.set(vis);
+  }
+
+  updateResultChartDataVisibility(true);
+});
 
 $(".pageTest #favoriteQuoteButton").on("click", async () => {
   if (quoteLang === undefined || quoteId === "") {

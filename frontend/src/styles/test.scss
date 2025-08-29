@@ -779,6 +779,83 @@
     .chart {
       grid-area: chart;
       width: 100%;
+      position: relative;
+
+      &:hover {
+        .chartLegend {
+          opacity: 1;
+          pointer-events: auto;
+        }
+      }
+
+      .chartLegend {
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        background: var(--bg-color);
+        border-radius: var(--roundness);
+        // top: -2.25em;
+        bottom: -0.75em;
+        padding: 0.25em;
+        right: 0;
+        font-size: 0.75em;
+        transition: opacity 0.125s;
+        cursor: pointer;
+        display: flex;
+
+        .line {
+          height: 0.25em;
+          width: 1.5em;
+          border-radius: calc(var(--roundness) / 2);
+          transition: background 0.125s;
+        }
+        button {
+          padding: 0.5em 1em;
+          display: inline-grid;
+          grid-template-columns: auto 1fr;
+          place-items: center center;
+          text-decoration: line-through;
+
+          &[data-id="raw"] .line {
+            //striped background using gradient
+            background: repeating-linear-gradient(
+              90deg,
+              var(--sub-color),
+              var(--sub-color) 0.6em,
+              transparent 0.6em,
+              transparent 0.9em
+            );
+          }
+          &[data-id="burst"] .line {
+            background: var(--sub-color);
+          }
+          &[data-id="errors"] .line {
+            background: var(--sub-color);
+          }
+
+          &.active,
+          &:hover {
+            text-decoration: none;
+            color: var(--text-color);
+            &[data-id="raw"] .line {
+              //striped background using gradient
+              background: repeating-linear-gradient(
+                90deg,
+                var(--main-color),
+                var(--main-color) 0.6em,
+                transparent 0.6em,
+                transparent 1em
+              );
+            }
+            &[data-id="burst"] .line {
+              background: var(--sub-color);
+            }
+            &[data-id="errors"] .line {
+              background: var(--error-color);
+            }
+          }
+        }
+      }
 
       canvas {
         width: 100% !important;
