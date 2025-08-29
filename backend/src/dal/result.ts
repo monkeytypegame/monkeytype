@@ -82,7 +82,10 @@ export async function getLastResult(uid: string): Promise<DBResult> {
 export async function getLastResultTimestamp(uid: string): Promise<number> {
   const lastResult = await getResultCollection().findOne(
     { uid },
-    { projection: { timestamp: 1, _id: 0 }, sort: { timestamp: -1 } }
+    {
+      projection: { timestamp: 1, _id: 0 },
+      sort: { timestamp: -1 },
+    }
   );
 
   if (lastResult === null) throw new MonkeyError(404, "No last result found");
