@@ -833,10 +833,9 @@
             background: var(--sub-color);
           }
 
-          &.active,
-          &:hover {
+          &.active {
             text-decoration: none;
-            color: var(--text-color);
+            color: var(--sub-color);
             &[data-id="raw"] .line {
               //striped background using gradient
               background: repeating-linear-gradient(
@@ -853,6 +852,14 @@
             &[data-id="errors"] .line {
               background: var(--error-color);
             }
+          }
+
+          &:hover {
+            color: var(--text-color);
+          }
+
+          &:active {
+            color: var(--sub-color);
           }
         }
       }
