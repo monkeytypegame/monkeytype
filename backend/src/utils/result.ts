@@ -1,4 +1,9 @@
-import { CompletedEvent, Result } from "@monkeytype/schemas/results";
+import {
+  ChartData,
+  CompletedEvent,
+  OldChartData,
+  Result,
+} from "@monkeytype/schemas/results";
 import { Mode } from "@monkeytype/schemas/shared";
 import { ObjectId } from "mongodb";
 import { WithObjectId } from "./misc";
@@ -7,6 +12,7 @@ export type DBResult = WithObjectId<Result<Mode>> & {
   //legacy values
   correctChars?: number;
   incorrectChars?: number;
+  chartData: ChartData | OldChartData | "toolong";
 };
 
 export function buildDbResult(
