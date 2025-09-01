@@ -49,6 +49,7 @@ let result: CompletedEvent;
 let maxChartVal: number;
 
 let useSmoothedBurst = true;
+let useFakeChartData = false;
 
 let quoteLang: Language | undefined;
 let quoteId = "";
@@ -56,9 +57,21 @@ let quoteId = "";
 export function toggleSmoothedBurst(): void {
   useSmoothedBurst = !useSmoothedBurst;
   Notifications.add(useSmoothedBurst ? "on" : "off", 1);
-  void updateGraph().then(() => {
-    ChartController.result.update("resize");
-  });
+  if (TestUI.resultVisible) {
+    void updateGraph().then(() => {
+      ChartController.result.update("resize");
+    });
+  }
+}
+
+export function toggleUserFakeChartData(): void {
+  useFakeChartData = !useFakeChartData;
+  Notifications.add(useFakeChartData ? "on" : "off", 1);
+  if (TestUI.resultVisible) {
+    void updateGraph().then(() => {
+      ChartController.result.update("resize");
+    });
+  }
 }
 
 let resultAnnotation: AnnotationOptions<"line">[] = [];
@@ -79,57 +92,6 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-
-  // const fakeChartData = {
-  //   wpm: [
-  //     108, 120, 116, 114, 113, 120, 118, 121, 119, 120, 116, 118, 113, 110, 108,
-  //     110, 107, 107, 108, 109, 110, 112, 114, 112, 111, 109, 110, 108, 108, 109,
-  //   ],
-  //   raw: [
-  //     108, 120, 116, 114, 113, 120, 123, 127, 131, 131, 131, 132, 130, 133, 134,
-  //     134, 131, 129, 129, 128, 129, 130, 131, 129, 129, 127, 127, 128, 127, 127,
-  //   ],
-  //   burst: [
-  //     108, 132, 108, 108, 108, 156, 144, 156, 156, 132, 132, 144, 108, 168, 156,
-  //     132, 96, 108, 120, 120, 144, 156, 144, 84, 132, 84, 132, 156, 108, 120,
-  //   ],
-  //   err: [
-  //     0, 0, 0, 0, 0, 0, 3, 1, 3, 0, 5, 0, 3, 5, 4, 0, 2, 0, 0, 0, 0, 0, 0, 1, 2,
-  //     1, 0, 4, 0, 0,
-  //   ],
-  // };
-
-  // labels = [
-  //   (1).toString(),
-  //   (2).toString(),
-  //   (3).toString(),
-  //   (4).toString(),
-  //   (5).toString(),
-  //   (6).toString(),
-  //   (7).toString(),
-  //   (8).toString(),
-  //   (9).toString(),
-  //   (10).toString(),
-  //   (11).toString(),
-  //   (12).toString(),
-  //   (13).toString(),
-  //   (14).toString(),
-  //   (15).toString(),
-  //   (16).toString(),
-  //   (17).toString(),
-  //   (18).toString(),
-  //   (19).toString(),
-  //   (20).toString(),
-  //   (21).toString(),
-  //   (22).toString(),
-  //   (23).toString(),
-  //   (24).toString(),
-  //   (25).toString(),
-  //   (26).toString(),
-  //   (27).toString(),
-  //   (28).toString(),
-  //   (29).toString(),
-  // ];
 
   const chartData1 = [
     ...result.chartData["wpm"].map((a) =>
@@ -247,25 +209,123 @@ async function updateGraph(): Promise<void> {
     ...result.chartData.err
   );
 
-  // const chartData1 = [
-  //   ...fakeChartData["wpm"].map((a) =>
-  //     Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
-  //   ),
-  // ];
+  if (useFakeChartData) {
+    applyFakeChartData();
+  }
+}
 
-  // const chartData2 = [
-  //   ...fakeChartData["raw"].map((a) =>
-  //     Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
-  //   ),
-  // ];
+function applyFakeChartData(): void {
+  const fakeChartData = {
+    wpm: [
+      108, 120, 116, 114, 113, 120, 118, 121, 119, 120, 116, 118, 113, 110, 108,
+      110, 107, 107, 108, 109, 110, 112, 114, 112, 111, 109, 110, 108, 108, 109,
+    ],
+    raw: [
+      108, 120, 116, 114, 113, 120, 123, 127, 131, 131, 131, 132, 130, 133, 134,
+      134, 131, 129, 129, 128, 129, 130, 131, 129, 129, 127, 127, 128, 127, 127,
+    ],
+    burst: [
+      108, 132, 108, 108, 108, 156, 144, 156, 156, 132, 132, 144, 108, 168, 156,
+      132, 96, 108, 120, 120, 144, 156, 144, 84, 132, 84, 132, 156, 108, 120,
+    ],
+    err: [
+      0, 0, 0, 0, 0, 0, 3, 1, 3, 0, 5, 0, 3, 5, 4, 0, 2, 0, 0, 0, 0, 0, 0, 1, 2,
+      1, 0, 4, 0, 0,
+    ],
+  };
 
-  // const chartData3 = [
-  //   ...fakeChartData["burst"].map((a) =>
-  //     Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
-  //   ),
-  // ];
+  const labels = [
+    (1).toString(),
+    (2).toString(),
+    (3).toString(),
+    (4).toString(),
+    (5).toString(),
+    (6).toString(),
+    (7).toString(),
+    (8).toString(),
+    (9).toString(),
+    (10).toString(),
+    (11).toString(),
+    (12).toString(),
+    (13).toString(),
+    (14).toString(),
+    (15).toString(),
+    (16).toString(),
+    (17).toString(),
+    (18).toString(),
+    (19).toString(),
+    (20).toString(),
+    (21).toString(),
+    (22).toString(),
+    (23).toString(),
+    (24).toString(),
+    (25).toString(),
+    (26).toString(),
+    (27).toString(),
+    (28).toString(),
+    (29).toString(),
+  ];
 
-  // ChartController.result.getDataset("error").data = fakeChartData["err"];
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+
+  const chartData1 = [
+    ...fakeChartData["wpm"].map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
+  ];
+
+  const chartData2 = [
+    ...fakeChartData["raw"].map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
+  ];
+
+  const chartData3 = [
+    ...fakeChartData["burst"].map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
+  ];
+
+  maxChartVal = Math.max(
+    ...[
+      Math.max(...chartData1),
+      Math.max(...chartData2),
+      Math.max(...chartData3),
+    ]
+  );
+
+  let minChartVal = 0;
+
+  if (!Config.startGraphsAtZero) {
+    minChartVal = Math.min(
+      ...[
+        Math.min(...chartData1),
+        Math.min(...chartData2),
+        Math.min(...chartData3),
+      ]
+    );
+
+    // Round down to nearest multiple of 10
+    minChartVal = Math.floor(minChartVal / 10) * 10;
+  }
+
+  ChartController.result.data.labels = labels;
+
+  ChartController.result.getDataset("wpm").data = chartData1;
+  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
+  ChartController.result.getScale("wpm").min = minChartVal;
+  ChartController.result.getScale("wpm").max = maxChartVal;
+
+  ChartController.result.getDataset("raw").data = chartData2;
+  ChartController.result.getScale("raw").min = minChartVal;
+  ChartController.result.getScale("raw").max = maxChartVal;
+
+  ChartController.result.getDataset("burst").data = chartData3;
+  ChartController.result.getScale("burst").min = minChartVal;
+  ChartController.result.getScale("burst").max = maxChartVal;
+
+  ChartController.result.getDataset("error").data = fakeChartData.err;
+  ChartController.result.getScale("error").max = Math.max(...fakeChartData.err);
 }
 
 export async function updateGraphPBLine(): Promise<void> {
