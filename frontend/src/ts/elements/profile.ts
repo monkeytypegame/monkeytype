@@ -385,14 +385,8 @@ export function updateXp(
   if (details === undefined || details === null) return;
 
   if (sameUserCheck && where === "profile") {
-    const authUser = getAuthenticatedUser();
-    if (
-      !authUser ||
-      profileElement.attr("uid") !== authUser.uid ||
-      profileElement.attr("name") !== authUser.displayName
-    ) {
-      return;
-    }
+    const authedUserUid = getAuthenticatedUser()?.uid;
+    if (authedUserUid !== profileElement.attr("uid")) return;
   }
 
   const xpDetails = Levels.getXpDetails(xp);
