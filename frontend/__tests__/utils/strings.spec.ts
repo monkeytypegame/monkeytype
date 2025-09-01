@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as Strings from "../../src/ts/utils/strings";
 
 describe("string utils", () => {
@@ -70,51 +70,51 @@ describe("string utils", () => {
   describe("hasRTLCharacters", () => {
     it.each([
       // LTR characters should return false
-      ["hello", false, "basic Latin text"],
-      ["world123", false, "Latin text with numbers"],
-      ["test!", false, "Latin text with punctuation"],
-      ["ABC", false, "uppercase Latin text"],
-      ["", false, "empty string"],
-      ["123", false, "numbers only"],
-      ["!@#$%", false, "punctuation and symbols only"],
-      ["   ", false, "whitespace only"],
+      [false, "hello", "basic Latin text"],
+      [false, "world123", "Latin text with numbers"],
+      [false, "test!", "Latin text with punctuation"],
+      [false, "ABC", "uppercase Latin text"],
+      [false, "", "empty string"],
+      [false, "123", "numbers only"],
+      [false, "!@#$%", "punctuation and symbols only"],
+      [false, "   ", "whitespace only"],
 
       // Common LTR scripts
-      ["Здравствуй", false, "Cyrillic text"],
-      ["Bonjour", false, "Latin with accents"],
-      ["Καλημέρα", false, "Greek text"],
-      ["こんにちは", false, "Japanese Hiragana"],
-      ["你好", false, "Chinese characters"],
-      ["안녕하세요", false, "Korean text"],
+      [false, "Здравствуй", "Cyrillic text"],
+      [false, "Bonjour", "Latin with accents"],
+      [false, "Καλημέρα", "Greek text"],
+      [false, "こんにちは", "Japanese Hiragana"],
+      [false, "你好", "Chinese characters"],
+      [false, "안녕하세요", "Korean text"],
 
       // RTL characters should return true - Arabic
-      ["مرحبا", true, "Arabic text"],
-      ["السلام", true, "Arabic phrase"],
-      ["العربية", true, "Arabic word"],
-      ["٠١٢٣٤٥٦٧٨٩", true, "Arabic-Indic digits"],
+      [true, "مرحبا", "Arabic text"],
+      [true, "السلام", "Arabic phrase"],
+      [true, "العربية", "Arabic word"],
+      [true, "٠١٢٣٤٥٦٧٨٩", "Arabic-Indic digits"],
 
       // RTL characters should return true - Hebrew
-      ["שלום", true, "Hebrew text"],
-      ["עברית", true, "Hebrew word"],
-      ["ברוך", true, "Hebrew name"],
+      [true, "שלום", "Hebrew text"],
+      [true, "עברית", "Hebrew word"],
+      [true, "ברוך", "Hebrew name"],
 
       // RTL characters should return true - Persian/Farsi
-      ["سلام", true, "Persian text"],
-      ["فارسی", true, "Persian word"],
+      [true, "سلام", "Persian text"],
+      [true, "فارسی", "Persian word"],
 
       // Mixed content (should return true if ANY RTL characters are present)
-      ["hello مرحبا", true, "mixed LTR and Arabic"],
-      ["123 שלום", true, "numbers and Hebrew"],
-      ["test سلام!", true, "Latin, Persian, and punctuation"],
-      ["مرحبا123", true, "Arabic with numbers"],
-      ["hello؟", true, "Latin with Arabic punctuation"],
+      [true, "hello مرحبا", "mixed LTR and Arabic"],
+      [true, "123 שלום", "numbers and Hebrew"],
+      [true, "test سلام!", "Latin, Persian, and punctuation"],
+      [true, "مرحبا123", "Arabic with numbers"],
+      [true, "hello؟", "Latin with Arabic punctuation"],
 
       // Edge cases with various Unicode ranges
-      ["𝕳𝖊𝖑𝖑𝖔", false, "mathematical bold text (LTR)"],
-      ["🌍🌎🌏", false, "emoji"],
+      [false, "𝕳𝖊𝖑𝖑𝖔", "mathematical bold text (LTR)"],
+      [false, "🌍🌎🌏", "emoji"],
     ] as const)(
-      "should return %s for '%s' (%s)",
-      (word: string, expected: boolean, _description: string) => {
+      "should return %s for word '%s' (%s)",
+      (expected: boolean, word: string, _description: string) => {
         expect(Strings.__testing.hasRTLCharacters(word)).toBe(expected);
       }
     );
@@ -127,48 +127,48 @@ describe("string utils", () => {
 
     it.each([
       // Basic functionality - should use hasRTLCharacters result when word has core content
-      ["hello", false, false, "LTR word in LTR language"],
+      [false, "hello", false, "LTR word in LTR language"],
       [
+        false,
         "hello",
         true,
-        false,
         "LTR word in RTL language (word direction overrides language)",
       ],
       [
+        true,
         "مرحبا",
         false,
-        true,
         "RTL word in LTR language (word direction overrides language)",
       ],
-      ["مرحبا", true, true, "RTL word in RTL language"],
+      [true, "مرحبا", true, "RTL word in RTL language"],
 
       // Punctuation stripping behavior
-      ["hello!", false, false, "LTR word with trailing punctuation"],
-      ["!hello", false, false, "LTR word with leading punctuation"],
-      ["!hello!", false, false, "LTR word with surrounding punctuation"],
-      ["مرحبا؟", false, true, "RTL word with trailing punctuation"],
-      ["؟مرحبا", false, true, "RTL word with leading punctuation"],
-      ["؟مرحبا؟", false, true, "RTL word with surrounding punctuation"],
+      [false, "hello!", false, "LTR word with trailing punctuation"],
+      [false, "!hello", false, "LTR word with leading punctuation"],
+      [false, "!hello!", false, "LTR word with surrounding punctuation"],
+      [true, "مرحبا؟", false, "RTL word with trailing punctuation"],
+      [true, "؟مرحبا", false, "RTL word with leading punctuation"],
+      [true, "؟مرحبا؟", false, "RTL word with surrounding punctuation"],
 
       // Fallback to language direction for empty/neutral content
-      ["", false, false, "empty string falls back to LTR language"],
-      ["", true, true, "empty string falls back to RTL language"],
-      ["!!!", false, false, "punctuation only falls back to LTR language"],
-      ["!!!", true, true, "punctuation only falls back to RTL language"],
-      ["   ", false, false, "whitespace only falls back to LTR language"],
-      ["   ", true, true, "whitespace only falls back to RTL language"],
+      [false, "", false, "empty string falls back to LTR language"],
+      [true, "", true, "empty string falls back to RTL language"],
+      [false, "!!!", false, "punctuation only falls back to LTR language"],
+      [true, "!!!", true, "punctuation only falls back to RTL language"],
+      [false, "   ", false, "whitespace only falls back to LTR language"],
+      [true, "   ", true, "whitespace only falls back to RTL language"],
 
       // Numbers behavior (numbers are neutral, follow hasRTLCharacters detection)
-      ["123", false, false, "regular digits are not RTL"],
-      ["123", true, false, "regular digits are not RTL regardless of language"],
-      ["١٢٣", false, true, "Arabic-Indic digits are detected as RTL"],
-      ["١٢٣", true, true, "Arabic-Indic digits are detected as RTL"],
+      [false, "123", false, "regular digits are not RTL"],
+      [false, "123", true, "regular digits are not RTL regardless of language"],
+      [true, "١٢٣", false, "Arabic-Indic digits are detected as RTL"],
+      [true, "١٢٣", true, "Arabic-Indic digits are detected as RTL"],
     ] as const)(
       "should return %s for word '%s' with languageRTL=%s (%s)",
       (
+        expected: boolean,
         word: string,
         languageRTL: boolean,
-        expected: boolean,
         _description: string
       ) => {
         expect(Strings.getWordDirection(word, languageRTL)).toBe(expected);
@@ -180,137 +180,125 @@ describe("string utils", () => {
       expect(Strings.getWordDirection(undefined, true)).toBe(true);
     });
 
-    it("should use cache for repeated calls", () => {
-      const mapGetSpy = vi.spyOn(Map.prototype, "get");
-      const mapSetSpy = vi.spyOn(Map.prototype, "set");
+    describe("caching", () => {
+      let mapGetSpy: ReturnType<typeof vi.spyOn>;
+      let mapSetSpy: ReturnType<typeof vi.spyOn>;
+      let mapClearSpy: ReturnType<typeof vi.spyOn>;
 
-      // First call should cache the result (cache miss)
-      const result1 = Strings.getWordDirection("hello", false);
-      expect(result1).toBe(false);
-      expect(mapSetSpy).toHaveBeenCalledWith("hello", false);
+      beforeEach(() => {
+        mapGetSpy = vi.spyOn(Map.prototype, "get");
+        mapSetSpy = vi.spyOn(Map.prototype, "set");
+        mapClearSpy = vi.spyOn(Map.prototype, "clear");
+      });
 
-      // Reset spies to check second call
-      mapGetSpy.mockClear();
-      mapSetSpy.mockClear();
+      afterEach(() => {
+        mapGetSpy.mockRestore();
+        mapSetSpy.mockRestore();
+        mapClearSpy.mockRestore();
+      });
 
-      // Second call should use cache (cache hit)
-      const result2 = Strings.getWordDirection("hello", false);
-      expect(result2).toBe(false);
-      expect(mapGetSpy).toHaveBeenCalledWith("hello");
-      expect(mapSetSpy).not.toHaveBeenCalled(); // Should not set again
+      it("should use cache for repeated calls", () => {
+        // First call should cache the result (cache miss)
+        const result1 = Strings.getWordDirection("hello", false);
+        expect(result1).toBe(false);
+        expect(mapSetSpy).toHaveBeenCalledWith("hello", false);
 
-      // Cache should work regardless of language direction for same word
-      mapGetSpy.mockClear();
-      mapSetSpy.mockClear();
+        // Reset spies to check second call
+        mapGetSpy.mockClear();
+        mapSetSpy.mockClear();
 
-      const result3 = Strings.getWordDirection("hello", true);
-      expect(result3).toBe(false); // Still false because "hello" is LTR regardless of language
-      expect(mapGetSpy).toHaveBeenCalledWith("hello");
-      expect(mapSetSpy).not.toHaveBeenCalled(); // Should not set again
+        // Second call should use cache (cache hit)
+        const result2 = Strings.getWordDirection("hello", false);
+        expect(result2).toBe(false);
+        expect(mapGetSpy).toHaveBeenCalledWith("hello");
+        expect(mapSetSpy).not.toHaveBeenCalled(); // Should not set again
 
-      // Cleanup spies
-      mapGetSpy.mockRestore();
-      mapSetSpy.mockRestore();
-    });
+        // Cache should work regardless of language direction for same word
+        mapGetSpy.mockClear();
+        mapSetSpy.mockClear();
 
-    it("should cache based on core word without punctuation", () => {
-      const mapGetSpy = vi.spyOn(Map.prototype, "get");
-      const mapSetSpy = vi.spyOn(Map.prototype, "set");
+        const result3 = Strings.getWordDirection("hello", true);
+        expect(result3).toBe(false); // Still false because "hello" is LTR regardless of language
+        expect(mapGetSpy).toHaveBeenCalledWith("hello");
+        expect(mapSetSpy).not.toHaveBeenCalled(); // Should not set again
+      });
 
-      // First call should cache the result for core "hello"
-      const result1 = Strings.getWordDirection("hello", false);
-      expect(result1).toBe(false);
-      expect(mapSetSpy).toHaveBeenCalledWith("hello", false);
+      it("should cache based on core word without punctuation", () => {
+        // First call should cache the result for core "hello"
+        const result1 = Strings.getWordDirection("hello", false);
+        expect(result1).toBe(false);
+        expect(mapSetSpy).toHaveBeenCalledWith("hello", false);
 
-      mapGetSpy.mockClear();
-      mapSetSpy.mockClear();
+        mapGetSpy.mockClear();
+        mapSetSpy.mockClear();
 
-      // These should all use the same cache entry since they have the same core
-      const result2 = Strings.getWordDirection("hello!", false);
-      expect(result2).toBe(false);
-      expect(mapGetSpy).toHaveBeenCalledWith("hello");
-      expect(mapSetSpy).not.toHaveBeenCalled();
+        // These should all use the same cache entry since they have the same core
+        const result2 = Strings.getWordDirection("hello!", false);
+        expect(result2).toBe(false);
+        expect(mapGetSpy).toHaveBeenCalledWith("hello");
+        expect(mapSetSpy).not.toHaveBeenCalled();
 
-      mapGetSpy.mockClear();
-      mapSetSpy.mockClear();
+        mapGetSpy.mockClear();
+        mapSetSpy.mockClear();
 
-      const result3 = Strings.getWordDirection("!hello", false);
-      expect(result3).toBe(false);
-      expect(mapGetSpy).toHaveBeenCalledWith("hello");
-      expect(mapSetSpy).not.toHaveBeenCalled();
+        const result3 = Strings.getWordDirection("!hello", false);
+        expect(result3).toBe(false);
+        expect(mapGetSpy).toHaveBeenCalledWith("hello");
+        expect(mapSetSpy).not.toHaveBeenCalled();
 
-      mapGetSpy.mockClear();
-      mapSetSpy.mockClear();
+        mapGetSpy.mockClear();
+        mapSetSpy.mockClear();
 
-      const result4 = Strings.getWordDirection("!hello!", false);
-      expect(result4).toBe(false);
-      expect(mapGetSpy).toHaveBeenCalledWith("hello");
-      expect(mapSetSpy).not.toHaveBeenCalled();
+        const result4 = Strings.getWordDirection("!hello!", false);
+        expect(result4).toBe(false);
+        expect(mapGetSpy).toHaveBeenCalledWith("hello");
+        expect(mapSetSpy).not.toHaveBeenCalled();
+      });
 
-      // Cleanup spies
-      mapGetSpy.mockRestore();
-      mapSetSpy.mockRestore();
-    });
+      it("should handle cache clearing", () => {
+        // Cache a result
+        Strings.getWordDirection("test", false);
+        expect(mapSetSpy).toHaveBeenCalledWith("test", false);
 
-    it("should handle cache clearing", () => {
-      const mapGetSpy = vi.spyOn(Map.prototype, "get");
-      const mapSetSpy = vi.spyOn(Map.prototype, "set");
-      const mapClearSpy = vi.spyOn(Map.prototype, "clear");
+        // Clear cache
+        Strings.clearWordDirectionCache();
+        expect(mapClearSpy).toHaveBeenCalled();
 
-      // Cache a result
-      Strings.getWordDirection("test", false);
-      expect(mapSetSpy).toHaveBeenCalledWith("test", false);
+        mapGetSpy.mockClear();
+        mapSetSpy.mockClear();
+        mapClearSpy.mockClear();
 
-      // Clear cache
-      Strings.clearWordDirectionCache();
-      expect(mapClearSpy).toHaveBeenCalled();
+        // Should work normally after cache clear (cache miss again)
+        const result = Strings.getWordDirection("test", false);
+        expect(result).toBe(false);
+        expect(mapSetSpy).toHaveBeenCalledWith("test", false);
+      });
 
-      mapGetSpy.mockClear();
-      mapSetSpy.mockClear();
-      mapClearSpy.mockClear();
+      it("should demonstrate cache miss vs cache hit behavior", () => {
+        // Test cache miss - first time seeing this word
+        const result1 = Strings.getWordDirection("unique", false);
+        expect(result1).toBe(false);
+        expect(mapGetSpy).toHaveBeenCalledWith("unique");
+        expect(mapSetSpy).toHaveBeenCalledWith("unique", false);
 
-      // Should work normally after cache clear (cache miss again)
-      const result = Strings.getWordDirection("test", false);
-      expect(result).toBe(false);
-      expect(mapSetSpy).toHaveBeenCalledWith("test", false);
+        mapGetSpy.mockClear();
+        mapSetSpy.mockClear();
 
-      // Cleanup spies
-      mapGetSpy.mockRestore();
-      mapSetSpy.mockRestore();
-      mapClearSpy.mockRestore();
-    });
+        // Test cache hit - same word again
+        const result2 = Strings.getWordDirection("unique", false);
+        expect(result2).toBe(false);
+        expect(mapGetSpy).toHaveBeenCalledWith("unique");
+        expect(mapSetSpy).not.toHaveBeenCalled(); // No cache set on hit
 
-    it("should demonstrate cache miss vs cache hit behavior", () => {
-      const mapGetSpy = vi.spyOn(Map.prototype, "get");
-      const mapSetSpy = vi.spyOn(Map.prototype, "set");
+        mapGetSpy.mockClear();
+        mapSetSpy.mockClear();
 
-      // Test cache miss - first time seeing this word
-      const result1 = Strings.getWordDirection("unique", false);
-      expect(result1).toBe(false);
-      expect(mapGetSpy).toHaveBeenCalledWith("unique");
-      expect(mapSetSpy).toHaveBeenCalledWith("unique", false);
-
-      mapGetSpy.mockClear();
-      mapSetSpy.mockClear();
-
-      // Test cache hit - same word again
-      const result2 = Strings.getWordDirection("unique", false);
-      expect(result2).toBe(false);
-      expect(mapGetSpy).toHaveBeenCalledWith("unique");
-      expect(mapSetSpy).not.toHaveBeenCalled(); // No cache set on hit
-
-      mapGetSpy.mockClear();
-      mapSetSpy.mockClear();
-
-      // Test cache miss - different word
-      const result3 = Strings.getWordDirection("different", false);
-      expect(result3).toBe(false);
-      expect(mapGetSpy).toHaveBeenCalledWith("different");
-      expect(mapSetSpy).toHaveBeenCalledWith("different", false);
-
-      // Cleanup spies
-      mapGetSpy.mockRestore();
-      mapSetSpy.mockRestore();
+        // Test cache miss - different word
+        const result3 = Strings.getWordDirection("different", false);
+        expect(result3).toBe(false);
+        expect(mapGetSpy).toHaveBeenCalledWith("different");
+        expect(mapSetSpy).toHaveBeenCalledWith("different", false);
+      });
     });
   });
 });
