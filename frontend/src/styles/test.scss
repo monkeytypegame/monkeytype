@@ -839,12 +839,14 @@
             pointer-events: none;
 
             &.dashed {
-              background: repeating-linear-gradient(
+              background: linear-gradient(
                 90deg,
-                var(--color),
-                var(--color) 0.6em,
-                transparent 0.6em,
-                transparent 0.9em
+                var(--color) 0%,
+                var(--color) 40%,
+                transparent 40%,
+                transparent 60%,
+                var(--color) 60%,
+                var(--color) 100%
               );
             }
           }
