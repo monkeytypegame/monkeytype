@@ -78,9 +78,21 @@ export function replaceLegacyValues(result: DBResult): DBResult {
     result.correctChars !== undefined &&
     result.incorrectChars !== undefined
   ) {
-    result.charStats = [result.correctChars, result.incorrectChars, 0, 0];
-    delete result.correctChars;
-    delete result.incorrectChars;
+    //super edge case but just in case
+    if (result.charStats !== undefined) {
+      result.charStats = [
+        result.charStats[0],
+        result.charStats[1],
+        result.charStats[2],
+        result.charStats[3],
+      ];
+      delete result.correctChars;
+      delete result.incorrectChars;
+    } else {
+      result.charStats = [result.correctChars, result.incorrectChars, 0, 0];
+      delete result.correctChars;
+      delete result.incorrectChars;
+    }
   }
 
   if (typeof result.funbox === "string") {
