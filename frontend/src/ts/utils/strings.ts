@@ -236,3 +236,8 @@ export function getWordDirection(
 
   return result;
 }
+
+// Export testing utilities for unit tests
+export const __testing = {
+  hasRTLCharacters,
+};
