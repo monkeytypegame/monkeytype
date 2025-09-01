@@ -1096,12 +1096,14 @@ const resultChartDataVisibility = new LocalStorageWithSchema({
       raw: z.boolean(),
       burst: z.boolean(),
       errors: z.boolean(),
+      pbLine: z.boolean(),
     })
     .strict(),
   fallback: {
     raw: true,
     burst: true,
     errors: true,
+    pbLine: true,
   },
 });
 
@@ -1111,15 +1113,22 @@ function updateResultChartDataVisibility(update = false): void {
   ChartController.result.getDataset("burst").hidden = !vis.burst;
   ChartController.result.getDataset("error").hidden = !vis.errors;
 
+  for (const annotation of resultAnnotation) {
+    annotation.display = vis.pbLine;
+  }
+
   if (update) ChartController.result.update();
 
   const buttons = $(".pageTest #result .chart .chartLegend button");
 
   for (const button of buttons) {
     const id = $(button).data("id") as string;
-    if (id === "raw" || id === "burst" || id === "errors") {
-      $(button).toggleClass("active", vis[id]);
+
+    if (id !== "raw" && id !== "burst" && id !== "errors" && id !== "pbLine") {
+      return;
     }
+
+    $(button).toggleClass("active", vis[id]);
   }
 }
 
@@ -1181,13 +1190,13 @@ $(".pageTest #result .chart .chartLegend button").on("click", (event) => {
   const $target = $(event.target);
   const id = $target.data("id") as string;
 
-  if (id === "raw" || id === "burst" || id === "errors") {
-    const vis = resultChartDataVisibility.get();
-
-    vis[id] = !vis[id];
-
-    resultChartDataVisibility.set(vis);
+  if (id !== "raw" && id !== "burst" && id !== "errors" && id !== "pbLine") {
+    return;
   }
+
+  const vis = resultChartDataVisibility.get();
+  vis[id] = !vis[id];
+  resultChartDataVisibility.set(vis);
 
   updateResultChartDataVisibility(true);
 });

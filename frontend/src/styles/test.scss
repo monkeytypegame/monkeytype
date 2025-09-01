@@ -825,8 +825,8 @@
           align-items: center;
           --color: var(--sub-color);
 
+          text-decoration: line-through;
           .text {
-            text-decoration: line-through;
             pointer-events: none;
           }
 
@@ -855,9 +855,9 @@
           }
 
           &.active {
-            .text {
-              text-decoration: none;
-            }
+            text-decoration: none;
+            // .text {
+            // }
             color: var(--sub-color);
             &[data-id="raw"] {
               --color: var(--main-color);
@@ -872,6 +872,7 @@
 
           &:hover {
             color: var(--text-color);
+            background: var(--sub-alt-color);
           }
 
           &:active {
