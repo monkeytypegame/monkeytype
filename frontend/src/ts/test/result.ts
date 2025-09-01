@@ -729,9 +729,9 @@ async function updateTags(dontSave: boolean): Promise<void> {
           id: "tpb",
           scaleID: "wpm",
           value: typingSpeedUnit.fromWpm(tpb),
-          borderColor: themecolors.sub,
+          borderColor: themecolors.sub + "55",
           borderWidth: 1,
-          borderDash: [2, 2],
+          // borderDash: [4, 16],
           label: {
             backgroundColor: themecolors.sub,
             font: {
