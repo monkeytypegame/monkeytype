@@ -58,7 +58,7 @@ async function resetCaretPosition(): Promise<void> {
 
   const isWordRightToLeft = getWordDirection(
     currentWord,
-    isLanguageRightToLeft
+    isLanguageRightToLeft ?? false
   );
 
   caret.stop(true, true).animate(
@@ -243,7 +243,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
 
       const isWordRightToLeft = getWordDirection(
         currentWord,
-        isLanguageRightToLeft
+        isLanguageRightToLeft ?? false
       );
       newTop =
         word.offsetTop +
