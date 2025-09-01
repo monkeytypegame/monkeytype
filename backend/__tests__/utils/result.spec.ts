@@ -123,19 +123,85 @@ describe("Result Utils", () => {
       });
     });
 
+    describe("legacy chartData conversion", () => {
+      it("should convert chartData with 'raw' property to 'burst'", () => {
+        const resultWithLegacyChartData: DBResult = {
+          chartData: {
+            wpm: [50, 55, 60],
+            raw: [52, 57, 62],
+            err: [1, 0, 2],
+          } as any,
+        } as any;
+
+        const result = replaceLegacyValues(resultWithLegacyChartData);
+
+        expect(result.chartData).toEqual({
+          wpm: [50, 55, 60],
+          burst: [52, 57, 62],
+          err: [1, 0, 2],
+        });
+      });
+
+      it("should not convert chartData when it's 'toolong'", () => {
+        const resultWithToolongChartData: DBResult = {
+          chartData: "toolong",
+        } as any;
+
+        const result = replaceLegacyValues(resultWithToolongChartData);
+
+        expect(result.chartData).toBe("toolong");
+      });
+
+      it("should not convert chartData when it doesn't have 'raw' property", () => {
+        const resultWithModernChartData: DBResult = {
+          chartData: {
+            wpm: [50, 55, 60],
+            burst: [52, 57, 62],
+            err: [1, 0, 2],
+          },
+        } as any;
+
+        const result = replaceLegacyValues(resultWithModernChartData);
+
+        expect(result.chartData).toEqual({
+          wpm: [50, 55, 60],
+          burst: [52, 57, 62],
+          err: [1, 0, 2],
+        });
+      });
+
+      it("should not convert chartData when it's undefined", () => {
+        const resultWithoutChartData: DBResult = {} as any;
+
+        const result = replaceLegacyValues(resultWithoutChartData);
+
+        expect(result.chartData).toBeUndefined();
+      });
+    });
+
     it("should convert all legacy data at once", () => {
-      const resultWithBothLegacy: DBResult = {
+      const resultWithAllLegacy: DBResult = {
         correctChars: 100,
         incorrectChars: 8,
         funbox: "memory#mirror" as any,
+        chartData: {
+          wpm: [50, 55, 60],
+          raw: [52, 57, 62],
+          err: [1, 0, 2],
+        } as any,
       } as any;
 
-      const result = replaceLegacyValues(resultWithBothLegacy);
+      const result = replaceLegacyValues(resultWithAllLegacy);
 
       expect(result.charStats).toEqual([100, 8, 0, 0]);
       expect(result.correctChars).toBeUndefined();
       expect(result.incorrectChars).toBeUndefined();
       expect(result.funbox).toEqual(["memory", "mirror"]);
+      expect(result.chartData).toEqual({
+        wpm: [50, 55, 60],
+        burst: [52, 57, 62],
+        err: [1, 0, 2],
+      });
     });
 
     describe("no legacy values", () => {
