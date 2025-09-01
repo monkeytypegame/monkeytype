@@ -247,8 +247,6 @@ async function updateGraph(): Promise<void> {
     ...result.chartData.err
   );
 
-  updateResultChartDataVisibility();
-
   // const chartData1 = [
   //   ...fakeChartData["wpm"].map((a) =>
   //     Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
@@ -982,6 +980,7 @@ export async function update(
   await updateCrown(dontSave);
   await updateGraph();
   await updateGraphPBLine();
+  updateResultChartDataVisibility();
   await updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
@@ -1114,6 +1113,7 @@ function updateResultChartDataVisibility(update = false): void {
   ChartController.result.getDataset("error").hidden = !vis.errors;
 
   for (const annotation of resultAnnotation) {
+    if (annotation.id !== "lpb") continue;
     annotation.display = vis.pbLine;
   }
 
