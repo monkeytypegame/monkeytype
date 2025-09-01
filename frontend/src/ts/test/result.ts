@@ -1037,12 +1037,6 @@ export async function update(
     $("main #result #saveScreenshotButton").removeClass("hidden");
   }
 
-  if (window.scrollY > 0) {
-    $([document.documentElement, document.body])
-      .stop()
-      .animate({ scrollTop: 0 }, 250);
-  }
-
   TestConfig.hide();
 
   void Misc.swapElements(
@@ -1055,8 +1049,6 @@ export async function update(
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
-
-      window.scrollTo({ top: 0 });
     },
     async () => {
       Focus.set(false);

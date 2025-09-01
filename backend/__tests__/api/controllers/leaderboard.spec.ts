@@ -1,22 +1,16 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import _ from "lodash";
 import { ObjectId } from "mongodb";
-import request from "supertest";
-import app from "../../../src/app";
 import * as LeaderboardDal from "../../../src/dal/leaderboards";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as Configuration from "../../../src/init/configuration";
-import {
-  mockAuthenticateWithApeKey,
-  mockBearerAuthentication,
-} from "../../__testData__/auth";
+import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { XpLeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 
-const mockApp = request(app);
+const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 
 const allModes = [
   "10",
@@ -32,9 +26,6 @@ const allModes = [
 ];
 
 describe("Loaderboard Controller", () => {
-  beforeEach(() => {
-    mockAuth.beforeEach();
-  });
   describe("get leaderboard", () => {
     const getLeaderboardMock = vi.spyOn(LeaderboardDal, "get");
     const getLeaderboardCountMock = vi.spyOn(LeaderboardDal, "getCount");

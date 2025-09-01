@@ -1,17 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import request from "supertest";
-import app from "../../../src/app";
+import { describe, it, expect, afterEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import * as ConfigDal from "../../../src/dal/config";
 import { ObjectId } from "mongodb";
-import { mockBearerAuthentication } from "../../__testData__/auth";
-const mockApp = request(app);
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
+
+const { mockApp, uid } = setup();
 
 describe("ConfigController", () => {
-  beforeEach(() => {
-    mockAuth.beforeEach();
-  });
   describe("get config", () => {
     const getConfigMock = vi.spyOn(ConfigDal, "getConfig");
 

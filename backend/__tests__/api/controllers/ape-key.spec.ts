@@ -1,17 +1,14 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import request, { Test as SuperTest } from "supertest";
-import app from "../../../src/app";
+import { setup } from "../../__testData__/controller-test";
+import { Test as SuperTest } from "supertest";
 import * as ApeKeyDal from "../../../src/dal/ape-keys";
 import { ObjectId } from "mongodb";
 import * as Configuration from "../../../src/init/configuration";
 import * as UserDal from "../../../src/dal/user";
 import _ from "lodash";
-import { mockBearerAuthentication } from "../../__testData__/auth";
 
-const mockApp = request(app);
+const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 
 describe("ApeKeyController", () => {
   const getUserMock = vi.spyOn(UserDal, "getPartialUser");
@@ -21,7 +18,6 @@ describe("ApeKeyController", () => {
     getUserMock.mockResolvedValue(user(uid, {}));
     vi.useFakeTimers();
     vi.setSystemTime(1000);
-    mockAuth.beforeEach();
   });
 
   afterEach(() => {
