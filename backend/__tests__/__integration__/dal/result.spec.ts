@@ -7,7 +7,6 @@ import * as ResultUtils from "../../../src/utils/result";
 
 let uid: string;
 const timestamp = Date.now() - 60000;
-let replaceLegacyValuesSpy: any;
 
 async function createDummyData(
   uid: string,
@@ -66,13 +65,14 @@ async function createDummyData(
   }
 }
 describe("ResultDal", () => {
+  const replaceLegacyValuesMock = vi.spyOn(ResultUtils, "replaceLegacyValues");
+
   beforeEach(() => {
     uid = new ObjectId().toHexString();
-    replaceLegacyValuesSpy = vi.spyOn(ResultUtils, "replaceLegacyValues");
   });
   afterEach(async () => {
     if (uid) await ResultDal.deleteAll(uid);
-    vi.clearAllMocks();
+    replaceLegacyValuesMock.mockClear();
   });
   describe("getResults", () => {
     it("should read lastest 10 results ordered by timestamp", async () => {
@@ -147,7 +147,7 @@ describe("ResultDal", () => {
       await ResultDal.getResults(uid);
 
       //THEN
-      expect(replaceLegacyValuesSpy).toHaveBeenCalled();
+      expect(replaceLegacyValuesMock).toHaveBeenCalled();
     });
   });
   describe("getResult", () => {
@@ -160,7 +160,7 @@ describe("ResultDal", () => {
       await ResultDal.getResult(uid, resultId);
 
       //THEN
-      expect(replaceLegacyValuesSpy).toHaveBeenCalled();
+      expect(replaceLegacyValuesMock).toHaveBeenCalled();
     });
   });
   describe("getLastResult", () => {
@@ -172,7 +172,7 @@ describe("ResultDal", () => {
       await ResultDal.getLastResult(uid);
 
       //THEN
-      expect(replaceLegacyValuesSpy).toHaveBeenCalled();
+      expect(replaceLegacyValuesMock).toHaveBeenCalled();
     });
   });
   describe("getResultByTimestamp", () => {
@@ -184,7 +184,7 @@ describe("ResultDal", () => {
       await ResultDal.getResultByTimestamp(uid, timestamp);
 
       //THEN
-      expect(replaceLegacyValuesSpy).toHaveBeenCalled();
+      expect(replaceLegacyValuesMock).toHaveBeenCalled();
     });
   });
 });
