@@ -70,13 +70,26 @@ export async function getResult(uid: string, id: string): Promise<DBResult> {
 }
 
 export async function getLastResult(uid: string): Promise<DBResult> {
-  const [lastResult] = await getResultCollection()
-    .find({ uid })
-    .sort({ timestamp: -1 })
-    .limit(1)
-    .toArray();
-  if (!lastResult) throw new MonkeyError(404, "No results found");
+  const lastResult = await getResultCollection().findOne(
+    { uid },
+    { sort: { timestamp: -1 } }
+  );
+
+  if (lastResult === null) throw new MonkeyError(404, "No last result found");
   return convert(lastResult);
+}
+
+export async function getLastResultTimestamp(uid: string): Promise<number> {
+  const lastResult = await getResultCollection().findOne(
+    { uid },
+    {
+      projection: { timestamp: 1, _id: 0 },
+      sort: { timestamp: -1 },
+    }
+  );
+
+  if (lastResult === null) throw new MonkeyError(404, "No last result found");
+  return lastResult.timestamp;
 }
 
 export async function getResultByTimestamp(

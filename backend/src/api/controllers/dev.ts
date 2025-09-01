@@ -211,18 +211,15 @@ async function updateUser(uid: string): Promise<void> {
   );
 
   for (const mode of modes) {
-    const best = (
-      await ResultDal.getResultCollection()
-        .find({
-          uid,
-          language: mode.language,
-          mode: mode.mode,
-          mode2: mode.mode2,
-        })
-        .sort({ wpm: -1, timestamp: 1 })
-        .limit(1)
-        .toArray()
-    )[0] as DBResult;
+    const best = (await ResultDal.getResultCollection().findOne(
+      {
+        uid,
+        language: mode.language,
+        mode: mode.mode,
+        mode2: mode.mode2,
+      },
+      { sort: { wpm: -1, timestamp: 1 } }
+    )) as DBResult;
 
     if (personalBests[mode.mode] === undefined) personalBests[mode.mode] = {};
     if (personalBests[mode.mode][mode.mode2] === undefined)

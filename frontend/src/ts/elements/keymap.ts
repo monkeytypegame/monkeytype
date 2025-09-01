@@ -15,10 +15,11 @@ import * as AltTracker from "../test/alt-tracker";
 import * as KeyConverter from "../utils/key-converter";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { areSortedArraysEqual } from "../utils/arrays";
+import { LayoutObject } from "@monkeytype/schemas/layouts";
 
 export const keyDataDelimiter = "~~";
 
-const stenoKeys: JSONData.Layout = {
+const stenoKeys: LayoutObject = {
   keymapShowTopRow: true,
   type: "matrix",
   keys: {
@@ -143,7 +144,7 @@ export function show(): void {
 }
 
 function buildRow(options: {
-  layoutData: JSONData.Layout;
+  layoutData: LayoutObject;
   rowId: string;
   rowKeys: string[][];
   layoutNameDisplayString: string;
@@ -396,7 +397,7 @@ export async function refresh(): Promise<void> {
   if (!layoutName) return;
   try {
     let layoutNameDisplayString = layoutName;
-    let layoutData: JSONData.Layout;
+    let layoutData: LayoutObject;
     try {
       if (Config.keymapLayout === "overrideSync") {
         if (Config.layout === "default") {
@@ -477,7 +478,7 @@ export async function refresh(): Promise<void> {
   }
 }
 
-const isMacLike = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+const isMacLike = Misc.isMacLike();
 const symbolsPattern = /^[^\p{L}\p{N}]{1}$/u;
 type KeymapLegendStates = [letters: 0 | 1 | 2 | 3, symbols: 0 | 1 | 2 | 3];
 let keymapLegendStates: KeymapLegendStates = [0, 0];

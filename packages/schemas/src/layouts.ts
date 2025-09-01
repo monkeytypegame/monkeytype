@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { customEnumErrorHandler } from "./util";
 
-export const LayoutNameSchema = z.enum([
+export const LayoutNameSchema = z.enum(
+  [
     "qwerty",
     "dvorak",
     "colemak",
@@ -50,6 +51,8 @@ export const LayoutNameSchema = z.enum([
     "hungarian",
     "handsdown_alt",
     "handsdown_promethium",
+    "handsdown_neu",
+    "handsdown_neu_inverted",
     "typehack",
     "MTGAP",
     "MTGAP_full",
@@ -201,6 +204,7 @@ export const LayoutNameSchema = z.enum([
     "kuntum",
     "anishtro",
     "Kuntem",
+    "kuntem-jq",
     "BEAKL_Zi",
     "snorkle",
     "MALTRON",
@@ -221,6 +225,7 @@ export const LayoutNameSchema = z.enum([
     "rulemak",
     "persian_farsi_colemak",
     "persian_standard_colemak",
+    "ergo_split46",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),
@@ -228,3 +233,63 @@ export const LayoutNameSchema = z.enum([
 );
 
 export type LayoutName = z.infer<typeof LayoutNameSchema>;
+
+const charDefinitionSchema = z.array(z.string().length(1)).min(1).max(4);
+const row5CharDefinitionSchema = z.array(z.string().length(1)).min(1).max(4);
+
+const commonLayoutSchema = z
+  .object({
+    keymapShowTopRow: z.boolean(),
+    matrixShowRightColumn: z.boolean().optional(),
+  })
+  .strict();
+
+const ansiLayoutSchema = commonLayoutSchema
+  .extend({
+    type: z.literal("ansi"),
+    keys: z
+      .object({
+        row1: z.array(charDefinitionSchema).length(13),
+        row2: z.array(charDefinitionSchema).length(13),
+        row3: z.array(charDefinitionSchema).length(11),
+        row4: z.array(charDefinitionSchema).length(10),
+        row5: z.array(row5CharDefinitionSchema).min(1).max(2),
+      })
+      .strict(),
+  })
+  .strict();
+
+const isoLayoutSchema = commonLayoutSchema
+  .extend({
+    type: z.literal("iso"),
+    keys: z
+      .object({
+        row1: z.array(charDefinitionSchema).length(13),
+        row2: z.array(charDefinitionSchema).length(12),
+        row3: z.array(charDefinitionSchema).length(12),
+        row4: z.array(charDefinitionSchema).length(11),
+        row5: z.array(row5CharDefinitionSchema).min(1).max(2),
+      })
+      .strict(),
+  })
+  .strict();
+
+const matrixLayoutSchema = commonLayoutSchema
+  .extend({
+    type: z.literal("matrix"),
+    keys: z
+      .object({
+        row1: z.array(charDefinitionSchema).length(0),
+        row2: z.array(charDefinitionSchema).length(10),
+        row3: z.array(charDefinitionSchema).length(10),
+        row4: z.array(charDefinitionSchema).length(4),
+        row5: z.array(row5CharDefinitionSchema).length(0),
+      })
+      .strict(),
+  })
+  .strict();
+
+export const LayoutObjectSchema = ansiLayoutSchema
+  .or(isoLayoutSchema)
+  .or(matrixLayoutSchema);
+export type LayoutObject = z.infer<typeof LayoutObjectSchema>;

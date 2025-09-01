@@ -199,10 +199,7 @@ async function updateProfile(): Promise<void> {
   hide();
 }
 
-function addValidation(
-  element: JQuery<HTMLElement>,
-  schema: Zod.Schema
-): InputIndicator {
+function addValidation(element: JQuery, schema: Zod.Schema): InputIndicator {
   const indicator = new InputIndicator(element, {
     valid: {
       icon: "fa-check",

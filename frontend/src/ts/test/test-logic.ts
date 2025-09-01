@@ -171,17 +171,17 @@ export function restart(options = {} as RestartOptions): void {
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
       important: true,
     });
-    event?.preventDefault();
+    options.event?.preventDefault();
     return;
   }
 
   if (TestUI.testRestarting || TestUI.resultCalculating) {
-    event?.preventDefault();
+    options.event?.preventDefault();
     return;
   }
   if (ActivePage.get() === "test") {
     if (!ManualRestart.get()) {
-      if (Config.mode !== "zen") event?.preventDefault();
+      if (Config.mode !== "zen") options.event?.preventDefault();
       if (
         !canQuickRestart(
           Config.mode,
@@ -356,7 +356,7 @@ export function restart(options = {} as RestartOptions): void {
       TestState.setTestInitSuccess(true);
       const initResult = await init();
 
-      if (initResult === null) {
+      if (!initResult) {
         TestUI.setTestRestarting(false);
         return;
       }
@@ -407,7 +407,8 @@ export function restart(options = {} as RestartOptions): void {
 let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
-export async function init(): Promise<void | null> {
+
+export async function init(): Promise<boolean> {
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
@@ -428,7 +429,7 @@ export async function init(): Promise<void | null> {
     //     important: true,
     //   }
     // );
-    return null;
+    return false;
   }
 
   MonkeyPower.reset();
@@ -563,11 +564,13 @@ export async function init(): Promise<void | null> {
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     void KeymapEvent.highlight(
+      // ignoring for now but this might need a different approach
+      // eslint-disable-next-line @typescript-eslint/no-misused-spread
       Arrays.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
     );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
-  TestUI.setRightToLeft(language.rightToLeft);
+  TestUI.setRightToLeft(language.rightToLeft ?? false);
   TestUI.setLigatures(language.ligatures ?? false);
   TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
@@ -575,6 +578,7 @@ export async function init(): Promise<void | null> {
     "Test initialized with section indexes",
     generatedSectionIndexes
   );
+  return true;
 }
 
 export function areAllTestWordsGenerated(): boolean {
@@ -605,9 +609,12 @@ export async function addWord(): Promise<void> {
   }
 
   let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = getActiveFunboxes()
-    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+
+  const funboxToPush =
+    getActiveFunboxes()
+      .flatMap((fb) => fb.properties ?? [])
+      .find((prop) => prop.startsWith("toPush:")) ?? "";
+
   const toPushCount = funboxToPush?.split(":")[1];
   if (toPushCount !== undefined) bound = +toPushCount - 1;
 
@@ -1563,6 +1570,8 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       setTimeout(() => {
         void KeymapEvent.highlight(
           Arrays.nthElementFromArray(
+            // ignoring for now but this might need a different approach
+            // eslint-disable-next-line @typescript-eslint/no-misused-spread
             [...TestWords.words.getCurrent()],
             0
           ) as string
