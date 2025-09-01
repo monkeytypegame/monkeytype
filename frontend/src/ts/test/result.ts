@@ -1129,6 +1129,10 @@ function updateResultChartDataVisibility(update = false): void {
     }
 
     $(button).toggleClass("active", vis[id]);
+
+    if (id === "pbLine") {
+      $(button).toggleClass("hidden", !isAuthenticated());
+    }
   }
 }
 
