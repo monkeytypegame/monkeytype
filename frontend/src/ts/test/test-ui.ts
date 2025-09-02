@@ -965,7 +965,6 @@ export async function scrollTape(
       ) {
         toRemove.push(child);
         widthRemoved += wordOuterWidth;
-        wordsToRemoveCount++;
       } else {
         fullLineWidths += wordOuterWidth;
         if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
