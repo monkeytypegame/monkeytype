@@ -889,18 +889,12 @@ export async function scrollTape(
   const currentLang = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRTL = currentLang.rightToLeft;
 
-  // index of the active word in the collection of .word elements
-  const wordElementIndex =
-    TestState.activeWordIndex - TestState.removedUIWordCount;
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
   const wordsEl = document.getElementById("words") as HTMLElement;
   const wordsChildrenArr = [...wordsEl.children] as HTMLElement[];
-  const wordElements = wordsEl.getElementsByClassName("word");
-  const activeWordEl = wordElements[wordElementIndex] as
-    | HTMLElement
-    | undefined;
+  const activeWordEl = getWordElement(TestState.activeWordIndex);
   if (!activeWordEl) return;
   const afterNewLineEls = wordsEl.getElementsByClassName("afterNewline");
 
