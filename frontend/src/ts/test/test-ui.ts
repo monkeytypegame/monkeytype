@@ -545,10 +545,7 @@ export async function centerActiveLine(): Promise<void> {
   const { resolve, promise } = Misc.promiseWithResolvers();
   centeringActiveLine = promise;
 
-  const wordElements = document.querySelectorAll<HTMLElement>("#words .word");
-  const activeWordIndex =
-    TestState.activeWordIndex - TestState.removedUIWordCount;
-  const activeWordEl = wordElements[activeWordIndex];
+  const activeWordEl = getWordElement(TestState.activeWordIndex);
   if (!activeWordEl) {
     resolve();
     return;
@@ -556,8 +553,8 @@ export async function centerActiveLine(): Promise<void> {
   const currentTop = activeWordEl.offsetTop;
 
   let previousLineTop = currentTop;
-  for (let i = activeWordIndex - 1; i >= 0; i--) {
-    previousLineTop = wordElements[i]?.offsetTop ?? currentTop;
+  for (let i = TestState.activeWordIndex - 1; i >= 0; i--) {
+    previousLineTop = getWordElement(i)?.offsetTop ?? currentTop;
     if (previousLineTop < currentTop) {
       await lineJump(previousLineTop, true);
       resolve();
