@@ -1084,7 +1084,7 @@ export function updatePremid(): void {
   $(".pageTest #premidSecondsLeft").text(Config.time);
 }
 
-function removeWordElements(lastWordIndexToRemove: number): void {
+function removeTestElements(lastWordIndexToRemove: number): void {
   const wordsChildren = document.getElementById("words")?.children;
 
   if (wordsChildren === undefined) return;
@@ -1198,7 +1198,7 @@ export async function lineJump(
           currentLinesAnimating = 0;
           TestState.setLineScrollDistance(0);
           activeWordTop = activeWordEl.offsetTop;
-          removeWordElements(lastIndexToRemove);
+          removeTestElements(lastIndexToRemove);
           wordsEl.style.marginTop = "0";
           lineTransition = false;
           resolve();
@@ -1206,7 +1206,7 @@ export async function lineJump(
       });
       jqWords.dequeue("topMargin");
     } else {
-      removeWordElements(lastIndexToRemove);
+      removeTestElements(lastIndexToRemove);
       paceCaretElement.style.top = `${
         paceCaretElement.offsetTop - wordHeight
       }px`;
