@@ -1,13 +1,13 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 
+import { ConfigurationSchema } from "@monkeytype/schemas/configuration";
 import {
   CommonResponses,
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
-import { ConfigurationSchema } from "./schemas/configuration";
+} from "./util/api";
 
 export const GetConfigurationResponseSchema =
   responseWithData(ConfigurationSchema);
@@ -16,6 +16,8 @@ export type GetConfigurationResponse = z.infer<
   typeof GetConfigurationResponseSchema
 >;
 
+// marked as deprecated but zod team might reconsider according to https://github.com/colinhacks/zod/issues/2854#issuecomment-3100623150
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export const PartialConfigurationSchema = ConfigurationSchema.deepPartial();
 export type PartialConfiguration = z.infer<typeof PartialConfigurationSchema>;
 

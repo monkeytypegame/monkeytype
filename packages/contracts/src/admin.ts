@@ -1,12 +1,12 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
+import { IdSchema } from "@monkeytype/schemas/util";
 import {
   CommonResponses,
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
-import { IdSchema } from "./schemas/util";
+} from "./util/api";
 
 export const ToggleBanRequestSchema = z
   .object({

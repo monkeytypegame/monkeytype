@@ -1,6 +1,5 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
-import * as LoadingPage from "./pages/loading";
 import { isAuthenticated } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
@@ -12,14 +11,14 @@ import {
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
-import { Badge, CustomTheme } from "@monkeytype/contracts/schemas/users";
-import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
+import { Badge, CustomTheme } from "@monkeytype/schemas/users";
+import { Config, Difficulty } from "@monkeytype/schemas/configs";
 import {
   Mode,
   Mode2,
   PersonalBest,
   PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
+} from "@monkeytype/schemas/shared";
 import {
   getDefaultSnapshot,
   Snapshot,
@@ -30,7 +29,8 @@ import {
 import { getDefaultConfig } from "./constants/default-config";
 import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
+import * as AuthEvent from "./observables/auth-event";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -70,6 +70,8 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
     dbSnapshot.verified = originalVerified;
     dbSnapshot.lbOptOut = lbOptOut;
   }
+
+  AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
 }
 
 export async function initSnapshot(): Promise<Snapshot | false> {
@@ -77,12 +79,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   const snap = getDefaultSnapshot();
   try {
     if (!isAuthenticated()) return false;
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(22.5);
-    // } else {
-    //   LoadingPage.updateBar(16);
-    // }
-    // LoadingPage.updateText("Downloading user...");
 
     const [userResponse, configResponse, presetsResponse] = await Promise.all([
       Ape.users.get(),
@@ -180,12 +176,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
     }
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(45);
-    // } else {
-    //   LoadingPage.updateBar(32);
-    // }
-    // LoadingPage.updateText("Downloading config...");
+
     if (configData === undefined || configData === null) {
       snap.config = {
         ...getDefaultConfig(),
@@ -193,12 +184,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     } else {
       snap.config = migrateConfig(configData);
     }
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(67.5);
-    // } else {
-    //   LoadingPage.updateBar(48);
-    // }
-    // LoadingPage.updateText("Downloading tags...");
+
     snap.customThemes = userData.customThemes ?? [];
 
     // const userDataTags: MonkeyTypes.UserTagWithDisplay[] = userData.tags ?? [];
@@ -235,13 +221,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         return 0;
       }
     });
-
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(90);
-    // } else {
-    //   LoadingPage.updateBar(64);
-    // }
-    // LoadingPage.updateText("Downloading presets...");
 
     if (presetsData !== undefined && presetsData !== null) {
       const presetsWithDisplay = presetsData.map((preset) => {
@@ -286,11 +265,6 @@ export async function getUserResults(offset?: number): Promise<boolean> {
 
   if (!ConnectionState.get()) {
     return false;
-  }
-
-  if (dbSnapshot.results === undefined) {
-    LoadingPage.updateText("Downloading results...");
-    LoadingPage.updateBar(90);
   }
 
   const response = await Ape.results.get({ query: { offset } });
@@ -930,7 +904,7 @@ export async function updateLbMemory<M extends Mode>(
   }
 }
 
-export async function saveConfig(config: Config): Promise<void> {
+export async function saveConfig(config: Partial<Config>): Promise<void> {
   if (isAuthenticated()) {
     const response = await Ape.configs.save({ body: config });
     if (response.status !== 200) {

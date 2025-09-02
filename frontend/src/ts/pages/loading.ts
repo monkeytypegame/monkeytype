@@ -1,47 +1,60 @@
-import * as Misc from "../utils/misc";
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
 
-export function updateBar(percentage: number, fast = false): void {
-  const speed = fast ? 100 : 1000;
-  $(".pageLoading .fill, .pageAccount .preloader .fill")
-    .stop(true, fast)
-    .animate(
-      {
-        width: percentage + "%",
-      },
-      speed
-    );
+const pageEl = $(".page.pageLoading");
+const barEl = pageEl.find(".bar");
+const errorEl = pageEl.find(".error");
+const spinnerEl = pageEl.find(".spinner");
+const textEl = pageEl.find(".text");
+
+export async function updateBar(
+  percentage: number,
+  duration: number
+): Promise<void> {
+  return new Promise((resolve) => {
+    barEl
+      .find(".fill")
+      .stop(true, false)
+      .animate(
+        {
+          width: percentage + "%",
+        },
+        duration,
+        () => {
+          resolve();
+        }
+      );
+  });
 }
 
 export function updateText(text: string): void {
-  $(".pageLoading .text, .pageAccount .preloader .text").text(text);
+  textEl.removeClass("hidden").html(text);
+}
+
+export function showSpinner(): void {
+  barEl.addClass("hidden");
+  errorEl.addClass("hidden");
+  spinnerEl.removeClass("hidden");
+  textEl.addClass("hidden");
+}
+
+export function showError(): void {
+  barEl.addClass("hidden");
+  spinnerEl.addClass("hidden");
+  errorEl.removeClass("hidden");
+  textEl.addClass("hidden");
 }
 
 export async function showBar(): Promise<void> {
-  return new Promise((resolve) => {
-    void Misc.swapElements(
-      $(".pageLoading .preloader .icon"),
-      $(".pageLoading .preloader .barWrapper"),
-      125,
-      async () => {
-        resolve();
-      }
-    );
-    void Misc.swapElements(
-      $(".pageAccount .preloader .icon"),
-      $(".pageAccount .preloader .barWrapper"),
-      125,
-      async () => {
-        resolve();
-      }
-    );
-  });
+  barEl.removeClass("hidden");
+  errorEl.addClass("hidden");
+  spinnerEl.addClass("hidden");
+  textEl.addClass("hidden");
 }
 
 export const page = new Page({
   id: "loading",
-  element: $(".page.pageLoading"),
+  element: pageEl,
   path: "/",
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLoading");

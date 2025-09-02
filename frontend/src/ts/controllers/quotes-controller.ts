@@ -5,34 +5,17 @@ import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
 import Ape from "../ape";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
+import { QuoteData, QuoteDataQuote } from "@monkeytype/schemas/quotes";
+import { RequiredProperties } from "../utils/misc";
 
-export type Quote = {
-  text: string;
-  britishText?: string;
-  source: string;
-  length: number;
-  id: number;
+export type Quote = QuoteDataQuote & {
   group: number;
   language: Language;
   textSplit?: string[];
 };
 
-export type QuoteWithTextSplit = Quote & {
-  textSplit: string[];
-};
-
-type QuoteData = {
-  language: Language;
-  quotes: {
-    text: string;
-    britishText?: string;
-    source: string;
-    length: number;
-    id: number;
-  }[];
-  groups: [number, number][];
-};
+export type QuoteWithTextSplit = RequiredProperties<Quote, "textSplit">;
 
 type QuoteCollection = {
   quotes: Quote[];

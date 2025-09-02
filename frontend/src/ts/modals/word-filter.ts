@@ -10,12 +10,13 @@ import AnimatedModal, {
 import { LayoutsList } from "../constants/layouts";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { LanguageList } from "../constants/languages";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
+import { LayoutObject } from "@monkeytype/schemas/layouts";
 
 type FilterPreset = {
   display: string;
-  getIncludeString: (layout: JSONData.Layout) => string[];
-  getExcludeString: (layout: JSONData.Layout) => string[];
+  getIncludeString: (layout: LayoutObject) => string[][];
+  getExcludeString: (layout: LayoutObject) => string[][];
 };
 
 const presets: Record<string, FilterPreset> = {

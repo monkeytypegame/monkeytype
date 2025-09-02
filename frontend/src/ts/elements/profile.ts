@@ -11,11 +11,12 @@ import * as ActivePage from "../states/active-page";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
-import { UserProfile, RankAndCount } from "@monkeytype/contracts/schemas/users";
+import { UserProfile, RankAndCount } from "@monkeytype/schemas/users";
 import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
 import { secondsToString } from "../utils/date-and-time";
-import { Auth } from "../firebase";
+import { getAuthenticatedUser } from "../firebase";
 import { Snapshot } from "../constants/default-snapshot";
+import { getAvatarElement } from "../utils/discord-avatar";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = UserProfile | Snapshot;
@@ -47,25 +48,8 @@ export async function update(
   )
     return;
 
-  details.find(".placeholderAvatar").removeClass("hidden");
-  if (
-    profile.discordAvatar !== undefined &&
-    profile.discordId !== undefined &&
-    !banned
-  ) {
-    void Misc.getDiscordAvatarUrl(
-      profile.discordId,
-      profile.discordAvatar,
-      256
-    ).then((avatarUrl) => {
-      if (avatarUrl !== null) {
-        details.find(".placeholderAvatar").addClass("hidden");
-        details.find(".avatar").css("background-image", `url(${avatarUrl})`);
-      }
-    });
-  } else {
-    details.find(".avatar").removeAttr("style");
-  }
+  const avatar = details.find(".avatarAndName .avatar");
+  avatar.replaceWith(getAvatarElement(profile, { size: 256 }));
 
   if (profile.inventory?.badges && !banned) {
     let mainHtml = "";
@@ -301,7 +285,7 @@ export async function update(
     }
   }
 
-  updateXp(profile.xp ?? 0);
+  updateXp(where, profile.xp ?? 0);
   //lbs
 
   if (banned) {
@@ -336,7 +320,7 @@ export async function update(
     }
   }
 
-  if (profile.uid === Auth?.currentUser?.uid) {
+  if (profile.uid === getAuthenticatedUser()?.uid) {
     profileElement.find(".userReportButton").addClass("hidden");
   } else {
     profileElement.find(".userReportButton").removeClass("hidden");
@@ -389,9 +373,22 @@ export async function update(
   }
 }
 
-export function updateXp(xp: number): void {
-  const details = $(" .profile .details .levelAndBar");
+export function updateXp(
+  where: ProfileViewPaths,
+  xp: number,
+  sameUserCheck = false
+): void {
+  const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
+  const profileElement = $(`.page${elementClass} .profile`);
+  const details = $(`.page${elementClass} .profile .details .levelAndBar`);
+
   if (details === undefined || details === null) return;
+
+  if (sameUserCheck && where === "profile") {
+    const authedUserUid = getAuthenticatedUser()?.uid;
+    if (authedUserUid !== profileElement.attr("uid")) return;
+  }
+
   const xpDetails = Levels.getXpDetails(xp);
   const xpForLevel = xpDetails.levelMaxXp;
   const xpToDisplay = xpDetails.levelCurrentXp;

@@ -1,4 +1,4 @@
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 
 /**
  * Removes accents from a string.
@@ -166,4 +166,21 @@ export function splitIntoCharacters(s: string): string[] {
   }
 
   return result;
+}
+
+/**
+ * Replaces escaped control characters with their literal equivalents.
+ * Converts \t to tab characters, \n to newlines (with a space prefix),
+ * and handles double-escaped sequences (\\t, \\n) by converting them back to single escaped versions.
+ * @param textToClear The input string containing escaped control characters.
+ * @returns A new string with control characters properly converted.
+ */
+export function replaceControlCharacters(textToClear: string): string {
+  textToClear = textToClear.replace(/(?<!\\)\\t/g, "\t");
+  textToClear = textToClear.replace(/\\n/g, " \n");
+  textToClear = textToClear.replace(/([^\\]|^)\\n/gm, "$1\n");
+  textToClear = textToClear.replace(/\\\\t/gm, "\\t");
+  textToClear = textToClear.replace(/\\\\n/gm, "\\n");
+
+  return textToClear;
 }

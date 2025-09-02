@@ -21,6 +21,13 @@
         "explicit-function-return-type": "off",
         "ban-ts-comment": "off"
       }
+    },
+    {
+      "files": ["__tests__/**/*.d.ts"],
+      "rules": {
+        "typescript/consistent-type-definitions": "off",
+        "typescript/no-empty-object-type": "off"
+      }
     }
   ]
 }

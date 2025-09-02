@@ -177,21 +177,26 @@ export async function updatePosition(noAnim = false): Promise<void> {
   if (!currentWordNodeList?.length) return;
 
   const currentLetter = currentWordNodeList[inputLen];
+  const lastInputLetter = currentWordNodeList[inputLen - 1];
   const lastWordLetter = currentWordNodeList[wordLen - 1];
 
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRightToLeft = currentLanguage.rightToLeft;
+  const isLanguageRightToLeft = currentLanguage.rightToLeft ?? false;
 
   // in blind mode, and hide extra letters, extra letters have zero offsets
   // offsetHeight is the same for all visible letters
   // so is offsetTop (for same line letters)
   const letterHeight =
     (safeNumber(currentLetter?.offsetHeight) ?? 0) ||
+    (safeNumber(lastInputLetter?.offsetHeight) ?? 0) ||
     (safeNumber(lastWordLetter?.offsetHeight) ?? 0) ||
     Config.fontSize * convertRemToPixels(1);
 
   const letterPosTop =
-    currentLetter?.offsetTop ?? lastWordLetter?.offsetTop ?? 0;
+    currentLetter?.offsetTop ??
+    lastInputLetter?.offsetTop ??
+    lastWordLetter?.offsetTop ??
+    0;
   const diff = letterHeight - caretHeight;
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {
@@ -265,10 +270,25 @@ export async function updatePosition(noAnim = false): Promise<void> {
   }
 }
 
+function updateStyle(): void {
+  caret.style.width = "";
+  caret.classList.remove(
+    ...["off", "default", "underline", "outline", "block", "carrot", "banana"]
+  );
+  caret.classList.add(Config.caretStyle);
+}
+
 subscribe((eventKey) => {
   if (eventKey === "caretStyle") {
-    caret.style.width = "";
+    updateStyle();
     void updatePosition(true);
+  }
+  if (eventKey === "smoothCaret") {
+    if (Config.smoothCaret === "off") {
+      caret.style.animationName = "caretFlashHard";
+    } else {
+      caret.style.animationName = "caretFlashSmooth";
+    }
   }
 });
 

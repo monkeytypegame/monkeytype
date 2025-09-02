@@ -1,4 +1,5 @@
-import * as Validation from "../../src/validation/validation";
+import { describe, it, expect } from "vitest";
+import * as Validation from "@monkeytype/schemas/validation/validation";
 
 describe("validation", () => {
   it("containsProfanity", () => {

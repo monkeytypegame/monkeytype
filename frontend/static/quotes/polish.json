@@ -1058,19 +1058,19 @@
       "id": 178
     },
     {
-      "text": "Nie można tego zobaczyć ani dotknąć palcami, Nie można wyczuć węchem ani usłyszeć uszami; Jest pod górami, jest nad gwiazdami, Pustej jaskini nie omija,Po nas zostanie, było przed nami, Życie gasi, a śmiech zabija.",
+      "text": "Nie można tego zobaczyć ani dotknąć palcami, nie można wyczuć węchem ani usłyszeć uszami. Jest pod górami, jest nad gwiazdami, pustej jaskini nie omija, po nas zostanie, było przed nami, życie gasi, a śmiech zabija.",
       "source": "J.R.R. Tolkien, Hobbit, czyli tam i z powrotem",
-      "length": 214,
+      "length": 215,
       "id": 179
     },
     {
-      "text": "Tłuczmy szklanki, spodki, miski, Niech gospodarz żyje nasz! A choć Bilbo płaczu bliski, Niechaj drzazgi lecą z flasz!",
+      "text": "Tłuczmy szklanki, spodki, miski, niech gospodarz żyje nasz! A choć Bilbo płaczu bliski, niechaj drzazgi lecą z flasz!",
       "source": "J.R.R. Tolkien, Hobbit, czyli tam i z powrotem",
       "length": 117,
       "id": 180
     },
     {
-      "text": "Trzy Pierścienie dla królów elfów pod otwartym niebem, Siedem dla władców krasnali w ich kamiennych pałacach, Dziewięć dla śmiertelników, ludzi śmierci podległych, Jeden dla Władcy Ciemności na czarnym tronie.",
+      "text": "Trzy pierścienie dla królów elfów pod otwartym niebem, siedem dla władców krasnali w ich kamiennych pałacach, dziewięć dla śmiertelników, ludzi śmierci podległych, jeden dla Władcy Ciemności na czarnym tronie.",
       "source": "J.R.R. Tolkien, Władca Pierścieni",
       "length": 209,
       "id": 181
@@ -1082,7 +1082,7 @@
       "id": 182
     },
     {
-      "text": "Co chcesz przez to powiedzieć? Czy życzysz mi dobrego dnia, czy oznajmiasz, że dzień jest dobry, niezależnie od tego, co ja o nim myślę; czy sam dobrze się tego ranka czujesz, czy może uważasz, że dzisiaj należy być dobrym? – Wszystko naraz. A na dodatek, że w taki piękny dzień dobrze jest wypalić fajkę na świeżym powietrzu.",
+      "text": "Co chcesz przez to powiedzieć? Czy życzysz mi dobrego dnia, czy oznajmiasz, że dzień jest dobry, niezależnie od tego, co ja o nim myślę; czy sam dobrze się tego ranka czujesz, czy może uważasz, że dzisiaj należy być dobrym? - Wszystko naraz. A na dodatek, że w taki piękny dzień dobrze jest wypalić fajkę na świeżym powietrzu.",
       "source": "J.R.R. Tolkien, Hobbit, czyli tam i z powrotem",
       "length": 326,
       "id": 183
@@ -1188,6 +1188,276 @@
       "source": "Frank Herbert, Diuna",
       "length": 243,
       "id": 200
+    },
+    {
+      "text": "Grzegorz Brzęczyszczykiewicz. Chrząszczyrzewoszczyce, powiat Łękołody.",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 70,
+      "id": 201
+    },
+    {
+      "text": "Melduję posłusznie, panie pułkowniku, ja tę wojnę zupełnie niechcący wywołałem.",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 79,
+      "id": 202
+    },
+    {
+      "text": "Każdy szczęściu dopomoże, każdy dzisiaj wygrać może. Czarna przegrywa, czerwona wygrywa. Raz, dwa, trzy...",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 106,
+      "id": 203
+    },
+    {
+      "text": "Umarł w drodze, na pewno od ran. - To nie od ran, panie pułkowniku! Śliwowica!",
+      "source": "Jak rozpętałem II wojnę światową",
+      "length": 78,
+      "id": 204
+    },
+    {
+      "text": "Ty, chodź no tu. Gdzie ty tam idziesz? Chodź tu do pana. Jaki dobry! Jaką ma ładną panią! Tylko jakaś taka poważna… A czemu ona taka poważna, co? Grubciu… No masz. Co, dobre paproszki? Jedz, jedz. Jak nie będziesz jadł, to pani cię zamknie w takiej dziurze jak nas tutaj.",
+      "source": "Seksmisja",
+      "length": 271,
+      "id": 205
+    },
+    {
+      "text": "Ciemność, widzę ciemność, ciemność widzę.",
+      "source": "Seksmisja",
+      "length": 41,
+      "id": 206
+    },
+    {
+      "text": "Uratowani! Uratowani jesteśmy! Bocian! Patrz! Bocian! Jak on żyje, to znaczy, że my też możemy. Bocian, bociuś!",
+      "source": "Seksmisja",
+      "length": 111,
+      "id": 207
+    },
+    {
+      "text": "Liga broni, liga radzi, liga nigdy was nie zdradzi!",
+      "source": "Seksmisja",
+      "length": 51,
+      "id": 208
+    },
+    {
+      "text": "Za parę dni, proszę pana, to się dopiero zacznie: wywiady, autografy, wizyty w zakładach pracy.",
+      "source": "Seksmisja",
+      "length": 95,
+      "id": 209
+    },
+    {
+      "text": "Ja, książę Jeremi Wiśniowiecki, wojewoda ruski, pan na Łubniach i Wiśniowcu, przysięgam tobie, Boże żywy, w Trójcy Świętej jedyny, jako wznosząc tę szablę przeciw hultajstwu dopóty jej nie złożę, dopóki Ukrainy nie uspokoję, i buntów chłopskich we krwi nie utopię! Tak mi dopomóż Bóg!",
+      "source": "Ogniem i mieczem (1999)",
+      "length": 284,
+      "id": 210
+    },
+    {
+      "text": "Może chcesz waść zaczekać, aż siąpić przestanie. Żal umierać w taki deszcz. - Pułkownika będą chować, to i niebo płacze.",
+      "source": "Potop (1974)",
+      "length": 120,
+      "id": 211
+    },
+    {
+      "text": "Waść machasz jak cepem! - Kończ waść, wstydu oszczędź.",
+      "source": "Potop (1974)",
+      "length": 54,
+      "id": 212
+    },
+    {
+      "text": "Litwo! Ojczyzno moja! ty jesteś jak zdrowie. Ile cię trzeba cenić, ten tylko się dowie, kto cię stracił. Dziś piękność twą w całej ozdobie widzę i opisuję, bo tęsknię po tobie.",
+      "source": "Pan Tadeusz (1999)",
+      "length": 176,
+      "id": 213
+    },
+    {
+      "text": "Mówiłem panu zawsze - procesów zaniechać. Mówiłem panu zawsze - najechać, zajechać!",
+      "source": "Pan Tadeusz (1999)",
+      "length": 83,
+      "id": 214
+    },
+    {
+      "text": "Ja nie mam nic, ty nie masz nic, on nie ma nic... To razem właśnie mamy tyle, żeby założyć wielką fabrykę.",
+      "source": "Ziemia obiecana (1975)",
+      "length": 106,
+      "id": 215
+    },
+    {
+      "text": "Porozumienie osiąga się, gdy jedna ze stron udaje, że wierzy w dyrdymały opowiadane przez drugą.",
+      "source": "Andrzej Sapkowski, Lux perpetua",
+      "length": 96,
+      "id": 216
+    },
+    {
+      "text": "Tylko sześciu ludzi w Galaktyce wiedziało, że zadanie prezydenta polegało nie na sprawowaniu władzy, ale na odwracaniu od niej uwagi.",
+      "source": "Douglas Adams, Autostopem przez galaktykę",
+      "length": 133,
+      "id": 217
+    },
+    {
+      "text": "Stałem się śmiercią, niszczycielem światów.",
+      "source": "Robert Oppenheimer",
+      "length": 43,
+      "id": 218
+    },
+    {
+      "text": "Jeśli coś jest niemożliwe do wykonania, dajcie to zrobić Polakom.",
+      "source": "Napoleon Bonaparte",
+      "length": 65,
+      "id": 219
+    },
+    {
+      "text": "Nie ważne, jak długo żyjesz, ale jak mądrze. Nigdy nie jest za późno na naukę i rozwijanie się. Mądrość jest bezcenna, niezależnie od wieku.",
+      "source": "Janusz Korczak",
+      "length": 140,
+      "id": 220
+    },
+    {
+      "text": "Nie marnuj czasu, bo to materiał, z którego jest zrobione życie.",
+      "source": "Benjamin Franklin",
+      "length": 64,
+      "id": 221
+    },
+    {
+      "text": "Cudze chwalicie, swego nie znacie, sami nie wiecie co posiadacie.",
+      "source": "Polskie przysłowie",
+      "length": 65,
+      "id": 222
+    },
+    {
+      "text": "Nie kłóć się z głupcem, bo sprowadzi cię do swojego poziomu i pokona doświadczeniem.",
+      "source": "Polskie przysłowie",
+      "length": 84,
+      "id": 223
+    },
+    {
+      "text": "Lepiej jest milczeć i być uważanym za głupca, niż otworzyć usta i rozwiać wszelkie wątpliwości.",
+      "source": "Abraham Lincoln",
+      "length": 95,
+      "id": 224
+    },
+    {
+      "text": "Nie szata zdobi człowieka, szata jest dla człowieka, a nie człowiek dla szaty.",
+      "source": "Polskie przysłowie",
+      "length": 78,
+      "id": 225
+    },
+    {
+      "text": "Kto pod kim dołki kopie, ten sam w nie wpada. Czyli nie czyń drugiemu co tobie niemiłe.",
+      "source": "Polskie przysłowie",
+      "length": 87,
+      "id": 226
+    },
+    {
+      "text": "Nie sądź o człowieku po ubiorze, ale po tym, jakich ma przyjaciół. Człowiek jest bowiem tym, do kogo się przyłącza.",
+      "source": "Staropolskie Przysłowie",
+      "length": 115,
+      "id": 227
+    },
+    {
+      "text": "Co się odwlecze, to nie uciecze. Nie odwlekaj na jutro tego, co możesz zrobić dzisiaj.",
+      "source": "Polskie przysłowie",
+      "length": 86,
+      "id": 228
+    },
+    {
+      "text": "Najpierw człowiek uczy się chodzić, a potem biegać, później mówić, a następnie milczeć. Niezmiernie ważne jest, aby pewne rzeczy robić w odpowiedniej kolejności.",
+      "source": "Stefan Żeromski",
+      "length": 161,
+      "id": 229
+    },
+    {
+      "text": "Nie chwal dnia przed zachodem słońca, nie jesteś pewien, co może przynieść koniec dnia.",
+      "source": "Polskie przysłowie",
+      "length": 87,
+      "id": 230
+    },
+    {
+      "text": "Ja nigdy nie będę służył żadnemu królowi ani cesarzowi, tylko mojej ojczyźnie.",
+      "source": "Tadeusz Kościuszko",
+      "length": 78,
+      "id": 231
+    },
+    {
+      "text": "Niczego w życiu nie należy się bać, należy to tylko zrozumieć.",
+      "source": "Maria Skłodowska-Curie",
+      "length": 62,
+      "id": 232
+    },
+    {
+      "text": "Dopóki nie skorzystałem z Internetu, nie wiedziałem, że na świecie jest tylu idiotów.",
+      "source": "Stanisław Lem",
+      "length": 85,
+      "id": 233
+    },
+    {
+      "text": "Matematyka to jedyna dziedzina, w której nie da się niczego ukryć.",
+      "source": "Hugo Steinhaus",
+      "length": 66,
+      "id": 234
+    },
+    {
+      "text": "Nie wystarczy mówić do rzeczy, trzeba jeszcze mówić do ludzi.",
+      "source": "Tadeusz Kotarbiński",
+      "length": 61,
+      "id": 235
+    },
+    {
+      "text": "Matematyka jest najpiękniejszym językiem świata.",
+      "source": "Stefan Banach",
+      "length": 48,
+      "id": 236
+    },
+    {
+      "text": "Nauka powinna służyć ludzkości, nie jej zagładzie.",
+      "source": "Józef Rotblat",
+      "length": 50,
+      "id": 237
+    },
+    {
+      "text": "Jeżeli na ciało nie działa żadna siła lub siły działające się równoważą, to ciało pozostaje w spoczynku lub porusza się ruchem jednostajnym prostoliniowym.",
+      "source": "I zasada dynamiki Newtona (Fizyka)",
+      "length": 155,
+      "id": 238
+    },
+    {
+      "text": "Jeżeli na ciało działa stała siła, to porusza się ono ruchem jednostajnie przyspieszonym, a przyspieszenie jest wprost proporcjonalne do siły działającej na to ciało, a odwrotnie proporcjonalne do masy ciała.",
+      "source": "II zasada dynamiki Newtona (Fizyka)",
+      "length": 208,
+      "id": 239
+    },
+    {
+      "text": "Każde dwa ciała przyciągają się wzajemnie siłą, której wartość jest proporcjonalna do iloczynu ich mas i odwrotnie proporcjonalna do kwadratu odległości między nimi.",
+      "source": "Prawo powszechnego ciążenia (Fizyka)",
+      "length": 165,
+      "id": 240
+    },
+    {
+      "text": "Jeśli ciało A działa na ciało B siłą, to ciało B działa na ciało A siłą o tej samej wartości, lecz przeciwnie skierowaną.",
+      "source": "III zasada dynamiki Newtona (Fizyka)",
+      "length": 121,
+      "id": 241
+    },
+    {
+      "text": "Natężenie prądu w przewodniku jest proporcjonalne do napięcia i odwrotnie proporcjonalne do oporu.",
+      "source": "Prawo Ohma (Fizyka)",
+      "length": 98,
+      "id": 242
+    },
+    {
+      "text": "Energia nie może być stworzona ani zniszczona - może jedynie zmieniać formę.",
+      "source": "Zasada zachowania energii (Fizyka)",
+      "length": 76,
+      "id": 243
+    },
+    {
+      "text": "Na ciało zanurzone w cieczy działa siła wyporu równa ciężarowi wypartej cieczy.",
+      "source": "Prawo Archimedesa (Fizyka)",
+      "length": 79,
+      "id": 244
+    },
+    {
+      "text": "Siła elektrostatyczna między dwoma ładunkami jest proporcjonalna do iloczynu wartości tych ładunków i odwrotnie proporcjonalna do kwadratu odległości między nimi.",
+      "source": "Prawo Coulomba (Fizyka)",
+      "length": 162,
+      "id": 245
     }
   ]
 }

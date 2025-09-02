@@ -5,7 +5,7 @@ import type {
   Request as ExpressRequest,
 } from "express";
 import { DecodedToken } from "./auth";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import { ExpressRequestWithContext } from "../api/types";
 
 export type Context = {

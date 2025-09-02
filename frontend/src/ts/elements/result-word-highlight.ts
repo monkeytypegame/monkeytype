@@ -200,7 +200,7 @@ async function init(): Promise<boolean> {
 
   // Set isLanguageRTL
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  isLanguageRightToLeft = currentLanguage.rightToLeft;
+  isLanguageRightToLeft = currentLanguage.rightToLeft ?? false;
 
   RWH_el = $("#resultWordsHistory")[0] as HTMLElement;
   RWH_rect = RWH_el.getBoundingClientRect();

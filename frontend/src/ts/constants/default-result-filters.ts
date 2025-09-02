@@ -1,5 +1,4 @@
-import { ResultFilters } from "@monkeytype/contracts/schemas/users";
-import { deepClone } from "../utils/misc";
+import { ResultFilters } from "@monkeytype/schemas/users";
 import { LanguageList } from "./languages";
 import { getFunboxNames } from "@monkeytype/funbox";
 
@@ -67,4 +66,4 @@ const object: ResultFilters = {
   },
 };
 
-export default deepClone(object);
+export default structuredClone(object);

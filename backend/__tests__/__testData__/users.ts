@@ -1,6 +1,7 @@
 import * as DB from "../../src/init/db";
 import * as UserDAL from "../../src/dal/user";
 import { ObjectId } from "mongodb";
+import { PersonalBest } from "@monkeytype/schemas/shared";
 
 export async function createUser(
   user?: Partial<UserDAL.DBUser>
@@ -23,4 +24,22 @@ export async function createUserWithoutMigration(
   );
 
   return await UserDAL.getUser(uid, "test");
+}
+
+export function pb(
+  wpm: number,
+  acc: number = 90,
+  timestamp: number = 1
+): PersonalBest {
+  return {
+    acc,
+    consistency: 100,
+    difficulty: "normal",
+    lazyMode: false,
+    language: "english",
+    punctuation: false,
+    raw: wpm + 1,
+    wpm,
+    timestamp,
+  };
 }

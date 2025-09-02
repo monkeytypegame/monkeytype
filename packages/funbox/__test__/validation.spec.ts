@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as List from "../src/list";
 import * as Validation from "../src/validation";
 import { FunboxMetadata } from "../src/types";
@@ -7,7 +8,7 @@ describe("validation", () => {
     const getFunboxMock = vi.spyOn(List, "getFunbox");
 
     beforeEach(() => {
-      getFunboxMock.mockReset();
+      getFunboxMock.mockClear();
     });
 
     it("should pass without funboxNames", () => {

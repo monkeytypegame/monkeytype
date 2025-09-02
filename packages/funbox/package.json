@@ -13,21 +13,18 @@
   },
   "devDependencies": {
     "@monkeytype/eslint-config": "workspace:*",
+    "@monkeytype/schemas": "workspace:*",
     "@monkeytype/tsup-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
-    "chokidar": "3.6.0",
     "eslint": "8.57.1",
     "madge": "8.0.0",
-    "oxlint": "1.1.0",
+    "oxlint": "1.13.0",
     "tsup": "8.4.0",
     "typescript": "5.5.4",
-    "vitest": "2.1.9"
+    "vitest": "3.2.4"
   },
   "dependencies": {
     "@monkeytype/util": "workspace:*"
-  },
-  "peerDependencies": {
-    "@monkeytype/contracts": "workspace:*"
   },
   "exports": {
     ".": {

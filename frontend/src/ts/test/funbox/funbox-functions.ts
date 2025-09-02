@@ -22,13 +22,8 @@ import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
-import {
-  FunboxName,
-  KeymapLayout,
-  Layout,
-} from "@monkeytype/contracts/schemas/configs";
-import { Language } from "@monkeytype/contracts/schemas/languages";
-import type { LanguageObject, LanguageProperties } from "../../utils/json-data";
+import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
+import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -409,10 +404,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }
         setTimeout(() => {
           void KeymapEvent.highlight(
-            TestWords.words
-              .getCurrent()
-              .charAt(TestInput.input.current.length)
-              .toString()
+            TestWords.words.getCurrent().charAt(TestInput.input.current.length)
           );
         }, 1);
       }
@@ -430,7 +422,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
               TestInput.input.current.length,
               TestInput.input.current.length + 1
             )
-            .toString()
         );
       }, 1);
     },

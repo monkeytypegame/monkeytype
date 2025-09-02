@@ -10,10 +10,15 @@ import * as OutOfFocus from "../test/out-of-focus";
 import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
-import { Command, CommandsSubgroup } from "./types";
-import { areSortedArraysEqual } from "../utils/arrays";
+import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
+import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
+import { intersect } from "@monkeytype/util/arrays";
+import {
+  createInputEventHandler,
+  ValidationResult,
+} from "../elements/input-validation";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -21,6 +26,7 @@ type InputModeParams = {
   placeholder: string | null;
   value: string | null;
   icon: string | null;
+  validation?: ValidationResult;
 };
 
 let activeIndex = 0;
@@ -39,11 +45,11 @@ let subgroupOverride: CommandsSubgroup | null = null;
 let isAnimating = false;
 let lastSingleListModeInputValue = "";
 
-type CommandWithActiveState = Omit<Command, "active"> & { isActive: boolean };
+type CommandWithIsActive = Command & { isActive: boolean };
 
 let lastState:
   | {
-      list: CommandWithActiveState[];
+      list: CommandWithIsActive[];
       usingSingleList: boolean;
     }
   | undefined;
@@ -140,7 +146,7 @@ export function show(
       activeCommand = null;
       Focus.set(false);
       CommandlineLists.setStackToDefault();
-      updateInput();
+      await updateInput();
       await filterSubgroup();
       await showCommands();
       await updateActiveCommand();
@@ -157,7 +163,8 @@ export function show(
             value: showInputCommand.defaultValue?.() ?? "",
             icon: showInputCommand.icon ?? "fa-chevron-right",
           };
-          updateInput(inputModeParams.value as string);
+          createValidationHandler(showInputCommand);
+          void updateInput(inputModeParams.value as string);
           hideCommands();
         }
       }, 1);
@@ -175,6 +182,7 @@ function hide(clearModalChain = false): void {
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
+      hideWarning();
       addCommandlineBackground();
       if (ActivePage.get() === "test") {
         const isWordsFocused = $("#wordsInput").is(":focus");
@@ -198,20 +206,22 @@ async function goBackOrHide(): Promise<void> {
       value: null,
       icon: null,
     };
-    updateInput("");
+    await updateInput("");
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
+    hideWarning();
     return;
   }
 
   if (CommandlineLists.getStackLength() > 1) {
     CommandlineLists.popFromStack();
     activeIndex = 0;
-    updateInput("");
+    await updateInput("");
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
+    hideWarning();
   } else {
     hide();
   }
@@ -237,7 +247,7 @@ async function filterSubgroup(): Promise<void> {
 
   const matchCounts: number[] = [];
   for (const command of list) {
-    const isAvailable = command.available?.() ?? true;
+    const isAvailable = (await command.available?.()) ?? true;
     if (!isAvailable) {
       matches.push({
         matchCount: -1,
@@ -362,6 +372,33 @@ async function getList(): Promise<Command[]> {
   return (await getSubgroup()).list;
 }
 
+function getCommandIconsHtml(command: Command & { isActive: boolean }): {
+  iconHtml: string;
+  configIconHtml: string;
+} {
+  let iconHtml = `<i class="fas fa-fw fa-chevron-right"></i>`;
+  if (command.icon !== undefined && command.icon !== "") {
+    const faIcon = command.icon.startsWith("fa-");
+    const faType = command.iconType ?? "solid";
+    const faTypeClass = faType === "solid" ? "fas" : "far";
+    if (!faIcon) {
+      iconHtml = `<div class="textIcon">${command.icon}</div>`;
+    } else {
+      iconHtml = `<i class="${faTypeClass} fa-fw ${command.icon}"></i>`;
+    }
+  }
+
+  let configIconHtml = `<i class="fas fa-fw"></i>`;
+  if (command.isActive) {
+    configIconHtml = `<i class="fas fa-fw fa-check"></i>`;
+  }
+
+  return {
+    iconHtml,
+    configIconHtml,
+  };
+}
+
 async function showCommands(): Promise<void> {
   const element = document.querySelector("#commandLine .suggestions");
   if (element === null) {
@@ -385,16 +422,22 @@ async function showCommands(): Promise<void> {
         const configKey = command.configKey ?? subgroup.configKey;
         if (configKey !== undefined) {
           if (command.configValueMode === "include") {
-            isActive = (Config[configKey] as unknown[]).includes(
-              command.configValue
-            );
+            if (Array.isArray(command.configValue)) {
+              isActive = areUnsortedArraysEqual(
+                intersect(Config[configKey] as unknown[], command.configValue),
+                command.configValue
+              );
+            } else {
+              isActive = (Config[configKey] as unknown[]).includes(
+                command.configValue
+              );
+            }
           } else {
             isActive = Config[configKey] === command.configValue;
           }
         }
       }
-      const { active: _active, ...restOfCommand } = command;
-      return { ...restOfCommand, isActive } as CommandWithActiveState;
+      return { ...command, isActive } as CommandWithIsActive;
     });
 
   if (
@@ -417,38 +460,33 @@ async function showCommands(): Promise<void> {
 
   for (const command of list) {
     if (command.found !== true) continue;
-    let icon = command.icon ?? "fa-chevron-right";
-    const faIcon = icon.startsWith("fa-");
-    const iconType = command.iconType ?? "solid";
-    const iconTypeClass = iconType === "solid" ? "fas" : "far";
-    if (!faIcon) {
-      icon = `<div class="textIcon">${icon}</div>`;
-    } else {
-      icon = `<i class="${iconTypeClass} fa-fw ${icon}"></i>`;
-    }
-    let configIcon = "";
-    if (command.isActive) {
-      firstActive = firstActive ?? index;
-      configIcon = `<i class="fas fa-fw fa-check"></i>`;
-    } else {
-      configIcon = `<i class="fas fa-fw"></i>`;
-    }
-
-    const iconHTML = `<div class="icon">${
-      usingSingleList || configIcon === "" ? icon : configIcon
-    }</div>`;
     let customStyle = "";
     if (command.customStyle !== undefined && command.customStyle !== "") {
       customStyle = command.customStyle;
     }
 
+    const { iconHtml, configIconHtml } = getCommandIconsHtml(command);
+
     let display = command.display;
     if (usingSingleList) {
       display = (command.singleListDisplay ?? "") || command.display;
-      display = display.replace(
-        `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>`,
-        `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>` + configIcon
-      );
+      if (command.configValue !== undefined || command.active !== undefined) {
+        display = display.replace(
+          `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>`,
+          `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>` +
+            configIconHtml
+        );
+      }
+    }
+
+    let finalIconHtml = iconHtml;
+    if (
+      (!usingSingleList &&
+        command.subgroup === undefined &&
+        command.configValue !== undefined) ||
+      (!usingSingleList && command.active !== undefined)
+    ) {
+      finalIconHtml = configIconHtml;
     }
 
     if (command.customData !== undefined) {
@@ -456,7 +494,7 @@ async function showCommands(): Promise<void> {
         html += `<div class="command changeThemeCommand" data-command-id="${
           command.id
         }" data-index="${index}" style="${customStyle}">
-      ${iconHTML}<div>${display}</div>
+      <div class="icon">${finalIconHtml}</div><div>${display}</div>
       <div class="themeFavIcon ${
         command.customData["isFavorite"] === true ? "" : "hidden"
       }">
@@ -477,7 +515,7 @@ async function showCommands(): Promise<void> {
       </div>
       </div>`;
       }
-      if (command.id.startsWith("changeFont")) {
+      if (command.id.startsWith("setFontFamily")) {
         let fontFamily = command.customData["name"];
 
         if (fontFamily === "Helvetica") {
@@ -488,10 +526,10 @@ async function showCommands(): Promise<void> {
           fontFamily += " Preview";
         }
 
-        html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="font-family: ${fontFamily}">${iconHTML}<div>${display}</div></div>`;
+        html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="font-family: '${fontFamily}'"><div class="icon">${finalIconHtml}</div><div>${display}</div></div>`;
       }
     } else {
-      html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
+      html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="${customStyle}"><div class="icon">${finalIconHtml}</div><div>${display}</div></div>`;
     }
     index++;
   }
@@ -518,7 +556,7 @@ async function updateActiveCommand(): Promise<void> {
   activeCommand = command ?? null;
   if (element === undefined || command === undefined) {
     clearFontPreview();
-    void ThemeController.clearPreview();
+    void ThemeController.clearPreview(false);
     addCommandlineBackground();
     return;
   }
@@ -529,7 +567,7 @@ async function updateActiveCommand(): Promise<void> {
   if (/changeTheme.+/gi.test(command.id)) {
     removeCommandlineBackground();
   } else {
-    void ThemeController.clearPreview();
+    void ThemeController.clearPreview(false);
     addCommandlineBackground();
   }
 
@@ -541,10 +579,36 @@ function handleInputSubmit(): void {
   if (inputModeParams.command === null) {
     throw new Error("Can't handle input submit - command is null");
   }
-  inputModeParams.command.exec?.({
-    commandlineModal: modal,
-    input: inputValue,
-  });
+
+  if (inputModeParams.validation?.status === "checking") {
+    //validation ongoing, ignore the submit
+    return;
+  } else if (inputModeParams.validation?.status === "failed") {
+    const cmdLine = $("#commandLine .modal");
+    cmdLine
+      .stop(true, true)
+      .addClass("hasError")
+      .animate({ undefined: 1 }, 500, () => {
+        cmdLine.removeClass("hasError");
+      });
+    return;
+  }
+
+  if ("inputValueConvert" in inputModeParams.command) {
+    inputModeParams.command.exec?.({
+      commandlineModal: modal,
+
+      // @ts-expect-error this is fine
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      input: inputModeParams.command.inputValueConvert(inputValue),
+    });
+  } else {
+    inputModeParams.command.exec?.({
+      commandlineModal: modal,
+      input: inputValue,
+    });
+  }
+
   void AnalyticsController.log("usedCommandLine", {
     command: inputModeParams.command.id,
   });
@@ -564,11 +628,13 @@ async function runActiveCommand(): Promise<void> {
       value: command.defaultValue?.() ?? "",
       icon: command.icon ?? "fa-chevron-right",
     };
-    updateInput(inputModeParams.value as string);
+    createValidationHandler(command);
+
+    await updateInput(inputModeParams.value as string);
     hideCommands();
   } else if (command.subgroup) {
     CommandlineLists.pushToStack(command.subgroup);
-    updateInput("");
+    await updateInput("");
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
@@ -609,7 +675,7 @@ function keepActiveCommandInView(): void {
   lastActiveIndex = active.dataset["index"];
 }
 
-function updateInput(setInput?: string): void {
+async function updateInput(setInput?: string): Promise<void> {
   const iconElement: HTMLElement | null = document.querySelector(
     "#commandLine .searchicon"
   );
@@ -639,8 +705,14 @@ function updateInput(setInput?: string): void {
       element.setSelectionRange(0, element.value.length);
     }
   } else {
-    iconElement.innerHTML = '<i class="fas fa-search"></i>';
+    iconElement.innerHTML = '<i class="fas fa-fw fa-search"></i>';
     element.placeholder = "Search...";
+
+    const subgroup = await getSubgroup();
+
+    if (subgroup.title !== undefined && subgroup.title !== "") {
+      element.placeholder = `${subgroup.title}`;
+    }
 
     let length = inputValue.length;
     if (setInput !== undefined) {
@@ -668,6 +740,85 @@ async function decrementActiveIndex(): Promise<void> {
   await updateActiveCommand();
 }
 
+function showWarning(message: string): void {
+  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
+  const warningTextEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".warning .text");
+  if (warningEl === null || warningTextEl === null) {
+    throw new Error("Commandline warning element not found");
+  }
+  warningEl.classList.remove("hidden");
+  warningTextEl.textContent = message;
+}
+
+const showCheckingIcon = debounce(200, async () => {
+  const checkingiconEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".checkingicon");
+  if (checkingiconEl === null) {
+    throw new Error("Commandline checking icon element not found");
+  }
+  checkingiconEl.classList.remove("hidden");
+});
+
+function hideCheckingIcon(): void {
+  showCheckingIcon.cancel({ upcomingOnly: true });
+
+  const checkingiconEl = modal
+    .getModal()
+    .querySelector<HTMLElement>(".checkingicon");
+  if (checkingiconEl === null) {
+    throw new Error("Commandline checking icon element not found");
+  }
+  checkingiconEl.classList.add("hidden");
+}
+
+function hideWarning(): void {
+  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
+  if (warningEl === null) {
+    throw new Error("Commandline warning element not found");
+  }
+  warningEl.classList.add("hidden");
+}
+
+function updateValidationResult(
+  validation: NonNullable<InputModeParams["validation"]>
+): void {
+  inputModeParams.validation = validation;
+  if (validation.status === "checking") {
+    showCheckingIcon();
+  } else if (
+    validation.status === "failed" &&
+    validation.errorMessage !== undefined
+  ) {
+    showWarning(validation.errorMessage);
+    hideCheckingIcon();
+  } else {
+    hideWarning();
+    hideCheckingIcon();
+  }
+}
+
+/*
+ * Handlers needs to be created only once per command to ensure they debounce with the given delay
+ */
+const handlersCache = new Map<string, (e: Event) => Promise<void>>();
+
+function createValidationHandler(command: Command): void {
+  if ("validation" in command && !handlersCache.has(command.id)) {
+    const commandWithValidation = command as CommandWithValidation<unknown>;
+    const handler = createInputEventHandler(
+      updateValidationResult,
+      commandWithValidation.validation,
+      "inputValueConvert" in commandWithValidation
+        ? commandWithValidation.inputValueConvert
+        : undefined
+    );
+    handlersCache.set(command.id, handler);
+  }
+}
+
 const modal = new AnimatedModal({
   dialogId: "commandLine",
   customEscapeHandler: (): void => {
@@ -685,7 +836,7 @@ const modal = new AnimatedModal({
     input.addEventListener(
       "input",
       debounce(50, async (e) => {
-        inputValue = (e.target as HTMLInputElement).value;
+        inputValue = ((e as InputEvent).target as HTMLInputElement).value;
         if (subgroupOverride === null) {
           if (Config.singleListCommandLine === "on") {
             usingSingleList = true;
@@ -716,7 +867,7 @@ const modal = new AnimatedModal({
           lastSingleListModeInputValue !== ""
         ) {
           inputValue = lastSingleListModeInputValue;
-          updateInput();
+          await updateInput();
           await filterSubgroup();
           await showCommands();
           await updateActiveCommand();
@@ -756,6 +907,25 @@ const modal = new AnimatedModal({
         e.stopPropagation();
         await goBackOrHide();
       }
+    });
+
+    input.addEventListener("input", async (e) => {
+      if (
+        inputModeParams === null ||
+        inputModeParams.command === null ||
+        !("validation" in inputModeParams.command)
+      ) {
+        return;
+      }
+
+      const handler = handlersCache.get(inputModeParams.command.id);
+      if (handler === undefined) {
+        throw new Error(
+          `Expected handler for command ${inputModeParams.command.id} is missing`
+        );
+      }
+
+      await handler(e);
     });
 
     modalEl.addEventListener("mousemove", (_e) => {

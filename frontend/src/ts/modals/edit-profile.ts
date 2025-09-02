@@ -13,7 +13,7 @@ import {
   TwitterProfileSchema,
   UserProfileDetails,
   WebsiteSchema,
-} from "@monkeytype/contracts/schemas/users";
+} from "@monkeytype/schemas/users";
 import { InputIndicator } from "../elements/input-indicator";
 
 export function show(): void {
@@ -50,6 +50,9 @@ const twitterInput = $("#editProfileModal .twitter");
 const githubInput = $("#editProfileModal .github");
 const websiteInput = $("#editProfileModal .website");
 const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
+const showActivityOnPublicProfileInput = document.querySelector(
+  "#editProfileModal .editProfileShowActivityOnPublicProfile"
+) as HTMLInputElement;
 
 const indicators = [
   addValidation(twitterInput, TwitterProfileSchema),
@@ -63,7 +66,8 @@ function hydrateInputs(): void {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   const badges = snapshot.inventory?.badges ?? [];
-  const { bio, keyboard, socialProfiles } = snapshot.details ?? {};
+  const { bio, keyboard, socialProfiles, showActivityOnPublicProfile } =
+    snapshot.details ?? {};
   currentSelectedBadgeId = -1;
 
   bioInput.val(bio ?? "");
@@ -72,6 +76,8 @@ function hydrateInputs(): void {
   githubInput.val(socialProfiles?.github ?? "");
   websiteInput.val(socialProfiles?.website ?? "");
   badgeIdsSelect.html("");
+  showActivityOnPublicProfileInput.checked =
+    showActivityOnPublicProfile || false;
 
   badges?.forEach((badge: Badge) => {
     if (badge.selected) {
@@ -118,6 +124,8 @@ function buildUpdatesFromInputs(): UserProfileDetails {
   const twitter = (twitterInput.val() ?? "") as string;
   const github = (githubInput.val() ?? "") as string;
   const website = (websiteInput.val() ?? "") as string;
+  const showActivityOnPublicProfile =
+    showActivityOnPublicProfileInput.checked ?? false;
 
   const profileUpdates: UserProfileDetails = {
     bio,
@@ -127,6 +135,7 @@ function buildUpdatesFromInputs(): UserProfileDetails {
       github,
       website,
     },
+    showActivityOnPublicProfile,
   };
 
   return profileUpdates;
@@ -190,10 +199,7 @@ async function updateProfile(): Promise<void> {
   hide();
 }
 
-function addValidation(
-  element: JQuery<HTMLElement>,
-  schema: Zod.Schema
-): InputIndicator {
+function addValidation(element: JQuery, schema: Zod.Schema): InputIndicator {
   const indicator = new InputIndicator(element, {
     valid: {
       icon: "fa-check",

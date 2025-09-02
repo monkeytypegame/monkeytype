@@ -1,16 +1,14 @@
-import request, { Test as SuperTest } from "supertest";
-import app from "../../../src/app";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
+import { Test as SuperTest } from "supertest";
 import * as ApeKeyDal from "../../../src/dal/ape-keys";
 import { ObjectId } from "mongodb";
 import * as Configuration from "../../../src/init/configuration";
 import * as UserDal from "../../../src/dal/user";
 import _ from "lodash";
-import { mockBearerAuthentication } from "../../__testData__/auth";
 
-const mockApp = request(app);
+const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 
 describe("ApeKeyController", () => {
   const getUserMock = vi.spyOn(UserDal, "getPartialUser");
@@ -20,11 +18,10 @@ describe("ApeKeyController", () => {
     getUserMock.mockResolvedValue(user(uid, {}));
     vi.useFakeTimers();
     vi.setSystemTime(1000);
-    mockAuth.beforeEach();
   });
 
   afterEach(() => {
-    getUserMock.mockReset();
+    getUserMock.mockClear();
     vi.useRealTimers();
   });
 
@@ -32,7 +29,7 @@ describe("ApeKeyController", () => {
     const getApeKeysMock = vi.spyOn(ApeKeyDal, "getApeKeys");
 
     afterEach(() => {
-      getApeKeysMock.mockReset();
+      getApeKeysMock.mockClear();
     });
 
     it("should get the users config", async () => {
@@ -88,8 +85,8 @@ describe("ApeKeyController", () => {
     });
 
     afterEach(() => {
-      addApeKeyMock.mockReset();
-      countApeKeysMock.mockReset();
+      addApeKeyMock.mockClear();
+      countApeKeysMock.mockClear();
     });
 
     it("should add ape key", async () => {
@@ -197,7 +194,7 @@ describe("ApeKeyController", () => {
     const apeKeyId = new ObjectId().toHexString();
 
     afterEach(() => {
-      editApeKeyMock.mockReset();
+      editApeKeyMock.mockClear();
     });
 
     it("should edit ape key", async () => {
@@ -282,7 +279,7 @@ describe("ApeKeyController", () => {
     const apeKeyId = new ObjectId().toHexString();
 
     afterEach(() => {
-      deleteApeKeyMock.mockReset();
+      deleteApeKeyMock.mockClear();
     });
 
     it("should delete ape key", async () => {

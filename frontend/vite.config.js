@@ -5,6 +5,7 @@ import "dotenv/config";
 import PROD_CONFIG from "./vite.config.prod";
 import DEV_CONFIG from "./vite.config.dev";
 import MagicString from "magic-string";
+import { Fonts } from "./src/ts/constants/fonts";
 
 /** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
@@ -70,3 +71,28 @@ export default defineConfig(({ command }) => {
     return mergeConfig(BASE_CONFIG, DEV_CONFIG);
   }
 });
+
+/** Enable for font awesome v6 */
+/*
+function sassList(values) {
+  return values.map((it) => `"${it}"`).join(",");
+}
+*/
+
+export function getFontsConig() {
+  return (
+    "\n" +
+    Object.keys(Fonts)
+      .sort()
+      .map((name) => {
+        const config = Fonts[name];
+        if (config.systemFont === true) return "";
+        return `"${name.replaceAll("_", " ")}": (
+        "src": "${config.fileName}",
+        "weight": ${config.weight ?? 400},
+        ),`;
+      })
+      .join("\n") +
+    "\n"
+  );
+}

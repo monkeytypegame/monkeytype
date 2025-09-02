@@ -1,6 +1,7 @@
+import { describe, it, expect } from "vitest";
 import { getDefaultConfig } from "../../src/ts/constants/default-config";
 import { migrateConfig } from "../../src/ts/utils/config";
-import { PartialConfig } from "@monkeytype/contracts/schemas/configs";
+import { PartialConfig } from "@monkeytype/schemas/configs";
 
 const defaultConfig = getDefaultConfig();
 
@@ -192,6 +193,51 @@ describe("config.ts", () => {
           expected: {
             favThemes: ["80s_after_dark", "luna", "pulse"],
           },
+        },
+        {
+          given: { fontSize: "2" },
+          expected: { fontSize: 2 },
+        },
+        {
+          given: { fontSize: "15" },
+          expected: { fontSize: 1.5 },
+        },
+        {
+          given: { fontSize: "125" },
+          expected: { fontSize: 1.25 },
+        },
+        {
+          given: { fontSize: 15 },
+          expected: { fontSize: 15 },
+        },
+        {
+          given: { fontSize: -0.5 },
+          expected: { fontSize: 1 },
+        },
+        {
+          given: { tapeMargin: 9.5 },
+          expected: { tapeMargin: 10 },
+        },
+        {
+          given: { tapeMargin: 25 },
+          expected: { tapeMargin: 25 },
+        },
+        {
+          given: { tapeMargin: 90.5 },
+          expected: { tapeMargin: 90 },
+        },
+        {
+          given: { maxLineWidth: 0 },
+          expected: { maxLineWidth: 0 },
+        },
+
+        {
+          given: { maxLineWidth: 19 },
+          expected: { maxLineWidth: 20 },
+        },
+        {
+          given: { maxLineWidth: 1001 },
+          expected: { maxLineWidth: 1000 },
         },
       ])(`$given`, ({ given, expected }) => {
         const description = `given: ${JSON.stringify(

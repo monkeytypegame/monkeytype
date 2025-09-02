@@ -54,7 +54,7 @@ Chart.register(
 (
   Chart.defaults.animation as AnimationSpec<"line" | "bar" | "scatter">
 ).duration = 0;
-Chart.defaults.elements.line.tension = 0.3;
+Chart.defaults.elements.line.tension = 0.5;
 Chart.defaults.elements.line.fill = "origin";
 
 import "chartjs-adapter-date-fns";
@@ -67,6 +67,7 @@ import * as DateTime from "../utils/date-and-time";
 import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
 import { blendTwoHexColors } from "../utils/colors";
+import { typedKeys } from "../utils/misc";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -83,12 +84,18 @@ class ChartWithUpdateColors<
   }
 
   async updateColors(): Promise<void> {
+    //@ts-expect-error its too difficult to figure out these types, but this works
     await updateColors(this);
   }
 
   getDataset(id: DatasetIds): ChartDataset<TType, TData> {
     //@ts-expect-error its too difficult to figure out these types, but this works
     return this.data.datasets?.find((x) => x.yAxisID === id);
+  }
+
+  getScaleIds(): DatasetIds[] {
+    //@ts-expect-error its too difficult to figure out these types, but this works
+    return typedKeys(this.options?.scales ?? {}) as DatasetIds[];
   }
 
   getScale(
@@ -105,7 +112,7 @@ export const result = new ChartWithUpdateColors<
   "line" | "scatter",
   number[],
   string,
-  "wpm" | "raw" | "error"
+  "wpm" | "raw" | "error" | "burst"
 >(document.querySelector("#wpmChart") as HTMLCanvasElement, {
   type: "line",
   data: {
@@ -128,10 +135,11 @@ export const result = new ChartWithUpdateColors<
         label: "raw",
         data: [],
         borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 3,
+        borderWidth: 2,
         yAxisID: "raw",
+        borderDash: [8, 8],
         order: 3,
-        pointRadius: 1,
+        pointRadius: 0,
       },
       {
         //@ts-expect-error the type is defined incorrectly, have to ingore the error
@@ -155,6 +163,17 @@ export const result = new ChartWithUpdateColors<
           const value = context.dataset.data[index] as number;
           return (value ?? 0) <= 0 ? 0 : 5;
         },
+      },
+      {
+        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        clip: false,
+        label: "burst",
+        data: [],
+        borderColor: "rgba(125, 125, 125, 1)",
+        borderWidth: 3,
+        yAxisID: "burst",
+        order: 4,
+        pointRadius: 1,
       },
     ],
   },
@@ -197,6 +216,23 @@ export const result = new ChartWithUpdateColors<
         title: {
           display: true,
           text: "Raw Words per Minute",
+        },
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 20,
+        },
+        grid: {
+          display: false,
+        },
+      },
+      burst: {
+        axis: "y",
+        display: false,
+        title: {
+          display: true,
+          text: "Burst Words per Minute",
         },
         beginAtZero: true,
         min: 0,
@@ -922,7 +958,7 @@ export const miniResult = new ChartWithUpdateColors<
   "line" | "scatter",
   number[],
   string,
-  "wpm" | "raw" | "error"
+  "wpm" | "burst" | "error"
 >(document.querySelector("#miniResultChartModal canvas") as HTMLCanvasElement, {
   type: "line",
   data: {
@@ -932,19 +968,19 @@ export const miniResult = new ChartWithUpdateColors<
         label: "wpm",
         data: [],
         borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
+        borderWidth: 3,
         yAxisID: "wpm",
         order: 2,
-        pointRadius: 2,
+        pointRadius: 1,
       },
       {
-        label: "raw",
+        label: "burst",
         data: [],
         borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
-        yAxisID: "raw",
+        borderWidth: 3,
+        yAxisID: "burst",
         order: 3,
-        pointRadius: 2,
+        pointRadius: 1,
       },
       {
         label: "errors",
@@ -1002,12 +1038,12 @@ export const miniResult = new ChartWithUpdateColors<
           display: true,
         },
       },
-      raw: {
+      burst: {
         axis: "y",
         display: false,
         title: {
           display: true,
-          text: "Raw Words per Minute",
+          text: "Burst Words per Minute",
         },
         beginAtZero: true,
         min: 0,
@@ -1158,8 +1194,81 @@ async function updateColors<
   const maincolor = await ThemeColors.get("main");
   const errorcolor = await ThemeColors.get("error");
   const textcolor = await ThemeColors.get("text");
+  const gridcolor = subaltcolor;
 
-  const gridcolor = blendTwoHexColors(bgcolor, subaltcolor, 0.75);
+  for (const scaleKey of typedKeys(chart.scales)) {
+    //@ts-expect-error cant figure out this type but it works fine
+    const scale = chart.getScale(scaleKey) as CartesianScaleOptions;
+    scale.grid.color = gridcolor;
+    scale.grid.tickColor = gridcolor;
+    scale.grid.borderColor = gridcolor;
+    scale.ticks.color = subcolor;
+    scale.title.color = subcolor;
+  }
+
+  if (chart.id === result.id) {
+    const c = chart as unknown as typeof result;
+
+    const wpm = c.getDataset("wpm");
+    wpm.backgroundColor = "transparent";
+    wpm.borderColor = maincolor;
+    wpm.pointBackgroundColor = maincolor;
+    wpm.pointBorderColor = maincolor;
+
+    const raw = c.getDataset("raw");
+    raw.backgroundColor = "transparent";
+    raw.borderColor = maincolor + "99";
+    raw.pointBackgroundColor = maincolor + "99";
+    raw.pointBorderColor = maincolor + "99";
+
+    const error = c.getDataset("error");
+    error.backgroundColor = errorcolor;
+    error.borderColor = errorcolor;
+    error.pointBackgroundColor = errorcolor;
+    error.pointBorderColor = errorcolor;
+
+    const burst = c.getDataset("burst");
+    burst.backgroundColor = blendTwoHexColors(
+      subaltcolor,
+      subaltcolor + "00",
+      0.5
+    );
+    burst.borderColor = subcolor;
+    burst.pointBackgroundColor = subcolor;
+    burst.pointBorderColor = subcolor;
+
+    chart.update("resize");
+    return;
+  }
+
+  if (chart.id === miniResult.id) {
+    const c = chart as unknown as typeof miniResult;
+
+    const wpm = c.getDataset("wpm");
+    wpm.backgroundColor = "transparent";
+    wpm.borderColor = maincolor;
+    wpm.pointBackgroundColor = maincolor;
+    wpm.pointBorderColor = maincolor;
+
+    const error = c.getDataset("error");
+    error.backgroundColor = errorcolor;
+    error.borderColor = errorcolor;
+    error.pointBackgroundColor = errorcolor;
+    error.pointBorderColor = errorcolor;
+
+    const burst = c.getDataset("burst");
+    burst.backgroundColor = blendTwoHexColors(
+      subaltcolor,
+      subaltcolor + "00",
+      0.75
+    );
+    burst.borderColor = subcolor;
+    burst.pointBackgroundColor = subcolor;
+    burst.pointBorderColor = subcolor;
+
+    chart.update("resize");
+    return;
+  }
 
   //@ts-expect-error its too difficult to figure out these types, but this works
   chart.data.datasets[0].borderColor = (ctx): string => {
@@ -1316,10 +1425,10 @@ function setDefaultFontFamily(font: string): void {
 
 export function updateAllChartColors(): void {
   ThemeColors.update();
+  void result.updateColors();
   void accountHistory.updateColors();
   void accountHistogram.updateColors();
   void globalSpeedHistogram.updateColors();
-  void result.updateColors();
   void accountActivity.updateColors();
   void miniResult.updateColors();
 }

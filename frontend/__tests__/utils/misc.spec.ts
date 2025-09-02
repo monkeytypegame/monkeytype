@@ -1,50 +1,48 @@
-import { z } from "zod";
-import {
-  deepClone,
-  getErrorMessage,
-  isObject,
-  sanitize,
-} from "../../src/ts/utils/misc";
+import { describe, it, expect } from "vitest";
+import { getErrorMessage, isObject } from "../../src/ts/utils/misc";
 import {
   getLanguageDisplayString,
   removeLanguageSize,
 } from "../../src/ts/utils/strings";
-
-//todo this file is in the wrong place
+import { Language } from "@monkeytype/schemas/languages";
 
 describe("misc.ts", () => {
   describe("getLanguageDisplayString", () => {
     it("should return correctly formatted strings", () => {
-      const tests = [
+      const tests: {
+        input: Language;
+        noSizeString: boolean;
+        expected: string;
+      }[] = [
         {
-          input: "language",
+          input: "english",
           noSizeString: false,
-          expected: "language",
+          expected: "english",
         },
         {
-          input: "language_1k",
+          input: "english_1k",
           noSizeString: false,
-          expected: "language 1k",
+          expected: "english 1k",
         },
         {
-          input: "language_1k",
+          input: "english_1k",
           noSizeString: true,
-          expected: "language",
+          expected: "english",
         },
         {
-          input: "language_lang",
+          input: "english_medical",
           noSizeString: false,
-          expected: "language lang",
+          expected: "english medical",
         },
         {
-          input: "language_lang_1k",
+          input: "arabic_egypt_1k",
           noSizeString: false,
-          expected: "language lang 1k",
+          expected: "arabic egypt 1k",
         },
         {
-          input: "language_lang_1k",
+          input: "arabic_egypt_1k",
           noSizeString: true,
-          expected: "language lang",
+          expected: "arabic egypt",
         },
       ];
 
@@ -56,22 +54,22 @@ describe("misc.ts", () => {
   });
   describe("removeLanguageSize", () => {
     it("should remove language size", () => {
-      const tests = [
+      const tests: { input: Language; expected: Language }[] = [
         {
-          input: "language",
-          expected: "language",
+          input: "english",
+          expected: "english",
         },
         {
-          input: "language_1k",
-          expected: "language",
+          input: "english_1k",
+          expected: "english",
         },
         {
-          input: "language_lang",
-          expected: "language_lang",
+          input: "arabic_egypt",
+          expected: "arabic_egypt",
         },
         {
-          input: "language_lang_1k",
-          expected: "language_lang",
+          input: "arabic_egypt_1k",
+          expected: "arabic_egypt",
         },
       ];
 
@@ -124,57 +122,7 @@ describe("misc.ts", () => {
       });
     });
   });
-  describe("deepClone", () => {
-    it("should correctly clone objects", () => {
-      const tests = [
-        {
-          input: {},
-          expected: {},
-        },
-        {
-          input: { a: 1 },
-          expected: { a: 1 },
-        },
-        {
-          input: { a: { b: 2 } },
-          expected: { a: { b: 2 } },
-        },
-        {
-          input: { a: { b: 2 }, c: [1, 2, 3] },
-          expected: { a: { b: 2 }, c: [1, 2, 3] },
-        },
-        {
-          input: [],
-          expected: [],
-        },
-        {
-          input: [1, 2, 3],
-          expected: [1, 2, 3],
-        },
-        {
-          input: "string",
-          expected: "string",
-        },
-        {
-          input: 1,
-          expected: 1,
-        },
-        {
-          input: null,
-          expected: null,
-        },
-        {
-          input: undefined,
-          expected: undefined,
-        },
-      ];
 
-      tests.forEach((test) => {
-        const result = deepClone(test.input);
-        expect(result).toStrictEqual(test.expected);
-      });
-    });
-  });
   describe("getErrorMesssage", () => {
     it("should correctly get the error message", () => {
       const tests = [
@@ -227,58 +175,6 @@ describe("misc.ts", () => {
       tests.forEach((test) => {
         const result = getErrorMessage(test.input);
         expect(result).toBe(test.expected);
-      });
-    });
-  });
-  describe("sanitize function", () => {
-    const schema = z.object({
-      name: z.string(),
-      age: z.number().positive(),
-      tags: z.array(z.string()),
-    });
-
-    it("should return the same object if it is valid", () => {
-      const obj = { name: "Alice", age: 30, tags: ["developer", "coder"] };
-      expect(sanitize(schema, obj)).toEqual(obj);
-    });
-
-    it("should remove properties with invalid values", () => {
-      const obj = { name: "Alice", age: -5, tags: ["developer", "coder"] };
-      expect(sanitize(schema, obj)).toEqual({
-        name: "Alice",
-        tags: ["developer", "coder"],
-        age: undefined,
-      });
-    });
-
-    it("should remove invalid array elements", () => {
-      const obj = {
-        name: "Alice",
-        age: 30,
-        tags: ["developer", 123, "coder"] as any,
-      };
-      expect(sanitize(schema, obj)).toEqual({
-        name: "Alice",
-        age: 30,
-        tags: ["developer", "coder"],
-      });
-    });
-
-    it("should remove entire property if all array elements are invalid", () => {
-      const obj = { name: "Alice", age: 30, tags: [123, 456] as any };
-      expect(sanitize(schema, obj)).toEqual({
-        name: "Alice",
-        age: 30,
-        tags: undefined,
-      });
-    });
-
-    it("should remove object properties if they are invalid", () => {
-      const obj = { name: 123 as any, age: 30, tags: ["developer", "coder"] };
-      expect(sanitize(schema, obj)).toEqual({
-        age: 30,
-        tags: ["developer", "coder"],
-        name: undefined,
       });
     });
   });

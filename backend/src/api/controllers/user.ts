@@ -8,7 +8,7 @@ import { MonkeyResponse } from "../../utils/monkey-response";
 import * as DiscordUtils from "../../utils/discord";
 import {
   buildAgentLog,
-  isDevEnvironment,
+  getFrontendUrl,
   replaceObjectId,
   replaceObjectIds,
   sanitizeString,
@@ -39,7 +39,7 @@ import {
   CountByYearAndDay,
   TestActivity,
   UserProfileDetails,
-} from "@monkeytype/contracts/schemas/users";
+} from "@monkeytype/schemas/users";
 import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 import {
@@ -178,11 +178,7 @@ export async function sendVerificationEmail(
   const { data: link, error } = await tryCatch(
     FirebaseAdmin()
       .auth()
-      .generateEmailVerificationLink(email, {
-        url: isDevEnvironment()
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
-      })
+      .generateEmailVerificationLink(email, { url: getFrontendUrl() })
   );
 
   if (error) {
@@ -511,6 +507,7 @@ type RelevantUserInfo = Omit<
   | "note"
   | "ips"
   | "testActivity"
+  | "suspicious"
 >;
 
 function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
@@ -525,6 +522,7 @@ function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
     "note",
     "ips",
     "testActivity",
+    "suspicious",
   ]) as RelevantUserInfo;
 }
 
@@ -974,6 +972,11 @@ export async function getProfile(
     uid: user.uid,
   } as UserProfile;
 
+  if (user.profileDetails?.showActivityOnPublicProfile) {
+    profileData.testActivity = generateCurrentTestActivity(user.testActivity);
+  } else {
+    delete profileData.testActivity;
+  }
   return new MonkeyResponse("Profile retrieved", profileData);
 }
 
@@ -981,7 +984,13 @@ export async function updateProfile(
   req: MonkeyRequest<undefined, UpdateUserProfileRequest>
 ): Promise<UpdateUserProfileResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { bio, keyboard, socialProfiles, selectedBadgeId } = req.body;
+  const {
+    bio,
+    keyboard,
+    socialProfiles,
+    selectedBadgeId,
+    showActivityOnPublicProfile,
+  } = req.body;
 
   const user = await UserDAL.getPartialUser(uid, "update user profile", [
     "banned",
@@ -1007,6 +1016,7 @@ export async function updateProfile(
       socialProfiles,
       sanitizeString
     ) as UserProfileDetails["socialProfiles"],
+    showActivityOnPublicProfile,
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);

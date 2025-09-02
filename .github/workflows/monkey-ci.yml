@@ -2,7 +2,7 @@ name: Monkey CI
 
 env:
   PNPM_VERSION: "9.6.0"
-  NODE_VERSION: "20.16.0"
+  NODE_VERSION: "20.19.4"
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
 permissions:
@@ -44,7 +44,7 @@ jobs:
         with:
           filters: |
             json:
-              - 'frontend/**/*.json'
+              - 'frontend/static/**/*'
             be-src:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
               - 'backend/package.json'
@@ -238,16 +238,15 @@ jobs:
         id: filter
         with:
           filters: |
-            language-json:
+            languages:
               - 'frontend/static/languages/*.json'
-            quotes-json:
+            quotes:
               - 'frontend/static/quotes/*.json'
-            other-json:
-              - 'frontend/static/funbox/*.json'
-              - 'frontend/static/fonts/*.json'
-              - 'frontend/static/themes/*.json'
-              - 'frontend/static/challenges/*.json'
+            others:
               - 'frontend/static/layouts/*.json'
+              - 'frontend/static/themes/**'
+              - 'frontend/static/webfonts/**'
+              - 'frontend/static/challenges/*.json'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -277,19 +276,19 @@ jobs:
         run: pnpm install
 
       - name: Lint JSON
-        run: npm run pr-check-lint-json
+        run: npm run lint-json-assets
 
-      - name: Validate languages JSON
-        if: steps.filter.outputs.language-json == 'true'
-        run: npm run pr-check-language-json
+      - name: Validate language assets
+        if: steps.filter.outputs.languages == 'true'
+        run: npm run check-assets-languages
 
-      - name: Validate quotes JSON
-        if: steps.filter.outputs.quotes-json == 'true'
-        run: npm run pr-check-quote-json
+      - name: Validate quote assets
+        if: steps.filter.outputs.quotes == 'true'
+        run: npm run check-assets-quotes
 
-      - name: Validate other JSON
-        if: steps.filter.outputs.other-json == 'true'
-        run: npm run pr-check-other-json
+      - name: Validate other assets
+        if: steps.filter.outputs.others == 'true'
+        run: npm run check-assets-others
 
   ci-pkg:
     name: ci-pkg

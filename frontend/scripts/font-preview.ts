@@ -1,8 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
-import Fonts from "../static/fonts/_list.json";
+
 import subsetFont from "subset-font";
+import { Fonts } from "../src/ts/constants/fonts";
+import { KnownFontName } from "@monkeytype/schemas/fonts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,31 +16,23 @@ export async function generatePreviewFonts(
   const targetDir = __dirname + "/../static/webfonts-preview";
   fs.mkdirSync(targetDir, { recursive: true });
 
-  const srcFiles = fs.readdirSync(srcDir);
-
-  for (const font of Fonts) {
+  for (const name of Object.keys(Fonts)) {
+    const font = Fonts[name as KnownFontName];
     if (font.systemFont) continue;
 
-    const display = (font.display ?? font.name) + "Fontfamily";
+    const includedCharacters =
+      (font.display ?? name.replaceAll("_", " ")) + "Fontfamily";
 
-    const fileNames = srcFiles.filter((it) =>
-      it.startsWith(font.name.replaceAll(" ", "") + "-")
-    );
-
-    if (fileNames.length !== 1)
-      throw new Error(
-        `cannot find font file for ${font.name}. Candidates: ${fileNames}`
-      );
-    const fileName = fileNames[0];
+    const fileName = font.fileName;
 
     await generateSubset(
       srcDir + "/" + fileName,
       targetDir + "/" + fileName,
-      display
+      includedCharacters
     );
     if (debug) {
       console.log(
-        `Processing ${font.name} with file ${fileName} to display "${display}".`
+        `Processing ${name} with file ${fileName} to display "${includedCharacters}".`
       );
     }
   }
@@ -47,10 +41,10 @@ export async function generatePreviewFonts(
 async function generateSubset(
   source: string,
   target: string,
-  name: string
+  includedCharacters: string
 ): Promise<void> {
   const font = fs.readFileSync(source);
-  const subset = await subsetFont(font, name, {
+  const subset = await subsetFont(font, includedCharacters, {
     targetFormat: "woff2",
   });
   fs.writeFileSync(target, subset);

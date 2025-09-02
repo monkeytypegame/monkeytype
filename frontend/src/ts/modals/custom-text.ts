@@ -6,11 +6,12 @@ import * as ChallengeController from "../controllers/challenge-controller";
 import Config, * as UpdateConfig from "../config";
 import * as Strings from "../utils/strings";
 import * as WordFilterPopup from "./word-filter";
+import * as PractiseWords from "../test/practise-words";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { CustomTextMode } from "@monkeytype/contracts/schemas/util";
+import { CustomTextMode } from "@monkeytype/schemas/util";
 
 const popup = "#customTextModal .modal";
 
@@ -279,11 +280,7 @@ function cleanUpText(): string[] {
   }
 
   if (state.replaceControlCharactersEnabled) {
-    text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
-    text = text.replace(/\\n/g, " \n");
-    text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
-    text = text.replace(/\\\\t/gm, "\\t");
-    text = text.replace(/\\\\n/gm, "\\n");
+    text = Strings.replaceControlCharacters(text);
   }
 
   text = text.replace(/ +/gm, " ");
@@ -391,6 +388,7 @@ function apply(): void {
   ChallengeController.clearActive();
   ManualRestart.set();
   if (Config.mode !== "custom") UpdateConfig.setMode("custom");
+  PractiseWords.resetBefore();
   TestLogic.restart();
   hide();
 }
@@ -559,21 +557,21 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
   modalEl.querySelector(".button.wordfilter")?.addEventListener("click", () => {
     void WordFilterPopup.show({
-      modalChain: modal as AnimatedModal<unknown, unknown>,
+      modalChain: modal as AnimatedModal,
     });
   });
   modalEl
     .querySelector(".button.showSavedTexts")
     ?.addEventListener("click", () => {
       void SavedTextsPopup.show({
-        modalChain: modal as AnimatedModal<unknown, unknown>,
+        modalChain: modal as AnimatedModal,
       });
     });
   modalEl
     .querySelector(".button.saveCustomText")
     ?.addEventListener("click", () => {
       void SaveCustomTextPopup.show({
-        modalChain: modal as AnimatedModal<unknown, unknown>,
+        modalChain: modal as AnimatedModal,
         modalChainData: { text: cleanUpText() },
       });
     });

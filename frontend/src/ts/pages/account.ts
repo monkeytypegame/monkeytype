@@ -5,7 +5,6 @@ import * as ChartController from "../controllers/chart-controller";
 import Config, * as UpdateConfig from "../config";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
 import * as PbTables from "../elements/account/pb-tables";
-import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
@@ -22,23 +21,24 @@ import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import { Auth } from "../firebase";
+import { getAuthenticatedUser } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
-import { ChartData } from "@monkeytype/contracts/schemas/results";
+import { ChartData } from "@monkeytype/schemas/results";
 import {
   Difficulty,
   Mode,
   Mode2,
   Mode2Custom,
-} from "@monkeytype/contracts/schemas/shared";
-import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
+} from "@monkeytype/schemas/shared";
+import { ResultFiltersGroupItem } from "@monkeytype/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
+import { AccountChart } from "@monkeytype/schemas/configs";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -51,6 +51,7 @@ export function toggleFilterDebug(): void {
 
 let filteredResults: SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
+let testActivityEl: HTMLElement | null;
 
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults === undefined || filteredResults.length === 0) return;
@@ -211,8 +212,6 @@ let chartData: ChartController.HistoryChartData[] = [];
 let accChartData: ChartController.AccChartData[] = [];
 
 async function fillContent(): Promise<void> {
-  LoadingPage.updateText("Displaying stats...");
-  LoadingPage.updateBar(100);
   console.log("updating account page");
   ThemeColors.update();
 
@@ -222,7 +221,11 @@ async function fillContent(): Promise<void> {
   PbTables.update(snapshot.personalBests);
   void Profile.update("account", snapshot);
 
-  TestActivity.init(snapshot.testActivity, new Date(snapshot.addedAt));
+  TestActivity.init(
+    testActivityEl as HTMLElement,
+    snapshot.testActivity,
+    new Date(snapshot.addedAt)
+  );
   void ResultBatches.update();
 
   chartData = [];
@@ -962,21 +965,11 @@ async function fillContent(): Promise<void> {
   await Misc.sleep(0);
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
-  LoadingPage.updateBar(100, true);
   Focus.set(false);
-  void Misc.swapElements(
-    $(".pageAccount .preloader"),
-    $(".pageAccount .content"),
-    250,
-    async () => {
-      $(".page.pageAccount").css("height", "unset"); //weird safari fix
-    },
-    async () => {
-      setTimeout(() => {
-        Profile.updateNameFontSize("account");
-      }, 10);
-    }
-  );
+  $(".page.pageAccount").css("height", "unset"); //weird safari fix
+  setTimeout(() => {
+    Profile.updateNameFontSize("account");
+  }, 0);
 }
 
 export async function downloadResults(offset?: number): Promise<void> {
@@ -995,20 +988,13 @@ export async function downloadResults(offset?: number): Promise<void> {
 }
 
 async function update(): Promise<void> {
-  LoadingPage.updateBar(0, true);
-  if (DB.getSnapshot() === null) {
-    Notifications.add(`Missing account data. Please refresh.`, -1);
-    $(".pageAccount .preloader").html("Missing account data. Please refresh.");
-  } else {
-    LoadingPage.updateBar(90);
-    await downloadResults();
-    try {
-      await Misc.sleep(0);
-      await fillContent();
-    } catch (e) {
-      console.error(e);
-      Notifications.add(`Something went wrong: ${e}`, -1);
-    }
+  await downloadResults();
+  try {
+    await Misc.sleep(0);
+    await fillContent();
+  } catch (e) {
+    console.error(e);
+    Notifications.add(`Something went wrong: ${e}`, -1);
   }
 }
 
@@ -1122,25 +1108,25 @@ function sortAndRefreshHistory(
 }
 
 $(".pageAccount button.toggleResultsOnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[0] = newValue[0] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[1] = newValue[1] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage10OnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[2] = newValue[2] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage100OnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[3] = newValue[3] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
@@ -1156,14 +1142,19 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const windowHeight = $(window).height() ?? 0;
   const offset = $(`#result-${index}`).offset()?.top ?? 0;
   const scrollTo = offset - windowHeight / 2;
-  $([document.documentElement, document.body]).animate(
-    {
-      scrollTop: scrollTo,
-    },
-    Misc.applyReducedMotion(500)
-  );
-  $(".resultRow").removeClass("active");
-  $(`#result-${index}`).addClass("active");
+  $([document.documentElement, document.body])
+    .stop(true)
+    .animate(
+      { scrollTop: scrollTo },
+      {
+        duration: Misc.applyReducedMotion(500),
+        done: () => {
+          const element = $(`#result-${index}`);
+          $(".resultRow").removeClass("active");
+          requestAnimationFrame(() => element.addClass("active"));
+        },
+      }
+    );
 });
 
 $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
@@ -1337,6 +1328,27 @@ export const page = new Page({
   id: "account",
   element: $(".page.pageAccount"),
   path: "/account",
+  loadingOptions: {
+    shouldLoad: () => {
+      return DB.getSnapshot()?.results === undefined;
+    },
+    waitFor: async () => {
+      if (DB.getSnapshot() === null) {
+        throw new Error(
+          "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."
+        );
+      }
+      return downloadResults();
+    },
+    style: "bar",
+    keyframes: [
+      {
+        percentage: 90,
+        durationMs: 2000,
+        text: "Downloading results...",
+      },
+    ],
+  },
   afterHide: async (): Promise<void> => {
     reset();
     ResultFilters.removeButtons();
@@ -1345,26 +1357,25 @@ export const page = new Page({
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
     const snapshot = DB.getSnapshot();
-    if (snapshot?.results === undefined) {
-      $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
-      $(".pageAccount .content").addClass("hidden");
-      $(".pageAccount .preloader").removeClass("hidden");
-      await LoadingPage.showBar();
-    }
     ResultFilters.updateTagsDropdownOptions();
     await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
 
+    testActivityEl = document.querySelector(
+      ".page.pageAccount .testActivity"
+    ) as HTMLElement;
+
     TestActivity.initYearSelector(
+      testActivityEl,
       "current",
       snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
     );
 
-    void update().then(() => {
+    await update().then(() => {
       void updateChartColors();
       $(".pageAccount .content .accountVerificatinNotice").remove();
-      if (Auth?.currentUser?.emailVerified === false) {
+      if (getAuthenticatedUser()?.emailVerified === false) {
         $(".pageAccount .content").prepend(
           `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`
         );
