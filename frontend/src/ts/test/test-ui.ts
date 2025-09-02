@@ -1140,10 +1140,14 @@ export async function lineJump(
       return;
     }
 
+    // index of the active word in all #words.children
+    // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
+    const wordsChildren = [...wordsEl.children];
+    const activeWordIndex = wordsChildren.indexOf(activeWordEl);
+
     let lastWordIndexToRemove: number | undefined = undefined;
-    for (let i = TestState.activeWordIndex - 1; i >= 0; i--) {
-      const child = getWordElement(i);
-      if (!child) continue;
+    for (let i = activeWordIndex - 1; i >= 0; i--) {
+      const child = wordsChildren[i] as HTMLElement;
       if (child.classList.contains("hidden")) continue;
       if (Math.floor(child.offsetTop) < hideBound) {
         if (child.classList.contains("word")) {
