@@ -119,20 +119,18 @@ function updateUI(): void {
 function backspaceToPrevious(): void {
   if (!TestState.isActive) return;
 
-  const onScreenWordIndex =
-    TestState.activeWordIndex - TestState.removedUIWordCount;
+  const previousWordEl = TestUI.getWordElement(TestState.activeWordIndex - 1);
 
   //need to block going back to previous word if we are on the first visible word
-  if (TestInput.input.getHistory().length === 0 || onScreenWordIndex === 0) {
+  if (TestInput.input.getHistory().length === 0 || previousWordEl === null) {
     return;
   }
 
-  const wordElements = document.querySelectorAll("#words > .word");
   if (
     (TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
       TestWords.words.get(TestState.activeWordIndex - 1) &&
       !Config.freedomMode) ||
-    wordElements[onScreenWordIndex - 1]?.classList.contains("hidden")
+    previousWordEl.classList.contains("hidden")
   ) {
     return;
   }
@@ -141,10 +139,10 @@ function backspaceToPrevious(): void {
     return;
   }
 
+  const activeWordEl = TestUI.getWordElement(TestState.activeWordIndex);
+
   const incorrectLetterBackspaced =
-    wordElements[onScreenWordIndex]?.children[0]?.classList.contains(
-      "incorrect"
-    );
+    activeWordEl?.children[0]?.classList.contains("incorrect");
   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
     void TestUI.updateActiveWordLetters();
   }
