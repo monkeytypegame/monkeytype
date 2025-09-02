@@ -23,7 +23,6 @@ import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
-import { isSafeNumber } from "@monkeytype/util/numbers";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -1085,31 +1084,42 @@ export function updatePremid(): void {
   $(".pageTest #premidSecondsLeft").text(Config.time);
 }
 
-function removeWordElements(lastWordIndexToRemove: number): number {
+function removeWordElements(lastWordIndexToRemove: number): void {
   const wordsChildren = document.getElementById("words")?.children;
 
-  if (wordsChildren === undefined) return 0;
+  if (wordsChildren === undefined) return;
   let elementsToRemove = [];
-  let run = true;
   let domIndex = 0;
-  while (run) {
+  while (domIndex < wordsChildren.length) {
     const child = wordsChildren[domIndex] as HTMLElement | null;
     if (!child || !child.isConnected) continue;
-    if (!child.classList.contains("word")) continue;
+
     const wordIndex = parseInt(child.dataset["wordindex"] ?? "");
-    if (!isSafeNumber(wordIndex)) {
-      throw new Error("wordIndex is not a number");
+    if (
+      wordIndex !== undefined &&
+      child.classList.contains("word") &&
+      wordIndex > lastWordIndexToRemove
+    ) {
+      // we want to also remove new line elements which
+      // come after the last word - only break on a .word element
+      break;
     }
 
     elementsToRemove.push(child);
     domIndex++;
-    if (wordIndex === lastWordIndexToRemove) {
-      break;
-    }
+  }
+
+  if (elementsToRemove.length === wordsChildren.length) {
+    Notifications.add(
+      "Dang it, all the words just got removed. Something is definitely broken. Please report this!",
+      -1,
+      {
+        important: true,
+      }
+    );
   }
 
   elementsToRemove.map((el) => el.remove());
-  return elementsToRemove.length;
 }
 
 let currentLinesAnimating = 0;
