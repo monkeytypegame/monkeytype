@@ -564,10 +564,13 @@ async function updateActiveCommand(): Promise<void> {
   keepActiveCommandInView();
 
   clearFontPreview();
-  if (/changeTheme.+/gi.test(command.id)) {
+  if (
+    command.id?.startsWith("changeTheme") ||
+    command.id?.startsWith("setCustomThemeId")
+  ) {
     removeCommandlineBackground();
   } else {
-    void ThemeController.clearPreview(false);
+    void ThemeController.clearPreview();
     addCommandlineBackground();
   }
 
