@@ -227,12 +227,11 @@ export function getWordDirection(
   if (core.length === 0) return languageRTL;
 
   // cache by core to handle variants like "word" vs "word؟"
-  const cacheKey = `${core}`;
-  const cached = wordDirectionCache.get(cacheKey);
+  const cached = wordDirectionCache.get(core);
   if (cached !== undefined) return cached;
 
   const result = hasRTLCharacters(core);
-  wordDirectionCache.set(cacheKey, result);
+  wordDirectionCache.set(core, result);
 
   return result;
 }
