@@ -23,6 +23,7 @@ import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
+import { isSafeNumber } from "@monkeytype/util/numbers";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -1097,19 +1098,31 @@ export function updatePremid(): void {
   $(".pageTest #premidSecondsLeft").text(Config.time);
 }
 
-function removeWordElements(count: number): number {
+function removeWordElements(lastWordIndexToRemove: number): number {
   const wordsChildren = document.getElementById("words")?.children;
 
   if (wordsChildren === undefined) return 0;
-
-  let removedWords = 0;
-  for (let i = count; i >= 0; i--) {
-    const child = wordsChildren[i] as HTMLElement | null;
+  let elementsToRemove = [];
+  let run = true;
+  let domIndex = 0;
+  while (run) {
+    const child = wordsChildren[domIndex] as HTMLElement | null;
     if (!child || !child.isConnected) continue;
-    if (child.classList.contains("word")) removedWords++;
-    child.remove();
+    if (!child.classList.contains("word")) continue;
+    const wordIndex = parseInt(child.dataset["wordindex"] ?? "");
+    if (!isSafeNumber(wordIndex)) {
+      throw new Error("wordIndex is not a number");
+    }
+
+    elementsToRemove.push(child);
+    domIndex++;
+    if (wordIndex === lastWordIndexToRemove) {
+      break;
+    }
   }
-  return removedWords;
+
+  elementsToRemove.map((el) => el.remove());
+  return elementsToRemove.length;
 }
 
 let currentLinesAnimating = 0;
@@ -1130,25 +1143,22 @@ export async function lineJump(
       return;
     }
 
-    let wordsToRemove: number | undefined = undefined;
+    let lastIndexToRemove: number | undefined = undefined;
     for (let i = TestState.activeWordIndex - 1; i >= 0; i--) {
       const child = getWordElement(i);
       if (!child) continue;
       if (child.classList.contains("hidden")) continue;
       if (Math.floor(child.offsetTop) < hideBound) {
         if (child.classList.contains("word")) {
-          wordsToRemove = i;
+          lastIndexToRemove = i;
           break;
         } else if (child.classList.contains("beforeNewline")) {
           // set it to .newline but check .beforeNewline.offsetTop
           // because it's more reliable
-          wordsToRemove = i + 1;
+          lastIndexToRemove = i + 1;
           break;
         }
       }
-    }
-    if (wordsToRemove !== undefined) {
-      wordsToRemove -= TestState.removedUIWordCount;
     }
 
     const wordHeight = $(activeWordEl).outerHeight(true) as number;
@@ -1156,7 +1166,7 @@ export async function lineJump(
       "#paceCaret"
     ) as HTMLElement;
 
-    if (wordsToRemove === undefined) {
+    if (lastIndexToRemove === undefined) {
       resolve();
     } else if (Config.smoothLineScroll) {
       lineTransition = true;
@@ -1192,7 +1202,7 @@ export async function lineJump(
           TestState.setLineScrollDistance(0);
           activeWordTop = activeWordEl.offsetTop;
           TestState.incrementRemovedUIWordCount(
-            removeWordElements(wordsToRemove)
+            removeWordElements(lastIndexToRemove)
           );
           wordsEl.style.marginTop = "0";
           lineTransition = false;
@@ -1201,7 +1211,9 @@ export async function lineJump(
       });
       jqWords.dequeue("topMargin");
     } else {
-      TestState.incrementRemovedUIWordCount(removeWordElements(wordsToRemove));
+      TestState.incrementRemovedUIWordCount(
+        removeWordElements(lastIndexToRemove)
+      );
       paceCaretElement.style.top = `${
         paceCaretElement.offsetTop - wordHeight
       }px`;
