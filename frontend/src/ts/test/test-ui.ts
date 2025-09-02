@@ -153,7 +153,6 @@ export function setResultCalculating(val: boolean): void {
 
 export function reset(): void {
   currentTestLine = 0;
-  TestState.setRemovedUIWordCount(0);
 }
 
 export function focusWords(): void {
@@ -900,7 +899,6 @@ export async function scrollTape(
 
   let wordsWidthBeforeActive = 0;
   let fullLineWidths = 0;
-  let wordsToRemoveCount = 0;
   let leadingNewLine = false;
   let lastAfterNewLineElement = undefined;
   let widthRemoved = 0;
@@ -1002,7 +1000,6 @@ export async function scrollTape(
   /* remove overflown elements */
   if (toRemove.length > 0 && !noRemove) {
     for (const el of toRemove) el.remove();
-    TestState.incrementRemovedUIWordCount(wordsToRemoveCount);
     for (let i = 0; i < widthRemovedFromLine.length; i++) {
       const afterNewlineEl = afterNewLineEls[i] as HTMLElement;
       const currentLineIndent =
@@ -1192,9 +1189,7 @@ export async function lineJump(
           currentLinesAnimating = 0;
           TestState.setLineScrollDistance(0);
           activeWordTop = activeWordEl.offsetTop;
-          TestState.incrementRemovedUIWordCount(
-            removeWordElements(lastIndexToRemove)
-          );
+          removeWordElements(lastIndexToRemove);
           wordsEl.style.marginTop = "0";
           lineTransition = false;
           resolve();
@@ -1202,9 +1197,7 @@ export async function lineJump(
       });
       jqWords.dequeue("topMargin");
     } else {
-      TestState.incrementRemovedUIWordCount(
-        removeWordElements(lastIndexToRemove)
-      );
+      removeWordElements(lastIndexToRemove);
       paceCaretElement.style.top = `${
         paceCaretElement.offsetTop - wordHeight
       }px`;
