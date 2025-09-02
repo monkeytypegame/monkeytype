@@ -1140,19 +1140,19 @@ export async function lineJump(
       return;
     }
 
-    let lastIndexToRemove: number | undefined = undefined;
+    let lastWordIndexToRemove: number | undefined = undefined;
     for (let i = TestState.activeWordIndex - 1; i >= 0; i--) {
       const child = getWordElement(i);
       if (!child) continue;
       if (child.classList.contains("hidden")) continue;
       if (Math.floor(child.offsetTop) < hideBound) {
         if (child.classList.contains("word")) {
-          lastIndexToRemove = i;
+          lastWordIndexToRemove = i;
           break;
         } else if (child.classList.contains("beforeNewline")) {
           // set it to .newline but check .beforeNewline.offsetTop
           // because it's more reliable
-          lastIndexToRemove = i + 1;
+          lastWordIndexToRemove = i + 1;
           break;
         }
       }
@@ -1163,7 +1163,7 @@ export async function lineJump(
       "#paceCaret"
     ) as HTMLElement;
 
-    if (lastIndexToRemove === undefined) {
+    if (lastWordIndexToRemove === undefined) {
       resolve();
     } else if (Config.smoothLineScroll) {
       lineTransition = true;
@@ -1198,7 +1198,7 @@ export async function lineJump(
           currentLinesAnimating = 0;
           TestState.setLineScrollDistance(0);
           activeWordTop = activeWordEl.offsetTop;
-          removeTestElements(lastIndexToRemove);
+          removeTestElements(lastWordIndexToRemove);
           wordsEl.style.marginTop = "0";
           lineTransition = false;
           resolve();
@@ -1206,7 +1206,7 @@ export async function lineJump(
       });
       jqWords.dequeue("topMargin");
     } else {
-      removeTestElements(lastIndexToRemove);
+      removeTestElements(lastWordIndexToRemove);
       paceCaretElement.style.top = `${
         paceCaretElement.offsetTop - wordHeight
       }px`;
