@@ -119,10 +119,11 @@ function updateUI(): void {
 function backspaceToPrevious(): void {
   if (!TestState.isActive) return;
 
-  const wordElementIndex =
+  const onScreenWordIndex =
     TestState.activeWordIndex - TestState.removedUIWordCount;
 
-  if (TestInput.input.getHistory().length === 0 || wordElementIndex === 0) {
+  //need to block going back to previous word if we are on the first visible word
+  if (TestInput.input.getHistory().length === 0 || onScreenWordIndex === 0) {
     return;
   }
 
@@ -131,7 +132,7 @@ function backspaceToPrevious(): void {
     (TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
       TestWords.words.get(TestState.activeWordIndex - 1) &&
       !Config.freedomMode) ||
-    wordElements[wordElementIndex - 1]?.classList.contains("hidden")
+    wordElements[onScreenWordIndex - 1]?.classList.contains("hidden")
   ) {
     return;
   }
@@ -141,7 +142,7 @@ function backspaceToPrevious(): void {
   }
 
   const incorrectLetterBackspaced =
-    wordElements[wordElementIndex]?.children[0]?.classList.contains(
+    wordElements[onScreenWordIndex]?.children[0]?.classList.contains(
       "incorrect"
     );
   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
@@ -266,14 +267,10 @@ async function handleSpace(): Promise<void> {
     PaceCaret.handleSpace(false, currentWord);
     if (Config.blindMode) {
       if (Config.highlightMode !== "off") {
-        TestUI.highlightAllLettersAsCorrect(
-          TestState.activeWordIndex - TestState.removedUIWordCount
-        );
+        TestUI.highlightAllLettersAsCorrect(TestState.activeWordIndex);
       }
     } else {
-      TestUI.highlightBadWord(
-        TestState.activeWordIndex - TestState.removedUIWordCount
-      );
+      TestUI.highlightBadWord(TestState.activeWordIndex);
     }
     TestInput.input.pushHistory();
     TestState.increaseActiveWordIndex();
