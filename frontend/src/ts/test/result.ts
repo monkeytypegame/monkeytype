@@ -234,37 +234,7 @@ function applyFakeChartData(): void {
     ],
   };
 
-  const labels = [
-    (1).toString(),
-    (2).toString(),
-    (3).toString(),
-    (4).toString(),
-    (5).toString(),
-    (6).toString(),
-    (7).toString(),
-    (8).toString(),
-    (9).toString(),
-    (10).toString(),
-    (11).toString(),
-    (12).toString(),
-    (13).toString(),
-    (14).toString(),
-    (15).toString(),
-    (16).toString(),
-    (17).toString(),
-    (18).toString(),
-    (19).toString(),
-    (20).toString(),
-    (21).toString(),
-    (22).toString(),
-    (23).toString(),
-    (24).toString(),
-    (25).toString(),
-    (26).toString(),
-    (27).toString(),
-    (28).toString(),
-    (29).toString(),
-  ];
+  const labels = fakeChartData.wpm.map((_, i) => (i + 1).toString());
 
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
 
