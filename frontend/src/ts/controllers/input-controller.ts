@@ -340,16 +340,12 @@ async function handleSpace(): Promise<void> {
 
   if (!Config.showAllLines || shouldLimitToThreeLines) {
     const currentTop: number = Math.floor(
-      document.querySelectorAll<HTMLElement>("#words .word")[
-        TestState.activeWordIndex - TestState.removedUIWordCount - 1
-      ]?.offsetTop ?? 0
+      TestUI.getWordElement(TestState.activeWordIndex - 1)?.offsetTop ?? 0
     );
 
     const { data: nextTop } = tryCatchSync(() =>
       Math.floor(
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestState.activeWordIndex - TestState.removedUIWordCount
-        ]?.offsetTop ?? 0
+        TestUI.getWordElement(TestState.activeWordIndex)?.offsetTop ?? 0
       )
     );
 
@@ -665,9 +661,9 @@ async function handleChar(
     char
   );
 
-  const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex - TestState.removedUIWordCount
-  ] as HTMLElement;
+  const activeWord = document.querySelector(
+    `#words .word[data-wordindex='${TestState.activeWordIndex}']`
+  ) as HTMLElement;
 
   const testInputLength: number = !isCharKorean
     ? TestInput.input.current.length

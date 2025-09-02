@@ -200,10 +200,14 @@ export async function update(expectedStepEnd: number): Promise<void> {
     let newTop;
     let newLeft;
     try {
-      const newIndex = settings.currentWordIndex - TestState.removedUIWordCount;
-      const word = document.querySelectorAll("#words .word")[
-        newIndex
-      ] as HTMLElement;
+      const word = document.querySelector<HTMLElement>(
+        `#words .word[data-wordindex='${settings.currentWordIndex}']`
+      );
+
+      if (!word) {
+        throw new Error("Word element not found");
+      }
+
       if (settings.currentLetterIndex === -1) {
         currentLetter = word.querySelectorAll("letter")[0] as HTMLElement;
       } else {

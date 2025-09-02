@@ -41,15 +41,18 @@ export function setSelectedQuoteId(id: number): void {
 }
 
 export function setActiveWordIndex(index: number): void {
+  console.log("active word index", index);
   activeWordIndex = index;
 }
 
 export function increaseActiveWordIndex(): void {
   activeWordIndex++;
+  console.log("active word index", activeWordIndex);
 }
 
 export function decreaseActiveWordIndex(): void {
   activeWordIndex--;
+  console.log("active word index", activeWordIndex);
 }
 
 export function setTestInitSuccess(tf: boolean): void {

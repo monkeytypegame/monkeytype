@@ -651,7 +651,7 @@ export async function addWord(): Promise<void> {
         }
         wordCount++;
         TestWords.words.push(word, i);
-        TestUI.addWord(word);
+        TestUI.addWord(word, TestWords.words.length - 1);
       }
     }
   }
@@ -665,7 +665,7 @@ export async function addWord(): Promise<void> {
     );
 
     TestWords.words.push(randomWord.word, randomWord.sectionIndex);
-    TestUI.addWord(randomWord.word);
+    TestUI.addWord(randomWord.word, TestWords.words.length - 1);
   } catch (e) {
     TimerEvent.dispatch("fail", "word generation error");
     Notifications.add(
