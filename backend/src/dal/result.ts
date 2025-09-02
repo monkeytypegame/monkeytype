@@ -63,6 +63,7 @@ export async function getResult(uid: string, id: string): Promise<DBResult> {
     _id: new ObjectId(id),
     uid,
   });
+
   if (!result) throw new MonkeyError(404, "Result not found");
   return replaceLegacyValues(result);
 }

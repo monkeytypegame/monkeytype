@@ -1,4 +1,9 @@
-import { CompletedEvent, Result } from "@monkeytype/schemas/results";
+import {
+  ChartData,
+  CompletedEvent,
+  OldChartData,
+  Result,
+} from "@monkeytype/schemas/results";
 import { Mode } from "@monkeytype/schemas/shared";
 import { ObjectId } from "mongodb";
 import { WithObjectId } from "./misc";
@@ -8,6 +13,7 @@ export type DBResult = WithObjectId<Result<Mode>> & {
   //legacy values
   correctChars?: number;
   incorrectChars?: number;
+  chartData: ChartData | OldChartData | "toolong";
 };
 
 export function buildDbResult(
@@ -101,6 +107,19 @@ export function replaceLegacyValues(result: DBResult): DBResult {
     } else {
       result.funbox = (result.funbox as string).split("#") as FunboxName[];
     }
+  }
+
+  if (
+    result.chartData !== undefined &&
+    result.chartData !== "toolong" &&
+    "raw" in result.chartData
+  ) {
+    const temp = result.chartData;
+    result.chartData = {
+      wpm: temp.wpm,
+      burst: temp.raw,
+      err: temp.err,
+    };
   }
 
   return result;
