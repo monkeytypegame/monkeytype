@@ -1543,11 +1543,11 @@ export async function applyBurstHeatmap(): Promise<void> {
 }
 
 export function highlightBadWord(index: number): void {
-  $($("#words .word")[index] as HTMLElement).addClass("error");
+  $(getWordElement(index) as HTMLElement).addClass("error");
 }
 
 export function highlightAllLettersAsCorrect(wordIndex: number): void {
-  $($("#words .word")[wordIndex] as HTMLElement)
+  $(getWordElement(wordIndex) as HTMLElement)
     .find("letter")
     .addClass("correct");
 }
