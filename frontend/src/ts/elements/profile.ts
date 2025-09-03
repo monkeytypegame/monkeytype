@@ -71,7 +71,9 @@ export async function update(
   }
 
   details.find(".name").text(profile.name);
-  details.find(".userFlags").html(getHtmlByUserFlags(profile));
+  details
+    .find(".userFlags")
+    .html(getHtmlByUserFlags(profile, { isFriend: isFriend(profile.uid) }));
 
   if (profile.lbOptOut === true) {
     if (where === "profile") {
@@ -429,6 +431,14 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   const fittedFontSize = ratioAt10 * 10;
   const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
   nameField.style.fontSize = `${finalFontSize}px`;
+}
+
+function isFriend(uid: string | undefined): boolean {
+  if (uid === undefined || uid === getAuthenticatedUser()?.uid) return false;
+
+  return Object.entries(DB.getSnapshot()?.friends ?? []).some(
+    ([friendUid, status]) => friendUid === uid && status === "accepted"
+  );
 }
 
 export function updateFriendRequestButton(): void {
