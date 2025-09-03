@@ -46,6 +46,12 @@ nav {
       gap: 0.33em;
       display: grid;
       grid-auto-flow: column;
+
+      .notificationBubble {
+        left: 3em;
+        top: 0.5em;
+      }
+
       .spinner,
       .avatar {
         grid-column: 1/2;
@@ -216,7 +222,7 @@ nav {
           display: grid;
           grid-template-columns: auto 1fr auto;
           text-align: left;
-          .friendsBubble {
+          .notificationBubble {
             margin-right: 0.5em;
             position: unset;
             box-shadow: 0 0 0 0.5em var(--sub-alt-color);

@@ -391,9 +391,7 @@ key {
   }
 }
 
-.notificationBubble,
-.accountBubble,
-.friendsBubble {
+.notificationBubble {
   position: absolute;
   background: var(--main-color);
   width: 1em;
@@ -404,13 +402,7 @@ key {
   border-radius: 100rem;
   box-shadow: 0 0 0 0.5em var(--bg-color);
   transition: 0.125s;
-}
-.notificationBubble {
   right: 0.5em;
-  top: 0.5em;
-}
-.accountBubble {
-  left: 3em; //i bet there is a better way
   top: 0.5em;
 }
 
