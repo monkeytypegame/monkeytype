@@ -121,21 +121,21 @@ function backspaceToPrevious(): void {
 
   const previousWordEl = TestUI.getWordElement(TestState.activeWordIndex - 1);
 
-  //need to block going back to previous word if we are on the first visible word
-  if (TestInput.input.getHistory().length === 0 || previousWordEl === null) {
-    return;
-  }
+  const isFirstWord = TestInput.input.getHistory().length === 0;
+  const isFirstVisibleWord = previousWordEl === null;
+  const isPreviousWordHidden = previousWordEl?.classList.contains("hidden");
+  const isPreviousWordCorrect =
+    TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
+    TestWords.words.get(TestState.activeWordIndex - 1);
 
   if (
-    (TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
-      TestWords.words.get(TestState.activeWordIndex - 1) &&
-      !Config.freedomMode) ||
-    previousWordEl.classList.contains("hidden")
+    isFirstWord ||
+    isFirstVisibleWord ||
+    isPreviousWordHidden ||
+    (isPreviousWordCorrect && !Config.freedomMode) ||
+    Config.confidenceMode === "on" ||
+    Config.confidenceMode === "max"
   ) {
-    return;
-  }
-
-  if (Config.confidenceMode === "on" || Config.confidenceMode === "max") {
     return;
   }
 
