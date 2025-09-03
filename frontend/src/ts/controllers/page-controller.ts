@@ -115,6 +115,9 @@ async function showSyncLoading({
   PageLoading.page.element.addClass("hidden");
 }
 
+// Global abort controller for keyframe promises
+let keyframeAbortController: AbortController | null = null;
+
 async function getLoadingPromiseWithBarKeyframes(
   loadingOptions: Extract<
     NonNullable<Page<unknown>["loadingOptions"]>,
@@ -123,13 +126,16 @@ async function getLoadingPromiseWithBarKeyframes(
   fillDivider: number,
   fillOffset: number
 ): Promise<void> {
-  let aborted = false;
   let loadingPromise = loadingOptions.loadingPromise();
 
-  // Animate bar keyframes, but allow aborting if loading.promise finishes first
+  // Create abort controller for this keyframe sequence
+  const localAbortController = new AbortController();
+  keyframeAbortController = localAbortController;
+
+  // Animate bar keyframes, but allow aborting if loading.promise finishes first or if globally aborted
   const keyframePromise = (async () => {
     for (const keyframe of loadingOptions.keyframes) {
-      if (aborted) break;
+      if (localAbortController.signal.aborted) break;
       if (keyframe.text !== undefined) {
         PageLoading.updateText(keyframe.text);
       }
@@ -145,12 +151,18 @@ async function getLoadingPromiseWithBarKeyframes(
     keyframePromise,
     (async () => {
       await loadingPromise;
-      aborted = true;
+      localAbortController.abort();
     })(),
   ]);
 
   // Always wait for loading.promise to finish before continuing
   await loadingPromise;
+
+  // Clean up the abort controller
+  if (keyframeAbortController === localAbortController) {
+    keyframeAbortController = null;
+  }
+
   return;
 }
 
@@ -236,7 +248,18 @@ export async function change(
         easingMethod,
       });
     }
+
+    // Clean up abort controller after successful loading
+    if (keyframeAbortController) {
+      keyframeAbortController = null;
+    }
   } catch (error) {
+    // Abort any running keyframe promises
+    if (keyframeAbortController) {
+      keyframeAbortController.abort();
+      keyframeAbortController = null;
+    }
+
     pages.loading.element.addClass("active");
     ActivePage.set(pages.loading.id);
     Focus.set(false);
