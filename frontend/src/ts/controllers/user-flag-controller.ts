@@ -21,6 +21,13 @@ const flags: UserFlag[] = [
   },
 ];
 
+const friendFlag: UserFlag = {
+  name: "Friend",
+  description: "Friend :)",
+  icon: "fa-user-friends",
+  test: () => true,
+};
+
 export type SupportsFlags = {
   isPremium?: boolean;
   banned?: boolean;
@@ -39,6 +46,7 @@ type UserFlag = {
 
 type UserFlagOptions = {
   iconsOnly?: boolean;
+  isFriend?: boolean;
 };
 
 const USER_FLAG_OPTIONS_DEFAULT: UserFlagOptions = {
@@ -77,7 +85,10 @@ export function getHtmlByUserFlags(
   options?: UserFlagOptions
 ): string {
   const formatOptions = { ...USER_FLAG_OPTIONS_DEFAULT, ...options };
-  return getMatchingFlags(source)
-    .map((it) => toHtml(it, formatOptions))
-    .join("");
+  const flags = getMatchingFlags(source);
+  if (options?.isFriend) {
+    flags.push(friendFlag);
+  }
+  const result = flags.map((it) => toHtml(it, formatOptions)).join("");
+  return result;
 }
