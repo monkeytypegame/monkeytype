@@ -20,8 +20,9 @@ export async function sync(): Promise<void> {
   const response = await Ape.configuration.get();
 
   if (response.status !== 200) {
-    console.error("Could not fetch configuration", response.body.message);
-    reject("cannot load configuration");
+    const message = `Could not fetch configuration: ${response.body.message}`;
+    console.error(message);
+    reject(message);
     return;
   } else {
     config = response.body.data ?? undefined;
