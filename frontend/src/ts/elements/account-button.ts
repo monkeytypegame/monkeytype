@@ -75,6 +75,28 @@ export function update(): void {
       }
     );
   }
+
+  updateFriendRequests();
+}
+
+export function updateFriendRequests(): void {
+  const friends = getSnapshot()?.friends;
+
+  if (friends !== undefined) {
+    const pendingFriendRequests = Object.values(friends).filter(
+      (it) => it === "pending"
+    ).length;
+    if (pendingFriendRequests > 0) {
+      $("nav .accountButtonAndMenu .accountBubble").removeClass("hidden");
+      $("nav .accountButtonAndMenu .friendsBubble")
+        .removeClass("hidden")
+        .text(pendingFriendRequests);
+      return;
+    }
+  }
+
+  $("nav .accountButtonAndMenu .accountBubble").addClass("hidden");
+  $("nav .accountButtonAndMenu .friendsBubble").addClass("hidden");
 }
 
 const coarse = window.matchMedia("(pointer:coarse)")?.matches;
