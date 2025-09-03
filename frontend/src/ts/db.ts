@@ -267,13 +267,17 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     }
 
     snap.friends = Object.fromEntries(
-      friendsData.map((friend) => [
+      friendsData.map((friend) => {
         // oxlint-disable-next-line no-non-null-assertion
-        friend.initiatorUid === getAuthenticatedUser()!.uid
-          ? friend.friendUid
-          : friend.initiatorUid,
-        friend.status,
-      ])
+        const isMyRequest = getAuthenticatedUser()!.uid === friend.initiatorUid;
+
+        return [
+          isMyRequest ? friend.friendUid : friend.initiatorUid,
+          friend.status === "pending" && !isMyRequest
+            ? "incoming"
+            : friend.status,
+        ];
+      })
     );
 
     dbSnapshot = snap;
