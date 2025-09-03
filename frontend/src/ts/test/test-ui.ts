@@ -678,7 +678,10 @@ function updateWordsMargin<T extends unknown[]>(
   }
 }
 
-export function addWord(word: string, wordIndex: number): void {
+export function addWord(
+  word: string,
+  wordIndex = TestWords.words.length - 1
+): void {
   $("#words").append(buildWordHTML(word, wordIndex));
 }
 
