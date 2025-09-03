@@ -76,10 +76,10 @@ export function update(): void {
     );
   }
 
-  updateFriendRequests();
+  updateFriendRequestsIndicator();
 }
 
-export function updateFriendRequests(): void {
+export function updateFriendRequestsIndicator(): void {
   const friends = getSnapshot()?.friends;
 
   if (friends !== undefined) {

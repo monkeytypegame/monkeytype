@@ -5,6 +5,7 @@ import { format } from "date-fns/format";
 import { isAuthenticated } from "../../firebase";
 import { getFriendUid } from "../../pages/friends";
 import * as DB from "../../db";
+import { updateFriendRequestsIndicator } from "../account-button";
 
 let blockedUsers: FriendRequest[] = [];
 const element = $("#pageAccountSettings .tab[data-tab='blockedUsers']");
@@ -99,6 +100,7 @@ element.on("click", "table button.delete", async (e) => {
 
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
       delete snapshot.friends[uid];
+      updateFriendRequestsIndicator();
     }
   }
 });
