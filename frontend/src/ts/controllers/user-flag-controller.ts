@@ -19,19 +19,19 @@ const flags: UserFlag[] = [
     color: "var(--error-color)",
     test: (it) => it.lbOptOut === true,
   },
+  {
+    name: "Friend",
+    description: "Friend :)",
+    icon: "fa-user-friends",
+    test: (it) => it.isFriend === true,
+  },
 ];
-
-const friendFlag: UserFlag = {
-  name: "Friend",
-  description: "Friend :)",
-  icon: "fa-user-friends",
-  test: () => true,
-};
 
 export type SupportsFlags = {
   isPremium?: boolean;
   banned?: boolean;
   lbOptOut?: boolean;
+  isFriend?: boolean;
 };
 
 type UserFlag = {
@@ -85,10 +85,7 @@ export function getHtmlByUserFlags(
   options?: UserFlagOptions
 ): string {
   const formatOptions = { ...USER_FLAG_OPTIONS_DEFAULT, ...options };
-  const flags = getMatchingFlags(source);
-  if (options?.isFriend) {
-    flags.push(friendFlag);
-  }
-  const result = flags.map((it) => toHtml(it, formatOptions)).join("");
-  return result;
+  return getMatchingFlags(source)
+    .map((it) => toHtml(it, formatOptions))
+    .join("");
 }

@@ -73,7 +73,7 @@ export async function update(
   details.find(".name").text(profile.name);
   details
     .find(".userFlags")
-    .html(getHtmlByUserFlags(profile, { isFriend: isFriend(profile.uid) }));
+    .html(getHtmlByUserFlags({ ...profile, isFriend: isFriend(profile.uid) }));
 
   if (profile.lbOptOut === true) {
     if (where === "profile") {
