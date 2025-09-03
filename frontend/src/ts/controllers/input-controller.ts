@@ -139,7 +139,7 @@ function backspaceToPrevious(): void {
     return;
   }
 
-  const activeWordEl = TestUI.getWordElement(TestState.activeWordIndex);
+  const activeWordEl = TestUI.getActiveWordElement();
 
   const incorrectLetterBackspaced =
     activeWordEl?.children[0]?.classList.contains("incorrect");
@@ -339,9 +339,7 @@ async function handleSpace(): Promise<void> {
     );
 
     const { data: nextTop } = tryCatchSync(() =>
-      Math.floor(
-        TestUI.getWordElement(TestState.activeWordIndex)?.offsetTop ?? 0
-      )
+      Math.floor(TestUI.getActiveWordElement()?.offsetTop ?? 0)
     );
 
     if ((nextTop ?? 0) > currentTop) {
@@ -1117,7 +1115,7 @@ $(document).on("keydown", async (event) => {
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
     void Sound.playClick();
-    const activeWord = TestUI.getWordElement(TestState.activeWordIndex);
+    const activeWord = TestUI.getActiveWordElement();
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead

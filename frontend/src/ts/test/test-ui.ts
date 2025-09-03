@@ -169,6 +169,10 @@ export function getWordElement(index: number): HTMLElement | null {
   return el;
 }
 
+export function getActiveWordElement(): HTMLElement | null {
+  return getWordElement(TestState.activeWordIndex);
+}
+
 export function updateActiveElement(
   backspace?: boolean,
   initial = false
@@ -182,7 +186,7 @@ export function updateActiveElement(
   } else if (active !== null && !initial) {
     active.classList.remove("active");
   }
-  const newActiveWord = getWordElement(TestState.activeWordIndex);
+  const newActiveWord = getActiveWordElement();
   if (newActiveWord === null) {
     throw new Error("activeWord is null - can't update active element");
   }
@@ -489,7 +493,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
   if (!el) return;
 
-  const activeWord = getWordElement(TestState.activeWordIndex);
+  const activeWord = getActiveWordElement();
 
   if (!activeWord) {
     el.style.top = "0px";
@@ -543,7 +547,7 @@ export async function centerActiveLine(): Promise<void> {
   const { resolve, promise } = Misc.promiseWithResolvers();
   centeringActiveLine = promise;
 
-  const activeWordEl = getWordElement(TestState.activeWordIndex);
+  const activeWordEl = getActiveWordElement();
   if (!activeWordEl) {
     resolve();
     return;
@@ -570,7 +574,7 @@ export function updateWordsWrapperHeight(force = false): void {
   const outOfFocusEl = document.querySelector(
     ".outOfFocusWarning"
   ) as HTMLElement;
-  const activeWordEl = getWordElement(TestState.activeWordIndex);
+  const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
 
   wrapperEl.classList.remove("hidden");
@@ -699,7 +703,7 @@ export async function updateActiveWordLetters(
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
-  const activeWord = getWordElement(TestState.activeWordIndex);
+  const activeWord = getActiveWordElement();
   if (!activeWord) return;
   const hintIndices: number[][] = [];
 
@@ -892,7 +896,7 @@ export async function scrollTape(
   ).offsetWidth;
   const wordsEl = document.getElementById("words") as HTMLElement;
   const wordsChildrenArr = [...wordsEl.children] as HTMLElement[];
-  const activeWordEl = getWordElement(TestState.activeWordIndex);
+  const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
   const afterNewLineEls = wordsEl.getElementsByClassName("afterNewline");
 
@@ -1134,7 +1138,7 @@ export async function lineJump(
     const hideBound = currentTop;
 
     const wordsEl = document.getElementById("words") as HTMLElement;
-    const activeWordEl = getWordElement(TestState.activeWordIndex);
+    const activeWordEl = getActiveWordElement();
     if (!activeWordEl) {
       resolve();
       return;
