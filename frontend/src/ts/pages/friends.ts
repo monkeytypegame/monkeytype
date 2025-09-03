@@ -23,6 +23,7 @@ import { formatTypingStatsRatio } from "../utils/misc";
 import { getLanguageDisplayString } from "../utils/strings";
 import * as DB from "../db";
 import { getAuthenticatedUser } from "../firebase";
+import * as ServerConfiguration from "../ape/server-configuration";
 
 const pageElement = $(".page.pageFriends");
 
@@ -438,6 +439,12 @@ export const page = new Page<undefined>({
   loadingOptions: {
     shouldLoad: () => getAuthenticatedUser() !== null,
     waitFor: async () => {
+      await ServerConfiguration.configurationPromise;
+      const serverConfig = ServerConfiguration.get();
+      if (!serverConfig?.friends.enabled) {
+        throw new Error("Friends are disabled.");
+      }
+
       await Promise.all([fetchPendingRequests(), fetchFriends()]);
     },
     style: "bar",
