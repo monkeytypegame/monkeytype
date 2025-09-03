@@ -12,6 +12,8 @@ import * as TestActivity from "../elements/test-activity";
 import { TestActivityCalendar } from "../elements/test-activity-calendar";
 import { getFirstDayOfTheWeek } from "../utils/date-and-time";
 import { addFriend } from "./friends";
+import * as AuthEvent from "../observables/auth-event";
+import { get as getServerConfiguration } from "../ape/server-configuration";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
@@ -82,7 +84,7 @@ function reset(): void {
             <i class="fas fa-flag"></i>
           </button>
           <button
-            class="addFriendButton"
+            class="addFriendButton needsAccount hidden"
             data-balloon-pos="left"
             aria-label="Send friend request"
           >
@@ -234,6 +236,12 @@ async function update(options: UpdateOptions): Promise<void> {
   } else {
     Notifications.add("Missing update parameter!", -1);
   }
+
+  if (getServerConfiguration()?.friends.enabled) {
+    $(".profile .addFriendButton").removeClass("hidden");
+  } else {
+    $(".profile .addFriendButton").addClass("hidden");
+  }
 }
 
 $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
@@ -283,6 +291,16 @@ export const page = new Page<undefined | UserProfile>({
       $(".page.pageProfile .content").addClass("hidden");
     }
   },
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    if (event.data.isUserSignedIn) {
+      $(`.pageProfile .needsAccount`).removeClass("hidden");
+    } else {
+      $(`.pageProfile .needsAccount`).addClass("hidden");
+    }
+  }
 });
 
 Skeleton.save("pageProfile");

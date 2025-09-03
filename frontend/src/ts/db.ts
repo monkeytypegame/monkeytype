@@ -31,7 +31,10 @@ import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
 import * as AuthEvent from "./observables/auth-event";
-import { get as getServerConfiguration } from "./ape/server-configuration";
+import {
+  configPromise,
+  get as getServerConfiguration,
+} from "./ape/server-configuration";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -83,6 +86,8 @@ export function setSnapshot(
 export async function initSnapshot(): Promise<Snapshot | false> {
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = getDefaultSnapshot();
+  await configPromise;
+
   try {
     if (!isAuthenticated()) return false;
 
