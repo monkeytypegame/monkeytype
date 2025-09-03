@@ -85,7 +85,7 @@ export type Snapshot = Omit<
   xp: number;
   testActivity?: ModifiableTestActivityCalendar;
   testActivityByYear?: { [key: string]: TestActivityCalendar };
-  friends: Record<string, FriendRequestStatus>;
+  friends: Record<string, FriendRequestStatus | "incoming">;
 };
 
 export type SnapshotPreset = Preset & {

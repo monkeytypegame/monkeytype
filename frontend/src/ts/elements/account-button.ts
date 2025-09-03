@@ -84,7 +84,7 @@ export function updateFriendRequestsIndicator(): void {
 
   if (friends !== undefined) {
     const pendingFriendRequests = Object.values(friends).filter(
-      (it) => it === "pending"
+      (it) => it === "incoming"
     ).length;
     if (pendingFriendRequests > 0) {
       $("nav .accountButtonAndMenu .accountBubble").removeClass("hidden");

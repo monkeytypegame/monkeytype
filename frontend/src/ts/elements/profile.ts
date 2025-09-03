@@ -437,9 +437,6 @@ export function updateFriendRequestButton(): void {
     .querySelector(".profile")
     ?.getAttribute("uid") as string;
   const button = document.querySelector(".profile .addFriendButton");
-  if (button === null) {
-    throw new Error("button?");
-  }
 
   const myProfile = myUid === profileUid;
   const hasRequest = DB.getSnapshot()?.friends[profileUid] !== undefined;
