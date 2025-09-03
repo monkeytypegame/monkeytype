@@ -53,6 +53,7 @@ export async function addFriend(friendName: string): Promise<true | string> {
       const friendUid = getFriendUid(result.body.data);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       snapshot.friends[friendUid] = result.body.data.status;
+      updatePendingRequests();
     }
     return true;
   }
@@ -120,7 +121,7 @@ async function fetchPendingRequests(): Promise<void> {
   }
 }
 
-async function updatePendingRequests(): Promise<void> {
+function updatePendingRequests(): void {
   $(".pageFriends .pendingRequests").addClass("hidden");
 
   if (pendingRequests === undefined || pendingRequests.length === 0) {
@@ -393,6 +394,7 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
 
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
       delete snapshot.friends[friendUid];
+      updatePendingRequests();
     }
     if (count === 1) {
       $(".pageFriends .pendingRequests").addClass("hidden");
@@ -455,7 +457,7 @@ export const page = new Page<undefined>({
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageFriends", "main");
 
-    void updatePendingRequests();
+    updatePendingRequests();
     void updateFriends();
   },
 });

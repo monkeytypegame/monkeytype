@@ -19,6 +19,7 @@ import { Snapshot } from "../constants/default-snapshot";
 import { getAvatarElement } from "../utils/discord-avatar";
 import { formatXp } from "../utils/levels";
 import { formatTopPercentage } from "../utils/misc";
+import { get as getServerConfiguration } from "../ape/server-configuration";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = UserProfile | Snapshot;
@@ -313,21 +314,9 @@ export async function update(
 
   if (profile.uid === getAuthenticatedUser()?.uid) {
     profileElement.find(".userReportButton").addClass("hidden");
-    profileElement.find(".addFriendButton").addClass("hidden");
   } else {
     profileElement.find(".userReportButton").removeClass("hidden");
   }
-  if (
-    profile.uid !== undefined &&
-    (profile.uid === getAuthenticatedUser()?.uid ||
-      DB.getSnapshot()?.friends[profile.uid] !== undefined)
-  ) {
-    profileElement.find(".addFriendButton").addClass("hidden");
-  } else {
-    profileElement.find(".addFriendButton").removeClass("hidden");
-  }
-
-  //structure
 
   const bioAndKey = bio || keyboard;
 
@@ -372,6 +361,8 @@ export async function update(
   } else if (socials && bioAndKey) {
     details.addClass("both");
   }
+
+  updateFriendRequestButton();
 }
 
 export function updateXp(
@@ -440,6 +431,26 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   nameField.style.fontSize = `${finalFontSize}px`;
 }
 
+export function updateFriendRequestButton(): void {
+  const myUid = getAuthenticatedUser()?.uid;
+  const profileUid = document
+    .querySelector(".profile")
+    ?.getAttribute("uid") as string;
+  const button = document.querySelector(".profile .addFriendButton");
+  if (button === null) {
+    throw new Error("button?");
+  }
+
+  const myProfile = myUid === profileUid;
+  const hasRequest = DB.getSnapshot()?.friends[profileUid] !== undefined;
+  const featureEnabled = getServerConfiguration()?.friends.enabled;
+
+  if (!featureEnabled || myUid === undefined || myProfile || hasRequest) {
+    button?.classList.add("hidden");
+  } else {
+    button?.classList.remove("hidden");
+  }
+}
 const throttledEvent = throttle(1000, () => {
   const activePage = ActivePage.get();
   if (activePage && ["account", "profile"].includes(activePage)) {
