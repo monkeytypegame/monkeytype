@@ -332,7 +332,7 @@ async function validateLanguages(): Promise<void> {
 async function validateFonts(): Promise<void> {
   const problems = new Problems<KnownFontName, "_additional">("Fonts", {
     _additional:
-      "Font files present but missing in not declared in frontend/src/ts/constants/fonts.ts",
+      "Font files present but missing in frontend/src/ts/constants/fonts.ts",
   });
 
   //no missing files
