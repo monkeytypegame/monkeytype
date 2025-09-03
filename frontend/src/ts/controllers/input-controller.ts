@@ -656,8 +656,8 @@ async function handleChar(
     char
   );
 
-  const activeWord = document.querySelector(
-    `#words .word[data-wordindex='${TestState.activeWordIndex}']`
+  const activeWord = TestUI.getWordElement(
+    TestState.activeWordIndex
   ) as HTMLElement;
 
   const testInputLength: number = !isCharKorean
