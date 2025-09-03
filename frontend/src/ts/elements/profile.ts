@@ -453,9 +453,9 @@ export function updateFriendRequestButton(): void {
   const featureEnabled = getServerConfiguration()?.friends.enabled;
 
   if (!featureEnabled || myUid === undefined || myProfile || hasRequest) {
-    button?.classList.add("hidden");
+    button?.classList.add("disabled");
   } else {
-    button?.classList.remove("hidden");
+    button?.classList.remove("disabled");
   }
 }
 const throttledEvent = throttle(1000, () => {

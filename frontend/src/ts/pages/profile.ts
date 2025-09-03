@@ -83,7 +83,7 @@ function reset(): void {
             <i class="fas fa-flag"></i>
           </button>
           <button
-            class="addFriendButton hidden"
+            class="addFriendButton disabled"
             data-balloon-pos="left"
             aria-label="Send friend request"
           >
@@ -245,6 +245,7 @@ $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
 
   void UserReportModal.show({ uid, name, lbOptOut });
 });
+//TODO disabled
 $(".page.pageProfile").on("click", ".profile .addFriendButton", async () => {
   const friendName = $(".page.pageProfile .profile").attr("name") ?? "";
 
@@ -252,7 +253,7 @@ $(".page.pageProfile").on("click", ".profile .addFriendButton", async () => {
 
   if (result === true) {
     Notifications.add(`Request send to ${friendName}`);
-    $(".profile .details .addFriendButton").addClass("hidden");
+    $(".profile .details .addFriendButton").addClass("disabled");
   } else {
     Notifications.add(result, -1);
   }
