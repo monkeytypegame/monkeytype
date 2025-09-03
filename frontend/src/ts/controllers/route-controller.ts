@@ -6,7 +6,6 @@ import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import * as Notifications from "../elements/notifications";
 import { LoadingOptions } from "../pages/page";
-import { get as getServerConfiguration } from "../ape/server-configuration";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -154,12 +153,6 @@ const routes: Route[] = [
       }
       if (!isAuthenticated()) {
         await navigate("/login", options);
-        return;
-      }
-      //timing issue, on initial load the serverconfiguration not there yet
-      const serverConfiguration = getServerConfiguration();
-      if (serverConfiguration && !getServerConfiguration()?.friends.enabled) {
-        await navigate("/", options);
         return;
       }
 
