@@ -32,7 +32,7 @@ import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
 import * as AuthEvent from "./observables/auth-event";
 import {
-  configPromise,
+  configurationPromise,
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 
@@ -86,7 +86,7 @@ export function setSnapshot(
 export async function initSnapshot(): Promise<Snapshot | false> {
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = getDefaultSnapshot();
-  await configPromise;
+  await configurationPromise;
 
   try {
     if (!isAuthenticated()) return false;
