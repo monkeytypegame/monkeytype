@@ -434,7 +434,7 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
     entry.uid
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
-            ${getHtmlByUserFlags(entry, { isFriend: isFriend(entry.uid) })}
+            ${getHtmlByUserFlags({ ...entry, isFriend: isFriend(entry.uid) })}
             ${
               isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
             }
@@ -489,7 +489,7 @@ function buildWeeklyTableRow(
     entry.uid
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
-            ${getHtmlByUserFlags(entry, { isFriend: isFriend(entry.uid) })}
+            ${getHtmlByUserFlags({ ...entry, isFriend: isFriend(entry.uid) })}
             ${
               isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
             }
