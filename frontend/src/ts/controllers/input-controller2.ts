@@ -873,6 +873,8 @@ wordsInput.addEventListener("keydown", (event) => {
       "spacing debug keydown STOPPED - repeat",
       event.key,
       event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       event.which
     );
     return;
@@ -890,7 +892,7 @@ wordsInput.addEventListener("keydown", (event) => {
 
   const now = performance.now();
   setTimeout(() => {
-    if (eventCode === "" || event.which === 231) {
+    if (eventCode === "" || event.key === "Unidentified") {
       eventCode = "NoCode";
     }
     TestInput.recordKeydownTime(now, eventCode);
@@ -903,6 +905,8 @@ wordsInput.addEventListener("keyup", (event) => {
       "spacing debug keyup STOPPED - repeat",
       event.key,
       event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       event.which
     );
     return;
@@ -920,7 +924,7 @@ wordsInput.addEventListener("keyup", (event) => {
 
   const now = performance.now();
   setTimeout(() => {
-    if (eventCode === "" || event.which === 231) {
+    if (eventCode === "" || event.key === "Unidentified") {
       eventCode = "NoCode";
     }
     TestInput.recordKeyupTime(now, eventCode);

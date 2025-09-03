@@ -1688,10 +1688,7 @@ function afterAnyTestInput(correctInput: boolean | null): void {
 
   if (Config.keymapMode === "next") {
     void KeymapEvent.highlight(
-      TestWords.words
-        .getCurrent()
-        .charAt(TestInput.input.current.length)
-        .toString()
+      TestWords.words.getCurrent().charAt(TestInput.input.current.length)
     );
   }
 
