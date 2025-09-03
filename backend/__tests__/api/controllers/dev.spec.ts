@@ -1,29 +1,14 @@
-import request from "supertest";
-import app from "../../../src/app";
-import * as AuthUtils from "../../../src/utils/auth";
-import { ObjectId } from "mongodb";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import * as Misc from "../../../src/utils/misc";
-import { DecodedIdToken } from "firebase-admin/auth";
 
-const uid = new ObjectId().toHexString();
-const mockDecodedToken = {
-  uid,
-  email: "newuser@mail.com",
-  iat: 0,
-} as DecodedIdToken;
-const mockApp = request(app);
-
+const { mockApp } = setup();
 describe("DevController", () => {
-  const verifyIdTokenMock = vi.spyOn(AuthUtils, "verifyIdToken");
-  beforeEach(() => {
-    verifyIdTokenMock.mockReset().mockResolvedValue(mockDecodedToken);
-  });
-
   describe("generate testData", () => {
     const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
 
     beforeEach(() => {
-      isDevEnvironmentMock.mockReset();
+      isDevEnvironmentMock.mockClear();
       isDevEnvironmentMock.mockReturnValue(true);
     });
 

@@ -1,7 +1,4 @@
-import {
-  Language,
-  LanguageSchema,
-} from "@monkeytype/contracts/schemas/languages";
+import { Language, LanguageSchema } from "@monkeytype/schemas/languages";
 
 export const LanguageList: Language[] = LanguageSchema._def.values;
 
@@ -42,6 +39,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   ],
   arabic: ["arabic", "arabic_10k"],
   arabic_egypt: ["arabic_egypt", "arabic_egypt_1k"],
+  arabic_morocco: ["arabic_morocco"],
   italian: [
     "italian",
     "italian_1k",
@@ -154,7 +152,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "norwegian_nynorsk_400k",
   ],
   hebrew: ["hebrew", "hebrew_1k", "hebrew_5k", "hebrew_10k"],
-  icelandic: ["icelandic_1k"],
+  icelandic: ["icelandic", "icelandic_1k"],
   malagasy: ["malagasy", "malagasy_1k"],
   malay: ["malay", "malay_1k"],
   romanian: [
@@ -294,6 +292,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   occitan: ["occitan", "occitan_1k", "occitan_2k", "occitan_5k", "occitan_10k"],
   kabyle: ["kabyle", "kabyle_1k", "kabyle_2k", "kabyle_5k", "kabyle_10k"],
   zulu: ["zulu"],
+  hawaiian: ["hawaiian", "hawaiian_1k"],
   code: [
     "code_python",
     "code_python_1k",
@@ -343,6 +342,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_arduino",
     "code_systemverilog",
     "code_elixir",
+    "code_gleam",
     "code_zig",
     "code_gdscript",
     "code_gdscript_2",
@@ -354,6 +354,10 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_common_lisp",
     "code_odin",
     "code_fortran",
+    "code_abap",
+    "code_abap_1k",
+    "code_yoptascript",
+    "code_cuda",
   ],
   viossa: ["viossa", "viossa_njutro"],
 };

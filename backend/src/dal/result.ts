@@ -7,10 +7,8 @@ import {
 } from "mongodb";
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
-
 import { getUser, getTags } from "./user";
-import { DBResult } from "../utils/result";
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { DBResult, replaceLegacyValues } from "../utils/result";
 import { tryCatch } from "@monkeytype/util/trycatch";
 
 export const getResultCollection = (): Collection<DBResult> =>
@@ -65,18 +63,32 @@ export async function getResult(uid: string, id: string): Promise<DBResult> {
     _id: new ObjectId(id),
     uid,
   });
+
   if (!result) throw new MonkeyError(404, "Result not found");
-  return convert(result);
+  return replaceLegacyValues(result);
 }
 
 export async function getLastResult(uid: string): Promise<DBResult> {
-  const [lastResult] = await getResultCollection()
-    .find({ uid })
-    .sort({ timestamp: -1 })
-    .limit(1)
-    .toArray();
-  if (!lastResult) throw new MonkeyError(404, "No results found");
-  return convert(lastResult);
+  const lastResult = await getResultCollection().findOne(
+    { uid },
+    { sort: { timestamp: -1 } }
+  );
+
+  if (lastResult === null) throw new MonkeyError(404, "No last result found");
+  return replaceLegacyValues(lastResult);
+}
+
+export async function getLastResultTimestamp(uid: string): Promise<number> {
+  const lastResult = await getResultCollection().findOne(
+    { uid },
+    {
+      projection: { timestamp: 1, _id: 0 },
+      sort: { timestamp: -1 },
+    }
+  );
+
+  if (lastResult === null) throw new MonkeyError(404, "No last result found");
+  return lastResult.timestamp;
 }
 
 export async function getResultByTimestamp(
@@ -84,7 +96,8 @@ export async function getResultByTimestamp(
   timestamp: number
 ): Promise<DBResult | null> {
   const result = await getResultCollection().findOne({ uid, timestamp });
-  return convert(result);
+  if (result === null) return null;
+  return replaceLegacyValues(result);
 }
 
 type GetResultsOpts = {
@@ -127,26 +140,5 @@ export async function getResults(
 
   const results = await query.toArray();
   if (results === undefined) throw new MonkeyError(404, "Result not found");
-  return convert(results);
-}
-
-function convert<T extends DBResult | DBResult[] | null>(results: T): T {
-  if (results === null) return results;
-
-  const migrate = (result: DBResult): DBResult => {
-    if (typeof result.funbox === "string") {
-      if (result.funbox === "none") {
-        result.funbox = [];
-      } else {
-        result.funbox = (result.funbox as string).split("#") as FunboxName[];
-      }
-    }
-    return result;
-  };
-
-  if (Array.isArray(results)) {
-    return results.map(migrate) as T;
-  } else {
-    return migrate(results) as T;
-  }
+  return results.map(replaceLegacyValues);
 }

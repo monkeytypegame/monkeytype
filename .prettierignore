@@ -4,7 +4,6 @@
 docker/
 *.min.js
 *.min.css
-layouts.ts
 quotes/*
 chartjs-plugin-*.js
 sound/*

@@ -83,13 +83,13 @@ module.exports = {
           },
           build: {
             description:
-              "Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)",
+              "Changes that affect the build system or external dependencies (example scopes: vite, tsup-node, npm)",
             title: "Builds",
             emoji: "🛠",
           },
           ci: {
             description:
-              "Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)",
+              "Changes to our CI configuration files and scripts (example scopes: GitHub Workflows)",
             title: "Continuous Integrations",
             emoji: "⚙️",
           },

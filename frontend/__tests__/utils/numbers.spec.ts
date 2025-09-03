@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import * as Numbers from "../../src/ts/utils/numbers";
 
 describe("numbers", () => {

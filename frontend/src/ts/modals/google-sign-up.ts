@@ -1,5 +1,4 @@
 import * as Notifications from "../elements/notifications";
-import { debounce } from "throttle-debounce";
 import {
   sendEmailVerification,
   updateProfile,
@@ -9,12 +8,14 @@ import {
 import Ape from "../ape";
 import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
-import * as AccountController from "../controllers/account-controller";
+import * as AccountController from "../auth";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
-import { InputIndicator } from "../elements/input-indicator";
 import AnimatedModal from "../utils/animated-modal";
+import { resetIgnoreAuthCallback } from "../firebase";
+import { validateWithIndicator } from "../elements/input-validation";
+import { UserNameSchema } from "@monkeytype/schemas/users";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -51,6 +52,7 @@ function show(credential: UserCredential): void {
 async function hide(): Promise<void> {
   void modal.hide({
     afterAnimation: async () => {
+      resetIgnoreAuthCallback();
       if (signedInUser !== undefined) {
         Notifications.add("Sign up process cancelled", 0, {
           duration: 5,
@@ -138,72 +140,43 @@ function disableButton(): void {
   $("#googleSignUpModal button").prop("disabled", true);
 }
 
+const nameInputEl = document.querySelector(
+  "#googleSignUpModal input"
+) as HTMLInputElement;
+
 function enableInput(): void {
-  $("#googleSignUpModal input").prop("disabled", false);
+  nameInputEl.disabled = false;
 }
 
 function disableInput(): void {
-  $("#googleSignUpModal input").prop("disabled", true);
+  nameInputEl.disabled = true;
 }
 
-const nameIndicator = new InputIndicator($("#googleSignUpModal input"), {
-  available: {
-    icon: "fa-check",
-    level: 1,
-  },
-  unavailable: {
-    icon: "fa-times",
-    level: -1,
-  },
-  taken: {
-    icon: "fa-user",
-    level: -1,
-  },
-  checking: {
-    icon: "fa-circle-notch",
-    spinIcon: true,
-    level: 0,
-  },
-});
+validateWithIndicator(nameInputEl, {
+  schema: UserNameSchema,
+  isValid: async (name: string) => {
+    const checkNameResponse = (
+      await Ape.users.getNameAvailability({
+        params: { name: name },
+      })
+    ).status;
 
-const checkNameDebounced = debounce(1000, async () => {
-  const val = $("#googleSignUpModal input").val() as string;
-  if (!val) return;
-  const response = await Ape.users.getNameAvailability({
-    params: { name: val },
-  });
-
-  if (response.status === 200) {
-    nameIndicator.show("available", response.body.message);
-    enableButton();
-  } else if (response.status === 422) {
-    nameIndicator.show("unavailable", response.body.message);
-  } else if (response.status === 409) {
-    nameIndicator.show("taken", response.body.message);
-  } else {
-    nameIndicator.show("unavailable");
-    Notifications.add(
-      "Failed to check name availability: " + response.body.message,
-      -1
-    );
-  }
+    return checkNameResponse === 200 ? true : "Name not available";
+  },
+  debounceDelay: 1000,
+  callback: (result) => {
+    if (result.status === "success") {
+      enableButton();
+    } else {
+      disableButton();
+    }
+  },
 });
 
 async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.addEventListener("submit", (e) => {
     e.preventDefault();
     void apply();
-  });
-  modalEl.querySelector("input")?.addEventListener("input", () => {
-    disableButton();
-    const val = $("#googleSignUpModal input").val() as string;
-    if (val === "") {
-      nameIndicator.hide();
-      return;
-    } else {
-      nameIndicator.show("checking");
-      checkNameDebounced();
-    }
   });
 }
 

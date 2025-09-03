@@ -54,7 +54,51 @@
     border-radius: 0.3rem;
     font-size: 0.5rem;
   }
-  #testActivity {
+  .testActivity {
     display: none;
+  }
+
+  .pageLeaderboards {
+    .content .tableAndUser {
+      //font-size: 0.7rem;
+      .bigUser {
+        gap: 1em;
+        padding-left: 0.75em;
+        .stat.narrow:last-child {
+          font-size: 0.75em;
+        }
+        .userInfo {
+          font-size: 0.8em;
+        }
+        .rank {
+          margin-right: 0.5em;
+        }
+      }
+      .titleAndButtons {
+        // grid-template-columns: 1fr;
+        .title {
+          // text-align: center;
+          font-size: 1em;
+        }
+      }
+      table {
+        .avatarNameBadge .flagsAndBadge .badge .text {
+          display: block;
+        }
+        tbody td.date {
+          font-size: 0.75em;
+        }
+        .avatarNameBadge {
+          grid-template-columns: 1.25em 1fr;
+          grid-template-areas:
+            "avatar name"
+            "badges badges";
+          .flagsAndBadge {
+            grid-area: badges;
+            // justify-self: center;
+          }
+        }
+      }
+    }
   }
 }

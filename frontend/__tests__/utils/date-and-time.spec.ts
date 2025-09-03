@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as DateAndTime from "../../src/ts/utils/date-and-time";
 
 describe("date-and-time", () => {
@@ -17,8 +18,8 @@ describe("date-and-time", () => {
     const localeMock = vi.spyOn(Intl, "Locale");
 
     beforeEach(() => {
-      languageMock.mockReset();
-      localeMock.mockReset();
+      languageMock.mockClear();
+      localeMock.mockClear();
     });
 
     it("fallback to sunday for missing language", () => {

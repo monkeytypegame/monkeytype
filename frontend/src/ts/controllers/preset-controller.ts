@@ -1,9 +1,8 @@
-import { Preset } from "@monkeytype/contracts/schemas/presets";
-import * as UpdateConfig from "../config";
+import { Preset } from "@monkeytype/schemas/presets";
+import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";
-import { migrateConfig, replaceLegacyValues } from "../utils/config";
 import * as TagController from "./tag-controller";
 import { SnapshotPreset } from "../constants/default-snapshot";
 
@@ -15,15 +14,16 @@ export async function apply(_id: string): Promise<void> {
   if (presetToApply === undefined) {
     return;
   }
+
   if (isPartialPreset(presetToApply)) {
-    const combinedConfig = {
-      ...UpdateConfig.getConfigChanges(),
-      ...replaceLegacyValues(presetToApply.config),
-    };
-    await UpdateConfig.apply(migrateConfig(combinedConfig));
+    await UpdateConfig.apply({
+      ...structuredClone(Config),
+      ...presetToApply.config,
+    });
   } else {
-    await UpdateConfig.apply(migrateConfig(presetToApply.config));
+    await UpdateConfig.apply(presetToApply.config);
   }
+
   if (
     !isPartialPreset(presetToApply) ||
     presetToApply.settingGroups?.includes("behavior")

@@ -9,6 +9,10 @@
     color: var(--bg-color);
     justify-content: center;
 
+    &.clickable {
+      cursor: pointer;
+    }
+
     &.withImage {
       .lefticon {
         display: none;

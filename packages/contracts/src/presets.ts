@@ -6,9 +6,12 @@ import {
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
-import { EditPresetRequestSchema, PresetSchema } from "./schemas/presets";
-import { IdSchema } from "./schemas/util";
+} from "./util/api";
+import {
+  EditPresetRequestSchema,
+  PresetSchema,
+} from "@monkeytype/schemas/presets";
+import { IdSchema } from "@monkeytype/schemas/util";
 
 export const GetPresetResponseSchema = responseWithData(z.array(PresetSchema));
 export type GetPresetResponse = z.infer<typeof GetPresetResponseSchema>;

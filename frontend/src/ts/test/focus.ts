@@ -1,9 +1,9 @@
 import * as Caret from "./caret";
-import * as ActivePage from "../states/active-page";
 import * as LiveSpeed from "./live-speed";
 import * as LiveBurst from "./live-burst";
 import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
+import * as PageTransition from "../states/page-transition";
 
 const unfocusPx = 3;
 let state = false;
@@ -36,9 +36,9 @@ export function set(foc: boolean, withCursor = false): void {
     Caret.startAnimation();
     $("header").removeClass("focus");
     $("footer").removeClass("focus");
-    $("body").css("cursor", "default");
-    $("button").css("cursor", "default");
-    $("a").css("cursor", "default");
+    $("body").css("cursor", "");
+    $("button").css("cursor", "");
+    $("a").css("cursor", "");
     $("main").removeClass("focus");
     $("#bannerCenter").removeClass("focus");
     $("#notificationCenter").removeClass("focus");
@@ -56,9 +56,8 @@ export function set(foc: boolean, withCursor = false): void {
 }
 
 $(document).on("mousemove", function (event) {
+  if (PageTransition.get()) return;
   if (!state) return;
-  if (ActivePage.get() === "loading") return;
-  if (ActivePage.get() === "account" && state) return;
   if (
     event.originalEvent &&
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px

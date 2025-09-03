@@ -38643,6 +38643,162 @@
       "source": "Outlast",
       "length": 104,
       "id": 7653
+    },
+    {
+      "text": "Shh. I'd just like to hear the story. I mean... I paid a lot of money for that story, so... I think I can hear it as much as I want! So... tell me again",
+      "source": "Better Call Saul",
+      "length": 152,
+      "id": 7654
+    },
+    {
+      "text": "You're not a real lawyer! University of American Samoa, for Christ's sake? An online course?! What a joke! I worked my ass off to get where I am, and you take these shortcuts and you think suddenly you're my peer?! You do what I do because you're funny and you can make people laugh?! I committed my life to this! You don't slide into it like a cheap pair of slippers and then reap all the rewards!",
+      "source": "Better Call Saul",
+      "length": 398,
+      "id": 7655
+    },
+    {
+      "text": "I have people. I have people waiting for me. They don't know what I do, they never will. They're protected, but I do what I do so they can have a better life and if I live or if I die it really doesn't make a difference to me as long as they have what they need. So when it's my time to go, I will go knowing I did everything I could for them. Now, you ask me how I keep going? That's how.",
+      "source": "Better Call Saul",
+      "length": 389,
+      "id": 7656
+    },
+    {
+      "text": "Alvarez has been paying me for years; years. But you know what? I would have done it for free. Because I hate every last one of you psycho sacks of shit. I opened Lalo's gate, and I would do it again. And I'm glad what they did to him. He's a soulless pig, and I wished I'd killed him with my own hands. And you know what else, Hector? I put you in that chair. Oh, yeah. Your heart meds? I switched them for sugar pills. You were dead and buried, and I had to watch this asshole bring you back. So when you are sitting in your shitty nursing home and you're sucking down on your Jell-O night after night for the rest of your life, you think of me, you twisted fuck.",
+      "source": "Better Call Saul",
+      "length": 665,
+      "id": 7657
+    },
+    {
+      "text": "Before you approach anyone to tell them why something can’t be done, is late, or is broken, stop and listen to yourself. Talk to the rubber duck on your monitor, or the cat. Does your excuse sound reasonable, or stupid? How’s it going to sound to your boss? Run through the conversation in your mind. What is the other person likely to say? Will they ask, \"Have you tried this…\" or \"Didn’t you consider that?\" How will you respond? Before you go and tell them the bad news, is there anything else you can try? Sometimes, you just know what they are going to say, so save them the trouble. Instead of excuses, provide options. Don’t say it can’t be done; explain what can be done to salvage the situation.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7658,
+      "length": 704
+    },
+    {
+      "text": "In inner cities, some buildings are beautiful and clean, while others are rotting hulks. Why? Researchers in the field of crime and urban decay discovered a fascinating trigger mechanism, one that very quickly turns a clean, intact, inhabited building into a smashed and abandoned derelict. A broken window. One broken window, left unrepaired for any substantial length of time, instills in the inhabitants of the building a sense of abandonment—a sense that the powers that be don’t care about the building. So another window gets broken. People start littering. Graffiti appears. Serious structural damage begins. In a relatively short span of time, the building becomes damaged beyond the owner’s desire to fix it, and the sense of abandonment becomes reality.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7659,
+      "length": 763
+    },
+    {
+      "text": "The three soldiers returning home from war were hungry. When they saw the village ahead their spirits lifted—they were sure the villagers would give them a meal. But when they got there, they found the doors locked and the windows closed. After many years of war, the villagers were short of food, and hoarded what they had. Undeterred, the soldiers boiled a pot of water and carefully placed three stones into it. The amazed villagers came out to watch. \"This is stone soup,\" the soldiers explained. \"Is that all you put in it?\" asked the villagers. \"Absolutely—although some say it tastes even better with a few carrots…\" A villager ran off, returning in no time with a basket of carrots from his hoard. A couple of minutes later, the villagers again asked \"Is that it?\" \"Well,\" said the soldiers, \"a couple of potatoes give it body.\" Off ran another villager. Over the next hour, the soldiers listed more ingredients that would enhance the soup: beef, leeks, salt, and herbs. Each time a different villager would run off to raid their personal stores. Eventually they had produced a large pot of steaming soup. The soldiers removed the stones, and they sat down with the entire village to enjoy the first square meal any of them had eaten in months.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7660,
+      "length": 1252
+    },
+    {
+      "text": "There’s an old(ish) joke about a company that places an order for 100,000 ICs with a Japanese manufacturer. Part of the specification was the defect rate: one chip in 10,000. A few weeks later the order arrived: one large box containing thousands of ICs, and a small one containing just ten. Attached to the small box was a label that read: \"These are the faulty ones.\"",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7661,
+      "length": 369
+    },
+    {
+      "text": "You’re communicating only if you’re conveying what you mean to convey—just talking isn’t enough. To do that, you need to understand the needs, interests, and capabilities of your audience.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7662,
+      "length": 188
+    },
+    {
+      "text": "It’s six o’clock on Friday afternoon, following a week when the auditors have been in. Your boss’s youngest is in the hospital, it’s pouring rain outside, and the commute home is guaranteed to be a nightmare. This probably isn’t a good time to ask her for a memory upgrade for your laptop.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7663,
+      "length": 289
+    },
+    {
+      "text": "You’re on a helicopter tour of the Grand Canyon when the pilot, who made the obvious mistake of eating fish for lunch, suddenly groans and faints. Fortunately, he left you hovering 100 feet above the ground. As luck would have it, you had read a Wikipedia page about helicopters the previous night. You know that helicopters have four basic controls. The cyclic is the stick you hold in your right hand. Move it, and the helicopter moves in the corresponding direction. Your left hand holds the collective pitch lever. Pull up on this and you increase the pitch on all the blades, generating lift. At the end of the pitch lever is the throttle. Finally you have two foot pedals, which vary the amount of tail rotor thrust and so help turn the helicopter. “Easy!,” you think. “Gently lower the collective pitch lever and you’ll descend gracefully to the ground, a hero.” However, when you try it, you discover that life isn’t that simple. The helicopter’s nose drops, and you start to spiral down to the left. Suddenly you discover that you’re flying a system where every control input has secondary effects. Lower the left-hand lever and you need to add compensating backward movement to the right-hand stick and push the right pedal. But then each of these changes affects all of the other controls again. Suddenly you’re juggling an unbelievably complex system, where every change impacts all the other inputs. Your workload is phenomenal: your hands and feet are constantly moving, trying to balance all the interacting forces. Helicopter controls are decidedly not orthogonal.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7664,
+      "length": 1580
+    },
+    {
+      "text": "Many industries use prototypes to try out specific ideas; prototyping is much cheaper than full-scale production. Car makers, for example, may build many different prototypes of a new car design. Each one is designed to test a specific aspect of the car—the aerodynamics, styling, structural characteristics, and so on. Old school folks might use a clay model for wind tunnel testing, maybe a balsa wood and duct tape model will do for the art department, and so on. The less romantic will do their modeling on a computer screen or in virtual reality, reducing costs even further. In this way, risky or uncertain elements can be tried out without committing to building the real item.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7665,
+      "length": 684
+    },
+    {
+      "text": "To some extent, all answers are estimates. It’s just that some are more accurate than others. So the first question you have to ask yourself when someone asks you for an estimate is the context in which your answer will be taken. Do they need high accuracy, or are they looking for a ballpark figure?",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7666,
+      "length": 300
+    },
+    {
+      "text": "All estimates are based on models of the problem. But before we get too deeply into the techniques of building models, we have to mention a basic estimating trick that always gives good answers: ask someone who’s already done it. Before you get too committed to model building, cast around for someone who’s been in a similar situation in the past. See how their problem got solved. It’s unlikely you’ll ever find an exact match, but you’d be surprised how many times you can successfully draw on others’ experiences.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7667,
+      "length": 517
+    },
+    {
+      "text": "Every maker starts their journey with a basic set of good-quality tools. A woodworker might need rules, gauges, a couple of saws, some good planes, fine chisels, drills and braces, mallets, and clamps. These tools will be lovingly chosen, will be built to last, will perform specific jobs with little overlap with other tools, and, perhaps most importantly, will feel right in the budding woodworker’s hands.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7668,
+      "length": 408
+    },
+    {
+      "text": "The word bug has been used to describe an \"object of terror\" ever since the fourteenth century. Rear Admiral Dr. Grace Hopper, the inventor of COBOL, is credited with observing the first computer bug—literally, a moth caught in a relay in an early computer system. When asked to explain why the machine wasn’t behaving as intended, a technician reported that there was “a bug in the system,” and dutifully taped it— wings and all—into the log book.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7669,
+      "length": 448
+    },
+    {
+      "text": "A very simple but particularly useful technique for finding the cause of a problem is simply to explain it to someone else. The other person should look over your shoulder at the screen, and nod his or her head constantly (like a rubber duck bobbing up and down in a bathtub). They do not need to say a word; the simple act of explaining, step by step, what the code is supposed to do often causes the problem to leap off the screen and announce itself.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7670,
+      "length": 453
+    },
+    {
+      "text": "No one in the brief history of computing has ever written a piece of perfect software. It’s unlikely that you’ll be the first. And unless you accept this as a fact, you’ll end up wasting time and energy chasing an impossible dream.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7671,
+      "length": 231
+    },
+    {
+      "text": "It’s late at night, dark, pouring rain. The two-seater whips around the tight curves of the twisty little mountain roads, barely holding the corners. A hairpin comes up and the car misses it, crashing though the skimpy guardrail and soaring to a fiery crash in the valley below. State troopers arrive on the scene, and the senior officer sadly shakes their head. “Must have outrun their headlights.” Had the speeding two-seater been going faster than the speed of light? No, that speed limit is firmly fixed. What the officer referred to was the driver’s ability to stop or steer in time in response to the headlight’s illumination.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7672,
+      "length": 632
+    },
+    {
+      "text": "Coupling is the enemy of change, because it links together things that must change in parallel. This makes change more difficult: either you spend time tracking down all the parts that need changing, or you spend time wondering why things broke when you changed “just one thing” and not the other things to which it was coupled.",
+      "source": "The Pragmatic Programmer (2nd Edition)",
+      "id": 7673,
+      "length": 328
+    },
+    {
+      "text": "Every action you take is a vote for the type of person you wish to become. No single instance will transform your beliefs, but as the votes build up, so does the evidence of your new identity.",
+      "source": "James Clear, Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
+      "id": 7674,
+      "length": 192
+    },
+    {
+      "text": "You do not rise to the level of your goals. You fall to the level of your systems.",
+      "source": "James Clear, Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
+      "id": 7675,
+      "length": 82
+    },
+    {
+      "text": "You should be far more concerned with your current trajectory than with your current results.",
+      "source": "James Clear, Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
+      "id": 7676,
+      "length": 93
+    },
+    {
+      "text": "When you fall in love with the process rather than the product, you don’t have to wait to give yourself permission to be happy. You can be satisfied anytime your system is running.",
+      "source": "James Clear, Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
+      "id": 7677,
+      "length": 180
+    },
+    {
+      "text": "Goals are good for setting a direction, but systems are best for making progress.",
+      "source": "James Clear, Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
+      "id": 7678,
+      "length": 81
+    },
+    {
+      "text": "All big things come from small beginnings. The seed of every habit is a single, tiny decision. But as that decision is repeated, a habit sprouts and grows stronger. Roots entrench themselves and branches grow. The task of breaking a bad habit is like uprooting a powerful oak within us. And the task of building a good habit is like cultivating a delicate flower one day at a time.",
+      "source": "James Clear, Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
+      "id": 7679,
+      "length": 381
     }
   ]
 }

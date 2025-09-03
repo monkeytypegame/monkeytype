@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../../src/ts/utils/local-storage-with-schema";
 
@@ -32,9 +33,9 @@ describe("local-storage-with-schema.ts", () => {
     });
 
     afterEach(() => {
-      getItemMock.mockReset();
-      setItemMock.mockReset();
-      removeItemMock.mockReset();
+      getItemMock.mockClear();
+      setItemMock.mockClear();
+      removeItemMock.mockClear();
     });
 
     beforeEach(() => {

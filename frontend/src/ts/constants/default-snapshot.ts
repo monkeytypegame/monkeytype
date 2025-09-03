@@ -3,18 +3,17 @@ import {
   User,
   UserProfileDetails,
   UserTag,
-} from "@monkeytype/contracts/schemas/users";
-import { deepClone } from "../utils/misc";
+} from "@monkeytype/schemas/users";
 import { getDefaultConfig } from "./default-config";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { Result } from "@monkeytype/contracts/schemas/results";
-import { Config, FunboxName } from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
+import { Result } from "@monkeytype/schemas/results";
+import { Config, FunboxName } from "@monkeytype/schemas/configs";
 import {
   ModifiableTestActivityCalendar,
   TestActivityCalendar,
 } from "../elements/test-activity-calendar";
-import { Preset } from "@monkeytype/contracts/schemas/presets";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Preset } from "@monkeytype/schemas/presets";
+import { Language } from "@monkeytype/schemas/languages";
 
 export type SnapshotUserTag = UserTag & {
   active?: boolean;
@@ -135,5 +134,5 @@ const defaultSnap = {
 } as Snapshot;
 
 export function getDefaultSnapshot(): Snapshot {
-  return deepClone(defaultSnap);
+  return structuredClone(defaultSnap);
 }

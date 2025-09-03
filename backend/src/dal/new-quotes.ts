@@ -6,12 +6,12 @@ import { readFile } from "node:fs/promises";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { compareTwoStrings } from "string-similarity";
-import { ApproveQuote, Quote } from "@monkeytype/contracts/schemas/quotes";
+import { ApproveQuote, Quote } from "@monkeytype/schemas/quotes";
 import { WithObjectId } from "../utils/misc";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { z } from "zod";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
 
 const JsonQuoteSchema = z.object({
   text: z.string(),
@@ -187,6 +187,7 @@ export async function approve(
       if (compareTwoStrings(old.text, quote.text) > 0.8) {
         throw new MonkeyError(409, "Duplicate quote");
       }
+      return true;
     });
     let maxid = 0;
     quoteObject.quotes.map(function (q) {

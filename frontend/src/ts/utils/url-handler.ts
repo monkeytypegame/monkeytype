@@ -15,7 +15,7 @@ import {
   DifficultySchema,
   Mode2Schema,
   ModeSchema,
-} from "@monkeytype/contracts/schemas/shared";
+} from "@monkeytype/schemas/shared";
 import {
   CustomBackgroundFilter,
   CustomBackgroundFilterSchema,
@@ -25,11 +25,12 @@ import {
   CustomThemeColorsSchema,
   FunboxSchema,
   FunboxName,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
 import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
+import * as AuthEvent from "../observables/auth-event";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -64,12 +65,13 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     const { discordId, discordAvatar } = response.body.data;
     if (discordId !== undefined) {
       snapshot.discordId = discordId;
-    } else {
+    }
+    if (discordAvatar !== undefined) {
       snapshot.discordAvatar = discordAvatar;
     }
 
     DB.setSnapshot(snapshot);
-    AccountButton.updateAvatar(discordId, discordAvatar);
+    AccountButton.updateAvatar(snapshot);
   }
 }
 
@@ -187,7 +189,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     } else if (mode === "words") {
       UpdateConfig.setWordCount(parseInt(de[1], 10), true);
     } else if (mode === "quote") {
-      UpdateConfig.setQuoteLength(-2, false);
+      UpdateConfig.setQuoteLength([-2], false);
       TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();
     }
@@ -197,6 +199,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (de[2] !== null) {
     const customTextSettings = de[2];
     CustomText.setText(customTextSettings.text);
+
+    //make sure to set mode before the limit as mode also sets the limit
+    CustomText.setMode(customTextSettings.mode ?? "repeat");
 
     if (customTextSettings.limit !== undefined) {
       CustomText.setLimitMode(customTextSettings.limit.mode);
@@ -223,8 +228,6 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     else if (customTextSettings.delimiter === "|") {
       CustomText.setPipeDelimiter(true);
     }
-
-    CustomText.setMode(customTextSettings.mode ?? "repeat");
 
     applied["custom text settings"] = "";
   }
@@ -303,3 +306,14 @@ export function loadChallengeFromUrl(getOverride?: string): void {
       console.error(e);
     });
 }
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    const search = window.location.search;
+    const hash = window.location.hash;
+    loadCustomThemeFromUrl(search);
+    loadTestSettingsFromUrl(search);
+    loadChallengeFromUrl(search);
+    void linkDiscord(hash);
+  }
+});
