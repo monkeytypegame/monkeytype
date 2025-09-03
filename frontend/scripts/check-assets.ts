@@ -1,8 +1,8 @@
 /**
  * Example usage in root or frontend:
- * pnpm validate-json (npm run validate-json)
+ * pnpm check-assets (npm run check-assets)
  * pnpm vaildate-json quotes others(npm run vaildate-json quotes others)
- * pnpm validate-json challenges fonts -p (npm run validate-json challenges fonts -- -p)
+ * pnpm check-assets challenges fonts -p (npm run check-assets challenges fonts -- -p)
  */
 
 import * as fs from "fs";
