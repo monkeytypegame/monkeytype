@@ -87,16 +87,16 @@ export function updateFriendRequestsIndicator(): void {
       (it) => it === "incoming"
     ).length;
     if (pendingFriendRequests > 0) {
-      $("nav .accountButtonAndMenu .accountBubble").removeClass("hidden");
-      $("nav .accountButtonAndMenu .friendsBubble")
+      $("nav .view-account > .notificationBubble").removeClass("hidden");
+      $("nav .goToFriends > .notificationBubble")
         .removeClass("hidden")
         .text(pendingFriendRequests);
       return;
     }
   }
 
-  $("nav .accountButtonAndMenu .accountBubble").addClass("hidden");
-  $("nav .accountButtonAndMenu .friendsBubble").addClass("hidden");
+  $("nav .view-account > .notificationBubble").addClass("hidden");
+  $("nav goToFriends > .notificationBubble").addClass("hidden");
 }
 
 const coarse = window.matchMedia("(pointer:coarse)")?.matches;
