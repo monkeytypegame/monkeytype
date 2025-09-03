@@ -5,12 +5,12 @@ import { promiseWithResolvers } from "../utils/misc";
 let config: Configuration | undefined = undefined;
 
 const {
-  promise: configPromise,
+  promise: configurationPromise,
   resolve,
   reject,
 } = promiseWithResolvers<boolean>();
 
-export { configPromise };
+export { configurationPromise };
 
 export function get(): Configuration | undefined {
   return config;

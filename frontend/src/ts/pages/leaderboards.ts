@@ -1417,7 +1417,7 @@ export const page = new PageWithUrlParams({
     stopTimer();
   },
   beforeShow: async (options): Promise<void> => {
-    await ServerConfiguration.configPromise;
+    await ServerConfiguration.configurationPromise;
     Skeleton.append("pageLeaderboards", "main");
     await updateValidDailyLeaderboards();
     await appendModeAndLanguageButtons();
