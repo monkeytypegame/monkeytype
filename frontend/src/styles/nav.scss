@@ -410,8 +410,7 @@ header {
   &.focus {
     color: var(--sub-color) !important;
 
-    .notificationBubble,
-    .accountBubble {
+    .notificationBubble {
       opacity: 0;
     }
 
