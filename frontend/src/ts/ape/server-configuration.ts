@@ -4,7 +4,11 @@ import { promiseWithResolvers } from "../utils/misc";
 
 let config: Configuration | undefined = undefined;
 
-const { promise: configPromise, resolve } = promiseWithResolvers<boolean>();
+const {
+  promise: configPromise,
+  resolve,
+  reject,
+} = promiseWithResolvers<boolean>();
 
 export { configPromise };
 
@@ -17,6 +21,7 @@ export async function sync(): Promise<void> {
 
   if (response.status !== 200) {
     console.error("Could not fetch configuration", response.body.message);
+    reject("cannot load configuration");
     return;
   } else {
     config = response.body.data ?? undefined;
