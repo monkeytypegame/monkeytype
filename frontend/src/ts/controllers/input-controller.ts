@@ -654,9 +654,7 @@ async function handleChar(
     char
   );
 
-  const activeWord = TestUI.getWordElement(
-    TestState.activeWordIndex
-  ) as HTMLElement;
+  const activeWord = TestUI.getActiveWordElement() as HTMLElement;
 
   const testInputLength: number = !isCharKorean
     ? TestInput.input.current.length
