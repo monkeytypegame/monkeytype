@@ -601,7 +601,7 @@ export function areAllTestWordsGenerated(): boolean {
 //add word during the test
 export async function addWord(): Promise<void> {
   if (Config.mode === "zen") {
-    TestUI.appendEmptyWordElement(TestInput.input.getHistory().length);
+    TestUI.appendEmptyWordElement();
     return;
   }
 

@@ -455,7 +455,7 @@ export function showWords(): void {
   $("#words").empty();
 
   if (Config.mode === "zen") {
-    appendEmptyWordElement(TestInput.input.getHistory().length);
+    appendEmptyWordElement();
   } else {
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
@@ -471,7 +471,9 @@ export function showWords(): void {
   }, 125);
 }
 
-export function appendEmptyWordElement(index: number): void {
+export function appendEmptyWordElement(
+  index = TestInput.input.getHistory().length
+): void {
   $("#words").append(
     `<div class='word' data-wordindex='${index}'><letter class='invisible'>_</letter></div>`
   );
