@@ -106,7 +106,7 @@ async function validateChallenges(): Promise<void> {
 async function validateLayouts(): Promise<void> {
   const problems = new Problems<Layout, "_additional">("Layouts", {
     _additional:
-      "Additional layout files not declared in frontend/src/ts/constants/layouts.ts",
+      "Layout files present but missing in packages/schemas/src/layouts.ts",
   });
 
   for (let layoutName of LayoutsList) {
@@ -138,8 +138,7 @@ async function validateLayouts(): Promise<void> {
   const additionalLayoutFiles = fs
     .readdirSync("./static/layouts")
     .map((it) => it.substring(0, it.length - 5))
-    .filter((it) => !LayoutsList.some((layout) => layout === it))
-    .map((it) => `frontend/static/layouts/${it}.json`);
+    .filter((it) => !LayoutsList.some((layout) => layout === it));
   if (additionalLayoutFiles.length !== 0) {
     additionalLayoutFiles.forEach((it) => problems.add("_additional", it));
   }
@@ -239,9 +238,9 @@ async function validateLanguages(): Promise<void> {
     "Languages",
     {
       _additional:
-        "Additional language files not declared in frontend/src/ts/constants/languages.ts",
+        "Language files present but missing in packages/schemas/src/languages.ts",
       _groups:
-        "Problems in LanguageGroups on frontend/src/ts/constants/languages.ts",
+        "Problems in LanguageGroups in frontend/src/ts/constants/languages.ts",
     }
   );
 
@@ -290,7 +289,6 @@ async function validateLanguages(): Promise<void> {
   fs.readdirSync("./static/languages")
     .map((it) => it.substring(0, it.length - 5))
     .filter((it) => !LanguageList.some((language) => language === it))
-    .map((it) => `frontend/static/languages/${it}.json`)
     .forEach((it) => problems.add("_additional", it));
 
   //check groups
@@ -334,7 +332,7 @@ async function validateLanguages(): Promise<void> {
 async function validateFonts(): Promise<void> {
   const problems = new Problems<KnownFontName, "_additional">("Fonts", {
     _additional:
-      "Additional font files not declared in frontend/src/ts/constants/fonts.ts",
+      "Font files present but missing in not declared in frontend/src/ts/constants/fonts.ts",
   });
 
   //no missing files
@@ -367,7 +365,6 @@ async function validateFonts(): Promise<void> {
 
   fontFiles
     .filter((name) => !expectedFontFiles.has(name))
-    .map((name) => `frontend/static/webfonts/${name}`)
     .forEach((file) => problems.add("_additional", file));
 
   console.log(problems.toString());
@@ -380,7 +377,7 @@ async function validateFonts(): Promise<void> {
 async function validateThemes(): Promise<void> {
   const problems = new Problems<ThemeName, "_additional">("Themes", {
     _additional:
-      "Additional theme files not declared in frontend/src/ts/constants/themes.ts",
+      "Theme files present but missing in frontend/src/ts/constants/themes.ts",
   });
 
   //no missing files
@@ -396,7 +393,6 @@ async function validateThemes(): Promise<void> {
   //additional theme files
   themeFiles
     .filter((it) => !ThemesList.some((theme) => theme.name === it))
-    .map((it) => `frontend/static/themes/${it}.css`)
     .forEach((it) => problems.add("_additional", it));
 
   console.log(problems.toString());
