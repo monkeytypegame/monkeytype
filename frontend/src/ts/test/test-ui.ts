@@ -734,7 +734,7 @@ export async function updateActiveWordLetters(
         ret += `<letter class="correct">${char}</letter>`;
       }
     }
-    if (TestInput.input.current === "") {
+    if (TestInput.input.current === "" && CompositionState.getData() === "") {
       ret += `<letter class='invisible'>_</letter>`;
     }
 
