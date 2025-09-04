@@ -1063,7 +1063,10 @@ wordsInput.addEventListener("keydown", async (event) => {
         return;
       }
     }
-    if (TestWords.hasNewline || Config.mode === "zen") {
+    if (
+      TestWords.hasNewline ||
+      (Config.mode === "zen" && CompositionState.getComposing())
+    ) {
       await emulateInsertText("\n", event, now);
       event.preventDefault();
       return;
