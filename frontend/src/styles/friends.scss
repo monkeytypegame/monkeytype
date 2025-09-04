@@ -62,6 +62,12 @@
         &:last-child {
           text-align: right;
         }
+
+        //don't wrap friendsfor rand streak into multiple lines
+        &:nth-child(2),
+        &:nth-child(6) {
+          white-space: nowrap;
+        }
       }
 
       .sub {
