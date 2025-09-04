@@ -29,6 +29,7 @@ import { isAnyPopupVisible, whorf } from "../utils/misc";
 import { canQuickRestart } from "../utils/quick-restart";
 import * as CustomText from "../test/custom-text";
 import * as CustomTextState from "../states/custom-text-name";
+import { isSpace } from "../utils/strings";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -372,7 +373,7 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   //prevent space from being inserted if input is empty
   //allow if strict space is enabled
   if (
-    data === " " &&
+    isSpace(data) &&
     inputValue === "" &&
     Config.difficulty === "normal" &&
     !Config.strictSpace
@@ -381,7 +382,7 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   }
 
   //prevent space in nospace funbox
-  if (data === " " && isFunboxActiveWithProperty("nospace")) {
+  if (isSpace(data) && isFunboxActiveWithProperty("nospace")) {
     preventDefault = true;
   }
 
@@ -397,7 +398,7 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   if (
     data !== null &&
     data !== "" &&
-    ((data === " " && shouldInsertSpace) || data !== " ") &&
+    ((isSpace(data) && shouldInsertSpace) || !isSpace(data)) &&
     TestInput.input.current.length >= TestWords.words.getCurrent().length &&
     wordJumped &&
     Config.mode !== "zen"
@@ -409,7 +410,7 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
   const overLimit = TestInput.input.current.length >= inputLimit;
-  if (overLimit && ((data === " " && shouldInsertSpace) || data !== " ")) {
+  if (overLimit && ((isSpace(data) && shouldInsertSpace) || !isSpace(data))) {
     console.error("Hitting word limit");
     preventDefault = true;
   }
@@ -419,7 +420,7 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
 
 // boolean if data is space, null if not
 function shouldInsertSpaceCharacter(data: string): boolean | null {
-  if (data !== " ") {
+  if (!isSpace(data)) {
     return null;
   }
   const correctSoFar = (TestWords.words.getCurrent() + " ").startsWith(
@@ -519,7 +520,7 @@ async function onInsertText({
   }
 
   const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
-  const charIsNotSpace = data !== " ";
+  const charIsNotSpace = !isSpace(data);
   if (charIsNotSpace || shouldInsertSpace) {
     setTestInputToDOMValue(data === "\n");
   }
@@ -554,7 +555,7 @@ async function onInsertText({
 
   WeakSpot.updateScore(data, correct);
 
-  if (data !== " " && Config.oppositeShiftMode !== "off") {
+  if (!isSpace(data) && Config.oppositeShiftMode !== "off") {
     if (!correctShiftUsed) {
       replaceLastInputValueChar("");
       incorrectShiftsInARow++;
@@ -584,7 +585,7 @@ async function onInsertText({
     nospaceEnabled &&
     TestInput.input.current.length === TestWords.words.getCurrent().length;
   const spaceOrNewLine =
-    (data === " " && TestInput.input.current.length > 0) ||
+    (isSpace(data) && TestInput.input.current.length > 0) ||
     (data === "\n" && TestInput.input.current.length > 0) ||
     noSpaceForce;
 

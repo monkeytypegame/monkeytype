@@ -184,3 +184,30 @@ export function replaceControlCharacters(textToClear: string): string {
 
   return textToClear;
 }
+
+/**
+ * Checks if a character is a directly typable space character on a standard keyboard.
+ * These are space characters that can be typed without special input methods or copy-pasting.
+ * @param char The character to check.
+ * @returns True if the character is a directly typable space, false otherwise.
+ */
+export function isSpace(char: string): boolean {
+  if (char.length !== 1) return false;
+
+  const codePoint = char.codePointAt(0);
+  if (codePoint === undefined) return false;
+
+  // Directly typable spaces:
+  // U+0020 - Regular space (spacebar)
+  // U+2002 - En space (Option+Space on Mac)
+  // U+2003 - Em space (Option+Shift+Space on Mac)
+  // U+2009 - Thin space (various input methods)
+  // U+3000 - Ideographic space (CJK input methods)
+  return (
+    codePoint === 0x0020 ||
+    codePoint === 0x2002 ||
+    codePoint === 0x2003 ||
+    codePoint === 0x2009 ||
+    codePoint === 0x3000
+  );
+}
