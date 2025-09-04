@@ -254,7 +254,7 @@ export async function start(): Promise<void> {
             -1
           );
 
-          // TimerEvent.dispatch("fail", "slow timer");
+          TimerEvent.dispatch("fail", "slow timer");
         }
       }
     }
