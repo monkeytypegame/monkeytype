@@ -779,6 +779,109 @@
     .chart {
       grid-area: chart;
       width: 100%;
+      position: relative;
+
+      &:hover {
+        .chartLegend {
+          opacity: 1;
+          pointer-events: auto;
+        }
+      }
+
+      .chartLegend {
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        background: var(--bg-color);
+        border-radius: var(--roundness);
+        // top: -2.25em;
+        bottom: -0.75em;
+        padding: 0.25em;
+        right: 0;
+        font-size: 0.75em;
+        transition: opacity 0.125s;
+        cursor: pointer;
+        display: flex;
+
+        // button {
+        //   border-radius: 0;
+        //   background: var(--sub-alt-color);
+        // }
+
+        // button:first-child {
+        //   border-top-left-radius: var(--roundness);
+        //   border-bottom-left-radius: var(--roundness);
+        // }
+
+        // button:last-child {
+        //   border-top-right-radius: var(--roundness);
+        //   border-bottom-right-radius: var(--roundness);
+        // }
+
+        button {
+          padding: 0.5em 1em;
+          display: inline-grid;
+          grid-template-columns: auto 1fr;
+          align-items: center;
+          --color: var(--sub-color);
+
+          text-decoration: line-through;
+          .text {
+            pointer-events: none;
+          }
+
+          .line {
+            height: 0.25em;
+            width: 1.5em;
+            border-radius: calc(var(--roundness) / 2);
+            transition: background 0.125s;
+            background: var(--color);
+            pointer-events: none;
+
+            &.dashed {
+              background: linear-gradient(
+                90deg,
+                var(--color) 0%,
+                var(--color) 40%,
+                transparent 40%,
+                transparent 60%,
+                var(--color) 60%,
+                var(--color) 100%
+              );
+            }
+          }
+
+          .fas {
+            color: var(--color);
+            line-height: 0;
+          }
+
+          &.active {
+            text-decoration: none;
+            // .text {
+            // }
+            color: var(--sub-color);
+            &[data-id="raw"] {
+              --color: var(--main-color);
+            }
+            &[data-id="burst"] {
+              --color: var(--sub-color);
+            }
+            &[data-id="errors"] {
+              --color: var(--error-color);
+            }
+          }
+
+          &:hover {
+            color: var(--text-color);
+            background: var(--sub-alt-color);
+          }
+
+          &:active {
+            color: var(--sub-color);
+          }
+        }
+      }
 
       canvas {
         width: 100% !important;
