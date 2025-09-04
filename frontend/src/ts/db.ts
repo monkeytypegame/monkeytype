@@ -91,14 +91,16 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   try {
     if (!isAuthenticated()) return false;
 
+    const friendsRequest = getServerConfiguration()?.friends.enabled
+      ? Ape.friends.getRequests()
+      : { status: 200, body: { message: "", data: [] } };
+
     const [userResponse, configResponse, presetsResponse, friendsResponse] =
       await Promise.all([
         Ape.users.get(),
         Ape.configs.get(),
         Ape.presets.get(),
-        getServerConfiguration()?.friends.enabled
-          ? Ape.friends.getRequests()
-          : { status: 200, body: { message: "", data: [] } },
+        friendsRequest,
       ]);
 
     if (userResponse.status !== 200) {
