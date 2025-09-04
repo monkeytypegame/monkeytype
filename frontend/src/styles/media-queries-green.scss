@@ -277,4 +277,18 @@
       }
     }
   }
+  .pageFriends {
+    .content .friends table {
+      font-size: 0.9rem;
+
+      td:nth-child(2),
+      td:nth-child(6) {
+        display: none;
+      }
+
+      .badge .text {
+        display: none;
+      }
+    }
+  }
 }
