@@ -1066,7 +1066,7 @@ wordsInput.addEventListener("keydown", async (event) => {
     }
     if (
       TestWords.hasNewline ||
-      (Config.mode === "zen" && CompositionState.getComposing())
+      (Config.mode === "zen" && !CompositionState.getComposing())
     ) {
       await emulateInsertText("\n", event, now);
       event.preventDefault();
