@@ -211,7 +211,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
     element.classList.add("me");
   } else {
     actions = `<button class="remove">
-            <i class="fas fa-trash fa-fw"></i>
+            <i class="fas fa-user-times fa-fw"></i>
           </button>`;
   }
   element.innerHTML = `<tr>
