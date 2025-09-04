@@ -234,17 +234,6 @@
   .pageFriends {
     .content .friends table {
       font-size: 0.75rem;
-
-      //hide friends for, tests
-      td:nth-child(2),
-      td:nth-child(4),
-      td:nth-child(6) {
-        //border: 1px dashed red;
-        display: none;
-      }
-      .badge .text {
-        display: none;
-      }
     }
   }
 }
