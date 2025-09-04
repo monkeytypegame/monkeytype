@@ -1093,42 +1093,16 @@ export function updatePremid(): void {
   $(".pageTest #premidSecondsLeft").text(Config.time);
 }
 
-function removeTestElements(lastWordIndexToRemove: number): void {
+function removeTestElements(lastElementIndexToRemove: number): void {
   const wordsChildren = document.getElementById("words")?.children;
 
   if (wordsChildren === undefined) return;
-  let elementsToRemove = [];
-  let domIndex = 0;
-  while (domIndex < wordsChildren.length) {
-    const child = wordsChildren[domIndex] as HTMLElement | null;
+
+  for (let i = lastElementIndexToRemove; i >= 0; i--) {
+    const child = wordsChildren[i];
     if (!child || !child.isConnected) continue;
-
-    const wordIndex = parseInt(child.dataset["wordindex"] ?? "");
-    if (
-      wordIndex !== undefined &&
-      child.classList.contains("word") &&
-      wordIndex > lastWordIndexToRemove
-    ) {
-      // we want to also remove new line elements which
-      // come after the last word - only break on a .word element
-      break;
-    }
-
-    elementsToRemove.push(child);
-    domIndex++;
+    child.remove();
   }
-
-  if (elementsToRemove.length === wordsChildren.length) {
-    Notifications.add(
-      "Dang it, all the words just got removed. Something is definitely broken. Please report this!",
-      -1,
-      {
-        important: true,
-      }
-    );
-  }
-
-  elementsToRemove.map((el) => el.remove());
 }
 
 let currentLinesAnimating = 0;
@@ -1152,20 +1126,20 @@ export async function lineJump(
     // index of the active word in all #words.children
     // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
     const wordsChildren = [...wordsEl.children];
-    const activeWordIndex = wordsChildren.indexOf(activeWordEl);
+    const activeWordElementIndex = wordsChildren.indexOf(activeWordEl);
 
-    let lastWordIndexToRemove: number | undefined = undefined;
-    for (let i = activeWordIndex - 1; i >= 0; i--) {
+    let lastElementIndexToRemove: number | undefined = undefined;
+    for (let i = activeWordElementIndex - 1; i >= 0; i--) {
       const child = wordsChildren[i] as HTMLElement;
       if (child.classList.contains("hidden")) continue;
       if (Math.floor(child.offsetTop) < hideBound) {
         if (child.classList.contains("word")) {
-          lastWordIndexToRemove = i;
+          lastElementIndexToRemove = i;
           break;
         } else if (child.classList.contains("beforeNewline")) {
           // set it to .newline but check .beforeNewline.offsetTop
           // because it's more reliable
-          lastWordIndexToRemove = i + 1;
+          lastElementIndexToRemove = i + 1;
           break;
         }
       }
@@ -1176,7 +1150,7 @@ export async function lineJump(
       "#paceCaret"
     ) as HTMLElement;
 
-    if (lastWordIndexToRemove === undefined) {
+    if (lastElementIndexToRemove === undefined) {
       resolve();
     } else if (Config.smoothLineScroll) {
       lineTransition = true;
@@ -1211,7 +1185,7 @@ export async function lineJump(
           currentLinesAnimating = 0;
           TestState.setLineScrollDistance(0);
           activeWordTop = activeWordEl.offsetTop;
-          removeTestElements(lastWordIndexToRemove);
+          removeTestElements(lastElementIndexToRemove);
           wordsEl.style.marginTop = "0";
           lineTransition = false;
           resolve();
@@ -1219,7 +1193,7 @@ export async function lineJump(
       });
       jqWords.dequeue("topMargin");
     } else {
-      removeTestElements(lastWordIndexToRemove);
+      removeTestElements(lastElementIndexToRemove);
       paceCaretElement.style.top = `${
         paceCaretElement.offsetTop - wordHeight
       }px`;
