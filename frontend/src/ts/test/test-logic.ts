@@ -162,6 +162,8 @@ export function restart(options = {} as RestartOptions): void {
   };
 
   options = { ...defaultOptions, ...options };
+  Strings.clearWordDirectionCache();
+
   const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
 
   const noQuit = isFunboxActive("no_quit");
