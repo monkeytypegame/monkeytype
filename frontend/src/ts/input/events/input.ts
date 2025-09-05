@@ -234,14 +234,7 @@ export async function onInsertText({
   if (!CompositionState.getComposing()) {
     if (increasedWordIndex && checkIfFailedDueToMinBurst(lastBurst)) {
       TestLogic.fail("min burst");
-    } else if (
-      //todo: should the 3rd be increasedWordIndex?
-      checkIfFailedDueToDifficulty(
-        correct,
-        shouldInsertSpace,
-        shouldGoToNextWord
-      )
-    ) {
+    } else if (checkIfFailedDueToDifficulty(correct, shouldGoToNextWord)) {
       TestLogic.fail("difficulty");
     } else if (checkIfFinished(shouldGoToNextWord, increasedWordIndex)) {
       void TestLogic.finish();

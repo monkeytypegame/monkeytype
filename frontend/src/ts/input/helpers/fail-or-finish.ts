@@ -27,13 +27,10 @@ export function checkIfFailedDueToMinBurst(lastBurst: number | null): boolean {
 
 export function checkIfFailedDueToDifficulty(
   correctInsert: boolean,
-  shouldInsertSpace: boolean,
-  wentToNextWord: boolean
+  shouldGoToNextWord: boolean
 ): boolean {
   const shouldFailDueToExpert =
-    Config.difficulty === "expert" &&
-    !correctInsert &&
-    (shouldInsertSpace || wentToNextWord);
+    Config.difficulty === "expert" && !correctInsert && shouldGoToNextWord;
 
   const shouldFailDueToMaster =
     Config.difficulty === "master" && !correctInsert;
