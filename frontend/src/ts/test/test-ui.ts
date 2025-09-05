@@ -1733,10 +1733,18 @@ export function afterTestDelete(): void {
 }
 
 export function beforeTestWordChange(
+  direction: "forward",
+  correct: boolean
+): void;
+export function beforeTestWordChange(direction: "back", correct: null): void;
+export function beforeTestWordChange(
   direction: "forward" | "back",
   correct: boolean | null
 ): void {
-  void updateActiveWordLetters();
+  if (Config.stopOnError === "letter" && (correct || correct === null)) {
+    void updateActiveWordLetters();
+  }
+
   if (direction === "forward") {
     if (Config.blindMode) {
       highlightAllLettersAsCorrect(
