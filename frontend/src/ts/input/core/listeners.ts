@@ -8,6 +8,7 @@ import {
 import { handleInput } from "../events/input";
 import { handleKeydown } from "../events/keydown";
 import { handleKeyup } from "../events/keyup";
+import { handleSelectionChange } from "../events/selection";
 
 const wordsInput = getWordsInput();
 
@@ -24,14 +25,8 @@ wordsInput.addEventListener("select selectstart", (event) => {
   event.preventDefault();
 });
 
-wordsInput.addEventListener("selectionchange", () => {
-  const hasSelectedText = wordsInput.selectionStart !== wordsInput.selectionEnd;
-  const isCursorAtEnd = wordsInput.selectionStart === wordsInput.value.length;
-
-  if (hasSelectedText || !isCursorAtEnd) {
-    // force caret at end of input
-    moveCaretToTheEnd();
-  }
+wordsInput.addEventListener("selectionchange", (event) => {
+  handleSelectionChange(event);
 });
 
 wordsInput.addEventListener("keyup", async (event) => {
