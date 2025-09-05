@@ -7,7 +7,6 @@ import * as TestLogic from "../test/test-logic";
 import * as TestWords from "../test/test-words";
 import * as MonkeyPower from "../elements/monkey-power";
 import {
-  findSingleActiveFunboxWithFunction,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
 } from "../test/funbox/list";
@@ -30,8 +29,18 @@ import { canQuickRestart } from "../utils/quick-restart";
 import * as CustomText from "../test/custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import { isSpace } from "../utils/strings";
-
-const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
+import {
+  getInputValue,
+  getWordsInput,
+  replaceLastInputValueChar,
+  setInputValue,
+  setTestInputToDOMValue,
+} from "./element";
+import {
+  isCharCorrect,
+  isIgnoredInputType,
+  shouldInsertSpaceCharacter,
+} from "./helpers";
 
 type SupportedInputType =
   | "insertText"
@@ -40,115 +49,10 @@ type SupportedInputType =
   | "insertLineBreak"
   | "deleteContentBackward";
 
-const ignoredInputTypes = [
-  "insertReplacementText", //todo reconsider
-  "insertParagraph",
-  "insertOrderedList",
-  "insertUnorderedList",
-  "insertHorizontalRule",
-  "insertFromYank",
-  "insertFromDrop",
-  "insertFromPaste",
-  "insertFromPasteAsQuotation",
-  "insertTranspose",
-  "insertLink",
-  "deleteSoftLineBackward",
-  "deleteSoftLineForward",
-  "deleteEntireSoftLine",
-  "deleteHardLineBackward",
-  "deleteHardLineForward",
-  "deleteByDrag",
-  "deleteByCut",
-  "deleteContent", // might break things?
-  "deleteContentForward",
-  "history*",
-  "format*",
-];
-
 let correctShiftUsed = true;
 let incorrectShiftsInARow = 0;
 let awaitingNextWord = false;
 let lastBailoutAttempt = -1;
-
-function isCharCorrect(data: string): boolean {
-  if (Config.mode === "zen") return true;
-
-  let { inputValue } = getInputValue();
-
-  if (data === "\n") {
-    inputValue += "\n";
-  }
-
-  const index = inputValue.length - 1;
-
-  const targetWord = TestWords.words.get(TestState.activeWordIndex);
-
-  const input = inputValue[index];
-  const target = targetWord[index];
-
-  if (inputValue === targetWord + " ") {
-    return true;
-  }
-
-  if (input === undefined) {
-    return false;
-  }
-
-  if (target === undefined) {
-    return false;
-  }
-
-  if (target === input) {
-    return true;
-  }
-
-  const funbox = findSingleActiveFunboxWithFunction("isCharCorrect");
-  if (funbox) {
-    return funbox.functions.isCharCorrect(input, target);
-  }
-
-  if (Config.language.startsWith("russian")) {
-    if (
-      (input === "ё" || input === "е" || input === "e") &&
-      (target === "ё" || target === "е" || target === "e")
-    ) {
-      return true;
-    }
-  }
-
-  if (
-    (input === "’" ||
-      input === "‘" ||
-      input === "'" ||
-      input === "ʼ" ||
-      input === "׳" ||
-      input === "ʻ") &&
-    (target === "’" ||
-      target === "‘" ||
-      target === "'" ||
-      target === "ʼ" ||
-      target === "׳" ||
-      target === "ʻ")
-  ) {
-    return true;
-  }
-
-  if (
-    (input === `"` || input === "”" || input === "“" || input === "„") &&
-    (target === `"` || target === "”" || target === "“" || target === "„")
-  ) {
-    return true;
-  }
-
-  if (
-    (input === "–" || input === "—" || input === "-") &&
-    (target === "-" || target === "–" || target === "—")
-  ) {
-    return true;
-  }
-
-  return false;
-}
 
 type GoToNextWordParams = {
   correctInsert: boolean;
@@ -418,26 +322,6 @@ function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   return preventDefault;
 }
 
-// boolean if data is space, null if not
-function shouldInsertSpaceCharacter(data: string): boolean | null {
-  if (!isSpace(data)) {
-    return null;
-  }
-  const correctSoFar = (TestWords.words.getCurrent() + " ").startsWith(
-    TestInput.input.current + data
-  );
-  const stopOnErrorLetterAndIncorrect =
-    Config.stopOnError === "letter" && !correctSoFar;
-  const stopOnErrorWordAndIncorrect =
-    Config.stopOnError === "word" && !correctSoFar;
-  const strictSpace =
-    TestInput.input.current.length === 0 &&
-    (Config.strictSpace || Config.difficulty !== "normal");
-  return (
-    stopOnErrorLetterAndIncorrect || stopOnErrorWordAndIncorrect || strictSpace
-  );
-}
-
 async function onInsertText({
   inputType,
   data,
@@ -513,7 +397,8 @@ async function onInsertText({
     return;
   }
 
-  const correct = isCharCorrect(data);
+  const { inputValue } = getInputValue();
+  const correct = isCharCorrect(data, inputValue);
 
   if (TestInput.input.current.length === 0) {
     TestInput.setBurstStart(now);
@@ -682,37 +567,6 @@ function onDelete({ inputType }: InputEventHandler): void {
   TestUI.afterTestDelete();
 }
 
-function replaceLastInputValueChar(char: string): void {
-  const { inputValue } = getInputValue();
-  setInputValue(inputValue.slice(0, -1) + char);
-}
-
-function setInputValue(value: string): void {
-  console.trace();
-  console.log("setting input value", value);
-  wordsInput.value = " " + value;
-  setTestInputToDOMValue();
-}
-
-function setTestInputToDOMValue(appendNewLine = false): void {
-  TestInput.input.current =
-    getInputValue().inputValue + (appendNewLine ? "\n" : "");
-}
-
-function getInputValue(): { inputValue: string; realInputValue: string } {
-  return {
-    inputValue: wordsInput.value.slice(1),
-    realInputValue: wordsInput.value,
-  };
-}
-
-function moveCaretToTheEnd(): void {
-  wordsInput.setSelectionRange(
-    wordsInput.value.length,
-    wordsInput.value.length
-  );
-}
-
 async function emulateInsertText(
   data: string,
   event: KeyboardEvent,
@@ -734,7 +588,7 @@ async function emulateInsertText(
   // because onBeforeInsertText can also block the event
   // setInputValue and setTestInputToDOMValue will be called later be updated in onInsertText
   const { inputValue } = getInputValue();
-  wordsInput.value = " " + inputValue + data;
+  getWordsInput().value = " " + inputValue + data;
 
   await onInsertText({
     data,
@@ -744,7 +598,7 @@ async function emulateInsertText(
   });
 }
 
-wordsInput.addEventListener("beforeinput", (event) => {
+getWordsInput().addEventListener("beforeinput", (event) => {
   console.debug("wordsInput event beforeinput", {
     inputType: event.inputType,
     data: event.data,
@@ -758,21 +612,9 @@ wordsInput.addEventListener("beforeinput", (event) => {
     return;
   }
 
-  for (const ignoredInputType of ignoredInputTypes) {
-    let prevent = false;
-    if (ignoredInputType.endsWith("*")) {
-      if (event.inputType.startsWith(ignoredInputType.slice(0, -1))) {
-        prevent = true;
-      }
-    } else {
-      if (event.inputType === ignoredInputType) {
-        prevent = true;
-      }
-    }
-    if (prevent) {
-      event.preventDefault();
-      return;
-    }
+  if (isIgnoredInputType(event.inputType)) {
+    event.preventDefault();
+    return;
   }
 
   if (awaitingNextWord) {
@@ -816,7 +658,7 @@ wordsInput.addEventListener("beforeinput", (event) => {
   }
 });
 
-wordsInput.addEventListener("input", async (event) => {
+getWordsInput().addEventListener("input", async (event) => {
   if (!(event instanceof InputEvent)) {
     //since the listener is on an input element, this should never trigger
     //but its here to narrow the type of "event"
@@ -856,30 +698,7 @@ wordsInput.addEventListener("input", async (event) => {
   }
 });
 
-wordsInput.addEventListener("focus", () => {
-  moveCaretToTheEnd();
-});
-
-wordsInput.addEventListener("copy paste", (event) => {
-  event.preventDefault();
-});
-
-//this might not do anything
-wordsInput.addEventListener("select selectstart", (event) => {
-  event.preventDefault();
-});
-
-wordsInput.addEventListener("selectionchange", () => {
-  const hasSelectedText = wordsInput.selectionStart !== wordsInput.selectionEnd;
-  const isCursorAtEnd = wordsInput.selectionStart === wordsInput.value.length;
-
-  if (hasSelectedText || !isCursorAtEnd) {
-    // force caret at end of input
-    moveCaretToTheEnd();
-  }
-});
-
-wordsInput.addEventListener("keydown", (event) => {
+getWordsInput().addEventListener("keydown", (event) => {
   if (event.repeat) {
     console.log(
       "spacing debug keydown STOPPED - repeat",
@@ -911,7 +730,7 @@ wordsInput.addEventListener("keydown", (event) => {
   }, 0);
 });
 
-wordsInput.addEventListener("keyup", (event) => {
+getWordsInput().addEventListener("keyup", (event) => {
   if (event.repeat) {
     console.log(
       "spacing debug keyup STOPPED - repeat",
@@ -943,7 +762,7 @@ wordsInput.addEventListener("keyup", (event) => {
   }, 0);
 });
 
-wordsInput.addEventListener("keydown", async (event) => {
+getWordsInput().addEventListener("keydown", async (event) => {
   console.debug("wordsInput event keydown", {
     key: event.key,
     code: event.code,
@@ -1102,7 +921,7 @@ wordsInput.addEventListener("keydown", async (event) => {
   }
 });
 
-wordsInput.addEventListener("keyup", (event) => {
+getWordsInput().addEventListener("keyup", (event) => {
   console.debug("wordsInput event keyup", {
     key: event.key,
     code: event.code,
@@ -1131,7 +950,7 @@ wordsInput.addEventListener("keyup", (event) => {
   }, 0);
 });
 
-wordsInput.addEventListener("compositionstart", (event) => {
+getWordsInput().addEventListener("compositionstart", (event) => {
   console.debug("wordsInput event compositionstart", { data: event.data });
   CompositionState.setComposing(true);
   if (!TestState.isActive) {
@@ -1140,12 +959,12 @@ wordsInput.addEventListener("compositionstart", (event) => {
   }
 });
 
-wordsInput.addEventListener("compositionupdate", (event) => {
+getWordsInput().addEventListener("compositionupdate", (event) => {
   console.debug("wordsInput event compositionupdate", { data: event.data });
   CompositionState.setData(event.data);
 });
 
-wordsInput.addEventListener("compositionend", async (event) => {
+getWordsInput().addEventListener("compositionend", async (event) => {
   console.debug("wordsInput event compositionend", { data: event.data });
   CompositionState.setComposing(false);
   CompositionState.setData("");
