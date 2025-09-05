@@ -243,7 +243,6 @@ export async function onInsertText({
       )
     ) {
       TestLogic.fail("difficulty");
-      //todo: function says wentToNextWord but we are using shouldGoToNextWord?
     } else if (checkIfFinished(increasedWordIndex, shouldGoToNextWord)) {
       void TestLogic.finish();
     }

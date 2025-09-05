@@ -46,10 +46,10 @@ export function checkIfFailedDueToDifficulty(
 
 export function checkIfFinished(
   spaceIncreasedIndex: boolean | null,
-  wentToNextWord: boolean
+  shouldGoToNextWord: boolean
 ): boolean {
   const allWordsTyped = TestState.activeWordIndex >= TestWords.words.length - 1;
-  const spaceOnLastWord = wentToNextWord && !spaceIncreasedIndex;
+  const spaceOnLastWord = shouldGoToNextWord && !spaceIncreasedIndex;
   const currentWord = TestWords.words.getCurrent();
   const allWordGenerated = TestLogic.areAllTestWordsGenerated();
   const wordIsCorrect =
