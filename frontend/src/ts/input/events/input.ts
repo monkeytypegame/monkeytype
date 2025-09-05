@@ -41,6 +41,12 @@ import {
 } from "../helpers/validation";
 import { SupportedInputType } from "../helpers/input-type";
 
+const charOverrides = new Map<string, string>([
+  ["…", "..."],
+  ["œ", "oe"],
+  ["æ", "ae"],
+]);
+
 type OnInsertTextParams = {
   event: Event;
   now: number;
@@ -67,57 +73,19 @@ export async function onInsertText({
     return;
   }
 
+  const charOverride = charOverrides.get(data);
   if (
-    data === "…" &&
-    TestWords.words.getCurrent()[TestInput.input.current.length] !== "…"
+    charOverride !== undefined &&
+    TestWords.words.getCurrent()[TestInput.input.current.length] !== data
   ) {
-    for (let i = 0; i < 3; i++) {
+    for (const char of charOverride) {
       await onInsertText({
         inputType,
         event,
-        data: ".",
+        data: char,
         now,
       });
     }
-
-    return;
-  }
-
-  if (
-    data === "œ" &&
-    TestWords.words.getCurrent()[TestInput.input.current.length] !== "œ"
-  ) {
-    await onInsertText({
-      inputType,
-      event,
-      data: "o",
-      now,
-    });
-    await onInsertText({
-      inputType,
-      event,
-      data: "e",
-      now,
-    });
-    return;
-  }
-
-  if (
-    data === "æ" &&
-    TestWords.words.getCurrent()[TestInput.input.current.length] !== "æ"
-  ) {
-    await onInsertText({
-      inputType,
-      event,
-      data: "a",
-      now,
-    });
-    await onInsertText({
-      inputType,
-      event,
-      data: "e",
-      now,
-    });
     return;
   }
 
