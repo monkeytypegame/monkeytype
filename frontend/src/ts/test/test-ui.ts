@@ -1710,8 +1710,8 @@ export function afterTestTextInput(
     override = inputOverride;
   }
 
-  //nospace cant be handled here because word index is already increased
-  //at this point
+  //nospace cant be handled here becauseword index
+  // is already increased at this point
 
   setActiveWordTop();
   if (!increasedWordIndex) void updateActiveWordLetters(override);
