@@ -2,8 +2,8 @@ import Config from "../../config";
 import * as TestInput from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
-import { getInputValue } from "../input-element";
-import { InputEventHandler } from "../types";
+import { getInputValue } from "../core/input-element";
+import { InputEventHandler } from "../core/types";
 
 export function onBeforeDelete({ event }: InputEventHandler): void {
   if (!TestState.isActive) {

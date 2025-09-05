@@ -5,11 +5,12 @@ import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isAnyPopupVisible } from "../../utils/misc";
 import { isSpace } from "../../utils/strings";
-import { getInputValue } from "../input-element";
-import { isIgnoredInputType, shouldInsertSpaceCharacter } from "../helpers";
-import { OnInsertTextParams, SupportedInputType } from "../types";
-import { getAwaitingNextWord } from "../state";
+import { getInputValue } from "../core/input-element";
+import { isIgnoredInputType } from "../helpers/misc";
+import { OnInsertTextParams, SupportedInputType } from "../core/types";
+import { getAwaitingNextWord } from "../core/state";
 import { onBeforeDelete } from "./beforedelete";
+import { shouldInsertSpaceCharacter } from "../helpers/validation";
 
 export function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   let preventDefault = false;

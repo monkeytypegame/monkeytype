@@ -1,4 +1,4 @@
-import { OnInsertTextParams, SupportedInputType } from "../types";
+import { OnInsertTextParams, SupportedInputType } from "../core/types";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
@@ -7,12 +7,8 @@ import {
   getWordsInput,
   replaceLastInputValueChar,
   setTestInputToDOMValue,
-} from "../input-element";
-import {
-  failOrFinish,
-  isCharCorrect,
-  shouldInsertSpaceCharacter,
-} from "../helpers";
+} from "../core/input-element";
+import { failOrFinish } from "../helpers/misc";
 import { isSpace } from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
@@ -31,11 +27,15 @@ import {
   getIncorrectShiftsInARow,
   incrementIncorrectShiftsInARow,
   resetIncorrectShiftsInARow,
-} from "../state";
+} from "../core/state";
 import * as Notifications from "../../elements/notifications";
-import { goToNextWord } from "../word-navigation";
+import { goToNextWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./beforeinput";
 import { onDelete } from "./delete";
+import {
+  isCharCorrect,
+  shouldInsertSpaceCharacter,
+} from "../helpers/validation";
 
 export async function onInsertText({
   inputType,

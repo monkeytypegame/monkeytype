@@ -1,4 +1,4 @@
-import * as TestInput from "../test/test-input";
+import * as TestInput from "../../test/test-input";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 

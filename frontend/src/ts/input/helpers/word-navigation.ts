@@ -1,22 +1,22 @@
-import Config from "../config";
-import * as TestInput from "../test/test-input";
-import * as TestUI from "../test/test-ui";
-import * as PaceCaret from "../test/pace-caret";
-import * as TestState from "../test/test-state";
-import * as TestLogic from "../test/test-logic";
-import * as TestWords from "../test/test-words";
+import Config from "../../config";
+import * as TestInput from "../../test/test-input";
+import * as TestUI from "../../test/test-ui";
+import * as PaceCaret from "../../test/pace-caret";
+import * as TestState from "../../test/test-state";
+import * as TestLogic from "../../test/test-logic";
+import * as TestWords from "../../test/test-words";
 import {
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
-} from "../test/funbox/list";
-import * as TestStats from "../test/test-stats";
-import * as Replay from "../test/replay";
-import * as LiveBurst from "../test/live-burst";
-import * as Funbox from "../test/funbox/funbox";
-import * as Loader from "../elements/loader";
-import { setInputValue } from "./input-element";
-import { SupportedInputType } from "./types";
-import { setAwaitingNextWord } from "./state";
+} from "../../test/funbox/list";
+import * as TestStats from "../../test/test-stats";
+import * as Replay from "../../test/replay";
+import * as LiveBurst from "../../test/live-burst";
+import * as Funbox from "../../test/funbox/funbox";
+import * as Loader from "../../elements/loader";
+import { setInputValue } from "../core/input-element";
+import { SupportedInputType } from "../core/types";
+import { setAwaitingNextWord } from "../core/state";
 
 type GoToNextWordParams = {
   correctInsert: boolean;

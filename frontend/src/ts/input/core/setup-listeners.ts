@@ -1,13 +1,13 @@
 import { getWordsInput, moveCaretToTheEnd } from "./input-element";
-import { handleBeforeInput } from "./events/beforeinput";
+import { handleBeforeInput } from "../events/beforeinput";
 import {
   handleCompositionEnd,
   handleCompositionStart,
   handleCompositionUpdate,
-} from "./events/composition";
-import { handleInput } from "./events/input";
-import { handleKeydown } from "./events/keydown";
-import { handleKeyup } from "./events/keyup";
+} from "../events/composition";
+import { handleInput } from "../events/input";
+import { handleKeydown } from "../events/keydown";
+import { handleKeyup } from "../events/keyup";
 
 const wordsInput = getWordsInput();
 

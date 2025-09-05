@@ -31,7 +31,7 @@ import "./test/caps-warning";
 import "./modals/simple-modals";
 import * as CookiesModal from "./modals/cookies";
 // import "./controllers/input-controller";
-import "./input/setup";
+import "./input/core/setup-listeners";
 import "./ready";
 import "./controllers/route-controller";
 import "./pages/about";

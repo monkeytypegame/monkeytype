@@ -1,4 +1,4 @@
-import { InputEventHandler } from "../types";
+import { InputEventHandler } from "../core/types";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
@@ -6,11 +6,11 @@ import {
   getInputValue,
   setInputValue,
   setTestInputToDOMValue,
-} from "../input-element";
+} from "../core/input-element";
 import * as TestState from "../../test/test-state";
 import * as Replay from "../../test/replay";
 import Config from "../../config";
-import { goToPreviousWord } from "../word-navigation";
+import { goToPreviousWord } from "../helpers/word-navigation";
 
 export function onDelete({ inputType }: InputEventHandler): void {
   const { realInputValue } = getInputValue();
