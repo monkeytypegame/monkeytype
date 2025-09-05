@@ -243,7 +243,7 @@ export async function onInsertText({
       )
     ) {
       TestLogic.fail("difficulty");
-    } else if (checkIfFinished(increasedWordIndex, shouldGoToNextWord)) {
+    } else if (checkIfFinished(shouldGoToNextWord, increasedWordIndex)) {
       void TestLogic.finish();
     }
   }

@@ -45,8 +45,8 @@ export function checkIfFailedDueToDifficulty(
 }
 
 export function checkIfFinished(
-  spaceIncreasedIndex: boolean | null,
-  shouldGoToNextWord: boolean
+  shouldGoToNextWord: boolean,
+  spaceIncreasedIndex: boolean | null
 ): boolean {
   const allWordsTyped = TestState.activeWordIndex >= TestWords.words.length - 1;
   const spaceOnLastWord = shouldGoToNextWord && !spaceIncreasedIndex;
