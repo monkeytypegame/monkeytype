@@ -50,7 +50,9 @@ describe("FriendsController", () => {
         .expect(200);
 
       //THEN
-      expect(body.data).toEqual([{ ...friend, _id: friend._id.toHexString() }]);
+      expect(body.data).toEqual([
+        { ...friend, _id: friend._id.toHexString(), key: undefined },
+      ]);
       expect(getFriendsMock).toHaveBeenCalledWith({
         initiatorUid: uid,
         friendUid: uid,

@@ -11,11 +11,14 @@ import { MonkeyRequest } from "../types";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as FriendsDal from "../../dal/friends";
 import * as UserDal from "../../dal/user";
-import { replaceObjectId, replaceObjectIds } from "../../utils/misc";
+import { replaceObjectId } from "../../utils/misc";
 import MonkeyError from "../../utils/error";
 import { omit } from "lodash";
 import { FriendRequest } from "@monkeytype/schemas/friends";
 
+function convert(db: FriendsDal.DBFriendRequest): FriendRequest {
+  return replaceObjectId(omit(db, "key"));
+}
 export async function getRequests(
   req: MonkeyRequest<GetFriendRequestsQuery>
 ): Promise<GetFriendRequestsResponse> {
@@ -30,10 +33,7 @@ export async function getRequests(
     status: status,
   });
 
-  return new MonkeyResponse(
-    "Friend requests retrieved",
-    replaceObjectIds(results)
-  );
+  return new MonkeyResponse("Friend requests retrieved", results.map(convert));
 }
 
 export async function createRequest(
@@ -54,14 +54,9 @@ export async function createRequest(
     "name",
   ]);
 
-  const result: FriendRequest = omit(
-    replaceObjectId(
-      await FriendsDal.create(initiator, friend, maxFriendsPerUser)
-    ),
-    "key"
-  );
+  const result = await FriendsDal.create(initiator, friend, maxFriendsPerUser);
 
-  return new MonkeyResponse("Friend created", result);
+  return new MonkeyResponse("Friend created", convert(result));
 }
 
 export async function deleteRequest(
