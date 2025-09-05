@@ -220,6 +220,7 @@ export async function onInsertText({
   const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
   const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
 
+  //code mode - auto insert tabs
   if (
     Config.language.startsWith("code") &&
     correct &&
