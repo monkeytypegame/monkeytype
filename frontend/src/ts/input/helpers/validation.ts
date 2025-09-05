@@ -96,9 +96,13 @@ export function shouldInsertSpaceCharacter(data: string): boolean | null {
   const stopOnErrorWordAndIncorrect =
     Config.stopOnError === "word" && !correctSoFar;
   const strictSpace =
-    TestInput.input.current.length === 0 &&
-    (Config.strictSpace || Config.difficulty !== "normal");
+    TestInput.input.current.length === 0 && Config.strictSpace;
+  const incorrectAndNotNormalDifficulty =
+    !correctSoFar && Config.difficulty !== "normal";
   return (
-    stopOnErrorLetterAndIncorrect || stopOnErrorWordAndIncorrect || strictSpace
+    stopOnErrorLetterAndIncorrect ||
+    stopOnErrorWordAndIncorrect ||
+    strictSpace ||
+    incorrectAndNotNormalDifficulty
   );
 }
