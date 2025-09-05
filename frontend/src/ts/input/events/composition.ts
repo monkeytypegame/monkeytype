@@ -24,10 +24,12 @@ export async function handleCompositionEnd(
 
   const now = performance.now();
 
-  await onInsertText({
-    event,
-    inputType: "insertText",
-    data: event.data,
-    now,
-  });
+  if (event.data !== "") {
+    await onInsertText({
+      event,
+      inputType: "insertText",
+      data: event.data,
+      now,
+    });
+  }
 }
