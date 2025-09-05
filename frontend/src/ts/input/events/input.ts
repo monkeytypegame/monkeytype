@@ -299,6 +299,6 @@ export async function handleInput(event: InputEvent): Promise<void> {
   ) {
     onDelete(inputType);
   } else if (inputType === "insertCompositionText") {
-    TestUI.afterTestTextInput(true);
+    TestUI.afterTestTextInput(true, null);
   }
 }
