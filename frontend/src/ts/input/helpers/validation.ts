@@ -89,7 +89,7 @@ export function shouldInsertSpaceCharacter(data: string): boolean | null {
     return null;
   }
   const correctSoFar = (TestWords.words.getCurrent() + " ").startsWith(
-    TestInput.input.current + data
+    TestInput.input.current + " "
   );
   const stopOnErrorLetterAndIncorrect =
     Config.stopOnError === "letter" && !correctSoFar;
