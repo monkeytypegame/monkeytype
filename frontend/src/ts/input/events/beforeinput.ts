@@ -108,12 +108,6 @@ function onBeforeDelete({ event }: InputEventHandler): void {
 }
 
 export async function handleBeforeInput(event: InputEvent): Promise<void> {
-  console.debug("wordsInput event beforeinput", {
-    inputType: event.inputType,
-    data: event.data,
-    value: (event.target as HTMLInputElement).value,
-  });
-
   const popupVisible = isAnyPopupVisible();
   if (popupVisible) {
     event.preventDefault();

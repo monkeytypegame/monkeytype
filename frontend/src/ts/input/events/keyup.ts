@@ -34,11 +34,6 @@ function handleKeyupTiming(event: KeyboardEvent, now: number): void {
 }
 
 export async function handleKeyup(event: KeyboardEvent): Promise<void> {
-  console.debug("wordsInput event keyup", {
-    key: event.key,
-    code: event.code,
-  });
-
   if (
     event.key === "Home" ||
     event.key === "End" ||

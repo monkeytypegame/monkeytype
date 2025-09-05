@@ -159,11 +159,6 @@ async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
 }
 
 export async function handleKeydown(event: KeyboardEvent): Promise<void> {
-  console.debug("wordsInput event keydown", {
-    key: event.key,
-    code: event.code,
-  });
-
   const now = performance.now();
   handleKeydownTiming(event, now);
 

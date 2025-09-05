@@ -5,7 +5,6 @@ import * as TestLogic from "../../test/test-logic";
 import { onInsertText } from "./input";
 
 export function handleCompositionStart(event: CompositionEvent): void {
-  console.debug("wordsInput event compositionstart", { data: event.data });
   CompositionState.setComposing(true);
   if (!TestState.isActive) {
     TestUI.setActiveWordTop();
@@ -14,14 +13,12 @@ export function handleCompositionStart(event: CompositionEvent): void {
 }
 
 export function handleCompositionUpdate(event: CompositionEvent): void {
-  console.debug("wordsInput event compositionupdate", { data: event.data });
   CompositionState.setData(event.data);
 }
 
 export async function handleCompositionEnd(
   event: CompositionEvent
 ): Promise<void> {
-  console.debug("wordsInput event compositionend", { data: event.data });
   CompositionState.setComposing(false);
   CompositionState.setData("");
 

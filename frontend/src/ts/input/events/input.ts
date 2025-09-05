@@ -285,20 +285,7 @@ function onDelete({ inputType }: InputEventHandler): void {
   TestUI.afterTestDelete();
 }
 
-export async function handleInput(event: Event): Promise<void> {
-  if (!(event instanceof InputEvent)) {
-    //since the listener is on an input element, this should never trigger
-    //but its here to narrow the type of "event"
-    event.preventDefault();
-    return;
-  }
-
-  console.debug("wordsInput event input", {
-    inputType: event.inputType,
-    data: event.data,
-    value: (event.target as HTMLInputElement).value,
-  });
-
+export async function handleInput(event: InputEvent): Promise<void> {
   const now = performance.now();
 
   //this is ok to cast because we are preventing default from anything else
