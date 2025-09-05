@@ -7,8 +7,6 @@ export function getWordsInput(): HTMLInputElement {
 }
 
 export function setInputValue(value: string): void {
-  console.trace();
-  console.log("setting input value", value);
   wordsInput.value = " " + value;
   setTestInputToDOMValue();
 }
