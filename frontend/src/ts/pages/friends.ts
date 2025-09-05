@@ -24,6 +24,7 @@ import { getLanguageDisplayString } from "../utils/strings";
 import * as DB from "../db";
 import { getAuthenticatedUser } from "../firebase";
 import * as ServerConfiguration from "../ape/server-configuration";
+import * as AuthEvent from "../observables/auth-event";
 
 const pageElement = $(".page.pageFriends");
 
@@ -167,7 +168,8 @@ async function fetchFriends(): Promise<void> {
     friendsList = result.body.data;
   }
 }
-async function updateFriends(): Promise<void> {
+
+function updateFriends(): void {
   $(".pageFriends .friends .nodata").addClass("hidden");
   $(".pageFriends .friends table").addClass("hidden");
 
@@ -404,7 +406,7 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
 
     if (action === "accepted") {
       await fetchFriends();
-      await updateFriends();
+      updateFriends();
     }
   }
 });
@@ -445,7 +447,15 @@ export const page = new Page<undefined>({
         throw new Error("Friends are disabled.");
       }
 
-      await Promise.all([fetchPendingRequests(), fetchFriends()]);
+      if (friendsList !== undefined && pendingRequests !== undefined) {
+        setTimeout(async () => {
+          await Promise.all([fetchPendingRequests(), fetchFriends()]);
+          updatePendingRequests();
+          updateFriends();
+        }, 0);
+      } else {
+        await Promise.all([fetchPendingRequests(), fetchFriends()]);
+      }
     },
     style: "bar",
     keyframes: [
@@ -465,10 +475,17 @@ export const page = new Page<undefined>({
     Skeleton.append("pageFriends", "main");
 
     updatePendingRequests();
-    void updateFriends();
+    updateFriends();
   },
 });
 
 $(() => {
   Skeleton.save("pageFriends");
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged" && !event.data.isUserSignedIn) {
+    pendingRequests = undefined;
+    friendsList = undefined;
+  }
 });
