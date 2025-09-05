@@ -22,7 +22,7 @@ import * as KeymapEvent from "../../observables/keymap-event";
 import * as WeakSpot from "../../test/weak-spot";
 import * as CompositionState from "../../states/composition";
 import {
-  getCorrectShiftUsed,
+  isCorrectShiftUsed,
   getIncorrectShiftsInARow,
   incrementIncorrectShiftsInARow,
   resetIncorrectShiftsInARow,
@@ -161,7 +161,7 @@ export async function onInsertText({
   WeakSpot.updateScore(data, correct);
 
   if (!isSpace(data) && Config.oppositeShiftMode !== "off") {
-    if (!getCorrectShiftUsed()) {
+    if (!isCorrectShiftUsed()) {
       replaceLastInputValueChar("");
       incrementIncorrectShiftsInARow();
       if (getIncorrectShiftsInARow() >= 5) {

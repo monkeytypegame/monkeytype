@@ -3,7 +3,7 @@ let incorrectShiftsInARow = 0;
 let awaitingNextWord = false;
 let lastBailoutAttempt = -1;
 
-export function getCorrectShiftUsed(): boolean {
+export function isCorrectShiftUsed(): boolean {
   return correctShiftUsed;
 }
 
@@ -27,7 +27,7 @@ export function resetIncorrectShiftsInARow(): void {
   incorrectShiftsInARow = 0;
 }
 
-export function getAwaitingNextWord(): boolean {
+export function isAwaitingNextWord(): boolean {
   return awaitingNextWord;
 }
 

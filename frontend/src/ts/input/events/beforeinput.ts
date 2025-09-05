@@ -6,7 +6,7 @@ import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isAnyPopupVisible } from "../../utils/misc";
 import { isSpace } from "../../utils/strings";
 import { getInputValue } from "../core/input-element";
-import { getAwaitingNextWord } from "../core/state";
+import { isAwaitingNextWord } from "../core/state";
 import { onBeforeDelete } from "./beforedelete";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
 import { isSupportedInputType } from "../helpers/input-type";
@@ -77,7 +77,7 @@ export async function handleBeforeInput(event: InputEvent): Promise<void> {
     return;
   }
 
-  if (getAwaitingNextWord()) {
+  if (isAwaitingNextWord()) {
     event.preventDefault();
     return;
   }
