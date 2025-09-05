@@ -19,7 +19,6 @@ export function checkIfFailedDueToMinBurst(lastBurst: number | null): boolean {
       (Config.minBurst === "fixed" && lastBurst < Config.minBurstCustomSpeed) ||
       (Config.minBurst === "flex" && lastBurst < flex)
     ) {
-      TestLogic.fail("min burst");
       return true;
     }
   }
@@ -40,7 +39,6 @@ export function checkIfFailedDueToDifficulty(
     Config.difficulty === "master" && !correctInsert;
 
   if (shouldFailDueToExpert || shouldFailDueToMaster) {
-    TestLogic.fail("difficulty");
     return true;
   }
   return false;
@@ -65,7 +63,6 @@ export function checkIfFinished(
     allWordGenerated &&
     (wordIsCorrect || shouldQuickEnd || spaceOnLastWord)
   ) {
-    void TestLogic.finish();
     return true;
   }
   return false;

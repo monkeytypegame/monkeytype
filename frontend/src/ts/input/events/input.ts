@@ -231,24 +231,22 @@ export async function onInsertText({
     }, 0);
   }
 
-  if (increasedWordIndex) {
-    if (checkIfFailedDueToMinBurst(lastBurst)) return;
-  }
-
   if (!CompositionState.getComposing()) {
-    //todo: should the 3rd be increasedWordIndex?
-    if (
+    if (increasedWordIndex && checkIfFailedDueToMinBurst(lastBurst)) {
+      TestLogic.fail("min burst");
+    } else if (
+      //todo: should the 3rd be increasedWordIndex?
       checkIfFailedDueToDifficulty(
         correct,
         shouldInsertSpace,
         shouldGoToNextWord
       )
     ) {
-      return;
+      TestLogic.fail("difficulty");
+      //todo: function says wentToNextWord but we are using shouldGoToNextWord?
+    } else if (checkIfFinished(increasedWordIndex, shouldGoToNextWord)) {
+      void TestLogic.finish();
     }
-
-    //todo: function says wentToNextWord but we are using shouldGoToNextWord?
-    if (checkIfFinished(increasedWordIndex, shouldGoToNextWord)) return;
   }
 
   if (!increasedWordIndex) {
