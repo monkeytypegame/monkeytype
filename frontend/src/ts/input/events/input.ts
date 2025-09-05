@@ -250,9 +250,7 @@ export async function onInsertText({
     }
   }
 
-  if (!increasedWordIndex) {
-    TestUI.afterTestTextInput(correct, visualInputOverride);
-  }
+  TestUI.afterTestTextInput(correct, increasedWordIndex, visualInputOverride);
 }
 
 export async function emulateInsertText(

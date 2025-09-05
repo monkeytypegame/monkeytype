@@ -1702,6 +1702,7 @@ function afterAnyTestInput(correctInput: boolean | null): void {
 
 export function afterTestTextInput(
   correct: boolean,
+  increasedWordIndex: boolean | null,
   inputOverride?: string
 ): void {
   let override: string | undefined;
@@ -1709,7 +1710,7 @@ export function afterTestTextInput(
     override = inputOverride;
   }
   setActiveWordTop();
-  void updateActiveWordLetters(override);
+  if (!increasedWordIndex) void updateActiveWordLetters(override);
 
   // this probably should be handled by the input controller,
   // but i will leave it here in case i need it later
