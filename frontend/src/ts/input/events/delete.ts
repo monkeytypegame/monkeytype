@@ -10,9 +10,9 @@ import * as TestState from "../../test/test-state";
 import * as Replay from "../../test/replay";
 import Config from "../../config";
 import { goToPreviousWord } from "../helpers/word-navigation";
-import { SupportedInputType } from "../helpers/input-type";
+import { DeleteInputType } from "../helpers/input-type";
 
-export function onDelete(inputType: SupportedInputType): void {
+export function onDelete(inputType: DeleteInputType): void {
   const { realInputValue } = getInputValue();
 
   setTestInputToDOMValue();

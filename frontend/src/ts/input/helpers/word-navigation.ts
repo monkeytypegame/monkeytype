@@ -16,7 +16,7 @@ import * as Funbox from "../../test/funbox/funbox";
 import * as Loader from "../../elements/loader";
 import { setInputValue } from "../core/input-element";
 import { setAwaitingNextWord } from "../core/state";
-import { SupportedInputType } from "./input-type";
+import { DeleteInputType } from "./input-type";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
@@ -83,7 +83,7 @@ export async function goToNextWord({
   return ret;
 }
 
-export function goToPreviousWord(inputType: SupportedInputType): void {
+export function goToPreviousWord(inputType: DeleteInputType): void {
   if (TestState.activeWordIndex === 0) {
     setInputValue("");
     return;

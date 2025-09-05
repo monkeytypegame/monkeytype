@@ -4,12 +4,12 @@ import * as TestState from "../../test/test-state";
 import * as TestInput from "../../test/test-input";
 import { whorf } from "../../utils/misc";
 import * as TestLogic from "../../test/test-logic";
-import { SupportedInputType } from "./input-type";
+import { InsertInputType } from "./input-type";
 
 type FailOrFinishParams = {
   data: string;
   correctInsert: boolean;
-  inputType: SupportedInputType;
+  inputType: InsertInputType;
   spaceIncreasedIndex: boolean | null;
   wentToNextWord: boolean;
   shouldInsertSpace: boolean;
