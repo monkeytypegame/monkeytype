@@ -100,6 +100,12 @@ export function getOpenApi(): OpenAPIObject {
           "x-displayName": "Leaderboards",
         },
         {
+          name: "friends",
+          description: "User friend requests and friends list.",
+          "x-displayName": "Friends",
+          "x-public": "no",
+        },
+        {
           name: "psas",
           description: "Public service announcements.",
           "x-displayName": "PSAs",

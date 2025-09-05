@@ -375,7 +375,7 @@ describe("PresetDal", () => {
       ).presetId;
 
       //WHEN
-      PresetDal.removePreset(uid, first);
+      await PresetDal.removePreset(uid, first);
 
       //THEN
       const read = await PresetDal.getPresets(uid);

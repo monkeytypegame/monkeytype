@@ -36,6 +36,7 @@ import { MonkeyMail, UserStreak } from "@monkeytype/schemas/users";
 import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
+import * as FriendsDal from "../../../src/dal/friends";
 import { pb } from "../../__testData__/users";
 
 const { mockApp, uid, mockAuth } = setup();
@@ -624,6 +625,7 @@ describe("user controller test", () => {
       "purgeUserFromXpLeaderboards"
     );
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
+    const friendsDeletebyUidMock = vi.spyOn(FriendsDal, "deleteByUid");
     const logsDeleteUserMock = vi.spyOn(LogDal, "deleteUserLogs");
 
     beforeEach(() => {
@@ -636,6 +638,7 @@ describe("user controller test", () => {
         deleteConfigMock,
         purgeUserFromDailyLeaderboardsMock,
         purgeUserFromXpLeaderboardsMock,
+        friendsDeletebyUidMock,
         logsDeleteUserMock,
       ].forEach((it) => it.mockResolvedValue(undefined));
 
@@ -654,6 +657,7 @@ describe("user controller test", () => {
         deleteAllPresetsMock,
         purgeUserFromDailyLeaderboardsMock,
         purgeUserFromXpLeaderboardsMock,
+        friendsDeletebyUidMock,
         logsDeleteUserMock,
       ].forEach((it) => it.mockClear());
     });
@@ -684,6 +688,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(friendsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -719,6 +724,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(friendsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -749,6 +755,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(friendsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -778,6 +785,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).not.toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).not.toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).not.toHaveBeenCalledWith(uid);
+      expect(friendsDeletebyUidMock).not.toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).not.toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -818,6 +826,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(friendsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -858,6 +867,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(friendsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -978,6 +988,7 @@ describe("user controller test", () => {
     const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
     const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
     const updateNameMock = vi.spyOn(UserDal, "updateName");
+    const friendsUpdateNameMock = vi.spyOn(FriendsDal, "updateName");
     const addImportantLogMock = vi.spyOn(LogDal, "addImportantLog");
 
     beforeEach(() => {
@@ -985,6 +996,7 @@ describe("user controller test", () => {
         blocklistContainsMock,
         getPartialUserMock,
         updateNameMock,
+        friendsUpdateNameMock,
         addImportantLogMock,
       ].forEach((it) => {
         it.mockClear().mockResolvedValue(null as never);
@@ -1016,6 +1028,7 @@ describe("user controller test", () => {
         "changed name from Bob to newName",
         uid
       );
+      expect(friendsUpdateNameMock).toHaveBeenCalledWith(uid, "newName");
     });
 
     it("should fail if username is blocked", async () => {
@@ -1032,6 +1045,7 @@ describe("user controller test", () => {
       //THEN
       expect(body.message).toEqual("Username blocked");
       expect(updateNameMock).not.toHaveBeenCalled();
+      expect(friendsUpdateNameMock).not.toHaveBeenCalled();
     });
 
     it("should fail for banned users", async () => {
