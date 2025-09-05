@@ -119,31 +119,30 @@ function updateUI(): void {
 function backspaceToPrevious(): void {
   if (!TestState.isActive) return;
 
-  const wordElementIndex =
-    TestState.activeWordIndex - TestState.removedUIWordCount;
+  const previousWordEl = TestUI.getWordElement(TestState.activeWordIndex - 1);
 
-  if (TestInput.input.getHistory().length === 0 || wordElementIndex === 0) {
-    return;
-  }
+  const isFirstWord = TestInput.input.getHistory().length === 0;
+  const isFirstVisibleWord = previousWordEl === null;
+  const isPreviousWordHidden = previousWordEl?.classList.contains("hidden");
+  const isPreviousWordCorrect =
+    TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
+    TestWords.words.get(TestState.activeWordIndex - 1);
 
-  const wordElements = document.querySelectorAll("#words > .word");
   if (
-    (TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
-      TestWords.words.get(TestState.activeWordIndex - 1) &&
-      !Config.freedomMode) ||
-    wordElements[wordElementIndex - 1]?.classList.contains("hidden")
+    isFirstWord ||
+    isFirstVisibleWord ||
+    isPreviousWordHidden ||
+    (isPreviousWordCorrect && !Config.freedomMode) ||
+    Config.confidenceMode === "on" ||
+    Config.confidenceMode === "max"
   ) {
     return;
   }
 
-  if (Config.confidenceMode === "on" || Config.confidenceMode === "max") {
-    return;
-  }
+  const activeWordEl = TestUI.getActiveWordElement();
 
   const incorrectLetterBackspaced =
-    wordElements[wordElementIndex]?.children[0]?.classList.contains(
-      "incorrect"
-    );
+    activeWordEl?.children[0]?.classList.contains("incorrect");
   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
     void TestUI.updateActiveWordLetters();
   }
@@ -266,14 +265,10 @@ async function handleSpace(): Promise<void> {
     PaceCaret.handleSpace(false, currentWord);
     if (Config.blindMode) {
       if (Config.highlightMode !== "off") {
-        TestUI.highlightAllLettersAsCorrect(
-          TestState.activeWordIndex - TestState.removedUIWordCount
-        );
+        TestUI.highlightAllLettersAsCorrect(TestState.activeWordIndex);
       }
     } else {
-      TestUI.highlightBadWord(
-        TestState.activeWordIndex - TestState.removedUIWordCount
-      );
+      TestUI.highlightBadWord(TestState.activeWordIndex);
     }
     TestInput.input.pushHistory();
     TestState.increaseActiveWordIndex();
@@ -340,17 +335,11 @@ async function handleSpace(): Promise<void> {
 
   if (!Config.showAllLines || shouldLimitToThreeLines) {
     const currentTop: number = Math.floor(
-      document.querySelectorAll<HTMLElement>("#words .word")[
-        TestState.activeWordIndex - TestState.removedUIWordCount - 1
-      ]?.offsetTop ?? 0
+      TestUI.getWordElement(TestState.activeWordIndex - 1)?.offsetTop ?? 0
     );
 
     const { data: nextTop } = tryCatchSync(() =>
-      Math.floor(
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestState.activeWordIndex - TestState.removedUIWordCount
-        ]?.offsetTop ?? 0
-      )
+      Math.floor(TestUI.getActiveWordElement()?.offsetTop ?? 0)
     );
 
     if ((nextTop ?? 0) > currentTop) {
@@ -665,9 +654,7 @@ async function handleChar(
     char
   );
 
-  const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex - TestState.removedUIWordCount
-  ] as HTMLElement;
+  const activeWord = TestUI.getActiveWordElement() as HTMLElement;
 
   const testInputLength: number = !isCharKorean
     ? TestInput.input.current.length
@@ -1126,11 +1113,7 @@ $(document).on("keydown", async (event) => {
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
     void Sound.playClick();
-    const activeWord: HTMLElement | null = document.querySelectorAll(
-      "#words .word"
-    )?.[
-      TestState.activeWordIndex - TestState.removedUIWordCount
-    ] as HTMLElement;
+    const activeWord = TestUI.getActiveWordElement();
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead
