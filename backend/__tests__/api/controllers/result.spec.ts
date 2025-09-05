@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import request from "supertest";
-import app from "../../../src/app";
+import { setup } from "../../__testData__/controller-test";
 import _, { omit } from "lodash";
 import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
@@ -8,24 +7,15 @@ import * as UserDal from "../../../src/dal/user";
 import * as LogsDal from "../../../src/dal/logs";
 import * as PublicDal from "../../../src/dal/public";
 import { ObjectId } from "mongodb";
-import {
-  mockAuthenticateWithApeKey,
-  mockBearerAuthentication,
-} from "../../__testData__/auth";
+import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import { DBResult } from "../../../src/utils/result";
 
-const mockApp = request(app);
+const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
 enableRateLimitExpects();
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 
 describe("result controller test", () => {
-  beforeEach(() => {
-    mockAuth.beforeEach();
-  });
-
   describe("getResults", () => {
     const resultMock = vi.spyOn(ResultDal, "getResults");
 
@@ -281,44 +271,6 @@ describe("result controller test", () => {
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
-    it("should get results with legacy values", async () => {
-      //GIVEN
-      const resultOne = givenDbResult(uid, {
-        charStats: undefined,
-        incorrectChars: 5,
-        correctChars: 12,
-      });
-      const resultTwo = givenDbResult(uid, {
-        charStats: undefined,
-        incorrectChars: 7,
-        correctChars: 15,
-      });
-      resultMock.mockResolvedValue([resultOne, resultTwo]);
-
-      //WHEN
-      const { body } = await mockApp
-        .get("/results")
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(200);
-
-      //THEN
-
-      expect(body.message).toEqual("Results retrieved");
-      expect(body.data[0]).toMatchObject({
-        _id: resultOne._id.toHexString(),
-        charStats: [12, 5, 0, 0],
-      });
-      expect(body.data[0]).not.toHaveProperty("correctChars");
-      expect(body.data[0]).not.toHaveProperty("incorrectChars");
-
-      expect(body.data[1]).toMatchObject({
-        _id: resultTwo._id.toHexString(),
-        charStats: [15, 7, 0, 0],
-      });
-      expect(body.data[1]).not.toHaveProperty("correctChars");
-      expect(body.data[1]).not.toHaveProperty("incorrectChars");
-    });
     it("should be rate limited", async () => {
       await expect(
         mockApp.get("/results").set("Authorization", `Bearer ${uid}`)
@@ -371,31 +323,6 @@ describe("result controller test", () => {
         .set("Authorization", `ApeKey ${apeKey}`)
         .send()
         .expect(200);
-    });
-    it("should get last result with legacy values", async () => {
-      //GIVEN
-      const result = givenDbResult(uid, {
-        charStats: undefined,
-        incorrectChars: 5,
-        correctChars: 12,
-      });
-      getResultMock.mockResolvedValue(result);
-
-      //WHEN
-      const { body } = await mockApp
-        .get(`/results/id/${result._id}`)
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(200);
-
-      //THEN
-      expect(body.message).toEqual("Result retrieved");
-      expect(body.data).toMatchObject({
-        _id: result._id.toHexString(),
-        charStats: [12, 5, 0, 0],
-      });
-      expect(body.data).not.toHaveProperty("correctChars");
-      expect(body.data).not.toHaveProperty("incorrectChars");
     });
     it("should rate limit get  result with ape key", async () => {
       //GIVEN
@@ -452,31 +379,6 @@ describe("result controller test", () => {
         .set("Authorization", `ApeKey ${apeKey}`)
         .send()
         .expect(200);
-    });
-    it("should get last result with legacy values", async () => {
-      //GIVEN
-      const result = givenDbResult(uid, {
-        charStats: undefined,
-        incorrectChars: 5,
-        correctChars: 12,
-      });
-      getLastResultMock.mockResolvedValue(result);
-
-      //WHEN
-      const { body } = await mockApp
-        .get("/results/last")
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(200);
-
-      //THEN
-      expect(body.message).toEqual("Result retrieved");
-      expect(body.data).toMatchObject({
-        _id: result._id.toHexString(),
-        charStats: [12, 5, 0, 0],
-      });
-      expect(body.data).not.toHaveProperty("correctChars");
-      expect(body.data).not.toHaveProperty("incorrectChars");
     });
     it("should rate limit get last result with ape key", async () => {
       //GIVEN
@@ -720,7 +622,7 @@ describe("result controller test", () => {
             bailedOut: false,
             blindMode: false,
             charStats: [100, 2, 3, 5],
-            chartData: { wpm: [1, 2, 3], raw: [50, 55, 56], err: [0, 2, 0] },
+            chartData: { wpm: [1, 2, 3], burst: [50, 55, 56], err: [0, 2, 0] },
             consistency: 23.5,
             difficulty: "normal",
             funbox: [],
@@ -773,7 +675,7 @@ describe("result controller test", () => {
           charStats: [100, 2, 3, 5],
           chartData: {
             err: [0, 2, 0],
-            raw: [50, 55, 56],
+            burst: [50, 55, 56],
             wpm: [1, 2, 3],
           },
           consistency: 23.5,
@@ -855,7 +757,7 @@ describe("result controller test", () => {
             bailedOut: false,
             blindMode: false,
             charStats: [100, 2, 3, 5],
-            chartData: { wpm: [1, 2, 3], raw: [50, 55, 56], err: [0, 2, 0] },
+            chartData: { wpm: [1, 2, 3], burst: [50, 55, 56], err: [0, 2, 0] },
             consistency: 23.5,
             difficulty: "normal",
             funbox: [],

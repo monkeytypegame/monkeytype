@@ -83,15 +83,20 @@ export function init(
 
   let sortableSlowWords: [string, number][] = [];
   if (slow) {
-    sortableSlowWords = TestWords.words
+    const typedWords = TestWords.words
       .get()
-      .map((e, i) => [e, TestInput.burstHistory[i] ?? 0]);
+      .slice(0, TestInput.input.getHistory().length - 1);
+
+    sortableSlowWords = typedWords.map((e, i) => [
+      e,
+      TestInput.burstHistory[i] ?? 0,
+    ]);
     sortableSlowWords.sort((a, b) => {
       return a[1] - b[1];
     });
     sortableSlowWords = sortableSlowWords.slice(
       0,
-      Math.min(limit, Math.round(TestWords.words.length * 0.2))
+      Math.min(limit, Math.round(typedWords.length * 0.2))
     );
     if (sortableSlowWords.length === 0) {
       Notifications.add("Test too short to classify slow words.", 0);

@@ -18,7 +18,7 @@ type CharCount = {
   correctSpaces: number;
 };
 
-type Stats = {
+export type Stats = {
   wpm: number;
   wpmRaw: number;
   acc: number;

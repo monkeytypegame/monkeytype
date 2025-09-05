@@ -1,10 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import GeorgeQueue from "../../../src/queues/george-queue";
 import crypto from "crypto";
-import request from "supertest";
-import app from "../../../src/app";
 
-const mockApp = request(app);
+const { mockApp } = setup();
 
 describe("WebhooksController", () => {
   describe("githubRelease", () => {
