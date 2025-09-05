@@ -90,12 +90,6 @@ export async function handleBeforeInput(event: InputEvent): Promise<void> {
   const inputType = event.inputType;
   // const now = performance.now();
 
-  // beforeinput is always typed as inputevent but input is not?
-  // if (!(event instanceof InputEvent)) {
-  // event.preventDefault();
-  // return;
-  // }
-
   if (inputType === "insertText" && event.data !== null) {
     const preventDefault = onBeforeInsertText(event.data);
     if (preventDefault) {

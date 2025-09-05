@@ -51,6 +51,13 @@ wordsInput.addEventListener("keydown", async (event) => {
 });
 
 wordsInput.addEventListener("beforeinput", async (event) => {
+  if (!(event instanceof InputEvent)) {
+    //beforeinput is typed as inputevent but input is not?
+    //@ts-expect-error just doing this as a sanity check
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    event.preventDefault();
+    return;
+  }
   console.debug("wordsInput event beforeinput", {
     inputType: event.inputType,
     data: event.data,
