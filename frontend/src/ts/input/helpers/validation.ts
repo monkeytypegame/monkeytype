@@ -19,7 +19,7 @@ export function isCharCorrect(data: string, inputValue: string): boolean {
   const input = inputValue[index];
   const target = targetWord[index];
 
-  if (inputValue === targetWord + " ") {
+  if (replaceSpaceLikeCharacters(inputValue) === targetWord + " ") {
     return true;
   }
 

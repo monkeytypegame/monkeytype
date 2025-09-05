@@ -211,3 +211,7 @@ export function isSpace(char: string): boolean {
     codePoint === 0x3000
   );
 }
+
+export function replaceSpaceLikeCharacters(text: string): string {
+  return text.replace(/[\u0020\u2002\u2003\u2009\u3000]/g, " ");
+}
