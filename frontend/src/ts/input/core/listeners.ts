@@ -26,6 +26,16 @@ wordsInput.addEventListener("select selectstart", (event) => {
 });
 
 wordsInput.addEventListener("selectionchange", (event) => {
+  const selection = window.getSelection();
+  console.debug("wordsInput event selectionchange", {
+    selection: selection?.toString(),
+    anchorOffset: selection?.anchorOffset,
+    focusOffset: selection?.focusOffset,
+    rangeCount: selection?.rangeCount,
+    isCollapsed: selection?.isCollapsed,
+    selectionStart: (event.target as HTMLInputElement).selectionStart,
+    selectionEnd: (event.target as HTMLInputElement).selectionEnd,
+  });
   handleSelectionChange(event);
 });
 
