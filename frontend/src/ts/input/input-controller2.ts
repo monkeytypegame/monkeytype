@@ -698,7 +698,7 @@ getWordsInput().addEventListener("input", async (event) => {
   }
 });
 
-getWordsInput().addEventListener("keydown", (event) => {
+function handleKeydownTiming(event: KeyboardEvent, now: number): void {
   if (event.repeat) {
     console.log(
       "spacing debug keydown STOPPED - repeat",
@@ -721,16 +721,15 @@ getWordsInput().addEventListener("keydown", (event) => {
     eventCode = "NoCode";
   }
 
-  const now = performance.now();
   setTimeout(() => {
     if (eventCode === "" || event.key === "Unidentified") {
       eventCode = "NoCode";
     }
     TestInput.recordKeydownTime(now, eventCode);
   }, 0);
-});
+}
 
-getWordsInput().addEventListener("keyup", (event) => {
+function handleKeyupTiming(event: KeyboardEvent, now: number): void {
   if (event.repeat) {
     console.log(
       "spacing debug keyup STOPPED - repeat",
@@ -753,14 +752,13 @@ getWordsInput().addEventListener("keyup", (event) => {
     eventCode = "NoCode";
   }
 
-  const now = performance.now();
   setTimeout(() => {
     if (eventCode === "" || event.key === "Unidentified") {
       eventCode = "NoCode";
     }
     TestInput.recordKeyupTime(now, eventCode);
   }, 0);
-});
+}
 
 getWordsInput().addEventListener("keydown", async (event) => {
   console.debug("wordsInput event keydown", {
@@ -769,6 +767,7 @@ getWordsInput().addEventListener("keydown", async (event) => {
   });
 
   const now = performance.now();
+  handleKeydownTiming(event, now);
 
   if (
     event.key === "Home" ||
@@ -927,8 +926,6 @@ getWordsInput().addEventListener("keyup", (event) => {
     code: event.code,
   });
 
-  // const now = performance.now();
-
   if (
     event.key === "Home" ||
     event.key === "End" ||
@@ -938,6 +935,9 @@ getWordsInput().addEventListener("keyup", (event) => {
     event.preventDefault();
     return;
   }
+
+  const now = performance.now();
+  handleKeyupTiming(event, now);
 
   const arrowsActive = Config.funbox.includes("arrows");
   if (event.key.startsWith("Arrow") && !arrowsActive) {
