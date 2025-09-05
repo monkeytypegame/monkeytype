@@ -1709,6 +1709,10 @@ export function afterTestTextInput(
   if (inputOverride !== undefined) {
     override = inputOverride;
   }
+
+  //nospace cant be handled here because word index is already increased
+  //at this point
+
   setActiveWordTop();
   if (!increasedWordIndex) void updateActiveWordLetters(override);
 
