@@ -1,4 +1,13 @@
 import * as TestInput from "../test/test-input";
+import { handleBeforeInput } from "./events/beforeinput";
+import {
+  handleCompositionEnd,
+  handleCompositionStart,
+  handleCompositionUpdate,
+} from "./events/composition";
+import { handleInput } from "./events/input";
+import { handleKeydown } from "./events/keydown";
+import { handleKeyup } from "./events/keyup";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -62,3 +71,30 @@ wordsInput.addEventListener("selectionchange", () => {
     moveCaretToTheEnd();
   }
 });
+
+wordsInput.addEventListener("keyup", async (event) => await handleKeyup(event));
+
+wordsInput.addEventListener(
+  "keydown",
+  async (event) => await handleKeydown(event)
+);
+
+wordsInput.addEventListener(
+  "beforeinput",
+  async (event) => await handleBeforeInput(event)
+);
+
+wordsInput.addEventListener("input", async (event) => await handleInput(event));
+
+wordsInput.addEventListener("compositionstart", (event) =>
+  handleCompositionStart(event)
+);
+
+wordsInput.addEventListener("compositionupdate", (event) =>
+  handleCompositionUpdate(event)
+);
+
+wordsInput.addEventListener(
+  "compositionend",
+  async (event) => await handleCompositionEnd(event)
+);
