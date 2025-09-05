@@ -8,6 +8,7 @@ import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
 import {
   getInputValue,
+  getWordsInput,
   replaceLastInputValueChar,
   setInputValue,
   setTestInputToDOMValue,
@@ -38,7 +39,7 @@ import {
 } from "../state";
 import * as Notifications from "../../elements/notifications";
 import { goToNextWord, goToPreviousWord } from "../word-navigation";
-import { emulateInsertText } from "../emulation";
+import { onBeforeInsertText } from "./beforeinput";
 
 export async function onInsertText({
   inputType,
@@ -283,6 +284,37 @@ function onDelete({ inputType }: InputEventHandler): void {
   }
 
   TestUI.afterTestDelete();
+}
+
+async function emulateInsertText(
+  data: string,
+  event: KeyboardEvent,
+  now: number
+): Promise<void> {
+  const preventDefault = onBeforeInsertText({
+    data,
+    now,
+    event,
+    inputType: "insertText",
+  });
+
+  if (preventDefault) {
+    return;
+  }
+
+  // default is prevented so we need to manually update the input value.
+  // remember to not call setInputValue or setTestInputToDOMValue in here
+  // because onBeforeInsertText can also block the event
+  // setInputValue and setTestInputToDOMValue will be called later be updated in onInsertText
+  const { inputValue } = getInputValue();
+  getWordsInput().value = " " + inputValue + data;
+
+  await onInsertText({
+    data,
+    now,
+    event,
+    inputType: "insertText",
+  });
 }
 
 export async function handleInput(event: InputEvent): Promise<void> {
