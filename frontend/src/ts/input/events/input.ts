@@ -180,6 +180,8 @@ export async function onInsertText({
     if (!Config.blindMode) {
       visualInputOverride = TestInput.input.current;
     }
+    // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
+    // like accuracy, keypress errors, and missed words
     replaceLastInputValueChar("");
   }
 
@@ -193,13 +195,6 @@ export async function onInsertText({
     (isSpace(data) && TestInput.input.current.length > 0) ||
     (data === "\n" && TestInput.input.current.length > 0) ||
     noSpaceForce;
-
-  // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
-  // like accuracy, keypress errors, and missed words
-  // const stopOnErrorBlock =
-  //   (Config.stopOnError === "word" || Config.stopOnError === "letter") &&
-  //   Config.difficulty === "normal" &&
-  //   !correct;
 
   const shouldGoToNextWord = spaceOrNewLine && !shouldInsertSpace;
 
