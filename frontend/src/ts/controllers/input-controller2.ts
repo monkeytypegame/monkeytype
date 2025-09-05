@@ -706,6 +706,13 @@ function getInputValue(): { inputValue: string; realInputValue: string } {
   };
 }
 
+function moveCaretToTheEnd(): void {
+  wordsInput.setSelectionRange(
+    wordsInput.value.length,
+    wordsInput.value.length
+  );
+}
+
 async function emulateInsertText(
   data: string,
   event: KeyboardEvent,
@@ -849,23 +856,27 @@ wordsInput.addEventListener("input", async (event) => {
   }
 });
 
-wordsInput.addEventListener("focus", (event) => {
-  wordsInput.selectionStart = wordsInput.value.length;
-  wordsInput.selectionEnd = wordsInput.value.length;
+wordsInput.addEventListener("focus", () => {
+  moveCaretToTheEnd();
 });
 
 wordsInput.addEventListener("copy paste", (event) => {
   event.preventDefault();
 });
 
+//this might not do anything
 wordsInput.addEventListener("select selectstart", (event) => {
   event.preventDefault();
 });
 
-wordsInput.addEventListener("selectionchange", (event) => {
-  event.preventDefault();
-  wordsInput.selectionStart = wordsInput.value.length;
-  wordsInput.selectionEnd = wordsInput.value.length;
+wordsInput.addEventListener("selectionchange", () => {
+  const hasSelectedText = wordsInput.selectionStart !== wordsInput.selectionEnd;
+  const isCursorAtEnd = wordsInput.selectionStart === wordsInput.value.length;
+
+  if (hasSelectedText || !isCursorAtEnd) {
+    // force caret at end of input
+    moveCaretToTheEnd();
+  }
 });
 
 wordsInput.addEventListener("keydown", (event) => {
