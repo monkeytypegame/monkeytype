@@ -1,19 +1,15 @@
 import Config from "../../config";
 import * as TestInput from "../../test/test-input";
 import * as TestUI from "../../test/test-ui";
-import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isAnyPopupVisible } from "../../utils/misc";
 import { isSpace } from "../../utils/strings";
 import { getInputValue } from "../input-element";
 import { isIgnoredInputType, shouldInsertSpaceCharacter } from "../helpers";
-import {
-  InputEventHandler,
-  OnInsertTextParams,
-  SupportedInputType,
-} from "../types";
+import { OnInsertTextParams, SupportedInputType } from "../types";
 import { getAwaitingNextWord } from "../state";
+import { onBeforeDelete } from "./beforedelete";
 
 export function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   let preventDefault = false;
@@ -66,45 +62,6 @@ export function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
   }
 
   return preventDefault;
-}
-
-function onBeforeDelete({ event }: InputEventHandler): void {
-  if (!TestState.isActive) {
-    event.preventDefault();
-    return;
-  }
-  const { inputValue } = getInputValue();
-  const inputIsEmpty = inputValue === "";
-  const firstWord = TestState.activeWordIndex === 0;
-
-  if (inputIsEmpty && firstWord) {
-    //block this no matter what
-    event.preventDefault();
-    return;
-  }
-
-  const freedomMode = Config.freedomMode;
-  if (freedomMode) {
-    //allow anything in freedom mode
-    return;
-  }
-
-  const confidence = Config.confidenceMode;
-  const previousWordCorrect =
-    (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
-    TestWords.words.get(TestState.activeWordIndex - 1);
-
-  if (confidence === "on" && inputIsEmpty && !previousWordCorrect) {
-    event.preventDefault();
-  }
-
-  if (confidence === "max") {
-    event.preventDefault();
-  }
-
-  if (inputIsEmpty && previousWordCorrect) {
-    event.preventDefault();
-  }
 }
 
 export async function handleBeforeInput(event: InputEvent): Promise<void> {

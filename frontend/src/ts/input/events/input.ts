@@ -1,8 +1,4 @@
-import {
-  InputEventHandler,
-  OnInsertTextParams,
-  SupportedInputType,
-} from "../types";
+import { OnInsertTextParams, SupportedInputType } from "../types";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
@@ -10,7 +6,6 @@ import {
   getInputValue,
   getWordsInput,
   replaceLastInputValueChar,
-  setInputValue,
   setTestInputToDOMValue,
 } from "../input-element";
 import {
@@ -38,8 +33,9 @@ import {
   resetIncorrectShiftsInARow,
 } from "../state";
 import * as Notifications from "../../elements/notifications";
-import { goToNextWord, goToPreviousWord } from "../word-navigation";
+import { goToNextWord } from "../word-navigation";
 import { onBeforeInsertText } from "./beforeinput";
+import { onDelete } from "./delete";
 
 export async function onInsertText({
   inputType,
@@ -246,47 +242,7 @@ export async function onInsertText({
   TestUI.afterTestTextInput(correct, visualInputOverride);
 }
 
-function onDelete({ inputType }: InputEventHandler): void {
-  const { realInputValue } = getInputValue();
-
-  setTestInputToDOMValue();
-
-  Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
-  TestInput.setCurrentNotAfk();
-
-  const onlyTabs = /^\t*$/.test(TestInput.input.current);
-  const allTabsCorrect = TestWords.words
-    .getCurrent()
-    .startsWith(TestInput.input.current);
-
-  //special check for code languages
-  if (
-    Config.language.startsWith("code") &&
-    Config.codeUnindentOnBackspace &&
-    onlyTabs &&
-    allTabsCorrect
-    // (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
-    //   TestWords.words.get(TestState.activeWordIndex - 1) ||
-    //   Config.freedomMode)
-  ) {
-    setInputValue("");
-    goToPreviousWord(inputType);
-  } else {
-    //normal backspace
-    if (realInputValue === "") {
-      const isFirstVisibleWord =
-        TestState.activeWordIndex - TestState.removedUIWordCount === 0;
-
-      if (!isFirstVisibleWord) {
-        goToPreviousWord(inputType);
-      }
-    }
-  }
-
-  TestUI.afterTestDelete();
-}
-
-async function emulateInsertText(
+export async function emulateInsertText(
   data: string,
   event: KeyboardEvent,
   now: number

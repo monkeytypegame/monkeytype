@@ -18,7 +18,7 @@ import {
   setCorrectShiftUsed,
   setLastBailoutAttempt,
 } from "../state";
-import { emulateInsertText } from "../emulation";
+import { emulateInsertText } from "./input";
 
 function handleKeydownTiming(event: KeyboardEvent, now: number): void {
   if (event.repeat) {
