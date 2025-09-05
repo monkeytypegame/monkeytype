@@ -4,40 +4,7 @@ import * as TestState from "../../test/test-state";
 import * as TestInput from "../../test/test-input";
 import { whorf } from "../../utils/misc";
 import * as TestLogic from "../../test/test-logic";
-import { SupportedInputType } from "../core/types";
-
-export function isIgnoredInputType(inputType: string): boolean {
-  return [
-    "insertReplacementText", //todo reconsider
-    "insertParagraph",
-    "insertOrderedList",
-    "insertUnorderedList",
-    "insertHorizontalRule",
-    "insertFromYank",
-    "insertFromDrop",
-    "insertFromPaste",
-    "insertFromPasteAsQuotation",
-    "insertTranspose",
-    "insertLink",
-    "deleteSoftLineBackward",
-    "deleteSoftLineForward",
-    "deleteEntireSoftLine",
-    "deleteHardLineBackward",
-    "deleteHardLineForward",
-    "deleteByDrag",
-    "deleteByCut",
-    "deleteContent", // might break things?
-    "deleteContentForward",
-    "history*",
-    "format*",
-  ].some((type) => {
-    if (type.endsWith("*")) {
-      return inputType.startsWith(type.slice(0, -1));
-    } else {
-      return inputType === type;
-    }
-  });
-}
+import { SupportedInputType } from "./input-type";
 
 type FailOrFinishParams = {
   data: string;

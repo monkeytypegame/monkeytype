@@ -6,13 +6,12 @@ import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isAnyPopupVisible } from "../../utils/misc";
 import { isSpace } from "../../utils/strings";
 import { getInputValue } from "../core/input-element";
-import { isIgnoredInputType } from "../helpers/misc";
-import { OnInsertTextParams, SupportedInputType } from "../core/types";
 import { getAwaitingNextWord } from "../core/state";
 import { onBeforeDelete } from "./beforedelete";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
+import { isSupportedInputType } from "../helpers/input-type";
 
-export function onBeforeInsertText({ data }: OnInsertTextParams): boolean {
+export function onBeforeInsertText(data: string): boolean {
   let preventDefault = false;
 
   const { inputValue } = getInputValue();
@@ -73,7 +72,7 @@ export async function handleBeforeInput(event: InputEvent): Promise<void> {
     return;
   }
 
-  if (isIgnoredInputType(event.inputType)) {
+  if (!isSupportedInputType(event.inputType)) {
     event.preventDefault();
     return;
   }
@@ -88,8 +87,8 @@ export async function handleBeforeInput(event: InputEvent): Promise<void> {
     return;
   }
 
-  const inputType = event.inputType as SupportedInputType;
-  const now = performance.now();
+  const inputType = event.inputType;
+  // const now = performance.now();
 
   // beforeinput is always typed as inputevent but input is not?
   // if (!(event instanceof InputEvent)) {
@@ -98,12 +97,7 @@ export async function handleBeforeInput(event: InputEvent): Promise<void> {
   // }
 
   if (inputType === "insertText" && event.data !== null) {
-    const preventDefault = onBeforeInsertText({
-      inputType,
-      data: event.data,
-      event,
-      now,
-    });
+    const preventDefault = onBeforeInsertText(event.data);
     if (preventDefault) {
       event.preventDefault();
     }
@@ -111,10 +105,6 @@ export async function handleBeforeInput(event: InputEvent): Promise<void> {
     inputType === "deleteWordBackward" ||
     inputType === "deleteContentBackward"
   ) {
-    onBeforeDelete({
-      inputType,
-      event,
-      now,
-    });
+    onBeforeDelete(event);
   }
 }

@@ -1,4 +1,3 @@
-import { OnInsertTextParams, SupportedInputType } from "../core/types";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
@@ -8,7 +7,7 @@ import {
   replaceLastInputValueChar,
   setTestInputToDOMValue,
 } from "../core/input-element";
-import { failOrFinish } from "../helpers/misc";
+import { failOrFinish } from "../helpers/fail-or-finish";
 import { isSpace } from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
@@ -36,6 +35,14 @@ import {
   isCharCorrect,
   shouldInsertSpaceCharacter,
 } from "../helpers/validation";
+import { SupportedInputType } from "../helpers/input-type";
+
+type OnInsertTextParams = {
+  event: Event;
+  now: number;
+  inputType: SupportedInputType;
+  data: string;
+};
 
 export async function onInsertText({
   inputType,
@@ -71,8 +78,6 @@ export async function onInsertText({
 
     return;
   }
-
-  console.log(TestWords.words.getCurrent()[TestInput.input.current.length]);
 
   if (
     data === "œ" &&
@@ -247,12 +252,7 @@ export async function emulateInsertText(
   event: KeyboardEvent,
   now: number
 ): Promise<void> {
-  const preventDefault = onBeforeInsertText({
-    data,
-    now,
-    event,
-    inputType: "insertText",
-  });
+  const preventDefault = onBeforeInsertText(data);
 
   if (preventDefault) {
     return;
@@ -276,7 +276,8 @@ export async function emulateInsertText(
 export async function handleInput(event: InputEvent): Promise<void> {
   const now = performance.now();
 
-  //this is ok to cast because we are preventing default from anything else
+  //this is ok to cast because we are preventing default in handleBeforeInput
+  // for unsupported input types
   const inputType = event.inputType as SupportedInputType;
 
   if (inputType === "insertText" && event.data !== null) {
@@ -290,11 +291,7 @@ export async function handleInput(event: InputEvent): Promise<void> {
     inputType === "deleteWordBackward" ||
     inputType === "deleteContentBackward"
   ) {
-    onDelete({
-      inputType,
-      event,
-      now,
-    });
+    onDelete(inputType);
   } else if (inputType === "insertCompositionText") {
     TestUI.afterTestTextInput(true);
   }

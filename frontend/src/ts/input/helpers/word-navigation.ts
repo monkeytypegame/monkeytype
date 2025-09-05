@@ -15,8 +15,8 @@ import * as LiveBurst from "../../test/live-burst";
 import * as Funbox from "../../test/funbox/funbox";
 import * as Loader from "../../elements/loader";
 import { setInputValue } from "../core/input-element";
-import { SupportedInputType } from "../core/types";
 import { setAwaitingNextWord } from "../core/state";
+import { SupportedInputType } from "./input-type";
 
 type GoToNextWordParams = {
   correctInsert: boolean;

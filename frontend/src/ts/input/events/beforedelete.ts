@@ -3,9 +3,8 @@ import * as TestInput from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { getInputValue } from "../core/input-element";
-import { InputEventHandler } from "../core/types";
 
-export function onBeforeDelete({ event }: InputEventHandler): void {
+export function onBeforeDelete(event: InputEvent): void {
   if (!TestState.isActive) {
     event.preventDefault();
     return;
