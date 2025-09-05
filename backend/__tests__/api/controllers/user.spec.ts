@@ -8,8 +8,7 @@ import {
   afterAll,
   vi,
 } from "vitest";
-import request from "supertest";
-import app from "../../../src/app";
+import { setup } from "../../__testData__/controller-test";
 import * as Configuration from "../../../src/init/configuration";
 import { generateCurrentTestActivity } from "../../../src/api/controllers/user";
 import * as UserDal from "../../../src/dal/user";
@@ -30,10 +29,7 @@ import * as ApeKeysDal from "../../../src/dal/ape-keys";
 import * as LogDal from "../../../src/dal/logs";
 import { ObjectId } from "mongodb";
 import { PersonalBest } from "@monkeytype/schemas/shared";
-import {
-  mockAuthenticateWithApeKey,
-  mockBearerAuthentication,
-} from "../../__testData__/auth";
+import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { randomUUID } from "node:crypto";
 import _ from "lodash";
 import { MonkeyMail, UserStreak } from "@monkeytype/schemas/users";
@@ -43,16 +39,10 @@ import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboar
 import * as FriendsDal from "../../../src/dal/friends";
 import { pb } from "../../__testData__/users";
 
-const mockApp = request(app);
+const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 
 describe("user controller test", () => {
-  beforeEach(() => {
-    mockAuth.beforeEach();
-  });
-
   describe("user signup", () => {
     const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
     const firebaseDeleteUserMock = vi.spyOn(AuthUtils, "deleteUser");
@@ -639,7 +629,6 @@ describe("user controller test", () => {
     const logsDeleteUserMock = vi.spyOn(LogDal, "deleteUserLogs");
 
     beforeEach(() => {
-      mockAuth.beforeEach();
       [
         firebaseDeleteUserMock,
         deleteUserMock,

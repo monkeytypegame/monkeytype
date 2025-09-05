@@ -9,6 +9,7 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { convertRemToPixels } from "../utils/numbers";
 import { getActiveFunboxes } from "./funbox/list";
+import { getWordDirection } from "../utils/strings";
 
 type Settings = {
   wpm: number;
@@ -53,12 +54,19 @@ async function resetCaretPosition(): Promise<void> {
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
 
+  const currentWord = TestWords.words.get(settings?.currentWordIndex ?? 0);
+
+  const isWordRightToLeft = getWordDirection(
+    currentWord,
+    isLanguageRightToLeft ?? false
+  );
+
   caret.stop(true, true).animate(
     {
       top: firstLetter.offsetTop - firstLetterHeight / 4,
       left:
         firstLetter.offsetLeft +
-        (isLanguageRightToLeft ? firstLetter.offsetWidth : 0),
+        (isWordRightToLeft ? firstLetter.offsetWidth : 0),
     },
     0,
     "linear"
@@ -231,6 +239,12 @@ export async function update(expectedStepEnd: number): Promise<void> {
       );
       const isLanguageRightToLeft = currentLanguage.rightToLeft;
 
+      const currentWord = TestWords.words.get(settings.currentWordIndex);
+
+      const isWordRightToLeft = getWordDirection(
+        currentWord,
+        isLanguageRightToLeft ?? false
+      );
       newTop =
         word.offsetTop +
         currentLetter.offsetTop -
@@ -240,13 +254,13 @@ export async function update(expectedStepEnd: number): Promise<void> {
           word.offsetLeft +
           currentLetter.offsetLeft -
           caretWidth / 2 +
-          (isLanguageRightToLeft ? currentLetterWidth : 0);
+          (isWordRightToLeft ? currentLetterWidth : 0);
       } else {
         newLeft =
           word.offsetLeft +
           currentLetter.offsetLeft -
           caretWidth / 2 +
-          (isLanguageRightToLeft ? 0 : currentLetterWidth);
+          (isWordRightToLeft ? 0 : currentLetterWidth);
       }
       caret.removeClass("hidden");
     } catch (e) {

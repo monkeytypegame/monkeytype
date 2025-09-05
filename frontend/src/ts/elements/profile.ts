@@ -285,7 +285,7 @@ export async function update(
     }
   }
 
-  updateXp(profile.xp ?? 0);
+  updateXp(where, profile.xp ?? 0);
   //lbs
 
   if (banned) {
@@ -373,9 +373,22 @@ export async function update(
   }
 }
 
-export function updateXp(xp: number): void {
-  const details = $(" .profile .details .levelAndBar");
+export function updateXp(
+  where: ProfileViewPaths,
+  xp: number,
+  sameUserCheck = false
+): void {
+  const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
+  const profileElement = $(`.page${elementClass} .profile`);
+  const details = $(`.page${elementClass} .profile .details .levelAndBar`);
+
   if (details === undefined || details === null) return;
+
+  if (sameUserCheck && where === "profile") {
+    const authedUserUid = getAuthenticatedUser()?.uid;
+    if (authedUserUid !== profileElement.attr("uid")) return;
+  }
+
   const xpDetails = Levels.getXpDetails(xp);
   const xpForLevel = xpDetails.levelMaxXp;
   const xpToDisplay = xpDetails.levelCurrentXp;

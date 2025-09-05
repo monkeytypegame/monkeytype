@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "full-check": "turbo lint ts-check build test integration-test validate-json --force",
+    "full-check": "turbo lint ts-check build test integration-test check-assets --force",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "ts-check": "turbo run ts-check",
@@ -54,10 +54,10 @@
     "pretty-fix-assets": "prettier --write ./frontend/static",
     "pretty-fix-pkg": "prettier --write ./packages",
     "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
-    "validate-json": "turbo validate-json --filter @monkeytype/frontend",
-    "check-assets-quotes": "turbo validate-json --filter @monkeytype/frontend  -- quotes",
-    "check-assets-languages": "turbo validate-json --filter @monkeytype/frontend  -- languages",
-    "check-assets-others": "turbo validate-json --filter @monkeytype/frontend  -- others",
+    "check-assets": "turbo check-assets --filter @monkeytype/frontend",
+    "check-assets-quotes": "turbo check-assets --filter @monkeytype/frontend  -- quotes",
+    "check-assets-languages": "turbo check-assets --filter @monkeytype/frontend  -- languages",
+    "check-assets-others": "turbo check-assets --filter @monkeytype/frontend  -- others",
     "knip": "knip"
   },
   "engines": {
@@ -67,6 +67,7 @@
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "19.2.2",
     "@monkeytype/release": "workspace:*",
+    "@vitest/coverage-v8": "3.2.4",
     "conventional-changelog": "6.0.0",
     "eslint": "8.57.1",
     "husky": "8.0.1",
@@ -88,6 +89,6 @@
       "eslint"
     ]
   },
-  "version": "25.35.0",
+  "version": "25.36.0",
   "packageManager": "pnpm@9.6.0"
 }

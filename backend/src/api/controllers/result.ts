@@ -1,6 +1,10 @@
 import * as ResultDAL from "../../dal/result";
 import * as PublicDAL from "../../dal/public";
-import { isDevEnvironment, replaceObjectId } from "../../utils/misc";
+import {
+  isDevEnvironment,
+  replaceObjectId,
+  replaceObjectIds,
+} from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
 import "dotenv/config";
@@ -26,11 +30,7 @@ import _, { omit } from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
-import {
-  buildDbResult,
-  DBResult,
-  replaceLegacyValues,
-} from "../../utils/result";
+import { buildDbResult } from "../../utils/result";
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { addImportantLog, addLog } from "../../dal/logs";
 import {
@@ -47,11 +47,9 @@ import {
 import {
   CompletedEvent,
   KeyStats,
-  Result,
   PostResultResponse,
   XpBreakdown,
 } from "@monkeytype/schemas/results";
-import { Mode } from "@monkeytype/schemas/shared";
 import {
   isSafeNumber,
   mapRange,
@@ -133,7 +131,8 @@ export async function getResults(
     },
     uid
   );
-  return new MonkeyResponse("Results retrieved", results.map(convertResult));
+
+  return new MonkeyResponse("Results retrieved", replaceObjectIds(results));
 }
 
 export async function getResultById(
@@ -143,7 +142,7 @@ export async function getResultById(
   const { resultId } = req.params;
 
   const result = await ResultDAL.getResult(uid, resultId);
-  return new MonkeyResponse("Result retrieved", convertResult(result));
+  return new MonkeyResponse("Result retrieved", replaceObjectId(result));
 }
 
 export async function getLastResult(
@@ -151,7 +150,7 @@ export async function getLastResult(
 ): Promise<GetLastResultResponse> {
   const { uid } = req.ctx.decodedToken;
   const result = await ResultDAL.getLastResult(uid);
-  return new MonkeyResponse("Result retrieved", convertResult(result));
+  return new MonkeyResponse("Result retrieved", replaceObjectId(result));
 }
 
 export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
@@ -840,8 +839,4 @@ async function calculateXp(
     dailyBonus: isAwardingDailyBonus,
     breakdown,
   };
-}
-
-function convertResult(db: DBResult): Result<Mode> {
-  return replaceObjectId(replaceLegacyValues(db));
 }

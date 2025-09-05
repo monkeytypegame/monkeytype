@@ -290,13 +290,12 @@ export async function getPartialUser<K extends keyof DBUser>(
   */
 
 export async function findByName(name: string): Promise<DBUser | undefined> {
-  return (
-    await getUsersCollection()
-      .find({ name })
-      .collation({ locale: "en", strength: 1 })
-      .limit(1)
-      .toArray()
-  )[0];
+  const found = await getUsersCollection().findOne(
+    { name },
+    { collation: { locale: "en", strength: 1 } }
+  );
+
+  return found !== null ? found : undefined;
 }
 
 export async function isNameAvailable(
