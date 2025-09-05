@@ -729,6 +729,112 @@ function handleKeydownTiming(event: KeyboardEvent, now: number): void {
   }, 0);
 }
 
+async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
+  if (Config.quickRestart === "tab") {
+    e.preventDefault();
+    if ((TestWords.hasTab && e.shiftKey) || !TestWords.hasTab) {
+      TestLogic.restart();
+      return;
+    }
+  }
+  if (TestWords.hasTab) {
+    await emulateInsertText("\t", e, now);
+    e.preventDefault();
+    return;
+  }
+}
+
+async function handleEnter(e: KeyboardEvent, now: number): Promise<void> {
+  if (e.shiftKey) {
+    if (Config.mode === "zen") {
+      void TestLogic.finish();
+      return;
+    } else if (
+      !canQuickRestart(
+        Config.mode,
+        Config.words,
+        Config.time,
+        CustomText.getData(),
+        CustomTextState.isCustomTextLong() ?? false
+      )
+    ) {
+      const delay = Date.now() - lastBailoutAttempt;
+      if (lastBailoutAttempt === -1 || delay > 200) {
+        lastBailoutAttempt = Date.now();
+        if (delay >= 5000) {
+          Notifications.add(
+            "Please double tap shift+enter to confirm bail out",
+            0,
+            {
+              important: true,
+              duration: 5,
+            }
+          );
+        }
+      } else {
+        TestState.setBailedOut(true);
+        void TestLogic.finish();
+      }
+    }
+  }
+
+  if (Config.quickRestart === "enter") {
+    e.preventDefault();
+    if ((TestWords.hasNewline && e.shiftKey) || !TestWords.hasNewline) {
+      TestLogic.restart();
+      return;
+    }
+  }
+  if (
+    TestWords.hasNewline ||
+    (Config.mode === "zen" && !CompositionState.getComposing())
+  ) {
+    await emulateInsertText("\n", e, now);
+    e.preventDefault();
+    return;
+  }
+}
+
+async function handleArrows(event: KeyboardEvent, now: number): Promise<void> {
+  const map: Record<string, string> = {
+    ArrowUp: "w",
+    ArrowDown: "s",
+    ArrowLeft: "a",
+    ArrowRight: "d",
+  };
+
+  const char = map[event.key];
+
+  if (char !== undefined) {
+    await emulateInsertText(char, event, now);
+  }
+  event.preventDefault();
+}
+
+async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
+  if (
+    Config.oppositeShiftMode === "keymap" &&
+    Config.keymapLayout !== "overrideSync"
+  ) {
+    const keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
+      () => undefined
+    );
+    if (keymapLayout === undefined) {
+      Notifications.add("Failed to load keymap layout", -1);
+
+      return;
+    }
+    const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
+
+    correctShiftUsed =
+      keycode === undefined ? true : ShiftTracker.isUsingOppositeShift(keycode);
+  } else {
+    correctShiftUsed = ShiftTracker.isUsingOppositeShift(
+      event.code as KeyConverter.Keycode
+    );
+  }
+}
+
 function handleKeyupTiming(event: KeyboardEvent, now: number): void {
   if (event.repeat) {
     console.log(
@@ -780,52 +886,15 @@ getWordsInput().addEventListener("keydown", async (event) => {
   }
 
   if (Config.oppositeShiftMode !== "off") {
-    if (
-      Config.oppositeShiftMode === "keymap" &&
-      Config.keymapLayout !== "overrideSync"
-    ) {
-      const keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
-        () => undefined
-      );
-      if (keymapLayout === undefined) {
-        Notifications.add("Failed to load keymap layout", -1);
-
-        return;
-      }
-      const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
-
-      correctShiftUsed =
-        keycode === undefined
-          ? true
-          : ShiftTracker.isUsingOppositeShift(keycode);
-    } else {
-      correctShiftUsed = ShiftTracker.isUsingOppositeShift(
-        event.code as KeyConverter.Keycode
-      );
-    }
+    await handleOppositeShift(event);
   }
 
   // there used to be an if check here with funbox preventDefaultEvent check
   // but its only used in arrows so im not sure if its needed
   // todo: decide what to do
-
   const arrowsActive = Config.funbox.includes("arrows");
-  if (event.key.startsWith("Arrow")) {
-    if (arrowsActive) {
-      const map: Record<string, string> = {
-        ArrowUp: "w",
-        ArrowDown: "s",
-        ArrowLeft: "a",
-        ArrowRight: "d",
-      };
-
-      const char = map[event.key];
-
-      if (char !== undefined) {
-        await emulateInsertText(char, event, now);
-      }
-    }
-    event.preventDefault();
+  if (arrowsActive && event.key.startsWith("Arrow")) {
+    await handleArrows(event, now);
     return;
   }
 
@@ -838,69 +907,11 @@ getWordsInput().addEventListener("keydown", async (event) => {
   }
 
   if (event.key === "Tab") {
-    if (Config.quickRestart === "tab") {
-      event.preventDefault();
-      if ((TestWords.hasTab && event.shiftKey) || !TestWords.hasTab) {
-        TestLogic.restart();
-        return;
-      }
-    }
-    if (TestWords.hasTab) {
-      await emulateInsertText("\t", event, now);
-      event.preventDefault();
-      return;
-    }
+    await handleTab(event, now);
   }
 
   if (event.key === "Enter") {
-    if (event.shiftKey) {
-      if (Config.mode === "zen") {
-        void TestLogic.finish();
-        return;
-      } else if (
-        !canQuickRestart(
-          Config.mode,
-          Config.words,
-          Config.time,
-          CustomText.getData(),
-          CustomTextState.isCustomTextLong() ?? false
-        )
-      ) {
-        const delay = Date.now() - lastBailoutAttempt;
-        if (lastBailoutAttempt === -1 || delay > 200) {
-          lastBailoutAttempt = Date.now();
-          if (delay >= 5000) {
-            Notifications.add(
-              "Please double tap shift+enter to confirm bail out",
-              0,
-              {
-                important: true,
-                duration: 5,
-              }
-            );
-          }
-        } else {
-          TestState.setBailedOut(true);
-          void TestLogic.finish();
-        }
-      }
-    }
-
-    if (Config.quickRestart === "enter") {
-      event.preventDefault();
-      if ((TestWords.hasNewline && event.shiftKey) || !TestWords.hasNewline) {
-        TestLogic.restart();
-        return;
-      }
-    }
-    if (
-      TestWords.hasNewline ||
-      (Config.mode === "zen" && !CompositionState.getComposing())
-    ) {
-      await emulateInsertText("\n", event, now);
-      event.preventDefault();
-      return;
-    }
+    await handleEnter(event, now);
   }
 
   if (event.key === "Escape" && Config.quickRestart === "esc") {
