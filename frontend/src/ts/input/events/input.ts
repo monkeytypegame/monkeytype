@@ -7,7 +7,11 @@ import {
   replaceLastInputValueChar,
   setTestInputToDOMValue,
 } from "../core/input-element";
-import { failOrFinish } from "../helpers/fail-or-finish";
+import {
+  checkIfFailedDueToDifficulty,
+  checkIfFailedDueToMinBurst,
+  checkIfFinished,
+} from "../helpers/fail-or-finish";
 import { isSpace } from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
@@ -227,16 +231,24 @@ export async function onInsertText({
     }, 0);
   }
 
+  if (increasedWordIndex) {
+    if (checkIfFailedDueToMinBurst(lastBurst)) return;
+  }
+
   if (!CompositionState.getComposing()) {
-    failOrFinish({
-      data: data ?? "",
-      correctInsert: correct,
-      inputType: "insertText",
-      wentToNextWord: shouldGoToNextWord,
-      shouldInsertSpace,
-      spaceIncreasedIndex: increasedWordIndex,
-      lastBurst,
-    });
+    //todo: should the 3rd be increasedWordIndex?
+    if (
+      checkIfFailedDueToDifficulty(
+        correct,
+        shouldInsertSpace,
+        shouldGoToNextWord
+      )
+    ) {
+      return;
+    }
+
+    //todo: function says wentToNextWord but we are using shouldGoToNextWord?
+    if (checkIfFinished(increasedWordIndex, shouldGoToNextWord)) return;
   }
 
   if (!increasedWordIndex) {

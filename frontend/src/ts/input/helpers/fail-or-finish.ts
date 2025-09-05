@@ -4,25 +4,8 @@ import * as TestState from "../../test/test-state";
 import * as TestInput from "../../test/test-input";
 import { whorf } from "../../utils/misc";
 import * as TestLogic from "../../test/test-logic";
-import { InsertInputType } from "./input-type";
 
-type FailOrFinishParams = {
-  data: string;
-  correctInsert: boolean;
-  inputType: InsertInputType;
-  spaceIncreasedIndex: boolean | null;
-  wentToNextWord: boolean;
-  shouldInsertSpace: boolean;
-  lastBurst: number | null;
-};
-
-export function failOrFinish({
-  correctInsert,
-  wentToNextWord,
-  spaceIncreasedIndex,
-  shouldInsertSpace,
-  lastBurst,
-}: FailOrFinishParams): void {
+export function checkIfFailedDueToMinBurst(lastBurst: number | null): boolean {
   if (Config.minBurst !== "off" && lastBurst !== null) {
     let wordLength: number;
     if (Config.mode === "zen") {
@@ -37,10 +20,17 @@ export function failOrFinish({
       (Config.minBurst === "flex" && lastBurst < flex)
     ) {
       TestLogic.fail("min burst");
-      return;
+      return true;
     }
   }
+  return false;
+}
 
+export function checkIfFailedDueToDifficulty(
+  correctInsert: boolean,
+  shouldInsertSpace: boolean,
+  wentToNextWord: boolean
+): boolean {
   const shouldFailDueToExpert =
     Config.difficulty === "expert" &&
     !correctInsert &&
@@ -51,10 +41,15 @@ export function failOrFinish({
 
   if (shouldFailDueToExpert || shouldFailDueToMaster) {
     TestLogic.fail("difficulty");
-    return;
+    return true;
   }
+  return false;
+}
 
-  // if we went to the next word, shift the active index back
+export function checkIfFinished(
+  spaceIncreasedIndex: boolean | null,
+  wentToNextWord: boolean
+): boolean {
   const allWordsTyped = TestState.activeWordIndex >= TestWords.words.length - 1;
   const spaceOnLastWord = wentToNextWord && !spaceIncreasedIndex;
   const currentWord = TestWords.words.getCurrent();
@@ -71,6 +66,7 @@ export function failOrFinish({
     (wordIsCorrect || shouldQuickEnd || spaceOnLastWord)
   ) {
     void TestLogic.finish();
-    return;
+    return true;
   }
+  return false;
 }
