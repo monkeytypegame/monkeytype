@@ -148,7 +148,11 @@ export async function onInsertText({
   }
 
   let visualInputOverride: string | undefined;
-  if (Config.stopOnError === "letter" && !correct) {
+  if (
+    Config.stopOnError === "letter" &&
+    !correct &&
+    Config.difficulty !== "normal"
+  ) {
     if (!Config.blindMode) {
       visualInputOverride = TestInput.input.current;
     }
