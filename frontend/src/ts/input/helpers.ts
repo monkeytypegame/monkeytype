@@ -5,33 +5,31 @@ import * as TestInput from "../test/test-input";
 import { findSingleActiveFunboxWithFunction } from "../test/funbox/list";
 import { isSpace } from "../utils/strings";
 
-const ignoredInputTypes = [
-  "insertReplacementText", //todo reconsider
-  "insertParagraph",
-  "insertOrderedList",
-  "insertUnorderedList",
-  "insertHorizontalRule",
-  "insertFromYank",
-  "insertFromDrop",
-  "insertFromPaste",
-  "insertFromPasteAsQuotation",
-  "insertTranspose",
-  "insertLink",
-  "deleteSoftLineBackward",
-  "deleteSoftLineForward",
-  "deleteEntireSoftLine",
-  "deleteHardLineBackward",
-  "deleteHardLineForward",
-  "deleteByDrag",
-  "deleteByCut",
-  "deleteContent", // might break things?
-  "deleteContentForward",
-  "history*",
-  "format*",
-];
-
 export function isIgnoredInputType(inputType: string): boolean {
-  return ignoredInputTypes.some((type) => {
+  return [
+    "insertReplacementText", //todo reconsider
+    "insertParagraph",
+    "insertOrderedList",
+    "insertUnorderedList",
+    "insertHorizontalRule",
+    "insertFromYank",
+    "insertFromDrop",
+    "insertFromPaste",
+    "insertFromPasteAsQuotation",
+    "insertTranspose",
+    "insertLink",
+    "deleteSoftLineBackward",
+    "deleteSoftLineForward",
+    "deleteEntireSoftLine",
+    "deleteHardLineBackward",
+    "deleteHardLineForward",
+    "deleteByDrag",
+    "deleteByCut",
+    "deleteContent", // might break things?
+    "deleteContentForward",
+    "history*",
+    "format*",
+  ].some((type) => {
     if (type.endsWith("*")) {
       return inputType.startsWith(type.slice(0, -1));
     } else {
