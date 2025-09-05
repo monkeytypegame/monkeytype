@@ -62,6 +62,7 @@ export class SortedTable<T> {
 
   public setData(data: T[]): void {
     this.data = data.map((source) => ({ source }));
+    this.doSort();
   }
 
   private doSort(): void {
