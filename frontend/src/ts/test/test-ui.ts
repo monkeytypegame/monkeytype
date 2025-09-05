@@ -21,7 +21,10 @@ import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
 import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
-import { findSingleActiveFunboxWithFunction } from "./funbox/list";
+import {
+  findSingleActiveFunboxWithFunction,
+  isFunboxActiveWithProperty,
+} from "./funbox/list";
 import * as TestState from "./test-state";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
@@ -1741,7 +1744,11 @@ export function beforeTestWordChange(
   direction: "forward" | "back",
   correct: boolean | null
 ): void {
-  if (Config.stopOnError === "letter" && (correct || correct === null)) {
+  const nospaceEnabled = isFunboxActiveWithProperty("nospace");
+  if (
+    (Config.stopOnError === "letter" && (correct || correct === null)) ||
+    nospaceEnabled
+  ) {
     void updateActiveWordLetters();
   }
 
