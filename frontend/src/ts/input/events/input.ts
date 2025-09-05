@@ -239,7 +239,9 @@ export async function onInsertText({
     });
   }
 
-  TestUI.afterTestTextInput(correct, visualInputOverride);
+  if (!increasedIndex) {
+    TestUI.afterTestTextInput(correct, visualInputOverride);
+  }
 }
 
 export async function emulateInsertText(
