@@ -202,14 +202,14 @@ export async function onInsertText({
     TestInput.corrected.update(data, correct);
   }
 
-  let increasedIndex = null;
-  let lastBurst = null;
+  let increasedWordIndex: null | boolean = null;
+  let lastBurst: null | number = null;
   if (shouldGoToNextWord) {
     const result = await goToNextWord({
       correctInsert: correct,
     });
     lastBurst = result.lastBurst;
-    increasedIndex = result.increasedIndex;
+    increasedWordIndex = result.increasedWordIndex;
   }
 
   const currentWord = TestWords.words.getCurrent();
@@ -234,12 +234,12 @@ export async function onInsertText({
       inputType: "insertText",
       wentToNextWord: shouldGoToNextWord,
       shouldInsertSpace,
-      spaceIncreasedIndex: increasedIndex,
+      spaceIncreasedIndex: increasedWordIndex,
       lastBurst,
     });
   }
 
-  if (!increasedIndex) {
+  if (!increasedWordIndex) {
     TestUI.afterTestTextInput(correct, visualInputOverride);
   }
 }

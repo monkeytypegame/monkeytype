@@ -23,7 +23,7 @@ type GoToNextWordParams = {
 };
 
 type GoToNextWordReturn = {
-  increasedIndex: boolean;
+  increasedWordIndex: boolean;
   lastBurst: number;
 };
 
@@ -31,7 +31,7 @@ export async function goToNextWord({
   correctInsert,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
   const ret = {
-    increasedIndex: false,
+    increasedWordIndex: false,
     lastBurst: 0,
   };
 
@@ -73,7 +73,7 @@ export async function goToNextWord({
     TestState.activeWordIndex < TestWords.words.length - 1 ||
     Config.mode === "zen"
   ) {
-    ret.increasedIndex = true;
+    ret.increasedWordIndex = true;
     TestState.increaseActiveWordIndex();
   }
 
