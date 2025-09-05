@@ -347,6 +347,8 @@ describe("FriendsDal", () => {
         streak: {
           length: 10,
           maxLength: 50,
+          lastResultTimestamp: 0,
+          hourOffset: -1,
         } as any,
         xp: 42,
         inventory: {
@@ -402,7 +404,10 @@ describe("FriendsDal", () => {
           timeTyping: friendTwo.timeTyping,
           startedTests: friendTwo.startedTests,
           completedTests: friendTwo.completedTests,
-          streak: friendTwo.streak,
+          streak: {
+            length: friendTwo.streak?.length,
+            maxLength: friendTwo.streak?.maxLength,
+          },
           xp: friendTwo.xp,
           isPremium: true,
         },

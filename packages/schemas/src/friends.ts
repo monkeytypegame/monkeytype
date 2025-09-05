@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { IdSchema } from "./util";
-import { UserSchema } from "./users";
+import { UserSchema, UserStreakSchema } from "./users";
 import { PersonalBestSchema } from "./shared";
 
 export const FriendRequestStatusSchema = z.enum([
@@ -34,7 +34,6 @@ export const FriendSchema = UserSchema.pick({
   completedTests: true,
   timeTyping: true,
   xp: true,
-  streak: true,
   banned: true,
   lbOptOut: true,
 }).extend({
@@ -44,6 +43,7 @@ export const FriendSchema = UserSchema.pick({
   top60: PersonalBestSchema.optional(),
   badgeId: z.number().int().optional(),
   isPremium: z.boolean().optional(),
+  streak: UserStreakSchema.pick({ length: true, maxLength: true }),
 });
 
 export type Friend = z.infer<typeof FriendSchema>;
