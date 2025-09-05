@@ -9,7 +9,6 @@ export function handleSelectionChange(event: Event): void {
   const hasSelectedText = el.selectionStart !== el.selectionEnd;
   const isCursorAtEnd = el.selectionStart === el.value.length;
   if (hasSelectedText || !isCursorAtEnd) {
-    // force caret at end of input
     moveCaretToTheEnd();
   }
 }
