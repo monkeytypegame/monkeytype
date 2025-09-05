@@ -1,6 +1,6 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
-import { isAuthenticated } from "./firebase";
+import { isAuthenticated, getAuthenticatedUser } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { migrateConfig } from "./utils/config";
@@ -31,6 +31,10 @@ import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
 import * as AuthEvent from "./observables/auth-event";
+import {
+  configurationPromise,
+  get as getServerConfiguration,
+} from "./ape/server-configuration";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -77,14 +81,22 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
 export async function initSnapshot(): Promise<Snapshot | false> {
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = getDefaultSnapshot();
+  await configurationPromise;
+
   try {
     if (!isAuthenticated()) return false;
 
-    const [userResponse, configResponse, presetsResponse] = await Promise.all([
-      Ape.users.get(),
-      Ape.configs.get(),
-      Ape.presets.get(),
-    ]);
+    const friendsRequest = getServerConfiguration()?.friends.enabled
+      ? Ape.friends.getRequests()
+      : { status: 200, body: { message: "", data: [] } };
+
+    const [userResponse, configResponse, presetsResponse, friendsResponse] =
+      await Promise.all([
+        Ape.users.get(),
+        Ape.configs.get(),
+        Ape.presets.get(),
+        friendsRequest,
+      ]);
 
     if (userResponse.status !== 200) {
       throw new SnapshotInitError(
@@ -104,10 +116,17 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         presetsResponse.status
       );
     }
+    if (friendsResponse.status !== 200) {
+      throw new SnapshotInitError(
+        `${friendsResponse.body.message} (friendRequests)`,
+        friendsResponse.status
+      );
+    }
 
     const userData = userResponse.body.data;
     const configData = configResponse.body.data;
     const presetsData = presetsResponse.body.data;
+    const friendsData = friendsResponse.body.data;
 
     if (userData === null) {
       throw new SnapshotInitError(
@@ -243,6 +262,20 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         }
       );
     }
+
+    snap.friends = Object.fromEntries(
+      friendsData.map((friend) => {
+        // oxlint-disable-next-line no-non-null-assertion
+        const isMyRequest = getAuthenticatedUser()!.uid === friend.initiatorUid;
+
+        return [
+          isMyRequest ? friend.friendUid : friend.initiatorUid,
+          friend.status === "pending" && !isMyRequest
+            ? "incoming"
+            : friend.status,
+        ];
+      })
+    );
 
     dbSnapshot = snap;
     return dbSnapshot;
