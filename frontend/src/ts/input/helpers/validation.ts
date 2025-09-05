@@ -3,16 +3,21 @@ import * as TestWords from "../../test/test-words";
 import * as TestState from "../../test/test-state";
 import * as TestInput from "../../test/test-input";
 import { findSingleActiveFunboxWithFunction } from "../../test/funbox/list";
-import { isSpace } from "../../utils/strings";
+import { isSpace, replaceSpaceLikeCharacters } from "../../utils/strings";
 
-export function isCharCorrect(data: string, inputValue: string): boolean {
+export function isCharCorrect(
+  data: string,
+  inputValue: string,
+  indexOverride?: number
+): boolean {
   if (Config.mode === "zen") return true;
 
   if (data === "\n") {
     inputValue += "\n";
   }
 
-  const index = inputValue.length - 1;
+  const index =
+    indexOverride !== undefined ? indexOverride : inputValue.length - 1;
 
   const targetWord = TestWords.words.get(TestState.activeWordIndex);
 

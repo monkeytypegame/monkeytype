@@ -52,6 +52,10 @@ type OnInsertTextParams = {
   now: number;
   inputType: SupportedInputType;
   data: string;
+
+  // this is for handling multi character inputs
+  // need to keep track which character we are checking
+  multiIndex?: number;
 };
 
 export async function onInsertText({
@@ -59,17 +63,19 @@ export async function onInsertText({
   data,
   event,
   now,
+  multiIndex,
 }: OnInsertTextParams): Promise<void> {
   if (data.length > 1) {
-    for (const char of data) {
+    for (let i = 0; i < data.length; i++) {
+      const char = data[i] as string;
       await onInsertText({
         inputType,
         event,
         data: char,
         now,
+        multiIndex: i,
       });
     }
-
     return;
   }
 
@@ -90,7 +96,7 @@ export async function onInsertText({
   }
 
   const { inputValue } = getInputValue();
-  const correct = isCharCorrect(data, inputValue);
+  const correct = isCharCorrect(data, inputValue, multiIndex);
 
   if (TestInput.input.current.length === 0) {
     TestInput.setBurstStart(now);
