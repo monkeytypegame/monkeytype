@@ -221,8 +221,10 @@ export async function onInsertText({
     }, 0);
   }
 
-  if (!CompositionState.getComposing()) {
-    if (checkIfFailedDueToDifficulty(correct, spaceOrNewLine)) {
+  const lastInMultiOrDisabled = multiIndex === undefined || lastInMultiIndex;
+
+  if (!CompositionState.getComposing() && lastInMultiOrDisabled) {
+    if (checkIfFailedDueToDifficulty(spaceOrNewLine)) {
       TestLogic.fail("difficulty");
     } else if (increasedWordIndex && checkIfFailedDueToMinBurst(lastBurst)) {
       TestLogic.fail("min burst");
@@ -231,7 +233,7 @@ export async function onInsertText({
     }
   }
 
-  if (multiIndex === undefined || lastInMultiIndex) {
+  if (lastInMultiOrDisabled) {
     TestUI.afterTestTextInput(correct, increasedWordIndex, visualInputOverride);
   }
 }
