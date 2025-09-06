@@ -56,6 +56,7 @@ type OnInsertTextParams = {
   // this is for handling multi character inputs
   // need to keep track which character we are checking
   multiIndex?: number;
+  lastInMultiIndex?: boolean;
 };
 
 export async function onInsertText({
@@ -64,6 +65,7 @@ export async function onInsertText({
   event,
   now,
   multiIndex,
+  lastInMultiIndex,
 }: OnInsertTextParams): Promise<void> {
   if (data.length > 1) {
     for (let i = 0; i < data.length; i++) {
@@ -74,6 +76,7 @@ export async function onInsertText({
         data: char,
         now,
         multiIndex: i,
+        lastInMultiIndex: i === data.length - 1,
       });
     }
     return;
@@ -228,7 +231,9 @@ export async function onInsertText({
     }
   }
 
-  TestUI.afterTestTextInput(correct, increasedWordIndex, visualInputOverride);
+  if (multiIndex === undefined || lastInMultiIndex) {
+    TestUI.afterTestTextInput(correct, increasedWordIndex, visualInputOverride);
+  }
 }
 
 export async function emulateInsertText(
