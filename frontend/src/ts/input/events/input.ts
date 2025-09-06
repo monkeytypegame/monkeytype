@@ -222,10 +222,10 @@ export async function onInsertText({
   }
 
   if (!CompositionState.getComposing()) {
-    if (increasedWordIndex && checkIfFailedDueToMinBurst(lastBurst)) {
-      TestLogic.fail("min burst");
-    } else if (checkIfFailedDueToDifficulty(correct, spaceOrNewLine)) {
+    if (checkIfFailedDueToDifficulty(correct, spaceOrNewLine)) {
       TestLogic.fail("difficulty");
+    } else if (increasedWordIndex && checkIfFailedDueToMinBurst(lastBurst)) {
+      TestLogic.fail("min burst");
     } else if (checkIfFinished(shouldGoToNextWord, increasedWordIndex)) {
       void TestLogic.finish();
     }
