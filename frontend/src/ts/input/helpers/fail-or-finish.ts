@@ -27,15 +27,15 @@ export function checkIfFailedDueToMinBurst(lastBurst: number | null): boolean {
 
 // Using space or newline instead of shouldInsertSapce or increasedWordIndex
 // because we want expert mode to fail no matter if confidence or stop on error is on
-export function checkIfFailedDueToDifficulty(
-  correctInsert: boolean,
-  spaceOrNewLine: boolean
-): boolean {
-  const shouldFailDueToExpert =
-    Config.difficulty === "expert" && !correctInsert && spaceOrNewLine;
+export function checkIfFailedDueToDifficulty(spaceOrNewLine: boolean): boolean {
+  const correctSoFar = TestWords.words
+    .getCurrent()
+    .startsWith(TestInput.input.current);
 
-  const shouldFailDueToMaster =
-    Config.difficulty === "master" && !correctInsert;
+  const shouldFailDueToExpert =
+    Config.difficulty === "expert" && !correctSoFar && spaceOrNewLine;
+
+  const shouldFailDueToMaster = Config.difficulty === "master" && !correctSoFar;
 
   if (shouldFailDueToExpert || shouldFailDueToMaster) {
     return true;
