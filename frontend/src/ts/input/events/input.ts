@@ -281,13 +281,9 @@ export async function handleInput(event: InputEvent): Promise<void> {
     onDelete(inputType);
   } else if (
     inputType === "insertCompositionText" &&
-    event.isComposing &&
     getLastInsertCompositionTextData() !== event.data
   ) {
-    // the extra isComposing check is needed because firefox fires an extra input event
-    // that is "insertCompositionText" but isComposing is false which we dont want to handle
-
-    // the data comparison to last is needed because all browsers seem to double up the last event
+    // the data comparison to last is needed for full word composition events
     // both have the same data, so we ignore the second one
     setLastInsertCompositionTextData(event.data ?? "");
     TestUI.afterTestTextInput(true, null);

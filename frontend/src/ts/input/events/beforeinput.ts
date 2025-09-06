@@ -100,5 +100,8 @@ export async function handleBeforeInput(event: InputEvent): Promise<void> {
     inputType === "deleteContentBackward"
   ) {
     onBeforeDelete(event);
+  } else if (inputType === "insertCompositionText" && !event.isComposing) {
+    // firefox fires this extra event which we dont want to handle
+    event.preventDefault();
   }
 }
