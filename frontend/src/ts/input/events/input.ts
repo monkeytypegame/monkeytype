@@ -30,6 +30,8 @@ import {
   getIncorrectShiftsInARow,
   incrementIncorrectShiftsInARow,
   resetIncorrectShiftsInARow,
+  getLastInsertCompositionTextData,
+  setLastInsertCompositionTextData,
 } from "../core/state";
 import * as Notifications from "../../elements/notifications";
 import { goToNextWord } from "../helpers/word-navigation";
@@ -277,7 +279,17 @@ export async function handleInput(event: InputEvent): Promise<void> {
     inputType === "deleteContentBackward"
   ) {
     onDelete(inputType);
-  } else if (inputType === "insertCompositionText") {
+  } else if (
+    inputType === "insertCompositionText" &&
+    event.isComposing &&
+    getLastInsertCompositionTextData() !== event.data
+  ) {
+    // the extra isComposing check is needed because firefox fires an extra input event
+    // that is "insertCompositionText" but isComposing is false which we dont want to handle
+
+    // the data comparison to last is needed because all browsers seem to double up the last event
+    // both have the same data, so we ignore the second one
+    setLastInsertCompositionTextData(event.data ?? "");
     TestUI.afterTestTextInput(true, null);
   }
 }
