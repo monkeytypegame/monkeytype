@@ -12,6 +12,10 @@ import { shouldInsertSpaceCharacter } from "../helpers/validation";
 import { isSupportedInputType } from "../helpers/input-type";
 
 export function onBeforeInsertText(data: string): boolean {
+  if (TestUI.testRestarting) {
+    return true;
+  }
+
   let preventDefault = false;
 
   const { inputValue } = getInputValue();
