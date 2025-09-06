@@ -7,6 +7,8 @@ import { setLastInsertCompositionTextData } from "../core/state";
 
 export function handleCompositionStart(event: CompositionEvent): void {
   CompositionState.setComposing(true);
+  CompositionState.setData("");
+  setLastInsertCompositionTextData("");
   if (!TestState.isActive) {
     TestUI.setActiveWordTop();
     TestLogic.startTest(performance.now());
