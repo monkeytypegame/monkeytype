@@ -283,9 +283,7 @@ export async function handleInput(event: InputEvent): Promise<void> {
     inputType === "insertCompositionText" &&
     getLastInsertCompositionTextData() !== event.data
   ) {
-    // the data comparison to last is needed for full word composition events
-    // because all browsers seem to double up the last event
-    // both have the same data, so we ignore the second one
+    // in case the data is the same as the last one, just ignore it
     setLastInsertCompositionTextData(event.data ?? "");
     TestUI.afterTestTextInput(true, null);
   }

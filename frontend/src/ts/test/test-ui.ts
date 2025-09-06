@@ -1732,6 +1732,8 @@ export function afterTestTextInput(
   //   // $("#wordsInput").val(" " + TestInput.input.current);
   // }
 
+  console.trace();
+
   afterAnyTestInput(correct);
 }
 
