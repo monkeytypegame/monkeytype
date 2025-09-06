@@ -284,6 +284,7 @@ export async function handleInput(event: InputEvent): Promise<void> {
     getLastInsertCompositionTextData() !== event.data
   ) {
     // the data comparison to last is needed for full word composition events
+    // because all browsers seem to double up the last event
     // both have the same data, so we ignore the second one
     setLastInsertCompositionTextData(event.data ?? "");
     TestUI.afterTestTextInput(true, null);
