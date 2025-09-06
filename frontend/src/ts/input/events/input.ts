@@ -48,21 +48,24 @@ const charOverrides = new Map<string, string>([
 ]);
 
 type OnInsertTextParams = {
-  event: Event;
+  // might need later?
+  // inputType: SupportedInputType;
+  // event: Event;
+
+  // timing information
   now: number;
-  inputType: SupportedInputType;
+  // data being inserted
   data: string;
 
   // this is for handling multi character inputs
   // need to keep track which character we are checking
   multiIndex?: number;
+  // are we on the last character of a multi character input
   lastInMultiIndex?: boolean;
 };
 
 export async function onInsertText({
-  inputType,
   data,
-  event,
   now,
   multiIndex,
   lastInMultiIndex,
@@ -71,8 +74,6 @@ export async function onInsertText({
     for (let i = 0; i < data.length; i++) {
       const char = data[i] as string;
       await onInsertText({
-        inputType,
-        event,
         data: char,
         now,
         multiIndex: i,
@@ -89,8 +90,6 @@ export async function onInsertText({
   ) {
     for (const char of charOverride) {
       await onInsertText({
-        inputType,
-        event,
         data: char,
         now,
       });
@@ -217,7 +216,7 @@ export async function onInsertText({
     isCurrentCharTab
   ) {
     setTimeout(() => {
-      void emulateInsertText("\t", event as KeyboardEvent, now);
+      void emulateInsertText("\t", now);
     }, 0);
   }
 
@@ -240,7 +239,6 @@ export async function onInsertText({
 
 export async function emulateInsertText(
   data: string,
-  event: KeyboardEvent,
   now: number
 ): Promise<void> {
   const preventDefault = onBeforeInsertText(data);
@@ -259,8 +257,6 @@ export async function emulateInsertText(
   await onInsertText({
     data,
     now,
-    event,
-    inputType: "insertText",
   });
 }
 
@@ -273,8 +269,6 @@ export async function handleInput(event: InputEvent): Promise<void> {
 
   if (inputType === "insertText" && event.data !== null) {
     await onInsertText({
-      inputType,
-      event,
       data: event.data,
       now,
     });

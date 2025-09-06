@@ -26,8 +26,6 @@ export async function handleCompositionEnd(
 
   if (event.data !== "") {
     await onInsertText({
-      event,
-      inputType: "insertText",
       data: event.data,
       now,
     });
