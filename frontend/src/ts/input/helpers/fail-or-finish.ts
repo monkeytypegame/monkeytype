@@ -28,6 +28,8 @@ export function checkIfFailedDueToMinBurst(lastBurst: number | null): boolean {
 // Using space or newline instead of shouldInsertSapce or increasedWordIndex
 // because we want expert mode to fail no matter if confidence or stop on error is on
 export function checkIfFailedDueToDifficulty(spaceOrNewLine: boolean): boolean {
+  if (Config.mode === "zen") return false;
+
   const correctSoFar = TestWords.words
     .getCurrent()
     .startsWith(TestInput.input.current);
