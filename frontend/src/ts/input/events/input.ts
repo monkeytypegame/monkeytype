@@ -161,7 +161,7 @@ export async function onInsertText({
   if (
     Config.stopOnError === "letter" &&
     !correct &&
-    Config.difficulty !== "normal"
+    Config.difficulty === "normal"
   ) {
     if (!Config.blindMode) {
       visualInputOverride = TestInput.input.current;
