@@ -93,6 +93,9 @@ export function shouldInsertSpaceCharacter(data: string): boolean | null {
   if (!isSpace(data)) {
     return null;
   }
+  if (Config.mode === "zen") {
+    return false;
+  }
   const correctSoFar = (TestWords.words.getCurrent() + " ").startsWith(
     TestInput.input.current + " "
   );
