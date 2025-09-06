@@ -3,6 +3,7 @@ import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestLogic from "../../test/test-logic";
 import { onInsertText } from "./input";
+import { setLastInsertCompositionTextData } from "../core/state";
 
 export function handleCompositionStart(event: CompositionEvent): void {
   CompositionState.setComposing(true);
@@ -21,6 +22,7 @@ export async function handleCompositionEnd(
 ): Promise<void> {
   CompositionState.setComposing(false);
   CompositionState.setData("");
+  setLastInsertCompositionTextData("");
 
   const now = performance.now();
 
