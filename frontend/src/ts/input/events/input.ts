@@ -285,6 +285,6 @@ export async function handleInput(event: InputEvent): Promise<void> {
   ) {
     // in case the data is the same as the last one, just ignore it
     setLastInsertCompositionTextData(event.data ?? "");
-    TestUI.afterTestTextInput(true, null);
+    TestUI.afterTestCompositionUpdate();
   }
 }

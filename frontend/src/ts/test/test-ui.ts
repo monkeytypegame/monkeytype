@@ -1737,6 +1737,12 @@ export function afterTestTextInput(
   afterAnyTestInput(correct);
 }
 
+export function afterTestCompositionUpdate(): void {
+  void updateActiveWordLetters();
+  // correct needs to be true to get the normal click sound
+  afterAnyTestInput(true);
+}
+
 export function afterTestDelete(): void {
   void updateActiveWordLetters();
   afterAnyTestInput(null);
