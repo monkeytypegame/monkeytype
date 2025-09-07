@@ -28,6 +28,7 @@ wordsInput.addEventListener("select selectstart", (event) => {
 wordsInput.addEventListener("selectionchange", (event) => {
   const selection = window.getSelection();
   console.debug("wordsInput event selectionchange", {
+    event,
     selection: selection?.toString(),
     isCollapsed: selection?.isCollapsed,
     selectionStart: (event.target as HTMLInputElement).selectionStart,
@@ -38,6 +39,7 @@ wordsInput.addEventListener("selectionchange", (event) => {
 
 wordsInput.addEventListener("keyup", async (event) => {
   console.debug("wordsInput event keyup", {
+    event,
     key: event.key,
     code: event.code,
   });
@@ -46,6 +48,7 @@ wordsInput.addEventListener("keyup", async (event) => {
 
 wordsInput.addEventListener("keydown", async (event) => {
   console.debug("wordsInput event keydown", {
+    event,
     key: event.key,
     code: event.code,
   });
@@ -61,6 +64,7 @@ wordsInput.addEventListener("beforeinput", async (event) => {
     return;
   }
   console.debug("wordsInput event beforeinput", {
+    event,
     inputType: event.inputType,
     data: event.data,
     value: (event.target as HTMLInputElement).value,
@@ -76,6 +80,7 @@ wordsInput.addEventListener("input", async (event) => {
     return;
   }
   console.debug("wordsInput event input", {
+    event,
     inputType: event.inputType,
     data: event.data,
     value: (event.target as HTMLInputElement).value,
@@ -84,16 +89,22 @@ wordsInput.addEventListener("input", async (event) => {
 });
 
 wordsInput.addEventListener("compositionstart", (event) => {
-  console.debug("wordsInput event compositionstart", { data: event.data });
+  console.debug("wordsInput event compositionstart", {
+    event,
+    data: event.data,
+  });
   handleCompositionStart(event);
 });
 
 wordsInput.addEventListener("compositionupdate", (event) => {
-  console.debug("wordsInput event compositionupdate", { data: event.data });
+  console.debug("wordsInput event compositionupdate", {
+    event,
+    data: event.data,
+  });
   handleCompositionUpdate(event);
 });
 
 wordsInput.addEventListener("compositionend", async (event) => {
-  console.debug("wordsInput event compositionend", { data: event.data });
+  console.debug("wordsInput event compositionend", { event, data: event.data });
   await handleCompositionEnd(event);
 });
