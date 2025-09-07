@@ -67,7 +67,10 @@ if (isDevEnvironment()) {
 
 //stop space scrolling
 window.addEventListener("keydown", function (e) {
-  if (e.code === "Space" && e.target === document.body) {
+  if (
+    e.code === "Space" &&
+    (e.target === document.body || (e.target as HTMLElement)?.id === "result")
+  ) {
     e.preventDefault();
   }
 });
