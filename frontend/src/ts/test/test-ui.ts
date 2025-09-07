@@ -1671,20 +1671,15 @@ export function getActiveWordTopAfterAppend(data: string): number {
   return top;
 }
 
-function afterAnyTestInput(
-  correctInput: boolean | null,
-  compositionAutomaticallyEnded: boolean | null
-): void {
-  if (compositionAutomaticallyEnded !== true) {
-    if (
-      correctInput === true ||
-      Config.playSoundOnError === "off" ||
-      Config.blindMode
-    ) {
-      void SoundController.playClick();
-    } else {
-      void SoundController.playError();
-    }
+function afterAnyTestInput(correctInput: boolean | null): void {
+  if (
+    correctInput === true ||
+    Config.playSoundOnError === "off" ||
+    Config.blindMode
+  ) {
+    void SoundController.playClick();
+  } else {
+    void SoundController.playError();
   }
 
   const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
@@ -1738,18 +1733,19 @@ export function afterTestTextInput(
   //   // $("#wordsInput").val(" " + TestInput.input.current);
   // }
 
-  afterAnyTestInput(correct, compositionAutomaticallyEnded);
+  if (compositionAutomaticallyEnded) return;
+  afterAnyTestInput(correct);
 }
 
 export function afterTestCompositionUpdate(): void {
   void updateActiveWordLetters();
   // correct needs to be true to get the normal click sound
-  afterAnyTestInput(true, null);
+  afterAnyTestInput(true);
 }
 
 export function afterTestDelete(): void {
   void updateActiveWordLetters();
-  afterAnyTestInput(null, null);
+  afterAnyTestInput(null);
 }
 
 export function beforeTestWordChange(
