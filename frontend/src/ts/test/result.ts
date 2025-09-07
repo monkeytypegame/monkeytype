@@ -707,7 +707,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
 
   let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
-  activeTags.forEach(async (tag) => {
+  for (const tag of activeTags) {
     const tpb = await DB.getLocalTagPB(
       tag._id,
       Config.mode,
@@ -791,7 +791,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
         }
       }
     }
-  });
+  }
 }
 
 function updateTestType(randomQuote: Quote | null): void {
@@ -1010,8 +1010,8 @@ export async function update(
   await updateCrown(dontSave);
   await updateGraph();
   await updateGraphPBLine();
-  updateResultChartDataVisibility();
   await updateTags(dontSave);
+  updateResultChartDataVisibility();
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
@@ -1118,6 +1118,7 @@ const resultChartDataVisibility = new LocalStorageWithSchema({
       burst: z.boolean(),
       errors: z.boolean(),
       pbLine: z.boolean(),
+      tagPbLine: z.boolean(),
     })
     .strict(),
   fallback: {
@@ -1125,6 +1126,7 @@ const resultChartDataVisibility = new LocalStorageWithSchema({
     burst: true,
     errors: true,
     pbLine: true,
+    tagPbLine: true,
   },
 });
 
@@ -1135,18 +1137,32 @@ function updateResultChartDataVisibility(update = false): void {
   ChartController.result.getDataset("error").hidden = !vis.errors;
 
   for (const annotation of resultAnnotation) {
-    if (annotation.id !== "lpb") continue;
-    annotation.display = vis.pbLine;
+    if (annotation.id === "lpb") {
+      annotation.display = vis.pbLine;
+    } else if (annotation.id === "tpb") {
+      annotation.display = vis.tagPbLine;
+    }
   }
 
   if (update) ChartController.result.update();
 
   const buttons = $(".pageTest #result .chart .chartLegend button");
 
+  // Check if there are any tag PB annotations
+  const hasTagPbAnnotations = resultAnnotation.some(
+    (annotation) => annotation.id === "tpb"
+  );
+
   for (const button of buttons) {
     const id = $(button).data("id") as string;
 
-    if (id !== "raw" && id !== "burst" && id !== "errors" && id !== "pbLine") {
+    if (
+      id !== "raw" &&
+      id !== "burst" &&
+      id !== "errors" &&
+      id !== "pbLine" &&
+      id !== "tagPbLine"
+    ) {
       return;
     }
 
@@ -1154,6 +1170,11 @@ function updateResultChartDataVisibility(update = false): void {
 
     if (id === "pbLine") {
       $(button).toggleClass("hidden", !isAuthenticated());
+    } else if (id === "tagPbLine") {
+      $(button).toggleClass(
+        "hidden",
+        !isAuthenticated() || !hasTagPbAnnotations
+      );
     }
   }
 }
@@ -1216,10 +1237,15 @@ $(".pageTest #result .chart .chartLegend button").on("click", (event) => {
   const $target = $(event.target);
   const id = $target.data("id") as string;
 
-  if (id !== "raw" && id !== "burst" && id !== "errors" && id !== "pbLine") {
+  if (
+    id !== "raw" &&
+    id !== "burst" &&
+    id !== "errors" &&
+    id !== "pbLine" &&
+    id !== "tagPbLine"
+  ) {
     return;
   }
-
   const vis = resultChartDataVisibility.get();
   vis[id] = !vis[id];
   resultChartDataVisibility.set(vis);
@@ -1238,7 +1264,7 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
   if (!dbSnapshot) return;
 
   if ($button.hasClass("fas")) {
-    // Remove from favorites
+    // Remove from
     Loader.show();
     const response = await Ape.users.removeQuoteFromFavorites({
       body: {
