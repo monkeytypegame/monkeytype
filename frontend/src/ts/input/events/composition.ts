@@ -42,6 +42,7 @@ export async function handleCompositionEnd(
     await onInsertText({
       data: event.data,
       now,
+      isCompositionEnding: true,
     });
   }
 }

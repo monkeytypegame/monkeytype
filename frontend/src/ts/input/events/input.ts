@@ -59,6 +59,8 @@ type OnInsertTextParams = {
   now: number;
   // data being inserted
   data: string;
+  // true if called by compositionEnd
+  isCompositionEnding?: boolean;
 
   // this is for handling multi character inputs
   // need to keep track which character we are checking
@@ -72,6 +74,7 @@ export async function onInsertText({
   now,
   multiIndex,
   lastInMultiIndex,
+  isCompositionEnding,
 }: OnInsertTextParams): Promise<void> {
   if (data.length > 1) {
     for (let i = 0; i < data.length; i++) {
@@ -238,14 +241,17 @@ export async function onInsertText({
   if (lastInMultiOrDisabled) {
     // this is not a bulletproof way to stop double sound on click with composition end,
     // but it will work for now
-    const compositionAutomaticallyEnded =
-      !getLastCompositionUpdateSameAsInput();
+    let compositionAutomaticallyEnded = null;
+
+    if (isCompositionEnding) {
+      compositionAutomaticallyEnded = !getLastCompositionUpdateSameAsInput();
+    }
 
     TestUI.afterTestTextInput(
       correct,
       increasedWordIndex,
-      visualInputOverride,
-      compositionAutomaticallyEnded
+      compositionAutomaticallyEnded,
+      visualInputOverride
     );
   }
 }

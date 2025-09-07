@@ -1673,7 +1673,7 @@ export function getActiveWordTopAfterAppend(data: string): number {
 
 function afterAnyTestInput(
   correctInput: boolean | null,
-  compositionAutomaticallyEnded?: boolean
+  compositionAutomaticallyEnded: boolean | null
 ): void {
   if (compositionAutomaticallyEnded !== true) {
     if (
@@ -1708,8 +1708,8 @@ function afterAnyTestInput(
 export function afterTestTextInput(
   correct: boolean,
   increasedWordIndex: boolean | null,
-  inputOverride?: string,
-  compositionAutomaticallyEnded?: boolean
+  compositionAutomaticallyEnded: boolean | null,
+  inputOverride?: string
 ): void {
   let override: string | undefined;
   if (inputOverride !== undefined) {
@@ -1744,12 +1744,12 @@ export function afterTestTextInput(
 export function afterTestCompositionUpdate(): void {
   void updateActiveWordLetters();
   // correct needs to be true to get the normal click sound
-  afterAnyTestInput(true);
+  afterAnyTestInput(true, null);
 }
 
 export function afterTestDelete(): void {
   void updateActiveWordLetters();
-  afterAnyTestInput(null);
+  afterAnyTestInput(null, null);
 }
 
 export function beforeTestWordChange(
