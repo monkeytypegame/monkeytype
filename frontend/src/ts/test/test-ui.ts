@@ -1671,15 +1671,20 @@ export function getActiveWordTopAfterAppend(data: string): number {
   return top;
 }
 
-function afterAnyTestInput(correctInput: boolean | null): void {
-  if (
-    correctInput === true ||
-    Config.playSoundOnError === "off" ||
-    Config.blindMode
-  ) {
-    void SoundController.playClick();
-  } else {
-    void SoundController.playError();
+function afterAnyTestInput(
+  correctInput: boolean | null,
+  compositionAutomaticallyEnded?: boolean
+): void {
+  if (compositionAutomaticallyEnded !== true) {
+    if (
+      correctInput === true ||
+      Config.playSoundOnError === "off" ||
+      Config.blindMode
+    ) {
+      void SoundController.playClick();
+    } else {
+      void SoundController.playError();
+    }
   }
 
   const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
@@ -1703,7 +1708,8 @@ function afterAnyTestInput(correctInput: boolean | null): void {
 export function afterTestTextInput(
   correct: boolean,
   increasedWordIndex: boolean | null,
-  inputOverride?: string
+  inputOverride?: string,
+  compositionAutomaticallyEnded?: boolean
 ): void {
   let override: string | undefined;
   if (inputOverride !== undefined) {
@@ -1732,9 +1738,7 @@ export function afterTestTextInput(
   //   // $("#wordsInput").val(" " + TestInput.input.current);
   // }
 
-  console.trace();
-
-  afterAnyTestInput(correct);
+  afterAnyTestInput(correct, compositionAutomaticallyEnded);
 }
 
 export function afterTestCompositionUpdate(): void {
