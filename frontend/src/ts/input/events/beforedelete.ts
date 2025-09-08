@@ -3,6 +3,7 @@ import * as TestInput from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { getInputValue } from "../core/input-element";
+import * as TestUI from "../../test/test-ui";
 
 export function onBeforeDelete(event: InputEvent): void {
   if (!TestState.isActive) {
@@ -11,12 +12,16 @@ export function onBeforeDelete(event: InputEvent): void {
   }
   const { inputValue } = getInputValue();
   const inputIsEmpty = inputValue === "";
-  const firstWord = TestState.activeWordIndex === 0;
 
-  if (inputIsEmpty && firstWord) {
-    //block this no matter what
-    event.preventDefault();
-    return;
+  if (inputIsEmpty) {
+    //this is nested because we only wanna pull the element from the dom if needed
+    const previousWordElement = TestUI.getWordElement(
+      TestState.activeWordIndex - 1
+    );
+    if (previousWordElement === null) {
+      event.preventDefault();
+      return;
+    }
   }
 
   const freedomMode = Config.freedomMode;
