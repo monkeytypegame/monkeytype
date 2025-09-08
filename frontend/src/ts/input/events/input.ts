@@ -103,8 +103,29 @@ export async function onInsertText({
     return;
   }
 
+  const correctShiftUsed =
+    Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
+
   const { inputValue } = getInputValue();
-  const correct = isCharCorrect(data, inputValue, multiIndex);
+  const correct = isCharCorrect(data, inputValue, correctShiftUsed, multiIndex);
+
+  if (!isSpace(data) && correctShiftUsed === false) {
+    replaceLastInputValueChar("");
+    incrementIncorrectShiftsInARow();
+    if (getIncorrectShiftsInARow() >= 5) {
+      Notifications.add("Opposite shift mode is on.", 0, {
+        important: true,
+        customTitle: "Reminder",
+      });
+    }
+  } else {
+    resetIncorrectShiftsInARow();
+  }
+
+  if (!TestState.isActive) {
+    TestUI.setActiveWordTop();
+    TestLogic.startTest(now);
+  }
 
   if (TestInput.input.current.length === 0) {
     TestInput.setBurstStart(now);
@@ -114,11 +135,6 @@ export async function onInsertText({
   const charIsNotSpace = !isSpace(data);
   if (charIsNotSpace || shouldInsertSpace) {
     setTestInputToDOMValue(data === "\n");
-  }
-
-  if (!TestState.isActive) {
-    TestUI.setActiveWordTop();
-    TestLogic.startTest(now);
   }
 
   TestInput.setCurrentNotAfk();
@@ -145,21 +161,6 @@ export async function onInsertText({
   }
 
   WeakSpot.updateScore(data, correct);
-
-  if (!isSpace(data) && Config.oppositeShiftMode !== "off") {
-    if (!isCorrectShiftUsed()) {
-      replaceLastInputValueChar("");
-      incrementIncorrectShiftsInARow();
-      if (getIncorrectShiftsInARow() >= 5) {
-        Notifications.add("Opposite shift mode is on.", 0, {
-          important: true,
-          customTitle: "Reminder",
-        });
-      }
-    } else {
-      resetIncorrectShiftsInARow();
-    }
-  }
 
   let visualInputOverride: string | undefined;
   if (

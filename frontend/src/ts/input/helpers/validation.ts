@@ -8,9 +8,12 @@ import { isSpace, replaceSpaceLikeCharacters } from "../../utils/strings";
 export function isCharCorrect(
   data: string,
   inputValue: string,
+  correctShiftUsed: boolean | null, //null means disabled
   indexOverride?: number
 ): boolean {
   if (Config.mode === "zen") return true;
+
+  if (correctShiftUsed === false) return false;
 
   if (data === "\n") {
     inputValue += "\n";
