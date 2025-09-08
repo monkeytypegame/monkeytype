@@ -33,6 +33,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LiveAcc from "./live-acc";
 import * as Focus from "../test/focus";
 import * as TimerProgress from "../test/timer-progress";
+import * as LiveBurst from "./live-burst";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -1727,9 +1728,16 @@ export function beforeTestWordChange(
   }
 }
 
-export function afterTestWordChange(direction: "forward" | "back"): void {
+export async function afterTestWordChange(
+  direction: "forward" | "back"
+): Promise<void> {
   updateActiveElement();
   void Caret.updatePosition();
+
+  const lastBurst = TestInput.burstHistory[TestInput.burstHistory.length - 1];
+  if (Numbers.isSafeNumber(lastBurst)) {
+    void LiveBurst.update(Math.round(lastBurst));
+  }
   if (
     direction === "forward" &&
     (!Config.showAllLines ||

@@ -11,7 +11,6 @@ import {
 } from "../../test/funbox/list";
 import * as TestStats from "../../test/test-stats";
 import * as Replay from "../../test/replay";
-import * as LiveBurst from "../../test/live-burst";
 import * as Funbox from "../../test/funbox/funbox";
 import * as Loader from "../../elements/loader";
 import { setInputValue } from "../core/input-element";
@@ -49,7 +48,6 @@ export async function goToNextWord({
 
   //burst calculation and fail
   const burst: number = TestStats.calculateBurst();
-  void LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
   ret.lastBurst = burst;
 
@@ -78,7 +76,7 @@ export async function goToNextWord({
   }
 
   setInputValue("");
-  TestUI.afterTestWordChange("forward");
+  void TestUI.afterTestWordChange("forward");
 
   return ret;
 }
@@ -112,5 +110,5 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
       setInputValue(word);
     }
   }
-  TestUI.afterTestWordChange("back");
+  void TestUI.afterTestWordChange("back");
 }
