@@ -1686,22 +1686,6 @@ export function afterTestTextInput(
   setActiveWordTop();
   if (!increasedWordIndex) void updateActiveWordLetters(override);
 
-  // this probably should be handled by the input controller,
-  // but i will leave it here in case i need it later
-  // const newTop =
-  //   (
-  //     document.querySelectorAll("#words .word")?.[
-  //       TestState.activeWordIndex - TestState.removedUIWordCount
-  //     ] as HTMLElement
-  //   )?.offsetTop ?? 0;
-
-  // if (newTop > activeWordTop) {
-  //   //word jumped, go back
-  //   // TestInput.input.replaceCurrentLastChar("");
-  //   void updateActiveWordLetters(TestInput.input.current.slice(0, -1));
-  //   // $("#wordsInput").val(" " + TestInput.input.current);
-  // }
-
   if (compositionAutomaticallyEnded) return;
   afterAnyTestInput(correct);
 }
