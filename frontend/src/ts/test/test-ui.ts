@@ -1523,13 +1523,14 @@ export async function applyBurstHeatmap(): Promise<void> {
 }
 
 export function highlightBadWord(index: number): void {
-  $(getWordElement(index) as HTMLElement).addClass("error");
+  getWordElement(index)?.classList.add("error");
 }
 
 export function highlightAllLettersAsCorrect(wordIndex: number): void {
-  $(getWordElement(wordIndex) as HTMLElement)
-    .find("letter")
-    .addClass("correct");
+  const letters = getWordElement(wordIndex)?.children;
+  for (const letter of letters ?? []) {
+    letter.classList.add("correct");
+  }
 }
 
 function updateWordsWidth(): void {
