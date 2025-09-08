@@ -1753,18 +1753,19 @@ export function afterTestWordChange(direction: "forward" | "back"): void {
       (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||
       (Config.mode === "custom" && CustomText.getLimitMode() === "time"))
   ) {
-    const wordElements = document.querySelectorAll("#words .word");
+    const previousWord = getWordElement(TestState.activeWordIndex - 1);
+    const activeWord = getActiveWordElement();
 
-    const previousTop: number = Math.floor(
-      (wordElements[TestState.activeWordIndex - 1] as HTMLElement | undefined)
-        ?.offsetTop ?? 0
-    );
-    const currentTop = Math.floor(
-      (wordElements[TestState.activeWordIndex] as HTMLElement | undefined)
-        ?.offsetTop ?? 0
-    );
+    if (!previousWord || !activeWord) return;
 
-    if (currentTop > previousTop) {
+    const previousTop = previousWord.offsetTop;
+    const activeTop = activeWord.offsetTop;
+
+    if (
+      activeTop !== null &&
+      previousTop !== null &&
+      Math.floor(activeTop) > Math.floor(previousTop)
+    ) {
       void lineJump(previousTop);
     }
   }
