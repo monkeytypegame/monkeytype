@@ -186,6 +186,57 @@ export function replaceControlCharacters(textToClear: string): string {
 }
 
 /**
+ * Detect if a word contains RTL (Right-to-Left) characters.
+ * This is for test scenarios where individual words may have different directions.
+ * Uses a simple regex pattern that covers all common RTL scripts.
+ * @param word the word to check for RTL characters
+ * @returns true if the word contains RTL characters, false otherwise
+ */
+function hasRTLCharacters(word: string): boolean {
+  if (!word || word.length === 0) {
+    return false;
+  }
+
+  // This covers Arabic, Farsi, Urdu, and other RTL scripts
+  const rtlPattern =
+    /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+
+  return rtlPattern.test(word);
+}
+
+/**
+ * Cache for word direction to avoid repeated calculations per word
+ * Keyed by the stripped core of the word; can be manually cleared when needed
+ */
+let wordDirectionCache: Map<string, boolean> = new Map();
+
+export function clearWordDirectionCache(): void {
+  wordDirectionCache.clear();
+}
+
+export function getWordDirection(
+  word: string | undefined,
+  languageRTL: boolean
+): boolean {
+  if (word === undefined || word.length === 0) return languageRTL;
+
+  // Strip leading/trailing punctuation and whitespace so attached opposite-direction
+  // punctuation like "word؟" or "،word" doesn't flip the direction detection
+  // and if only punctuation/symbols/whitespace, use main language direction
+  const core = word.replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "");
+  if (core.length === 0) return languageRTL;
+
+  // cache by core to handle variants like "word" vs "word؟"
+  const cached = wordDirectionCache.get(core);
+  if (cached !== undefined) return cached;
+
+  const result = hasRTLCharacters(core);
+  wordDirectionCache.set(core, result);
+
+  return result;
+}
+
+/**
  * Checks if a character is a directly typable space character on a standard keyboard.
  * These are space characters that can be typed without special input methods or copy-pasting.
  * @param char The character to check.
@@ -215,3 +266,8 @@ export function isSpace(char: string): boolean {
 export function replaceSpaceLikeCharacters(text: string): string {
   return text.replace(/[\u0020\u2002\u2003\u2009\u3000]/g, " ");
 }
+
+// Export testing utilities for unit tests
+export const __testing = {
+  hasRTLCharacters,
+};

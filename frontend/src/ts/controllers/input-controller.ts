@@ -126,34 +126,33 @@ let awaitingNextWord = false;
 // function backspaceToPrevious(): void {
 //   if (!TestState.isActive) return;
 
-//   const wordElementIndex =
-//     TestState.activeWordIndex - TestState.removedUIWordCount;
+// const previousWordEl = TestUI.getWordElement(TestState.activeWordIndex - 1);
 
-//   if (TestInput.input.getHistory().length === 0 || wordElementIndex === 0) {
-//     return;
-//   }
+// const isFirstWord = TestInput.input.getHistory().length === 0;
+// const isFirstVisibleWord = previousWordEl === null;
+// const isPreviousWordHidden = previousWordEl?.classList.contains("hidden");
+// const isPreviousWordCorrect =
+//   TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
+//   TestWords.words.get(TestState.activeWordIndex - 1);
 
-//   const wordElements = document.querySelectorAll("#words > .word");
-//   if (
-//     (TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
-//       TestWords.words.get(TestState.activeWordIndex - 1) &&
-//       !Config.freedomMode) ||
-//     wordElements[wordElementIndex - 1]?.classList.contains("hidden")
-//   ) {
-//     return;
-//   }
+// if (
+//   isFirstWord ||
+//   isFirstVisibleWord ||
+//   isPreviousWordHidden ||
+//   (isPreviousWordCorrect && !Config.freedomMode) ||
+//   Config.confidenceMode === "on" ||
+//   Config.confidenceMode === "max"
+// ) {
+//   return;
+// }
 
-//   if (Config.confidenceMode === "on" || Config.confidenceMode === "max") {
-//     return;
-//   }
+// const activeWordEl = TestUI.getActiveWordElement();
 
-//   const incorrectLetterBackspaced =
-//     wordElements[wordElementIndex]?.children[0]?.classList.contains(
-//       "incorrect"
-//     );
-//   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
-//     void TestUI.updateActiveWordLetters();
-//   }
+// const incorrectLetterBackspaced =
+//   activeWordEl?.children[0]?.classList.contains("incorrect");
+// if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
+//   void TestUI.updateActiveWordLetters();
+// }
 
 //   TestInput.input.current = TestInput.input.popHistory();
 //   TestInput.corrected.popHistory();
@@ -216,80 +215,78 @@ let awaitingNextWord = false;
 
 //   const nospace = isFunboxActiveWithProperty("nospace");
 
-//   //correct word or in zen mode
-//   const isWordCorrect: boolean =
-//     currentWord === TestInput.input.current || Config.mode === "zen";
-//   void MonkeyPower.addPower(isWordCorrect, true);
-//   TestInput.incrementAccuracy(isWordCorrect);
-//   if (isWordCorrect) {
-//     if (Config.stopOnError === "letter") {
-//       void TestUI.updateActiveWordLetters();
-//     }
-//     PaceCaret.handleSpace(true, currentWord);
-//     TestInput.input.pushHistory();
-//     TestState.increaseActiveWordIndex();
-//     Funbox.toggleScript(TestWords.words.getCurrent());
-//     TestInput.incrementKeypressCount();
-//     TestInput.pushKeypressWord(TestState.activeWordIndex);
-//     if (!nospace) {
+//correct word or in zen mode
+// const isWordCorrect: boolean =
+//   currentWord === TestInput.input.current || Config.mode === "zen";
+// void MonkeyPower.addPower(isWordCorrect, true);
+// TestInput.incrementAccuracy(isWordCorrect);
+// if (isWordCorrect) {
+//   if (Config.stopOnError === "letter") {
+//     void TestUI.updateActiveWordLetters();
+//   }
+//   PaceCaret.handleSpace(true, currentWord);
+//   TestInput.input.pushHistory();
+//   TestState.increaseActiveWordIndex();
+//   Funbox.toggleScript(TestWords.words.getCurrent());
+//   TestInput.incrementKeypressCount();
+//   TestInput.pushKeypressWord(TestState.activeWordIndex);
+//   if (!nospace) {
+//     void Sound.playClick();
+//   }
+//   Replay.addReplayEvent("submitCorrectWord");
+// } else {
+//   if (!nospace) {
+//     if (Config.playSoundOnError === "off" || Config.blindMode) {
 //       void Sound.playClick();
+//     } else {
+//       void Sound.playError();
 //     }
-//     Replay.addReplayEvent("submitCorrectWord");
-//   } else {
-//     if (!nospace) {
-//       if (Config.playSoundOnError === "off" || Config.blindMode) {
-//         void Sound.playClick();
-//       } else {
-//         void Sound.playError();
-//       }
+//   }
+//   TestInput.pushMissedWord(TestWords.words.getCurrent());
+//   TestInput.incrementKeypressErrors();
+//   const cil: number = TestInput.input.current.length;
+//   if (cil <= TestWords.words.getCurrent().length) {
+//     if (cil >= TestInput.corrected.current.length) {
+//       TestInput.corrected.current += "_";
+//     } else {
+//       TestInput.corrected.current =
+//         TestInput.corrected.current.substring(0, cil) +
+//         "_" +
+//         TestInput.corrected.current.substring(cil + 1);
 //     }
-//     if (Config.deleteOnError !== "off") {
-//       if (handleDeleteOnError(true)) {
-//         return;
-//       }
-//     }
-//     TestInput.pushMissedWord(TestWords.words.getCurrent());
-//     TestInput.incrementKeypressErrors();
-//     const cil: number = TestInput.input.current.length;
-//     if (cil <= TestWords.words.getCurrent().length) {
-//       if (cil >= TestInput.corrected.current.length) {
-//         TestInput.corrected.current += "_";
-//       } else {
-//         TestInput.corrected.current =
-//           TestInput.corrected.current.substring(0, cil) +
-//           "_" +
-//           TestInput.corrected.current.substring(cil + 1);
-//       }
+//   }
+//   if (Config.stopOnError !== "off") {
+//     if (Config.difficulty === "expert" || Config.difficulty === "master") {
+//       //failed due to diff when pressing space
+//       TestLogic.fail("difficulty");
+//       return;
 //     }
 //     if (Config.stopOnError === "word") {
 //       dontInsertSpace = false;
 //       Replay.addReplayEvent("incorrectLetter", "_");
 //       void TestUI.updateActiveWordLetters();
 //       void Caret.updatePosition();
-//       return;
 //     }
-//     PaceCaret.handleSpace(false, currentWord);
-//     if (Config.blindMode) {
-//       if (Config.highlightMode !== "off") {
-//         TestUI.highlightAllLettersAsCorrect(
-//           TestState.activeWordIndex - TestState.removedUIWordCount
-//         );
-//       }
-//     } else {
-//       TestUI.highlightBadWord(
-//         TestState.activeWordIndex - TestState.removedUIWordCount
-//       );
-//     }
-//     TestInput.input.pushHistory();
-//     TestState.increaseActiveWordIndex();
-//     Funbox.toggleScript(TestWords.words.getCurrent());
-//     TestInput.incrementKeypressCount();
-//     TestInput.pushKeypressWord(TestState.activeWordIndex);
-//     Replay.addReplayEvent("submitErrorWord");
-//     if (Config.difficulty === "expert" || Config.difficulty === "master") {
-//       TestLogic.fail("difficulty");
-//     }
+//     return;
 //   }
+//   PaceCaret.handleSpace(false, currentWord);
+//   if (Config.blindMode) {
+//     if (Config.highlightMode !== "off") {
+//       TestUI.highlightAllLettersAsCorrect(TestState.activeWordIndex);
+//     }
+//   } else {
+//     TestUI.highlightBadWord(TestState.activeWordIndex);
+//   }
+//   TestInput.input.pushHistory();
+//   TestState.increaseActiveWordIndex();
+//   Funbox.toggleScript(TestWords.words.getCurrent());
+//   TestInput.incrementKeypressCount();
+//   TestInput.pushKeypressWord(TestState.activeWordIndex);
+//   Replay.addReplayEvent("submitErrorWord");
+//   if (Config.difficulty === "expert" || Config.difficulty === "master") {
+//     TestLogic.fail("difficulty");
+//   }
+// }
 
 //   TestInput.corrected.pushHistory();
 
@@ -343,20 +340,14 @@ let awaitingNextWord = false;
 //     (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
 //     (Config.mode === "custom" && CustomText.getLimitValue() === 0);
 
-//   if (!Config.showAllLines || shouldLimitToThreeLines) {
-//     const currentTop: number = Math.floor(
-//       document.querySelectorAll<HTMLElement>("#words .word")[
-//         TestState.activeWordIndex - TestState.removedUIWordCount - 1
-//       ]?.offsetTop ?? 0
-//     );
+// if (!Config.showAllLines || shouldLimitToThreeLines) {
+//   const currentTop: number = Math.floor(
+//     TestUI.getWordElement(TestState.activeWordIndex - 1)?.offsetTop ?? 0
+//   );
 
-//     const { data: nextTop } = tryCatchSync(() =>
-//       Math.floor(
-//         document.querySelectorAll<HTMLElement>("#words .word")[
-//           TestState.activeWordIndex - TestState.removedUIWordCount
-//         ]?.offsetTop ?? 0
-//       )
-//     );
+//   const { data: nextTop } = tryCatchSync(() =>
+//     Math.floor(TestUI.getActiveWordElement()?.offsetTop ?? 0)
+//   );
 
 //     if ((nextTop ?? 0) > currentTop) {
 //       void TestUI.lineJump(currentTop);
@@ -713,9 +704,7 @@ async function handleChar(
     char
   );
 
-  const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex - TestState.removedUIWordCount
-  ] as HTMLElement;
+  const activeWord = TestUI.getActiveWordElement() as HTMLElement;
 
   const testInputLength: number = !isCharKorean
     ? TestInput.input.current.length
@@ -1180,11 +1169,7 @@ $(document).on("keydown", async (event) => {
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
     void Sound.playClick();
-    const activeWord: HTMLElement | null = document.querySelectorAll(
-      "#words .word"
-    )?.[
-      TestState.activeWordIndex - TestState.removedUIWordCount
-    ] as HTMLElement;
+    const activeWord = TestUI.getActiveWordElement();
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead
@@ -1506,4 +1491,49 @@ $("#wordsInput").on("input", async (event) => {
       ).selectionEnd = (event.target as HTMLInputElement).value.length;
     }
   }, 0);
+});
+
+document.querySelector("#wordsInput")?.addEventListener("focus", (event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+  target.setSelectionRange(value.length, value.length);
+});
+
+$("#wordsInput").on("copy paste", (event) => {
+  event.preventDefault();
+});
+
+$("#wordsInput").on("select selectstart", (event) => {
+  event.preventDefault();
+});
+
+$("#wordsInput").on("selectionchange", (event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+
+  const hasSelectedText = target.selectionStart !== target.selectionEnd;
+  const isCursorAtEnd = target.selectionStart === value.length;
+
+  if (hasSelectedText || !isCursorAtEnd) {
+    // force caret at end of input
+    target.setSelectionRange(value.length, value.length);
+  }
+});
+
+$("#wordsInput").on("keydown", (event) => {
+  if (event.key.startsWith("Arrow")) {
+    event.preventDefault();
+  }
+});
+
+// Composing events
+$("#wordsInput").on("compositionstart", () => {
+  if (Config.layout !== "default") return;
+  CompositionState.setComposing(true);
+  CompositionState.setStartPos(TestInput.input.current.length);
+});
+
+$("#wordsInput").on("compositionend", () => {
+  if (Config.layout !== "default") return;
+  CompositionState.setComposing(false);
 });
