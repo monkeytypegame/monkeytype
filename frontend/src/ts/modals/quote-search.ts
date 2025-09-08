@@ -10,7 +10,6 @@ import {
   SearchService,
   TextExtractor,
 } from "../utils/search-service";
-import { splitByAndKeep } from "../utils/strings";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
 import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
@@ -47,7 +46,8 @@ function highlightMatches(text: string, matchedText: string[]): string {
   if (matchedText.length === 0) {
     return text;
   }
-  const words = splitByAndKeep(text, `.,"/#!$%^&*;:{}=-_\`~() `.split(""));
+  // same delimiters as in search-service.ts:tokenize(text)
+  const words = text.split(/([\\\][.,"/#!?$%^&*;:{}=\-_`~()\s])/g);
 
   const normalizedWords = words.map((word) => {
     const shouldHighlight =
