@@ -138,9 +138,7 @@ export function setResultVisible(val: boolean): void {
 }
 
 export function setActiveWordTop(): void {
-  const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex - TestState.removedUIWordCount
-  ] as HTMLElement;
+  const activeWord = getActiveWordElement();
   activeWordTop = activeWord?.offsetTop ?? 0;
 }
 
@@ -1622,9 +1620,9 @@ function updateLiveStatsColor(value: TimerColor): void {
 }
 
 export function getActiveWordTopAfterAppend(data: string): number {
-  const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex - TestState.removedUIWordCount
-  ] as HTMLElement;
+  const activeWord = getActiveWordElement();
+
+  if (!activeWord) throw new Error("No active word element found");
 
   if (data === " ") {
     data = "_";
@@ -1738,13 +1736,9 @@ export function beforeTestWordChange(
 
   if (direction === "forward") {
     if (Config.blindMode) {
-      highlightAllLettersAsCorrect(
-        TestState.activeWordIndex - TestState.removedUIWordCount
-      );
+      highlightAllLettersAsCorrect(TestState.activeWordIndex);
     } else if (correct === false) {
-      highlightBadWord(
-        TestState.activeWordIndex - TestState.removedUIWordCount
-      );
+      highlightBadWord(TestState.activeWordIndex);
     }
   }
 }
@@ -1760,16 +1754,14 @@ export function afterTestWordChange(direction: "forward" | "back"): void {
       (Config.mode === "custom" && CustomText.getLimitMode() === "time"))
   ) {
     const wordElements = document.querySelectorAll("#words .word");
-    const currentElementId =
-      TestState.activeWordIndex - TestState.removedUIWordCount;
 
     const previousTop: number = Math.floor(
-      (wordElements[currentElementId - 1] as HTMLElement | undefined)
+      (wordElements[TestState.activeWordIndex - 1] as HTMLElement | undefined)
         ?.offsetTop ?? 0
     );
     const currentTop = Math.floor(
-      (wordElements[currentElementId] as HTMLElement | undefined)?.offsetTop ??
-        0
+      (wordElements[TestState.activeWordIndex] as HTMLElement | undefined)
+        ?.offsetTop ?? 0
     );
 
     if (currentTop > previousTop) {
