@@ -634,7 +634,7 @@ export async function getLocalPB<M extends Mode>(
   );
 }
 
-export function saveLocalPB<M extends Mode>(
+function saveLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
   punctuation: boolean,
