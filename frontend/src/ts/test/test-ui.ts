@@ -34,6 +34,8 @@ import * as LiveAcc from "./live-acc";
 import * as Focus from "../test/focus";
 import * as TimerProgress from "../test/timer-progress";
 import * as LiveBurst from "./live-burst";
+import * as LiveSpeed from "./live-speed";
+import * as Monkey from "./monkey";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -1762,6 +1764,16 @@ export async function afterTestWordChange(
       void lineJump(previousTop);
     }
   }
+}
+
+export function afterTestStart(): void {
+  Focus.set(true);
+  Monkey.show();
+  TimerProgress.show();
+  LiveSpeed.show();
+  LiveAcc.show();
+  LiveBurst.show();
+  TimerProgress.update();
 }
 
 $(".pageTest #copyWordsListButton").on("click", async () => {

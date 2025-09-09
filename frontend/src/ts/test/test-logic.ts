@@ -109,18 +109,11 @@ export function startTest(now: number): boolean {
     void AnalyticsController.log("testStartedNoLogin");
   }
 
-  Focus.set(true);
   TestState.setActive(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
-  TimerProgress.show();
-  LiveSpeed.show();
-  LiveAcc.show();
-  LiveBurst.show();
-  TimerProgress.update();
   TestTimer.clear();
-  Monkey.show();
 
   for (const fb of getActiveFunboxesWithFunction("start")) {
     fb.functions.start();
@@ -137,6 +130,7 @@ export function startTest(now: number): boolean {
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(now);
   void TestTimer.start();
+  TestUI.afterTestStart();
   return true;
 }
 
