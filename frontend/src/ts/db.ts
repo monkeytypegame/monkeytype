@@ -49,7 +49,10 @@ export function getSnapshot(): Snapshot | undefined {
   return dbSnapshot;
 }
 
-export function setSnapshot(newSnapshot: Snapshot | undefined): void {
+export function setSnapshot(
+  newSnapshot: Snapshot | undefined,
+  noEventDispatch = false
+): void {
   const originalBanned = dbSnapshot?.banned;
   const originalVerified = dbSnapshot?.verified;
   const lbOptOut = dbSnapshot?.lbOptOut;
@@ -71,7 +74,9 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
     dbSnapshot.lbOptOut = lbOptOut;
   }
 
-  AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
+  if (!noEventDispatch) {
+    AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
+  }
 }
 
 export async function initSnapshot(): Promise<Snapshot | false> {
@@ -922,38 +927,74 @@ export async function resetConfig(): Promise<void> {
   }
 }
 
-export function saveLocalResult(result: SnapshotResult<Mode>): void {
+export type SaveLocalResultData = {
+  xp?: number;
+  streak?: number;
+  result?: SnapshotResult<Mode>;
+  isPb?: boolean;
+};
+
+export function saveLocalResult(data: SaveLocalResultData): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (snapshot?.results !== undefined) {
-    snapshot.results.unshift(result);
+  if (data.result !== undefined) {
+    if (snapshot?.results !== undefined) {
+      snapshot.results.unshift(data.result);
+    }
+    if (snapshot.testActivity !== undefined) {
+      snapshot.testActivity.increment(new Date(data.result.timestamp));
+    }
+    if (snapshot.typingStats === undefined) {
+      snapshot.typingStats = {
+        timeTyping: 0,
+        startedTests: 0,
+        completedTests: 0,
+      };
 
-    setSnapshot(snapshot);
+      const time =
+        data.result.testDuration +
+        data.result.incompleteTestSeconds -
+        data.result.afkDuration;
+
+      snapshot.typingStats.timeTyping += time;
+      snapshot.typingStats.startedTests += data.result.restartCount + 1;
+      snapshot.typingStats.completedTests += 1;
+    }
+
+    if (data.isPb) {
+      saveLocalPB(
+        data.result.mode,
+        data.result.mode2,
+        data.result.punctuation,
+        data.result.numbers,
+        data.result.language,
+        data.result.difficulty,
+        data.result.lazyMode,
+        data.result.wpm,
+        data.result.acc,
+        data.result.rawWpm,
+        data.result.consistency
+      );
+    }
   }
 
-  if (snapshot.testActivity !== undefined) {
-    snapshot.testActivity.increment(new Date(result.timestamp));
-    setSnapshot(snapshot);
-  }
-}
-
-export function updateLocalStats(started: number, time: number): void {
-  const snapshot = getSnapshot();
-  if (!snapshot) return;
-  if (snapshot.typingStats === undefined) {
-    snapshot.typingStats = {
-      timeTyping: 0,
-      startedTests: 0,
-      completedTests: 0,
-    };
+  if (data.xp !== undefined) {
+    if (snapshot.xp === undefined) {
+      snapshot.xp = 0;
+    }
+    snapshot.xp += data.xp;
   }
 
-  snapshot.typingStats.timeTyping += time;
-  snapshot.typingStats.startedTests += started;
-  snapshot.typingStats.completedTests += 1;
+  if (data.streak !== undefined) {
+    snapshot.streak = data.streak;
 
-  setSnapshot(snapshot);
+    if (snapshot.streak > snapshot.maxStreak) {
+      snapshot.maxStreak = snapshot.streak;
+    }
+  }
+
+  setSnapshot(snapshot, true);
 }
 
 export function addXp(xp: number): void {
@@ -964,7 +1005,7 @@ export function addXp(xp: number): void {
     snapshot.xp = 0;
   }
   snapshot.xp += xp;
-  setSnapshot(snapshot);
+  setSnapshot(snapshot, true);
 }
 
 export function updateInboxUnreadSize(newSize: number): void {
@@ -985,19 +1026,6 @@ export function addBadge(badge: Badge): void {
     };
   }
   snapshot.inventory.badges.push(badge);
-  setSnapshot(snapshot);
-}
-
-export function setStreak(streak: number): void {
-  const snapshot = getSnapshot();
-  if (!snapshot) return;
-
-  snapshot.streak = streak;
-
-  if (snapshot.streak > snapshot.maxStreak) {
-    snapshot.maxStreak = snapshot.streak;
-  }
-
   setSnapshot(snapshot);
 }
 
