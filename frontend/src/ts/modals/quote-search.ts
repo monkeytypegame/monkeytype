@@ -59,6 +59,38 @@ function highlightMatches(text: string, matchedText: string[]): string {
   }, "");
 }
 
+// a faster but uglier highlightMatches
+function _highlightMatches(text: string, matchedText: string[]): string {
+  const delimitersPattern = /[^\\\][.,"/#!?$%^&*;:{}=\-_`~()\s]/;
+  const pattern = new RegExp(
+    `(?<!${delimitersPattern.source})((?:${matchedText.join(")|(?:")}))${
+      delimitersPattern.source
+    }*`,
+    "g"
+  );
+
+  const elemPrefix = `<span class="highlight">`;
+  const elemSuffix = `</span>`;
+  const offsetLength = elemPrefix.length + elemSuffix.length;
+
+  let offset = 0;
+  let highlightedText = text;
+  const matches = text.matchAll(pattern);
+  for (const match of matches) {
+    const matchStart = match.index + offset;
+    const matchEnd = match.index + match[0].length + offset;
+    highlightedText =
+      highlightedText.slice(0, matchStart) +
+      elemPrefix +
+      match[0] +
+      elemSuffix +
+      highlightedText.slice(matchEnd);
+    offset += offsetLength;
+  }
+
+  return highlightedText;
+}
+
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (!modal.isOpen()) return [];
   const quoteLengthFilterValue = $(
