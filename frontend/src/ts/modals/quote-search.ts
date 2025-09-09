@@ -61,6 +61,7 @@ function highlightMatches(text: string, matchedText: string[]): string {
 
 // a faster but uglier highlightMatches
 function _highlightMatches(text: string, matchedText: string[]): string {
+  // same delimiters as in search-service.ts:tokenize(text)
   const delimitersPattern = /[^\\\][.,"/#!?$%^&*;:{}=\-_`~()\s]/;
   const pattern = new RegExp(
     `(?<!${delimitersPattern.source})((?:${matchedText.join(")|(?:")}))${
