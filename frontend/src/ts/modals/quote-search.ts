@@ -43,24 +43,8 @@ function getSearchService<T>(
 }
 
 function highlightMatches(text: string, matchedText: string[]): string {
-  if (matchedText.length === 0) {
-    return text;
-  }
-  // same delimiters as in search-service.ts:tokenize(text)
-  const words = text.split(/([\\\][.,"/#!?$%^&*;:{}=\-_`~()\s]+)/g);
+  if (matchedText.length === 0) return text;
 
-  return words.reduce((highlightedText, currWord) => {
-    const shouldHighlight =
-      matchedText.find((match) => currWord.startsWith(match)) !== undefined;
-    const highlightedWord = shouldHighlight
-      ? `<span class="highlight">${currWord}</span>`
-      : currWord;
-    return highlightedText + highlightedWord;
-  }, "");
-}
-
-// a faster but uglier highlightMatches
-function _highlightMatches(text: string, matchedText: string[]): string {
   // same delimiters as in search-service.ts:tokenize(text)
   const delimitersPattern = /[^\\\][.,"/#!?$%^&*;:{}=\-_`~()\s]/;
   const pattern = new RegExp(
@@ -70,26 +54,7 @@ function _highlightMatches(text: string, matchedText: string[]): string {
     "g"
   );
 
-  const elemPrefix = `<span class="highlight">`;
-  const elemSuffix = `</span>`;
-  const offsetLength = elemPrefix.length + elemSuffix.length;
-
-  let offset = 0;
-  let highlightedText = text;
-  const matches = text.matchAll(pattern);
-  for (const match of matches) {
-    const matchStart = match.index + offset;
-    const matchEnd = match.index + match[0].length + offset;
-    highlightedText =
-      highlightedText.slice(0, matchStart) +
-      elemPrefix +
-      match[0] +
-      elemSuffix +
-      highlightedText.slice(matchEnd);
-    offset += offsetLength;
-  }
-
-  return highlightedText;
+  return text.replace(pattern, '<span class="highlight">$&</span>');
 }
 
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
