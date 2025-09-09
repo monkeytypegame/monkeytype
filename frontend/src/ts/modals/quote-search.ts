@@ -47,17 +47,16 @@ function highlightMatches(text: string, matchedText: string[]): string {
     return text;
   }
   // same delimiters as in search-service.ts:tokenize(text)
-  const words = text.split(/([\\\][.,"/#!?$%^&*;:{}=\-_`~()\s])/g);
+  const words = text.split(/([\\\][.,"/#!?$%^&*;:{}=\-_`~()\s]+)/g);
 
-  const normalizedWords = words.map((word) => {
+  return words.reduce((highlightedText, currWord) => {
     const shouldHighlight =
-      matchedText.find((match) => {
-        return word.startsWith(match);
-      }) !== undefined;
-    return shouldHighlight ? `<span class="highlight">${word}</span>` : word;
-  });
-
-  return normalizedWords.join("");
+      matchedText.find((match) => currWord.startsWith(match)) !== undefined;
+    const highlightedWord = shouldHighlight
+      ? `<span class="highlight">${currWord}</span>`
+      : currWord;
+    return highlightedText + highlightedWord;
+  }, "");
 }
 
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
