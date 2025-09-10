@@ -8,6 +8,7 @@ describe("PresetDal", () => {
     it("should read", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
+      const decoyUid = new ObjectId().toHexString();
       const first = await PresetDal.addPreset(uid, {
         name: "first",
         config: { ads: "sellout" },
@@ -22,7 +23,11 @@ describe("PresetDal", () => {
           showAverage: "off",
         },
       });
-      await PresetDal.addPreset("unknown", { name: "unknown", config: {} });
+
+      await PresetDal.addPreset(decoyUid, {
+        name: "unknown",
+        config: {},
+      });
 
       //WHEN
       const read = await PresetDal.getPresets(uid);
@@ -101,7 +106,8 @@ describe("PresetDal", () => {
 
   describe("editPreset", () => {
     it("should not fail if preset is unknown", async () => {
-      await PresetDal.editPreset("uid", {
+      const uid = new ObjectId().toHexString();
+      await PresetDal.editPreset(uid, {
         _id: new ObjectId().toHexString(),
         name: "new",
         config: {},
@@ -350,8 +356,9 @@ describe("PresetDal", () => {
 
   describe("removePreset", () => {
     it("should fail if preset is unknown", async () => {
+      const uid = new ObjectId().toHexString();
       await expect(() =>
-        PresetDal.removePreset("uid", new ObjectId().toHexString())
+        PresetDal.removePreset(uid, new ObjectId().toHexString())
       ).rejects.toThrowError("Preset not found");
     });
     it("should remove", async () => {
@@ -435,7 +442,8 @@ describe("PresetDal", () => {
 
   describe("deleteAllPresets", () => {
     it("should not fail if preset is unknown", async () => {
-      await PresetDal.deleteAllPresets("uid");
+      const uid = new ObjectId().toHexString();
+      await PresetDal.deleteAllPresets(uid);
     });
     it("should delete all", async () => {
       //GIVEN
