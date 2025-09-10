@@ -214,6 +214,8 @@ export async function change(
   previousPage.element.addClass("hidden");
   await previousPage?.afterHide();
 
+  const nextPageLoadingMode = nextPage.loadingOptions?.loadingMode();
+
   //show loading page if needed
   try {
     let loadingOptions: LoadingOptions[] = [];
@@ -227,7 +229,7 @@ export async function change(
     if (loadingOptions.length > 0) {
       if (
         options.loadingOptions?.loadingMode() === "sync" ||
-        nextPage.loadingOptions?.loadingMode() === "sync"
+        nextPageLoadingMode === "sync"
       ) {
         await showLoading({
           loadingOptions,
@@ -262,8 +264,6 @@ export async function change(
     // @ts-expect-error for the future (i think)
     data: options.data,
   });
-
-  const nextPageLoadingMode = nextPage.loadingOptions?.loadingMode();
 
   if (
     typeof nextPageLoadingMode === "object" &&
