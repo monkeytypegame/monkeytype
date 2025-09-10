@@ -59,6 +59,13 @@ export type CheckNamePathParameters = z.infer<
   typeof CheckNamePathParametersSchema
 >;
 
+export const CheckNameResponseSchema = responseWithData(
+  z.object({
+    availability: z.enum(["available", "taken"]),
+  })
+);
+export type CheckNameResponse = z.infer<typeof CheckNameResponseSchema>;
+
 export const UpdateUserNameRequestSchema = z.object({
   name: UserNameSchema,
 });
@@ -364,8 +371,7 @@ export const usersContract = c.router(
       path: "/checkName/:name",
       pathParams: CheckNamePathParametersSchema.strict(),
       responses: {
-        200: MonkeyResponseSchema.describe("Name is available"),
-        409: MonkeyResponseSchema.describe("Name is not available"),
+        200: CheckNameResponseSchema,
       },
       metadata: meta({
         authenticationOptions: { isPublic: true },

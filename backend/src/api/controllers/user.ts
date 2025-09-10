@@ -51,6 +51,7 @@ import {
   AddTagRequest,
   AddTagResponse,
   CheckNamePathParameters,
+  CheckNameResponse,
   CreateUserRequest,
   DeleteCustomThemeRequest,
   EditCustomThemeRequst,
@@ -430,16 +431,15 @@ export async function optOutOfLeaderboards(
 
 export async function checkName(
   req: MonkeyRequest<undefined, undefined, CheckNamePathParameters>
-): Promise<MonkeyResponse> {
+): Promise<CheckNameResponse> {
   const { name } = req.params;
   const { uid } = req.ctx.decodedToken;
 
   const available = await UserDAL.isNameAvailable(name, uid);
-  if (!available) {
-    throw new MonkeyError(409, "Username unavailable");
-  }
 
-  return new MonkeyResponse("Username available", null);
+  return new MonkeyResponse("Check username", {
+    availability: available ? "available" : "taken",
+  });
 }
 
 export async function updateEmail(

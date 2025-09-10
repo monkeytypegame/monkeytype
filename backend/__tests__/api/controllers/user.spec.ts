@@ -238,8 +238,8 @@ describe("user controller test", () => {
 
       //THEN
       expect(body).toEqual({
-        message: "Username available",
-        data: null,
+        message: "Check username",
+        data: { availability: "available" },
       });
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", "");
     });
@@ -252,10 +252,13 @@ describe("user controller test", () => {
       const { body } = await mockApp
         .get("/users/checkName/bob")
         //no authentication required
-        .expect(409);
+        .expect(200);
 
       //THEN
-      expect(body.message).toEqual("Username unavailable");
+      expect(body).toEqual({
+        message: "Check username",
+        data: { availability: "taken" },
+      });
 
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", "");
     });
@@ -271,8 +274,8 @@ describe("user controller test", () => {
 
       //THEN
       expect(body).toEqual({
-        message: "Username available",
-        data: null,
+        message: "Check username",
+        data: { availability: "available" },
       });
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", uid);
     });
