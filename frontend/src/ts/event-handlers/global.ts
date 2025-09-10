@@ -4,10 +4,32 @@ import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Commandline from "../commandline/commandline";
 import * as Notifications from "../elements/notifications";
+import * as ActivePage from "../states/active-page";
+import { ModifierKeys } from "../constants/modifier-keys";
+import { focusWords } from "../test/test-ui";
 
 document.addEventListener("keydown", async (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
+
+  //autofocus
+  const wordsFocused: boolean = $("#wordsInput").is(":focus");
+  const pageTestActive: boolean = ActivePage.get() === "test";
+  const popupVisible: boolean = Misc.isAnyPopupVisible();
+
+  if (
+    pageTestActive &&
+    !wordsFocused &&
+    !popupVisible &&
+    !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
+    !e.metaKey &&
+    !e.ctrlKey
+  ) {
+    focusWords();
+    if (Config.showOutOfFocusWarning) {
+      e.preventDefault();
+    }
+  }
 
   if (
     (e.key === "Escape" && Config.quickRestart !== "esc") ||

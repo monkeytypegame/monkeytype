@@ -917,25 +917,25 @@ let awaitingNextWord = false;
 //   }
 // }
 
-$("#wordsInput").on("keydown", (event) => {
-  const pageTestActive: boolean = ActivePage.get() === "test";
-  const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
-  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
-  const popupVisible: boolean = Misc.isAnyPopupVisible();
-  const allowTyping: boolean =
-    pageTestActive &&
-    !commandLineVisible &&
-    !leaderboardsVisible &&
-    !popupVisible &&
-    !TestUI.resultVisible &&
-    event.key !== "Enter" &&
-    !awaitingNextWord &&
-    TestState.testInitSuccess;
+// $("#wordsInput").on("keydown", (event) => {
+//   const pageTestActive: boolean = ActivePage.get() === "test";
+//   const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
+//   const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
+//   const popupVisible: boolean = Misc.isAnyPopupVisible();
+//   const allowTyping: boolean =
+//     pageTestActive &&
+//     !commandLineVisible &&
+//     !leaderboardsVisible &&
+//     !popupVisible &&
+//     !TestUI.resultVisible &&
+//     event.key !== "Enter" &&
+//     !awaitingNextWord &&
+//     TestState.testInitSuccess;
 
-  if (!allowTyping) {
-    event.preventDefault();
-  }
-});
+//   if (!allowTyping) {
+//     event.preventDefault();
+//   }
+// });
 
 let lastBailoutAttempt = -1;
 
@@ -974,16 +974,19 @@ $(document).on("keydown", async (event) => {
     (wordsFocused || event.key !== "Enter") &&
     !awaitingNextWord;
 
-  if (
-    allowTyping &&
-    !wordsFocused &&
-    !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(event.key)
-  ) {
-    TestUI.focusWords();
-    if (Config.showOutOfFocusWarning && !event.ctrlKey && !event.metaKey) {
-      event.preventDefault();
-    }
-  }
+  // if (
+  //   allowTyping &&
+  //   !wordsFocused &&
+  //   !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(event.key) &&
+  //   !event.metaKey &&
+  //   !event.ctrlKey &&
+  //   !event.altKey &&
+  //   !event.shiftKey
+  // ) {
+  //   console.log("focusing", event);
+  //   TestUI.focusWords();
+  //   event.preventDefault();
+  // }
 
   //tab
   if (event.key === "Tab") {
