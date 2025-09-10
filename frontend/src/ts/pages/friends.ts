@@ -436,9 +436,25 @@ export const page = new Page<undefined>({
   element: pageElement,
   path: "/friends",
   loadingOptions: {
-    shouldLoad: () =>
-      getAuthenticatedUser() !== null &&
-      (friendsList === undefined || pendingRequests === undefined),
+    shouldLoad: () => {
+      const hasCache =
+        friendsList !== undefined && pendingRequests !== undefined;
+
+      if (hasCache) {
+        setTimeout(async () => {
+          const spinner = document.querySelector(".friends .spinner");
+          spinner?.classList.remove("hidden");
+
+          await page.loadingOptions?.waitFor();
+          await page.beforeShow({});
+
+          spinner?.classList.add("hidden");
+        }, 0);
+      }
+
+      return getAuthenticatedUser() !== null && !hasCache;
+    },
+
     waitFor: async () => {
       await ServerConfiguration.configurationPromise;
       const serverConfig = ServerConfiguration.get();
@@ -446,15 +462,7 @@ export const page = new Page<undefined>({
         throw new Error("Connectins are disabled.");
       }
 
-      if (friendsList !== undefined && pendingRequests !== undefined) {
-        setTimeout(async () => {
-          await Promise.all([fetchPendingConnections(), fetchFriends()]);
-          updatePendingConnections();
-          updateFriends();
-        }, 0);
-      } else {
-        await Promise.all([fetchPendingConnections(), fetchFriends()]);
-      }
+      await Promise.all([fetchPendingConnections(), fetchFriends()]);
     },
     style: "bar",
     keyframes: [
