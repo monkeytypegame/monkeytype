@@ -259,7 +259,14 @@ export const page = new Page({
         typingStatsResponseData,
       ].every((it) => it !== null);
       if (hasCache) {
-        return { mode: "async", onCall: Loader.show, afterResolve: fill };
+        return {
+          mode: "async",
+          onCall: Loader.show,
+          afterResolve: () => {
+            Loader.hide();
+            void fill();
+          },
+        };
       } else {
         return "sync";
       }
