@@ -346,6 +346,11 @@ export const limits = {
     max: 60,
   },
 
+  userFriendGet: {
+    window: "hour",
+    max: 60,
+  },
+
   // ApeKeys Routing
   apeKeysGet: {
     window: "hour",
@@ -362,27 +367,22 @@ export const limits = {
     max: 1,
   },
 
-  friendRequestsGet: {
+  connectionGet: {
     window: "hour",
     max: 60,
   },
 
-  friendRequestsCreate: {
+  connectionCreate: {
     window: "hour",
     max: 60,
   },
 
-  friendRequestsDelete: {
+  connectionDelete: {
     window: "hour",
     max: 60,
   },
 
-  friendRequestsUpdate: {
-    window: "hour",
-    max: 60,
-  },
-
-  friendGet: {
+  connectionUpdate: {
     window: "hour",
     max: 60,
   },

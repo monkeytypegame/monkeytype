@@ -36,7 +36,7 @@ import { MonkeyMail, UserStreak } from "@monkeytype/schemas/users";
 import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
-import * as FriendsDal from "../../../src/dal/friends";
+import * as ConnectionsDal from "../../../src/dal/connections";
 import { pb } from "../../__testData__/users";
 import { SuperTest } from "supertest";
 
@@ -626,7 +626,7 @@ describe("user controller test", () => {
       "purgeUserFromXpLeaderboards"
     );
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
-    const friendsDeletebyUidMock = vi.spyOn(FriendsDal, "deleteByUid");
+    const friendsDeletebyUidMock = vi.spyOn(ConnectionsDal, "deleteByUid");
     const logsDeleteUserMock = vi.spyOn(LogDal, "deleteUserLogs");
 
     beforeEach(() => {
@@ -989,7 +989,7 @@ describe("user controller test", () => {
     const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
     const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
     const updateNameMock = vi.spyOn(UserDal, "updateName");
-    const friendsUpdateNameMock = vi.spyOn(FriendsDal, "updateName");
+    const friendsUpdateNameMock = vi.spyOn(ConnectionsDal, "updateName");
     const addImportantLogMock = vi.spyOn(LogDal, "addImportantLog");
 
     beforeEach(() => {
@@ -4058,5 +4058,5 @@ async function enableFriendsEndpoints(enabled: boolean): Promise<void> {
 async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
   await enableFriendsEndpoints(false);
   const { body } = await call.expect(503);
-  expect(body.message).toEqual("Friends are not available at this time.");
+  expect(body.message).toEqual("Connections are not available at this time.");
 }

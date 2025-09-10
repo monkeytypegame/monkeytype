@@ -1,30 +1,30 @@
 import {
-  CreateFriendRequestRequest,
-  CreateFriendRequestResponse,
-  GetFriendRequestsQuery,
-  GetFriendRequestsResponse,
+  CreateConnectionRequest,
+  CreateConnectionResponse,
+  GetConnectionsQuery,
+  GetConnectionsResponse,
   IdPathParams,
-  UpdateFriendRequestsRequest,
-} from "@monkeytype/contracts/friends";
+  UpdateConnectionRequest,
+} from "@monkeytype/contracts/connections";
 import { MonkeyRequest } from "../types";
 import { MonkeyResponse } from "../../utils/monkey-response";
-import * as FriendsDal from "../../dal/friends";
+import * as ConnectionsDal from "../../dal/connections";
 import * as UserDal from "../../dal/user";
 import { replaceObjectId } from "../../utils/misc";
 import MonkeyError from "../../utils/error";
 import { omit } from "lodash";
-import { FriendRequest } from "@monkeytype/schemas/friends";
+import { Connection } from "@monkeytype/schemas/connections";
 
-function convert(db: FriendsDal.DBFriendRequest): FriendRequest {
+function convert(db: ConnectionsDal.DBConnection): Connection {
   return replaceObjectId(omit(db, "key"));
 }
 export async function getRequests(
-  req: MonkeyRequest<GetFriendRequestsQuery>
-): Promise<GetFriendRequestsResponse> {
+  req: MonkeyRequest<GetConnectionsQuery>
+): Promise<GetConnectionsResponse> {
   const { uid } = req.ctx.decodedToken;
   const { status, type } = req.query;
 
-  const results = await FriendsDal.getRequests({
+  const results = await ConnectionsDal.getConnections({
     initiatorUid:
       type === undefined || type.includes("outgoing") ? uid : undefined,
     friendUid:
@@ -32,30 +32,30 @@ export async function getRequests(
     status: status,
   });
 
-  return new MonkeyResponse("Friend requests retrieved", results.map(convert));
+  return new MonkeyResponse("Connections retrieved", results.map(convert));
 }
 
 export async function createRequest(
-  req: MonkeyRequest<undefined, CreateFriendRequestRequest>
-): Promise<CreateFriendRequestResponse> {
+  req: MonkeyRequest<undefined, CreateConnectionRequest>
+): Promise<CreateConnectionResponse> {
   const { uid } = req.ctx.decodedToken;
   const { friendName } = req.body;
   const { maxPerUser } = req.ctx.configuration.connections;
 
-  const friend = await UserDal.getUserByName(friendName, "create friend");
+  const friend = await UserDal.getUserByName(friendName, "create connection");
 
   if (uid === friend.uid) {
     throw new MonkeyError(400, "You cannot be your own friend, sorry.");
   }
 
-  const initiator = await UserDal.getPartialUser(uid, "create friend", [
+  const initiator = await UserDal.getPartialUser(uid, "create connection", [
     "uid",
     "name",
   ]);
 
-  const result = await FriendsDal.create(initiator, friend, maxPerUser);
+  const result = await ConnectionsDal.create(initiator, friend, maxPerUser);
 
-  return new MonkeyResponse("Friend created", convert(result));
+  return new MonkeyResponse("Connection created", convert(result));
 }
 
 export async function deleteRequest(
@@ -64,19 +64,19 @@ export async function deleteRequest(
   const { uid } = req.ctx.decodedToken;
   const { id } = req.params;
 
-  await FriendsDal.deleteById(uid, id);
+  await ConnectionsDal.deleteById(uid, id);
 
-  return new MonkeyResponse("Friend deleted", null);
+  return new MonkeyResponse("Connection deleted", null);
 }
 
 export async function updateRequest(
-  req: MonkeyRequest<undefined, UpdateFriendRequestsRequest, IdPathParams>
+  req: MonkeyRequest<undefined, UpdateConnectionRequest, IdPathParams>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { id } = req.params;
   const { status } = req.body;
 
-  await FriendsDal.updateStatus(uid, id, status);
+  await ConnectionsDal.updateStatus(uid, id, status);
 
-  return new MonkeyResponse("Friend updated", null);
+  return new MonkeyResponse("Connection updated", null);
 }

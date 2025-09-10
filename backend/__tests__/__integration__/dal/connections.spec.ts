@@ -9,61 +9,64 @@ import {
 } from "vitest";
 import { ObjectId } from "mongodb";
 
-import * as FriendsDal from "../../../src/dal/friends";
-import { createConnection as createFriend } from "../../__testData__/connections";
+import * as ConnectionsDal from "../../../src/dal/connections";
+import { createConnection } from "../../__testData__/connections";
 
-describe("FriendsDal", () => {
+describe("ConnectionsDal", () => {
   beforeAll(async () => {
-    await FriendsDal.createIndicies();
+    await ConnectionsDal.createIndicies();
   });
 
   describe("getRequests", () => {
     it("get by uid", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const initOne = await createFriend({ initiatorUid: uid });
-      const initTwo = await createFriend({ initiatorUid: uid });
-      const friendOne = await createFriend({ friendUid: uid });
-      const _decoy = await createFriend({});
+      const initOne = await createConnection({ initiatorUid: uid });
+      const initTwo = await createConnection({ initiatorUid: uid });
+      const friendOne = await createConnection({ friendUid: uid });
+      const _decoy = await createConnection({});
 
       //WHEN / THEM
 
       expect(
-        await FriendsDal.getRequests({ initiatorUid: uid, friendUid: uid })
+        await ConnectionsDal.getConnections({
+          initiatorUid: uid,
+          friendUid: uid,
+        })
       ).toStrictEqual([initOne, initTwo, friendOne]);
     });
 
     it("get by uid and status", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const initAccepted = await createFriend({
+      const initAccepted = await createConnection({
         initiatorUid: uid,
         status: "accepted",
       });
-      const _initPending = await createFriend({
+      const _initPending = await createConnection({
         initiatorUid: uid,
         status: "pending",
       });
-      const initBlocked = await createFriend({
+      const initBlocked = await createConnection({
         initiatorUid: uid,
         status: "blocked",
       });
 
-      const friendAccepted = await createFriend({
+      const friendAccepted = await createConnection({
         friendUid: uid,
         status: "accepted",
       });
-      const _friendPending = await createFriend({
+      const _friendPending = await createConnection({
         friendUid: uid,
         status: "pending",
       });
 
-      const _decoy = await createFriend({ status: "accepted" });
+      const _decoy = await createConnection({ status: "accepted" });
 
       //WHEN / THEN
 
       expect(
-        await FriendsDal.getRequests({
+        await ConnectionsDal.getConnections({
           initiatorUid: uid,
           friendUid: uid,
           status: ["accepted", "blocked"],
@@ -85,17 +88,17 @@ describe("FriendsDal", () => {
     it("should fail creating duplicates", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const first = await createFriend({
+      const first = await createConnection({
         initiatorUid: uid,
       });
 
       //WHEN/THEN
       await expect(
-        createFriend({
+        createConnection({
           initiatorUid: first.friendUid,
           friendUid: uid,
         })
-      ).rejects.toThrow("Duplicate friend or blocked");
+      ).rejects.toThrow("Duplicate connection or blocked");
     });
 
     it("should create", async () => {
@@ -104,7 +107,7 @@ describe("FriendsDal", () => {
       const friendUid = new ObjectId().toHexString();
 
       //WHEN
-      const created = await FriendsDal.create(
+      const created = await ConnectionsDal.create(
         { uid, name: "Bob" },
         { uid: friendUid, name: "Kevin" },
         2
@@ -123,15 +126,15 @@ describe("FriendsDal", () => {
       });
     });
 
-    it("should fail if maximum friends are reached", async () => {
+    it("should fail if maximum connections are reached", async () => {
       //GIVEN
       const initiatorUid = new ObjectId().toHexString();
-      await createFriend({ initiatorUid });
-      await createFriend({ initiatorUid });
+      await createConnection({ initiatorUid });
+      await createConnection({ initiatorUid });
 
       //WHEN / THEM
-      await expect(createFriend({ initiatorUid }, 2)).rejects.toThrow(
-        "Maximum number of friends reached\nStack: create friend request"
+      await expect(createConnection({ initiatorUid }, 2)).rejects.toThrow(
+        "Maximum number of connections reached\nStack: create connection request"
       );
     });
   });
@@ -139,36 +142,44 @@ describe("FriendsDal", () => {
     it("should update the status", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const first = await createFriend({
+      const first = await createConnection({
         friendUid: uid,
       });
-      const second = await createFriend({
+      const second = await createConnection({
         friendUid: uid,
       });
 
       //WHEN
-      await FriendsDal.updateStatus(uid, first._id.toHexString(), "accepted");
+      await ConnectionsDal.updateStatus(
+        uid,
+        first._id.toHexString(),
+        "accepted"
+      );
 
       //THEN
-      expect(await FriendsDal.getRequests({ friendUid: uid })).toEqual([
+      expect(await ConnectionsDal.getConnections({ friendUid: uid })).toEqual([
         { ...first, status: "accepted" },
         second,
       ]);
 
       //can update twice to the same status
-      await FriendsDal.updateStatus(uid, first._id.toHexString(), "accepted");
+      await ConnectionsDal.updateStatus(
+        uid,
+        first._id.toHexString(),
+        "accepted"
+      );
     });
     it("should fail if uid does not match the friendUid", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const first = await createFriend({
+      const first = await createConnection({
         initiatorUid: uid,
       });
 
       //WHEN / THEN
       await expect(
-        FriendsDal.updateStatus(uid, first._id.toHexString(), "accepted")
-      ).rejects.toThrow("Friend not found");
+        ConnectionsDal.updateStatus(uid, first._id.toHexString(), "accepted")
+      ).rejects.toThrow("Connection not found");
     });
   });
 
@@ -176,81 +187,85 @@ describe("FriendsDal", () => {
     it("should delete by initiator", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const first = await createFriend({
+      const first = await createConnection({
         initiatorUid: uid,
       });
-      const second = await createFriend({
+      const second = await createConnection({
         initiatorUid: uid,
       });
 
       //WHEN
-      await FriendsDal.deleteById(uid, first._id.toHexString());
+      await ConnectionsDal.deleteById(uid, first._id.toHexString());
 
       //THEN
-      expect(await FriendsDal.getRequests({ initiatorUid: uid })).toStrictEqual(
-        [second]
-      );
+      expect(
+        await ConnectionsDal.getConnections({ initiatorUid: uid })
+      ).toStrictEqual([second]);
     });
 
     it("should delete by friend", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const first = await createFriend({
+      const first = await createConnection({
         friendUid: uid,
       });
-      const second = await createFriend({
+      const second = await createConnection({
         friendUid: uid,
         status: "accepted",
       });
 
       //WHEN
-      await FriendsDal.deleteById(uid, first._id.toHexString());
+      await ConnectionsDal.deleteById(uid, first._id.toHexString());
 
       //THEN
       expect(
-        await FriendsDal.getRequests({ initiatorUid: second.initiatorUid })
+        await ConnectionsDal.getConnections({
+          initiatorUid: second.initiatorUid,
+        })
       ).toStrictEqual([second]);
     });
 
     it("should fail if uid does not match", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const first = await createFriend({
+      const first = await createConnection({
         initiatorUid: uid,
       });
 
       //WHEN / THEN
       await expect(
-        FriendsDal.deleteById("Bob", first._id.toHexString())
+        ConnectionsDal.deleteById("Bob", first._id.toHexString())
       ).rejects.toThrow("Cannot be deleted");
     });
 
     it("should fail if initiator deletes blocked by friend", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const myRequestWasBlocked = await createFriend({
+      const myRequestWasBlocked = await createConnection({
         initiatorName: uid,
         status: "blocked",
       });
 
       //WHEN / THEN
       await expect(
-        FriendsDal.deleteById(uid, myRequestWasBlocked._id.toHexString())
+        ConnectionsDal.deleteById(uid, myRequestWasBlocked._id.toHexString())
       ).rejects.toThrow("Cannot be deleted");
     });
     it("allow friend to delete blocked", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const myBlockedUser = await createFriend({
+      const myBlockedUser = await createConnection({
         friendUid: uid,
         status: "blocked",
       });
 
       //WHEN
-      await FriendsDal.deleteById(uid, myBlockedUser._id.toHexString());
+      await ConnectionsDal.deleteById(uid, myBlockedUser._id.toHexString());
 
       //THEN
-      expect(await FriendsDal.getRequests({ friendUid: uid })).toEqual([]);
+      expect(await ConnectionsDal.getConnections({ friendUid: uid })).toEqual(
+        []
+      );
     });
   });
 
@@ -258,21 +273,26 @@ describe("FriendsDal", () => {
     it("should delete by uid", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const _initOne = await createFriend({ initiatorUid: uid });
-      const _initTwo = await createFriend({ initiatorUid: uid });
-      const _friendOne = await createFriend({ friendUid: uid });
-      const decoy = await createFriend({});
+      const _initOne = await createConnection({ initiatorUid: uid });
+      const _initTwo = await createConnection({ initiatorUid: uid });
+      const _friendOne = await createConnection({ friendUid: uid });
+      const decoy = await createConnection({});
 
       //WHEN
-      await FriendsDal.deleteByUid(uid);
+      await ConnectionsDal.deleteByUid(uid);
 
       //THEN
       expect(
-        await FriendsDal.getRequests({ initiatorUid: uid, friendUid: uid })
+        await ConnectionsDal.getConnections({
+          initiatorUid: uid,
+          friendUid: uid,
+        })
       ).toEqual([]);
 
       expect(
-        await FriendsDal.getRequests({ initiatorUid: decoy.initiatorUid })
+        await ConnectionsDal.getConnections({
+          initiatorUid: decoy.initiatorUid,
+        })
       ).toEqual([decoy]);
     });
   });
@@ -280,26 +300,29 @@ describe("FriendsDal", () => {
     it("should update the name", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const initOne = await createFriend({
+      const initOne = await createConnection({
         initiatorUid: uid,
         initiatorName: "Bob",
       });
-      const initTwo = await createFriend({
+      const initTwo = await createConnection({
         initiatorUid: uid,
         initiatorName: "Bob",
       });
-      const friendOne = await createFriend({
+      const friendOne = await createConnection({
         friendUid: uid,
         friendName: "Bob",
       });
-      const decoy = await createFriend({});
+      const decoy = await createConnection({});
 
       //WHEN
-      await FriendsDal.updateName(uid, "King Bob");
+      await ConnectionsDal.updateName(uid, "King Bob");
 
       //THEN
       expect(
-        await FriendsDal.getRequests({ initiatorUid: uid, friendUid: uid })
+        await ConnectionsDal.getConnections({
+          initiatorUid: uid,
+          friendUid: uid,
+        })
       ).toEqual([
         { ...initOne, initiatorName: "King Bob" },
         { ...initTwo, initiatorName: "King Bob" },
@@ -307,7 +330,9 @@ describe("FriendsDal", () => {
       ]);
 
       expect(
-        await FriendsDal.getRequests({ initiatorUid: decoy.initiatorUid })
+        await ConnectionsDal.getConnections({
+          initiatorUid: decoy.initiatorUid,
+        })
       ).toEqual([decoy]);
     });
   });

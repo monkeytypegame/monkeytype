@@ -5,7 +5,7 @@ import { mockBearerAuthentication } from "../../__testData__/auth";
 import * as Configuration from "../../../src/init/configuration";
 import { ObjectId } from "mongodb";
 import _ from "lodash";
-import * as FriendsDal from "../../../src/dal/friends";
+import * as ConnectionsDal from "../../../src/dal/connections";
 import * as UserDal from "../../../src/dal/user";
 
 const mockApp = request(app);
@@ -13,24 +13,24 @@ const configuration = Configuration.getCachedConfiguration();
 const uid = new ObjectId().toHexString();
 const mockAuth = mockBearerAuthentication(uid);
 
-describe("FriendsController", () => {
+describe("ConnectionsController", () => {
   beforeEach(async () => {
-    await enableFriendsEndpoints(true);
+    await enablleConnectionsEndpoints(true);
     vi.useFakeTimers();
     vi.setSystemTime(1000);
     mockAuth.beforeEach();
   });
 
-  describe("get friend requests", () => {
-    const getFriendsMock = vi.spyOn(FriendsDal, "getRequests");
+  describe("get connections", () => {
+    const getConnectionsMock = vi.spyOn(ConnectionsDal, "getConnections");
 
     beforeEach(() => {
-      getFriendsMock.mockClear();
+      getConnectionsMock.mockClear();
     });
 
     it("should get for the current user", async () => {
       //GIVEN
-      const friend: FriendsDal.DBFriendRequest = {
+      const friend: ConnectionsDal.DBConnection = {
         _id: new ObjectId(),
         addedAt: 42,
         initiatorUid: new ObjectId().toHexString(),
@@ -41,11 +41,11 @@ describe("FriendsController", () => {
         key: "key",
       };
 
-      getFriendsMock.mockResolvedValue([friend]);
+      getConnectionsMock.mockResolvedValue([friend]);
 
       //WHEN
       const { body } = await mockApp
-        .get("/friends/requests")
+        .get("/connections")
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
@@ -53,7 +53,7 @@ describe("FriendsController", () => {
       expect(body.data).toEqual([
         { ...friend, _id: friend._id.toHexString(), key: undefined },
       ]);
-      expect(getFriendsMock).toHaveBeenCalledWith({
+      expect(getConnectionsMock).toHaveBeenCalledWith({
         initiatorUid: uid,
         friendUid: uid,
       });
@@ -61,17 +61,17 @@ describe("FriendsController", () => {
 
     it("should filter by status", async () => {
       //GIVEN
-      getFriendsMock.mockResolvedValue([]);
+      getConnectionsMock.mockResolvedValue([]);
 
       //WHEN
       await mockApp
-        .get("/friends/requests")
+        .get("/connections")
         .query({ status: "accepted" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
-      expect(getFriendsMock).toHaveBeenCalledWith({
+      expect(getConnectionsMock).toHaveBeenCalledWith({
         initiatorUid: uid,
         friendUid: uid,
         status: ["accepted"],
@@ -80,17 +80,17 @@ describe("FriendsController", () => {
 
     it("should filter by multiple status", async () => {
       //GIVEN
-      getFriendsMock.mockResolvedValue([]);
+      getConnectionsMock.mockResolvedValue([]);
 
       //WHEN
       await mockApp
-        .get("/friends/requests")
+        .get("/connections")
         .query({ status: ["accepted", "blocked"] })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
-      expect(getFriendsMock).toHaveBeenCalledWith({
+      expect(getConnectionsMock).toHaveBeenCalledWith({
         initiatorUid: uid,
         friendUid: uid,
         status: ["accepted", "blocked"],
@@ -99,67 +99,67 @@ describe("FriendsController", () => {
 
     it("should filter by type incoming", async () => {
       //GIVEN
-      getFriendsMock.mockResolvedValue([]);
+      getConnectionsMock.mockResolvedValue([]);
 
       //WHEN
       await mockApp
-        .get("/friends/requests")
+        .get("/connections")
         .query({ type: "incoming" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
-      expect(getFriendsMock).toHaveBeenCalledWith({
+      expect(getConnectionsMock).toHaveBeenCalledWith({
         friendUid: uid,
       });
     });
 
     it("should filter by type outgoing", async () => {
       //GIVEN
-      getFriendsMock.mockResolvedValue([]);
+      getConnectionsMock.mockResolvedValue([]);
 
       //WHEN
       await mockApp
-        .get("/friends/requests")
+        .get("/connections")
         .query({ type: "outgoing" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
-      expect(getFriendsMock).toHaveBeenCalledWith({
+      expect(getConnectionsMock).toHaveBeenCalledWith({
         initiatorUid: uid,
       });
     });
 
     it("should filter by multiple types", async () => {
       //GIVEN
-      getFriendsMock.mockResolvedValue([]);
+      getConnectionsMock.mockResolvedValue([]);
 
       //WHEN
       await mockApp
-        .get("/friends/requests")
+        .get("/connections")
         .query({ type: ["incoming", "outgoing"] })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
-      expect(getFriendsMock).toHaveBeenCalledWith({
+      expect(getConnectionsMock).toHaveBeenCalledWith({
         initiatorUid: uid,
         friendUid: uid,
       });
     });
 
-    it("should fail if friends endpoints are disabled", async () => {
+    it("should fail if connections endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
-        mockApp.get("/friends/requests").set("Authorization", `Bearer ${uid}`)
+        mockApp.get("/connections").set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should fail without authentication", async () => {
-      await mockApp.get("/friends/requests").expect(401);
+      await mockApp.get("/connections").expect(401);
     });
     it("should fail for unknown query parameter", async () => {
       const { body } = await mockApp
-        .get("/friends/requests")
+        .get("/connections")
         .query({ extra: "yes" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
@@ -174,7 +174,7 @@ describe("FriendsController", () => {
   describe("create friend request", () => {
     const getUserByNameMock = vi.spyOn(UserDal, "getUserByName");
     const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
-    const createUserMock = vi.spyOn(FriendsDal, "create");
+    const createUserMock = vi.spyOn(ConnectionsDal, "create");
 
     beforeEach(() => {
       [getUserByNameMock, getPartialUserMock, createUserMock].forEach((it) =>
@@ -189,7 +189,7 @@ describe("FriendsController", () => {
       getUserByNameMock.mockResolvedValue(myFriend as any);
       getPartialUserMock.mockResolvedValue(me as any);
 
-      const result: FriendsDal.DBFriendRequest = {
+      const result: ConnectionsDal.DBConnection = {
         _id: new ObjectId(),
         addedAt: 42,
         initiatorUid: me.uid,
@@ -203,7 +203,7 @@ describe("FriendsController", () => {
 
       //WHEN
       const { body } = await mockApp
-        .post("/friends/requests")
+        .post("/connections")
         .send({ friendName: "Kevin" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
@@ -219,11 +219,15 @@ describe("FriendsController", () => {
         status: "pending",
       });
 
-      expect(getUserByNameMock).toHaveBeenCalledWith("Kevin", "create friend");
-      expect(getPartialUserMock).toHaveBeenCalledWith(uid, "create friend", [
-        "uid",
-        "name",
-      ]);
+      expect(getUserByNameMock).toHaveBeenCalledWith(
+        "Kevin",
+        "create connection"
+      );
+      expect(getPartialUserMock).toHaveBeenCalledWith(
+        uid,
+        "create connection",
+        ["uid", "name"]
+      );
       expect(createUserMock).toHaveBeenCalledWith(me, myFriend, 100);
     });
 
@@ -236,7 +240,7 @@ describe("FriendsController", () => {
 
       //WHEN
       const { body } = await mockApp
-        .post("/friends/requests")
+        .post("/connections")
         .send({ friendName: "Bob" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(400);
@@ -248,7 +252,7 @@ describe("FriendsController", () => {
     it("should fail without mandatory properties", async () => {
       //WHEN
       const { body } = await mockApp
-        .post("/friends/requests")
+        .post("/connections")
         .send({})
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
@@ -262,7 +266,7 @@ describe("FriendsController", () => {
     it("should fail with extra properties", async () => {
       //WHEN
       const { body } = await mockApp
-        .post("/friends/requests")
+        .post("/connections")
         .send({ friendName: "1", extra: "value" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
@@ -274,22 +278,22 @@ describe("FriendsController", () => {
       });
     });
 
-    it("should fail if friends endpoints are disabled", async () => {
+    it("should fail if connections endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
         mockApp
-          .post("/friends/requests")
+          .post("/connections")
           .send({ friendName: "1" })
           .set("Authorization", `Bearer ${uid}`)
       );
     });
 
     it("should fail without authentication", async () => {
-      await mockApp.post("/friends/requests").expect(401);
+      await mockApp.post("/connections").expect(401);
     });
   });
 
   describe("delete friend request", () => {
-    const deleteByIdMock = vi.spyOn(FriendsDal, "deleteById");
+    const deleteByIdMock = vi.spyOn(ConnectionsDal, "deleteById");
 
     beforeEach(() => {
       deleteByIdMock.mockClear().mockResolvedValue();
@@ -298,28 +302,26 @@ describe("FriendsController", () => {
     it("should delete by id", async () => {
       //WHEN
       await mockApp
-        .delete("/friends/requests/1")
+        .delete("/connections/1")
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
       expect(deleteByIdMock).toHaveBeenCalledWith(uid, "1");
     });
-    it("should fail if friends endpoints are disabled", async () => {
+    it("should fail if connections endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
-        mockApp
-          .delete("/friends/requests/1")
-          .set("Authorization", `Bearer ${uid}`)
+        mockApp.delete("/connections/1").set("Authorization", `Bearer ${uid}`)
       );
     });
 
     it("should fail without authentication", async () => {
-      await mockApp.delete("/friends/requests/1").expect(401);
+      await mockApp.delete("/connections/1").expect(401);
     });
   });
 
   describe("update friend request", () => {
-    const updateStatusMock = vi.spyOn(FriendsDal, "updateStatus");
+    const updateStatusMock = vi.spyOn(ConnectionsDal, "updateStatus");
 
     beforeEach(() => {
       updateStatusMock.mockClear().mockResolvedValue();
@@ -328,7 +330,7 @@ describe("FriendsController", () => {
     it("should accept", async () => {
       //WHEN
       await mockApp
-        .patch("/friends/requests/1")
+        .patch("/connections/1")
         .send({ status: "accepted" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
@@ -339,7 +341,7 @@ describe("FriendsController", () => {
     it("should block", async () => {
       //WHEN
       await mockApp
-        .patch("/friends/requests/1")
+        .patch("/connections/1")
         .send({ status: "blocked" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
@@ -350,7 +352,7 @@ describe("FriendsController", () => {
 
     it("should fail for invalid status", async () => {
       const { body } = await mockApp
-        .patch("/friends/requests/1")
+        .patch("/connections/1")
         .send({ status: "invalid" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
@@ -362,10 +364,10 @@ describe("FriendsController", () => {
         ],
       });
     });
-    it("should fail if friends endpoints are disabled", async () => {
+    it("should fail if connections endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
         mockApp
-          .patch("/friends/requests/1")
+          .patch("/connections/1")
           .send({ status: "accepted" })
           .set("Authorization", `Bearer ${uid}`)
       );
@@ -373,14 +375,14 @@ describe("FriendsController", () => {
 
     it("should fail without authentication", async () => {
       await mockApp
-        .patch("/friends/requests/1")
+        .patch("/connections/1")
         .send({ status: "accepted" })
         .expect(401);
     });
   });
 });
 
-async function enableFriendsEndpoints(enabled: boolean): Promise<void> {
+async function enablleConnectionsEndpoints(enabled: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {
     connections: { enabled },
   });
@@ -390,7 +392,7 @@ async function enableFriendsEndpoints(enabled: boolean): Promise<void> {
   );
 }
 async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
-  await enableFriendsEndpoints(false);
+  await enablleConnectionsEndpoints(false);
   const { body } = await call.expect(503);
-  expect(body.message).toEqual("Friends are not available at this time.");
+  expect(body.message).toEqual("Connections are not available at this time.");
 }

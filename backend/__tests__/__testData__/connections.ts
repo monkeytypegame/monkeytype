@@ -1,11 +1,11 @@
 import { ObjectId } from "mongodb";
-import * as FriendsDal from "../../src/dal/friends";
+import * as ConnectionsDal from "../../src/dal/connections";
 
 export async function createConnection(
-  data: Partial<FriendsDal.DBFriendRequest>,
+  data: Partial<ConnectionsDal.DBConnection>,
   maxPerUser = 25
-): Promise<FriendsDal.DBFriendRequest> {
-  const result = await FriendsDal.create(
+): Promise<ConnectionsDal.DBConnection> {
+  const result = await ConnectionsDal.create(
     {
       uid: data.initiatorUid ?? new ObjectId().toHexString(),
       name: data.initiatorName ?? "user" + new ObjectId().toHexString(),
@@ -16,7 +16,7 @@ export async function createConnection(
     },
     maxPerUser
   );
-  await FriendsDal.getCollection().updateOne(
+  await ConnectionsDal.getCollection().updateOne(
     { _id: result._id },
     { $set: data }
   );

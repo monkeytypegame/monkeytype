@@ -34,7 +34,7 @@ import { Result as ResultType } from "@monkeytype/schemas/results";
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
 import GeorgeQueue from "../queues/george-queue";
-import { getCollection as getConnectionCollection } from "./friends";
+import { getCollection as getConnectionCollection } from "./connections";
 
 export type DBUserTag = WithObjectId<UserTag>;
 

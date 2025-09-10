@@ -100,9 +100,9 @@ export function getOpenApi(): OpenAPIObject {
           "x-displayName": "Leaderboards",
         },
         {
-          name: "friends",
-          description: "User friend requests and friends list.",
-          "x-displayName": "Friends",
+          name: "connections",
+          description: "Connections between users.",
+          "x-displayName": "Connections",
           "x-public": "no",
         },
         {

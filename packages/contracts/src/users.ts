@@ -939,10 +939,10 @@ export const usersContract = c.router(
         200: GetFriendsResponseSchema,
       },
       metadata: meta({
-        rateLimit: "friendGet",
+        rateLimit: "userFriendGet",
         requireConfiguration: {
           path: "connections.enabled",
-          invalidMessage: "Friends are not available at this time.",
+          invalidMessage: "Connections are not available at this time.",
         },
       }),
     },
