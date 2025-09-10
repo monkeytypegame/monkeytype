@@ -1,6 +1,6 @@
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
-import Page from "./page";
+import { CachedPage } from "./page";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
@@ -21,6 +21,8 @@ function reset(): void {
 
 let speedHistogramResponseData: SpeedHistogram | null;
 let typingStatsResponseData: TypingStats | null;
+let supporters: string[] | null;
+let contributors: string[] | null;
 
 function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {
@@ -87,11 +89,7 @@ function updateStatsAndHistogram(): void {
   }
 }
 
-async function getStatsAndHistogramData(): Promise<void> {
-  if (speedHistogramResponseData && typingStatsResponseData) {
-    return;
-  }
-
+async function getSpeedHistogram(): Promise<void> {
   if (!ConnectionState.get()) {
     Notifications.add("Cannot update all time stats - offline", 0);
     return;
@@ -112,19 +110,29 @@ async function getStatsAndHistogramData(): Promise<void> {
       -1
     );
   }
+}
+
+async function getTypingStats(): Promise<void> {
+  if (!ConnectionState.get()) {
+    Notifications.add("Cannot update all time stats - offline", 0);
+    return;
+  }
+
   const typingStats = await Ape.public.getTypingStats();
   if (typingStats.status === 200) {
     typingStatsResponseData = typingStats.body.data;
   } else {
     Notifications.add(
-      `Failed to get global typing stats: ${speedStats.body.message}`,
+      `Failed to get global typing stats: ${typingStats.body.message}`,
       -1
     );
   }
 }
 
-async function fill(): Promise<void> {
-  const { data: supporters, error: supportersError } = await tryCatch(
+async function getSupporters(): Promise<void> {
+  //we fetch supporters only once because they don't change often
+  if (supporters) return;
+  const { data, error: supportersError } = await tryCatch(
     JSONData.getSupportersList()
   );
   if (supportersError) {
@@ -133,8 +141,13 @@ async function fill(): Promise<void> {
       -1
     );
   }
+  supporters = data;
+}
 
-  const { data: contributors, error: contributorsError } = await tryCatch(
+async function getContributors(): Promise<void> {
+  //we fetch contributors only once because they don't change often
+  if (contributors) return;
+  const { data, error: contributorsError } = await tryCatch(
     JSONData.getContributorsList()
   );
   if (contributorsError) {
@@ -143,10 +156,11 @@ async function fill(): Promise<void> {
       -1
     );
   }
+  contributors = data;
+}
 
-  void getStatsAndHistogramData().then(() => {
-    updateStatsAndHistogram();
-  });
+async function fill(): Promise<void> {
+  updateStatsAndHistogram();
 
   const supportersEl = document.querySelector(".pageAbout .supporters");
   let supportersHTML = "";
@@ -197,10 +211,46 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   return { data: histogramChartDataBucketed, labels };
 }
 
-export const page = new Page({
+export const page = new CachedPage({
   id: "about",
   element: $(".page.pageAbout"),
   path: "/about",
+  loadingOptions: {
+    style: "bar",
+    keyframes: [
+      {
+        percentage: 25,
+        durationMs: 1000,
+        text: "Downloading statistics",
+      },
+      {
+        percentage: 50,
+        durationMs: 1000,
+        text: "Downloading contributors",
+      },
+      {
+        percentage: 75,
+        durationMs: 1000,
+        text: "Downloading supporters",
+      },
+    ],
+    waitFor: async () => {
+      await Promise.all([
+        getContributors(),
+        getSupporters(),
+        getSpeedHistogram(),
+        getTypingStats(),
+      ]);
+    },
+    shouldLoad: () => true,
+    shouldRefreshAsync: () =>
+      [
+        contributors,
+        supporters,
+        speedHistogramResponseData,
+        typingStatsResponseData,
+      ].every((it) => it !== undefined && it !== null),
+  },
   afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageAbout");

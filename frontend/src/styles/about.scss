@@ -3,6 +3,9 @@
   flex-direction: column;
   gap: 2rem;
 
+  &.cacheRefresh {
+    border: 2px dashed hotpink;
+  }
   h2 {
     font-size: 1rem;
     margin: 0;

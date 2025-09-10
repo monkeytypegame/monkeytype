@@ -156,3 +156,33 @@ export class PageWithUrlParams<T, U extends UrlParamsSchema> extends Page<T> {
     await this._beforeShow?.({ ...options, urlParams: urlParams });
   }
 }
+
+export type CachedPageProperties<T> = PageProperties<T> & {
+  loadingOptions?: LoadingOptions & {
+    shouldRefreshAsync: () => boolean;
+  };
+};
+
+export class CachedPage<T> extends Page<T> {
+  constructor(props: CachedPageProperties<T>) {
+    if (props.loadingOptions !== undefined) {
+      const originalShouldLoad = props.loadingOptions.shouldLoad;
+      props.loadingOptions.shouldLoad = () => {
+        const refreshAsync = props.loadingOptions?.shouldRefreshAsync();
+        console.log("###", { refreshAsync });
+
+        if (refreshAsync) {
+          this.element.addClass("cacheRefresh");
+          void props.loadingOptions?.waitFor().then(async () => {
+            await props.beforeShow?.({});
+            this.element.removeClass("cacheRefresh");
+          });
+        }
+
+        return !refreshAsync && originalShouldLoad();
+      };
+    }
+
+    super(props);
+  }
+}
