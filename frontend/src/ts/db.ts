@@ -51,7 +51,7 @@ export function getSnapshot(): Snapshot | undefined {
 
 export function setSnapshot(
   newSnapshot: Snapshot | undefined,
-  noEventDispatch = false
+  options: { dispatchEvent: boolean } = { dispatchEvent: true }
 ): void {
   const originalBanned = dbSnapshot?.banned;
   const originalVerified = dbSnapshot?.verified;
@@ -74,7 +74,7 @@ export function setSnapshot(
     dbSnapshot.lbOptOut = lbOptOut;
   }
 
-  if (!noEventDispatch) {
+  if (options.dispatchEvent) {
     AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
   }
 }
@@ -994,7 +994,9 @@ export function saveLocalResult(data: SaveLocalResultData): void {
     }
   }
 
-  setSnapshot(snapshot, true);
+  setSnapshot(snapshot, {
+    dispatchEvent: false,
+  });
 }
 
 export function addXp(xp: number): void {
@@ -1005,7 +1007,9 @@ export function addXp(xp: number): void {
     snapshot.xp = 0;
   }
   snapshot.xp += xp;
-  setSnapshot(snapshot, true);
+  setSnapshot(snapshot, {
+    dispatchEvent: false,
+  });
 }
 
 export function updateInboxUnreadSize(newSize: number): void {
