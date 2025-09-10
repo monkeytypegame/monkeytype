@@ -15,10 +15,7 @@ import {
 import { isSpace } from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
-import {
-  getActiveFunboxesWithFunction,
-  isFunboxActiveWithProperty,
-} from "../../test/funbox/list";
+import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import * as Replay from "../../test/replay";
 import * as MonkeyPower from "../../elements/monkey-power";
 import Config from "../../config";
@@ -138,11 +135,6 @@ export async function onInsertText({
   }
 
   TestInput.setCurrentNotAfk();
-
-  for (const fb of getActiveFunboxesWithFunction("handleChar")) {
-    data = fb.functions.handleChar(data);
-    replaceLastInputValueChar(data);
-  }
 
   Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
 

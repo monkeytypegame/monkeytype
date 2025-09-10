@@ -989,9 +989,9 @@ $(document).on("keydown", async (event) => {
   // }
 
   //tab
-  if (event.key === "Tab") {
-    await handleTab(event, popupVisible);
-  }
+  // if (event.key === "Tab") {
+  //   await handleTab(event, popupVisible);
+  // }
 
   //esc
   if (event.key === "Escape" && Config.quickRestart === "esc") {

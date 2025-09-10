@@ -118,21 +118,6 @@ async function handleEnter(e: KeyboardEvent, now: number): Promise<void> {
   }
 }
 
-async function handleArrows(event: KeyboardEvent, now: number): Promise<void> {
-  const map: Record<string, string> = {
-    ArrowUp: "w",
-    ArrowDown: "s",
-    ArrowLeft: "a",
-    ArrowRight: "d",
-  };
-
-  const char = map[event.key];
-
-  if (char !== undefined) {
-    await emulateInsertText(char, now);
-  }
-}
-
 async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
   if (
     Config.oppositeShiftMode === "keymap" &&
@@ -162,12 +147,33 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
   const now = performance.now();
   handleKeydownTiming(event, now);
 
+  for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
+    void fb.functions.handleKeydown(event);
+  }
+
+  for (const fb of getActiveFunboxesWithFunction("getEmulatedChar")) {
+    const emulatedChar = fb.functions.getEmulatedChar(event);
+    if (emulatedChar !== null) {
+      await emulateInsertText(emulatedChar, now);
+      event.preventDefault();
+      return;
+    }
+  }
+
+  if (Config.layout !== "default") {
+    const emulatedChar = await getCharFromEvent(event);
+    if (emulatedChar !== null) {
+      await emulateInsertText(emulatedChar, now);
+      event.preventDefault();
+      return;
+    }
+  }
+
   if (
     event.key === "Home" ||
     event.key === "End" ||
     event.key === "PageUp" ||
-    event.key === "PageDown" ||
-    event.key.startsWith("Arrow")
+    event.key === "PageDown"
   ) {
     event.preventDefault();
     return;
@@ -175,16 +181,6 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
 
   if (Config.oppositeShiftMode !== "off") {
     await handleOppositeShift(event);
-  }
-
-  // there used to be an if check here with funbox preventDefaultEvent check
-  // but its only used in arrows so im not sure if its needed
-  // todo: decide what to do
-  const arrowsActive = Config.funbox.includes("arrows");
-  if (arrowsActive && event.key.startsWith("Arrow")) {
-    await handleArrows(event, now);
-    event.preventDefault();
-    return;
   }
 
   if (!event.repeat) {
@@ -209,19 +205,5 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
     event.preventDefault();
     TestLogic.restart();
     return;
-  }
-
-  for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
-    void fb.functions.handleKeydown(event);
-  }
-
-  if (Config.layout !== "default") {
-    const emulatedChar = await getCharFromEvent(event);
-
-    if (emulatedChar !== null) {
-      await emulateInsertText(emulatedChar, now);
-      event.preventDefault();
-      return;
-    }
   }
 }
