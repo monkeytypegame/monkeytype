@@ -80,7 +80,7 @@ export function update(): void {
 }
 
 export function updateFriendRequestsIndicator(): void {
-  const friends = getSnapshot()?.friends;
+  const friends = getSnapshot()?.connections;
 
   if (friends !== undefined) {
     const pendingFriendRequests = Object.values(friends).filter(

@@ -36,7 +36,7 @@ $(async (): Promise<void> => {
         $(".login").addClass("hidden");
         $(".disabledNotification").removeClass("hidden");
       }
-      if (!ServerConfiguration.get()?.friends.enabled) {
+      if (!ServerConfiguration.get()?.connections.enabled) {
         $(".accountButtonAndMenu .goToFriends").addClass("hidden");
       }
     });

@@ -1,5 +1,5 @@
 import * as Notifications from "../../elements/notifications";
-import { FriendRequest } from "@monkeytype/schemas/friends";
+import { Connection } from "@monkeytype/schemas/connections";
 import Ape from "../../ape";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../../firebase";
@@ -7,7 +7,7 @@ import { getFriendUid } from "../../pages/friends";
 import * as DB from "../../db";
 import { updateFriendRequestsIndicator } from "../account-button";
 
-let blockedUsers: FriendRequest[] = [];
+let blockedUsers: Connection[] = [];
 const element = $("#pageAccountSettings .tab[data-tab='blockedUsers']");
 
 async function getData(): Promise<boolean> {
@@ -18,7 +18,7 @@ async function getData(): Promise<boolean> {
     return false;
   }
 
-  const response = await Ape.friends.getRequests({
+  const response = await Ape.connections.get({
     query: { status: "blocked", type: "incoming" },
   });
 
@@ -83,7 +83,7 @@ element.on("click", "table button.delete", async (e) => {
     throw new Error("Cannot find id of target.");
   }
 
-  const response = await Ape.friends.deleteRequest({ params: { id } });
+  const response = await Ape.connections.delete({ params: { id } });
   if (response.status !== 200) {
     Notifications.add(`Cannot unblock user: ${response.body.message}`, -1);
   } else {
@@ -99,7 +99,7 @@ element.on("click", "table button.delete", async (e) => {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
-      delete snapshot.friends[uid];
+      delete snapshot.connections[uid];
       updateFriendRequestsIndicator();
     }
   }
