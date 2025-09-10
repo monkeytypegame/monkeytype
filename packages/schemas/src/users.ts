@@ -9,6 +9,7 @@ import {
   DefaultTimeModeSchema,
   QuoteLengthSchema,
   DifficultySchema,
+  PersonalBestSchema,
 } from "./shared";
 import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
 import { doesNotContainProfanity } from "./validation/validation";
@@ -371,3 +372,26 @@ export const ReportUserReasonSchema = z.enum([
   "Suspected cheating",
 ]);
 export type ReportUserReason = z.infer<typeof ReportUserReasonSchema>;
+
+export const FriendSchema = UserSchema.pick({
+  uid: true,
+  name: true,
+  discordId: true,
+  discordAvatar: true,
+  startedTests: true,
+  completedTests: true,
+  timeTyping: true,
+  xp: true,
+  banned: true,
+  lbOptOut: true,
+}).extend({
+  addedAt: z.number().int().nonnegative().optional(),
+  connectionId: IdSchema.optional(),
+  top15: PersonalBestSchema.optional(),
+  top60: PersonalBestSchema.optional(),
+  badgeId: z.number().int().optional(),
+  isPremium: z.boolean().optional(),
+  streak: UserStreakSchema.pick({ length: true, maxLength: true }),
+});
+
+export type Friend = z.infer<typeof FriendSchema>;

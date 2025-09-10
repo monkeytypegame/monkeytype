@@ -38,6 +38,7 @@ import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as FriendsDal from "../../../src/dal/friends";
 import { pb } from "../../__testData__/users";
+import { SuperTest } from "supertest";
 
 const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -3889,6 +3890,62 @@ describe("user controller test", () => {
       });
     });
   });
+  describe("get friends", () => {
+    const getFriendsMock = vi.spyOn(UserDal, "getFriends");
+
+    beforeEach(() => {
+      enableFriendsEndpoints(true);
+      getFriendsMock.mockClear();
+    });
+
+    it("gets with premium enabled", async () => {
+      //GIVEN
+      enablePremiumFeatures(true);
+      const friend: UserDal.DBFriend = {
+        name: "Bob",
+        isPremium: true,
+      } as any;
+      getFriendsMock.mockResolvedValue([friend]);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/users/friends")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body.data).toEqual([{ name: "Bob", isPremium: true }]);
+    });
+
+    it("gets with premium disabled", async () => {
+      //GIVEN
+      enablePremiumFeatures(false);
+      const friend: UserDal.DBFriend = {
+        name: "Bob",
+        isPremium: true,
+      } as any;
+      getFriendsMock.mockResolvedValue([friend]);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/users/friends")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body.data).toEqual([{ name: "Bob" }]);
+    });
+
+    it("should fail if friends endpoints are disabled", async () => {
+      await expectFailForDisabledEndpoint(
+        mockApp.get("/users/friends").set("Authorization", `Bearer ${uid}`)
+      );
+    });
+
+    it("should fail without authentication", async () => {
+      await mockApp.get("/users/friends").expect(401);
+    });
+  });
 });
 
 function fillYearWithDay(days: number): number[] {
@@ -3987,4 +4044,19 @@ async function enableReporting(enabled: boolean): Promise<void> {
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
   );
+}
+
+async function enableFriendsEndpoints(enabled: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    connections: { enabled },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}
+async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
+  await enableFriendsEndpoints(false);
+  const { body } = await call.expect(503);
+  expect(body.message).toEqual("Friends are not available at this time.");
 }

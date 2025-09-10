@@ -60,6 +60,7 @@ import {
   GetCustomThemesResponse,
   GetDiscordOauthLinkResponse,
   GetFavoriteQuotesResponse,
+  GetFriendsResponse,
   GetPersonalBestsQuery,
   GetPersonalBestsResponse,
   GetProfilePathParams,
@@ -1264,4 +1265,20 @@ export async function getStreak(
   const user = await UserDAL.getPartialUser(uid, "streak", ["streak"]);
 
   return new MonkeyResponse("Streak data retrieved", user.streak ?? null);
+}
+
+export async function getFriends(
+  req: MonkeyRequest
+): Promise<GetFriendsResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const premiumEnabled = req.ctx.configuration.users.premium.enabled;
+  const data = await UserDAL.getFriends(uid);
+
+  if (!premiumEnabled) {
+    for (const friend of data) {
+      delete friend.isPremium;
+    }
+  }
+
+  return new MonkeyResponse("Friends retrieved", data);
 }

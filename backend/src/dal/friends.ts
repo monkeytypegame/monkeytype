@@ -1,7 +1,6 @@
 import { Collection, Filter, ObjectId } from "mongodb";
 import * as db from "../init/db";
 import {
-  Friend,
   FriendRequest,
   FriendRequestStatus,
 } from "@monkeytype/schemas/friends";
@@ -13,8 +12,6 @@ export type DBFriendRequest = WithObjectId<
     key: string; //sorted uid
   }
 >;
-
-export type DBFriend = Friend;
 
 // Export for use in tests
 export const getCollection = (): Collection<DBFriendRequest> =>
@@ -50,13 +47,13 @@ export async function getRequests(options: {
 export async function create(
   initiator: { uid: string; name: string },
   friend: { uid: string; name: string },
-  maxFriendsPerUser: number
+  maxPerUser: number
 ): Promise<DBFriendRequest> {
   const count = await getCollection().countDocuments({
     initiatorUid: initiator.uid,
   });
 
-  if (count >= maxFriendsPerUser) {
+  if (count >= maxPerUser) {
     throw new MonkeyError(
       409,
       "Maximum number of friends reached",
@@ -175,215 +172,6 @@ function getKey(initiatorUid: string, friendUid: string): string {
   const ids = [initiatorUid, friendUid];
   ids.sort();
   return ids.join("/");
-}
-
-export async function getFriends(uid: string): Promise<DBFriend[]> {
-  return (await getCollection()
-    .aggregate([
-      {
-        $match: {
-          //uid is friend or initiator
-          $and: [
-            {
-              $or: [{ initiatorUid: uid }, { friendUid: uid }],
-              status: "accepted",
-            },
-          ],
-        },
-      },
-      {
-        $project: {
-          friendUid: true,
-          initiatorUid: true,
-          addedAt: true,
-        },
-      },
-      {
-        $addFields: {
-          //pick the other user, not uid
-          uid: {
-            $cond: {
-              if: { $eq: ["$friendUid", uid] },
-              // oxlint-disable-next-line no-thenable
-              then: "$initiatorUid",
-              else: "$friendUid",
-            },
-          },
-        },
-      },
-      // we want to fetch the data for our uid as well, add it to the list of documents
-      // workaround for missing unionWith + $documents in mongodb 5.0
-      {
-        $group: {
-          _id: null,
-          data: {
-            $push: {
-              uid: "$uid",
-              addedAt: "$addedAt",
-              friendRequestId: "$_id",
-            },
-          },
-        },
-      },
-      {
-        $project: {
-          data: {
-            $concatArrays: ["$data", [{ uid }]],
-          },
-        },
-      },
-      {
-        $unwind: "$data",
-      },
-
-      /* end of workaround, this is the replacement for >= 5.1
-    
-      { $addFields: { friendRequestId: "$_id" } },
-      { $project: { uid: true, addedAt: true, friendRequestId: true } },
-      {
-        $unionWith: {
-          pipeline: [{ $documents: [{ uid }] }],
-        },
-      },
-      */
-
-      {
-        $lookup: {
-          /* query users to get the friend data */
-          from: "users",
-          localField: "data.uid", //just uid if we remove the workaround above
-          foreignField: "uid",
-          as: "result",
-          let: {
-            addedAt: "$data.addedAt", //just $addedAt if we remove the workaround above
-            friendRequestId: "$data.friendRequestId", //just $friendRequestId if we remove the workaround above
-          },
-          pipeline: [
-            {
-              $project: {
-                _id: false,
-                uid: true,
-                friendRequestId: true,
-                name: true,
-                discordId: true,
-                discordAvatar: true,
-                startedTests: true,
-                completedTests: true,
-                timeTyping: true,
-                xp: true,
-                "streak.length": true,
-                "streak.maxLength": true,
-                personalBests: true,
-                "inventory.badges": true,
-                "premium.expirationTimestamp": true,
-                banned: 1,
-                lbOptOut: 1,
-              },
-            },
-            {
-              $addFields: {
-                addedAt: "$$addedAt",
-                friendRequestId: "$$friendRequestId",
-                top15: {
-                  $reduce: {
-                    //find highest wpm from time 15 PBs
-                    input: "$personalBests.time.15",
-                    initialValue: {},
-                    in: {
-                      $cond: [
-                        { $gte: ["$$this.wpm", "$$value.wpm"] },
-                        "$$this",
-                        "$$value",
-                      ],
-                    },
-                  },
-                },
-                top60: {
-                  $reduce: {
-                    //find highest wpm from time 60 PBs
-                    input: "$personalBests.time.60",
-                    initialValue: {},
-                    in: {
-                      $cond: [
-                        { $gte: ["$$this.wpm", "$$value.wpm"] },
-                        "$$this",
-                        "$$value",
-                      ],
-                    },
-                  },
-                },
-                badgeId: {
-                  $ifNull: [
-                    {
-                      $first: {
-                        $map: {
-                          input: {
-                            $filter: {
-                              input: "$inventory.badges",
-                              as: "badge",
-                              cond: { $eq: ["$$badge.selected", true] },
-                            },
-                          },
-                          as: "selectedBadge",
-                          in: "$$selectedBadge.id",
-                        },
-                      },
-                    },
-                    "$$REMOVE",
-                  ],
-                },
-                isPremium: {
-                  $cond: {
-                    if: {
-                      $or: [
-                        { $eq: ["$premium.expirationTimestamp", -1] },
-                        {
-                          $gt: [
-                            "$premium.expirationTimestamp",
-                            { $toLong: "$$NOW" },
-                          ],
-                        },
-                      ],
-                    },
-                    // oxlint-disable-next-line no-thenable
-                    then: true,
-                    else: "$$REMOVE",
-                  },
-                },
-              },
-            },
-            {
-              $addFields: {
-                //remove nulls
-                top15: { $ifNull: ["$top15", "$$REMOVE"] },
-                top60: { $ifNull: ["$top60", "$$REMOVE"] },
-                badgeId: { $ifNull: ["$badgeId", "$$REMOVE"] },
-                addedAt: "$addedAt",
-              },
-            },
-            {
-              $project: {
-                personalBests: false,
-                inventory: false,
-                premium: false,
-              },
-            },
-          ],
-        },
-      },
-      {
-        $replaceRoot: {
-          newRoot: {
-            $cond: [
-              { $gt: [{ $size: "$result" }, 0] },
-              { $first: "$result" },
-              {}, // empty document fallback, this can happen if the user is not present
-            ],
-          },
-        },
-      },
-    ])
-    .toArray()) as DBFriend[];
 }
 
 export async function createIndicies(): Promise<void> {

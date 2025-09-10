@@ -3,7 +3,6 @@ import {
   CreateFriendRequestResponse,
   GetFriendRequestsQuery,
   GetFriendRequestsResponse,
-  GetFriendsResponse,
   IdPathParams,
   UpdateFriendRequestsRequest,
 } from "@monkeytype/contracts/friends";
@@ -41,7 +40,7 @@ export async function createRequest(
 ): Promise<CreateFriendRequestResponse> {
   const { uid } = req.ctx.decodedToken;
   const { friendName } = req.body;
-  const { maxFriendsPerUser } = req.ctx.configuration.friends;
+  const { maxPerUser } = req.ctx.configuration.connections;
 
   const friend = await UserDal.getUserByName(friendName, "create friend");
 
@@ -54,7 +53,7 @@ export async function createRequest(
     "name",
   ]);
 
-  const result = await FriendsDal.create(initiator, friend, maxFriendsPerUser);
+  const result = await FriendsDal.create(initiator, friend, maxPerUser);
 
   return new MonkeyResponse("Friend created", convert(result));
 }
@@ -80,20 +79,4 @@ export async function updateRequest(
   await FriendsDal.updateStatus(uid, id, status);
 
   return new MonkeyResponse("Friend updated", null);
-}
-
-export async function getFriends(
-  req: MonkeyRequest
-): Promise<GetFriendsResponse> {
-  const { uid } = req.ctx.decodedToken;
-  const premiumEnabled = req.ctx.configuration.users.premium.enabled;
-  const data = await FriendsDal.getFriends(uid);
-
-  if (!premiumEnabled) {
-    for (const friend of data) {
-      delete friend.isPremium;
-    }
-  }
-
-  return new MonkeyResponse("Friends retrieved", data);
 }

@@ -378,66 +378,11 @@ describe("FriendsController", () => {
         .expect(401);
     });
   });
-  describe("get friends", () => {
-    const getFriendsMock = vi.spyOn(FriendsDal, "getFriends");
-
-    beforeEach(() => {
-      getFriendsMock.mockClear();
-    });
-
-    it("gets with premium enabled", async () => {
-      //GIVEN
-      enablePremiumFeatures(true);
-      const friend: FriendsDal.DBFriend = {
-        name: "Bob",
-        isPremium: true,
-      } as any;
-      getFriendsMock.mockResolvedValue([friend]);
-
-      //WHEN
-      const { body } = await mockApp
-        .get("/friends")
-        .set("Authorization", `Bearer ${uid}`)
-        .expect(200);
-
-      //THEN
-      expect(body.data).toEqual([{ name: "Bob", isPremium: true }]);
-    });
-
-    it("gets with premium disabled", async () => {
-      //GIVEN
-      enablePremiumFeatures(false);
-      const friend: FriendsDal.DBFriend = {
-        name: "Bob",
-        isPremium: true,
-      } as any;
-      getFriendsMock.mockResolvedValue([friend]);
-
-      //WHEN
-      const { body } = await mockApp
-        .get("/friends")
-        .set("Authorization", `Bearer ${uid}`)
-        .expect(200);
-
-      //THEN
-      expect(body.data).toEqual([{ name: "Bob" }]);
-    });
-
-    it("should fail if friends endpoints are disabled", async () => {
-      await expectFailForDisabledEndpoint(
-        mockApp.get("/friends").set("Authorization", `Bearer ${uid}`)
-      );
-    });
-
-    it("should fail without authentication", async () => {
-      await mockApp.get("/friends").expect(401);
-    });
-  });
 });
 
 async function enableFriendsEndpoints(enabled: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {
-    friends: { enabled },
+    connections: { enabled },
   });
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
@@ -448,14 +393,4 @@ async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
   await enableFriendsEndpoints(false);
   const { body } = await call.expect(503);
   expect(body.message).toEqual("Friends are not available at this time.");
-}
-
-async function enablePremiumFeatures(premium: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    users: { premium: { enabled: premium } },
-  });
-
-  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
-  );
 }

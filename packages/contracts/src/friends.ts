@@ -4,7 +4,6 @@ import {
   FriendRequestSchema,
   FriendRequestStatusSchema,
   FriendRequestTypeSchema,
-  FriendSchema,
 } from "@monkeytype/schemas/friends";
 import { z } from "zod";
 import {
@@ -62,9 +61,6 @@ export const UpdateFriendRequestsRequestSchema = z.object({
 export type UpdateFriendRequestsRequest = z.infer<
   typeof UpdateFriendRequestsRequestSchema
 >;
-
-export const GetFriendsResponseSchema = responseWithData(z.array(FriendSchema));
-export type GetFriendsResponse = z.infer<typeof GetFriendsResponseSchema>;
 
 export const friendsContract = c.router(
   {
@@ -126,18 +122,6 @@ export const friendsContract = c.router(
         rateLimit: "friendRequestsUpdate",
       }),
     },
-    getFriends: {
-      summary: "get friends",
-      description: "get friends list",
-      method: "GET",
-      path: "/",
-      responses: {
-        200: GetFriendsResponseSchema,
-      },
-      metadata: meta({
-        rateLimit: "friendGet",
-      }),
-    },
   },
   {
     pathPrefix: "/friends",
@@ -145,7 +129,7 @@ export const friendsContract = c.router(
     metadata: meta({
       openApiTags: "friends",
       requireConfiguration: {
-        path: "friends.enabled",
+        path: "connections.enabled",
         invalidMessage: "Friends are not available at this time.",
       },
     }),
