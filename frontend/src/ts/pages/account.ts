@@ -1323,8 +1323,12 @@ export const page = new Page({
   element: $(".page.pageAccount"),
   path: "/account",
   loadingOptions: {
-    shouldLoad: () => {
-      return DB.getSnapshot()?.results === undefined;
+    loadingMode: () => {
+      if (DB.getSnapshot()?.results === undefined) {
+        return "sync";
+      } else {
+        return "none";
+      }
     },
     waitFor: async () => {
       if (DB.getSnapshot() === null) {
