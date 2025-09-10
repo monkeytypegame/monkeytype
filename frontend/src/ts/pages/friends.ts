@@ -16,7 +16,6 @@ import { secondsToString } from "../utils/date-and-time";
 import { PersonalBest } from "@monkeytype/schemas/shared";
 import Format from "../utils/format";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
-import { Friend, FriendRequest } from "@monkeytype/schemas/friends";
 import { SortedTable } from "../utils/sorted-table";
 import { getAvatarElement } from "../utils/discord-avatar";
 import { formatTypingStatsRatio } from "../utils/misc";
@@ -25,27 +24,29 @@ import * as DB from "../db";
 import { getAuthenticatedUser } from "../firebase";
 import * as ServerConfiguration from "../ape/server-configuration";
 import * as AuthEvent from "../observables/auth-event";
+import { Connection } from "@monkeytype/schemas/connections";
+import { Friend } from "@monkeytype/schemas/users";
 
 const pageElement = $(".page.pageFriends");
 
 let friendsTable: SortedTable<Friend> | undefined = undefined;
 
-let pendingRequests: FriendRequest[] | undefined;
+let pendingRequests: Connection[] | undefined;
 let friendsList: Friend[] | undefined;
 
 export function getFriendUid(
-  friendRequest: Pick<FriendRequest, "initiatorUid" | "friendUid">
+  connection: Pick<Connection, "initiatorUid" | "friendUid">
 ): string {
   const me = getAuthenticatedUser();
   if (me === null)
     throw new Error("expected to be authenticated in getFriendUid");
 
-  if (me.uid === friendRequest.initiatorUid) return friendRequest.friendUid;
-  return friendRequest.initiatorUid;
+  if (me.uid === connection.initiatorUid) return connection.friendUid;
+  return connection.initiatorUid;
 }
 
 export async function addFriend(friendName: string): Promise<true | string> {
-  const result = await Ape.friends.createRequest({ body: { friendName } });
+  const result = await Ape.connections.create({ body: { friendName } });
 
   if (result.status !== 200) {
     return `Friend request failed: ${result.body.message}`;
@@ -54,8 +55,8 @@ export async function addFriend(friendName: string): Promise<true | string> {
     if (snapshot !== undefined) {
       const friendUid = getFriendUid(result.body.data);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      snapshot.friends[friendUid] = result.body.data.status;
-      updatePendingRequests();
+      snapshot.connections[friendUid] = result.body.data.status;
+      updatePendingConnections();
     }
     return true;
   }
@@ -90,15 +91,15 @@ const removeFriendModal = new SimpleModal({
     thisPopup.text = `Are you sure you want to remove ${thisPopup.parameters[1]} as a friend?`;
   },
   execFn: async (thisPopup) => {
-    const friendRequestId = thisPopup.parameters[0] as string;
-    const result = await Ape.friends.deleteRequest({
-      params: { id: friendRequestId },
+    const connectionId = thisPopup.parameters[0] as string;
+    const result = await Ape.connections.delete({
+      params: { id: connectionId },
     });
     if (result.status !== 200) {
       return { status: -1, message: result.body.message };
     } else {
       friendsList = friendsList?.filter(
-        (it) => it.friendRequestId !== friendRequestId
+        (it) => it.connectionId !== connectionId
       );
       friendsTable?.setData(friendsList ?? []);
       friendsTable?.updateBody();
@@ -107,23 +108,20 @@ const removeFriendModal = new SimpleModal({
   },
 });
 
-async function fetchPendingRequests(): Promise<void> {
-  const result = await Ape.friends.getRequests({
+async function fetchPendingConnections(): Promise<void> {
+  const result = await Ape.connections.get({
     query: { status: "pending", type: "incoming" },
   });
 
   if (result.status !== 200) {
-    Notifications.add(
-      "Error getting friend requests: " + result.body.message,
-      -1
-    );
+    Notifications.add("Error getting connections: " + result.body.message, -1);
     pendingRequests = undefined;
   } else {
     pendingRequests = result.body.data;
   }
 }
 
-function updatePendingRequests(): void {
+function updatePendingConnections(): void {
   $(".pageFriends .pendingRequests").addClass("hidden");
 
   if (pendingRequests === undefined || pendingRequests.length === 0) {
@@ -160,7 +158,7 @@ function updatePendingRequests(): void {
 }
 
 async function fetchFriends(): Promise<void> {
-  const result = await Ape.friends.getFriends();
+  const result = await Ape.users.getFriends();
   if (result.status !== 200) {
     Notifications.add("Error getting friends: " + result.body.message, -1);
     friendsList = undefined;
@@ -204,7 +202,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
   const top60 = formatPb(entry.top60);
 
   const element = document.createElement("tr");
-  element.dataset["friendRequestId"] = entry.friendRequestId;
+  element.dataset["connectionId"] = entry.connectionId;
 
   const isMe = entry.uid === getAuthenticatedUser()?.uid;
 
@@ -369,10 +367,10 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
 
   const result =
     action === "rejected"
-      ? await Ape.friends.deleteRequest({
+      ? await Ape.connections.delete({
           params: { id },
         })
-      : await Ape.friends.updateRequest({
+      : await Ape.connections.update({
           params: { id },
           body: { status: action as "accepted" | "blocked" },
         });
@@ -396,8 +394,8 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
-      delete snapshot.friends[friendUid];
-      updatePendingRequests();
+      delete snapshot.connections[friendUid];
+      updatePendingConnections();
     }
     if (count === 1) {
       $(".pageFriends .pendingRequests").addClass("hidden");
@@ -419,9 +417,9 @@ $(".pageFriends .friends table").on("click", async (e) => {
   if (action === undefined) return;
 
   if (action === "remove") {
-    const friendRequestId =
-      e.target.parentElement?.parentElement?.dataset["friendRequestId"];
-    if (friendRequestId === undefined) {
+    const connectionId =
+      e.target.parentElement?.parentElement?.dataset["connectionId"];
+    if (connectionId === undefined) {
       throw new Error("Cannot find id of target.");
     }
 
@@ -429,7 +427,7 @@ $(".pageFriends .friends table").on("click", async (e) => {
       e.target.parentElement?.parentElement?.querySelector("a.entryName")
         ?.textContent ?? "";
 
-    removeFriendModal.show([friendRequestId, name], {});
+    removeFriendModal.show([connectionId, name], {});
   }
 });
 
@@ -443,18 +441,18 @@ export const page = new Page<undefined>({
     waitFor: async () => {
       await ServerConfiguration.configurationPromise;
       const serverConfig = ServerConfiguration.get();
-      if (!serverConfig?.friends.enabled) {
-        throw new Error("Friends are disabled.");
+      if (!serverConfig?.connections.enabled) {
+        throw new Error("Connectins are disabled.");
       }
 
       if (friendsList !== undefined && pendingRequests !== undefined) {
         setTimeout(async () => {
-          await Promise.all([fetchPendingRequests(), fetchFriends()]);
-          updatePendingRequests();
+          await Promise.all([fetchPendingConnections(), fetchFriends()]);
+          updatePendingConnections();
           updateFriends();
         }, 0);
       } else {
-        await Promise.all([fetchPendingRequests(), fetchFriends()]);
+        await Promise.all([fetchPendingConnections(), fetchFriends()]);
       }
     },
     style: "bar",
@@ -474,7 +472,7 @@ export const page = new Page<undefined>({
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageFriends", "main");
 
-    updatePendingRequests();
+    updatePendingConnections();
     updateFriends();
   },
 });

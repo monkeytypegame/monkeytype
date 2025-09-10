@@ -436,7 +436,7 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
 function isFriend(uid: string | undefined): boolean {
   if (uid === undefined || uid === getAuthenticatedUser()?.uid) return false;
 
-  return Object.entries(DB.getSnapshot()?.friends ?? []).some(
+  return Object.entries(DB.getSnapshot()?.connections ?? []).some(
     ([friendUid, status]) => friendUid === uid && status === "accepted"
   );
 }
@@ -449,8 +449,8 @@ export function updateFriendRequestButton(): void {
   const button = document.querySelector(".profile .addFriendButton");
 
   const myProfile = myUid === profileUid;
-  const hasRequest = DB.getSnapshot()?.friends[profileUid] !== undefined;
-  const featureEnabled = getServerConfiguration()?.friends.enabled;
+  const hasRequest = DB.getSnapshot()?.connections[profileUid] !== undefined;
+  const featureEnabled = getServerConfiguration()?.connections.enabled;
 
   if (!featureEnabled || myUid === undefined || myProfile || hasRequest) {
     button?.classList.add("disabled");

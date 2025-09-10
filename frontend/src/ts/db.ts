@@ -91,16 +91,16 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   try {
     if (!isAuthenticated()) return false;
 
-    const friendsRequest = getServerConfiguration()?.friends.enabled
-      ? Ape.friends.getRequests()
+    const connectionsRequest = getServerConfiguration()?.connections.enabled
+      ? Ape.connections.get()
       : { status: 200, body: { message: "", data: [] } };
 
-    const [userResponse, configResponse, presetsResponse, friendsResponse] =
+    const [userResponse, configResponse, presetsResponse, connectionsResponse] =
       await Promise.all([
         Ape.users.get(),
         Ape.configs.get(),
         Ape.presets.get(),
-        friendsRequest,
+        connectionsRequest,
       ]);
 
     if (userResponse.status !== 200) {
@@ -121,17 +121,17 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         presetsResponse.status
       );
     }
-    if (friendsResponse.status !== 200) {
+    if (connectionsResponse.status !== 200) {
       throw new SnapshotInitError(
-        `${friendsResponse.body.message} (friendRequests)`,
-        friendsResponse.status
+        `${connectionsResponse.body.message} (connections)`,
+        connectionsResponse.status
       );
     }
 
     const userData = userResponse.body.data;
     const configData = configResponse.body.data;
     const presetsData = presetsResponse.body.data;
-    const friendsData = friendsResponse.body.data;
+    const connectionsData = connectionsResponse.body.data;
 
     if (userData === null) {
       throw new SnapshotInitError(
@@ -268,16 +268,16 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       );
     }
 
-    snap.friends = Object.fromEntries(
-      friendsData.map((friend) => {
-        // oxlint-disable-next-line no-non-null-assertion
-        const isMyRequest = getAuthenticatedUser()!.uid === friend.initiatorUid;
+    snap.connections = Object.fromEntries(
+      connectionsData.map((connection) => {
+        const isMyRequest =
+          getAuthenticatedUser()?.uid === connection.initiatorUid;
 
         return [
-          isMyRequest ? friend.friendUid : friend.initiatorUid,
-          friend.status === "pending" && !isMyRequest
+          isMyRequest ? connection.friendUid : connection.initiatorUid,
+          connection.status === "pending" && !isMyRequest
             ? "incoming"
-            : friend.status,
+            : connection.status,
         ];
       })
     );
