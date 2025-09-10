@@ -15,7 +15,7 @@ const mockAuth = mockBearerAuthentication(uid);
 
 describe("ConnectionsController", () => {
   beforeEach(async () => {
-    await enablleConnectionsEndpoints(true);
+    await enableConnectionsEndpoints(true);
     vi.useFakeTimers();
     vi.setSystemTime(1000);
     mockAuth.beforeEach();
@@ -382,7 +382,7 @@ describe("ConnectionsController", () => {
   });
 });
 
-async function enablleConnectionsEndpoints(enabled: boolean): Promise<void> {
+async function enableConnectionsEndpoints(enabled: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {
     connections: { enabled },
   });
@@ -392,7 +392,7 @@ async function enablleConnectionsEndpoints(enabled: boolean): Promise<void> {
   );
 }
 async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
-  await enablleConnectionsEndpoints(false);
+  await enableConnectionsEndpoints(false);
   const { body } = await call.expect(503);
   expect(body.message).toEqual("Connections are not available at this time.");
 }

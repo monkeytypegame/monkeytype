@@ -199,7 +199,7 @@ describe("UserDal", () => {
     // when
     await UserDAL.updateName(testUser.uid, renamed, testUser.name);
 
-    // thencreateUser({
+    // then
     const updatedUser = await UserDAL.getUser(testUser.uid, "test");
     expect(updatedUser.name).toBe(renamed);
   });

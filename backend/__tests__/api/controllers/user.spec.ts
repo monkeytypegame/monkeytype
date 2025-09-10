@@ -626,7 +626,7 @@ describe("user controller test", () => {
       "purgeUserFromXpLeaderboards"
     );
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
-    const friendsDeletebyUidMock = vi.spyOn(ConnectionsDal, "deleteByUid");
+    const connectionsDeletebyUidMock = vi.spyOn(ConnectionsDal, "deleteByUid");
     const logsDeleteUserMock = vi.spyOn(LogDal, "deleteUserLogs");
 
     beforeEach(() => {
@@ -639,7 +639,7 @@ describe("user controller test", () => {
         deleteConfigMock,
         purgeUserFromDailyLeaderboardsMock,
         purgeUserFromXpLeaderboardsMock,
-        friendsDeletebyUidMock,
+        connectionsDeletebyUidMock,
         logsDeleteUserMock,
       ].forEach((it) => it.mockResolvedValue(undefined));
 
@@ -658,7 +658,7 @@ describe("user controller test", () => {
         deleteAllPresetsMock,
         purgeUserFromDailyLeaderboardsMock,
         purgeUserFromXpLeaderboardsMock,
-        friendsDeletebyUidMock,
+        connectionsDeletebyUidMock,
         logsDeleteUserMock,
       ].forEach((it) => it.mockClear());
     });
@@ -689,7 +689,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
-      expect(friendsDeletebyUidMock).toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -725,7 +725,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
-      expect(friendsDeletebyUidMock).toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -756,7 +756,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
-      expect(friendsDeletebyUidMock).toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -786,7 +786,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).not.toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).not.toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).not.toHaveBeenCalledWith(uid);
-      expect(friendsDeletebyUidMock).not.toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).not.toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).not.toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -827,7 +827,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
-      expect(friendsDeletebyUidMock).toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -868,7 +868,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
-      expect(friendsDeletebyUidMock).toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -989,7 +989,7 @@ describe("user controller test", () => {
     const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
     const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
     const updateNameMock = vi.spyOn(UserDal, "updateName");
-    const friendsUpdateNameMock = vi.spyOn(ConnectionsDal, "updateName");
+    const connectionsUpdateNameMock = vi.spyOn(ConnectionsDal, "updateName");
     const addImportantLogMock = vi.spyOn(LogDal, "addImportantLog");
 
     beforeEach(() => {
@@ -997,7 +997,7 @@ describe("user controller test", () => {
         blocklistContainsMock,
         getPartialUserMock,
         updateNameMock,
-        friendsUpdateNameMock,
+        connectionsUpdateNameMock,
         addImportantLogMock,
       ].forEach((it) => {
         it.mockClear().mockResolvedValue(null as never);
@@ -1029,7 +1029,7 @@ describe("user controller test", () => {
         "changed name from Bob to newName",
         uid
       );
-      expect(friendsUpdateNameMock).toHaveBeenCalledWith(uid, "newName");
+      expect(connectionsUpdateNameMock).toHaveBeenCalledWith(uid, "newName");
     });
 
     it("should fail if username is blocked", async () => {
@@ -1046,7 +1046,7 @@ describe("user controller test", () => {
       //THEN
       expect(body.message).toEqual("Username blocked");
       expect(updateNameMock).not.toHaveBeenCalled();
-      expect(friendsUpdateNameMock).not.toHaveBeenCalled();
+      expect(connectionsUpdateNameMock).not.toHaveBeenCalled();
     });
 
     it("should fail for banned users", async () => {
@@ -3894,7 +3894,7 @@ describe("user controller test", () => {
     const getFriendsMock = vi.spyOn(UserDal, "getFriends");
 
     beforeEach(() => {
-      enableFriendsEndpoints(true);
+      enableConnectionsEndpoints(true);
       getFriendsMock.mockClear();
     });
 
@@ -4046,7 +4046,7 @@ async function enableReporting(enabled: boolean): Promise<void> {
   );
 }
 
-async function enableFriendsEndpoints(enabled: boolean): Promise<void> {
+async function enableConnectionsEndpoints(enabled: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {
     connections: { enabled },
   });
@@ -4056,7 +4056,7 @@ async function enableFriendsEndpoints(enabled: boolean): Promise<void> {
   );
 }
 async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
-  await enableFriendsEndpoints(false);
+  await enableConnectionsEndpoints(false);
   const { body } = await call.expect(503);
   expect(body.message).toEqual("Connections are not available at this time.");
 }
