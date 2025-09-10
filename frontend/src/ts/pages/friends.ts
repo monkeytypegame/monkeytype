@@ -356,7 +356,7 @@ $(".pageFriends button.friendAdd").on("click", () => {
 $(".pageFriends .pendingRequests table").on("click", async (e) => {
   const action = Array.from(e.target.classList).find((it) =>
     ["accepted", "rejected", "blocked"].includes(it)
-  );
+  ) as "accepted" | "rejected" | "blocked";
 
   if (action === undefined) return;
 
@@ -372,7 +372,7 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
         })
       : await Ape.connections.update({
           params: { id },
-          body: { status: action as "accepted" | "blocked" },
+          body: { status: action },
         });
 
   if (result.status !== 200) {
@@ -381,27 +381,26 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
       -1
     );
   } else {
-    const row = e.target.parentElement?.parentElement;
-    const count = row?.parentElement?.childElementCount;
-    row?.remove();
+    //remove from cache
+    pendingRequests = pendingRequests?.filter((it) => it._id !== id);
+    updatePendingConnections();
 
     const snapshot = DB.getSnapshot();
-    if (action === "rejected" && snapshot) {
+    if (snapshot) {
       const friendUid =
         e.target.parentElement?.parentElement?.dataset["friendUid"];
       if (friendUid === undefined) {
         throw new Error("Cannot find friendUid of target.");
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
-      delete snapshot.connections[friendUid];
-      updatePendingConnections();
+      if (action === "rejected") {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
+        delete snapshot.connections[friendUid];
+      } else {
+        snapshot.connections[friendUid] = action;
+      }
+      DB.setSnapshot(snapshot);
     }
-    if (count === 1) {
-      $(".pageFriends .pendingRequests").addClass("hidden");
-    }
-    DB.getSnapshot();
-
     if (action === "accepted") {
       await fetchFriends();
       updateFriends();
@@ -437,7 +436,9 @@ export const page = new Page<undefined>({
   element: pageElement,
   path: "/friends",
   loadingOptions: {
-    shouldLoad: () => getAuthenticatedUser() !== null,
+    shouldLoad: () =>
+      getAuthenticatedUser() !== null &&
+      (friendsList === undefined || pendingRequests === undefined),
     waitFor: async () => {
       await ServerConfiguration.configurationPromise;
       const serverConfig = ServerConfiguration.get();
