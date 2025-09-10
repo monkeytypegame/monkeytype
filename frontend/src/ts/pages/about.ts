@@ -1,6 +1,6 @@
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
-import { CachedPage } from "./page";
+import Page from "./page";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
@@ -10,6 +10,7 @@ import * as Skeleton from "../utils/skeleton";
 import { TypingStats, SpeedHistogram } from "@monkeytype/schemas/public";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import * as Loader from "../elements/loader";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -211,7 +212,7 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   return { data: histogramChartDataBucketed, labels };
 }
 
-export const page = new CachedPage({
+export const page = new Page({
   id: "about",
   element: $(".page.pageAbout"),
   path: "/about",
@@ -242,14 +243,27 @@ export const page = new CachedPage({
         getTypingStats(),
       ]);
     },
-    shouldLoad: () => true,
-    shouldRefreshAsync: () =>
-      [
+    // shouldLoad: () => true,
+    // shouldRefreshAsync: () =>
+    //   [
+    //     contributors,
+    //     supporters,
+    //     speedHistogramResponseData,
+    //     typingStatsResponseData,
+    //   ].every((it) => it !== null),
+    loadingMode: () => {
+      const hasCache = [
         contributors,
         supporters,
         speedHistogramResponseData,
         typingStatsResponseData,
-      ].every((it) => it !== null),
+      ].every((it) => it !== null);
+      if (hasCache) {
+        return { mode: "async", onCall: Loader.show, afterResolve: fill };
+      } else {
+        return "sync";
+      }
+    },
   },
   afterHide: async (): Promise<void> => {
     reset();

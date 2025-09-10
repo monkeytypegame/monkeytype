@@ -225,11 +225,10 @@ export async function change(
     }
 
     if (loadingOptions.length > 0) {
-      const shouldShowLoading =
-        options.loadingOptions?.shouldLoad() ||
-        nextPage.loadingOptions?.shouldLoad();
-
-      if (shouldShowLoading === true) {
+      if (
+        options.loadingOptions?.loadingMode() === "sync" ||
+        nextPage.loadingOptions?.loadingMode() === "sync"
+      ) {
         await showLoading({
           loadingOptions,
           totalDuration,
@@ -263,6 +262,19 @@ export async function change(
     // @ts-expect-error for the future (i think)
     data: options.data,
   });
+
+  const nextPageLoadingMode = nextPage.loadingOptions?.loadingMode();
+
+  if (
+    typeof nextPageLoadingMode === "object" &&
+    nextPageLoadingMode.mode === "async"
+  ) {
+    nextPageLoadingMode.onCall();
+    void nextPage?.loadingOptions?.waitFor().then(() => {
+      nextPageLoadingMode.afterResolve();
+    });
+  }
+
   nextPage.element.removeClass("hidden").css("opacity", 0);
   await Misc.promiseAnimation(
     nextPage.element,

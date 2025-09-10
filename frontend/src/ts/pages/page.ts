@@ -24,9 +24,12 @@ type Options<T> = {
 
 export type LoadingOptions = {
   /**
-   * Should the loading screen be shown?
+   * Should the waitFor promise be awaited with a loading screen or in the background?
    */
-  shouldLoad: () => boolean;
+  loadingMode: () =>
+    | "none"
+    | "sync"
+    | { mode: "async"; onCall: () => void; afterResolve: () => void };
   /**
    * When this promise resolves, the loading screen will be hidden.
    */
@@ -163,26 +166,26 @@ export type CachedPageProperties<T> = PageProperties<T> & {
   };
 };
 
-export class CachedPage<T> extends Page<T> {
-  constructor(props: CachedPageProperties<T>) {
-    if (props.loadingOptions !== undefined) {
-      const originalShouldLoad = props.loadingOptions.shouldLoad;
-      props.loadingOptions.shouldLoad = () => {
-        const refreshAsync = props.loadingOptions?.shouldRefreshAsync();
-        console.log("###", { refreshAsync });
+// export class CachedPage<T> extends Page<T> {
+//   constructor(props: CachedPageProperties<T>) {
+//     if (props.loadingOptions !== undefined) {
+//       const originalShouldLoad = props.loadingOptions.shouldLoad;
+//       props.loadingOptions.shouldLoad = () => {
+//         const refreshAsync = props.loadingOptions?.shouldRefreshAsync();
+//         console.log("###", { refreshAsync });
 
-        if (refreshAsync) {
-          this.element.addClass("cacheRefresh");
-          void props.loadingOptions?.waitFor().then(async () => {
-            await props.beforeShow?.({});
-            this.element.removeClass("cacheRefresh");
-          });
-        }
+//         if (refreshAsync) {
+//           this.element.addClass("cacheRefresh");
+//           void props.loadingOptions?.waitFor().then(async () => {
+//             await props.beforeShow?.({});
+//             this.element.removeClass("cacheRefresh");
+//           });
+//         }
 
-        return !refreshAsync && originalShouldLoad();
-      };
-    }
+//         return !refreshAsync && originalShouldLoad();
+//       };
+//     }
 
-    super(props);
-  }
-}
+//     super(props);
+//   }
+// }
