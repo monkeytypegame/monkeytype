@@ -97,6 +97,26 @@ export function splitByAndKeep(text: string, delimiters: string[]): string[] {
 }
 
 /**
+ * Highlight all word matches inside a text.
+ * Highlighting is wrapping each match with a <span class="highlight">.
+ * A Match will not be highlighted if it is inside a bigger word that is not in the matches array.
+ * @param text the full text to highlight words inside it.
+ * @param matches an array of words to highlight in the text.
+ * @returns the full text with highlighted word matches
+ */
+export function highlightMatches(text: string, matches: string[]): string {
+  if (matches.length === 0) return text;
+
+  // matches that don't have a letter before or after them
+  const pattern = new RegExp(
+    `(?<!\\p{L})(?:${matches.join("|")})(?!\\p{L})`,
+    "gu"
+  );
+
+  return text.replace(pattern, '<span class="highlight">$&</span>');
+}
+
+/**
  * Returns a display string for the given language, optionally removing the size indicator.
  * @param language The language string.
  * @param noSizeString Whether to remove the size indicator from the language string. Default is false.

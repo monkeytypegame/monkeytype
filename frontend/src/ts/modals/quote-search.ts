@@ -20,6 +20,7 @@ import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
+import { highlightMatches } from "../utils/strings";
 
 const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
@@ -40,21 +41,6 @@ function getSearchService<T>(
     newSearchService as unknown as (typeof searchServiceCache)[typeof language];
 
   return newSearchService;
-}
-
-function highlightMatches(text: string, matchedText: string[]): string {
-  if (matchedText.length === 0) return text;
-
-  // same delimiters as in search-service.ts:tokenize(text)
-  const delimitersPattern = /[^\\\][.,"/#!?$%^&*;:{}=\-_`~()\s]/;
-  const pattern = new RegExp(
-    `(?<!${delimitersPattern.source})((?:${matchedText.join(")|(?:")}))${
-      delimitersPattern.source
-    }*`,
-    "g"
-  );
-
-  return text.replace(pattern, '<span class="highlight">$&</span>');
 }
 
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {

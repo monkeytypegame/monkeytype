@@ -2,6 +2,73 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as Strings from "../../src/ts/utils/strings";
 
 describe("string utils", () => {
+  describe("highlightMatches", () => {
+    const shouldHighlight = [
+      {
+        description: "all matches",
+        text: "I come passing by the woods.",
+        matches: ["come", "by"],
+        expected: `I <span class="highlight">come</span> passing <span class="highlight">by</span> the woods.`,
+      },
+      {
+        description: "longest match possible",
+        text: "There comes a time when we come.",
+        matches: ["come", "comes"],
+        expected: `There <span class="highlight">comes</span> a time when we <span class="highlight">come</span>.`,
+      },
+      {
+        description: "if preceded by puntuation/symbols",
+        text: "(bad example)",
+        matches: ["bad"],
+        expected: `(<span class="highlight">bad</span> example)`,
+      },
+      {
+        description: "if followed by puntuation/symbols",
+        text: "They're good, or bad, or anything.",
+        matches: ["bad"],
+        expected: `They're good, or <span class="highlight">bad</span>, or anything.`,
+      },
+      {
+        description: "if wrapped with underscores",
+        text: "_string_",
+        matches: ["string"],
+        expected: `_<span class="highlight">string</span>_`,
+      },
+    ];
+    const shouldNotHighlight = [
+      {
+        description: "a match with trailing letters",
+        text: "The magic of comets inside us.",
+        matches: ["come"],
+        expected: `The magic of comets inside us.`,
+      },
+      {
+        description: "a match with leading letters",
+        text: "Today's friend becomes tomorrow's foe.",
+        matches: ["comes"],
+        expected: `Today's friend becomes tomorrow's foe.`,
+      },
+      {
+        description: "a match inside a bigger word",
+        text: "We started to get along together.",
+        matches: ["get"],
+        expected: `We started to <span class="highlight">get</span> along together.`,
+      },
+    ];
+    it.each(shouldHighlight)(
+      "should highlight $description",
+      ({ text, matches, expected }) => {
+        expect(Strings.highlightMatches(text, matches)).toBe(expected);
+      }
+    );
+    it.each(shouldNotHighlight)(
+      "should not highlight $description",
+      ({ text, matches, expected }) => {
+        expect(Strings.highlightMatches(text, matches)).toBe(expected);
+      }
+    );
+  });
+
   describe("splitIntoCharacters", () => {
     it("splits regular characters", () => {
       expect(Strings.splitIntoCharacters("abc")).toEqual(["a", "b", "c"]);
