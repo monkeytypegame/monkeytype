@@ -165,27 +165,3 @@ export type CachedPageProperties<T> = PageProperties<T> & {
     shouldRefreshAsync: () => boolean;
   };
 };
-
-// export class CachedPage<T> extends Page<T> {
-//   constructor(props: CachedPageProperties<T>) {
-//     if (props.loadingOptions !== undefined) {
-//       const originalShouldLoad = props.loadingOptions.shouldLoad;
-//       props.loadingOptions.shouldLoad = () => {
-//         const refreshAsync = props.loadingOptions?.shouldRefreshAsync();
-//         console.log("###", { refreshAsync });
-
-//         if (refreshAsync) {
-//           this.element.addClass("cacheRefresh");
-//           void props.loadingOptions?.waitFor().then(async () => {
-//             await props.beforeShow?.({});
-//             this.element.removeClass("cacheRefresh");
-//           });
-//         }
-
-//         return !refreshAsync && originalShouldLoad();
-//       };
-//     }
-
-//     super(props);
-//   }
-// }

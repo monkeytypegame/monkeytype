@@ -243,14 +243,6 @@ export const page = new Page({
         getTypingStats(),
       ]);
     },
-    // shouldLoad: () => true,
-    // shouldRefreshAsync: () =>
-    //   [
-    //     contributors,
-    //     supporters,
-    //     speedHistogramResponseData,
-    //     typingStatsResponseData,
-    //   ].every((it) => it !== null),
     loadingMode: () => {
       const hasCache = [
         contributors,
