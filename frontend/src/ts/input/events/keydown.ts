@@ -131,7 +131,6 @@ async function handleArrows(event: KeyboardEvent, now: number): Promise<void> {
   if (char !== undefined) {
     await emulateInsertText(char, now);
   }
-  event.preventDefault();
 }
 
 async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
@@ -167,7 +166,8 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
     event.key === "Home" ||
     event.key === "End" ||
     event.key === "PageUp" ||
-    event.key === "PageDown"
+    event.key === "PageDown" ||
+    event.key.startsWith("Arrow")
   ) {
     event.preventDefault();
     return;
@@ -183,6 +183,7 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
   const arrowsActive = Config.funbox.includes("arrows");
   if (arrowsActive && event.key.startsWith("Arrow")) {
     await handleArrows(event, now);
+    event.preventDefault();
     return;
   }
 
