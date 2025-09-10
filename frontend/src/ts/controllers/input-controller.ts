@@ -864,12 +864,10 @@ async function handleTab(
 $("#wordsInput").on("keydown", (event) => {
   const pageTestActive: boolean = ActivePage.get() === "test";
   const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
-  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
   const popupVisible: boolean = Misc.isAnyPopupVisible();
   const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
-    !leaderboardsVisible &&
     !popupVisible &&
     !TestUI.resultVisible &&
     event.key !== "Enter" &&
@@ -905,14 +903,12 @@ $(document).on("keydown", async (event) => {
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
   const pageTestActive: boolean = ActivePage.get() === "test";
   const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
-  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
 
   const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
-    !leaderboardsVisible &&
     !popupVisible &&
     !TestUI.resultVisible &&
     (wordsFocused || event.key !== "Enter") &&
