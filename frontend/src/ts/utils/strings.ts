@@ -97,12 +97,13 @@ export function splitByAndKeep(text: string, delimiters: string[]): string[] {
 }
 
 /**
- * Highlight all word matches inside a text.
- * Highlighting is wrapping each match with a <span class="highlight">.
- * A Match will not be highlighted if it is inside a bigger word that is not in the matches array.
- * @param text the full text to highlight words inside it.
- * @param matches an array of words to highlight in the text.
- * @returns the full text with highlighted word matches
+ * Highlights all occurrences of specified words within a given text.
+ * Each match is wrapped in a <span class="highlight"> element.
+ * Matches are ignored if they appear as part of a larger word
+ * not included in the matches array.
+ * @param text The full text in which to highlight words.
+ * @param matches An array of words to highlight.
+ * @return The full text with all matching words highlighted.
  */
 export function highlightMatches(text: string, matches: string[]): string {
   if (matches.length === 0) return text;
