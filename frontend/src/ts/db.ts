@@ -51,7 +51,7 @@ export function getSnapshot(): Snapshot | undefined {
 
 export function setSnapshot(
   newSnapshot: Snapshot | undefined,
-  options: { dispatchEvent: boolean } = { dispatchEvent: true }
+  options?: { dispatchEvent?: boolean }
 ): void {
   const originalBanned = dbSnapshot?.banned;
   const originalVerified = dbSnapshot?.verified;
@@ -74,7 +74,7 @@ export function setSnapshot(
     dbSnapshot.lbOptOut = lbOptOut;
   }
 
-  if (options.dispatchEvent) {
+  if (options?.dispatchEvent !== false) {
     AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
   }
 }
