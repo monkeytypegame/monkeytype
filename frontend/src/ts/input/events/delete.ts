@@ -6,7 +6,7 @@ import {
   setInputValue,
   setTestInputToDOMValue,
 } from "../core/input-element";
-import * as TestState from "../../test/test-state";
+
 import * as Replay from "../../test/replay";
 import Config from "../../config";
 import { goToPreviousWord } from "../helpers/word-navigation";
@@ -40,12 +40,7 @@ export function onDelete(inputType: DeleteInputType): void {
   } else {
     //normal backspace
     if (realInputValue === "") {
-      const isFirstVisibleWord =
-        TestState.activeWordIndex - TestState.removedUIWordCount === 0;
-
-      if (!isFirstVisibleWord) {
-        goToPreviousWord(inputType);
-      }
+      goToPreviousWord(inputType);
     }
   }
 
