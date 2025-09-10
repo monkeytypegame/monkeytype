@@ -487,435 +487,435 @@ let awaitingNextWord = false;
 //   }
 // }
 
-async function handleChar(
-  char: string,
-  charIndex: number,
-  realInputValue?: string
-): Promise<void> {
-  if (TestUI.resultCalculating || TestUI.resultVisible) {
-    return;
-  }
+// async function handleChar(
+//   char: string,
+//   charIndex: number,
+//   realInputValue?: string
+// ): Promise<void> {
+//   if (TestUI.resultCalculating || TestUI.resultVisible) {
+//     return;
+//   }
 
-  if (char === "…" && TestWords.words.getCurrent()[charIndex] !== "…") {
-    for (let i = 0; i < 3; i++) {
-      await handleChar(".", charIndex + i);
-    }
+//   if (char === "…" && TestWords.words.getCurrent()[charIndex] !== "…") {
+//     for (let i = 0; i < 3; i++) {
+//       await handleChar(".", charIndex + i);
+//     }
 
-    return;
-  }
+//     return;
+//   }
 
-  if (char === "œ" && TestWords.words.getCurrent()[charIndex] !== "œ") {
-    await handleChar("o", charIndex);
-    await handleChar("e", charIndex + 1);
-    return;
-  }
+//   if (char === "œ" && TestWords.words.getCurrent()[charIndex] !== "œ") {
+//     await handleChar("o", charIndex);
+//     await handleChar("e", charIndex + 1);
+//     return;
+//   }
 
-  if (char === "æ" && TestWords.words.getCurrent()[charIndex] !== "æ") {
-    await handleChar("a", charIndex);
-    await handleChar("e", charIndex + 1);
-    return;
-  }
+//   if (char === "æ" && TestWords.words.getCurrent()[charIndex] !== "æ") {
+//     await handleChar("a", charIndex);
+//     await handleChar("e", charIndex + 1);
+//     return;
+//   }
 
-  console.debug("Handling char", char, charIndex, realInputValue);
+//   console.debug("Handling char", char, charIndex, realInputValue);
 
-  const now = performance.now();
+//   const now = performance.now();
 
-  const isCharKorean: boolean = TestInput.input.getKoreanStatus();
+//   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const fb of getActiveFunboxesWithFunction("handleChar")) {
-    char = fb.functions.handleChar(char);
-  }
+//   for (const fb of getActiveFunboxesWithFunction("handleChar")) {
+//     char = fb.functions.handleChar(char);
+//   }
 
-  const nospace = isFunboxActiveWithProperty("nospace");
+//   const nospace = isFunboxActiveWithProperty("nospace");
 
-  if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
-    if (nospace) return;
-    void handleSpace();
+//   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
+//     if (nospace) return;
+//     void handleSpace();
 
-    if (Config.deleteOnError !== "off") {
-      handleDeleteOnError();
-    }
+//     if (Config.deleteOnError !== "off") {
+//       handleDeleteOnError();
+//     }
 
-    //insert space for expert and master or strict space,
-    //or for stop on error set to word,
-    //otherwise dont do anything
-    if (
-      Config.difficulty !== "normal" ||
-      (Config.strictSpace && Config.mode !== "zen") ||
-      (Config.stopOnError === "word" && charIndex > 0)
-    ) {
-      if (dontInsertSpace) {
-        dontInsertSpace = false;
-        return;
-      }
-    } else {
-      return;
-    }
-  }
+//     //insert space for expert and master or strict space,
+//     //or for stop on error set to word,
+//     //otherwise dont do anything
+//     if (
+//       Config.difficulty !== "normal" ||
+//       (Config.strictSpace && Config.mode !== "zen") ||
+//       (Config.stopOnError === "word" && charIndex > 0)
+//     ) {
+//       if (dontInsertSpace) {
+//         dontInsertSpace = false;
+//         return;
+//       }
+//     } else {
+//       return;
+//     }
+//   }
 
-  if (
-    Config.mode !== "zen" &&
-    TestWords.words.getCurrent()[charIndex] !== "\n" &&
-    char === "\n"
-  ) {
-    return;
-  }
+//   if (
+//     Config.mode !== "zen" &&
+//     TestWords.words.getCurrent()[charIndex] !== "\n" &&
+//     char === "\n"
+//   ) {
+//     return;
+//   }
 
-  //start the test
-  if (!TestState.isActive && !TestLogic.startTest(now)) {
-    return;
-  }
+//   //start the test
+//   if (!TestState.isActive && !TestLogic.startTest(now)) {
+//     return;
+//   }
 
-  Focus.set(true);
-  Caret.stopAnimation();
+//   Focus.set(true);
+//   Caret.stopAnimation();
 
-  const thisCharCorrect: boolean = isCharCorrect(char, charIndex);
-  let resultingWord: string;
+//   const thisCharCorrect: boolean = isCharCorrect(char, charIndex);
+//   let resultingWord: string;
 
-  if (thisCharCorrect && Config.mode !== "zen") {
-    char = !isCharKorean
-      ? TestWords.words.getCurrent().charAt(charIndex)
-      : Hangul.disassemble(TestWords.words.getCurrent())[charIndex] ?? "";
-  }
+//   if (thisCharCorrect && Config.mode !== "zen") {
+//     char = !isCharKorean
+//       ? TestWords.words.getCurrent().charAt(charIndex)
+//       : Hangul.disassemble(TestWords.words.getCurrent())[charIndex] ?? "";
+//   }
 
-  if (!thisCharCorrect && char === "\n") {
-    if (TestInput.input.current === "") return;
-    char = " ";
-  }
+//   if (!thisCharCorrect && char === "\n") {
+//     if (TestInput.input.current === "") return;
+//     char = " ";
+//   }
 
-  if (TestInput.input.current === "") {
-    TestInput.setBurstStart(now);
-  }
+//   if (TestInput.input.current === "") {
+//     TestInput.setBurstStart(now);
+//   }
 
-  if (isCharKorean || Config.language.startsWith("korean")) {
-    // Get real input from #WordsInput char call.
-    // This is because the chars can't be confirmed correctly.
-    // With chars alone this happens when a previous symbol is completed
-    // Example:
-    // input history: ['프'], input:ㄹ, expected :프ㄹ, result: 플
-    const realInput: string = (realInputValue ?? "").slice(1);
-    resultingWord = realInput;
-    koInputVisual.innerText = resultingWord.slice(-1);
-  } else if (Config.language.startsWith("chinese")) {
-    resultingWord = (realInputValue ?? "").slice(1);
-  } else {
-    resultingWord =
-      TestInput.input.current.substring(0, charIndex) +
-      char +
-      TestInput.input.current.substring(charIndex + 1);
-  }
+//   if (isCharKorean || Config.language.startsWith("korean")) {
+//     // Get real input from #WordsInput char call.
+//     // This is because the chars can't be confirmed correctly.
+//     // With chars alone this happens when a previous symbol is completed
+//     // Example:
+//     // input history: ['프'], input:ㄹ, expected :프ㄹ, result: 플
+//     const realInput: string = (realInputValue ?? "").slice(1);
+//     resultingWord = realInput;
+//     koInputVisual.innerText = resultingWord.slice(-1);
+//   } else if (Config.language.startsWith("chinese")) {
+//     resultingWord = (realInputValue ?? "").slice(1);
+//   } else {
+//     resultingWord =
+//       TestInput.input.current.substring(0, charIndex) +
+//       char +
+//       TestInput.input.current.substring(charIndex + 1);
+//   }
 
-  // If a trailing composed char is used, ignore it when counting accuracy
-  if (
-    !thisCharCorrect &&
-    // Misc.trailingComposeChars.test(resultingWord) &&
-    CompositionState.getComposing() &&
-    !Config.language.startsWith("korean")
-  ) {
-    TestInput.input.current = resultingWord;
-    void TestUI.updateActiveWordLetters();
-    void Caret.updatePosition();
-    return;
-  }
+//   // If a trailing composed char is used, ignore it when counting accuracy
+//   if (
+//     !thisCharCorrect &&
+//     // Misc.trailingComposeChars.test(resultingWord) &&
+//     CompositionState.getComposing() &&
+//     !Config.language.startsWith("korean")
+//   ) {
+//     TestInput.input.current = resultingWord;
+//     void TestUI.updateActiveWordLetters();
+//     void Caret.updatePosition();
+//     return;
+//   }
 
-  void MonkeyPower.addPower(thisCharCorrect);
-  TestInput.incrementAccuracy(thisCharCorrect);
+//   void MonkeyPower.addPower(thisCharCorrect);
+//   TestInput.incrementAccuracy(thisCharCorrect);
 
-  if (!thisCharCorrect) {
-    TestInput.incrementKeypressErrors();
-    TestInput.pushMissedWord(TestWords.words.getCurrent());
-  }
+//   if (!thisCharCorrect) {
+//     TestInput.incrementKeypressErrors();
+//     TestInput.pushMissedWord(TestWords.words.getCurrent());
+//   }
 
-  WeakSpot.updateScore(
-    Config.mode === "zen"
-      ? char
-      : TestWords.words.getCurrent()[charIndex] ?? "",
-    thisCharCorrect
-  );
+//   WeakSpot.updateScore(
+//     Config.mode === "zen"
+//       ? char
+//       : TestWords.words.getCurrent()[charIndex] ?? "",
+//     thisCharCorrect
+//   );
 
-  if (thisCharCorrect) {
-    void Sound.playClick();
-  } else {
-    if (Config.playSoundOnError === "off" || Config.blindMode) {
-      void Sound.playClick();
-    } else {
-      void Sound.playError();
-    }
-  }
+//   if (thisCharCorrect) {
+//     void Sound.playClick();
+//   } else {
+//     if (Config.playSoundOnError === "off" || Config.blindMode) {
+//       void Sound.playClick();
+//     } else {
+//       void Sound.playError();
+//     }
+//   }
 
-  //keymap
-  if (Config.keymapMode === "react") {
-    void KeymapEvent.flash(char, thisCharCorrect);
-  }
+//   //keymap
+//   if (Config.keymapMode === "react") {
+//     void KeymapEvent.flash(char, thisCharCorrect);
+//   }
 
-  if (Config.difficulty !== "master") {
-    if (!correctShiftUsed) {
-      incorrectShiftsInARow++;
-      if (incorrectShiftsInARow >= 5) {
-        Notifications.add("Opposite shift mode is on.", 0, {
-          important: true,
-          customTitle: "Reminder",
-        });
-      }
-      return;
-    } else {
-      incorrectShiftsInARow = 0;
-    }
-  }
+//   if (Config.difficulty !== "master") {
+//     if (!correctShiftUsed) {
+//       incorrectShiftsInARow++;
+//       if (incorrectShiftsInARow >= 5) {
+//         Notifications.add("Opposite shift mode is on.", 0, {
+//           important: true,
+//           customTitle: "Reminder",
+//         });
+//       }
+//       return;
+//     } else {
+//       incorrectShiftsInARow = 0;
+//     }
+//   }
 
-  //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
-  if (TestInput.corrected.current === "") {
-    TestInput.corrected.current += !isCharKorean
-      ? resultingWord
-      : Hangul.disassemble(resultingWord).join("");
-  } else {
-    const currCorrectedTestInputLength: number = !isCharKorean
-      ? TestInput.corrected.current.length
-      : Hangul.disassemble(TestInput.corrected.current).length;
+//   //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
+//   if (TestInput.corrected.current === "") {
+//     TestInput.corrected.current += !isCharKorean
+//       ? resultingWord
+//       : Hangul.disassemble(resultingWord).join("");
+//   } else {
+//     const currCorrectedTestInputLength: number = !isCharKorean
+//       ? TestInput.corrected.current.length
+//       : Hangul.disassemble(TestInput.corrected.current).length;
 
-    if (charIndex >= currCorrectedTestInputLength) {
-      TestInput.corrected.current += !isCharKorean
-        ? char
-        : Hangul.disassemble(char).concat().join("");
-    } else if (!thisCharCorrect) {
-      TestInput.corrected.current =
-        TestInput.corrected.current.substring(0, charIndex) +
-        char +
-        TestInput.corrected.current.substring(charIndex + 1);
-    }
-  }
+//     if (charIndex >= currCorrectedTestInputLength) {
+//       TestInput.corrected.current += !isCharKorean
+//         ? char
+//         : Hangul.disassemble(char).concat().join("");
+//     } else if (!thisCharCorrect) {
+//       TestInput.corrected.current =
+//         TestInput.corrected.current.substring(0, charIndex) +
+//         char +
+//         TestInput.corrected.current.substring(charIndex + 1);
+//     }
+//   }
 
-  TestInput.incrementKeypressCount();
-  TestInput.pushKeypressWord(TestState.activeWordIndex);
+//   TestInput.incrementKeypressCount();
+//   TestInput.pushKeypressWord(TestState.activeWordIndex);
 
-  if (
-    Config.difficulty !== "master" &&
-    Config.stopOnError === "letter" &&
-    !thisCharCorrect
-  ) {
-    if (!Config.blindMode) {
-      void TestUI.updateActiveWordLetters(TestInput.input.current + char);
-    }
-    return;
-  }
+//   if (
+//     Config.difficulty !== "master" &&
+//     Config.stopOnError === "letter" &&
+//     !thisCharCorrect
+//   ) {
+//     if (!Config.blindMode) {
+//       void TestUI.updateActiveWordLetters(TestInput.input.current + char);
+//     }
+//     return;
+//   }
 
-  Replay.addReplayEvent(
-    thisCharCorrect ? "correctLetter" : "incorrectLetter",
-    char
-  );
+//   Replay.addReplayEvent(
+//     thisCharCorrect ? "correctLetter" : "incorrectLetter",
+//     char
+//   );
 
-  const activeWord = TestUI.getActiveWordElement() as HTMLElement;
+//   const activeWord = TestUI.getActiveWordElement() as HTMLElement;
 
-  const testInputLength: number = !isCharKorean
-    ? TestInput.input.current.length
-    : Hangul.disassemble(TestInput.input.current).length;
-  //update the active word top, but only once
-  if (testInputLength === 1 && TestState.activeWordIndex === 0) {
-    // TestUI.setActiveWordTop(activeWord?.offsetTop);
-  }
+//   const testInputLength: number = !isCharKorean
+//     ? TestInput.input.current.length
+//     : Hangul.disassemble(TestInput.input.current).length;
+//   //update the active word top, but only once
+//   if (testInputLength === 1 && TestState.activeWordIndex === 0) {
+//     // TestUI.setActiveWordTop(activeWord?.offsetTop);
+//   }
 
-  //max length of the input is 20 unless in zen mode then its 30
-  if (
-    (Config.mode === "zen" && charIndex < 30) ||
-    (Config.mode !== "zen" &&
-      resultingWord.length < TestWords.words.getCurrent().length + 20)
-  ) {
-    TestInput.input.current = resultingWord;
-  } else {
-    console.error("Hitting word limit");
-  }
+//   //max length of the input is 20 unless in zen mode then its 30
+//   if (
+//     (Config.mode === "zen" && charIndex < 30) ||
+//     (Config.mode !== "zen" &&
+//       resultingWord.length < TestWords.words.getCurrent().length + 20)
+//   ) {
+//     TestInput.input.current = resultingWord;
+//   } else {
+//     console.error("Hitting word limit");
+//   }
 
-  if (!thisCharCorrect && Config.difficulty === "master") {
-    TestLogic.fail("difficulty");
-    return;
-  }
+//   if (!thisCharCorrect && Config.difficulty === "master") {
+//     TestLogic.fail("difficulty");
+//     return;
+//   }
 
-  if (Config.deleteOnError !== "off" && !thisCharCorrect) {
-    if (handleDeleteOnError()) {
-      return;
-    }
-  }
+//   if (Config.deleteOnError !== "off" && !thisCharCorrect) {
+//     if (handleDeleteOnError()) {
+//       return;
+//     }
+//   }
 
-  if (Config.mode !== "zen") {
-    //not applicable to zen mode
-    //auto stop the test if the last word is correct
-    //do not stop if not all characters have been parsed by handleChar yet
-    const currentWord = TestWords.words.getCurrent();
-    const lastWordIndex = TestState.activeWordIndex;
-    const lastWord = lastWordIndex === TestWords.words.length - 1;
-    const allWordGenerated = TestLogic.areAllTestWordsGenerated();
-    const wordIsTheSame = currentWord === TestInput.input.current;
-    const shouldQuickEnd =
-      Config.quickEnd &&
-      !Config.language.startsWith("korean") &&
-      currentWord.length === TestInput.input.current.length &&
-      Config.stopOnError === "off";
-    const isChinese = Config.language.startsWith("chinese");
+//   if (Config.mode !== "zen") {
+//     //not applicable to zen mode
+//     //auto stop the test if the last word is correct
+//     //do not stop if not all characters have been parsed by handleChar yet
+//     const currentWord = TestWords.words.getCurrent();
+//     const lastWordIndex = TestState.activeWordIndex;
+//     const lastWord = lastWordIndex === TestWords.words.length - 1;
+//     const allWordGenerated = TestLogic.areAllTestWordsGenerated();
+//     const wordIsTheSame = currentWord === TestInput.input.current;
+//     const shouldQuickEnd =
+//       Config.quickEnd &&
+//       !Config.language.startsWith("korean") &&
+//       currentWord.length === TestInput.input.current.length &&
+//       Config.stopOnError === "off";
+//     const isChinese = Config.language.startsWith("chinese");
 
-    if (
-      lastWord &&
-      allWordGenerated &&
-      (wordIsTheSame || shouldQuickEnd) &&
-      (!isChinese ||
-        (realInputValue !== undefined &&
-          charIndex + 2 === realInputValue.length))
-    ) {
-      void TestLogic.finish();
-      return;
-    }
-  }
+//     if (
+//       lastWord &&
+//       allWordGenerated &&
+//       (wordIsTheSame || shouldQuickEnd) &&
+//       (!isChinese ||
+//         (realInputValue !== undefined &&
+//           charIndex + 2 === realInputValue.length))
+//     ) {
+//       void TestLogic.finish();
+//       return;
+//     }
+//   }
 
-  const activeWordTopBeforeJump = activeWord?.offsetTop;
-  await TestUI.updateActiveWordLetters();
+//   const activeWordTopBeforeJump = activeWord?.offsetTop;
+//   await TestUI.updateActiveWordLetters();
 
-  const newActiveTop = activeWord?.offsetTop;
-  //stop the word jump by slicing off the last character, update word again
-  // dont do it in replace typos, because it might trigger in the middle of a wrd
-  // when using non monospace fonts
-  /**
-   * NOTE: this input length > 1 guard, added in commit bc94a64,
-   * aimed to prevent some input blocking issue after test restarts.
-   *
-   * This check was found to cause a jump to a hidden 3rd line bug in zen mode (#6697)
-   * So commented due to the zen bug and the original issue not being reproducible,
-   *
-   * REVISIT this logic if any INPUT or WORD JUMP issues reappear.
-   */
-  if (
-    activeWordTopBeforeJump < newActiveTop &&
-    !TestUI.lineTransition
-    // TestInput.input.current.length > 1
-  ) {
-    if (Config.mode === "zen" || Config.indicateTypos === "replace") {
-      if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);
-    } else {
-      TestInput.input.current = TestInput.input.current.slice(0, -1);
-      await TestUI.updateActiveWordLetters();
-    }
-  }
+//   const newActiveTop = activeWord?.offsetTop;
+//   //stop the word jump by slicing off the last character, update word again
+//   // dont do it in replace typos, because it might trigger in the middle of a wrd
+//   // when using non monospace fonts
+//   /**
+//    * NOTE: this input length > 1 guard, added in commit bc94a64,
+//    * aimed to prevent some input blocking issue after test restarts.
+//    *
+//    * This check was found to cause a jump to a hidden 3rd line bug in zen mode (#6697)
+//    * So commented due to the zen bug and the original issue not being reproducible,
+//    *
+//    * REVISIT this logic if any INPUT or WORD JUMP issues reappear.
+//    */
+//   if (
+//     activeWordTopBeforeJump < newActiveTop &&
+//     !TestUI.lineTransition
+//     // TestInput.input.current.length > 1
+//   ) {
+//     if (Config.mode === "zen" || Config.indicateTypos === "replace") {
+//       if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);
+//     } else {
+//       TestInput.input.current = TestInput.input.current.slice(0, -1);
+//       await TestUI.updateActiveWordLetters();
+//     }
+//   }
 
-  //simulate space press in nospace funbox
-  if (
-    (nospace &&
-      TestInput.input.current.length === TestWords.words.getCurrent().length) ||
-    (char === "\n" && thisCharCorrect)
-  ) {
-    void handleSpace();
-  }
+//   //simulate space press in nospace funbox
+//   if (
+//     (nospace &&
+//       TestInput.input.current.length === TestWords.words.getCurrent().length) ||
+//     (char === "\n" && thisCharCorrect)
+//   ) {
+//     void handleSpace();
+//   }
 
-  const currentWord = TestWords.words.getCurrent();
-  const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
-  const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
+//   const currentWord = TestWords.words.getCurrent();
+//   const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
+//   const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
 
-  setTimeout(() => {
-    if (
-      thisCharCorrect &&
-      Config.language.startsWith("code") &&
-      doesCurrentWordHaveTab &&
-      isCurrentCharTab
-    ) {
-      const tabEvent = new KeyboardEvent("keydown", {
-        key: "Tab",
-        code: "Tab",
-      });
-      document.dispatchEvent(tabEvent);
-    }
-  }, 0);
+//   setTimeout(() => {
+//     if (
+//       thisCharCorrect &&
+//       Config.language.startsWith("code") &&
+//       doesCurrentWordHaveTab &&
+//       isCurrentCharTab
+//     ) {
+//       const tabEvent = new KeyboardEvent("keydown", {
+//         key: "Tab",
+//         code: "Tab",
+//       });
+//       document.dispatchEvent(tabEvent);
+//     }
+//   }, 0);
 
-  if (char !== "\n") {
-    void Caret.updatePosition();
-  }
-}
+//   if (char !== "\n") {
+//     void Caret.updatePosition();
+//   }
+// }
 
-async function handleTab(
-  event: JQuery.KeyDownEvent,
-  popupVisible: boolean
-): Promise<void> {
-  if (TestUI.resultCalculating) {
-    event.preventDefault();
-    return;
-  }
+// async function handleTab(
+//   event: JQuery.KeyDownEvent,
+//   popupVisible: boolean
+// ): Promise<void> {
+//   if (TestUI.resultCalculating) {
+//     event.preventDefault();
+//     return;
+//   }
 
-  let shouldInsertTabCharacter = false;
+//   let shouldInsertTabCharacter = false;
 
-  if (
-    (Config.mode === "zen" && !event.shiftKey) ||
-    (TestWords.hasTab && !event.shiftKey)
-  ) {
-    shouldInsertTabCharacter = true;
-  }
+//   if (
+//     (Config.mode === "zen" && !event.shiftKey) ||
+//     (TestWords.hasTab && !event.shiftKey)
+//   ) {
+//     shouldInsertTabCharacter = true;
+//   }
 
-  const modalVisible: boolean =
-    Misc.isPopupVisible("commandLineWrapper") || popupVisible;
+//   const modalVisible: boolean =
+//     Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
-  if (Config.quickRestart === "esc") {
-    // dont do anything special
-    if (modalVisible) return;
+//   if (Config.quickRestart === "esc") {
+//     // dont do anything special
+//     if (modalVisible) return;
 
-    // dont do anything on login so we can tab/esc between inputs
-    if (ActivePage.get() === "login") return;
+//     // dont do anything on login so we can tab/esc between inputs
+//     if (ActivePage.get() === "login") return;
 
-    event.preventDefault();
-    // insert tab character if needed (only during the test)
-    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
-      await handleChar("\t", TestInput.input.current.length);
-      setWordsInput(" " + TestInput.input.current);
-      return;
-    }
-  } else if (Config.quickRestart === "tab") {
-    // dont do anything special
-    if (modalVisible) return;
+//     event.preventDefault();
+//     // insert tab character if needed (only during the test)
+//     if (!TestUI.resultVisible && shouldInsertTabCharacter) {
+//       await handleChar("\t", TestInput.input.current.length);
+//       setWordsInput(" " + TestInput.input.current);
+//       return;
+//     }
+//   } else if (Config.quickRestart === "tab") {
+//     // dont do anything special
+//     if (modalVisible) return;
 
-    // dont do anything on login so we can tab/esc betweeen inputs
-    if (ActivePage.get() === "login") return;
+//     // dont do anything on login so we can tab/esc betweeen inputs
+//     if (ActivePage.get() === "login") return;
 
-    // change page if not on test page
-    if (ActivePage.get() !== "test") {
-      await navigate("/");
-      return;
-    }
+//     // change page if not on test page
+//     if (ActivePage.get() !== "test") {
+//       await navigate("/");
+//       return;
+//     }
 
-    // in case we are in a long test, setting manual restart
-    if (event.shiftKey) {
-      ManualRestart.set();
-    } else {
-      ManualRestart.reset();
-    }
+//     // in case we are in a long test, setting manual restart
+//     if (event.shiftKey) {
+//       ManualRestart.set();
+//     } else {
+//       ManualRestart.reset();
+//     }
 
-    // insert tab character if needed (only during the test)
-    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
-      event.preventDefault();
-      await handleChar("\t", TestInput.input.current.length);
-      setWordsInput(" " + TestInput.input.current);
-      return;
-    }
+//     // insert tab character if needed (only during the test)
+//     if (!TestUI.resultVisible && shouldInsertTabCharacter) {
+//       event.preventDefault();
+//       await handleChar("\t", TestInput.input.current.length);
+//       setWordsInput(" " + TestInput.input.current);
+//       return;
+//     }
 
-    //otherwise restart
-    TestLogic.restart({ event });
-  } else {
-    //quick tab off
-    // dont do anything special
-    if (modalVisible) return;
+//     //otherwise restart
+//     TestLogic.restart({ event });
+//   } else {
+//     //quick tab off
+//     // dont do anything special
+//     if (modalVisible) return;
 
-    //only special handlig on the test page
-    if (ActivePage.get() !== "test") return;
-    if (TestUI.resultVisible) return;
+//     //only special handlig on the test page
+//     if (ActivePage.get() !== "test") return;
+//     if (TestUI.resultVisible) return;
 
-    // insert tab character if needed
-    if (shouldInsertTabCharacter) {
-      event.preventDefault();
-      await handleChar("\t", TestInput.input.current.length);
-      setWordsInput(" " + TestInput.input.current);
-      return;
-    }
+//     // insert tab character if needed
+//     if (shouldInsertTabCharacter) {
+//       event.preventDefault();
+//       await handleChar("\t", TestInput.input.current.length);
+//       setWordsInput(" " + TestInput.input.current);
+//       return;
+//     }
 
-    setTimeout(() => {
-      if (document.activeElement?.id !== "wordsInput") {
-        Focus.set(false);
-      }
-    }, 0);
-  }
-}
+//     setTimeout(() => {
+//       if (document.activeElement?.id !== "wordsInput") {
+//         Focus.set(false);
+//       }
+//     }, 0);
+//   }
+// }
 
 $("#wordsInput").on("keydown", (event) => {
   const pageTestActive: boolean = ActivePage.get() === "test";
