@@ -19,10 +19,10 @@ function reset(): void {
   void ChartController.globalSpeedHistogram.updateColors();
 }
 
-let speedHistogramResponseData: SpeedHistogram | null;
-let typingStatsResponseData: TypingStats | null;
-let supporters: string[] | null;
-let contributors: string[] | null;
+let speedHistogramResponseData: SpeedHistogram | null = null;
+let typingStatsResponseData: TypingStats | null = null;
+let supporters: string[] | null = null;
+let contributors: string[] | null = null;
 
 function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {
@@ -249,7 +249,7 @@ export const page = new CachedPage({
         supporters,
         speedHistogramResponseData,
         typingStatsResponseData,
-      ].every((it) => it !== undefined && it !== null),
+      ].every((it) => it !== null),
   },
   afterHide: async (): Promise<void> => {
     reset();
