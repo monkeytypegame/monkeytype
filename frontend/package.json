@@ -65,7 +65,7 @@
     "tsx": "4.16.2",
     "typescript": "5.5.4",
     "unplugin-inject-preload": "3.0.0",
-    "vite": "6.3.4",
+    "vite": "6.3.6",
     "vite-bundle-visualizer": "1.0.1",
     "vite-plugin-checker": "0.7.2",
     "vite-plugin-filter-replace": "0.1.14",
