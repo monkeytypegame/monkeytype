@@ -19,6 +19,7 @@ import {
   setLastBailoutAttempt,
 } from "../core/state";
 import { emulateInsertText } from "./input";
+import { getActiveFunboxesWithFunction } from "../../test/funbox/list";
 
 function handleKeydownTiming(event: KeyboardEvent, now: number): void {
   if (event.repeat) {
@@ -195,16 +196,22 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
 
   if (event.key === "Tab") {
     await handleTab(event, now);
+    return;
   }
 
   if (event.key === "Enter") {
     await handleEnter(event, now);
+    return;
   }
 
   if (event.key === "Escape" && Config.quickRestart === "esc") {
     event.preventDefault();
     TestLogic.restart();
     return;
+  }
+
+  for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
+    void fb.functions.handleKeydown(event);
   }
 
   if (Config.layout !== "default") {

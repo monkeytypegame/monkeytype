@@ -953,9 +953,9 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
-    void fb.functions.handleKeydown(event);
-  }
+  // for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
+  //   void fb.functions.handleKeydown(event);
+  // }
 
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");

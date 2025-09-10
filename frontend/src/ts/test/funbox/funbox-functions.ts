@@ -41,9 +41,7 @@ export type FunboxFunctions = {
   preventDefaultEvent?: (
     event: JQuery.KeyDownEvent<Document, null, Document, Document>
   ) => Promise<boolean>;
-  handleKeydown?: (
-    event: JQuery.KeyDownEvent<Document, undefined, Document, Document>
-  ) => Promise<void>;
+  handleKeydown?: (event: KeyboardEvent) => Promise<void>;
   getResultContent?: () => string;
   start?: () => void;
   restart?: () => void;
@@ -51,9 +49,7 @@ export type FunboxFunctions = {
   getWordsFrequencyMode?: () => FunboxWordsFrequency;
 };
 
-async function readAheadHandleKeydown(
-  event: JQuery.KeyDownEvent<Document, undefined, Document, Document>
-): Promise<void> {
+async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
   const inputCurrentChar = (TestInput.input.current ?? "").slice(-1);
   const wordCurrentChar = TestWords.words
     .getCurrent()
