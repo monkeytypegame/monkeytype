@@ -10,7 +10,6 @@ import * as Skeleton from "../utils/skeleton";
 import { TypingStats, SpeedHistogram } from "@monkeytype/schemas/public";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import * as Loader from "../elements/loader";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -20,10 +19,8 @@ function reset(): void {
   void ChartController.globalSpeedHistogram.updateColors();
 }
 
-let speedHistogramResponseData: SpeedHistogram | null = null;
-let typingStatsResponseData: TypingStats | null = null;
-let supporters: string[] | null = null;
-let contributors: string[] | null = null;
+let speedHistogramResponseData: SpeedHistogram | null;
+let typingStatsResponseData: TypingStats | null;
 
 function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {
@@ -90,7 +87,11 @@ function updateStatsAndHistogram(): void {
   }
 }
 
-async function getSpeedHistogram(): Promise<void> {
+async function getStatsAndHistogramData(): Promise<void> {
+  if (speedHistogramResponseData && typingStatsResponseData) {
+    return;
+  }
+
   if (!ConnectionState.get()) {
     Notifications.add("Cannot update all time stats - offline", 0);
     return;
@@ -111,29 +112,19 @@ async function getSpeedHistogram(): Promise<void> {
       -1
     );
   }
-}
-
-async function getTypingStats(): Promise<void> {
-  if (!ConnectionState.get()) {
-    Notifications.add("Cannot update all time stats - offline", 0);
-    return;
-  }
-
   const typingStats = await Ape.public.getTypingStats();
   if (typingStats.status === 200) {
     typingStatsResponseData = typingStats.body.data;
   } else {
     Notifications.add(
-      `Failed to get global typing stats: ${typingStats.body.message}`,
+      `Failed to get global typing stats: ${speedStats.body.message}`,
       -1
     );
   }
 }
 
-async function getSupporters(): Promise<void> {
-  //we fetch supporters only once because they don't change often
-  if (supporters) return;
-  const { data, error: supportersError } = await tryCatch(
+async function fill(): Promise<void> {
+  const { data: supporters, error: supportersError } = await tryCatch(
     JSONData.getSupportersList()
   );
   if (supportersError) {
@@ -142,13 +133,8 @@ async function getSupporters(): Promise<void> {
       -1
     );
   }
-  supporters = data;
-}
 
-async function getContributors(): Promise<void> {
-  //we fetch contributors only once because they don't change often
-  if (contributors) return;
-  const { data, error: contributorsError } = await tryCatch(
+  const { data: contributors, error: contributorsError } = await tryCatch(
     JSONData.getContributorsList()
   );
   if (contributorsError) {
@@ -157,11 +143,10 @@ async function getContributors(): Promise<void> {
       -1
     );
   }
-  contributors = data;
-}
 
-async function fill(): Promise<void> {
-  updateStatsAndHistogram();
+  void getStatsAndHistogramData().then(() => {
+    updateStatsAndHistogram();
+  });
 
   const supportersEl = document.querySelector(".pageAbout .supporters");
   let supportersHTML = "";
@@ -216,25 +201,6 @@ export const page = new Page({
   id: "about",
   element: $(".page.pageAbout"),
   path: "/about",
-  loadingOptions: {
-    style: "spinner",
-    loadingPromise: async () => {
-      await Promise.all([
-        getContributors(),
-        getSupporters(),
-        getSpeedHistogram(),
-        getTypingStats(),
-      ]);
-    },
-    loadingMode: () => ({
-      mode: "async",
-      beforeLoading: Loader.show,
-      afterLoading: () => {
-        Loader.hide();
-        void fill();
-      },
-    }),
-  },
   afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageAbout");
