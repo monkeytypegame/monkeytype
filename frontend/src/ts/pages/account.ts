@@ -1323,10 +1323,14 @@ export const page = new Page({
   element: $(".page.pageAccount"),
   path: "/account",
   loadingOptions: {
-    shouldLoad: () => {
-      return DB.getSnapshot()?.results === undefined;
+    loadingMode: () => {
+      if (DB.getSnapshot()?.results === undefined) {
+        return "sync";
+      } else {
+        return "none";
+      }
     },
-    waitFor: async () => {
+    loadingPromise: async () => {
       if (DB.getSnapshot() === null) {
         throw new Error(
           "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."

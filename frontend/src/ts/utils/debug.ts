@@ -52,13 +52,20 @@ function logTiming(start: number, funcName: string): void {
     count: arr.length,
   });
   const endOverhead = performance.now();
-  //@ts-expect-error chrome api thingy
-  console.timeStamp(`#${arr.length} ${funcName}`, start, end, funcName);
+  console.timeStamp(
+    `#${arr.length} ${funcName}`,
+    //@ts-expect-error chrome api thingy
+    start,
+    end,
+    funcName,
+    "monkeytype"
+  );
   console.timeStamp(
     `#${arr.length} profiling overhead`,
     //@ts-expect-error chrome api thingy
     end,
     endOverhead,
-    funcName
+    funcName,
+    "monkeytype"
   );
 }
