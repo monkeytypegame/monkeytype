@@ -106,6 +106,7 @@ export function splitByAndKeep(text: string, delimiters: string[]): string[] {
  * @return The full text with all matching words highlighted.
  */
 export function highlightMatches(text: string, matches: string[]): string {
+  matches = matches.filter((match) => match !== "");
   if (matches.length === 0) return text;
 
   // matches that don't have a letter before or after them

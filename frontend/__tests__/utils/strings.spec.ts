@@ -5,54 +5,131 @@ describe("string utils", () => {
   describe("highlightMatches", () => {
     const shouldHighlight = [
       {
-        description: "all matches",
-        text: "I come passing by the woods.",
-        matches: ["come", "by"],
-        expected: `I <span class="highlight">come</span> passing <span class="highlight">by</span> the woods.`,
+        description: "word at the beginning",
+        text: "Start here.",
+        matches: ["Start"],
+        expected: '<span class="highlight">Start</span> here.',
       },
       {
-        description: "longest match possible",
-        text: "There comes a time when we come.",
-        matches: ["come", "comes"],
-        expected: `There <span class="highlight">comes</span> a time when we <span class="highlight">come</span>.`,
+        description: "word at the end",
+        text: "reach the end",
+        matches: ["end"],
+        expected: 'reach the <span class="highlight">end</span>',
       },
       {
-        description: "if preceded by puntuation/symbols",
-        text: "(bad example)",
-        matches: ["bad"],
-        expected: `(<span class="highlight">bad</span> example)`,
+        description: "mutliple matches",
+        text: "one two three",
+        matches: ["one", "three"],
+        expected:
+          '<span class="highlight">one</span> two <span class="highlight">three</span>',
       },
       {
-        description: "if followed by puntuation/symbols",
-        text: "They're good, or bad, or anything.",
-        matches: ["bad"],
-        expected: `They're good, or <span class="highlight">bad</span>, or anything.`,
+        description: "repeated matches",
+        text: "one two two",
+        matches: ["two"],
+        expected:
+          'one <span class="highlight">two</span> <span class="highlight">two</span>',
       },
       {
-        description: "if wrapped with underscores",
-        text: "_string_",
-        matches: ["string"],
-        expected: `_<span class="highlight">string</span>_`,
+        description: "longest possible  match",
+        text: "abc ab",
+        matches: ["ab", "abc"],
+        expected:
+          '<span class="highlight">abc</span> <span class="highlight">ab</span>',
+      },
+      {
+        description: "if wrapped in parenthesis",
+        text: "(test)",
+        matches: ["test"],
+        expected: '(<span class="highlight">test</span>)',
+      },
+      {
+        description: "if wrapped in commas",
+        text: ",test,",
+        matches: ["test"],
+        expected: ',<span class="highlight">test</span>,',
+      },
+      {
+        description: "if wrapped in underscores",
+        text: "_test_",
+        matches: ["test"],
+        expected: '_<span class="highlight">test</span>_',
+      },
+      {
+        description: "words in russian",
+        text: "Привет, мир!",
+        matches: ["Привет", "мир"],
+        expected:
+          '<span class="highlight">Привет</span>, <span class="highlight">мир</span>!',
+      },
+      {
+        description: "words with chinese punctuation",
+        text: "你好，世界！",
+        matches: ["你好", "世界"],
+        expected:
+          '<span class="highlight">你好</span>，<span class="highlight">世界</span>！',
+      },
+      {
+        description: "words with arabic punctuation",
+        text: "؟مرحبا، بكم؛",
+        matches: ["مرحبا", "بكم"],
+        expected:
+          '؟<span class="highlight">مرحبا</span>، <span class="highlight">بكم</span>؛',
+      },
+      {
+        description: "standalone numbers",
+        text: "My number is 1234.",
+        matches: ["1234"],
+        expected: 'My number is <span class="highlight">1234</span>.',
       },
     ];
     const shouldNotHighlight = [
       {
-        description: "a match with trailing letters",
-        text: "The magic of comets inside us.",
-        matches: ["come"],
-        expected: `The magic of comets inside us.`,
+        description: "a match within a longer word",
+        text: "together",
+        matches: ["get"],
       },
       {
         description: "a match with leading letters",
-        text: "Today's friend becomes tomorrow's foe.",
-        matches: ["comes"],
-        expected: `Today's friend becomes tomorrow's foe.`,
+        text: "welcome",
+        matches: ["come"],
       },
       {
-        description: "a match inside a bigger word",
-        text: "We started to get along together.",
-        matches: ["get"],
-        expected: `We started to <span class="highlight">get</span> along together.`,
+        description: "a match with trailing letters",
+        text: "comets",
+        matches: ["come"],
+      },
+      {
+        description: "japanese matches within longer words",
+        text: "こんにちは世界",
+        matches: ["こんにちは"],
+      },
+      {
+        description: "numbers within words",
+        text: "abc1234def",
+        matches: ["1234"],
+      },
+    ];
+    const returnOriginal = [
+      {
+        description: "if matches is an empty array",
+        text: "Nothing to match.",
+        matches: [],
+      },
+      {
+        description: "if matches has an empty string only",
+        text: "Nothing to match.",
+        matches: [""],
+      },
+      {
+        description: "if no matches found in text",
+        text: "Hello world.",
+        matches: ["absent"],
+      },
+      {
+        description: "if text is empty",
+        text: "",
+        matches: ["anything"],
       },
     ];
     it.each(shouldHighlight)(
@@ -63,8 +140,14 @@ describe("string utils", () => {
     );
     it.each(shouldNotHighlight)(
       "should not highlight $description",
-      ({ text, matches, expected }) => {
-        expect(Strings.highlightMatches(text, matches)).toBe(expected);
+      ({ text, matches }) => {
+        expect(Strings.highlightMatches(text, matches)).toBe(text);
+      }
+    );
+    it.each(returnOriginal)(
+      "should return original text $description",
+      ({ text, matches }) => {
+        expect(Strings.highlightMatches(text, matches)).toBe(text);
       }
     );
   });
