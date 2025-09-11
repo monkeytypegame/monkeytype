@@ -24,7 +24,10 @@ type Options<T> = {
 
 export type LoadingOptions = {
   /**
-   * Should the waitFor promise be awaited with a loading screen or in the background?
+   * Get the loading mode for this page.
+   * "none" - No loading screen will be shown.
+   * "sync" - A loading spinner or bar (depending on style) will be shown until the page is ready.
+   * { mode: "async", onCall, afterResolve } - The waitFor promise will be awaited in the background and afterResolve called after it resolves.
    */
   loadingMode: () =>
     | "none"
