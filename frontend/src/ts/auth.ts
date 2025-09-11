@@ -177,7 +177,7 @@ export async function onAuthStateChanged(
           return "none";
         }
       },
-      waitFor: async () => {
+      loadingPromise: async () => {
         await userPromise;
       },
       style: "bar",

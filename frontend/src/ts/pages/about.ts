@@ -235,7 +235,7 @@ export const page = new Page({
         text: "Downloading supporters",
       },
     ],
-    waitFor: async () => {
+    loadingPromise: async () => {
       await Promise.all([
         getContributors(),
         getSupporters(),
@@ -253,8 +253,8 @@ export const page = new Page({
       if (hasCache) {
         return {
           mode: "async",
-          onCall: Loader.show,
-          afterResolve: () => {
+          beforeLoading: Loader.show,
+          afterLoading: () => {
             Loader.hide();
             void fill();
           },

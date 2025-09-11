@@ -97,7 +97,7 @@ async function showLoading({
       void PageLoading.updateBar(100, 125);
       PageLoading.updateText("Done");
     } else {
-      await options.waitFor();
+      await options.loadingPromise();
     }
   }
 
@@ -123,7 +123,7 @@ async function getLoadingPromiseWithBarKeyframes(
   fillOffset: number
 ): Promise<void> {
   let aborted = false;
-  let loadingPromise = loadingOptions.waitFor();
+  let loadingPromise = loadingOptions.loadingPromise();
 
   // Animate bar keyframes, but allow aborting if loading.promise finishes first
   const keyframePromise = (async () => {
@@ -269,9 +269,9 @@ export async function change(
     typeof nextPageLoadingMode === "object" &&
     nextPageLoadingMode.mode === "async"
   ) {
-    nextPageLoadingMode.onCall();
-    void nextPage?.loadingOptions?.waitFor().then(() => {
-      nextPageLoadingMode.afterResolve();
+    nextPageLoadingMode.beforeLoading();
+    void nextPage?.loadingOptions?.loadingPromise().then(() => {
+      nextPageLoadingMode.afterLoading();
     });
   }
 

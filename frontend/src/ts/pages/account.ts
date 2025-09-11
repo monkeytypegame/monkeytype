@@ -1330,7 +1330,7 @@ export const page = new Page({
         return "none";
       }
     },
-    waitFor: async () => {
+    loadingPromise: async () => {
       if (DB.getSnapshot() === null) {
         throw new Error(
           "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."

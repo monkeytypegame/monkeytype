@@ -27,16 +27,16 @@ export type LoadingOptions = {
    * Get the loading mode for this page.
    * "none" - No loading screen will be shown.
    * "sync" - A loading spinner or bar (depending on style) will be shown until the page is ready.
-   * { mode: "async", onCall, afterResolve } - The waitFor promise will be awaited in the background and afterResolve called after it resolves.
+   * { mode: "async", beforeLoading, afterLoading } - The loadingPromise will be executed in the background and afterLoading called after it resolves.
    */
   loadingMode: () =>
     | "none"
     | "sync"
-    | { mode: "async"; onCall: () => void; afterResolve: () => void };
+    | { mode: "async"; beforeLoading: () => void; afterLoading: () => void };
   /**
    * When this promise resolves, the loading screen will be hidden.
    */
-  waitFor: () => Promise<void>;
+  loadingPromise: () => Promise<void>;
 } & (
   | {
       style: "spinner";
