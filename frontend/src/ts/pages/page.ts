@@ -162,9 +162,3 @@ export class PageWithUrlParams<T, U extends UrlParamsSchema> extends Page<T> {
     await this._beforeShow?.({ ...options, urlParams: urlParams });
   }
 }
-
-export type CachedPageProperties<T> = PageProperties<T> & {
-  loadingOptions?: LoadingOptions & {
-    shouldRefreshAsync: () => boolean;
-  };
-};
