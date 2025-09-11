@@ -159,10 +159,11 @@ validateWithIndicator(nameInputEl, {
       params: { name: name },
     });
 
-    return checkNameResponse.status === 200 &&
-      checkNameResponse.body.data.availability === "available"
-      ? true
-      : "Name not available";
+    return (
+      (checkNameResponse.status === 200 &&
+        checkNameResponse.body.data.available) ||
+      "Name not available"
+    );
   },
   debounceDelay: 1000,
   callback: (result) => {

@@ -438,7 +438,7 @@ export async function checkName(
   const available = await UserDAL.isNameAvailable(name, uid);
 
   return new MonkeyResponse("Check username", {
-    availability: available ? "available" : "taken",
+    available,
   });
 }
 

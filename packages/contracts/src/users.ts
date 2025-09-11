@@ -61,7 +61,7 @@ export type CheckNamePathParameters = z.infer<
 
 export const CheckNameResponseSchema = responseWithData(
   z.object({
-    availability: z.enum(["available", "taken"]),
+    available: z.boolean(),
   })
 );
 export type CheckNameResponse = z.infer<typeof CheckNameResponseSchema>;

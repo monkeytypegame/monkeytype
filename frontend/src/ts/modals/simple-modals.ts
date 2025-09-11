@@ -480,10 +480,11 @@ list.updateName = new SimpleModal({
             params: { name: newName },
           });
 
-          return checkNameResponse.status === 200 &&
-            checkNameResponse.body.data.availability === "available"
-            ? true
-            : "Name not available";
+          return (
+            (checkNameResponse.status === 200 &&
+              checkNameResponse.body.data.available) ||
+            "Name not available"
+          );
         },
         debounceDelay: 1000,
       },

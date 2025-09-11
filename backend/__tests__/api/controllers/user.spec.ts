@@ -239,7 +239,7 @@ describe("user controller test", () => {
       //THEN
       expect(body).toEqual({
         message: "Check username",
-        data: { availability: "available" },
+        data: { available: true },
       });
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", "");
     });
@@ -257,7 +257,7 @@ describe("user controller test", () => {
       //THEN
       expect(body).toEqual({
         message: "Check username",
-        data: { availability: "taken" },
+        data: { available: false },
       });
 
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", "");
@@ -275,7 +275,7 @@ describe("user controller test", () => {
       //THEN
       expect(body).toEqual({
         message: "Check username",
-        data: { availability: "available" },
+        data: { available: true },
       });
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", uid);
     });
