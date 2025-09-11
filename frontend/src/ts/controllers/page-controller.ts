@@ -50,7 +50,7 @@ function updateTitle(nextPage: { id: string; display?: string }): void {
   }
 }
 
-async function showLoading({
+async function showSyncLoading({
   loadingOptions,
   totalDuration,
   easingMethod,
@@ -219,7 +219,10 @@ export async function change(
   //show loading page if needed
   try {
     let loadingOptions: LoadingOptions[] = [];
-    if (options.loadingOptions) {
+    if (
+      options.loadingOptions &&
+      options.loadingOptions.loadingMode() === "sync"
+    ) {
       loadingOptions.push(options.loadingOptions);
     }
     if (nextPage.loadingOptions && nextPageLoadingMode === "sync") {
@@ -227,16 +230,11 @@ export async function change(
     }
 
     if (loadingOptions.length > 0) {
-      if (
-        options.loadingOptions?.loadingMode() === "sync" ||
-        nextPageLoadingMode === "sync"
-      ) {
-        await showLoading({
-          loadingOptions,
-          totalDuration,
-          easingMethod,
-        });
-      }
+      await showSyncLoading({
+        loadingOptions,
+        totalDuration,
+        easingMethod,
+      });
     }
   } catch (error) {
     pages.loading.element.addClass("active");
