@@ -214,24 +214,22 @@ export async function change(
   previousPage.element.addClass("hidden");
   await previousPage?.afterHide();
 
+  // we need to evaluate and store next page loading mode in case options.loadingOptions.loadingMode is sync
   const nextPageLoadingMode = nextPage.loadingOptions?.loadingMode();
 
   //show loading page if needed
   try {
-    let loadingOptions: LoadingOptions[] = [];
-    if (
-      options.loadingOptions &&
-      options.loadingOptions.loadingMode() === "sync"
-    ) {
-      loadingOptions.push(options.loadingOptions);
+    let syncLoadingOptions: LoadingOptions[] = [];
+    if (options.loadingOptions?.loadingMode() === "sync") {
+      syncLoadingOptions.push(options.loadingOptions);
     }
-    if (nextPage.loadingOptions && nextPageLoadingMode === "sync") {
-      loadingOptions.push(nextPage.loadingOptions);
+    if (nextPage.loadingOptions?.loadingMode() === "sync") {
+      syncLoadingOptions.push(nextPage.loadingOptions);
     }
 
-    if (loadingOptions.length > 0) {
+    if (syncLoadingOptions.length > 0) {
       await showSyncLoading({
-        loadingOptions,
+        loadingOptions: syncLoadingOptions,
         totalDuration,
         easingMethod,
       });
