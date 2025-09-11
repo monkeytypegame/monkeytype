@@ -450,32 +450,47 @@ $(".pageFriends .friends table").on("click", async (e) => {
   }
 });
 
+function showSpinner(): void {
+  document.querySelector(".friends .spinner")?.classList.remove("hidden");
+}
+
+function hideSpinner(): void {
+  document.querySelector(".friends .spinner")?.classList.add("hidden");
+}
+
+function update(): void {
+  updatePendingConnections();
+  updateFriends();
+}
+
 export const page = new Page<undefined>({
   id: "friends",
   display: "Friends",
   element: pageElement,
   path: "/friends",
   loadingOptions: {
-    shouldLoad: () => {
+    loadingMode: () => {
+      if (!getAuthenticatedUser()) {
+        return "none";
+      }
       const hasCache =
         friendsList !== undefined && pendingRequests !== undefined;
 
       if (hasCache) {
-        setTimeout(async () => {
-          const spinner = document.querySelector(".friends .spinner");
-          spinner?.classList.remove("hidden");
-
-          await page.loadingOptions?.waitFor();
-          await page.beforeShow({});
-
-          spinner?.classList.add("hidden");
-        }, 0);
+        return {
+          mode: "async",
+          beforeLoading: showSpinner,
+          afterLoading: () => {
+            hideSpinner();
+            update();
+          },
+        };
+      } else {
+        return "sync";
       }
-
-      return getAuthenticatedUser() !== null && !hasCache;
     },
 
-    waitFor: async () => {
+    loadingPromise: async () => {
       await ServerConfiguration.configurationPromise;
       const serverConfig = ServerConfiguration.get();
       if (!serverConfig?.connections.enabled) {
@@ -500,9 +515,7 @@ export const page = new Page<undefined>({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageFriends", "main");
-
-    updatePendingConnections();
-    updateFriends();
+    update();
   },
 });
 
