@@ -226,7 +226,7 @@ describe("user controller test", () => {
       userIsNameAvailableMock.mockClear();
     });
 
-    it("returns ok if name is available", async () => {
+    it("returns available if name is available", async () => {
       //GIVEN
       userIsNameAvailableMock.mockResolvedValue(true);
 
@@ -244,7 +244,7 @@ describe("user controller test", () => {
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", "");
     });
 
-    it("returns 409 if name is not available", async () => {
+    it("returns taken if name is not available", async () => {
       //GIVEN
       userIsNameAvailableMock.mockResolvedValue(false);
 
@@ -278,6 +278,12 @@ describe("user controller test", () => {
         data: { availability: "available" },
       });
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", uid);
+    });
+    it("returns 422 if username contains profanity", async () => {
+      await mockApp
+        .get("/users/checkName/newMiodec")
+        //no authentication required
+        .expect(422);
     });
   });
   describe("sendVerificationEmail", () => {
