@@ -222,7 +222,7 @@ export async function change(
     if (options.loadingOptions) {
       loadingOptions.push(options.loadingOptions);
     }
-    if (nextPage.loadingOptions) {
+    if (nextPage.loadingOptions && nextPageLoadingMode === "sync") {
       loadingOptions.push(nextPage.loadingOptions);
     }
 
