@@ -65,7 +65,27 @@ export async function addFriend(friendName: string): Promise<true | string> {
 const addFriendModal = new SimpleModal({
   id: "addFriend",
   title: "Add a friend",
-  inputs: [{ placeholder: "user name", type: "text", initVal: "" }],
+  inputs: [
+    {
+      placeholder: "user name",
+      type: "text",
+      initVal: "",
+      validation: {
+        isValid: async (name: string) => {
+          const checkNameResponse = await Ape.users.getNameAvailability({
+            params: { name: name },
+          });
+
+          return (
+            (checkNameResponse.status === 200 &&
+              !checkNameResponse.body.data.available) ||
+            "Unknown user"
+          );
+        },
+        debounceDelay: 1000,
+      },
+    },
+  ],
   buttonText: "request",
   onlineOnly: true,
   execFn: async (_thisPopup, friendName) => {
