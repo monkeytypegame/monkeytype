@@ -217,24 +217,7 @@ export const page = new Page({
   element: $(".page.pageAbout"),
   path: "/about",
   loadingOptions: {
-    style: "bar",
-    keyframes: [
-      {
-        percentage: 25,
-        durationMs: 1000,
-        text: "Downloading statistics",
-      },
-      {
-        percentage: 50,
-        durationMs: 1000,
-        text: "Downloading contributors",
-      },
-      {
-        percentage: 75,
-        durationMs: 1000,
-        text: "Downloading supporters",
-      },
-    ],
+    style: "spinner",
     loadingPromise: async () => {
       await Promise.all([
         getContributors(),
@@ -243,26 +226,14 @@ export const page = new Page({
         getTypingStats(),
       ]);
     },
-    loadingMode: () => {
-      const hasCache = [
-        contributors,
-        supporters,
-        speedHistogramResponseData,
-        typingStatsResponseData,
-      ].every((it) => it !== null);
-      if (hasCache) {
-        return {
-          mode: "async",
-          beforeLoading: Loader.show,
-          afterLoading: () => {
-            Loader.hide();
-            void fill();
-          },
-        };
-      } else {
-        return "sync";
-      }
-    },
+    loadingMode: () => ({
+      mode: "async",
+      beforeLoading: Loader.show,
+      afterLoading: () => {
+        Loader.hide();
+        void fill();
+      },
+    }),
   },
   afterHide: async (): Promise<void> => {
     reset();
