@@ -138,6 +138,7 @@ async function fetchPendingConnections(): Promise<void> {
     pendingRequests = undefined;
   } else {
     pendingRequests = result.body.data;
+    DB.updateConnections(pendingRequests);
   }
 }
 
@@ -380,10 +381,12 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
 
   if (action === undefined) return;
 
-  const id = e.target.parentElement?.parentElement?.dataset["id"];
+  const row = e.target.closest("tr") as HTMLElement;
+  const id = row.dataset["id"];
   if (id === undefined) {
     throw new Error("Cannot find id of target.");
   }
+  row.querySelectorAll("button").forEach((button) => (button.disabled = true));
 
   const result =
     action === "rejected"
@@ -407,8 +410,7 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
 
     const snapshot = DB.getSnapshot();
     if (snapshot) {
-      const friendUid =
-        e.target.parentElement?.parentElement?.dataset["friendUid"];
+      const friendUid = row.dataset["friendUid"];
       if (friendUid === undefined) {
         throw new Error("Cannot find friendUid of target.");
       }
@@ -435,16 +437,14 @@ $(".pageFriends .friends table").on("click", async (e) => {
 
   if (action === undefined) return;
 
-  if (action === "remove") {
-    const connectionId =
-      e.target.parentElement?.parentElement?.dataset["connectionId"];
-    if (connectionId === undefined) {
-      throw new Error("Cannot find id of target.");
-    }
+  const row = e.target.closest("tr") as HTMLElement;
+  const connectionId = row.dataset["connectionId"];
+  if (connectionId === undefined) {
+    throw new Error("Cannot find id of target.");
+  }
 
-    const name =
-      e.target.parentElement?.parentElement?.querySelector("a.entryName")
-        ?.textContent ?? "";
+  if (action === "remove") {
+    const name = row.querySelector("a.entryName")?.textContent ?? "";
 
     removeFriendModal.show([connectionId, name], {});
   }
