@@ -92,14 +92,28 @@ const addFriendModal = new SimpleModal({
   execFn: async (_thisPopup, receiverName) => {
     const result = await addFriend(receiverName);
 
-    if (result !== true) {
-      return {
-        status: -1,
-        message: result,
-      };
-    } else {
+    if (result === true) {
       return { status: 1, message: `Request send to ${receiverName}` };
     }
+
+    let status: -1 | 0 | 1 = -1;
+    let message: string = "Unknown error";
+
+    if (result.includes("already exists")) {
+      status = 0;
+      message = `You are already friends with ${receiverName}`;
+    } else if (result.includes("request already sent")) {
+      status = 0;
+      message = `You have already sent a friend request to ${receiverName}`;
+    } else if (result.includes("blocked by initiator")) {
+      status = 0;
+      message = `You have blocked ${receiverName}`;
+    } else if (result.includes("blocked by receiver")) {
+      status = 0;
+      message = `${receiverName} has blocked you`;
+    }
+
+    return { status, message, alwaysHide: true };
   },
 });
 
