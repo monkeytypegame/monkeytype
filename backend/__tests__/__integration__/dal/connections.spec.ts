@@ -98,7 +98,7 @@ describe("ConnectionsDal", () => {
           initiatorUid: first.receiverUid,
           receiverUid: uid,
         })
-      ).rejects.toThrow("Duplicate connection");
+      ).rejects.toThrow("Connection request already sent");
     });
 
     it("should create", async () => {

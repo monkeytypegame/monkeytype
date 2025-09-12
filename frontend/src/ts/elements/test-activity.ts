@@ -34,9 +34,9 @@ export function init(
   update(element, calendar);
 }
 
-export function clear(element: HTMLElement): void {
-  element.classList.add("hidden");
-  element.querySelector(".activity")?.replaceChildren();
+export function clear(element?: HTMLElement): void {
+  element?.classList.add("hidden");
+  element?.querySelector(".activity")?.replaceChildren();
 }
 
 function update(element: HTMLElement, calendar?: TestActivityCalendar): void {

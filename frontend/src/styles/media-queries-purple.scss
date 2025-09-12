@@ -322,4 +322,19 @@
   .modalWrapper .modal .inputs.withLabel {
     grid-template-columns: 1fr;
   }
+
+  .pageFriends {
+    .content .friends table {
+      td:nth-child(5),
+      td:nth-child(6) {
+        display: none;
+      }
+    }
+  }
+
+  .pageAccountSettings [data-tab="blockedUsers"] {
+    table {
+      font-size: 0.75rem;
+    }
+  }
 }
