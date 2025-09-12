@@ -2005,9 +2005,9 @@ describe("UserDal", () => {
       });
       const friendOneRequest = await createFriend({
         initiatorUid: uid,
-        friendUid: friendOne.uid,
+        receiverUid: friendOne.uid,
         status: "accepted",
-        addedAt: 100,
+        lastModified: 100,
       });
       const friendTwo = await UserTestData.createUser({
         name: "Two",
@@ -2032,21 +2032,21 @@ describe("UserDal", () => {
       });
       const friendTwoRequest = await createFriend({
         initiatorUid: uid,
-        friendUid: friendTwo.uid,
+        receiverUid: friendTwo.uid,
         status: "accepted",
-        addedAt: 200,
+        lastModified: 200,
       });
 
       const friendThree = await UserTestData.createUser({ name: "Three" });
       const friendThreeRequest = await createFriend({
-        friendUid: uid,
+        receiverUid: uid,
         initiatorUid: friendThree.uid,
         status: "accepted",
-        addedAt: 300,
+        lastModified: 300,
       });
 
       //non accepted
-      await createFriend({ friendUid: uid, status: "pending" });
+      await createFriend({ receiverUid: uid, status: "pending" });
       await createFriend({ initiatorUid: uid, status: "blocked" });
 
       //WHEN
@@ -2057,7 +2057,7 @@ describe("UserDal", () => {
         {
           uid: friendOne.uid,
           name: "One",
-          addedAt: 100,
+          lastModified: 100,
           connectionId: friendOneRequest._id,
           // oxlint-disable-next-line no-non-null-assertion
           top15: friendOne.personalBests.time["15"]![0] as any,
@@ -2071,7 +2071,7 @@ describe("UserDal", () => {
         {
           uid: friendTwo.uid,
           name: "Two",
-          addedAt: 200,
+          lastModified: 200,
           connectionId: friendTwoRequest._id,
           discordId: friendTwo.discordId,
           discordAvatar: friendTwo.discordAvatar,
@@ -2088,7 +2088,7 @@ describe("UserDal", () => {
         {
           uid: friendThree.uid,
           name: "Three",
-          addedAt: 300,
+          lastModified: 300,
           connectionId: friendThreeRequest._id,
         },
         {

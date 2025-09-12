@@ -11,8 +11,8 @@ export async function createConnection(
       name: data.initiatorName ?? "user" + new ObjectId().toHexString(),
     },
     {
-      uid: data.friendUid ?? new ObjectId().toHexString(),
-      name: data.friendName ?? "user" + new ObjectId().toHexString(),
+      uid: data.receiverUid ?? new ObjectId().toHexString(),
+      name: data.receiverName ?? "user" + new ObjectId().toHexString(),
     },
     maxPerUser
   );

@@ -32,11 +32,11 @@ describe("ConnectionsController", () => {
       //GIVEN
       const friend: ConnectionsDal.DBConnection = {
         _id: new ObjectId(),
-        addedAt: 42,
+        lastModified: 42,
         initiatorUid: new ObjectId().toHexString(),
         initiatorName: "Bob",
-        friendUid: new ObjectId().toHexString(),
-        friendName: "Kevin",
+        receiverUid: new ObjectId().toHexString(),
+        receiverName: "Kevin",
         status: "pending",
         key: "key",
       };
@@ -55,7 +55,7 @@ describe("ConnectionsController", () => {
       ]);
       expect(getConnectionsMock).toHaveBeenCalledWith({
         initiatorUid: uid,
-        friendUid: uid,
+        receiverUid: uid,
       });
     });
 
@@ -73,7 +73,7 @@ describe("ConnectionsController", () => {
       //THEN
       expect(getConnectionsMock).toHaveBeenCalledWith({
         initiatorUid: uid,
-        friendUid: uid,
+        receiverUid: uid,
         status: ["accepted"],
       });
     });
@@ -92,7 +92,7 @@ describe("ConnectionsController", () => {
       //THEN
       expect(getConnectionsMock).toHaveBeenCalledWith({
         initiatorUid: uid,
-        friendUid: uid,
+        receiverUid: uid,
         status: ["accepted", "blocked"],
       });
     });
@@ -110,7 +110,7 @@ describe("ConnectionsController", () => {
 
       //THEN
       expect(getConnectionsMock).toHaveBeenCalledWith({
-        friendUid: uid,
+        receiverUid: uid,
       });
     });
 
@@ -145,7 +145,7 @@ describe("ConnectionsController", () => {
       //THEN
       expect(getConnectionsMock).toHaveBeenCalledWith({
         initiatorUid: uid,
-        friendUid: uid,
+        receiverUid: uid,
       });
     });
 
@@ -171,7 +171,7 @@ describe("ConnectionsController", () => {
     });
   });
 
-  describe("create friend request", () => {
+  describe("create connection", () => {
     const getUserByNameMock = vi.spyOn(UserDal, "getUserByName");
     const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
     const createUserMock = vi.spyOn(ConnectionsDal, "create");
@@ -191,11 +191,11 @@ describe("ConnectionsController", () => {
 
       const result: ConnectionsDal.DBConnection = {
         _id: new ObjectId(),
-        addedAt: 42,
+        lastModified: 42,
         initiatorUid: me.uid,
         initiatorName: me.name,
-        friendUid: myFriend.uid,
-        friendName: myFriend.name,
+        receiverUid: myFriend.uid,
+        receiverName: myFriend.name,
         key: "test",
         status: "pending",
       };
@@ -204,18 +204,18 @@ describe("ConnectionsController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/connections")
-        .send({ friendName: "Kevin" })
+        .send({ receiverName: "Kevin" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
       expect(body.data).toEqual({
         _id: result._id.toHexString(),
-        addedAt: 42,
+        lastModified: 42,
         initiatorUid: me.uid,
         initiatorName: me.name,
-        friendUid: myFriend.uid,
-        friendName: myFriend.name,
+        receiverUid: myFriend.uid,
+        receiverName: myFriend.name,
         status: "pending",
       });
 
@@ -231,7 +231,7 @@ describe("ConnectionsController", () => {
       expect(createUserMock).toHaveBeenCalledWith(me, myFriend, 100);
     });
 
-    it("should fail if user and friend are the same", async () => {
+    it("should fail if user and receiver are the same", async () => {
       //GIVEN
       const me = { uid, name: "Bob" };
 
@@ -241,7 +241,7 @@ describe("ConnectionsController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/connections")
-        .send({ friendName: "Bob" })
+        .send({ receiverName: "Bob" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(400);
 
@@ -260,14 +260,14 @@ describe("ConnectionsController", () => {
       //THEN
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
-        validationErrors: [`"friendName" Required`],
+        validationErrors: [`"receiverName" Required`],
       });
     });
     it("should fail with extra properties", async () => {
       //WHEN
       const { body } = await mockApp
         .post("/connections")
-        .send({ friendName: "1", extra: "value" })
+        .send({ receiverName: "1", extra: "value" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
@@ -282,7 +282,7 @@ describe("ConnectionsController", () => {
       await expectFailForDisabledEndpoint(
         mockApp
           .post("/connections")
-          .send({ friendName: "1" })
+          .send({ receiverName: "1" })
           .set("Authorization", `Bearer ${uid}`)
       );
     });
@@ -292,7 +292,7 @@ describe("ConnectionsController", () => {
     });
   });
 
-  describe("delete friend request", () => {
+  describe("delete connection", () => {
     const deleteByIdMock = vi.spyOn(ConnectionsDal, "deleteById");
 
     beforeEach(() => {
@@ -320,7 +320,7 @@ describe("ConnectionsController", () => {
     });
   });
 
-  describe("update friend request", () => {
+  describe("update connection", () => {
     const updateStatusMock = vi.spyOn(ConnectionsDal, "updateStatus");
 
     beforeEach(() => {

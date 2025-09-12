@@ -1260,7 +1260,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
           //uid is friend or initiator
           $and: [
             {
-              $or: [{ initiatorUid: uid }, { friendUid: uid }],
+              $or: [{ initiatorUid: uid }, { receiverUid: uid }],
               status: "accepted",
             },
           ],
@@ -1268,9 +1268,9 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
       },
       {
         $project: {
-          friendUid: true,
+          receiverUid: true,
           initiatorUid: true,
-          addedAt: true,
+          lastModified: true,
         },
       },
       {
@@ -1278,10 +1278,10 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
           //pick the other user, not uid
           uid: {
             $cond: {
-              if: { $eq: ["$friendUid", uid] },
+              if: { $eq: ["$receiverUid", uid] },
               // oxlint-disable-next-line no-thenable
               then: "$initiatorUid",
-              else: "$friendUid",
+              else: "$receiverUid",
             },
           },
         },
@@ -1294,7 +1294,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
           data: {
             $push: {
               uid: "$uid",
-              addedAt: "$addedAt",
+              lastModified: "$lastModified",
               connectionId: "$_id",
             },
           },
@@ -1314,7 +1314,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
       /* end of workaround, this is the replacement for >= 5.1
     
       { $addFields: { connectionId: "$_id" } },
-      { $project: { uid: true, addedAt: true, connectionId: true } },
+      { $project: { uid: true, lastModified: true, connectionId: true } },
       {
         $unionWith: {
           pipeline: [{ $documents: [{ uid }] }],
@@ -1330,7 +1330,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
           foreignField: "uid",
           as: "result",
           let: {
-            addedAt: "$data.addedAt", //just $addedAt if we remove the workaround above
+            lastModified: "$data.lastModified", //just $lastModified if we remove the workaround above
             connectionId: "$data.connectionId", //just $connectionId if we remove the workaround above
           },
           pipeline: [
@@ -1357,7 +1357,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
             },
             {
               $addFields: {
-                addedAt: "$$addedAt",
+                lastModified: "$$lastModified",
                 connectionId: "$$connectionId",
                 top15: {
                   $reduce: {
@@ -1433,7 +1433,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
                 top15: { $ifNull: ["$top15", "$$REMOVE"] },
                 top60: { $ifNull: ["$top60", "$$REMOVE"] },
                 badgeId: { $ifNull: ["$badgeId", "$$REMOVE"] },
-                addedAt: "$addedAt",
+                lastModified: "$lastModified",
               },
             },
             {

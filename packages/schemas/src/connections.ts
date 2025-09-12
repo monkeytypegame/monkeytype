@@ -15,9 +15,9 @@ export const ConnectionSchema = z.object({
   _id: IdSchema,
   initiatorUid: IdSchema,
   initiatorName: z.string(),
-  friendUid: IdSchema,
-  friendName: z.string(),
-  addedAt: z.number().int().nonnegative(),
+  receiverUid: IdSchema,
+  receiverName: z.string(),
+  lastModified: z.number().int().nonnegative(),
   status: ConnectionStatusSchema,
 });
 

@@ -16,12 +16,12 @@ export const getCollection = (): Collection<DBConnection> =>
 
 export async function getConnections(options: {
   initiatorUid?: string;
-  friendUid?: string;
+  receiverUid?: string;
   status?: ConnectionStatus[];
 }): Promise<DBConnection[]> {
-  const { initiatorUid, friendUid, status } = options;
+  const { initiatorUid, receiverUid, status } = options;
 
-  if (initiatorUid === undefined && friendUid === undefined)
+  if (initiatorUid === undefined && receiverUid === undefined)
     throw new Error("no filter provided");
 
   let filter: Filter<DBConnection> = { $or: [] };
@@ -30,8 +30,8 @@ export async function getConnections(options: {
     filter.$or?.push({ initiatorUid });
   }
 
-  if (friendUid !== undefined) {
-    filter.$or?.push({ friendUid });
+  if (receiverUid !== undefined) {
+    filter.$or?.push({ receiverUid });
   }
 
   if (status !== undefined) {
@@ -43,7 +43,7 @@ export async function getConnections(options: {
 
 export async function create(
   initiator: { uid: string; name: string },
-  friend: { uid: string; name: string },
+  receiver: { uid: string; name: string },
   maxPerUser: number
 ): Promise<DBConnection> {
   const count = await getCollection().countDocuments({
@@ -57,15 +57,16 @@ export async function create(
       "create connection request"
     );
   }
+  const key = getKey(initiator.uid, receiver.uid);
   try {
     const created: DBConnection = {
       _id: new ObjectId(),
-      key: getKey(initiator.uid, friend.uid),
+      key,
       initiatorUid: initiator.uid,
       initiatorName: initiator.name,
-      friendUid: friend.uid,
-      friendName: friend.name,
-      addedAt: Date.now(),
+      receiverUid: receiver.uid,
+      receiverName: receiver.name,
+      lastModified: Date.now(),
       status: "pending",
     };
 
@@ -75,7 +76,14 @@ export async function create(
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.name === "MongoServerError" && e.code === 11000) {
-      throw new MonkeyError(409, "Duplicate connection or blocked");
+      const existing = await getCollection().findOne(
+        { key },
+        { projection: { status: 1 } }
+      );
+      throw new MonkeyError(
+        409,
+        `Duplicate connection with status ${existing?.status}`
+      );
     }
 
     throw e;
@@ -84,22 +92,22 @@ export async function create(
 
 /**
  *Update the status of a connection by id
- * @param friendUid
+ * @param receiverUid
  * @param id
  * @param status
- * @throws MonkeyError if the connection id is unknown or the friendUid does not match
+ * @throws MonkeyError if the connection id is unknown or the recieverUid does not match
  */
 export async function updateStatus(
-  friendUid: string,
+  receiverUid: string,
   id: string,
   status: ConnectionStatus
 ): Promise<void> {
   const updateResult = await getCollection().updateOne(
     {
       _id: new ObjectId(id),
-      friendUid,
+      receiverUid,
     },
-    { $set: { status } }
+    { $set: { status, lastModified: Date.now() } }
   );
 
   if (updateResult.matchedCount === 0) {
@@ -121,7 +129,7 @@ export async function deleteById(uid: string, id: string): Promise<void> {
       },
       {
         $or: [
-          { friendUid: uid },
+          { receiverUid: uid },
           { status: { $in: ["accepted", "pending"] }, initiatorUid: uid },
         ],
       },
@@ -134,7 +142,7 @@ export async function deleteById(uid: string, id: string): Promise<void> {
 }
 
 /**
- * Update all connections for the uid (initiator or friend) with the given name.
+ * Update all connections for the uid (initiator or receiver) with the given name.
  * @param uid
  * @param newName
  */
@@ -148,25 +156,25 @@ export async function updateName(uid: string, newName: string): Promise<void> {
     },
     {
       updateMany: {
-        filter: { friendUid: uid },
-        update: { $set: { friendName: newName } },
+        filter: { receiverUid: uid },
+        update: { $set: { receiverName: newName } },
       },
     },
   ]);
 }
 
 /**
- * Remove all connections containing the uid as initiatorUid or friendUid
+ * Remove all connections containing the uid as initiatorUid or receiverUid
  * @param uid
  */
 export async function deleteByUid(uid: string): Promise<void> {
   await getCollection().deleteMany({
-    $or: [{ initiatorUid: uid }, { friendUid: uid }],
+    $or: [{ initiatorUid: uid }, { receiverUid: uid }],
   });
 }
 
-function getKey(initiatorUid: string, friendUid: string): string {
-  const ids = [initiatorUid, friendUid];
+function getKey(initiatorUid: string, receiverUid: string): string {
+  const ids = [initiatorUid, receiverUid];
   ids.sort();
   return ids.join("/");
 }
@@ -174,8 +182,8 @@ function getKey(initiatorUid: string, friendUid: string): string {
 export async function createIndicies(): Promise<void> {
   //index used for search
   await getCollection().createIndex({ initiatorUid: 1 });
-  await getCollection().createIndex({ friendUid: 1 });
+  await getCollection().createIndex({ receiverUid: 1 });
 
-  //make sure there is only one connection for each friend/creator pair
+  //make sure there is only one connection for each initiatorr/receiver
   await getCollection().createIndex({ key: 1 }, { unique: true });
 }

@@ -27,7 +27,7 @@ export async function getRequests(
   const results = await ConnectionsDal.getConnections({
     initiatorUid:
       type === undefined || type.includes("outgoing") ? uid : undefined,
-    friendUid:
+    receiverUid:
       type === undefined || type?.includes("incoming") ? uid : undefined,
     status: status,
   });
@@ -39,12 +39,15 @@ export async function createRequest(
   req: MonkeyRequest<undefined, CreateConnectionRequest>
 ): Promise<CreateConnectionResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { friendName } = req.body;
+  const { receiverName } = req.body;
   const { maxPerUser } = req.ctx.configuration.connections;
 
-  const friend = await UserDal.getUserByName(friendName, "create connection");
+  const receiver = await UserDal.getUserByName(
+    receiverName,
+    "create connection"
+  );
 
-  if (uid === friend.uid) {
+  if (uid === receiver.uid) {
     throw new MonkeyError(400, "You cannot be your own friend, sorry.");
   }
 
@@ -53,7 +56,7 @@ export async function createRequest(
     "name",
   ]);
 
-  const result = await ConnectionsDal.create(initiator, friend, maxPerUser);
+  const result = await ConnectionsDal.create(initiator, receiver, maxPerUser);
 
   return new MonkeyResponse("Connection created", convert(result));
 }

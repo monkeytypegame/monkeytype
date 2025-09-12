@@ -36,7 +36,7 @@ export const GetConnectionsQuerySchema = z.object({
 export type GetConnectionsQuery = z.infer<typeof GetConnectionsQuerySchema>;
 
 export const CreateConnectionRequestSchema = ConnectionSchema.pick({
-  friendName: true,
+  receiverName: true,
 });
 export type CreateConnectionRequest = z.infer<
   typeof CreateConnectionRequestSchema
@@ -83,7 +83,7 @@ export const connectionsContract = c.router(
       body: CreateConnectionRequestSchema.strict(),
       responses: {
         200: CreateConnectionResponseSchema,
-        404: MonkeyResponseSchema.describe("FriendUid unknown"),
+        404: MonkeyResponseSchema.describe("ReceiverUid unknown"),
         409: MonkeyResponseSchema.describe(
           "Duplicate connection, blocked or max connections reached"
         ),
