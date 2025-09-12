@@ -10,6 +10,7 @@ import * as ConfigEvent from "../observables/config-event";
 import { convertRemToPixels } from "../utils/numbers";
 import { getActiveFunboxes } from "./funbox/list";
 import { getWordDirection } from "../utils/strings";
+import { Caret } from "../utils/caret";
 
 type Settings = {
   wpm: number;
@@ -56,17 +57,25 @@ async function resetCaretPosition(): Promise<void> {
 
   const currentWord = TestWords.words.get(settings?.currentWordIndex ?? 0);
 
-  const isWordRightToLeft = getWordDirection(
+  const _isWordRightToLeft = getWordDirection(
     currentWord,
     isLanguageRightToLeft ?? false
   );
 
+  // caret.stop(true, true).animate(
+  //   {
+  //     top: firstLetter.offsetTop - firstLetterHeight / 4,
+  //     left:
+  //       firstLetter.offsetLeft +
+  //       (isWordRightToLeft ? firstLetter.offsetWidth : 0),
+  //   },
+  //   0,
+  //   "linear"
+  // );
+
   caret.stop(true, true).animate(
     {
-      top: firstLetter.offsetTop - firstLetterHeight / 4,
-      left:
-        firstLetter.offsetLeft +
-        (isWordRightToLeft ? firstLetter.offsetWidth : 0),
+      left: getTargetPositionLeft(),
     },
     0,
     "linear"
@@ -148,6 +157,21 @@ export async function init(): Promise<void> {
     timeout: null,
   };
   await resetCaretPosition();
+}
+
+function getTargetPositionLeft(): number {
+  const word = document.querySelector<HTMLElement>(
+    `#words .word[data-wordindex='${settings?.currentWordIndex ?? 0}']`
+  );
+  const letter = word?.querySelectorAll("letter")[
+    settings?.currentLetterIndex === -1 ? 0 : settings?.currentLetterIndex ?? 0
+  ] as HTMLElement;
+
+  return (
+    (word?.offsetLeft ?? 0) +
+    (letter?.offsetLeft ?? 0) +
+    (settings?.currentLetterIndex === -1 ? 0 : letter?.offsetWidth ?? 0)
+  );
 }
 
 export async function update(expectedStepEnd: number): Promise<void> {
@@ -354,7 +378,22 @@ function updateStyle(): void {
   paceCaret.addClass(Config.paceCaretStyle);
 }
 
+const caret = new Caret(
+  document.getElementById("paceCaret") as HTMLElement,
+  Config.paceCaretStyle
+);
+
+window["caret"] = caret;
+
 ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "paceCaret") void init();
-  if (eventKey === "paceCaretStyle") updateStyle();
+  if (eventKey === "paceCaret") {
+    void init();
+  }
+  if (eventKey === "paceCaretStyle") {
+    updateStyle();
+    caret.setStyle(Config.paceCaretStyle);
+    setTimeout(() => {
+      caret.goTo({ wordIndex: 0, letterIndex: 0 });
+    }, 1000);
+  }
 });

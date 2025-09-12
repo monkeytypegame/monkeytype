@@ -20,6 +20,11 @@
 
 #caret,
 #paceCaret {
+  &.hidden {
+    opacity: 1 !important;
+    display: block !important;
+  }
+
   &.off {
     width: 0;
   }
