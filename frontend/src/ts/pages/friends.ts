@@ -26,6 +26,7 @@ import * as ServerConfiguration from "../ape/server-configuration";
 import * as AuthEvent from "../observables/auth-event";
 import { Connection } from "@monkeytype/schemas/connections";
 import { Friend } from "@monkeytype/schemas/users";
+import * as Loader from "../elements/loader";
 
 const pageElement = $(".page.pageFriends");
 
@@ -388,6 +389,7 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
   }
   row.querySelectorAll("button").forEach((button) => (button.disabled = true));
 
+  Loader.show();
   const result =
     action === "rejected"
       ? await Ape.connections.delete({
@@ -397,6 +399,7 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
           params: { id },
           body: { status: action },
         });
+  Loader.hide();
 
   if (result.status !== 200) {
     Notifications.add(
