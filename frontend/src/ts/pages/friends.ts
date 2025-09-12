@@ -428,6 +428,17 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
       }
       DB.setSnapshot(snapshot);
     }
+
+    if (action === "blocked") {
+      Notifications.add(`User has been blocked`, 0);
+    }
+    if (action === "accepted") {
+      Notifications.add(`Request accepted`, 1);
+    }
+    if (action === "rejected") {
+      Notifications.add(`Request rejected`, 0);
+    }
+
     if (action === "accepted") {
       showSpinner();
       await fetchFriends();
