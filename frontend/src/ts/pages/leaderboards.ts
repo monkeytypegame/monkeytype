@@ -1439,7 +1439,7 @@ function isFriend(uid: string): boolean {
   if (uid === getAuthenticatedUser()?.uid) return false;
 
   return Object.entries(DB.getSnapshot()?.connections ?? []).some(
-    ([friendUid, status]) => friendUid === uid && status === "accepted"
+    ([receiverUid, status]) => receiverUid === uid && status === "accepted"
   );
 }
 

@@ -35,28 +35,28 @@ let friendsTable: SortedTable<Friend> | undefined = undefined;
 let pendingRequests: Connection[] | undefined;
 let friendsList: Friend[] | undefined;
 
-export function getFriendUid(
-  connection: Pick<Connection, "initiatorUid" | "friendUid">
+export function getReceiverUid(
+  connection: Pick<Connection, "initiatorUid" | "receiverUid">
 ): string {
   const me = getAuthenticatedUser();
   if (me === null)
-    throw new Error("expected to be authenticated in getFriendUid");
+    throw new Error("expected to be authenticated in getReceiverUid");
 
-  if (me.uid === connection.initiatorUid) return connection.friendUid;
+  if (me.uid === connection.initiatorUid) return connection.receiverUid;
   return connection.initiatorUid;
 }
 
-export async function addFriend(friendName: string): Promise<true | string> {
-  const result = await Ape.connections.create({ body: { friendName } });
+export async function addFriend(receiverName: string): Promise<true | string> {
+  const result = await Ape.connections.create({ body: { receiverName } });
 
   if (result.status !== 200) {
     return `Friend request failed: ${result.body.message}`;
   } else {
     const snapshot = DB.getSnapshot();
     if (snapshot !== undefined) {
-      const friendUid = getFriendUid(result.body.data);
+      const receiverUid = getReceiverUid(result.body.data);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      snapshot.connections[friendUid] = result.body.data.status;
+      snapshot.connections[receiverUid] = result.body.data.status;
       updatePendingConnections();
     }
     return true;
@@ -89,8 +89,8 @@ const addFriendModal = new SimpleModal({
   ],
   buttonText: "request",
   onlineOnly: true,
-  execFn: async (_thisPopup, friendName) => {
-    const result = await addFriend(friendName);
+  execFn: async (_thisPopup, receiverName) => {
+    const result = await addFriend(receiverName);
 
     if (result !== true) {
       return {
@@ -98,7 +98,7 @@ const addFriendModal = new SimpleModal({
         message: result,
       };
     } else {
-      return { status: 1, message: `Request send to ${friendName}` };
+      return { status: 1, message: `Request send to ${receiverName}` };
     }
   },
 });
@@ -153,13 +153,13 @@ function updatePendingConnections(): void {
 
     const html = pendingRequests
       .map(
-        (item) => `<tr data-id="${item._id}" data-friend-uid="${getFriendUid(
-          item
-        )}">
+        (item) => `<tr data-id="${
+          item._id
+        }" data-receiver-uid="${getReceiverUid(item)}">
         <td><a href="${location.origin}/profile/${
           item.initiatorUid
         }?isUid" router-link>${item.initiatorName}</a></td>
-        <td>${formatAge(item.addedAt)} ago</td>
+        <td>${formatAge(item.lastModified)} ago</td>
         <td class="actions">
           <button class="accepted" aria-label="accept" data-balloon-pos="up">
             <i class="fas fa-check fa-fw"></i>
@@ -255,7 +255,9 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
           </div>
         </td>
         <td>${
-          entry.addedAt !== undefined ? formatAge(entry.addedAt, "short") : "-"
+          entry.lastModified !== undefined
+            ? formatAge(entry.lastModified, "short")
+            : "-"
         }</td>
         <td><span aria-label="total xp: ${
           isSafeNumber(entry.xp) ? formatXp(entry.xp) : ""
@@ -413,16 +415,16 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
 
     const snapshot = DB.getSnapshot();
     if (snapshot) {
-      const friendUid = row.dataset["friendUid"];
-      if (friendUid === undefined) {
-        throw new Error("Cannot find friendUid of target.");
+      const receiverUid = row.dataset["receiverUid"];
+      if (receiverUid === undefined) {
+        throw new Error("Cannot find receiverUid of target.");
       }
 
       if (action === "rejected") {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
-        delete snapshot.connections[friendUid];
+        delete snapshot.connections[receiverUid];
       } else {
-        snapshot.connections[friendUid] = action;
+        snapshot.connections[receiverUid] = action;
       }
       DB.setSnapshot(snapshot);
     }
