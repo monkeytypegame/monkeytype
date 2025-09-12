@@ -424,8 +424,10 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
       DB.setSnapshot(snapshot);
     }
     if (action === "accepted") {
+      showSpinner();
       await fetchFriends();
       updateFriends();
+      hideSpinner();
     }
   }
 });
