@@ -56,11 +56,13 @@ export type DBUser = Omit<
   inbox?: MonkeyMail[];
   ips?: string[];
   canReport?: boolean;
+  nameHistory?: string[];
   lastNameChange?: number;
   canManageApeKeys?: boolean;
   bananas?: number;
   testActivity?: CountByYearAndDay;
   suspicious?: boolean;
+  note?: string;
 };
 
 const SECONDS_PER_HOUR = 3600;

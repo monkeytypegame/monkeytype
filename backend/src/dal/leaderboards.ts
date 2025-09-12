@@ -2,7 +2,7 @@ import * as db from "../init/db";
 import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
-import { isDevEnvironment } from "../utils/misc";
+import { isDevEnvironment, omit } from "../utils/misc";
 import {
   getCachedConfiguration,
   getLiveConfiguration,
@@ -11,7 +11,6 @@ import {
 import { addLog } from "./logs";
 import { Collection, Document, ObjectId } from "mongodb";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
-import { omit } from "lodash";
 import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";
 import { aggregateWithAcceptedConnections } from "./connections";

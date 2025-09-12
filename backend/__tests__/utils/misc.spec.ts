@@ -1,6 +1,6 @@
 import { describe, it, expect, afterAll, vi } from "vitest";
 import _ from "lodash";
-import * as misc from "../../src/utils/misc";
+import * as Misc from "../../src/utils/misc";
 import { ObjectId } from "mongodb";
 
 describe("Misc Utils", () => {
@@ -32,7 +32,7 @@ describe("Misc Utils", () => {
     _.each(testCases, (testCase, pattern) => {
       const { cases, expected } = testCase;
       _.each(cases, (caseValue, index) => {
-        expect(misc.matchesAPattern(caseValue, pattern)).toBe(expected[index]);
+        expect(Misc.matchesAPattern(caseValue, pattern)).toBe(expected[index]);
       });
     });
   });
@@ -80,7 +80,7 @@ describe("Misc Utils", () => {
     ];
 
     _.each(testCases, ({ wpm, acc, timestamp, expectedScore }) => {
-      expect(misc.kogascore(wpm, acc, timestamp)).toBe(expectedScore);
+      expect(Misc.kogascore(wpm, acc, timestamp)).toBe(expectedScore);
     });
   });
 
@@ -109,7 +109,7 @@ describe("Misc Utils", () => {
     ];
 
     _.each(testCases, ({ input, expected }) => {
-      expect(misc.identity(input)).toEqual(expected);
+      expect(Misc.identity(input)).toEqual(expected);
     });
   });
 
@@ -178,7 +178,7 @@ describe("Misc Utils", () => {
     ];
 
     _.each(testCases, ({ obj, expected }) => {
-      expect(misc.flattenObjectDeep(obj)).toEqual(expected);
+      expect(Misc.flattenObjectDeep(obj)).toEqual(expected);
     });
   });
 
@@ -215,7 +215,7 @@ describe("Misc Utils", () => {
     ];
 
     testCases.forEach(({ input, expected }) => {
-      expect(misc.sanitizeString(input)).toEqual(expected);
+      expect(Misc.sanitizeString(input)).toEqual(expected);
     });
   });
 
@@ -284,7 +284,7 @@ describe("Misc Utils", () => {
     ];
 
     testCases.forEach(({ input, output }) => {
-      expect(misc.getOrdinalNumberString(input)).toEqual(output);
+      expect(Misc.getOrdinalNumberString(input)).toEqual(output);
     });
   });
   it("formatSeconds", () => {
@@ -298,45 +298,45 @@ describe("Misc Utils", () => {
         expected: "1.08 minutes",
       },
       {
-        seconds: misc.HOUR_IN_SECONDS,
+        seconds: Misc.HOUR_IN_SECONDS,
         expected: "1 hour",
       },
       {
-        seconds: misc.DAY_IN_SECONDS,
+        seconds: Misc.DAY_IN_SECONDS,
         expected: "1 day",
       },
       {
-        seconds: misc.WEEK_IN_SECONDS,
+        seconds: Misc.WEEK_IN_SECONDS,
         expected: "1 week",
       },
       {
-        seconds: misc.YEAR_IN_SECONDS,
+        seconds: Misc.YEAR_IN_SECONDS,
         expected: "1 year",
       },
       {
-        seconds: 2 * misc.YEAR_IN_SECONDS,
+        seconds: 2 * Misc.YEAR_IN_SECONDS,
         expected: "2 years",
       },
       {
-        seconds: 4 * misc.YEAR_IN_SECONDS,
+        seconds: 4 * Misc.YEAR_IN_SECONDS,
         expected: "4 years",
       },
       {
-        seconds: 3 * misc.WEEK_IN_SECONDS,
+        seconds: 3 * Misc.WEEK_IN_SECONDS,
         expected: "3 weeks",
       },
       {
-        seconds: misc.MONTH_IN_SECONDS * 4,
+        seconds: Misc.MONTH_IN_SECONDS * 4,
         expected: "4 months",
       },
       {
-        seconds: misc.MONTH_IN_SECONDS * 11,
+        seconds: Misc.MONTH_IN_SECONDS * 11,
         expected: "11 months",
       },
     ];
 
     testCases.forEach(({ seconds, expected }) => {
-      expect(misc.formatSeconds(seconds)).toBe(expected);
+      expect(Misc.formatSeconds(seconds)).toBe(expected);
     });
   });
 
@@ -347,14 +347,14 @@ describe("Misc Utils", () => {
         test: "test",
         number: 1,
       };
-      expect(misc.replaceObjectId(fromDatabase)).toStrictEqual({
+      expect(Misc.replaceObjectId(fromDatabase)).toStrictEqual({
         _id: fromDatabase._id.toHexString(),
         test: "test",
         number: 1,
       });
     });
     it("ignores null values", () => {
-      expect(misc.replaceObjectId(null)).toBeNull();
+      expect(Misc.replaceObjectId(null)).toBeNull();
     });
   });
 
@@ -371,7 +371,7 @@ describe("Misc Utils", () => {
         number: 2,
       };
       expect(
-        misc.replaceObjectIds([fromDatabase, fromDatabase2])
+        Misc.replaceObjectIds([fromDatabase, fromDatabase2])
       ).toStrictEqual([
         {
           _id: fromDatabase._id.toHexString(),
@@ -386,7 +386,56 @@ describe("Misc Utils", () => {
       ]);
     });
     it("handles undefined", () => {
-      expect(misc.replaceObjectIds(undefined as any)).toBeUndefined();
+      expect(Misc.replaceObjectIds(undefined as any)).toBeUndefined();
+    });
+  });
+
+  describe("omit()", () => {
+    it("should omit a single key", () => {
+      const input = { a: 1, b: 2, c: 3 };
+      const result = Misc.omit(input, "b");
+      expect(result).toEqual({ a: 1, c: 3 });
+    });
+
+    it("should omit multiple keys", () => {
+      const input = { a: 1, b: 2, c: 3, d: 4 };
+      const result = Misc.omit(input, "a", "d");
+      expect(result).toEqual({ b: 2, c: 3 });
+    });
+
+    it("should return the same object if no keys are omitted", () => {
+      const input = { x: 1, y: 2 };
+      const result = Misc.omit(input);
+      expect(result).toEqual({ x: 1, y: 2 });
+    });
+
+    it("should not mutate the original object", () => {
+      const input = { foo: "bar", baz: "qux" };
+      const copy = { ...input };
+      Misc.omit(input, "baz");
+      expect(input).toEqual(copy);
+    });
+
+    it("should ignore keys that do not exist", () => {
+      const input = { a: 1, b: 2 };
+      const result = Misc.omit(input, "c" as any); // allow a non-existing key
+      expect(result).toEqual({ a: 1, b: 2 });
+    });
+
+    it("should work with different value types", () => {
+      const input = {
+        str: "hello",
+        num: 123,
+        bool: true,
+        obj: { x: 1 },
+        arr: [1, 2, 3],
+      };
+      const result = Misc.omit(input, "bool", "arr");
+      expect(result).toEqual({
+        str: "hello",
+        num: 123,
+        obj: { x: 1 },
+      });
     });
   });
 });
