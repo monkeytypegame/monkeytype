@@ -98,7 +98,7 @@ describe("ConnectionsDal", () => {
           initiatorUid: first.receiverUid,
           receiverUid: uid,
         })
-      ).rejects.toThrow("Duplicate connection with status pending");
+      ).rejects.toThrow("Duplicate connection");
     });
 
     it("should create", async () => {
@@ -152,7 +152,7 @@ describe("ConnectionsDal", () => {
           initiatorUid: first.receiverUid,
           receiverUid: uid,
         })
-      ).rejects.toThrow("Duplicate connection with status blocked");
+      ).rejects.toThrow("Connection blocked");
     });
   });
   describe("updateStatus", () => {

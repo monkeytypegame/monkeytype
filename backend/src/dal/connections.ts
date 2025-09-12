@@ -82,7 +82,9 @@ export async function create(
       );
       throw new MonkeyError(
         409,
-        `Duplicate connection with status ${existing?.status}`
+        existing?.status === "blocked"
+          ? "Connection blocked"
+          : "Duplicate connection"
       );
     }
 
