@@ -3,7 +3,7 @@ import { Connection } from "@monkeytype/schemas/connections";
 import Ape from "../../ape";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../../firebase";
-import { getFriendUid } from "../../pages/friends";
+import { getReceiverUid } from "../../pages/friends";
 import * as DB from "../../db";
 import { updateFriendRequestsIndicator } from "../account-button";
 
@@ -59,11 +59,11 @@ function refreshList(): void {
   }
   const content = blockedUsers.map(
     (blocked) => `
-    <tr data-id="${blocked._id}" data-uid="${getFriendUid(blocked)}">
+    <tr data-id="${blocked._id}" data-uid="${getReceiverUid(blocked)}">
        <td><a href="${location.origin}/profile/${
       blocked.initiatorUid
     }?isUid" router-link>${blocked.initiatorName}</a></td>
-       <td>${format(new Date(blocked.addedAt), "dd MMM yyyy HH:mm")}</td>
+       <td>${format(new Date(blocked.lastModified), "dd MMM yyyy HH:mm")}</td>
        <td>
          <button class="delete">
            <i class="fas fa-fw fa-trash-alt"></i>

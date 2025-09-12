@@ -1122,7 +1122,7 @@ function convertConnections(
         getAuthenticatedUser()?.uid === connection.initiatorUid;
 
       return [
-        isMyRequest ? connection.friendUid : connection.initiatorUid,
+        isMyRequest ? connection.receiverUid : connection.initiatorUid,
         connection.status === "pending" && !isMyRequest
           ? "incoming"
           : connection.status,
