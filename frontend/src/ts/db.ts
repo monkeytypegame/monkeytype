@@ -1105,11 +1105,16 @@ export async function getTestActivityCalendar(
   return dbSnapshot.testActivityByYear[yearString];
 }
 
-export function updateConnections(connections: Connection[]): void {
+export function mergeConnections(connections: Connection[]): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  snapshot.connections = convertConnections(connections);
+  const update = convertConnections(connections);
+
+  for (const [key, value] of Object.entries(update)) {
+    snapshot.connections[key] = value;
+  }
+
   setSnapshot(snapshot);
 }
 

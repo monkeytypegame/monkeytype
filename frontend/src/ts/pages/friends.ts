@@ -139,7 +139,7 @@ async function fetchPendingConnections(): Promise<void> {
     pendingRequests = undefined;
   } else {
     pendingRequests = result.body.data;
-    DB.updateConnections(pendingRequests);
+    DB.mergeConnections(pendingRequests);
   }
 }
 
