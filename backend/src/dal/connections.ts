@@ -80,12 +80,20 @@ export async function create(
         { key },
         { projection: { status: 1 } }
       );
-      throw new MonkeyError(
-        409,
-        existing?.status === "blocked"
-          ? "Connection blocked"
-          : "Duplicate connection"
-      );
+
+      let message = "";
+
+      if (existing?.status === "accepted") {
+        message = "Connection already exists";
+      } else if (existing?.status === "pending") {
+        message = "Connection request already sent";
+      } else if (existing?.status === "blocked") {
+        message = "Connection is blocked";
+      } else {
+        message = "Duplicate connection";
+      }
+
+      throw new MonkeyError(409, message);
     }
 
     throw e;
