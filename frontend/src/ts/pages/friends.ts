@@ -124,7 +124,7 @@ const removeFriendModal = new SimpleModal({
       );
       friendsTable?.setData(friendsList ?? []);
       friendsTable?.updateBody();
-      return { status: 1, message: `Removed friend.` };
+      return { status: 1, message: `Friend removed` };
     }
   },
 });
