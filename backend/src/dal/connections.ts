@@ -88,7 +88,11 @@ export async function create(
       } else if (existing?.status === "pending") {
         message = "Connection request already sent";
       } else if (existing?.status === "blocked") {
-        message = "Connection is blocked";
+        if (existing.initiatorUid === initiator.uid) {
+          message = "Connection blocked by initiator";
+        } else {
+          message = "Connection blocked by receiver";
+        }
       } else {
         message = "Duplicate connection";
       }
