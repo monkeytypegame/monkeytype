@@ -96,7 +96,7 @@ export function updateFriendRequestsIndicator(): void {
   }
 
   $("nav .view-account > .notificationBubble").addClass("hidden");
-  $("nav goToFriends > .notificationBubble").addClass("hidden");
+  $("nav .goToFriends > .notificationBubble").addClass("hidden");
 }
 
 const coarse = window.matchMedia("(pointer:coarse)")?.matches;

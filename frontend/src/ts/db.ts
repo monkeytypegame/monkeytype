@@ -35,6 +35,7 @@ import {
   configurationPromise,
   get as getServerConfiguration,
 } from "./ape/server-configuration";
+import { Connection } from "@monkeytype/schemas/connections";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -268,19 +269,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       );
     }
 
-    snap.connections = Object.fromEntries(
-      connectionsData.map((connection) => {
-        const isMyRequest =
-          getAuthenticatedUser()?.uid === connection.initiatorUid;
-
-        return [
-          isMyRequest ? connection.friendUid : connection.initiatorUid,
-          connection.status === "pending" && !isMyRequest
-            ? "incoming"
-            : connection.status,
-        ];
-      })
-    );
+    snap.connections = convertConnections(connectionsData);
 
     dbSnapshot = snap;
     return dbSnapshot;
@@ -1114,6 +1103,32 @@ export async function getTestActivityCalendar(
   }
 
   return dbSnapshot.testActivityByYear[yearString];
+}
+
+export function updateConnections(connections: Connection[]): void {
+  const snapshot = getSnapshot();
+  if (!snapshot) return;
+
+  snapshot.connections = convertConnections(connections);
+  setSnapshot(snapshot);
+}
+
+function convertConnections(
+  connectionsData: Connection[]
+): Snapshot["connections"] {
+  return Object.fromEntries(
+    connectionsData.map((connection) => {
+      const isMyRequest =
+        getAuthenticatedUser()?.uid === connection.initiatorUid;
+
+      return [
+        isMyRequest ? connection.friendUid : connection.initiatorUid,
+        connection.status === "pending" && !isMyRequest
+          ? "incoming"
+          : connection.status,
+      ];
+    })
+  );
 }
 
 // export async function DB.getLocalTagPB(tagId) {

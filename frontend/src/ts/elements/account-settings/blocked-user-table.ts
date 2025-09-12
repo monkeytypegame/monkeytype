@@ -76,12 +76,14 @@ function refreshList(): void {
 }
 
 element.on("click", "table button.delete", async (e) => {
-  const id = (e.target as HTMLElement).parentElement?.parentElement?.dataset[
-    "id"
-  ];
+  const row = (e.target as HTMLElement).closest("tr") as HTMLElement;
+  const id = row.dataset["id"];
+
   if (id === undefined) {
     throw new Error("Cannot find id of target.");
   }
+
+  row.querySelectorAll("button").forEach((button) => (button.disabled = true));
 
   const response = await Ape.connections.delete({ params: { id } });
   if (response.status !== 200) {
@@ -92,8 +94,7 @@ element.on("click", "table button.delete", async (e) => {
 
     const snapshot = DB.getSnapshot();
     if (snapshot) {
-      const uid = (e.target as HTMLElement).parentElement?.parentElement
-        ?.dataset["uid"];
+      const uid = row.dataset["uid"];
       if (uid === undefined) {
         throw new Error("Cannot find uid of target.");
       }
