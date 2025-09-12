@@ -4,7 +4,7 @@ import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "../test/test-state";
 import * as TestWords from "./test-words";
-import { prefersReducedMotion } from "../utils/misc";
+import { prefersReducedMotion, sleep } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
 import { splitIntoCharacters } from "../utils/strings";
 import { safeNumber } from "@monkeytype/util/numbers";
@@ -182,6 +182,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     animate: Config.smoothCaret !== "off",
   });
 
+  //this should probably be somewhere else, or might not even be needed?
   // if (Config.showAllLines) {
   //   const browserHeight = window.innerHeight;
   //   const middlePos = browserHeight / 2 - (jqcaret.outerHeight() as number) / 2;

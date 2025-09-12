@@ -101,6 +101,22 @@ export function getTargetPositionLeft(
   return result;
 }
 
+function getSpaceWidth(wordElement?: HTMLElement): number {
+  if (!wordElement) {
+    const el = document.querySelector<HTMLElement>("#words .word");
+    if (el) {
+      wordElement = el;
+    } else {
+      return 0;
+    }
+  }
+  const wordComputedStyle = window.getComputedStyle(wordElement);
+  return (
+    parseInt(wordComputedStyle.marginRight) +
+    parseInt(wordComputedStyle.marginLeft)
+  );
+}
+
 export class Caret {
   private element: HTMLElement;
   private style: CaretStyle;
@@ -170,6 +186,7 @@ export class Caret {
     top: number;
     duration?: number;
     easing?: string;
+    width?: number;
   }): void {
     const smoothCaretSpeed =
       Config.smoothCaret === "off"
@@ -193,7 +210,11 @@ export class Caret {
     $(this.element)
       .stop(true, false)
       .animate(
-        { left: left, top: options.top },
+        {
+          left: left,
+          top: options.top,
+          width: options.width,
+        },
         finalDuration,
         options.easing ?? "swing"
       );
@@ -204,13 +225,13 @@ export class Caret {
     letterIndex: number;
     animate?: boolean;
   }): void {
-    const { left, top } = this.getLeftAndTop(
+    const { left, top, letterWidth } = this.getLeftAndTop(
       options.wordIndex,
       options.letterIndex
     );
 
     if (options.animate) {
-      this.animatePosition({ left, top });
+      this.animatePosition({ left, top, width: letterWidth });
     } else {
       this.setPosition({ left, top });
     }
@@ -219,7 +240,7 @@ export class Caret {
   private getLeftAndTop(
     wordIndex: number,
     letterIndex: number
-  ): { left: number; top: number } {
+  ): { left: number; top: number; letterWidth: number } {
     const word = this.wordCache.querySelector<HTMLElement>(
       `.word[data-wordindex='${wordIndex}']`
     );
@@ -272,6 +293,7 @@ export class Caret {
         letter.offsetTop +
         verticalCorrection -
         TestState.lineScrollDistance,
+      letterWidth: lastLetter ? getSpaceWidth(word) : letter.offsetWidth,
     };
 
     // this.setPosition({
