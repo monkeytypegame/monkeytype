@@ -44,7 +44,7 @@ export async function get(
   const limit = pageSize;
 
   try {
-    const preset = await getCollection({ language, mode, mode2 })
+    const result = await getCollection({ language, mode, mode2 })
       .find()
       .sort({ rank: 1 })
       .skip(skip)
@@ -52,10 +52,10 @@ export async function get(
       .toArray();
 
     if (!premiumFeaturesEnabled) {
-      return preset.map((it) => omit(it, "isPremium"));
+      return result.map((it) => omit(it, "isPremium"));
     }
 
-    return preset;
+    return result;
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {
