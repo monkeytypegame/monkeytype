@@ -283,9 +283,9 @@ export class Caret {
     top += TestState.lineScrollDistance * -1;
 
     // center the caret vertically and horizontally
-    left += (options.letter.offsetHeight - this.getHeight()) / 2;
+    top += (options.letter.offsetHeight - this.getHeight()) / 2;
     if (!this.isFullWidth()) {
-      top += -this.getWidth() / 2;
+      left += this.getWidth() / 2;
     }
 
     return {
