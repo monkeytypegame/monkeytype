@@ -140,7 +140,13 @@ export class Caret {
     wordText: string;
     side: "beforeLetter" | "afterLetter";
     animate?: boolean;
+    animationOptions?: {
+      duration?: number;
+      easing?: string;
+    };
   }): Promise<void> {
+    if (this.style === "off") return;
+
     const { left, top, width } = await this.getLeftTopWidth(options);
 
     if (options.animate) {
@@ -148,9 +154,20 @@ export class Caret {
         left: number;
         top: number;
         width?: number;
+        duration?: number;
+        easing?: string;
       } = { left, top };
       if (this.isFullWidth()) {
         animation["width"] = width;
+      }
+
+      if (options.animationOptions) {
+        if (options.animationOptions.duration !== undefined) {
+          animation.duration = options.animationOptions.duration;
+        }
+        if (options.animationOptions.easing !== undefined) {
+          animation.easing = options.animationOptions.easing;
+        }
       }
 
       this.animatePosition(animation);
