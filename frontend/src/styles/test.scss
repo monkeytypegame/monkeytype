@@ -228,6 +228,7 @@
 
   .word {
     letter {
+      outline: 1px solid var(--sub-color);
       color: var(--untyped-letter-color);
       animation: var(--untyped-letter-animation);
       border-bottom-style: solid;
@@ -246,6 +247,12 @@
         }
       }
 
+      &.debugCaretTarget {
+        outline: 2px solid red;
+      }
+      &.debugCaretTarget2 {
+        outline: 2px solid yellow;
+      }
       &.correct {
         color: var(--correct-letter-color);
         animation: var(--correct-letter-animation);

@@ -431,6 +431,13 @@ export function isElementVisible(query: string): boolean {
   return !!el.getClientRects().length;
 }
 
+export function isHTMLElementVisible(el: HTMLElement): boolean {
+  if (!el) {
+    return false;
+  }
+  return !!el.getClientRects().length;
+}
+
 export function isPopupVisible(popupId: string): boolean {
   return isElementVisible(`#popups #${popupId}`);
 }
