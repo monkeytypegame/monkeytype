@@ -176,7 +176,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   //   .stop(true, false)
   //   .animate(animation, SlowTimer.get() || noAnim ? 0 : smoothCaretSpeed);
 
-  caret.goTo({
+  await caret.goTo({
     wordIndex: TestState.activeWordIndex,
     letterIndex: TestInput.input.current.length,
     animate: Config.smoothCaret !== "off",
