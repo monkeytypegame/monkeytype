@@ -161,9 +161,6 @@ export async function init(): Promise<void> {
     timeout: null,
   };
   await resetCaretPosition();
-  // setTimeout(() => {
-  // start();
-  // }, 1000);
 }
 
 export async function update(duration: number): Promise<void> {

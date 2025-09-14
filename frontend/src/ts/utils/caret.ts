@@ -121,9 +121,27 @@ export class Caret {
       animation["width"] = options.width;
     }
 
+    let lastOffset = 0;
     $(this.element)
       .stop(true, false)
-      .animate(animation, finalDuration, options.easing ?? "swing");
+      .animate(animation, {
+        duration: finalDuration,
+        easing: options.easing ?? "swing",
+        step: (_now, tween) => {
+          // because a line scroll might be happening at the same time,
+          // we need to offset the top value by the currrent scroll distance
+
+          // using stored offset here instead of the lineScrollDistance directly
+          // because its reset to null after the scroll animation completes
+          // but the caret animation might still be running for a bit
+          if (tween.prop === "top") {
+            if (TestState.lineScrollDistance !== null) {
+              lastOffset = TestState.lineScrollDistance;
+            }
+            tween.now += lastOffset;
+          }
+        },
+      });
   }
 
   public getSpaceWidth(wordElement: HTMLElement): number {
@@ -339,7 +357,12 @@ export class Caret {
       }
     }
 
-    top += TestState.lineScrollDistance * -1;
+    // because of requestAnimationFrame, this calculation might be happening after
+    // a lit scroll already started, so we need to account for that here
+    // the line scroll is further accounted for in the animatePosition step function
+    if (TestState.lineScrollDistance !== null) {
+      top += TestState.lineScrollDistance * -1;
+    }
 
     // center the caret vertically and horizontally
     if (this.style !== "underline") {

@@ -9,7 +9,8 @@ export let bailedOut = false;
 export let selectedQuoteId = 1;
 export let activeWordIndex = 0;
 export let testInitSuccess = true;
-export let lineScrollDistance = 0;
+export let lineScrollDistanceRemaining = 0;
+export let lineScrollDistance: null | number = null;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -55,6 +56,10 @@ export function setTestInitSuccess(tf: boolean): void {
   testInitSuccess = tf;
 }
 
-export function setLineScrollDistance(val: number): void {
+export function setLineScrollDistanceRemaining(val: number): void {
+  lineScrollDistanceRemaining = val;
+}
+
+export function setLineScrollDistance(val: number | null): void {
   lineScrollDistance = val;
 }

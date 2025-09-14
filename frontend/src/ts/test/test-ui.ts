@@ -1146,26 +1146,14 @@ export async function lineJump(
     }
 
     const wordHeight = $(activeWordEl).outerHeight(true) as number;
-    const paceCaretElement = document.querySelector(
-      "#paceCaret"
-    ) as HTMLElement;
 
     if (lastElementIndexToRemove === undefined) {
       resolve();
     } else if (Config.smoothLineScroll) {
       lineTransition = true;
 
-      $(paceCaretElement)
-        .stop(true, false)
-        .animate(
-          {
-            top: paceCaretElement?.offsetTop - wordHeight,
-          },
-          SlowTimer.get() ? 0 : 125
-        );
-
-      const scrollDistance = TestState.lineScrollDistance + wordHeight;
-      TestState.setLineScrollDistance(scrollDistance);
+      const scrollDistance = TestState.lineScrollDistanceRemaining + wordHeight;
+      TestState.setLineScrollDistanceRemaining(scrollDistance);
       currentLinesAnimating++;
       const newCss: Record<string, string> = {
         marginTop: `-${wordHeight * currentLinesAnimating}px`,
@@ -1177,13 +1165,15 @@ export async function lineJump(
         queue: "topMargin",
         step: (now, fx) => {
           const completionRate = (now - fx.start) / (fx.end - fx.start);
-          TestState.setLineScrollDistance(
+          TestState.setLineScrollDistanceRemaining(
             scrollDistance * (1 - completionRate)
           );
+          TestState.setLineScrollDistance(now);
         },
         complete: () => {
           currentLinesAnimating = 0;
-          TestState.setLineScrollDistance(0);
+          TestState.setLineScrollDistanceRemaining(0);
+          TestState.setLineScrollDistance(null);
           activeWordTop = activeWordEl.offsetTop;
           removeTestElements(lastElementIndexToRemove);
           wordsEl.style.marginTop = "0";
@@ -1194,9 +1184,6 @@ export async function lineJump(
       jqWords.dequeue("topMargin");
     } else {
       removeTestElements(lastElementIndexToRemove);
-      paceCaretElement.style.top = `${
-        paceCaretElement.offsetTop - wordHeight
-      }px`;
       resolve();
     }
   }
