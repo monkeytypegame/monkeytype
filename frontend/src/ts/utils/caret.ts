@@ -5,21 +5,10 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestWords from "../test/test-words";
 import { getTotalInlineMargin } from "./misc";
 
-// export function isCaretFullWidth(): boolean {
-//   return ["block", "outline", "underline"].includes(Config.caretStyle);
-// }
-
 const wordsCache = document.querySelector<HTMLElement>("#words") as HTMLElement;
-if (wordsCache === null) {
-  throw new Error("Words element not found");
-}
-
 const wordsWrapperCache = document.querySelector<HTMLElement>(
   "#wordsWrapper"
 ) as HTMLElement;
-if (wordsWrapperCache === null) {
-  throw new Error("Words wrapper element not found");
-}
 
 export class Caret {
   private element: HTMLElement;
@@ -372,13 +361,6 @@ export class Caret {
         top += options.word.offsetTop;
       }
     }
-
-    // because of requestAnimationFrame, this calculation might be happening after
-    // a lit scroll already started, so we need to account for that here
-    // the line scroll is further accounted for in the animatePosition step function
-    // if (TestState.lineScrollDistance !== null) {
-    //   top += TestState.lineScrollDistance * -1;
-    // }
 
     // center the caret vertically and horizontally
     if (this.style !== "underline") {
