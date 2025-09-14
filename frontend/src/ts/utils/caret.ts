@@ -13,6 +13,7 @@ export class Caret {
   private style: CaretStyle;
   private wordsCache: HTMLElement;
   private wordsWrapperCache: HTMLElement;
+  private pendingFrame: number | null = null;
 
   constructor(element: HTMLElement, style: CaretStyle) {
     this.element = element;
@@ -145,41 +146,47 @@ export class Caret {
       easing?: string;
     };
   }): void {
-    if (this.style === "off") return;
-
-    const { left, top, width } = this.getLeftTopWidth(options);
-
-    if (options.animate) {
-      const animation: {
-        left: number;
-        top: number;
-        width?: number;
-        duration?: number;
-        easing?: string;
-      } = { left, top };
-      if (this.isFullWidth()) {
-        animation["width"] = width;
-      }
-
-      if (options.animationOptions) {
-        if (options.animationOptions.duration !== undefined) {
-          animation.duration = options.animationOptions.duration;
-        }
-        if (options.animationOptions.easing !== undefined) {
-          animation.easing = options.animationOptions.easing;
-        }
-      }
-
-      this.animatePosition(animation);
-    } else {
-      this.setPosition({ left, top });
-
-      if (this.isFullWidth()) {
-        this.setWidth(width);
-      } else {
-        this.resetWidth();
-      }
+    if (this.pendingFrame !== null) {
+      cancelAnimationFrame(this.pendingFrame);
     }
+    this.pendingFrame = requestAnimationFrame(() => {
+      this.pendingFrame = null;
+      if (this.style === "off") return;
+
+      const { left, top, width } = this.getLeftTopWidth(options);
+
+      if (options.animate) {
+        const animation: {
+          left: number;
+          top: number;
+          width?: number;
+          duration?: number;
+          easing?: string;
+        } = { left, top };
+        if (this.isFullWidth()) {
+          animation["width"] = width;
+        }
+
+        if (options.animationOptions) {
+          if (options.animationOptions.duration !== undefined) {
+            animation.duration = options.animationOptions.duration;
+          }
+          if (options.animationOptions.easing !== undefined) {
+            animation.easing = options.animationOptions.easing;
+          }
+        }
+
+        this.animatePosition(animation);
+      } else {
+        this.setPosition({ left, top });
+
+        if (this.isFullWidth()) {
+          this.setWidth(width);
+        } else {
+          this.resetWidth();
+        }
+      }
+    });
   }
 
   private getLeftTopWidth(options: {
