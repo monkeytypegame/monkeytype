@@ -172,12 +172,13 @@ export class Caret {
       const word = this.wordsCache.querySelector<HTMLElement>(
         `.word[data-wordindex="${options.wordIndex}"]`
       );
+      const letters = word?.querySelectorAll<HTMLElement>("letter") ?? [];
       const wordText = TestWords.words.get(options.wordIndex);
 
       let side: "beforeLetter" | "afterLetter" = "beforeLetter";
-      if (options.letterIndex >= wordText.length) {
+      if (options.letterIndex >= letters.length) {
         side = "afterLetter";
-        options.letterIndex = wordText.length - 1;
+        options.letterIndex = letters.length - 1;
       }
       if (options.letterIndex < 0) {
         options.letterIndex = 0;
