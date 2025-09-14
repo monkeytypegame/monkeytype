@@ -10,6 +10,9 @@ export let selectedQuoteId = 1;
 export let activeWordIndex = 0;
 export let testInitSuccess = true;
 export let lineScrollDistance = 0;
+export let isLanguageRightToLeft = false;
+export let isDirectionReversed = false;
+export let isTestRightToLeft = false;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -57,4 +60,16 @@ export function setTestInitSuccess(tf: boolean): void {
 
 export function setLineScrollDistance(val: number): void {
   lineScrollDistance = val;
+}
+
+export function setIsLanguageRightToLeft(rtl: boolean): void {
+  isLanguageRightToLeft = rtl;
+}
+
+export function setIsDirectionReversed(val: boolean): void {
+  isDirectionReversed = val;
+}
+
+export function setIsTestRightToLeft(rtl: boolean): void {
+  isTestRightToLeft = rtl;
 }

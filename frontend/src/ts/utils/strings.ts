@@ -236,7 +236,7 @@ export function clearWordDirectionCache(): void {
   wordDirectionCache.clear();
 }
 
-export function getWordDirection(
+export function isWordRightToLeft(
   word: string | undefined,
   languageRTL: boolean
 ): boolean {

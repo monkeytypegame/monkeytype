@@ -70,6 +70,7 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
   isFunboxActive,
+  isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
@@ -96,6 +97,18 @@ export function setNotSignedInUidAndHash(uid: string): void {
   //@ts-expect-error really need to delete this
   delete notSignedInLastResult.hash;
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
+}
+
+async function setTestDirection(): Promise<void> {
+  // changing Config.language or funboxes mid-test requires a restart
+  // if that changes, call this function on each update
+  const currentLanguage = await JSONData.getLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft ?? false;
+  TestState.setIsLanguageRightToLeft(isLanguageRTL);
+  const isDirectionReversed = isFunboxActiveWithProperty("reverseDirection");
+  TestState.setIsDirectionReversed(isDirectionReversed);
+  // logical XOR
+  TestState.setIsTestRightToLeft(isLanguageRTL !== isDirectionReversed);
 }
 
 export function startTest(now: number): boolean {
@@ -408,7 +421,7 @@ let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
 
-export async function init(): Promise<boolean> {
+async function init(): Promise<boolean> {
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
@@ -571,6 +584,7 @@ export async function init(): Promise<boolean> {
   Funbox.toggleScript(TestWords.words.getCurrent());
   TestUI.setRightToLeft(language.rightToLeft ?? false);
   TestUI.setLigatures(language.ligatures ?? false);
+  await setTestDirection();
   TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
   console.debug(
