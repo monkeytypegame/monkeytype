@@ -1159,9 +1159,16 @@ export async function lineJump(
         marginTop: `-${wordHeight * currentLinesAnimating}px`,
       };
 
+      const duration = SlowTimer.get() ? 0 : 125;
+
+      Caret.handleSmoothLineScroll({
+        scrollDistance,
+        duration,
+      });
+
       const jqWords = $(wordsEl);
       jqWords.stop("topMargin", true, false).animate(newCss, {
-        duration: SlowTimer.get() ? 0 : 125,
+        duration,
         queue: "topMargin",
         step: (now, fx) => {
           const completionRate = (now - fx.start) / (fx.end - fx.start);

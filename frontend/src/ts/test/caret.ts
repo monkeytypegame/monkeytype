@@ -17,6 +17,13 @@ export function hide(): void {
   caret.getElement().classList.add("hidden");
 }
 
+export function handleSmoothLineScroll(options: {
+  duration: number;
+  scrollDistance: number;
+}): void {
+  caret.handleSmoothLineScroll(options);
+}
+
 export async function updatePosition(noAnim = false): Promise<void> {
   const isLanguageRightToLeft =
     (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
