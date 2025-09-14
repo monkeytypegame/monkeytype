@@ -29,6 +29,16 @@ let caret = new Caret(
 
 let lastTestWpm = 0;
 
+export function handleSmoothLineScroll(options: {
+  newMarginTop: number;
+  duration: number;
+}): void {
+  caret.handleSmoothLineScroll({
+    newMarginTop: options.newMarginTop,
+    duration: options.duration,
+  });
+}
+
 export function setLastTestWpm(wpm: number): void {
   if (
     !TestState.isPaceRepeat ||

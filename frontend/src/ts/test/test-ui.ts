@@ -23,6 +23,7 @@ import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
+import * as PaceCaret from "./pace-caret";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -1161,6 +1162,11 @@ export async function lineJump(
       const duration = SlowTimer.get() ? 0 : 125;
 
       Caret.handleSmoothLineScroll({
+        newMarginTop,
+        duration,
+      });
+
+      PaceCaret.handleSmoothLineScroll({
         newMarginTop,
         duration,
       });
