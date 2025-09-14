@@ -9,28 +9,28 @@ import { getTotalInlineMargin } from "./misc";
 //   return ["block", "outline", "underline"].includes(Config.caretStyle);
 // }
 
+const wordsCache = document.querySelector<HTMLElement>("#words") as HTMLElement;
+if (wordsCache === null) {
+  throw new Error("Words element not found");
+}
+
+const wordsWrapperCache = document.querySelector<HTMLElement>(
+  "#wordsWrapper"
+) as HTMLElement;
+if (wordsWrapperCache === null) {
+  throw new Error("Words wrapper element not found");
+}
+
 export class Caret {
   private element: HTMLElement;
-  private style: CaretStyle;
-  private wordsCache: HTMLElement;
-  private wordsWrapperCache: HTMLElement;
+  private style: CaretStyle = "default";
   private pendingFrame: number | null = null;
   private marginTop: number = 0;
   private readyToResetMarginTop: boolean = false;
 
   constructor(element: HTMLElement, style: CaretStyle) {
     this.element = element;
-
-    this.style = "default";
     this.setStyle(style);
-
-    const wordsEl = document.querySelector<HTMLElement>("#words");
-    if (!wordsEl) throw new Error("Words element not found");
-    this.wordsCache = wordsEl;
-
-    const wordsWrapperEl = document.querySelector<HTMLElement>("#wordsWrapper");
-    if (!wordsWrapperEl) throw new Error("Words wrapper element not found");
-    this.wordsWrapperCache = wordsWrapperEl;
   }
 
   public setStyle(style: CaretStyle): void {
@@ -175,7 +175,7 @@ export class Caret {
       this.pendingFrame = null;
       if (this.style === "off") return;
 
-      const word = this.wordsCache.querySelector<HTMLElement>(
+      const word = wordsCache.querySelector<HTMLElement>(
         `.word[data-wordindex="${options.wordIndex}"]`
       );
       const letters = word?.querySelectorAll<HTMLElement>("letter") ?? [];
@@ -216,7 +216,7 @@ export class Caret {
         this.readyToResetMarginTop = false;
         $(this.element).css({
           marginTop: 0,
-          top: parseFloat(this.element.style.top) + this.marginTop,
+          top: (parseFloat(this.element.style.top) || 0) + this.marginTop,
         });
         this.marginTop = 0;
       }
@@ -331,7 +331,7 @@ export class Caret {
         }
         left += options.letter.offsetLeft;
         left += options.word.offsetWidth * -1;
-        left += this.wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
+        left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
         left += afterLetterCorrection;
 
         top += options.letter.offsetTop;
@@ -340,7 +340,7 @@ export class Caret {
         if (this.isFullWidth()) {
           left += width * -1;
         }
-        left += this.wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
+        left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
 
         top += options.letter.offsetTop;
         top += options.word.offsetTop;
@@ -360,13 +360,13 @@ export class Caret {
         top += options.word.offsetTop;
       } else if (Config.tapeMode === "word") {
         left += options.letter.offsetLeft;
-        left += this.wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
+        left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
         left += afterLetterCorrection;
 
         top += options.letter.offsetTop;
         top += options.word.offsetTop;
       } else if (Config.tapeMode === "letter") {
-        left += this.wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
+        left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
 
         top += options.letter.offsetTop;
         top += options.word.offsetTop;
