@@ -3,6 +3,7 @@ import Config from "../config";
 import { getWordDirection } from "./strings";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "../test/test-state";
+import * as TestWords from "../test/test-words";
 
 // export function isCaretFullWidth(): boolean {
 //   return ["block", "outline", "underline"].includes(Config.caretStyle);
@@ -134,11 +135,8 @@ export class Caret {
   }
 
   public goTo(options: {
-    word: HTMLElement;
-    letter: HTMLElement;
-    letters: NodeListOf<HTMLElement>;
-    wordText: string;
-    side: "beforeLetter" | "afterLetter";
+    wordIndex: number;
+    letterIndex: number;
     isLanguageRightToLeft: boolean;
     animate?: boolean;
     animationOptions?: {
@@ -153,7 +151,41 @@ export class Caret {
       this.pendingFrame = null;
       if (this.style === "off") return;
 
-      const { left, top, width } = this.getLeftTopWidth(options);
+      const word = this.wordsCache.querySelector<HTMLElement>(
+        `.word[data-wordindex="${options.wordIndex}"]`
+      );
+      const wordText = TestWords.words.get(options.wordIndex);
+
+      let side: "beforeLetter" | "afterLetter" = "beforeLetter";
+      if (options.letterIndex >= wordText.length) {
+        side = "afterLetter";
+        options.letterIndex = wordText.length - 1;
+      }
+      if (options.letterIndex < 0) {
+        options.letterIndex = 0;
+      }
+
+      let letter =
+        word?.querySelectorAll<HTMLElement>("letter")[options.letterIndex];
+
+      if (word === null || letter === undefined) {
+        return;
+      }
+
+      for (const l of document.querySelectorAll(".word letter")) {
+        l.classList.remove("debugCaretTarget");
+        l.classList.remove("debugCaretTarget2");
+      }
+
+      letter?.classList.add("debugCaretTarget");
+
+      const { left, top, width } = this.getLeftTopWidth({
+        word,
+        letter,
+        wordText,
+        side,
+        isLanguageRightToLeft: options.isLanguageRightToLeft,
+      });
 
       if (options.animate) {
         const animation: {
@@ -192,7 +224,6 @@ export class Caret {
   private getLeftTopWidth(options: {
     word: HTMLElement;
     letter: HTMLElement;
-    letters: NodeListOf<HTMLElement>;
     wordText: string;
     side: "beforeLetter" | "afterLetter";
     isLanguageRightToLeft: boolean;
@@ -205,10 +236,15 @@ export class Caret {
     //if the letter is not visible, use the closest visible letter (but only for full width carets)
     const isLetterVisible = options.letter.offsetWidth > 0;
     if (!isLetterVisible && this.isFullWidth()) {
+      const letters = options.word.querySelectorAll<HTMLElement>("letter");
+      if (letters.length === 0) {
+        throw new Error("Caret getLeftTopWidth: no letters found in word");
+      }
+
       // ignore letters after the current letter
       let ignore = true;
-      for (let i = options.letters.length - 1; i >= 0; i--) {
-        const loopLetter = options.letters[i] as HTMLElement;
+      for (let i = letters.length - 1; i >= 0; i--) {
+        const loopLetter = letters[i] as HTMLElement;
         if (loopLetter === options.letter) {
           // at the current letter, stop ignoring, continue to the next
           ignore = false;

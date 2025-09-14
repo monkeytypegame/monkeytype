@@ -45,28 +45,13 @@ async function resetCaretPosition(): Promise<void> {
   }
   if (Config.mode === "zen") return;
 
-  const word = document.querySelector<HTMLElement>(
-    `#words .word[data-wordindex='0']`
-  );
-
-  if (word === null) return;
-
-  const letters = word?.querySelectorAll<HTMLElement>("letter");
-
-  if (letters === undefined || letters.length === 0) return;
-
-  const letter = letters[0] as HTMLElement;
-
   const isLanguageRightToLeft =
     (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
 
   caret.goTo({
-    word,
-    letter,
-    letters,
+    wordIndex: 0,
+    letterIndex: 0,
     isLanguageRightToLeft,
-    wordText: TestWords.words.get(0),
-    side: "beforeLetter",
     animate: false,
   });
 
@@ -242,61 +227,24 @@ export async function update(duration: number): Promise<void> {
   }
 
   try {
-    const word = document.querySelector<HTMLElement>(
-      `#words .word[data-wordindex='${settings.currentWordIndex}']`
-    );
-
-    if (word === null) {
-      throw new Error("Caret update: word is null");
-    }
-
-    const letters = word?.querySelectorAll<HTMLElement>("letter");
-
-    if (letters === undefined || letters.length === 0) {
-      throw new Error("Caret update: letters is undefined or empty");
-    }
-
-    let letter;
-    let side: "beforeLetter" | "afterLetter";
-    if (settings.currentLetterIndex === letters.length) {
-      //last letter, need to use the previuos letter and use side "afterLetter"
-      letter = letters[settings.currentLetterIndex - 1];
-      side = "afterLetter";
-    } else {
-      letter = letters[settings.currentLetterIndex];
-      side = "beforeLetter";
-    }
-
-    if (letter === undefined) {
-      throw new Error("Caret update: letter is undefined");
-    }
-
-    // letter doesnt exist when i send it to goTo because leters get replaced
-    console.log(word);
-    console.log(letters);
-    console.log(letter);
-
     const isLanguageRightToLeft =
       (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
 
     caret.goTo({
-      word,
-      letter,
-      letters,
-      wordText: TestWords.words.get(settings.currentWordIndex),
+      wordIndex: settings.currentWordIndex,
+      letterIndex: settings.currentLetterIndex,
       isLanguageRightToLeft,
-      side,
       animate: true,
       animationOptions: {
         duration,
         easing: "linear",
       },
     });
-    // settings.timeout = setTimeout(() => {
-    //   update((settings?.spc ?? 0) * 1000).catch(() => {
-    //     settings = null;
-    //   });
-    // }, duration);
+    settings.timeout = setTimeout(() => {
+      update((settings?.spc ?? 0) * 1000).catch(() => {
+        settings = null;
+      });
+    }, duration);
   } catch (e) {
     console.error(e);
     $("#paceCaret").addClass("hidden");
