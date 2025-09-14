@@ -3,6 +3,7 @@ import Config from "../config";
 import { getWordDirection } from "./strings";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestWords from "../test/test-words";
+import { getTotalInlineMargin } from "./misc";
 
 // export function isCaretFullWidth(): boolean {
 //   return ["block", "outline", "underline"].includes(Config.caretStyle);
@@ -157,14 +158,6 @@ export class Caret {
     $(this.element).dequeue("pos");
   }
 
-  public getSpaceWidth(wordElement: HTMLElement): number {
-    const wordComputedStyle = window.getComputedStyle(wordElement);
-    return (
-      parseInt(wordComputedStyle.marginRight) +
-      parseInt(wordComputedStyle.marginLeft)
-    );
-  }
-
   public goTo(options: {
     wordIndex: number;
     letterIndex: number;
@@ -302,7 +295,7 @@ export class Caret {
       options.letter.classList.add("debugCaretTarget2");
     }
 
-    const spaceWidth = this.getSpaceWidth(options.word);
+    const spaceWidth = getTotalInlineMargin(options.word);
     let width = spaceWidth;
     if (this.isFullWidth() && options.side === "beforeLetter") {
       width = options.letter.offsetWidth;

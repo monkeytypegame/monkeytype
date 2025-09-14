@@ -746,4 +746,11 @@ export function isMacLike(): boolean {
   return isPlatform(/Mac|iPod|iPhone|iPad/);
 }
 
+export function getTotalInlineMargin(element: HTMLElement): number {
+  const computedStyle = window.getComputedStyle(element);
+  return (
+    parseInt(computedStyle.marginRight) + parseInt(computedStyle.marginLeft)
+  );
+}
+
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
