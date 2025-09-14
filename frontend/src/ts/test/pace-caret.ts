@@ -60,7 +60,7 @@ async function resetCaretPosition(): Promise<void> {
   const isLanguageRightToLeft =
     (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
 
-  await caret.goTo({
+  caret.goTo({
     word,
     letter,
     letters,
@@ -279,7 +279,7 @@ export async function update(duration: number): Promise<void> {
     const isLanguageRightToLeft =
       (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
 
-    await caret.goTo({
+    caret.goTo({
       word,
       letter,
       letters,

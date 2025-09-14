@@ -56,7 +56,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const isLanguageRightToLeft =
     (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
 
-  await caret.goTo({
+  caret.goTo({
     word: word,
     letter: letter as HTMLElement,
     wordText: TestWords.words.getCurrent(),
