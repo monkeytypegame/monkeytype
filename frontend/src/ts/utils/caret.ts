@@ -342,7 +342,9 @@ export class Caret {
     top += TestState.lineScrollDistance * -1;
 
     // center the caret vertically and horizontally
-    top += (options.letter.offsetHeight - this.getHeight()) / 2;
+    if (this.style !== "underline") {
+      top += (options.letter.offsetHeight - this.getHeight()) / 2;
+    }
     if (!this.isFullWidth()) {
       left += (this.getWidth() / 2) * -1;
     }
