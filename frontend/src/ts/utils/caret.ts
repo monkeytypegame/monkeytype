@@ -25,7 +25,6 @@ export class Caret {
   private element: HTMLElement;
   private style: CaretStyle = "default";
   private pendingFrame: number | null = null;
-  private marginTop: number = 0;
   private readyToResetMarginTop: boolean = false;
 
   constructor(element: HTMLElement, style: CaretStyle) {
@@ -106,9 +105,6 @@ export class Caret {
         {
           duration: options.duration,
           queue: "marginTop",
-          step: (now) => {
-            this.marginTop = now;
-          },
           complete: () => {
             this.readyToResetMarginTop = true;
           },
@@ -139,9 +135,11 @@ export class Caret {
       ? 0
       : options.duration ?? smoothCaretSpeed;
 
+    const currentMarginTop = parseFloat(this.element.style.marginTop || "0");
+
     const animation: Record<string, number> = {
       left: options.left,
-      top: options.top + this.marginTop * -1,
+      top: options.top + currentMarginTop * -1,
     };
 
     if (options.width !== undefined) {
@@ -212,13 +210,15 @@ export class Caret {
         isLanguageRightToLeft: options.isLanguageRightToLeft,
       });
 
+      const currentMarginTop = parseFloat(this.element.style.marginTop || "0");
+      const currentTop = parseFloat(this.element.style.top || "0");
+
       if (this.readyToResetMarginTop) {
         this.readyToResetMarginTop = false;
         $(this.element).css({
           marginTop: 0,
-          top: (parseFloat(this.element.style.top) || 0) + this.marginTop,
+          top: currentTop + currentMarginTop,
         });
-        this.marginTop = 0;
       }
 
       if (options.animate) {
