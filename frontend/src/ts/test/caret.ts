@@ -4,6 +4,7 @@ import * as TestState from "../test/test-state";
 import * as TestWords from "./test-words";
 import { subscribe } from "../observables/config-event";
 import { Caret } from "../utils/caret";
+import * as JSONData from "../utils/json-data";
 
 export function stopAnimation(): void {
   caret.stopBlinking();
@@ -52,10 +53,14 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   letter?.classList.add("debugCaretTarget");
 
+  const isLanguageRightToLeft =
+    (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
+
   await caret.goTo({
     word: word,
     letter: letter as HTMLElement,
     wordText: TestWords.words.getCurrent(),
+    isLanguageRightToLeft,
     letters,
     side,
     animate: Config.smoothCaret !== "off" && !noAnim,

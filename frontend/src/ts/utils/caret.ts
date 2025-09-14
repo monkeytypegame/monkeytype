@@ -3,7 +3,6 @@ import Config from "../config";
 import { getWordDirection } from "./strings";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "../test/test-state";
-import * as JSONData from "../utils/json-data";
 
 // export function isCaretFullWidth(): boolean {
 //   return ["block", "outline", "underline"].includes(Config.caretStyle);
@@ -133,21 +132,22 @@ export class Caret {
     );
   }
 
-  public async goTo(options: {
+  public goTo(options: {
     word: HTMLElement;
     letter: HTMLElement;
     letters: NodeListOf<HTMLElement>;
     wordText: string;
     side: "beforeLetter" | "afterLetter";
+    isLanguageRightToLeft: boolean;
     animate?: boolean;
     animationOptions?: {
       duration?: number;
       easing?: string;
     };
-  }): Promise<void> {
+  }): void {
     if (this.style === "off") return;
 
-    const { left, top, width } = await this.getLeftTopWidth(options);
+    const { left, top, width } = this.getLeftTopWidth(options);
 
     if (options.animate) {
       const animation: {
@@ -182,18 +182,17 @@ export class Caret {
     }
   }
 
-  private async getLeftTopWidth(options: {
+  private getLeftTopWidth(options: {
     word: HTMLElement;
     letter: HTMLElement;
     letters: NodeListOf<HTMLElement>;
     wordText: string;
     side: "beforeLetter" | "afterLetter";
-  }): Promise<{ left: number; top: number; width: number }> {
-    const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-    const isLanguageRightToLeft = currentLanguage.rightToLeft ?? false;
+    isLanguageRightToLeft: boolean;
+  }): { left: number; top: number; width: number } {
     const isWordRightToLeft = getWordDirection(
       options.wordText,
-      isLanguageRightToLeft
+      options.isLanguageRightToLeft
     );
 
     //if the letter is not visible, use the closest visible letter (but only for full width carets)

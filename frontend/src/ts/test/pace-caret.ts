@@ -7,6 +7,7 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../utils/caret";
+import * as JSONData from "../utils/json-data";
 
 type Settings = {
   wpm: number;
@@ -56,10 +57,14 @@ async function resetCaretPosition(): Promise<void> {
 
   const letter = letters[0] as HTMLElement;
 
+  const isLanguageRightToLeft =
+    (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
+
   await caret.goTo({
     word,
     letter,
     letters,
+    isLanguageRightToLeft,
     wordText: TestWords.words.get(0),
     side: "beforeLetter",
     animate: false,
@@ -271,11 +276,15 @@ export async function update(duration: number): Promise<void> {
     console.log(letters);
     console.log(letter);
 
+    const isLanguageRightToLeft =
+      (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
+
     await caret.goTo({
       word,
       letter,
       letters,
       wordText: TestWords.words.get(settings.currentWordIndex),
+      isLanguageRightToLeft,
       side,
       animate: true,
       animationOptions: {
