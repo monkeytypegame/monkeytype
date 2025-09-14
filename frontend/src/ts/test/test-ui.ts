@@ -1152,17 +1152,16 @@ export async function lineJump(
     } else if (Config.smoothLineScroll) {
       lineTransition = true;
 
-      const scrollDistance = TestState.lineScrollDistanceRemaining + wordHeight;
-      TestState.setLineScrollDistanceRemaining(scrollDistance);
       currentLinesAnimating++;
+      const newMarginTop = -1 * wordHeight * currentLinesAnimating;
       const newCss: Record<string, string> = {
-        marginTop: `-${wordHeight * currentLinesAnimating}px`,
+        marginTop: `${newMarginTop}px`,
       };
 
       const duration = SlowTimer.get() ? 0 : 125;
 
       Caret.handleSmoothLineScroll({
-        scrollDistance,
+        newMarginTop,
         duration,
       });
 
@@ -1170,17 +1169,8 @@ export async function lineJump(
       jqWords.stop("topMargin", true, false).animate(newCss, {
         duration,
         queue: "topMargin",
-        step: (now, fx) => {
-          const completionRate = (now - fx.start) / (fx.end - fx.start);
-          TestState.setLineScrollDistanceRemaining(
-            scrollDistance * (1 - completionRate)
-          );
-          TestState.setLineScrollDistance(now);
-        },
         complete: () => {
           currentLinesAnimating = 0;
-          TestState.setLineScrollDistanceRemaining(0);
-          TestState.setLineScrollDistance(null);
           activeWordTop = activeWordEl.offsetTop;
           removeTestElements(lastElementIndexToRemove);
           wordsEl.style.marginTop = "0";

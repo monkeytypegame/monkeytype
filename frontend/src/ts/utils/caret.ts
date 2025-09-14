@@ -93,14 +93,14 @@ export class Caret {
 
   public handleSmoothLineScroll(options: {
     duration: number;
-    scrollDistance: number;
+    newMarginTop: number;
   }): void {
     this.readyToResetMarginTop = false;
     $(this.element)
       .stop("marginTop", true, false)
       .animate(
         {
-          marginTop: options.scrollDistance * -1,
+          marginTop: options.newMarginTop,
         },
         {
           duration: options.duration,
@@ -223,7 +223,7 @@ export class Caret {
         this.readyToResetMarginTop = false;
         $(this.element).css({
           marginTop: 0,
-          top,
+          top: parseFloat(this.element.style.top) + this.marginTop,
         });
         this.marginTop = 0;
       }

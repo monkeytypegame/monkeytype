@@ -19,7 +19,7 @@ export function hide(): void {
 
 export function handleSmoothLineScroll(options: {
   duration: number;
-  scrollDistance: number;
+  newMarginTop: number;
 }): void {
   caret.handleSmoothLineScroll(options);
 }
