@@ -138,15 +138,6 @@ export class Caret {
       ? 0
       : options.duration ?? smoothCaretSpeed;
 
-    if (this.readyToResetMarginTop) {
-      this.readyToResetMarginTop = false;
-      $(this.element).css({
-        marginTop: 0,
-        top: options.top,
-      });
-      this.marginTop = 0;
-    }
-
     const animation: Record<string, number> = {
       left: options.left,
       top: options.top + this.marginTop * -1,
@@ -227,6 +218,15 @@ export class Caret {
         side,
         isLanguageRightToLeft: options.isLanguageRightToLeft,
       });
+
+      if (this.readyToResetMarginTop) {
+        this.readyToResetMarginTop = false;
+        $(this.element).css({
+          marginTop: 0,
+          top,
+        });
+        this.marginTop = 0;
+      }
 
       if (options.animate) {
         const animation: {
