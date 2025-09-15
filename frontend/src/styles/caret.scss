@@ -56,7 +56,7 @@
     width: 0.5em;
     border-radius: 0;
     z-index: -1;
-    border-radius: calc(var(--roundness) / 4);
+    border-radius: calc(var(--roundness) / 2);
   }
 
   &.outline {
@@ -64,7 +64,7 @@
     animation-name: none;
     background: transparent;
     border: 0.05em solid var(--caret-color);
-    border-radius: calc(var(--roundness) / 4);
+    border-radius: calc(var(--roundness) / 2);
   }
 
   &.underline {
