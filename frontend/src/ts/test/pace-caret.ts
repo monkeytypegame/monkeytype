@@ -69,6 +69,7 @@ async function resetCaretPosition(): Promise<void> {
     (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
 
   caret.stopAllAnimations();
+  caret.clearMargins();
 
   caret.goTo({
     wordIndex: 0,

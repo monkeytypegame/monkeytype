@@ -24,6 +24,20 @@ export function handleSmoothLineScroll(options: {
   caret.handleSmoothLineScroll(options);
 }
 
+export async function resetPosition(): Promise<void> {
+  const isLanguageRightToLeft =
+    (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
+
+  caret.clearMargins();
+  caret.stopAllAnimations();
+  caret.goTo({
+    wordIndex: 0,
+    letterIndex: 0,
+    isLanguageRightToLeft,
+    animate: false,
+  });
+}
+
 export async function updatePosition(noAnim = false): Promise<void> {
   const isLanguageRightToLeft =
     (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;

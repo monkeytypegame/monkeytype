@@ -105,6 +105,13 @@ export class Caret {
     $(this.element).stop(true, false);
   }
 
+  public clearMargins(): void {
+    this.element.style.marginTop = "0px";
+    this.element.style.marginLeft = "0px";
+    this.readyToResetMarginTop = false;
+    this.readyToResetMarginLeft = false;
+  }
+
   public handleSmoothTapeScroll(options: {
     duration: number;
     additionalMarginLeft: number;
