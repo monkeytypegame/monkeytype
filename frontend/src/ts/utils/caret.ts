@@ -84,6 +84,14 @@ export class Caret {
     duration: number;
     newMarginTop: number;
   }): void {
+    // smooth line scroll works by animating the words top margin.
+    // to sync the carets to the lines, we need to do the same here.
+
+    // using a readyToResetMarginTop flag here to make sure the animation
+    // is fully finished before we reset the marginTop to 0
+
+    // making sure to use a separate animation queue so that it doesnt
+    // affect the position animations
     this.readyToResetMarginTop = false;
     $(this.element)
       .stop("marginTop", true, false)
@@ -124,6 +132,9 @@ export class Caret {
       ? 0
       : options.duration ?? smoothCaretSpeed;
 
+    // accounting for marginTop set by smooth line scroll
+    // animation uses inline styles, so its fine to read inline here instead
+    // of computed styles which would be much slower
     const currentMarginTop = parseFloat(this.element.style.marginTop || "0");
 
     const animation: Record<string, number> = {
