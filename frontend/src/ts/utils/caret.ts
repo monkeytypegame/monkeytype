@@ -120,14 +120,13 @@ export class Caret {
     duration: number;
     newMarginLeft: number;
   }): void {
-    console.log("handleSmoothTapeScroll", options);
     this.readyToResetMarginLeft = false;
 
     // const currentMarginLeft = parseFloat(this.element.style.marginLeft || "0");
     // const finalMarginLeft = currentMarginLeft + options.additionalMarginLeft;
     const finalMarginLeft = options.newMarginLeft;
 
-    console.log("finalMarginLeft", finalMarginLeft);
+    console.log("margin animating to", finalMarginLeft);
 
     if (finalMarginLeft > 0) {
       console.error("finalMarginLeft > 0, something went wrong");

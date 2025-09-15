@@ -1044,14 +1044,14 @@ export async function scrollTape(
       currentWordWidth -= lastPositiveLetterWidth;
   }
 
-  const currentMarginLeft = parseFloat(wordsEl.style.marginLeft || "0");
-  console.log("currentMarginLeft", currentMarginLeft);
   /* change to new #words & .afterNewline margins */
 
   const tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
 
   let newMargin = tapeMarginPx - wordsWidthBeforeActive - currentWordWidth;
   if (isLanguageRTL) newMargin = wordRightMargin - newMargin;
+
+  const currentMarginLeft = parseFloat(wordsEl.style.marginLeft || "0");
 
   console.log({
     wordsWrapperWidth,
@@ -1062,18 +1062,17 @@ export async function scrollTape(
     currentMarginLeft,
   });
 
-  const duration = SlowTimer.get() ? 0 : 125;
-
-  console.log("sending", (currentMarginLeft - newMargin) * -1);
-  PaceCaret.handleSmoothTapeScroll({
-    newMarginLeft:
-      PaceCaret.getMarginLeft() + (currentMarginLeft - newMargin) * -1,
-    duration,
-  });
-
-  const jqWords = $(wordsEl);
   if (Config.smoothLineScroll) {
-    jqWords.stop("leftMargin", true, false).animate(
+    const jqWords = $(wordsEl).stop("leftMargin", true, false);
+    const duration = SlowTimer.get() ? 0 : 125;
+
+    PaceCaret.handleSmoothTapeScroll({
+      newMarginLeft:
+        PaceCaret.getMarginLeft() + (currentMarginLeft - newMargin) * -1,
+      duration,
+    });
+
+    jqWords.animate(
       {
         marginLeft: newMargin,
       },
