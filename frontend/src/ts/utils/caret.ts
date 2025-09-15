@@ -30,6 +30,7 @@ export class Caret {
   private element: HTMLElement;
   private style: CaretStyle = "default";
   private readyToResetMarginTop: boolean = false;
+  private readyToResetMarginLeft: boolean = false;
   private singleAnimationFrame = new SingleAnimationFrame();
   private isMainCaret: boolean = false;
 
@@ -98,6 +99,30 @@ export class Caret {
     } else {
       this.element.style.animationName = "caretFlashSmooth";
     }
+  }
+
+  public handleSmoothTapeScroll(options: {
+    duration: number;
+    newMarginLeft: number;
+  }): void {
+    this.readyToResetMarginLeft = false;
+    $(this.element)
+      .stop("marginLeft", true, false)
+      .animate(
+        {
+          marginLeft: options.newMarginLeft,
+        },
+        {
+          // this NEEDS to be the same duration as the
+          // line scroll otherwise it will look weird
+          duration: options.duration,
+          queue: "marginLeft",
+          complete: () => {
+            this.readyToResetMarginLeft = true;
+          },
+        }
+      );
+    $(this.element).dequeue("marginLeft");
   }
 
   public handleSmoothLineScroll(options: {
@@ -243,6 +268,10 @@ export class Caret {
       // which would be much slower
       const currentMarginTop = parseFloat(this.element.style.marginTop || "0");
       const currentTop = parseFloat(this.element.style.top || "0");
+      const currentMarginLeft = parseFloat(
+        this.element.style.marginLeft || "0"
+      );
+      const currentLeft = parseFloat(this.element.style.left || "0");
 
       // if the margin animation finished, we reset it here by removing the margin
       // and offsetting the top by the same amount
@@ -251,6 +280,14 @@ export class Caret {
         $(this.element).css({
           marginTop: 0,
           top: currentTop + currentMarginTop,
+        });
+      }
+
+      if (this.readyToResetMarginLeft) {
+        this.readyToResetMarginLeft = false;
+        $(this.element).css({
+          marginLeft: 0,
+          left: currentLeft + currentMarginLeft,
         });
       }
 

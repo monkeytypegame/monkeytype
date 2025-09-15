@@ -39,6 +39,16 @@ export function handleSmoothLineScroll(options: {
   });
 }
 
+export function handleSmoothTapeScroll(options: {
+  newMarginLeft: number;
+  duration: number;
+}): void {
+  caret.handleSmoothTapeScroll({
+    newMarginLeft: options.newMarginLeft,
+    duration: options.duration,
+  });
+}
+
 export function setLastTestWpm(wpm: number): void {
   if (
     !TestState.isPaceRepeat ||
