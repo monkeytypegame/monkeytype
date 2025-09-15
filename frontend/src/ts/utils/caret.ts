@@ -175,6 +175,12 @@ export class Caret {
       const letters = word?.querySelectorAll<HTMLElement>("letter") ?? [];
       const wordText = TestWords.words.get(options.wordIndex);
 
+      // caret can be either on the left side of the target letter or the right
+      // we stick to the left side unless we are on the last letter or beyond
+      // then we switch to the right side
+
+      // we also clamp the letterIndex to be within the range of actual letters
+      // anything beyond just goes to the edge of the word
       let side: "beforeLetter" | "afterLetter" = "beforeLetter";
       if (options.letterIndex >= letters.length) {
         side = "afterLetter";
@@ -191,14 +197,14 @@ export class Caret {
         return;
       }
 
+      //todo: remove debug code
       for (const l of document.querySelectorAll(".word letter")) {
         l.classList.remove("debugCaretTarget");
         l.classList.remove("debugCaretTarget2");
       }
-
       letter?.classList.add("debugCaretTarget");
 
-      const { left, top, width } = this.getLeftTopWidth({
+      const { left, top, width } = this.getTargetPositionAndWidth({
         word,
         letter,
         wordText,
@@ -206,9 +212,13 @@ export class Caret {
         isLanguageRightToLeft: options.isLanguageRightToLeft,
       });
 
+      // again, animations use inline styles, so we read them here instead of computed
+      // which would be much slower
       const currentMarginTop = parseFloat(this.element.style.marginTop || "0");
       const currentTop = parseFloat(this.element.style.top || "0");
 
+      // if the margin animation finished, we reset it here by removing the margin
+      // and offsetting the top by the same amount
       if (this.readyToResetMarginTop) {
         this.readyToResetMarginTop = false;
         $(this.element).css({
@@ -251,7 +261,7 @@ export class Caret {
     });
   }
 
-  private getLeftTopWidth(options: {
+  private getTargetPositionAndWidth(options: {
     word: HTMLElement;
     letter: HTMLElement;
     wordText: string;
