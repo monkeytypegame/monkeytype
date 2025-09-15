@@ -39,12 +39,16 @@ export function handleSmoothLineScroll(options: {
   });
 }
 
+export function getMarginLeft(): number {
+  return caret.getMarginLeft();
+}
+
 export function handleSmoothTapeScroll(options: {
   newMarginLeft: number;
   duration: number;
 }): void {
   caret.handleSmoothTapeScroll({
-    additionalMarginLeft: options.newMarginLeft,
+    newMarginLeft: options.newMarginLeft,
     duration: options.duration,
   });
 }

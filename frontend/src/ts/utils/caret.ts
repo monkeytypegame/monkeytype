@@ -112,20 +112,32 @@ export class Caret {
     this.readyToResetMarginLeft = false;
   }
 
+  public getMarginLeft(): number {
+    return parseFloat(this.element.style.marginLeft || "0");
+  }
+
   public handleSmoothTapeScroll(options: {
     duration: number;
-    additionalMarginLeft: number;
+    newMarginLeft: number;
   }): void {
     console.log("handleSmoothTapeScroll", options);
     this.readyToResetMarginLeft = false;
 
-    const currentMarginLeft = parseFloat(this.element.style.marginLeft || "0");
+    // const currentMarginLeft = parseFloat(this.element.style.marginLeft || "0");
+    // const finalMarginLeft = currentMarginLeft + options.additionalMarginLeft;
+    const finalMarginLeft = options.newMarginLeft;
+
+    console.log("finalMarginLeft", finalMarginLeft);
+
+    if (finalMarginLeft > 0) {
+      console.error("finalMarginLeft > 0, something went wrong");
+    }
 
     $(this.element)
       .stop("marginLeft", true, false)
       .animate(
         {
-          marginLeft: currentMarginLeft + options.additionalMarginLeft,
+          marginLeft: finalMarginLeft,
         },
         {
           // this NEEDS to be the same duration as the
@@ -260,13 +272,15 @@ export class Caret {
       }
 
       if (caretDebug) {
-        for (const l of document.querySelectorAll(".word letter")) {
-          l.classList.remove("debugCaretTarget");
-          l.classList.remove("debugCaretTarget2");
-          l.classList.add("debugCaret");
+        if (this.element.id === "paceCaret") {
+          for (const l of document.querySelectorAll(".word letter")) {
+            l.classList.remove("debugCaretTarget");
+            l.classList.remove("debugCaretTarget2");
+            l.classList.add("debugCaret");
+          }
+          letter?.classList.add("debugCaretTarget");
+          this.element.classList.add("debug");
         }
-        letter?.classList.add("debugCaretTarget");
-        this.element.classList.add("debug");
       } else {
         this.element.classList.remove("debug");
       }

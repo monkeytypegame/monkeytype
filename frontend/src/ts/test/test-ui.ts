@@ -1066,7 +1066,8 @@ export async function scrollTape(
 
   console.log("sending", (currentMarginLeft - newMargin) * -1);
   PaceCaret.handleSmoothTapeScroll({
-    newMarginLeft: (currentMarginLeft - newMargin) * -1,
+    newMarginLeft:
+      PaceCaret.getMarginLeft() + (currentMarginLeft - newMargin) * -1,
     duration,
   });
 
