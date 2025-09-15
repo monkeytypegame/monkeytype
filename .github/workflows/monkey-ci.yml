@@ -163,19 +163,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Ensure testcontainers tempdir exists
+        run: mkdir -p tmp/.testcontainers
+
       - name: Cache testcontainers tmpdir
         id: cache-testcontainers
         uses: actions/cache@v4
-        env:
-          cache-name: testcontainers
+        
         with:
-          path: /var/lib/docker
+          path: tmp/.testcontainers
           key: ${{ runner.os }}-testcontainers-mongo-5.0.13-redis-6.2.6
 
       - name: Pull testcontainers images
         run: |
           docker pull mongo:5.0.13
           docker pull redis:6.2.6
+
+      - name: Preload images into testcontainers tempdir
+        run: |
+          docker run --rm -v $PWD/tmp/.testcontainers:/tmp mongo:5.0.13 true
+          docker run --rm -v $PWD/tmp/.testcontainers:/tmp redis:6.2.6 true
 
       - name: Check lint
         run: npm run lint-be
