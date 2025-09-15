@@ -120,6 +120,8 @@ export class Caret {
           marginTop: options.newMarginTop,
         },
         {
+          // this NEEDS to be the same duration as the
+          // line scroll otherwise it will look weird
           duration: options.duration,
           queue: "marginTop",
           complete: () => {
