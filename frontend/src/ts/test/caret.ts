@@ -58,8 +58,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
 const caret = new Caret(
   document.getElementById("caret") as HTMLElement,
-  Config.caretStyle,
-  true
+  Config.caretStyle
 );
 
 subscribe((eventKey) => {

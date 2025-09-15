@@ -31,12 +31,14 @@ export class Caret {
   private style: CaretStyle = "default";
   private readyToResetMarginTop: boolean = false;
   private singleAnimationFrame = new SingleAnimationFrame();
-  private isMainCaret: boolean;
+  private isMainCaret: boolean = false;
 
-  constructor(element: HTMLElement, style: CaretStyle, isMainCaret = false) {
+  constructor(element: HTMLElement, style: CaretStyle) {
     this.element = element;
     this.setStyle(style);
-    this.isMainCaret = isMainCaret;
+    if (this.element.id === "caret") {
+      this.isMainCaret = true;
+    }
   }
 
   public setStyle(style: CaretStyle): void {
