@@ -31,10 +31,12 @@ export class Caret {
   private style: CaretStyle = "default";
   private readyToResetMarginTop: boolean = false;
   private singleAnimationFrame = new SingleAnimationFrame();
+  private isMainCaret: boolean;
 
-  constructor(element: HTMLElement, style: CaretStyle) {
+  constructor(element: HTMLElement, style: CaretStyle, isMainCaret = false) {
     this.element = element;
     this.setStyle(style);
+    this.isMainCaret = isMainCaret;
   }
 
   public setStyle(style: CaretStyle): void {
@@ -389,13 +391,23 @@ export class Caret {
         top += options.word.offsetTop;
       } else if (Config.tapeMode === "word") {
         left += options.letter.offsetLeft;
-        left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
         left += afterLetterCorrection;
+        if (!this.isMainCaret) {
+          left += options.word.offsetLeft;
+        } else {
+          left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
+        }
 
         top += options.letter.offsetTop;
         top += options.word.offsetTop;
       } else if (Config.tapeMode === "letter") {
-        left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
+        if (!this.isMainCaret) {
+          left += options.letter.offsetLeft;
+          left += options.word.offsetLeft;
+          left += afterLetterCorrection;
+        } else {
+          left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
+        }
 
         top += options.letter.offsetTop;
         top += options.word.offsetTop;
