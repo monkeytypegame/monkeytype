@@ -20,10 +20,12 @@
 
 #caret,
 #paceCaret {
-  outline: 1px solid white;
-  &.hidden {
-    opacity: 1 !important;
-    display: block !important;
+  &.debug {
+    outline: 1px solid white;
+    &.hidden {
+      opacity: 0.5 !important;
+      display: block !important;
+    }
   }
 
   &.off {

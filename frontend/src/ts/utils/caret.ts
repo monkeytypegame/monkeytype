@@ -10,6 +10,22 @@ const wordsWrapperCache = document.querySelector<HTMLElement>(
   "#wordsWrapper"
 ) as HTMLElement;
 
+let caretDebug = true;
+export function toggleCaretDebug(): void {
+  caretDebug = !caretDebug;
+  if (!caretDebug) {
+    for (const l of document.querySelectorAll(".word letter")) {
+      l.classList.remove("debugCaret");
+      l.classList.remove("debugCaretTarget");
+      l.classList.remove("debugCaretTarget2");
+    }
+  } else {
+    for (const l of document.querySelectorAll(".word letter")) {
+      l.classList.add("debugCaret");
+    }
+  }
+}
+
 export class Caret {
   private element: HTMLElement;
   private style: CaretStyle = "default";
@@ -197,12 +213,17 @@ export class Caret {
         return;
       }
 
-      //todo: remove debug code
-      for (const l of document.querySelectorAll(".word letter")) {
-        l.classList.remove("debugCaretTarget");
-        l.classList.remove("debugCaretTarget2");
+      if (caretDebug) {
+        for (const l of document.querySelectorAll(".word letter")) {
+          l.classList.remove("debugCaretTarget");
+          l.classList.remove("debugCaretTarget2");
+          l.classList.add("debugCaret");
+        }
+        letter?.classList.add("debugCaretTarget");
+        this.element.classList.add("debug");
+      } else {
+        this.element.classList.remove("debug");
       }
-      letter?.classList.add("debugCaretTarget");
 
       const { left, top, width } = this.getTargetPositionAndWidth({
         word,
@@ -298,7 +319,9 @@ export class Caret {
           break;
         }
       }
-      options.letter.classList.add("debugCaretTarget2");
+      if (caretDebug) {
+        options.letter.classList.add("debugCaretTarget2");
+      }
     }
 
     const spaceWidth = getTotalInlineMargin(options.word);
