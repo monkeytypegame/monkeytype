@@ -160,7 +160,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Cache testcontainers tmpdir
+      - name: Cache testcontainers images
         id: cache-testcontainers
         uses: ScribeMD/docker-cache@0.5.0
         with:
