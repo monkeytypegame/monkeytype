@@ -169,7 +169,7 @@ jobs:
         env:
           cache-name: testcontainers
         with:
-          path: tmp/.testcontainers
+          path: /var/lib/docker
           key: ${{ runner.os }}-testcontainers-mongo-5.0.13-redis-6.2.6
 
       - name: Pull testcontainers images
