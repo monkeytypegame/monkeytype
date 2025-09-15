@@ -3,7 +3,7 @@ import Config from "../config";
 import { getWordDirection } from "./strings";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestWords from "../test/test-words";
-import { getTotalInlineMargin } from "./misc";
+import { getTotalInlineMargin, SingleAnimationFrame } from "./misc";
 
 const wordsCache = document.querySelector<HTMLElement>("#words") as HTMLElement;
 const wordsWrapperCache = document.querySelector<HTMLElement>(
@@ -13,8 +13,8 @@ const wordsWrapperCache = document.querySelector<HTMLElement>(
 export class Caret {
   private element: HTMLElement;
   private style: CaretStyle = "default";
-  private pendingFrame: number | null = null;
   private readyToResetMarginTop: boolean = false;
+  private singleAnimationFrame = new SingleAnimationFrame();
 
   constructor(element: HTMLElement, style: CaretStyle) {
     this.element = element;
@@ -166,11 +166,7 @@ export class Caret {
       easing?: string;
     };
   }): void {
-    if (this.pendingFrame !== null) {
-      cancelAnimationFrame(this.pendingFrame);
-    }
-    this.pendingFrame = requestAnimationFrame(() => {
-      this.pendingFrame = null;
+    this.singleAnimationFrame.request(() => {
       if (this.style === "off") return;
 
       const word = wordsCache.querySelector<HTMLElement>(
