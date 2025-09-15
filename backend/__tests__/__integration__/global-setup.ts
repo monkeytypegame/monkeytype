@@ -7,6 +7,7 @@ export async function setup(): Promise<void> {
   process.env.TZ = "UTC";
 
   //use testcontainer to start mongodb
+  //make sure to update the image version in monkey-ci.yml if you change it here
   const mongoContainer = new GenericContainer("mongo:5.0.13")
     .withExposedPorts(27017)
     .withWaitStrategy(Wait.forListeningPorts());
@@ -19,6 +20,7 @@ export async function setup(): Promise<void> {
   process.env["TEST_DB_URL"] = mongoUrl;
 
   //use testcontainer to start redis
+  //make sure to update the image version in monkey-ci.yml if you change it here
   const redisContainer = new GenericContainer("redis:6.2.6")
     .withExposedPorts(6379)
     .withWaitStrategy(Wait.forLogMessage("Ready to accept connections"));
