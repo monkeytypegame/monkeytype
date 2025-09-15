@@ -111,7 +111,7 @@ export const LayoutNameSchema = z.enum(
     "klauser",
     "oneproduct",
     "pine",
-    "pine v4",
+    "pine_v4",
     "real",
     "rolll",
     "stndc",
