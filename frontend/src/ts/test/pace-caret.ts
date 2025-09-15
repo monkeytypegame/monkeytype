@@ -174,19 +174,13 @@ export async function init(): Promise<void> {
 }
 
 export async function update(duration: number): Promise<void> {
-  if (settings === null || TestUI.resultVisible) {
+  if (settings === null || !TestState.isActive || TestUI.resultVisible) {
     return;
   }
 
-  // if (settings === null || !TestState.isActive || TestUI.resultVisible) {
-  //   return;
-  // }
-
-  console.log("update pace caret");
-
-  // if ($("#paceCaret").hasClass("hidden")) {
-  //   $("#paceCaret").removeClass("hidden");
-  // }
+  if ($("#paceCaret").hasClass("hidden")) {
+    $("#paceCaret").removeClass("hidden");
+  }
 
   try {
     settings.currentLetterIndex++;
@@ -257,110 +251,6 @@ export async function update(duration: number): Promise<void> {
     $("#paceCaret").addClass("hidden");
     return;
   }
-
-  // try {
-  //   const caret = $("#paceCaret");
-  //   let currentLetter;
-  //   let newTop;
-  //   let newLeft;
-  //   try {
-  //     const word = document.querySelector<HTMLElement>(
-  //       `#words .word[data-wordindex='${settings.currentWordIndex}']`
-  //     );
-
-  //     if (!word) {
-  //       throw new Error("Word element not found");
-  //     }
-
-  //     if (settings.currentLetterIndex === -1) {
-  //       currentLetter = word.querySelectorAll("letter")[0] as HTMLElement;
-  //     } else {
-  //       currentLetter = word.querySelectorAll("letter")[
-  //         settings.currentLetterIndex
-  //       ] as HTMLElement;
-  //     }
-
-  //     const currentLetterHeight = $(currentLetter).height(),
-  //       currentLetterWidth = $(currentLetter).width(),
-  //       caretWidth = caret.width();
-
-  //     if (
-  //       currentLetterHeight === undefined ||
-  //       currentLetterWidth === undefined ||
-  //       caretWidth === undefined
-  //     ) {
-  //       throw new Error(
-  //         "Undefined current letter height, width or caret width."
-  //       );
-  //     }
-
-  //     const currentLanguage = await JSONData.getCurrentLanguage(
-  //       Config.language
-  //     );
-  //     const isLanguageRightToLeft = currentLanguage.rightToLeft;
-
-  //     const currentWord = TestWords.words.get(settings.currentWordIndex);
-
-  //     const isWordRightToLeft = getWordDirection(
-  //       currentWord,
-  //       isLanguageRightToLeft ?? false
-  //     );
-  //     newTop =
-  //       word.offsetTop +
-  //       currentLetter.offsetTop -
-  //       Config.fontSize * convertRemToPixels(1) * 0.1;
-  //     if (settings.currentLetterIndex === -1) {
-  //       newLeft =
-  //         word.offsetLeft +
-  //         currentLetter.offsetLeft -
-  //         caretWidth / 2 +
-  //         (isWordRightToLeft ? currentLetterWidth : 0);
-  //     } else {
-  //       newLeft =
-  //         word.offsetLeft +
-  //         currentLetter.offsetLeft -
-  //         caretWidth / 2 +
-  //         (isWordRightToLeft ? 0 : currentLetterWidth);
-  //     }
-  //     caret.removeClass("hidden");
-  //   } catch (e) {
-  //     caret.addClass("hidden");
-  //   }
-
-  //   const duration = expectedStepEnd - performance.now();
-
-  //   if (newTop !== undefined) {
-  //     $("#paceCaret").css({
-  //       top: newTop - TestState.lineScrollDistance,
-  //     });
-
-  //     if (Config.smoothCaret !== "off") {
-  //       caret.stop(true, true).animate(
-  //         {
-  //           left: newLeft,
-  //         },
-  //         SlowTimer.get() ? 0 : duration,
-  //         "linear"
-  //       );
-  //     } else {
-  //       caret.stop(true, true).animate(
-  //         {
-  //           left: newLeft,
-  //         },
-  //         0,
-  //         "linear"
-  //       );
-  //     }
-  //   }
-  //   settings.timeout = setTimeout(() => {
-  //     update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
-  //       settings = null;
-  //     });
-  //   }, duration);
-  // } catch (e) {
-  //   console.error(e);
-  //   $("#paceCaret").addClass("hidden");
-  // }
 }
 
 export function reset(): void {
