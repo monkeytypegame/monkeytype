@@ -101,16 +101,24 @@ export class Caret {
     }
   }
 
+  public stopAllAnimations(): void {
+    $(this.element).stop(true, false);
+  }
+
   public handleSmoothTapeScroll(options: {
     duration: number;
-    newMarginLeft: number;
+    additionalMarginLeft: number;
   }): void {
+    console.log("handleSmoothTapeScroll", options);
     this.readyToResetMarginLeft = false;
+
+    const currentMarginLeft = parseFloat(this.element.style.marginLeft || "0");
+
     $(this.element)
       .stop("marginLeft", true, false)
       .animate(
         {
-          marginLeft: options.newMarginLeft,
+          marginLeft: currentMarginLeft + options.additionalMarginLeft,
         },
         {
           // this NEEDS to be the same duration as the

@@ -1045,16 +1045,17 @@ export async function scrollTape(
   }
 
   const currentMarginLeft = parseFloat(wordsEl.style.marginLeft || "0");
+  console.log("currentMarginLeft", currentMarginLeft);
   /* change to new #words & .afterNewline margins */
-  let newMargin =
-    wordsWrapperWidth * (Config.tapeMargin / 100) -
-    wordsWidthBeforeActive -
-    currentWordWidth;
+
+  const tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
+
+  let newMargin = tapeMarginPx - wordsWidthBeforeActive - currentWordWidth;
   if (isLanguageRTL) newMargin = wordRightMargin - newMargin;
 
   console.log({
     wordsWrapperWidth,
-    tapeMarginCalculated: wordsWrapperWidth * (Config.tapeMargin / 100),
+    tapeMarginPx,
     wordsWidthBeforeActive,
     currentWordWidth,
     newMargin,
@@ -1063,6 +1064,7 @@ export async function scrollTape(
 
   const duration = SlowTimer.get() ? 0 : 125;
 
+  console.log("sending", (currentMarginLeft - newMargin) * -1);
   PaceCaret.handleSmoothTapeScroll({
     newMarginLeft: (currentMarginLeft - newMargin) * -1,
     duration,

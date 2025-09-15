@@ -44,7 +44,7 @@ export function handleSmoothTapeScroll(options: {
   duration: number;
 }): void {
   caret.handleSmoothTapeScroll({
-    newMarginLeft: options.newMarginLeft,
+    additionalMarginLeft: options.newMarginLeft,
     duration: options.duration,
   });
 }
@@ -67,6 +67,8 @@ async function resetCaretPosition(): Promise<void> {
 
   const isLanguageRightToLeft =
     (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
+
+  caret.stopAllAnimations();
 
   caret.goTo({
     wordIndex: 0,
