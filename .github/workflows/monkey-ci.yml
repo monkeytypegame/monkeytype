@@ -126,9 +126,6 @@ jobs:
     needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-    env:
-      TESTCONTAINERS_TYUK_DISABLED: true   #don't remove docker images after testcontainers shuts down
-      TESTCONTAINERS_TMPDIR: tmp/.testcontainers
     steps:
       - uses: actions/checkout@v4
         with:
@@ -163,27 +160,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Ensure testcontainers tempdir exists
-        run: mkdir -p tmp/.testcontainers
-
       - name: Cache testcontainers tmpdir
         id: cache-testcontainers
-        uses: actions/cache@v4
-        
+        uses: ScribeMD/docker-cache@0.5.0
         with:
-          path: tmp/.testcontainers
           key: ${{ runner.os }}-testcontainers-mongo-5.0.13-redis-6.2.6
 
       - name: Pull testcontainers images
         run: |
           docker pull mongo:5.0.13
           docker pull redis:6.2.6
-
-      - name: Preload images into testcontainers tempdir
-        run: |
-          docker run --rm -v $PWD/tmp/.testcontainers:/tmp mongo:5.0.13 true
-          docker run --rm -v $PWD/tmp/.testcontainers:/tmp redis:6.2.6 true
-
+          
       - name: Check lint
         run: npm run lint-be
 
