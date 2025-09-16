@@ -20,8 +20,9 @@ export function hide(): void {
 export function handleSmoothLineScroll(options: {
   duration: number;
   newMarginTop: number;
+  instant: boolean;
 }): void {
-  caret.handleSmoothLineScroll(options);
+  caret.handleLineJump(options);
 }
 
 export async function resetPosition(): Promise<void> {

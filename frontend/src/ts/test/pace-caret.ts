@@ -32,10 +32,12 @@ let lastTestWpm = 0;
 export function handleSmoothLineScroll(options: {
   newMarginTop: number;
   duration: number;
+  instant: boolean;
 }): void {
-  caret.handleSmoothLineScroll({
+  caret.handleLineJump({
     newMarginTop: options.newMarginTop,
     duration: options.duration,
+    instant: options.instant,
   });
 }
 
@@ -46,10 +48,12 @@ export function getMarginLeft(): number {
 export function handleSmoothTapeScroll(options: {
   newMarginLeft: number;
   duration: number;
+  instant: boolean;
 }): void {
-  caret.handleSmoothTapeScroll({
+  caret.handleTapeScroll({
     newMarginLeft: options.newMarginLeft,
     duration: options.duration,
+    instant: options.instant,
   });
 }
 

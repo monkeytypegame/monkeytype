@@ -106,8 +106,8 @@ export class Caret {
   }
 
   public clearMargins(): void {
-    this.element.style.marginTop = "0px";
-    this.element.style.marginLeft = "0px";
+    this.element.style.marginTop = "";
+    this.element.style.marginLeft = "";
     this.readyToResetMarginTop = false;
     this.readyToResetMarginLeft = false;
   }
@@ -116,27 +116,26 @@ export class Caret {
     return parseFloat(this.element.style.marginLeft || "0");
   }
 
-  public handleSmoothTapeScroll(options: {
+  public handleTapeScroll(options: {
     duration: number;
     newMarginLeft: number;
+    instant: boolean;
   }): void {
     this.readyToResetMarginLeft = false;
 
-    // const currentMarginLeft = parseFloat(this.element.style.marginLeft || "0");
-    // const finalMarginLeft = currentMarginLeft + options.additionalMarginLeft;
-    const finalMarginLeft = options.newMarginLeft;
-
-    console.log("margin animating to", finalMarginLeft);
-
-    if (finalMarginLeft > 0) {
-      console.error("finalMarginLeft > 0, something went wrong");
+    if (options.instant) {
+      $(this.element).stop("marginLeft", true, false).css({
+        marginLeft: options.newMarginLeft,
+      });
+      this.readyToResetMarginLeft = true;
+      return;
     }
 
     $(this.element)
       .stop("marginLeft", true, false)
       .animate(
         {
-          marginLeft: finalMarginLeft,
+          marginLeft: options.newMarginLeft,
         },
         {
           // this NEEDS to be the same duration as the
@@ -151,11 +150,12 @@ export class Caret {
     $(this.element).dequeue("marginLeft");
   }
 
-  public handleSmoothLineScroll(options: {
+  public handleLineJump(options: {
     duration: number;
     newMarginTop: number;
+    instant: boolean;
   }): void {
-    // smooth line scroll works by animating the words top margin.
+    // smooth line jump works by animating the words top margin.
     // to sync the carets to the lines, we need to do the same here.
 
     // using a readyToResetMarginTop flag here to make sure the animation
@@ -164,6 +164,15 @@ export class Caret {
     // making sure to use a separate animation queue so that it doesnt
     // affect the position animations
     this.readyToResetMarginTop = false;
+
+    if (options.instant) {
+      $(this.element).stop("marginTop", true, false).css({
+        marginTop: options.newMarginTop,
+      });
+      this.readyToResetMarginTop = true;
+      return;
+    }
+
     $(this.element)
       .stop("marginTop", true, false)
       .animate(
