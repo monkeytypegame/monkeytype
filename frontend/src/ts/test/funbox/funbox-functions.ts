@@ -1,4 +1,3 @@
-import { Section } from "../../utils/json-data";
 import { FunboxWordsFrequency, Wordset } from "../wordset";
 import * as GetText from "../../utils/generate";
 import Config, * as UpdateConfig from "../../config";
@@ -24,7 +23,6 @@ import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
-import { LanguageProperties } from "../../utils/json-data";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -36,7 +34,7 @@ export type FunboxFunctions = {
   clearGlobal?: () => void;
   rememberSettings?: () => void;
   toggleScript?: (params: string[]) => void;
-  pullSection?: (language?: Language) => Promise<Section | false>;
+  pullSection?: (language?: Language) => Promise<JSONData.Section | false>;
   handleSpace?: () => void;
   handleChar?: (char: string) => string;
   isCharCorrect?: (char: string, originalChar: string) => boolean;
@@ -155,11 +153,11 @@ class PseudolangWordGenerator extends Wordset {
 
 export class PolyglotWordset extends Wordset {
   public wordsWithLanguage: Map<string, Language>;
-  public languageProperties: Map<Language, LanguageProperties>;
+  public languageProperties: Map<Language, JSONData.LanguageProperties>;
 
   constructor(
     wordsWithLanguage: Map<string, Language>,
-    languageProperties: Map<Language, LanguageProperties>
+    languageProperties: Map<Language, JSONData.LanguageProperties>
   ) {
     // build and shuffle the word array
     const wordArray = Array.from(wordsWithLanguage.keys());
