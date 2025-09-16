@@ -17,12 +17,8 @@ export function hide(): void {
   caret.getElement().classList.add("hidden");
 }
 
-export function handleSmoothLineScroll(options: {
-  duration: number;
-  newMarginTop: number;
-  instant: boolean;
-}): void {
-  caret.handleLineJump(options);
+export function getCaret(): Caret {
+  return caret;
 }
 
 export async function resetPosition(): Promise<void> {

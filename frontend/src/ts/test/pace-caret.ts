@@ -29,32 +29,12 @@ let caret = new Caret(
 
 let lastTestWpm = 0;
 
-export function handleSmoothLineScroll(options: {
-  newMarginTop: number;
-  duration: number;
-  instant: boolean;
-}): void {
-  caret.handleLineJump({
-    newMarginTop: options.newMarginTop,
-    duration: options.duration,
-    instant: options.instant,
-  });
+export function getCaret(): Caret {
+  return caret;
 }
 
 export function getMarginLeft(): number {
   return caret.getMarginLeft();
-}
-
-export function handleSmoothTapeScroll(options: {
-  newMarginLeft: number;
-  duration: number;
-  instant: boolean;
-}): void {
-  caret.handleTapeScroll({
-    newMarginLeft: options.newMarginLeft,
-    duration: options.duration,
-    instant: options.instant,
-  });
 }
 
 export function setLastTestWpm(wpm: number): void {

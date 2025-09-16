@@ -1066,7 +1066,7 @@ export async function scrollTape(
     const jqWords = $(wordsEl).stop("leftMargin", true, false);
     const duration = SlowTimer.get() ? 0 : 125;
 
-    PaceCaret.handleSmoothTapeScroll({
+    PaceCaret.getCaret().handleTapeScroll({
       newMarginLeft:
         PaceCaret.getMarginLeft() + (currentMarginLeft - newMargin) * -1,
       duration,
@@ -1097,7 +1097,7 @@ export async function scrollTape(
       (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
     }
 
-    PaceCaret.handleSmoothTapeScroll({
+    PaceCaret.getCaret().handleTapeScroll({
       newMarginLeft:
         PaceCaret.getMarginLeft() + (currentMarginLeft - newMargin) * -1,
       duration: 0,
@@ -1189,13 +1189,13 @@ export async function lineJump(
 
       const duration = SlowTimer.get() ? 0 : 125;
 
-      Caret.handleSmoothLineScroll({
+      Caret.getCaret().handleLineJump({
         newMarginTop,
         duration,
         instant: false,
       });
 
-      PaceCaret.handleSmoothLineScroll({
+      PaceCaret.getCaret().handleLineJump({
         newMarginTop,
         duration,
         instant: false,
@@ -1218,13 +1218,13 @@ export async function lineJump(
     } else {
       const newMarginTop = -1 * wordHeight;
 
-      Caret.handleSmoothLineScroll({
+      Caret.getCaret().handleLineJump({
         newMarginTop,
         duration: 0,
         instant: true,
       });
 
-      PaceCaret.handleSmoothLineScroll({
+      PaceCaret.getCaret().handleLineJump({
         newMarginTop,
         duration: 0,
         instant: true,
