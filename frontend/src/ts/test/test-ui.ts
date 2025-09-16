@@ -1032,15 +1032,6 @@ export async function scrollTape(
 
   const currentMarginLeft = parseFloat(wordsEl.style.marginLeft || "0");
 
-  console.log({
-    wordsWrapperWidth,
-    tapeMarginPx,
-    wordsWidthBeforeActive,
-    currentWordWidth,
-    newMargin,
-    currentMarginLeft,
-  });
-
   if (Config.smoothLineScroll) {
     const jqWords = $(wordsEl).stop("leftMargin", true, false);
     const duration = SlowTimer.get() ? 0 : 125;
