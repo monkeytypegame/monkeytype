@@ -1,14 +1,15 @@
-import request from "supertest";
-import app from "../../../src/app";
+import { describe, it, expect, afterEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import * as PublicDal from "../../../src/dal/public";
-const mockApp = request(app);
+
+const { mockApp } = setup();
 
 describe("PublicController", () => {
   describe("get speed histogram", () => {
     const getSpeedHistogramMock = vi.spyOn(PublicDal, "getSpeedHistogram");
 
     afterEach(() => {
-      getSpeedHistogramMock.mockReset();
+      getSpeedHistogramMock.mockClear();
     });
 
     it("gets for english time 60", async () => {
@@ -115,7 +116,7 @@ describe("PublicController", () => {
     const getTypingStatsMock = vi.spyOn(PublicDal, "getTypingStats");
 
     afterEach(() => {
-      getTypingStatsMock.mockReset();
+      getTypingStatsMock.mockClear();
     });
 
     it("gets without authentication", async () => {

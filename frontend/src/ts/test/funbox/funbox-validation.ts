@@ -1,10 +1,6 @@
 import * as Notifications from "../../elements/notifications";
 import * as Strings from "../../utils/strings";
-import {
-  Config,
-  ConfigValue,
-  FunboxName,
-} from "@monkeytype/contracts/schemas/configs";
+import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
 import { FunboxMetadata, getFunbox } from "@monkeytype/funbox";
 import { intersect } from "@monkeytype/util/arrays";
 

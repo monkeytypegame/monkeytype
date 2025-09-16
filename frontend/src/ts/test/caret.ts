@@ -6,7 +6,7 @@ import * as TestState from "../test/test-state";
 import * as TestWords from "./test-words";
 import { prefersReducedMotion } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
-import { splitIntoCharacters } from "../utils/strings";
+import { splitIntoCharacters, getWordDirection } from "../utils/strings";
 import { safeNumber } from "@monkeytype/util/numbers";
 import { subscribe } from "../observables/config-event";
 
@@ -59,10 +59,17 @@ function getTargetPositionLeft(
   currentWordNodeList: NodeListOf<HTMLElement>,
   fullWidthCaretWidth: number,
   wordLen: number,
-  inputLen: number
+  inputLen: number,
+  currentWord?: string
 ): number {
   const invisibleExtraLetters = Config.blindMode || Config.hideExtraLetters;
   let result = 0;
+
+  // use word-specific direction if available and different from language direction
+  const isWordRightToLeft = getWordDirection(
+    currentWord,
+    isLanguageRightToLeft
+  );
 
   if (Config.tapeMode === "off") {
     let positionOffsetToWord = 0;
@@ -71,7 +78,7 @@ function getTargetPositionLeft(
     const lastWordLetter = currentWordNodeList[wordLen - 1];
     const lastInputLetter = currentWordNodeList[inputLen - 1];
 
-    if (isLanguageRightToLeft) {
+    if (isWordRightToLeft) {
       if (inputLen <= wordLen && currentLetter) {
         // at word beginning in zen mode both lengths are 0, but currentLetter is defined "_"
         positionOffsetToWord =
@@ -104,13 +111,13 @@ function getTargetPositionLeft(
       $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
     const tapeMargin =
       wordsWrapperWidth *
-      (isLanguageRightToLeft
+      (isWordRightToLeft
         ? 1 - Config.tapeMargin / 100
         : Config.tapeMargin / 100);
 
     result =
       tapeMargin -
-      (fullWidthCaret && isLanguageRightToLeft ? fullWidthCaretWidth : 0);
+      (fullWidthCaret && isWordRightToLeft ? fullWidthCaretWidth : 0);
 
     if (Config.tapeMode === "word" && inputLen > 0) {
       let currentWordWidth = 0;
@@ -125,7 +132,7 @@ function getTargetPositionLeft(
       // if current letter has zero width move the caret to previous positive width letter
       if ($(currentWordNodeList[inputLen] as Element).outerWidth(true) === 0)
         currentWordWidth -= lastPositiveLetterWidth;
-      if (isLanguageRightToLeft) currentWordWidth *= -1;
+      if (isWordRightToLeft) currentWordWidth *= -1;
       result += currentWordWidth;
     }
   }
@@ -166,10 +173,9 @@ export async function updatePosition(noAnim = false): Promise<void> {
   let wordLen = splitIntoCharacters(TestWords.words.getCurrent()).length;
   const inputLen = splitIntoCharacters(TestInput.input.current).length;
   if (Config.mode === "zen") wordLen = inputLen;
-  const activeWordEl =
-    document.querySelectorAll<HTMLElement>("#words .word")[
-      TestState.activeWordIndex - TestState.removedUIWordCount
-    ];
+  const activeWordEl = document.querySelector<HTMLElement>(
+    `#words .word[data-wordindex='${TestState.activeWordIndex}']`
+  );
   if (!activeWordEl) return;
 
   const currentWordNodeList =
@@ -177,21 +183,26 @@ export async function updatePosition(noAnim = false): Promise<void> {
   if (!currentWordNodeList?.length) return;
 
   const currentLetter = currentWordNodeList[inputLen];
+  const lastInputLetter = currentWordNodeList[inputLen - 1];
   const lastWordLetter = currentWordNodeList[wordLen - 1];
 
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRightToLeft = currentLanguage.rightToLeft;
+  const isLanguageRightToLeft = currentLanguage.rightToLeft ?? false;
 
   // in blind mode, and hide extra letters, extra letters have zero offsets
   // offsetHeight is the same for all visible letters
   // so is offsetTop (for same line letters)
   const letterHeight =
     (safeNumber(currentLetter?.offsetHeight) ?? 0) ||
+    (safeNumber(lastInputLetter?.offsetHeight) ?? 0) ||
     (safeNumber(lastWordLetter?.offsetHeight) ?? 0) ||
     Config.fontSize * convertRemToPixels(1);
 
   const letterPosTop =
-    currentLetter?.offsetTop ?? lastWordLetter?.offsetTop ?? 0;
+    currentLetter?.offsetTop ??
+    lastInputLetter?.offsetTop ??
+    lastWordLetter?.offsetTop ??
+    0;
   const diff = letterHeight - caretHeight;
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {
@@ -206,6 +217,12 @@ export async function updatePosition(noAnim = false): Promise<void> {
     currentWordNodeList
   );
 
+  // in zen mode, use the input content to determine word direction
+  const currentWordForDirection =
+    Config.mode === "zen"
+      ? TestInput.input.current
+      : TestWords.words.getCurrent();
+
   const letterPosLeft = getTargetPositionLeft(
     fullWidthCaret,
     isLanguageRightToLeft,
@@ -213,7 +230,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
     currentWordNodeList,
     letterWidth,
     wordLen,
-    inputLen
+    inputLen,
+    currentWordForDirection
   );
   const newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
 
@@ -265,10 +283,25 @@ export async function updatePosition(noAnim = false): Promise<void> {
   }
 }
 
+function updateStyle(): void {
+  caret.style.width = "";
+  caret.classList.remove(
+    ...["off", "default", "underline", "outline", "block", "carrot", "banana"]
+  );
+  caret.classList.add(Config.caretStyle);
+}
+
 subscribe((eventKey) => {
   if (eventKey === "caretStyle") {
-    caret.style.width = "";
+    updateStyle();
     void updatePosition(true);
+  }
+  if (eventKey === "smoothCaret") {
+    if (Config.smoothCaret === "off") {
+      caret.style.animationName = "caretFlashHard";
+    } else {
+      caret.style.animationName = "caretFlashSmooth";
+    }
   }
 });
 

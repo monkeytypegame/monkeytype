@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { layoutKeyToKeycode } from "../../src/ts/utils/key-converter";
 

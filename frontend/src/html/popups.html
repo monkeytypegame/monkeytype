@@ -66,6 +66,7 @@
     <button class="showTestNotifications">show test notifications</button>
     <button class="showRealWordsInput">show real words input</button>
     <button class="xpBarTest">xp bar test</button>
+    <button class="toggleFakeChartData">toggle fake chart data</button>
   </div>
 </dialog>
 
@@ -286,7 +287,7 @@
       <button data-words="custom">custom</button>
     </div>
     <div class="group quoteGroup hidden">
-      <button data-quoteLength="-1">all</button>
+      <button data-quoteLength="all">all</button>
       <button data-quoteLength="0">short</button>
       <button data-quoteLength="1">medium</button>
       <button data-quoteLength="2">long</button>
@@ -295,6 +296,9 @@
     </div>
     <div class="group customGroup hidden">
       <button class="customChange">change</button>
+    </div>
+    <div class="group">
+      <button class="shareButton">share</button>
     </div>
   </div>
 </dialog>
@@ -1021,113 +1025,6 @@
     <button>copy link to clipboard</button>
   </div>
 </dialog>
-<div id="leaderboardsWrapper" class="popupWrapper hidden">
-  <div id="leaderboards">
-    <div class="leaderboardsTop">
-      <div class="mainTitle">All-Time English Leaderboards</div>
-      <div class="subTitle">Next update in: --:--</div>
-      <div class="textButton showYesterdayButton hidden">
-        <i class="fas fa-calendar-day"></i>
-        <div class="text">Show yesterday</div>
-      </div>
-      <div class="buttons">
-        <div class="buttonGroup timeRange">
-          <div class="button allTime">all-time</div>
-          <div class="button daily">daily</div>
-          <select class="languageSelect" disabled></select>
-        </div>
-      </div>
-    </div>
-    <div class="tables">
-      <div class="titleAndTable">
-        <div class="titleAndButtons">
-          <div class="title">
-            Time 15
-            <i
-              class="hidden leftTableLoader fas fa-fw fa-spin fa-circle-notch"
-            ></i>
-          </div>
-          <div class="buttons">
-            <div class="button leftTableJumpToTop">
-              <i class="fas fa-fw fas fa-crown"></i>
-              <!-- Top -->
-            </div>
-            <div class="button leftTableJumpToMe">
-              <i class="fas fa-fw fas fa-user"></i>
-              <!-- Me -->
-            </div>
-          </div>
-        </div>
-        <div class="leftTableWrapper invisible">
-          <table class="left">
-            <thead>
-              <tr>
-                <td width="1%">#</td>
-                <td>name</td>
-                <td class="alignRight" width="1%">
-                  wpm
-                  <br />
-                  <div class="sub">accuracy</div>
-                </td>
-                <td class="alignRight" width="1%">
-                  raw
-                  <br />
-                  <div class="sub">consistency</div>
-                </td>
-                <td class="alignRight" width="125px">date</td>
-              </tr>
-            </thead>
-            <tbody></tbody>
-            <tfoot></tfoot>
-          </table>
-        </div>
-      </div>
-      <div class="titleAndTable">
-        <div class="titleAndButtons">
-          <div class="title">
-            Time 60
-            <i
-              class="hidden rightTableLoader fas fa-fw fa-spin fa-circle-notch"
-            ></i>
-          </div>
-          <div class="buttons">
-            <div class="button rightTableJumpToTop">
-              <i class="fas fa-fw fas fa-crown"></i>
-              <!-- Top -->
-            </div>
-            <div class="button rightTableJumpToMe">
-              <i class="fas fa-fw fas fa-user"></i>
-              <!-- Me -->
-            </div>
-          </div>
-        </div>
-        <div class="rightTableWrapper invisible">
-          <table class="right">
-            <thead>
-              <tr>
-                <td width="1%">#</td>
-                <td>name</td>
-                <td class="alignRight" width="1%">
-                  wpm
-                  <br />
-                  <div class="sub">accuracy</div>
-                </td>
-                <td class="alignRight" width="1%">
-                  raw
-                  <br />
-                  <div class="sub">consistency</div>
-                </td>
-                <td class="alignRight" width="120px">date</td>
-              </tr>
-            </thead>
-            <tbody></tbody>
-            <tfoot></tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 <dialog id="versionHistoryModal" class="modalWrapper hidden">
   <div class="modal"></div>
 </dialog>
@@ -1284,7 +1181,16 @@
       <div class="searchicon">
         <i class="fas fa-fw fa-search"></i>
       </div>
+      <div class="checkingicon hidden">
+        <i class="fas fa-fw fa-circle-notch fa-spin"></i>
+      </div>
       <input type="text" class="input" placeholder="Type to search" />
+    </div>
+    <div class="warning hidden">
+      <div class="icon">
+        <i class="fas fa-fw fa-exclamation-triangle"></i>
+      </div>
+      <div class="text">This is some warning text.</div>
     </div>
     <div class="suggestions"></div>
   </div>
@@ -1367,6 +1273,17 @@
     <div>
       <label>badge</label>
       <div class="badgeSelectionContainer"></div>
+    </div>
+    <div>
+      <label>public activity</label>
+      <label class="checkbox">
+        <input
+          class="editProfileShowActivityOnPublicProfile"
+          type="checkbox"
+          checked
+        />
+        <span>Include test activity graph on your public profile.</span>
+      </label>
     </div>
     <button class="edit-profile-submit" type="submit">save</button>
   </form>

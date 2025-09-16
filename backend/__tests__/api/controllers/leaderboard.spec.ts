@@ -1,21 +1,16 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import _ from "lodash";
 import { ObjectId } from "mongodb";
-import request from "supertest";
-import app from "../../../src/app";
 import * as LeaderboardDal from "../../../src/dal/leaderboards";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as Configuration from "../../../src/init/configuration";
-import {
-  mockAuthenticateWithApeKey,
-  mockBearerAuthentication,
-} from "../../__testData__/auth";
-import { XpLeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
+import { XpLeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 
-const mockApp = request(app);
+const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 
 const allModes = [
   "10",
@@ -31,21 +26,20 @@ const allModes = [
 ];
 
 describe("Loaderboard Controller", () => {
-  beforeEach(() => {
-    mockAuth.beforeEach();
-  });
   describe("get leaderboard", () => {
     const getLeaderboardMock = vi.spyOn(LeaderboardDal, "get");
+    const getLeaderboardCountMock = vi.spyOn(LeaderboardDal, "getCount");
 
     beforeEach(() => {
-      getLeaderboardMock.mockReset();
+      getLeaderboardMock.mockClear();
+      getLeaderboardCountMock.mockClear();
     });
 
     it("should get for english time 60", async () => {
       //GIVEN
 
       const resultData = {
-        count: 0,
+        count: 42,
         pageSize: 50,
         entries: [
           {
@@ -78,6 +72,7 @@ describe("Loaderboard Controller", () => {
         _id: new ObjectId(),
       }));
       getLeaderboardMock.mockResolvedValue(mockData);
+      getLeaderboardCountMock.mockResolvedValue(42);
 
       //WHEN
 
@@ -97,13 +92,15 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         0,
-        50
+        50,
+        false
       );
     });
 
     it("should get for english time 60 with page", async () => {
       //GIVEN
       getLeaderboardMock.mockResolvedValue([]);
+      getLeaderboardCountMock.mockResolvedValue(0);
       const page = 0;
       const pageSize = 25;
 
@@ -135,32 +132,34 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         page,
-        pageSize
+        pageSize,
+        false
       );
     });
 
-    it("should get for mode", async () => {
-      getLeaderboardMock.mockResolvedValue([]);
-      for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-        const response = await mockApp
-          .get("/leaderboards")
-          .query({ language: "english", mode, mode2: "custom" });
-        expect(response.status, "for mode " + mode).toEqual(200);
-      }
+    describe("should get for modes", async () => {
+      beforeEach(() => {
+        getLeaderboardMock.mockResolvedValue([]);
+      });
+
+      const testCases = [
+        { mode: "time", mode2: "15", language: "english", expectStatus: 200 },
+        { mode: "time", mode2: "60", language: "english", expectStatus: 200 },
+        { mode: "time", mode2: "30", language: "english", expectStatus: 404 },
+        { mode: "words", mode2: "15", language: "english", expectStatus: 404 },
+        { mode: "time", mode2: "15", language: "spanish", expectStatus: 404 },
+      ];
+      it.for(testCases)(
+        `expect $expectStatus for mode $mode, mode2 $mode2, lang $language`,
+        async ({ mode, mode2, language, expectStatus }) => {
+          await mockApp
+            .get("/leaderboards")
+            .query({ language, mode, mode2 })
+            .expect(expectStatus);
+        }
+      );
     });
 
-    it("should get for mode2", async () => {
-      getLeaderboardMock.mockResolvedValue([]);
-      for (const mode2 of allModes) {
-        const response = await mockApp.get("/leaderboards").query({
-          language: "english",
-          mode: "words",
-          mode2,
-        });
-
-        expect(response.status, "for mode2 " + mode2).toEqual(200);
-      }
-    });
     it("fails for missing query", async () => {
       const { body } = await mockApp.get("/leaderboards").expect(422);
 
@@ -236,7 +235,7 @@ describe("Loaderboard Controller", () => {
     const getLeaderboardRankMock = vi.spyOn(LeaderboardDal, "getRank");
 
     afterEach(() => {
-      getLeaderboardRankMock.mockReset();
+      getLeaderboardRankMock.mockClear();
     });
 
     it("fails withouth authentication", async () => {
@@ -395,7 +394,7 @@ describe("Loaderboard Controller", () => {
     );
 
     beforeEach(async () => {
-      getDailyLeaderboardMock.mockReset();
+      getDailyLeaderboardMock.mockClear();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await dailyLeaderboardEnabled(true);
@@ -701,7 +700,7 @@ describe("Loaderboard Controller", () => {
     );
 
     beforeEach(async () => {
-      getDailyLeaderboardMock.mockReset();
+      getDailyLeaderboardMock.mockClear();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await dailyLeaderboardEnabled(true);
@@ -878,7 +877,7 @@ describe("Loaderboard Controller", () => {
     const getXpWeeklyLeaderboardMock = vi.spyOn(WeeklyXpLeaderboard, "get");
 
     beforeEach(async () => {
-      getXpWeeklyLeaderboardMock.mockReset();
+      getXpWeeklyLeaderboardMock.mockClear();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await weeklyLeaderboardEnabled(true);
@@ -1072,7 +1071,7 @@ describe("Loaderboard Controller", () => {
     const getXpWeeklyLeaderboardMock = vi.spyOn(WeeklyXpLeaderboard, "get");
 
     beforeEach(async () => {
-      getXpWeeklyLeaderboardMock.mockReset();
+      getXpWeeklyLeaderboardMock.mockClear();
       await weeklyLeaderboardEnabled(true);
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);

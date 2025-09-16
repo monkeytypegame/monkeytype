@@ -1,8 +1,8 @@
 import Config from "../../config";
 import { format as dateFormat } from "date-fns/format";
 import Format from "../../utils/format";
-import { Mode2, PersonalBests } from "@monkeytype/contracts/schemas/shared";
-import { StringNumber } from "@monkeytype/contracts/schemas/util";
+import { Mode2, PersonalBests } from "@monkeytype/schemas/shared";
+import { StringNumber } from "@monkeytype/schemas/util";
 
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";

@@ -32,7 +32,13 @@ async function insertIntoDb(
 
   if (!important) delete dbLog.important;
 
-  Logger.info(`${event}\t${uid}\t${JSON.stringify(message)}`);
+  const stringified = JSON.stringify(message);
+
+  Logger.info(
+    `${event}\t${uid}\t${
+      stringified.length > 100 ? stringified.slice(0, 100) + "..." : stringified
+    }`
+  );
 
   await getLogsCollection().insertOne(dbLog);
 }
@@ -50,6 +56,7 @@ export async function addImportantLog(
   message: string | Record<string, unknown>,
   uid = ""
 ): Promise<void> {
+  console.log("log", event, message, uid);
   await insertIntoDb(event, message, uid, true);
 }
 

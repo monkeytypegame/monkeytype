@@ -1,3 +1,6 @@
+import { LanguageObject } from "@monkeytype/schemas/languages";
+export type Accents = LanguageObject["additionalAccents"];
+
 const accents: Accents = [
   ["áàâäåãąą́āą̄ă", "a"],
   ["éèêëẽęę́ēę̄ėě", "e"],
@@ -43,10 +46,10 @@ const accents: Accents = [
 ];
 
 const accentsMap = new Map<string, string>(
+  // ignoring for now but this might need a different approach
+  // eslint-disable-next-line @typescript-eslint/no-misused-spread
   accents.flatMap((rule) => [...rule[0]].map((accent) => [accent, rule[1]]))
 );
-
-export type Accents = [string, string][];
 
 function findAccent(
   wordSlice: string,
@@ -72,6 +75,8 @@ export function replaceAccents(
 ): string {
   if (!word) return word;
   const uppercased = word.toUpperCase();
+  // ignoring for now but this might need a different approach
+  // eslint-disable-next-line @typescript-eslint/no-misused-spread
   const cases = [...word].map((it, i) => it === uppercased[i]);
   const newWordArray: string[] = [];
 

@@ -1,6 +1,5 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
-import * as LoadingPage from "./pages/loading";
 import { isAuthenticated } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
@@ -12,14 +11,14 @@ import {
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
-import { Badge, CustomTheme } from "@monkeytype/contracts/schemas/users";
-import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
+import { Badge, CustomTheme } from "@monkeytype/schemas/users";
+import { Config, Difficulty } from "@monkeytype/schemas/configs";
 import {
   Mode,
   Mode2,
   PersonalBest,
   PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
+} from "@monkeytype/schemas/shared";
 import {
   getDefaultSnapshot,
   Snapshot,
@@ -30,7 +29,8 @@ import {
 import { getDefaultConfig } from "./constants/default-config";
 import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
-import { Language } from "@monkeytype/contracts/schemas/languages";
+import { Language } from "@monkeytype/schemas/languages";
+import * as AuthEvent from "./observables/auth-event";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -49,7 +49,10 @@ export function getSnapshot(): Snapshot | undefined {
   return dbSnapshot;
 }
 
-export function setSnapshot(newSnapshot: Snapshot | undefined): void {
+export function setSnapshot(
+  newSnapshot: Snapshot | undefined,
+  options?: { dispatchEvent?: boolean }
+): void {
   const originalBanned = dbSnapshot?.banned;
   const originalVerified = dbSnapshot?.verified;
   const lbOptOut = dbSnapshot?.lbOptOut;
@@ -70,6 +73,10 @@ export function setSnapshot(newSnapshot: Snapshot | undefined): void {
     dbSnapshot.verified = originalVerified;
     dbSnapshot.lbOptOut = lbOptOut;
   }
+
+  if (options?.dispatchEvent !== false) {
+    AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: false } });
+  }
 }
 
 export async function initSnapshot(): Promise<Snapshot | false> {
@@ -77,12 +84,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   const snap = getDefaultSnapshot();
   try {
     if (!isAuthenticated()) return false;
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(22.5);
-    // } else {
-    //   LoadingPage.updateBar(16);
-    // }
-    // LoadingPage.updateText("Downloading user...");
 
     const [userResponse, configResponse, presetsResponse] = await Promise.all([
       Ape.users.get(),
@@ -180,12 +181,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
     }
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(45);
-    // } else {
-    //   LoadingPage.updateBar(32);
-    // }
-    // LoadingPage.updateText("Downloading config...");
+
     if (configData === undefined || configData === null) {
       snap.config = {
         ...getDefaultConfig(),
@@ -193,12 +189,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     } else {
       snap.config = migrateConfig(configData);
     }
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(67.5);
-    // } else {
-    //   LoadingPage.updateBar(48);
-    // }
-    // LoadingPage.updateText("Downloading tags...");
+
     snap.customThemes = userData.customThemes ?? [];
 
     // const userDataTags: MonkeyTypes.UserTagWithDisplay[] = userData.tags ?? [];
@@ -235,13 +226,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         return 0;
       }
     });
-
-    // if (ActivePage.get() === "loading") {
-    //   LoadingPage.updateBar(90);
-    // } else {
-    //   LoadingPage.updateBar(64);
-    // }
-    // LoadingPage.updateText("Downloading presets...");
 
     if (presetsData !== undefined && presetsData !== null) {
       const presetsWithDisplay = presetsData.map((preset) => {
@@ -286,11 +270,6 @@ export async function getUserResults(offset?: number): Promise<boolean> {
 
   if (!ConnectionState.get()) {
     return false;
-  }
-
-  if (dbSnapshot.results === undefined) {
-    LoadingPage.updateText("Downloading results...");
-    LoadingPage.updateBar(90);
   }
 
   const response = await Ape.results.get({ query: { offset } });
@@ -655,7 +634,7 @@ export async function getLocalPB<M extends Mode>(
   );
 }
 
-export async function saveLocalPB<M extends Mode>(
+function saveLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
   punctuation: boolean,
@@ -667,7 +646,7 @@ export async function saveLocalPB<M extends Mode>(
   acc: number,
   raw: number,
   consistency: number
-): Promise<void> {
+): void {
   if (mode === "quote") return;
   if (!dbSnapshot) return;
   function cont(): void {
@@ -930,7 +909,7 @@ export async function updateLbMemory<M extends Mode>(
   }
 }
 
-export async function saveConfig(config: Config): Promise<void> {
+export async function saveConfig(config: Partial<Config>): Promise<void> {
   if (isAuthenticated()) {
     const response = await Ape.configs.save({ body: config });
     if (response.status !== 200) {
@@ -948,38 +927,76 @@ export async function resetConfig(): Promise<void> {
   }
 }
 
-export function saveLocalResult(result: SnapshotResult<Mode>): void {
+export type SaveLocalResultData = {
+  xp?: number;
+  streak?: number;
+  result?: SnapshotResult<Mode>;
+  isPb?: boolean;
+};
+
+export function saveLocalResult(data: SaveLocalResultData): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (snapshot?.results !== undefined) {
-    snapshot.results.unshift(result);
+  if (data.result !== undefined) {
+    if (snapshot?.results !== undefined) {
+      snapshot.results.unshift(data.result);
+    }
+    if (snapshot.testActivity !== undefined) {
+      snapshot.testActivity.increment(new Date(data.result.timestamp));
+    }
+    if (snapshot.typingStats === undefined) {
+      snapshot.typingStats = {
+        timeTyping: 0,
+        startedTests: 0,
+        completedTests: 0,
+      };
 
-    setSnapshot(snapshot);
+      const time =
+        data.result.testDuration +
+        data.result.incompleteTestSeconds -
+        data.result.afkDuration;
+
+      snapshot.typingStats.timeTyping += time;
+      snapshot.typingStats.startedTests += data.result.restartCount + 1;
+      snapshot.typingStats.completedTests += 1;
+    }
+
+    if (data.isPb) {
+      saveLocalPB(
+        data.result.mode,
+        data.result.mode2,
+        data.result.punctuation,
+        data.result.numbers,
+        data.result.language,
+        data.result.difficulty,
+        data.result.lazyMode,
+        data.result.wpm,
+        data.result.acc,
+        data.result.rawWpm,
+        data.result.consistency
+      );
+    }
   }
 
-  if (snapshot.testActivity !== undefined) {
-    snapshot.testActivity.increment(new Date(result.timestamp));
-    setSnapshot(snapshot);
-  }
-}
-
-export function updateLocalStats(started: number, time: number): void {
-  const snapshot = getSnapshot();
-  if (!snapshot) return;
-  if (snapshot.typingStats === undefined) {
-    snapshot.typingStats = {
-      timeTyping: 0,
-      startedTests: 0,
-      completedTests: 0,
-    };
+  if (data.xp !== undefined) {
+    if (snapshot.xp === undefined) {
+      snapshot.xp = 0;
+    }
+    snapshot.xp += data.xp;
   }
 
-  snapshot.typingStats.timeTyping += time;
-  snapshot.typingStats.startedTests += started;
-  snapshot.typingStats.completedTests += 1;
+  if (data.streak !== undefined) {
+    snapshot.streak = data.streak;
 
-  setSnapshot(snapshot);
+    if (snapshot.streak > snapshot.maxStreak) {
+      snapshot.maxStreak = snapshot.streak;
+    }
+  }
+
+  setSnapshot(snapshot, {
+    dispatchEvent: false,
+  });
 }
 
 export function addXp(xp: number): void {
@@ -990,7 +1007,9 @@ export function addXp(xp: number): void {
     snapshot.xp = 0;
   }
   snapshot.xp += xp;
-  setSnapshot(snapshot);
+  setSnapshot(snapshot, {
+    dispatchEvent: false,
+  });
 }
 
 export function updateInboxUnreadSize(newSize: number): void {
@@ -1011,19 +1030,6 @@ export function addBadge(badge: Badge): void {
     };
   }
   snapshot.inventory.badges.push(badge);
-  setSnapshot(snapshot);
-}
-
-export function setStreak(streak: number): void {
-  const snapshot = getSnapshot();
-  if (!snapshot) return;
-
-  snapshot.streak = streak;
-
-  if (snapshot.streak > snapshot.maxStreak) {
-    snapshot.maxStreak = snapshot.streak;
-  }
-
   setSnapshot(snapshot);
 }
 

@@ -21,10 +21,11 @@ import {
   KeymapLegendStyle,
 } from "@monkeytype/contracts/schemas/configs";
 import { areSortedArraysEqual } from "../utils/arrays";
+import { LayoutObject } from "@monkeytype/schemas/layouts";
 
 export const keyDataDelimiter = "~~";
 
-const stenoKeys: JSONData.Layout = {
+const stenoKeys: LayoutObject = {
   keymapShowTopRow: true,
   type: "matrix",
   keys: {
@@ -149,7 +150,7 @@ export function show(): void {
 }
 
 function buildRow(options: {
-  layoutData: JSONData.Layout;
+  layoutData: LayoutObject;
   rowId: string;
   rowKeys: string[][];
   layoutNameDisplayString: string;
@@ -391,15 +392,18 @@ function buildRow(options: {
   return rowHtml;
 }
 
-export async function refresh(
-  layoutName: string = Config.layout
-): Promise<void> {
+export async function refresh(): Promise<void> {
+  const layoutName =
+    Config.keymapLayout === "overrideSync"
+      ? Config.keymapLayout
+      : Config.layout;
+
   if (Config.keymapMode === "off") return;
   if (ActivePage.get() !== "test") return;
   if (!layoutName) return;
   try {
     let layoutNameDisplayString = layoutName;
-    let layoutData: JSONData.Layout;
+    let layoutData: LayoutObject;
     try {
       if (Config.keymapLayout === "overrideSync") {
         if (Config.layout === "default") {
@@ -497,7 +501,7 @@ export async function refresh(
   }
 }
 
-const isMacLike = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+const isMacLike = Misc.isMacLike();
 const symbolsPattern = /^[^\p{L}\p{N}]{1}$/u;
 type KeymapLegendStates = [letters: 0 | 1 | 2 | 3, symbols: 0 | 1 | 2 | 3];
 let keymapLegendStates: KeymapLegendStates = [0, 0];
@@ -604,12 +608,59 @@ async function updateLegends(): Promise<void> {
     key.textContent = character ?? "";
   }
 }
+let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe((eventKey, newValue) => {
-  if (eventKey === "layout" && Config.keymapLayout === "overrideSync") {
-    void refresh(Config.keymapLayout);
+ConfigEvent.subscribe((eventKey) => {
+  const handleMode = (): void => {
+    $(".activeKey").removeClass("activeKey");
+    $(".keymapKey").attr("style", "");
+    Config.keymapMode === "off" ? hide() : show();
+  };
+  const handleSize = (): void => {
+    $("#keymap").css("zoom", Config.keymapSize);
+  };
+  const handleLegendStyle = (): void => {
+    let style = Config.keymapLegendStyle;
+
+    // Remove existing styles
+    const keymapLegendStyles = ["lowercase", "uppercase", "blank", "dynamic"];
+    keymapLegendStyles.forEach((name) => {
+      $(".keymapLegendStyle").removeClass(name);
+    });
+
+    style = style || "lowercase";
+
+    // Mutate the keymap in the DOM, if it exists.
+    // 1. Remove everything
+    $(".keymapKey > .letter").css("display", "");
+    $(".keymapKey > .letter").css("text-transform", "");
+
+    // 2. Append special styles onto the DOM elements
+    if (style === "uppercase") {
+      $(".keymapKey > .letter").css("text-transform", "capitalize");
+    }
+    if (style === "blank") {
+      $(".keymapKey > .letter").css("display", "none");
+    }
+
+    // Update and save to cookie for persistence
+    $(".keymapLegendStyle").addClass(style);
+  };
+
+  if (eventKey === "fullConfigChange") {
+    ignoreConfigEvent = true;
   }
+  if (eventKey === "fullConfigChangeFinished") {
+    ignoreConfigEvent = false;
+    void refresh();
+    handleMode();
+    handleSize();
+    handleLegendStyle();
+  }
+  if (ignoreConfigEvent) return;
+
   if (
+    (eventKey === "layout" && Config.keymapLayout === "overrideSync") ||
     eventKey === "keymapLayout" ||
     eventKey === "keymapStyle" ||
     eventKey === "keymapShowTopRow" ||
@@ -618,7 +669,13 @@ ConfigEvent.subscribe((eventKey, newValue) => {
     void refresh();
   }
   if (eventKey === "keymapMode") {
-    newValue === "off" ? hide() : show();
+    handleMode();
+  }
+  if (eventKey === "keymapSize") {
+    handleSize();
+  }
+  if (eventKey === "keymapLegendStyle") {
+    handleLegendStyle();
   }
 });
 

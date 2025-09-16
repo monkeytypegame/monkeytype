@@ -1,8 +1,4 @@
-import {
-  Config,
-  CustomThemeColors,
-} from "@monkeytype/contracts/schemas/configs";
-import { deepClone } from "../utils/misc";
+import { Config, CustomThemeColors } from "@monkeytype/schemas/configs";
 
 const obj = {
   theme: "serika_dark",
@@ -105,8 +101,9 @@ const obj = {
   tapeMode: "off",
   tapeMargin: 50,
   maxLineWidth: 0,
+  playTimeWarning: "off",
 } as Config;
 
 export function getDefaultConfig(): Config {
-  return deepClone(obj);
+  return structuredClone(obj);
 }

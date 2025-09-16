@@ -1,9 +1,12 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import { CommonResponses, meta, responseWithData } from "./schemas/api";
-import { SpeedHistogramSchema, TypingStatsSchema } from "./schemas/public";
-import { Mode2Schema, ModeSchema } from "./schemas/shared";
-import { LanguageSchema } from "./schemas/languages";
+import { CommonResponses, meta, responseWithData } from "./util/api";
+import {
+  SpeedHistogramSchema,
+  TypingStatsSchema,
+} from "@monkeytype/schemas/public";
+import { Mode2Schema, ModeSchema } from "@monkeytype/schemas/shared";
+import { LanguageSchema } from "@monkeytype/schemas/languages";
 
 export const GetSpeedHistogramQuerySchema = z
   .object({

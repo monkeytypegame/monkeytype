@@ -1,6 +1,9 @@
-import { FunboxName } from "@monkeytype/contracts/schemas/configs";
-import { Language } from "@monkeytype/contracts/schemas/languages";
-import { Accents } from "../test/lazy-mode";
+import { Language, LanguageObject } from "@monkeytype/schemas/languages";
+import { Challenge } from "@monkeytype/schemas/challenges";
+import { LayoutObject } from "@monkeytype/schemas/layouts";
+
+//pin implementation
+const fetch = window.fetch;
 
 /**
  * Fetches JSON data from the specified URL using the fetch API.
@@ -67,42 +70,15 @@ export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
   fetchJson
 );
 
-export type Keys = {
-  row1: string[][];
-  row2: string[][];
-  row3: string[][];
-  row4: string[][];
-  row5: string[][];
-};
-
-export type Layout = {
-  keymapShowTopRow: boolean;
-  matrixShowRightColumn?: boolean;
-  type: "iso" | "ansi" | "ortho" | "matrix";
-  keys: Keys;
-};
-
 /**
  * Fetches a layout by name from the server.
  * @param layoutName The name of the layout to fetch.
  * @returns A promise that resolves to the layout object.
  * @throws {Error} If the layout list or layout doesn't exist.
  */
-export async function getLayout(layoutName: string): Promise<Layout> {
-  return await cachedFetchJson<Layout>(`/layouts/${layoutName}.json`);
+export async function getLayout(layoutName: string): Promise<LayoutObject> {
+  return await cachedFetchJson<LayoutObject>(`/layouts/${layoutName}.json`);
 }
-
-export type LanguageObject = {
-  name: Language;
-  rightToLeft: boolean;
-  noLazyMode?: boolean;
-  ligatures?: boolean;
-  orderedByFrequency?: boolean;
-  words: string[];
-  additionalAccents: Accents;
-  bcp47?: string;
-  originalPunctuation?: boolean;
-};
 
 let currentLanguage: LanguageObject;
 
@@ -153,45 +129,6 @@ export class Section {
 }
 
 export type FunboxWordOrder = "normal" | "reverse";
-
-export type FontObject = {
-  name: string;
-  display?: string;
-  systemFont?: string;
-};
-
-let fontsList: FontObject[] | undefined;
-
-/**
- * Fetches the list of font objects from the server.
- * @returns A promise that resolves to the list of font objects.
- */
-export async function getFontsList(): Promise<FontObject[]> {
-  if (!fontsList) {
-    let list = await cachedFetchJson<FontObject[]>("/fonts/_list.json");
-    list = list.sort((a, b) => {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-    fontsList = list;
-    return fontsList;
-  } else {
-    return fontsList;
-  }
-}
-
-export type Challenge = {
-  name: string;
-  display: string;
-  autoRole: boolean;
-  type: string;
-  parameters: (string | number | boolean | FunboxName[])[];
-  message: string;
-  requirements: Record<string, Record<string, string | number | boolean>>;
-};
 
 /**
  * Fetches the list of challenges from the server.

@@ -1,91 +1,21 @@
-import PunctuationCommands from "./lists/punctuation";
-import ModeCommands from "./lists/mode";
-import TimeCommands from "./lists/time";
-import WordsCommands from "./lists/words";
-import ConfidenceModeCommands from "./lists/confidence-mode";
-import QuoteLengthCommands from "./lists/quote-length";
-import StopOnErrorCommands from "./lists/stop-on-error";
-import NumbersCommands from "./lists/numbers";
-import SmoothCaretCommands from "./lists/smooth-caret";
-import QuickRestartCommands from "./lists/quick-restart";
-import RepeatQuotesCommands from "./lists/repeat-quotes";
-import LiveSpeedStyleCommands from "./lists/live-speed-style";
-import LiveAccStyleCommands from "./lists/live-acc-style";
-import LiveBurstStyleCommands from "./lists/live-burst-style";
-import ShowAverageCommands from "./lists/show-average";
-import KeyTipsCommands from "./lists/key-tips";
-import FreedomModeCommands from "./lists/freedom-mode";
-import StrictSpaceCommands from "./lists/strict-space";
-import BlindModeCommands from "./lists/blind-mode";
-import ShowWordsHistoryCommands from "./lists/show-words-history";
-import IndicateTyposCommands from "./lists/indicate-typos";
-import HideExtraLettersCommands from "./lists/hide-extra-letters";
-import QuickEndCommands from "./lists/quick-end";
-import OppositeShiftModeCommands from "./lists/opposite-shift-mode";
-import SoundOnErrorCommands from "./lists/sound-on-error";
-import SoundVolumeCommands from "./lists/sound-volume";
-import FlipTestColorsCommands from "./lists/flip-test-colors";
-import SmoothLineScrollCommands from "./lists/smooth-line-scroll";
-import AlwaysShowDecimalCommands from "./lists/always-show-decimal";
-import TypingSpeedUnitCommands from "./lists/typing-speed-unit";
-import StartGraphsAtZeroCommands from "./lists/start-graphs-at-zero";
-import LazyModeCommands from "./lists/lazy-mode";
-import ShowAllLinesCommands from "./lists/show-all-lines";
-import ColorfulModeCommands from "./lists/colorful-mode";
-import OutOfFocusWarningCommands from "./lists/out-of-focus-warning";
-import SingleListCommandlineCommands from "./lists/single-list-commandline";
-import CapsLockWarningCommands from "./lists/caps-lock-warning";
-import SoundOnClickCommands from "./lists/sound-on-click";
-import MinWpmCommands from "./lists/min-wpm";
-import MinAccCommands from "./lists/min-acc";
 import MinBurstCommands from "./lists/min-burst";
-import CustomThemeCommands from "./lists/custom-theme";
-import RandomThemeCommands from "./lists/random-theme";
-import DifficultyCommands from "./lists/difficulty";
-import PaceCaretStyleCommands from "./lists/pace-caret-style";
-import PaceCaretModeCommands from "./lists/pace-caret";
-import CaretStyleCommands from "./lists/caret-style";
-import RepeatedPaceCommands from "./lists/repeated-pace";
-import TimerStyleCommands from "./lists/timer-style";
-import TimerColorCommands from "./lists/timer-color";
-import TimerOpacityCommands from "./lists/timer-opacity";
-import HighlightModeCommands from "./lists/highlight-mode";
-import TapeModeCommands from "./lists/tape-mode";
-import TapeMarginCommands from "./lists/tape-margin";
-import BritishEnglishCommands from "./lists/british-english";
-import KeymapModeCommands from "./lists/keymap-mode";
-import KeymapStyleCommands from "./lists/keymap-style";
-import KeymapLegendStyleCommands from "./lists/keymap-legend-style";
-import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
-import KeymapSizeCommands from "./lists/keymap-size";
-import EnableAdsCommands from "./lists/enable-ads";
-import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import BailOutCommands from "./lists/bail-out";
 import QuoteFavoriteCommands from "./lists/quote-favorites";
 import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
-import FontSizeCommands from "./lists/font-size";
-import MaxLineWidthCommands from "./lists/max-line-width";
 import ResultScreenCommands from "./lists/result-screen";
-import CustomBackgroundSizeCommands from "./lists/background-size";
+import CustomBackgroundCommands from "./lists/custom-background";
+import FontFamilyCommands from "./lists/font-family";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
-import CodeUnindentOnBackspace from "./lists/code-unindent-on-backspace";
-
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
-import LayoutsCommands from "./lists/layouts";
 import FunboxCommands from "./lists/funbox";
 import ThemesCommands from "./lists/themes";
 import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
-import FontFamilyCommands, {
-  update as updateFontFamilyCommands,
-} from "./lists/font-family";
-import LanguagesCommands from "./lists/languages";
-import KeymapLayoutsCommands from "./lists/keymap-layouts";
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
@@ -98,25 +28,9 @@ import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
-import {
-  CustomBackgroundSchema,
-  CustomLayoutFluid,
-} from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
-import * as TestLogic from "../test/test-logic";
-import * as ActivePage from "../states/active-page";
-import { Language } from "@monkeytype/contracts/schemas/languages";
-
-const fontsPromise = JSONData.getFontsList();
-fontsPromise
-  .then((fonts) => {
-    updateFontFamilyCommands(fonts);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update fonts commands")
-    );
-  });
+import { buildCommandForConfigKey } from "./util";
+import { CommandlineConfigMetadataObject } from "./commandline-metadata";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -129,6 +43,22 @@ challengesPromise
     );
   });
 
+const languageCommand = buildCommandForConfigKey("language");
+const difficultyCommand = buildCommandForConfigKey("difficulty");
+const blindModeCommand = buildCommandForConfigKey("blindMode");
+const oppositeShiftModeCommand = buildCommandForConfigKey("oppositeShiftMode");
+const stopOnErrorCommand = buildCommandForConfigKey("stopOnError");
+const confidenceModeCommand = buildCommandForConfigKey("confidenceMode");
+const lazyModeCommand = buildCommandForConfigKey("lazyMode");
+const layoutCommand = buildCommandForConfigKey("layout");
+const showAverageCommand = buildCommandForConfigKey("showAverage");
+const keymapLayoutCommand = buildCommandForConfigKey("keymapLayout");
+const customThemeCommand = buildCommandForConfigKey("customTheme");
+const adsCommand = buildCommandForConfigKey("ads");
+const minSpeedCommand = buildCommandForConfigKey("minWpm");
+const minAccCommand = buildCommandForConfigKey("minAcc");
+const paceCaretCommand = buildCommandForConfigKey("paceCaret");
+
 export const commands: CommandsSubgroup = {
   title: "",
   list: [
@@ -136,12 +66,13 @@ export const commands: CommandsSubgroup = {
     ...ResultScreenCommands,
 
     //test screen
-    ...PunctuationCommands,
-    ...NumbersCommands,
-    ...ModeCommands,
-    ...TimeCommands,
-    ...WordsCommands,
-    ...QuoteLengthCommands,
+    buildCommandForConfigKey("punctuation"),
+    buildCommandForConfigKey("numbers"),
+    buildCommandForConfigKey("mode"),
+    buildCommandForConfigKey("time"),
+    buildCommandForConfigKey("words"),
+    buildCommandForConfigKey("quoteLength"),
+    languageCommand,
     {
       id: "changeCustomModeText",
       display: "Change custom text",
@@ -177,131 +108,98 @@ export const commands: CommandsSubgroup = {
     ...ResultSavingCommands,
 
     //behavior
-    ...DifficultyCommands,
-    ...QuickRestartCommands,
-    ...RepeatQuotesCommands,
-    ...BlindModeCommands,
-    ...ShowWordsHistoryCommands,
-    ...SingleListCommandlineCommands,
-    ...MinWpmCommands,
-    ...MinAccCommands,
-    ...MinBurstCommands,
-    ...LanguagesCommands,
-    ...BritishEnglishCommands,
-    ...FunboxCommands,
-    {
-      id: "changeCustomLayoutfluid",
-      display: "Custom layoutfluid...",
-      defaultValue: (): string => {
-        return Config.customLayoutfluid.join(" ");
-      },
-      input: true,
-      icon: "fa-tint",
-      exec: ({ input }): void => {
-        if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(
-          input.split(" ") as CustomLayoutFluid
-        );
-      },
-    },
-    {
-      id: "changeCustomPolyglot",
-      display: "Polyglot languages...",
-      defaultValue: (): string => {
-        return Config.customPolyglot.join(" ");
-      },
-      input: true,
-      icon: "fa-language",
-      exec: ({ input }): void => {
-        if (input === undefined) return;
-        void UpdateConfig.setCustomPolyglot(input.split(" ") as Language[]);
-        if (ActivePage.get() === "test") {
-          TestLogic.restart();
-        }
-      },
-    },
+    ...buildCommands(
+      difficultyCommand,
+      "quickRestart",
+      "repeatQuotes",
+      blindModeCommand,
+      "alwaysShowWordsHistory",
+      "singleListCommandLine",
+      minSpeedCommand,
+      minAccCommand,
+      ...MinBurstCommands,
+      "britishEnglish",
+      ...FunboxCommands,
+      "customLayoutfluid",
+      "customPolyglot"
+    ),
 
     //input
-    ...FreedomModeCommands,
-    ...StrictSpaceCommands,
-    ...OppositeShiftModeCommands,
-    ...StopOnErrorCommands,
-    ...ConfidenceModeCommands,
-    ...QuickEndCommands,
-    ...IndicateTyposCommands,
-    ...HideExtraLettersCommands,
-    ...LazyModeCommands,
-    ...LayoutsCommands,
-    ...CodeUnindentOnBackspace,
+    ...buildCommands(
+      "freedomMode",
+      "strictSpace",
+      oppositeShiftModeCommand,
+      stopOnErrorCommand,
+      confidenceModeCommand,
+      "quickEnd",
+      "indicateTypos",
+      "hideExtraLetters",
+      lazyModeCommand,
+      layoutCommand,
+      "codeUnindentOnBackspace"
+    ),
 
     //sound
-    ...SoundVolumeCommands,
-    ...SoundOnClickCommands,
-    ...SoundOnErrorCommands,
+    ...buildCommands(
+      "soundVolume",
+      "playSoundOnClick",
+      "playSoundOnError",
+      "playTimeWarning"
+    ),
 
     //caret
-    ...SmoothCaretCommands,
-    ...CaretStyleCommands,
-    ...PaceCaretModeCommands,
-    ...RepeatedPaceCommands,
-    ...PaceCaretStyleCommands,
+    ...buildCommands(
+      "smoothCaret",
+      "caretStyle",
+      paceCaretCommand,
+      "repeatedPace",
+      "paceCaretStyle"
+    ),
 
     //appearence
-    ...TimerStyleCommands,
-    ...LiveSpeedStyleCommands,
-    ...LiveAccStyleCommands,
-    ...LiveBurstStyleCommands,
+    ...buildCommands(
+      "timerStyle",
+      "liveSpeedStyle",
+      "liveAccStyle",
+      "liveBurstStyle",
 
-    ...TimerColorCommands,
-    ...TimerOpacityCommands,
-    ...HighlightModeCommands,
-    ...TapeModeCommands,
-    ...TapeMarginCommands,
-    ...SmoothLineScrollCommands,
-    ...ShowAllLinesCommands,
-    ...TypingSpeedUnitCommands,
-    ...AlwaysShowDecimalCommands,
-    ...StartGraphsAtZeroCommands,
-    ...MaxLineWidthCommands,
-    ...FontSizeCommands,
-    ...FontFamilyCommands,
-    ...KeymapModeCommands,
-    ...KeymapStyleCommands,
-    ...KeymapLegendStyleCommands,
-    ...KeymapSizeCommands,
-    ...KeymapLayoutsCommands,
-    ...KeymapShowTopRowCommands,
+      "timerColor",
+      "timerOpacity",
+      "highlightMode",
+
+      "tapeMode",
+      "tapeMargin",
+      "smoothLineScroll",
+      "showAllLines",
+      "typingSpeedUnit",
+      "alwaysShowDecimalPlaces",
+      "startGraphsAtZero",
+      "maxLineWidth",
+      "fontSize",
+      ...FontFamilyCommands,
+      "keymapMode",
+      "keymapStyle",
+      "keymapLegendStyle",
+      "keymapSize",
+      keymapLayoutCommand,
+      "keymapShowTopRow"
+    ),
 
     //theme
-    ...ThemesCommands,
-    ...CustomThemeCommands,
-    ...CustomThemesListCommands,
-    ...FlipTestColorsCommands,
-    ...ColorfulModeCommands,
-    ...AddOrRemoveThemeToFavorite,
-    {
-      id: "changeCustomBackground",
-      display: "Custom background...",
-      icon: "fa-image",
-      defaultValue: (): string => {
-        return Config.customBackground;
-      },
-      input: true,
-      exec: ({ input }): void => {
-        const parsed = CustomBackgroundSchema.safeParse(input);
-        if (!parsed.success) {
-          Notifications.add(
-            `Invalid custom background URL (${parsed.error.issues[0]?.message})`,
-            0
-          );
-          return;
-        }
-        UpdateConfig.setCustomBackground(input ?? "");
-      },
-    },
-    ...CustomBackgroundSizeCommands,
-    ...CustomBackgroundFilterCommands,
-    ...RandomThemeCommands,
+    ...buildCommands(
+      ...ThemesCommands,
+      customThemeCommand,
+
+      ...CustomThemesListCommands,
+      "flipTestColors",
+      "colorfulMode",
+      ...AddOrRemoveThemeToFavorite,
+      ...CustomBackgroundCommands,
+      "customBackgroundSize",
+      ...CustomBackgroundFilterCommands,
+      "randomTheme"
+    ),
+
     {
       id: "randomizeTheme",
       display: "Next random theme",
@@ -313,23 +211,17 @@ export const commands: CommandsSubgroup = {
     },
 
     //showhide elements
-    ...KeyTipsCommands,
-    ...OutOfFocusWarningCommands,
-    ...CapsLockWarningCommands,
-    ...ShowAverageCommands,
-    ...MonkeyPowerLevelCommands,
-    {
-      id: "toggleMonkey",
-      display: "Toggle Monkey",
-      icon: "fa-egg",
-      visible: false,
-      exec: (): void => {
-        UpdateConfig.setMonkey(!Config.monkey);
-      },
-    },
+    ...buildCommands(
+      "showKeyTips",
+      "showOutOfFocusWarning",
+      "capsLockWarning",
+      showAverageCommand,
+      "monkeyPowerLevel",
+      "monkey"
+    ),
 
     //danger zone
-    ...EnableAdsCommands,
+    adsCommand,
 
     //other
     ...LoadChallengeCommands,
@@ -405,7 +297,11 @@ export const commands: CommandsSubgroup = {
             Notifications.add("Copied to clipboard", 1);
           })
           .catch((e: unknown) => {
-            Notifications.add("Failed to copy to clipboard: " + e, -1);
+            const message = Misc.createErrorMessage(
+              e,
+              "Failed to copy to clipboard"
+            );
+            Notifications.add(message, -1);
           });
       },
     },
@@ -448,27 +344,27 @@ export const commands: CommandsSubgroup = {
 };
 
 const lists = {
-  keymapLayouts: KeymapLayoutsCommands[0]?.subgroup,
-  enableAds: EnableAdsCommands[0]?.subgroup,
-  customThemesList: CustomThemesListCommands[0]?.subgroup,
+  keymapLayouts: keymapLayoutCommand.subgroup,
+  enableAds: adsCommand.subgroup,
+  customThemesList: customThemeCommand.subgroup,
   themes: ThemesCommands[0]?.subgroup,
   loadChallenge: LoadChallengeCommands[0]?.subgroup,
-  languages: LanguagesCommands[0]?.subgroup,
-  difficulty: DifficultyCommands[0]?.subgroup,
-  lazyMode: LazyModeCommands[0]?.subgroup,
-  paceCaretMode: PaceCaretModeCommands[0]?.subgroup,
-  showAverage: ShowAverageCommands[0]?.subgroup,
-  minWpm: MinWpmCommands[0]?.subgroup,
-  minAcc: MinAccCommands[0]?.subgroup,
+  languages: languageCommand.subgroup,
+  difficulty: difficultyCommand.subgroup,
+  lazyMode: lazyModeCommand.subgroup,
+  paceCaretMode: paceCaretCommand.subgroup,
+  showAverage: showAverageCommand.subgroup,
+  minWpm: minSpeedCommand.subgroup,
+  minAcc: minAccCommand.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
   funbox: FunboxCommands[0]?.subgroup,
-  confidenceMode: ConfidenceModeCommands[0]?.subgroup,
-  stopOnError: StopOnErrorCommands[0]?.subgroup,
-  layouts: LayoutsCommands[0]?.subgroup,
-  oppositeShiftMode: OppositeShiftModeCommands[0]?.subgroup,
+  confidenceMode: confidenceModeCommand.subgroup,
+  stopOnError: stopOnErrorCommand.subgroup,
+  layouts: layoutCommand.subgroup,
+  oppositeShiftMode: oppositeShiftModeCommand.subgroup,
   tags: TagsCommands[0]?.subgroup,
   resultSaving: ResultSavingCommands[0]?.subgroup,
-  blindMode: BlindModeCommands[0]?.subgroup,
+  blindMode: blindModeCommand.subgroup,
 };
 
 export function doesListExist(listName: string): boolean {
@@ -478,7 +374,7 @@ export function doesListExist(listName: string): boolean {
 export async function getList(
   listName: ListsObjectKeys
 ): Promise<CommandsSubgroup> {
-  await Promise.allSettled([fontsPromise, challengesPromise]);
+  await Promise.allSettled([challengesPromise]);
 
   const list = lists[listName];
   if (!list) {
@@ -520,7 +416,7 @@ export function getTopOfStack(): CommandsSubgroup {
 
 let singleList: CommandsSubgroup | undefined;
 export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
-  await Promise.allSettled([fontsPromise, challengesPromise]);
+  await Promise.allSettled([challengesPromise]);
   const singleCommands: Command[] = [];
   for (const command of commands.list) {
     const ret = buildSingleListCommands(command);
@@ -583,10 +479,10 @@ function buildSingleListCommands(
         icon: parentCommand.icon,
         alias: newAlias,
         visible: (parentCommand.visible ?? true) && (command.visible ?? true),
-        available: (): boolean => {
+        available: async (): Promise<boolean> => {
           return (
-            (parentCommand?.available?.() ?? true) &&
-            (command?.available?.() ?? true)
+            ((await parentCommand?.available?.()) ?? true) &&
+            ((await command?.available?.()) ?? true)
           );
         },
       };
@@ -596,4 +492,12 @@ function buildSingleListCommands(
     }
   }
   return commands;
+}
+
+function buildCommands(
+  ...commands: (Command | keyof CommandlineConfigMetadataObject)[]
+): Command[] {
+  return commands.map((it) =>
+    typeof it === "string" ? buildCommandForConfigKey(it) : it
+  );
 }

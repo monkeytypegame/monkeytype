@@ -14,6 +14,16 @@
     .searchicon {
       color: var(--sub-color);
       margin: 1px 1rem 0 1rem;
+      grid-column: 1/2;
+      grid-row: 1/2;
+    }
+
+    .checkingicon {
+      color: var(--sub-color);
+      margin: 1px 1rem 0 1rem;
+      grid-column: 1/2;
+      grid-row: 1/2;
+      background-color: var(--bg-color);
     }
 
     input {
@@ -27,6 +37,25 @@
       border-radius: var(--roundness);
       &:focus-visible {
         box-shadow: none;
+      }
+    }
+
+    &.hasError {
+      animation: shake 0.1s ease-in-out infinite;
+    }
+
+    .warning {
+      background: var(--sub-alt-color);
+      padding: 0.5em 0;
+      font-size: 0.75em;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      .icon {
+        color: var(--error-color);
+        margin: 0 1.15rem;
+      }
+      .text {
+        color: var(--error-color);
       }
     }
 

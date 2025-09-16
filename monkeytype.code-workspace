@@ -46,7 +46,8 @@
     },
     "[html]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "vitest.maximumConfigs": 10
   },
 
   "launch": {
@@ -55,17 +56,18 @@
       {
         "type": "node",
         "request": "attach",
-        "name": "Debug attach backend",
+        "name": "Backend: Attach",
         "port": 9229,
-        "skipFiles": ["<node_internals>/**"]
+        "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
       },
       {
-        "name": "Vite Debugger",
         "type": "chrome",
         "request": "launch",
+        "name": "Frontend: Open and Attach",
         "port": 9222,
-        "url": "http://localhost:3000",
-        "webRoot": "${workspaceFolder}/frontend/src"
+        "skipFiles": ["**/node_modules/**"],
+        "webRoot": "${workspaceFolder:frontend}/src",
+        "url": "http://localhost:3000"
       }
     ],
     "compounds": []

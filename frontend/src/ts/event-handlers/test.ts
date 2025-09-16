@@ -14,6 +14,7 @@ import * as CustomTextModal from "../modals/custom-text";
 import * as PractiseWordsModal from "../modals/practise-words";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
+import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
@@ -39,6 +40,10 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (time === "custom") {
     CustomTestDurationModal.show();
   }
+});
+
+$(".pageTest").on("click", "#testConfig .shareButton", (e) => {
+  ShareTestSettingsPopup.show();
 });
 
 $(".pageTest").on("click", ".tags .editTagsButton", () => {
@@ -94,7 +99,7 @@ $(".pageTest").on("click", "#practiseWordsButton", () => {
 });
 
 $(".pageTest #dailyLeaderboardRank").on("click", async () => {
-  navigate(
+  void navigate(
     `/leaderboards?type=daily&language=${Config.language}&mode2=${getMode2(
       Config,
       null

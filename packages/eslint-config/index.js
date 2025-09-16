@@ -10,6 +10,7 @@ module.exports = {
     "node_modules/",
     "dist/",
     "build/",
+    "vitest.config.ts",
   ],
   extends: [
     "eslint:recommended",
@@ -90,17 +91,37 @@ module.exports = {
         "plugin:oxlint/recommended",
       ],
       rules: {
-        //strict type checked
-        "@typescript-eslint/require-await": "off",
+        //not using
+        "@typescript-eslint/non-nullable-type-assertion-style": "off",
+        "import/namespace": "off",
+        "@typescript-eslint/no-unnecessary-condition": "off",
+        "@typescript-eslint/switch-exhaustiveness-check": "off",
+        "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/unbound-method": "off",
-        "@typescript-eslint/await-thenable": "off",
+        //unnecessary, might aswell keep template strings in case a string might be added in the future
         "@typescript-eslint/no-unnecessary-template-expression": "off",
         "@typescript-eslint/prefer-promise-reject-errors": "off",
-        "@typescript-eslint/no-unnecessary-type-arguments": "off",
-        "@typescript-eslint/restrict-template-expressions": "off",
         "@typescript-eslint/no-redundant-type-constituents": "off",
-        "@typescript-eslint/restrict-plus-operands": "off",
 
+        //todo: consider some of these?
+        //936, no options on this one. super strict, it doesnt allow casting to a narrower type
+        "@typescript-eslint/no-unsafe-type-assertion": "off",
+        //224 errors, very easy to fix.
+        // adds unnecessary promise overhead and pushing the function to the microtask queue, creating a delay
+        // all though performance impact probably minimal
+        // anything that needs to be absolutely as fast as possible should not be async (if not using await)
+        "@typescript-eslint/require-await": "off",
+        //388, when allowing numbers only 27, when also allowing arrays 12
+        // could be nice to avoid some weird things showing up in templated strings
+        "@typescript-eslint/restrict-template-expressions": [
+          "off",
+          {
+            allowNumber: true,
+            allowArray: true,
+          },
+        ],
+
+        //using
         "@typescript-eslint/no-unsafe-member-access": "error",
         "@typescript-eslint/no-unsafe-call": "error",
         "@typescript-eslint/no-unsafe-argument": "error",
@@ -110,7 +131,6 @@ module.exports = {
           "error",
           { ignoreArrowShorthand: true },
         ],
-        "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/no-misused-promises": [
           "error",
           {
@@ -123,10 +143,32 @@ module.exports = {
           "error",
           { allowNullableBoolean: true },
         ],
-        "@typescript-eslint/non-nullable-type-assertion-style": "off",
-        "@typescript-eslint/no-unnecessary-condition": "off",
-        "@typescript-eslint/no-invalid-void-type": "off",
-        "import/namespace": "off",
+        "@typescript-eslint/no-invalid-void-type": "error",
+        "@typescript-eslint/no-array-delete": "error",
+        "@typescript-eslint/no-base-to-string": "error",
+        "@typescript-eslint/no-duplicate-type-constituents": "error",
+        "@typescript-eslint/no-for-in-array": "error",
+        "@typescript-eslint/no-implied-eval": "error",
+        "@typescript-eslint/no-meaningless-void-operator": "error",
+        "@typescript-eslint/no-mixed-enums": "error",
+        "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
+        "@typescript-eslint/no-unsafe-enum-comparison": "error",
+        "@typescript-eslint/no-unsafe-return": "error",
+        "@typescript-eslint/no-unsafe-unary-minus": "error",
+        "@typescript-eslint/prefer-reduce-type-parameter": "error",
+        "@typescript-eslint/prefer-return-this-type": "error",
+        "@typescript-eslint/related-getter-setter-pairs": "error",
+        "@typescript-eslint/require-array-sort-compare": "error",
+        "@typescript-eslint/return-await": "error",
+        "@typescript-eslint/use-unknown-in-catch-callback-variable": "error",
+        "@typescript-eslint/await-thenable": "error",
+        "@typescript-eslint/no-unnecessary-type-arguments": "error",
+        "@typescript-eslint/restrict-plus-operands": [
+          "error",
+          {
+            allowNumberAndString: true,
+          },
+        ],
 
         //handled by oxlint
         "@typescript-eslint/no-non-null-assertion": "off",
@@ -136,7 +178,7 @@ module.exports = {
         "@typescript-eslint/no-unused-expressions": "off",
         "@typescript-eslint/no-empty-function": "off",
         "no-empty": "off",
-        "@typescript-eslint/only-throw-error": "off",
+        "@typescript-eslint/only-throw-error": "error",
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-unsafe-function-type": "off",
         "@typescript-eslint/consistent-type-definitions": "off",

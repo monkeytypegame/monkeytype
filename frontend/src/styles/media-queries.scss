@@ -50,6 +50,7 @@ body {
 @import "media-queries-blue";
 @import "media-queries-purple";
 @import "media-queries-brown";
+@import "media-queries-gray";
 
 @media only screen and (max-width: 1875px) {
   .ad.ad-v {
@@ -65,35 +66,7 @@ body {
 
 // //1450px
 // @media only screen and (max-width: 90.625rem) {
-//   #leaderboardsWrapper #leaderboards {
-//     .mainTitle {
-//       font-size: 2rem;
-//     }
-//     .title {
-//       font-size: 1rem;
-//     }
-//     .leaderboardsTop {
-//       grid-template-columns: auto 1fr max-content;
-//       .buttonGroup {
-//         grid-auto-flow: row;
-//         gap: 0.5rem;
-//       }
-//     }
-//     .tables table {
-//       .avatarNameBadge .badge .text {
-//         display: none;
-//       }
-//       tr td:first-child {
-//         padding-left: 0.25rem;
-//       }
-//       tr td:last-child {
-//         padding-right: 0.25rem;
-//       }
-//       td {
-//         padding: 0.25rem 0.5rem;
-//       }
-//     }
-//   }
+//
 // }
 
 // //1330px
@@ -115,13 +88,6 @@ body {
 
 // //1250px
 // @media only screen and (max-width: 78.125rem) {
-//   #leaderboardsWrapper #leaderboards {
-//     .tables table {
-//       tr td:nth-child(5) {
-//         display: none;
-//       }
-//     }
-//   }
 //   #customTextModal .modal {
 //     textarea {
 //       min-height: 426px;
@@ -146,50 +112,6 @@ body {
 //   #result .morestats {
 //     gap: 1rem;
 //     grid-template-rows: 1fr 1fr;
-//   }
-//   #leaderboardsWrapper {
-//     #leaderboards {
-//       .leaderboardsTop {
-//         flex-direction: column;
-//         align-items: baseline;
-//         grid-template-areas:
-//           "title title"
-//           "subtitle subtitle"
-//           "yesterday yesterday"
-//           "buttons buttons";
-//         grid-template-columns: 1fr;
-//         .buttons {
-//           margin-top: 0.5rem;
-//         }
-//         .buttonGroup {
-//           grid-auto-flow: column;
-//         }
-//         .showYesterdayButton {
-//           margin-left: 0;
-//         }
-//       }
-//       .tables {
-//         grid-template-columns: unset;
-//         table {
-//           .avatarNameBadge .badge .text {
-//             display: block;
-//           }
-//           tr td:last-child {
-//             width: 30%;
-//           }
-//         }
-//       }
-//       .tables .rightTableWrapper,
-//       .tables .leftTableWrapper {
-//         height: calc(50vh - 10rem);
-//       }
-//       .tables table {
-//         tr td:nth-child(5) {
-//           display: table-cell;
-//           width: auto;
-//         }
-//       }
-//     }
 //   }
 // }
 
@@ -310,11 +232,6 @@ body {
 //     }
 //     .leaderboardsPositions {
 //       grid-template-areas: "title title" "t15 t60";
-//     }
-//   }
-//   #leaderboards {
-//     .mainTitle {
-//       font-size: 1.5rem !important;
 //     }
 //   }
 //   #bannerCenter .banner .container {
@@ -458,13 +375,6 @@ body {
 //   #quoteSearchModal .modal #quoteSearchControlsWrapper {
 //     grid-template-columns: 1fr;
 //   }
-//   #leaderboardsWrapper #leaderboards {
-//     .tables table {
-//       tr td:nth-child(5) {
-//         display: none;
-//       }
-//     }
-//   }
 //   .pageAbout {
 //     .triplegroup {
 //       grid-template-columns: 1fr;
@@ -541,24 +451,6 @@ body {
 //           display: none;
 //         }
 //         .levelAndBar {
-//           display: none;
-//         }
-//       }
-//     }
-//   }
-//   #leaderboardsWrapper #leaderboards {
-//     width: 85vw;
-//     .tables .rightTableWrapper,
-//     .tables .leftTableWrapper {
-//       height: calc(50vh - 10rem);
-//     }
-//     .tables {
-//       grid-template-columns: unset;
-//       table {
-//         .avatarNameBadge .badge .text {
-//           display: block;
-//         }
-//         tr td:nth-child(4) {
 //           display: none;
 //         }
 //       }
@@ -718,9 +610,6 @@ body {
 //         gap: 1rem;
 //       }
 //     }
-//   }
-//   #leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup {
-//     grid-auto-flow: row;
 //   }
 
 //   .pageAccount {
@@ -969,32 +858,6 @@ body {
 //       .right {
 //         grid-template-rows: 1fr 1fr 1fr 1fr;
 //       }
-//     }
-//   }
-
-//   #leaderboardsWrapper #leaderboards {
-//     .tables .titleAndTable .titleAndButtons {
-//       grid-template-columns: unset;
-//     }
-//     .tables table {
-//       thead,
-//       tbody,
-//       tfoot {
-//         // font-size: 0.5rem;
-//       }
-//       tr td:first-child {
-//         padding-left: 0.25rem;
-//       }
-//       tr td:last-child {
-//         padding-right: 0.25rem;
-//       }
-//       td {
-//         padding: 0.25rem;
-//       }
-//     }
-//     .tables .rightTableWrapper,
-//     .tables .leftTableWrapper {
-//       height: calc(50vh - 9rem);
 //     }
 //   }
 //   .page404 .content {

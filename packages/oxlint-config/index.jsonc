@@ -1,0 +1,106 @@
+{
+  "ignorePatterns": ["node_modules", "dist", "coverage", "build"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
+  },
+  "plugins": ["typescript", "unicorn", "oxc", "import", "node", "promise"],
+  "rules": {
+    // disabled rules
+    "no-await-in-loop": "off",
+    "consistent-function-scoping": "off",
+    "prefer-add-event-listener": "off",
+    "no-new": "off",
+    "no-new-array": "off",
+    "no-useless-spread": "off",
+    "no-async-endpoint-handlers": "off",
+    "no-this-alias": "off",
+    "no-unassigned-import": "off",
+    "no-array-reverse": "off", // disabled for compatibility
+
+    // enabled rules
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^(_|e|event)",
+        "caughtErrorsIgnorePattern": "^(_|e|error)",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "no-var": "error",
+    "no-non-null-assertion": "error",
+    "no-non-null-asserted-nullish-coalescing": "error",
+    "no-explicit-any": "error",
+    "no-empty-object-type": "error",
+    "explicit-function-return-type": [
+      "error",
+      {
+        "allowExpressions": true
+      }
+    ],
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowTernary": true
+      }
+    ],
+    "no-unsafe-function-type": "error",
+    "prefer-for-of": "error",
+    "consistent-type-definitions": ["error", "type"],
+    "no-var-requires": "error",
+    "no-named-as-default": "error",
+    "no-named-as-default-member": "error",
+    "no-array-constructor": "error",
+    "no-dynamic-delete": "error",
+    "no-extraneous-class": "error",
+    "no-require-imports": "error",
+    "no-empty-function": "error",
+    "no-redeclare": "error",
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ],
+    "no-self-compare": "error",
+    "no-throw-literal": "error",
+    "no-constant-condition": "error",
+    "no-constant-binary-expression": "error",
+    "no-unnecessary-type-constraint": "error",
+    "no-useless-constructor": "error",
+    "prefer-literal-enum-member": "error",
+    "prefer-namespace-keyword": "error",
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "no-duplicates": "error",
+    "no-case-declarations": "error",
+    "no-fallthrough": "error",
+    "no-inner-declarations": "error",
+    "no-prototype-builtins": "error",
+    "no-regex-spaces": "error",
+    "typescript/no-namespace": "error",
+    "eqeqeq": "error",
+    "ban-ts-comment": "error",
+    "no-unassigned-vars": "error",
+    "max-depth": [
+      "error",
+      {
+        "max": 5
+      }
+    ],
+    "always-return": [
+      "error",
+      {
+        "ignoreLastCallback": true
+      }
+    ],
+
+    // todo: enable
+    "no-array-for-each": "off",
+
+    // consider these for the future
+    "no-cycle": "off",
+    "no-nested-ternary": "off"
+  }
+}

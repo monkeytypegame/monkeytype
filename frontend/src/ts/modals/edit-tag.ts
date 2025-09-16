@@ -3,7 +3,7 @@ import * as DB from "../db";
 import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal, TextInput } from "../utils/simple-modal";
-import { TagNameSchema } from "@monkeytype/contracts/schemas/users";
+import { TagNameSchema } from "@monkeytype/schemas/users";
 
 const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
 const tagNameValidation = async (tagName: string): Promise<true | string> => {
@@ -21,7 +21,7 @@ const actionModals: Record<Action, SimpleModal> = {
       {
         placeholder: "tag name",
         type: "text",
-        validation: { isValid: tagNameValidation },
+        validation: { isValid: tagNameValidation, debounceDelay: 0 },
       },
     ],
     onlineOnly: true,
@@ -63,7 +63,7 @@ const actionModals: Record<Action, SimpleModal> = {
       {
         placeholder: "tag name",
         type: "text",
-        validation: { isValid: tagNameValidation },
+        validation: { isValid: tagNameValidation, debounceDelay: 0 },
       },
     ],
     onlineOnly: true,
