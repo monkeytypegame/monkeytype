@@ -1070,7 +1070,6 @@ export async function scrollTape(
       newMarginLeft:
         PaceCaret.getMarginLeft() + (currentMarginLeft - newMargin) * -1,
       duration,
-      instant: false,
     });
 
     jqWords.animate(
@@ -1101,7 +1100,6 @@ export async function scrollTape(
       newMarginLeft:
         PaceCaret.getMarginLeft() + (currentMarginLeft - newMargin) * -1,
       duration: 0,
-      instant: true,
     });
 
     if (afterCompleteFn) afterCompleteFn();
@@ -1192,13 +1190,11 @@ export async function lineJump(
       Caret.getCaret().handleLineJump({
         newMarginTop,
         duration,
-        instant: false,
       });
 
       PaceCaret.getCaret().handleLineJump({
         newMarginTop,
         duration,
-        instant: false,
       });
 
       const jqWords = $(wordsEl);
@@ -1221,13 +1217,11 @@ export async function lineJump(
       Caret.getCaret().handleLineJump({
         newMarginTop,
         duration: 0,
-        instant: true,
       });
 
       PaceCaret.getCaret().handleLineJump({
         newMarginTop,
         duration: 0,
-        instant: true,
       });
 
       removeTestElements(lastElementIndexToRemove);

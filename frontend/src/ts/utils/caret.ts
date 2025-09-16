@@ -117,13 +117,12 @@ export class Caret {
   }
 
   public handleTapeScroll(options: {
-    duration: number;
     newMarginLeft: number;
-    instant: boolean;
+    duration: number;
   }): void {
     this.readyToResetMarginLeft = false;
 
-    if (options.instant) {
+    if (options.duration === 0) {
       $(this.element).stop("marginLeft", true, false).css({
         marginLeft: options.newMarginLeft,
       });
@@ -151,9 +150,8 @@ export class Caret {
   }
 
   public handleLineJump(options: {
-    duration: number;
     newMarginTop: number;
-    instant: boolean;
+    duration: number;
   }): void {
     // smooth line jump works by animating the words top margin.
     // to sync the carets to the lines, we need to do the same here.
@@ -165,7 +163,7 @@ export class Caret {
     // affect the position animations
     this.readyToResetMarginTop = false;
 
-    if (options.instant) {
+    if (options.duration === 0) {
       $(this.element).stop("marginTop", true, false).css({
         marginTop: options.newMarginTop,
       });
