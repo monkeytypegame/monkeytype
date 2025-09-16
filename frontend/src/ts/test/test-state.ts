@@ -11,6 +11,7 @@ export let selectedQuoteId = 1;
 export let activeWordIndex = 0;
 export let testInitSuccess = true;
 export let testRestarting = false;
+export let resultVisible = false;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -69,4 +70,8 @@ export function setTestRestarting(val: boolean): void {
   } else {
     restartingResolve();
   }
+}
+
+export function setResultVisible(val: boolean): void {
+  resultVisible = val;
 }

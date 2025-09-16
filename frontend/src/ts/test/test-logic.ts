@@ -293,7 +293,7 @@ export function restart(options = {} as RestartOptions): void {
   TestUI.reset();
   CompositionState.setComposing(false);
 
-  if (TestUI.resultVisible) {
+  if (TestState.resultVisible) {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
@@ -305,14 +305,14 @@ export function restart(options = {} as RestartOptions): void {
   }
 
   let el = null;
-  if (TestUI.resultVisible) {
+  if (TestState.resultVisible) {
     //results are being displayed
     el = $("#result");
   } else {
     //words are being displayed
     el = $("#typingTest");
   }
-  TestUI.setResultVisible(false);
+  TestState.setResultVisible(false);
   TestState.setTestRestarting(true);
   el.stop(true, true).animate(
     {
@@ -890,7 +890,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.setEnd(TestInput.keypressTimings.spacing.last);
   }
 
-  TestUI.setResultVisible(true);
+  TestState.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
   Caret.hide();
@@ -1296,7 +1296,7 @@ async function saveResult(
     void XPBar.update(
       snapxp,
       data.xp,
-      TestUI.resultVisible ? data.xpBreakdown : undefined
+      TestState.resultVisible ? data.xpBreakdown : undefined
     );
     dataToSave.xp = data.xp;
   }

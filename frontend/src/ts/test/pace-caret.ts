@@ -1,5 +1,4 @@
 import * as TestWords from "./test-words";
-import * as TestUI from "./test-ui";
 import Config from "../config";
 import * as DB from "../db";
 import * as Misc from "../utils/misc";
@@ -175,7 +174,7 @@ export async function init(): Promise<void> {
 }
 
 export async function update(duration: number): Promise<void> {
-  if (settings === null || !TestState.isActive || TestUI.resultVisible) {
+  if (settings === null || !TestState.isActive || TestState.resultVisible) {
     return;
   }
 
