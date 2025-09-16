@@ -119,7 +119,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
 export let resultVisible = false;
 export let activeWordTop = 0;
-export let testRestarting = false;
 export let lineTransition = false;
 export let currentTestLine = 0;
 export let resultCalculating = false;
@@ -130,21 +129,6 @@ export function setResultVisible(val: boolean): void {
 
 export function setActiveWordTop(val: number): void {
   activeWordTop = val;
-}
-
-let { promise: testRestartingPromise, resolve: restartingResolve } =
-  Misc.promiseWithResolvers();
-
-export { testRestartingPromise };
-
-export function setTestRestarting(val: boolean): void {
-  testRestarting = val;
-  if (val) {
-    ({ promise: testRestartingPromise, resolve: restartingResolve } =
-      Misc.promiseWithResolvers());
-  } else {
-    restartingResolve();
-  }
 }
 
 export function setResultCalculating(val: boolean): void {
