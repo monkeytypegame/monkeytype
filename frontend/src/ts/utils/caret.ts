@@ -10,7 +10,7 @@ const wordsWrapperCache = document.querySelector<HTMLElement>(
   "#wordsWrapper"
 ) as HTMLElement;
 
-let lockedMainCaretInTape = false;
+let lockedMainCaretInTape = true;
 
 let caretDebug = true;
 export function toggleCaretDebug(): void {
