@@ -30,7 +30,6 @@ import { LanguageObject } from "@monkeytype/schemas/languages";
 //pin implementation
 const random = Math.random;
 
-
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
 }
@@ -386,7 +385,7 @@ async function applyBritishEnglishToWord(
 }
 
 function applyLazyModeToWord(word: string, language: LanguageObject): string {
-  // if currentWordset is a PolyglotWordset, use the word's actual language for lazy mode
+  // polyglot mode, use the word's actual language
   if (currentWordset && currentWordset instanceof PolyglotWordset) {
     const langName = currentWordset.wordsWithLanguage.get(word);
     const langProps = langName
@@ -399,7 +398,8 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
     }
     return word;
   }
-  // normal mode - use the current language's settings
+
+  // normal mode
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
   if (Config.lazyMode && allowLazyMode) {
     word = LazyMode.replaceAccents(word, language.additionalAccents);
@@ -655,7 +655,7 @@ export async function generateWords(
   const funbox = findSingleActiveFunboxWithFunction("withWords");
   if (funbox) {
     const result = await funbox.functions.withWords(wordList);
-    // handle result from withWords: PolyglotWordset if isPolyglot, otherwise Wordset
+    // PolyglotWordset if polyglot otherwise Wordset
     if (result instanceof PolyglotWordset) {
       const polyglotResult = result;
       currentWordset = polyglotResult;

@@ -470,12 +470,10 @@ export async function init(): Promise<boolean> {
   }
 
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
-  // special handling for polyglot mode
-  if (getActiveFunboxNames().includes("polyglot")) {
-    // in polyglot mode, check if any of the selected languages support lazy mode
-    const polyglotLanguages = Config.customPolyglot;
 
-    // load all selected polyglot languages to check their lazy mode support
+  // polyglot mode, check to enable lazy mode if any support it
+  if (getActiveFunboxNames().includes("polyglot")) {
+    const polyglotLanguages = Config.customPolyglot;
     const languagePromises = polyglotLanguages.map(async (langName) => {
       const { data: lang, error } = await tryCatch(
         JSONData.getLanguage(langName)
@@ -510,7 +508,7 @@ export async function init(): Promise<boolean> {
       UpdateConfig.setLazyMode(true, true);
     }
   } else {
-    // normal mode - use the current language's settings
+    // normal mode
     if (Config.lazyMode && !allowLazyMode) {
       rememberLazyMode = true;
       Notifications.add("This language does not support lazy mode.", 0, {
