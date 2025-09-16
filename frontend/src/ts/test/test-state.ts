@@ -9,7 +9,6 @@ export let bailedOut = false;
 export let selectedQuoteId = 1;
 export let activeWordIndex = 0;
 export let testInitSuccess = true;
-export let removedUIWordCount = 0;
 export let lineScrollDistance = 0;
 
 export function setRepeated(tf: boolean): void {
@@ -54,14 +53,6 @@ export function decreaseActiveWordIndex(): void {
 
 export function setTestInitSuccess(tf: boolean): void {
   testInitSuccess = tf;
-}
-
-export function setRemovedUIWordCount(val: number): void {
-  removedUIWordCount = val;
-}
-
-export function incrementRemovedUIWordCount(by: number = 1): void {
-  removedUIWordCount += by;
 }
 
 export function setLineScrollDistance(val: number): void {

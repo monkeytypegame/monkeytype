@@ -27,12 +27,7 @@ import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
 import { ChartData } from "@monkeytype/schemas/results";
-import {
-  Difficulty,
-  Mode,
-  Mode2,
-  Mode2Custom,
-} from "@monkeytype/schemas/shared";
+import { Mode, Mode2, Mode2Custom } from "@monkeytype/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
@@ -300,7 +295,7 @@ async function fillContent(): Promise<void> {
       if (resdiff === undefined) {
         resdiff = "normal";
       }
-      if (!ResultFilters.getFilter("difficulty", resdiff as Difficulty)) {
+      if (!ResultFilters.getFilter("difficulty", resdiff)) {
         if (filterDebug) {
           console.log(`skipping result due to difficulty filter`, result);
         }
@@ -1287,7 +1282,6 @@ $(".pageAccount .group.presetFilterButtons").on(
 );
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
-  //@ts-expect-error dont really wanna figure out the types here but it works
   void Misc.downloadResultsCSV(filteredResults);
 });
 
@@ -1329,10 +1323,14 @@ export const page = new Page({
   element: $(".page.pageAccount"),
   path: "/account",
   loadingOptions: {
-    shouldLoad: () => {
-      return DB.getSnapshot()?.results === undefined;
+    loadingMode: () => {
+      if (DB.getSnapshot()?.results === undefined) {
+        return "sync";
+      } else {
+        return "none";
+      }
     },
-    waitFor: async () => {
+    loadingPromise: async () => {
       if (DB.getSnapshot() === null) {
         throw new Error(
           "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."

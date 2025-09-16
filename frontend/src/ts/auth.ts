@@ -170,10 +170,14 @@ export async function onAuthStateChanged(
   await navigate(undefined, {
     force: true,
     loadingOptions: {
-      shouldLoad: () => {
-        return user !== null;
+      loadingMode: () => {
+        if (user !== null) {
+          return "sync";
+        } else {
+          return "none";
+        }
       },
-      waitFor: async () => {
+      loadingPromise: async () => {
         await userPromise;
       },
       style: "bar",
