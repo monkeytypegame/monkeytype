@@ -34,6 +34,7 @@ module.exports = {
           "__testing should only be accessed in test files. Use the public API instead.",
       },
     ],
+    '@typescript-eslint/no-base-to-string': 'off',
   },
   overrides: [
     {

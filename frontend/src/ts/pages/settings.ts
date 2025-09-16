@@ -24,6 +24,7 @@ import {
   FunboxName,
   ConfigKeySchema,
   ConfigKey,
+  KeymapCustom,
 } from "@monkeytype/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
@@ -42,6 +43,7 @@ import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
+import { keymapToString, stringToKeymap } from "../utils/custom-keymap";
 
 let settingsInitialized = false;
 
@@ -117,6 +119,9 @@ async function initGroups(): Promise<void> {
           $(".pageSettings .section[data-config-name='keymapSize']").addClass(
             "hidden"
           );
+          $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+            "hidden"
+          );
         } else {
           $(
             ".pageSettings .section[data-config-name='keymapStyle']"
@@ -133,6 +138,18 @@ async function initGroups(): Promise<void> {
           $(
             ".pageSettings .section[data-config-name='keymapSize']"
           ).removeClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapSize']"
+          ).removeClass("hidden");
+          if (Config.keymapStyle === "custom") {
+            $(
+              ".pageSettings .section[data-config-name='keymapCustom']"
+            ).removeClass("hidden");
+          } else {
+            $(
+              ".pageSettings .section[data-config-name='keymapCustom']"
+            ).addClass("hidden");
+          }
         }
       },
     }
@@ -140,6 +157,11 @@ async function initGroups(): Promise<void> {
   groups["keymapStyle"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
+    "button"
+  );
+  groups["keymapCustom"] = new SettingsGroup(
+    "keymapCustom",
+    UpdateConfig.setKeymapCustom,
     "button"
   );
   groups["keymapLayout"] = new SettingsGroup(
@@ -919,6 +941,12 @@ export async function update(
   );
 
   setInputValue(
+    "keymapCustom",
+    ".pageSettings .section[data-config-name='keymapCustom'] textarea",
+    keymapToString(Config.keymapCustom)
+  );
+
+  setInputValue(
     "maxLineWidth",
     ".pageSettings .section[data-config-name='maxLineWidth'] input",
     Config.maxLineWidth
@@ -1115,6 +1143,38 @@ $(".pageSettings .quickNav .links a").on("click", (e) => {
   );
   if (isClosed) {
     toggleSettingsGroup(settingsGroup);
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton button.save"
+).on("click", () => {
+  const stringValue = $(
+    ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+  ).val() as string;
+  const keymap: KeymapCustom = stringToKeymap(stringValue);
+  const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+).on("keypress", (e) => {
+  if (e.key === "Enter") {
+    const stringValue = $(
+      ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+    ).val() as string;
+    const keymap: KeymapCustom = stringToKeymap(stringValue);
+    const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
   }
 });
 

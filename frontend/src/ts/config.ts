@@ -712,6 +712,13 @@ export function setKeymapStyle(
   return genericSet("keymapStyle", style, nosave);
 }
 
+export function setKeymapCustom(
+  keymapCustom: ConfigSchemas.KeymapCustom,
+  nosave?: boolean
+): boolean {
+  return genericSet("keymapCustom", keymapCustom, nosave);
+}
+
 export function setKeymapLayout(
   layout: ConfigSchemas.KeymapLayout,
   nosave?: boolean

@@ -19,7 +19,7 @@ import {
   KeymapCustom,
   KeymapLayout,
   KeymapLegendStyle,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 

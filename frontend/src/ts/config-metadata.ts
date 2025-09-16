@@ -583,6 +583,13 @@ export const configMetadata: ConfigMetadataObject = {
     overrideConfig: ({ currentConfig }) =>
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
+  keymapCustom: {
+    icon: "fa-keyboard",
+    displayString: "keymap custom",
+    changeRequiresRestart: false,
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
+  },
   keymapLegendStyle: {
     icon: "fa-keyboard",
     displayString: "keymap legend style",

@@ -4,7 +4,7 @@ import {
   KeymapCustomSchema,
   KeymapLegendStyle,
   KeymapLayout as Layout,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
 import { dataKeys as keyToDataObject } from "../constants/data-keys";
 import { sanitizeString } from "@monkeytype/util/strings";
 import { parseWithSchema } from "@monkeytype/util/json";
