@@ -1241,10 +1241,39 @@
     </div>
     <div class="section fullWidth" data-config-name="keymapCustom">
       <div class="inputs">
+        <div class="usingLocalKeymap">
+          <button class="no-auto-handle">
+            <i class="fas fa-trash fa-fw"></i>
+            remove custom keymap
+          </button>
+        </div>
+        <div class="uploadContainer">
+          <label
+            for="keymapCustomUpload"
+            class="button"
+            aria-label="Select custom keymap"
+            data-balloon-pos="left"
+          >
+            <i class="fas fa-file-import fa-fw"></i>
+            use local keymap
+          </label>
+
+          <input
+            type="file"
+            id="keymapCustomUpload"
+            accept="application/json"
+            style="display: none"
+          />
+        </div>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
         <div class="textareaAndButton">
           <textarea
             class="textarea"
-            placeholder="place here the KLE keymap..."
+            placeholder="place here the raw KLE keymap..."
           ></textarea>
           <button class="save no-auto-handle">
             <i class="fas fa-save fa-fw"></i>

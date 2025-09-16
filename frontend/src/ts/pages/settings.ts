@@ -41,6 +41,7 @@ import { z } from "zod";
 import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
+import * as CustomKeymapPicker from "../elements/settings/custom-keymap-picker";
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import { keymapToString, stringToKeymap } from "../utils/custom-keymap";
@@ -879,6 +880,7 @@ export async function update(
   await CustomBackgroundPicker.updateUI();
   await updateFilterSectionVisibility();
   await CustomFontPicker.updateUI();
+  await CustomKeymapPicker.updateUI();
 
   const setInputValue = (
     key: ConfigKey,
