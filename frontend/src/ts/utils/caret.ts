@@ -292,21 +292,21 @@ export class Caret {
         isLanguageRightToLeft: options.isLanguageRightToLeft,
       });
 
-      // again, animations use inline styles, so we read them here instead of computed
-      // which would be much slower
-      const currentMarginTop = parseFloat(this.element.style.marginTop || "0");
-      const currentTop = parseFloat(this.element.style.top || "0");
-
       // if the margin animation finished, we reset it here by removing the margin
       // and offsetting the top by the same amount
       if (this.readyToResetMarginTop) {
         this.readyToResetMarginTop = false;
+        const currentMarginTop = parseFloat(
+          this.element.style.marginTop || "0"
+        );
+        const currentTop = parseFloat(this.element.style.top || "0");
         $(this.element).css({
           marginTop: 0,
           top: currentTop + currentMarginTop,
         });
       }
 
+      // same for marginLeft
       let currentMarginLeft = parseFloat(this.element.style.marginLeft || "0");
       if (this.readyToResetMarginLeft) {
         this.readyToResetMarginLeft = false;
@@ -319,6 +319,8 @@ export class Caret {
       }
 
       if (options.animate) {
+        // to be honst, im not 100% sure why we need to offset the left by currentMarginLeft,
+        // but not currentMarginTop, but it seems that way after testing
         const animation: {
           left: number;
           top: number;
