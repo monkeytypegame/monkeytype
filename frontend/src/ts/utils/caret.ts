@@ -420,28 +420,18 @@ export class Caret {
 
     // yes, this is all super verbose, but its easier to maintain and understand
     if (isWordRightToLeft) {
-      let afterLetterCorrection = 0;
-      if (options.side === "afterLetter") {
-        if (this.isFullWidth()) {
-          afterLetterCorrection += spaceWidth * -1;
-        } else {
-          afterLetterCorrection += options.letter.offsetWidth * -1;
-        }
-      }
       if (Config.tapeMode === "off") {
         if (!this.isFullWidth()) {
           left += options.letter.offsetWidth;
         }
         left += options.letter.offsetLeft;
         left += options.word.offsetLeft;
-        left += afterLetterCorrection;
       } else if (Config.tapeMode === "word") {
         if (!this.isFullWidth()) {
           left += options.letter.offsetWidth;
         }
         left += options.word.offsetWidth * -1;
         left += options.letter.offsetLeft;
-        left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
           left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
         } else {
@@ -457,22 +447,25 @@ export class Caret {
         } else {
           left += options.letter.offsetLeft;
           left += options.word.offsetLeft;
-          left += afterLetterCorrection;
           left += width;
         }
       }
-    } else {
+
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
-        afterLetterCorrection += options.letter.offsetWidth;
+        if (this.isFullWidth()) {
+          afterLetterCorrection += spaceWidth * -1;
+        } else {
+          afterLetterCorrection += options.letter.offsetWidth * -1;
+        }
       }
+      left += afterLetterCorrection;
+    } else {
       if (Config.tapeMode === "off") {
         left += options.letter.offsetLeft;
         left += options.word.offsetLeft;
-        left += afterLetterCorrection;
       } else if (Config.tapeMode === "word") {
         left += options.letter.offsetLeft;
-        left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
           left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
         } else {
@@ -484,9 +477,14 @@ export class Caret {
         } else {
           left += options.letter.offsetLeft;
           left += options.word.offsetLeft;
-          left += afterLetterCorrection;
         }
       }
+
+      let afterLetterCorrection = 0;
+      if (options.side === "afterLetter") {
+        afterLetterCorrection += options.letter.offsetWidth;
+      }
+      left += afterLetterCorrection;
     }
 
     //top position
