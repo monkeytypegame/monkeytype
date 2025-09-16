@@ -10,6 +10,8 @@ const wordsWrapperCache = document.querySelector<HTMLElement>(
   "#wordsWrapper"
 ) as HTMLElement;
 
+let lockedMainCaretInTape = false;
+
 let caretDebug = true;
 export function toggleCaretDebug(): void {
   caretDebug = !caretDebug;
@@ -120,6 +122,8 @@ export class Caret {
     newMarginLeft: number;
     duration: number;
   }): void {
+    if (this.isMainCaret && lockedMainCaretInTape) return;
+
     this.readyToResetMarginLeft = false;
 
     if (options.duration === 0) {
@@ -469,21 +473,21 @@ export class Caret {
       } else if (Config.tapeMode === "word") {
         left += options.letter.offsetLeft;
         left += afterLetterCorrection;
-        if (!this.isMainCaret) {
-          left += options.word.offsetLeft;
-        } else {
+        if (this.isMainCaret && lockedMainCaretInTape) {
           left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
+        } else {
+          left += options.word.offsetLeft;
         }
 
         top += options.letter.offsetTop;
         top += options.word.offsetTop;
       } else if (Config.tapeMode === "letter") {
-        if (!this.isMainCaret) {
+        if (this.isMainCaret && lockedMainCaretInTape) {
+          left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
+        } else {
           left += options.letter.offsetLeft;
           left += options.word.offsetLeft;
           left += afterLetterCorrection;
-        } else {
-          left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
         }
 
         top += options.letter.offsetTop;

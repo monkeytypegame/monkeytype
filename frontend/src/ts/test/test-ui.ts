@@ -1047,7 +1047,14 @@ export async function scrollTape(
 
     PaceCaret.getCaret().handleTapeScroll({
       newMarginLeft:
-        PaceCaret.getMarginLeft() + (currentMarginLeft - newMargin) * -1,
+        PaceCaret.getCaret().getMarginLeft() +
+        (currentMarginLeft - newMargin) * -1,
+      duration,
+    });
+
+    Caret.getCaret().handleTapeScroll({
+      newMarginLeft:
+        Caret.getCaret().getMarginLeft() + (currentMarginLeft - newMargin) * -1,
       duration,
     });
 
@@ -1075,9 +1082,16 @@ export async function scrollTape(
       (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
     }
 
+    Caret.getCaret().handleTapeScroll({
+      newMarginLeft:
+        Caret.getCaret().getMarginLeft() + (currentMarginLeft - newMargin) * -1,
+      duration: 0,
+    });
+
     PaceCaret.getCaret().handleTapeScroll({
       newMarginLeft:
-        PaceCaret.getMarginLeft() + (currentMarginLeft - newMargin) * -1,
+        PaceCaret.getCaret().getMarginLeft() +
+        (currentMarginLeft - newMargin) * -1,
       duration: 0,
     });
 

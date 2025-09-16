@@ -32,10 +32,6 @@ export function getCaret(): Caret {
   return caret;
 }
 
-export function getMarginLeft(): number {
-  return caret.getMarginLeft();
-}
-
 export function setLastTestWpm(wpm: number): void {
   if (
     !TestState.isPaceRepeat ||
