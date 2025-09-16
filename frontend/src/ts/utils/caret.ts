@@ -296,10 +296,6 @@ export class Caret {
       // which would be much slower
       const currentMarginTop = parseFloat(this.element.style.marginTop || "0");
       const currentTop = parseFloat(this.element.style.top || "0");
-      const currentMarginLeft = parseFloat(
-        this.element.style.marginLeft || "0"
-      );
-      const currentLeft = parseFloat(this.element.style.left || "0");
 
       // if the margin animation finished, we reset it here by removing the margin
       // and offsetting the top by the same amount
@@ -311,12 +307,15 @@ export class Caret {
         });
       }
 
+      let currentMarginLeft = parseFloat(this.element.style.marginLeft || "0");
       if (this.readyToResetMarginLeft) {
         this.readyToResetMarginLeft = false;
+        const currentLeft = parseFloat(this.element.style.left || "0");
         $(this.element).css({
           marginLeft: 0,
           left: currentLeft + currentMarginLeft,
         });
+        currentMarginLeft = 0;
       }
 
       if (options.animate) {
@@ -326,7 +325,7 @@ export class Caret {
           width?: number;
           duration?: number;
           easing?: string;
-        } = { left, top };
+        } = { left: left - currentMarginLeft, top };
         if (this.isFullWidth()) {
           animation["width"] = width;
         }
