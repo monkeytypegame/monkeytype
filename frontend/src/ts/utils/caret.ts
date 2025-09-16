@@ -428,7 +428,6 @@ export class Caret {
           afterLetterCorrection += options.letter.offsetWidth * -1;
         }
       }
-
       if (Config.tapeMode === "off") {
         if (!this.isFullWidth()) {
           left += options.letter.offsetWidth;
@@ -436,9 +435,6 @@ export class Caret {
         left += options.letter.offsetLeft;
         left += options.word.offsetLeft;
         left += afterLetterCorrection;
-
-        top += options.letter.offsetTop;
-        top += options.word.offsetTop;
       } else if (Config.tapeMode === "word") {
         if (!this.isFullWidth()) {
           left += options.letter.offsetWidth;
@@ -447,31 +443,21 @@ export class Caret {
         left += options.word.offsetWidth * -1;
         left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
         left += afterLetterCorrection;
-
-        top += options.letter.offsetTop;
-        top += options.word.offsetTop;
       } else if (Config.tapeMode === "letter") {
         if (this.isFullWidth()) {
           left += width * -1;
         }
         left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
-
-        top += options.letter.offsetTop;
-        top += options.word.offsetTop;
       }
     } else {
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
         afterLetterCorrection += options.letter.offsetWidth;
       }
-
       if (Config.tapeMode === "off") {
         left += options.letter.offsetLeft;
         left += options.word.offsetLeft;
         left += afterLetterCorrection;
-
-        top += options.letter.offsetTop;
-        top += options.word.offsetTop;
       } else if (Config.tapeMode === "word") {
         left += options.letter.offsetLeft;
         left += afterLetterCorrection;
@@ -480,9 +466,6 @@ export class Caret {
         } else {
           left += options.word.offsetLeft;
         }
-
-        top += options.letter.offsetTop;
-        top += options.word.offsetTop;
       } else if (Config.tapeMode === "letter") {
         if (this.isMainCaret && lockedMainCaretInTape) {
           left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
@@ -491,11 +474,12 @@ export class Caret {
           left += options.word.offsetLeft;
           left += afterLetterCorrection;
         }
-
-        top += options.letter.offsetTop;
-        top += options.word.offsetTop;
       }
     }
+
+    //top position
+    top += options.letter.offsetTop;
+    top += options.word.offsetTop;
 
     // center the caret vertically and horizontally
     if (this.style !== "underline") {
