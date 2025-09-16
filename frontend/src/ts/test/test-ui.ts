@@ -1071,15 +1071,12 @@ export async function scrollTape(
     }
 
     Caret.getCaret().handleTapeScroll({
-      newMarginLeft:
-        Caret.getCaret().getMarginLeft() + (currentMarginLeft - newMargin) * -1,
+      marginDelta: (currentMarginLeft - newMargin) * -1,
       duration: 0,
     });
 
     PaceCaret.getCaret().handleTapeScroll({
-      newMarginLeft:
-        PaceCaret.getCaret().getMarginLeft() +
-        (currentMarginLeft - newMargin) * -1,
+      marginDelta: (currentMarginLeft - newMargin) * -1,
       duration: 0,
     });
 
