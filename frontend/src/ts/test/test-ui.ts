@@ -1037,15 +1037,12 @@ export async function scrollTape(
     const duration = SlowTimer.get() ? 0 : 125;
 
     PaceCaret.getCaret().handleTapeScroll({
-      newMarginLeft:
-        PaceCaret.getCaret().getMarginLeft() +
-        (currentMarginLeft - newMargin) * -1,
+      marginDelta: (currentMarginLeft - newMargin) * -1,
       duration,
     });
 
     Caret.getCaret().handleTapeScroll({
-      newMarginLeft:
-        Caret.getCaret().getMarginLeft() + (currentMarginLeft - newMargin) * -1,
+      marginDelta: (currentMarginLeft - newMargin) * -1,
       duration,
     });
 

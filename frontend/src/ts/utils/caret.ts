@@ -119,16 +119,18 @@ export class Caret {
   }
 
   public handleTapeScroll(options: {
-    newMarginLeft: number;
+    marginDelta: number;
     duration: number;
   }): void {
     if (this.isMainCaret && lockedMainCaretInTape) return;
 
     this.readyToResetMarginLeft = false;
 
+    const newMarginLeft = this.getMarginLeft() + options.marginDelta;
+
     if (options.duration === 0) {
       $(this.element).stop("marginLeft", true, false).css({
-        marginLeft: options.newMarginLeft,
+        marginLeft: newMarginLeft,
       });
       this.readyToResetMarginLeft = true;
       return;
@@ -138,7 +140,7 @@ export class Caret {
       .stop("marginLeft", true, false)
       .animate(
         {
-          marginLeft: options.newMarginLeft,
+          marginLeft: newMarginLeft,
         },
         {
           // this NEEDS to be the same duration as the
