@@ -10,7 +10,6 @@ import {
   SearchService,
   TextExtractor,
 } from "../utils/search-service";
-import { splitByAndKeep } from "../utils/strings";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
 import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
@@ -21,6 +20,7 @@ import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
+import { highlightMatches } from "../utils/strings";
 
 const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
@@ -41,23 +41,6 @@ function getSearchService<T>(
     newSearchService as unknown as (typeof searchServiceCache)[typeof language];
 
   return newSearchService;
-}
-
-function highlightMatches(text: string, matchedText: string[]): string {
-  if (matchedText.length === 0) {
-    return text;
-  }
-  const words = splitByAndKeep(text, `.,"/#!$%^&*;:{}=-_\`~() `.split(""));
-
-  const normalizedWords = words.map((word) => {
-    const shouldHighlight =
-      matchedText.find((match) => {
-        return word.startsWith(match);
-      }) !== undefined;
-    return shouldHighlight ? `<span class="highlight">${word}</span>` : word;
-  });
-
-  return normalizedWords.join("");
 }
 
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {

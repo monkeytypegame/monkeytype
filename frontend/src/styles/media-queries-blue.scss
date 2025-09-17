@@ -221,16 +221,6 @@
       }
     }
   }
-  #leaderboardsWrapper #leaderboards .leaderboardsTop {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: "title title" "subtitle yesterday" "buttons buttons";
-    .buttons .timeRange {
-      grid-template-columns: 1fr 1fr 1fr;
-      .languageSelect {
-        grid-column: span 1;
-      }
-    }
-  }
   .testActivity {
     --box-size: 0.58em;
     // .activity div,
