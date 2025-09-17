@@ -160,8 +160,8 @@ export function focusWords(): void {
   wordsInput?.focus({
     preventScroll: true,
   });
-  const wordsWrapper = document.querySelector<HTMLElement>("#typingTest");
-  Misc.scrollToCenterOrTop(wordsWrapper);
+  const typingTest = document.querySelector<HTMLElement>("#typingTest");
+  Misc.scrollToCenterOrTop(typingTest);
 }
 
 export function blurWords(): void {
