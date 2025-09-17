@@ -186,7 +186,7 @@ export function keepWordsInputInTheCenter(force = false): void {
   const wordsInputRect = wordsInput.getBoundingClientRect();
   const wordsInputBelowCenter = wordsInputRect.top > windowHeight / 2;
 
-  // dont do anything if its above or at the center
+  // dont do anything if its above or at the center unless forced
   if (!wordsInputBelowCenter && !force) return;
 
   wordsInput.scrollIntoView({
