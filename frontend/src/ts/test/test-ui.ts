@@ -168,6 +168,28 @@ export function blurWords(): void {
   $("#wordsInput").trigger("blur");
 }
 
+export function keepWordsInputInTheCenter(): void {
+  const wordsInput = document.querySelector<HTMLElement>("#wordsInput");
+  const wordsWrapper = document.querySelector<HTMLElement>("#wordsWrapper");
+  if (!wordsInput || !wordsWrapper) return;
+
+  const wordsWrapperHeight = wordsWrapper.offsetHeight;
+  const windowHeight = window.innerHeight;
+
+  // dont do anything if the wrapper can fit on screen
+  if (wordsWrapperHeight < windowHeight) return;
+
+  const wordsInputRect = wordsInput.getBoundingClientRect();
+  const wordsInputBelowCenter = wordsInputRect.top > windowHeight / 2;
+
+  // dont do anything if its above or at the center
+  if (!wordsInputBelowCenter) return;
+
+  wordsInput.scrollIntoView({
+    block: "center",
+  });
+}
+
 export function getWordElement(index: number): HTMLElement | null {
   const el = document.querySelector<HTMLElement>(
     `#words .word[data-wordindex='${index}']`
@@ -528,6 +550,8 @@ export async function updateWordsInputPosition(): Promise<void> {
     } else {
       el.style.left = Math.max(0, activeWord.offsetLeft) + "px";
     }
+
+    keepWordsInputInTheCenter();
   });
 }
 
