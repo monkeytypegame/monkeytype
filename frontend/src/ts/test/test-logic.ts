@@ -436,7 +436,6 @@ export async function init(): Promise<boolean> {
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
-  TestState.setRemovedUIWordCount(0);
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
@@ -1289,6 +1288,8 @@ async function saveResult(
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
+  const dataToSave: DB.SaveLocalResultData = {};
+
   if (data.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
 
@@ -1297,11 +1298,11 @@ async function saveResult(
       data.xp,
       TestUI.resultVisible ? data.xpBreakdown : undefined
     );
-    DB.addXp(data.xp);
+    dataToSave.xp = data.xp;
   }
 
   if (data.streak !== undefined) {
-    DB.setStreak(data.streak);
+    dataToSave.streak = data.streak;
   }
 
   if (data.insertedId !== undefined) {
@@ -1315,13 +1316,7 @@ async function saveResult(
     if (data.isPb !== undefined && data.isPb) {
       result.isPb = true;
     }
-    DB.saveLocalResult(result);
-    DB.updateLocalStats(
-      completedEvent.incompleteTests.length + 1,
-      completedEvent.testDuration +
-        completedEvent.incompleteTestSeconds -
-        completedEvent.afkDuration
-    );
+    dataToSave.result = result;
   }
 
   void AnalyticsController.log("testCompleted");
@@ -1344,33 +1339,10 @@ async function saveResult(
     }
     Result.showCrown("normal");
 
-    await DB.saveLocalPB(
-      completedEvent.mode,
-      completedEvent.mode2,
-      completedEvent.punctuation,
-      completedEvent.numbers,
-      completedEvent.language,
-      completedEvent.difficulty,
-      completedEvent.lazyMode,
-      completedEvent.wpm,
-      completedEvent.acc,
-      completedEvent.rawWpm,
-      completedEvent.consistency
-    );
+    dataToSave.isPb = true;
   } else {
     Result.showErrorCrownIfNeeded();
   }
-
-  // if (response.data.dailyLeaderboardRank) {
-  //   Notifications.add(
-  //     `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
-  //       Misc.getPositionString(response.data.dailyLeaderboardRank),
-  //     1,
-  //     10,
-  //     "Daily Leaderboard",
-  //     "list-ol"
-  //   );
-  // }
 
   if (data.dailyLeaderboardRank === undefined) {
     $("#result .stats .dailyLeaderboard").addClass("hidden");
@@ -1397,6 +1369,7 @@ async function saveResult(
   if (isRetrying) {
     Notifications.add("Result saved", 1, { important: true });
   }
+  DB.saveLocalResult(dataToSave);
 }
 
 export function fail(reason: string): void {

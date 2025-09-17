@@ -7,14 +7,7 @@
   },
   "plugins": ["typescript", "unicorn", "oxc", "import", "node", "promise"],
   "rules": {
-    "no-unused-vars": [
-      "error",
-      {
-        "argsIgnorePattern": "^(_|e|event)",
-        "caughtErrorsIgnorePattern": "^(_|e|error)",
-        "varsIgnorePattern": "^_"
-      }
-    ],
+    // disabled rules
     "no-await-in-loop": "off",
     "consistent-function-scoping": "off",
     "prefer-add-event-listener": "off",
@@ -23,8 +16,19 @@
     "no-useless-spread": "off",
     "no-async-endpoint-handlers": "off",
     "no-this-alias": "off",
-    "no-var": "error",
     "no-unassigned-import": "off",
+    "no-array-reverse": "off", // disabled for compatibility
+
+    // enabled rules
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^(_|e|event)",
+        "caughtErrorsIgnorePattern": "^(_|e|error)",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "no-var": "error",
     "no-non-null-assertion": "error",
     "no-non-null-asserted-nullish-coalescing": "error",
     "no-explicit-any": "error",
@@ -92,10 +96,10 @@
       }
     ],
 
-    "todo": "off",
+    // todo: enable
     "no-array-for-each": "off",
 
-    "consider": "off",
+    // consider these for the future
     "no-cycle": "off",
     "no-nested-ternary": "off"
   }

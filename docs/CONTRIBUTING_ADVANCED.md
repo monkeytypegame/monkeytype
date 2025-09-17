@@ -118,7 +118,7 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 ## Building and Running Monkeytype
 
-Its time to run Monkeytype. Just like with the databases, you can run the frontend and backend manually or with Docker.
+It's time to run Monkeytype. Just like with the databases, you can run the frontend and backend manually or with Docker.
 
 ### Dependencies (if running manually)
 
