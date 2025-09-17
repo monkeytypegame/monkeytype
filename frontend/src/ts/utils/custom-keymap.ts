@@ -93,7 +93,10 @@ export function stringToKeymap(keymap: string): KeymapCustom {
 
 export function keymapToString(keymap: KeymapCustom): string {
   try {
-    if (keymap?.length === 1 && keymap[0]?.length === 0) {
+    if (
+      (keymap?.length === 1 && keymap[0]?.length === 0) ||
+      keymap?.length === 0
+    ) {
       return "";
     }
     let jsonString = JSON.stringify(keymap ?? "");

@@ -192,6 +192,7 @@
     }
 
     &[data-config-name="fontFamily"],
+    &[data-config-name="keymapCustom"],
     &[data-config-name="customBackgroundSize"] {
       .separator {
         margin-bottom: 0.5rem;
@@ -210,6 +211,7 @@
       }
     }
 
+    &[data-config-name="keymapCustom"],
     &[data-config-name="fontFamily"] {
       grid-template-areas:
         "title title"
@@ -221,6 +223,7 @@
         .separator {
           margin-bottom: 0;
         }
+        .usingLocalKeymap,
         .usingLocalFont {
           button {
             width: 100%;

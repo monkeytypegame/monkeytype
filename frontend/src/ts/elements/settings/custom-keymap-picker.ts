@@ -2,6 +2,7 @@ import FileStorage from "../../utils/file-storage";
 import * as Notifications from "../notifications";
 import { keymapToString, stringToKeymap } from "../../utils/custom-keymap";
 import * as UpdateConfig from "../../config";
+import { KeymapCustom } from "@monkeytype/schemas/configs";
 
 const parentEl = document.querySelector(
   ".pageSettings .section[data-config-name='keymapCustom']"
@@ -18,6 +19,18 @@ async function readFileAsData(file: File): Promise<string> {
     reader.onerror = reject;
     reader.readAsText(file);
   });
+}
+
+async function applyCustomKeymap(keymap: KeymapCustom): Promise<void> {
+  $(
+    ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+  ).val("");
+  const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
 }
 
 export async function updateUI(): Promise<void> {
@@ -39,7 +52,7 @@ usingLocalKeymapEl
   ?.addEventListener("click", async () => {
     await FileStorage.deleteFile("LocalKeymapFile");
     await updateUI();
-    UpdateConfig.setKeymapCustom([]);
+    await applyCustomKeymap([]);
   });
 
 uploadContainerEl
@@ -65,7 +78,7 @@ uploadContainerEl
     await FileStorage.storeFile("LocalKeymapFile", keymapToString(keymapData));
 
     await updateUI();
-    UpdateConfig.setKeymapCustom(keymapData);
+    await applyCustomKeymap(keymapData);
 
     fileInput.value = "";
   });

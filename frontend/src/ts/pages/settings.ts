@@ -944,7 +944,7 @@ export async function update(
 
   setInputValue(
     "keymapCustom",
-    ".pageSettings .section[data-config-name='keymapCustom'] textarea",
+    ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea",
     keymapToString(Config.keymapCustom)
   );
 
