@@ -575,7 +575,11 @@ async function updateLegends(): Promise<void> {
   }
 
   for (let i = 0; i < layoutKeys.length; i++) {
-    const layoutKey = layoutKeys[i] as string[];
+    let layoutKey = layoutKeys[i] as string[];
+
+    if (Config.keymapStyle === "custom") {
+      layoutKey = layoutKey[0]?.split("") ?? ["", ""];
+    }
     const key = keys[i];
     const lowerCaseCharacter = layoutKey[0];
     const upperCaseCharacter = layoutKey[1];
@@ -584,7 +588,9 @@ async function updateLegends(): Promise<void> {
       key === undefined ||
       layoutKey === undefined ||
       lowerCaseCharacter === undefined ||
-      upperCaseCharacter === undefined
+      lowerCaseCharacter === "" ||
+      upperCaseCharacter === undefined ||
+      upperCaseCharacter === ""
     )
       continue;
 
