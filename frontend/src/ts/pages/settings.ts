@@ -1271,11 +1271,15 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
   if (eventKey === "themeLight") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${eventValue}"]`
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${Strings.stringifyConfigValue(
+        eventValue
+      )}"]`
     ).attr("selected", "true");
   } else if (eventKey === "themeDark") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${eventValue}"]`
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${Strings.stringifyConfigValue(
+        eventValue
+      )}"]`
     ).attr("selected", "true");
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once

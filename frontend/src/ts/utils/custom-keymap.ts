@@ -8,6 +8,7 @@ import {
 import { dataKeys as keyToDataObject } from "../constants/data-keys";
 import { sanitizeString } from "@monkeytype/util/strings";
 import { parseWithSchema } from "@monkeytype/util/json";
+import { stringifyConfigValue } from "./strings";
 
 const columnMultiplier = 8;
 const rowMultiplier = 8;
@@ -317,7 +318,7 @@ export function getCustomKeymapSyle(
             isRotationSectionStarted = true;
           }
           keyString = sanitizeString(
-            rowCopy[index + 1]?.toString() ?? ""
+            stringifyConfigValue(rowCopy[index + 1]) ?? ""
           ).toLowerCase();
           rowCopy.splice(index, 1);
         }

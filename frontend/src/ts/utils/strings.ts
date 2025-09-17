@@ -262,3 +262,16 @@ export function getWordDirection(
 export const __testing = {
   hasRTLCharacters,
 };
+
+/**
+ * Stringify properly JSON objects to avoid no-base-to-string
+ * eslint errors
+ */
+export function stringifyConfigValue(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  if (typeof value !== "object") {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    return value.toString();
+  }
+  return JSON.stringify(value);
+}
