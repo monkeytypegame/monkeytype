@@ -160,15 +160,19 @@ export function focusWords(): void {
   wordsInput?.focus({
     preventScroll: true,
   });
-  const typingTest = document.querySelector<HTMLElement>("#typingTest");
-  Misc.scrollToCenterOrTop(typingTest);
+  if (TestState.isActive) {
+    keepWordsInputInTheCenter(true);
+  } else {
+    const typingTest = document.querySelector<HTMLElement>("#typingTest");
+    Misc.scrollToCenterOrTop(typingTest);
+  }
 }
 
 export function blurWords(): void {
   $("#wordsInput").trigger("blur");
 }
 
-export function keepWordsInputInTheCenter(): void {
+export function keepWordsInputInTheCenter(force = false): void {
   const wordsInput = document.querySelector<HTMLElement>("#wordsInput");
   const wordsWrapper = document.querySelector<HTMLElement>("#wordsWrapper");
   if (!wordsInput || !wordsWrapper) return;
@@ -183,7 +187,7 @@ export function keepWordsInputInTheCenter(): void {
   const wordsInputBelowCenter = wordsInputRect.top > windowHeight / 2;
 
   // dont do anything if its above or at the center
-  if (!wordsInputBelowCenter) return;
+  if (!wordsInputBelowCenter && !force) return;
 
   wordsInput.scrollIntoView({
     block: "center",
