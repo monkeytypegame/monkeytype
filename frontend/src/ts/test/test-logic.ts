@@ -105,10 +105,9 @@ async function setTestDirection(): Promise<void> {
   const currentLanguage = await JSONData.getLanguage(Config.language);
   const isLanguageRTL = currentLanguage.rightToLeft ?? false;
   TestState.setIsLanguageRightToLeft(isLanguageRTL);
-  const isDirectionReversed = isFunboxActiveWithProperty("reverseDirection");
-  TestState.setIsDirectionReversed(isDirectionReversed);
-  // logical XOR
-  TestState.setIsTestRightToLeft(isLanguageRTL !== isDirectionReversed);
+  TestState.setIsDirectionReversed(
+    isFunboxActiveWithProperty("reverseDirection")
+  );
 }
 
 export function startTest(now: number): boolean {

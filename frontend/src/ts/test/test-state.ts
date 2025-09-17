@@ -12,7 +12,6 @@ export let testInitSuccess = true;
 export let lineScrollDistance = 0;
 export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
-export let isTestRightToLeft = false;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -68,8 +67,4 @@ export function setIsLanguageRightToLeft(rtl: boolean): void {
 
 export function setIsDirectionReversed(val: boolean): void {
   isDirectionReversed = val;
-}
-
-export function setIsTestRightToLeft(rtl: boolean): void {
-  isTestRightToLeft = rtl;
 }

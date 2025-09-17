@@ -52,9 +52,11 @@ async function resetCaretPosition(): Promise<void> {
 
   const currentWord = TestWords.words.get(settings?.currentWordIndex ?? 0);
 
-  const isWordRTL =
-    isWordRightToLeft(currentWord, TestState.isLanguageRightToLeft) !==
-    TestState.isDirectionReversed; // logical XOR
+  const isWordRTL = isWordRightToLeft(
+    currentWord,
+    TestState.isLanguageRightToLeft,
+    TestState.isDirectionReversed
+  );
 
   caret.stop(true, true).animate(
     {
@@ -233,9 +235,11 @@ export async function update(expectedStepEnd: number): Promise<void> {
 
       const currentWord = TestWords.words.get(settings.currentWordIndex);
 
-      const isWordRTL =
-        isWordRightToLeft(currentWord, TestState.isLanguageRightToLeft) !==
-        TestState.isDirectionReversed; // logical XOR
+      const isWordRTL = isWordRightToLeft(
+        currentWord,
+        TestState.isLanguageRightToLeft,
+        TestState.isDirectionReversed
+      );
 
       newTop =
         word.offsetTop +

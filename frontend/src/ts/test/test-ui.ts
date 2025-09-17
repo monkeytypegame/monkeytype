@@ -241,11 +241,11 @@ async function joinOverlappingHints(
   activeWordLetters: NodeListOf<Element>,
   hintElements: HTMLCollection
 ): Promise<void> {
-  const isWordRightToLeft =
-    Strings.isWordRightToLeft(
-      TestWords.words.getCurrent(),
-      TestState.isLanguageRightToLeft
-    ) !== TestState.isDirectionReversed; // logical XOR
+  const isWordRightToLeft = Strings.isWordRightToLeft(
+    TestWords.words.getCurrent(),
+    TestState.isLanguageRightToLeft,
+    TestState.isDirectionReversed
+  );
 
   let previousBlocksAdjacent = false;
   let currentHintBlock = 0;
@@ -491,6 +491,10 @@ function shouldUpdateWordsInputPosition(): boolean {
 export async function updateWordsInputPosition(initial = false): Promise<void> {
   if (ActivePage.get() !== "test") return;
 
+  const isTestRightToLeft = TestState.isDirectionReversed
+    ? !TestState.isLanguageRightToLeft
+    : TestState.isLanguageRightToLeft;
+
   const el = document.querySelector<HTMLElement>("#wordsInput");
 
   if (!el) return;
@@ -532,7 +536,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
     el.style.top = targetTop + "px";
   }
 
-  if (activeWord.offsetWidth < letterHeight && TestState.isTestRightToLeft) {
+  if (activeWord.offsetWidth < letterHeight && isTestRightToLeft) {
     el.style.left = activeWord.offsetLeft - letterHeight + "px";
   } else {
     el.style.left = Math.max(0, activeWord.offsetLeft) + "px";
@@ -893,6 +897,10 @@ export async function scrollTape(
 
   await centeringActiveLine;
 
+  const isTestRightToLeft = TestState.isDirectionReversed
+    ? !TestState.isLanguageRightToLeft
+    : TestState.isLanguageRightToLeft;
+
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
@@ -965,8 +973,8 @@ export async function scrollTape(
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
       if (
-        (!TestState.isTestRightToLeft && forWordLeft < 0 - forWordWidth) ||
-        (TestState.isTestRightToLeft && forWordLeft > wordsWrapperWidth)
+        (!isTestRightToLeft && forWordLeft < 0 - forWordWidth) ||
+        (isTestRightToLeft && forWordLeft > wordsWrapperWidth)
       ) {
         toRemove.push(child);
         widthRemoved += wordOuterWidth;
@@ -1012,7 +1020,7 @@ export async function scrollTape(
         currentLineIndent - (widthRemovedFromLine[i] ?? 0)
       }px`;
     }
-    if (TestState.isTestRightToLeft) widthRemoved *= -1;
+    if (isTestRightToLeft) widthRemoved *= -1;
     const currentWordsMargin = parseFloat(wordsEl.style.marginLeft) || 0;
     wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
   }
@@ -1045,7 +1053,7 @@ export async function scrollTape(
     wordsWrapperWidth * (Config.tapeMargin / 100) -
     wordsWidthBeforeActive -
     currentWordWidth;
-  if (TestState.isTestRightToLeft) newMargin = wordRightMargin - newMargin;
+  if (isTestRightToLeft) newMargin = wordRightMargin - newMargin;
 
   const jqWords = $(wordsEl);
   if (Config.smoothLineScroll) {

@@ -330,6 +330,20 @@ describe("string utils", () => {
       expect(Strings.isWordRightToLeft(undefined, true)).toBe(true);
     });
 
+    // testing reverseDirection
+    it("should return true for LTR word with reversed direction", () => {
+      expect(Strings.isWordRightToLeft("hello", false, true)).toBe(true);
+      expect(Strings.isWordRightToLeft("hello", true, true)).toBe(true);
+    });
+    it("should return false for RTL word with reversed direction", () => {
+      expect(Strings.isWordRightToLeft("مرحبا", true, true)).toBe(false);
+      expect(Strings.isWordRightToLeft("مرحبا", false, true)).toBe(false);
+    });
+    it("should return reverse of languageRTL for undefined word with reversed direction", () => {
+      expect(Strings.isWordRightToLeft(undefined, false, true)).toBe(true);
+      expect(Strings.isWordRightToLeft(undefined, true, true)).toBe(false);
+    });
+
     describe("caching", () => {
       let mapGetSpy: ReturnType<typeof vi.spyOn>;
       let mapSetSpy: ReturnType<typeof vi.spyOn>;

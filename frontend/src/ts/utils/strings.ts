@@ -238,24 +238,27 @@ export function clearWordDirectionCache(): void {
 
 export function isWordRightToLeft(
   word: string | undefined,
-  languageRTL: boolean
+  languageRTL: boolean,
+  reverseDirection?: boolean
 ): boolean {
-  if (word === undefined || word.length === 0) return languageRTL;
+  if (word === undefined || word.length === 0) {
+    return reverseDirection ? !languageRTL : languageRTL;
+  }
 
   // Strip leading/trailing punctuation and whitespace so attached opposite-direction
   // punctuation like "word؟" or "،word" doesn't flip the direction detection
   // and if only punctuation/symbols/whitespace, use main language direction
   const core = word.replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "");
-  if (core.length === 0) return languageRTL;
+  if (core.length === 0) return reverseDirection ? !languageRTL : languageRTL;
 
   // cache by core to handle variants like "word" vs "word؟"
   const cached = wordDirectionCache.get(core);
-  if (cached !== undefined) return cached;
+  if (cached !== undefined) return reverseDirection ? !cached : cached;
 
   const result = hasRTLCharacters(core);
   wordDirectionCache.set(core, result);
 
-  return result;
+  return reverseDirection ? !result : result;
 }
 
 // Export testing utilities for unit tests
