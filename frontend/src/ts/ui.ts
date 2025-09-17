@@ -106,7 +106,7 @@ const debouncedEvent = debounce(250, () => {
       void TestUI.updateHintsPositionDebounced();
     }
     setTimeout(() => {
-      void TestUI.updateWordsInputPosition();
+      TestUI.updateWordsInputPosition();
       TestUI.focusWords();
     }, 250);
   }
