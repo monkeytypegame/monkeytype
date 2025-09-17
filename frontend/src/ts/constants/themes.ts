@@ -1116,9 +1116,9 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
   },
   dragon: {
     bgColor: "#141519",
-    mainColor: "#ff6b1d",
-    subColor: "#52545c",
-    textColor: "#e6e7ea",
+    mainColor: "#ff7a2d",
+    subColor: "#6b6d75",
+    textColor: "#f0f2f5",
   },
 };
 
