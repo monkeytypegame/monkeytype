@@ -1075,6 +1075,11 @@ export async function update(
     250,
     async () => {
       $("#result").trigger("focus");
+      const result = document.querySelector<HTMLElement>("#result");
+      result?.focus({
+        preventScroll: true,
+      });
+      Misc.scrollToCenterOrTop(result);
       void AdController.renderResult();
       TestUI.setResultCalculating(false);
       $("#words").empty();

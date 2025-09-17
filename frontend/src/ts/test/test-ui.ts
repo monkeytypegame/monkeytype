@@ -155,7 +155,13 @@ export function reset(): void {
 }
 
 export function focusWords(): void {
-  $("#wordsInput").trigger("focus");
+  const wordsInput = document.querySelector<HTMLElement>("#wordsInput");
+  wordsInput?.blur();
+  wordsInput?.focus({
+    preventScroll: true,
+  });
+  const wordsWrapper = document.querySelector<HTMLElement>("#typingTest");
+  Misc.scrollToCenterOrTop(wordsWrapper);
 }
 
 export function blurWords(): void {
@@ -1711,11 +1717,13 @@ addEventListener("resize", () => {
 });
 
 $("#wordsInput").on("focus", (e) => {
+  console.log("words input getting focus");
   const wordsFocused = e.target === document.activeElement;
   if (!wordsFocused) return;
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
+  console.log("words input calling show");
   Caret.show(true);
 });
 

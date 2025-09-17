@@ -96,6 +96,7 @@
     position: relative;
     width: 100%;
     margin: 0 auto;
+    outline: 1px solid red;
   }
 
   .ssWatermark {
@@ -572,10 +573,10 @@
 }
 
 #wordsInput {
-  width: 1ch;
+  width: 20ch;
   font-size: 1em;
   height: 1em;
-  opacity: 0;
+  opacity: 1;
   padding: 0;
   margin: 0 auto;
   border: none;
@@ -612,6 +613,7 @@
 }
 
 #result {
+  outline: 1px solid red !important;
   &:focus-visible {
     outline: none;
   }
@@ -1351,6 +1353,7 @@
   #wordsWrapper {
     position: relative;
     overflow: visible clip;
+    outline: 1px solid red;
     &.tape {
       overflow: hidden;
       -webkit-mask-image: linear-gradient(
