@@ -229,7 +229,7 @@ export function updateActiveElement(
 
   activeWordTop = newActiveWord.offsetTop;
 
-  void updateWordsInputPosition();
+  updateWordsInputPosition();
 
   if (!initial && Config.tapeMode !== "off") {
     void scrollTape();
@@ -513,11 +513,11 @@ export function appendEmptyWordElement(
   );
 }
 let updateWordsInputPositionAnimationFrameId: null | number = null;
-export async function updateWordsInputPosition(): Promise<void> {
+export function updateWordsInputPosition(): void {
   if (updateWordsInputPositionAnimationFrameId !== null) {
     cancelAnimationFrame(updateWordsInputPositionAnimationFrameId);
   }
-  updateWordsInputPositionAnimationFrameId = requestAnimationFrame(async () => {
+  updateWordsInputPositionAnimationFrameId = requestAnimationFrame(() => {
     updateWordsInputPositionAnimationFrameId = null;
     if (ActivePage.get() !== "test") return;
     const isTestRightToLeft = TestState.isDirectionReversed
