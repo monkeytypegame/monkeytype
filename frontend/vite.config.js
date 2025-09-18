@@ -81,7 +81,10 @@ function sassList(values) {
 
 export function getFontsConig() {
   return (
-    "\n" +
+    `\n"Vazirmatn": (
+    "src": "Vazirmatn-Regular.woff2",
+    "weight": 400,
+    ),\n` +
     Object.keys(Fonts)
       .sort()
       .map((name) => {
