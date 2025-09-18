@@ -160,6 +160,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Cache testcontainers images
+        id: cache-testcontainers
+        uses: AndreKurait/docker-cache@0.6.0
+        with:
+          key: ${{ runner.os }}-testcontainers-mongo-5.0.13-redis-6.2.6
+
+      - name: Pull testcontainers images
+        run: |
+          docker pull mongo:5.0.13
+          docker pull redis:6.2.6
+          
       - name: Check lint
         run: npm run lint-be
 
