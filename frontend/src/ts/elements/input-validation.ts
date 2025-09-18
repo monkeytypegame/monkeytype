@@ -152,6 +152,7 @@ export function validateWithIndicator<T>(
   inputElement: HTMLInputElement,
   options: ValidationOptions<T>
 ): void {
+  console.log({ inputElement, options });
   //use indicator
   const indicator = new InputIndicator(inputElement, {
     success: {

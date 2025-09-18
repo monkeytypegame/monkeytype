@@ -6,7 +6,11 @@ import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
-import { PresetType, PresetTypeSchema } from "@monkeytype/schemas/presets";
+import {
+  PresetNameSchema,
+  PresetType,
+  PresetTypeSchema,
+} from "@monkeytype/schemas/presets";
 import { getPreset } from "../controllers/preset-controller";
 import {
   ConfigGroupName,
@@ -17,6 +21,7 @@ import {
 } from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
+import { validateWithIndicator } from "../elements/input-validation";
 
 const state = {
   presetType: "full" as PresetType,
@@ -51,6 +56,14 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .inputs").removeClass("hidden");
         $("#editPresetModal .modal .presetType").removeClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
+        validateWithIndicator(
+          document.querySelector(
+            "#editPresetModal .modal input"
+          ) as HTMLInputElement,
+          {
+            schema: PresetNameSchema,
+          }
+        );
         state.presetType = "full";
       } else if (action === "edit" && id !== undefined && name !== undefined) {
         $("#editPresetModal .modal").attr("data-action", "edit");
@@ -63,6 +76,14 @@ export function show(action: string, id?: string, name?: string): void {
           "#editPresetModal .modal label.changePresetToCurrentCheckbox"
         ).removeClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
+        validateWithIndicator(
+          document.querySelector(
+            "#editPresetModal .modal input"
+          ) as HTMLInputElement,
+          {
+            schema: PresetNameSchema,
+          }
+        );
         state.setPresetToCurrent = false;
         await updateEditPresetUI();
       } else if (
@@ -237,6 +258,9 @@ async function apply(): Promise<void> {
     Notifications.add("Preset name cannot be empty", 0);
     return;
   }
+
+  //TODO
+  //store presetNameEl as HtnlInputElementWithValidation and check .isValid()
 
   hide();
 
