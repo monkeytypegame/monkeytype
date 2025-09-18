@@ -1024,28 +1024,26 @@ export async function scrollTape(
   }
 
   /* change to new #words & .afterNewline margins */
-
   const tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
+  let newMarginOffset = wordsWidthBeforeActive + currentWordWidth;
+  let newMargin = tapeMarginPx - newMarginOffset;
+  if (isLanguageRTL) {
+    newMarginOffset *= -1;
+    newMargin = wordRightMargin - newMargin;
+  }
 
-  let newMargin = tapeMarginPx - wordsWidthBeforeActive - currentWordWidth;
-  if (isLanguageRTL) newMargin = wordRightMargin - newMargin;
+  const duration = SlowTimer.get() || !Config.smoothLineScroll ? 0 : 125;
+  const scrollOptions = {
+    newValue: newMarginOffset * -1,
+    duration,
+    resetBy: widthRemoved,
+  };
 
-  const currentMarginLeft = parseFloat(wordsEl.style.marginLeft || "0");
+  Caret.caret.handleTapeScroll(scrollOptions);
+  PaceCaret.caret.handleTapeScroll(scrollOptions);
 
   if (Config.smoothLineScroll) {
     const jqWords = $(wordsEl).stop("leftMargin", true, false);
-    const duration = SlowTimer.get() ? 0 : 125;
-
-    PaceCaret.caret.handleTapeScroll({
-      marginDelta: (currentMarginLeft - newMargin) * -1,
-      duration,
-    });
-
-    Caret.caret.handleTapeScroll({
-      marginDelta: (currentMarginLeft - newMargin) * -1,
-      duration,
-    });
-
     jqWords.animate(
       {
         marginLeft: newMargin,
@@ -1061,7 +1059,7 @@ export async function scrollTape(
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       $(afterNewLineEls[i] as Element)
         .stop(true, false)
-        .animate({ marginLeft: newMargin }, SlowTimer.get() ? 0 : 125);
+        .animate({ marginLeft: newMargin }, duration);
     }
   } else {
     wordsEl.style.marginLeft = `${newMargin}px`;
@@ -1069,17 +1067,6 @@ export async function scrollTape(
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
     }
-
-    Caret.caret.handleTapeScroll({
-      marginDelta: (currentMarginLeft - newMargin) * -1,
-      duration: 0,
-    });
-
-    PaceCaret.caret.handleTapeScroll({
-      marginDelta: (currentMarginLeft - newMargin) * -1,
-      duration: 0,
-    });
-
     if (afterCompleteFn) afterCompleteFn();
   }
 }

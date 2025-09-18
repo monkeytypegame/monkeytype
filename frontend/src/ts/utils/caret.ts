@@ -35,6 +35,7 @@ export class Caret {
   private readyToResetMarginLeft: boolean = false;
   private singleAnimationFrame = new SingleAnimationFrame();
   private isMainCaret: boolean = false;
+  private cumulativeMarginLeftReset: number = 0;
 
   constructor(element: HTMLElement, style: CaretStyle) {
     this.element = element;
@@ -112,21 +113,19 @@ export class Caret {
     this.element.style.marginLeft = "";
     this.readyToResetMarginTop = false;
     this.readyToResetMarginLeft = false;
-  }
-
-  public getMarginLeft(): number {
-    return parseFloat(this.element.style.marginLeft || "0");
+    this.cumulativeMarginLeftReset = 0;
   }
 
   public handleTapeScroll(options: {
-    marginDelta: number;
+    newValue: number;
     duration: number;
+    resetBy: number;
   }): void {
     if (this.isMainCaret && lockedMainCaretInTape) return;
-
     this.readyToResetMarginLeft = false;
 
-    const newMarginLeft = this.getMarginLeft() + options.marginDelta;
+    this.cumulativeMarginLeftReset += options.resetBy;
+    const newMarginLeft = options.newValue - this.cumulativeMarginLeftReset;
 
     if (options.duration === 0) {
       $(this.element).stop("marginLeft", true, false).css({
@@ -218,14 +217,9 @@ export class Caret {
       ? 0
       : options.duration ?? smoothCaretSpeed;
 
-    // accounting for marginTop set by smooth line scroll
-    // animation uses inline styles, so its fine to read inline here instead
-    // of computed styles which would be much slower
-    const currentMarginTop = parseFloat(this.element.style.marginTop || "0");
-
     const animation: Record<string, number> = {
       left: options.left,
-      top: options.top + currentMarginTop * -1,
+      top: options.top,
     };
 
     if (options.width !== undefined) {
@@ -307,16 +301,16 @@ export class Caret {
 
       // if the margin animation finished, we reset it here by removing the margin
       // and offsetting the top by the same amount
+      let currentMarginTop = parseFloat(this.element.style.marginTop || "0");
       if (this.readyToResetMarginTop) {
         this.readyToResetMarginTop = false;
-        const currentMarginTop = parseFloat(
-          this.element.style.marginTop || "0"
-        );
         const currentTop = parseFloat(this.element.style.top || "0");
+
         $(this.element).css({
           marginTop: 0,
           top: currentTop + currentMarginTop,
         });
+        currentMarginTop = 0;
       }
 
       // same for marginLeft
@@ -324,23 +318,31 @@ export class Caret {
       if (this.readyToResetMarginLeft) {
         this.readyToResetMarginLeft = false;
         const currentLeft = parseFloat(this.element.style.left || "0");
+
         $(this.element).css({
           marginLeft: 0,
           left: currentLeft + currentMarginLeft,
         });
+        this.cumulativeMarginLeftReset += currentMarginLeft;
         currentMarginLeft = 0;
       }
 
       if (options.animate) {
         // to be honst, im not 100% sure why we need to offset the left by currentMarginLeft,
         // but not currentMarginTop, but it seems that way after testing
+
+        // actually we need both, but you were doing the top in a different place. Here I moved it for you
+
+        // accounting for marginTop set by smooth line scroll
+        // animation uses inline styles, so its fine to read inline here instead
+        // of computed styles which would be much slower
         const animation: {
           left: number;
           top: number;
           width?: number;
           duration?: number;
           easing?: string;
-        } = { left: left - currentMarginLeft, top };
+        } = { left: left - currentMarginLeft, top: top - currentMarginTop };
         if (this.isFullWidth()) {
           animation["width"] = width;
         }
