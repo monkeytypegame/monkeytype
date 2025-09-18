@@ -20,12 +20,7 @@ import {
   reauthenticateWithPopup,
   unlink,
 } from "firebase/auth";
-import {
-  createErrorMessage,
-  isDevEnvironment,
-  isPasswordStrong,
-  reloadAfter,
-} from "../utils/misc";
+import { createErrorMessage, reloadAfter } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
 import { CustomThemeColors } from "@monkeytype/schemas/configs";
@@ -38,7 +33,11 @@ import {
 } from "../utils/simple-modal";
 import { ShowOptions } from "../utils/animated-modal";
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
-import { UserEmailSchema, UserNameSchema } from "@monkeytype/schemas/users";
+import {
+  PasswordSchema,
+  UserEmailSchema,
+  UserNameSchema,
+} from "@monkeytype/schemas/users";
 import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 
@@ -551,6 +550,9 @@ list.updatePassword = new SimpleModal({
       placeholder: "new password",
       type: "password",
       initVal: "",
+      validation: {
+        schema: PasswordSchema,
+      },
     },
     {
       placeholder: "confirm new password",
@@ -577,14 +579,6 @@ list.updatePassword = new SimpleModal({
       return {
         status: 0,
         message: "New password must be different from previous password",
-      };
-    }
-
-    if (!isDevEnvironment() && !isPasswordStrong(newPassword)) {
-      return {
-        status: 0,
-        message:
-          "New password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
       };
     }
 

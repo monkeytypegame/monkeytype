@@ -26,6 +26,7 @@ import {
   UserTagSchema,
   UserEmailSchema,
   UserNameSchema,
+  PasswordSchema,
 } from "@monkeytype/schemas/users";
 import {
   Mode2Schema,
@@ -80,7 +81,7 @@ export const UpdateEmailRequestSchema = z.object({
 export type UpdateEmailRequest = z.infer<typeof UpdateEmailRequestSchema>;
 
 export const UpdatePasswordRequestSchema = z.object({
-  newPassword: z.string().min(6),
+  newPassword: PasswordSchema,
 });
 export type UpdatePasswordRequest = z.infer<typeof UpdatePasswordRequestSchema>;
 
@@ -439,7 +440,7 @@ export const usersContract = c.router(
     },
     updatePassword: {
       summary: "update password",
-      description: "Updates a user's email",
+      description: "Updates a user's password",
       method: "PATCH",
       path: "/password",
       body: UpdatePasswordRequestSchema.strict(),
