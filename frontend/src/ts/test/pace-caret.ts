@@ -283,7 +283,11 @@ export function start(): void {
   void update((settings?.spc ?? 0) * 1000);
 }
 
-window["update"] = update;
+type WindowWithUpdate = typeof window & {
+  update: (duration: number) => void;
+};
+
+(window as WindowWithUpdate).update = update;
 
 function updateStyle(): void {
   const paceCaret = $("#paceCaret");
