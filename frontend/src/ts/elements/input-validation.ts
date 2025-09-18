@@ -143,7 +143,7 @@ export type ValidationOptions<T> = (T extends string
   callback?: (result: ValidationResult) => void;
 };
 
-export type HTMLInputElementWithIsValid = HTMLInputElement & {
+export type ValidatedHtmlInputElement = HTMLInputElement & {
   isValid: () => boolean | undefined;
 };
 /**
@@ -154,7 +154,7 @@ export type HTMLInputElementWithIsValid = HTMLInputElement & {
 export function validateWithIndicator<T>(
   inputElement: HTMLInputElement,
   options: ValidationOptions<T>
-): HTMLInputElementWithIsValid {
+): ValidatedHtmlInputElement {
   //use indicator
   const indicator = new InputIndicator(inputElement, {
     success: {
@@ -195,9 +195,10 @@ export function validateWithIndicator<T>(
 
   inputElement.addEventListener("input", handler);
 
-  // Attach isValid method directly to the inputElement instance
-  (inputElement as HTMLInputElementWithIsValid).isValid = () => isValid;
-  return inputElement as HTMLInputElementWithIsValid;
+  const result = inputElement as ValidatedHtmlInputElement;
+  result.isValid = () => isValid;
+
+  return result;
 }
 
 export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
