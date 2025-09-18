@@ -54,7 +54,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
   }
 
   protected getInterval(lastDay: Date, fullYear = false): Interval {
-    const end = fullYear ? endOfYear(lastDay) : new Date();
+    const end = fullYear ? endOfYear(lastDay) : new UTCDateMini();
     let start = startOfYear(lastDay);
     if (!fullYear) {
       //show the last 52 weeks. Not using one year to avoid the graph to show 54 weeks
