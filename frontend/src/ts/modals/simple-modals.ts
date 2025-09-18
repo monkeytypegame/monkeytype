@@ -20,7 +20,11 @@ import {
   reauthenticateWithPopup,
   unlink,
 } from "firebase/auth";
-import { createErrorMessage, reloadAfter } from "../utils/misc";
+import {
+  createErrorMessage,
+  isDevEnvironment,
+  reloadAfter,
+} from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
 import { CustomThemeColors } from "@monkeytype/schemas/configs";
@@ -40,6 +44,7 @@ import {
 } from "@monkeytype/schemas/users";
 import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
+import { z } from "zod";
 
 type PopupKey =
   | "updateEmail"
@@ -551,7 +556,7 @@ list.updatePassword = new SimpleModal({
       type: "password",
       initVal: "",
       validation: {
-        schema: PasswordSchema,
+        schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
       },
     },
     {

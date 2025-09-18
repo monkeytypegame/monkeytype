@@ -8,6 +8,8 @@ import {
   UserNameSchema,
 } from "@monkeytype/schemas/users";
 import { validateWithIndicator } from "../elements/input-validation";
+import { isDevEnvironment } from "../utils/misc";
+import { z } from "zod";
 
 let registerForm: {
   name?: string;
@@ -180,7 +182,7 @@ const passwordInputEl = validateWithIndicator(
     ".page.pageLogin .register.side .passwordInput"
   ) as HTMLInputElement,
   {
-    schema: PasswordSchema,
+    schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
     callback: (result) => {
       if (result.status === "success") {
         //re-validate the verify password

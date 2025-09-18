@@ -26,7 +26,6 @@ import {
   UserTagSchema,
   UserEmailSchema,
   UserNameSchema,
-  PasswordSchema,
 } from "@monkeytype/schemas/users";
 import {
   Mode2Schema,
@@ -81,7 +80,7 @@ export const UpdateEmailRequestSchema = z.object({
 export type UpdateEmailRequest = z.infer<typeof UpdateEmailRequestSchema>;
 
 export const UpdatePasswordRequestSchema = z.object({
-  newPassword: PasswordSchema,
+  newPassword: z.string().min(6),
 });
 export type UpdatePasswordRequest = z.infer<typeof UpdatePasswordRequestSchema>;
 
