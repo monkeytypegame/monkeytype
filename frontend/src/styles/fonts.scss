@@ -1,5 +1,14 @@
 @use "sass:map";
 
+$fonts: map.set(
+  $fonts,
+  "Vazirmatn",
+  (
+    "src": "Vazirmatn-Regular.woff2",
+    "weight": 400,
+  )
+);
+
 @each $font, $config in $fonts {
   $dir: "webfonts";
   $previewDir: "webfonts-preview";
