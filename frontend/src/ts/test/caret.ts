@@ -17,10 +17,6 @@ export function hide(): void {
   caret.getElement().classList.add("hidden");
 }
 
-export function getCaret(): Caret {
-  return caret;
-}
-
 export async function resetPosition(): Promise<void> {
   const isLanguageRightToLeft =
     (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
@@ -67,7 +63,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   // }
 }
 
-const caret = new Caret(
+export const caret = new Caret(
   document.getElementById("caret") as HTMLElement,
   Config.caretStyle
 );

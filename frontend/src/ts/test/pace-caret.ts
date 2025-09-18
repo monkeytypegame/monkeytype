@@ -21,16 +21,12 @@ type Settings = {
 
 export let settings: Settings | null = null;
 
-let caret = new Caret(
+export const caret = new Caret(
   document.getElementById("paceCaret") as HTMLElement,
   Config.paceCaretStyle
 );
 
 let lastTestWpm = 0;
-
-export function getCaret(): Caret {
-  return caret;
-}
 
 export function setLastTestWpm(wpm: number): void {
   if (
