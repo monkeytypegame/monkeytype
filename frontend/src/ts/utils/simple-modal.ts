@@ -355,12 +355,12 @@ export class SimpleModal {
 
   exec(): void {
     if (!this.canClose) return;
-    if (this.__hasMissingRequired()) {
+    if (this.hasMissingRequired()) {
       Notifications.add("Please fill in all fields", 0);
       return;
     }
 
-    if (this.__hasValidationErrors()) {
+    if (this.hasValidationErrors()) {
       Notifications.add("Please solve all validation errors", 0);
       return;
     }
@@ -430,13 +430,13 @@ export class SimpleModal {
     }
   }
 
-  __hasMissingRequired(): boolean {
+  hasMissingRequired(): boolean {
     return this.inputs
       .filter((i) => i.hidden !== true && i.optional !== true)
       .some((v) => v.currentValue() === undefined || v.currentValue() === "");
   }
 
-  __hasValidationErrors(): boolean {
+  hasValidationErrors(): boolean {
     return this.inputs.some((i) => i.hasError === true);
   }
 
@@ -446,7 +446,7 @@ export class SimpleModal {
     ) as HTMLButtonElement;
     if (button === null) return;
 
-    if (this.__hasMissingRequired() || this.__hasValidationErrors()) {
+    if (this.hasMissingRequired() || this.hasValidationErrors()) {
       button.disabled = true;
     } else {
       button.disabled = false;
