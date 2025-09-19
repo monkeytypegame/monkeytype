@@ -1,6 +1,6 @@
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import _, { omit } from "lodash";
+import _ from "lodash";
 import uaparser from "ua-parser-js";
 import { MonkeyRequest } from "../api/types";
 import { ObjectId } from "mongodb";
@@ -220,8 +220,8 @@ export function replaceObjectId<T extends { _id: ObjectId }>(
     return null;
   }
   const result = {
+    ...data,
     _id: data._id.toString(),
-    ...omit(data, "_id"),
   } as T & { _id: string };
   return result;
 }
@@ -240,3 +240,15 @@ export function replaceObjectIds<T extends { _id: ObjectId }>(
 export type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
   _id: ObjectId;
 };
+
+export function omit<T extends object, K extends keyof T>(
+  obj: T,
+  ...keys: K[]
+): Omit<T, K> {
+  const result = { ...obj };
+  for (const key of keys) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete result[key];
+  }
+  return result;
+}

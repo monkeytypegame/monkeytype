@@ -2,7 +2,7 @@ import _ from "lodash";
 import * as db from "./db";
 import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
-import { identity } from "../utils/misc";
+import { identity, omit } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { addLog } from "../dal/logs";
@@ -81,9 +81,9 @@ export async function getLiveConfiguration(): Promise<Configuration> {
     const liveConfiguration = await configurationCollection.findOne();
 
     if (liveConfiguration) {
-      const baseConfiguration = _.cloneDeep(BASE_CONFIGURATION);
+      const baseConfiguration = structuredClone(BASE_CONFIGURATION);
 
-      const liveConfigurationWithoutId = _.omit(
+      const liveConfigurationWithoutId = omit(
         liveConfiguration,
         "_id"
       ) as Configuration;
@@ -129,7 +129,7 @@ export async function patchConfiguration(
   configurationUpdates: PartialConfiguration
 ): Promise<boolean> {
   try {
-    const currentConfiguration = _.cloneDeep(configuration);
+    const currentConfiguration = structuredClone(configuration);
     mergeConfigurations(currentConfiguration, configurationUpdates);
 
     await db
