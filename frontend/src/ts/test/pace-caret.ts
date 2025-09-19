@@ -4,12 +4,11 @@ import Config from "../config";
 import * as DB from "../db";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { convertRemToPixels } from "../utils/numbers";
 import { getActiveFunboxes } from "./funbox/list";
-import { getWordDirection } from "../utils/strings";
+import { isWordRightToLeft } from "../utils/strings";
 
 type Settings = {
   wpm: number;
@@ -51,22 +50,18 @@ async function resetCaretPosition(): Promise<void> {
 
   if (firstLetter === undefined || firstLetterHeight === undefined) return;
 
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRightToLeft = currentLanguage.rightToLeft;
-
   const currentWord = TestWords.words.get(settings?.currentWordIndex ?? 0);
 
-  const isWordRightToLeft = getWordDirection(
+  const isWordRTL = isWordRightToLeft(
     currentWord,
-    isLanguageRightToLeft ?? false
+    TestState.isLanguageRightToLeft,
+    TestState.isDirectionReversed
   );
 
   caret.stop(true, true).animate(
     {
       top: firstLetter.offsetTop - firstLetterHeight / 4,
-      left:
-        firstLetter.offsetLeft +
-        (isWordRightToLeft ? firstLetter.offsetWidth : 0),
+      left: firstLetter.offsetLeft + (isWordRTL ? firstLetter.offsetWidth : 0),
     },
     0,
     "linear"
@@ -238,17 +233,14 @@ export async function update(expectedStepEnd: number): Promise<void> {
         );
       }
 
-      const currentLanguage = await JSONData.getCurrentLanguage(
-        Config.language
-      );
-      const isLanguageRightToLeft = currentLanguage.rightToLeft;
-
       const currentWord = TestWords.words.get(settings.currentWordIndex);
 
-      const isWordRightToLeft = getWordDirection(
+      const isWordRTL = isWordRightToLeft(
         currentWord,
-        isLanguageRightToLeft ?? false
+        TestState.isLanguageRightToLeft,
+        TestState.isDirectionReversed
       );
+
       newTop =
         word.offsetTop +
         currentLetter.offsetTop -
@@ -258,13 +250,13 @@ export async function update(expectedStepEnd: number): Promise<void> {
           word.offsetLeft +
           currentLetter.offsetLeft -
           caretWidth / 2 +
-          (isWordRightToLeft ? currentLetterWidth : 0);
+          (isWordRTL ? currentLetterWidth : 0);
       } else {
         newLeft =
           word.offsetLeft +
           currentLetter.offsetLeft -
           caretWidth / 2 +
-          (isWordRightToLeft ? 0 : currentLetterWidth);
+          (isWordRTL ? 0 : currentLetterWidth);
       }
       caret.removeClass("hidden");
     } catch (e) {

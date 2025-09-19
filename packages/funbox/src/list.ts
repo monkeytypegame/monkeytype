@@ -404,9 +404,9 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "backwards",
     properties: [
       "hasCssFile",
-      "noLigatures",
       "conflictsWithSymmetricChars",
       "wordOrder:reverse",
+      "reverseDirection",
     ],
     canGetPb: true,
     frontendFunctions: ["alterText"],
