@@ -28,6 +28,14 @@ export function toggleCaretDebug(): void {
   }
 }
 
+type AnimatePositionOptions = {
+  left: number;
+  top: number;
+  duration?: number;
+  easing?: string;
+  width?: number;
+};
+
 export class Caret {
   private element: HTMLElement;
   private style: CaretStyle = "default";
@@ -196,13 +204,7 @@ export class Caret {
     $(this.element).dequeue("marginTop");
   }
 
-  public animatePosition(options: {
-    left: number;
-    top: number;
-    duration?: number;
-    easing?: string;
-    width?: number;
-  }): void {
+  public animatePosition(options: AnimatePositionOptions): void {
     const smoothCaretSpeed =
       Config.smoothCaret === "off"
         ? 0
@@ -218,14 +220,9 @@ export class Caret {
       ? 0
       : options.duration ?? smoothCaretSpeed;
 
-    // accounting for marginTop set by smooth line scroll
-    // animation uses inline styles, so its fine to read inline here instead
-    // of computed styles which would be much slower
-    const currentMarginTop = parseFloat(this.element.style.marginTop || "0");
-
     const animation: Record<string, number> = {
       left: options.left,
-      top: options.top + currentMarginTop * -1,
+      top: options.top,
     };
 
     if (options.width !== undefined) {
@@ -305,18 +302,20 @@ export class Caret {
         isLanguageRightToLeft: options.isLanguageRightToLeft,
       });
 
+      // animation uses inline styles, so its fine to read inline here instead
+      // of computed styles which would be much slower
+
       // if the margin animation finished, we reset it here by removing the margin
       // and offsetting the top by the same amount
+      let currentMarginTop = parseFloat(this.element.style.marginTop || "0");
       if (this.readyToResetMarginTop) {
         this.readyToResetMarginTop = false;
-        const currentMarginTop = parseFloat(
-          this.element.style.marginTop || "0"
-        );
         const currentTop = parseFloat(this.element.style.top || "0");
         $(this.element).css({
           marginTop: 0,
           top: currentTop + currentMarginTop,
         });
+        currentMarginTop = 0;
       }
 
       // same for marginLeft
@@ -332,17 +331,12 @@ export class Caret {
       }
 
       if (options.animate) {
-        // to be honst, im not 100% sure why we need to offset the left by currentMarginLeft,
-        // but not currentMarginTop, but it seems that way after testing
-        const animation: {
-          left: number;
-          top: number;
-          width?: number;
-          duration?: number;
-          easing?: string;
-        } = { left: left - currentMarginLeft, top };
+        const animation: AnimatePositionOptions = {
+          left: left - currentMarginLeft,
+          top: top - currentMarginTop,
+        };
         if (this.isFullWidth()) {
-          animation["width"] = width;
+          animation.width = width;
         }
 
         if (options.animationOptions) {
