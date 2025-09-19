@@ -43,7 +43,7 @@ export class Caret {
   private readyToResetMarginLeft: boolean = false;
   private singleAnimationFrame = new SingleAnimationFrame();
   private isMainCaret: boolean = false;
-  private cumulativeMarginLeftReset: number = 0;
+  private cumulativeTapeMarginCorrection: number = 0;
 
   constructor(element: HTMLElement, style: CaretStyle) {
     this.element = element;
@@ -133,11 +133,11 @@ export class Caret {
     this.element.style.marginLeft = "";
     this.readyToResetMarginTop = false;
     this.readyToResetMarginLeft = false;
-    this.cumulativeMarginLeftReset = 0;
+    this.cumulativeTapeMarginCorrection = 0;
   }
 
   public handleTapeWordsRemoved(widthRemoved: number): void {
-    this.cumulativeMarginLeftReset += widthRemoved;
+    this.cumulativeTapeMarginCorrection += widthRemoved;
   }
 
   public handleTapeScroll(options: {
@@ -147,7 +147,8 @@ export class Caret {
     if (this.isMainCaret && lockedMainCaretInTape) return;
     this.readyToResetMarginLeft = false;
 
-    const newMarginLeft = options.newValue - this.cumulativeMarginLeftReset;
+    const newMarginLeft =
+      options.newValue - this.cumulativeTapeMarginCorrection;
 
     if (options.duration === 0) {
       $(this.element).stop("marginLeft", true, false).css({
@@ -342,7 +343,7 @@ export class Caret {
           marginLeft: 0,
           left: currentLeft + currentMarginLeft,
         });
-        this.cumulativeMarginLeftReset += currentMarginLeft;
+        this.cumulativeTapeMarginCorrection += currentMarginLeft;
         currentMarginLeft = 0;
       }
 
