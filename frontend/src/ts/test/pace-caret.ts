@@ -6,7 +6,6 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../utils/caret";
-import * as JSONData from "../utils/json-data";
 
 type Settings = {
   wpm: number;
@@ -37,15 +36,12 @@ export function setLastTestWpm(wpm: number): void {
   }
 }
 
-async function resetCaretPosition(): Promise<void> {
+function resetCaretPosition(): void {
   if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
   if (!$("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").addClass("hidden");
   }
   if (Config.mode === "zen") return;
-
-  const isLanguageRightToLeft =
-    (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
 
   caret.stopAllAnimations();
   caret.clearMargins();
@@ -53,7 +49,7 @@ async function resetCaretPosition(): Promise<void> {
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft,
+    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
     animate: false,
   });
 
@@ -162,7 +158,7 @@ export async function init(): Promise<void> {
     wordsStatus: {},
     timeout: null,
   };
-  await resetCaretPosition();
+  resetCaretPosition();
 }
 
 export async function update(duration: number): Promise<void> {
