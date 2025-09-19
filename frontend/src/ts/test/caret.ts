@@ -3,7 +3,6 @@ import * as TestInput from "./test-input";
 import * as TestState from "../test/test-state";
 import { subscribe } from "../observables/config-event";
 import { Caret } from "../utils/caret";
-import * as JSONData from "../utils/json-data";
 
 export function stopAnimation(): void {
   caret.stopBlinking();
@@ -28,14 +27,11 @@ export function resetPosition(): void {
   });
 }
 
-export async function updatePosition(noAnim = false): Promise<void> {
-  const isLanguageRightToLeft =
-    (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
-
+export function updatePosition(noAnim = false): void {
   caret.goTo({
     wordIndex: TestState.activeWordIndex,
     letterIndex: TestInput.input.current.length,
-    isLanguageRightToLeft,
+    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
     animate: Config.smoothCaret !== "off" && !noAnim,
   });
 
@@ -68,7 +64,7 @@ export const caret = new Caret(
 subscribe((eventKey) => {
   if (eventKey === "caretStyle") {
     caret.setStyle(Config.caretStyle);
-    void updatePosition(true);
+    updatePosition(true);
   }
   if (eventKey === "smoothCaret") {
     caret.updateBlinkingAnimation();
@@ -77,6 +73,6 @@ subscribe((eventKey) => {
 
 export function show(noAnim = false): void {
   caret.getElement().classList.remove("hidden");
-  void updatePosition(noAnim);
+  updatePosition(noAnim);
   startAnimation();
 }
