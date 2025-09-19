@@ -1,13 +1,12 @@
 @use "sass:map";
 
-$fonts: map.set(
-  $fonts,
-  "Vazirmatn",
-  (
-    "src": "Vazirmatn-Regular.woff2",
-    "weight": 400,
-  )
-);
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("/webfonts/Vazirmatn-Regular.woff2") format("woff2");
+}
 
 @each $font, $config in $fonts {
   $dir: "webfonts";
