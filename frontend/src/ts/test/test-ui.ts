@@ -1032,15 +1032,15 @@ export async function scrollTape(
     newMargin = wordRightMargin - newMargin;
   }
 
-  const duration = SlowTimer.get() || !Config.smoothLineScroll ? 0 : 125;
-  const scrollOptions = {
+  const duration = SlowTimer.get() ? 0 : 125;
+  const caretScrollOptions = {
     newValue: newMarginOffset * -1,
-    duration,
+    duration: Config.smoothLineScroll ? duration : 0,
     resetBy: widthRemoved,
   };
 
-  Caret.caret.handleTapeScroll(scrollOptions);
-  PaceCaret.caret.handleTapeScroll(scrollOptions);
+  Caret.caret.handleTapeScroll(caretScrollOptions);
+  PaceCaret.caret.handleTapeScroll(caretScrollOptions);
 
   if (Config.smoothLineScroll) {
     const jqWords = $(wordsEl).stop("leftMargin", true, false);
