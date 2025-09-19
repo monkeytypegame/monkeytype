@@ -124,15 +124,17 @@ export class Caret {
     this.cumulativeMarginLeftReset = 0;
   }
 
+  public resetMarginLeftBy(widthRemoved: number): void {
+    this.cumulativeMarginLeftReset += widthRemoved;
+  }
+
   public handleTapeScroll(options: {
     newValue: number;
     duration: number;
-    resetBy: number;
   }): void {
     if (this.isMainCaret && lockedMainCaretInTape) return;
     this.readyToResetMarginLeft = false;
 
-    this.cumulativeMarginLeftReset += options.resetBy;
     const newMarginLeft = options.newValue - this.cumulativeMarginLeftReset;
 
     if (options.duration === 0) {
