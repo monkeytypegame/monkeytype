@@ -34,26 +34,6 @@ export function updatePosition(noAnim = false): void {
     isLanguageRightToLeft: TestState.isLanguageRightToLeft,
     animate: Config.smoothCaret !== "off" && !noAnim,
   });
-
-  //this should probably be somewhere else, or might not even be needed?
-  // if (Config.showAllLines) {
-  //   const browserHeight = window.innerHeight;
-  //   const middlePos = browserHeight / 2 - (jqcaret.outerHeight() as number) / 2;
-  //   const contentHeight = document.body.scrollHeight;
-
-  //   if (
-  //     newTop >= middlePos &&
-  //     contentHeight > browserHeight &&
-  //     TestState.isActive
-  //   ) {
-  //     const newscrolltop = newTop - middlePos / 2;
-  //     window.scrollTo({
-  //       left: 0,
-  //       top: newscrolltop,
-  //       behavior: prefersReducedMotion() ? "instant" : "smooth",
-  //     });
-  //   }
-  // }
 }
 
 export const caret = new Caret(
