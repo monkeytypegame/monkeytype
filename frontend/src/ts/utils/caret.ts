@@ -1,16 +1,16 @@
 import { CaretStyle } from "@monkeytype/schemas/configs";
 import Config from "../config";
-import { getWordDirection } from "./strings";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestWords from "../test/test-words";
 import { getTotalInlineMargin, SingleAnimationFrame } from "./misc";
+import { isWordRightToLeft } from "./strings";
 
 const wordsCache = document.querySelector<HTMLElement>("#words") as HTMLElement;
 const wordsWrapperCache = document.querySelector<HTMLElement>(
   "#wordsWrapper"
 ) as HTMLElement;
 
-let lockedMainCaretInTape = false;
+let lockedMainCaretInTape = true;
 
 let caretDebug = true;
 export function toggleCaretDebug(): void {
@@ -27,6 +27,14 @@ export function toggleCaretDebug(): void {
     }
   }
 }
+
+type AnimatePositionOptions = {
+  left: number;
+  top: number;
+  duration?: number;
+  easing?: string;
+  width?: number;
+};
 
 export class Caret {
   private element: HTMLElement;
@@ -195,13 +203,7 @@ export class Caret {
     $(this.element).dequeue("marginTop");
   }
 
-  public animatePosition(options: {
-    left: number;
-    top: number;
-    duration?: number;
-    easing?: string;
-    width?: number;
-  }): void {
+  public animatePosition(options: AnimatePositionOptions): void {
     const smoothCaretSpeed =
       Config.smoothCaret === "off"
         ? 0
@@ -299,6 +301,9 @@ export class Caret {
         isLanguageRightToLeft: options.isLanguageRightToLeft,
       });
 
+      // animation uses inline styles, so its fine to read inline here instead
+      // of computed styles which would be much slower
+
       // if the margin animation finished, we reset it here by removing the margin
       // and offsetting the top by the same amount
       let currentMarginTop = parseFloat(this.element.style.marginTop || "0");
@@ -328,16 +333,12 @@ export class Caret {
       }
 
       if (options.animate) {
-        const animation: {
-          left: number;
-          top: number;
-          width?: number;
-          duration?: number;
-          easing?: string;
-          // take the current margins into account (meaning an animation is running)
-        } = { left: left - currentMarginLeft, top: top - currentMarginTop };
+        const animation: AnimatePositionOptions = {
+          left: left - currentMarginLeft,
+          top: top - currentMarginTop,
+        };
         if (this.isFullWidth()) {
-          animation["width"] = width;
+          animation.width = width;
         }
 
         if (options.animationOptions) {
@@ -369,7 +370,7 @@ export class Caret {
     side: "beforeLetter" | "afterLetter";
     isLanguageRightToLeft: boolean;
   }): { left: number; top: number; width: number } {
-    const isWordRightToLeft = getWordDirection(
+    const isWordRTL = isWordRightToLeft(
       options.wordText,
       options.isLanguageRightToLeft
     );
@@ -414,19 +415,29 @@ export class Caret {
     let top = 0;
 
     // yes, this is all super verbose, but its easier to maintain and understand
-    if (isWordRightToLeft) {
+    if (isWordRTL) {
+      let afterLetterCorrection = 0;
+      if (options.side === "afterLetter") {
+        if (this.isFullWidth()) {
+          afterLetterCorrection += spaceWidth * -1;
+        } else {
+          afterLetterCorrection += options.letter.offsetWidth * -1;
+        }
+      }
       if (Config.tapeMode === "off") {
         if (!this.isFullWidth()) {
           left += options.letter.offsetWidth;
         }
         left += options.letter.offsetLeft;
         left += options.word.offsetLeft;
+        left += afterLetterCorrection;
       } else if (Config.tapeMode === "word") {
         if (!this.isFullWidth()) {
           left += options.letter.offsetWidth;
         }
         left += options.word.offsetWidth * -1;
         left += options.letter.offsetLeft;
+        left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
           left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
         } else {
@@ -442,25 +453,22 @@ export class Caret {
         } else {
           left += options.letter.offsetLeft;
           left += options.word.offsetLeft;
+          left += afterLetterCorrection;
           left += width;
         }
       }
-
+    } else {
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
-        if (this.isFullWidth()) {
-          afterLetterCorrection += spaceWidth * -1;
-        } else {
-          afterLetterCorrection += options.letter.offsetWidth * -1;
-        }
+        afterLetterCorrection += options.letter.offsetWidth;
       }
-      left += afterLetterCorrection;
-    } else {
       if (Config.tapeMode === "off") {
         left += options.letter.offsetLeft;
         left += options.word.offsetLeft;
+        left += afterLetterCorrection;
       } else if (Config.tapeMode === "word") {
         left += options.letter.offsetLeft;
+        left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
           left += wordsWrapperCache.offsetWidth * (Config.tapeMargin / 100);
         } else {
@@ -472,14 +480,9 @@ export class Caret {
         } else {
           left += options.letter.offsetLeft;
           left += options.word.offsetLeft;
+          left += afterLetterCorrection;
         }
       }
-
-      let afterLetterCorrection = 0;
-      if (options.side === "afterLetter") {
-        afterLetterCorrection += options.letter.offsetWidth;
-      }
-      left += afterLetterCorrection;
     }
 
     //top position

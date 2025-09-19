@@ -17,16 +17,13 @@ export function hide(): void {
   caret.getElement().classList.add("hidden");
 }
 
-export async function resetPosition(): Promise<void> {
-  const isLanguageRightToLeft =
-    (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
-
+export function resetPosition(): void {
   caret.clearMargins();
   caret.stopAllAnimations();
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft,
+    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
     animate: false,
   });
 }

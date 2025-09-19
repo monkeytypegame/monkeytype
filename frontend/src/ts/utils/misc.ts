@@ -746,6 +746,17 @@ export function isMacLike(): boolean {
   return isPlatform(/Mac|iPod|iPhone|iPad/);
 }
 
+export function scrollToCenterOrTop(el: HTMLElement | null): void {
+  if (!el) return;
+
+  const elementHeight = el.offsetHeight;
+  const windowHeight = window.innerHeight;
+
+  el.scrollIntoView({
+    block: elementHeight < windowHeight ? "center" : "start",
+  });
+}
+
 export function getTotalInlineMargin(element: HTMLElement): number {
   const computedStyle = window.getComputedStyle(element);
   return (

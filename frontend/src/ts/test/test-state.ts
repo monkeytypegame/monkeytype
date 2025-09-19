@@ -12,6 +12,8 @@ export let activeWordIndex = 0;
 export let testInitSuccess = true;
 export let testRestarting = false;
 export let resultVisible = false;
+export let isLanguageRightToLeft = false;
+export let isDirectionReversed = false;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -74,4 +76,12 @@ export function setTestRestarting(val: boolean): void {
 
 export function setResultVisible(val: boolean): void {
   resultVisible = val;
+}
+
+export function setIsLanguageRightToLeft(rtl: boolean): void {
+  isLanguageRightToLeft = rtl;
+}
+
+export function setIsDirectionReversed(val: boolean): void {
+  isDirectionReversed = val;
 }

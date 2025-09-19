@@ -343,8 +343,10 @@ async function handleSpace(): Promise<void> {
 
     if ((nextTop ?? 0) > currentTop) {
       void TestUI.lineJump(currentTop);
-    } //end of line wrap
-  }
+    }
+  } //end of line wrap
+
+  void Caret.updatePosition();
 
   void Caret.updatePosition();
 
