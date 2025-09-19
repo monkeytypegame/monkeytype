@@ -170,6 +170,41 @@ export async function update(duration: number): Promise<void> {
     $("#paceCaret").removeClass("hidden");
   }
 
+  incrementLetterIndex();
+
+  try {
+    caret.goTo({
+      wordIndex: settings.currentWordIndex,
+      letterIndex: settings.currentLetterIndex,
+      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
+      animate: true,
+      animationOptions: {
+        duration,
+        easing: "linear",
+      },
+    });
+    settings.timeout = setTimeout(() => {
+      update((settings?.spc ?? 0) * 1000).catch(() => {
+        settings = null;
+      });
+    }, duration);
+  } catch (e) {
+    console.error(e);
+    $("#paceCaret").addClass("hidden");
+    return;
+  }
+}
+
+export function reset(): void {
+  if (settings?.timeout !== null && settings?.timeout !== undefined) {
+    clearTimeout(settings.timeout);
+  }
+  settings = null;
+}
+
+function incrementLetterIndex(): void {
+  if (settings === null) return;
+
   try {
     settings.currentLetterIndex++;
     if (
@@ -214,35 +249,6 @@ export async function update(duration: number): Promise<void> {
     $("#paceCaret").addClass("hidden");
     return;
   }
-
-  try {
-    caret.goTo({
-      wordIndex: settings.currentWordIndex,
-      letterIndex: settings.currentLetterIndex,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      animate: true,
-      animationOptions: {
-        duration,
-        easing: "linear",
-      },
-    });
-    settings.timeout = setTimeout(() => {
-      update((settings?.spc ?? 0) * 1000).catch(() => {
-        settings = null;
-      });
-    }, duration);
-  } catch (e) {
-    console.error(e);
-    $("#paceCaret").addClass("hidden");
-    return;
-  }
-}
-
-export function reset(): void {
-  if (settings?.timeout !== null && settings?.timeout !== undefined) {
-    clearTimeout(settings.timeout);
-  }
-  settings = null;
 }
 
 export function handleSpace(correct: boolean, currentWord: string): void {
