@@ -38,11 +38,9 @@ export function setLastTestWpm(wpm: number): void {
 
 function resetCaretPosition(): void {
   if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
-  if (!$("#paceCaret").hasClass("hidden")) {
-    $("#paceCaret").addClass("hidden");
-  }
   if (Config.mode === "zen") return;
 
+  caret.hide();
   caret.stopAllAnimations();
   caret.clearMargins();
 
@@ -52,40 +50,10 @@ function resetCaretPosition(): void {
     isLanguageRightToLeft: TestState.isLanguageRightToLeft,
     animate: false,
   });
-
-  // const caret = $("#paceCaret");
-  // const firstLetter = document
-  //   ?.querySelector("#words .word")
-  //   ?.querySelector("letter") as HTMLElement;
-
-  // const firstLetterHeight = $(firstLetter).height();
-
-  // if (firstLetter === undefined || firstLetterHeight === undefined) return;
-
-  // const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  // const isLanguageRightToLeft = currentLanguage.rightToLeft;
-
-  // const currentWord = TestWords.words.get(settings?.currentWordIndex ?? 0);
-
-  // const isWordRightToLeft = getWordDirection(
-  //   currentWord,
-  //   isLanguageRightToLeft ?? false
-  // );
-
-  // caret.stop(true, true).animate(
-  //   {
-  //     top: firstLetter.offsetTop - firstLetterHeight / 4,
-  //     left:
-  //       firstLetter.offsetLeft +
-  //       (isWordRightToLeft ? firstLetter.offsetWidth : 0),
-  //   },
-  //   0,
-  //   "linear"
-  // );
 }
 
 export async function init(): Promise<void> {
-  $("#paceCaret").addClass("hidden");
+  caret.hide();
   const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
   let wpm = 0;
   if (Config.paceCaret === "pb") {
@@ -166,8 +134,8 @@ export async function update(duration: number): Promise<void> {
     return;
   }
 
-  if ($("#paceCaret").hasClass("hidden")) {
-    $("#paceCaret").removeClass("hidden");
+  if (caret.isHidden()) {
+    caret.show();
   }
 
   incrementLetterIndex();
@@ -190,7 +158,7 @@ export async function update(duration: number): Promise<void> {
     }, duration);
   } catch (e) {
     console.error(e);
-    $("#paceCaret").addClass("hidden");
+    caret.hide();
     return;
   }
 }
@@ -246,7 +214,7 @@ function incrementLetterIndex(): void {
     //out of words
     settings = null;
     console.log("pace caret out of words");
-    $("#paceCaret").addClass("hidden");
+    caret.hide();
     return;
   }
 }

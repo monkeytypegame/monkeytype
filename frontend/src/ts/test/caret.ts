@@ -13,7 +13,7 @@ export function startAnimation(): void {
 }
 
 export function hide(): void {
-  caret.getElement().classList.add("hidden");
+  caret.hide();
 }
 
 export function resetPosition(): void {
@@ -52,7 +52,7 @@ subscribe((eventKey) => {
 });
 
 export function show(noAnim = false): void {
-  caret.getElement().classList.remove("hidden");
+  caret.show();
   updatePosition(noAnim);
   startAnimation();
 }
