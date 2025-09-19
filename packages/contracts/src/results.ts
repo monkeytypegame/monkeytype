@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   CommonResponses,
   meta,
+  MonkeyClientError,
   MonkeyResponseSchema,
   responseWithData,
 } from "./util/api";
@@ -131,6 +132,13 @@ export const resultsContract = c.router(
       body: AddResultRequestSchema.strict(),
       responses: {
         200: AddResultResponseSchema,
+        460: MonkeyClientError.describe("Test too short"),
+        461: MonkeyClientError.describe("Result hash invalid"),
+        462: MonkeyClientError.describe("Result spacing invalid"),
+        463: MonkeyClientError.describe("Result data invalid"),
+        464: MonkeyClientError.describe("Missing key data"),
+        465: MonkeyClientError.describe("Bot detected"),
+        466: MonkeyClientError.describe("Duplicate result"),
       },
       metadata: meta({
         rateLimit: "resultsAdd",
