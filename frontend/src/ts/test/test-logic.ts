@@ -99,17 +99,6 @@ export function setNotSignedInUidAndHash(uid: string): void {
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
 }
 
-async function setTestDirection(): Promise<void> {
-  // changing Config.language or funboxes mid-test requires a restart
-  // if that changes, call this function on each update
-  const currentLanguage = await JSONData.getLanguage(Config.language);
-  const isLanguageRTL = currentLanguage.rightToLeft ?? false;
-  TestState.setIsLanguageRightToLeft(isLanguageRTL);
-  TestState.setIsDirectionReversed(
-    isFunboxActiveWithProperty("reverseDirection")
-  );
-}
-
 export function startTest(now: number): boolean {
   if (PageTransition.get()) {
     return false;
@@ -583,7 +572,13 @@ async function init(): Promise<boolean> {
   Funbox.toggleScript(TestWords.words.getCurrent());
   TestUI.setRightToLeft(language.rightToLeft ?? false);
   TestUI.setLigatures(language.ligatures ?? false);
-  await setTestDirection();
+
+  const isLanguageRTL = language.rightToLeft ?? false;
+  TestState.setIsLanguageRightToLeft(isLanguageRTL);
+  TestState.setIsDirectionReversed(
+    isFunboxActiveWithProperty("reverseDirection")
+  );
+
   TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
   console.debug(
