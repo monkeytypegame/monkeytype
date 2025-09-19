@@ -6,7 +6,6 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../utils/caret";
-import * as JSONData from "../utils/json-data";
 
 type Settings = {
   wpm: number;
@@ -37,59 +36,24 @@ export function setLastTestWpm(wpm: number): void {
   }
 }
 
-async function resetCaretPosition(): Promise<void> {
+function resetCaretPosition(): void {
   if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
-  if (!$("#paceCaret").hasClass("hidden")) {
-    $("#paceCaret").addClass("hidden");
-  }
   if (Config.mode === "zen") return;
 
-  const isLanguageRightToLeft =
-    (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
-
+  caret.hide();
   caret.stopAllAnimations();
   caret.clearMargins();
 
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft,
+    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
     animate: false,
   });
-
-  // const caret = $("#paceCaret");
-  // const firstLetter = document
-  //   ?.querySelector("#words .word")
-  //   ?.querySelector("letter") as HTMLElement;
-
-  // const firstLetterHeight = $(firstLetter).height();
-
-  // if (firstLetter === undefined || firstLetterHeight === undefined) return;
-
-  // const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  // const isLanguageRightToLeft = currentLanguage.rightToLeft;
-
-  // const currentWord = TestWords.words.get(settings?.currentWordIndex ?? 0);
-
-  // const isWordRightToLeft = getWordDirection(
-  //   currentWord,
-  //   isLanguageRightToLeft ?? false
-  // );
-
-  // caret.stop(true, true).animate(
-  //   {
-  //     top: firstLetter.offsetTop - firstLetterHeight / 4,
-  //     left:
-  //       firstLetter.offsetLeft +
-  //       (isWordRightToLeft ? firstLetter.offsetWidth : 0),
-  //   },
-  //   0,
-  //   "linear"
-  // );
 }
 
 export async function init(): Promise<void> {
-  $("#paceCaret").addClass("hidden");
+  caret.hide();
   const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
   let wpm = 0;
   if (Config.paceCaret === "pb") {
@@ -162,7 +126,7 @@ export async function init(): Promise<void> {
     wordsStatus: {},
     timeout: null,
   };
-  await resetCaretPosition();
+  resetCaretPosition();
 }
 
 export async function update(duration: number): Promise<void> {
@@ -170,9 +134,44 @@ export async function update(duration: number): Promise<void> {
     return;
   }
 
-  if ($("#paceCaret").hasClass("hidden")) {
-    $("#paceCaret").removeClass("hidden");
+  if (caret.isHidden()) {
+    caret.show();
   }
+
+  incrementLetterIndex();
+
+  try {
+    caret.goTo({
+      wordIndex: settings.currentWordIndex,
+      letterIndex: settings.currentLetterIndex,
+      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
+      animate: true,
+      animationOptions: {
+        duration,
+        easing: "linear",
+      },
+    });
+    settings.timeout = setTimeout(() => {
+      update((settings?.spc ?? 0) * 1000).catch(() => {
+        settings = null;
+      });
+    }, duration);
+  } catch (e) {
+    console.error(e);
+    caret.hide();
+    return;
+  }
+}
+
+export function reset(): void {
+  if (settings?.timeout !== null && settings?.timeout !== undefined) {
+    clearTimeout(settings.timeout);
+  }
+  settings = null;
+}
+
+function incrementLetterIndex(): void {
+  if (settings === null) return;
 
   try {
     settings.currentLetterIndex++;
@@ -215,38 +214,9 @@ export async function update(duration: number): Promise<void> {
     //out of words
     settings = null;
     console.log("pace caret out of words");
-    $("#paceCaret").addClass("hidden");
+    caret.hide();
     return;
   }
-
-  try {
-    caret.goTo({
-      wordIndex: settings.currentWordIndex,
-      letterIndex: settings.currentLetterIndex,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      animate: true,
-      animationOptions: {
-        duration,
-        easing: "linear",
-      },
-    });
-    settings.timeout = setTimeout(() => {
-      update((settings?.spc ?? 0) * 1000).catch(() => {
-        settings = null;
-      });
-    }, duration);
-  } catch (e) {
-    console.error(e);
-    $("#paceCaret").addClass("hidden");
-    return;
-  }
-}
-
-export function reset(): void {
-  if (settings?.timeout !== null && settings?.timeout !== undefined) {
-    clearTimeout(settings.timeout);
-  }
-  settings = null;
 }
 
 export function handleSpace(correct: boolean, currentWord: string): void {
@@ -276,24 +246,9 @@ export function start(): void {
   void update((settings?.spc ?? 0) * 1000);
 }
 
-function updateStyle(): void {
-  const paceCaret = $("#paceCaret");
-  paceCaret.removeClass([
-    "off",
-    "default",
-    "underline",
-    "outline",
-    "block",
-    "carrot",
-    "banana",
-  ]);
-  paceCaret.addClass(Config.paceCaretStyle);
-}
-
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "paceCaret") void init();
   if (eventKey === "paceCaretStyle") {
     caret.setStyle(Config.paceCaretStyle);
-    updateStyle();
   }
 });

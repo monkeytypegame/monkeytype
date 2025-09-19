@@ -66,6 +66,18 @@ export class Caret {
     return this.element;
   }
 
+  public show(): void {
+    this.element.classList.remove("hidden");
+  }
+
+  public hide(): void {
+    this.element.classList.add("hidden");
+  }
+
+  public isHidden(): boolean {
+    return this.element.classList.contains("hidden");
+  }
+
   public getWidth(): number {
     return this.element.offsetWidth;
   }
