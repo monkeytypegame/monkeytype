@@ -17,10 +17,6 @@ export function hide(): void {
   caret.getElement().classList.add("hidden");
 }
 
-export function getCaret(): Caret {
-  return caret;
-}
-
 export function resetPosition(): void {
   caret.clearMargins();
   caret.stopAllAnimations();
@@ -64,7 +60,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   // }
 }
 
-const caret = new Caret(
+export const caret = new Caret(
   document.getElementById("caret") as HTMLElement,
   Config.caretStyle
 );
