@@ -328,20 +328,13 @@ export class Caret {
       }
 
       if (options.animate) {
-        // to be honst, im not 100% sure why we need to offset the left by currentMarginLeft,
-        // but not currentMarginTop, but it seems that way after testing
-
-        // actually we need both, but you were doing the top in a different place. Here I moved it for you
-
-        // accounting for marginTop set by smooth line scroll
-        // animation uses inline styles, so its fine to read inline here instead
-        // of computed styles which would be much slower
         const animation: {
           left: number;
           top: number;
           width?: number;
           duration?: number;
           easing?: string;
+          // take the current margins into account (meaning an animation is running)
         } = { left: left - currentMarginLeft, top: top - currentMarginTop };
         if (this.isFullWidth()) {
           animation["width"] = width;
