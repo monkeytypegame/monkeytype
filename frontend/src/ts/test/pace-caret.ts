@@ -21,7 +21,7 @@ type Settings = {
 
 export let settings: Settings | null = null;
 
-export let caret = new Caret(
+export const caret = new Caret(
   document.getElementById("paceCaret") as HTMLElement,
   Config.paceCaretStyle
 );
