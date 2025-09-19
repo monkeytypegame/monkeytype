@@ -51,7 +51,11 @@
     display: grid;
     gap: 2rem;
     &.quickNav {
-      justify-content: center;
+       position: sticky;
+       top: 0; /* Adjust this if you have a fixed header (e.g. top: 60px) */
+       z-index: 10; /* Keep it above other content */
+
+       justify-content: center;
       .links {
         font-size: 0.75rem;
         background: var(--sub-alt-color);
