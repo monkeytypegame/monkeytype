@@ -124,7 +124,7 @@ export class Caret {
     this.cumulativeMarginLeftReset = 0;
   }
 
-  public resetMarginLeftBy(widthRemoved: number): void {
+  public handleTapeWordsRemoved(widthRemoved: number): void {
     this.cumulativeMarginLeftReset += widthRemoved;
   }
 

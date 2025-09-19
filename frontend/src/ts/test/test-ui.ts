@@ -1023,8 +1023,8 @@ export async function scrollTape(
     if (isTestRightToLeft) widthRemoved *= -1;
     const currentWordsMargin = parseFloat(wordsEl.style.marginLeft) || 0;
     wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
-    Caret.caret.resetMarginLeftBy(widthRemoved);
-    PaceCaret.caret.resetMarginLeftBy(widthRemoved);
+    Caret.caret.handleTapeWordsRemoved(widthRemoved);
+    PaceCaret.caret.handleTapeWordsRemoved(widthRemoved);
   }
 
   /* calculate current word width to add to #words margin */
