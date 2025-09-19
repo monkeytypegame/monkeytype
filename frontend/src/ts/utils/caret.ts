@@ -1,9 +1,9 @@
 import { CaretStyle } from "@monkeytype/schemas/configs";
 import Config from "../config";
-import { getWordDirection } from "./strings";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestWords from "../test/test-words";
 import { getTotalInlineMargin, SingleAnimationFrame } from "./misc";
+import { isWordRightToLeft } from "./strings";
 
 const wordsCache = document.querySelector<HTMLElement>("#words") as HTMLElement;
 const wordsWrapperCache = document.querySelector<HTMLElement>(
@@ -374,7 +374,7 @@ export class Caret {
     side: "beforeLetter" | "afterLetter";
     isLanguageRightToLeft: boolean;
   }): { left: number; top: number; width: number } {
-    const isWordRightToLeft = getWordDirection(
+    const isWordRTL = isWordRightToLeft(
       options.wordText,
       options.isLanguageRightToLeft
     );
@@ -419,7 +419,7 @@ export class Caret {
     let top = 0;
 
     // yes, this is all super verbose, but its easier to maintain and understand
-    if (isWordRightToLeft) {
+    if (isWordRTL) {
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
         if (this.isFullWidth()) {

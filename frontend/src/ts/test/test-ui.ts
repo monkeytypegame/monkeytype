@@ -135,11 +135,43 @@ export function reset(): void {
 }
 
 export function focusWords(): void {
-  $("#wordsInput").trigger("focus");
+  const wordsInput = document.querySelector<HTMLElement>("#wordsInput");
+  wordsInput?.blur();
+  wordsInput?.focus({
+    preventScroll: true,
+  });
+  if (TestState.isActive) {
+    keepWordsInputInTheCenter(true);
+  } else {
+    const typingTest = document.querySelector<HTMLElement>("#typingTest");
+    Misc.scrollToCenterOrTop(typingTest);
+  }
 }
 
 export function blurWords(): void {
   $("#wordsInput").trigger("blur");
+}
+
+export function keepWordsInputInTheCenter(force = false): void {
+  const wordsInput = document.querySelector<HTMLElement>("#wordsInput");
+  const wordsWrapper = document.querySelector<HTMLElement>("#wordsWrapper");
+  if (!wordsInput || !wordsWrapper) return;
+
+  const wordsWrapperHeight = wordsWrapper.offsetHeight;
+  const windowHeight = window.innerHeight;
+
+  // dont do anything if the wrapper can fit on screen
+  if (wordsWrapperHeight < windowHeight) return;
+
+  const wordsInputRect = wordsInput.getBoundingClientRect();
+  const wordsInputBelowCenter = wordsInputRect.top > windowHeight / 2;
+
+  // dont do anything if its above or at the center unless forced
+  if (!wordsInputBelowCenter && !force) return;
+
+  wordsInput.scrollIntoView({
+    block: "center",
+  });
 }
 
 export function getWordElement(index: number): HTMLElement | null {
@@ -177,9 +209,8 @@ export function updateActiveElement(
 
   activeWordTop = newActiveWord.offsetTop;
 
-  if (!initial && shouldUpdateWordsInputPosition()) {
-    void updateWordsInputPosition();
-  }
+  updateWordsInputPosition();
+
   if (!initial && Config.tapeMode !== "off") {
     void scrollTape();
   }
@@ -221,8 +252,11 @@ async function joinOverlappingHints(
   activeWordLetters: NodeListOf<Element>,
   hintElements: HTMLCollection
 ): Promise<void> {
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRTL = currentLanguage.rightToLeft;
+  const isWordRightToLeft = Strings.isWordRightToLeft(
+    TestWords.words.getCurrent(),
+    TestState.isLanguageRightToLeft,
+    TestState.isDirectionReversed
+  );
 
   let previousBlocksAdjacent = false;
   let currentHintBlock = 0;
@@ -254,8 +288,8 @@ async function joinOverlappingHints(
 
     const sameTop = block1Letter1.offsetTop === block2Letter1.offsetTop;
 
-    const leftBlock = isLanguageRTL ? hintBlock2 : hintBlock1;
-    const rightBlock = isLanguageRTL ? hintBlock1 : hintBlock2;
+    const leftBlock = isWordRightToLeft ? hintBlock2 : hintBlock1;
+    const rightBlock = isWordRightToLeft ? hintBlock1 : hintBlock2;
 
     // block edge is offset half its width because of transform: translate(-50%)
     const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
@@ -270,7 +304,7 @@ async function joinOverlappingHints(
 
       const block1Letter1Pos =
         block1Letter1.offsetLeft +
-        (isLanguageRTL ? block1Letter1.offsetWidth : 0);
+        (isWordRightToLeft ? block1Letter1.offsetWidth : 0);
       const bothBlocksLettersWidthHalved =
         hintBlock2.offsetLeft - hintBlock1.offsetLeft;
       hintBlock1.style.left =
@@ -428,7 +462,7 @@ function updateWordWrapperClasses(): void {
 
   updateWordsWidth();
   updateWordsWrapperHeight(true);
-  updateWordsMargin(updateWordsInputPosition, [true]);
+  updateWordsMargin(updateWordsInputPosition, []);
 }
 
 export function showWords(): void {
@@ -447,7 +481,7 @@ export function showWords(): void {
   updateActiveElement(undefined, true);
   updateWordWrapperClasses();
   setTimeout(() => {
-    void Caret.resetPosition();
+    Caret.resetPosition();
   }, 125);
 }
 
@@ -458,65 +492,55 @@ export function appendEmptyWordElement(
     `<div class='word' data-wordindex='${index}'><letter class='invisible'>_</letter></div>`
   );
 }
-
-const posUpdateLangList = ["japanese", "chinese", "korean"];
-function shouldUpdateWordsInputPosition(): boolean {
-  const language = posUpdateLangList.some((l) => Config.language.startsWith(l));
-  return language || (Config.mode !== "time" && Config.showAllLines);
-}
-
-export async function updateWordsInputPosition(initial = false): Promise<void> {
-  if (ActivePage.get() !== "test") return;
-
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRTL = currentLanguage.rightToLeft;
-
-  const el = document.querySelector<HTMLElement>("#wordsInput");
-
-  if (!el) return;
-
-  const activeWord = getActiveWordElement();
-
-  if (!activeWord) {
-    el.style.top = "0px";
-    el.style.left = "0px";
-    return;
+let updateWordsInputPositionAnimationFrameId: null | number = null;
+export function updateWordsInputPosition(): void {
+  if (updateWordsInputPositionAnimationFrameId !== null) {
+    cancelAnimationFrame(updateWordsInputPositionAnimationFrameId);
   }
+  updateWordsInputPositionAnimationFrameId = requestAnimationFrame(() => {
+    updateWordsInputPositionAnimationFrameId = null;
+    if (ActivePage.get() !== "test") return;
+    const isTestRightToLeft = TestState.isDirectionReversed
+      ? !TestState.isLanguageRightToLeft
+      : TestState.isLanguageRightToLeft;
 
-  const computed = window.getComputedStyle(activeWord);
-  const activeWordMargin =
-    parseInt(computed.marginTop) + parseInt(computed.marginBottom);
+    const el = document.querySelector<HTMLElement>("#wordsInput");
 
-  const letterHeight = convertRemToPixels(Config.fontSize);
-  const targetTop =
-    activeWord.offsetTop + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
+    if (!el) return;
 
-  if (Config.tapeMode !== "off") {
-    el.style.maxWidth = `${100 - Config.tapeMargin}%`;
-  } else {
-    el.style.maxWidth = "";
-  }
-  if (activeWord.offsetWidth < letterHeight) {
-    el.style.width = letterHeight + "px";
-  } else {
-    el.style.width = activeWord.offsetWidth + "px";
-  }
+    const activeWord = getActiveWordElement();
 
-  if (
-    initial &&
-    !shouldUpdateWordsInputPosition() &&
-    Config.tapeMode === "off"
-  ) {
-    el.style.top = targetTop + letterHeight + activeWordMargin + 4 + "px";
-  } else {
+    if (!activeWord) {
+      el.style.top = "0px";
+      el.style.left = "0px";
+      return;
+    }
+
+    const letterHeight = convertRemToPixels(Config.fontSize);
+    const targetTop =
+      activeWord.offsetTop + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
+
+    if (Config.tapeMode !== "off") {
+      el.style.maxWidth = `${100 - Config.tapeMargin}%`;
+    } else {
+      el.style.maxWidth = "";
+    }
+    if (activeWord.offsetWidth < letterHeight) {
+      el.style.width = letterHeight + "px";
+    } else {
+      el.style.width = activeWord.offsetWidth + "px";
+    }
+
     el.style.top = targetTop + "px";
-  }
 
-  if (activeWord.offsetWidth < letterHeight && isLanguageRTL) {
-    el.style.left = activeWord.offsetLeft - letterHeight + "px";
-  } else {
-    el.style.left = Math.max(0, activeWord.offsetLeft) + "px";
-  }
+    if (activeWord.offsetWidth < letterHeight && isTestRightToLeft) {
+      el.style.left = activeWord.offsetLeft - letterHeight + "px";
+    } else {
+      el.style.left = Math.max(0, activeWord.offsetLeft) + "px";
+    }
+
+    keepWordsInputInTheCenter();
+  });
 }
 
 let centeringActiveLine: Promise<void> = Promise.resolve();
@@ -873,8 +897,9 @@ export async function scrollTape(
 
   await centeringActiveLine;
 
-  const currentLang = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRTL = currentLang.rightToLeft;
+  const isTestRightToLeft = TestState.isDirectionReversed
+    ? !TestState.isLanguageRightToLeft
+    : TestState.isLanguageRightToLeft;
 
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
@@ -948,8 +973,8 @@ export async function scrollTape(
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
       if (
-        (!isLanguageRTL && forWordLeft < 0 - forWordWidth) ||
-        (isLanguageRTL && forWordLeft > wordsWrapperWidth)
+        (!isTestRightToLeft && forWordLeft < 0 - forWordWidth) ||
+        (isTestRightToLeft && forWordLeft > wordsWrapperWidth)
       ) {
         toRemove.push(child);
         widthRemoved += wordOuterWidth;
@@ -995,7 +1020,7 @@ export async function scrollTape(
         currentLineIndent - (widthRemovedFromLine[i] ?? 0)
       }px`;
     }
-    if (isLanguageRTL) widthRemoved *= -1;
+    if (isTestRightToLeft) widthRemoved *= -1;
     const currentWordsMargin = parseFloat(wordsEl.style.marginLeft) || 0;
     wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
   }
@@ -1028,7 +1053,7 @@ export async function scrollTape(
   const tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
 
   let newMargin = tapeMarginPx - wordsWidthBeforeActive - currentWordWidth;
-  if (isLanguageRTL) newMargin = wordRightMargin - newMargin;
+  if (isTestRightToLeft) newMargin = wordRightMargin - newMargin;
 
   const currentMarginLeft = parseFloat(wordsEl.style.marginLeft || "0");
 

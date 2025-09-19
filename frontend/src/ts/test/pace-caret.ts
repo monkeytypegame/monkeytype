@@ -224,13 +224,10 @@ export async function update(duration: number): Promise<void> {
   }
 
   try {
-    const isLanguageRightToLeft =
-      (await JSONData.getLanguage(Config.language)).rightToLeft ?? false;
-
     caret.goTo({
       wordIndex: settings.currentWordIndex,
       letterIndex: settings.currentLetterIndex,
-      isLanguageRightToLeft,
+      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
       animate: true,
       animationOptions: {
         duration,
@@ -282,8 +279,6 @@ export function start(): void {
   console.log("start pace caret");
   void update((settings?.spc ?? 0) * 1000);
 }
-
-window["update"] = update;
 
 function updateStyle(): void {
   const paceCaret = $("#paceCaret");

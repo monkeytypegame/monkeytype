@@ -316,10 +316,6 @@
   &.rightToLeftTest {
     //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
     direction: rtl;
-    .word {
-      //flex-direction: row-reverse;
-      direction: rtl;
-    }
   }
   &.withLigatures {
     .word {
@@ -758,10 +754,6 @@
         &.rightToLeftTest {
           //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
           direction: rtl;
-          .word {
-            //flex-direction: row-reverse;
-            direction: rtl;
-          }
         }
         &.withLigatures {
           .word {
