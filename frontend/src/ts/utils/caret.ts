@@ -36,11 +36,12 @@ type AnimatePositionOptions = {
   width?: number;
 };
 
+export type ReadyToReset = { marginTop: boolean; marginLeft: boolean };
+
 export class Caret {
   private element: HTMLElement;
   private style: CaretStyle = "default";
-  private readyToResetMarginTop: boolean = false;
-  private readyToResetMarginLeft: boolean = false;
+  private readyToReset: ReadyToReset = { marginTop: false, marginLeft: false };
   private singleAnimationFrame = new SingleAnimationFrame();
   private isMainCaret: boolean = false;
   private cumulativeTapeMarginCorrection: number = 0;
@@ -131,8 +132,8 @@ export class Caret {
   public clearMargins(): void {
     this.element.style.marginTop = "";
     this.element.style.marginLeft = "";
-    this.readyToResetMarginTop = false;
-    this.readyToResetMarginLeft = false;
+    this.readyToReset.marginTop = false;
+    this.readyToReset.marginLeft = false;
     this.cumulativeTapeMarginCorrection = 0;
   }
 
@@ -140,82 +141,41 @@ export class Caret {
     this.cumulativeTapeMarginCorrection += widthRemoved;
   }
 
-  public handleTapeScroll(options: {
-    newValue: number;
+  public handleSmoothLineScroll(options: {
+    property: keyof ReadyToReset;
+    newMargin: number;
     duration: number;
   }): void {
-    if (this.isMainCaret && lockedMainCaretInTape) return;
-    this.readyToResetMarginLeft = false;
+    let newMargin = options.newMargin;
 
-    const newMarginLeft =
-      options.newValue - this.cumulativeTapeMarginCorrection;
+    if (options.property === "marginLeft") {
+      if (this.isMainCaret && lockedMainCaretInTape) return;
+      newMargin -= this.cumulativeTapeMarginCorrection;
+    } else if (options.property === "marginTop") {
+      if (this.isMainCaret && options.duration === 0) return;
+    }
+
+    this.readyToReset[options.property] = false;
+
+    const newCss: Record<string, string> = {};
+    newCss[options.property] = `${newMargin}px`;
+
+    const jqCaret = $(this.element).stop(options.property, true, false);
 
     if (options.duration === 0) {
-      $(this.element).stop("marginLeft", true, false).css({
-        marginLeft: newMarginLeft,
-      });
-      this.readyToResetMarginLeft = true;
+      jqCaret.css(newCss);
+      this.readyToReset[options.property] = true;
       return;
     }
 
-    $(this.element)
-      .stop("marginLeft", true, false)
-      .animate(
-        {
-          marginLeft: newMarginLeft,
-        },
-        {
-          // this NEEDS to be the same duration as the
-          // line scroll otherwise it will look weird
-          duration: options.duration,
-          queue: "marginLeft",
-          complete: () => (this.readyToResetMarginLeft = true),
-        }
-      );
-    $(this.element).dequeue("marginLeft");
-  }
-
-  public handleLineJump(options: {
-    newMarginTop: number;
-    duration: number;
-  }): void {
-    // smooth line jump works by animating the words top margin.
-    // to sync the carets to the lines, we need to do the same here.
-
-    // using a readyToResetMarginTop flag here to make sure the animation
-    // is fully finished before we reset the marginTop to 0
-
-    // making sure to use a separate animation queue so that it doesnt
-    // affect the position animations
-    this.readyToResetMarginTop = false;
-
-    if (options.duration === 0) {
-      if (this.isMainCaret) {
-        this.readyToResetMarginTop = true;
-        return;
-      }
-      $(this.element).stop("marginTop", true, false).css({
-        marginTop: options.newMarginTop,
-      });
-      this.readyToResetMarginTop = true;
-      return;
-    }
-
-    $(this.element)
-      .stop("marginTop", true, false)
-      .animate(
-        {
-          marginTop: options.newMarginTop,
-        },
-        {
-          // this NEEDS to be the same duration as the
-          // line scroll otherwise it will look weird
-          duration: options.duration,
-          queue: "marginTop",
-          complete: () => (this.readyToResetMarginTop = true),
-        }
-      );
-    $(this.element).dequeue("marginTop");
+    jqCaret.animate(newCss, {
+      // this NEEDS to be the same duration as the
+      // line scroll otherwise it will look weird
+      duration: options.duration,
+      queue: options.property,
+      complete: () => (this.readyToReset[options.property] = true),
+    });
+    $(this.element).dequeue(options.property);
   }
 
   public animatePosition(options: AnimatePositionOptions): void {
@@ -322,8 +282,8 @@ export class Caret {
       // if the margin animation finished, we reset it here by removing the margin
       // and offsetting the top by the same amount
       let currentMarginTop = parseFloat(this.element.style.marginTop || "0");
-      if (this.readyToResetMarginTop) {
-        this.readyToResetMarginTop = false;
+      if (this.readyToReset.marginTop) {
+        this.readyToReset.marginTop = false;
         const currentTop = parseFloat(this.element.style.top || "0");
 
         $(this.element).css({
@@ -335,8 +295,8 @@ export class Caret {
 
       // same for marginLeft
       let currentMarginLeft = parseFloat(this.element.style.marginLeft || "0");
-      if (this.readyToResetMarginLeft) {
-        this.readyToResetMarginLeft = false;
+      if (this.readyToReset.marginLeft) {
+        this.readyToReset.marginLeft = false;
         const currentLeft = parseFloat(this.element.style.left || "0");
 
         $(this.element).css({
