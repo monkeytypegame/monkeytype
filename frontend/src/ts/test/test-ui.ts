@@ -525,8 +525,9 @@ export function updateWordsInputPosition(): void {
       : TestState.isLanguageRightToLeft;
 
     const el = document.querySelector<HTMLElement>("#wordsInput");
+    const wrapperElement = document.querySelector<HTMLElement>("#wordsWrapper");
 
-    if (!el) return;
+    if (!el || !wrapperElement) return;
 
     const activeWord = getActiveWordElement();
 
@@ -553,10 +554,16 @@ export function updateWordsInputPosition(): void {
 
     el.style.top = targetTop + "px";
 
-    if (activeWord.offsetWidth < letterHeight && isTestRightToLeft) {
-      el.style.left = activeWord.offsetLeft - letterHeight + "px";
+    if (Config.tapeMode !== "off") {
+      el.style.left = `${
+        wrapperElement.offsetWidth * (Config.tapeMargin / 100)
+      }px`;
     } else {
-      el.style.left = Math.max(0, activeWord.offsetLeft) + "px";
+      if (activeWord.offsetWidth < letterHeight && isTestRightToLeft) {
+        el.style.left = activeWord.offsetLeft - letterHeight + "px";
+      } else {
+        el.style.left = Math.max(0, activeWord.offsetLeft) + "px";
+      }
     }
 
     keepWordsInputInTheCenter();
