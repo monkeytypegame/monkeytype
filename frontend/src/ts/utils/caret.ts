@@ -372,8 +372,6 @@ export class Caret {
 
         if (this.isFullWidth()) {
           this.setWidth(width);
-        } else {
-          this.resetWidth();
         }
       }
     });
