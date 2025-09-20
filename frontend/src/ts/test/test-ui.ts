@@ -1069,18 +1069,18 @@ export async function scrollTape(
   PaceCaret.caret.handleTapeScroll(caretScrollOptions);
 
   if (Config.smoothLineScroll) {
-    const jqWords = $(wordsEl).stop("leftMargin", true, false);
+    const jqWords = $(wordsEl).stop("marginLeft", true, false);
     jqWords.animate(
       {
         marginLeft: newMargin,
       },
       {
         duration,
-        queue: "leftMargin",
+        queue: "marginLeft",
         complete: afterCompleteFn,
       }
     );
-    jqWords.dequeue("leftMargin");
+    jqWords.dequeue("marginLeft");
     for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       $(afterNewLineEls[i] as Element)
@@ -1165,34 +1165,27 @@ export async function lineJump(
 
     if (lastElementIndexToRemove === undefined) {
       resolve();
-      currentTestLine++;
-      updateWordsWrapperHeight();
-      return promise;
-    }
+    } else if (Config.smoothLineScroll) {
+      currentLinesJumping++;
 
-    currentLinesJumping++;
+      const wordHeight = $(activeWordEl).outerHeight(true) as number;
+      const newMarginTop = -1 * wordHeight * currentLinesJumping;
+      const duration = SlowTimer.get() ? 0 : 125;
 
-    const wordHeight = $(activeWordEl).outerHeight(true) as number;
-    const newMarginTop = -1 * wordHeight * currentLinesJumping;
-    const duration = SlowTimer.get() ? 0 : 125;
+      const caretLineJumpOptions = {
+        newMarginTop,
+        duration: Config.smoothLineScroll ? duration : 0,
+      };
+      Caret.caret.handleLineJump(caretLineJumpOptions);
+      PaceCaret.caret.handleLineJump(caretLineJumpOptions);
 
-    const caretLineJumpOptions = {
-      newMarginTop,
-      duration: Config.smoothLineScroll ? duration : 0,
-    };
-    Caret.caret.handleLineJump(caretLineJumpOptions);
-    PaceCaret.caret.handleLineJump(caretLineJumpOptions);
-
-    if (Config.smoothLineScroll) {
       lineTransition = true;
       const jqWords = $(wordsEl);
-      jqWords.stop("topMargin", true, false).animate(
-        {
-          marginTop: `${newMarginTop}px`,
-        },
+      jqWords.stop("marginTop", true, false).animate(
+        { marginTop: `${newMarginTop}px` },
         {
           duration,
-          queue: "topMargin",
+          queue: "marginTop",
           complete: () => {
             currentLinesJumping = 0;
             activeWordTop = activeWordEl.offsetTop;
@@ -1203,9 +1196,8 @@ export async function lineJump(
           },
         }
       );
-      jqWords.dequeue("topMargin");
+      jqWords.dequeue("marginTop");
     } else {
-      currentLinesJumping = 0;
       removeTestElements(lastElementIndexToRemove);
       resolve();
     }

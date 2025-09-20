@@ -169,9 +169,7 @@ export class Caret {
           // line scroll otherwise it will look weird
           duration: options.duration,
           queue: "marginLeft",
-          complete: () => {
-            this.readyToResetMarginLeft = true;
-          },
+          complete: () => (this.readyToResetMarginLeft = true),
         }
       );
     $(this.element).dequeue("marginLeft");
@@ -210,9 +208,7 @@ export class Caret {
           // line scroll otherwise it will look weird
           duration: options.duration,
           queue: "marginTop",
-          complete: () => {
-            this.readyToResetMarginTop = true;
-          },
+          complete: () => (this.readyToResetMarginTop = true),
         }
       );
     $(this.element).dequeue("marginTop");
