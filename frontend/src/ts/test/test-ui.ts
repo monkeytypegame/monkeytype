@@ -466,7 +466,9 @@ function updateWordWrapperClasses(): void {
 }
 
 export function showWords(): void {
-  $("#words").empty();
+  const words = $("#words");
+
+  words.empty();
 
   if (Config.mode === "zen") {
     appendEmptyWordElement();
@@ -475,8 +477,13 @@ export function showWords(): void {
     for (let i = 0; i < TestWords.words.length; i++) {
       wordsHTML += buildWordHTML(TestWords.words.get(i), i);
     }
-    $("#words").html(wordsHTML);
+    words.html(wordsHTML);
   }
+
+  words.stop(true, false).css({
+    marginTop: 0,
+    marginLeft: 0,
+  });
 
   updateActiveElement(undefined, true);
   updateWordWrapperClasses();
