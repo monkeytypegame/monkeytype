@@ -1123,7 +1123,7 @@ function removeTestElements(lastElementIndexToRemove: number): void {
   }
 }
 
-let currentLinesAnimating = 0;
+let currentLinesJumping = 0;
 
 export async function lineJump(
   currentTop: number,
@@ -1163,58 +1163,49 @@ export async function lineJump(
       }
     }
 
-    const wordHeight = $(activeWordEl).outerHeight(true) as number;
-
     if (lastElementIndexToRemove === undefined) {
       resolve();
-    } else if (Config.smoothLineScroll) {
+      currentTestLine++;
+      updateWordsWrapperHeight();
+      return promise;
+    }
+
+    currentLinesJumping++;
+
+    const wordHeight = $(activeWordEl).outerHeight(true) as number;
+    const newMarginTop = -1 * wordHeight * currentLinesJumping;
+    const duration = SlowTimer.get() ? 0 : 125;
+
+    const caretLineJumpOptions = {
+      newMarginTop,
+      duration: Config.smoothLineScroll ? duration : 0,
+    };
+    Caret.caret.handleLineJump(caretLineJumpOptions);
+    PaceCaret.caret.handleLineJump(caretLineJumpOptions);
+
+    if (Config.smoothLineScroll) {
       lineTransition = true;
-
-      currentLinesAnimating++;
-      const newMarginTop = -1 * wordHeight * currentLinesAnimating;
-      const newCss: Record<string, string> = {
-        marginTop: `${newMarginTop}px`,
-      };
-
-      const duration = SlowTimer.get() ? 0 : 125;
-
-      Caret.caret.handleLineJump({
-        newMarginTop,
-        duration,
-      });
-
-      PaceCaret.caret.handleLineJump({
-        newMarginTop,
-        duration,
-      });
-
       const jqWords = $(wordsEl);
-      jqWords.stop("topMargin", true, false).animate(newCss, {
-        duration,
-        queue: "topMargin",
-        complete: () => {
-          currentLinesAnimating = 0;
-          activeWordTop = activeWordEl.offsetTop;
-          removeTestElements(lastElementIndexToRemove);
-          wordsEl.style.marginTop = "0";
-          lineTransition = false;
-          resolve();
+      jqWords.stop("topMargin", true, false).animate(
+        {
+          marginTop: `${newMarginTop}px`,
         },
-      });
+        {
+          duration,
+          queue: "topMargin",
+          complete: () => {
+            currentLinesJumping = 0;
+            activeWordTop = activeWordEl.offsetTop;
+            removeTestElements(lastElementIndexToRemove);
+            wordsEl.style.marginTop = "0";
+            lineTransition = false;
+            resolve();
+          },
+        }
+      );
       jqWords.dequeue("topMargin");
     } else {
-      const newMarginTop = -1 * wordHeight;
-
-      Caret.caret.handleLineJump({
-        newMarginTop,
-        duration: 0,
-      });
-
-      PaceCaret.caret.handleLineJump({
-        newMarginTop,
-        duration: 0,
-      });
-
+      currentLinesJumping = 0;
       removeTestElements(lastElementIndexToRemove);
       resolve();
     }
