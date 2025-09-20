@@ -24,7 +24,6 @@ import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
 import * as PaceCaret from "./pace-caret";
-import { ReadyToReset } from "../utils/caret";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -1062,13 +1061,12 @@ export async function scrollTape(
 
   const duration = SlowTimer.get() ? 0 : 125;
   const caretScrollOptions = {
-    property: "marginLeft" as keyof ReadyToReset,
-    newMargin: newMarginOffset * -1,
+    newValue: newMarginOffset * -1,
     duration: Config.smoothLineScroll ? duration : 0,
   };
 
-  Caret.caret.handleSmoothLineScroll(caretScrollOptions);
-  PaceCaret.caret.handleSmoothLineScroll(caretScrollOptions);
+  Caret.caret.handleTapeScroll(caretScrollOptions);
+  PaceCaret.caret.handleTapeScroll(caretScrollOptions);
 
   if (Config.smoothLineScroll) {
     const jqWords = $(wordsEl).stop("marginLeft", true, false);
@@ -1179,12 +1177,11 @@ export async function lineJump(
     const duration = SlowTimer.get() ? 0 : 125;
 
     const caretLineJumpOptions = {
-      property: "marginTop" as keyof ReadyToReset,
-      newMargin: newMarginTop,
+      newMarginTop,
       duration: Config.smoothLineScroll ? duration : 0,
     };
-    Caret.caret.handleSmoothLineScroll(caretLineJumpOptions);
-    PaceCaret.caret.handleSmoothLineScroll(caretLineJumpOptions);
+    Caret.caret.handleLineJump(caretLineJumpOptions);
+    PaceCaret.caret.handleLineJump(caretLineJumpOptions);
 
     if (Config.smoothLineScroll) {
       lineTransition = true;
