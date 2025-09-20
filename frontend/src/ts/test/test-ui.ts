@@ -658,7 +658,7 @@ function updateWordsMargin<T extends unknown[]>(
     void updateHintsPositionDebounced();
   };
   if (Config.tapeMode !== "off") {
-    void scrollTape(true, afterComplete);
+    void scrollTape(true, true, afterComplete);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
     const afterNewlineEls =
@@ -898,8 +898,12 @@ function getNlCharWidth(
 
 export async function scrollTape(
   noRemove = false,
+  initial = false,
   afterCompleteFn?: () => void
 ): Promise<void> {
+  console.log("scrollTape");
+  console.trace();
+
   if (ActivePage.get() !== "test" || TestState.resultVisible) return;
 
   await centeringActiveLine;
@@ -1066,7 +1070,7 @@ export async function scrollTape(
     newMargin = wordRightMargin - newMargin;
   }
 
-  const duration = SlowTimer.get() ? 0 : 125;
+  const duration = initial ? 0 : SlowTimer.get() ? 0 : 125;
   const caretScrollOptions = {
     newValue: newMarginOffset * -1,
     duration: Config.smoothLineScroll ? duration : 0,
