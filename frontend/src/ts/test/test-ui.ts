@@ -908,9 +908,6 @@ export async function scrollTape(
   initial = false,
   afterCompleteFn?: () => void
 ): Promise<void> {
-  console.log("scrollTape");
-  console.trace();
-
   if (ActivePage.get() !== "test" || TestState.resultVisible) return;
 
   await centeringActiveLine;
