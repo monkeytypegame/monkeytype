@@ -326,7 +326,6 @@ async function handleSpace(): Promise<void> {
     void TestLogic.addWord();
   }
   TestUI.updateActiveElement();
-  void Caret.updatePosition();
 
   const shouldLimitToThreeLines =
     Config.mode === "time" ||
@@ -344,8 +343,10 @@ async function handleSpace(): Promise<void> {
 
     if ((nextTop ?? 0) > currentTop) {
       void TestUI.lineJump(currentTop);
-    } //end of line wrap
-  }
+    }
+  } //end of line wrap
+
+  void Caret.updatePosition();
 
   // enable if i decide that auto tab should also work after a space
   // if (

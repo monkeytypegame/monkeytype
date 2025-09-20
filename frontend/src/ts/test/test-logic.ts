@@ -70,6 +70,7 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
   isFunboxActive,
+  isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
@@ -408,7 +409,7 @@ let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
 
-export async function init(): Promise<boolean> {
+async function init(): Promise<boolean> {
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
@@ -571,6 +572,13 @@ export async function init(): Promise<boolean> {
   Funbox.toggleScript(TestWords.words.getCurrent());
   TestUI.setRightToLeft(language.rightToLeft ?? false);
   TestUI.setLigatures(language.ligatures ?? false);
+
+  const isLanguageRTL = language.rightToLeft ?? false;
+  TestState.setIsLanguageRightToLeft(isLanguageRTL);
+  TestState.setIsDirectionReversed(
+    isFunboxActiveWithProperty("reverseDirection")
+  );
+
   TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
   console.debug(
