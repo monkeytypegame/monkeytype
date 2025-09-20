@@ -21,7 +21,10 @@ import {
 } from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
-import { validateWithIndicator } from "../elements/input-validation";
+import {
+  ValidatedHtmlInputElement,
+  validateWithIndicator,
+} from "../elements/input-validation";
 
 const state = {
   presetType: "full" as PresetType,
@@ -30,6 +33,8 @@ const state = {
   ),
   setPresetToCurrent: false,
 };
+
+let presetNameEl: ValidatedHtmlInputElement | null = null;
 
 export function show(action: string, id?: string, name?: string): void {
   if (!ConnectionState.get()) {
@@ -44,11 +49,22 @@ export function show(action: string, id?: string, name?: string): void {
     beforeAnimation: async () => {
       $("#editPresetModal .modal .text").addClass("hidden");
       addCheckBoxes();
+      if (!presetNameEl) {
+        presetNameEl = validateWithIndicator(
+          document.querySelector(
+            "#editPresetModal .modal input"
+          ) as HTMLInputElement,
+          {
+            schema: PresetNameSchema,
+          }
+        );
+      }
       if (action === "add") {
         $("#editPresetModal .modal").attr("data-action", "add");
         $("#editPresetModal .modal .popupTitle").html("Add new preset");
         $("#editPresetModal .modal .submit").html(`add`);
-        $("#editPresetModal .modal input").val("");
+        presetNameEl?.setValue(null);
+        presetNameEl?.parentElement?.classList.remove("hidden");
         $("#editPresetModal .modal input").removeClass("hidden");
         $(
           "#editPresetModal .modal label.changePresetToCurrentCheckbox"
@@ -56,34 +72,20 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .inputs").removeClass("hidden");
         $("#editPresetModal .modal .presetType").removeClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
-        validateWithIndicator(
-          document.querySelector(
-            "#editPresetModal .modal input"
-          ) as HTMLInputElement,
-          {
-            schema: PresetNameSchema,
-          }
-        );
         state.presetType = "full";
       } else if (action === "edit" && id !== undefined && name !== undefined) {
         $("#editPresetModal .modal").attr("data-action", "edit");
         $("#editPresetModal .modal").attr("data-preset-id", id);
         $("#editPresetModal .modal .popupTitle").html("Edit preset");
         $("#editPresetModal .modal .submit").html(`save`);
-        $("#editPresetModal .modal input").val(name);
+        presetNameEl?.setValue(name);
+        presetNameEl?.parentElement?.classList.remove("hidden");
+
         $("#editPresetModal .modal input").removeClass("hidden");
         $(
           "#editPresetModal .modal label.changePresetToCurrentCheckbox"
         ).removeClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
-        validateWithIndicator(
-          document.querySelector(
-            "#editPresetModal .modal input"
-          ) as HTMLInputElement,
-          {
-            schema: PresetNameSchema,
-          }
-        );
         state.setPresetToCurrent = false;
         await updateEditPresetUI();
       } else if (
@@ -106,6 +108,7 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .inputs").addClass("hidden");
         $("#editPresetModal .modal .presetType").addClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").addClass("hidden");
+        presetNameEl?.parentElement?.classList.add("hidden");
       }
       updateUI();
     },
@@ -259,8 +262,10 @@ async function apply(): Promise<void> {
     return;
   }
 
-  //TODO
-  //store presetNameEl as HtnlInputElementWithValidation and check .isValid()
+  if (presetNameEl?.isValid() === false) {
+    Notifications.add("Preset name is not valid", 0);
+    return;
+  }
 
   hide();
 
