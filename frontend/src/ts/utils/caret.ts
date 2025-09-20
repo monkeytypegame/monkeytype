@@ -43,6 +43,7 @@ export class Caret {
   private readyToResetMarginLeft: boolean = false;
   private singleAnimationFrame = new SingleAnimationFrame();
   private isMainCaret: boolean = false;
+  private cumulativeTapeMarginCorrection: number = 0;
 
   constructor(element: HTMLElement, style: CaretStyle) {
     this.element = element;
@@ -132,21 +133,30 @@ export class Caret {
     this.element.style.marginLeft = "";
     this.readyToResetMarginTop = false;
     this.readyToResetMarginLeft = false;
+    this.cumulativeTapeMarginCorrection = 0;
   }
 
-  public getMarginLeft(): number {
-    return parseFloat(this.element.style.marginLeft || "0");
+  public handleTapeWordsRemoved(widthRemoved: number): void {
+    this.cumulativeTapeMarginCorrection += widthRemoved;
   }
 
   public handleTapeScroll(options: {
-    marginDelta: number;
+    newValue: number;
     duration: number;
   }): void {
     if (this.isMainCaret && lockedMainCaretInTape) return;
-
     this.readyToResetMarginLeft = false;
 
-    const newMarginLeft = this.getMarginLeft() + options.marginDelta;
+    /**
+     * If we didn't reset marginLeft, then options.newValue gives the correct caret
+     * position by adding up the widths of all typed characters. But since we reset
+     * caret.style.marginLeft during the test, the caret ends up too far left.
+     *
+     * To fix this, we track how much marginLeft we've reset so far (cumulativeTapeMarginCorrection),
+     * and subtract it from options.newValue to get the correct newMarginLeft.
+     */
+    const newMarginLeft =
+      options.newValue - this.cumulativeTapeMarginCorrection;
 
     if (options.duration === 0) {
       $(this.element).stop("marginLeft", true, false).css({
@@ -187,6 +197,7 @@ export class Caret {
 
     // making sure to use a separate animation queue so that it doesnt
     // affect the position animations
+    if (this.isMainCaret && options.duration === 0) return;
     this.readyToResetMarginTop = false;
 
     if (options.duration === 0) {
@@ -323,6 +334,7 @@ export class Caret {
       if (this.readyToResetMarginTop) {
         this.readyToResetMarginTop = false;
         const currentTop = parseFloat(this.element.style.top || "0");
+
         $(this.element).css({
           marginTop: 0,
           top: currentTop + currentMarginTop,
@@ -335,12 +347,21 @@ export class Caret {
       if (this.readyToResetMarginLeft) {
         this.readyToResetMarginLeft = false;
         const currentLeft = parseFloat(this.element.style.left || "0");
+
         $(this.element).css({
           marginLeft: 0,
           left: currentLeft + currentMarginLeft,
         });
+        this.cumulativeTapeMarginCorrection += currentMarginLeft;
         currentMarginLeft = 0;
       }
+
+      /**
+       * we subtract the margin from the target position in order to arrive at the intended location
+       * if my margin is +20 and I wanna go to +50, then if I set my inline style left/top to +50
+       * I will arrive to +70. However if I set it to (50 - 20), my left/top will be +30 and my margin
+       * will be +20 and I will end up at (30 + 20) = 50
+       */
 
       if (options.animate) {
         const animation: AnimatePositionOptions = {
@@ -366,8 +387,6 @@ export class Caret {
 
         if (this.isFullWidth()) {
           this.setWidth(width);
-        } else {
-          this.resetWidth();
         }
       }
     });

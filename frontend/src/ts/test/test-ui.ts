@@ -1023,6 +1023,8 @@ export async function scrollTape(
     if (isTestRightToLeft) widthRemoved *= -1;
     const currentWordsMargin = parseFloat(wordsEl.style.marginLeft) || 0;
     wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
+    Caret.caret.handleTapeWordsRemoved(widthRemoved);
+    PaceCaret.caret.handleTapeWordsRemoved(widthRemoved);
   }
 
   /* calculate current word width to add to #words margin */
@@ -1049,44 +1051,41 @@ export async function scrollTape(
   }
 
   /* change to new #words & .afterNewline margins */
-
   const tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
+  let newMarginOffset = wordsWidthBeforeActive + currentWordWidth;
+  let newMargin = tapeMarginPx - newMarginOffset;
+  if (isTestRightToLeft) {
+    newMarginOffset *= -1;
+    newMargin = wordRightMargin - newMargin;
+  }
 
-  let newMargin = tapeMarginPx - wordsWidthBeforeActive - currentWordWidth;
-  if (isTestRightToLeft) newMargin = wordRightMargin - newMargin;
+  const duration = SlowTimer.get() ? 0 : 125;
+  const caretScrollOptions = {
+    newValue: newMarginOffset * -1,
+    duration: Config.smoothLineScroll ? duration : 0,
+  };
 
-  const currentMarginLeft = parseFloat(wordsEl.style.marginLeft || "0");
+  Caret.caret.handleTapeScroll(caretScrollOptions);
+  PaceCaret.caret.handleTapeScroll(caretScrollOptions);
 
   if (Config.smoothLineScroll) {
-    const jqWords = $(wordsEl).stop("leftMargin", true, false);
-    const duration = SlowTimer.get() ? 0 : 125;
-
-    PaceCaret.caret.handleTapeScroll({
-      marginDelta: (currentMarginLeft - newMargin) * -1,
-      duration,
-    });
-
-    Caret.caret.handleTapeScroll({
-      marginDelta: (currentMarginLeft - newMargin) * -1,
-      duration,
-    });
-
+    const jqWords = $(wordsEl).stop("marginLeft", true, false);
     jqWords.animate(
       {
         marginLeft: newMargin,
       },
       {
         duration,
-        queue: "leftMargin",
+        queue: "marginLeft",
         complete: afterCompleteFn,
       }
     );
-    jqWords.dequeue("leftMargin");
+    jqWords.dequeue("marginLeft");
     for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       $(afterNewLineEls[i] as Element)
         .stop(true, false)
-        .animate({ marginLeft: newMargin }, SlowTimer.get() ? 0 : 125);
+        .animate({ marginLeft: newMargin }, duration);
     }
   } else {
     wordsEl.style.marginLeft = `${newMargin}px`;
@@ -1094,17 +1093,6 @@ export async function scrollTape(
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
     }
-
-    Caret.caret.handleTapeScroll({
-      marginDelta: (currentMarginLeft - newMargin) * -1,
-      duration: 0,
-    });
-
-    PaceCaret.caret.handleTapeScroll({
-      marginDelta: (currentMarginLeft - newMargin) * -1,
-      duration: 0,
-    });
-
     if (afterCompleteFn) afterCompleteFn();
   }
 }
@@ -1135,7 +1123,7 @@ function removeTestElements(lastElementIndexToRemove: number): void {
   }
 }
 
-let currentLinesAnimating = 0;
+let currentLinesJumping = 0;
 
 export async function lineJump(
   currentTop: number,
@@ -1175,58 +1163,47 @@ export async function lineJump(
       }
     }
 
-    const wordHeight = $(activeWordEl).outerHeight(true) as number;
-
     if (lastElementIndexToRemove === undefined) {
       resolve();
-    } else if (Config.smoothLineScroll) {
+      currentTestLine++;
+      updateWordsWrapperHeight();
+      return promise;
+    }
+
+    currentLinesJumping++;
+
+    const wordHeight = $(activeWordEl).outerHeight(true) as number;
+    const newMarginTop = -1 * wordHeight * currentLinesJumping;
+    const duration = SlowTimer.get() ? 0 : 125;
+
+    const caretLineJumpOptions = {
+      newMarginTop,
+      duration: Config.smoothLineScroll ? duration : 0,
+    };
+    Caret.caret.handleLineJump(caretLineJumpOptions);
+    PaceCaret.caret.handleLineJump(caretLineJumpOptions);
+
+    if (Config.smoothLineScroll) {
       lineTransition = true;
-
-      currentLinesAnimating++;
-      const newMarginTop = -1 * wordHeight * currentLinesAnimating;
-      const newCss: Record<string, string> = {
-        marginTop: `${newMarginTop}px`,
-      };
-
-      const duration = SlowTimer.get() ? 0 : 125;
-
-      Caret.caret.handleLineJump({
-        newMarginTop,
-        duration,
-      });
-
-      PaceCaret.caret.handleLineJump({
-        newMarginTop,
-        duration,
-      });
-
       const jqWords = $(wordsEl);
-      jqWords.stop("topMargin", true, false).animate(newCss, {
-        duration,
-        queue: "topMargin",
-        complete: () => {
-          currentLinesAnimating = 0;
-          activeWordTop = activeWordEl.offsetTop;
-          removeTestElements(lastElementIndexToRemove);
-          wordsEl.style.marginTop = "0";
-          lineTransition = false;
-          resolve();
-        },
-      });
-      jqWords.dequeue("topMargin");
+      jqWords.stop("marginTop", true, false).animate(
+        { marginTop: `${newMarginTop}px` },
+        {
+          duration,
+          queue: "marginTop",
+          complete: () => {
+            currentLinesJumping = 0;
+            activeWordTop = activeWordEl.offsetTop;
+            removeTestElements(lastElementIndexToRemove);
+            wordsEl.style.marginTop = "0";
+            lineTransition = false;
+            resolve();
+          },
+        }
+      );
+      jqWords.dequeue("marginTop");
     } else {
-      const newMarginTop = -1 * wordHeight;
-
-      Caret.caret.handleLineJump({
-        newMarginTop,
-        duration: 0,
-      });
-
-      PaceCaret.caret.handleLineJump({
-        newMarginTop,
-        duration: 0,
-      });
-
+      currentLinesJumping = 0;
       removeTestElements(lastElementIndexToRemove);
       resolve();
     }
