@@ -1165,20 +1165,25 @@ export async function lineJump(
 
     if (lastElementIndexToRemove === undefined) {
       resolve();
-    } else if (Config.smoothLineScroll) {
-      currentLinesJumping++;
+      currentTestLine++;
+      updateWordsWrapperHeight();
+      return promise;
+    }
 
-      const wordHeight = $(activeWordEl).outerHeight(true) as number;
-      const newMarginTop = -1 * wordHeight * currentLinesJumping;
-      const duration = SlowTimer.get() ? 0 : 125;
+    currentLinesJumping++;
 
-      const caretLineJumpOptions = {
-        newMarginTop,
-        duration: Config.smoothLineScroll ? duration : 0,
-      };
-      Caret.caret.handleLineJump(caretLineJumpOptions);
-      PaceCaret.caret.handleLineJump(caretLineJumpOptions);
+    const wordHeight = $(activeWordEl).outerHeight(true) as number;
+    const newMarginTop = -1 * wordHeight * currentLinesJumping;
+    const duration = SlowTimer.get() ? 0 : 125;
 
+    const caretLineJumpOptions = {
+      newMarginTop,
+      duration: Config.smoothLineScroll ? duration : 0,
+    };
+    Caret.caret.handleLineJump(caretLineJumpOptions);
+    PaceCaret.caret.handleLineJump(caretLineJumpOptions);
+
+    if (Config.smoothLineScroll) {
       lineTransition = true;
       const jqWords = $(wordsEl);
       jqWords.stop("marginTop", true, false).animate(
@@ -1198,6 +1203,7 @@ export async function lineJump(
       );
       jqWords.dequeue("marginTop");
     } else {
+      currentLinesJumping = 0;
       removeTestElements(lastElementIndexToRemove);
       resolve();
     }

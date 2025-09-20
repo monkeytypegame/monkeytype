@@ -190,6 +190,10 @@ export class Caret {
     this.readyToResetMarginTop = false;
 
     if (options.duration === 0) {
+      if (this.isMainCaret) {
+        this.readyToResetMarginTop = true;
+        return;
+      }
       $(this.element).stop("marginTop", true, false).css({
         marginTop: options.newMarginTop,
       });
