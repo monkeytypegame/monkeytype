@@ -23,6 +23,7 @@ import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
+import * as PaceCaret from "./pace-caret";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -116,34 +117,13 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
-export let resultVisible = false;
 export let activeWordTop = 0;
-export let testRestarting = false;
 export let lineTransition = false;
 export let currentTestLine = 0;
 export let resultCalculating = false;
 
-export function setResultVisible(val: boolean): void {
-  resultVisible = val;
-}
-
 export function setActiveWordTop(val: number): void {
   activeWordTop = val;
-}
-
-let { promise: testRestartingPromise, resolve: restartingResolve } =
-  Misc.promiseWithResolvers();
-
-export { testRestartingPromise };
-
-export function setTestRestarting(val: boolean): void {
-  testRestarting = val;
-  if (val) {
-    ({ promise: testRestartingPromise, resolve: restartingResolve } =
-      Misc.promiseWithResolvers());
-  } else {
-    restartingResolve();
-  }
 }
 
 export function setResultCalculating(val: boolean): void {
@@ -347,7 +327,7 @@ async function joinOverlappingHints(
 async function updateHintsPosition(): Promise<void> {
   if (
     ActivePage.get() !== "test" ||
-    resultVisible ||
+    TestState.resultVisible ||
     Config.indicateTypos !== "below"
   )
     return;
@@ -501,7 +481,7 @@ export function showWords(): void {
   updateActiveElement(undefined, true);
   updateWordWrapperClasses();
   setTimeout(() => {
-    void Caret.updatePosition();
+    Caret.resetPosition();
   }, 125);
 }
 
@@ -601,7 +581,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 export function updateWordsWrapperHeight(force = false): void {
-  if (ActivePage.get() !== "test" || resultVisible) return;
+  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
   const outOfFocusEl = document.querySelector(
@@ -920,7 +900,7 @@ export async function scrollTape(
   noRemove = false,
   afterCompleteFn?: () => void
 ): Promise<void> {
-  if (ActivePage.get() !== "test" || resultVisible) return;
+  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
 
   await centeringActiveLine;
 
@@ -1050,6 +1030,8 @@ export async function scrollTape(
     if (isTestRightToLeft) widthRemoved *= -1;
     const currentWordsMargin = parseFloat(wordsEl.style.marginLeft) || 0;
     wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
+    Caret.caret.handleTapeWordsRemoved(widthRemoved);
+    PaceCaret.caret.handleTapeWordsRemoved(widthRemoved);
   }
 
   /* calculate current word width to add to #words margin */
@@ -1076,30 +1058,41 @@ export async function scrollTape(
   }
 
   /* change to new #words & .afterNewline margins */
-  let newMargin =
-    wordsWrapperWidth * (Config.tapeMargin / 100) -
-    wordsWidthBeforeActive -
-    currentWordWidth;
-  if (isTestRightToLeft) newMargin = wordRightMargin - newMargin;
+  const tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
+  let newMarginOffset = wordsWidthBeforeActive + currentWordWidth;
+  let newMargin = tapeMarginPx - newMarginOffset;
+  if (isTestRightToLeft) {
+    newMarginOffset *= -1;
+    newMargin = wordRightMargin - newMargin;
+  }
 
-  const jqWords = $(wordsEl);
+  const duration = SlowTimer.get() ? 0 : 125;
+  const caretScrollOptions = {
+    newValue: newMarginOffset * -1,
+    duration: Config.smoothLineScroll ? duration : 0,
+  };
+
+  Caret.caret.handleTapeScroll(caretScrollOptions);
+  PaceCaret.caret.handleTapeScroll(caretScrollOptions);
+
   if (Config.smoothLineScroll) {
-    jqWords.stop("leftMargin", true, false).animate(
+    const jqWords = $(wordsEl).stop("marginLeft", true, false);
+    jqWords.animate(
       {
         marginLeft: newMargin,
       },
       {
-        duration: SlowTimer.get() ? 0 : 125,
-        queue: "leftMargin",
+        duration,
+        queue: "marginLeft",
         complete: afterCompleteFn,
       }
     );
-    jqWords.dequeue("leftMargin");
+    jqWords.dequeue("marginLeft");
     for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       $(afterNewLineEls[i] as Element)
         .stop(true, false)
-        .animate({ marginLeft: newMargin }, SlowTimer.get() ? 0 : 125);
+        .animate({ marginLeft: newMargin }, duration);
     }
   } else {
     wordsEl.style.marginLeft = `${newMargin}px`;
@@ -1137,7 +1130,7 @@ function removeTestElements(lastElementIndexToRemove: number): void {
   }
 }
 
-let currentLinesAnimating = 0;
+let currentLinesJumping = 0;
 
 export async function lineJump(
   currentTop: number,
@@ -1177,58 +1170,48 @@ export async function lineJump(
       }
     }
 
-    const wordHeight = $(activeWordEl).outerHeight(true) as number;
-    const paceCaretElement = document.querySelector(
-      "#paceCaret"
-    ) as HTMLElement;
-
     if (lastElementIndexToRemove === undefined) {
       resolve();
-    } else if (Config.smoothLineScroll) {
+      currentTestLine++;
+      updateWordsWrapperHeight();
+      return promise;
+    }
+
+    currentLinesJumping++;
+
+    const wordHeight = $(activeWordEl).outerHeight(true) as number;
+    const newMarginTop = -1 * wordHeight * currentLinesJumping;
+    const duration = SlowTimer.get() ? 0 : 125;
+
+    const caretLineJumpOptions = {
+      newMarginTop,
+      duration: Config.smoothLineScroll ? duration : 0,
+    };
+    Caret.caret.handleLineJump(caretLineJumpOptions);
+    PaceCaret.caret.handleLineJump(caretLineJumpOptions);
+
+    if (Config.smoothLineScroll) {
       lineTransition = true;
-
-      $(paceCaretElement)
-        .stop(true, false)
-        .animate(
-          {
-            top: paceCaretElement?.offsetTop - wordHeight,
-          },
-          SlowTimer.get() ? 0 : 125
-        );
-
-      const scrollDistance = TestState.lineScrollDistance + wordHeight;
-      TestState.setLineScrollDistance(scrollDistance);
-      currentLinesAnimating++;
-      const newCss: Record<string, string> = {
-        marginTop: `-${wordHeight * currentLinesAnimating}px`,
-      };
-
       const jqWords = $(wordsEl);
-      jqWords.stop("topMargin", true, false).animate(newCss, {
-        duration: SlowTimer.get() ? 0 : 125,
-        queue: "topMargin",
-        step: (now, fx) => {
-          const completionRate = (now - fx.start) / (fx.end - fx.start);
-          TestState.setLineScrollDistance(
-            scrollDistance * (1 - completionRate)
-          );
-        },
-        complete: () => {
-          currentLinesAnimating = 0;
-          TestState.setLineScrollDistance(0);
-          activeWordTop = activeWordEl.offsetTop;
-          removeTestElements(lastElementIndexToRemove);
-          wordsEl.style.marginTop = "0";
-          lineTransition = false;
-          resolve();
-        },
-      });
-      jqWords.dequeue("topMargin");
+      jqWords.stop("marginTop", true, false).animate(
+        { marginTop: `${newMarginTop}px` },
+        {
+          duration,
+          queue: "marginTop",
+          complete: () => {
+            currentLinesJumping = 0;
+            activeWordTop = activeWordEl.offsetTop;
+            removeTestElements(lastElementIndexToRemove);
+            wordsEl.style.marginTop = "0";
+            lineTransition = false;
+            resolve();
+          },
+        }
+      );
+      jqWords.dequeue("marginTop");
     } else {
+      currentLinesJumping = 0;
       removeTestElements(lastElementIndexToRemove);
-      paceCaretElement.style.top = `${
-        paceCaretElement.offsetTop - wordHeight
-      }px`;
       resolve();
     }
   }
@@ -1410,7 +1393,7 @@ async function loadWordsHistory(): Promise<boolean> {
 }
 
 export function toggleResultWords(noAnimation = false): void {
-  if (resultVisible) {
+  if (TestState.resultVisible) {
     ResultWordHighlight.updateToggleWordsHistoryTime();
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
@@ -1715,7 +1698,7 @@ $(".pageTest #result #wpmChart").on("mouseenter", () => {
 });
 
 $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
-  if (resultVisible) {
+  if (TestState.resultVisible) {
     const input = $(e.currentTarget).attr("input");
     const burst = parseInt($(e.currentTarget).attr("burst") as string);
     if (input !== undefined) {
@@ -1745,14 +1728,14 @@ addEventListener("resize", () => {
 $("#wordsInput").on("focus", (e) => {
   const wordsFocused = e.target === document.activeElement;
   if (!wordsFocused) return;
-  if (!resultVisible && Config.showOutOfFocusWarning) {
+  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
   Caret.show(true);
 });
 
 $("#wordsInput").on("focusout", () => {
-  if (!resultVisible && Config.showOutOfFocusWarning) {
+  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.show();
   }
   Caret.hide();

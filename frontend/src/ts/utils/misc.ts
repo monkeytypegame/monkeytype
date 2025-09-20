@@ -757,4 +757,38 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
   });
 }
 
+export function getTotalInlineMargin(element: HTMLElement): number {
+  const computedStyle = window.getComputedStyle(element);
+  return (
+    parseInt(computedStyle.marginRight) + parseInt(computedStyle.marginLeft)
+  );
+}
+
+export class SingleAnimationFrame {
+  private pendingFrame: number | null = null;
+
+  /**
+   * Requests an animation frame. If a frame is already pending,
+   * it will be canceled and replaced with the latest one.
+   */
+  public request(callback: () => void): void {
+    this.cancel();
+    this.pendingFrame = requestAnimationFrame(() => {
+      this.pendingFrame = null;
+      callback();
+    });
+  }
+
+  public cancel(): void {
+    if (this.pendingFrame !== null) {
+      cancelAnimationFrame(this.pendingFrame);
+      this.pendingFrame = null;
+    }
+  }
+
+  public isPending(): boolean {
+    return this.pendingFrame !== null;
+  }
+}
+
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
