@@ -11,8 +11,8 @@ const wordsWrapperCache = document.querySelector<HTMLElement>(
 ) as HTMLElement;
 
 let lockedMainCaretInTape = true;
+let caretDebug = false;
 
-let caretDebug = true;
 export function toggleCaretDebug(): void {
   caretDebug = !caretDebug;
   if (!caretDebug) {
@@ -83,7 +83,15 @@ export class Caret {
   }
 
   public getHeight(): number {
-    return this.element.offsetHeight;
+    if (!this.isHidden()) {
+      return this.element.offsetHeight;
+    }
+
+    let height = 0;
+    this.show();
+    height = this.element.offsetHeight;
+    this.hide();
+    return height;
   }
 
   public isFullWidth(): boolean {
