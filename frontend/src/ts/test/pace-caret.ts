@@ -242,7 +242,6 @@ export function handleSpace(correct: boolean, currentWord: string): void {
 }
 
 export function start(): void {
-  console.log("start pace caret");
   void update((settings?.spc ?? 0) * 1000);
 }
 
