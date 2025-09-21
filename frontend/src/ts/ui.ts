@@ -98,7 +98,7 @@ window.addEventListener("beforeunload", (event) => {
 });
 
 const debouncedEvent = debounce(250, () => {
-  if (getActivePage() === "test" && !TestUI.resultVisible) {
+  if (getActivePage() === "test" && !TestState.resultVisible) {
     if (Config.tapeMode !== "off") {
       void TestUI.scrollTape();
     } else {
@@ -106,7 +106,7 @@ const debouncedEvent = debounce(250, () => {
       void TestUI.updateHintsPositionDebounced();
     }
     setTimeout(() => {
-      void TestUI.updateWordsInputPosition();
+      TestUI.updateWordsInputPosition();
       TestUI.focusWords();
     }, 250);
   }

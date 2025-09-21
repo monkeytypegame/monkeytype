@@ -116,34 +116,13 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
-export let resultVisible = false;
 export let activeWordTop = 0;
-export let testRestarting = false;
 export let lineTransition = false;
 export let currentTestLine = 0;
 export let resultCalculating = false;
 
-export function setResultVisible(val: boolean): void {
-  resultVisible = val;
-}
-
 export function setActiveWordTop(val: number): void {
   activeWordTop = val;
-}
-
-let { promise: testRestartingPromise, resolve: restartingResolve } =
-  Misc.promiseWithResolvers();
-
-export { testRestartingPromise };
-
-export function setTestRestarting(val: boolean): void {
-  testRestarting = val;
-  if (val) {
-    ({ promise: testRestartingPromise, resolve: restartingResolve } =
-      Misc.promiseWithResolvers());
-  } else {
-    restartingResolve();
-  }
 }
 
 export function setResultCalculating(val: boolean): void {
@@ -229,7 +208,7 @@ export function updateActiveElement(
 
   activeWordTop = newActiveWord.offsetTop;
 
-  void updateWordsInputPosition();
+  updateWordsInputPosition();
 
   if (!initial && Config.tapeMode !== "off") {
     void scrollTape();
@@ -272,8 +251,11 @@ async function joinOverlappingHints(
   activeWordLetters: NodeListOf<Element>,
   hintElements: HTMLCollection
 ): Promise<void> {
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRTL = currentLanguage.rightToLeft;
+  const isWordRightToLeft = Strings.isWordRightToLeft(
+    TestWords.words.getCurrent(),
+    TestState.isLanguageRightToLeft,
+    TestState.isDirectionReversed
+  );
 
   let previousBlocksAdjacent = false;
   let currentHintBlock = 0;
@@ -305,8 +287,8 @@ async function joinOverlappingHints(
 
     const sameTop = block1Letter1.offsetTop === block2Letter1.offsetTop;
 
-    const leftBlock = isLanguageRTL ? hintBlock2 : hintBlock1;
-    const rightBlock = isLanguageRTL ? hintBlock1 : hintBlock2;
+    const leftBlock = isWordRightToLeft ? hintBlock2 : hintBlock1;
+    const rightBlock = isWordRightToLeft ? hintBlock1 : hintBlock2;
 
     // block edge is offset half its width because of transform: translate(-50%)
     const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
@@ -321,7 +303,7 @@ async function joinOverlappingHints(
 
       const block1Letter1Pos =
         block1Letter1.offsetLeft +
-        (isLanguageRTL ? block1Letter1.offsetWidth : 0);
+        (isWordRightToLeft ? block1Letter1.offsetWidth : 0);
       const bothBlocksLettersWidthHalved =
         hintBlock2.offsetLeft - hintBlock1.offsetLeft;
       hintBlock1.style.left =
@@ -344,7 +326,7 @@ async function joinOverlappingHints(
 async function updateHintsPosition(): Promise<void> {
   if (
     ActivePage.get() !== "test" ||
-    resultVisible ||
+    TestState.resultVisible ||
     Config.indicateTypos !== "below"
   )
     return;
@@ -510,19 +492,21 @@ export function appendEmptyWordElement(
   );
 }
 let updateWordsInputPositionAnimationFrameId: null | number = null;
-export async function updateWordsInputPosition(): Promise<void> {
+export function updateWordsInputPosition(): void {
   if (updateWordsInputPositionAnimationFrameId !== null) {
     cancelAnimationFrame(updateWordsInputPositionAnimationFrameId);
   }
-  updateWordsInputPositionAnimationFrameId = requestAnimationFrame(async () => {
+  updateWordsInputPositionAnimationFrameId = requestAnimationFrame(() => {
     updateWordsInputPositionAnimationFrameId = null;
     if (ActivePage.get() !== "test") return;
-    const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-    const isLanguageRTL = currentLanguage.rightToLeft;
+    const isTestRightToLeft = TestState.isDirectionReversed
+      ? !TestState.isLanguageRightToLeft
+      : TestState.isLanguageRightToLeft;
 
     const el = document.querySelector<HTMLElement>("#wordsInput");
+    const wrapperElement = document.querySelector<HTMLElement>("#wordsWrapper");
 
-    if (!el) return;
+    if (!el || !wrapperElement) return;
 
     const activeWord = getActiveWordElement();
 
@@ -549,10 +533,16 @@ export async function updateWordsInputPosition(): Promise<void> {
 
     el.style.top = targetTop + "px";
 
-    if (activeWord.offsetWidth < letterHeight && isLanguageRTL) {
-      el.style.left = activeWord.offsetLeft - letterHeight + "px";
+    if (Config.tapeMode !== "off") {
+      el.style.left = `${
+        wrapperElement.offsetWidth * (Config.tapeMargin / 100)
+      }px`;
     } else {
-      el.style.left = Math.max(0, activeWord.offsetLeft) + "px";
+      if (activeWord.offsetWidth < letterHeight && isTestRightToLeft) {
+        el.style.left = activeWord.offsetLeft - letterHeight + "px";
+      } else {
+        el.style.left = Math.max(0, activeWord.offsetLeft) + "px";
+      }
     }
 
     keepWordsInputInTheCenter();
@@ -590,7 +580,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 export function updateWordsWrapperHeight(force = false): void {
-  if (ActivePage.get() !== "test" || resultVisible) return;
+  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
   const outOfFocusEl = document.querySelector(
@@ -909,12 +899,13 @@ export async function scrollTape(
   noRemove = false,
   afterCompleteFn?: () => void
 ): Promise<void> {
-  if (ActivePage.get() !== "test" || resultVisible) return;
+  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
 
   await centeringActiveLine;
 
-  const currentLang = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRTL = currentLang.rightToLeft;
+  const isTestRightToLeft = TestState.isDirectionReversed
+    ? !TestState.isLanguageRightToLeft
+    : TestState.isLanguageRightToLeft;
 
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
@@ -988,8 +979,8 @@ export async function scrollTape(
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
       if (
-        (!isLanguageRTL && forWordLeft < 0 - forWordWidth) ||
-        (isLanguageRTL && forWordLeft > wordsWrapperWidth)
+        (!isTestRightToLeft && forWordLeft < 0 - forWordWidth) ||
+        (isTestRightToLeft && forWordLeft > wordsWrapperWidth)
       ) {
         toRemove.push(child);
         widthRemoved += wordOuterWidth;
@@ -1035,7 +1026,7 @@ export async function scrollTape(
         currentLineIndent - (widthRemovedFromLine[i] ?? 0)
       }px`;
     }
-    if (isLanguageRTL) widthRemoved *= -1;
+    if (isTestRightToLeft) widthRemoved *= -1;
     const currentWordsMargin = parseFloat(wordsEl.style.marginLeft) || 0;
     wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
   }
@@ -1068,7 +1059,7 @@ export async function scrollTape(
     wordsWrapperWidth * (Config.tapeMargin / 100) -
     wordsWidthBeforeActive -
     currentWordWidth;
-  if (isLanguageRTL) newMargin = wordRightMargin - newMargin;
+  if (isTestRightToLeft) newMargin = wordRightMargin - newMargin;
 
   const jqWords = $(wordsEl);
   if (Config.smoothLineScroll) {
@@ -1398,7 +1389,7 @@ async function loadWordsHistory(): Promise<boolean> {
 }
 
 export function toggleResultWords(noAnimation = false): void {
-  if (resultVisible) {
+  if (TestState.resultVisible) {
     ResultWordHighlight.updateToggleWordsHistoryTime();
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
@@ -1703,7 +1694,7 @@ $(".pageTest #result #wpmChart").on("mouseenter", () => {
 });
 
 $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
-  if (resultVisible) {
+  if (TestState.resultVisible) {
     const input = $(e.currentTarget).attr("input");
     const burst = parseInt($(e.currentTarget).attr("burst") as string);
     if (input !== undefined) {
@@ -1733,14 +1724,14 @@ addEventListener("resize", () => {
 $("#wordsInput").on("focus", (e) => {
   const wordsFocused = e.target === document.activeElement;
   if (!wordsFocused) return;
-  if (!resultVisible && Config.showOutOfFocusWarning) {
+  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
   Caret.show(true);
 });
 
 $("#wordsInput").on("focusout", () => {
-  if (!resultVisible && Config.showOutOfFocusWarning) {
+  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.show();
   }
   Caret.hide();
