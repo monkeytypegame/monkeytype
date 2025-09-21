@@ -480,11 +480,6 @@ export function showWords(): void {
     words.html(wordsHTML);
   }
 
-  words.stop(true, false).css({
-    marginTop: 0,
-    marginLeft: 0,
-  });
-
   updateActiveElement(undefined, true);
   updateWordWrapperClasses();
   setTimeout(() => {
@@ -665,9 +660,12 @@ function updateWordsMargin<T extends unknown[]>(
     void updateHintsPositionDebounced();
   };
   if (Config.tapeMode !== "off") {
-    void scrollTape(true, afterComplete);
+    void scrollTape(false, afterComplete);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
+
+    $(wordsEl).stop(true, false);
+
     const afterNewlineEls =
       wordsEl.querySelectorAll<HTMLElement>(".afterNewline");
     if (Config.smoothLineScroll) {
