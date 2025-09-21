@@ -1,5 +1,4 @@
 import * as TestWords from "./test-words";
-import * as TestUI from "./test-ui";
 import Config from "../config";
 import * as DB from "../db";
 import * as SlowTimer from "../states/slow-timer";
@@ -146,7 +145,7 @@ export async function init(): Promise<void> {
 }
 
 export async function update(expectedStepEnd: number): Promise<void> {
-  if (settings === null || !TestState.isActive || TestUI.resultVisible) {
+  if (settings === null || !TestState.isActive || TestState.resultVisible) {
     return;
   }
   // if ($("#paceCaret").hasClass("hidden")) {

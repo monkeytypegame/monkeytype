@@ -116,15 +116,10 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
-export let resultVisible = false;
 export let activeWordTop = 0;
 export let lineTransition = false;
 export let currentTestLine = 0;
 export let resultCalculating = false;
-
-export function setResultVisible(val: boolean): void {
-  resultVisible = val;
-}
 
 export function setActiveWordTop(val: number): void {
   activeWordTop = val;
@@ -331,7 +326,7 @@ async function joinOverlappingHints(
 async function updateHintsPosition(): Promise<void> {
   if (
     ActivePage.get() !== "test" ||
-    resultVisible ||
+    TestState.resultVisible ||
     Config.indicateTypos !== "below"
   )
     return;
@@ -585,7 +580,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 export function updateWordsWrapperHeight(force = false): void {
-  if (ActivePage.get() !== "test" || resultVisible) return;
+  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
   const outOfFocusEl = document.querySelector(
@@ -904,7 +899,7 @@ export async function scrollTape(
   noRemove = false,
   afterCompleteFn?: () => void
 ): Promise<void> {
-  if (ActivePage.get() !== "test" || resultVisible) return;
+  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
 
   await centeringActiveLine;
 
@@ -1394,7 +1389,7 @@ async function loadWordsHistory(): Promise<boolean> {
 }
 
 export function toggleResultWords(noAnimation = false): void {
-  if (resultVisible) {
+  if (TestState.resultVisible) {
     ResultWordHighlight.updateToggleWordsHistoryTime();
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
@@ -1699,7 +1694,7 @@ $(".pageTest #result #wpmChart").on("mouseenter", () => {
 });
 
 $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
-  if (resultVisible) {
+  if (TestState.resultVisible) {
     const input = $(e.currentTarget).attr("input");
     const burst = parseInt($(e.currentTarget).attr("burst") as string);
     if (input !== undefined) {
@@ -1729,14 +1724,14 @@ addEventListener("resize", () => {
 $("#wordsInput").on("focus", (e) => {
   const wordsFocused = e.target === document.activeElement;
   if (!wordsFocused) return;
-  if (!resultVisible && Config.showOutOfFocusWarning) {
+  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
   Caret.show(true);
 });
 
 $("#wordsInput").on("focusout", () => {
-  if (!resultVisible && Config.showOutOfFocusWarning) {
+  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.show();
   }
   Caret.hide();
