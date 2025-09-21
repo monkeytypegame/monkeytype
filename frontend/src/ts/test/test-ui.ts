@@ -660,7 +660,7 @@ function updateWordsMargin<T extends unknown[]>(
     void updateHintsPositionDebounced();
   };
   if (Config.tapeMode !== "off") {
-    void scrollTape(false, afterComplete);
+    void scrollTape(true, afterComplete);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
 
