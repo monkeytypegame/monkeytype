@@ -1013,7 +1013,7 @@ $(document).on("keydown", async (event) => {
 
   if (!allowTyping) return;
 
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     event.preventDefault();
     return;
   }
@@ -1249,7 +1249,7 @@ $("#wordsInput").on("keyup", (event) => {
 });
 
 $("#wordsInput").on("keyup", (event) => {
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     event.preventDefault();
     return;
   }
@@ -1269,7 +1269,7 @@ $("#wordsInput").on("beforeinput", (event) => {
 });
 
 $("#wordsInput").on("input", async (event) => {
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     (event.target as HTMLInputElement).value = " ";
     return;
   }

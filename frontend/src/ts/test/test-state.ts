@@ -1,4 +1,5 @@
 import { Challenge } from "@monkeytype/schemas/challenges";
+import { promiseWithResolvers } from "../utils/misc";
 
 export let isRepeated = false;
 export let isPaceRepeat = false;
@@ -12,6 +13,7 @@ export let testInitSuccess = true;
 export let lineScrollDistance = 0;
 export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
+export let testRestarting = false;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -67,4 +69,19 @@ export function setIsLanguageRightToLeft(rtl: boolean): void {
 
 export function setIsDirectionReversed(val: boolean): void {
   isDirectionReversed = val;
+}
+
+let { promise: testRestartingPromise, resolve: restartingResolve } =
+  promiseWithResolvers();
+
+export { testRestartingPromise };
+
+export function setTestRestarting(val: boolean): void {
+  testRestarting = val;
+  if (val) {
+    ({ promise: testRestartingPromise, resolve: restartingResolve } =
+      promiseWithResolvers());
+  } else {
+    restartingResolve();
+  }
 }
