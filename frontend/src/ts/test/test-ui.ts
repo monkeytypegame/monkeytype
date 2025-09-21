@@ -665,7 +665,7 @@ function updateWordsMargin<T extends unknown[]>(
     void updateHintsPositionDebounced();
   };
   if (Config.tapeMode !== "off") {
-    void scrollTape(true, true, afterComplete);
+    void scrollTape(true, afterComplete);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
     const afterNewlineEls =
@@ -904,8 +904,7 @@ function getNlCharWidth(
 }
 
 export async function scrollTape(
-  noRemove = false,
-  initial = false,
+  noAnimation = false,
   afterCompleteFn?: () => void
 ): Promise<void> {
   if (ActivePage.get() !== "test" || TestState.resultVisible) return;
@@ -1025,7 +1024,7 @@ export async function scrollTape(
   }
 
   /* remove overflown elements */
-  if (toRemove.length > 0 && !noRemove) {
+  if (toRemove.length > 0) {
     for (const el of toRemove) el.remove();
     for (let i = 0; i < widthRemovedFromLine.length; i++) {
       const afterNewlineEl = afterNewLineEls[i] as HTMLElement;
@@ -1074,7 +1073,7 @@ export async function scrollTape(
     newMargin = wordRightMargin - newMargin;
   }
 
-  const duration = initial ? 0 : SlowTimer.get() ? 0 : 125;
+  const duration = noAnimation ? 0 : SlowTimer.get() ? 0 : 125;
   const caretScrollOptions = {
     newValue: newMarginOffset * -1,
     duration: Config.smoothLineScroll ? duration : 0,
