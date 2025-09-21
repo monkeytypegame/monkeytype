@@ -353,6 +353,7 @@ export async function updateGraphPBLine(): Promise<void> {
 
   ChartController.result.getScale("wpm").max = maxChartVal;
   ChartController.result.getScale("raw").max = maxChartVal;
+  ChartController.result.getScale("burst").max = maxChartVal;
 }
 
 function updateWpmAndAcc(): void {
