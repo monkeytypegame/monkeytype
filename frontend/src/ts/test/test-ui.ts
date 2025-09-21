@@ -673,6 +673,7 @@ function updateWordsMargin<T extends unknown[]>(
       jqWords.stop("leftMargin", true, false).animate(
         {
           marginLeft: 0,
+          marginTop: 0,
         },
         {
           duration: SlowTimer.get() ? 0 : 125,
@@ -686,6 +687,7 @@ function updateWordsMargin<T extends unknown[]>(
         .animate({ marginLeft: 0 }, SlowTimer.get() ? 0 : 125);
     } else {
       wordsEl.style.marginLeft = `0`;
+      wordsEl.style.marginTop = `0`;
       for (const afterNewline of afterNewlineEls) {
         afterNewline.style.marginLeft = `0`;
       }
