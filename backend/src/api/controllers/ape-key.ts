@@ -27,7 +27,7 @@ export async function getApeKeys(
 
   const apeKeys = await ApeKeysDAL.getApeKeys(uid);
   const cleanedKeys: Record<string, ApeKey> = Object.fromEntries(
-    apeKeys.map((item) => [String(item._id), cleanApeKey(item)])
+    apeKeys.map((item) => [item._id.toHexString(), cleanApeKey(item)])
   );
 
   return new MonkeyResponse("ApeKeys retrieved", cleanedKeys);
