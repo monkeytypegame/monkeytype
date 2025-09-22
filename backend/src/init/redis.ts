@@ -1,5 +1,4 @@
 import fs from "fs";
-import _ from "lodash";
 import { join } from "path";
 import IORedis, { Redis } from "ioredis";
 import Logger from "../utils/logger";
@@ -61,10 +60,14 @@ const REDIS_SCRIPTS_DIRECTORY_PATH = join(__dirname, "../../redis-scripts");
 function loadScripts(client: IORedis.Redis): void {
   const scriptFiles = fs.readdirSync(REDIS_SCRIPTS_DIRECTORY_PATH);
 
+  const toCamelCase = (kebab: string): string => {
+    return kebab.replace(/-([a-z])/g, (_, char: string) => char.toUpperCase());
+  };
+
   scriptFiles.forEach((scriptFile) => {
     const scriptPath = join(REDIS_SCRIPTS_DIRECTORY_PATH, scriptFile);
     const scriptSource = fs.readFileSync(scriptPath, "utf-8");
-    const scriptName = _.camelCase(scriptFile.split(".")[0]);
+    const scriptName = toCamelCase(scriptFile.split(".")[0] as string);
 
     client.defineCommand(scriptName, {
       lua: scriptSource,

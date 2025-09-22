@@ -50,7 +50,7 @@ async function createDummyData(
         tags: [],
         consistency: 100,
         keyConsistency: 100,
-        chartData: { wpm: [], raw: [], err: [] },
+        chartData: { wpm: [], burst: [], err: [] },
         uid,
         keySpacingStats: { average: 0, sd: 0 },
         keyDurationStats: { average: 0, sd: 0 },

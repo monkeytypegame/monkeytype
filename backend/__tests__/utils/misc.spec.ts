@@ -453,4 +453,46 @@ describe("Misc Utils", () => {
       });
     });
   });
+
+  describe("isPlainObject", () => {
+    it("should return true for plain objects", () => {
+      expect(Misc.isPlainObject({})).toBe(true);
+      expect(Misc.isPlainObject({ a: 1, b: 2 })).toBe(true);
+      expect(Misc.isPlainObject(Object.create(Object.prototype))).toBe(true);
+    });
+
+    it("should return false for arrays", () => {
+      expect(Misc.isPlainObject([])).toBe(false);
+      expect(Misc.isPlainObject([1, 2, 3])).toBe(false);
+    });
+
+    it("should return false for null", () => {
+      expect(Misc.isPlainObject(null)).toBe(false);
+    });
+
+    it("should return false for primitives", () => {
+      expect(Misc.isPlainObject(123)).toBe(false);
+      expect(Misc.isPlainObject("string")).toBe(false);
+      expect(Misc.isPlainObject(true)).toBe(false);
+      expect(Misc.isPlainObject(undefined)).toBe(false);
+      expect(Misc.isPlainObject(Symbol("sym"))).toBe(false);
+    });
+
+    it("should return false for objects with different prototypes", () => {
+      // oxlint-disable-next-line no-extraneous-class
+      class MyClass {}
+      expect(Misc.isPlainObject(new MyClass())).toBe(false);
+      expect(Misc.isPlainObject(Object.create(null))).toBe(false);
+      expect(Misc.isPlainObject(new Date())).toBe(false);
+      expect(Misc.isPlainObject(new Map())).toBe(false);
+      expect(Misc.isPlainObject(new Set())).toBe(false);
+    });
+
+    it("should return false for functions", () => {
+      // oxlint-disable-next-line no-empty-function
+      expect(Misc.isPlainObject(function () {})).toBe(false);
+      // oxlint-disable-next-line no-empty-function
+      expect(Misc.isPlainObject(() => {})).toBe(false);
+    });
+  });
 });

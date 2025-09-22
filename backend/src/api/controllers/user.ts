@@ -92,6 +92,7 @@ import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as ConnectionsDal from "../../dal/connections";
+import { PersonalBest } from "@monkeytype/schemas/shared";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   const { data: verified, error } = await tryCatch(verify(captcha));
@@ -935,18 +936,30 @@ export async function getProfile(
     lbOptOut,
   } = user;
 
-  const validTimePbs = {
-    "15": personalBests?.time?.["15"],
-    "30": personalBests?.time?.["30"],
-    "60": personalBests?.time?.["60"],
-    "120": personalBests?.time?.["120"],
+  const extractValid = (
+    src: Record<string, PersonalBest[]>,
+    validKeys: string[]
+  ): Record<string, PersonalBest[]> => {
+    return validKeys.reduce((obj, key) => {
+      if (src?.[key] !== undefined) {
+        obj[key] = src[key];
+      }
+      return obj;
+    }, {});
   };
-  const validWordsPbs = {
-    "10": personalBests?.words?.["10"],
-    "25": personalBests?.words?.["25"],
-    "50": personalBests?.words?.["50"],
-    "100": personalBests?.words?.["100"],
-  };
+
+  const validTimePbs = extractValid(personalBests.time, [
+    "15",
+    "30",
+    "60",
+    "120",
+  ]);
+  const validWordsPbs = extractValid(personalBests.words, [
+    "10",
+    "25",
+    "50",
+    "100",
+  ]);
 
   const typingStats = {
     completedTests,

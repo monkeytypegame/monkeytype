@@ -1181,7 +1181,6 @@ describe("UserDal", () => {
         discordId: "discordId",
         discordAvatar: "discordAvatar",
       });
-
       //when
       await UserDAL.linkDiscord(uid, "newId", "newAvatar");
 
@@ -1189,6 +1188,21 @@ describe("UserDal", () => {
       const read = await UserDAL.getUser(uid, "read");
       expect(read.discordId).toEqual("newId");
       expect(read.discordAvatar).toEqual("newAvatar");
+    });
+    it("should update without avatar", async () => {
+      //given
+      const { uid } = await UserTestData.createUser({
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+      });
+
+      //when
+      await UserDAL.linkDiscord(uid, "newId");
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.discordId).toEqual("newId");
+      expect(read.discordAvatar).toEqual("discordAvatar");
     });
   });
   describe("unlinkDiscord", () => {

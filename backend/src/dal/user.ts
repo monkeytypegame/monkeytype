@@ -9,7 +9,7 @@ import {
   type UpdateFilter,
   type Filter,
 } from "mongodb";
-import { flattenObjectDeep, WithObjectId } from "../utils/misc";
+import { flattenObjectDeep, isPlainObject, WithObjectId } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
@@ -605,10 +605,10 @@ export async function linkDiscord(
   discordId: string,
   discordAvatar?: string
 ): Promise<void> {
-  const updates: Partial<DBUser> = _.pickBy(
-    { discordId, discordAvatar },
-    _.identity
-  );
+  const updates: Partial<DBUser> = { discordId };
+  if (discordAvatar !== undefined && discordAvatar !== null)
+    updates.discordAvatar = discordAvatar;
+
   await updateUser({ uid }, { $set: updates }, { stack: "link discord" });
 }
 
@@ -911,8 +911,7 @@ export async function updateProfile(
 ): Promise<void> {
   const profileUpdates = _.omitBy(
     flattenObjectDeep(profileDetailUpdates, "profileDetails"),
-    (value) =>
-      value === undefined || (_.isPlainObject(value) && _.isEmpty(value))
+    (value) => value === undefined || (isPlainObject(value) && _.isEmpty(value))
   );
 
   const updates = {
