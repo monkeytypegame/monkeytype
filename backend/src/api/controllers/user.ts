@@ -1,4 +1,3 @@
-import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError, {
   getErrorMessage,
@@ -585,7 +584,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
 
   let inboxUnreadSize = 0;
   if (req.ctx.configuration.users.inbox.enabled) {
-    inboxUnreadSize = _.filter(userInfo.inbox, { read: false }).length;
+    inboxUnreadSize = userInfo.inbox?.filter((mail) => !mail.read).length ?? 0;
   }
 
   if (!userInfo.name) {
@@ -936,8 +935,18 @@ export async function getProfile(
     lbOptOut,
   } = user;
 
-  const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
-  const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
+  const validTimePbs = {
+    "15": personalBests?.time?.["15"],
+    "30": personalBests?.time?.["30"],
+    "60": personalBests?.time?.["60"],
+    "120": personalBests?.time?.["120"],
+  };
+  const validWordsPbs = {
+    "10": personalBests?.words?.["10"],
+    "25": personalBests?.words?.["25"],
+    "50": personalBests?.words?.["50"],
+    "100": personalBests?.words?.["100"],
+  };
 
   const typingStats = {
     completedTests,
@@ -1019,10 +1028,7 @@ export async function updateProfile(
   const profileDetailsUpdates: Partial<UserProfileDetails> = {
     bio: sanitizeString(bio),
     keyboard: sanitizeString(keyboard),
-    socialProfiles: _.mapValues(
-      socialProfiles,
-      sanitizeString
-    ) as UserProfileDetails["socialProfiles"],
+    socialProfiles: socialProfiles ?? {},
     showActivityOnPublicProfile,
   };
 
