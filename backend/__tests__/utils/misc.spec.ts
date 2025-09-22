@@ -1,5 +1,4 @@
 import { describe, it, expect, afterAll, vi } from "vitest";
-import _ from "lodash";
 import * as Misc from "../../src/utils/misc";
 import { ObjectId } from "mongodb";
 
@@ -8,36 +7,44 @@ describe("Misc Utils", () => {
     vi.useRealTimers();
   });
 
-  it("matchesAPattern", () => {
-    const testCases = {
-      "eng.*": {
+  describe("matchesAPattern", () => {
+    const testCases = [
+      {
+        pattern: "eng.*",
         cases: ["english", "aenglish", "en", "eng"],
         expected: [true, false, false, true],
       },
 
-      "\\d+": {
+      {
+        pattern: "\\d+",
         cases: ["b", "2", "331", "1a"],
         expected: [false, true, true, false],
       },
-      "(hi|hello)": {
+      {
+        pattern: "(hi|hello)",
         cases: ["hello", "hi", "hillo", "hi hello"],
         expected: [true, true, false, false],
       },
-      ".+": {
+      {
+        pattern: ".+",
         cases: ["a2", "b2", "c1", ""],
         expected: [true, true, true, false],
       },
-    };
+    ];
 
-    _.each(testCases, (testCase, pattern) => {
-      const { cases, expected } = testCase;
-      _.each(cases, (caseValue, index) => {
-        expect(Misc.matchesAPattern(caseValue, pattern)).toBe(expected[index]);
-      });
-    });
+    it.each(testCases)(
+      "matchesAPattern with $pattern",
+      ({ pattern, cases, expected }) => {
+        cases.forEach((caseValue, index) => {
+          expect(Misc.matchesAPattern(caseValue, pattern)).toBe(
+            expected[index]
+          );
+        });
+      }
+    );
   });
 
-  it("kogascore", () => {
+  describe("kogascore", () => {
     const testCases = [
       {
         wpm: 214.8,
@@ -79,12 +86,15 @@ describe("Misc Utils", () => {
       },
     ];
 
-    _.each(testCases, ({ wpm, acc, timestamp, expectedScore }) => {
-      expect(Misc.kogascore(wpm, acc, timestamp)).toBe(expectedScore);
-    });
+    it.each(testCases)(
+      "kogascore with wpm:$wpm, acc:$acc, timestamp:$timestamp = $expectedScore",
+      ({ wpm, acc, timestamp, expectedScore }) => {
+        expect(Misc.kogascore(wpm, acc, timestamp)).toBe(expectedScore);
+      }
+    );
   });
 
-  it("identity", () => {
+  describe("identity", () => {
     const testCases = [
       {
         input: "",
@@ -107,13 +117,15 @@ describe("Misc Utils", () => {
         expected: "undefined",
       },
     ];
-
-    _.each(testCases, ({ input, expected }) => {
-      expect(Misc.identity(input)).toEqual(expected);
-    });
+    it.each(testCases)(
+      "identity with $input = $expected",
+      ({ input, expected }) => {
+        expect(Misc.identity(input)).toBe(expected);
+      }
+    );
   });
 
-  it("flattenObjectDeep", () => {
+  describe("flattenObjectDeep", () => {
     const testCases = [
       {
         obj: {
@@ -177,9 +189,12 @@ describe("Misc Utils", () => {
       },
     ];
 
-    _.each(testCases, ({ obj, expected }) => {
-      expect(Misc.flattenObjectDeep(obj)).toEqual(expected);
-    });
+    it.each(testCases)(
+      "flattenObjectDeep with $obj = $expected",
+      ({ obj, expected }) => {
+        expect(Misc.flattenObjectDeep(obj)).toEqual(expected);
+      }
+    );
   });
 
   it("sanitizeString", () => {
