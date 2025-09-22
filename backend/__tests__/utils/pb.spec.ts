@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import _ from "lodash";
 import * as pb from "../../src/utils/pb";
 import { Mode, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
 import { FunboxName } from "@monkeytype/schemas/configs";
+import _ from "lodash";
 
 describe("Pb Utils", () => {
   it("funboxCatGetPb", () => {
@@ -175,7 +175,7 @@ describe("Pb Utils", () => {
       for (const lbPb of lbpbstartingvalues) {
         const lbPbPb = pb.updateLeaderboardPersonalBests(
           userPbs,
-          _.cloneDeep(lbPb) as pb.LbPersonalBests,
+          structuredClone(lbPb) as pb.LbPersonalBests,
           result15
         );
 

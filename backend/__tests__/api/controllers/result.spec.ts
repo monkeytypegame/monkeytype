@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { setup } from "../../__testData__/controller-test";
-import _, { omit } from "lodash";
 import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
@@ -10,6 +9,7 @@ import { ObjectId } from "mongodb";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import { DBResult } from "../../../src/utils/result";
+import { omit } from "../../../src/utils/misc";
 
 const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -824,10 +824,9 @@ describe("result controller test", () => {
   });
 });
 
-async function enablePremiumFeatures(premium: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    users: { premium: { enabled: premium } },
-  });
+async function enablePremiumFeatures(enabled: boolean): Promise<void> {
+  const mockConfig = await configuration;
+  mockConfig.users.premium = { ...mockConfig.users.premium, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
@@ -857,7 +856,7 @@ function givenDbResult(uid: string, customize?: Partial<DBResult>): DBResult {
     isPb: true,
     chartData: {
       wpm: [Math.random() * 100],
-      raw: [Math.random() * 100],
+      burst: [Math.random() * 100],
       err: [Math.random() * 100],
     },
     name: "testName",
@@ -866,9 +865,11 @@ function givenDbResult(uid: string, customize?: Partial<DBResult>): DBResult {
 }
 
 async function acceptApeKeys(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    apeKeys: { acceptKeys: enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.apeKeys = {
+    ...mockConfig.apeKeys,
+    acceptKeys: enabled,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
@@ -876,9 +877,8 @@ async function acceptApeKeys(enabled: boolean): Promise<void> {
 }
 
 async function enableResultsSaving(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    results: { savingEnabled: enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.results = { ...mockConfig.results, savingEnabled: enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig

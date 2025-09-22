@@ -24,7 +24,6 @@ import {
   IRouter,
   NextFunction,
   Response,
-  Router,
   static as expressStatic,
 } from "express";
 import { isDevEnvironment } from "../../utils/misc";
@@ -190,8 +189,8 @@ function applyApiRoutes(app: Application): void {
     );
   });
 
-  _.each(API_ROUTE_MAP, (router: Router, route) => {
+  for (const [route, router] of Object.entries(API_ROUTE_MAP)) {
     const apiRoute = `${BASE_ROUTE}${route}`;
     app.use(apiRoute, router);
-  });
+  }
 }

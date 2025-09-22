@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import _ from "lodash";
+
 import * as UserDAL from "../../../src/dal/user";
 import * as UserTestData from "../../__testData__/users";
 import { createConnection as createFriend } from "../../__testData__/connections";
@@ -236,9 +236,13 @@ describe("UserDal", () => {
 
     // then
     const updatedUser = (await UserDAL.getUser(testUser.uid, "test")) ?? {};
-    expect(_.values(updatedUser.personalBests).filter(_.isEmpty)).toHaveLength(
-      5
-    );
+    expect(updatedUser.personalBests).toStrictEqual({
+      time: {},
+      words: {},
+      quote: {},
+      custom: {},
+      zen: {},
+    });
   });
 
   it("autoBan should automatically ban after configured anticheat triggers", async () => {

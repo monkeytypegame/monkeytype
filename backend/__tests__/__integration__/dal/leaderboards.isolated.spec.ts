@@ -1,5 +1,4 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
-import _ from "lodash";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../../src/dal/user";
 import * as LeaderboardsDal from "../../../src/dal/leaderboards";
@@ -12,6 +11,7 @@ import { LbPersonalBests } from "../../../src/utils/pb";
 
 import { pb } from "../../__testData__/users";
 import { createConnection } from "../../__testData__/connections";
+import { omit } from "../../../src/utils/misc";
 
 describe("LeaderboardsDal", () => {
   afterEach(async () => {
@@ -60,7 +60,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => _.omit(it, ["_id"]));
+      const lb = results.map((it) => omit(it, "_id"));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: rank1 }),
@@ -87,7 +87,8 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => _.omit(it, ["_id"]));
+
+      const lb = results.map((it) => omit(it, "_id"));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 1, user: rank1 }),
@@ -201,7 +202,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = result.map((it) => omit(it, "_id"));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noBadge }),
@@ -240,7 +241,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = result.map((it) => omit(it, "_id"));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noPremium }),
@@ -298,7 +299,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => _.omit(it, ["_id"]));
+      const lb = results.map((it) => omit(it, "_id"));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 3, user: rank3 }),
@@ -337,7 +338,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => _.omit(it, ["_id"]));
+      const lb = results.map((it) => omit(it, "_id"));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 1, user: rank1, friendsRank: 1 }),
@@ -376,7 +377,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => _.omit(it, ["_id"]));
+      const lb = results.map((it) => omit(it, "_id"));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 4, user: rank4, friendsRank: 3 }),

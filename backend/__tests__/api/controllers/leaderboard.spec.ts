@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { setup } from "../../__testData__/controller-test";
-import _ from "lodash";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../../src/dal/leaderboards";
 import * as ConnectionsDal from "../../../src/dal/connections";
@@ -1422,9 +1421,8 @@ describe("Loaderboard Controller", () => {
 });
 
 async function acceptApeKeys(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    apeKeys: { acceptKeys: enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.apeKeys = { ...mockConfig.apeKeys, acceptKeys: enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
@@ -1432,18 +1430,22 @@ async function acceptApeKeys(enabled: boolean): Promise<void> {
 }
 
 async function dailyLeaderboardEnabled(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    dailyLeaderboards: { enabled: enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.dailyLeaderboards = {
+    ...mockConfig.dailyLeaderboards,
+    enabled: enabled,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
   );
 }
 async function weeklyLeaderboardEnabled(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    leaderboards: { weeklyXp: { enabled } },
-  });
+  const mockConfig = await configuration;
+  mockConfig.leaderboards.weeklyXp = {
+    ...mockConfig.leaderboards.weeklyXp,
+    enabled,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig

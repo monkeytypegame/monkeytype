@@ -9,8 +9,8 @@ import {
 } from "@monkeytype/schemas/leaderboards";
 import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
 import MonkeyError from "../utils/error";
-import { omit } from "lodash";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { omit } from "../utils/misc";
 
 export type AddResultOpts = {
   entry: RedisXpLeaderboardEntry;

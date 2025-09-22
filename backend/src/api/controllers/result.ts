@@ -2,6 +2,7 @@ import * as ResultDAL from "../../dal/result";
 import * as PublicDAL from "../../dal/public";
 import {
   isDevEnvironment,
+  omit,
   replaceObjectId,
   replaceObjectIds,
 } from "../../utils/misc";
@@ -26,7 +27,7 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import _, { omit } from "lodash";
+import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
