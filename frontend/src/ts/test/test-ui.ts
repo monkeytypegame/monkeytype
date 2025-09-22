@@ -670,18 +670,18 @@ function updateWordsMargin<T extends unknown[]>(
       wordsEl.querySelectorAll<HTMLElement>(".afterNewline");
     if (Config.smoothLineScroll) {
       const jqWords = $(wordsEl);
-      jqWords.stop("leftMargin", true, false).animate(
+      jqWords.stop("marginLeft", true, false).animate(
         {
           marginLeft: 0,
           marginTop: 0,
         },
         {
           duration: SlowTimer.get() ? 0 : 125,
-          queue: "leftMargin",
+          queue: "marginLeft",
           complete: afterComplete,
         }
       );
-      jqWords.dequeue("leftMargin");
+      jqWords.dequeue("marginLeft");
       $(afterNewlineEls)
         .stop(true, false)
         .animate({ marginLeft: 0 }, SlowTimer.get() ? 0 : 125);
