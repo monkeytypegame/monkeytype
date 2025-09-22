@@ -24,6 +24,7 @@ import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
 import * as PaceCaret from "./pace-caret";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -494,13 +495,9 @@ export function appendEmptyWordElement(
     `<div class='word' data-wordindex='${index}'><letter class='invisible'>_</letter></div>`
   );
 }
-let updateWordsInputPositionAnimationFrameId: null | number = null;
+
 export function updateWordsInputPosition(): void {
-  if (updateWordsInputPositionAnimationFrameId !== null) {
-    cancelAnimationFrame(updateWordsInputPositionAnimationFrameId);
-  }
-  updateWordsInputPositionAnimationFrameId = requestAnimationFrame(() => {
-    updateWordsInputPositionAnimationFrameId = null;
+  requestDebouncedAnimationFrame("test-ui.updateWordsInputPosition", () => {
     if (ActivePage.get() !== "test") return;
     const isTestRightToLeft = TestState.isDirectionReversed
       ? !TestState.isLanguageRightToLeft
