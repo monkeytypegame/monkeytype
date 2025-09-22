@@ -3388,7 +3388,7 @@ describe("user controller test", () => {
       await enableInbox(true);
     });
 
-    it("shold get inbox", async () => {
+    it("should get inbox", async () => {
       //GIVEN
       const mailOne: MonkeyMail = {
         id: randomUUID(),
