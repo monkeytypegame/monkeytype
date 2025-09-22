@@ -2,8 +2,9 @@ import { CaretStyle } from "@monkeytype/schemas/configs";
 import Config from "../config";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestWords from "../test/test-words";
-import { getTotalInlineMargin, SingleAnimationFrame } from "./misc";
+import { getTotalInlineMargin } from "./misc";
 import { isWordRightToLeft } from "./strings";
+import { requestDebouncedAnimationFrame } from "./debounced-animation-frame";
 
 const wordsCache = document.querySelector<HTMLElement>("#words") as HTMLElement;
 const wordsWrapperCache = document.querySelector<HTMLElement>(
@@ -41,7 +42,6 @@ export class Caret {
   private style: CaretStyle = "default";
   private readyToResetMarginTop: boolean = false;
   private readyToResetMarginLeft: boolean = false;
-  private singleAnimationFrame = new SingleAnimationFrame();
   private isMainCaret: boolean = false;
   private cumulativeTapeMarginCorrection: number = 0;
 
@@ -280,7 +280,7 @@ export class Caret {
       easing?: string;
     };
   }): void {
-    this.singleAnimationFrame.request(() => {
+    requestDebouncedAnimationFrame(`caret.${this.element.id}.goTo`, () => {
       if (this.style === "off") return;
 
       const word = wordsCache.querySelector<HTMLElement>(
