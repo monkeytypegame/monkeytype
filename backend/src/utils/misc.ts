@@ -1,6 +1,5 @@
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import _ from "lodash";
 import uaparser from "ua-parser-js";
 import { MonkeyRequest } from "../api/types";
 import { ObjectId } from "mongodb";
@@ -97,7 +96,7 @@ export function flattenObjectDeep(
 
     const newPrefix = prefix.length > 0 ? `${prefix}.${key}` : key;
 
-    if (_.isPlainObject(value)) {
+    if (isPlainObject(value)) {
       const flattened = flattenObjectDeep(value as Record<string, unknown>);
       const flattenedKeys = Object.keys(flattened);
 
@@ -251,4 +250,12 @@ export function omit<T extends object, K extends keyof T>(
     delete result[key];
   }
   return result;
+}
+
+export function isPlainObject(value: unknown): boolean {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    Object.getPrototypeOf(value) === Object.prototype
+  );
 }

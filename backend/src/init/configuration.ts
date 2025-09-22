@@ -2,7 +2,7 @@ import _ from "lodash";
 import * as db from "./db";
 import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
-import { identity, omit } from "../utils/misc";
+import { identity, isPlainObject, omit } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { addLog } from "../dal/logs";
@@ -26,22 +26,18 @@ function mergeConfigurations(
   baseConfiguration: Configuration,
   liveConfiguration: PartialConfiguration
 ): void {
-  if (
-    !_.isPlainObject(baseConfiguration) ||
-    !_.isPlainObject(liveConfiguration)
-  ) {
+  if (!isPlainObject(baseConfiguration) || !isPlainObject(liveConfiguration)) {
     return;
   }
 
   function merge(base: object, source: object): void {
     const commonKeys = _.intersection(_.keys(base), _.keys(source));
-
     commonKeys.forEach((key) => {
       const baseValue = base[key] as object;
       const sourceValue = source[key] as object;
 
-      const isBaseValueObject = _.isPlainObject(baseValue);
-      const isSourceValueObject = _.isPlainObject(sourceValue);
+      const isBaseValueObject = isPlainObject(baseValue);
+      const isSourceValueObject = isPlainObject(sourceValue);
 
       if (isBaseValueObject && isSourceValueObject) {
         merge(baseValue, sourceValue);
