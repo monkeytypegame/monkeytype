@@ -673,7 +673,6 @@ function updateWordsMargin<T extends unknown[]>(
       jqWords.stop("marginLeft", true, false).animate(
         {
           marginLeft: 0,
-          marginTop: 0,
         },
         {
           duration: SlowTimer.get() ? 0 : 125,
@@ -681,7 +680,16 @@ function updateWordsMargin<T extends unknown[]>(
           complete: afterComplete,
         }
       );
-      jqWords.dequeue("marginLeft");
+      jqWords.stop("marginTop", true, false).animate(
+        {
+          marginTop: 0,
+        },
+        {
+          duration: SlowTimer.get() ? 0 : 125,
+          queue: "marginTop",
+        }
+      );
+      jqWords.dequeue("marginTop");
       $(afterNewlineEls)
         .stop(true, false)
         .animate({ marginLeft: 0 }, SlowTimer.get() ? 0 : 125);
