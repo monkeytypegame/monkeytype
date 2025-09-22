@@ -1,10 +1,14 @@
 import Ape from "../ape";
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
-import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
-import { UserEmailSchema, UserNameSchema } from "@monkeytype/schemas/users";
+import {
+  PasswordSchema,
+  UserEmailSchema,
+  UserNameSchema,
+} from "@monkeytype/schemas/users";
 import { validateWithIndicator } from "../elements/input-validation";
+import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
 
 let registerForm: {
@@ -39,11 +43,19 @@ export function hidePreloader(): void {
   $(".pageLogin .preloader").addClass("hidden");
 }
 
+function isFormComplete(): boolean {
+  return (
+    registerForm.name !== undefined &&
+    registerForm.email !== undefined &&
+    registerForm.password !== undefined
+  );
+}
+
 export const updateSignupButton = (): void => {
-  if (Object.values(registerForm).some((it) => it === undefined)) {
-    disableSignUpButton();
-  } else {
+  if (isFormComplete()) {
     enableSignUpButton();
+  } else {
+    disableSignUpButton();
   }
 };
 
@@ -53,9 +65,7 @@ type SignupData = {
   password: string;
 };
 export function getSignupData(): SignupData | false {
-  return Object.values(registerForm).some((it) => it === undefined)
-    ? false
-    : (registerForm as SignupData);
+  return isFormComplete() ? (registerForm as SignupData) : false;
 }
 
 const nameInputEl = document.querySelector(
@@ -86,9 +96,58 @@ let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
   null;
 let moduleLoadAttempted = false;
 
-const emailInputEl = document.querySelector(
-  ".page.pageLogin .register.side input.emailInput"
-) as HTMLInputElement;
+const emailInputEl = validateWithIndicator(
+  document.querySelector(
+    ".page.pageLogin .register.side input.emailInput"
+  ) as HTMLInputElement,
+  {
+    schema: UserEmailSchema,
+    isValid: async (email: string) => {
+      const educationRegex =
+        /@.*(student|education|school|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
+      if (educationRegex.test(email)) {
+        return {
+          warning:
+            "Some education emails will fail to receive our messages, or disable the account as soon as you graduate. Consider using a personal email address.",
+        };
+      }
+
+      const emailHasTypo = TypoList.some((typo) => {
+        return email.endsWith(typo);
+      });
+      if (emailHasTypo) {
+        return {
+          warning: "Please check your email address, it may contain a typo.",
+        };
+      }
+
+      if (
+        disposableEmailModule &&
+        disposableEmailModule.isDisposableEmail !== undefined
+      ) {
+        try {
+          if (disposableEmailModule.isDisposableEmail(email)) {
+            return {
+              warning:
+                "Using a temporary email may cause issues with logging in, password resets and support. Consider using a permanent email address. Don't worry, we don't send spam.",
+            };
+          }
+        } catch (e) {
+          // Silent failure
+        }
+      }
+
+      return true;
+    },
+    debounceDelay: 0,
+    callback: (result) => {
+      if (result.status === "success") {
+        //re-validate the verify email
+        emailVerifyInputEl.dispatchEvent(new Event("input"));
+      }
+    },
+  }
+);
 
 emailInputEl.addEventListener("focus", async () => {
   if (!moduleLoadAttempted) {
@@ -99,54 +158,6 @@ emailInputEl.addEventListener("focus", async () => {
       // Silent failure
     }
   }
-});
-
-validateWithIndicator(emailInputEl, {
-  schema: UserEmailSchema,
-  isValid: async (email: string) => {
-    const educationRegex =
-      /@.*(student|education|school|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
-    if (educationRegex.test(email)) {
-      return {
-        warning:
-          "Some education emails will fail to receive our messages, or disable the account as soon as you graduate. Consider using a personal email address.",
-      };
-    }
-
-    const emailHasTypo = TypoList.some((typo) => {
-      return email.endsWith(typo);
-    });
-    if (emailHasTypo) {
-      return {
-        warning: "Please check your email address, it may contain a typo.",
-      };
-    }
-
-    if (
-      disposableEmailModule &&
-      disposableEmailModule.isDisposableEmail !== undefined
-    ) {
-      try {
-        if (disposableEmailModule.isDisposableEmail(email)) {
-          return {
-            warning:
-              "Using a temporary email may cause issues with logging in, password resets and support. Consider using a permanent email address. Don't worry, we don't send spam.",
-          };
-        }
-      } catch (e) {
-        // Silent failure
-      }
-    }
-
-    return true;
-  },
-  debounceDelay: 0,
-  callback: (result) => {
-    if (result.status === "success") {
-      //re-validate the verify email
-      emailVerifyInputEl.dispatchEvent(new Event("input"));
-    }
-  },
 });
 
 const emailVerifyInputEl = document.querySelector(
@@ -161,36 +172,27 @@ validateWithIndicator(emailVerifyInputEl, {
   debounceDelay: 0,
   callback: (result) => {
     registerForm.email =
-      result.status === "success" ? emailInputEl.value : undefined;
+      emailInputEl.isValid() && result.status === "success"
+        ? emailInputEl.value
+        : undefined;
     updateSignupButton();
   },
 });
 
-const passwordInputEl = document.querySelector(
-  ".page.pageLogin .register.side .passwordInput"
-) as HTMLInputElement;
-validateWithIndicator(passwordInputEl, {
-  schema: z.string().min(6), //firebase requires min 6 chars, we apply stricter rules on prod
-  isValid: async (password: string) => {
-    if (!Misc.isDevEnvironment() && !Misc.isPasswordStrong(password)) {
-      if (password.length < 8) {
-        return "Password must be at least 8 characters";
-      } else if (password.length > 64) {
-        return "Password must be at most 64 characters";
-      } else {
-        return "Password must contain at least one capital letter, number, and special character";
+const passwordInputEl = validateWithIndicator(
+  document.querySelector(
+    ".page.pageLogin .register.side .passwordInput"
+  ) as HTMLInputElement,
+  {
+    schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
+    callback: (result) => {
+      if (result.status === "success") {
+        //re-validate the verify password
+        passwordVerifyInputEl.dispatchEvent(new Event("input"));
       }
-    }
-    return true;
-  },
-  debounceDelay: 0,
-  callback: (result) => {
-    if (result.status === "success") {
-      //re-validate the verify password
-      passwordVerifyInputEl.dispatchEvent(new Event("input"));
-    }
-  },
-});
+    },
+  }
+);
 
 const passwordVerifyInputEl = document.querySelector(
   ".page.pageLogin .register.side .verifyPasswordInput"
@@ -204,7 +206,9 @@ validateWithIndicator(passwordVerifyInputEl, {
   debounceDelay: 0,
   callback: (result) => {
     registerForm.password =
-      result.status === "success" ? passwordInputEl.value : undefined;
+      passwordInputEl.isValid() && result.status === "success"
+        ? passwordInputEl.value
+        : undefined;
     updateSignupButton();
   },
 });

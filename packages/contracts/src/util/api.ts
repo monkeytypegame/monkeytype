@@ -121,6 +121,10 @@ export const CommonResponses = {
   403: MonkeyClientError.describe("Operation not permitted"),
   422: MonkeyValidationErrorSchema.describe("Request validation failed"),
   429: MonkeyClientError.describe("Rate limit exceeded"),
+  470: MonkeyClientError.describe("Invalid ApeKey"),
+  471: MonkeyClientError.describe("ApeKey is inactive"),
+  472: MonkeyClientError.describe("ApeKey is malformed"),
+  479: MonkeyClientError.describe("ApeKey rate limit exceeded"),
   500: MonkeyServerError.describe("Generic server error"),
   503: MonkeyServerError.describe(
     "Endpoint disabled or server is under maintenance"

@@ -449,7 +449,7 @@ export const usersContract = c.router(
     },
     updatePassword: {
       summary: "update password",
-      description: "Updates a user's email",
+      description: "Updates a user's password",
       method: "PATCH",
       path: "/password",
       body: UpdatePasswordRequestSchema.strict(),

@@ -746,4 +746,15 @@ export function isMacLike(): boolean {
   return isPlatform(/Mac|iPod|iPhone|iPad/);
 }
 
+export function scrollToCenterOrTop(el: HTMLElement | null): void {
+  if (!el) return;
+
+  const elementHeight = el.offsetHeight;
+  const windowHeight = window.innerHeight;
+
+  el.scrollIntoView({
+    block: elementHeight < windowHeight ? "center" : "start",
+  });
+}
+
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
