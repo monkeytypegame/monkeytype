@@ -70,6 +70,7 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
   isFunboxActive,
+  isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
@@ -175,7 +176,7 @@ export function restart(options = {} as RestartOptions): void {
     return;
   }
 
-  if (TestUI.testRestarting || TestUI.resultCalculating) {
+  if (TestState.testRestarting || TestUI.resultCalculating) {
     options.event?.preventDefault();
     return;
   }
@@ -293,7 +294,7 @@ export function restart(options = {} as RestartOptions): void {
   TestUI.reset();
   CompositionState.setComposing(false);
 
-  if (TestUI.resultVisible) {
+  if (TestState.resultVisible) {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
@@ -305,15 +306,15 @@ export function restart(options = {} as RestartOptions): void {
   }
 
   let el = null;
-  if (TestUI.resultVisible) {
+  if (TestState.resultVisible) {
     //results are being displayed
     el = $("#result");
   } else {
     //words are being displayed
     el = $("#typingTest");
   }
-  TestUI.setResultVisible(false);
-  TestUI.setTestRestarting(true);
+  TestState.setResultVisible(false);
+  TestState.setTestRestarting(true);
   el.stop(true, true).animate(
     {
       opacity: 0,
@@ -357,7 +358,7 @@ export function restart(options = {} as RestartOptions): void {
       const initResult = await init();
 
       if (!initResult) {
-        TestUI.setTestRestarting(false);
+        TestState.setTestRestarting(false);
         return;
       }
 
@@ -395,7 +396,7 @@ export function restart(options = {} as RestartOptions): void {
             LiveBurst.reset();
             TestUI.updatePremid();
             ManualRestart.reset();
-            TestUI.setTestRestarting(false);
+            TestState.setTestRestarting(false);
           }
         );
     }
@@ -408,7 +409,7 @@ let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
 
-export async function init(): Promise<boolean> {
+async function init(): Promise<boolean> {
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
@@ -419,7 +420,7 @@ export async function init(): Promise<boolean> {
       );
     }
     TestInitFailed.show();
-    TestUI.setTestRestarting(false);
+    TestState.setTestRestarting(false);
     TestState.setTestInitSuccess(false);
     Focus.set(false);
     // Notifications.add(
@@ -571,6 +572,13 @@ export async function init(): Promise<boolean> {
   Funbox.toggleScript(TestWords.words.getCurrent());
   TestUI.setRightToLeft(language.rightToLeft ?? false);
   TestUI.setLigatures(language.ligatures ?? false);
+
+  const isLanguageRTL = language.rightToLeft ?? false;
+  TestState.setIsLanguageRightToLeft(isLanguageRTL);
+  TestState.setIsDirectionReversed(
+    isFunboxActiveWithProperty("reverseDirection")
+  );
+
   TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
   console.debug(
@@ -890,7 +898,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.setEnd(TestInput.keypressTimings.spacing.last);
   }
 
-  TestUI.setResultVisible(true);
+  TestState.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
   Caret.hide();
@@ -1296,7 +1304,7 @@ async function saveResult(
     void XPBar.update(
       snapxp,
       data.xp,
-      TestUI.resultVisible ? data.xpBreakdown : undefined
+      TestState.resultVisible ? data.xpBreakdown : undefined
     );
     dataToSave.xp = data.xp;
   }
@@ -1434,7 +1442,7 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
 });
 
 $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as Mode;
   if (mode === undefined) return;
@@ -1445,7 +1453,7 @@ $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd !== "custom") {
     if (UpdateConfig.setWordCount(parseInt(wrd))) {
@@ -1456,7 +1464,7 @@ $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode !== "custom") {
     if (UpdateConfig.setTimeConfig(parseInt(mode))) {
@@ -1467,7 +1475,7 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   const lenAttr = $(e.currentTarget).attr("quoteLength");
   if (lenAttr === "all") {
     if (UpdateConfig.setQuoteLengthAll()) {
@@ -1495,7 +1503,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   if (UpdateConfig.setPunctuation(!Config.punctuation)) {
     ManualRestart.set();
     restart();
@@ -1503,7 +1511,7 @@ $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
 });
 
 $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   if (UpdateConfig.setNumbers(!Config.numbers)) {
     ManualRestart.set();
     restart();

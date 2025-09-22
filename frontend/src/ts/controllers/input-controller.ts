@@ -326,7 +326,6 @@ async function handleSpace(): Promise<void> {
     void TestLogic.addWord();
   }
   TestUI.updateActiveElement();
-  void Caret.updatePosition();
 
   const shouldLimitToThreeLines =
     Config.mode === "time" ||
@@ -344,8 +343,10 @@ async function handleSpace(): Promise<void> {
 
     if ((nextTop ?? 0) > currentTop) {
       void TestUI.lineJump(currentTop);
-    } //end of line wrap
-  }
+    }
+  } //end of line wrap
+
+  void Caret.updatePosition();
 
   // enable if i decide that auto tab should also work after a space
   // if (
@@ -446,7 +447,7 @@ async function handleChar(
   charIndex: number,
   realInputValue?: string
 ): Promise<void> {
-  if (TestUI.resultCalculating || TestUI.resultVisible) {
+  if (TestUI.resultCalculating || TestState.resultVisible) {
     return;
   }
 
@@ -801,7 +802,7 @@ async function handleTab(
 
     event.preventDefault();
     // insert tab character if needed (only during the test)
-    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
+    if (!TestState.resultVisible && shouldInsertTabCharacter) {
       await handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       return;
@@ -827,7 +828,7 @@ async function handleTab(
     }
 
     // insert tab character if needed (only during the test)
-    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
+    if (!TestState.resultVisible && shouldInsertTabCharacter) {
       event.preventDefault();
       await handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
@@ -843,7 +844,7 @@ async function handleTab(
 
     //only special handlig on the test page
     if (ActivePage.get() !== "test") return;
-    if (TestUI.resultVisible) return;
+    if (TestState.resultVisible) return;
 
     // insert tab character if needed
     if (shouldInsertTabCharacter) {
@@ -869,7 +870,7 @@ $("#wordsInput").on("keydown", (event) => {
     pageTestActive &&
     !commandLineVisible &&
     !popupVisible &&
-    !TestUI.resultVisible &&
+    !TestState.resultVisible &&
     event.key !== "Enter" &&
     !awaitingNextWord &&
     TestState.testInitSuccess;
@@ -910,7 +911,7 @@ $(document).on("keydown", async (event) => {
     pageTestActive &&
     !commandLineVisible &&
     !popupVisible &&
-    !TestUI.resultVisible &&
+    !TestState.resultVisible &&
     (wordsFocused || event.key !== "Enter") &&
     !awaitingNextWord;
 
@@ -982,7 +983,7 @@ $(document).on("keydown", async (event) => {
       return;
     }
 
-    if (TestUI.resultVisible) {
+    if (TestState.resultVisible) {
       TestLogic.restart({
         event,
       });
@@ -1012,7 +1013,7 @@ $(document).on("keydown", async (event) => {
 
   if (!allowTyping) return;
 
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     event.preventDefault();
     return;
   }
@@ -1248,7 +1249,7 @@ $("#wordsInput").on("keyup", (event) => {
 });
 
 $("#wordsInput").on("keyup", (event) => {
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     event.preventDefault();
     return;
   }
@@ -1257,7 +1258,7 @@ $("#wordsInput").on("keyup", (event) => {
 
   if (IgnoredKeys.includes(event.key)) return;
 
-  if (TestUI.resultVisible) return;
+  if (TestState.resultVisible) return;
 });
 
 $("#wordsInput").on("beforeinput", (event) => {
@@ -1268,7 +1269,7 @@ $("#wordsInput").on("beforeinput", (event) => {
 });
 
 $("#wordsInput").on("input", async (event) => {
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     (event.target as HTMLInputElement).value = " ";
     return;
   }
