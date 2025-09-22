@@ -238,7 +238,7 @@ function updateActiveExtraButtons(key: string, value: ConfigValue): void {
     $("#testConfig .time .textButton").removeClass("active");
     const timeCustom = ![15, 30, 60, 120].includes(value as number)
       ? "custom"
-      : value;
+      : (value as number);
     $(
       "#testConfig .time .textButton[timeConfig='" + timeCustom + "']"
     ).addClass("active");
@@ -247,7 +247,7 @@ function updateActiveExtraButtons(key: string, value: ConfigValue): void {
 
     const wordCustom = ![10, 25, 50, 100, 200].includes(value as number)
       ? "custom"
-      : value;
+      : (value as number);
 
     $(
       "#testConfig .wordCount .textButton[wordCount='" + wordCustom + "']"

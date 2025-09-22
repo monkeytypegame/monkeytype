@@ -67,7 +67,10 @@ if (isDevEnvironment()) {
 
 //stop space scrolling
 window.addEventListener("keydown", function (e) {
-  if (e.code === "Space" && e.target === document.body) {
+  if (
+    e.code === "Space" &&
+    (e.target === document.body || (e.target as HTMLElement)?.id === "result")
+  ) {
     e.preventDefault();
   }
 });
@@ -87,14 +90,15 @@ window.addEventListener("beforeunload", (event) => {
   } else {
     if (TestState.isActive) {
       event.preventDefault();
-      // Chrome requires returnValue to be set.
+      // Included for legacy support, e.g. Chrome/Edge < 119
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       event.returnValue = "";
     }
   }
 });
 
 const debouncedEvent = debounce(250, () => {
-  if (getActivePage() === "test" && !TestUI.resultVisible) {
+  if (getActivePage() === "test" && !TestState.resultVisible) {
     if (Config.tapeMode !== "off") {
       void TestUI.scrollTape();
     } else {
@@ -102,10 +106,8 @@ const debouncedEvent = debounce(250, () => {
       void TestUI.updateHintsPositionDebounced();
     }
     setTimeout(() => {
-      void TestUI.updateWordsInputPosition();
-      if ($("#wordsInput").is(":focus")) {
-        Caret.show(true);
-      }
+      TestUI.updateWordsInputPosition();
+      TestUI.focusWords();
     }, 250);
   }
 });

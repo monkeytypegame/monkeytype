@@ -52,7 +52,7 @@ function updateTitle(nextPage: { id: string; display?: string }): void {
   }
 }
 
-async function showLoading({
+async function showSyncLoading({
   loadingOptions,
   totalDuration,
   easingMethod,
@@ -99,7 +99,7 @@ async function showLoading({
       void PageLoading.updateBar(100, 125);
       PageLoading.updateText("Done");
     } else {
-      await options.waitFor();
+      await options.loadingPromise();
     }
   }
 
@@ -125,7 +125,7 @@ async function getLoadingPromiseWithBarKeyframes(
   fillOffset: number
 ): Promise<void> {
   let aborted = false;
-  let loadingPromise = loadingOptions.waitFor();
+  let loadingPromise = loadingOptions.loadingPromise();
 
   // Animate bar keyframes, but allow aborting if loading.promise finishes first
   const keyframePromise = (async () => {
@@ -220,28 +220,25 @@ export async function change(
   previousPage.element.addClass("hidden");
   await previousPage?.afterHide();
 
+  // we need to evaluate and store next page loading mode in case options.loadingOptions.loadingMode is sync
+  const nextPageLoadingMode = nextPage.loadingOptions?.loadingMode();
+
   //show loading page if needed
   try {
-    let loadingOptions: LoadingOptions[] = [];
-    if (options.loadingOptions) {
-      loadingOptions.push(options.loadingOptions);
+    let syncLoadingOptions: LoadingOptions[] = [];
+    if (options.loadingOptions?.loadingMode() === "sync") {
+      syncLoadingOptions.push(options.loadingOptions);
     }
-    if (nextPage.loadingOptions) {
-      loadingOptions.push(nextPage.loadingOptions);
+    if (nextPage.loadingOptions?.loadingMode() === "sync") {
+      syncLoadingOptions.push(nextPage.loadingOptions);
     }
 
-    if (loadingOptions.length > 0) {
-      const shouldShowLoading =
-        options.loadingOptions?.shouldLoad() ||
-        nextPage.loadingOptions?.shouldLoad();
-
-      if (shouldShowLoading === true) {
-        await showLoading({
-          loadingOptions,
-          totalDuration,
-          easingMethod,
-        });
-      }
+    if (syncLoadingOptions.length > 0) {
+      await showSyncLoading({
+        loadingOptions: syncLoadingOptions,
+        totalDuration,
+        easingMethod,
+      });
     }
   } catch (error) {
     pages.loading.element.addClass("active");
@@ -270,6 +267,17 @@ export async function change(
     // @ts-expect-error for the future (i think)
     data: options.data,
   });
+
+  if (
+    typeof nextPageLoadingMode === "object" &&
+    nextPageLoadingMode.mode === "async"
+  ) {
+    nextPageLoadingMode.beforeLoading();
+    void nextPage?.loadingOptions?.loadingPromise().then(() => {
+      nextPageLoadingMode.afterLoading();
+    });
+  }
+
   nextPage.element.removeClass("hidden").css("opacity", 0);
   await Misc.promiseAnimation(
     nextPage.element,

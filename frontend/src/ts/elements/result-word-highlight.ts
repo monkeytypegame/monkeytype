@@ -4,8 +4,7 @@
 // Constants for padding around the highlights
 
 import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
-import Config from "../config";
+import * as TestState from "../test/test-state";
 
 const PADDING_X = 16;
 const PADDING_Y = 12;
@@ -56,7 +55,6 @@ let isInitialized = false;
 let isHoveringChart = false;
 let isFirstHighlightSinceInit = true;
 let isFirstHighlightSinceClear = true;
-let isLanguageRightToLeft = false;
 let isInitInProgress = false;
 
 // Highlights .word elements in range [firstWordIndex, lastWordIndex]
@@ -104,7 +102,7 @@ export async function highlightWordsInRange(
   const newHighlightElementPositions = getHighlightElementPositions(
     firstWordIndex,
     lastWordIndex,
-    isLanguageRightToLeft
+    TestState.isLanguageRightToLeft
   );
 
   // For each line...
@@ -197,10 +195,6 @@ async function init(): Promise<boolean> {
       )
     );
   }
-
-  // Set isLanguageRTL
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  isLanguageRightToLeft = currentLanguage.rightToLeft;
 
   RWH_el = $("#resultWordsHistory")[0] as HTMLElement;
   RWH_rect = RWH_el.getBoundingClientRect();
@@ -309,7 +303,7 @@ async function init(): Promise<boolean> {
 
       // For RTL languages, account for difference between highlightContainer left and RWH_el left
       let RTL_offset;
-      if (isLanguageRightToLeft) {
+      if (TestState.isLanguageRightToLeft) {
         RTL_offset = line.rect.left - RWH_rect.left + PADDING_X;
       } else {
         RTL_offset = 0;

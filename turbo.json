@@ -31,8 +31,8 @@
     "start": {
       "dependsOn": ["build"]
     },
-    "@monkeytype/frontend#validate-json": {
-      "dependsOn": ["^parallel"]
+    "@monkeytype/frontend#check-assets": {
+      "dependsOn": ["^parallel", "@monkeytype/schemas#build"]
     },
     "@monkeytype/frontend#build": {
       "dependsOn": ["^build"],

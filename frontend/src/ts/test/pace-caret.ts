@@ -1,14 +1,13 @@
 import * as TestWords from "./test-words";
-import * as TestUI from "./test-ui";
 import Config from "../config";
 import * as DB from "../db";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { convertRemToPixels } from "../utils/numbers";
 import { getActiveFunboxes } from "./funbox/list";
+import { isWordRightToLeft } from "../utils/strings";
 
 type Settings = {
   wpm: number;
@@ -50,15 +49,18 @@ async function resetCaretPosition(): Promise<void> {
 
   if (firstLetter === undefined || firstLetterHeight === undefined) return;
 
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRightToLeft = currentLanguage.rightToLeft;
+  const currentWord = TestWords.words.get(settings?.currentWordIndex ?? 0);
+
+  const isWordRTL = isWordRightToLeft(
+    currentWord,
+    TestState.isLanguageRightToLeft,
+    TestState.isDirectionReversed
+  );
 
   caret.stop(true, true).animate(
     {
       top: firstLetter.offsetTop - firstLetterHeight / 4,
-      left:
-        firstLetter.offsetLeft +
-        (isLanguageRightToLeft ? firstLetter.offsetWidth : 0),
+      left: firstLetter.offsetLeft + (isWordRTL ? firstLetter.offsetWidth : 0),
     },
     0,
     "linear"
@@ -143,7 +145,7 @@ export async function init(): Promise<void> {
 }
 
 export async function update(expectedStepEnd: number): Promise<void> {
-  if (settings === null || !TestState.isActive || TestUI.resultVisible) {
+  if (settings === null || !TestState.isActive || TestState.resultVisible) {
     return;
   }
   // if ($("#paceCaret").hasClass("hidden")) {
@@ -200,10 +202,14 @@ export async function update(expectedStepEnd: number): Promise<void> {
     let newTop;
     let newLeft;
     try {
-      const newIndex = settings.currentWordIndex - TestState.removedUIWordCount;
-      const word = document.querySelectorAll("#words .word")[
-        newIndex
-      ] as HTMLElement;
+      const word = document.querySelector<HTMLElement>(
+        `#words .word[data-wordindex='${settings.currentWordIndex}']`
+      );
+
+      if (!word) {
+        throw new Error("Word element not found");
+      }
+
       if (settings.currentLetterIndex === -1) {
         currentLetter = word.querySelectorAll("letter")[0] as HTMLElement;
       } else {
@@ -226,10 +232,13 @@ export async function update(expectedStepEnd: number): Promise<void> {
         );
       }
 
-      const currentLanguage = await JSONData.getCurrentLanguage(
-        Config.language
+      const currentWord = TestWords.words.get(settings.currentWordIndex);
+
+      const isWordRTL = isWordRightToLeft(
+        currentWord,
+        TestState.isLanguageRightToLeft,
+        TestState.isDirectionReversed
       );
-      const isLanguageRightToLeft = currentLanguage.rightToLeft;
 
       newTop =
         word.offsetTop +
@@ -240,13 +249,13 @@ export async function update(expectedStepEnd: number): Promise<void> {
           word.offsetLeft +
           currentLetter.offsetLeft -
           caretWidth / 2 +
-          (isLanguageRightToLeft ? currentLetterWidth : 0);
+          (isWordRTL ? currentLetterWidth : 0);
       } else {
         newLeft =
           word.offsetLeft +
           currentLetter.offsetLeft -
           caretWidth / 2 +
-          (isLanguageRightToLeft ? 0 : currentLetterWidth);
+          (isWordRTL ? 0 : currentLetterWidth);
       }
       caret.removeClass("hidden");
     } catch (e) {

@@ -1,6 +1,10 @@
 import * as ResultDAL from "../../dal/result";
 import * as PublicDAL from "../../dal/public";
-import { isDevEnvironment, replaceObjectId } from "../../utils/misc";
+import {
+  isDevEnvironment,
+  replaceObjectId,
+  replaceObjectIds,
+} from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
 import "dotenv/config";
@@ -26,11 +30,7 @@ import _, { omit } from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
-import {
-  buildDbResult,
-  DBResult,
-  replaceLegacyValues,
-} from "../../utils/result";
+import { buildDbResult } from "../../utils/result";
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { addImportantLog, addLog } from "../../dal/logs";
 import {
@@ -47,11 +47,9 @@ import {
 import {
   CompletedEvent,
   KeyStats,
-  Result,
   PostResultResponse,
   XpBreakdown,
 } from "@monkeytype/schemas/results";
-import { Mode } from "@monkeytype/schemas/shared";
 import {
   isSafeNumber,
   mapRange,
@@ -133,7 +131,8 @@ export async function getResults(
     },
     uid
   );
-  return new MonkeyResponse("Results retrieved", results.map(convertResult));
+
+  return new MonkeyResponse("Results retrieved", replaceObjectIds(results));
 }
 
 export async function getResultById(
@@ -143,7 +142,7 @@ export async function getResultById(
   const { resultId } = req.params;
 
   const result = await ResultDAL.getResult(uid, resultId);
-  return new MonkeyResponse("Result retrieved", convertResult(result));
+  return new MonkeyResponse("Result retrieved", replaceObjectId(result));
 }
 
 export async function getLastResult(
@@ -151,7 +150,7 @@ export async function getLastResult(
 ): Promise<GetLastResultResponse> {
   const { uid } = req.ctx.decodedToken;
   const result = await ResultDAL.getLastResult(uid);
-  return new MonkeyResponse("Result retrieved", convertResult(result));
+  return new MonkeyResponse("Result retrieved", replaceObjectId(result));
 }
 
 export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
@@ -331,7 +330,9 @@ export async function addResult(
   //   );
   //   return res.status(400).json({ message: "Time traveler detected" });
 
-  const { data: lastResult } = await tryCatch(ResultDAL.getLastResult(uid));
+  const { data: lastResultTimestamp } = await tryCatch(
+    ResultDAL.getLastResultTimestamp(uid)
+  );
 
   //convert result test duration to miliseconds
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
@@ -340,16 +341,16 @@ export async function addResult(
   const testDurationMilis = completedEvent.testDuration * 1000;
   const incompleteTestsMilis = completedEvent.incompleteTestSeconds * 1000;
   const earliestPossible =
-    (lastResult?.timestamp ?? 0) + testDurationMilis + incompleteTestsMilis;
+    (lastResultTimestamp ?? 0) + testDurationMilis + incompleteTestsMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
   if (
-    isSafeNumber(lastResult?.timestamp) &&
+    isSafeNumber(lastResultTimestamp) &&
     nowNoMilis < earliestPossible - 1000
   ) {
     void addLog(
       "invalid_result_spacing",
       {
-        lastTimestamp: lastResult.timestamp,
+        lastTimestamp: lastResultTimestamp,
         earliestPossible,
         now: nowNoMilis,
         testDuration: testDurationMilis,
@@ -592,7 +593,7 @@ export async function addResult(
   const xpGained = await calculateXp(
     completedEvent,
     req.ctx.configuration.users.xp,
-    uid,
+    lastResultTimestamp,
     user.xp ?? 0,
     streak
   );
@@ -691,7 +692,7 @@ type XpResult = {
 async function calculateXp(
   result: CompletedEvent,
   xpConfiguration: Configuration["users"]["xp"],
-  uid: string,
+  lastResultTimestamp: number | null,
   currentTotalXp: number,
   streak: number
 ): Promise<XpResult> {
@@ -804,16 +805,8 @@ async function calculateXp(
   const accuracyModifier = (acc - 50) / 50;
 
   let dailyBonus = 0;
-  const { data: lastResult, error: getLastResultError } = await tryCatch(
-    ResultDAL.getLastResult(uid)
-  );
-
-  if (getLastResultError) {
-    Logger.error(`Could not fetch last result: ${getLastResultError}`);
-  }
-
-  if (isSafeNumber(lastResult?.timestamp)) {
-    const lastResultDay = getStartOfDayTimestamp(lastResult.timestamp);
+  if (isSafeNumber(lastResultTimestamp)) {
+    const lastResultDay = getStartOfDayTimestamp(lastResultTimestamp);
     const today = getCurrentDayTimestamp();
     if (lastResultDay !== today) {
       const proportionalXp = Math.round(currentTotalXp * 0.05);
@@ -848,8 +841,4 @@ async function calculateXp(
     dailyBonus: isAwardingDailyBonus,
     breakdown,
   };
-}
-
-function convertResult(db: DBResult): Result<Mode> {
-  return replaceObjectId(replaceLegacyValues(db));
 }

@@ -6,6 +6,7 @@ import { setMediaQueryDebugLevel } from "../ui";
 import { signIn } from "../auth";
 import * as Loader from "../elements/loader";
 import { update } from "../elements/xp-bar";
+import { toggleUserFakeChartData } from "../test/result";
 
 let mediaQueryDebugLevel = 0;
 
@@ -83,6 +84,11 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     }, 500);
     void modal.hide();
   });
+  modalEl
+    .querySelector(".toggleFakeChartData")
+    ?.addEventListener("click", () => {
+      toggleUserFakeChartData();
+    });
 }
 
 const modal = new AnimatedModal({

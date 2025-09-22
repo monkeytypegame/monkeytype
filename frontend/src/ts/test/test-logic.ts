@@ -82,6 +82,7 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
   isFunboxActive,
+  isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
@@ -177,6 +178,8 @@ export function restart(options = {} as RestartOptions): void {
   };
 
   options = { ...defaultOptions, ...options };
+  Strings.clearWordDirectionCache();
+
   const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
 
   const noQuit = isFunboxActive("no_quit");
@@ -184,21 +187,21 @@ export function restart(options = {} as RestartOptions): void {
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
       important: true,
     });
-    event?.preventDefault();
+    options.event?.preventDefault();
     return;
   }
 
   if (
-    TestUI.testRestarting ||
+    TestState.testRestarting ||
     TestUI.resultCalculating ||
     (TribeState.getState() > 5 && !options.tribeOverride)
   ) {
-    event?.preventDefault();
+    options.event?.preventDefault();
     return;
   }
   if (ActivePage.get() === "test") {
     if (!ManualRestart.get()) {
-      if (Config.mode !== "zen") event?.preventDefault();
+      if (Config.mode !== "zen") options.event?.preventDefault();
       if (
         !canQuickRestart(
           Config.mode,
@@ -311,7 +314,7 @@ export function restart(options = {} as RestartOptions): void {
   TestUI.reset();
   CompositionState.setComposing(false);
 
-  if (TestUI.resultVisible) {
+  if (TestState.resultVisible) {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
@@ -323,15 +326,15 @@ export function restart(options = {} as RestartOptions): void {
   }
 
   let el = null;
-  if (TestUI.resultVisible) {
+  if (TestState.resultVisible) {
     //results are being displayed
     el = $("#result");
   } else {
     //words are being displayed
     el = $("#typingTest");
   }
-  TestUI.setResultVisible(false);
-  TestUI.setTestRestarting(true);
+  TestState.setResultVisible(false);
+  TestState.setTestRestarting(true);
   el.stop(true, true).animate(
     {
       opacity: 0,
@@ -384,8 +387,8 @@ export function restart(options = {} as RestartOptions): void {
       TestState.setTestInitSuccess(true);
       const initResult = await init();
 
-      if (initResult === null) {
-        TestUI.setTestRestarting(false);
+      if (!initResult) {
+        TestState.setTestRestarting(false);
         return;
       }
 
@@ -423,7 +426,7 @@ export function restart(options = {} as RestartOptions): void {
             LiveBurst.reset();
             TestUI.updatePremid();
             ManualRestart.reset();
-            TestUI.setTestRestarting(false);
+            TestState.setTestRestarting(false);
           }
         );
     }
@@ -435,7 +438,8 @@ export function restart(options = {} as RestartOptions): void {
 let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
-export async function init(): Promise<void | null> {
+
+async function init(): Promise<boolean> {
   console.debug("Initializing test");
   if (TribeState.getState() > 5 && TribeState.getRoom()) {
     Random.setSeed(TribeState.getRoom()?.seed.toString() ?? "");
@@ -451,7 +455,7 @@ export async function init(): Promise<void | null> {
       );
     }
     TestInitFailed.show();
-    TestUI.setTestRestarting(false);
+    TestState.setTestRestarting(false);
     TestState.setTestInitSuccess(false);
     Focus.set(false);
     // Notifications.add(
@@ -461,14 +465,13 @@ export async function init(): Promise<void | null> {
     //     important: true,
     //   }
     // );
-    return null;
+    return false;
   }
 
   MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
-  TestState.setRemovedUIWordCount(0);
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 
@@ -596,18 +599,28 @@ export async function init(): Promise<void | null> {
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     void KeymapEvent.highlight(
+      // ignoring for now but this might need a different approach
+      // eslint-disable-next-line @typescript-eslint/no-misused-spread
       Arrays.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
     );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
-  TestUI.setRightToLeft(language.rightToLeft);
+  TestUI.setRightToLeft(language.rightToLeft ?? false);
   TestUI.setLigatures(language.ligatures ?? false);
+
+  const isLanguageRTL = language.rightToLeft ?? false;
+  TestState.setIsLanguageRightToLeft(isLanguageRTL);
+  TestState.setIsDirectionReversed(
+    isFunboxActiveWithProperty("reverseDirection")
+  );
+
   TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
   console.debug(
     "Test initialized with section indexes",
     generatedSectionIndexes
   );
+  return true;
 }
 
 export function areAllTestWordsGenerated(): boolean {
@@ -638,9 +651,12 @@ export async function addWord(): Promise<void> {
   }
 
   let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = getActiveFunboxes()
-    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+
+  const funboxToPush =
+    getActiveFunboxes()
+      .flatMap((fb) => fb.properties ?? [])
+      .find((prop) => prop.startsWith("toPush:")) ?? "";
+
   const toPushCount = funboxToPush?.split(":")[1];
   if (toPushCount !== undefined) bound = +toPushCount - 1;
 
@@ -756,7 +772,8 @@ export async function retrySavingResult(): Promise<void> {
 }
 
 function buildCompletedEvent(
-  difficultyFailed: boolean
+  stats: TestStats.Stats,
+  rawPerSecond: number[]
 ): Omit<CompletedEvent, "hash" | "uid"> {
   //build completed event object
   let stfk = Numbers.roundTo2(
@@ -772,44 +789,8 @@ function buildCompletedEvent(
   if (lkte < 0 || Config.mode === "zen") {
     lkte = 0;
   }
-  // stats
-  const stats = TestStats.calculateStats();
-  if (stats.time % 1 !== 0 && Config.mode !== "time") {
-    TestStats.setLastSecondNotRound();
-  }
-
-  PaceCaret.setLastTestWpm(stats.wpm); //todo why is this in here?
-
-  // if the last second was not rounded, add another data point to the history
-  if (TestStats.lastSecondNotRound && !difficultyFailed) {
-    const wpmAndRaw = TestStats.calculateWpmAndRaw();
-    TestInput.pushToWpmHistory(wpmAndRaw.wpm);
-    TestInput.pushToRawHistory(wpmAndRaw.raw);
-    TestInput.pushKeypressesToHistory();
-    TestInput.pushErrorToHistory();
-    TestInput.pushAfkToHistory();
-  }
 
   //consistency
-  const rawPerSecond = TestInput.keypressCountHistory.map((count) =>
-    Math.round((count / 5) * 60)
-  );
-
-  //adjust last second if last second is not round
-  // if (TestStats.lastSecondNotRound && stats.time % 1 >= 0.1) {
-  if (
-    Config.mode !== "time" &&
-    TestStats.lastSecondNotRound &&
-    stats.time % 1 >= 0.5
-  ) {
-    const timescale = 1 / (stats.time % 1);
-
-    //multiply last element of rawBefore by scale, and round it
-    rawPerSecond[rawPerSecond.length - 1] = Math.round(
-      (rawPerSecond[rawPerSecond.length - 1] as number) * timescale
-    );
-  }
-
   const stddev = Numbers.stdDev(rawPerSecond);
   const avg = Numbers.mean(rawPerSecond);
   let consistency = Numbers.roundTo2(Numbers.kogasa(stddev / avg));
@@ -839,7 +820,7 @@ function buildCompletedEvent(
 
   const chartData = {
     wpm: TestInput.wpmHistory,
-    raw: rawPerSecond,
+    burst: rawPerSecond,
     err: chartErr,
   };
 
@@ -969,7 +950,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.setEnd(TestInput.keypressTimings.spacing.last);
   }
 
-  TestUI.setResultVisible(true);
+  TestState.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
   Caret.hide();
@@ -995,7 +976,44 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.removeAfkData();
   }
 
-  const ce = buildCompletedEvent(difficultyFailed);
+  // stats
+  const stats = TestStats.calculateStats();
+  if (stats.time % 1 !== 0 && Config.mode !== "time") {
+    TestStats.setLastSecondNotRound();
+  }
+
+  PaceCaret.setLastTestWpm(stats.wpm);
+
+  // if the last second was not rounded, add another data point to the history
+  if (TestStats.lastSecondNotRound && !difficultyFailed) {
+    const wpmAndRaw = TestStats.calculateWpmAndRaw();
+    TestInput.pushToWpmHistory(wpmAndRaw.wpm);
+    TestInput.pushToRawHistory(wpmAndRaw.raw);
+    TestInput.pushKeypressesToHistory();
+    TestInput.pushErrorToHistory();
+    TestInput.pushAfkToHistory();
+  }
+
+  const rawPerSecond = TestInput.keypressCountHistory.map((count) =>
+    Math.round((count / 5) * 60)
+  );
+
+  //adjust last second if last second is not round
+  // if (TestStats.lastSecondNotRound && stats.time % 1 >= 0.1) {
+  if (
+    Config.mode !== "time" &&
+    TestStats.lastSecondNotRound &&
+    stats.time % 1 >= 0.5
+  ) {
+    const timescale = 1 / (stats.time % 1);
+
+    //multiply last element of rawBefore by scale, and round it
+    rawPerSecond[rawPerSecond.length - 1] = Math.round(
+      (rawPerSecond[rawPerSecond.length - 1] as number) * timescale
+    );
+  }
+
+  const ce = buildCompletedEvent(stats, rawPerSecond);
 
   console.debug("Completed event object", ce);
 
@@ -1429,19 +1447,21 @@ async function saveResult(
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
+  const dataToSave: DB.SaveLocalResultData = {};
+
   if (data.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
 
     void XPBar.update(
       snapxp,
       data.xp,
-      TestUI.resultVisible ? data.xpBreakdown : undefined
+      TestState.resultVisible ? data.xpBreakdown : undefined
     );
-    DB.addXp(data.xp);
+    dataToSave.xp = data.xp;
   }
 
   if (data.streak !== undefined) {
-    DB.setStreak(data.streak);
+    dataToSave.streak = data.streak;
   }
 
   if (data.insertedId !== undefined) {
@@ -1455,13 +1475,7 @@ async function saveResult(
     if (data.isPb !== undefined && data.isPb) {
       result.isPb = true;
     }
-    DB.saveLocalResult(result);
-    DB.updateLocalStats(
-      completedEvent.incompleteTests.length + 1,
-      completedEvent.testDuration +
-        completedEvent.incompleteTestSeconds -
-        completedEvent.afkDuration
-    );
+    dataToSave.result = result;
   }
 
   void AnalyticsController.log("testCompleted");
@@ -1484,33 +1498,10 @@ async function saveResult(
     }
     Result.showCrown("normal");
 
-    await DB.saveLocalPB(
-      completedEvent.mode,
-      completedEvent.mode2,
-      completedEvent.punctuation,
-      completedEvent.numbers,
-      completedEvent.language,
-      completedEvent.difficulty,
-      completedEvent.lazyMode,
-      completedEvent.wpm,
-      completedEvent.acc,
-      completedEvent.rawWpm,
-      completedEvent.consistency
-    );
+    dataToSave.isPb = true;
   } else {
     Result.showErrorCrownIfNeeded();
   }
-
-  // if (response.data.dailyLeaderboardRank) {
-  //   Notifications.add(
-  //     `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
-  //       Misc.getPositionString(response.data.dailyLeaderboardRank),
-  //     1,
-  //     10,
-  //     "Daily Leaderboard",
-  //     "list-ol"
-  //   );
-  // }
 
   if (data.dailyLeaderboardRank === undefined) {
     $("#result .stats .dailyLeaderboard").addClass("hidden");
@@ -1554,6 +1545,7 @@ async function saveResult(
     chartData: tribeChartData,
     resolve: await testSavePromise,
   });
+  DB.saveLocalResult(dataToSave);
 }
 
 export function fail(reason: string): void {
@@ -1643,7 +1635,7 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
 });
 
 $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as Mode;
   if (mode === undefined) return;
@@ -1654,7 +1646,7 @@ $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd !== "custom") {
     if (UpdateConfig.setWordCount(parseInt(wrd))) {
@@ -1665,7 +1657,7 @@ $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode !== "custom") {
     if (UpdateConfig.setTimeConfig(parseInt(mode))) {
@@ -1676,7 +1668,7 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   const lenAttr = $(e.currentTarget).attr("quoteLength");
   if (lenAttr === "all") {
     if (UpdateConfig.setQuoteLengthAll()) {
@@ -1704,7 +1696,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   if (UpdateConfig.setPunctuation(!Config.punctuation)) {
     ManualRestart.set();
     restart();
@@ -1712,7 +1704,7 @@ $(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
 });
 
 $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
-  if (TestUI.testRestarting) return;
+  if (TestState.testRestarting) return;
   if (UpdateConfig.setNumbers(!Config.numbers)) {
     ManualRestart.set();
     restart();
@@ -1754,6 +1746,8 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       setTimeout(() => {
         void KeymapEvent.highlight(
           Arrays.nthElementFromArray(
+            // ignoring for now but this might need a different approach
+            // eslint-disable-next-line @typescript-eslint/no-misused-spread
             [...TestWords.words.getCurrent()],
             0
           ) as string

@@ -303,7 +303,11 @@ export const commands: CommandsSubgroup = {
             Notifications.add("Copied to clipboard", 1);
           })
           .catch((e: unknown) => {
-            Notifications.add("Failed to copy to clipboard: " + e, -1);
+            const message = Misc.createErrorMessage(
+              e,
+              "Failed to copy to clipboard"
+            );
+            Notifications.add(message, -1);
           });
       },
     },

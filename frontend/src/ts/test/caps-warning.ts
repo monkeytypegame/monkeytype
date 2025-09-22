@@ -1,7 +1,7 @@
 import Config from "../config";
+import * as Misc from "../utils/misc";
 
 const el = document.querySelector("#capsWarning") as HTMLElement;
-const isMacOs = navigator.platform.startsWith("Mac");
 
 export let capsState = false;
 
@@ -39,5 +39,5 @@ function update(event: JQuery.KeyDownEvent | JQuery.KeyUpEvent): void {
 $(document).on("keyup", update);
 
 $(document).on("keydown", (event) => {
-  if (isMacOs) update(event);
+  if (Misc.isMac()) update(event);
 });

@@ -24,4 +24,28 @@ module.exports = {
   settings: {
     lintAllEsApis: true,
   },
+  rules: {
+    // Prevent accessing __testing outside of test files
+    "no-restricted-syntax": [
+      "error",
+      {
+        selector: "MemberExpression[property.name='__testing']",
+        message:
+          "__testing should only be accessed in test files. Use the public API instead.",
+      },
+    ],
+  },
+  overrides: [
+    {
+      // Allow __testing access in test files
+      files: [
+        "**/__tests__/**/*.{js,ts,tsx}",
+        "**/*.{test,spec}.{js,ts,tsx}",
+        "**/tests/**/*.{js,ts,tsx}",
+      ],
+      rules: {
+        "no-restricted-syntax": "off",
+      },
+    },
+  ],
 };

@@ -221,37 +221,6 @@
       }
     }
   }
-  #leaderboardsWrapper #leaderboards {
-    .tables {
-      grid-template-columns: 1fr;
-      height: 100%;
-      .titleAndTable .title {
-        font-size: 1rem;
-      }
-      .rightTableWrapper,
-      .leftTableWrapper {
-        height: calc(50vh - 9rem);
-      }
-    }
-    .leaderboardsTop {
-      .buttons .timeRange {
-        font-size: 0.75rem;
-      }
-      // grid-template-columns: 1fr 1fr;
-      // grid-template-areas: "title title" "subtitle yesterday" "buttons buttons";
-      .mainTitle {
-        font-size: 1.5rem;
-      }
-
-      // .buttons .timeRange {
-      //   font-size: 0.75rem;
-      //   grid-template-columns: 1fr 1fr 1fr;
-      //   .languageSelect {
-      //     grid-column: span 1;
-      //   }
-      // }
-    }
-  }
   #customTextModal {
     .modal {
       grid-template-areas:

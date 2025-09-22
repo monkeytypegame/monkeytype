@@ -7,7 +7,6 @@ import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
-import * as CustomText from "./custom-text";
 
 type CharCount = {
   spaces: number;
@@ -19,7 +18,7 @@ type CharCount = {
   correctSpaces: number;
 };
 
-type Stats = {
+export type Stats = {
   wpm: number;
   wpmRaw: number;
   acc: number;
@@ -344,11 +343,7 @@ function countChars(): CharCount {
       }
       correctChars += toAdd.correct;
       incorrectChars += toAdd.incorrect;
-      if (
-        i === inputWords.length - 1 &&
-        (Config.mode === "time" ||
-          (Config.mode === "custom" && CustomText.getLimit().mode === "time"))
-      ) {
+      if (i === inputWords.length - 1) {
         //last word - check if it was all correct - add to correct word chars
         if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
       } else {

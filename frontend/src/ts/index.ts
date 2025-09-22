@@ -106,7 +106,7 @@ addToGlobal({
   replay: Replay.getReplayExport,
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
-  toggleUnsmoothedRaw: Result.toggleUnsmoothedRaw,
+  toggleSmoothedBurst: Result.toggleSmoothedBurst,
   egVideoListener: egVideoListener,
   toggleDebugLogs: Logger.toggleDebugLogs,
   toggleSentryDebug: Sentry.toggleDebug,

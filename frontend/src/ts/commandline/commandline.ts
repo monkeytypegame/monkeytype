@@ -556,7 +556,7 @@ async function updateActiveCommand(): Promise<void> {
   activeCommand = command ?? null;
   if (element === undefined || command === undefined) {
     clearFontPreview();
-    void ThemeController.clearPreview();
+    void ThemeController.clearPreview(false);
     addCommandlineBackground();
     return;
   }
@@ -564,7 +564,10 @@ async function updateActiveCommand(): Promise<void> {
   keepActiveCommandInView();
 
   clearFontPreview();
-  if (/changeTheme.+/gi.test(command.id)) {
+  if (
+    command.id?.startsWith("changeTheme") ||
+    command.id?.startsWith("setCustomThemeId")
+  ) {
     removeCommandlineBackground();
   } else {
     void ThemeController.clearPreview();

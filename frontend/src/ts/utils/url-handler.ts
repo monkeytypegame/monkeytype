@@ -201,6 +201,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     const customTextSettings = de[2];
     CustomText.setText(customTextSettings.text);
 
+    //make sure to set mode before the limit as mode also sets the limit
+    CustomText.setMode(customTextSettings.mode ?? "repeat");
+
     if (customTextSettings.limit !== undefined) {
       CustomText.setLimitMode(customTextSettings.limit.mode);
       CustomText.setLimitValue(customTextSettings.limit.value);
@@ -226,8 +229,6 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     else if (customTextSettings.delimiter === "|") {
       CustomText.setPipeDelimiter(true);
     }
-
-    CustomText.setMode(customTextSettings.mode ?? "repeat");
 
     applied["custom text settings"] = "";
   }

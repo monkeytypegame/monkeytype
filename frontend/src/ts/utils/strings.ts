@@ -97,6 +97,28 @@ export function splitByAndKeep(text: string, delimiters: string[]): string[] {
 }
 
 /**
+ * Highlights all occurrences of specified words within a given text.
+ * Each match is wrapped in a <span class="highlight"> element.
+ * Matches are ignored if they appear as part of a larger word
+ * not included in the matches array.
+ * @param text The full text in which to highlight words.
+ * @param matches An array of words to highlight.
+ * @return The full text with all matching words highlighted.
+ */
+export function highlightMatches(text: string, matches: string[]): string {
+  matches = matches.filter((match) => match !== "");
+  if (matches.length === 0) return text;
+
+  // matches that don't have a letter before or after them
+  const pattern = new RegExp(
+    `(?<!\\p{L})(?:${matches.join("|")})(?!\\p{L})`,
+    "gu"
+  );
+
+  return text.replace(pattern, '<span class="highlight">$&</span>');
+}
+
+/**
  * Returns a display string for the given language, optionally removing the size indicator.
  * @param language The language string.
  * @param noSizeString Whether to remove the size indicator from the language string. Default is false.
@@ -167,3 +189,79 @@ export function splitIntoCharacters(s: string): string[] {
 
   return result;
 }
+
+/**
+ * Replaces escaped control characters with their literal equivalents.
+ * Converts \t to tab characters, \n to newlines (with a space prefix),
+ * and handles double-escaped sequences (\\t, \\n) by converting them back to single escaped versions.
+ * @param textToClear The input string containing escaped control characters.
+ * @returns A new string with control characters properly converted.
+ */
+export function replaceControlCharacters(textToClear: string): string {
+  textToClear = textToClear.replace(/(?<!\\)\\t/g, "\t");
+  textToClear = textToClear.replace(/\\n/g, " \n");
+  textToClear = textToClear.replace(/([^\\]|^)\\n/gm, "$1\n");
+  textToClear = textToClear.replace(/\\\\t/gm, "\\t");
+  textToClear = textToClear.replace(/\\\\n/gm, "\\n");
+
+  return textToClear;
+}
+
+/**
+ * Detect if a word contains RTL (Right-to-Left) characters.
+ * This is for test scenarios where individual words may have different directions.
+ * Uses a simple regex pattern that covers all common RTL scripts.
+ * @param word the word to check for RTL characters
+ * @returns true if the word contains RTL characters, false otherwise
+ */
+function hasRTLCharacters(word: string): boolean {
+  if (!word || word.length === 0) {
+    return false;
+  }
+
+  // This covers Arabic, Farsi, Urdu, and other RTL scripts
+  const rtlPattern =
+    /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+
+  return rtlPattern.test(word);
+}
+
+/**
+ * Cache for word direction to avoid repeated calculations per word
+ * Keyed by the stripped core of the word; can be manually cleared when needed
+ */
+let wordDirectionCache: Map<string, boolean> = new Map();
+
+export function clearWordDirectionCache(): void {
+  wordDirectionCache.clear();
+}
+
+export function isWordRightToLeft(
+  word: string | undefined,
+  languageRTL: boolean,
+  reverseDirection?: boolean
+): boolean {
+  if (word === undefined || word.length === 0) {
+    return reverseDirection ? !languageRTL : languageRTL;
+  }
+
+  // Strip leading/trailing punctuation and whitespace so attached opposite-direction
+  // punctuation like "word؟" or "،word" doesn't flip the direction detection
+  // and if only punctuation/symbols/whitespace, use main language direction
+  const core = word.replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "");
+  if (core.length === 0) return reverseDirection ? !languageRTL : languageRTL;
+
+  // cache by core to handle variants like "word" vs "word؟"
+  const cached = wordDirectionCache.get(core);
+  if (cached !== undefined) return reverseDirection ? !cached : cached;
+
+  const result = hasRTLCharacters(core);
+  wordDirectionCache.set(core, result);
+
+  return reverseDirection ? !result : result;
+}
+
+// Export testing utilities for unit tests
+export const __testing = {
+  hasRTLCharacters,
+};

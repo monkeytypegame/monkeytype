@@ -215,11 +215,13 @@ export async function navigate(
   }
   if (
     !options.force &&
-    (TestUI.testRestarting || TestUI.resultCalculating || PageTransition.get())
+    (TestState.testRestarting ||
+      TestUI.resultCalculating ||
+      PageTransition.get())
   ) {
     console.debug(
       `navigate: ${url} ignored, page is busy (testRestarting: ${
-        TestUI.testRestarting
+        TestState.testRestarting
       }, resultCalculating: ${
         TestUI.resultCalculating
       }, pageTransition: ${PageTransition.get()})`
@@ -232,7 +234,8 @@ export async function navigate(
     Notifications.add("No quit funbox is active. Please finish the test.", 0, {
       important: true,
     });
-    event?.preventDefault();
+    //todo: figure out if this was ever used
+    // event?.preventDefault();
     return;
   }
 
