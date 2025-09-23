@@ -464,6 +464,7 @@ function updateWordWrapperClasses(): void {
   updateWordsWidth();
   updateWordsWrapperHeight(true);
   updateWordsMargin(updateWordsInputPosition, []);
+  Caret.resetPosition();
 }
 
 export function showWords(): void {
@@ -483,9 +484,6 @@ export function showWords(): void {
 
   updateActiveElement(undefined, true);
   updateWordWrapperClasses();
-  setTimeout(() => {
-    Caret.resetPosition();
-  }, 125);
 }
 
 export function appendEmptyWordElement(
@@ -665,40 +663,12 @@ function updateWordsMargin<T extends unknown[]>(
 
     const afterNewlineEls =
       wordsEl.querySelectorAll<HTMLElement>(".afterNewline");
-    if (Config.smoothLineScroll) {
-      const jqWords = $(wordsEl);
-      jqWords.stop("marginLeft", true, false).animate(
-        {
-          marginLeft: 0,
-        },
-        {
-          duration: SlowTimer.get() ? 0 : 125,
-          queue: "marginLeft",
-          complete: afterComplete,
-        }
-      );
-      jqWords.stop("marginTop", true, false).animate(
-        {
-          marginTop: 0,
-        },
-        {
-          duration: SlowTimer.get() ? 0 : 125,
-          queue: "marginTop",
-        }
-      );
-      jqWords.dequeue("marginTop");
-      jqWords.dequeue("marginLeft");
-      $(afterNewlineEls)
-        .stop(true, false)
-        .animate({ marginLeft: 0 }, SlowTimer.get() ? 0 : 125);
-    } else {
-      wordsEl.style.marginLeft = `0`;
-      wordsEl.style.marginTop = `0`;
-      for (const afterNewline of afterNewlineEls) {
-        afterNewline.style.marginLeft = `0`;
-      }
-      afterComplete();
+    wordsEl.style.marginLeft = `0`;
+    wordsEl.style.marginTop = `0`;
+    for (const afterNewline of afterNewlineEls) {
+      afterNewline.style.marginLeft = `0`;
     }
+    afterComplete();
   }
 }
 
