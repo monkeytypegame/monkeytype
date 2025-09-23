@@ -113,7 +113,11 @@ export async function getResults(
   const { onOrAfterTimestamp, offset, limit } = opts ?? {};
 
   const condition: Filter<DBResult> = { uid };
-  if (onOrAfterTimestamp !== undefined && !isNaN(onOrAfterTimestamp)) {
+  if (
+    onOrAfterTimestamp !== undefined &&
+    onOrAfterTimestamp !== null &&
+    !isNaN(onOrAfterTimestamp)
+  ) {
     condition.timestamp = { $gte: onOrAfterTimestamp };
   }
 

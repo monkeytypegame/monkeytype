@@ -1,4 +1,3 @@
-import _ from "lodash";
 import * as db from "./db";
 import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
@@ -31,7 +30,10 @@ function mergeConfigurations(
   }
 
   function merge(base: object, source: object): void {
-    const commonKeys = _.intersection(_.keys(base), _.keys(source));
+    const baseKeys = Object.keys(base);
+    const sourceKeys = Object.keys(source);
+    const commonKeys = baseKeys.filter((key) => sourceKeys.includes(key));
+
     commonKeys.forEach((key) => {
       const baseValue = base[key] as object;
       const sourceValue = source[key] as object;
@@ -162,3 +164,7 @@ export async function updateFromConfigurationFile(): Promise<void> {
     await patchConfiguration(data.configuration);
   }
 }
+
+export const __testing = {
+  mergeConfigurations,
+};

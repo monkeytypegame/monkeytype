@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { canFunboxGetPb, checkAndUpdatePb, LbPersonalBests } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
@@ -909,9 +908,15 @@ export async function updateProfile(
   profileDetailUpdates: Partial<UserProfileDetails>,
   inventory?: UserInventory
 ): Promise<void> {
-  const profileUpdates = _.omitBy(
-    flattenObjectDeep(profileDetailUpdates, "profileDetails"),
-    (value) => value === undefined || (isPlainObject(value) && _.isEmpty(value))
+  let profileUpdates = flattenObjectDeep(
+    Object.fromEntries(
+      Object.entries(profileDetailUpdates).filter(
+        ([_, value]) =>
+          value !== undefined &&
+          !(isPlainObject(value) && Object.keys(value).length === 0)
+      )
+    ),
+    "profileDetails"
   );
 
   const updates = {

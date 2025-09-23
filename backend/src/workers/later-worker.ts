@@ -216,3 +216,7 @@ export default (redisConnection?: IORedis.Redis): Worker => {
   });
   return worker;
 };
+
+export const __testing = {
+  calculateXpReward,
+};
