@@ -373,19 +373,17 @@ export class Caret {
        * will be +20 and I will end up at (30 + 20) = 50
        */
 
-      const target = {
+      const animateOrPositionOptions = {
         left: left - currentMarginLeft,
         top: top - currentMarginTop,
         ...(this.isFullWidth() && { width }),
+        ...(options.animate && options.animationOptions),
       };
 
       if (options.animate) {
-        this.animatePosition({
-          ...target,
-          ...options.animationOptions,
-        });
+        this.animatePosition(animateOrPositionOptions);
       } else {
-        this.setPosition(target);
+        this.setPosition(animateOrPositionOptions);
       }
     });
   }
