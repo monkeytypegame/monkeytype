@@ -464,7 +464,7 @@ function updateWordWrapperClasses(): void {
   updateWordsWidth();
   updateWordsWrapperHeight(true);
   updateWordsMargin(updateWordsInputPosition, []);
-  Caret.resetPosition();
+  Caret.updatePosition();
 }
 
 export function showWords(): void {
