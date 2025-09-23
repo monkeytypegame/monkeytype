@@ -4,6 +4,7 @@ import * as LiveBurst from "./live-burst";
 import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
 import * as PageTransition from "../states/page-transition";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 
 const unfocusPx = 3;
 let state = false;
@@ -41,13 +42,13 @@ function initializeCache(): void {
 // with cursor is a special case that is only used on the initial page load
 // to avoid the cursor being invisible and confusing the user
 export function set(value: boolean, withCursor = false): void {
-  initializeCache();
+  requestDebouncedAnimationFrame("focus.set", () => {
+    initializeCache();
 
-  if (value && !state) {
-    state = true;
+    if (value && !state) {
+      state = true;
 
-    // batch DOM operations for better performance
-    requestAnimationFrame(() => {
+      // batch DOM operations for better performance
       if (cache.focus) {
         for (const el of cache.focus) {
           el.classList.add("focus");
@@ -58,17 +59,15 @@ export function set(value: boolean, withCursor = false): void {
           el.style.cursor = "none";
         }
       }
-    });
 
-    Caret.stopAnimation();
-    LiveSpeed.show();
-    LiveBurst.show();
-    LiveAcc.show();
-    TimerProgress.show();
-  } else if (!value && state) {
-    state = false;
+      Caret.stopAnimation();
+      LiveSpeed.show();
+      LiveBurst.show();
+      LiveAcc.show();
+      TimerProgress.show();
+    } else if (!value && state) {
+      state = false;
 
-    requestAnimationFrame(() => {
       if (cache.focus) {
         for (const el of cache.focus) {
           el.classList.remove("focus");
@@ -79,14 +78,14 @@ export function set(value: boolean, withCursor = false): void {
           el.style.cursor = "";
         }
       }
-    });
 
-    Caret.startAnimation();
-    LiveSpeed.hide();
-    LiveBurst.hide();
-    LiveAcc.hide();
-    TimerProgress.hide();
-  }
+      Caret.startAnimation();
+      LiveSpeed.hide();
+      LiveBurst.hide();
+      LiveAcc.hide();
+      TimerProgress.hide();
+    }
+  });
 }
 
 $(document).on("mousemove", function (event) {

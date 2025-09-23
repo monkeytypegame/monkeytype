@@ -23,6 +23,7 @@ import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -116,34 +117,13 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
-export let resultVisible = false;
 export let activeWordTop = 0;
-export let testRestarting = false;
 export let lineTransition = false;
 export let currentTestLine = 0;
 export let resultCalculating = false;
 
-export function setResultVisible(val: boolean): void {
-  resultVisible = val;
-}
-
 export function setActiveWordTop(val: number): void {
   activeWordTop = val;
-}
-
-let { promise: testRestartingPromise, resolve: restartingResolve } =
-  Misc.promiseWithResolvers();
-
-export { testRestartingPromise };
-
-export function setTestRestarting(val: boolean): void {
-  testRestarting = val;
-  if (val) {
-    ({ promise: testRestartingPromise, resolve: restartingResolve } =
-      Misc.promiseWithResolvers());
-  } else {
-    restartingResolve();
-  }
 }
 
 export function setResultCalculating(val: boolean): void {
@@ -347,7 +327,7 @@ async function joinOverlappingHints(
 async function updateHintsPosition(): Promise<void> {
   if (
     ActivePage.get() !== "test" ||
-    resultVisible ||
+    TestState.resultVisible ||
     Config.indicateTypos !== "below"
   )
     return;
@@ -512,13 +492,9 @@ export function appendEmptyWordElement(
     `<div class='word' data-wordindex='${index}'><letter class='invisible'>_</letter></div>`
   );
 }
-let updateWordsInputPositionAnimationFrameId: null | number = null;
+
 export function updateWordsInputPosition(): void {
-  if (updateWordsInputPositionAnimationFrameId !== null) {
-    cancelAnimationFrame(updateWordsInputPositionAnimationFrameId);
-  }
-  updateWordsInputPositionAnimationFrameId = requestAnimationFrame(() => {
-    updateWordsInputPositionAnimationFrameId = null;
+  requestDebouncedAnimationFrame("test-ui.updateWordsInputPosition", () => {
     if (ActivePage.get() !== "test") return;
     const isTestRightToLeft = TestState.isDirectionReversed
       ? !TestState.isLanguageRightToLeft
@@ -601,7 +577,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 export function updateWordsWrapperHeight(force = false): void {
-  if (ActivePage.get() !== "test" || resultVisible) return;
+  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
   const outOfFocusEl = document.querySelector(
@@ -920,7 +896,7 @@ export async function scrollTape(
   noRemove = false,
   afterCompleteFn?: () => void
 ): Promise<void> {
-  if (ActivePage.get() !== "test" || resultVisible) return;
+  if (ActivePage.get() !== "test" || TestState.resultVisible) return;
 
   await centeringActiveLine;
 
@@ -1410,7 +1386,7 @@ async function loadWordsHistory(): Promise<boolean> {
 }
 
 export function toggleResultWords(noAnimation = false): void {
-  if (resultVisible) {
+  if (TestState.resultVisible) {
     ResultWordHighlight.updateToggleWordsHistoryTime();
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
@@ -1715,7 +1691,7 @@ $(".pageTest #result #wpmChart").on("mouseenter", () => {
 });
 
 $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
-  if (resultVisible) {
+  if (TestState.resultVisible) {
     const input = $(e.currentTarget).attr("input");
     const burst = parseInt($(e.currentTarget).attr("burst") as string);
     if (input !== undefined) {
@@ -1745,14 +1721,14 @@ addEventListener("resize", () => {
 $("#wordsInput").on("focus", (e) => {
   const wordsFocused = e.target === document.activeElement;
   if (!wordsFocused) return;
-  if (!resultVisible && Config.showOutOfFocusWarning) {
+  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
   Caret.show(true);
 });
 
 $("#wordsInput").on("focusout", () => {
-  if (!resultVisible && Config.showOutOfFocusWarning) {
+  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.show();
   }
   Caret.hide();
