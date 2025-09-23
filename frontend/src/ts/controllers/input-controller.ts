@@ -119,31 +119,30 @@ function updateUI(): void {
 function backspaceToPrevious(): void {
   if (!TestState.isActive) return;
 
-  const wordElementIndex =
-    TestState.activeWordIndex - TestState.removedUIWordCount;
+  const previousWordEl = TestUI.getWordElement(TestState.activeWordIndex - 1);
 
-  if (TestInput.input.getHistory().length === 0 || wordElementIndex === 0) {
-    return;
-  }
+  const isFirstWord = TestInput.input.getHistory().length === 0;
+  const isFirstVisibleWord = previousWordEl === null;
+  const isPreviousWordHidden = previousWordEl?.classList.contains("hidden");
+  const isPreviousWordCorrect =
+    TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
+    TestWords.words.get(TestState.activeWordIndex - 1);
 
-  const wordElements = document.querySelectorAll("#words > .word");
   if (
-    (TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
-      TestWords.words.get(TestState.activeWordIndex - 1) &&
-      !Config.freedomMode) ||
-    wordElements[wordElementIndex - 1]?.classList.contains("hidden")
+    isFirstWord ||
+    isFirstVisibleWord ||
+    isPreviousWordHidden ||
+    (isPreviousWordCorrect && !Config.freedomMode) ||
+    Config.confidenceMode === "on" ||
+    Config.confidenceMode === "max"
   ) {
     return;
   }
 
-  if (Config.confidenceMode === "on" || Config.confidenceMode === "max") {
-    return;
-  }
+  const activeWordEl = TestUI.getActiveWordElement();
 
   const incorrectLetterBackspaced =
-    wordElements[wordElementIndex]?.children[0]?.classList.contains(
-      "incorrect"
-    );
+    activeWordEl?.children[0]?.classList.contains("incorrect");
   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
     void TestUI.updateActiveWordLetters();
   }
@@ -266,14 +265,10 @@ async function handleSpace(): Promise<void> {
     PaceCaret.handleSpace(false, currentWord);
     if (Config.blindMode) {
       if (Config.highlightMode !== "off") {
-        TestUI.highlightAllLettersAsCorrect(
-          TestState.activeWordIndex - TestState.removedUIWordCount
-        );
+        TestUI.highlightAllLettersAsCorrect(TestState.activeWordIndex);
       }
     } else {
-      TestUI.highlightBadWord(
-        TestState.activeWordIndex - TestState.removedUIWordCount
-      );
+      TestUI.highlightBadWord(TestState.activeWordIndex);
     }
     TestInput.input.pushHistory();
     TestState.increaseActiveWordIndex();
@@ -331,7 +326,6 @@ async function handleSpace(): Promise<void> {
     void TestLogic.addWord();
   }
   TestUI.updateActiveElement();
-  void Caret.updatePosition();
 
   const shouldLimitToThreeLines =
     Config.mode === "time" ||
@@ -340,23 +334,19 @@ async function handleSpace(): Promise<void> {
 
   if (!Config.showAllLines || shouldLimitToThreeLines) {
     const currentTop: number = Math.floor(
-      document.querySelectorAll<HTMLElement>("#words .word")[
-        TestState.activeWordIndex - TestState.removedUIWordCount - 1
-      ]?.offsetTop ?? 0
+      TestUI.getWordElement(TestState.activeWordIndex - 1)?.offsetTop ?? 0
     );
 
     const { data: nextTop } = tryCatchSync(() =>
-      Math.floor(
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestState.activeWordIndex - TestState.removedUIWordCount
-        ]?.offsetTop ?? 0
-      )
+      Math.floor(TestUI.getActiveWordElement()?.offsetTop ?? 0)
     );
 
     if ((nextTop ?? 0) > currentTop) {
       void TestUI.lineJump(currentTop);
-    } //end of line wrap
-  }
+    }
+  } //end of line wrap
+
+  void Caret.updatePosition();
 
   // enable if i decide that auto tab should also work after a space
   // if (
@@ -457,7 +447,7 @@ async function handleChar(
   charIndex: number,
   realInputValue?: string
 ): Promise<void> {
-  if (TestUI.resultCalculating || TestUI.resultVisible) {
+  if (TestUI.resultCalculating || TestState.resultVisible) {
     return;
   }
 
@@ -665,9 +655,7 @@ async function handleChar(
     char
   );
 
-  const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex - TestState.removedUIWordCount
-  ] as HTMLElement;
+  const activeWord = TestUI.getActiveWordElement() as HTMLElement;
 
   const testInputLength: number = !isCharKorean
     ? TestInput.input.current.length
@@ -814,7 +802,7 @@ async function handleTab(
 
     event.preventDefault();
     // insert tab character if needed (only during the test)
-    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
+    if (!TestState.resultVisible && shouldInsertTabCharacter) {
       await handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       return;
@@ -840,7 +828,7 @@ async function handleTab(
     }
 
     // insert tab character if needed (only during the test)
-    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
+    if (!TestState.resultVisible && shouldInsertTabCharacter) {
       event.preventDefault();
       await handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
@@ -856,7 +844,7 @@ async function handleTab(
 
     //only special handlig on the test page
     if (ActivePage.get() !== "test") return;
-    if (TestUI.resultVisible) return;
+    if (TestState.resultVisible) return;
 
     // insert tab character if needed
     if (shouldInsertTabCharacter) {
@@ -877,14 +865,12 @@ async function handleTab(
 $("#wordsInput").on("keydown", (event) => {
   const pageTestActive: boolean = ActivePage.get() === "test";
   const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
-  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
   const popupVisible: boolean = Misc.isAnyPopupVisible();
   const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
-    !leaderboardsVisible &&
     !popupVisible &&
-    !TestUI.resultVisible &&
+    !TestState.resultVisible &&
     event.key !== "Enter" &&
     !awaitingNextWord &&
     TestState.testInitSuccess;
@@ -918,16 +904,14 @@ $(document).on("keydown", async (event) => {
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
   const pageTestActive: boolean = ActivePage.get() === "test";
   const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
-  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
 
   const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
-    !leaderboardsVisible &&
     !popupVisible &&
-    !TestUI.resultVisible &&
+    !TestState.resultVisible &&
     (wordsFocused || event.key !== "Enter") &&
     !awaitingNextWord;
 
@@ -999,7 +983,7 @@ $(document).on("keydown", async (event) => {
       return;
     }
 
-    if (TestUI.resultVisible) {
+    if (TestState.resultVisible) {
       TestLogic.restart({
         event,
       });
@@ -1029,7 +1013,7 @@ $(document).on("keydown", async (event) => {
 
   if (!allowTyping) return;
 
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     event.preventDefault();
     return;
   }
@@ -1126,11 +1110,7 @@ $(document).on("keydown", async (event) => {
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
     void Sound.playClick();
-    const activeWord: HTMLElement | null = document.querySelectorAll(
-      "#words .word"
-    )?.[
-      TestState.activeWordIndex - TestState.removedUIWordCount
-    ] as HTMLElement;
+    const activeWord = TestUI.getActiveWordElement();
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead
@@ -1269,7 +1249,7 @@ $("#wordsInput").on("keyup", (event) => {
 });
 
 $("#wordsInput").on("keyup", (event) => {
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     event.preventDefault();
     return;
   }
@@ -1278,7 +1258,7 @@ $("#wordsInput").on("keyup", (event) => {
 
   if (IgnoredKeys.includes(event.key)) return;
 
-  if (TestUI.resultVisible) return;
+  if (TestState.resultVisible) return;
 });
 
 $("#wordsInput").on("beforeinput", (event) => {
@@ -1289,7 +1269,7 @@ $("#wordsInput").on("beforeinput", (event) => {
 });
 
 $("#wordsInput").on("input", async (event) => {
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     (event.target as HTMLInputElement).value = " ";
     return;
   }

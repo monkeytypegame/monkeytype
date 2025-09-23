@@ -26,15 +26,3 @@
 .pageAbout .section p {
   color: var(--sub-color);
 }
-
-#leaderboardsWrapper #leaderboards .title {
-  color: var(--sub-color);
-}
-
-#leaderboardsWrapper #leaderboards .tables table thead {
-  color: var(--sub-color);
-}
-
-#leaderboardsWrapper #leaderboards .tables table tbody {
-  color: var(--sub-color);
-}

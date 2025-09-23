@@ -155,17 +155,7 @@ async function apply(
     isPreview
   );
 
-  if (themeName !== "custom") {
-    clearCustomTheme();
-  }
   const name = customColorsOverride ? "custom" : themeName;
-
-  ThemeColors.reset();
-
-  $(".keymapKey").attr("style", "");
-  // $("#currentTheme").attr("href", `themes/${name}.css`);
-  await loadStyle(name);
-  ThemeColors.update();
 
   if ((Config.customTheme && !isPreview) || customColorsOverride) {
     const colors = customColorsOverride ?? Config.customThemeColors;
@@ -175,6 +165,18 @@ async function apply(
       document.documentElement.style.setProperty(colorVar, colors[i] as string);
     }
   }
+
+  ThemeColors.reset();
+
+  $(".keymapKey").attr("style", "");
+  // $("#currentTheme").attr("href", `themes/${name}.css`);
+  await loadStyle(name);
+
+  if (name !== "custom") {
+    clearCustomTheme();
+  }
+
+  ThemeColors.update();
 
   // if (!isPreview) {
   const colors = await ThemeColors.getAll();

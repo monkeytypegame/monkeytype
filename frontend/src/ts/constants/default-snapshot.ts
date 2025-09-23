@@ -7,7 +7,7 @@ import {
 import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
-import { Config, FunboxName } from "@monkeytype/schemas/configs";
+import { Config, Difficulty, FunboxName } from "@monkeytype/schemas/configs";
 import {
   ModifiableTestActivityCalendar,
   TestActivityCalendar,
@@ -41,7 +41,7 @@ export type SnapshotResult<M extends Mode> = Omit<
   bailedOut: boolean;
   blindMode: boolean;
   lazyMode: boolean;
-  difficulty: string;
+  difficulty: Difficulty;
   funbox: FunboxName[];
   language: Language;
   numbers: boolean;

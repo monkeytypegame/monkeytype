@@ -24,13 +24,19 @@ type Options<T> = {
 
 export type LoadingOptions = {
   /**
-   * Should the loading screen be shown?
+   * Get the loading mode for this page.
+   * "none" - No loading screen will be shown.
+   * "sync" - A loading spinner or bar (depending on style) will be shown until the page is ready.
+   * { mode: "async", beforeLoading, afterLoading } - The loadingPromise will be executed in the background and afterLoading called after it resolves.
    */
-  shouldLoad: () => boolean;
+  loadingMode: () =>
+    | "none"
+    | "sync"
+    | { mode: "async"; beforeLoading: () => void; afterLoading: () => void };
   /**
    * When this promise resolves, the loading screen will be hidden.
    */
-  waitFor: () => Promise<void>;
+  loadingPromise: () => Promise<void>;
 } & (
   | {
       style: "spinner";

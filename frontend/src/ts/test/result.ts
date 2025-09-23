@@ -44,6 +44,7 @@ import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
+import * as TestState from "./test-state";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -57,7 +58,7 @@ let quoteId = "";
 export function toggleSmoothedBurst(): void {
   useSmoothedBurst = !useSmoothedBurst;
   Notifications.add(useSmoothedBurst ? "on" : "off", 1);
-  if (TestUI.resultVisible) {
+  if (TestState.resultVisible) {
     void updateGraph().then(() => {
       ChartController.result.update("resize");
     });
@@ -67,7 +68,7 @@ export function toggleSmoothedBurst(): void {
 export function toggleUserFakeChartData(): void {
   useFakeChartData = !useFakeChartData;
   Notifications.add(useFakeChartData ? "on" : "off", 1);
-  if (TestUI.resultVisible) {
+  if (TestState.resultVisible) {
     void updateGraph().then(() => {
       ChartController.result.update("resize");
     });
@@ -352,6 +353,7 @@ export async function updateGraphPBLine(): Promise<void> {
 
   ChartController.result.getScale("wpm").max = maxChartVal;
   ChartController.result.getScale("raw").max = maxChartVal;
+  ChartController.result.getScale("burst").max = maxChartVal;
 }
 
 function updateWpmAndAcc(): void {
@@ -1074,7 +1076,11 @@ export async function update(
     $("#result"),
     250,
     async () => {
-      $("#result").trigger("focus");
+      const result = document.querySelector<HTMLElement>("#result");
+      result?.focus({
+        preventScroll: true,
+      });
+      Misc.scrollToCenterOrTop(result);
       void AdController.renderResult();
       TestUI.setResultCalculating(false);
       $("#words").empty();
@@ -1309,7 +1315,7 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 ConfigEvent.subscribe(async (eventKey) => {
   if (
     ["typingSpeedUnit", "startGraphsAtZero"].includes(eventKey) &&
-    TestUI.resultVisible
+    TestState.resultVisible
   ) {
     resultAnnotation = [];
 
