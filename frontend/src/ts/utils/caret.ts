@@ -377,24 +377,16 @@ export class Caret {
           left: left - currentMarginLeft,
           top: top - currentMarginTop,
           ...(this.isFullWidth() && { width }),
+          ...options.animationOptions,
         };
-
-        if (options.animationOptions) {
-          if (options.animationOptions.duration !== undefined) {
-            animation.duration = options.animationOptions.duration;
-          }
-          if (options.animationOptions.easing !== undefined) {
-            animation.easing = options.animationOptions.easing;
-          }
-        }
 
         this.animatePosition(animation);
       } else {
-        this.setPosition({ left, top });
-
         if (this.isFullWidth()) {
           this.setWidth(width);
         }
+
+        this.setPosition({ left, top });
       }
     });
   }
