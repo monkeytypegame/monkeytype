@@ -38,6 +38,7 @@ type AnimatePositionOptions = {
 };
 
 export class Caret {
+  private id: string;
   private element: HTMLElement;
   private style: CaretStyle = "default";
   private readyToResetMarginTop: boolean = false;
@@ -46,9 +47,10 @@ export class Caret {
   private cumulativeTapeMarginCorrection: number = 0;
 
   constructor(element: HTMLElement, style: CaretStyle) {
+    this.id = element.id;
     this.element = element;
     this.setStyle(style);
-    if (this.element.id === "caret") {
+    if (this.id === "caret") {
       this.isMainCaret = true;
     }
   }
@@ -280,7 +282,7 @@ export class Caret {
       easing?: string;
     };
   }): void {
-    requestDebouncedAnimationFrame(`caret.${this.element.id}.goTo`, () => {
+    requestDebouncedAnimationFrame(`caret.${this.id}.goTo`, () => {
       if (this.style === "off") return;
 
       const word = wordsCache.querySelector<HTMLElement>(
@@ -312,7 +314,7 @@ export class Caret {
       }
 
       if (caretDebug) {
-        if (this.element.id === "paceCaret") {
+        if (this.id === "paceCaret") {
           for (const l of document.querySelectorAll(".word letter")) {
             l.classList.remove("debugCaretTarget");
             l.classList.remove("debugCaretTarget2");
