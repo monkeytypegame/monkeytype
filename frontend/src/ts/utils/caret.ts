@@ -29,14 +29,6 @@ export function toggleCaretDebug(): void {
   }
 }
 
-type AnimatePositionOptions = {
-  left: number;
-  top: number;
-  duration?: number;
-  easing?: string;
-  width?: number;
-};
-
 export class Caret {
   private id: string;
   private element: HTMLElement;
@@ -240,7 +232,13 @@ export class Caret {
     $(this.element).dequeue("marginTop");
   }
 
-  public animatePosition(options: AnimatePositionOptions): void {
+  public animatePosition(options: {
+    left: number;
+    top: number;
+    duration?: number;
+    easing?: string;
+    width?: number;
+  }): void {
     const smoothCaretSpeed =
       Config.smoothCaret === "off"
         ? 0
