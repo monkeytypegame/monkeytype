@@ -84,10 +84,6 @@ export class Caret {
     return this.element.offsetWidth;
   }
 
-  public setWidth(width: number): void {
-    this.element.style.width = `${width}px`;
-  }
-
   public resetWidth(): void {
     this.element.style.width = "";
   }
@@ -108,9 +104,16 @@ export class Caret {
     return ["block", "outline", "underline"].includes(this.style);
   }
 
-  public setPosition(options: { left: number; top: number }): void {
+  public setPosition(options: {
+    left: number;
+    top: number;
+    width?: number;
+  }): void {
     this.element.style.left = `${options.left}px`;
     this.element.style.top = `${options.top}px`;
+    if (options.width !== undefined) {
+      this.element.style.width = `${options.width}px`;
+    }
   }
 
   public startBlinking(): void {
@@ -382,11 +385,13 @@ export class Caret {
 
         this.animatePosition(animation);
       } else {
-        if (this.isFullWidth()) {
-          this.setWidth(width);
-        }
+        const position: AnimatePositionOptions = {
+          left,
+          top,
+          ...(this.isFullWidth() && { width }),
+        };
 
-        this.setPosition({ left, top });
+        this.setPosition(position);
       }
     });
   }
