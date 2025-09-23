@@ -84,6 +84,14 @@ export class Caret {
     return this.element.offsetWidth;
   }
 
+  public setWidth(width: number): void {
+    this.element.style.width = `${width}px`;
+  }
+
+  public resetWidth(): void {
+    this.element.style.width = "";
+  }
+
   public getHeight(): number {
     if (!this.isHidden()) {
       return this.element.offsetHeight;
@@ -103,14 +111,6 @@ export class Caret {
   public setPosition(options: { left: number; top: number }): void {
     this.element.style.left = `${options.left}px`;
     this.element.style.top = `${options.top}px`;
-  }
-
-  public setWidth(width: number): void {
-    this.element.style.width = `${width}px`;
-  }
-
-  public resetWidth(): void {
-    this.element.style.width = "";
   }
 
   public startBlinking(): void {
