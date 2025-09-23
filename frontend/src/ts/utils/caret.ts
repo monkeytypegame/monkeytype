@@ -282,9 +282,8 @@ export class Caret {
       easing?: string;
     };
   }): void {
+    if (this.style === "off") return;
     requestDebouncedAnimationFrame(`caret.${this.id}.goTo`, () => {
-      if (this.style === "off") return;
-
       const word = wordsCache.querySelector<HTMLElement>(
         `.word[data-wordindex="${options.wordIndex}"]`
       );
