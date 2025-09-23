@@ -376,10 +376,8 @@ export class Caret {
         const animation: AnimatePositionOptions = {
           left: left - currentMarginLeft,
           top: top - currentMarginTop,
+          ...(this.isFullWidth() && { width }),
         };
-        if (this.isFullWidth()) {
-          animation.width = width;
-        }
 
         if (options.animationOptions) {
           if (options.animationOptions.duration !== undefined) {
