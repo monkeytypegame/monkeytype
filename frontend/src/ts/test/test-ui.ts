@@ -687,6 +687,7 @@ function updateWordsMargin<T extends unknown[]>(
         }
       );
       jqWords.dequeue("marginTop");
+      jqWords.dequeue("marginLeft");
       $(afterNewlineEls)
         .stop(true, false)
         .animate({ marginLeft: 0 }, SlowTimer.get() ? 0 : 125);
