@@ -463,7 +463,9 @@ function updateWordWrapperClasses(): void {
 
   updateWordsWidth();
   updateWordsWrapperHeight(true);
-  updateWordsMargin(updateWordsInputPosition, []);
+  updateWordsMargin();
+  updateWordsInputPosition();
+  void updateHintsPositionDebounced();
   Caret.updatePosition();
 }
 
@@ -647,16 +649,9 @@ export function updateWordsWrapperHeight(force = false): void {
   outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
 }
 
-function updateWordsMargin<T extends unknown[]>(
-  afterCompleteFn: (...args: T) => void,
-  args: T
-): void {
-  const afterComplete = (): void => {
-    afterCompleteFn(...args);
-    void updateHintsPositionDebounced();
-  };
+function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
-    void scrollTape(true, afterComplete);
+    void scrollTape(true);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
 
@@ -669,7 +664,6 @@ function updateWordsMargin<T extends unknown[]>(
     for (const afterNewline of afterNewlineEls) {
       afterNewline.style.marginLeft = `0`;
     }
-    afterComplete();
   }
 }
 
@@ -880,10 +874,7 @@ function getNlCharWidth(
   return nlChar.offsetWidth + letterMargin;
 }
 
-export async function scrollTape(
-  noAnimation = false,
-  afterCompleteFn?: () => void
-): Promise<void> {
+export async function scrollTape(noAnimation = false): Promise<void> {
   if (ActivePage.get() !== "test" || TestState.resultVisible) return;
 
   await centeringActiveLine;
@@ -1068,7 +1059,6 @@ export async function scrollTape(
       {
         duration,
         queue: "marginLeft",
-        complete: afterCompleteFn,
       }
     );
     jqWords.dequeue("marginLeft");
@@ -1084,7 +1074,6 @@ export async function scrollTape(
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
     }
-    if (afterCompleteFn) afterCompleteFn();
   }
 }
 
