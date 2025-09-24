@@ -484,6 +484,7 @@ export function showWords(): void {
 
   updateActiveElement(undefined, true);
   updateWordWrapperClasses();
+  PaceCaret.resetCaretPosition();
 }
 
 export function appendEmptyWordElement(

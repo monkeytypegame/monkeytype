@@ -36,7 +36,7 @@ export function setLastTestWpm(wpm: number): void {
   }
 }
 
-function resetCaretPosition(): void {
+export function resetCaretPosition(): void {
   if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
   if (Config.mode === "zen") return;
 
@@ -126,7 +126,6 @@ export async function init(): Promise<void> {
     wordsStatus: {},
     timeout: null,
   };
-  resetCaretPosition();
 }
 
 export async function update(duration: number): Promise<void> {
