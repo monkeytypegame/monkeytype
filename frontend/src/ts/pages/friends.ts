@@ -175,7 +175,7 @@ function updatePendingConnections(): void {
           item.initiatorUid
         }?isUid" router-link>${item.initiatorName}</a></td>
         <td>
-          <span data-balloon-pos="up" aria-label="${format(
+          <span data-balloon-pos="up" aria-label="since ${format(
             item.lastModified,
             "dd MMM yyyy HH:mm"
           )}">
@@ -278,7 +278,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         </td>
         <td><span data-balloon-pos="up" aria-label="${
           entry.lastModified !== undefined
-            ? format(entry.lastModified, "dd MMM yyyy HH:mm")
+            ? "since " + format(entry.lastModified, "dd MMM yyyy HH:mm")
             : ""
         }">${
     entry.lastModified !== undefined
