@@ -452,6 +452,7 @@ export function updateFriendRequestButton(): void {
     button?.classList.add("disabled");
   } else {
     button?.classList.remove("disabled");
+    button?.classList.remove("hidden");
   }
 }
 const throttledEvent = throttle(1000, () => {
