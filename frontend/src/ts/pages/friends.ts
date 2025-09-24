@@ -6,7 +6,8 @@ import {
   intervalToDuration,
   format as dateFormat,
   formatDuration,
-  DurationUnit,
+  formatDistanceToNow,
+  format,
 } from "date-fns";
 import * as Notifications from "../elements/notifications";
 import { isSafeNumber } from "@monkeytype/util/numbers";
@@ -173,7 +174,14 @@ function updatePendingConnections(): void {
         <td><a href="${location.origin}/profile/${
           item.initiatorUid
         }?isUid" router-link>${item.initiatorName}</a></td>
-        <td>${formatAge(item.lastModified)} ago</td>
+        <td>
+          <span data-balloon-pos="up" aria-label="${format(
+            item.lastModified,
+            "dd MMM yyyy HH:mm"
+          )}">
+            ${formatAge(item.lastModified)}
+          <span>
+        </td>
         <td class="actions">
           <button class="accepted" aria-label="accept" data-balloon-pos="up">
             <i class="fas fa-check fa-fw"></i>
@@ -268,11 +276,15 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
             </div>
           </div>
         </td>
-        <td>${
+        <td><span data-balloon-pos="up" aria-label="${
           entry.lastModified !== undefined
-            ? formatAge(entry.lastModified, "short")
-            : "-"
-        }</td>
+            ? format(entry.lastModified, "dd MMM yyyy HH:mm")
+            : ""
+        }">${
+    entry.lastModified !== undefined
+      ? formatAge(entry.lastModified, "short")
+      : "-"
+  }</span></td>
         <td><span aria-label="total xp: ${
           isSafeNumber(entry.xp) ? formatXp(entry.xp) : ""
         }" data-balloon-pos="up">
@@ -320,28 +332,16 @@ function formatAge(
   timestamp: number | undefined,
   format?: "short" | "full"
 ): string {
-  const units: Array<DurationUnit> = [
-    "years",
-    "months",
-    "days",
-    "hours",
-    "minutes",
-  ];
-
   if (timestamp === undefined) return "";
   let formatted = "";
   const duration = intervalToDuration({ start: timestamp, end: Date.now() });
 
   if (format === undefined || format === "full") {
-    formatted = formatDuration(duration, { format: units });
+    formatted = formatDuration(duration, {
+      format: ["years", "months", "days", "hours", "minutes"],
+    });
   } else {
-    for (const unit of units) {
-      const value = duration[unit];
-      if (value !== undefined && value > 0) {
-        formatted = `${value} ${unit}`;
-        break;
-      }
-    }
+    formatted = formatDistanceToNow(timestamp);
   }
 
   return formatted !== "" ? formatted : "less then a minute";
