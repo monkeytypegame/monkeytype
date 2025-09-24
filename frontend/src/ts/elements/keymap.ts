@@ -14,6 +14,12 @@ import * as ShiftTracker from "../test/shift-tracker";
 import * as AltTracker from "../test/alt-tracker";
 import * as KeyConverter from "../utils/key-converter";
 import { getActiveFunboxNames } from "../test/funbox/list";
+import { getCustomKeymapSyle } from "../utils/custom-keymap";
+import {
+  KeymapCustom,
+  KeymapLayout,
+  KeymapLegendStyle,
+} from "@monkeytype/schemas/configs";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 
@@ -458,6 +464,22 @@ export async function refresh(): Promise<void> {
       });
     }
 
+    if (Config.keymapStyle === "custom") {
+      const {
+        keymapCustom,
+        keymapLayout,
+        keymapLegendStyle,
+      }: {
+        keymapCustom: KeymapCustom;
+        keymapLayout: KeymapLayout;
+        keymapLegendStyle: KeymapLegendStyle;
+      } = Config;
+      keymapElement = getCustomKeymapSyle(
+        keymapCustom,
+        keymapLayout,
+        keymapLegendStyle
+      );
+    }
     $("#keymap").html(keymapElement);
 
     $("#keymap").removeClass("staggered");
@@ -467,6 +489,7 @@ export async function refresh(): Promise<void> {
     $("#keymap").removeClass("alice");
     $("#keymap").removeClass("steno");
     $("#keymap").removeClass("steno_matrix");
+    $("#keymap").removeClass("custom");
     $("#keymap").addClass(Config.keymapStyle);
   } catch (e) {
     if (e instanceof Error) {
@@ -552,7 +575,11 @@ async function updateLegends(): Promise<void> {
   }
 
   for (let i = 0; i < layoutKeys.length; i++) {
-    const layoutKey = layoutKeys[i] as string[];
+    let layoutKey = layoutKeys[i] as string[];
+
+    if (Config.keymapStyle === "custom") {
+      layoutKey = layoutKey[0]?.split("") ?? ["", ""];
+    }
     const key = keys[i];
     const lowerCaseCharacter = layoutKey[0];
     const upperCaseCharacter = layoutKey[1];
@@ -561,7 +588,9 @@ async function updateLegends(): Promise<void> {
       key === undefined ||
       layoutKey === undefined ||
       lowerCaseCharacter === undefined ||
-      upperCaseCharacter === undefined
+      lowerCaseCharacter === "" ||
+      upperCaseCharacter === undefined ||
+      upperCaseCharacter === ""
     )
       continue;
 
