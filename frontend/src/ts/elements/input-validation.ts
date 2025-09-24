@@ -146,6 +146,7 @@ export type ValidationOptions<T> = (T extends string
 export type ValidatedHtmlInputElement = HTMLInputElement & {
   isValid: () => boolean | undefined;
   setValue: (val: string | null) => void;
+  triggerValidation: () => void;
 };
 /**
  * adds an 'InputIndicator` to the given `inputElement` and updates its status depending on the given validation
@@ -206,6 +207,9 @@ export function validateWithIndicator<T>(
     } else {
       inputElement.dispatchEvent(new Event("input"));
     }
+  };
+  result.triggerValidation = () => {
+    inputElement.dispatchEvent(new Event("input"));
   };
 
   return result;
