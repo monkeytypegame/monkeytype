@@ -1,11 +1,13 @@
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
 import * as CustomTextState from "../states/custom-text-name";
-import { InputIndicator } from "../elements/input-indicator";
-import { debounce } from "throttle-debounce";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { validateWithIndicator } from "../elements/input-validation";
+import { z } from "zod";
 
-let indicator: InputIndicator | undefined;
+type IncomingData = {
+  text: string[];
+};
 
 type State = {
   textToSave: string[];
@@ -14,6 +16,35 @@ type State = {
 const state: State = {
   textToSave: [],
 };
+
+const validatedInput = validateWithIndicator(
+  $("#saveCustomTextModal .textName")[0] as HTMLInputElement,
+  {
+    debounceDelay: 500,
+    schema: z
+      .string()
+      .min(1)
+      .max(32)
+      .regex(/^[\w\s-]+$/, {
+        message:
+          "Name can only contain letters, numbers, spaces, underscores and hyphens",
+      }),
+    isValid: async (value) => {
+      const checkbox = $("#saveCustomTextModal .isLongText").prop(
+        "checked"
+      ) as boolean;
+      const names = CustomText.getCustomTextNames(checkbox);
+      return !names.includes(value) ? true : "Duplicate name";
+    },
+    callback: (result) => {
+      if (result.status === "success") {
+        $("#saveCustomTextModal button.save").prop("disabled", false);
+      } else {
+        $("#saveCustomTextModal button.save").prop("disabled", true);
+      }
+    },
+  }
+);
 
 export async function show(options: ShowOptions<IncomingData>): Promise<void> {
   state.textToSave = [];
@@ -26,10 +57,6 @@ export async function show(options: ShowOptions<IncomingData>): Promise<void> {
       $("#saveCustomTextModal button.save").prop("disabled", true);
     },
   });
-}
-
-function hide(): void {
-  void modal.hide();
 }
 
 function save(): boolean {
@@ -59,68 +86,17 @@ function save(): boolean {
   }
 }
 
-function updateIndicatorAndButton(): void {
-  const val = $("#saveCustomTextModal .textName").val() as string;
-  const checkbox = $("#saveCustomTextModal .isLongText").prop(
-    "checked"
-  ) as boolean;
-
-  if (!val) {
-    indicator?.hide();
-    $("#saveCustomTextModal button.save").prop("disabled", true);
-  } else {
-    const names = CustomText.getCustomTextNames(checkbox);
-    if (names.includes(val)) {
-      indicator?.show("unavailable");
-      $("#saveCustomTextModal button.save").prop("disabled", true);
-    } else {
-      indicator?.show("available");
-      $("#saveCustomTextModal button.save").prop("disabled", false);
-    }
-  }
-}
-
-const updateInputAndButtonDebounced = debounce(500, updateIndicatorAndButton);
-
 async function setup(modalEl: HTMLElement): Promise<void> {
-  indicator = new InputIndicator($("#saveCustomTextModal .textName"), {
-    available: {
-      icon: "fa-check",
-      level: 1,
-    },
-    unavailable: {
-      icon: "fa-times",
-      level: -1,
-    },
-    loading: {
-      icon: "fa-circle-notch",
-      spinIcon: true,
-      level: 0,
-    },
-  });
   modalEl.addEventListener("submit", (e) => {
     e.preventDefault();
-    if (save()) hide();
-  });
-  modalEl.querySelector(".textName")?.addEventListener("input", (e) => {
-    const val = (e.target as HTMLInputElement).value;
-    if (val.length > 0) {
-      indicator?.show("loading");
-      updateInputAndButtonDebounced();
+    if (validatedInput.getValidationResult().status === "success" && save()) {
+      void modal.hide();
     }
   });
   modalEl.querySelector(".isLongText")?.addEventListener("input", (e) => {
-    const val = (e.target as HTMLInputElement).value;
-    if (val.length > 0) {
-      indicator?.show("loading");
-      updateInputAndButtonDebounced();
-    }
+    validatedInput.triggerValidation();
   });
 }
-
-type IncomingData = {
-  text: string[];
-};
 
 const modal = new AnimatedModal<IncomingData>({
   dialogId: "saveCustomTextModal",

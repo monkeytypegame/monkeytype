@@ -172,7 +172,8 @@ validateWithIndicator(emailVerifyInputEl, {
   debounceDelay: 0,
   callback: (result) => {
     registerForm.email =
-      emailInputEl.isValid() && result.status === "success"
+      emailInputEl.getValidationResult().status === "success" &&
+      result.status === "success"
         ? emailInputEl.value
         : undefined;
     updateSignupButton();
@@ -206,7 +207,8 @@ validateWithIndicator(passwordVerifyInputEl, {
   debounceDelay: 0,
   callback: (result) => {
     registerForm.password =
-      passwordInputEl.isValid() && result.status === "success"
+      passwordInputEl.getValidationResult().status === "success" &&
+      result.status === "success"
         ? passwordInputEl.value
         : undefined;
     updateSignupButton();

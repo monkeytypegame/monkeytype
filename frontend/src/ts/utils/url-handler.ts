@@ -163,6 +163,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("testSettings", getOverride);
   if (getValue === null) return;
 
+  // if the encoding structure or method ever changes, make sure to support the old data format
+  // otherwise eiko will be sad
+
   const { data: de, error } = tryCatchSync(() =>
     parseJsonWithSchema(decompressFromURI(getValue) ?? "", TestSettingsSchema)
   );
