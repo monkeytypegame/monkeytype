@@ -179,7 +179,7 @@ function updatePendingConnections(): void {
             item.lastModified,
             "dd MMM yyyy HH:mm"
           )}">
-            ${formatAge(item.lastModified)}
+            ${formatAge(item.lastModified)} ago
           <span>
         </td>
         <td class="actions">
