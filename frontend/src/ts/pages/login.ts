@@ -170,7 +170,10 @@ validateWithIndicator(emailVerifyInputEl, {
   debounceDelay: 0,
   callback: (result) => {
     registerForm.email =
-      result.status === "success" ? emailInputEl.value : undefined;
+      emailInputEl.getValidationResult().status === "success" &&
+      result.status === "success"
+        ? emailInputEl.value
+        : undefined;
     updateSignupButton();
   },
 });
@@ -202,7 +205,10 @@ validateWithIndicator(passwordVerifyInputEl, {
   debounceDelay: 0,
   callback: (result) => {
     registerForm.password =
-      result.status === "success" ? passwordInputEl.value : undefined;
+      passwordInputEl.getValidationResult().status === "success" &&
+      result.status === "success"
+        ? passwordInputEl.value
+        : undefined;
     updateSignupButton();
   },
 });
