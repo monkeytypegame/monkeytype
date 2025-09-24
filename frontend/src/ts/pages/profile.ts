@@ -12,7 +12,6 @@ import * as TestActivity from "../elements/test-activity";
 import { TestActivityCalendar } from "../elements/test-activity-calendar";
 import { getFirstDayOfTheWeek } from "../utils/date-and-time";
 import { addFriend } from "./friends";
-import * as AuthEvent from "../observables/auth-event";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
@@ -285,12 +284,6 @@ export const page = new Page<undefined | UserProfile>({
       $(".page.pageProfile .content").addClass("hidden");
     }
   },
-});
-
-AuthEvent.subscribe((event) => {
-  if (event.type === "authStateChanged") {
-    Profile.updateFriendRequestButton();
-  }
 });
 
 Skeleton.save("pageProfile");
