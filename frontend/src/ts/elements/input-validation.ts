@@ -32,9 +32,6 @@ export type Validation<T> = {
 
   /** custom debounce delay for `isValid` call. defaults to 100 */
   debounceDelay?: number;
-
-  /** Resets the value to the current config if empty */
-  resetIfEmpty?: false;
 };
 
 // oxlint-disable-next-line no-explicit-any
@@ -144,7 +141,7 @@ export type ValidationOptions<T> = (T extends string
 };
 
 export type ValidatedHtmlInputElement = HTMLInputElement & {
-  isValid: () => boolean | undefined;
+  getValidationResult: () => ValidationResult;
   setValue: (val: string | null) => void;
   triggerValidation: () => void;
 };
@@ -178,9 +175,11 @@ export function validateWithIndicator<T>(
     },
   });
 
-  let isValid: boolean | undefined = undefined;
+  let currentStatus: ValidationResult = {
+    status: "checking",
+  };
   const callback = (result: ValidationResult): void => {
-    isValid = result.status === "success" || result.status === "warning";
+    currentStatus = result;
     if (result.status === "failed" || result.status === "warning") {
       indicator.show(result.status, result.errorMessage);
     } else {
@@ -198,11 +197,12 @@ export function validateWithIndicator<T>(
   inputElement.addEventListener("input", handler);
 
   const result = inputElement as ValidatedHtmlInputElement;
-  result.isValid = () => isValid;
+  result.getValidationResult = () => {
+    return currentStatus;
+  };
   result.setValue = (val: string | null) => {
     inputElement.value = val ?? "";
     if (val === null) {
-      isValid = undefined;
       indicator.hide();
     } else {
       inputElement.dispatchEvent(new Event("input"));
@@ -227,6 +227,8 @@ export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
     schema: boolean;
     /** optional callback is called for each change of the validation result */
     validationCallback?: (result: ValidationResult) => void;
+    /** Resets the value to the current config if empty */
+    resetIfEmpty?: false;
   };
 };
 

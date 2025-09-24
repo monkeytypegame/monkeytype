@@ -262,7 +262,7 @@ async function apply(): Promise<void> {
     return;
   }
 
-  if (presetNameEl?.isValid() === false) {
+  if (presetNameEl?.getValidationResult().status === "failed") {
     Notifications.add("Preset name is not valid", 0);
     return;
   }
