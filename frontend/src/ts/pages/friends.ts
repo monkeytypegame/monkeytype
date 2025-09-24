@@ -370,8 +370,8 @@ function formatPb(entry?: PersonalBest):
   result.details = [
     `${getLanguageDisplayString(entry.language)}`,
     `${result.wpm} wpm`,
-    `${result.raw} raw`,
     `${result.acc} acc`,
+    `${result.raw} raw`,
     `${result.con} con`,
     `${dateFormat(entry.timestamp, "dd MMM yyyy")}`,
   ].join("\n");

@@ -76,14 +76,14 @@ function reset(): void {
         </div>
         <div class="buttonGroup">
           <button
-            class="userReportButton"
+            class="userReportButton hidden"
             data-balloon-pos="left"
             aria-label="Report user"
           >
             <i class="fas fa-flag"></i>
           </button>
           <button
-            class="addFriendButton disabled"
+            class="addFriendButton hidden"
             data-balloon-pos="left"
             aria-label="Send friend request"
           >
@@ -245,7 +245,7 @@ $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
 
   void UserReportModal.show({ uid, name, lbOptOut });
 });
-//TODO disabled
+
 $(".page.pageProfile").on("click", ".profile .addFriendButton", async () => {
   const friendName = $(".page.pageProfile .profile").attr("name") ?? "";
 

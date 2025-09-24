@@ -73,7 +73,9 @@ export async function update(
   details.find(".name").text(profile.name);
   details
     .find(".userFlags")
-    .html(getHtmlByUserFlags({ ...profile, isFriend: isFriend(profile.uid) }));
+    .html(
+      getHtmlByUserFlags({ ...profile, isFriend: DB.isFriend(profile.uid) })
+    );
 
   if (profile.lbOptOut === true) {
     if (where === "profile") {
@@ -433,14 +435,6 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   nameField.style.fontSize = `${finalFontSize}px`;
 }
 
-function isFriend(uid: string | undefined): boolean {
-  if (uid === undefined || uid === getAuthenticatedUser()?.uid) return false;
-
-  return Object.entries(DB.getSnapshot()?.connections ?? []).some(
-    ([receiverUid, status]) => receiverUid === uid && status === "accepted"
-  );
-}
-
 export function updateFriendRequestButton(): void {
   const myUid = getAuthenticatedUser()?.uid;
   const profileUid = document
@@ -452,7 +446,9 @@ export function updateFriendRequestButton(): void {
   const hasRequest = DB.getSnapshot()?.connections[profileUid] !== undefined;
   const featureEnabled = getServerConfiguration()?.connections.enabled;
 
-  if (!featureEnabled || myUid === undefined || myProfile || hasRequest) {
+  if (!featureEnabled || myUid === undefined || myProfile) {
+    button?.classList.add("hidden");
+  } else if (hasRequest) {
     button?.classList.add("disabled");
   } else {
     button?.classList.remove("disabled");
