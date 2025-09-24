@@ -144,7 +144,7 @@ export type ValidationOptions<T> = (T extends string
 };
 
 export type ValidatedHtmlInputElement = HTMLInputElement & {
-  isValid: () => boolean | undefined;
+  getValidationResult: () => ValidationResult;
   setValue: (val: string | null) => void;
   triggerValidation: () => void;
 };
@@ -178,9 +178,11 @@ export function validateWithIndicator<T>(
     },
   });
 
-  let isValid: boolean | undefined = undefined;
+  let currentStatus: ValidationResult = {
+    status: "checking",
+  };
   const callback = (result: ValidationResult): void => {
-    isValid = result.status === "success" || result.status === "warning";
+    currentStatus = result;
     if (result.status === "failed" || result.status === "warning") {
       indicator.show(result.status, result.errorMessage);
     } else {
@@ -198,11 +200,12 @@ export function validateWithIndicator<T>(
   inputElement.addEventListener("input", handler);
 
   const result = inputElement as ValidatedHtmlInputElement;
-  result.isValid = () => isValid;
+  result.getValidationResult = () => {
+    return currentStatus;
+  };
   result.setValue = (val: string | null) => {
     inputElement.value = val ?? "";
     if (val === null) {
-      isValid = undefined;
       indicator.hide();
     } else {
       inputElement.dispatchEvent(new Event("input"));

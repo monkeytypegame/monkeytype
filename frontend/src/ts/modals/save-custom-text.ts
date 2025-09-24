@@ -89,7 +89,7 @@ function save(): boolean {
 async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.addEventListener("submit", (e) => {
     e.preventDefault();
-    if (validatedInput.isValid() === true && save()) {
+    if (validatedInput.getValidationResult().status === "success" && save()) {
       void modal.hide();
     }
   });
