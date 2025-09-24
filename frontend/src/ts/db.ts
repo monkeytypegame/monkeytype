@@ -1136,6 +1136,17 @@ function convertConnections(
   );
 }
 
+export function isFriend(uid: string | undefined): boolean {
+  if (uid === undefined || uid === getAuthenticatedUser()?.uid) return false;
+
+  const snapshot = getSnapshot();
+  if (!snapshot) return false;
+
+  return Object.entries(snapshot.connections).some(
+    ([receiverUid, status]) => receiverUid === uid && status === "accepted"
+  );
+}
+
 // export async function DB.getLocalTagPB(tagId) {
 //   function cont() {
 //     let ret = 0;

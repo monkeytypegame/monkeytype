@@ -434,7 +434,10 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
     entry.uid
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
-            ${getHtmlByUserFlags({ ...entry, isFriend: isFriend(entry.uid) })}
+            ${getHtmlByUserFlags({
+              ...entry,
+              isFriend: DB.isFriend(entry.uid),
+            })}
             ${
               isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
             }
@@ -489,7 +492,10 @@ function buildWeeklyTableRow(
     entry.uid
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
-            ${getHtmlByUserFlags({ ...entry, isFriend: isFriend(entry.uid) })}
+            ${getHtmlByUserFlags({
+              ...entry,
+              isFriend: DB.isFriend(entry.uid),
+            })}
             ${
               isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
             }
@@ -1434,14 +1440,6 @@ export const page = new PageWithUrlParams({
     // updateSideButtons();
   },
 });
-
-function isFriend(uid: string): boolean {
-  if (uid === getAuthenticatedUser()?.uid) return false;
-
-  return Object.entries(DB.getSnapshot()?.connections ?? []).some(
-    ([receiverUid, status]) => receiverUid === uid && status === "accepted"
-  );
-}
 
 $(async () => {
   Skeleton.save("pageLeaderboards");
