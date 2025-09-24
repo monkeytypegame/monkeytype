@@ -32,9 +32,6 @@ export type Validation<T> = {
 
   /** custom debounce delay for `isValid` call. defaults to 100 */
   debounceDelay?: number;
-
-  /** Resets the value to the current config if empty */
-  resetIfEmpty?: false;
 };
 
 // oxlint-disable-next-line no-explicit-any
@@ -230,6 +227,8 @@ export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
     schema: boolean;
     /** optional callback is called for each change of the validation result */
     validationCallback?: (result: ValidationResult) => void;
+    /** Resets the value to the current config if empty */
+    resetIfEmpty?: false;
   };
 };
 
