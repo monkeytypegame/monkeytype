@@ -268,31 +268,6 @@ export async function getPartialUser<K extends keyof DBUser>(
   return results;
 }
 
-/**
- * Get users document only containing requested fields
- * @param uids  user ids
- * @param stack stack description used in the error
- * @param fields list of fields
- * @returns map of userids with partial DBUser only containing requested fields
- */
-/*export async function getPartialUsers<K extends keyof DBUser>(
-  uids: string[],
-  stack: string,
-  fields: K[]
-): Promise<Record<string, Pick<DBUser, K>>> {
-  const projection = new Map(fields.map((it) => [it, 1]));
-  const results = await getUsersCollection().find(
-    { uid: { $in: uids } },
-    { projection }
-  );
-  if (results === null) return {};
-
-  return Object.fromEntries(
-    (await results.toArray()).map((it) => [it.uid, it])
-  );
-}
-  */
-
 export async function findByName(name: string): Promise<DBUser | undefined> {
   const found = await getUsersCollection().findOne(
     { name },

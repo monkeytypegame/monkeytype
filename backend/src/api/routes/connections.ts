@@ -7,18 +7,19 @@ import * as ConnectionsController from "../controllers/connections";
 const s = initServer();
 export default s.router(connectionsContract, {
   get: {
-    handler: async (r) => callController(ConnectionsController.getRequests)(r),
+    handler: async (r) =>
+      callController(ConnectionsController.getConnections)(r),
   },
   create: {
     handler: async (r) =>
-      callController(ConnectionsController.createRequest)(r),
+      callController(ConnectionsController.createConnection)(r),
   },
   delete: {
     handler: async (r) =>
-      callController(ConnectionsController.deleteRequest)(r),
+      callController(ConnectionsController.deleteConnection)(r),
   },
   update: {
     handler: async (r) =>
-      callController(ConnectionsController.updateRequest)(r),
+      callController(ConnectionsController.updateConnection)(r),
   },
 });
