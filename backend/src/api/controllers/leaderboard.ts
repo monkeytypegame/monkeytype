@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
@@ -26,6 +25,7 @@ import {
   MILLISECONDS_IN_DAY,
 } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
+import { omit } from "es-toolkit";
 
 export async function getLeaderboard(
   req: MonkeyRequest<GetLeaderboardQuery>
@@ -57,7 +57,7 @@ export async function getLeaderboard(
   }
 
   const count = await LeaderboardsDAL.getCount(mode, mode2, language);
-  const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
+  const normalizedLeaderboard = leaderboard.map((it) => omit(it, ["_id"]));
 
   return new MonkeyResponse("Leaderboard retrieved", {
     count,

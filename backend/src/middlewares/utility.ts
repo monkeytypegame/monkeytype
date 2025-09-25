@@ -1,4 +1,3 @@
-import _ from "lodash";
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { recordClientVersion as prometheusRecordClientVersion } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";

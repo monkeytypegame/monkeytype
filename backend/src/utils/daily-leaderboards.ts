@@ -1,4 +1,4 @@
-import _, { omit } from "lodash";
+import { omit } from "es-toolkit";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { matchesAPattern, kogascore } from "./misc";
@@ -167,7 +167,7 @@ export class DailyLeaderboard {
     );
 
     if (!premiumFeaturesEnabled) {
-      return resultsWithRanks.map((it) => omit(it, "isPremium"));
+      return resultsWithRanks.map((it) => omit(it, ["isPremium"]));
     }
 
     return resultsWithRanks;

@@ -1,4 +1,3 @@
-import _ from "lodash";
 import MonkeyError from "../utils/error";
 import type { Response, NextFunction, Request } from "express";
 import { RateLimiterMemory } from "rate-limiter-flexible";

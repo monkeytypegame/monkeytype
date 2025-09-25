@@ -1,5 +1,4 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
-import _ from "lodash";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../../src/dal/user";
 import * as LeaderboardsDal from "../../../src/dal/leaderboards";
@@ -11,6 +10,7 @@ import * as DB from "../../../src/init/db";
 import { LbPersonalBests } from "../../../src/utils/pb";
 
 import { pb } from "../../__testData__/users";
+import { omit } from "es-toolkit";
 
 describe("LeaderboardsDal", () => {
   afterEach(async () => {
@@ -59,7 +59,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = result.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: rank1 }),
@@ -86,7 +86,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = result.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 1, user: rank1 }),
@@ -200,7 +200,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = result.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noBadge }),
@@ -239,7 +239,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = result.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noPremium }),

@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { keyBy, mapValues, omit } from "es-toolkit";
 import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
 import * as ApeKeysDAL from "../../dal/ape-keys";
@@ -18,7 +18,7 @@ import { ApeKey } from "@monkeytype/schemas/ape-keys";
 import { MonkeyRequest } from "../types";
 
 function cleanApeKey(apeKey: ApeKeysDAL.DBApeKey): ApeKey {
-  return _.omit(apeKey, "hash", "_id", "uid", "useCount");
+  return omit(apeKey, ["hash", "_id", "uid", "useCount"]) as ApeKey;
 }
 
 export async function getApeKeys(
@@ -27,7 +27,10 @@ export async function getApeKeys(
   const { uid } = req.ctx.decodedToken;
 
   const apeKeys = await ApeKeysDAL.getApeKeys(uid);
-  const cleanedKeys = _(apeKeys).keyBy("_id").mapValues(cleanApeKey).value();
+  const cleanedKeys = mapValues(
+    keyBy(apeKeys, (it) => it._id.toHexString()),
+    cleanApeKey
+  );
 
   return new MonkeyResponse("ApeKeys retrieved", cleanedKeys);
 }

@@ -1,4 +1,3 @@
-import _ from "lodash";
 import * as db from "./db";
 import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
@@ -15,6 +14,8 @@ import { join } from "path";
 import { existsSync, readFileSync } from "fs";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { z } from "zod";
+import { intersection, isPlainObject, omit } from "es-toolkit";
+import { keys } from "es-toolkit/compat";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 const SERVER_CONFIG_FILE_PATH = join(
@@ -26,22 +27,19 @@ function mergeConfigurations(
   baseConfiguration: Configuration,
   liveConfiguration: PartialConfiguration
 ): void {
-  if (
-    !_.isPlainObject(baseConfiguration) ||
-    !_.isPlainObject(liveConfiguration)
-  ) {
+  if (!isPlainObject(baseConfiguration) || !isPlainObject(liveConfiguration)) {
     return;
   }
 
   function merge(base: object, source: object): void {
-    const commonKeys = _.intersection(_.keys(base), _.keys(source));
+    const commonKeys = intersection(keys(base), keys(source));
 
     commonKeys.forEach((key) => {
       const baseValue = base[key] as object;
       const sourceValue = source[key] as object;
 
-      const isBaseValueObject = _.isPlainObject(baseValue);
-      const isSourceValueObject = _.isPlainObject(sourceValue);
+      const isBaseValueObject = isPlainObject(baseValue);
+      const isSourceValueObject = isPlainObject(sourceValue);
 
       if (isBaseValueObject && isSourceValueObject) {
         merge(baseValue, sourceValue);
@@ -81,12 +79,11 @@ export async function getLiveConfiguration(): Promise<Configuration> {
     const liveConfiguration = await configurationCollection.findOne();
 
     if (liveConfiguration) {
-      const baseConfiguration = _.cloneDeep(BASE_CONFIGURATION);
+      const baseConfiguration = structuredClone(BASE_CONFIGURATION);
 
-      const liveConfigurationWithoutId = _.omit(
-        liveConfiguration,
-        "_id"
-      ) as Configuration;
+      const liveConfigurationWithoutId = omit(liveConfiguration, [
+        "_id",
+      ]) as Configuration;
       mergeConfigurations(baseConfiguration, liveConfigurationWithoutId);
 
       await pushConfiguration(baseConfiguration);
@@ -129,7 +126,7 @@ export async function patchConfiguration(
   configurationUpdates: PartialConfiguration
 ): Promise<boolean> {
   try {
-    const currentConfiguration = _.cloneDeep(configuration);
+    const currentConfiguration = structuredClone(configuration);
     mergeConfigurations(currentConfiguration, configurationUpdates);
 
     await db
@@ -166,3 +163,7 @@ export async function updateFromConfigurationFile(): Promise<void> {
     await patchConfiguration(data.configuration);
   }
 }
+
+export const __testing = {
+  mergeConfigurations,
+};

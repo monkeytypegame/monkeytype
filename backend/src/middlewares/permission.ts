@@ -1,4 +1,3 @@
-import _ from "lodash";
 import MonkeyError from "../utils/error";
 import type { Response, NextFunction } from "express";
 import { DBUser, getPartialUser } from "../dal/user";
