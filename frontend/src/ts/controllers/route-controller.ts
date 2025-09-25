@@ -144,6 +144,21 @@ const routes: Route[] = [
       });
     },
   },
+  {
+    path: "/friends",
+    load: async (_params, options) => {
+      if (!isAuthAvailable()) {
+        await navigate("/", options);
+        return;
+      }
+      if (!isAuthenticated()) {
+        await navigate("/login", options);
+        return;
+      }
+
+      await PageController.change("friends", options);
+    },
+  },
 ];
 
 export async function navigate(

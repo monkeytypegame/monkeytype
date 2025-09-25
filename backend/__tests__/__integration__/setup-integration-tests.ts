@@ -24,6 +24,9 @@ beforeAll(async () => {
   }));
 
   setupCommonMocks();
+
+  //we compare the time in mongodb to calculate premium status, so we have to use real time here
+  vi.useRealTimers();
 });
 
 afterEach(async () => {
