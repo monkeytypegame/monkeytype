@@ -761,4 +761,11 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
   });
 }
 
+export function getTotalInlineMargin(element: HTMLElement): number {
+  const computedStyle = window.getComputedStyle(element);
+  return (
+    parseInt(computedStyle.marginRight) + parseInt(computedStyle.marginLeft)
+  );
+}
+
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
