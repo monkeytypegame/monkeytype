@@ -2,7 +2,7 @@ import * as db from "../init/db";
 import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
-import { isDevEnvironment } from "../utils/misc";
+import { isDevEnvironment, omit } from "../utils/misc";
 import {
   getCachedConfiguration,
   getLiveConfiguration,
@@ -11,7 +11,6 @@ import {
 import { addLog } from "./logs";
 import { Collection, ObjectId } from "mongodb";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
-import { omit } from "lodash";
 import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";
 
@@ -44,7 +43,7 @@ export async function get(
   const limit = pageSize;
 
   try {
-    const preset = await getCollection({ language, mode, mode2 })
+    const result = await getCollection({ language, mode, mode2 })
       .find()
       .sort({ rank: 1 })
       .skip(skip)
@@ -52,10 +51,10 @@ export async function get(
       .toArray();
 
     if (!premiumFeaturesEnabled) {
-      return preset.map((it) => omit(it, "isPremium"));
+      return result.map((it) => omit(it, "isPremium"));
     }
 
-    return preset;
+    return result;
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {

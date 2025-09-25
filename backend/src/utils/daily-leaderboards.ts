@@ -1,7 +1,6 @@
-import _, { omit } from "lodash";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
-import { matchesAPattern, kogascore } from "./misc";
+import { matchesAPattern, kogascore, omit } from "./misc";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import {
   Configuration,
