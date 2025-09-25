@@ -195,8 +195,8 @@ function getKey(initiatorUid: string, receiverUid: string): string {
 
 export async function createIndicies(): Promise<void> {
   //index used for search
-  await getCollection().createIndex({ initiatorUid: 1 });
-  await getCollection().createIndex({ receiverUid: 1 });
+  await getCollection().createIndex({ initiatorUid: 1, status: 1 });
+  await getCollection().createIndex({ receiverUid: 1, status: 1 });
 
   //make sure there is only one connection for each initiatorr/receiver
   await getCollection().createIndex({ key: 1 }, { unique: true });
