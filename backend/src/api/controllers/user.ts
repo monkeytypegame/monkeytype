@@ -1,4 +1,3 @@
-import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError, {
   getErrorMessage,
@@ -89,6 +88,8 @@ import {
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { mapValues, omit, pick } from "es-toolkit";
+import { filter } from "es-toolkit/compat";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   const { data: verified, error } = await tryCatch(verify(captcha));
@@ -511,7 +512,7 @@ type RelevantUserInfo = Omit<
 >;
 
 function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
-  return _.omit(user, [
+  return omit(user, [
     "bananas",
     "lbPersonalBests",
     "inbox",
@@ -578,7 +579,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
 
   let inboxUnreadSize = 0;
   if (req.ctx.configuration.users.inbox.enabled) {
-    inboxUnreadSize = _.filter(userInfo.inbox, { read: false }).length;
+    inboxUnreadSize = filter(userInfo.inbox, { read: false }).length;
   }
 
   if (!userInfo.name) {
@@ -929,8 +930,8 @@ export async function getProfile(
     lbOptOut,
   } = user;
 
-  const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
-  const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
+  const validTimePbs = pick(personalBests?.time, ["15", "30", "60", "120"]);
+  const validWordsPbs = pick(personalBests?.words, ["10", "25", "50", "100"]);
 
   const typingStats = {
     completedTests,
@@ -1012,8 +1013,8 @@ export async function updateProfile(
   const profileDetailsUpdates: Partial<UserProfileDetails> = {
     bio: sanitizeString(bio),
     keyboard: sanitizeString(keyboard),
-    socialProfiles: _.mapValues(
-      socialProfiles,
+    socialProfiles: mapValues(
+      socialProfiles ?? {},
       sanitizeString
     ) as UserProfileDetails["socialProfiles"],
     showActivityOnPublicProfile,

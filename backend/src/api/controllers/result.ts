@@ -26,7 +26,7 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import _, { omit } from "lodash";
+import { omit, sumBy, uniq } from "es-toolkit";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
@@ -224,7 +224,7 @@ export async function addResult(
 
   const resulthash = completedEvent.hash;
   if (req.ctx.configuration.results.objectHashCheckEnabled) {
-    const objectToHash = omit(completedEvent, "hash");
+    const objectToHash = omit(completedEvent, ["hash"]);
     const serverhash = objectHash(objectToHash);
     if (serverhash !== resulthash) {
       void addLog(
@@ -243,7 +243,7 @@ export async function addResult(
     Logger.warning("Object hash check is disabled, skipping hash check");
   }
 
-  if (completedEvent.funbox.length !== _.uniq(completedEvent.funbox).length) {
+  if (completedEvent.funbox.length !== uniq(completedEvent.funbox).length) {
     throw new MonkeyError(400, "Duplicate funboxes");
   }
 
@@ -758,7 +758,7 @@ async function calculateXp(
   }
 
   if (funboxBonusConfiguration > 0 && resultFunboxes.length !== 0) {
-    const funboxModifier = _.sumBy(resultFunboxes, (funboxName) => {
+    const funboxModifier = sumBy(resultFunboxes, (funboxName) => {
       const funbox = getFunbox(funboxName);
       const difficultyLevel = funbox?.difficultyLevel ?? 0;
       return Math.max(difficultyLevel * funboxBonusConfiguration, 0);

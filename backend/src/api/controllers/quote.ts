@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import { getPartialUser, updateQuoteRatings } from "../../dal/user";
 import * as ReportDAL from "../../dal/report";
@@ -24,6 +23,7 @@ import {
 import { replaceObjectId, replaceObjectIds } from "../../utils/misc";
 import { MonkeyRequest } from "../types";
 import { Language } from "@monkeytype/schemas/languages";
+import { setWith } from "es-toolkit/compat";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -126,7 +126,7 @@ export async function submitRating(
     shouldUpdateRating
   );
 
-  _.setWith(userQuoteRatings, `[${language}][${quoteId}]`, rating, Object);
+  setWith(userQuoteRatings, `[${language}][${quoteId}]`, rating, Object);
 
   await updateQuoteRatings(uid, userQuoteRatings);
 

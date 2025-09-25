@@ -1,4 +1,3 @@
-import _ from "lodash";
 import {
   Collection,
   type DeleteResult,
@@ -10,6 +9,8 @@ import * as db from "../init/db";
 import { getUser, getTags } from "./user";
 import { DBResult, replaceLegacyValues } from "../utils/result";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { isNil } from "es-toolkit";
+import { isNaN } from "es-toolkit/compat";
 
 export const getResultCollection = (): Collection<DBResult> =>
   db.collection<DBResult>("results");
@@ -115,8 +116,8 @@ export async function getResults(
     .find(
       {
         uid,
-        ...(!_.isNil(onOrAfterTimestamp) &&
-          !_.isNaN(onOrAfterTimestamp) && {
+        ...(!isNil(onOrAfterTimestamp) &&
+          !isNaN(onOrAfterTimestamp) && {
             timestamp: { $gte: onOrAfterTimestamp },
           }),
       },

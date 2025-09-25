@@ -1,6 +1,6 @@
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import _, { omit } from "lodash";
+import { isPlainObject, omit } from "es-toolkit";
 import uaparser from "ua-parser-js";
 import { MonkeyRequest } from "../api/types";
 import { ObjectId } from "mongodb";
@@ -97,7 +97,7 @@ export function flattenObjectDeep(
 
     const newPrefix = prefix.length > 0 ? `${prefix}.${key}` : key;
 
-    if (_.isPlainObject(value)) {
+    if (isPlainObject(value)) {
       const flattened = flattenObjectDeep(value as Record<string, unknown>);
       const flattenedKeys = Object.keys(flattened);
 
@@ -221,7 +221,7 @@ export function replaceObjectId<T extends { _id: ObjectId }>(
   }
   const result = {
     _id: data._id.toString(),
-    ...omit(data, "_id"),
+    ...omit(data, ["_id"]),
   } as T & { _id: string };
   return result;
 }
