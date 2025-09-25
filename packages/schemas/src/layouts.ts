@@ -182,6 +182,7 @@ export const LayoutNameSchema = z.enum(
     "estonian",
     "stronk",
     "dhorf",
+    "gust",
     "recurva",
     "seht-drai",
     "ints",
