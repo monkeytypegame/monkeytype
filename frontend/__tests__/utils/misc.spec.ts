@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getErrorMessage, isObject } from "../../src/ts/utils/misc";
+import { getErrorMessage, isObject, escapeHTML } from "../../src/ts/utils/misc";
 import {
   getLanguageDisplayString,
   removeLanguageSize,
@@ -118,6 +118,46 @@ describe("misc.ts", () => {
 
       tests.forEach((test) => {
         const result = isObject(test.input);
+        expect(result).toBe(test.expected);
+      });
+    });
+  });
+
+  describe("escapeHTML", () => {
+    it("should escape HTML characters correctly", () => {
+      const tests = [
+        {
+          input: "hello world",
+          expected: "hello world",
+        },
+        {
+          input: "<script>alert('xss')</script>",
+          expected: "&lt;script&gt;alert(&#39;xss&#39;)&lt;&#x2F;script&gt;",
+        },
+        {
+          input: 'Hello "world" & friends',
+          expected: "Hello &quot;world&quot; &amp; friends",
+        },
+        {
+          input: "Click `here` to continue",
+          expected: "Click &#x60;here&#x60; to continue",
+        },
+        {
+          input: null,
+          expected: null,
+        },
+        {
+          input: undefined,
+          expected: undefined,
+        },
+        {
+          input: "",
+          expected: "",
+        },
+      ];
+
+      tests.forEach((test) => {
+        const result = escapeHTML(test.input);
         expect(result).toBe(test.expected);
       });
     });
