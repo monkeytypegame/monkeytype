@@ -409,6 +409,7 @@ export const LanguageSchema = z.enum(
     "code_v",
     "code_ook",
     "code_typescript",
+    "code_ocaml",
     "code_odin",
     "xhosa",
     "xhosa_3k",
