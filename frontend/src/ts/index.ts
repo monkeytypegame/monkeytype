@@ -51,6 +51,7 @@ import * as Cookies from "./cookies";
 import "./elements/psa";
 import "./utils/url-handler";
 import "./modals/last-signed-out-result";
+import { addToGlobal } from "./utils/global";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -70,13 +71,6 @@ Object.defineProperty(window, "Math", {
   configurable: false,
   enumerable: true,
 });
-
-function addToGlobal(items: Record<string, unknown>): void {
-  for (const [name, item] of Object.entries(items)) {
-    //@ts-expect-error dev
-    window[name] = item;
-  }
-}
 
 void loadFromLocalStorage();
 void VersionButton.update();
