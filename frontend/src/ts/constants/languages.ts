@@ -352,6 +352,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_typescript",
     "code_cobol",
     "code_common_lisp",
+    "code_ocaml",
     "code_odin",
     "code_fortran",
     "code_abap",
