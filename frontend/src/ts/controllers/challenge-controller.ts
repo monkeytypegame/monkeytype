@@ -20,6 +20,7 @@ import { CompletedEvent } from "@monkeytype/schemas/results";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Challenge } from "@monkeytype/schemas/challenges";
+import { stringifyConfigValue } from "../utils/strings";
 
 let challengeLoading = false;
 
@@ -133,7 +134,11 @@ function verifyRequirement(
       const configValue = requirementValue[configKey];
       if (Config[configKey as keyof ConfigType] !== configValue) {
         requirementsMet = false;
-        failReasons.push(`${configKey} not set to ${configValue}`);
+        failReasons.push(
+          `${stringifyConfigValue(configKey)} not set to ${stringifyConfigValue(
+            configValue
+          )}`
+        );
       }
     }
   }
