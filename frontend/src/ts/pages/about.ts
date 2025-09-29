@@ -151,7 +151,7 @@ async function fill(): Promise<void> {
   const supportersEl = document.querySelector(".pageAbout .supporters");
   let supportersHTML = "";
   for (const supporter of supporters ?? []) {
-    supportersHTML += `<div>${supporter}</div>`;
+    supportersHTML += `<div>${Misc.escapeHTML(supporter)}</div>`;
   }
   if (supportersEl) {
     supportersEl.innerHTML = supportersHTML;
@@ -160,7 +160,7 @@ async function fill(): Promise<void> {
   const contributorsEl = document.querySelector(".pageAbout .contributors");
   let contributorsHTML = "";
   for (const contributor of contributors ?? []) {
-    contributorsHTML += `<div>${contributor}</div>`;
+    contributorsHTML += `<div>${Misc.escapeHTML(contributor)}</div>`;
   }
   if (contributorsEl) {
     contributorsEl.innerHTML = contributorsHTML;
