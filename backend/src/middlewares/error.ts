@@ -46,9 +46,11 @@ async function errorHandlingMiddleware(
       uid: monkeyError.uid ?? req.ctx?.decodedToken?.uid,
     };
     let message = "Unknown error";
+    let isDbError = false;
 
     if (/ECONNREFUSED.*27017/i.test(error.message)) {
       message = "Could not connect to the database. It may be down.";
+      isDbError = true;
     } else if (error instanceof URIError || error instanceof SyntaxError) {
       status = 400;
       message = "Unprocessable request";
@@ -73,27 +75,30 @@ async function errorHandlingMiddleware(
         errorId: string;
       };
 
-      try {
-        await addLog(
-          "system_error",
-          `${status} ${errorId} ${error.message} ${error.stack}`,
-          uid
-        );
-        await db.collection<DBError>("errors").insertOne({
-          _id: errorId,
-          timestamp: Date.now(),
-          status: status,
-          uid,
-          message: error.message,
-          stack: error.stack,
-          endpoint: req.originalUrl,
-          method: req.method,
-          url: req.url,
-        });
-      } catch (e) {
-        Logger.error("Logging to db failed.");
-        Logger.error(getErrorMessage(e) ?? "Unknown error");
-        console.error(e);
+      if (!isDbError) {
+        try {
+          await addLog(
+            "system_error",
+            `${status} ${errorId} ${error.message} ${error.stack}`,
+            uid
+          );
+
+          await db.collection<DBError>("errors").insertOne({
+            _id: errorId,
+            timestamp: Date.now(),
+            status: status,
+            uid,
+            message: error.message,
+            stack: error.stack,
+            endpoint: req.originalUrl,
+            method: req.method,
+            url: req.url,
+          });
+        } catch (e) {
+          Logger.error("Logging to db failed.");
+          Logger.error(getErrorMessage(e) ?? "Unknown error");
+          console.error(e);
+        }
       }
     } else {
       Logger.error(`Error: ${error.message} Stack: ${error.stack}`);
