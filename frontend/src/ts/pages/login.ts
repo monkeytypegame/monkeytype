@@ -10,6 +10,7 @@ import {
 import { validateWithIndicator } from "../elements/input-validation";
 import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
+import { apeValidation } from "../utils/remote-validation";
 
 let registerForm: {
   name?: string;
@@ -73,15 +74,10 @@ const nameInputEl = document.querySelector(
 ) as HTMLInputElement;
 validateWithIndicator(nameInputEl, {
   schema: UserNameSchema,
-  isValid: async (name: string) => {
-    const checkNameResponse = (
-      await Ape.users.getNameAvailability({
-        params: { name: name },
-      })
-    ).status;
-
-    return checkNameResponse === 200 ? true : "Name not available";
-  },
+  isValid: apeValidation(
+    async (name) => Ape.users.getNameAvailability({ params: { name } }),
+    { errorMessage: "Name not available" }
+  ),
   debounceDelay: 1000,
   callback: (result) => {
     registerForm.name =

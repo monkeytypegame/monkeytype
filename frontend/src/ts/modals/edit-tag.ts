@@ -6,7 +6,7 @@ import { SimpleModal, TextInput } from "../utils/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
 
 const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
-const tagNameValidation = async (tagName: string): Promise<true | string> => {
+const tagNameValidation = async (tagName: string): Promise<IsValidResponse> => {
   const validationResult = TagNameSchema.safeParse(cleanTagName(tagName));
   if (validationResult.success) return true;
   return validationResult.error.errors.map((err) => err.message).join(", ");
