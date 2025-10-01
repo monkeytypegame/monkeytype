@@ -1,5 +1,6 @@
 import Ape from "../ape";
 import * as DB from "../db";
+import { IsValidResponse } from "../elements/input-validation";
 import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal, TextInput } from "../utils/simple-modal";
