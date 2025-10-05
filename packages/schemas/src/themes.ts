@@ -19,6 +19,7 @@ export const ThemeNameSchema = z.enum(
     "blue_dolphin",
     "blueberry_dark",
     "blueberry_light",
+    "blurple",
     "botanical",
     "bouquet",
     "breeze",
