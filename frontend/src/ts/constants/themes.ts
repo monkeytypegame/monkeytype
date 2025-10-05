@@ -16,6 +16,12 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#939eae",
     textColor: "#e9ecf0",
   },
+  "monkeyblue": {
+    bgColor: "#1a1919",
+    mainColor: "#fff",
+    subColor: "#6c62d2",
+    textColor: "#9fd5ec",
+  },
   "9009": {
     bgColor: "#eeebe2",
     mainColor: "#080909",
