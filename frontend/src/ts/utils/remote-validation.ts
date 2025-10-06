@@ -1,22 +1,26 @@
 import { IsValidResponse } from "../elements/input-validation";
 
-export function apeValidation<T>(
+type IsValidResonseOrFunction =
+  | ((message: string) => IsValidResponse)
+  | IsValidResponse;
+export function remoteValidation<V, T>(
   call: (
-    val: string
+    val: V
   ) => Promise<{ status: number; body: { data?: T; message: string } }>,
   options?: {
     check?: (data: T) => IsValidResponse;
-    errorMessage?: string;
+    on4xx?: IsValidResonseOrFunction;
+    on5xx?: IsValidResonseOrFunction;
   }
-): (val: string) => Promise<IsValidResponse> {
+): (val: V) => Promise<IsValidResponse> {
   return async (val) => {
     const result = await call(val);
-    if (result.status === 200) {
+    if (result.status <= 299) {
       return options?.check?.(result.body.data as T) ?? true;
-    } else if (result.status >= 500) {
-      return result.body.message;
-    } else {
-      return options?.errorMessage ?? result.body.message;
     }
+    const handler = result.status <= 499 ? options?.on4xx : options?.on5xx;
+    if (handler === undefined) return result.body.message;
+    if (typeof handler === "function") return handler(result.body.message);
+    return handler;
   };
 }

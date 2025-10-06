@@ -45,7 +45,7 @@ import {
 import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 import { z } from "zod";
-import { apeValidation } from "../utils/remote-validation";
+import { remoteValidation } from "../utils/remote-validation";
 
 type PopupKey =
   | "updateEmail"
@@ -480,9 +480,9 @@ list.updateName = new SimpleModal({
       initVal: "",
       validation: {
         schema: UserNameSchema,
-        isValid: apeValidation(
+        isValid: remoteValidation(
           async (name) => Ape.users.getNameAvailability({ params: { name } }),
-          { errorMessage: "Name not available" }
+          { on5xx: "Backend unavailable, try later." }
         ),
         debounceDelay: 1000,
       },

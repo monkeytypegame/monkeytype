@@ -16,7 +16,7 @@ import AnimatedModal from "../utils/animated-modal";
 import { resetIgnoreAuthCallback } from "../firebase";
 import { validateWithIndicator } from "../elements/input-validation";
 import { UserNameSchema } from "@monkeytype/schemas/users";
-import { apeValidation } from "../utils/remote-validation";
+import { remoteValidation } from "../utils/remote-validation";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -155,9 +155,9 @@ function disableInput(): void {
 
 validateWithIndicator(nameInputEl, {
   schema: UserNameSchema,
-  isValid: apeValidation(
+  isValid: remoteValidation(
     async (name) => Ape.users.getNameAvailability({ params: { name } }),
-    { errorMessage: "Name not available" }
+    { on5xx: "Backend unavailable, try later." }
   ),
   debounceDelay: 1000,
   callback: (result) => {

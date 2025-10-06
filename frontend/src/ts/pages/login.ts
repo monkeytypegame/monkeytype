@@ -10,7 +10,7 @@ import {
 import { validateWithIndicator } from "../elements/input-validation";
 import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
-import { apeValidation } from "../utils/remote-validation";
+import { remoteValidation } from "../utils/remote-validation";
 
 let registerForm: {
   name?: string;
@@ -74,9 +74,9 @@ const nameInputEl = document.querySelector(
 ) as HTMLInputElement;
 validateWithIndicator(nameInputEl, {
   schema: UserNameSchema,
-  isValid: apeValidation(
+  isValid: remoteValidation(
     async (name) => Ape.users.getNameAvailability({ params: { name } }),
-    { errorMessage: "Name not available" }
+    { on5xx: "Backend unavailable, try later." }
   ),
   debounceDelay: 1000,
   callback: (result) => {
