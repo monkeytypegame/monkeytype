@@ -416,6 +416,7 @@ export const LanguageSchema = z.enum(
     "tibetan_1k",
     "code_cobol",
     "code_common_lisp",
+    "code_erlang",
     "docker_file",
     "code_fortran",
     "viossa",
