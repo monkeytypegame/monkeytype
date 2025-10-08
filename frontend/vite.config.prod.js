@@ -13,6 +13,8 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { getFontsConig } from "./vite.config";
+import { compression, defineAlgorithm } from "vite-plugin-compression2";
+import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -252,6 +254,10 @@ export default {
         );
       },
     },
+    ViteImageOptimizer(),
+    compression({
+      algorithms: [defineAlgorithm("brotliCompress", { level: 9 })],
+    }),
   ],
   build: {
     sourcemap: process.env.SENTRY,
