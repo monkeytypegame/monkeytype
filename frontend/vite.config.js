@@ -7,6 +7,8 @@ import DEV_CONFIG from "./vite.config.dev";
 import MagicString from "magic-string";
 import { Fonts } from "./src/ts/constants/fonts";
 
+global.navigator = undefined; // sass compatibly & imagemin bug https://github.com/vitejs/vite/issues/5815#issuecomment-984041683
+
 /** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
   plugins: [

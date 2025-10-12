@@ -13,7 +13,7 @@ export function showIfNotClosedBefore(): void {
     Notifications.addBanner(
       `New merch store now open, including a limited edition metal keycap! <a target="_blank" rel="noopener" href="https://mktp.co/merch">monkeytype.store</a>`,
       1,
-      "./images/merch3.png",
+      "./images/merch3.avif",
       false,
       () => {
         closed.set(true);
