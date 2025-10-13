@@ -9,7 +9,7 @@ import {
 } from "@monkeytype/schemas/leaderboards";
 import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
 import MonkeyError from "../utils/error";
-import { omit } from "lodash";
+import { omit } from "es-toolkit";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 
@@ -190,7 +190,7 @@ export class WeeklyXpLeaderboard {
     );
 
     if (!premiumFeaturesEnabled) {
-      return resultsWithRanks.map((it) => omit(it, "isPremium"));
+      return resultsWithRanks.map((it) => omit(it, ["isPremium"]));
     }
 
     return resultsWithRanks;

@@ -1,4 +1,3 @@
-import _ from "lodash";
 import IORedis from "ioredis";
 import { Worker, Job, type ConnectionOptions } from "bullmq";
 import Logger from "../utils/logger";
@@ -17,6 +16,7 @@ import { recordTimeToCompleteJob } from "../utils/prometheus";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
 import { MonkeyMail } from "@monkeytype/schemas/users";
 import { isSafeNumber, mapRange } from "@monkeytype/util/numbers";
+import { RewardBracket } from "@monkeytype/schemas/configuration";
 
 async function handleDailyLeaderboardResults(
   ctx: LaterTaskContexts["daily-leaderboard-results"]
@@ -61,18 +61,7 @@ async function handleDailyLeaderboardResults(
 
       const placementString = getOrdinalNumberString(rank);
 
-      const xpReward = _(xpRewardBrackets)
-        .filter((bracket) => rank >= bracket.minRank && rank <= bracket.maxRank)
-        .map((bracket) =>
-          mapRange(
-            rank,
-            bracket.minRank,
-            bracket.maxRank,
-            bracket.maxReward,
-            bracket.minReward
-          )
-        )
-        .max();
+      const xpReward = calculateXpReward(xpRewardBrackets, rank);
 
       if (!isSafeNumber(xpReward)) return;
 
@@ -151,18 +140,7 @@ async function handleWeeklyXpLeaderboardResults(
     const xp = Math.round(totalXp);
     const placementString = getOrdinalNumberString(rank);
 
-    const xpReward = _(xpRewardBrackets)
-      .filter((bracket) => rank >= bracket.minRank && rank <= bracket.maxRank)
-      .map((bracket) =>
-        mapRange(
-          rank,
-          bracket.minRank,
-          bracket.maxRank,
-          bracket.maxReward,
-          bracket.minReward
-        )
-      )
-      .max();
+    const xpReward = calculateXpReward(xpRewardBrackets, rank);
 
     if (!isSafeNumber(xpReward)) return;
 
@@ -208,6 +186,24 @@ async function jobHandler(job: Job<LaterTask<LaterTaskType>>): Promise<void> {
   Logger.success(`Job: ${taskName} - completed in ${elapsed}ms`);
 }
 
+function calculateXpReward(
+  xpRewardBrackets: RewardBracket[],
+  rank: number
+): number | undefined {
+  const rewards = xpRewardBrackets
+    .filter((bracket) => rank >= bracket.minRank && rank <= bracket.maxRank)
+    .map((bracket) =>
+      mapRange(
+        rank,
+        bracket.minRank,
+        bracket.maxRank,
+        bracket.maxReward,
+        bracket.minReward
+      )
+    );
+  return rewards.length ? Math.max(...rewards) : undefined;
+}
+
 export default (redisConnection?: IORedis.Redis): Worker => {
   const worker = new Worker(LaterQueue.queueName, jobHandler, {
     autorun: false,
@@ -219,4 +215,7 @@ export default (redisConnection?: IORedis.Redis): Worker => {
     );
   });
   return worker;
+};
+export const __testing = {
+  calculateXpReward,
 };

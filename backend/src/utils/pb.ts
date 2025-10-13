@@ -1,7 +1,8 @@
-import _ from "lodash";
 import { Mode, PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result as ResultType } from "@monkeytype/schemas/results";
 import { getFunbox } from "@monkeytype/funbox";
+import { isNil } from "es-toolkit";
+import { isEmpty } from "es-toolkit/compat";
 
 export type LbPersonalBests = {
   time: Record<number, Record<string, PersonalBest>>;
@@ -46,7 +47,7 @@ export function checkAndUpdatePb(
     (userPb[mode][mode2] as PersonalBest[]).push(buildPersonalBest(result));
   }
 
-  if (!_.isNil(lbPersonalBests)) {
+  if (!isNil(lbPersonalBests)) {
     const newLbPb = updateLeaderboardPersonalBests(
       userPb,
       lbPersonalBests,
@@ -186,9 +187,9 @@ export function updateLeaderboardPersonalBests(
       }
     }
   );
-  _.each(bestForEveryLanguage, (pb: PersonalBest, language: string) => {
+  Object.entries(bestForEveryLanguage).forEach(([language, pb]) => {
     const languageDoesNotExist = lbPb[mode][mode2]?.[language] === undefined;
-    const languageIsEmpty = _.isEmpty(lbPb[mode][mode2]?.[language]);
+    const languageIsEmpty = isEmpty(lbPb[mode][mode2]?.[language]);
 
     if (
       (languageDoesNotExist ||

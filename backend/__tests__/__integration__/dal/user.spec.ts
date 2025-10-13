@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import _ from "lodash";
+
 import * as UserDAL from "../../../src/dal/user";
 import * as UserTestData from "../../__testData__/users";
 import { ObjectId } from "mongodb";
@@ -235,9 +235,13 @@ describe("UserDal", () => {
 
     // then
     const updatedUser = (await UserDAL.getUser(testUser.uid, "test")) ?? {};
-    expect(_.values(updatedUser.personalBests).filter(_.isEmpty)).toHaveLength(
-      5
-    );
+    expect(updatedUser.personalBests).toStrictEqual({
+      time: {},
+      words: {},
+      quote: {},
+      custom: {},
+      zen: {},
+    });
   });
 
   it("autoBan should automatically ban after configured anticheat triggers", async () => {
@@ -620,97 +624,129 @@ describe("UserDal", () => {
     });
   });
 
-  it("updateProfile should appropriately handle multiple profile updates", async () => {
-    const uid = new ObjectId().toHexString();
-    await UserDAL.addUser("test name", "test email", uid);
+  describe("updateProfile", () => {
+    it("updateProfile should appropriately handle multiple profile updates", async () => {
+      const uid = new ObjectId().toHexString();
+      await UserDAL.addUser("test name", "test email", uid);
 
-    await UserDAL.updateProfile(
-      uid,
-      {
+      await UserDAL.updateProfile(
+        uid,
+        {
+          bio: "test bio",
+        },
+        {
+          badges: [],
+        }
+      );
+
+      const user = await UserDAL.getUser(uid, "test add result filters");
+      expect(user.profileDetails).toStrictEqual({
         bio: "test bio",
-      },
-      {
+      });
+      expect(user.inventory).toStrictEqual({
         badges: [],
-      }
-    );
+      });
 
-    const user = await UserDAL.getUser(uid, "test add result filters");
-    expect(user.profileDetails).toStrictEqual({
-      bio: "test bio",
-    });
-    expect(user.inventory).toStrictEqual({
-      badges: [],
-    });
+      await UserDAL.updateProfile(
+        uid,
+        {
+          keyboard: "test keyboard",
+          socialProfiles: {
+            twitter: "test twitter",
+          },
+        },
+        {
+          badges: [
+            {
+              id: 1,
+              selected: true,
+            },
+          ],
+        }
+      );
 
-    await UserDAL.updateProfile(
-      uid,
-      {
+      const updatedUser = await UserDAL.getUser(uid, "test add result filters");
+      expect(updatedUser.profileDetails).toStrictEqual({
+        bio: "test bio",
         keyboard: "test keyboard",
         socialProfiles: {
           twitter: "test twitter",
         },
-      },
-      {
+      });
+      expect(updatedUser.inventory).toStrictEqual({
         badges: [
           {
             id: 1,
             selected: true,
           },
         ],
-      }
-    );
+      });
 
-    const updatedUser = await UserDAL.getUser(uid, "test add result filters");
-    expect(updatedUser.profileDetails).toStrictEqual({
-      bio: "test bio",
-      keyboard: "test keyboard",
-      socialProfiles: {
-        twitter: "test twitter",
-      },
-    });
-    expect(updatedUser.inventory).toStrictEqual({
-      badges: [
+      await UserDAL.updateProfile(
+        uid,
         {
-          id: 1,
-          selected: true,
+          bio: "test bio 2",
+          socialProfiles: {
+            github: "test github",
+            website: "test website",
+          },
         },
-      ],
-    });
+        {
+          badges: [
+            {
+              id: 1,
+            },
+          ],
+        }
+      );
 
-    await UserDAL.updateProfile(
-      uid,
-      {
+      const updatedUser2 = await UserDAL.getUser(
+        uid,
+        "test add result filters"
+      );
+      expect(updatedUser2.profileDetails).toStrictEqual({
         bio: "test bio 2",
+        keyboard: "test keyboard",
         socialProfiles: {
+          twitter: "test twitter",
           github: "test github",
           website: "test website",
         },
-      },
-      {
+      });
+      expect(updatedUser2.inventory).toStrictEqual({
         badges: [
           {
             id: 1,
           },
         ],
-      }
-    );
-
-    const updatedUser2 = await UserDAL.getUser(uid, "test add result filters");
-    expect(updatedUser2.profileDetails).toStrictEqual({
-      bio: "test bio 2",
-      keyboard: "test keyboard",
-      socialProfiles: {
-        twitter: "test twitter",
-        github: "test github",
-        website: "test website",
-      },
+      });
     });
-    expect(updatedUser2.inventory).toStrictEqual({
-      badges: [
-        {
-          id: 1,
+    it("should omit undefined or empty object values", async () => {
+      //GIVEN
+      const givenUser = await UserTestData.createUser({
+        profileDetails: {
+          bio: "test bio",
+          keyboard: "test keyboard",
+          socialProfiles: {
+            twitter: "test twitter",
+            github: "test github",
+          },
         },
-      ],
+      });
+
+      //WHEN
+      await UserDAL.updateProfile(givenUser.uid, {
+        bio: undefined, //ignored
+        keyboard: "updates",
+        socialProfiles: {}, //ignored
+      });
+
+      //THEN
+      const read = await UserDAL.getUser(givenUser.uid, "read");
+      expect(read.profileDetails).toStrictEqual({
+        ...givenUser.profileDetails,
+        keyboard: "updates",
+      });
     });
   });
 
@@ -1176,7 +1212,6 @@ describe("UserDal", () => {
         discordId: "discordId",
         discordAvatar: "discordAvatar",
       });
-
       //when
       await UserDAL.linkDiscord(uid, "newId", "newAvatar");
 
@@ -1184,6 +1219,21 @@ describe("UserDal", () => {
       const read = await UserDAL.getUser(uid, "read");
       expect(read.discordId).toEqual("newId");
       expect(read.discordAvatar).toEqual("newAvatar");
+    });
+    it("should update without avatar", async () => {
+      //given
+      const { uid } = await UserTestData.createUser({
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+      });
+
+      //when
+      await UserDAL.linkDiscord(uid, "newId");
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.discordId).toEqual("newId");
+      expect(read.discordAvatar).toEqual("discordAvatar");
     });
   });
   describe("unlinkDiscord", () => {

@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { canFunboxGetPb, checkAndUpdatePb, LbPersonalBests } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
@@ -33,6 +32,8 @@ import { Result as ResultType } from "@monkeytype/schemas/results";
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
 import GeorgeQueue from "../queues/george-queue";
+import { isEmpty, identity } from "es-toolkit/compat";
+import { isPlainObject, omitBy, pickBy } from "es-toolkit";
 
 export type DBUserTag = WithObjectId<UserTag>;
 
@@ -54,11 +55,13 @@ export type DBUser = Omit<
   inbox?: MonkeyMail[];
   ips?: string[];
   canReport?: boolean;
+  nameHistory?: string[];
   lastNameChange?: number;
   canManageApeKeys?: boolean;
   bananas?: number;
   testActivity?: CountByYearAndDay;
   suspicious?: boolean;
+  note?: string;
 };
 
 const SECONDS_PER_HOUR = 3600;
@@ -599,9 +602,9 @@ export async function linkDiscord(
   discordId: string,
   discordAvatar?: string
 ): Promise<void> {
-  const updates: Partial<DBUser> = _.pickBy(
+  const updates: Partial<DBUser> = pickBy(
     { discordId, discordAvatar },
-    _.identity
+    identity
   );
   await updateUser({ uid }, { $set: updates }, { stack: "link discord" });
 }
@@ -903,10 +906,9 @@ export async function updateProfile(
   profileDetailUpdates: Partial<UserProfileDetails>,
   inventory?: UserInventory
 ): Promise<void> {
-  const profileUpdates = _.omitBy(
+  const profileUpdates = omitBy(
     flattenObjectDeep(profileDetailUpdates, "profileDetails"),
-    (value) =>
-      value === undefined || (_.isPlainObject(value) && _.isEmpty(value))
+    (value) => value === undefined || (isPlainObject(value) && isEmpty(value))
   );
 
   const updates = {

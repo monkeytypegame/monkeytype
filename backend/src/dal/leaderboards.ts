@@ -11,7 +11,7 @@ import {
 import { addLog } from "./logs";
 import { Collection, ObjectId } from "mongodb";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
-import { omit } from "lodash";
+import { omit } from "es-toolkit";
 import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";
 
@@ -52,7 +52,7 @@ export async function get(
       .toArray();
 
     if (!premiumFeaturesEnabled) {
-      return preset.map((it) => omit(it, "isPremium"));
+      return preset.map((it) => omit(it, ["isPremium"]));
     }
 
     return preset;

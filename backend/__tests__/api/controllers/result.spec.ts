@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { setup } from "../../__testData__/controller-test";
-import _, { omit } from "lodash";
 import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
@@ -10,6 +9,8 @@ import { ObjectId } from "mongodb";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import { DBResult } from "../../../src/utils/result";
+import { omit } from "es-toolkit";
+import { CompletedEvent } from "@monkeytype/schemas/results";
 
 const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -488,15 +489,14 @@ describe("result controller test", () => {
     it("should apply defaults on missing data", async () => {
       //GIVEN
       const result = givenDbResult(uid);
-      const partialResult = omit(
-        result,
+      const partialResult = omit(result, [
         "difficulty",
         "language",
         "funbox",
         "lazyMode",
         "punctuation",
-        "numbers"
-      );
+        "numbers",
+      ]);
 
       const resultIdString = result._id.toHexString();
       const tagIds = [
@@ -588,6 +588,7 @@ describe("result controller test", () => {
 
     beforeEach(async () => {
       await enableResultsSaving(true);
+      await enableUsersXpGain(true);
 
       [
         userGetMock,
@@ -611,48 +612,15 @@ describe("result controller test", () => {
     it("should add result", async () => {
       //GIVEN
 
+      const completedEvent = buildCompletedEvent({
+        funbox: ["58008", "read_ahead_hard"],
+      });
       //WHEN
       const { body } = await mockApp
         .post("/results")
         .set("Authorization", `Bearer ${uid}`)
         .send({
-          result: {
-            acc: 86,
-            afkDuration: 5,
-            bailedOut: false,
-            blindMode: false,
-            charStats: [100, 2, 3, 5],
-            chartData: { wpm: [1, 2, 3], burst: [50, 55, 56], err: [0, 2, 0] },
-            consistency: 23.5,
-            difficulty: "normal",
-            funbox: [],
-            hash: "hash",
-            incompleteTestSeconds: 2,
-            incompleteTests: [{ acc: 75, seconds: 10 }],
-            keyConsistency: 12,
-            keyDuration: [0, 3, 5],
-            keySpacing: [0, 2, 4],
-            language: "english",
-            lazyMode: false,
-            mode: "time",
-            mode2: "15",
-            numbers: false,
-            punctuation: false,
-            rawWpm: 99,
-            restartCount: 4,
-            tags: ["tagOneId", "tagTwoId"],
-            testDuration: 15.1,
-            timestamp: 1000,
-            uid,
-            wpmConsistency: 55,
-            wpm: 80,
-            stopOnLetter: false,
-            //new required
-            charTotal: 5,
-            keyOverlap: 7,
-            lastKeyToEnd: 9,
-            startToFirstKey: 11,
-          },
+          result: completedEvent,
         })
         .expect(200);
 
@@ -662,7 +630,12 @@ describe("result controller test", () => {
         tagPbs: [],
         xp: 0,
         dailyXpBonus: false,
-        xpBreakdown: {},
+        xpBreakdown: {
+          accPenalty: 28,
+          base: 20,
+          incomplete: 5,
+          funbox: 80,
+        },
         streak: 0,
         insertedId: insertedId.toHexString(),
       });
@@ -751,44 +724,9 @@ describe("result controller test", () => {
         .post("/results")
         .set("Authorization", `Bearer ${uid}`)
         .send({
-          result: {
-            acc: 86,
-            afkDuration: 5,
-            bailedOut: false,
-            blindMode: false,
-            charStats: [100, 2, 3, 5],
-            chartData: { wpm: [1, 2, 3], burst: [50, 55, 56], err: [0, 2, 0] },
-            consistency: 23.5,
-            difficulty: "normal",
-            funbox: [],
-            hash: "hash",
-            incompleteTestSeconds: 2,
-            incompleteTests: [{ acc: 75, seconds: 10 }],
-            keyConsistency: 12,
-            keyDuration: [0, 3, 5],
-            keySpacing: [0, 2, 4],
-            language: "english",
-            lazyMode: false,
-            mode: "time",
-            mode2: "15",
-            numbers: false,
-            punctuation: false,
-            rawWpm: 99,
-            restartCount: 4,
-            tags: ["tagOneId", "tagTwoId"],
-            testDuration: 15.1,
-            timestamp: 1000,
-            uid,
-            wpmConsistency: 55,
-            wpm: 80,
-            stopOnLetter: false,
-            //new required
-            charTotal: 5,
-            keyOverlap: 7,
-            lastKeyToEnd: 9,
-            startToFirstKey: 11,
+          result: buildCompletedEvent({
             extra2: "value",
-          },
+          } as any),
           extra: "value",
         })
         .expect(422);
@@ -801,6 +739,24 @@ describe("result controller test", () => {
           "Unrecognized key(s) in object: 'extra'",
         ],
       });
+    });
+
+    it("should fail wit duplicate funboxes", async () => {
+      //GIVEN
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent({
+            funbox: ["58008", "58008"],
+          }),
+        })
+        .expect(400);
+
+      //THEN
+      expect(body.message).toEqual("Duplicate funboxes");
     });
 
     // it("should fail invalid properties ", async () => {
@@ -824,10 +780,50 @@ describe("result controller test", () => {
   });
 });
 
-async function enablePremiumFeatures(premium: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    users: { premium: { enabled: premium } },
-  });
+function buildCompletedEvent(result?: Partial<CompletedEvent>): CompletedEvent {
+  return {
+    acc: 86,
+    afkDuration: 5,
+    bailedOut: false,
+    blindMode: false,
+    charStats: [100, 2, 3, 5],
+    chartData: { wpm: [1, 2, 3], burst: [50, 55, 56], err: [0, 2, 0] },
+    consistency: 23.5,
+    difficulty: "normal",
+    funbox: [],
+    hash: "hash",
+    incompleteTestSeconds: 2,
+    incompleteTests: [{ acc: 75, seconds: 10 }],
+    keyConsistency: 12,
+    keyDuration: [0, 3, 5],
+    keySpacing: [0, 2, 4],
+    language: "english",
+    lazyMode: false,
+    mode: "time",
+    mode2: "15",
+    numbers: false,
+    punctuation: false,
+    rawWpm: 99,
+    restartCount: 4,
+    tags: ["tagOneId", "tagTwoId"],
+    testDuration: 15.1,
+    timestamp: 1000,
+    uid,
+    wpmConsistency: 55,
+    wpm: 80,
+    stopOnLetter: false,
+    //new required
+    charTotal: 5,
+    keyOverlap: 7,
+    lastKeyToEnd: 9,
+    startToFirstKey: 11,
+    ...result,
+  };
+}
+
+async function enablePremiumFeatures(enabled: boolean): Promise<void> {
+  const mockConfig = await configuration;
+  mockConfig.users.premium = { ...mockConfig.users.premium, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
@@ -857,7 +853,7 @@ function givenDbResult(uid: string, customize?: Partial<DBResult>): DBResult {
     isPb: true,
     chartData: {
       wpm: [Math.random() * 100],
-      raw: [Math.random() * 100],
+      burst: [Math.random() * 100],
       err: [Math.random() * 100],
     },
     name: "testName",
@@ -866,9 +862,11 @@ function givenDbResult(uid: string, customize?: Partial<DBResult>): DBResult {
 }
 
 async function acceptApeKeys(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    apeKeys: { acceptKeys: enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.apeKeys = {
+    ...mockConfig.apeKeys,
+    acceptKeys: enabled,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
@@ -876,9 +874,16 @@ async function acceptApeKeys(enabled: boolean): Promise<void> {
 }
 
 async function enableResultsSaving(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    results: { savingEnabled: enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.results = { ...mockConfig.results, savingEnabled: enabled };
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}
+async function enableUsersXpGain(enabled: boolean): Promise<void> {
+  const mockConfig = await configuration;
+  mockConfig.users.xp = { ...mockConfig.users.xp, enabled, funboxBonus: 1 };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
