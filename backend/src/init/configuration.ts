@@ -1,8 +1,7 @@
-import _ from "lodash";
 import * as db from "./db";
 import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
-import { identity } from "../utils/misc";
+import { identity, isPlainObject, omit } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { addLog } from "../dal/logs";
@@ -26,22 +25,21 @@ function mergeConfigurations(
   baseConfiguration: Configuration,
   liveConfiguration: PartialConfiguration
 ): void {
-  if (
-    !_.isPlainObject(baseConfiguration) ||
-    !_.isPlainObject(liveConfiguration)
-  ) {
+  if (!isPlainObject(baseConfiguration) || !isPlainObject(liveConfiguration)) {
     return;
   }
 
   function merge(base: object, source: object): void {
-    const commonKeys = _.intersection(_.keys(base), _.keys(source));
+    const baseKeys = Object.keys(base);
+    const sourceKeys = Object.keys(source);
+    const commonKeys = baseKeys.filter((key) => sourceKeys.includes(key));
 
     commonKeys.forEach((key) => {
       const baseValue = base[key] as object;
       const sourceValue = source[key] as object;
 
-      const isBaseValueObject = _.isPlainObject(baseValue);
-      const isSourceValueObject = _.isPlainObject(sourceValue);
+      const isBaseValueObject = isPlainObject(baseValue);
+      const isSourceValueObject = isPlainObject(sourceValue);
 
       if (isBaseValueObject && isSourceValueObject) {
         merge(baseValue, sourceValue);
@@ -81,9 +79,9 @@ export async function getLiveConfiguration(): Promise<Configuration> {
     const liveConfiguration = await configurationCollection.findOne();
 
     if (liveConfiguration) {
-      const baseConfiguration = _.cloneDeep(BASE_CONFIGURATION);
+      const baseConfiguration = structuredClone(BASE_CONFIGURATION);
 
-      const liveConfigurationWithoutId = _.omit(
+      const liveConfigurationWithoutId = omit(
         liveConfiguration,
         "_id"
       ) as Configuration;
@@ -129,7 +127,7 @@ export async function patchConfiguration(
   configurationUpdates: PartialConfiguration
 ): Promise<boolean> {
   try {
-    const currentConfiguration = _.cloneDeep(configuration);
+    const currentConfiguration = structuredClone(configuration);
     mergeConfigurations(currentConfiguration, configurationUpdates);
 
     await db
@@ -166,3 +164,7 @@ export async function updateFromConfigurationFile(): Promise<void> {
     await patchConfiguration(data.configuration);
   }
 }
+
+export const __testing = {
+  mergeConfigurations,
+};

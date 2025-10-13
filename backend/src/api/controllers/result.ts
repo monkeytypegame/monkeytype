@@ -2,6 +2,7 @@ import * as ResultDAL from "../../dal/result";
 import * as PublicDAL from "../../dal/public";
 import {
   isDevEnvironment,
+  omit,
   replaceObjectId,
   replaceObjectIds,
 } from "../../utils/misc";
@@ -26,7 +27,6 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import _, { omit } from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
@@ -243,7 +243,7 @@ export async function addResult(
     Logger.warning("Object hash check is disabled, skipping hash check");
   }
 
-  if (completedEvent.funbox.length !== _.uniq(completedEvent.funbox).length) {
+  if (new Set(completedEvent.funbox).size !== completedEvent.funbox.length) {
     throw new MonkeyError(400, "Duplicate funboxes");
   }
 
@@ -758,11 +758,12 @@ async function calculateXp(
   }
 
   if (funboxBonusConfiguration > 0 && resultFunboxes.length !== 0) {
-    const funboxModifier = _.sumBy(resultFunboxes, (funboxName) => {
+    const funboxModifier = resultFunboxes.reduce((sum, funboxName) => {
       const funbox = getFunbox(funboxName);
       const difficultyLevel = funbox?.difficultyLevel ?? 0;
-      return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
-    });
+      return sum + Math.max(difficultyLevel * funboxBonusConfiguration, 0);
+    }, 0);
+
     if (funboxModifier > 0) {
       modifier += funboxModifier;
       breakdown.funbox = Math.round(baseXp * funboxModifier);

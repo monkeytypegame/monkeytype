@@ -5,7 +5,6 @@ import * as ApeKeyDal from "../../../src/dal/ape-keys";
 import { ObjectId } from "mongodb";
 import * as Configuration from "../../../src/init/configuration";
 import * as UserDal from "../../../src/dal/user";
-import _ from "lodash";
 
 const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -354,9 +353,12 @@ function apeKeyDb(
 }
 
 async function enableApeKeysEndpoints(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    apeKeys: { endpointsEnabled: enabled, maxKeysPerUser: 1 },
-  });
+  const mockConfig = await configuration;
+  mockConfig.apeKeys = {
+    ...mockConfig.apeKeys,
+    endpointsEnabled: enabled,
+    maxKeysPerUser: 1,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
