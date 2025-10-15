@@ -10,7 +10,6 @@ export type DBConnection = WithObjectId<
   }
 >;
 
-// Export for use in tests
 export const getCollection = (): Collection<DBConnection> =>
   db.collection("connections");
 
@@ -22,7 +21,7 @@ export async function getConnections(options: {
   const { initiatorUid, receiverUid, status } = options;
 
   if (initiatorUid === undefined && receiverUid === undefined)
-    throw new Error("no filter provided");
+    throw new Error("Missing filter");
 
   let filter: Filter<DBConnection> = { $or: [] };
 
@@ -151,7 +150,7 @@ export async function deleteById(uid: string, id: string): Promise<void> {
   });
 
   if (deletionResult.deletedCount === 0) {
-    throw new MonkeyError(404, "Cannot be deleted");
+    throw new MonkeyError(404, "No permission or connection not found");
   }
 }
 
