@@ -10,6 +10,7 @@ import * as CustomTextState from "../states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
 import Format from "../utils/format";
 import { getActiveFunboxNames } from "../test/funbox/list";
+import { escapeHTML } from "../utils/misc";
 
 ConfigEvent.subscribe((eventKey) => {
   const configKeys: ConfigEvent.ConfigEventKey[] = [
@@ -79,7 +80,9 @@ export async function update(): Promise<void> {
   const isLong = CustomTextState.isCustomTextLong();
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton noInteraction"><i class="fas fa-book"></i>${customTextName} (shift + enter to save progress)</div>`
+      `<div class="textButton noInteraction"><i class="fas fa-book"></i>${escapeHTML(
+        customTextName
+      )} (shift + enter to save progress)</div>`
     );
   }
 

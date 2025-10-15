@@ -1,4 +1,3 @@
-import { Section } from "../../utils/json-data";
 import { FunboxWordsFrequency, Wordset } from "../wordset";
 import * as GetText from "../../utils/generate";
 import Config, * as UpdateConfig from "../../config";
@@ -24,17 +23,18 @@ import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
+
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
-  withWords?: (words?: string[]) => Promise<Wordset>;
+  withWords?: (words?: string[]) => Promise<Wordset | PolyglotWordset>;
   alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
   applyGlobalCSS?: () => void;
   clearGlobal?: () => void;
   rememberSettings?: () => void;
   toggleScript?: (params: string[]) => void;
-  pullSection?: (language?: Language) => Promise<Section | false>;
+  pullSection?: (language?: Language) => Promise<JSONData.Section | false>;
   handleSpace?: () => void;
   handleChar?: (char: string) => string;
   isCharCorrect?: (char: string, originalChar: string) => boolean;
@@ -148,6 +148,23 @@ class PseudolangWordGenerator extends Wordset {
       word += nextChar;
     }
     return word;
+  }
+}
+
+export class PolyglotWordset extends Wordset {
+  public wordsWithLanguage: Map<string, Language>;
+  public languageProperties: Map<Language, JSONData.LanguageProperties>;
+
+  constructor(
+    wordsWithLanguage: Map<string, Language>,
+    languageProperties: Map<Language, JSONData.LanguageProperties>
+  ) {
+    // build and shuffle the word array
+    const wordArray = Array.from(wordsWithLanguage.keys());
+    Arrays.shuffle(wordArray);
+    super(wordArray);
+    this.wordsWithLanguage = wordsWithLanguage;
+    this.languageProperties = languageProperties;
   }
 }
 
@@ -646,12 +663,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             `Failed to load language: ${language}. It will be ignored.`,
             0
           );
-          return null; // Return null for failed languages
+          return null;
         })
       );
 
       const languages = (await Promise.all(promises)).filter(
-        (lang) => lang !== null
+        (lang): lang is LanguageObject => lang !== null
       );
 
       if (languages.length === 0) {
@@ -679,9 +696,44 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         throw new WordGenError("");
       }
 
-      const wordSet = languages.flatMap((it) => it.words);
-      Arrays.shuffle(wordSet);
-      return new Wordset(wordSet);
+      // direction conflict check
+      const allRightToLeft = languages.every((lang) => lang.rightToLeft);
+      const allLeftToRight = languages.every((lang) => !lang.rightToLeft);
+      const mainLanguage = await JSONData.getLanguage(Config.language);
+      const mainLanguageIsRTL = mainLanguage?.rightToLeft ?? false;
+      if (
+        (mainLanguageIsRTL && allLeftToRight) ||
+        (!mainLanguageIsRTL && allRightToLeft)
+      ) {
+        const fallbackLanguage =
+          languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
+        UpdateConfig.setLanguage(fallbackLanguage);
+        Notifications.add(
+          `Language direction conflict: switched to ${fallbackLanguage} for consistency.`,
+          0,
+          { duration: 5 }
+        );
+        throw new WordGenError("");
+      }
+
+      // build languageProperties
+      const languageProperties = new Map(
+        languages.map((lang) => [
+          lang.name,
+          {
+            noLazyMode: lang.noLazyMode,
+            ligatures: lang.ligatures,
+            rightToLeft: lang.rightToLeft,
+            additionalAccents: lang.additionalAccents,
+          },
+        ])
+      );
+
+      const wordsWithLanguage = new Map(
+        languages.flatMap((lang) => lang.words.map((word) => [word, lang.name]))
+      );
+
+      return new PolyglotWordset(wordsWithLanguage, languageProperties);
     },
   },
 };

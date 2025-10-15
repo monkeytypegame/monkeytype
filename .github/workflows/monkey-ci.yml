@@ -239,14 +239,14 @@ jobs:
         with:
           filters: |
             languages:
-              - 'frontend/static/languages/*.json'
+              - 'frontend/static/languages/**'
             quotes:
-              - 'frontend/static/quotes/*.json'
+              - 'frontend/static/quotes/**'
             others:
-              - 'frontend/static/layouts/*.json'
+              - 'frontend/static/layouts/**'
               - 'frontend/static/themes/**'
               - 'frontend/static/webfonts/**'
-              - 'frontend/static/challenges/*.json'
+              - 'frontend/static/challenges/**'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
