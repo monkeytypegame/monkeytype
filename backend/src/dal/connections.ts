@@ -124,7 +124,7 @@ export async function updateStatus(
   );
 
   if (updateResult.matchedCount === 0) {
-    throw new MonkeyError(404, "Connection not found");
+    throw new MonkeyError(404, "No permission or Connection not found");
   }
 }
 
