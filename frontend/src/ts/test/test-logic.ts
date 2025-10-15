@@ -614,10 +614,10 @@ async function init(): Promise<boolean> {
     );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
-  TestUI.setRightToLeft(allRightToLeft ?? language.rightToLeft ?? false);
-  TestUI.setLigatures(allRightToLeft ?? language.ligatures ?? false);
+  TestUI.setLigatures(allLigatures ?? language.ligatures ?? false);
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
+  TestUI.setRightToLeft(isLanguageRTL);
   TestState.setIsLanguageRightToLeft(isLanguageRTL);
   TestState.setIsDirectionReversed(
     isFunboxActiveWithProperty("reverseDirection")
