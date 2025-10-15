@@ -205,7 +205,7 @@ describe("ConnectionsDal", () => {
       //WHEN / THEN
       await expect(
         ConnectionsDal.updateStatus(uid, first._id.toHexString(), "accepted")
-      ).rejects.toThrow("Connection not found");
+      ).rejects.toThrow("No permission or connection not found");
     });
   });
 
@@ -261,7 +261,7 @@ describe("ConnectionsDal", () => {
       //WHEN / THEN
       await expect(
         ConnectionsDal.deleteById("Bob", first._id.toHexString())
-      ).rejects.toThrow("Cannot be deleted");
+      ).rejects.toThrow("No permission or connection not found");
     });
 
     it("should fail if initiator deletes blocked by receiver", async () => {
@@ -275,7 +275,7 @@ describe("ConnectionsDal", () => {
       //WHEN / THEN
       await expect(
         ConnectionsDal.deleteById(uid, myRequestWasBlocked._id.toHexString())
-      ).rejects.toThrow("Cannot be deleted");
+      ).rejects.toThrow("No permission or connection not found");
     });
     it("allow receiver to delete blocked", async () => {
       //GIVEN
