@@ -418,6 +418,7 @@ export const LanguageSchema = z.enum(
     "code_cobol",
     "code_clojure",
     "code_common_lisp",
+    "code_erlang",
     "docker_file",
     "code_fortran",
     "viossa",
