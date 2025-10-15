@@ -951,16 +951,16 @@ export function saveLocalResult(data: SaveLocalResultData): void {
         startedTests: 0,
         completedTests: 0,
       };
-
-      const time =
-        data.result.testDuration +
-        data.result.incompleteTestSeconds -
-        data.result.afkDuration;
-
-      snapshot.typingStats.timeTyping += time;
-      snapshot.typingStats.startedTests += data.result.restartCount + 1;
-      snapshot.typingStats.completedTests += 1;
     }
+
+    const time =
+      data.result.testDuration +
+      data.result.incompleteTestSeconds -
+      data.result.afkDuration;
+
+    snapshot.typingStats.timeTyping += time;
+    snapshot.typingStats.startedTests += data.result.restartCount + 1;
+    snapshot.typingStats.completedTests += 1;
 
     if (data.isPb) {
       saveLocalPB(
