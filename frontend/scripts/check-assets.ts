@@ -137,8 +137,7 @@ async function validateLayouts(): Promise<void> {
   //no files not defined in LayoutsList
   const additionalLayoutFiles = fs
     .readdirSync("./static/layouts")
-    .map((it) => it.substring(0, it.length - 5))
-    .filter((it) => !LayoutsList.some((layout) => layout === it));
+    .filter((it) => !LayoutsList.some((layout) => layout + ".json" === it));
   if (additionalLayoutFiles.length !== 0) {
     additionalLayoutFiles.forEach((it) => problems.add("_additional", it));
   }
@@ -287,8 +286,7 @@ async function validateLanguages(): Promise<void> {
 
   //no files not defined in LanguageList
   fs.readdirSync("./static/languages")
-    .map((it) => it.substring(0, it.length - 5))
-    .filter((it) => !LanguageList.some((language) => language === it))
+    .filter((it) => !LanguageList.some((language) => language + ".json" === it))
     .forEach((it) => problems.add("_additional", it));
 
   //check groups
@@ -381,18 +379,20 @@ async function validateThemes(): Promise<void> {
   });
 
   //no missing files
-  const themeFiles = fs
-    .readdirSync("./static/themes")
-    .map((it) => it.substring(0, it.length - 4));
+  const themeFiles = fs.readdirSync("./static/themes");
 
   //missing theme files
-  ThemesList.filter((it) => !themeFiles.includes(it.name)).forEach((it) =>
-    problems.add(it.name, `missing file frontend/static/themes/${it.name}.css`)
+  ThemesList.filter((it) => !themeFiles.includes(it.name + ".css")).forEach(
+    (it) =>
+      problems.add(
+        it.name,
+        `missing file frontend/static/themes/${it.name}.css`
+      )
   );
 
   //additional theme files
   themeFiles
-    .filter((it) => !ThemesList.some((theme) => theme.name === it))
+    .filter((it) => !ThemesList.some((theme) => theme.name + ".css" === it))
     .forEach((it) => problems.add("_additional", it));
 
   console.log(problems.toString());

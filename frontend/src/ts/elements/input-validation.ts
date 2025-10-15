@@ -32,9 +32,6 @@ export type Validation<T> = {
 
   /** custom debounce delay for `isValid` call. defaults to 100 */
   debounceDelay?: number;
-
-  /** Resets the value to the current config if empty */
-  resetIfEmpty?: false;
 };
 
 // oxlint-disable-next-line no-explicit-any
@@ -143,6 +140,11 @@ export type ValidationOptions<T> = (T extends string
   callback?: (result: ValidationResult) => void;
 };
 
+export type ValidatedHtmlInputElement = HTMLInputElement & {
+  getValidationResult: () => ValidationResult;
+  setValue: (val: string | null) => void;
+  triggerValidation: () => void;
+};
 /**
  * adds an 'InputIndicator` to the given `inputElement` and updates its status depending on the given validation
  * @param inputElement
@@ -151,7 +153,7 @@ export type ValidationOptions<T> = (T extends string
 export function validateWithIndicator<T>(
   inputElement: HTMLInputElement,
   options: ValidationOptions<T>
-): void {
+): ValidatedHtmlInputElement {
   //use indicator
   const indicator = new InputIndicator(inputElement, {
     success: {
@@ -172,7 +174,12 @@ export function validateWithIndicator<T>(
       level: 0,
     },
   });
+
+  let currentStatus: ValidationResult = {
+    status: "checking",
+  };
   const callback = (result: ValidationResult): void => {
+    currentStatus = result;
     if (result.status === "failed" || result.status === "warning") {
       indicator.show(result.status, result.errorMessage);
     } else {
@@ -188,6 +195,24 @@ export function validateWithIndicator<T>(
   );
 
   inputElement.addEventListener("input", handler);
+
+  const result = inputElement as ValidatedHtmlInputElement;
+  result.getValidationResult = () => {
+    return currentStatus;
+  };
+  result.setValue = (val: string | null) => {
+    inputElement.value = val ?? "";
+    if (val === null) {
+      indicator.hide();
+    } else {
+      inputElement.dispatchEvent(new Event("input"));
+    }
+  };
+  result.triggerValidation = () => {
+    inputElement.dispatchEvent(new Event("input"));
+  };
+
+  return result;
 }
 
 export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
@@ -202,6 +227,8 @@ export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
     schema: boolean;
     /** optional callback is called for each change of the validation result */
     validationCallback?: (result: ValidationResult) => void;
+    /** Resets the value to the current config if empty */
+    resetIfEmpty?: false;
   };
 };
 

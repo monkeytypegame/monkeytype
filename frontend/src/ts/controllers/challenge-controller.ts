@@ -5,7 +5,6 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
 import Config, * as UpdateConfig from "../config";
-import * as TestUI from "../test/test-ui";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as Loader from "../elements/loader";
@@ -28,7 +27,7 @@ export function clearActive(): void {
   if (
     TestState.activeChallenge &&
     !challengeLoading &&
-    !TestUI.testRestarting
+    !TestState.testRestarting
   ) {
     Notifications.add("Challenge cleared", 0);
     TestState.setActiveChallenge(null);
