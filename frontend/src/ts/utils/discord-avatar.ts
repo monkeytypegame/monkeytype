@@ -1,5 +1,3 @@
-import { addToGlobal } from "./global";
-
 type Options = { size?: number; userIcon?: string };
 
 const knownBadUrls = new Set();
@@ -13,27 +11,33 @@ function buildElement(url: string | null, options?: Options): HTMLElement {
       options?.userIcon ?? "fas fa-user-circle"
     }"></i></div>`;
   } else {
-    avatar.innerHTML = `
-      <div class="loading"><i class="fas fa-circle-notch fa-spin"></i></div>
-      <div class="discordImage">
-        <img src="${url}?size=${options?.size ?? 32})"
-        onload="onAvatarLoaded(this)" onerror="onAvatarError(this)"
-        ></img>
-      </div>`;
+    const loading = document.createElement("div");
+    loading.className = "loading";
+    loading.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "discordImage";
+
+    const img = document.createElement("img");
+    img.src = `${url}?size=${options?.size ?? 32}`;
+
+    // Add event listeners directly to the img element
+    img.addEventListener("load", async () => {
+      loading.remove();
+    });
+
+    img.addEventListener("error", () => {
+      knownBadUrls.add(url);
+      avatar.replaceWith(buildElement(null, options));
+    });
+
+    imageContainer.appendChild(img);
+    avatar.appendChild(loading);
+    avatar.appendChild(imageContainer);
   }
 
   return avatar;
 }
-
-addToGlobal({
-  onAvatarLoaded: (element: HTMLImageElement): void => {
-    element.closest(".avatar")?.querySelector(".loading")?.remove();
-  },
-  onAvatarError: (element: HTMLImageElement): void => {
-    knownBadUrls.add(element.src.split("?")[0]);
-    element.closest(".avatar")?.replaceWith(buildElement(null));
-  },
-});
 
 export function getAvatarElement(
   {
