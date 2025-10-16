@@ -1,12 +1,11 @@
-import {
-  ConfigValue,
-  QuoteLength,
-} from "@monkeytype/contracts/schemas/configs";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { ConfigValue, QuoteLength } from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { applyReducedMotion } from "../utils/misc";
+import { areUnsortedArraysEqual } from "../utils/arrays";
+import * as AuthEvent from "../observables/auth-event";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
@@ -25,7 +24,7 @@ export async function instantUpdate(): Promise<void> {
   );
 
   $("#testConfig .puncAndNum").addClass("hidden");
-  $("#testConfig .spacer").addClass("scrolled");
+  $("#testConfig .spacer").css("transition", "none").addClass("scrolled");
   $("#testConfig .time").addClass("hidden");
   $("#testConfig .wordCount").addClass("hidden");
   $("#testConfig .customText").addClass("hidden");
@@ -33,39 +32,64 @@ export async function instantUpdate(): Promise<void> {
   $("#testConfig .zen").addClass("hidden");
 
   if (Config.mode === "time") {
-    $("#testConfig .puncAndNum").removeClass("hidden");
+    $("#testConfig .puncAndNum").removeClass("hidden").css({
+      width: "",
+      opacity: "",
+    });
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .time").removeClass("hidden");
 
-    updateExtras("time", Config.time);
+    updateActiveExtraButtons("time", Config.time);
   } else if (Config.mode === "words") {
-    $("#testConfig .puncAndNum").removeClass("hidden");
+    $("#testConfig .puncAndNum").removeClass("hidden").css({
+      width: "",
+      opacity: "",
+    });
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .wordCount").removeClass("hidden");
 
-    updateExtras("words", Config.words);
+    updateActiveExtraButtons("words", Config.words);
   } else if (Config.mode === "quote") {
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .quoteLength").removeClass("hidden");
 
-    updateExtras("quoteLength", Config.quoteLength);
+    updateActiveExtraButtons("quoteLength", Config.quoteLength);
   } else if (Config.mode === "custom") {
-    $("#testConfig .puncAndNum").removeClass("hidden");
+    $("#testConfig .puncAndNum").removeClass("hidden").css({
+      width: "",
+      opacity: "",
+    });
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .customText").removeClass("hidden");
   }
 
-  updateExtras("numbers", Config.numbers);
-  updateExtras("punctuation", Config.punctuation);
+  updateActiveExtraButtons("quoteLength", Config.quoteLength);
+  updateActiveExtraButtons("numbers", Config.numbers);
+  updateActiveExtraButtons("punctuation", Config.punctuation);
+
+  setTimeout(() => {
+    $("#testConfig .spacer").css("transition", "");
+  }, 125);
 }
 
-export async function update(previous: Mode, current: Mode): Promise<void> {
+async function update(previous: Mode, current: Mode): Promise<void> {
   if (previous === current) return;
-  $("#testConfig .mode .textButton").removeClass("active");
-  $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
+  updateActiveModeButtons(current);
+
+  let m2;
+
+  if (Config.mode === "time") {
+    m2 = Config.time;
+  } else if (Config.mode === "words") {
+    m2 = Config.words;
+  } else if (Config.mode === "quote") {
+    m2 = Config.quoteLength;
+  }
+
+  if (m2 !== undefined) updateActiveExtraButtons(Config.mode, m2);
 
   const submenu = {
     time: "time",
@@ -111,6 +135,7 @@ export async function update(previous: Mode, current: Mode): Promise<void> {
     );
 
     puncAndNumEl
+      .stop(true, false)
       .css({
         width: puncAndNumVisible[previous] ? width : 0,
         opacity: puncAndNumVisible[previous] ? 1 : 0,
@@ -162,6 +187,7 @@ export async function update(previous: Mode, current: Mode): Promise<void> {
   const widthStep = widthDifference / 2;
 
   previousEl
+    .stop(true, false)
     .css({
       opacity: 1,
       width: previousWidth,
@@ -186,6 +212,7 @@ export async function update(previous: Mode, current: Mode): Promise<void> {
             width: previousWidth + widthStep,
           })
           .removeClass("hidden")
+          .stop(true, false)
           .animate(
             {
               opacity: 1,
@@ -201,12 +228,17 @@ export async function update(previous: Mode, current: Mode): Promise<void> {
     );
 }
 
-export function updateExtras(key: string, value: ConfigValue): void {
+function updateActiveModeButtons(mode: Mode): void {
+  $("#testConfig .mode .textButton").removeClass("active");
+  $("#testConfig .mode .textButton[mode='" + mode + "']").addClass("active");
+}
+
+function updateActiveExtraButtons(key: string, value: ConfigValue): void {
   if (key === "time") {
     $("#testConfig .time .textButton").removeClass("active");
     const timeCustom = ![15, 30, 60, 120].includes(value as number)
       ? "custom"
-      : value;
+      : (value as number);
     $(
       "#testConfig .time .textButton[timeConfig='" + timeCustom + "']"
     ).addClass("active");
@@ -215,18 +247,25 @@ export function updateExtras(key: string, value: ConfigValue): void {
 
     const wordCustom = ![10, 25, 50, 100, 200].includes(value as number)
       ? "custom"
-      : value;
+      : (value as number);
 
     $(
       "#testConfig .wordCount .textButton[wordCount='" + wordCustom + "']"
     ).addClass("active");
   } else if (key === "quoteLength") {
     $("#testConfig .quoteLength .textButton").removeClass("active");
-    (value as QuoteLength[]).forEach((ql) => {
-      $(
-        "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
-      ).addClass("active");
-    });
+
+    if (areUnsortedArraysEqual(value as QuoteLength[], [0, 1, 2, 3])) {
+      $("#testConfig .quoteLength .textButton[quotelength='all']").addClass(
+        "active"
+      );
+    } else {
+      (value as QuoteLength[]).forEach((ql) => {
+        $(
+          "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
+        ).addClass("active");
+      });
+    }
   } else if (key === "numbers") {
     if (value === false) {
       $("#testConfig .numbersMode.textButton").removeClass("active");
@@ -250,27 +289,41 @@ export function hideFavoriteQuoteLength(): void {
   $("#testConfig .quoteLength .favorite").addClass("hidden");
 }
 
+let ignoreConfigEvent = false;
+
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
+  if (eventKey === "fullConfigChange") {
+    ignoreConfigEvent = true;
+  }
+  if (eventKey === "fullConfigChangeFinished") {
+    ignoreConfigEvent = false;
+
+    void instantUpdate();
+  }
+
+  // this is here to prevent calling set / preview multiple times during a full config loading
+  // once the full config is loaded, we can apply everything once
+  if (ignoreConfigEvent) return;
+
   if (ActivePage.get() !== "test") return;
   if (eventKey === "mode") {
     void update(eventPreviousValue as Mode, eventValue as Mode);
-
-    let m2;
-
-    if (Config.mode === "time") {
-      m2 = Config.time;
-    } else if (Config.mode === "words") {
-      m2 = Config.words;
-    } else if (Config.mode === "quote") {
-      m2 = Config.quoteLength;
-    }
-
-    if (m2 !== undefined) updateExtras(Config.mode, m2);
   } else if (
     ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
       eventKey
     )
   ) {
-    if (eventValue !== undefined) updateExtras(eventKey, eventValue);
+    if (eventValue !== undefined)
+      updateActiveExtraButtons(eventKey, eventValue);
+  }
+});
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    if (!event.data.isUserSignedIn) {
+      hideFavoriteQuoteLength();
+    } else {
+      showFavoriteQuoteLength();
+    }
   }
 });

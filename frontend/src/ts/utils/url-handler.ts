@@ -15,7 +15,7 @@ import {
   DifficultySchema,
   Mode2Schema,
   ModeSchema,
-} from "@monkeytype/contracts/schemas/shared";
+} from "@monkeytype/schemas/shared";
 import {
   CustomBackgroundFilter,
   CustomBackgroundFilterSchema,
@@ -23,9 +23,14 @@ import {
   CustomBackgroundSizeSchema,
   CustomThemeColors,
   CustomThemeColorsSchema,
-} from "@monkeytype/contracts/schemas/configs";
+  FunboxSchema,
+  FunboxName,
+} from "@monkeytype/schemas/configs";
 import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { tryCatchSync } from "@monkeytype/util/trycatch";
+import { Language } from "@monkeytype/schemas/languages";
+import * as AuthEvent from "../observables/auth-event";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -60,12 +65,13 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     const { discordId, discordAvatar } = response.body.data;
     if (discordId !== undefined) {
       snapshot.discordId = discordId;
-    } else {
+    }
+    if (discordAvatar !== undefined) {
       snapshot.discordAvatar = discordAvatar;
     }
 
     DB.setSnapshot(snapshot);
-    AccountButton.updateAvatar(discordId, discordAvatar);
+    AccountButton.updateAvatar(snapshot);
   }
 }
 
@@ -80,15 +86,12 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("customTheme", getOverride);
   if (getValue === null) return;
 
-  let decoded: z.infer<typeof customThemeUrlDataSchema>;
-  try {
-    decoded = parseJsonWithSchema(atob(getValue), customThemeUrlDataSchema);
-  } catch (e) {
-    console.log("Custom theme URL decoding failed", e);
-    Notifications.add(
-      "Failed to load theme from URL: " + (e as Error).message,
-      0
-    );
+  const { data: decoded, error } = tryCatchSync(() =>
+    parseJsonWithSchema(atob(getValue), customThemeUrlDataSchema)
+  );
+  if (error) {
+    console.log("Custom theme URL decoding failed", error);
+    Notifications.add("Failed to load theme from URL: " + error.message, 0);
     return;
   }
 
@@ -153,23 +156,23 @@ const TestSettingsSchema = z.tuple([
   z.boolean().nullable(), //numbers
   z.string().nullable(), //language
   DifficultySchema.nullable(),
-  z.string().nullable(), //funbox
+  FunboxSchema.or(z.string().nullable()), //funbox as array or legacy string as hash separated values
 ]);
-
-type SharedTestSettings = z.infer<typeof TestSettingsSchema>;
 
 export function loadTestSettingsFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("testSettings", getOverride);
   if (getValue === null) return;
 
-  let de: SharedTestSettings;
-  try {
-    const decompressed = decompressFromURI(getValue) ?? "";
-    de = parseJsonWithSchema(decompressed, TestSettingsSchema);
-  } catch (e) {
-    console.error("Failed to parse test settings:", e);
+  // if the encoding structure or method ever changes, make sure to support the old data format
+  // otherwise eiko will be sad
+
+  const { data: de, error } = tryCatchSync(() =>
+    parseJsonWithSchema(decompressFromURI(getValue) ?? "", TestSettingsSchema)
+  );
+  if (error) {
+    console.error("Failed to parse test settings:", error);
     Notifications.add(
-      "Failed to load test settings from URL: " + (e as Error).message,
+      "Failed to load test settings from URL: " + error.message,
       0
     );
     return;
@@ -189,7 +192,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     } else if (mode === "words") {
       UpdateConfig.setWordCount(parseInt(de[1], 10), true);
     } else if (mode === "quote") {
-      UpdateConfig.setQuoteLength(-2, false);
+      UpdateConfig.setQuoteLength([-2], false);
       TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();
     }
@@ -199,6 +202,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (de[2] !== null) {
     const customTextSettings = de[2];
     CustomText.setText(customTextSettings.text);
+
+    //make sure to set mode before the limit as mode also sets the limit
+    CustomText.setMode(customTextSettings.mode ?? "repeat");
 
     if (customTextSettings.limit !== undefined) {
       CustomText.setLimitMode(customTextSettings.limit.mode);
@@ -226,8 +232,6 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
       CustomText.setPipeDelimiter(true);
     }
 
-    CustomText.setMode(customTextSettings.mode ?? "repeat");
-
     applied["custom text settings"] = "";
   }
 
@@ -242,7 +246,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 
   if (de[5] !== null) {
-    UpdateConfig.setLanguage(de[5], true);
+    UpdateConfig.setLanguage(de[5] as Language, true);
     applied["language"] = de[5];
   }
 
@@ -252,8 +256,15 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 
   if (de[7] !== null) {
-    UpdateConfig.setFunbox(de[7], true);
-    applied["funbox"] = de[7];
+    let val: FunboxName[] = [];
+    //convert legacy values
+    if (typeof de[7] === "string") {
+      val = de[7].split("#") as FunboxName[];
+    } else {
+      val = de[7];
+    }
+    UpdateConfig.setFunbox(val, true);
+    applied["funbox"] = val.join(", ");
   }
 
   restartTest({
@@ -298,3 +309,14 @@ export function loadChallengeFromUrl(getOverride?: string): void {
       console.error(e);
     });
 }
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    const search = window.location.search;
+    const hash = window.location.hash;
+    loadCustomThemeFromUrl(search);
+    loadTestSettingsFromUrl(search);
+    loadChallengeFromUrl(search);
+    void linkDiscord(hash);
+  }
+});

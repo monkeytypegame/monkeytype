@@ -87,9 +87,9 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
     }
   }
 
-  const usedClasses = new Array(...usedClassesSet).sort();
-  const allModuleClasses = Object.values(modules2).flatMap((it) => it);
-  const icons = usedClasses.filter((it) => !allModuleClasses.includes(it));
+  const usedClasses = [...usedClassesSet].sort();
+  const allModuleClasses = new Set(Object.values(modules2).flatMap((it) => it));
+  const icons = usedClasses.filter((it) => !allModuleClasses.has(it));
 
   const solid = icons.filter((it) => iconSet.solid.includes(it));
   const regular = icons.filter((it) => iconSet.regular.includes(it));
@@ -99,7 +99,7 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
     (it) => !(solid.includes(it) || regular.includes(it) || brands.includes(it))
   );
   if (leftOvers.length !== 0) {
-    throw new Error("unknown icons: " + leftOvers);
+    throw new Error("unknown icons: " + leftOvers.toString());
   }
 
   if (debug) {

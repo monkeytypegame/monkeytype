@@ -75,7 +75,6 @@ class Notification {
       cls = "bad";
       icon = `<i class="fas fa-times-circle"></i>`;
       title = "Error";
-      console.error(this.message);
     }
 
     if (this.important) {
@@ -194,11 +193,11 @@ class Notification {
         });
       }
       // NOTE: This need to be changed if the update banner text is changed
-      if (this.message.includes("please refresh")) {
+      if (/please (<a.*>)?refresh/i.test(this.message)) {
         // add pointer when refresh is needed
         $(
           `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
-        ).css("cursor", "pointer");
+        ).addClass("clickable");
         // refresh on clicking banner
         $(
           `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`

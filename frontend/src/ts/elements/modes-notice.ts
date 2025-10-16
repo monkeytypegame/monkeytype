@@ -9,24 +9,29 @@ import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
 import Format from "../utils/format";
+import { getActiveFunboxNames } from "../test/funbox/list";
+import { escapeHTML } from "../utils/misc";
 
 ConfigEvent.subscribe((eventKey) => {
-  if (
-    [
-      "difficulty",
-      "blindMode",
-      "stopOnError",
-      "paceCaret",
-      "minWpm",
-      "minAcc",
-      "minBurst",
-      "confidenceMode",
-      "layout",
-      "showAverage",
-      "typingSpeedUnit",
-      "quickRestart",
-    ].includes(eventKey)
-  ) {
+  const configKeys: ConfigEvent.ConfigEventKey[] = [
+    "difficulty",
+    "blindMode",
+    "stopOnError",
+    "paceCaret",
+    "minWpm",
+    "minWpmCustomSpeed",
+    "minAcc",
+    "minAccCustom",
+    "minBurst",
+    "confidenceMode",
+    "layout",
+    "showAverage",
+    "typingSpeedUnit",
+    "quickRestart",
+    "customPolyglot",
+    "alwaysShowDecimalPlaces",
+  ];
+  if (configKeys.includes(eventKey)) {
     void update();
   }
 });
@@ -75,7 +80,9 @@ export async function update(): Promise<void> {
   const isLong = CustomTextState.isCustomTextLong();
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton noInteraction"><i class="fas fa-book"></i>${customTextName} (shift + enter to save progress)</div>`
+      `<div class="textButton noInteraction"><i class="fas fa-book"></i>${escapeHTML(
+        customTextName
+      )} (shift + enter to save progress)</div>`
     );
   }
 
@@ -91,12 +98,27 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.mode !== "zen") {
+  const usingPolyglot = getActiveFunboxNames().includes("polyglot");
+
+  if (Config.mode !== "zen" && !usingPolyglot) {
     $(".pageTest #testModesNotice").append(
       `<button class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
         Config.language,
         Config.mode === "quote"
       )}</button>`
+    );
+  }
+
+  if (usingPolyglot) {
+    const languages = Config.customPolyglot
+      .map((lang) => {
+        const langDisplay = getLanguageDisplayString(lang, true);
+        return langDisplay;
+      })
+      .join(", ");
+
+    $(".pageTest #testModesNotice").append(
+      `<button class="textButton" commandId="setCustomPolyglotCustom"><i class="fas fa-globe-americas"></i>${languages}</button>`
     );
   }
 
@@ -154,14 +176,11 @@ export async function update(): Promise<void> {
 
     if (isAuthenticated() && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
-        ? Format.typingSpeed(avgWPM, {
-            suffix: ` ${Config.typingSpeedUnit}`,
-            showDecimalPlaces: false,
-          })
+        ? Format.typingSpeed(avgWPM, { suffix: ` ${Config.typingSpeedUnit}` })
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
-        ? Format.accuracy(avgAcc, { suffix: " acc", showDecimalPlaces: false })
+        ? Format.accuracy(avgAcc, { suffix: " acc" })
         : "";
 
       const text = `${avgWPMText} ${avgAccText}`.trim();
@@ -198,11 +217,11 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.funbox !== "none") {
+  if (Config.funbox.length > 0) {
     $(".pageTest #testModesNotice").append(
       `<button class="textButton" commands="funbox"><i class="fas fa-gamepad"></i>${Config.funbox
-        .replace(/_/g, " ")
-        .replace(/#/g, ", ")}</button>`
+        .map((it) => it.replace(/_/g, " "))
+        .join(", ")}</button>`
     );
   }
 

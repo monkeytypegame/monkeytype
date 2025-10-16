@@ -1,14 +1,17 @@
 import Ape from "../ape";
-import * as AccountController from "../controllers/account-controller";
+import * as AccountController from "../auth";
 import * as DB from "../db";
 import * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import * as CustomText from "../test/custom-text";
-import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
-import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
+import {
+  isAuthenticated,
+  getAuthenticatedUser,
+  isAuthAvailable,
+} from "../firebase";
 import {
   EmailAuthProvider,
   User,
@@ -20,12 +23,11 @@ import {
 import {
   createErrorMessage,
   isDevEnvironment,
-  isPasswordStrong,
   reloadAfter,
 } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
-import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
+import { CustomThemeColors } from "@monkeytype/schemas/configs";
 import * as AccountSettings from "../pages/account-settings";
 import {
   ExecReturn,
@@ -35,8 +37,14 @@ import {
 } from "../utils/simple-modal";
 import { ShowOptions } from "../utils/animated-modal";
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
-import { UserEmailSchema, UserNameSchema } from "@monkeytype/contracts/users";
+import {
+  PasswordSchema,
+  UserEmailSchema,
+  UserNameSchema,
+} from "@monkeytype/schemas/users";
 import { goToPage } from "../pages/leaderboards";
+import FileStorage from "../utils/file-storage";
+import { z } from "zod";
 
 type PopupKey =
   | "updateEmail"
@@ -132,7 +140,7 @@ function isUsingGoogleAuthentication(): boolean {
 
 function isUsingAuthentication(authProvider: AuthMethod): boolean {
   return (
-    Auth?.currentUser?.providerData.some(
+    getAuthenticatedUser()?.providerData.some(
       (p) => p.providerId === authProvider
     ) || false
   );
@@ -141,20 +149,21 @@ function isUsingAuthentication(authProvider: AuthMethod): boolean {
 async function reauthenticate(
   options: ReauthenticateOptions
 ): Promise<ReauthSuccess | ReauthFailed> {
-  if (Auth === undefined) {
+  if (!isAuthAvailable()) {
     return {
       status: -1,
       message: "Authentication is not initialized",
     };
   }
 
-  if (!isAuthenticated()) {
+  const user = getAuthenticatedUser();
+  if (user === null) {
     return {
       status: -1,
       message: "User is not signed in",
     };
   }
-  const user = getAuthenticatedUser();
+
   const authMethod = getPreferredAuthenticationMethod(options.excludeMethod);
 
   try {
@@ -241,6 +250,7 @@ list.updateEmail = new SimpleModal({
         isValid: async (currentValue, thisPopup) =>
           currentValue === thisPopup.inputs?.[1]?.currentValue() ||
           "Emails don't match",
+        debounceDelay: 0,
       },
     },
   ],
@@ -478,6 +488,7 @@ list.updateName = new SimpleModal({
 
           return checkNameResponse === 200 ? true : "Name not available";
         },
+        debounceDelay: 1000,
       },
     },
   ],
@@ -509,7 +520,6 @@ list.updateName = new SimpleModal({
       if (snapshot.needsToChangeName) {
         reloadAfter(2);
       }
-      AccountButton.update(snapshot);
     }
 
     return {
@@ -545,6 +555,9 @@ list.updatePassword = new SimpleModal({
       placeholder: "new password",
       type: "password",
       initVal: "",
+      validation: {
+        schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
+      },
     },
     {
       placeholder: "confirm new password",
@@ -571,14 +584,6 @@ list.updatePassword = new SimpleModal({
       return {
         status: 0,
         message: "New password must be different from previous password",
-      };
-    }
-
-    if (!isDevEnvironment() && !isPasswordStrong(newPassword)) {
-      return {
-        status: 0,
-        message:
-          "New password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
       };
     }
 
@@ -783,6 +788,7 @@ list.resetAccount = new SimpleModal({
 
     Notifications.add("Resetting settings...", 0);
     await UpdateConfig.reset();
+    await FileStorage.deleteFile("LocalBackgroundFile");
 
     Notifications.add("Resetting account...", 0);
     const response = await Ape.users.reset();
@@ -938,6 +944,7 @@ list.resetSettings = new SimpleModal({
   onlineOnly: true,
   execFn: async (): Promise<ExecReturn> => {
     await UpdateConfig.reset();
+    await FileStorage.deleteFile("LocalBackgroundFile");
     return {
       status: 1,
       message: "Settings reset",
@@ -1018,7 +1025,6 @@ list.unlinkDiscord = new SimpleModal({
 
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
-    AccountButton.updateAvatar(undefined, undefined);
     DB.setSnapshot(snap);
     AccountSettings.updateUI();
 
@@ -1151,7 +1157,7 @@ list.updateCustomTheme = new SimpleModal({
       };
     }
     UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
-    void ThemePicker.refreshButtons();
+    void ThemePicker.fillCustomButtons();
 
     return {
       status: 1,
@@ -1178,7 +1184,7 @@ list.deleteCustomTheme = new SimpleModal({
   onlineOnly: true,
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
-    void ThemePicker.refreshButtons();
+    void ThemePicker.fillCustomButtons();
 
     return {
       status: 1,

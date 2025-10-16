@@ -14,7 +14,7 @@ const list: Command[] = [
     sticky: true,
     exec: (): void => {
       ManualRestart.set();
-      if (Funbox.setFunbox("none")) {
+      if (Funbox.setFunbox([])) {
         TestLogic.restart();
       }
     },

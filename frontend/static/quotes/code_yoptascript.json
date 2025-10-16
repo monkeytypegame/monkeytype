@@ -1,0 +1,29 @@
+{
+  "language": "code_yoptascript",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "'use client';\nукрасть { SessionProvider } забратьИз 'next-auth/react' на\nукрасть { ReactNode } забратьИз 'react' на\n\nпредъява йопта Providers(жЫ children есть: жЫ children: ReactNode есть) жЫ\n\tотвечаю (\n\t\t<SessionProvider>\n\t\t\t{children}\n\t\t</SessionProvider>\n\t)\nесть",
+      "source": "From gopnik's brain",
+      "length": 265,
+      "id": 1
+    },
+    {
+      "text": "йопта stalinSort(arr) жЫ\n\tучастковый result внатуре [arr[0]]\n\tго (участковый i внатуре 1 нах i < arr.length нах i++) жЫ\n\t\tвилкойвглаз (arr[i] > result[result.length - 1]) жЫ\n\t\t\tresult.пупок(arr[i]) нах\n\t\tесть\n\tесть\n\tотвечаю result нах\nесть",
+      "source": "From gopnik's brain",
+      "length": 239,
+      "id": 2
+    },
+    {
+      "text": "красноглазое.чмо(\"Батя встал - район проснулся\")",
+      "source": "From gopnik's brain",
+      "length": 48,
+      "id": 3
+    }
+  ]
+}

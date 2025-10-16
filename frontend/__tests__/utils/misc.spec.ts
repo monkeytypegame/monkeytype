@@ -1,44 +1,48 @@
-import { deepClone, getErrorMessage, isObject } from "../../src/ts/utils/misc";
+import { describe, it, expect } from "vitest";
+import { getErrorMessage, isObject, escapeHTML } from "../../src/ts/utils/misc";
 import {
   getLanguageDisplayString,
   removeLanguageSize,
 } from "../../src/ts/utils/strings";
-
-//todo this file is in the wrong place
+import { Language } from "@monkeytype/schemas/languages";
 
 describe("misc.ts", () => {
   describe("getLanguageDisplayString", () => {
     it("should return correctly formatted strings", () => {
-      const tests = [
+      const tests: {
+        input: Language;
+        noSizeString: boolean;
+        expected: string;
+      }[] = [
         {
-          input: "language",
+          input: "english",
           noSizeString: false,
-          expected: "language",
+          expected: "english",
         },
         {
-          input: "language_1k",
+          input: "english_1k",
           noSizeString: false,
-          expected: "language 1k",
+          expected: "english 1k",
         },
         {
-          input: "language_1k",
+          input: "english_1k",
           noSizeString: true,
-          expected: "language",
+          expected: "english",
         },
         {
-          input: "language_lang",
+          input: "english_medical",
           noSizeString: false,
-          expected: "language lang",
+          expected: "english medical",
         },
         {
-          input: "language_lang_1k",
+          input: "arabic_egypt_1k",
           noSizeString: false,
-          expected: "language lang 1k",
+          expected: "arabic egypt 1k",
         },
         {
-          input: "language_lang_1k",
+          input: "arabic_egypt_1k",
           noSizeString: true,
-          expected: "language lang",
+          expected: "arabic egypt",
         },
       ];
 
@@ -50,22 +54,22 @@ describe("misc.ts", () => {
   });
   describe("removeLanguageSize", () => {
     it("should remove language size", () => {
-      const tests = [
+      const tests: { input: Language; expected: Language }[] = [
         {
-          input: "language",
-          expected: "language",
+          input: "english",
+          expected: "english",
         },
         {
-          input: "language_1k",
-          expected: "language",
+          input: "english_1k",
+          expected: "english",
         },
         {
-          input: "language_lang",
-          expected: "language_lang",
+          input: "arabic_egypt",
+          expected: "arabic_egypt",
         },
         {
-          input: "language_lang_1k",
-          expected: "language_lang",
+          input: "arabic_egypt_1k",
+          expected: "arabic_egypt",
         },
       ];
 
@@ -118,40 +122,25 @@ describe("misc.ts", () => {
       });
     });
   });
-  describe("deepClone", () => {
-    it("should correctly clone objects", () => {
+
+  describe("escapeHTML", () => {
+    it("should escape HTML characters correctly", () => {
       const tests = [
         {
-          input: {},
-          expected: {},
+          input: "hello world",
+          expected: "hello world",
         },
         {
-          input: { a: 1 },
-          expected: { a: 1 },
+          input: "<script>alert('xss')</script>",
+          expected: "&lt;script&gt;alert(&#39;xss&#39;)&lt;&#x2F;script&gt;",
         },
         {
-          input: { a: { b: 2 } },
-          expected: { a: { b: 2 } },
+          input: 'Hello "world" & friends',
+          expected: "Hello &quot;world&quot; &amp; friends",
         },
         {
-          input: { a: { b: 2 }, c: [1, 2, 3] },
-          expected: { a: { b: 2 }, c: [1, 2, 3] },
-        },
-        {
-          input: [],
-          expected: [],
-        },
-        {
-          input: [1, 2, 3],
-          expected: [1, 2, 3],
-        },
-        {
-          input: "string",
-          expected: "string",
-        },
-        {
-          input: 1,
-          expected: 1,
+          input: "Click `here` to continue",
+          expected: "Click &#x60;here&#x60; to continue",
         },
         {
           input: null,
@@ -161,14 +150,19 @@ describe("misc.ts", () => {
           input: undefined,
           expected: undefined,
         },
+        {
+          input: "",
+          expected: "",
+        },
       ];
 
       tests.forEach((test) => {
-        const result = deepClone(test.input);
-        expect(result).toStrictEqual(test.expected);
+        const result = escapeHTML(test.input);
+        expect(result).toBe(test.expected);
       });
     });
   });
+
   describe("getErrorMesssage", () => {
     it("should correctly get the error message", () => {
       const tests = [

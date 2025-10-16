@@ -16,6 +16,8 @@ import * as TestState from "./test-state";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
+import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
+import * as SoundController from "../controllers/sound-controller";
 
 type TimerStats = {
   dateNow: number;
@@ -90,13 +92,8 @@ function calculateAcc(): number {
 
 function layoutfluid(): void {
   if (timerDebug) console.time("layoutfluid");
-  if (
-    Config.funbox.split("#").includes("layoutfluid") &&
-    Config.mode === "time"
-  ) {
-    const layouts = Config.customLayoutfluid
-      ? Config.customLayoutfluid.split("#")
-      : ["qwerty", "dvorak", "colemak"];
+  if (Config.funbox.includes("layoutfluid") && Config.mode === "time") {
+    const layouts = Config.customLayoutfluid;
     const switchTime = Config.time / layouts.length;
     const time = Time.get();
     const index = Math.floor(time / switchTime);
@@ -118,8 +115,8 @@ function layoutfluid(): void {
 
     if (Config.layout !== layout && layout !== undefined) {
       LayoutfluidFunboxTimer.hide();
-      UpdateConfig.setLayout(layout, true);
-      UpdateConfig.setKeymapLayout(layout, true);
+      UpdateConfig.setLayout(layout as Layout, true);
+      UpdateConfig.setKeymapLayout(layout as KeymapLayout, true);
     }
   }
   if (timerDebug) console.timeEnd("layoutfluid");
@@ -157,30 +154,46 @@ function checkIfFailed(
 
 function checkIfTimeIsUp(): void {
   if (timerDebug) console.time("times up check");
-  if (
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
-  ) {
-    if (
-      (Time.get() >= Config.time &&
-        Config.time !== 0 &&
-        Config.mode === "time") ||
-      (Time.get() >= CustomText.getLimitValue() &&
-        CustomText.getLimitValue() !== 0 &&
-        Config.mode === "custom")
-    ) {
-      //times up
-      if (timer !== null) clearTimeout(timer);
-      Caret.hide();
-      TestInput.input.pushHistory();
-      TestInput.corrected.pushHistory();
-      SlowTimer.clear();
-      slowTimerCount = 0;
-      TimerEvent.dispatch("finish");
-      return;
-    }
+  let maxTime = undefined;
+
+  if (Config.mode === "time") {
+    maxTime = Config.time;
+  } else if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
+    maxTime = CustomText.getLimitValue();
   }
+  if (maxTime !== undefined && maxTime !== 0 && Time.get() >= maxTime) {
+    //times up
+    if (timer !== null) clearTimeout(timer);
+    Caret.hide();
+    TestInput.input.pushHistory();
+    TestInput.corrected.pushHistory();
+    SlowTimer.clear();
+    slowTimerCount = 0;
+    TimerEvent.dispatch("finish");
+    return;
+  }
+
   if (timerDebug) console.timeEnd("times up check");
+}
+
+function playTimeWarning(): void {
+  if (timerDebug) console.time("play timer warning");
+
+  let maxTime = undefined;
+
+  if (Config.mode === "time") {
+    maxTime = Config.time;
+  } else if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
+    maxTime = CustomText.getLimitValue();
+  }
+
+  if (
+    maxTime !== undefined &&
+    Time.get() === maxTime - parseInt(Config.playTimeWarning, 10)
+  ) {
+    void SoundController.playTimeWarning();
+  }
+  if (timerDebug) console.timeEnd("play timer warning");
 }
 
 // ---------------------------------------
@@ -196,6 +209,7 @@ async function timerStep(): Promise<void> {
   Time.increment();
   premid();
   updateTimer();
+  if (Config.playTimeWarning !== "off") playTimeWarning();
   const wpmAndRaw = calculateWpmRaw();
   const acc = calculateAcc();
   monkey(wpmAndRaw);

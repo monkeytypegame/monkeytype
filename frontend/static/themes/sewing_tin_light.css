@@ -34,7 +34,21 @@ header #logo .text {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  padding-bottom: 0.1em;
 }
+
+/* fix logo clipping */
+header #logo .icon {
+  padding-bottom: 0.05em;
+}
+nav {
+  padding-bottom: 0.2em;
+}
+
+header {
+  margin-bottom: -0.1em;
+}
+/*  */
 
 header #logo .text .top {
   /* prevent it from being transparent */

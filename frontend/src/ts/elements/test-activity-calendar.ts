@@ -1,4 +1,5 @@
 import { UTCDateMini } from "@date-fns/utc/date/mini";
+import { safeNumber } from "@monkeytype/util/numbers";
 import {
   format,
   endOfMonth,
@@ -53,7 +54,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
   }
 
   protected getInterval(lastDay: Date, fullYear = false): Interval {
-    const end = fullYear ? endOfYear(lastDay) : new Date();
+    const end = fullYear ? endOfYear(lastDay) : new UTCDateMini();
     let start = startOfYear(lastDay);
     if (!fullYear) {
       //show the last 52 weeks. Not using one year to avoid the graph to show 54 weeks
@@ -111,7 +112,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
           text: format(month, "MMM").toLowerCase(),
           weeks: weeks,
         });
-      } else if (i == 0) {
+      } else if (i === 0) {
         results.push({ text: "", weeks: weeks });
       }
     }
@@ -148,7 +149,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
         level: getValue(count),
         label:
           count !== undefined && count !== null
-            ? `${count} ${count == 1 ? "test" : "tests"} on ${day}`
+            ? `${count} ${count === 1 ? "test" : "tests"} on ${day}`
             : `no activity on ${day}`,
       });
       currentDate = addDays(currentDate, 1);
@@ -219,7 +220,7 @@ export class ModifiableTestActivityCalendar
     const lastDay = new UTCDateMini(this.lastDay);
     if (isSameDay(date, lastDay)) {
       const last = this.data.length - 1;
-      this.data[last] = (this.data[last] || 0) + 1;
+      this.data[last] = (safeNumber(this.data[last]) ?? 0) + 1;
     } else if (isBefore(date, lastDay)) {
       throw new Error("cannot alter data in the past.");
     } else {

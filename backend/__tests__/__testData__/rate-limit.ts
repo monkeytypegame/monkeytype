@@ -1,3 +1,4 @@
+import { expect } from "vitest";
 import { REQUEST_MULTIPLIER } from "../../src/middlewares/rate-limit";
 import { MatcherResult, ExpectedRateLimit } from "../vitest";
 import { Test as SuperTest } from "supertest";

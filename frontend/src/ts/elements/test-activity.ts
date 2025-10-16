@@ -7,27 +7,40 @@ import {
   TestActivityCalendar,
   TestActivityMonth,
 } from "./test-activity-calendar";
+import { safeNumber } from "@monkeytype/util/numbers";
 
 let yearSelector: SlimSelect | undefined = undefined;
 
 export function init(
+  element: HTMLElement,
   calendar?: TestActivityCalendar,
   userSignUpDate?: Date
 ): void {
   if (calendar === undefined) {
-    $("#testActivity").addClass("hidden");
+    clear(element);
     return;
   }
-  $("#testActivity").removeClass("hidden");
+  element.classList.remove("hidden");
 
-  yearSelector = getYearSelector();
-  initYearSelector("current", userSignUpDate?.getFullYear() || 2022);
-  updateLabels(calendar.firstDayOfWeek);
-  update(calendar);
+  if (element.querySelector(".yearSelect") !== null) {
+    yearSelector = getYearSelector(element);
+    initYearSelector(
+      element,
+      "current",
+      safeNumber(userSignUpDate?.getFullYear()) ?? 2022
+    );
+  }
+  updateLabels(element, calendar.firstDayOfWeek);
+  update(element, calendar);
 }
 
-function update(calendar?: TestActivityCalendar): void {
-  const container = document.querySelector("#testActivity .activity");
+export function clear(element: HTMLElement): void {
+  element.classList.add("hidden");
+  element.querySelector(".activity")?.replaceChildren();
+}
+
+function update(element: HTMLElement, calendar?: TestActivityCalendar): void {
+  const container = element.querySelector(".activity");
 
   if (container === null) {
     return;
@@ -37,13 +50,15 @@ function update(calendar?: TestActivityCalendar): void {
 
   if (calendar === undefined) {
     updateMonths([]);
-    $("#testActivity .nodata").removeClass("hidden");
+    element.querySelector(".nodata")?.classList.remove("hidden");
+
     return;
   }
 
   updateMonths(calendar.getMonths());
-  $("#testActivity .nodata").addClass("hidden");
-  const title = document.querySelector("#testActivity .title");
+  element.querySelector(".nodata")?.classList.add("hidden");
+
+  const title = element.querySelector(".title");
   {
     if (title !== null) {
       title.innerHTML = calendar.getTotalTests() + " tests";
@@ -62,6 +77,7 @@ function update(calendar?: TestActivityCalendar): void {
 }
 
 export function initYearSelector(
+  element: HTMLElement,
   selectedYear: number | "current",
   startYear: number
 ): void {
@@ -87,7 +103,7 @@ export function initYearSelector(
     }
   }
 
-  const yearSelect = getYearSelector();
+  const yearSelect = getYearSelector(element);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   yearSelect.setData(years);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -95,7 +111,11 @@ export function initYearSelector(
 }
 
 function updateMonths(months: TestActivityMonth[]): void {
-  const element = document.querySelector("#testActivity .months") as Element;
+  const element = document.querySelector(".testActivity .months");
+
+  if (element === null) {
+    return;
+  }
 
   element.innerHTML = months
     .map(
@@ -105,10 +125,10 @@ function updateMonths(months: TestActivityMonth[]): void {
     .join("");
 }
 
-function getYearSelector(): SlimSelect {
+function getYearSelector(element: HTMLElement): SlimSelect {
   if (yearSelector !== undefined) return yearSelector;
   yearSelector = new SlimSelect({
-    select: "#testActivity .yearSelect",
+    select: element.querySelector(".yearSelect") as Element,
     settings: {
       showSearch: false,
     },
@@ -118,7 +138,7 @@ function getYearSelector(): SlimSelect {
         yearSelector?.disable();
         const selected = newVal[0]?.value as string;
         const activity = await getTestActivityCalendar(selected);
-        update(activity);
+        update(element, activity);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         if ((yearSelector?.getData() ?? []).length > 1) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -139,11 +159,11 @@ const daysDisplay = [
   "friday",
   "saturday",
 ];
-function updateLabels(firstDayOfWeek: number): void {
+function updateLabels(element: HTMLElement, firstDayOfWeek: number): void {
   const days: (string | undefined)[] = [];
   for (let i = 0; i < 7; i++) {
     days.push(
-      i % 2 != firstDayOfWeek % 2
+      i % 2 !== firstDayOfWeek % 2
         ? daysDisplay[(firstDayOfWeek + i) % 7]
         : undefined
     );
@@ -163,6 +183,6 @@ function updateLabels(firstDayOfWeek: number): void {
       .join("");
   };
 
-  $("#testActivity .daysFull").html(buildHtml());
-  $("#testActivity .days").html(buildHtml(3));
+  (element.querySelector(".daysFull") as HTMLElement).innerHTML = buildHtml();
+  (element.querySelector(".days") as HTMLElement).innerHTML = buildHtml(3);
 }

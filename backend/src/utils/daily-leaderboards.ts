@@ -2,13 +2,18 @@ import _, { omit } from "lodash";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { matchesAPattern, kogascore } from "./misc";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import {
   Configuration,
   ValidModeRule,
-} from "@monkeytype/contracts/schemas/configuration";
-import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+} from "@monkeytype/schemas/configuration";
+import {
+  LeaderboardEntry,
+  RedisDailyLeaderboardEntry,
+  RedisDailyLeaderboardEntrySchema,
+} from "@monkeytype/schemas/leaderboards";
 import MonkeyError from "./error";
-import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import { Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { getCurrentDayTimestamp } from "@monkeytype/util/date-and-time";
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
@@ -50,7 +55,7 @@ export class DailyLeaderboard {
   }
 
   public async addResult(
-    entry: Omit<LeaderboardEntry, "rank">,
+    entry: RedisDailyLeaderboardEntry,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
   ): Promise<number> {
     const connection = RedisClient.getConnection();
@@ -72,9 +77,7 @@ export class DailyLeaderboard {
 
     const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
 
-    // @ts-expect-error we are doing some weird file to function mapping, thats why its any
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const rank = (await connection.addResult(
+    const rank = await connection.addResult(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
@@ -83,7 +86,7 @@ export class DailyLeaderboard {
       entry.uid,
       resultScore,
       JSON.stringify(entry)
-    )) as number;
+    );
 
     if (
       isValidModeRule(
@@ -126,16 +129,14 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    // @ts-expect-error we are doing some weird file to function mapping, thats why its any
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const [results, _] = (await connection.getResults(
+    const [results, _] = await connection.getResults(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
       minRank,
       maxRank,
       "false"
-    )) as [string[], string[]];
+    );
 
     if (results === undefined) {
       throw new Error(
@@ -145,13 +146,23 @@ export class DailyLeaderboard {
 
     const resultsWithRanks: LeaderboardEntry[] = results.map(
       (resultJSON, index) => {
-        // TODO: parse with zod?
-        const parsed = JSON.parse(resultJSON) as LeaderboardEntry;
+        try {
+          const parsed = parseJsonWithSchema(
+            resultJSON,
+            RedisDailyLeaderboardEntrySchema
+          );
 
-        return {
-          ...parsed,
-          rank: minRank + index + 1,
-        };
+          return {
+            ...parsed,
+            rank: minRank + index + 1,
+          };
+        } catch (error) {
+          throw new Error(
+            `Failed to parse leaderboard entry at index ${index}: ${
+              error instanceof Error ? error.message : String(error)
+            }`
+          );
+        }
       }
     );
 
@@ -191,7 +202,7 @@ export class DailyLeaderboard {
   ): Promise<LeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      throw new MonkeyError(500, "Redis connnection is unavailable");
+      throw new Error("Redis connection is unavailable");
     }
 
     const { leaderboardScoresKey, leaderboardResultsKey } =
@@ -214,16 +225,27 @@ export class DailyLeaderboard {
       return null;
     }
 
-    return {
-      ...(JSON.parse(result ?? "null") as LeaderboardEntry),
-      rank: rank + 1,
-    };
+    try {
+      return {
+        ...parseJsonWithSchema(
+          result ?? "null",
+          RedisDailyLeaderboardEntrySchema
+        ),
+        rank: rank + 1,
+      };
+    } catch (error) {
+      throw new Error(
+        `Failed to parse leaderboard entry: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
   }
 
   public async getCount(): Promise<number> {
     const connection = RedisClient.getConnection();
     if (!connection) {
-      throw new MonkeyError(500, "Redis connnection is unavailable");
+      throw new Error("Redis connection is unavailable");
     }
 
     const { leaderboardScoresKey } = this.getTodaysLeaderboardKeys();
@@ -241,8 +263,6 @@ export async function purgeUserFromDailyLeaderboards(
     return;
   }
 
-  // @ts-expect-error we are doing some weird file to function mapping, thats why its any
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   await connection.purgeResults(0, uid, dailyLeaderboardNamespace);
 }
 
@@ -278,3 +298,7 @@ export function getDailyLeaderboard(
 
   return new DailyLeaderboard(modeRule, customTimestamp);
 }
+
+export const __testing = {
+  namespace: dailyLeaderboardNamespace,
+};

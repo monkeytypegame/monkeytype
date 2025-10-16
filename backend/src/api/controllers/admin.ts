@@ -6,13 +6,14 @@ import GeorgeQueue from "../../queues/george-queue";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 import {
   AcceptReportsRequest,
+  ClearStreakHourOffsetRequest,
   RejectReportsRequest,
   SendForgotPasswordEmailRequest,
   ToggleBanRequest,
   ToggleBanResponse,
 } from "@monkeytype/contracts/admin";
 import MonkeyError, { getErrorMessage } from "../../utils/error";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import { addImportantLog } from "../../dal/logs";
 import { MonkeyRequest } from "../types";
 
@@ -40,6 +41,17 @@ export async function toggleBan(
   return new MonkeyResponse(`Ban toggled`, {
     banned: !user.banned,
   });
+}
+
+export async function clearStreakHourOffset(
+  req: MonkeyRequest<undefined, ClearStreakHourOffsetRequest>
+): Promise<MonkeyResponse> {
+  const { uid } = req.body;
+
+  await UserDAL.clearStreakHourOffset(uid);
+  void addImportantLog("admin_streak_hour_offset_cleared_by", {}, uid);
+
+  return new MonkeyResponse("Streak hour offset cleared", null);
 }
 
 export async function acceptReports(
@@ -74,9 +86,9 @@ export async function handleReports(
   const reportsFromDb = await ReportDAL.getReports(reportIds);
   const reportById = new Map(reportsFromDb.map((it) => [it.id, it]));
 
-  const existingReportIds = reportsFromDb.map((report) => report.id);
+  const existingReportIds = new Set(reportsFromDb.map((report) => report.id));
   const missingReportIds = reportIds.filter(
-    (reportId) => !existingReportIds.includes(reportId)
+    (reportId) => !existingReportIds.has(reportId)
   );
 
   if (missingReportIds.length > 0) {

@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import * as Numbers from "../src/numbers";
 
 describe("numbers", () => {
@@ -95,6 +96,62 @@ describe("numbers", () => {
           )
         ).toEqual(expected);
       });
+    });
+  });
+  describe("isSafeNumber", () => {
+    describe("should correctly identify safe numbers", () => {
+      const testCases = [
+        //safe
+        { input: 0, expected: true },
+        { input: 1, expected: true },
+        { input: -1, expected: true },
+        { input: 0.5, expected: true },
+        { input: -0.5, expected: true },
+        //not safe
+        { input: NaN, expected: false },
+        { input: Infinity, expected: false },
+        { input: -Infinity, expected: false },
+        { input: "string", expected: false },
+        { input: null, expected: false },
+        { input: undefined, expected: false },
+        { input: true, expected: false },
+        { input: false, expected: false },
+      ];
+
+      it.for(testCases)(
+        "should return $expected for $input",
+        ({ input, expected }) => {
+          expect(Numbers.isSafeNumber(input)).toEqual(expected);
+        }
+      );
+    });
+  });
+  describe("safeNumber", () => {
+    describe("should correctly identify safe numbers", () => {
+      const testCases = [
+        //safe
+        { input: 0, expected: 0 },
+        { input: 1, expected: 1 },
+        { input: -1, expected: -1 },
+        { input: 0.5, expected: 0.5 },
+        { input: -0.5, expected: -0.5 },
+        //not safe
+        { input: NaN, expected: undefined },
+        { input: Infinity, expected: undefined },
+        { input: -Infinity, expected: undefined },
+        { input: "string", expected: undefined },
+        { input: null, expected: undefined },
+        { input: undefined, expected: undefined },
+        { input: true, expected: undefined },
+        { input: false, expected: undefined },
+      ];
+
+      it.for(testCases)(
+        "should return $expected for $input",
+        ({ input, expected }) => {
+          expect(Numbers.safeNumber(input as number)).toEqual(expected);
+        }
+      );
     });
   });
 });

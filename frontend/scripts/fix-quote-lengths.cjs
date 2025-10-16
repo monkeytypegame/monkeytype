@@ -1,3 +1,4 @@
+// eslint-disable no-require-imports
 const fs = require("fs");
 
 function fixQuoteLengths() {

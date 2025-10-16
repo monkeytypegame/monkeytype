@@ -1,58 +1,96 @@
 import * as Caret from "./caret";
-import * as ActivePage from "../states/active-page";
 import * as LiveSpeed from "./live-speed";
 import * as LiveBurst from "./live-burst";
 import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
+import * as PageTransition from "../states/page-transition";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 
 const unfocusPx = 3;
 let state = false;
 
-export function set(foc: boolean, withCursor = false): void {
-  if (foc && !state) {
-    state = true;
-    Caret.stopAnimation();
-    $("header").addClass("focus");
-    $("footer").addClass("focus");
-    if (!withCursor) $("body").css("cursor", "none");
-    $("main").addClass("focus");
-    $("#bannerCenter").addClass("focus");
-    $("#notificationCenter").addClass("focus");
-    $("#capsWarning").addClass("focus");
-    $("#ad-vertical-right-wrapper").addClass("focus");
-    $("#ad-vertical-left-wrapper").addClass("focus");
-    $("#ad-footer-wrapper").addClass("focus");
-    $("#ad-footer-small-wrapper").addClass("focus");
-    LiveSpeed.show();
-    LiveBurst.show();
-    LiveAcc.show();
-    TimerProgress.show();
-  } else if (!foc && state) {
-    state = false;
-    Caret.startAnimation();
-    $("header").removeClass("focus");
-    $("footer").removeClass("focus");
-    $("body").css("cursor", "default");
-    $("main").removeClass("focus");
-    $("#bannerCenter").removeClass("focus");
-    $("#notificationCenter").removeClass("focus");
-    $("#capsWarning").removeClass("focus");
-    $("#app").removeClass("focus");
-    $("#ad-vertical-right-wrapper").removeClass("focus");
-    $("#ad-vertical-left-wrapper").removeClass("focus");
-    $("#ad-footer-wrapper").removeClass("focus");
-    $("#ad-footer-small-wrapper").removeClass("focus");
-    LiveSpeed.hide();
-    LiveBurst.hide();
-    LiveAcc.hide();
-    TimerProgress.hide();
-  }
+let cacheReady = false;
+let cache: {
+  focus?: HTMLElement[];
+  cursor?: HTMLElement[];
+} = {};
+
+function initializeCache(): void {
+  if (cacheReady) return;
+
+  const cursorSelector = "body, button, a";
+  const elementsSelector = [
+    "app",
+    "header",
+    "footer",
+    "main",
+    "#bannerCenter",
+    "#notificationCenter",
+    "#capsWarning",
+    "#ad-vertical-right-wrapper",
+    "#ad-vertical-left-wrapper",
+    "#ad-footer-wrapper",
+    "#ad-footer-small-wrapper",
+  ].join(",");
+
+  cache.cursor = [...document.querySelectorAll<HTMLElement>(cursorSelector)];
+  cache.focus = [...document.querySelectorAll<HTMLElement>(elementsSelector)];
+
+  cacheReady = true;
+}
+
+// with cursor is a special case that is only used on the initial page load
+// to avoid the cursor being invisible and confusing the user
+export function set(value: boolean, withCursor = false): void {
+  requestDebouncedAnimationFrame("focus.set", () => {
+    initializeCache();
+
+    if (value && !state) {
+      state = true;
+
+      // batch DOM operations for better performance
+      if (cache.focus) {
+        for (const el of cache.focus) {
+          el.classList.add("focus");
+        }
+      }
+      if (!withCursor && cache.cursor) {
+        for (const el of cache.cursor) {
+          el.style.cursor = "none";
+        }
+      }
+
+      Caret.stopAnimation();
+      LiveSpeed.show();
+      LiveBurst.show();
+      LiveAcc.show();
+      TimerProgress.show();
+    } else if (!value && state) {
+      state = false;
+
+      if (cache.focus) {
+        for (const el of cache.focus) {
+          el.classList.remove("focus");
+        }
+      }
+      if (cache.cursor) {
+        for (const el of cache.cursor) {
+          el.style.cursor = "";
+        }
+      }
+
+      Caret.startAnimation();
+      LiveSpeed.hide();
+      LiveBurst.hide();
+      LiveAcc.hide();
+      TimerProgress.hide();
+    }
+  });
 }
 
 $(document).on("mousemove", function (event) {
+  if (PageTransition.get()) return;
   if (!state) return;
-  if (ActivePage.get() === "loading") return;
-  if (ActivePage.get() === "account" && state) return;
   if (
     event.originalEvent &&
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px

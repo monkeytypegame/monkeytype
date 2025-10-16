@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { isDevEnvironment } from "./misc";
-import { MonkeyServerErrorType } from "@monkeytype/contracts/schemas/api";
+import { MonkeyServerErrorType } from "@monkeytype/contracts/util/api";
 import { FirebaseError } from "firebase-admin";
 
 type FirebaseErrorParent = {
@@ -55,7 +55,7 @@ class MonkeyError extends Error implements MonkeyServerErrorType {
   uid?: string;
 
   constructor(status: number, message?: string, stack?: string, uid?: string) {
-    super();
+    super(message);
     this.status = status ?? 500;
     this.errorId = uuidv4();
     this.stack = stack;

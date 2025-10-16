@@ -1,4 +1,5 @@
-import { replace as replace } from "../../src/ts/test/british-english";
+import { describe, it, expect, beforeEach } from "vitest";
+import { replace } from "../../src/ts/test/british-english";
 import Config from "../../src/ts/config";
 
 describe("british-english", () => {
@@ -36,6 +37,31 @@ describe("british-english", () => {
       await expect(replace("armor-flavoring", "")).resolves.toEqual(
         "armour-flavouring"
       );
+    });
+
+    it("should convert double quotes to single quotes", async () => {
+      await expect(replace('"hello"', "")).resolves.toEqual("'hello'");
+      await expect(replace('"test"', "")).resolves.toEqual("'test'");
+      await expect(replace('"Hello World"', "")).resolves.toEqual(
+        "'Hello World'"
+      );
+    });
+
+    it("should convert double quotes and replace words", async () => {
+      await expect(replace('"color"', "")).resolves.toEqual("'colour'");
+      await expect(replace('"math"', "")).resolves.toEqual("'maths'");
+      await expect(replace('"Color"', "")).resolves.toEqual("'Colour'");
+    });
+
+    it("should handle multiple double quotes in a word", async () => {
+      await expect(
+        replace('He said "hello" and "goodbye"', "")
+      ).resolves.toEqual("He said 'hello' and 'goodbye'");
+    });
+
+    it("should not affect words without double quotes", async () => {
+      await expect(replace("'hello'", "")).resolves.toEqual("'hello'");
+      await expect(replace("test", "")).resolves.toEqual("test");
     });
   });
 });

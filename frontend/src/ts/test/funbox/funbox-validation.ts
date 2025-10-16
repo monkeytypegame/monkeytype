@@ -1,7 +1,7 @@
 import * as Notifications from "../../elements/notifications";
 import * as Strings from "../../utils/strings";
-import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
-import { FunboxMetadata, getFunboxesFromString } from "@monkeytype/funbox";
+import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
+import { FunboxMetadata, getFunbox } from "@monkeytype/funbox";
 import { intersect } from "@monkeytype/util/arrays";
 
 export function checkForcedConfig(
@@ -73,43 +73,48 @@ export function checkForcedConfig(
 export function canSetConfigWithCurrentFunboxes(
   key: string,
   value: ConfigValue,
-  funbox: string,
+  funbox: FunboxName[] = [],
   noNotification = false
 ): boolean {
   let errorCount = 0;
+  const funboxes = getFunbox(funbox);
   if (key === "mode") {
-    let fb = getFunboxesFromString(funbox).filter(
+    let fb = getFunbox(funbox).filter(
       (f) =>
         f.frontendForcedConfig?.["mode"] !== undefined &&
         !(f.frontendForcedConfig["mode"] as ConfigValue[]).includes(value)
     );
     if (value === "zen") {
       fb = fb.concat(
-        getFunboxesFromString(funbox).filter((f) => {
+        funboxes.filter((f) => {
+          const funcs = f.frontendFunctions ?? [];
+          const props = f.properties ?? [];
           return (
-            f.frontendFunctions?.includes("getWord") ??
-            f.frontendFunctions?.includes("pullSection") ??
-            f.frontendFunctions?.includes("alterText") ??
-            f.frontendFunctions?.includes("withWords") ??
-            f.properties?.includes("changesCapitalisation") ??
-            f.properties?.includes("nospace") ??
-            f.properties?.find((fp) => fp.startsWith("toPush:")) ??
-            f.properties?.includes("changesWordsVisibility") ??
-            f.properties?.includes("speaks") ??
-            f.properties?.includes("changesLayout") ??
-            f.properties?.includes("changesWordsFrequency")
+            funcs.includes("getWord") ||
+            funcs.includes("pullSection") ||
+            funcs.includes("alterText") ||
+            funcs.includes("withWords") ||
+            props.includes("changesCapitalisation") ||
+            props.includes("nospace") ||
+            props.some((fp) => fp.startsWith("toPush:")) ||
+            props.includes("changesWordsVisibility") ||
+            props.includes("speaks") ||
+            props.includes("changesLayout") ||
+            props.includes("changesWordsFrequency")
           );
         })
       );
     }
     if (value === "quote" || value === "custom") {
       fb = fb.concat(
-        getFunboxesFromString(funbox).filter((f) => {
+        funboxes.filter((f) => {
+          const funcs = f.frontendFunctions ?? [];
+          const props = f.properties ?? [];
           return (
-            f.frontendFunctions?.includes("getWord") ??
-            f.frontendFunctions?.includes("pullSection") ??
-            f.frontendFunctions?.includes("withWords") ??
-            f.properties?.includes("changesWordsFrequency")
+            funcs.includes("getWord") ||
+            funcs.includes("pullSection") ||
+            funcs.includes("withWords") ||
+            props.includes("changesWordsFrequency")
           );
         })
       );
@@ -120,7 +125,7 @@ export function canSetConfigWithCurrentFunboxes(
     }
   }
   if (key === "words" || key === "time") {
-    if (!checkForcedConfig(key, value, getFunboxesFromString(funbox)).result) {
+    if (!checkForcedConfig(key, value, funboxes).result) {
       if (!noNotification) {
         Notifications.add("Active funboxes do not support infinite tests", 0);
         return false;
@@ -128,9 +133,7 @@ export function canSetConfigWithCurrentFunboxes(
         errorCount += 1;
       }
     }
-  } else if (
-    !checkForcedConfig(key, value, getFunboxesFromString(funbox)).result
-  ) {
+  } else if (!checkForcedConfig(key, value, funboxes).result) {
     errorCount += 1;
   }
 
@@ -153,16 +156,12 @@ export function canSetConfigWithCurrentFunboxes(
 }
 
 export function canSetFunboxWithConfig(
-  funbox: string,
+  funbox: FunboxName,
   config: Config
 ): boolean {
   console.log("cansetfunboxwithconfig", funbox, config.mode);
-  let funboxToCheck = config.funbox;
-  if (funboxToCheck === "none") {
-    funboxToCheck = funbox;
-  } else {
-    funboxToCheck += "#" + funbox;
-  }
+  let funboxToCheck = [...config.funbox, funbox];
+
   const errors = [];
   for (const [configKey, configValue] of Object.entries(config)) {
     if (

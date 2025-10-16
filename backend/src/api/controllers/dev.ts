@@ -9,11 +9,7 @@ import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
 
-import {
-  Mode,
-  PersonalBest,
-  PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
+import { Mode, PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
 import {
   GenerateDataRequest,
   GenerateDataResponse,
@@ -22,6 +18,7 @@ import { roundTo2 } from "@monkeytype/util/numbers";
 import { MonkeyRequest } from "../types";
 import { DBResult } from "../../utils/result";
 import { LbPersonalBests } from "../../utils/pb";
+import { Language } from "@monkeytype/schemas/languages";
 
 const CREATE_RESULT_DEFAULT_OPTIONS = {
   firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),
@@ -140,7 +137,7 @@ function createResult(
     keyConsistency: 33.18,
     chartData: {
       wpm: createArray(testDuration, () => random(80, 120)),
-      raw: createArray(testDuration, () => random(80, 120)),
+      burst: createArray(testDuration, () => random(80, 120)),
       err: createArray(testDuration, () => (Math.random() < 0.1 ? 1 : 0)),
     },
     keySpacingStats: {
@@ -207,25 +204,22 @@ async function updateUser(uid: string): Promise<void> {
   const modes = stats.map(
     (it) =>
       it["_id"] as {
-        language: string;
+        language: Language;
         mode: "time" | "custom" | "words" | "quote" | "zen";
         mode2: `${number}` | "custom" | "zen";
       }
   );
 
   for (const mode of modes) {
-    const best = (
-      await ResultDal.getResultCollection()
-        .find({
-          uid,
-          language: mode.language,
-          mode: mode.mode,
-          mode2: mode.mode2,
-        })
-        .sort({ wpm: -1, timestamp: 1 })
-        .limit(1)
-        .toArray()
-    )[0] as DBResult;
+    const best = (await ResultDal.getResultCollection().findOne(
+      {
+        uid,
+        language: mode.language,
+        mode: mode.mode,
+        mode2: mode.mode2,
+      },
+      { sort: { wpm: -1, timestamp: 1 } }
+    )) as DBResult;
 
     if (personalBests[mode.mode] === undefined) personalBests[mode.mode] = {};
     if (personalBests[mode.mode][mode.mode2] === undefined)

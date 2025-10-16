@@ -2,18 +2,19 @@ import {
   Config,
   ConfigValue,
   PartialConfig,
-} from "@monkeytype/contracts/schemas/configs";
+  FunboxName,
+} from "@monkeytype/schemas/configs";
 import { typedKeys } from "./misc";
-import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
+import { sanitize } from "./sanitize";
+import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
-
 /**
  * migrates possible outdated config and merges with the default config values
  * @param config partial or possible outdated config
  * @returns
  */
 export function migrateConfig(config: PartialConfig | object): Config {
-  return mergeWithDefaultConfig(replaceLegacyValues(config));
+  return mergeWithDefaultConfig(sanitizeConfig(replaceLegacyValues(config)));
 }
 
 function mergeWithDefaultConfig(config: PartialConfig): Config {
@@ -27,10 +28,20 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
   return mergedConfig;
 }
 
-export function replaceLegacyValues(
+/**
+ * remove all values from the config which are not valid
+ */
+function sanitizeConfig(
+  config: ConfigSchemas.PartialConfig
+): ConfigSchemas.PartialConfig {
+  //make sure to use strip()
+  return sanitize(ConfigSchemas.PartialConfigSchema.strip(), config);
+}
+
+function replaceLegacyValues(
   configObj: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
-  //@ts-expect-error
+  //@ts-expect-error legacy configs
   if (configObj.quickTab === true && configObj.quickRestart === undefined) {
     configObj.quickRestart = "tab";
   }
@@ -40,7 +51,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.swapEscAndTab === true &&
     configObj.quickRestart === undefined
   ) {
@@ -48,14 +59,14 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.alwaysShowCPM === true &&
     configObj.typingSpeedUnit === undefined
   ) {
     configObj.typingSpeedUnit = "cpm";
   }
 
-  //@ts-expect-error
+  //@ts-expect-error legacy configs
   if (configObj.showAverage === "wpm") {
     configObj.showAverage = "speed";
   }
@@ -65,7 +76,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showTimerProgress === false &&
     configObj.timerStyle === undefined
   ) {
@@ -73,7 +84,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showLiveWpm === true &&
     configObj.liveSpeedStyle === undefined
   ) {
@@ -85,7 +96,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showLiveBurst === true &&
     configObj.liveBurstStyle === undefined
   ) {
@@ -97,7 +108,7 @@ export function replaceLegacyValues(
   }
 
   if (
-    //@ts-expect-error
+    //@ts-expect-error legacy configs
     configObj.showLiveAcc === true &&
     configObj.liveAccStyle === undefined
   ) {
@@ -110,6 +121,101 @@ export function replaceLegacyValues(
 
   if (typeof configObj.soundVolume === "string") {
     configObj.soundVolume = parseFloat(configObj.soundVolume);
+  }
+
+  if (typeof configObj.funbox === "string") {
+    if (configObj.funbox === "none") {
+      configObj.funbox = [];
+    } else {
+      configObj.funbox = (configObj.funbox as string).split(
+        "#"
+      ) as FunboxName[];
+    }
+  }
+
+  if (typeof configObj.customLayoutfluid === "string") {
+    configObj.customLayoutfluid = (configObj.customLayoutfluid as string).split(
+      "#"
+    ) as ConfigSchemas.CustomLayoutFluid;
+  }
+
+  if (typeof configObj.indicateTypos === "boolean") {
+    configObj.indicateTypos =
+      configObj.indicateTypos === false ? "off" : "replace";
+  }
+
+  if (typeof configObj.fontSize === "string") {
+    //legacy values use strings
+    const oldValue = configObj.fontSize;
+    let newValue = parseInt(oldValue);
+
+    if (oldValue === "125") {
+      newValue = 1.25;
+    } else if (oldValue === "15") {
+      newValue = 1.5;
+    }
+
+    configObj.fontSize = newValue;
+  } else if (configObj.fontSize !== undefined && configObj.fontSize < 0) {
+    configObj.fontSize = 1;
+  }
+
+  if (
+    Array.isArray(configObj.accountChart) &&
+    configObj.accountChart.length !== 4
+  ) {
+    configObj.accountChart = ["on", "on", "on", "on"];
+  }
+
+  if (
+    typeof configObj.minAccCustom === "number" &&
+    configObj.minAccCustom > 100
+  ) {
+    configObj.minAccCustom = 100;
+  }
+
+  if (
+    Array.isArray(configObj.customThemeColors) &&
+    //@ts-expect-error legacy configs
+    configObj.customThemeColors.length === 9
+  ) {
+    // migrate existing configs missing sub alt color
+    const colors = configObj.customThemeColors;
+    colors.splice(4, 0, "#000000");
+    configObj.customThemeColors = colors;
+  }
+
+  if (
+    Array.isArray(configObj.customBackgroundFilter) &&
+    //@ts-expect-error legacy configs
+    configObj.customBackgroundFilter.length === 5
+  ) {
+    const arr = configObj.customBackgroundFilter;
+    configObj.customBackgroundFilter = [arr[0], arr[1], arr[2], arr[3]];
+  }
+
+  if (typeof configObj.quoteLength === "number") {
+    if (configObj.quoteLength === -1) {
+      configObj.quoteLength = [0, 1, 2, 3];
+    } else {
+      configObj.quoteLength = [configObj.quoteLength];
+    }
+  }
+
+  if (configObj.tapeMargin !== undefined) {
+    if (configObj.tapeMargin < 10) {
+      configObj.tapeMargin = 10;
+    } else if (configObj.tapeMargin > 90) {
+      configObj.tapeMargin = 90;
+    }
+  }
+
+  if (configObj.maxLineWidth !== undefined) {
+    if (configObj.maxLineWidth < 20 && configObj.maxLineWidth !== 0) {
+      configObj.maxLineWidth = 20;
+    } else if (configObj.maxLineWidth > 1000) {
+      configObj.maxLineWidth = 1000;
+    }
   }
 
   return configObj;

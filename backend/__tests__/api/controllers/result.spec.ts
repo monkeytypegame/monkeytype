@@ -1,29 +1,21 @@
-import request from "supertest";
-import app from "../../../src/app";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import _, { omit } from "lodash";
 import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
 import * as LogsDal from "../../../src/dal/logs";
+import * as PublicDal from "../../../src/dal/public";
 import { ObjectId } from "mongodb";
-import {
-  mockAuthenticateWithApeKey,
-  mockBearerAuthentication,
-} from "../../__testData__/auth";
+import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import { DBResult } from "../../../src/utils/result";
 
-const mockApp = request(app);
+const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
 enableRateLimitExpects();
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 
 describe("result controller test", () => {
-  beforeEach(() => {
-    mockAuth.beforeEach();
-  });
-
   describe("getResults", () => {
     const resultMock = vi.spyOn(ResultDal, "getResults");
 
@@ -34,7 +26,7 @@ describe("result controller test", () => {
     });
 
     afterEach(() => {
-      resultMock.mockReset();
+      resultMock.mockClear();
     });
 
     it("should get results", async () => {
@@ -279,44 +271,6 @@ describe("result controller test", () => {
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
-    it("should get results with legacy values", async () => {
-      //GIVEN
-      const resultOne = givenDbResult(uid, {
-        charStats: undefined,
-        incorrectChars: 5,
-        correctChars: 12,
-      });
-      const resultTwo = givenDbResult(uid, {
-        charStats: undefined,
-        incorrectChars: 7,
-        correctChars: 15,
-      });
-      resultMock.mockResolvedValue([resultOne, resultTwo]);
-
-      //WHEN
-      const { body } = await mockApp
-        .get("/results")
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(200);
-
-      //THEN
-
-      expect(body.message).toEqual("Results retrieved");
-      expect(body.data[0]).toMatchObject({
-        _id: resultOne._id.toHexString(),
-        charStats: [12, 5, 0, 0],
-      });
-      expect(body.data[0]).not.toHaveProperty("correctChars");
-      expect(body.data[0]).not.toHaveProperty("incorrectChars");
-
-      expect(body.data[1]).toMatchObject({
-        _id: resultTwo._id.toHexString(),
-        charStats: [15, 7, 0, 0],
-      });
-      expect(body.data[1]).not.toHaveProperty("correctChars");
-      expect(body.data[1]).not.toHaveProperty("incorrectChars");
-    });
     it("should be rate limited", async () => {
       await expect(
         mockApp.get("/results").set("Authorization", `Bearer ${uid}`)
@@ -337,7 +291,7 @@ describe("result controller test", () => {
     const getResultMock = vi.spyOn(ResultDal, "getResult");
 
     afterEach(() => {
-      getResultMock.mockReset();
+      getResultMock.mockClear();
     });
 
     it("should get result", async () => {
@@ -370,31 +324,6 @@ describe("result controller test", () => {
         .send()
         .expect(200);
     });
-    it("should get last result with legacy values", async () => {
-      //GIVEN
-      const result = givenDbResult(uid, {
-        charStats: undefined,
-        incorrectChars: 5,
-        correctChars: 12,
-      });
-      getResultMock.mockResolvedValue(result);
-
-      //WHEN
-      const { body } = await mockApp
-        .get(`/results/id/${result._id}`)
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(200);
-
-      //THEN
-      expect(body.message).toEqual("Result retrieved");
-      expect(body.data).toMatchObject({
-        _id: result._id.toHexString(),
-        charStats: [12, 5, 0, 0],
-      });
-      expect(body.data).not.toHaveProperty("correctChars");
-      expect(body.data).not.toHaveProperty("incorrectChars");
-    });
     it("should rate limit get  result with ape key", async () => {
       //GIVEN
       const result = givenDbResult(uid, {
@@ -418,7 +347,7 @@ describe("result controller test", () => {
     const getLastResultMock = vi.spyOn(ResultDal, "getLastResult");
 
     afterEach(() => {
-      getLastResultMock.mockReset();
+      getLastResultMock.mockClear();
     });
 
     it("should get last result", async () => {
@@ -451,31 +380,6 @@ describe("result controller test", () => {
         .send()
         .expect(200);
     });
-    it("should get last result with legacy values", async () => {
-      //GIVEN
-      const result = givenDbResult(uid, {
-        charStats: undefined,
-        incorrectChars: 5,
-        correctChars: 12,
-      });
-      getLastResultMock.mockResolvedValue(result);
-
-      //WHEN
-      const { body } = await mockApp
-        .get("/results/last")
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(200);
-
-      //THEN
-      expect(body.message).toEqual("Result retrieved");
-      expect(body.data).toMatchObject({
-        _id: result._id.toHexString(),
-        charStats: [12, 5, 0, 0],
-      });
-      expect(body.data).not.toHaveProperty("correctChars");
-      expect(body.data).not.toHaveProperty("incorrectChars");
-    });
     it("should rate limit get last result with ape key", async () => {
       //GIVEN
       const result = givenDbResult(uid, {
@@ -497,13 +401,14 @@ describe("result controller test", () => {
     const deleteAllMock = vi.spyOn(ResultDal, "deleteAll");
     const logToDbMock = vi.spyOn(LogsDal, "addLog");
     afterEach(() => {
-      deleteAllMock.mockReset();
-      logToDbMock.mockReset();
+      deleteAllMock.mockClear();
+      logToDbMock.mockClear();
     });
 
     it("should delete", async () => {
       //GIVEN
       mockAuth.modifyToken({ iat: Date.now() - 1000 });
+      deleteAllMock.mockResolvedValue(undefined as any);
 
       //WHEN
       const { body } = await mockApp
@@ -543,7 +448,7 @@ describe("result controller test", () => {
         updateTagsMock,
         getUserPartialMock,
         checkIfTagPbMock,
-      ].forEach((it) => it.mockReset());
+      ].forEach((it) => it.mockClear());
     });
 
     it("should update tags", async () => {
@@ -626,7 +531,7 @@ describe("result controller test", () => {
         ...result,
         difficulty: "normal",
         language: "english",
-        funbox: "none",
+        funbox: [],
         lazyMode: false,
         punctuation: false,
         numbers: false,
@@ -672,22 +577,35 @@ describe("result controller test", () => {
   describe("addResult", () => {
     //TODO improve test coverage for addResult
     const insertedId = new ObjectId();
-    const getUserMock = vi.spyOn(UserDal, "getUser");
-    const updateStreakMock = vi.spyOn(UserDal, "updateStreak");
-    const checkIfTagPbMock = vi.spyOn(UserDal, "checkIfTagPb");
-    const addResultMock = vi.spyOn(ResultDal, "addResult");
+    const userGetMock = vi.spyOn(UserDal, "getUser");
+    const userUpdateStreakMock = vi.spyOn(UserDal, "updateStreak");
+    const userCheckIfTagPbMock = vi.spyOn(UserDal, "checkIfTagPb");
+    const userCheckIfPbMock = vi.spyOn(UserDal, "checkIfPb");
+    const userIncrementXpMock = vi.spyOn(UserDal, "incrementXp");
+    const userUpdateTypingStatsMock = vi.spyOn(UserDal, "updateTypingStats");
+    const resultAddMock = vi.spyOn(ResultDal, "addResult");
+    const publicUpdateStatsMock = vi.spyOn(PublicDal, "updateStats");
 
     beforeEach(async () => {
       await enableResultsSaving(true);
 
-      [getUserMock, updateStreakMock, checkIfTagPbMock, addResultMock].forEach(
-        (it) => it.mockReset()
-      );
+      [
+        userGetMock,
+        userUpdateStreakMock,
+        userCheckIfTagPbMock,
+        userCheckIfPbMock,
+        userIncrementXpMock,
+        userUpdateTypingStatsMock,
+        resultAddMock,
+        publicUpdateStatsMock,
+      ].forEach((it) => it.mockClear());
 
-      getUserMock.mockResolvedValue({ name: "bob" } as any);
-      updateStreakMock.mockResolvedValue(0);
-      checkIfTagPbMock.mockResolvedValue([]);
-      addResultMock.mockResolvedValue({ insertedId });
+      userGetMock.mockResolvedValue({ name: "bob" } as any);
+      userUpdateStreakMock.mockResolvedValue(0);
+      userCheckIfTagPbMock.mockResolvedValue([]);
+      userCheckIfPbMock.mockResolvedValue(true);
+      resultAddMock.mockResolvedValue({ insertedId });
+      userIncrementXpMock.mockResolvedValue();
     });
 
     it("should add result", async () => {
@@ -704,10 +622,10 @@ describe("result controller test", () => {
             bailedOut: false,
             blindMode: false,
             charStats: [100, 2, 3, 5],
-            chartData: { wpm: [1, 2, 3], raw: [50, 55, 56], err: [0, 2, 0] },
+            chartData: { wpm: [1, 2, 3], burst: [50, 55, 56], err: [0, 2, 0] },
             consistency: 23.5,
             difficulty: "normal",
-            funbox: "none",
+            funbox: [],
             hash: "hash",
             incompleteTestSeconds: 2,
             incompleteTests: [{ acc: 75, seconds: 10 }],
@@ -749,7 +667,7 @@ describe("result controller test", () => {
         insertedId: insertedId.toHexString(),
       });
 
-      expect(addResultMock).toHaveBeenCalledWith(
+      expect(resultAddMock).toHaveBeenCalledWith(
         uid,
         expect.objectContaining({
           acc: 86,
@@ -757,7 +675,7 @@ describe("result controller test", () => {
           charStats: [100, 2, 3, 5],
           chartData: {
             err: [0, 2, 0],
-            raw: [50, 55, 56],
+            burst: [50, 55, 56],
             wpm: [1, 2, 3],
           },
           consistency: 23.5,
@@ -782,6 +700,17 @@ describe("result controller test", () => {
           uid: uid,
           wpm: 80,
         })
+      );
+
+      expect(publicUpdateStatsMock).toHaveBeenCalledWith(
+        4,
+        15.1 + 2 - 5 //duration + incompleteTestSeconds-afk
+      );
+      expect(userIncrementXpMock).toHaveBeenCalledWith(uid, 0);
+      expect(userUpdateTypingStatsMock).toHaveBeenCalledWith(
+        uid,
+        4,
+        15.1 + 2 - 5 //duration + incompleteTestSeconds-afk
       );
     });
     it("should fail if result saving is disabled", async () => {
@@ -828,10 +757,10 @@ describe("result controller test", () => {
             bailedOut: false,
             blindMode: false,
             charStats: [100, 2, 3, 5],
-            chartData: { wpm: [1, 2, 3], raw: [50, 55, 56], err: [0, 2, 0] },
+            chartData: { wpm: [1, 2, 3], burst: [50, 55, 56], err: [0, 2, 0] },
             consistency: 23.5,
             difficulty: "normal",
-            funbox: "none",
+            funbox: [],
             hash: "hash",
             incompleteTestSeconds: 2,
             incompleteTests: [{ acc: 75, seconds: 10 }],
@@ -874,26 +803,24 @@ describe("result controller test", () => {
       });
     });
 
-    it("should fail invalid properties", async () => {
-      //GIVEN
-
-      //WHEN
-      const { body } = await mockApp
-        .post("/results")
-        .set("Authorization", `Bearer ${uid}`)
-        //TODO add all properties
-        .send({ result: { acc: 25 } })
-        .expect(422);
-
-      //THEN
-      /*
+    // it("should fail invalid properties ", async () => {
+    //GIVEN
+    //WHEN
+    // const { body } = await mockApp
+    //   .post("/results")
+    //   .set("Authorization", `Bearer ${uid}`)
+    //   //TODO add all properties
+    //   .send({ result: { acc: 25 } })
+    //   .expect(422);
+    //THEN
+    /*
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
         ],
       });
       */
-    });
+    // });
   });
 });
 

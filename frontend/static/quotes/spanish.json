@@ -1140,6 +1140,24 @@
       "source": "Enrique de Mesa - La alegre carreta",
       "length": 81,
       "id": 198
+    },
+    {
+      "text": "Aquél que tiene un porqué para vivir, puede soportar casi cualquier cómo.",
+      "source": "Friedrich Nietzsche",
+      "length": 73,
+      "id": 199
+    },
+    {
+      "text": "Es mucho más difícil crear que destruir, por eso solo los cobardes se decantan por lo segundo.",
+      "source": "Steve - Una película de Minecraft",
+      "length": 94,
+      "id": 200
+    },
+    {
+      "text": "Caminante, no hay camino, se hace camino al andar. Al andar se hace el camino, y al volver la vista atrás se ve la senda que nunca se ha de volver a pisar.",
+      "source": "Antonio Machado",
+      "length": 155,
+      "id": 201
     }
   ]
 }

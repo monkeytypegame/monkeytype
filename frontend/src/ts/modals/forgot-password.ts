@@ -3,9 +3,17 @@ import AnimatedModal from "../utils/animated-modal";
 import Ape from "../ape/index";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
-import { z } from "zod";
+import { UserEmailSchema } from "@monkeytype/schemas/users";
 
 export function show(): void {
+  if (!CaptchaController.isCaptchaAvailable()) {
+    Notifications.add(
+      "Could not show forgot password popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
+      -1
+    );
+    return;
+  }
+
   void modal.show({
     mode: "dialog",
     focusFirstInput: true,
@@ -39,9 +47,7 @@ async function submit(): Promise<void> {
     return;
   }
 
-  const emailSchema = z.string().email();
-
-  const validation = emailSchema.safeParse(email);
+  const validation = UserEmailSchema.safeParse(email);
   if (!validation.success) {
     Notifications.add("Please enter a valid email address");
     CaptchaController.reset("forgotPasswordModal");

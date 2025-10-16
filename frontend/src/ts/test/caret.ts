@@ -1,12 +1,12 @@
-import * as JSONData from "../utils/json-data";
 import Config from "../config";
 import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "../test/test-state";
 import * as TestWords from "./test-words";
-import { prefersReducedMotion } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
-import { splitIntoCharacters } from "../utils/strings";
+import { splitIntoCharacters, isWordRightToLeft } from "../utils/strings";
+import { safeNumber } from "@monkeytype/util/numbers";
+import { subscribe } from "../observables/config-event";
 
 export let caretAnimating = true;
 const caret = document.querySelector("#caret") as HTMLElement;
@@ -34,12 +34,15 @@ export function hide(): void {
   caret.classList.add("hidden");
 }
 
-export function getSpaceWidth(wordElement?: HTMLElement): number {
-  if (!wordElement)
-    wordElement = document
-      .getElementById("words")
-      ?.querySelectorAll(".word")?.[0] as HTMLElement | undefined;
-  if (!wordElement) return 0;
+function getSpaceWidth(wordElement?: HTMLElement): number {
+  if (!wordElement) {
+    const el = document.querySelector<HTMLElement>("#words .word");
+    if (el) {
+      wordElement = el;
+    } else {
+      return 0;
+    }
+  }
   const wordComputedStyle = window.getComputedStyle(wordElement);
   return (
     parseInt(wordComputedStyle.marginRight) +
@@ -49,35 +52,35 @@ export function getSpaceWidth(wordElement?: HTMLElement): number {
 
 function getTargetPositionLeft(
   fullWidthCaret: boolean,
-  isLanguageRightToLeft: boolean,
   activeWordElement: HTMLElement,
-  activeWordEmpty: boolean,
-  currentWordNodeList: NodeListOf<Element>,
+  currentWordNodeList: NodeListOf<HTMLElement>,
   fullWidthCaretWidth: number,
   wordLen: number,
-  inputLen: number
+  inputLen: number,
+  currentWord?: string
 ): number {
   const invisibleExtraLetters = Config.blindMode || Config.hideExtraLetters;
   let result = 0;
 
+  // use word-specific direction if available and different from language direction
+  const isWordRTL = isWordRightToLeft(
+    currentWord,
+    TestState.isLanguageRightToLeft,
+    TestState.isDirectionReversed
+  );
+
   if (Config.tapeMode === "off") {
     let positionOffsetToWord = 0;
 
-    const currentLetter = currentWordNodeList[inputLen] as
-      | HTMLElement
-      | undefined;
-    const lastWordLetter = currentWordNodeList[wordLen - 1] as
-      | HTMLElement
-      | undefined;
-    const lastInputLetter = currentWordNodeList[inputLen - 1] as
-      | HTMLElement
-      | undefined;
+    const currentLetter = currentWordNodeList[inputLen];
+    const lastWordLetter = currentWordNodeList[wordLen - 1];
+    const lastInputLetter = currentWordNodeList[inputLen - 1];
 
-    if (isLanguageRightToLeft) {
-      if (inputLen < wordLen && currentLetter) {
+    if (isWordRTL) {
+      if (inputLen <= wordLen && currentLetter) {
+        // at word beginning in zen mode both lengths are 0, but currentLetter is defined "_"
         positionOffsetToWord =
-          currentLetter?.offsetLeft +
-          (fullWidthCaret ? 0 : fullWidthCaretWidth);
+          currentLetter.offsetLeft + (fullWidthCaret ? 0 : fullWidthCaretWidth);
       } else if (!invisibleExtraLetters) {
         positionOffsetToWord =
           (lastInputLetter?.offsetLeft ?? 0) -
@@ -89,7 +92,7 @@ function getTargetPositionLeft(
       }
     } else {
       if (inputLen < wordLen && currentLetter) {
-        positionOffsetToWord = currentLetter?.offsetLeft;
+        positionOffsetToWord = currentLetter.offsetLeft;
       } else if (!invisibleExtraLetters) {
         positionOffsetToWord =
           (lastInputLetter?.offsetLeft ?? 0) +
@@ -101,25 +104,30 @@ function getTargetPositionLeft(
       }
     }
     result = activeWordElement.offsetLeft + positionOffsetToWord;
-    if (activeWordEmpty && isLanguageRightToLeft)
-      result += activeWordElement.offsetWidth;
   } else {
     const wordsWrapperWidth =
       $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
-    const tapeMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
+    const tapeMargin =
+      wordsWrapperWidth *
+      (isWordRTL ? 1 - Config.tapeMargin / 100 : Config.tapeMargin / 100);
 
     result =
-      tapeMargin -
-      (fullWidthCaret && isLanguageRightToLeft ? fullWidthCaretWidth : 0);
+      tapeMargin - (fullWidthCaret && isWordRTL ? fullWidthCaretWidth : 0);
 
     if (Config.tapeMode === "word" && inputLen > 0) {
       let currentWordWidth = 0;
+      let lastPositiveLetterWidth = 0;
       for (let i = 0; i < inputLen; i++) {
         if (invisibleExtraLetters && i >= wordLen) break;
-        currentWordWidth +=
-          $(currentWordNodeList[i] as HTMLElement).outerWidth(true) ?? 0;
+        const letterOuterWidth =
+          $(currentWordNodeList[i] as Element).outerWidth(true) ?? 0;
+        currentWordWidth += letterOuterWidth;
+        if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
       }
-      if (isLanguageRightToLeft) currentWordWidth *= -1;
+      // if current letter has zero width move the caret to previous positive width letter
+      if ($(currentWordNodeList[inputLen] as Element).outerWidth(true) === 0)
+        currentWordWidth -= lastPositiveLetterWidth;
+      if (isWordRTL) currentWordWidth *= -1;
       result += currentWordWidth;
     }
   }
@@ -127,10 +135,31 @@ function getTargetPositionLeft(
   return result;
 }
 
+function getLetterWidth(
+  currentLetter: HTMLElement | undefined,
+  activeWordEl: HTMLElement,
+  wordLength: number,
+  inputLength: number,
+  currentWordNodeList: NodeListOf<HTMLElement>
+): number {
+  let letterWidth = currentLetter?.offsetWidth;
+  if (letterWidth === undefined || wordLength === 0) {
+    // at word beginning in zen mode current letter is defined "_" but wordLen is 0
+    letterWidth = getSpaceWidth(activeWordEl);
+  } else if (letterWidth === 0) {
+    // current letter is a zero-width character e.g, diacritics)
+    for (let i = inputLength; i >= 0; i--) {
+      letterWidth = (currentWordNodeList[i] as HTMLElement)?.offsetWidth;
+      if (letterWidth) break;
+    }
+  }
+  return letterWidth ?? 0;
+}
+
 export async function updatePosition(noAnim = false): Promise<void> {
-  const caretWidth = Math.round(
-    document.querySelector("#caret")?.getBoundingClientRect().width ?? 0
-  );
+  const caretComputedStyle = window.getComputedStyle(caret);
+  const caretWidth = parseInt(caretComputedStyle.width) || 0;
+  const caretHeight = parseInt(caretComputedStyle.height) || 0;
 
   const fullWidthCaret = ["block", "outline", "underline"].includes(
     Config.caretStyle
@@ -139,119 +168,114 @@ export async function updatePosition(noAnim = false): Promise<void> {
   let wordLen = splitIntoCharacters(TestWords.words.getCurrent()).length;
   const inputLen = splitIntoCharacters(TestInput.input.current).length;
   if (Config.mode === "zen") wordLen = inputLen;
-  const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
-  let activeWordEmpty = false;
-  if (Config.mode === "zen") {
-    wordLen = inputLen;
-    if (inputLen === 0) activeWordEmpty = true;
-  }
+  const activeWordEl = document.querySelector<HTMLElement>(
+    `#words .word[data-wordindex='${TestState.activeWordIndex}']`
+  );
+  if (!activeWordEl) return;
 
-  const currentWordNodeList = activeWordEl?.querySelectorAll("letter");
+  const currentWordNodeList =
+    activeWordEl.querySelectorAll<HTMLElement>("letter");
   if (!currentWordNodeList?.length) return;
 
-  const currentLetter = currentWordNodeList[inputLen] as
-    | HTMLElement
-    | undefined;
-  const lastWordLetter = currentWordNodeList[wordLen - 1] as
-    | HTMLElement
-    | undefined;
-
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRightToLeft = currentLanguage.rightToLeft;
+  const currentLetter = currentWordNodeList[inputLen];
+  const lastInputLetter = currentWordNodeList[inputLen - 1];
+  const lastWordLetter = currentWordNodeList[wordLen - 1];
 
   // in blind mode, and hide extra letters, extra letters have zero offsets
   // offsetHeight is the same for all visible letters
   // so is offsetTop (for same line letters)
   const letterHeight =
-    currentLetter?.offsetHeight ||
-    lastWordLetter?.offsetHeight ||
+    (safeNumber(currentLetter?.offsetHeight) ?? 0) ||
+    (safeNumber(lastInputLetter?.offsetHeight) ?? 0) ||
+    (safeNumber(lastWordLetter?.offsetHeight) ?? 0) ||
     Config.fontSize * convertRemToPixels(1);
 
   const letterPosTop =
-    currentLetter?.offsetTop ?? lastWordLetter?.offsetTop ?? 0;
-  const diff = letterHeight - caret.offsetHeight;
+    currentLetter?.offsetTop ??
+    lastInputLetter?.offsetTop ??
+    lastWordLetter?.offsetTop ??
+    0;
+  const diff = letterHeight - caretHeight;
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {
-    newTop = activeWordEl.offsetTop + letterPosTop - caret.offsetHeight / 2;
+    newTop = activeWordEl.offsetTop + letterPosTop - caretHeight / 2;
   }
 
-  let letterWidth = currentLetter?.offsetWidth;
-  if (letterWidth === undefined || activeWordEmpty) {
-    letterWidth = getSpaceWidth(activeWordEl);
-  } else if (letterWidth === 0) {
-    // current letter is a zero-width character e.g, diacritics)
-    letterWidth = 0;
-    for (let i = inputLen; i >= 0; i--) {
-      letterWidth = (currentWordNodeList[i] as HTMLElement)?.offsetWidth;
-      if (letterWidth) break;
-    }
-  }
-  const newWidth = fullWidthCaret ? (letterWidth ?? 0) + "px" : "";
+  const letterWidth = getLetterWidth(
+    currentLetter,
+    activeWordEl,
+    wordLen,
+    inputLen,
+    currentWordNodeList
+  );
+
+  // in zen mode, use the input content to determine word direction
+  const currentWordForDirection =
+    Config.mode === "zen"
+      ? TestInput.input.current
+      : TestWords.words.getCurrent();
 
   const letterPosLeft = getTargetPositionLeft(
     fullWidthCaret,
-    isLanguageRightToLeft,
     activeWordEl,
-    activeWordEmpty,
     currentWordNodeList,
     letterWidth,
     wordLen,
-    inputLen
+    inputLen,
+    currentWordForDirection
   );
   const newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
-
-  let smoothlinescroll = $("#words .smoothScroller").height();
-  if (smoothlinescroll === undefined) smoothlinescroll = 0;
 
   const jqcaret = $(caret);
 
   jqcaret.css("display", "block"); //for some goddamn reason adding width animation sets the display to none ????????
 
   const animation: { top: number; left: number; width?: string } = {
-    top: newTop - smoothlinescroll,
+    top: newTop - TestState.lineScrollDistance,
     left: newLeft,
   };
 
-  if (newWidth !== "") {
-    animation.width = newWidth;
-  } else {
-    jqcaret.css("width", "");
+  if (fullWidthCaret) {
+    animation.width = `${letterWidth}px`;
   }
 
   const smoothCaretSpeed =
-    Config.smoothCaret == "off"
+    Config.smoothCaret === "off"
       ? 0
-      : Config.smoothCaret == "slow"
+      : Config.smoothCaret === "slow"
       ? 150
-      : Config.smoothCaret == "medium"
+      : Config.smoothCaret === "medium"
       ? 100
-      : Config.smoothCaret == "fast"
+      : Config.smoothCaret === "fast"
       ? 85
       : 0;
 
   jqcaret
     .stop(true, false)
     .animate(animation, SlowTimer.get() || noAnim ? 0 : smoothCaretSpeed);
+}
 
-  if (Config.showAllLines) {
-    const browserHeight = window.innerHeight;
-    const middlePos = browserHeight / 2 - (jqcaret.outerHeight() as number) / 2;
-    const contentHeight = document.body.scrollHeight;
+function updateStyle(): void {
+  caret.style.width = "";
+  caret.classList.remove(
+    ...["off", "default", "underline", "outline", "block", "carrot", "banana"]
+  );
+  caret.classList.add(Config.caretStyle);
+}
 
-    if (
-      newTop >= middlePos &&
-      contentHeight > browserHeight &&
-      TestState.isActive
-    ) {
-      const newscrolltop = newTop - middlePos / 2;
-      window.scrollTo({
-        left: 0,
-        top: newscrolltop,
-        behavior: prefersReducedMotion() ? "instant" : "smooth",
-      });
+subscribe((eventKey) => {
+  if (eventKey === "caretStyle") {
+    updateStyle();
+    void updatePosition(true);
+  }
+  if (eventKey === "smoothCaret") {
+    if (Config.smoothCaret === "off") {
+      caret.style.animationName = "caretFlashHard";
+    } else {
+      caret.style.animationName = "caretFlashSmooth";
     }
   }
-}
+});
 
 export function show(noAnim = false): void {
   caret.classList.remove("hidden");

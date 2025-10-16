@@ -1,16 +1,9 @@
 import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
-import { Config } from "@monkeytype/contracts/schemas/configs";
-import {
-  Mode,
-  Mode2,
-  PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
-import {
-  CustomTextDataWithTextLen,
-  Result,
-} from "@monkeytype/contracts/schemas/results";
+import { Config } from "@monkeytype/schemas/configs";
+import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
+import { Result } from "@monkeytype/schemas/results";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -151,7 +144,7 @@ export function toggleFullscreen(): void {
     } else if (elem.mozRequestFullScreen) {
       void elem.mozRequestFullScreen();
     } else if (elem.webkitRequestFullscreen) {
-      // @ts-expect-error
+      // @ts-expect-error some code i found online
       void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
@@ -171,18 +164,22 @@ export function escapeRegExp(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export function escapeHTML(str: string): string {
+export function escapeHTML<T extends string | null | undefined>(str: T): T {
   if (str === null || str === undefined) {
     return str;
   }
-  str = str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 
-  return str;
+  const escapeMap: Record<string, string> = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+    "/": "&#x2F;",
+    "`": "&#x60;",
+  };
+
+  return str.replace(/[&<>"'/`]/g, (char) => escapeMap[char] as string) as T;
 }
 
 export function isUsernameValid(name: string): boolean {
@@ -192,39 +189,6 @@ export function isUsernameValid(name: string): boolean {
   if (name.length > 14) return false;
   if (/^\..*/.test(name.toLowerCase())) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
-}
-
-export function canQuickRestart(
-  mode: string,
-  words: number,
-  time: number,
-  CustomText: Omit<CustomTextDataWithTextLen, "textLen">,
-  customTextIsLong: boolean
-): boolean {
-  const wordsLong = mode === "words" && (words >= 1000 || words === 0);
-  const timeLong = mode === "time" && (time >= 900 || time === 0);
-  const customTextLong = mode === "custom" && customTextIsLong;
-
-  const customTextRandomWordsLong =
-    mode === "custom" &&
-    (CustomText.limit.mode === "word" || CustomText.limit.mode === "section") &&
-    (CustomText.limit.value >= 1000 || CustomText.limit.value === 0);
-  const customTextRandomTimeLong =
-    mode === "custom" &&
-    CustomText.limit.mode === "time" &&
-    (CustomText.limit.value >= 900 || CustomText.limit.value === 0);
-
-  if (
-    wordsLong ||
-    timeLong ||
-    customTextLong ||
-    customTextRandomWordsLong ||
-    customTextRandomTimeLong
-  ) {
-    return false;
-  } else {
-    return true;
-  }
 }
 
 export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
@@ -248,6 +212,8 @@ type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
 } & string;
 
+// TODO INVESTIGATE IF THIS IS NEEDED
+// eslint-disable-next-line no-extend-native
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp
 ): number {
@@ -256,36 +222,6 @@ type LastIndex = {
 };
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
-
-export async function getDiscordAvatarUrl(
-  discordId?: string,
-  discordAvatar?: string,
-  discordAvatarSize = 32
-): Promise<string | null> {
-  if (
-    discordId === undefined ||
-    discordId === "" ||
-    discordAvatar === undefined ||
-    discordAvatar === ""
-  ) {
-    return null;
-  }
-  // An invalid request to this URL will return a 404.
-  try {
-    const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
-
-    const response = await fetch(avatarUrl, {
-      method: "HEAD",
-    });
-    if (!response.ok) {
-      return null;
-    }
-
-    return avatarUrl;
-  } catch (error) {}
-
-  return null;
-}
 
 export async function swapElements(
   el1: JQuery,
@@ -517,11 +453,45 @@ export function isAnyPopupVisible(): boolean {
   return popupVisible;
 }
 
+export type JQueryEasing =
+  | "linear"
+  | "swing"
+  | "easeInSine"
+  | "easeOutSine"
+  | "easeInOutSine"
+  | "easeInQuad"
+  | "easeOutQuad"
+  | "easeInOutQuad"
+  | "easeInCubic"
+  | "easeOutCubic"
+  | "easeInOutCubic"
+  | "easeInQuart"
+  | "easeOutQuart"
+  | "easeInOutQuart"
+  | "easeInQuint"
+  | "easeOutQuint"
+  | "easeInOutQuint"
+  | "easeInExpo"
+  | "easeOutExpo"
+  | "easeInOutExpo"
+  | "easeInCirc"
+  | "easeOutCirc"
+  | "easeInOutCirc"
+  | "easeInBack"
+  | "easeOutBack"
+  | "easeInOutBack"
+  | "easeInElastic"
+  | "easeOutElastic"
+  | "easeInOutElastic"
+  | "easeInBounce"
+  | "easeOutBounce"
+  | "easeInOutBounce";
+
 export async function promiseAnimation(
   el: JQuery,
   animation: Record<string, string>,
   duration: number,
-  easing: string
+  easing: JQueryEasing = "swing"
 ): Promise<void> {
   return new Promise((resolve) => {
     el.animate(animation, applyReducedMotion(duration), easing, resolve);
@@ -654,32 +624,6 @@ export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && !Array.isArray(obj) && obj !== null;
 }
 
-export function deepClone<T>(obj: T[]): T[];
-export function deepClone<T extends object>(obj: T): T;
-export function deepClone<T>(obj: T): T;
-export function deepClone<T>(obj: T | T[]): T | T[] {
-  // Check if the value is a primitive (not an object or array)
-  if (obj === null || typeof obj !== "object") {
-    return obj;
-  }
-
-  // Handle arrays
-  if (Array.isArray(obj)) {
-    return obj.map((item) => deepClone(item));
-  }
-
-  // Handle objects
-  const clonedObj = {} as { [K in keyof T]: T[K] };
-
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      clonedObj[key] = deepClone((obj as { [K in keyof T]: T[K] })[key]);
-    }
-  }
-
-  return clonedObj;
-}
-
 export function prefersReducedMotion(): boolean {
   return matchMedia?.("(prefers-reduced-motion)")?.matches;
 }
@@ -709,6 +653,119 @@ export function promiseWithResolvers<T = void>(): {
     reject = rej;
   });
   return { resolve, reject, promise };
+}
+
+/**
+ * Wrap a function so only one call runs at a time. While a call is running, new
+ * calls will not run and only the latest one will be queued, any prior queued
+ * calls are skipped. Once the running call finishes, the queued call runs.
+ * @param fn the function to debounce
+ * @param options - `rejectSkippedCalls`: if false, promises returned by skipped
+ * calls will be resolved to null, otherwise will be rejected (defaults to true).
+ * @returns debounced version of the original function. This debounced function
+ * returns a promise that resolves to the original return value. Promises of skipped
+ * calls will be rejected, (or resolved to null if `options.rejectSkippedCalls` was false).
+ */
+export function debounceUntilResolved<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => TResult,
+  options?: { rejectSkippedCalls?: true }
+): (...args: TArgs) => Promise<TResult>;
+export function debounceUntilResolved<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => TResult,
+  options: { rejectSkippedCalls: false }
+): (...args: TArgs) => Promise<TResult | null>;
+export function debounceUntilResolved<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => TResult,
+  { rejectSkippedCalls = true }: { rejectSkippedCalls?: boolean } = {}
+): (...args: TArgs) => Promise<TResult | null> {
+  let isLocked = false;
+  let next: {
+    args: TArgs;
+    resolve: (value: TResult | null) => void;
+    reject: (reason?: unknown) => void;
+  } | null = null;
+
+  async function run(...args: TArgs): Promise<TResult> {
+    isLocked = true;
+    try {
+      return await Promise.resolve(fn(...args));
+    } finally {
+      isLocked = false;
+
+      const queued = next;
+      next = null;
+      if (queued) run(...queued.args).then(queued.resolve, queued.reject);
+    }
+  }
+
+  return async function debounced(...args: TArgs): Promise<TResult | null> {
+    if (isLocked) {
+      // drop previously queued call
+      if (next) {
+        if (rejectSkippedCalls) {
+          next.reject(
+            new Error("skipped call: call was superseded by a more recent one")
+          );
+        } else {
+          next.resolve(null);
+        }
+      }
+
+      // queue the new call
+      return new Promise<TResult | null>((resolve, reject) => {
+        next = { args, resolve, reject };
+      });
+    }
+    // no running instances, run immediately
+    return run(...args);
+  };
+}
+
+export function triggerResize(): void {
+  $(window).trigger("resize");
+}
+
+export type RequiredProperties<T, K extends keyof T> = Omit<T, K> &
+  Required<Pick<T, K>>;
+
+function isPlatform(searchTerm: string | RegExp): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const platform = navigator.platform;
+  if (typeof searchTerm === "string") {
+    return platform.includes(searchTerm);
+  } else {
+    return searchTerm.test(platform);
+  }
+}
+
+export function isLinux(): boolean {
+  return isPlatform("Linux");
+}
+
+export function isMac(): boolean {
+  return isPlatform("Mac");
+}
+
+export function isMacLike(): boolean {
+  return isPlatform(/Mac|iPod|iPhone|iPad/);
+}
+
+export function scrollToCenterOrTop(el: HTMLElement | null): void {
+  if (!el) return;
+
+  const elementHeight = el.offsetHeight;
+  const windowHeight = window.innerHeight;
+
+  el.scrollIntoView({
+    block: elementHeight < windowHeight ? "center" : "start",
+  });
+}
+
+export function addToGlobal(items: Record<string, unknown>): void {
+  for (const [name, item] of Object.entries(items)) {
+    //@ts-expect-error dev
+    window[name] = item;
+  }
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

@@ -1,16 +1,30 @@
 import { intersect } from "@monkeytype/util/arrays";
-import { FunboxForcedConfig, FunboxName } from "./types";
+import { FunboxForcedConfig, FunboxMetadata } from "./types";
 import { getFunbox } from "./list";
+import { FunboxName } from "@monkeytype/schemas/configs";
+import { safeNumber } from "@monkeytype/util/numbers";
 
 export function checkCompatibility(
   funboxNames: FunboxName[],
   withFunbox?: FunboxName
 ): boolean {
   if (funboxNames.length === 0) return true;
-  let funboxesToCheck = getFunbox(funboxNames);
 
-  if (withFunbox !== undefined) {
-    funboxesToCheck = funboxesToCheck.concat(getFunbox(withFunbox));
+  let funboxesToCheck: FunboxMetadata[];
+
+  try {
+    funboxesToCheck = getFunbox(funboxNames);
+
+    if (withFunbox !== undefined) {
+      const toAdd = getFunbox(withFunbox);
+      funboxesToCheck = funboxesToCheck.concat(toAdd);
+    }
+  } catch (error) {
+    console.error(
+      "Error when getting funboxes for a compatibility check:",
+      error
+    );
+    return false;
   }
 
   const allFunboxesAreValid = funboxesToCheck.every((f) => f !== undefined);
@@ -19,13 +33,14 @@ export function checkCompatibility(
   const oneWordModifierMax =
     funboxesToCheck.filter(
       (f) =>
-        f.frontendFunctions?.includes("getWord") ??
-        f.frontendFunctions?.includes("pullSection") ??
+        f.frontendFunctions?.includes("getWord") ||
+        f.frontendFunctions?.includes("pullSection") ||
         f.frontendFunctions?.includes("withWords")
     ).length <= 1;
   const oneWordOrderMax =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp.startsWith("wordOrder"))
+    funboxesToCheck.filter(
+      (f) =>
+        f.properties?.find((fp) => fp.startsWith("wordOrder")) !== undefined
     ).length <= 1;
   const layoutUsability =
     funboxesToCheck.filter((f) =>
@@ -35,8 +50,11 @@ export function checkCompatibility(
       f.properties?.find((fp) => fp === "ignoresLayout" || fp === "usesLayout")
     ).length === 0;
   const oneNospaceOrToPushMax =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "nospace" || fp.startsWith("toPush"))
+    funboxesToCheck.filter(
+      (f) =>
+        f.properties?.find(
+          (fp) => fp === "nospace" || fp.startsWith("toPush")
+        ) !== undefined
     ).length <= 1;
   const oneChangesWordsVisibilityMax =
     funboxesToCheck.filter((f) =>
@@ -84,7 +102,7 @@ export function checkCompatibility(
   const oneToPushOrPullSectionMax =
     funboxesToCheck.filter(
       (f) =>
-        (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
+        f.properties?.find((fp) => fp.startsWith("toPush:")) !== undefined ||
         f.frontendFunctions?.includes("pullSection")
     ).length <= 1;
   const onePunctuateWordMax =
@@ -109,7 +127,8 @@ export function checkCompatibility(
       .filter((f) => f !== undefined)
       .flat()
       .reduce<Record<string, number>>((counts, cssModification) => {
-        counts[cssModification] = (counts[cssModification] || 0) + 1;
+        counts[cssModification] =
+          (safeNumber(counts[cssModification]) ?? 0) + 1;
         return counts;
       }, {})
   ).every((c) => c <= 1);

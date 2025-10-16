@@ -6,9 +6,9 @@ import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
-import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { FunboxName, checkCompatibility } from "@monkeytype/funbox";
+import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
+import { checkCompatibility } from "@monkeytype/funbox";
 import {
   getActiveFunboxes,
   getActiveFunboxNames,
@@ -18,17 +18,18 @@ import {
   getActiveFunboxesWithProperty,
 } from "./list";
 import { checkForcedConfig } from "./funbox-validation";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 export function toggleScript(...params: string[]): void {
-  if (Config.funbox === "none") return;
+  if (Config.funbox.length === 0) return;
 
   for (const fb of getActiveFunboxesWithFunction("toggleScript")) {
     fb.functions.toggleScript(params);
   }
 }
 
-export function setFunbox(funbox: string): boolean {
-  if (funbox === "none") {
+export function setFunbox(funbox: FunboxName[]): boolean {
+  if (funbox.length === 0) {
     for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
       fb.functions.clearGlobal();
     }
@@ -38,14 +39,10 @@ export function setFunbox(funbox: string): boolean {
   return true;
 }
 
-export function toggleFunbox(funbox: "none" | FunboxName): boolean {
-  if (funbox === "none") setFunbox("none");
+export function toggleFunbox(funbox: FunboxName): void {
   if (
-    !checkCompatibility(
-      getActiveFunboxNames(),
-      funbox === "none" ? undefined : funbox
-    ) &&
-    !Config.funbox.split("#").includes(funbox)
+    !checkCompatibility(getActiveFunboxNames(), funbox) &&
+    !Config.funbox.includes(funbox)
   ) {
     Notifications.add(
       `${Strings.capitalizeFirstLetter(
@@ -53,20 +50,16 @@ export function toggleFunbox(funbox: "none" | FunboxName): boolean {
       )} funbox is not compatible with the current funbox selection`,
       0
     );
-    return true;
+    return;
   }
   FunboxMemory.load();
-  const e = UpdateConfig.toggleFunbox(funbox, false);
+  UpdateConfig.toggleFunbox(funbox, false);
 
-  if (!getActiveFunboxNames().includes(funbox as FunboxName)) {
-    get(funbox as FunboxName).functions?.clearGlobal?.();
+  if (!getActiveFunboxNames().includes(funbox)) {
+    get(funbox).functions?.clearGlobal?.();
   } else {
-    get(funbox as FunboxName).functions?.applyGlobalCSS?.();
+    get(funbox).functions?.applyGlobalCSS?.();
   }
-
-  //todo find out what the hell this means
-  if (e === false || e === true) return false;
-  return true;
 }
 
 export async function clear(): Promise<boolean> {
@@ -87,7 +80,9 @@ export async function clear(): Promise<boolean> {
   return true;
 }
 
-export async function activate(funbox?: string): Promise<boolean | undefined> {
+export async function activate(
+  funbox?: FunboxName[]
+): Promise<boolean | undefined> {
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
   } else if (Config.funbox !== funbox) {
@@ -100,14 +95,13 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     Notifications.add(
       Misc.createErrorMessage(
         undefined,
-        `Failed to activate funbox: funboxes ${Config.funbox.replace(
-          /_/g,
-          " "
-        )} are not compatible`
+        `Failed to activate funbox: funboxes ${Config.funbox
+          .map((it) => it.replace(/_/g, " "))
+          .join(", ")} are not compatible`
       ),
       -1
     );
-    UpdateConfig.setFunbox("none", true);
+    UpdateConfig.setFunbox([], true);
     await clear();
     return false;
   }
@@ -118,15 +112,15 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   $("#wordsWrapper").removeClass("hidden");
 
-  let language;
-  try {
-    language = await JSONData.getCurrentLanguage(Config.language);
-  } catch (e) {
+  const { data: language, error } = await tryCatch(
+    JSONData.getCurrentLanguage(Config.language)
+  );
+  if (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to activate funbox"),
+      Misc.createErrorMessage(error, "Failed to activate funbox"),
       -1
     );
-    UpdateConfig.setFunbox("none", true);
+    UpdateConfig.setFunbox([], true);
     await clear();
     return false;
   }
@@ -137,7 +131,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         "Current language does not support this funbox mode",
         0
       );
-      UpdateConfig.setFunbox("none", true);
+      UpdateConfig.setFunbox([], true);
       await clear();
       return;
     }
@@ -182,7 +176,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   if (!canSetSoFar) {
-    if (Config.funbox.includes("#")) {
+    if (Config.funbox.length > 1) {
       Notifications.add(
         `Failed to activate funboxes ${Config.funbox}: no intersecting forced configs. Disabling funbox`,
         -1
@@ -193,7 +187,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         -1
       );
     }
-    UpdateConfig.setFunbox("none", true);
+    UpdateConfig.setFunbox([], true);
     await clear();
     return;
   }

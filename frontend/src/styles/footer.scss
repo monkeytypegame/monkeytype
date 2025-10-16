@@ -10,9 +10,6 @@ footer {
     transition: 0.125s;
     margin-bottom: 2em;
     line-height: 2;
-    key {
-      margin: 0 0.25rem;
-    }
   }
 
   #commandLineMobileButton {
@@ -82,6 +79,21 @@ footer {
       text-align: center;
       cursor: pointer;
       transition: 0.125s;
+    }
+  }
+
+  .current-theme {
+    .icon {
+      position: relative;
+      .favIndicator {
+        font-size: 0.5em;
+        top: -0.5em;
+        right: -0.5em;
+        padding: 0.25em;
+        position: absolute;
+        background: var(--bg-color);
+        border-radius: 100%;
+      }
     }
   }
 

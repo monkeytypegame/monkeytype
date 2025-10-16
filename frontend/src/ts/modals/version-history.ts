@@ -48,7 +48,7 @@ export function show(): void {
         .catch((e: unknown) => {
           const msg = createErrorMessage(e, "Failed to fetch version history");
           $("#versionHistoryModal .modal").html(
-            `<div class="releases">Failed to fetch version history:<br>${msg}</div`
+            `<div class="releases">${msg}</div`
           );
         });
       $("#newVersionIndicator").addClass("hidden");

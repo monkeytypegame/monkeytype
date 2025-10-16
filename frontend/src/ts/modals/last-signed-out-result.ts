@@ -2,9 +2,10 @@ import AnimatedModal from "../utils/animated-modal";
 
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
-import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
-import { Auth } from "../firebase";
+import { CompletedEvent } from "@monkeytype/schemas/results";
+import { getAuthenticatedUser } from "../firebase";
 import { syncNotSignedInLastResult } from "../utils/results";
+import * as AuthEvent from "../observables/auth-event";
 
 function reset(): void {
   (modal.getModal().querySelector(".result") as HTMLElement).innerHTML = `
@@ -70,8 +71,8 @@ function fillData(): void {
   if (r.punctuation) tt += "<br>punctuation";
   if (r.blindMode) tt += "<br>blind";
   if (r.lazyMode) tt += "<br>lazy";
-  if (r.funbox !== "none") {
-    tt += "<br>" + r.funbox.replace(/_/g, " ").replace(/#/g, ", ");
+  if (r.funbox.length > 0) {
+    tt += "<br>" + r.funbox.map((it) => it.replace(/_/g, " ")).join(",");
   }
   if (r.difficulty !== "normal") tt += "<br>" + r.difficulty;
   if (r.tags.length > 0) tt += "<br>" + r.tags.length + " tags";
@@ -99,9 +100,10 @@ export function show(): void {
     );
     return;
   }
-  reset();
+
   void modal.show({
     beforeAnimation: async (): Promise<void> => {
+      reset();
       fillData();
     },
   });
@@ -111,16 +113,27 @@ function hide(): void {
   void modal.hide();
 }
 
+AuthEvent.subscribe((event) => {
+  if (event.type === "snapshotUpdated" && event.data.isInitial) {
+    if (TestLogic.notSignedInLastResult !== null) {
+      show();
+    }
+  }
+});
+
 const modal = new AnimatedModal({
   dialogId: "lastSignedOutResult",
   setup: async (modalEl): Promise<void> => {
     modalEl
       .querySelector("button.save")
-      ?.addEventListener("click", async (e) => {
-        void syncNotSignedInLastResult(Auth?.currentUser?.uid as string);
+      ?.addEventListener("click", async () => {
+        const user = getAuthenticatedUser();
+        if (user !== null) {
+          void syncNotSignedInLastResult(user.uid);
+        }
         hide();
       });
-    modalEl.querySelector("button.discard")?.addEventListener("click", (e) => {
+    modalEl.querySelector("button.discard")?.addEventListener("click", () => {
       TestLogic.clearNotSignedInResult();
       Notifications.add("Last test result discarded", 0);
       hide();

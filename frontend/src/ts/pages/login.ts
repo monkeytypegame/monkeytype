@@ -1,13 +1,21 @@
-import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import Page from "./page";
-import * as Notifications from "../elements/notifications";
-import { InputIndicator } from "../elements/input-indicator";
 import * as Skeleton from "../utils/skeleton";
-import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
+import {
+  PasswordSchema,
+  UserEmailSchema,
+  UserNameSchema,
+} from "@monkeytype/schemas/users";
+import { validateWithIndicator } from "../elements/input-validation";
+import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
-import { UserNameSchema } from "@monkeytype/contracts/users";
+
+let registerForm: {
+  name?: string;
+  email?: string;
+  password?: string;
+} = {};
 
 export function enableSignUpButton(): void {
   $(".page.pageLogin .register.side button").prop("disabled", false);
@@ -35,316 +43,174 @@ export function hidePreloader(): void {
   $(".pageLogin .preloader").addClass("hidden");
 }
 
+function isFormComplete(): boolean {
+  return (
+    registerForm.name !== undefined &&
+    registerForm.email !== undefined &&
+    registerForm.password !== undefined
+  );
+}
+
 export const updateSignupButton = (): void => {
-  if (
-    nameIndicator.get() !== "available" ||
-    (emailIndicator.get() !== "valid" &&
-      emailIndicator.get() !== "typo" &&
-      emailIndicator.get() !== "edu") ||
-    verifyEmailIndicator.get() !== "match" ||
-    passwordIndicator.get() !== "good" ||
-    verifyPasswordIndicator.get() !== "match"
-  ) {
-    disableSignUpButton();
-  } else {
+  if (isFormComplete()) {
     enableSignUpButton();
+  } else {
+    disableSignUpButton();
   }
 };
 
-const checkNameDebounced = debounce(1000, async () => {
-  const val = $(
-    ".page.pageLogin .register.side .usernameInput"
-  ).val() as string;
+type SignupData = {
+  name: string;
+  email: string;
+  password: string;
+};
+export function getSignupData(): SignupData | false {
+  return isFormComplete() ? (registerForm as SignupData) : false;
+}
 
-  if (!val) {
+const nameInputEl = document.querySelector(
+  ".page.pageLogin .register.side input.usernameInput"
+) as HTMLInputElement;
+validateWithIndicator(nameInputEl, {
+  schema: UserNameSchema,
+  isValid: async (name: string) => {
+    const checkNameResponse = (
+      await Ape.users.getNameAvailability({
+        params: { name: name },
+      })
+    ).status;
+
+    return checkNameResponse === 200 ? true : "Name not available";
+  },
+  debounceDelay: 1000,
+  callback: (result) => {
+    registerForm.name =
+      result.status === "success" ? nameInputEl.value : undefined;
     updateSignupButton();
-    return;
-  }
+  },
+});
 
-  const parsed = UserNameSchema.safeParse(val);
-  if (!parsed.success) {
-    nameIndicator.show("unavailable", parsed.error.errors[0]?.message);
+let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
+  null;
+let moduleLoadAttempted = false;
+
+const emailInputEl = validateWithIndicator(
+  document.querySelector(
+    ".page.pageLogin .register.side input.emailInput"
+  ) as HTMLInputElement,
+  {
+    schema: UserEmailSchema,
+    isValid: async (email: string) => {
+      const educationRegex =
+        /@.*(student|education|school|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
+      if (educationRegex.test(email)) {
+        return {
+          warning:
+            "Some education emails will fail to receive our messages, or disable the account as soon as you graduate. Consider using a personal email address.",
+        };
+      }
+
+      const emailHasTypo = TypoList.some((typo) => {
+        return email.endsWith(typo);
+      });
+      if (emailHasTypo) {
+        return {
+          warning: "Please check your email address, it may contain a typo.",
+        };
+      }
+
+      if (
+        disposableEmailModule &&
+        disposableEmailModule.isDisposableEmail !== undefined
+      ) {
+        try {
+          if (disposableEmailModule.isDisposableEmail(email)) {
+            return {
+              warning:
+                "Using a temporary email may cause issues with logging in, password resets and support. Consider using a permanent email address. Don't worry, we don't send spam.",
+            };
+          }
+        } catch (e) {
+          // Silent failure
+        }
+      }
+
+      return true;
+    },
+    debounceDelay: 0,
+    callback: (result) => {
+      if (result.status === "success") {
+        //re-validate the verify email
+        emailVerifyInputEl.dispatchEvent(new Event("input"));
+      }
+    },
+  }
+);
+
+emailInputEl.addEventListener("focus", async () => {
+  if (!moduleLoadAttempted) {
+    moduleLoadAttempted = true;
+    try {
+      disposableEmailModule = await import("disposable-email-domains-js");
+    } catch (e) {
+      // Silent failure
+    }
+  }
+});
+
+const emailVerifyInputEl = document.querySelector(
+  ".page.pageLogin .register.side input.verifyEmailInput"
+) as HTMLInputElement;
+validateWithIndicator(emailVerifyInputEl, {
+  isValid: async (emailVerify: string) => {
+    return emailInputEl.value === emailVerify
+      ? true
+      : "verify email not matching email";
+  },
+  debounceDelay: 0,
+  callback: (result) => {
+    registerForm.email =
+      emailInputEl.getValidationResult().status === "success" &&
+      result.status === "success"
+        ? emailInputEl.value
+        : undefined;
     updateSignupButton();
-    return;
-  }
-
-  const response = await Ape.users.getNameAvailability({
-    params: { name: val },
-  });
-
-  if (response.status === 200) {
-    nameIndicator.show("available", response.body.message);
-  } else if (response.status === 422) {
-    nameIndicator.show("unavailable", response.body.message);
-  } else if (response.status === 409) {
-    nameIndicator.show("taken", response.body.message);
-  } else {
-    nameIndicator.show("unavailable", response.body.message);
-    Notifications.add(
-      "Failed to check name availability: " + response.body.message,
-      -1
-    );
-  }
-
-  updateSignupButton();
+  },
 });
 
-const checkEmail = (): void => {
-  const email = $(".page.pageLogin .register.side .emailInput").val() as string;
-  const educationRegex =
-    /@.*(student|education|school|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
-
-  const emailHasTypo = TypoList.some((typo) => {
-    return email.endsWith(typo);
-  });
-
-  if (z.string().email().safeParse(email).success) {
-    if (emailHasTypo) {
-      emailIndicator.show(
-        "typo",
-        "Please check your email address, it may contain a typo."
-      );
-    } else if (educationRegex.test(email)) {
-      emailIndicator.show(
-        "edu",
-        "Some education emails will fail to receive our messages, or disable the account as soon as you graduate. Consider using a personal email address."
-      );
-    } else {
-      emailIndicator.show("valid");
-    }
-  } else {
-    emailIndicator.show("invalid", "Please enter a valid email address.");
-  }
-
-  updateSignupButton();
-};
-
-const checkEmailsMatch = (): void => {
-  const email = $(".page.pageLogin .register.side .emailInput").val();
-  const verifyEmail = $(
-    ".page.pageLogin .register.side .verifyEmailInput"
-  ).val();
-  if (email === verifyEmail) {
-    verifyEmailIndicator.show("match");
-  } else {
-    verifyEmailIndicator.show("mismatch");
-  }
-
-  updateSignupButton();
-};
-
-const checkPassword = (): void => {
-  const password = $(
+const passwordInputEl = validateWithIndicator(
+  document.querySelector(
     ".page.pageLogin .register.side .passwordInput"
-  ).val() as string;
-
-  // Force user to use a capital letter, number, special character and reasonable length when setting up an account and changing password
-  if (!Misc.isDevEnvironment() && !Misc.isPasswordStrong(password)) {
-    if (password.length < 8) {
-      passwordIndicator.show("short", "Password must be at least 8 characters");
-    } else if (password.length > 64) {
-      passwordIndicator.show("long", "Password must be at most 64 characters");
-    } else {
-      passwordIndicator.show(
-        "weak",
-        "Password must contain at least one capital letter, number, and special character"
-      );
-    }
-  } else {
-    passwordIndicator.show("good", "Password is good");
-  }
-  updateSignupButton();
-};
-
-const checkPasswordsMatch = (): void => {
-  const password = $(".page.pageLogin .register.side .passwordInput").val();
-  const verifyPassword = $(
-    ".page.pageLogin .register.side .verifyPasswordInput"
-  ).val();
-  if (password === verifyPassword) {
-    verifyPasswordIndicator.show("match");
-  } else {
-    verifyPasswordIndicator.show("mismatch");
-  }
-
-  updateSignupButton();
-};
-
-const nameIndicator = new InputIndicator(
-  $(".page.pageLogin .register.side input.usernameInput"),
+  ) as HTMLInputElement,
   {
-    available: {
-      icon: "fa-check",
-      level: 1,
-    },
-    unavailable: {
-      icon: "fa-times",
-      level: -1,
-    },
-    taken: {
-      icon: "fa-user",
-      level: -1,
-    },
-    checking: {
-      icon: "fa-circle-notch",
-      spinIcon: true,
-      level: 0,
+    schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
+    callback: (result) => {
+      if (result.status === "success") {
+        //re-validate the verify password
+        passwordVerifyInputEl.dispatchEvent(new Event("input"));
+      }
     },
   }
 );
 
-const emailIndicator = new InputIndicator(
-  $(".page.pageLogin .register.side input.emailInput"),
-  {
-    valid: {
-      icon: "fa-check",
-      level: 1,
-    },
-    invalid: {
-      icon: "fa-times",
-      level: -1,
-    },
-    typo: {
-      icon: "fa-exclamation-triangle",
-      level: 1,
-    },
-    edu: {
-      icon: "fa-exclamation-triangle",
-      level: 1,
-    },
-  }
-);
-
-const verifyEmailIndicator = new InputIndicator(
-  $(".page.pageLogin .register.side input.verifyEmailInput"),
-  {
-    match: {
-      icon: "fa-check",
-      level: 1,
-    },
-    mismatch: {
-      icon: "fa-times",
-      level: -1,
-    },
-  }
-);
-
-const passwordIndicator = new InputIndicator(
-  $(".page.pageLogin .register.side input.passwordInput"),
-  {
-    good: {
-      icon: "fa-check",
-      level: 1,
-    },
-    short: {
-      icon: "fa-times",
-      level: -1,
-    },
-    long: {
-      icon: "fa-times",
-      level: -1,
-    },
-    weak: {
-      icon: "fa-times",
-      level: -1,
-    },
-  }
-);
-
-const verifyPasswordIndicator = new InputIndicator(
-  $(".page.pageLogin .register.side input.verifyPasswordInput"),
-  {
-    match: {
-      icon: "fa-check",
-      level: 1,
-    },
-    mismatch: {
-      icon: "fa-times",
-      level: -1,
-    },
-  }
-);
-
-$(".page.pageLogin .register.side .usernameInput").on("input", () => {
-  setTimeout(() => {
-    const val = $(
-      ".page.pageLogin .register.side .usernameInput"
-    ).val() as string;
-    if (val === "") {
-      nameIndicator.hide();
-      return;
-    } else {
-      nameIndicator.show("checking");
-      void checkNameDebounced();
-    }
-  }, 1);
-});
-
-$(".page.pageLogin .register.side .emailInput").on("input", () => {
-  const emailInputValue = $(
-    ".page.pageLogin .register.side .emailInput"
-  ).val() as string;
-  const verifyInputValue = $(
-    ".page.pageLogin .register.side .verifyEmailInput"
-  ).val() as string;
-
-  if (!emailInputValue && !verifyInputValue) {
-    emailIndicator.hide();
-    verifyEmailIndicator.hide();
-    return;
-  }
-  checkEmail();
-  checkEmailsMatch();
-});
-
-$(".page.pageLogin .register.side .verifyEmailInput").on("input", () => {
-  const emailInputValue = $(
-    ".page.pageLogin .register.side .emailInput"
-  ).val() as string;
-  const verifyInputValue = $(
-    ".page.pageLogin .register.side .verifyEmailInput"
-  ).val() as string;
-
-  if (!emailInputValue && !verifyInputValue) {
-    emailIndicator.hide();
-    verifyEmailIndicator.hide();
-    return;
-  }
-  checkEmailsMatch();
-});
-
-$(".page.pageLogin .register.side .passwordInput").on("input", () => {
-  const passwordInputValue = $(
-    ".page.pageLogin .register.side .passwordInput"
-  ).val() as string;
-  const verifyPasswordInputValue = $(
-    ".page.pageLogin .register.side .verifyPasswordInput"
-  ).val() as string;
-
-  if (!passwordInputValue && !verifyPasswordInputValue) {
-    passwordIndicator.hide();
-    verifyPasswordIndicator.hide();
-    return;
-  }
-  checkPassword();
-  checkPasswordsMatch();
-});
-
-$(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
-  const passwordInputValue = $(
-    ".page.pageLogin .register.side .passwordInput"
-  ).val() as string;
-  const verifyPasswordInputValue = $(
-    ".page.pageLogin .register.side .verifyPasswordInput"
-  ).val() as string;
-
-  if (!passwordInputValue && !verifyPasswordInputValue) {
-    passwordIndicator.hide();
-    verifyPasswordIndicator.hide();
-    return;
-  }
-  checkPassword();
-  checkPasswordsMatch();
+const passwordVerifyInputEl = document.querySelector(
+  ".page.pageLogin .register.side .verifyPasswordInput"
+) as HTMLInputElement;
+validateWithIndicator(passwordVerifyInputEl, {
+  isValid: async (passwordVerify: string) => {
+    return passwordInputEl.value === passwordVerify
+      ? true
+      : "verify password not matching password";
+  },
+  debounceDelay: 0,
+  callback: (result) => {
+    registerForm.password =
+      passwordInputEl.getValidationResult().status === "success" &&
+      result.status === "success"
+        ? passwordInputEl.value
+        : undefined;
+    updateSignupButton();
+  },
 });
 
 export const page = new Page({
@@ -352,16 +218,14 @@ export const page = new Page({
   element: $(".page.pageLogin"),
   path: "/login",
   afterHide: async (): Promise<void> => {
-    $(".pageLogin input").val("");
-    nameIndicator.hide();
-    emailIndicator.hide();
-    verifyEmailIndicator.hide();
-    passwordIndicator.hide();
-    verifyPasswordIndicator.hide();
+    hidePreloader();
     Skeleton.remove("pageLogin");
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLogin", "main");
+    registerForm = {};
+    $(".pageLogin input").val("");
+    $(".pageLogin .register .indicator").addClass("hidden");
     enableInputs();
     disableSignUpButton();
   },

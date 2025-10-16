@@ -14,7 +14,7 @@ import "./event-handlers/login";
 
 import "./modals/google-sign-up";
 
-import "./firebase";
+import { init } from "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
@@ -25,10 +25,11 @@ import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
-import "./controllers/account-controller";
+import { onAuthStateChanged } from "./auth";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
 import "./modals/simple-modals";
+import * as CookiesModal from "./modals/cookies";
 import "./controllers/input-controller";
 import "./ready";
 import "./controllers/route-controller";
@@ -41,21 +42,46 @@ import "./states/connection";
 import "./test/tts";
 import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
-import { isDevEnvironment } from "./utils/misc";
+import { isDevEnvironment, addToGlobal } from "./utils/misc";
 import * as VersionButton from "./elements/version-button";
 import * as Focus from "./test/focus";
 import { getDevOptionsModal } from "./utils/async-modules";
+import * as Sentry from "./sentry";
+import * as Cookies from "./cookies";
+import "./elements/psa";
+import "./utils/url-handler";
+import "./modals/last-signed-out-result";
 
-function addToGlobal(items: Record<string, unknown>): void {
-  for (const [name, item] of Object.entries(items)) {
-    //@ts-expect-error
-    window[name] = item;
-  }
-}
+// Lock Math.random
+Object.defineProperty(Math, "random", {
+  value: Math.random,
+  writable: false,
+  configurable: false,
+  enumerable: true,
+});
+
+// Freeze Math object
+Object.freeze(Math);
+
+// Lock Math on window
+Object.defineProperty(window, "Math", {
+  value: Math,
+  writable: false,
+  configurable: false,
+  enumerable: true,
+});
 
 void loadFromLocalStorage();
 void VersionButton.update();
 Focus.set(true, true);
+void init(onAuthStateChanged);
+
+const accepted = Cookies.getAcceptedCookies();
+if (accepted === null) {
+  CookiesModal.show();
+} else {
+  Cookies.activateWhatsAccepted();
+}
 
 addToGlobal({
   snapshot: DB.getSnapshot,
@@ -66,9 +92,10 @@ addToGlobal({
   replay: Replay.getReplayExport,
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
-  toggleUnsmoothedRaw: Result.toggleUnsmoothedRaw,
+  toggleSmoothedBurst: Result.toggleSmoothedBurst,
   egVideoListener: egVideoListener,
   toggleDebugLogs: Logger.toggleDebugLogs,
+  toggleSentryDebug: Sentry.toggleDebug,
 });
 
 if (isDevEnvironment()) {

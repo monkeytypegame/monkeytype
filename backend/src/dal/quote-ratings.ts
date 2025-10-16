@@ -1,7 +1,8 @@
-import { QuoteRating } from "@monkeytype/contracts/schemas/quotes";
+import { QuoteRating } from "@monkeytype/schemas/quotes";
 import * as db from "../init/db";
 import { Collection } from "mongodb";
 import { WithObjectId } from "../utils/misc";
+import { Language } from "@monkeytype/schemas/languages";
 
 type DBQuoteRating = WithObjectId<QuoteRating>;
 
@@ -11,7 +12,7 @@ export const getQuoteRatingCollection = (): Collection<DBQuoteRating> =>
 
 export async function submit(
   quoteId: number,
-  language: string,
+  language: Language,
   rating: number,
   update: boolean
 ): Promise<void> {
@@ -47,7 +48,7 @@ export async function submit(
 
 export async function get(
   quoteId: number,
-  language: string
+  language: Language
 ): Promise<DBQuoteRating | null> {
   return await getQuoteRatingCollection().findOne({ quoteId, language });
 }

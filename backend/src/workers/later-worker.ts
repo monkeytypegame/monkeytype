@@ -15,8 +15,8 @@ import LaterQueue, {
 } from "../queues/later-queue";
 import { recordTimeToCompleteJob } from "../utils/prometheus";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
-import { MonkeyMail } from "@monkeytype/contracts/schemas/users";
-import { mapRange } from "@monkeytype/util/numbers";
+import { MonkeyMail } from "@monkeytype/schemas/users";
+import { isSafeNumber, mapRange } from "@monkeytype/util/numbers";
 
 async function handleDailyLeaderboardResults(
   ctx: LaterTaskContexts["daily-leaderboard-results"]
@@ -74,7 +74,7 @@ async function handleDailyLeaderboardResults(
         )
         .max();
 
-      if (!xpReward) return;
+      if (!isSafeNumber(xpReward)) return;
 
       const rewardMail = buildMonkeyMail({
         subject: "Daily leaderboard placement",
@@ -164,7 +164,7 @@ async function handleWeeklyXpLeaderboardResults(
       )
       .max();
 
-    if (!xpReward) return;
+    if (!isSafeNumber(xpReward)) return;
 
     const rewardMail = buildMonkeyMail({
       subject: "Weekly XP Leaderboard placement",

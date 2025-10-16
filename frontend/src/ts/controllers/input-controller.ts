@@ -39,7 +39,11 @@ import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
+  getActiveFunboxNames,
 } from "../test/funbox/list";
+import { tryCatchSync } from "@monkeytype/util/trycatch";
+import { canQuickRestart } from "../utils/quick-restart";
+import * as PageTransition from "../states/page-transition";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -68,10 +72,7 @@ function updateUI(): void {
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     if (!Config.language.startsWith("korean")) {
       void KeymapEvent.highlight(
-        TestWords.words
-          .getCurrent()
-          .charAt(TestInput.input.current.length)
-          .toString()
+        TestWords.words.getCurrent().charAt(TestInput.input.current.length)
       );
     } else {
       //word [가다]
@@ -94,11 +95,11 @@ function updateUI(): void {
 
           //@ts-expect-error really cant be bothered fixing all these issues - its gonna get caught anyway
           const koChar: string =
-            //@ts-expect-error
+            //@ts-expect-error ---
             koCurrWord[inputGroupLength][inputCharLength] ??
-            //@ts-expect-error
+            //@ts-expect-error ---
             koCurrWord[koCurrInput.length][
-              //@ts-expect-error
+              //@ts-expect-error ---
               inputCharLength - koCurrWord[inputGroupLength].length
             ];
 
@@ -118,31 +119,30 @@ function updateUI(): void {
 function backspaceToPrevious(): void {
   if (!TestState.isActive) return;
 
-  const wordElementIndex =
-    TestState.activeWordIndex - TestUI.activeWordElementOffset;
+  const previousWordEl = TestUI.getWordElement(TestState.activeWordIndex - 1);
 
-  if (TestInput.input.getHistory().length === 0 || wordElementIndex === 0) {
-    return;
-  }
+  const isFirstWord = TestInput.input.getHistory().length === 0;
+  const isFirstVisibleWord = previousWordEl === null;
+  const isPreviousWordHidden = previousWordEl?.classList.contains("hidden");
+  const isPreviousWordCorrect =
+    TestInput.input.getHistory(TestState.activeWordIndex - 1) ===
+    TestWords.words.get(TestState.activeWordIndex - 1);
 
-  const wordElements = document.querySelectorAll("#words > .word");
   if (
-    (TestInput.input.getHistory(TestState.activeWordIndex - 1) ==
-      TestWords.words.get(TestState.activeWordIndex - 1) &&
-      !Config.freedomMode) ||
-    wordElements[wordElementIndex - 1]?.classList.contains("hidden")
+    isFirstWord ||
+    isFirstVisibleWord ||
+    isPreviousWordHidden ||
+    (isPreviousWordCorrect && !Config.freedomMode) ||
+    Config.confidenceMode === "on" ||
+    Config.confidenceMode === "max"
   ) {
     return;
   }
 
-  if (Config.confidenceMode === "on" || Config.confidenceMode === "max") {
-    return;
-  }
+  const activeWordEl = TestUI.getActiveWordElement();
 
   const incorrectLetterBackspaced =
-    wordElements[wordElementIndex]?.children[0]?.classList.contains(
-      "incorrect"
-    );
+    activeWordEl?.children[0]?.classList.contains("incorrect");
   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
     void TestUI.updateActiveWordLetters();
   }
@@ -265,14 +265,10 @@ async function handleSpace(): Promise<void> {
     PaceCaret.handleSpace(false, currentWord);
     if (Config.blindMode) {
       if (Config.highlightMode !== "off") {
-        TestUI.highlightAllLettersAsCorrect(
-          TestState.activeWordIndex - TestUI.activeWordElementOffset
-        );
+        TestUI.highlightAllLettersAsCorrect(TestState.activeWordIndex);
       }
     } else {
-      TestUI.highlightBadWord(
-        TestState.activeWordIndex - TestUI.activeWordElementOffset
-      );
+      TestUI.highlightBadWord(TestState.activeWordIndex);
     }
     TestInput.input.pushHistory();
     TestState.increaseActiveWordIndex();
@@ -330,7 +326,6 @@ async function handleSpace(): Promise<void> {
     void TestLogic.addWord();
   }
   TestUI.updateActiveElement();
-  void Caret.updatePosition();
 
   const shouldLimitToThreeLines =
     Config.mode === "time" ||
@@ -339,25 +334,19 @@ async function handleSpace(): Promise<void> {
 
   if (!Config.showAllLines || shouldLimitToThreeLines) {
     const currentTop: number = Math.floor(
-      document.querySelectorAll<HTMLElement>("#words .word")[
-        TestState.activeWordIndex - TestUI.activeWordElementOffset - 1
-      ]?.offsetTop ?? 0
+      TestUI.getWordElement(TestState.activeWordIndex - 1)?.offsetTop ?? 0
     );
-    let nextTop: number;
-    try {
-      nextTop = Math.floor(
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestState.activeWordIndex - TestUI.activeWordElementOffset
-        ]?.offsetTop ?? 0
-      );
-    } catch (e) {
-      nextTop = 0;
-    }
 
-    if (nextTop > currentTop) {
+    const { data: nextTop } = tryCatchSync(() =>
+      Math.floor(TestUI.getActiveWordElement()?.offsetTop ?? 0)
+    );
+
+    if ((nextTop ?? 0) > currentTop) {
       void TestUI.lineJump(currentTop);
-    } //end of line wrap
-  }
+    }
+  } //end of line wrap
+
+  void Caret.updatePosition();
 
   // enable if i decide that auto tab should also work after a space
   // if (
@@ -453,32 +442,32 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   return false;
 }
 
-function handleChar(
+async function handleChar(
   char: string,
   charIndex: number,
   realInputValue?: string
-): void {
-  if (TestUI.resultCalculating || TestUI.resultVisible) {
+): Promise<void> {
+  if (TestUI.resultCalculating || TestState.resultVisible) {
     return;
   }
 
   if (char === "…" && TestWords.words.getCurrent()[charIndex] !== "…") {
     for (let i = 0; i < 3; i++) {
-      handleChar(".", charIndex + i);
+      await handleChar(".", charIndex + i);
     }
 
     return;
   }
 
   if (char === "œ" && TestWords.words.getCurrent()[charIndex] !== "œ") {
-    handleChar("o", charIndex);
-    handleChar("e", charIndex + 1);
+    await handleChar("o", charIndex);
+    await handleChar("e", charIndex + 1);
     return;
   }
 
   if (char === "æ" && TestWords.words.getCurrent()[charIndex] !== "æ") {
-    handleChar("a", charIndex);
-    handleChar("e", charIndex + 1);
+    await handleChar("a", charIndex);
+    await handleChar("e", charIndex + 1);
     return;
   }
 
@@ -638,7 +627,7 @@ function handleChar(
     if (charIndex >= currCorrectedTestInputLength) {
       TestInput.corrected.current += !isCharKorean
         ? char
-        : Hangul.disassemble(char).concat();
+        : Hangul.disassemble(char).concat().join("");
     } else if (!thisCharCorrect) {
       TestInput.corrected.current =
         TestInput.corrected.current.substring(0, charIndex) +
@@ -666,9 +655,7 @@ function handleChar(
     char
   );
 
-  const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex - TestUI.activeWordElementOffset
-  ] as HTMLElement;
+  const activeWord = TestUI.getActiveWordElement() as HTMLElement;
 
   const testInputLength: number = !isCharKorean
     ? TestInput.input.current.length
@@ -716,7 +703,7 @@ function handleChar(
       (wordIsTheSame || shouldQuickEnd) &&
       (!isChinese ||
         (realInputValue !== undefined &&
-          charIndex + 2 == realInputValue.length))
+          charIndex + 2 === realInputValue.length))
     ) {
       void TestLogic.finish();
       return;
@@ -724,20 +711,31 @@ function handleChar(
   }
 
   const activeWordTopBeforeJump = activeWord?.offsetTop;
-  void TestUI.updateActiveWordLetters();
+  await TestUI.updateActiveWordLetters();
 
   const newActiveTop = activeWord?.offsetTop;
   //stop the word jump by slicing off the last character, update word again
+  // dont do it in replace typos, because it might trigger in the middle of a wrd
+  // when using non monospace fonts
+  /**
+   * NOTE: this input length > 1 guard, added in commit bc94a64,
+   * aimed to prevent some input blocking issue after test restarts.
+   *
+   * This check was found to cause a jump to a hidden 3rd line bug in zen mode (#6697)
+   * So commented due to the zen bug and the original issue not being reproducible,
+   *
+   * REVISIT this logic if any INPUT or WORD JUMP issues reappear.
+   */
   if (
     activeWordTopBeforeJump < newActiveTop &&
-    !TestUI.lineTransition &&
-    TestInput.input.current.length > 1
+    !TestUI.lineTransition
+    // TestInput.input.current.length > 1
   ) {
-    if (Config.mode === "zen") {
+    if (Config.mode === "zen" || Config.indicateTypos === "replace") {
       if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
-      void TestUI.updateActiveWordLetters();
+      await TestUI.updateActiveWordLetters();
     }
   }
 
@@ -774,7 +772,10 @@ function handleChar(
   }
 }
 
-function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
+async function handleTab(
+  event: JQuery.KeyDownEvent,
+  popupVisible: boolean
+): Promise<void> {
   if (TestUI.resultCalculating) {
     event.preventDefault();
     return;
@@ -801,8 +802,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     event.preventDefault();
     // insert tab character if needed (only during the test)
-    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
-      handleChar("\t", TestInput.input.current.length);
+    if (!TestState.resultVisible && shouldInsertTabCharacter) {
+      await handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       return;
     }
@@ -815,7 +816,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      navigate("/");
+      await navigate("/");
       return;
     }
 
@@ -827,9 +828,9 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     }
 
     // insert tab character if needed (only during the test)
-    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
+    if (!TestState.resultVisible && shouldInsertTabCharacter) {
       event.preventDefault();
-      handleChar("\t", TestInput.input.current.length);
+      await handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       return;
     }
@@ -843,12 +844,12 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     //only special handlig on the test page
     if (ActivePage.get() !== "test") return;
-    if (TestUI.resultVisible) return;
+    if (TestState.resultVisible) return;
 
     // insert tab character if needed
     if (shouldInsertTabCharacter) {
       event.preventDefault();
-      handleChar("\t", TestInput.input.current.length);
+      await handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       return;
     }
@@ -864,16 +865,15 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 $("#wordsInput").on("keydown", (event) => {
   const pageTestActive: boolean = ActivePage.get() === "test";
   const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
-  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
   const popupVisible: boolean = Misc.isAnyPopupVisible();
   const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
-    !leaderboardsVisible &&
     !popupVisible &&
-    !TestUI.resultVisible &&
+    !TestState.resultVisible &&
     event.key !== "Enter" &&
-    !awaitingNextWord;
+    !awaitingNextWord &&
+    TestState.testInitSuccess;
 
   if (!allowTyping) {
     event.preventDefault();
@@ -883,8 +883,8 @@ $("#wordsInput").on("keydown", (event) => {
 let lastBailoutAttempt = -1;
 
 $(document).on("keydown", async (event) => {
-  if (ActivePage.get() === "loading") {
-    console.debug("Ignoring keydown event on loading page.");
+  if (PageTransition.get()) {
+    console.debug("Ignoring keydown during page transition.");
     return;
   }
 
@@ -904,16 +904,14 @@ $(document).on("keydown", async (event) => {
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
   const pageTestActive: boolean = ActivePage.get() === "test";
   const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
-  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
 
   const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
-    !leaderboardsVisible &&
     !popupVisible &&
-    !TestUI.resultVisible &&
+    !TestState.resultVisible &&
     (wordsFocused || event.key !== "Enter") &&
     !awaitingNextWord;
 
@@ -930,7 +928,7 @@ $(document).on("keydown", async (event) => {
 
   //tab
   if (event.key === "Tab") {
-    handleTab(event, popupVisible);
+    await handleTab(event, popupVisible);
   }
 
   //esc
@@ -942,7 +940,7 @@ $(document).on("keydown", async (event) => {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      navigate("/");
+      await navigate("/");
       return;
     }
 
@@ -981,11 +979,11 @@ $(document).on("keydown", async (event) => {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      navigate("/");
+      await navigate("/");
       return;
     }
 
-    if (TestUI.resultVisible) {
+    if (TestState.resultVisible) {
       TestLogic.restart({
         event,
       });
@@ -1015,7 +1013,7 @@ $(document).on("keydown", async (event) => {
 
   if (!allowTyping) return;
 
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     event.preventDefault();
     return;
   }
@@ -1051,7 +1049,7 @@ $(document).on("keydown", async (event) => {
         TestInput.input.current.slice(-1),
         TestInput.input.current.length - 1
       ) &&
-      (TestInput.input.getHistory(TestState.activeWordIndex - 1) !=
+      (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
         TestWords.words.get(TestState.activeWordIndex - 1) ||
         Config.freedomMode)
     ) {
@@ -1072,7 +1070,7 @@ $(document).on("keydown", async (event) => {
       if (Config.mode === "zen") {
         void TestLogic.finish();
       } else if (
-        !Misc.canQuickRestart(
+        !canQuickRestart(
           Config.mode,
           Config.words,
           Config.time,
@@ -1097,9 +1095,13 @@ $(document).on("keydown", async (event) => {
           TestState.setBailedOut(true);
           void TestLogic.finish();
         }
+      } else {
+        await handleChar("\n", TestInput.input.current.length);
+        setWordsInput(" " + TestInput.input.current);
+        updateUI();
       }
     } else {
-      handleChar("\n", TestInput.input.current.length);
+      await handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       updateUI();
     }
@@ -1108,11 +1110,7 @@ $(document).on("keydown", async (event) => {
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
     void Sound.playClick();
-    const activeWord: HTMLElement | null = document.querySelectorAll(
-      "#words .word"
-    )?.[
-      TestState.activeWordIndex - TestUI.activeWordElementOffset
-    ] as HTMLElement;
+    const activeWord = TestUI.getActiveWordElement();
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead
@@ -1128,14 +1126,21 @@ $(document).on("keydown", async (event) => {
       Config.oppositeShiftMode === "keymap" &&
       Config.keymapLayout !== "overrideSync"
     ) {
-      const keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
+      let keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
         () => undefined
       );
+
       if (keymapLayout === undefined) {
         Notifications.add("Failed to load keymap layout", -1);
 
         return;
       }
+
+      const funbox = getActiveFunboxNames().includes("layout_mirror");
+      if (funbox) {
+        keymapLayout = KeyConverter.mirrorLayoutKeys(keymapLayout);
+      }
+
       const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
 
       correctShiftUsed =
@@ -1158,7 +1163,7 @@ $(document).on("keydown", async (event) => {
       )
     ) {
       event.preventDefault();
-      handleChar(event.key, TestInput.input.current.length);
+      await handleChar(event.key, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
     }
@@ -1166,15 +1171,12 @@ $(document).on("keydown", async (event) => {
 
   if (
     Config.layout !== "default" &&
-    !(
-      event.ctrlKey ||
-      (event.altKey && window.navigator.platform.search("Linux") > -1)
-    )
+    !(event.ctrlKey || (event.altKey && Misc.isLinux()))
   ) {
     const char: string | null = await LayoutEmulator.getCharFromEvent(event);
     if (char !== null) {
       event.preventDefault();
-      handleChar(char, TestInput.input.current.length);
+      await handleChar(char, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
     }
@@ -1189,6 +1191,8 @@ $("#wordsInput").on("keydown", (event) => {
       "spacing debug keydown STOPPED - repeat",
       event.key,
       event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       event.which
     );
     return;
@@ -1208,7 +1212,7 @@ $("#wordsInput").on("keydown", (event) => {
   const now = performance.now();
   setTimeout(() => {
     const eventCode =
-      event.code === "" || event.which === 231 ? "NoCode" : event.code;
+      event.code === "" || event.key === "Unidentified" ? "NoCode" : event.code;
     TestInput.recordKeydownTime(now, eventCode);
   }, 0);
 });
@@ -1219,6 +1223,8 @@ $("#wordsInput").on("keyup", (event) => {
       "spacing debug keydown STOPPED - repeat",
       event.key,
       event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       event.which
     );
     return;
@@ -1237,13 +1243,13 @@ $("#wordsInput").on("keyup", (event) => {
   const now = performance.now();
   setTimeout(() => {
     const eventCode =
-      event.code === "" || event.which === 231 ? "NoCode" : event.code;
+      event.code === "" || event.key === "Unidentified" ? "NoCode" : event.code;
     TestInput.recordKeyupTime(now, eventCode);
   }, 0);
 });
 
 $("#wordsInput").on("keyup", (event) => {
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     event.preventDefault();
     return;
   }
@@ -1252,7 +1258,7 @@ $("#wordsInput").on("keyup", (event) => {
 
   if (IgnoredKeys.includes(event.key)) return;
 
-  if (TestUI.resultVisible) return;
+  if (TestState.resultVisible) return;
 });
 
 $("#wordsInput").on("beforeinput", (event) => {
@@ -1262,8 +1268,8 @@ $("#wordsInput").on("beforeinput", (event) => {
   }
 });
 
-$("#wordsInput").on("input", (event) => {
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+$("#wordsInput").on("input", async (event) => {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     (event.target as HTMLInputElement).value = " ";
     return;
   }
@@ -1326,6 +1332,7 @@ $("#wordsInput").on("input", (event) => {
     inputValue.length >= currTestInput.length
   ) {
     setWordsInput(" " + currTestInput);
+    updateUI();
     return;
   }
 
@@ -1351,7 +1358,11 @@ $("#wordsInput").on("input", (event) => {
           iOffset = inputValue.indexOf(" ") + 1;
         }
         for (let i = diffStart; i < inputValue.length; i++) {
-          handleChar(inputValue[i] as string, i - iOffset, realInputValue);
+          await handleChar(
+            inputValue[i] as string,
+            i - iOffset,
+            realInputValue
+          );
         }
       }
     } else if (containsKorean) {
@@ -1388,7 +1399,7 @@ $("#wordsInput").on("input", (event) => {
     }
     for (let i = diffStart; i < inputValue.length; i++) {
       // passing realInput to allow for correct Korean character compilation
-      handleChar(inputValue[i] as string, i - iOffset, realInputValue);
+      await handleChar(inputValue[i] as string, i - iOffset, realInputValue);
     }
   }
 
@@ -1427,10 +1438,10 @@ $("#wordsInput").on("input", (event) => {
   }, 0);
 });
 
-$("#wordsInput").on("focus", (event) => {
-  (event.target as HTMLInputElement).selectionStart = (
-    event.target as HTMLInputElement
-  ).selectionEnd = (event.target as HTMLInputElement).value.length;
+document.querySelector("#wordsInput")?.addEventListener("focus", (event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+  target.setSelectionRange(value.length, value.length);
 });
 
 $("#wordsInput").on("copy paste", (event) => {
@@ -1439,6 +1450,19 @@ $("#wordsInput").on("copy paste", (event) => {
 
 $("#wordsInput").on("select selectstart", (event) => {
   event.preventDefault();
+});
+
+$("#wordsInput").on("selectionchange", (event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+
+  const hasSelectedText = target.selectionStart !== target.selectionEnd;
+  const isCursorAtEnd = target.selectionStart === value.length;
+
+  if (hasSelectedText || !isCursorAtEnd) {
+    // force caret at end of input
+    target.setSelectionRange(value.length, value.length);
+  }
 });
 
 $("#wordsInput").on("keydown", (event) => {

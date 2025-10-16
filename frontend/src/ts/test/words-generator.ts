@@ -1,6 +1,6 @@
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
-import * as Wordset from "./wordset";
+import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
 import QuotesController, {
   Quote,
   QuoteWithTextSplit,
@@ -15,13 +15,20 @@ import * as Strings from "../utils/strings";
 import * as Arrays from "../utils/arrays";
 import * as TestState from "../test/test-state";
 import * as GetText from "../utils/generate";
-import { FunboxWordOrder, LanguageObject } from "../utils/json-data";
+import { FunboxWordOrder } from "../utils/json-data";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithFunction,
 } from "./funbox/list";
+import { WordGenError } from "../utils/word-gen-error";
+import * as Loader from "../elements/loader";
+import { PolyglotWordset } from "./funbox/funbox-functions";
+import { LanguageObject } from "@monkeytype/schemas/languages";
+
+//pin implementation
+const random = Math.random;
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -58,7 +65,7 @@ export async function punctuateWord(
     }
 
     if (currentLanguage === "spanish") {
-      const rand = Math.random();
+      const rand = random();
       if (rand > 0.9) {
         word = "¿" + word;
         spanishSentenceTracker = "?";
@@ -68,7 +75,7 @@ export async function punctuateWord(
       }
     }
   } else if (
-    (Math.random() < 0.1 &&
+    (random() < 0.1 &&
       lastChar !== "." &&
       lastChar !== "," &&
       index !== maxindex - 2) ||
@@ -80,7 +87,7 @@ export async function punctuateWord(
         spanishSentenceTracker = "";
       }
     } else {
-      const rand = Math.random();
+      const rand = random();
       if (rand <= 0.8) {
         if (currentLanguage === "kurdish") {
           word += ".";
@@ -132,14 +139,14 @@ export async function punctuateWord(
       }
     }
   } else if (
-    Math.random() < 0.01 &&
+    random() < 0.01 &&
     lastChar !== "," &&
     lastChar !== "." &&
     currentLanguage !== "russian"
   ) {
     word = `"${word}"`;
   } else if (
-    Math.random() < 0.011 &&
+    random() < 0.011 &&
     lastChar !== "," &&
     lastChar !== "." &&
     currentLanguage !== "russian" &&
@@ -147,9 +154,9 @@ export async function punctuateWord(
     currentLanguage !== "slovak"
   ) {
     word = `'${word}'`;
-  } else if (Math.random() < 0.012 && lastChar !== "," && lastChar !== ".") {
+  } else if (random() < 0.012 && lastChar !== "," && lastChar !== ".") {
     if (currentLanguage === "code") {
-      const r = Math.random();
+      const r = random();
       const brackets = ["()", "{}", "[]", "<>"];
 
       // add `word` in javascript
@@ -170,7 +177,7 @@ export async function punctuateWord(
       word = `(${word})`;
     }
   } else if (
-    Math.random() < 0.013 &&
+    random() < 0.013 &&
     lastChar !== "," &&
     lastChar !== "." &&
     lastChar !== ";" &&
@@ -187,14 +194,14 @@ export async function punctuateWord(
       word += ":";
     }
   } else if (
-    Math.random() < 0.014 &&
+    random() < 0.014 &&
     lastChar !== "," &&
     lastChar !== "." &&
     previousWord !== "-"
   ) {
     word = "-";
   } else if (
-    Math.random() < 0.015 &&
+    random() < 0.015 &&
     lastChar !== "," &&
     lastChar !== "." &&
     lastChar !== ";" &&
@@ -216,7 +223,7 @@ export async function punctuateWord(
     } else {
       word += ";";
     }
-  } else if (Math.random() < 0.2 && lastChar !== ",") {
+  } else if (random() < 0.2 && lastChar !== ",") {
     if (
       currentLanguage === "arabic" ||
       currentLanguage === "urdu" ||
@@ -231,7 +238,7 @@ export async function punctuateWord(
     } else {
       word += ",";
     }
-  } else if (Math.random() < 0.25 && currentLanguage === "code") {
+  } else if (random() < 0.25 && currentLanguage === "code") {
     const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
     const specialsC = [
       "{",
@@ -282,7 +289,7 @@ export async function punctuateWord(
       }
     }
   } else if (
-    Math.random() < 0.5 &&
+    random() < 0.5 &&
     currentLanguage === "english" &&
     (await EnglishPunctuation.check(word))
   ) {
@@ -305,7 +312,7 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
   return EnglishPunctuation.replace(word);
 }
 
-function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
+function getFunboxWordsFrequency(): FunboxWordsFrequency | undefined {
   const funbox = findSingleActiveFunboxWithFunction("getWordsFrequencyMode");
   if (funbox) {
     return funbox.functions.getWordsFrequencyMode();
@@ -339,7 +346,7 @@ async function getFunboxSection(): Promise<string[]> {
 function getFunboxWord(
   word: string,
   wordIndex: number,
-  wordset?: Wordset.Wordset
+  wordset?: Wordset
 ): string {
   const funbox = findSingleActiveFunboxWithFunction("getWord");
 
@@ -378,6 +385,21 @@ async function applyBritishEnglishToWord(
 }
 
 function applyLazyModeToWord(word: string, language: LanguageObject): string {
+  // polyglot mode, use the word's actual language
+  if (currentWordset && currentWordset instanceof PolyglotWordset) {
+    const langName = currentWordset.wordsWithLanguage.get(word);
+    const langProps = langName
+      ? currentWordset.languageProperties.get(langName)
+      : undefined;
+    const allowLazyMode =
+      (langProps && !langProps.noLazyMode) || Config.mode === "custom";
+    if (Config.lazyMode && allowLazyMode && langProps) {
+      word = LazyMode.replaceAccents(word, langProps.additionalAccents);
+    }
+    return word;
+  }
+
+  // normal mode
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
   if (Config.lazyMode && allowLazyMode) {
     word = LazyMode.replaceAccents(word, language.additionalAccents);
@@ -386,16 +408,11 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
 }
 
 export function getWordOrder(): FunboxWordOrder {
-  const wordOrder =
-    getActiveFunboxes()
-      .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
-      ?.properties?.find((fp) => fp.startsWith("wordOrder")) ?? "";
+  const wordOrderProperty = getActiveFunboxes()
+    .flatMap((fb) => fb.properties ?? [])
+    .find((prop) => prop.startsWith("wordOrder:"));
 
-  if (!wordOrder) {
-    return "normal";
-  } else {
-    return wordOrder.split(":")[1] as FunboxWordOrder;
-  }
+  return (wordOrderProperty?.split(":")[1] as FunboxWordOrder) ?? "normal";
 }
 
 export function getLimit(): number {
@@ -413,8 +430,8 @@ export function getLimit(): number {
 
   const funboxToPush =
     getActiveFunboxes()
-      .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-      ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
+      .flatMap((fb) => fb.properties ?? [])
+      .find((prop) => prop.startsWith("toPush:")) ?? "";
 
   if (Config.showAllLines) {
     if (Config.mode === "custom") {
@@ -475,13 +492,6 @@ export function getLimit(): number {
   return limit;
 }
 
-export class WordGenError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "WordGenError";
-  }
-}
-
 async function getQuoteWordList(
   language: LanguageObject,
   wordOrder?: FunboxWordOrder
@@ -505,10 +515,12 @@ async function getQuoteWordList(
     ? "german"
     : language.name;
 
+  Loader.show();
   const quotesCollection = await QuotesController.getQuotes(
     languageToGet,
     Config.quoteLength
   );
+  Loader.hide();
 
   if (quotesCollection.length === 0) {
     UpdateConfig.setMode("words");
@@ -525,7 +537,7 @@ async function getQuoteWordList(
       TestState.selectedQuoteId
     );
     if (targetQuote === undefined) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
       throw new WordGenError(
         `Quote ${TestState.selectedQuoteId} does not exist`
       );
@@ -536,14 +548,14 @@ async function getQuoteWordList(
       Config.language
     );
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
       throw new WordGenError("No favorite quotes found");
     }
     rq = randomQuote;
   } else {
     const randomQuote = QuotesController.getRandomQuote();
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLength(-1);
+      UpdateConfig.setQuoteLengthAll();
       throw new WordGenError("No quotes found for selected quote length");
     }
     rq = randomQuote;
@@ -578,7 +590,7 @@ async function getQuoteWordList(
   return TestWords.currentQuote.textSplit;
 }
 
-let currentWordset: Wordset.Wordset | null = null;
+let currentWordset: Wordset | null = null;
 let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
@@ -587,6 +599,8 @@ type GenerateWordsReturn = {
   sectionIndexes: number[];
   hasTab: boolean;
   hasNewline: boolean;
+  allRightToLeft?: boolean;
+  allLigatures?: boolean;
 };
 
 let previousRandomQuote: QuoteWithTextSplit | null = null;
@@ -608,6 +622,8 @@ export async function generateWords(
     sectionIndexes: [],
     hasTab: false,
     hasNewline: false,
+    allRightToLeft: language.rightToLeft,
+    allLigatures: language.ligatures ?? false,
   };
 
   isCurrentlyUsingFunboxSection = isFunboxActiveWithFunction("pullSection");
@@ -638,9 +654,20 @@ export async function generateWords(
 
   const funbox = findSingleActiveFunboxWithFunction("withWords");
   if (funbox) {
-    currentWordset = await funbox.functions.withWords(wordList);
+    const result = await funbox.functions.withWords(wordList);
+    // PolyglotWordset if polyglot otherwise Wordset
+    if (result instanceof PolyglotWordset) {
+      const polyglotResult = result;
+      currentWordset = polyglotResult;
+      // set allLigatures if any language in languageProperties has ligatures true
+      ret.allLigatures = Array.from(
+        polyglotResult.languageProperties.values()
+      ).some((props) => !!props.ligatures);
+    } else {
+      currentWordset = result;
+    }
   } else {
-    currentWordset = await Wordset.withWords(wordList);
+    currentWordset = await withWords(wordList);
   }
 
   console.debug("Wordset", currentWordset);
@@ -752,6 +779,9 @@ export async function getNextWord(
         (Config.mode === "custom" &&
           CustomText.getLimitMode() === "word" &&
           wordIndex < CustomText.getLimitValue()) ||
+        (Config.mode === "custom" &&
+          CustomText.getLimitMode() === "section" &&
+          sectionIndex < CustomText.getLimitValue()) ||
         (Config.mode === "words" && wordIndex < Config.words)
       ) {
         continueRandomGeneration = true;
@@ -907,7 +937,7 @@ export async function getNextWord(
     );
   }
   if (Config.numbers) {
-    if (Math.random() < 0.1) {
+    if (random() < 0.1) {
       randomWord = GetText.getNumbers(4);
 
       if (Config.language.startsWith("kurdish")) {

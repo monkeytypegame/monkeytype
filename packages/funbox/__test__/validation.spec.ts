@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as List from "../src/list";
 import * as Validation from "../src/validation";
 import { FunboxMetadata } from "../src/types";
@@ -7,7 +8,7 @@ describe("validation", () => {
     const getFunboxMock = vi.spyOn(List, "getFunbox");
 
     beforeEach(() => {
-      getFunboxMock.mockReset();
+      getFunboxMock.mockClear();
     });
 
     it("should pass without funboxNames", () => {
@@ -112,6 +113,47 @@ describe("validation", () => {
       //WHEN / THEN
       expect(Validation.checkCompatibility(["plus_one", "plus_two"])).toBe(
         true
+      );
+    });
+    describe("should validate two funboxes modifying the wordset", () => {
+      const testCases = [
+        {
+          firstFunction: "withWords",
+          secondFunction: "withWords",
+          compatible: false,
+        },
+        {
+          firstFunction: "withWords",
+          secondFunction: "getWord",
+          compatible: false,
+        },
+        {
+          firstFunction: "getWord",
+          secondFunction: "pullSection",
+          compatible: false,
+        },
+      ];
+
+      it.for(testCases)(
+        `expect $firstFunction and $secondFunction to be compatible $compatible`,
+        ({ firstFunction, secondFunction, compatible }) => {
+          //GIVEN
+          getFunboxMock.mockReturnValueOnce([
+            {
+              name: "plus_one",
+              frontendFunctions: [firstFunction],
+            } as FunboxMetadata,
+            {
+              name: "plus_two",
+              frontendFunctions: [secondFunction],
+            } as FunboxMetadata,
+          ]);
+
+          //WHEN / THEN
+          expect(Validation.checkCompatibility(["plus_one", "plus_two"])).toBe(
+            compatible
+          );
+        }
       );
     });
   });

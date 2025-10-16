@@ -1,8 +1,4 @@
-import {
-  Config,
-  CustomThemeColors,
-} from "@monkeytype/contracts/schemas/configs";
-import { deepClone } from "../utils/misc";
+import { Config, CustomThemeColors } from "@monkeytype/schemas/configs";
 
 const obj = {
   theme: "serika_dark",
@@ -43,7 +39,7 @@ const obj = {
   paceCaretStyle: "default",
   flipTestColors: false,
   layout: "default",
-  funbox: "none",
+  funbox: [],
   confidenceMode: "off",
   indicateTypos: "off",
   timerStyle: "mini",
@@ -92,7 +88,8 @@ const obj = {
   customBackground: "",
   customBackgroundSize: "cover",
   customBackgroundFilter: [0, 1, 1, 1],
-  customLayoutfluid: "qwerty#dvorak#colemak",
+  customLayoutfluid: ["qwerty", "dvorak", "colemak"],
+  customPolyglot: ["english", "spanish", "french", "german"],
   monkeyPowerLevel: "off",
   minBurst: "off",
   minBurstCustomSpeed: 100,
@@ -103,8 +100,9 @@ const obj = {
   tapeMode: "off",
   tapeMargin: 50,
   maxLineWidth: 0,
+  playTimeWarning: "off",
 } as Config;
 
 export function getDefaultConfig(): Config {
-  return deepClone(obj);
+  return structuredClone(obj);
 }

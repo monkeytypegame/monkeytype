@@ -2,7 +2,6 @@ import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
-import * as JSONData from "../utils/json-data";
 import { isColorDark, isColorLight } from "../utils/colors";
 import Config, { setAutoSwitchTheme, setCustomTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
@@ -10,10 +9,12 @@ import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
-import * as AnalyticsController from "../controllers/analytics-controller";
 import { debounce } from "throttle-debounce";
+import { ThemeName } from "@monkeytype/schemas/configs";
+import { ThemesList } from "../constants/themes";
+import fileStorage from "../utils/file-storage";
 
-export let randomTheme: string | null = null;
+export let randomTheme: ThemeName | string | null = null;
 let isPreviewingTheme = false;
 let randomThemeIndex = 0;
 
@@ -153,15 +154,8 @@ async function apply(
     customColorsOverride,
     isPreview
   );
-  clearCustomTheme();
+
   const name = customColorsOverride ? "custom" : themeName;
-
-  ThemeColors.reset();
-
-  $(".keymapKey").attr("style", "");
-  // $("#currentTheme").attr("href", `themes/${name}.css`);
-  await loadStyle(name);
-  ThemeColors.update();
 
   if ((Config.customTheme && !isPreview) || customColorsOverride) {
     const colors = customColorsOverride ?? Config.customThemeColors;
@@ -172,7 +166,18 @@ async function apply(
     }
   }
 
-  void AnalyticsController.log("changedTheme", { theme: name });
+  ThemeColors.reset();
+
+  $(".keymapKey").attr("style", "");
+  // $("#currentTheme").attr("href", `themes/${name}.css`);
+  await loadStyle(name);
+
+  if (name !== "custom") {
+    clearCustomTheme();
+  }
+
+  ThemeColors.update();
+
   // if (!isPreview) {
   const colors = await ThemeColors.getAll();
   $(".keymapKey").attr("style", "");
@@ -180,7 +185,7 @@ async function apply(
   void updateFavicon();
   $("#metaThemeColor").attr("content", colors.bg);
   // }
-  updateFooterThemeName(isPreview ? themeName : undefined);
+  updateFooterIndicator(isPreview ? themeName : undefined);
 
   if (isColorDark(await ThemeColors.get("bg"))) {
     $("body").addClass("darkMode");
@@ -189,29 +194,70 @@ async function apply(
   }
 }
 
-function updateFooterThemeName(nameOverride?: string): void {
-  let str = Config.theme;
+function updateFooterIndicator(nameOverride?: string): void {
+  const indicator = document.querySelector<HTMLElement>(
+    "footer .right .current-theme"
+  );
+  const text = indicator?.querySelector<HTMLElement>(".text");
+  const favIcon = indicator?.querySelector<HTMLElement>(".favIndicator");
+
+  if (
+    !(indicator instanceof HTMLElement) ||
+    !(text instanceof HTMLElement) ||
+    !(favIcon instanceof HTMLElement)
+  ) {
+    return;
+  }
+
+  //text
+  let str: string = Config.theme;
   if (randomTheme !== null) str = randomTheme;
   if (Config.customTheme) str = "custom";
   if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
-  $(".current-theme .text").text(str);
+  text.innerText = str;
+
+  //fav icon
+  const isCustom = Config.customTheme;
+  // hide the favorite icon completely for custom themes
+  if (isCustom) {
+    favIcon.style.display = "none";
+    return;
+  }
+  favIcon.style.display = "";
+  const currentTheme = nameOverride ?? randomTheme ?? Config.theme;
+  const isFavorite =
+    currentTheme !== null &&
+    Config.favThemes.includes(currentTheme as ThemeName);
+
+  if (isFavorite) {
+    favIcon.style.display = "block";
+  } else {
+    favIcon.style.display = "none";
+  }
 }
+
+type PreviewState = {
+  theme: string;
+  colors?: string[];
+} | null;
+
+let previewState: PreviewState = null;
 
 export function preview(
   themeIdentifier: string,
   customColorsOverride?: string[]
 ): void {
-  debouncedPreview(themeIdentifier, customColorsOverride);
+  previewState = { theme: themeIdentifier, colors: customColorsOverride };
+  debouncedPreview();
 }
 
-const debouncedPreview = debounce<(t: string, c?: string[]) => void>(
-  250,
-  (themeIdenfitier, customColorsOverride) => {
+const debouncedPreview = debounce<() => void>(250, () => {
+  if (previewState) {
     isPreviewingTheme = true;
-    void apply(themeIdenfitier, customColorsOverride, true);
+    void apply(previewState.theme, previewState.colors, true);
   }
-);
+});
 
 async function set(
   themeIdentifier: string,
@@ -231,6 +277,8 @@ async function set(
 }
 
 export async function clearPreview(applyTheme = true): Promise<void> {
+  previewState = null;
+
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     if (applyTheme) {
@@ -245,19 +293,10 @@ export async function clearPreview(applyTheme = true): Promise<void> {
   }
 }
 
-let themesList: string[] = [];
+let themesList: (ThemeName | string)[] = [];
 
 async function changeThemeList(): Promise<void> {
-  let themes;
-  try {
-    themes = await JSONData.getThemesList();
-  } catch (e) {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update random theme list")
-    );
-    return;
-  }
-
+  const themes = ThemesList;
   if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
     themesList = Config.favThemes;
   } else if (Config.randomTheme === "light") {
@@ -341,12 +380,31 @@ function applyCustomBackgroundSize(): void {
   }
 }
 
-function applyCustomBackground(): void {
+export async function applyCustomBackground(): Promise<void> {
   // $(".customBackground").css({
   //   backgroundImage: `url(${Config.customBackground})`,
   //   backgroundAttachment: "fixed",
   // });
-  if (Config.customBackground === "") {
+
+  let backgroundUrl = Config.customBackground;
+
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']"
+  ).val(backgroundUrl);
+
+  //if there is a localBackgroundFile available, use it.
+  const localBackgroundFile = await fileStorage.getFile("LocalBackgroundFile");
+
+  if (localBackgroundFile !== undefined) {
+    backgroundUrl = localBackgroundFile;
+  }
+
+  // hide the filter section initially and always
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundFilter']"
+  ).addClass("hidden");
+
+  if (backgroundUrl === "") {
     $("#words").removeClass("noErrorBorder");
     $("#resultWordsHistory").removeClass("noErrorBorder");
     $(".customBackground img").remove();
@@ -357,16 +415,50 @@ function applyCustomBackground(): void {
     //use setAttribute for possible unsafe customBackground value
     const container = document.querySelector(".customBackground");
     const img = document.createElement("img");
-    img.setAttribute("src", Config.customBackground);
+
+    img.setAttribute("src", backgroundUrl);
     img.setAttribute(
       "onError",
-      "javascript:window.dispatchEvent(new Event('customBackgroundFailed'))"
+      "javascript:this.style.display='none'; window.dispatchEvent(new Event('customBackgroundFailed'))"
     );
+    img.onload = () => {
+      // show the filter section only if the image loads successfully
+      $(
+        ".pageSettings .section[data-config-name='customBackgroundFilter']"
+      ).removeClass("hidden");
+    };
+
     container?.replaceChildren(img);
 
     BackgroundFilter.apply();
     applyCustomBackgroundSize();
   }
+}
+
+export async function applyFontFamily(): Promise<void> {
+  let font = Config.fontFamily.replace(/_/g, " ");
+
+  const localFont = await fileStorage.getFile("LocalFontFamilyFile");
+  if (localFont === undefined) {
+    //use config font
+    $(".customFont").empty();
+  } else {
+    font = "LOCALCUSTOM";
+
+    $(".customFont").html(`
+      @font-face{ 
+        font-family: LOCALCUSTOM;
+        src: url(${localFont});
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }`);
+  }
+
+  document.documentElement.style.setProperty(
+    "--font",
+    `"${font}", "Roboto Mono", "Vazirmatn", monospace`
+  );
 }
 
 window
@@ -380,7 +472,37 @@ window
     }
   });
 
+let ignoreConfigEvent = false;
+
 ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
+  if (eventKey === "fullConfigChange") {
+    ignoreConfigEvent = true;
+  }
+  if (eventKey === "fullConfigChangeFinished") {
+    ignoreConfigEvent = false;
+
+    await clearRandom();
+    await clearPreview(false);
+    if (Config.autoSwitchTheme) {
+      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+        await set(Config.themeDark, true);
+      } else {
+        await set(Config.themeLight, true);
+      }
+    } else {
+      if (Config.customTheme) {
+        await set("custom");
+      } else {
+        await set(Config.theme);
+      }
+    }
+    await applyCustomBackground();
+  }
+
+  // this is here to prevent calling set / preview multiple times during a full config loading
+  // once the full config is loaded, we can apply everything once
+  if (ignoreConfigEvent) return;
+
   if (eventKey === "randomTheme") {
     void changeThemeList();
   }
@@ -395,25 +517,9 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     await clearPreview(false);
     await set(eventValue as string);
   }
-  if (eventKey === "setThemes") {
-    await clearRandom();
-    await clearPreview(false);
-    if (Config.autoSwitchTheme) {
-      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-        await set(Config.themeDark, true);
-      } else {
-        await set(Config.themeLight, true);
-      }
-    } else {
-      if (eventValue as boolean) {
-        await set("custom");
-      } else {
-        await set(Config.theme);
-      }
-    }
-  }
   if (eventKey === "randomTheme" && eventValue === "off") await clearRandom();
-  if (eventKey === "customBackground") applyCustomBackground();
+  if (eventKey === "customBackground") await applyCustomBackground();
+
   if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
   if (eventKey === "autoSwitchTheme") {
     if (eventValue as boolean) {
@@ -443,11 +549,22 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   ) {
     await set(Config.themeDark, true);
   }
+  if (
+    [
+      "theme",
+      "customTheme",
+      "customThemeColors",
+      "randomTheme",
+      "favThemes",
+    ].includes(eventKey)
+  ) {
+    updateFooterIndicator();
+  }
 });
 
 window.addEventListener("customBackgroundFailed", () => {
   Notifications.add(
-    "Custom background link is either temporairly unavailable or expired. Please make sure the URL is correct or change it",
+    "Custom background link is either temporarily unavailable or expired. Please make sure the URL is correct or change it",
     0,
     { duration: 5 }
   );

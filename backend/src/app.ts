@@ -10,6 +10,10 @@ import {
 } from "./middlewares/rate-limit";
 import { compatibilityCheckMiddleware } from "./middlewares/compatibilityCheck";
 import { COMPATIBILITY_CHECK_HEADER } from "@monkeytype/contracts";
+import { createETagGenerator } from "./utils/etag";
+import { v4RequestBody } from "./middlewares/utility";
+
+const etagFn = createETagGenerator({ weak: true });
 
 function buildApp(): express.Application {
   const app = express();
@@ -26,6 +30,9 @@ function buildApp(): express.Application {
 
   app.use(badAuthRateLimiterHandler);
   app.use(rootRateLimiter);
+  app.use(v4RequestBody);
+
+  app.set("etag", etagFn);
 
   addApiRoutes(app);
 

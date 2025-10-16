@@ -1,5 +1,7 @@
-import { execSync } from "child_process";
+// idk why its failing to resolve
+// eslint-disable-next-line import/no-unresolved
 import { Octokit } from "@octokit/rest";
+import { execSync } from "child_process";
 import dotenv from "dotenv";
 import fs, { readFileSync } from "fs";
 import readlineSync from "readline-sync";
@@ -11,12 +13,13 @@ const __dirname = dirname(__filename);
 
 dotenv.config();
 
-const args = process.argv.slice(2);
-const isFrontend = args.includes("--fe");
-const noDeploy = args.includes("--no-deploy");
-const isBackend = args.includes("--be");
-const isDryRun = args.includes("--dry");
-const noSyncCheck = args.includes("--no-sync-check");
+const args = new Set(process.argv.slice(2));
+const isFrontend = args.has("--fe");
+const noDeploy = args.has("--no-deploy");
+const isBackend = args.has("--be");
+const isDryRun = args.has("--dry");
+const noSyncCheck = args.has("--no-sync-check");
+const hotfix = args.has("--hotfix");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../../../");
 
@@ -110,13 +113,13 @@ const getCurrentVersion = () => {
 const incrementVersion = (currentVersion) => {
   console.log("Incrementing version...");
   const now = new Date();
-  const year = now.getFullYear().toString().slice(-2);
+  const year = Number(now.getFullYear().toString().slice(-2));
   const start = new Date(now.getFullYear(), 0, 1);
   const week = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
   const [prevYear, prevWeek, minor] = currentVersion.split(".").map(Number);
 
   let newMinor = minor + 1;
-  if (year != prevYear || week != prevWeek) {
+  if (year !== prevYear || week !== prevWeek) {
     newMinor = 0;
   }
 
@@ -162,17 +165,31 @@ const checkUncommittedChanges = () => {
   }
 };
 
+const installDependencies = () => {
+  console.log("Installing dependencies...");
+  if (isDryRun) {
+    console.log("[Dry Run] Dependencies would be installed.");
+  } else {
+    runProjectRootCommand("pnpm i");
+  }
+};
+
 const buildProject = () => {
   console.log("Building project...");
-  let filter = "";
 
   if (isFrontend && !isBackend) {
-    filter = "--filter @monkeytype/frontend";
+    runProjectRootCommand(
+      "SENTRY=1 npx turbo lint test check-assets build --filter @monkeytype/frontend --force"
+    );
   } else if (isBackend && !isFrontend) {
-    filter = "--filter @monkeytype/backend";
+    runProjectRootCommand(
+      "SENTRY=1 npx turbo lint test build --filter @monkeytype/backend --force"
+    );
+  } else {
+    runProjectRootCommand(
+      "SENTRY=1 npx turbo lint test check-assets build --force"
+    );
   }
-
-  runProjectRootCommand("npx turbo lint test validate-json build " + filter);
 };
 
 const deployBackend = () => {
@@ -235,27 +252,33 @@ const createGithubRelease = async (version, changelogContent) => {
 };
 
 const main = async () => {
-  console.log("Starting release process...");
+  console.log(`Starting ${hotfix ? "hotfix" : "release"} process...`);
 
-  checkBranchSync();
+  if (!hotfix) checkBranchSync();
 
   checkUncommittedChanges();
 
-  const changelogContent = await generateChangelog();
+  installDependencies();
 
-  console.log(changelogContent);
+  let changelogContent;
+  let newVersion;
+  if (!hotfix) {
+    changelogContent = await generateChangelog();
 
-  if (!readlineSync.keyInYN("Changelog looks good?")) {
-    console.log("Exiting.");
-    process.exit(1);
+    console.log(changelogContent);
+
+    if (!readlineSync.keyInYN("Changelog looks good?")) {
+      console.log("Exiting.");
+      process.exit(1);
+    }
+
+    const currentVersion = getCurrentVersion();
+    newVersion = incrementVersion(currentVersion);
+    console.log(`New version: ${newVersion}`);
   }
-
-  const currentVersion = getCurrentVersion();
-  const newVersion = incrementVersion(currentVersion);
-
   buildProject();
 
-  if (!readlineSync.keyInYN(`Ready to release ${newVersion}?`)) {
+  if (!hotfix && !readlineSync.keyInYN(`Ready to release ${newVersion}?`)) {
     console.log("Exiting.");
     process.exit(1);
   }
@@ -269,16 +292,22 @@ const main = async () => {
   }
 
   if (!noDeploy) purgeCache();
-  updatePackage(newVersion);
-  createCommitAndTag(newVersion);
-  try {
-    await createGithubRelease(newVersion, changelogContent);
-  } catch (e) {
-    console.error(`Failed to create release on GitHub: ${e}`);
-    console.log("Please create the release manually.");
+  if (!hotfix) {
+    updatePackage(newVersion);
+    createCommitAndTag(newVersion);
+    try {
+      await createGithubRelease(newVersion, changelogContent);
+    } catch (e) {
+      console.error(`Failed to create release on GitHub: ${e}`);
+      console.log("Please create the release manually.");
+    }
   }
 
-  console.log(`Release ${newVersion} completed successfully.`);
+  if (hotfix) {
+    console.log("Hotfix completed successfully.");
+  } else {
+    console.log(`Release ${newVersion} completed successfully.`);
+  }
   process.exit(0);
 };
 

@@ -1,138 +1,33 @@
 @use "sass:map";
-$fonts: (
-  "Source Code Pro": (
-    "src": "SourceCodePro-Regular",
-  ),
-  "JetBrains Mono": (
-    "src": "JetBrainsMono-Regular",
-  ),
-  "Montserrat": (
-    "src": "Montserrat-Regular",
-  ),
-  "Roboto": (
-    "src": "Roboto-Regular",
-  ),
-  "Titillium Web": (
-    "src": "TitilliumWeb-Regular",
-  ),
-  "Oxygen": (
-    "src": "Oxygen-Regular",
-  ),
-  "Itim": (
-    "src": "Itim-Regular",
-  ),
-  "Comfortaa": (
-    "src": "Comfortaa-Regular",
-  ),
-  "Coming Soon": (
-    "src": "ComingSoon-Regular",
-  ),
-  "Atkinson Hyperlegible": (
-    "src": "AtkinsonHyperlegible-Regular",
-  ),
-  "Lato": (
-    "src": "Lato-Regular",
-  ),
-  "Lalezar": (
-    "src": "Lalezar-Regular",
-  ),
-  "Noto Naskh Arabic": (
-    "src": "NotoNaskhArabic-Regular",
-  ),
-  "Vazirmatn": (
-    "src": "Vazirmatn-Regular",
-  ),
-  "Ubuntu": (
-    "src": "Ubuntu-Regular",
-  ),
-  "Ubuntu Mono": (
-    "src": "UbuntuMono-Regular",
-  ),
-  "Inconsolata": (
-    "src": "Inconsolata-Regular",
-  ),
-  "IBM Plex Sans": (
-    "src": "IBMPlexSans-SemiBold",
-    "weight": 600,
-  ),
-  "Lexend Deca": (
-    "src": "LexendDeca-Regular",
-  ),
-  "Fira Code": (
-    "src": "FiraCode-Regular",
-  ),
-  "Nunito": (
-    "src": "Nunito-Bold",
-    "weight": 700,
-  ),
-  "Roboto Mono": (
-    "src": "RobotoMono-Regular",
-  ),
-  "Boon": (
-    "src": "Boon-Regular",
-  ),
-  "Open Dyslexic": (
-    "src": "OpenDyslexic-Regular",
-  ),
-  "Cascadia Mono": (
-    "src": "CascadiaMono-Regular",
-  ),
-  "IBM Plex Mono": (
-    "src": "IBMPlexMono-Regular",
-  ),
-  "Overpass Mono": (
-    "src": "OverpassMono-Regular",
-  ),
-  "Hack": (
-    "src": "Hack-Regular",
-  ),
-  "CommitMono": (
-    "src": "CommitMono-Regular",
-  ),
-  "Mononoki": (
-    "src": "Mononoki-Regular",
-  ),
-  "Parkinsans": (
-    "src": "Parkinsans-Regular",
-  ),
-  "Geist": (
-    "src": "Geist-Medium",
-  ),
-  "Geist Mono": (
-    "src": "GeistMono-Medium",
-  ),
-);
 
-$font-defauls: (
-  "style": normal,
-  "weight": 400,
-  "display": block,
-  "format": "woff2",
-  "ext": "woff2",
-);
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("/webfonts/Vazirmatn-Regular.woff2") format("woff2");
+}
 
-@each $font, $settings in $fonts {
-  $config: map-merge($font-defauls, $settings);
-  $src: "/webfonts/" + map-get($config, "src") + "." + map-get($config, "ext");
+@each $font, $config in $fonts {
+  $dir: "webfonts";
   $previewDir: "webfonts-preview";
   @if variable-exists(previewFontsPath) {
     $previewDir: $previewFontsPath;
   }
 
   @font-face {
-    font-family: $font;
-    font-style: map-get($config, "style");
+    font-family: "#{$font}";
+    font-style: normal;
     font-weight: map-get($config, "weight");
-    font-display: map-get($config, "display");
-    src: url($src) format(map-get($config, "format"));
+    font-display: block;
+    src: url("/#{$dir}/#{map-get($config, 'src')}") format("woff2");
   }
 
   @font-face {
-    font-family: $font + " Preview";
-    font-style: map-get($config, "style");
+    font-family: "#{$font} Preview";
+    font-style: normal;
     font-weight: map-get($config, "weight");
-    font-display: map-get($config, "display");
-    src: url("/" + $previewDir + "/" + map-get($config, "src") + ".woff2")
-      format("woff2");
+    font-display: block;
+    src: url("/#{$previewDir}/#{map-get($config, 'src')}") format("woff2");
   }
 }

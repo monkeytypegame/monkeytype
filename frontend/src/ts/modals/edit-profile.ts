@@ -7,7 +7,14 @@ import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import * as Profile from "../elements/profile";
 import { CharacterCounter } from "../elements/character-counter";
-import { Badge, UserProfileDetails } from "@monkeytype/contracts/schemas/users";
+import {
+  Badge,
+  GithubProfileSchema,
+  TwitterProfileSchema,
+  UserProfileDetails,
+  WebsiteSchema,
+} from "@monkeytype/schemas/users";
+import { InputIndicator } from "../elements/input-indicator";
 
 export function show(): void {
   if (!ConnectionState.get()) {
@@ -43,6 +50,15 @@ const twitterInput = $("#editProfileModal .twitter");
 const githubInput = $("#editProfileModal .github");
 const websiteInput = $("#editProfileModal .website");
 const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
+const showActivityOnPublicProfileInput = document.querySelector(
+  "#editProfileModal .editProfileShowActivityOnPublicProfile"
+) as HTMLInputElement;
+
+const indicators = [
+  addValidation(twitterInput, TwitterProfileSchema),
+  addValidation(githubInput, GithubProfileSchema),
+  addValidation(websiteInput, WebsiteSchema),
+];
 
 let currentSelectedBadgeId = -1;
 
@@ -50,7 +66,8 @@ function hydrateInputs(): void {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   const badges = snapshot.inventory?.badges ?? [];
-  const { bio, keyboard, socialProfiles } = snapshot.details ?? {};
+  const { bio, keyboard, socialProfiles, showActivityOnPublicProfile } =
+    snapshot.details ?? {};
   currentSelectedBadgeId = -1;
 
   bioInput.val(bio ?? "");
@@ -59,6 +76,8 @@ function hydrateInputs(): void {
   githubInput.val(socialProfiles?.github ?? "");
   websiteInput.val(socialProfiles?.website ?? "");
   badgeIdsSelect.html("");
+  showActivityOnPublicProfileInput.checked =
+    showActivityOnPublicProfile || false;
 
   badges?.forEach((badge: Badge) => {
     if (badge.selected) {
@@ -90,6 +109,8 @@ function hydrateInputs(): void {
     badgeIdsSelect.find(".badgeSelectionItem").removeClass("selected");
     $(currentTarget).addClass("selected");
   });
+
+  indicators.forEach((it) => it.hide());
 }
 
 function initializeCharacterCounters(): void {
@@ -103,6 +124,8 @@ function buildUpdatesFromInputs(): UserProfileDetails {
   const twitter = (twitterInput.val() ?? "") as string;
   const github = (githubInput.val() ?? "") as string;
   const website = (websiteInput.val() ?? "") as string;
+  const showActivityOnPublicProfile =
+    showActivityOnPublicProfileInput.checked ?? false;
 
   const profileUpdates: UserProfileDetails = {
     bio,
@@ -112,6 +135,7 @@ function buildUpdatesFromInputs(): UserProfileDetails {
       github,
       website,
     },
+    showActivityOnPublicProfile,
   };
 
   return profileUpdates;
@@ -173,6 +197,42 @@ async function updateProfile(): Promise<void> {
   Notifications.add("Profile updated", 1);
 
   hide();
+}
+
+function addValidation(element: JQuery, schema: Zod.Schema): InputIndicator {
+  const indicator = new InputIndicator(element, {
+    valid: {
+      icon: "fa-check",
+      level: 1,
+    },
+    invalid: {
+      icon: "fa-times",
+      level: -1,
+    },
+    checking: {
+      icon: "fa-circle-notch",
+      spinIcon: true,
+      level: 0,
+    },
+  });
+
+  element.on("input", (event) => {
+    const value = (event.target as HTMLInputElement).value;
+    if (value === undefined || value === "") {
+      indicator.hide();
+      return;
+    }
+    const validationResult = schema.safeParse(value);
+    if (!validationResult.success) {
+      indicator.show(
+        "invalid",
+        validationResult.error.errors.map((err) => err.message).join(", ")
+      );
+      return;
+    }
+    indicator.show("valid");
+  });
+  return indicator;
 }
 
 const modal = new AnimatedModal({

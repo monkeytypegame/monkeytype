@@ -1,7 +1,15 @@
-import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
+import { Config, ConfigKey, ConfigValue } from "@monkeytype/schemas/configs";
+
+export type ConfigEventKey =
+  | ConfigKey
+  | "saveToLocalStorage"
+  | "setThemes"
+  | "configApplied"
+  | "fullConfigChange"
+  | "fullConfigChangeFinished";
 
 type SubscribeFunction = (
-  key: string,
+  key: ConfigEventKey,
   newValue?: ConfigValue,
   nosave?: boolean,
   previousValue?: ConfigValue,
@@ -15,7 +23,7 @@ export function subscribe(fn: SubscribeFunction): void {
 }
 
 export function dispatch(
-  key: string,
+  key: ConfigEventKey,
   newValue?: ConfigValue,
   nosave?: boolean,
   previousValue?: ConfigValue,

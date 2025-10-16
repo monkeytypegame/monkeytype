@@ -1,17 +1,12 @@
 @keyframes loader {
   0% {
-    width: 0;
-    left: 0;
+    transform: translateX(-100%) scaleX(0);
   }
-
   50% {
-    width: 100%;
-    left: 0;
+    transform: translateX(0) scaleX(1);
   }
-
   100% {
-    width: 0;
-    left: 100%;
+    transform: translateX(100%) scaleX(0);
   }
 }
 
@@ -64,18 +59,12 @@
   }
 }
 
-@keyframes flashHighlight {
+@keyframes accountRowHighlight {
   0% {
-    background-color: var(--bg-color) !important;
-  }
-  10% {
-    background-color: var(--main-color) !important;
-  }
-  40% {
-    background-color: var(--main-color) !important;
+    outline: 0.25em solid var(--main-color);
   }
   100% {
-    background-color: var(--bg-color) !important;
+    outline: 0.25em solid transparent;
   }
 }
 
@@ -109,5 +98,26 @@
   }
   100% {
     bottom: 0%;
+  }
+}
+
+@keyframes flashBorder {
+  0% {
+    box-shadow: 0 0 0 0.2em var(--main-color);
+  }
+  100% {
+    box-shadow: 0 0 0 0.2em transparent;
+  }
+}
+
+@keyframes gold-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }

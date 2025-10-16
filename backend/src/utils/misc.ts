@@ -193,11 +193,20 @@ export function isDevEnvironment(): boolean {
   return process.env["MODE"] === "dev";
 }
 
+export function getFrontendUrl(): string {
+  return isDevEnvironment()
+    ? "http://localhost:3000"
+    : process.env["FRONTEND_URL"] !== undefined
+    ? process.env["FRONTEND_URL"]
+    : "https://monkeytype.com";
+}
+
 /**
  * convert database object into api object
  * @param data  database object with `_id: ObjectId`
  * @returns api object with `id: string`
  */
+
 export function replaceObjectId<T extends { _id: ObjectId }>(
   data: T
 ): T & { _id: string };

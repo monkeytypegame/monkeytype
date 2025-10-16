@@ -33,16 +33,6 @@
       font-size: 9rem;
     }
   }
-  #leaderboardsWrapper #leaderboards {
-    table thead tr td:nth-child(4),
-    table tbody tr td:nth-child(4),
-    table tfoot tr td:nth-child(4) {
-      display: none;
-    }
-    .mainTitle {
-      font-size: 2rem;
-    }
-  }
   #customTextModal {
     .modal {
       .buttonsTop {
@@ -53,7 +43,7 @@
       }
     }
   }
-  #testActivity {
+  .testActivity {
     --box-size: 0.9em;
     --font-size: 0.9em;
     // .days {

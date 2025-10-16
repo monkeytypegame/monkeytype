@@ -1,22 +1,24 @@
 import Config from "./config";
 import * as Caret from "./test/caret";
-import * as Notifications from "./elements/notifications";
 import * as CustomText from "./test/custom-text";
 import * as TestState from "./test/test-state";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
-import { canQuickRestart, isDevEnvironment } from "./utils/misc";
+import { isDevEnvironment } from "./utils/misc";
 import { isCustomTextLong } from "./states/custom-text-name";
+import { canQuickRestart } from "./utils/quick-restart";
+import { FontName } from "@monkeytype/schemas/fonts";
+import { applyFontFamily } from "./controllers/theme-controller";
 
 let isPreviewingFont = false;
-export function previewFontFamily(font: string): void {
+export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
+    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
   );
-  void TestUI.updateHintsPosition();
+  void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
 }
 
@@ -48,7 +50,7 @@ function updateKeytips(): void {
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $("footer .keyTips").html(`
     ${
-      Config.quickRestart == "off"
+      Config.quickRestart === "off"
         ? "<key>tab</key> + <key>enter</key>"
         : `<key>${Config.quickRestart}</key>`
     } - restart test<br>
@@ -56,13 +58,6 @@ function updateKeytips(): void {
 }
 
 if (isDevEnvironment()) {
-  window.onerror = function (error): void {
-    if (JSON.stringify(error).includes("x_magnitude")) return;
-    Notifications.add(JSON.stringify(error), -1, {
-      important: true,
-      duration: 5,
-    });
-  };
   $("header #logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
   $("body").append(
@@ -72,7 +67,10 @@ if (isDevEnvironment()) {
 
 //stop space scrolling
 window.addEventListener("keydown", function (e) {
-  if (e.code === "Space" && e.target === document.body) {
+  if (
+    e.code === "Space" &&
+    (e.target === document.body || (e.target as HTMLElement)?.id === "result")
+  ) {
     e.preventDefault();
   }
 });
@@ -92,25 +90,24 @@ window.addEventListener("beforeunload", (event) => {
   } else {
     if (TestState.isActive) {
       event.preventDefault();
-      // Chrome requires returnValue to be set.
+      // Included for legacy support, e.g. Chrome/Edge < 119
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       event.returnValue = "";
     }
   }
 });
 
 const debouncedEvent = debounce(250, () => {
-  void Caret.updatePosition();
-  if (getActivePage() === "test" && !TestUI.resultVisible) {
+  if (getActivePage() === "test" && !TestState.resultVisible) {
     if (Config.tapeMode !== "off") {
       void TestUI.scrollTape();
     } else {
       void TestUI.centerActiveLine();
+      void TestUI.updateHintsPositionDebounced();
     }
     setTimeout(() => {
-      void TestUI.updateWordsInputPosition();
-      if ($("#wordsInput").is(":focus")) {
-        Caret.show();
-      }
+      TestUI.updateWordsInputPosition();
+      TestUI.focusWords();
     }, 250);
   }
 });
@@ -124,6 +121,16 @@ $(window).on("resize", () => {
   debouncedEvent();
 });
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe(async (eventKey) => {
   if (eventKey === "quickRestart") updateKeytips();
+  if (eventKey === "showKeyTips") {
+    if (Config.showKeyTips) {
+      $("footer .keyTips").removeClass("hidden");
+    } else {
+      $("footer .keyTips").addClass("hidden");
+    }
+  }
+  if (eventKey === "fontFamily") {
+    await applyFontFamily();
+  }
 });

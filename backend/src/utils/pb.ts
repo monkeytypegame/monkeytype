@@ -1,11 +1,7 @@
 import _ from "lodash";
-import {
-  Mode,
-  PersonalBest,
-  PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
-import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
-import { getFunboxesFromString } from "@monkeytype/funbox";
+import { Mode, PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
+import { Result as ResultType } from "@monkeytype/schemas/results";
+import { getFunbox } from "@monkeytype/funbox";
 
 export type LbPersonalBests = {
   time: Record<number, Record<string, PersonalBest>>;
@@ -20,16 +16,9 @@ type CheckAndUpdatePbResult = {
 type Result = Omit<ResultType<Mode>, "_id" | "name">;
 
 export function canFunboxGetPb(result: Result): boolean {
-  const funboxString = result.funbox;
-  if (
-    funboxString === undefined ||
-    funboxString === "" ||
-    funboxString === "none"
-  ) {
-    return true;
-  }
+  if (result.funbox === undefined || result.funbox.length === 0) return true;
 
-  return getFunboxesFromString(funboxString).every((f) => f.canGetPb);
+  return getFunbox(result.funbox).every((f) => f.canGetPb);
 }
 
 export function checkAndUpdatePb(

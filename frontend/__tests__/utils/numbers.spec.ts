@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import * as Numbers from "../../src/ts/utils/numbers";
 
 describe("numbers", () => {
@@ -44,6 +45,35 @@ describe("numbers", () => {
       expect(Numbers.abbreviateNumber((number *= 1000))).toEqual("1.0o");
       expect(Numbers.abbreviateNumber((number *= 1000))).toEqual("1.0n");
       expect(Numbers.abbreviateNumber((number *= 1000))).toEqual("1.0d");
+    });
+  });
+  describe("parseIntOptional", () => {
+    it("should return a number when given a valid string", () => {
+      expect(Numbers.parseIntOptional("123")).toBe(123);
+      expect(Numbers.parseIntOptional("42")).toBe(42);
+      expect(Numbers.parseIntOptional("0")).toBe(0);
+    });
+
+    it("should return undefined when given null", () => {
+      expect(Numbers.parseIntOptional(null)).toBeUndefined();
+    });
+
+    it("should return undefined when given undefined", () => {
+      expect(Numbers.parseIntOptional(undefined)).toBeUndefined();
+    });
+
+    it("should handle non-numeric strings", () => {
+      expect(Numbers.parseIntOptional("abc")).toBeNaN();
+      expect(Numbers.parseIntOptional("12abc")).toBe(12); // parseInt stops at non-numeric chars
+    });
+
+    it("should handle leading and trailing spaces", () => {
+      expect(Numbers.parseIntOptional(" 42 ")).toBe(42);
+    });
+    it("should return a number when given a valid string and radix", () => {
+      expect(Numbers.parseIntOptional("1010", 2)).toBe(10);
+      expect(Numbers.parseIntOptional("CF", 16)).toBe(207);
+      expect(Numbers.parseIntOptional("C", 26)).toBe(12);
     });
   });
 });

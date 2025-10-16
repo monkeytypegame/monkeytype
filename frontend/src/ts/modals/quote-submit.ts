@@ -3,20 +3,21 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
 import Config from "../config";
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
+import { Language } from "@monkeytype/schemas/languages";
+import { LanguageGroupNames } from "../constants/languages";
 
 let dropdownReady = false;
 async function initDropdown(): Promise<void> {
   if (dropdownReady) return;
-  const languageGroups = await JSONData.getLanguageGroups();
-  for (const group of languageGroups) {
-    if (group.name === "swiss_german") continue;
+
+  for (const group of LanguageGroupNames) {
+    if (group === "swiss_german") continue;
     $("#quoteSubmitModal .newQuoteLanguage").append(
-      `<option value="${group.name}">${group.name.replace(/_/g, " ")}</option>`
+      `<option value="${group}">${group.replace(/_/g, " ")}</option>`
     );
   }
   dropdownReady = true;
@@ -27,7 +28,7 @@ let select: SlimSelect | undefined = undefined;
 async function submitQuote(): Promise<void> {
   const text = $("#quoteSubmitModal .newQuoteText").val() as string;
   const source = $("#quoteSubmitModal .newQuoteSource").val() as string;
-  const language = $("#quoteSubmitModal .newQuoteLanguage").val() as string;
+  const language = $("#quoteSubmitModal .newQuoteLanguage").val() as Language;
   const captcha = CaptchaController.getResponse("submitQuote");
 
   if (!text || !source || !language) {
@@ -53,6 +54,14 @@ async function submitQuote(): Promise<void> {
 }
 
 export async function show(showOptions: ShowOptions): Promise<void> {
+  if (!CaptchaController.isCaptchaAvailable()) {
+    Notifications.add(
+      "Could not show quote submit popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
+      -1
+    );
+    return;
+  }
+
   void modal.show({
     ...showOptions,
     mode: "dialog",

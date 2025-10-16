@@ -71,10 +71,10 @@ function initialiseLimiters(): Record<RateLimiterId, RateLimitRequestHandler> {
     });
   };
 
-  return keys.reduce(
-    (output, key) => ({ ...output, [key]: convert(limits[key]) }),
-    {}
-  ) as Record<RateLimiterId, RateLimitRequestHandler>;
+  return keys.reduce((output, key) => {
+    output[key] = convert(limits[key]);
+    return output;
+  }, {}) as Record<RateLimiterId, RateLimitRequestHandler>;
 }
 
 function convertWindowToMs(window: Window): number {
@@ -129,7 +129,7 @@ export function rateLimitRequest<
         )
       );
     } else {
-      rateLimiter(req, res, next);
+      await rateLimiter(req, res, next);
     }
   };
 }
@@ -198,7 +198,7 @@ export async function incrementBadAuth(
   try {
     const key = getKey(req, res);
     await badAuthRateLimiter.penalty(key, penalty);
-  } catch (error) {}
+  } catch {}
 }
 
 export const webhookLimit = rateLimit({

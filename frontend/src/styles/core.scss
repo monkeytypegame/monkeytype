@@ -199,48 +199,13 @@ key {
   display: inline-block;
   font-size: 0.7rem;
   line-height: 0.7rem;
+  margin: 0 0.5em;
 }
 
 .pageLoading {
   height: 100%;
   display: grid;
   align-items: center;
-}
-
-.pageLoading,
-.pageAccount {
-  .preloader {
-    text-align: center;
-    justify-self: center;
-    display: grid;
-    .barWrapper {
-      justify-content: center;
-      display: grid;
-      gap: 1rem;
-      grid-row: 1;
-      grid-column: 1;
-      .bar {
-        width: 20rem;
-        height: 0.5rem;
-        background: var(--sub-alt-color);
-        border-radius: var(--roundness);
-        .fill {
-          height: 100%;
-          width: 0%;
-          background: var(--main-color);
-          border-radius: var(--roundness);
-          // transition: 1s;
-        }
-      }
-    }
-    .icon {
-      grid-row: 1;
-      grid-column: 1;
-      font-size: 2rem;
-      color: var(--main-color);
-      margin-bottom: 1rem;
-    }
-  }
 }
 
 .devIndicator {
@@ -369,13 +334,42 @@ key {
 }
 
 .avatar {
+  --size: 1em;
+
   transition: opacity 0.125s, filter 0.125s, webkit-filter 0.125s;
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 100%;
-  background-position: center center;
-  background-size: contain;
-  background-repeat: no-repeat;
+  width: var(--size);
+  height: var(--size);
+  font-size: var(--size);
+  line-height: var(--size);
+  display: grid;
+  place-content: center center;
+
+  div {
+    width: 1em;
+    height: 1em;
+    line-height: 1em;
+    font-size: var(--size);
+    border-radius: 100%;
+    grid-column: 1/2;
+    grid-row: 1/2;
+    place-self: center center;
+    display: grid;
+    place-content: center center;
+    overflow: hidden;
+    display: inline-block;
+    z-index: 1; //place above the loading spinner
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  .loading {
+    font-size: 0.8em;
+    line-height: 0.8em;
+  }
 }
 
 .badge {
@@ -388,16 +382,18 @@ key {
   display: grid;
   grid-template-columns: max-content auto;
   align-items: baseline;
+  --spacing: 0.5em;
+  --horizontalScale: 1.25;
   .fas,
   .far {
-    margin-right: 0.3rem;
-    margin-left: 0.3rem;
-    margin-top: 0.3rem;
-    margin-bottom: 0.3rem;
+    margin-right: calc(var(--spacing) * var(--horizontalScale));
+    margin-left: calc(var(--spacing) * var(--horizontalScale));
+    margin-top: var(--spacing);
+    margin-bottom: var(--spacing);
     font-size: 0.9em;
   }
   .text {
-    margin-right: 0.3rem;
+    margin-right: calc(var(--spacing) * var(--horizontalScale));
   }
 }
 
@@ -439,4 +435,16 @@ key {
   font-family: var(--font);
   font-size: var(--balloon-font-size);
   line-height: var(--balloon-font-size);
+}
+
+// this here to prevent tooltips from showing when an element is focused via mouse click
+// to avoid reappearing popups after clicks, WITHOUT breaking keyboard nav.
+// so shortly we show balloon tooltips on hover and keyboard focus only. not on mouse focus!
+@supports selector(:focus-visible) {
+  [aria-label][data-balloon-pos]:focus:not(:focus-visible):not(:hover)::before,
+  [aria-label][data-balloon-pos]:focus:not(:focus-visible):not(:hover)::after {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
 }

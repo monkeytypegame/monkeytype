@@ -1,4 +1,4 @@
-import { getCommandline } from "../utils/async-modules";
+import * as Commandline from "../commandline/commandline";
 import * as CustomWordAmount from "../modals/custom-word-amount";
 import Config from "../config";
 import * as DB from "../db";
@@ -14,11 +14,18 @@ import * as CustomTextModal from "../modals/custom-text";
 import * as PractiseWordsModal from "../modals/practise-words";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
+import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
   if (attr === undefined) return;
-  (await getCommandline()).show({ subgroupOverride: attr });
+  Commandline.show({ subgroupOverride: attr });
+});
+
+$(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
+  const attr = $(event.currentTarget).attr("commandId");
+  if (attr === undefined) return;
+  Commandline.show({ commandOverride: attr });
 });
 
 $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
@@ -33,6 +40,10 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (time === "custom") {
     CustomTestDurationModal.show();
   }
+});
+
+$(".pageTest").on("click", "#testConfig .shareButton", (e) => {
+  ShareTestSettingsPopup.show();
 });
 
 $(".pageTest").on("click", ".tags .editTagsButton", () => {
@@ -88,7 +99,7 @@ $(".pageTest").on("click", "#practiseWordsButton", () => {
 });
 
 $(".pageTest #dailyLeaderboardRank").on("click", async () => {
-  navigate(
+  void navigate(
     `/leaderboards?type=daily&language=${Config.language}&mode2=${getMode2(
       Config,
       null

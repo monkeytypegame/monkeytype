@@ -2,16 +2,18 @@ import Config, * as UpdateConfig from "../config";
 import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
-import { getCommandline } from "../utils/async-modules";
+import * as Commandline from "../commandline/commandline";
 import * as SupportPopup from "../modals/support";
 import * as ContactModal from "../modals/contact";
 import * as VersionHistoryModal from "../modals/version-history";
 import { envConfig } from "../constants/env-config";
+import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
+import { lastSeenServerCompatibility } from "../ape/adapters/ts-rest-adapter";
 
 document
   .querySelector("footer #commandLineMobileButton")
   ?.addEventListener("click", async () => {
-    (await getCommandline()).show({
+    Commandline.show({
       singleListOverride: false,
     });
   });
@@ -28,7 +30,17 @@ document
   ?.addEventListener("click", (e) => {
     const event = e as MouseEvent;
     if (event.shiftKey) {
-      alert(envConfig.clientVersion);
+      alert(
+        JSON.stringify(
+          {
+            clientVersion: envConfig.clientVersion,
+            clientCompatibility: COMPATIBILITY_CHECK,
+            lastSeenServerCompatibility,
+          },
+          null,
+          2
+        )
+      );
     } else {
       VersionHistoryModal.show();
     }
@@ -54,7 +66,7 @@ document
       UpdateConfig.setCustomTheme(true);
     } else {
       const subgroup = Config.customTheme ? "customThemesList" : "themes";
-      (await getCommandline()).show({
+      Commandline.show({
         subgroupOverride: subgroup,
       });
     }

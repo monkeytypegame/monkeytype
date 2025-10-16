@@ -36,33 +36,55 @@ import type {
   LabelPosition,
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
-import {
-  getActiveFunboxes,
-  getFromString,
-  isFunboxActiveWithProperty,
-} from "./funbox/list";
-import { getFunboxesFromString } from "@monkeytype/funbox";
+import { CompletedEvent } from "@monkeytype/schemas/results";
+import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
+import { getFunbox } from "@monkeytype/funbox";
 import { SnapshotUserTag } from "../constants/default-snapshot";
+import { Language } from "@monkeytype/schemas/languages";
+import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { z } from "zod";
+import * as TestState from "./test-state";
 
 let result: CompletedEvent;
 let maxChartVal: number;
 
-let useUnsmoothedRaw = false;
+let useSmoothedBurst = true;
+let useFakeChartData = false;
 
-let quoteLang = "";
+let quoteLang: Language | undefined;
 let quoteId = "";
 
-export function toggleUnsmoothedRaw(): void {
-  useUnsmoothedRaw = !useUnsmoothedRaw;
-  Notifications.add(useUnsmoothedRaw ? "on" : "off", 1);
+export function toggleSmoothedBurst(): void {
+  useSmoothedBurst = !useSmoothedBurst;
+  Notifications.add(useSmoothedBurst ? "on" : "off", 1);
+  if (TestState.resultVisible) {
+    void updateGraph().then(() => {
+      ChartController.result.update("resize");
+    });
+  }
+}
+
+export function toggleUserFakeChartData(): void {
+  useFakeChartData = !useFakeChartData;
+  Notifications.add(useFakeChartData ? "on" : "off", 1);
+  if (TestState.resultVisible) {
+    void updateGraph().then(() => {
+      ChartController.result.update("resize");
+    });
+  }
 }
 
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
 async function updateGraph(): Promise<void> {
+  if (result.chartData === "toolong") return;
+
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  const labels = [];
+  ChartController.result.getScale("wpm").title.text =
+    typingSpeedUnit.fullUnitString;
+
+  let labels = [];
 
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
@@ -72,21 +94,27 @@ async function updateGraph(): Promise<void> {
     }
   }
 
-  ChartController.result.getScale("wpm").title.text =
-    typingSpeedUnit.fullUnitString;
-
   const chartData1 = [
-    ...TestInput.wpmHistory.map((a) =>
+    ...result.chartData["wpm"].map((a) =>
       Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
     ),
   ];
 
-  if (result.chartData === "toolong") return;
-
   const chartData2 = [
-    ...result.chartData.raw.map((a) =>
+    ...TestInput.rawHistory.map((a) =>
       Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
     ),
+  ];
+
+  const valueWindow = Math.max(...result.chartData["burst"]) * 0.25;
+  let smoothedBurst = Arrays.smoothWithValueWindow(
+    result.chartData["burst"],
+    1,
+    useSmoothedBurst ? valueWindow : 0
+  );
+
+  const chartData3 = [
+    ...smoothedBurst.map((a) => Numbers.roundTo2(typingSpeedUnit.fromWpm(a))),
   ];
 
   if (
@@ -99,37 +127,32 @@ async function updateGraph(): Promise<void> {
     chartData2.pop();
   }
 
-  let smoothedRawData = chartData2;
-  if (!useUnsmoothedRaw) {
-    smoothedRawData = Arrays.smooth(smoothedRawData, 1);
-    smoothedRawData = smoothedRawData.map((a) => Math.round(a));
-  }
-
-  ChartController.result.data.labels = labels;
-  ChartController.result.getDataset("wpm").data = chartData1;
-  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
-  ChartController.result.getDataset("raw").data = smoothedRawData;
-
   maxChartVal = Math.max(
-    ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
+    ...[
+      Math.max(...chartData1),
+      Math.max(...chartData2),
+      Math.max(...chartData3),
+    ]
   );
 
+  let minChartVal = 0;
+
   if (!Config.startGraphsAtZero) {
-    const minChartVal = Math.min(
-      ...[Math.min(...smoothedRawData), Math.min(...chartData1)]
+    minChartVal = Math.min(
+      ...[
+        Math.min(...chartData1),
+        Math.min(...chartData2),
+        Math.min(...chartData3),
+      ]
     );
 
-    ChartController.result.getScale("wpm").min = minChartVal;
-    ChartController.result.getScale("raw").min = minChartVal;
-  } else {
-    ChartController.result.getScale("wpm").min = 0;
-    ChartController.result.getScale("raw").min = 0;
+    // Round down to nearest multiple of 10
+    minChartVal = Math.floor(minChartVal / 10) * 10;
   }
 
-  ChartController.result.getDataset("error").data = result.chartData.err;
+  const subcolor = await ThemeColors.get("sub");
 
-  const fc = await ThemeColors.get("sub");
-  if (Config.funbox !== "none") {
+  if (Config.funbox.length > 0) {
     let content = "";
     for (const fb of getActiveFunboxes()) {
       content += fb.name;
@@ -157,7 +180,7 @@ async function updateGraph(): Promise<void> {
           weight: Chart.defaults.font.weight as string,
           lineHeight: Chart.defaults.font.lineHeight as number,
         },
-        color: fc,
+        color: subcolor,
         padding: 3,
         borderRadius: 3,
         position: "start",
@@ -167,11 +190,113 @@ async function updateGraph(): Promise<void> {
     });
   }
 
+  ChartController.result.data.labels = labels;
+
+  ChartController.result.getDataset("wpm").data = chartData1;
+  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
+  ChartController.result.getScale("wpm").min = minChartVal;
   ChartController.result.getScale("wpm").max = maxChartVal;
+
+  ChartController.result.getDataset("raw").data = chartData2;
+  ChartController.result.getScale("raw").min = minChartVal;
   ChartController.result.getScale("raw").max = maxChartVal;
+
+  ChartController.result.getDataset("burst").data = chartData3;
+  ChartController.result.getScale("burst").min = minChartVal;
+  ChartController.result.getScale("burst").max = maxChartVal;
+
+  ChartController.result.getDataset("error").data = result.chartData.err;
   ChartController.result.getScale("error").max = Math.max(
     ...result.chartData.err
   );
+
+  if (useFakeChartData) {
+    applyFakeChartData();
+  }
+}
+
+function applyFakeChartData(): void {
+  const fakeChartData = {
+    wpm: [
+      108, 120, 116, 114, 113, 120, 118, 121, 119, 120, 116, 118, 113, 110, 108,
+      110, 107, 107, 108, 109, 110, 112, 114, 112, 111, 109, 110, 108, 108, 109,
+    ],
+    raw: [
+      108, 120, 116, 114, 113, 120, 123, 127, 131, 131, 131, 132, 130, 133, 134,
+      134, 131, 129, 129, 128, 129, 130, 131, 129, 129, 127, 127, 128, 127, 127,
+    ],
+    burst: [
+      108, 132, 108, 108, 108, 156, 144, 156, 156, 132, 132, 144, 108, 168, 156,
+      132, 96, 108, 120, 120, 144, 156, 144, 84, 132, 84, 132, 156, 108, 120,
+    ],
+    err: [
+      0, 0, 0, 0, 0, 0, 3, 1, 3, 0, 5, 0, 3, 5, 4, 0, 2, 0, 0, 0, 0, 0, 0, 1, 2,
+      1, 0, 4, 0, 0,
+    ],
+  };
+
+  const labels = fakeChartData.wpm.map((_, i) => (i + 1).toString());
+
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+
+  const chartData1 = [
+    ...fakeChartData["wpm"].map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
+  ];
+
+  const chartData2 = [
+    ...fakeChartData["raw"].map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
+  ];
+
+  const chartData3 = [
+    ...fakeChartData["burst"].map((a) =>
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
+  ];
+
+  maxChartVal = Math.max(
+    ...[
+      Math.max(...chartData1),
+      Math.max(...chartData2),
+      Math.max(...chartData3),
+    ]
+  );
+
+  let minChartVal = 0;
+
+  if (!Config.startGraphsAtZero) {
+    minChartVal = Math.min(
+      ...[
+        Math.min(...chartData1),
+        Math.min(...chartData2),
+        Math.min(...chartData3),
+      ]
+    );
+
+    // Round down to nearest multiple of 10
+    minChartVal = Math.floor(minChartVal / 10) * 10;
+  }
+
+  ChartController.result.data.labels = labels;
+
+  ChartController.result.getDataset("wpm").data = chartData1;
+  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
+  ChartController.result.getScale("wpm").min = minChartVal;
+  ChartController.result.getScale("wpm").max = maxChartVal;
+
+  ChartController.result.getDataset("raw").data = chartData2;
+  ChartController.result.getScale("raw").min = minChartVal;
+  ChartController.result.getScale("raw").max = maxChartVal;
+
+  ChartController.result.getDataset("burst").data = chartData3;
+  ChartController.result.getScale("burst").min = minChartVal;
+  ChartController.result.getScale("burst").max = maxChartVal;
+
+  ChartController.result.getDataset("error").data = fakeChartData.err;
+  ChartController.result.getScale("error").max = Math.max(...fakeChartData.err);
 }
 
 export async function updateGraphPBLine(): Promise<void> {
@@ -184,7 +309,7 @@ export async function updateGraphPBLine(): Promise<void> {
     result.language,
     result.difficulty,
     result.lazyMode ?? false,
-    getFunboxesFromString(result.funbox ?? "none")
+    getFunbox(result.funbox)
   );
   const localPbWpm = localPb?.wpm ?? 0;
   if (localPbWpm === 0) return;
@@ -198,9 +323,9 @@ export async function updateGraphPBLine(): Promise<void> {
     id: "lpb",
     scaleID: "wpm",
     value: chartlpb,
-    borderColor: themecolors.sub,
+    borderColor: themecolors.sub + "55",
     borderWidth: 1,
-    borderDash: [2, 2],
+    // borderDash: [4, 16],
     label: {
       backgroundColor: themecolors.sub,
       font: {
@@ -214,7 +339,7 @@ export async function updateGraphPBLine(): Promise<void> {
       padding: 3,
       borderRadius: 3,
       position: "center",
-      content: `PB: ${chartlpb}`,
+      content: ` PB: ${chartlpb} `,
       display: true,
     },
   });
@@ -228,6 +353,7 @@ export async function updateGraphPBLine(): Promise<void> {
 
   ChartController.result.getScale("wpm").max = maxChartVal;
   ChartController.result.getScale("raw").max = maxChartVal;
+  ChartController.result.getScale("burst").max = maxChartVal;
 }
 
 function updateWpmAndAcc(): void {
@@ -249,7 +375,7 @@ function updateWpmAndAcc(): void {
   );
 
   if (Config.alwaysShowDecimalPlaces) {
-    if (Config.typingSpeedUnit != "wpm") {
+    if (Config.typingSpeedUnit !== "wpm") {
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
         result.wpm.toFixed(2) + " wpm"
@@ -283,7 +409,7 @@ function updateWpmAndAcc(): void {
     let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
     let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
 
-    if (Config.typingSpeedUnit != "wpm") {
+    if (Config.typingSpeedUnit !== "wpm") {
       wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
     }
@@ -481,16 +607,17 @@ type CanGetPbObject = {
 };
 
 async function resultCanGetPb(): Promise<CanGetPbObject> {
-  const funboxes = result.funbox?.split("#") ?? [];
-  const funboxObjects = getFromString(result.funbox);
+  const funboxes = result.funbox;
+  const funboxObjects = getFunbox(result.funbox);
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
 
-  const funboxesOk =
-    result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb;
-  const notUsingStopOnLetter = Config.stopOnError !== "letter";
+  const funboxesOk = funboxes.length === 0 || allFunboxesCanGetPb;
+  // allow stopOnError:letter to be PB only if 100% accuracy, since it doesn't affect gameplay
+  const stopOnLetterTriggered =
+    Config.stopOnError === "letter" && result.acc < 100;
   const notBailedOut = !result.bailedOut;
 
-  if (funboxesOk && notUsingStopOnLetter && notBailedOut) {
+  if (funboxesOk && !stopOnLetterTriggered && notBailedOut) {
     return {
       value: true,
     };
@@ -501,7 +628,7 @@ async function resultCanGetPb(): Promise<CanGetPbObject> {
         reason: "funbox",
       };
     }
-    if (!notUsingStopOnLetter) {
+    if (stopOnLetterTriggered) {
       return {
         value: false,
         reason: "stop on letter",
@@ -582,7 +709,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
 
   let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
-  activeTags.forEach(async (tag) => {
+  for (const tag of activeTags) {
     const tpb = await DB.getLocalTagPB(
       tag._id,
       Config.mode,
@@ -634,9 +761,9 @@ async function updateTags(dontSave: boolean): Promise<void> {
           id: "tpb",
           scaleID: "wpm",
           value: typingSpeedUnit.fromWpm(tpb),
-          borderColor: themecolors.sub,
+          borderColor: themecolors.sub + "55",
           borderWidth: 1,
-          borderDash: [2, 2],
+          // borderDash: [4, 16],
           label: {
             backgroundColor: themecolors.sub,
             font: {
@@ -666,7 +793,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
         }
       }
     }
-  });
+  }
 }
 
 function updateTestType(randomQuote: Quote | null): void {
@@ -699,8 +826,9 @@ function updateTestType(randomQuote: Quote | null): void {
   if (Config.lazyMode) {
     testType += "<br>lazy";
   }
-  if (Config.funbox !== "none") {
-    testType += "<br>" + Config.funbox.replace(/_/g, " ").replace(/#/g, ", ");
+  if (Config.funbox.length > 0) {
+    testType +=
+      "<br>" + Config.funbox.map((it) => it.replace(/_/g, " ")).join(", ");
   }
   if (Config.difficulty === "expert") {
     testType += "<br>expert";
@@ -784,7 +912,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
 
     const userqr =
       DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
-    if (userqr) {
+    if (Numbers.isSafeNumber(userqr)) {
       $(".pageTest #result #rateQuoteButton .icon")
         .removeClass("far")
         .addClass("fas");
@@ -796,7 +924,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
           quoteStats?.average?.toFixed(1) ?? ""
         );
       })
-      .catch((e: unknown) => {
+      .catch((_e: unknown) => {
         $(".pageTest #result #rateQuoteButton .rating").text("?");
       });
     $(".pageTest #result #rateQuoteButton")
@@ -821,7 +949,7 @@ function updateQuoteFavorite(randomQuote: Quote | null): void {
     return;
   }
 
-  quoteLang = Config.mode === "quote" ? randomQuote.language : "";
+  quoteLang = Config.mode === "quote" ? randomQuote.language : undefined;
   quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
 
   const userFav = QuotesController.isQuoteFavorite(randomQuote);
@@ -851,7 +979,7 @@ export async function update(
   dontSave: boolean
 ): Promise<void> {
   resultAnnotation = [];
-  result = Misc.deepClone(res);
+  result = structuredClone(res);
   hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
@@ -885,6 +1013,7 @@ export async function update(
   await updateGraph();
   await updateGraphPBLine();
   await updateTags(dontSave);
+  updateResultChartDataVisibility();
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
@@ -940,12 +1069,6 @@ export async function update(
     $("main #result #saveScreenshotButton").removeClass("hidden");
   }
 
-  if (window.scrollY > 0) {
-    $([document.documentElement, document.body])
-      .stop()
-      .animate({ scrollTop: 0 }, 250);
-  }
-
   TestConfig.hide();
 
   void Misc.swapElements(
@@ -953,13 +1076,15 @@ export async function update(
     $("#result"),
     250,
     async () => {
-      $("#result").trigger("focus");
+      const result = document.querySelector<HTMLElement>("#result");
+      result?.focus({
+        preventScroll: true,
+      });
+      Misc.scrollToCenterOrTop(result);
       void AdController.renderResult();
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
-
-      window.scrollTo({ top: 0 });
     },
     async () => {
       Focus.set(false);
@@ -970,7 +1095,7 @@ export async function update(
         Misc.applyReducedMotion(125)
       );
 
-      const canQuickRestart = Misc.canQuickRestart(
+      const canQuickRestart = canQuickRestartFn(
         Config.mode,
         Config.words,
         Config.time,
@@ -989,6 +1114,75 @@ export async function update(
       void Funbox.clear();
     }
   );
+}
+
+const resultChartDataVisibility = new LocalStorageWithSchema({
+  key: "resultChartDataVisibility",
+  schema: z
+    .object({
+      raw: z.boolean(),
+      burst: z.boolean(),
+      errors: z.boolean(),
+      pbLine: z.boolean(),
+      tagPbLine: z.boolean(),
+    })
+    .strict(),
+  fallback: {
+    raw: true,
+    burst: true,
+    errors: true,
+    pbLine: true,
+    tagPbLine: true,
+  },
+});
+
+function updateResultChartDataVisibility(update = false): void {
+  const vis = resultChartDataVisibility.get();
+  ChartController.result.getDataset("raw").hidden = !vis.raw;
+  ChartController.result.getDataset("burst").hidden = !vis.burst;
+  ChartController.result.getDataset("error").hidden = !vis.errors;
+
+  for (const annotation of resultAnnotation) {
+    if (annotation.id === "lpb") {
+      annotation.display = vis.pbLine;
+    } else if (annotation.id === "tpb") {
+      annotation.display = vis.tagPbLine;
+    }
+  }
+
+  if (update) ChartController.result.update();
+
+  const buttons = $(".pageTest #result .chart .chartLegend button");
+
+  // Check if there are any tag PB annotations
+  const hasTagPbAnnotations = resultAnnotation.some(
+    (annotation) => annotation.id === "tpb"
+  );
+
+  for (const button of buttons) {
+    const id = $(button).data("id") as string;
+
+    if (
+      id !== "raw" &&
+      id !== "burst" &&
+      id !== "errors" &&
+      id !== "pbLine" &&
+      id !== "tagPbLine"
+    ) {
+      return;
+    }
+
+    $(button).toggleClass("active", vis[id]);
+
+    if (id === "pbLine") {
+      $(button).toggleClass("hidden", !isAuthenticated());
+    } else if (id === "tagPbLine") {
+      $(button).toggleClass(
+        "hidden",
+        !isAuthenticated() || !hasTagPbAnnotations
+      );
+    }
+  }
 }
 
 export function updateTagsAfterEdit(
@@ -1045,8 +1239,28 @@ export function updateTagsAfterEdit(
   }
 }
 
+$(".pageTest #result .chart .chartLegend button").on("click", (event) => {
+  const $target = $(event.target);
+  const id = $target.data("id") as string;
+
+  if (
+    id !== "raw" &&
+    id !== "burst" &&
+    id !== "errors" &&
+    id !== "pbLine" &&
+    id !== "tagPbLine"
+  ) {
+    return;
+  }
+  const vis = resultChartDataVisibility.get();
+  vis[id] = !vis[id];
+  resultChartDataVisibility.set(vis);
+
+  updateResultChartDataVisibility(true);
+});
+
 $(".pageTest #favoriteQuoteButton").on("click", async () => {
-  if (quoteLang === "" || quoteId === "") {
+  if (quoteLang === undefined || quoteId === "") {
     Notifications.add("Could not get quote stats!", -1);
     return;
   }
@@ -1056,7 +1270,7 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
   if (!dbSnapshot) return;
 
   if ($button.hasClass("fas")) {
-    // Remove from favorites
+    // Remove from
     Loader.show();
     const response = await Ape.users.removeQuoteFromFavorites({
       body: {
@@ -1101,7 +1315,7 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 ConfigEvent.subscribe(async (eventKey) => {
   if (
     ["typingSpeedUnit", "startGraphsAtZero"].includes(eventKey) &&
-    TestUI.resultVisible
+    TestState.resultVisible
   ) {
     resultAnnotation = [];
 

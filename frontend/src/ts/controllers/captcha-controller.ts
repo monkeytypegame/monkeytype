@@ -6,6 +6,27 @@ const siteKey = envConfig.recaptchaSiteKey;
 
 const captchas: Record<string, number> = {};
 
+type Grecaptcha = {
+  render: (
+    element: HTMLElement,
+    options: { sitekey: string; callback?: (responseToken: string) => void }
+  ) => number;
+  reset: (widgetId: number) => void;
+  getResponse: (widgetId: number) => string;
+};
+
+function getGrecaptcha(): Grecaptcha {
+  if (!("grecaptcha" in window)) {
+    throw new Error("grecaptcha is not defined");
+  }
+
+  return window.grecaptcha as Grecaptcha;
+}
+
+export function isCaptchaAvailable(): boolean {
+  return "grecaptcha" in window;
+}
+
 export function render(
   element: HTMLElement,
   id: string,
@@ -14,32 +35,23 @@ export function render(
   if (captchas[id] !== undefined && captchas[id] !== null) {
     return;
   }
-
-  //@ts-expect-error
-  const widgetId = grecaptcha.render(element, {
+  const widgetId = getGrecaptcha().render(element, {
     sitekey: siteKey,
     callback,
   });
-
-  captchas[id] = widgetId as number;
+  captchas[id] = widgetId;
 }
 
 export function reset(id: string): void {
   if (captchas[id] === undefined || captchas[id] === null) {
     return;
   }
-
-  //@ts-expect-error
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  grecaptcha.reset(captchas[id]);
+  getGrecaptcha().reset(captchas[id]);
 }
 
 export function getResponse(id: string): string {
   if (captchas[id] === undefined || captchas[id] === null) {
     return "";
   }
-
-  //@ts-expect-error
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-  return grecaptcha.getResponse(captchas[id]);
+  return getGrecaptcha().getResponse(captchas[id]);
 }

@@ -4,33 +4,18 @@ import { cachedFetchJson } from "../utils/json-data";
 import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
 import Ape from "../ape";
+import { tryCatch } from "@monkeytype/util/trycatch";
+import { Language } from "@monkeytype/schemas/languages";
+import { QuoteData, QuoteDataQuote } from "@monkeytype/schemas/quotes";
+import { RequiredProperties } from "../utils/misc";
 
-export type Quote = {
-  text: string;
-  britishText?: string;
-  source: string;
-  length: number;
-  id: number;
+export type Quote = QuoteDataQuote & {
   group: number;
-  language: string;
+  language: Language;
   textSplit?: string[];
 };
 
-export type QuoteWithTextSplit = Quote & {
-  textSplit: string[];
-};
-
-type QuoteData = {
-  language: string;
-  quotes: {
-    text: string;
-    britishText?: string;
-    source: string;
-    length: number;
-    id: number;
-  }[];
-  groups: [number, number][];
-};
+export type QuoteWithTextSplit = RequiredProperties<Quote, "textSplit">;
 
 type QuoteCollection = {
   quotes: Quote[];
@@ -53,22 +38,24 @@ class QuotesController {
   private queueIndex = 0;
 
   async getQuotes(
-    language: string,
+    language: Language,
     quoteLengths?: number[]
   ): Promise<QuoteCollection> {
     const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage) {
-      let data: QuoteData;
-      try {
-        data = await cachedFetchJson<QuoteData>(
-          `quotes/${normalizedLanguage}.json`
-        );
-      } catch (e) {
-        if (e instanceof Error && e?.message?.includes("404")) {
+      const { data, error } = await tryCatch(
+        cachedFetchJson<QuoteData>(`quotes/${normalizedLanguage}.json`)
+      );
+      if (error) {
+        if (
+          error instanceof Error &&
+          (error?.message?.includes("404") ||
+            error?.message?.includes("Content is not JSON"))
+        ) {
           return defaultQuoteCollection;
         } else {
-          throw e;
+          throw error;
         }
       }
 
@@ -161,7 +148,7 @@ class QuotesController {
     return randomQuote;
   }
 
-  getRandomFavoriteQuote(language: string): Quote | null {
+  getRandomFavoriteQuote(language: Language): Quote | null {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
       return null;
@@ -175,7 +162,7 @@ class QuotesController {
       return null;
     }
 
-    Object.keys(favoriteQuotes).forEach((language) => {
+    (Object.keys(favoriteQuotes) as Language[]).forEach((language) => {
       if (removeLanguageSize(language) !== normalizedLanguage) {
         return;
       }
@@ -207,12 +194,14 @@ class QuotesController {
 
     const normalizedQuoteLanguage = removeLanguageSize(quoteLanguage);
 
-    const matchedLanguage = Object.keys(favoriteQuotes).find((language) => {
-      if (normalizedQuoteLanguage !== removeLanguageSize(language)) {
-        return false;
+    const matchedLanguage = (Object.keys(favoriteQuotes) as Language[]).find(
+      (language) => {
+        if (normalizedQuoteLanguage !== removeLanguageSize(language)) {
+          return false;
+        }
+        return (favoriteQuotes[language] ?? []).includes(id.toString());
       }
-      return (favoriteQuotes[language] ?? []).includes(id.toString());
-    });
+    );
 
     return matchedLanguage !== undefined;
   }

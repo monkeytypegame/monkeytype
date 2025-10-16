@@ -4,10 +4,13 @@ import { secondsToString } from "../utils/date-and-time";
 import * as Notifications from "./notifications";
 import { format } from "date-fns/format";
 import * as Alerts from "./alerts";
-import { PSA } from "@monkeytype/contracts/schemas/psas";
+import { PSA } from "@monkeytype/schemas/psas";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
-import { IdSchema } from "@monkeytype/contracts/schemas/util";
+import { IdSchema } from "@monkeytype/schemas/util";
+import { tryCatch } from "@monkeytype/util/trycatch";
+import { isSafeNumber } from "@monkeytype/util/numbers";
+import * as AuthEvent from "../observables/auth-event";
 
 const confirmedPSAs = new LocalStorageWithSchema({
   key: "confirmedPSAs",
@@ -56,31 +59,42 @@ async function getLatest(): Promise<PSA[] | null> {
           url: string;
           updatedAt: string;
         }[];
-        activeMaintenances: {
-          id: string;
-          name: string;
-          start: string;
-          status: "NOTSTARTEDYET" | "INPROGRESS" | "COMPLETED";
-          duration: number;
-          url: string;
-          updatedAt: string;
-        }[];
+        activeMaintenances:
+          | {
+              id: string;
+              name: string;
+              start: string;
+              status: "NOTSTARTEDYET" | "INPROGRESS" | "COMPLETED";
+              duration: number;
+              url: string;
+              updatedAt: string;
+            }[]
+          | undefined;
       };
 
-      const instatus = await fetch(
-        "https://monkeytype.instatus.com/summary.json"
+      const { data: instatus, error } = await tryCatch(
+        fetch("https://monkeytype.instatus.com/summary.json")
       );
-      const instatusData =
-        (await instatus.json()) as unknown as InstatusSummary;
 
-      const maintenanceData = instatusData.activeMaintenances[0];
+      let maintenanceData: undefined | InstatusSummary["activeMaintenances"];
+
+      if (error) {
+        console.log("Failed to fetch Instatus summary", error);
+      } else {
+        const instatusData =
+          (await instatus.json()) as unknown as InstatusSummary;
+
+        maintenanceData = instatusData.activeMaintenances;
+      }
 
       if (
         maintenanceData !== undefined &&
-        maintenanceData.status === "INPROGRESS"
+        maintenanceData.length > 0 &&
+        maintenanceData[0] !== undefined &&
+        maintenanceData[0].status === "INPROGRESS"
       ) {
         Notifications.addPSA(
-          `Server is currently offline for scheduled maintenance. <a target= '_blank' href='${maintenanceData.url}'>Check the status page</a> for more info.`,
+          `Server is currently offline for scheduled maintenance. <a target= '_blank' href='${maintenanceData[0].url}'>Check the status page</a> for more info.`,
           -1,
           "bullhorn",
           true,
@@ -124,7 +138,7 @@ export async function show(): Promise<void> {
   }
   const localmemory = getMemory();
   latest.forEach((psa) => {
-    if (psa.date) {
+    if (isSafeNumber(psa.date)) {
       const dateObj = new Date(psa.date);
       const diff = psa.date - Date.now();
       const string = secondsToString(
@@ -164,3 +178,9 @@ export async function show(): Promise<void> {
     );
   });
 }
+
+AuthEvent.subscribe((event) => {
+  if (event.type === "authStateChanged") {
+    void show();
+  }
+});

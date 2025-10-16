@@ -13,13 +13,13 @@ import {
   GetLeaderboardQuery,
   GetLeaderboardRankQuery,
   GetLeaderboardRankResponse,
-  GetLeaderboardResponse as GetLeaderboardResponse,
+  GetLeaderboardResponse,
   GetWeeklyXpLeaderboardQuery,
   GetWeeklyXpLeaderboardRankQuery,
   GetWeeklyXpLeaderboardRankResponse,
   GetWeeklyXpLeaderboardResponse,
 } from "@monkeytype/contracts/leaderboards";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import {
   getCurrentDayTimestamp,
   getCurrentWeekTimestamp,
@@ -32,12 +32,21 @@ export async function getLeaderboard(
 ): Promise<GetLeaderboardResponse> {
   const { language, mode, mode2, page, pageSize } = req.query;
 
+  if (
+    mode !== "time" ||
+    (mode2 !== "15" && mode2 !== "60") ||
+    language !== "english"
+  ) {
+    throw new MonkeyError(404, "There is no leaderboard for this mode");
+  }
+
   const leaderboard = await LeaderboardsDAL.get(
     mode,
     mode2,
     language,
     page,
-    pageSize
+    pageSize,
+    req.ctx.configuration.users.premium.enabled
   );
 
   if (leaderboard === false) {

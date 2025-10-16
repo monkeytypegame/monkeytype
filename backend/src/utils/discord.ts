@@ -1,40 +1,37 @@
-import fetch from "node-fetch";
 import { isDevEnvironment } from "./misc";
 import * as RedisClient from "../init/redis";
 import { randomBytes } from "crypto";
 import MonkeyError from "./error";
+import { z } from "zod";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 const BASE_URL = "https://discord.com/api";
 
-type DiscordUser = {
-  id: string;
-  username: string;
-  discriminator: string;
-  avatar?: string;
-  bot?: boolean;
-  system?: boolean;
-  mfa_enabled?: boolean;
-  banner?: string;
-  accent_color?: number;
-  locale?: string;
-  verified?: boolean;
-  email?: string;
-  flags?: number;
-  premium_type?: number;
-  public_flags?: number;
-};
+const DiscordIdAndAvatarSchema = z.object({
+  id: z.string(),
+  avatar: z
+    .string()
+    .optional()
+    .or(z.null().transform(() => undefined)),
+});
+type DiscordIdAndAvatar = z.infer<typeof DiscordIdAndAvatarSchema>;
 
 export async function getDiscordUser(
   tokenType: string,
   accessToken: string
-): Promise<DiscordUser> {
+): Promise<DiscordIdAndAvatar> {
   const response = await fetch(`${BASE_URL}/users/@me`, {
     headers: {
       authorization: `${tokenType} ${accessToken}`,
     },
   });
 
-  return (await response.json()) as DiscordUser;
+  const parsed = parseJsonWithSchema(
+    await response.text(),
+    DiscordIdAndAvatarSchema
+  );
+
+  return parsed;
 }
 
 export async function getOauthLink(uid: string): Promise<string> {

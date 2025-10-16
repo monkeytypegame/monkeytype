@@ -4,7 +4,6 @@ import { generatePreviewFonts } from "./scripts/font-preview";
 import { VitePWA } from "vite-plugin-pwa";
 import replace from "vite-plugin-filter-replace";
 import path from "node:path";
-import { splitVendorChunkPlugin } from "vite";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
 import { writeFileSync } from "fs";
@@ -12,6 +11,8 @@ import { writeFileSync } from "fs";
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+import { getFontsConig } from "./vite.config";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -19,7 +20,7 @@ function pad(numbers, maxLength, fillString) {
   );
 }
 
-function buildClientVersion() {
+const CLIENT_VERSION = (() => {
   const date = new Date();
   const versionPrefix = pad(
     [date.getFullYear(), date.getMonth() + 1, date.getDate()],
@@ -40,7 +41,7 @@ function buildClientVersion() {
   } catch (e) {
     return `${version}_unknown-hash`;
   }
-}
+})();
 
 /** Enable for font awesome v6 */
 /*
@@ -67,7 +68,7 @@ export default {
       apply: "build",
 
       closeBundle() {
-        const version = buildClientVersion();
+        const version = CLIENT_VERSION;
         const versionJson = JSON.stringify({ version });
         const versionPath = path.resolve(__dirname, "dist/version.json");
         writeFileSync(versionPath, versionJson);
@@ -85,11 +86,10 @@ export default {
         tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
       },
     }),
-    splitVendorChunkPlugin(),
     ViteMinifyPlugin({}),
     VitePWA({
       // injectRegister: "networkfirst",
-      injectRegister: "script-defer",
+      injectRegister: null,
       registerType: "autoUpdate",
       manifest: {
         short_name: "Monkeytype",
@@ -140,12 +140,30 @@ export default {
         ],
       },
     }),
+    process.env.SENTRY
+      ? sentryVitePlugin({
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          org: "monkeytype",
+          project: "frontend",
+          release: {
+            name: CLIENT_VERSION,
+          },
+          applicationKey: "monkeytype-frontend",
+        })
+      : null,
     replace([
       {
-        filter: /firebase\.ts$/,
+        filter: ["src/ts/firebase.ts"],
         replace: {
-          from: /\.\/constants\/firebase-config/gi,
-          to: "./constants/firebase-config-live",
+          from: `"./constants/firebase-config"`,
+          to: `"./constants/firebase-config-live"`,
+        },
+      },
+      {
+        filter: ["src/email-handler.html"],
+        replace: {
+          from: `"./ts/constants/firebase-config"`,
+          to: `"./ts/constants/firebase-config-live"`,
         },
       },
     ]),
@@ -197,22 +215,21 @@ export default {
               totalOriginalSize += originalSize;
               totalMinifiedSize += minifiedSize;
 
-              const savings =
-                ((originalSize - minifiedSize) / originalSize) * 100;
-
               writeFileSync(sourcePath, minifiedContent);
 
-              console.log(
-                `\x1b[0m \x1b[36m${sourcePath}\x1b[0m | ` +
-                  `\x1b[90mOriginal: ${originalSize} bytes\x1b[0m | ` +
-                  `\x1b[90mMinified: ${minifiedSize} bytes\x1b[0m | ` +
-                  `\x1b[32mSavings: ${savings.toFixed(2)}%\x1b[0m`
-              );
+              // const savings =
+              //   ((originalSize - minifiedSize) / originalSize) * 100;
+              // console.log(
+              //   `\x1b[0m \x1b[36m${sourcePath}\x1b[0m | ` +
+              //     `\x1b[90mOriginal: ${originalSize} bytes\x1b[0m | ` +
+              //     `\x1b[90mMinified: ${minifiedSize} bytes\x1b[0m | ` +
+              //     `\x1b[32mSavings: ${savings.toFixed(2)}%\x1b[0m`
+              // );
             }
           });
         };
 
-        console.log("\n\x1b[1mMinifying JSON files...\x1b[0m\n");
+        // console.log("\n\x1b[1mMinifying JSON files...\x1b[0m\n");
 
         minifyJsonFiles("./dist");
 
@@ -220,7 +237,7 @@ export default {
           ((totalOriginalSize - totalMinifiedSize) / totalOriginalSize) * 100;
 
         console.log(
-          `\n\x1b[1mMinification Summary:\x1b[0m\n` +
+          `\n\n\x1b[1mJSON Minification Summary:\x1b[0m\n` +
             `  \x1b[90mTotal original size: ${(
               totalOriginalSize /
               1024 /
@@ -237,6 +254,7 @@ export default {
     },
   ],
   build: {
+    sourcemap: process.env.SENTRY,
     emptyOutDir: true,
     outDir: "../dist",
     assetsInlineLimit: 0, //dont inline small files as data
@@ -262,6 +280,23 @@ export default {
         },
         chunkFileNames: "js/[name].[hash].js",
         entryFileNames: "js/[name].[hash].js",
+        manualChunks: (id) => {
+          if (id.includes("@sentry")) {
+            return "vendor-sentry";
+          }
+          if (id.includes("jquery")) {
+            return "vendor-jquery";
+          }
+          if (id.includes("@firebase")) {
+            return "vendor-firebase";
+          }
+          if (id.includes("monkeytype/packages")) {
+            return "monkeytype-packages";
+          }
+          if (id.includes("node_modules")) {
+            return "vendor";
+          }
+        },
       },
     },
   },
@@ -270,29 +305,38 @@ export default {
       process.env.BACKEND_URL || "https://api.monkeytype.com"
     ),
     IS_DEVELOPMENT: JSON.stringify(false),
-    CLIENT_VERSION: JSON.stringify(buildClientVersion()),
+    CLIENT_VERSION: JSON.stringify(CLIENT_VERSION),
     RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),
     QUICK_LOGIN_EMAIL: undefined,
     QUICK_LOGIN_PASSWORD: undefined,
   },
-  /** Enable for font awesome v6 */
-  /*preprocessorOptions: {
-    scss: {
-      additionalData(source, fp) {
-        if (fp.endsWith("index.scss")) {
+
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData(source, fp) {
+          if (fp.endsWith("index.scss")) {
+            /** Enable for font awesome v6 */
+            /*
           const fontawesomeClasses = getFontawesomeConfig();
-          return `
+
           //inject variables into sass context
           $fontawesomeBrands: ${sassList(
             fontawesomeClasses.brands
           )};             
           $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
-
-          ${source}`;
-        } else {
-          return source;
-        }
+        */
+            const fonts = `$fonts: (${getFontsConig()});`;
+            return `
+              //inject variables into sass context
+              ${fonts}
+            
+              ${source}`;
+          } else {
+            return source;
+          }
+        },
       },
     },
-  },*/
+  },
 };

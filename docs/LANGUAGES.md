@@ -17,7 +17,7 @@ Once you have forked the repository you can now add your language. Create a new 
 
 The contents of the file should be as follows:
 
-```
+```json
 {
   "name": string,
   "rightToLeft": boolean,
@@ -31,35 +31,28 @@ The contents of the file should be as follows:
 It is recommended that you familiarize yourselves with JSON before adding a language. For the `name` field, put the name of your language. `rightToLeft` indicates how the language is written. If it is written right to left then put `true`, otherwise put `false`.
 `ligatures` A ligature occurs when multiple letters are joined together to form a character [more details](<https://en.wikipedia.org/wiki/Ligature_(writing)>). If there's joining in the words, which is the case in languages like (Arabic, Malayalam, Persian, Sanskrit, Central_Kurdish... etc.), then set the value to `true`, otherwise set it to `false`. For `bcp47` put your languages [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag). If the words you're adding are ordered by frequency (most common words at the top, least at the bottom) set the value of `orderedByFrequency` to `true`, otherwise `false`.  Finally, add your list of words to the `words` field.
 
-In addition to the language file, you need to add your language to the `_groups.json` and `_list.json` files in the same directory. Add the name of the language to the `_groups.json` file like so:
+Then, go to `packages/schemas/src/languages.ts` and add your new language name at the _end_ of the `LanguageSchema` enum. Make sure to end the line with a comma.  Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
 
-```
-{
-  "name": "spanish",
-  "languages": ["spanish", "spanish_1k", "spanish_10k"]
-},
-{
-  "name": "YOUR_LANGUAGE",
-  "languages": ["YOUR_LANGUAGES"]
-},
-{
-  "name": "french",
-  "languages": ["french", "french_1k", "french_2k", "french_10k"]
-},
+```typescript
+export const LanguageSchema = z.enum([
+  "english",
+  "english_1k",
+  ...
+  "your_language_name",
+  "your_language_name_10k",
+]);
 ```
 
-The `languages` field is the list of files that you have created for your language (without the `.json` file extension). Make sure to add all your files if you have created multiple word lists of differing lengths in the same language.
+Then, go to `frontend/src/ts/constants/language.ts` and add your new language name to the `LanguageGroups` map. You can either add it to an existing group or add a new one.  Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
 
-Add your language lists to the `_list.json` file like so:
-
-```
-,"spanish"
-,"spanish_1k"
-,"spanish_10k"
-,"YOUR_LANGUAGE"
-,"french"
-,"french_1k"
-,"french_2k"
+```typescript
+export const LanguageGroups: Record<string, Language[]> = {
+  ...
+  your_language_name: [
+    "your_language_name",
+    "your_language_name_10k",
+  ]
+};
 ```
 
 ### Committing Languages
@@ -74,5 +67,5 @@ Create a pull request:
 
 ## Language Guidelines
 
-Make sure your language follows the language guidelines.
-[Language guidelines](./CONTRIBUTING.md#language-guidelines)
+Make sure your language follows the [Language guidelines](./CONTRIBUTING.md#language-guidelines).
+

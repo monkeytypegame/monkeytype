@@ -4,8 +4,8 @@ import { getMode2 } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { Difficulty } from "@monkeytype/contracts/schemas/configs";
-import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import { Difficulty, FunboxName } from "@monkeytype/schemas/configs";
+import { Mode, Mode2 } from "@monkeytype/schemas/shared";
 
 function getCheckboxValue(checkbox: string): boolean {
   return $(`#shareTestSettingsModal label.${checkbox} input`).prop(
@@ -16,12 +16,12 @@ function getCheckboxValue(checkbox: string): boolean {
 type SharedTestSettings = [
   Mode | null,
   Mode2<Mode> | null,
-  CustomText.CustomTextData | null,
+  CustomText.CustomTextSettings | null,
   boolean | null,
   boolean | null,
   string | null,
   Difficulty | null,
-  string | null
+  FunboxName[] | null
 ];
 
 function updateURL(): void {

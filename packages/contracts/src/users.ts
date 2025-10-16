@@ -7,7 +7,7 @@ import {
   MonkeyResponseSchema,
   responseWithData,
   responseWithNullableData,
-} from "./schemas/api";
+} from "./util/api";
 import {
   CountByYearAndDaySchema,
   CustomThemeNameSchema,
@@ -24,13 +24,17 @@ import {
   UserSchema,
   UserStreakSchema,
   UserTagSchema,
-} from "./schemas/users";
-import { Mode2Schema, ModeSchema, PersonalBestSchema } from "./schemas/shared";
-import { IdSchema, LanguageSchema, StringNumberSchema } from "./schemas/util";
-import { CustomThemeColorsSchema } from "./schemas/configs";
-import { doesNotContainProfanity } from "./validation/validation";
-
-export const UserEmailSchema = z.string().email();
+  UserEmailSchema,
+  UserNameSchema,
+} from "@monkeytype/schemas/users";
+import {
+  Mode2Schema,
+  ModeSchema,
+  PersonalBestSchema,
+} from "@monkeytype/schemas/shared";
+import { IdSchema, StringNumberSchema } from "@monkeytype/schemas/util";
+import { LanguageSchema } from "@monkeytype/schemas/languages";
+import { CustomThemeColorsSchema } from "@monkeytype/schemas/configs";
 
 export const GetUserResponseSchema = responseWithData(
   UserSchema.extend({
@@ -38,18 +42,6 @@ export const GetUserResponseSchema = responseWithData(
   })
 );
 export type GetUserResponse = z.infer<typeof GetUserResponseSchema>;
-
-export const UserNameSchema = doesNotContainProfanity(
-  "substring",
-  z
-    .string()
-    .min(1)
-    .max(16)
-    .regex(
-      /^[\da-zA-Z_-]+$/,
-      "Can only contain lower/uppercase letters, underscore and minus."
-    )
-);
 
 export const CreateUserRequestSchema = z.object({
   email: UserEmailSchema.optional(),
@@ -85,7 +77,7 @@ export const UpdateEmailRequestSchema = z.object({
   newEmail: UserEmailSchema,
   previousEmail: UserEmailSchema,
 });
-export type UpdateEmailRequestSchema = z.infer<typeof UpdateEmailRequestSchema>;
+export type UpdateEmailRequest = z.infer<typeof UpdateEmailRequestSchema>;
 
 export const UpdatePasswordRequestSchema = z.object({
   newPassword: z.string().min(6),
@@ -326,7 +318,7 @@ export type GetCurrentTestActivityResponse = z.infer<
 
 export const GetStreakResponseSchema =
   responseWithNullableData(UserStreakSchema);
-export type GetStreakResponseSchema = z.infer<typeof GetStreakResponseSchema>;
+export type GetStreakResponse = z.infer<typeof GetStreakResponseSchema>;
 
 const c = initContract();
 
@@ -447,7 +439,7 @@ export const usersContract = c.router(
     },
     updatePassword: {
       summary: "update password",
-      description: "Updates a user's email",
+      description: "Updates a user's password",
       method: "PATCH",
       path: "/password",
       body: UpdatePasswordRequestSchema.strict(),

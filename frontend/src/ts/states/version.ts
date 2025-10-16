@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { getLatestReleaseFromGitHub } from "../utils/json-data";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { tryCatch } from "@monkeytype/util/trycatch";
+import { createErrorMessage } from "../utils/misc";
 
 const memoryLS = new LocalStorageWithSchema({
   key: "lastSeenVersion",
@@ -20,7 +22,19 @@ function getMemory(): string {
 }
 
 async function check(): Promise<void> {
-  const currentVersion = await getLatestReleaseFromGitHub();
+  const { data: currentVersion, error } = await tryCatch(
+    getLatestReleaseFromGitHub()
+  );
+
+  if (error) {
+    const msg = createErrorMessage(
+      error,
+      "Failed to fetch version number from GitHub"
+    );
+    console.error(msg);
+    return;
+  }
+
   const memoryVersion = getMemory();
 
   version = currentVersion;
@@ -34,6 +48,7 @@ async function check(): Promise<void> {
 }
 
 function purgeCaches(): void {
+  if (!("caches" in window)) return;
   void caches.keys().then(function (names) {
     for (const name of names) void caches.delete(name);
   });

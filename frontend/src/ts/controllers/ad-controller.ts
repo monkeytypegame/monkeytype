@@ -143,7 +143,7 @@ export async function checkAdblock(): Promise<void> {
   return new Promise((resolve) => {
     if (choice === "eg") {
       if (adBlock === undefined) {
-        //@ts-expect-error
+        //@ts-expect-error 3rd party ad code
         if (window.egAdPack === undefined) {
           adBlock = true;
         } else {
@@ -151,7 +151,7 @@ export async function checkAdblock(): Promise<void> {
         }
       }
     } else if (choice === "pw") {
-      //@ts-expect-error
+      //@ts-expect-error 3rd party ad code
       if (window.ramp === undefined) {
         adBlock = true;
       }
@@ -169,13 +169,13 @@ export async function checkCookieblocker(): Promise<void> {
         return;
       }
 
-      //@ts-expect-error
+      //@ts-expect-error 3rd party ad code
       if (window.__tcfapi === undefined) {
         cookieBlocker = true;
         resolve();
         return;
       }
-      //@ts-expect-error
+      //@ts-expect-error 3rd party ad code
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       window.__tcfapi("getTCData", 2, (tcData, success) => {
         if (success as boolean) {
@@ -269,13 +269,13 @@ export function updateFooterAndVerticalAds(visible: boolean): void {
 
 export function showConsentPopup(): void {
   if (choice === "eg") {
-    //@ts-expect-error
+    //@ts-expect-error 3rd party ad code, doesnt have types
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     window.__tcfapi("displayConsentUi", 2, function () {
       //
     });
   } else {
-    //@ts-expect-error
+    //@ts-expect-error 3rd party ad code, doesnt have types
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     ramp.showCmpModal();
   }
@@ -316,13 +316,13 @@ BannerEvent.subscribe(() => {
   updateVerticalMargin();
 });
 
-$(document).ready(() => {
+$(() => {
   updateBreakpoint(true);
   updateBreakpoint2();
 });
 
 window.onerror = function (error): void {
-  //@ts-expect-error
+  //@ts-expect-error ---
   if (choice === "eg") {
     if (typeof error === "string" && error.startsWith("EG APS")) {
       $("#ad-result-wrapper .iconAndText").addClass("withLeft");

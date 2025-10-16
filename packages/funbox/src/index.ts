@@ -1,14 +1,10 @@
-import { getList, getFunbox, getObject } from "./list";
-import { FunboxMetadata, FunboxName, FunboxProperty } from "./types";
-import { stringToFunboxNames } from "./util";
+import { FunboxName } from "@monkeytype/schemas/configs";
+import { getList, getFunbox, getObject, getFunboxNames } from "./list";
+import { FunboxMetadata, FunboxProperty } from "./types";
 import { checkCompatibility } from "./validation";
 
-export type { FunboxName, FunboxMetadata, FunboxProperty };
-export { checkCompatibility, stringToFunboxNames, getFunbox };
-
-export function getFunboxesFromString(names: string): FunboxMetadata[] {
-  return getFunbox(stringToFunboxNames(names));
-}
+export type { FunboxMetadata, FunboxProperty };
+export { checkCompatibility, getFunbox, getFunboxNames };
 
 export function getAllFunboxes(): FunboxMetadata[] {
   return getList();

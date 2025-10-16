@@ -7,11 +7,9 @@ import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
 import { intervalToDuration } from "date-fns/intervalToDuration";
 import * as Skeleton from "../utils/skeleton";
-import {
-  TypingStats,
-  SpeedHistogram,
-} from "@monkeytype/contracts/schemas/public";
+import { TypingStats, SpeedHistogram } from "@monkeytype/schemas/public";
 import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -126,26 +124,24 @@ async function getStatsAndHistogramData(): Promise<void> {
 }
 
 async function fill(): Promise<void> {
-  let supporters: string[];
-  try {
-    supporters = await JSONData.getSupportersList();
-  } catch (e) {
+  const { data: supporters, error: supportersError } = await tryCatch(
+    JSONData.getSupportersList()
+  );
+  if (supportersError) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to get supporters"),
+      Misc.createErrorMessage(supportersError, "Failed to get supporters"),
       -1
     );
-    supporters = [];
   }
 
-  let contributors: string[];
-  try {
-    contributors = await JSONData.getContributorsList();
-  } catch (e) {
+  const { data: contributors, error: contributorsError } = await tryCatch(
+    JSONData.getContributorsList()
+  );
+  if (contributorsError) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to get contributors"),
+      Misc.createErrorMessage(contributorsError, "Failed to get contributors"),
       -1
     );
-    contributors = [];
   }
 
   void getStatsAndHistogramData().then(() => {
@@ -154,8 +150,8 @@ async function fill(): Promise<void> {
 
   const supportersEl = document.querySelector(".pageAbout .supporters");
   let supportersHTML = "";
-  for (const supporter of supporters) {
-    supportersHTML += `<div>${supporter}</div>`;
+  for (const supporter of supporters ?? []) {
+    supportersHTML += `<div>${Misc.escapeHTML(supporter)}</div>`;
   }
   if (supportersEl) {
     supportersEl.innerHTML = supportersHTML;
@@ -163,8 +159,8 @@ async function fill(): Promise<void> {
 
   const contributorsEl = document.querySelector(".pageAbout .contributors");
   let contributorsHTML = "";
-  for (const contributor of contributors) {
-    contributorsHTML += `<div>${contributor}</div>`;
+  for (const contributor of contributors ?? []) {
+    contributorsHTML += `<div>${Misc.escapeHTML(contributor)}</div>`;
   }
   if (contributorsEl) {
     contributorsEl.innerHTML = contributorsHTML;

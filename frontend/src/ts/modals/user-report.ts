@@ -6,7 +6,7 @@ import SlimSelect from "slim-select";
 import AnimatedModal from "../utils/animated-modal";
 import { isAuthenticated } from "../firebase";
 import { CharacterCounter } from "../elements/character-counter";
-import { ReportUserReason } from "@monkeytype/contracts/schemas/users";
+import { ReportUserReason } from "@monkeytype/schemas/users";
 
 type State = {
   userUid?: string;
@@ -29,6 +29,14 @@ let select: SlimSelect | undefined = undefined;
 export async function show(options: ShowOptions): Promise<void> {
   if (!isAuthenticated()) {
     Notifications.add("You must be logged in to submit a report", 0);
+    return;
+  }
+
+  if (!CaptchaController.isCaptchaAvailable()) {
+    Notifications.add(
+      "Could not show user report popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
+      -1
+    );
     return;
   }
 

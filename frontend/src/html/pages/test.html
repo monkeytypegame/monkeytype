@@ -60,7 +60,7 @@
       </div>
 
       <div class="quoteLength">
-        <button class="textButton" quotelength="-1">all</button>
+        <button class="textButton" quotelength="all">all</button>
         <button class="textButton" quotelength="0">short</button>
         <button class="textButton" quotelength="1">medium</button>
         <button class="textButton" quotelength="2">long</button>
@@ -92,12 +92,29 @@
         <button class="textButton">change</button>
       </div>
     </div>
+    <button class="shareButton textButton">
+      <i class="fas fa-fw fa-share"></i>
+    </button>
   </div>
+
   <div id="mobileTestConfigButton">
     <button>
       <i class="fas fa-fw fa-cog"></i>
       Test settings
     </button>
+  </div>
+  <div id="testInitFailed" class="content-grid hidden">
+    <div class="message">
+      <div class="text">
+        Test initialization failed. Please try different settings or refreshing
+        the page. If the problem persists, please contact support.
+      </div>
+      <div class="error"></div>
+      <button class="active restart">
+        <i class="fas fa-fw fa-redo-alt"></i>
+        Restart
+      </button>
+    </div>
   </div>
   <div id="typingTest" class="content-grid full-width-padding">
     <div id="capsWarning" class="hidden">
@@ -314,6 +331,29 @@
         </div>
       </div>
       <div class="chart">
+        <div class="chartLegend">
+          <button class="text" tabindex="-1" data-id="pbLine">
+            <i class="fas fa-crown"></i>
+            <div class="text">pb</div>
+          </button>
+          <button class="text" tabindex="-1" data-id="tagPbLine">
+            <i class="fas fa-tag"></i>
+            <div class="text">tag pb</div>
+          </button>
+          <button class="text" tabindex="-1" data-id="raw">
+            <div class="line dashed"></div>
+            <div class="text">raw</div>
+          </button>
+          <button class="text" tabindex="-1" data-id="burst">
+            <div class="line"></div>
+            <div class="text">burst</div>
+          </button>
+          <button class="text" tabindex="-1" data-id="errors">
+            <!-- <div class="line"></div> -->
+            <i class="fas fa-times"></i>
+            <div class="text">errors</div>
+          </button>
+        </div>
         <!-- <div class="title">wpm over time</div> -->
         <canvas id="wpmChart"></canvas>
       </div>
@@ -434,9 +474,10 @@
           <button
             class="text"
             id="saveScreenshotButton"
-            aria-label="Copy screenshot to clipboard"
+            aria-label="Copy screenshot to clipboard&#10;(shift click to download)"
             role="button"
             data-balloon-pos="down"
+            data-balloon-break
           >
             <i class="far fa-fw fa-image"></i>
           </button>

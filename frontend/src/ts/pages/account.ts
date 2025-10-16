@@ -5,7 +5,6 @@ import * as ChartController from "../controllers/chart-controller";
 import Config, * as UpdateConfig from "../config";
 import * as MiniResultChartModal from "../modals/mini-result-chart";
 import * as PbTables from "../elements/account/pb-tables";
-import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
@@ -22,23 +21,19 @@ import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import { Auth } from "../firebase";
+import { getAuthenticatedUser } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
-import { ChartData } from "@monkeytype/contracts/schemas/results";
-import {
-  Difficulty,
-  Mode,
-  Mode2,
-  Mode2Custom,
-} from "@monkeytype/contracts/schemas/shared";
-import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
+import { ChartData } from "@monkeytype/schemas/results";
+import { Mode, Mode2, Mode2Custom } from "@monkeytype/schemas/shared";
+import { ResultFiltersGroupItem } from "@monkeytype/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
+import { AccountChart } from "@monkeytype/schemas/configs";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -51,11 +46,12 @@ export function toggleFilterDebug(): void {
 
 let filteredResults: SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
+let testActivityEl: HTMLElement | null;
 
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults === undefined || filteredResults.length === 0) return;
   let newVisibleLines;
-  if (lineIndex && lineIndex > visibleTableLines) {
+  if (Numbers.isSafeNumber(lineIndex) && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
   } else {
     newVisibleLines = visibleTableLines + 10;
@@ -97,11 +93,10 @@ function loadMoreLines(lineIndex?: number): void {
       icons += `<span aria-label="lazy mode" data-balloon-pos="up"><i class="fas fa-fw fa-couch"></i></span>`;
     }
 
-    if (result.funbox !== "none" && result.funbox !== undefined) {
+    if (result.funbox !== undefined && result.funbox.length > 0) {
       icons += `<span aria-label="${result.funbox
-        .replace(/_/g, " ")
-        .replace(
-          /#/g,
+        .map((it) => it.replace(/_/g, " "))
+        .join(
           ", "
         )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
     }
@@ -212,8 +207,6 @@ let chartData: ChartController.HistoryChartData[] = [];
 let accChartData: ChartController.AccChartData[] = [];
 
 async function fillContent(): Promise<void> {
-  LoadingPage.updateText("Displaying stats...");
-  LoadingPage.updateBar(100);
   console.log("updating account page");
   ThemeColors.update();
 
@@ -223,7 +216,11 @@ async function fillContent(): Promise<void> {
   PbTables.update(snapshot.personalBests);
   void Profile.update("account", snapshot);
 
-  TestActivity.init(snapshot.testActivity, new Date(snapshot.addedAt));
+  TestActivity.init(
+    testActivityEl as HTMLElement,
+    snapshot.testActivity,
+    new Date(snapshot.addedAt)
+  );
   void ResultBatches.update();
 
   chartData = [];
@@ -265,8 +262,10 @@ async function fillContent(): Promise<void> {
   type ActivityChartData = Record<
     number,
     {
+      restarts: number;
       amount: number;
       time: number;
+      maxWpm: number;
       totalWpm: number;
       totalAcc: number;
       totalCon: number;
@@ -296,7 +295,7 @@ async function fillContent(): Promise<void> {
       if (resdiff === undefined) {
         resdiff = "normal";
       }
-      if (!ResultFilters.getFilter("difficulty", resdiff as Difficulty)) {
+      if (!ResultFilters.getFilter("difficulty", resdiff)) {
         if (filterDebug) {
           console.log(`skipping result due to difficulty filter`, result);
         }
@@ -374,13 +373,11 @@ async function fillContent(): Promise<void> {
         }
       }
 
-      let langFilter = ResultFilters.getFilter(
-        "language",
-        result.language ?? "english"
-      );
+      let langFilter = ResultFilters.getFilter("language", result.language);
 
       if (
-        result.language === "english_expanded" &&
+        //legacy value for english_1k
+        (result.language as string) === "english_expanded" &&
         ResultFilters.getFilter("language", "english_1k")
       ) {
         langFilter = true;
@@ -414,7 +411,7 @@ async function fillContent(): Promise<void> {
         return;
       }
 
-      if (result.funbox === "none" || result.funbox === undefined) {
+      if (result.funbox === undefined || result.funbox.length === 0) {
         if (!ResultFilters.getFilter("funbox", "none")) {
           if (filterDebug) {
             console.log(`skipping result due to funbox filter`, result);
@@ -423,7 +420,7 @@ async function fillContent(): Promise<void> {
         }
       } else {
         let counter = 0;
-        for (const f of result.funbox.split("#")) {
+        for (const f of result.funbox) {
           if (ResultFilters.getFilter("funbox", f)) {
             counter++;
             break;
@@ -526,20 +523,26 @@ async function fillContent(): Promise<void> {
 
     if (dataForTimestamp !== undefined) {
       dataForTimestamp.amount++;
+      dataForTimestamp.restarts += result.restartCount ?? 0;
       dataForTimestamp.time +=
         result.testDuration +
         (result.incompleteTestSeconds ?? 0) -
         (result.afkDuration ?? 0);
+      if (result.wpm > dataForTimestamp.maxWpm) {
+        dataForTimestamp.maxWpm = result.wpm;
+      }
       dataForTimestamp.totalWpm += result.wpm;
       dataForTimestamp.totalAcc += result.acc;
       dataForTimestamp.totalCon += result.consistency ?? 0;
     } else {
       activityChartData[resultTimestamp] = {
         amount: 1,
+        restarts: result.restartCount ?? 0,
         time:
           result.testDuration +
           (result.incompleteTestSeconds ?? 0) -
           (result.afkDuration ?? 0),
+        maxWpm: result.wpm,
         totalWpm: result.wpm,
         totalAcc: result.acc,
         totalCon: result.consistency ?? 0,
@@ -688,6 +691,8 @@ async function fillContent(): Promise<void> {
       x: dateInt,
       y: dataPoint.time / 60,
       amount: dataPoint.amount,
+      restarts: dataPoint.restarts,
+      maxWpm: Numbers.roundTo2(typingSpeedUnit.fromWpm(dataPoint.maxWpm)),
       avgWpm: Numbers.roundTo2(dataPoint.totalWpm / dataPoint.amount),
       avgAcc: Numbers.roundTo2(dataPoint.totalAcc / dataPoint.amount),
       avgCon: Numbers.roundTo2(dataPoint.totalCon / dataPoint.amount),
@@ -955,21 +960,11 @@ async function fillContent(): Promise<void> {
   await Misc.sleep(0);
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
-  LoadingPage.updateBar(100, true);
   Focus.set(false);
-  void Misc.swapElements(
-    $(".pageAccount .preloader"),
-    $(".pageAccount .content"),
-    250,
-    async () => {
-      $(".page.pageAccount").css("height", "unset"); //weird safari fix
-    },
-    async () => {
-      setTimeout(() => {
-        Profile.updateNameFontSize("account");
-      }, 10);
-    }
-  );
+  $(".page.pageAccount").css("height", "unset"); //weird safari fix
+  setTimeout(() => {
+    Profile.updateNameFontSize("account");
+  }, 0);
 }
 
 export async function downloadResults(offset?: number): Promise<void> {
@@ -988,20 +983,13 @@ export async function downloadResults(offset?: number): Promise<void> {
 }
 
 async function update(): Promise<void> {
-  LoadingPage.updateBar(0, true);
-  if (DB.getSnapshot() === null) {
-    Notifications.add(`Missing account data. Please refresh.`, -1);
-    $(".pageAccount .preloader").html("Missing account data. Please refresh.");
-  } else {
-    LoadingPage.updateBar(90);
-    await downloadResults();
-    try {
-      await Misc.sleep(0);
-      await fillContent();
-    } catch (e) {
-      console.error(e);
-      Notifications.add(`Something went wrong: ${e}`, -1);
-    }
+  await downloadResults();
+  try {
+    await Misc.sleep(0);
+    await fillContent();
+  } catch (e) {
+    console.error(e);
+    Notifications.add(`Something went wrong: ${e}`, -1);
   }
 }
 
@@ -1103,7 +1091,7 @@ function sortAndRefreshHistory(
       }
     }
 
-    //@ts-expect-error
+    // @ts-expect-error temp
     temp.push(filteredResults[idx]);
     parsedIndexes.push(idx);
   }
@@ -1115,25 +1103,25 @@ function sortAndRefreshHistory(
 }
 
 $(".pageAccount button.toggleResultsOnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[0] = newValue[0] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[1] = newValue[1] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage10OnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[2] = newValue[2] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage100OnChart").on("click", () => {
-  const newValue = Config.accountChart;
+  const newValue = [...Config.accountChart] as AccountChart;
   newValue[3] = newValue[3] === "on" ? "off" : "on";
   UpdateConfig.setAccountChart(newValue);
 });
@@ -1149,14 +1137,19 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const windowHeight = $(window).height() ?? 0;
   const offset = $(`#result-${index}`).offset()?.top ?? 0;
   const scrollTo = offset - windowHeight / 2;
-  $([document.documentElement, document.body]).animate(
-    {
-      scrollTop: scrollTo,
-    },
-    Misc.applyReducedMotion(500)
-  );
-  $(".resultRow").removeClass("active");
-  $(`#result-${index}`).addClass("active");
+  $([document.documentElement, document.body])
+    .stop(true)
+    .animate(
+      { scrollTop: scrollTo },
+      {
+        duration: Misc.applyReducedMotion(500),
+        done: () => {
+          const element = $(`#result-${index}`);
+          $(".resultRow").removeClass("active");
+          requestAnimationFrame(() => element.addClass("active"));
+        },
+      }
+    );
 });
 
 $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
@@ -1289,7 +1282,6 @@ $(".pageAccount .group.presetFilterButtons").on(
 );
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
-  //@ts-expect-error
   void Misc.downloadResultsCSV(filteredResults);
 });
 
@@ -1330,6 +1322,31 @@ export const page = new Page({
   id: "account",
   element: $(".page.pageAccount"),
   path: "/account",
+  loadingOptions: {
+    loadingMode: () => {
+      if (DB.getSnapshot()?.results === undefined) {
+        return "sync";
+      } else {
+        return "none";
+      }
+    },
+    loadingPromise: async () => {
+      if (DB.getSnapshot() === null) {
+        throw new Error(
+          "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."
+        );
+      }
+      return downloadResults();
+    },
+    style: "bar",
+    keyframes: [
+      {
+        percentage: 90,
+        durationMs: 2000,
+        text: "Downloading results...",
+      },
+    ],
+  },
   afterHide: async (): Promise<void> => {
     reset();
     ResultFilters.removeButtons();
@@ -1338,25 +1355,25 @@ export const page = new Page({
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
     const snapshot = DB.getSnapshot();
-    if (snapshot?.results === undefined) {
-      $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
-      $(".pageAccount .content").addClass("hidden");
-      $(".pageAccount .preloader").removeClass("hidden");
-      await LoadingPage.showBar();
-    }
+    ResultFilters.updateTagsDropdownOptions();
     await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
 
+    testActivityEl = document.querySelector(
+      ".page.pageAccount .testActivity"
+    ) as HTMLElement;
+
     TestActivity.initYearSelector(
+      testActivityEl,
       "current",
       snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
     );
 
-    void update().then(() => {
+    await update().then(() => {
       void updateChartColors();
       $(".pageAccount .content .accountVerificatinNotice").remove();
-      if (Auth?.currentUser?.emailVerified === false) {
+      if (getAuthenticatedUser()?.emailVerified === false) {
         $(".pageAccount .content").prepend(
           `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`
         );

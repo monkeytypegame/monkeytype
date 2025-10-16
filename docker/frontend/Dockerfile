@@ -1,4 +1,4 @@
-FROM node:20.16.0-alpine3.19 AS builder
+FROM node:20.19.4-alpine3.19 AS builder
 WORKDIR /app
 
 #ENV
@@ -21,6 +21,7 @@ RUN npm i -g pnpm && \
 FROM nginx:mainline-alpine
 
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
+COPY docker/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 COPY docker/frontend/updateConfig.sh /docker-entrypoint.d/updateConfig.sh
 RUN chmod +x /docker-entrypoint.d/updateConfig.sh
 

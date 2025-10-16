@@ -5,9 +5,9 @@ import {
 } from "../controllers/user-flag-controller";
 import { isAuthenticated } from "../firebase";
 import * as XpBar from "./xp-bar";
-import { Snapshot } from "../constants/default-snapshot";
-
-let usingAvatar = false;
+import { getAvatarElement } from "../utils/discord-avatar";
+import * as AuthEvent from "../observables/auth-event";
+import { getSnapshot } from "../db";
 
 export function hide(): void {
   $("nav .accountButtonAndMenu").addClass("hidden");
@@ -15,91 +15,8 @@ export function hide(): void {
 }
 
 export function loading(state: boolean): void {
-  if (state) {
-    $("header nav .account").css("opacity", 1).css("pointer-events", "none");
-
-    if (usingAvatar) {
-      $("header nav .view-account .loading")
-        .css("opacity", 1)
-        .removeClass("hidden");
-      $("header nav .view-account .avatar")
-        .stop(true, true)
-        .css({ opacity: 1 })
-        .animate(
-          {
-            opacity: 0,
-          },
-          100,
-          () => {
-            $("header nav .view-account .avatar").addClass("hidden");
-          }
-        );
-    } else {
-      $("header nav .view-account .loading")
-        .stop(true, true)
-        .removeClass("hidden")
-        .css({ opacity: 0 })
-        .animate(
-          {
-            opacity: 1,
-          },
-          100
-        );
-      $("header nav .view-account .user")
-        .stop(true, true)
-        .css({ opacity: 1 })
-        .animate(
-          {
-            opacity: 0,
-          },
-          100,
-          () => {
-            $("header nav .view-account .user").addClass("hidden");
-          }
-        );
-    }
-  } else {
-    $("header nav .account").css("opacity", 1).css("pointer-events", "auto");
-
-    if (usingAvatar) {
-      $("header nav .view-account .loading")
-        .css("opacity", 1)
-        .addClass("hidden");
-      $("header nav .view-account .avatar")
-        .stop(true, true)
-        .removeClass("hidden")
-        .css({ opacity: 0 })
-        .animate(
-          {
-            opacity: 1,
-          },
-          100
-        );
-    } else {
-      $("header nav .view-account .loading")
-        .stop(true, true)
-        .css({ opacity: 1 })
-        .animate(
-          {
-            opacity: 0,
-          },
-          100,
-          () => {
-            $("header nav .view-account .loading").addClass("hidden");
-          }
-        );
-      $("header nav .view-account .user")
-        .stop(true, true)
-        .removeClass("hidden")
-        .css({ opacity: 0 })
-        .animate(
-          {
-            opacity: 1,
-          },
-          100
-        );
-    }
-  }
+  $("nav .accountButtonAndMenu .spinner").css({ opacity: state ? "1" : "0" });
+  $("nav .accountButtonAndMenu .avatar").css({ opacity: state ? "0" : "1" });
 }
 
 export function updateName(name: string): void {
@@ -112,42 +29,29 @@ function updateFlags(flags: SupportsFlags): void {
   );
 }
 
-export function updateAvatar(
-  discordId: string | undefined,
-  discordAvatar: string | undefined
-): void {
-  if ((discordAvatar ?? "") && (discordId ?? "")) {
-    void Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
-      (discordAvatarUrl) => {
-        if (discordAvatarUrl !== null) {
-          $("header nav .view-account .avatar").css(
-            "background-image",
-            `url(${discordAvatarUrl})`
-          );
-          usingAvatar = true;
-
-          $("header nav .view-account .user").addClass("hidden");
-          $("header nav .view-account .avatar").removeClass("hidden");
-        }
-      }
-    );
-  } else {
-    $("header nav .view-account .avatar").addClass("hidden");
-    $("header nav .view-account .user").removeClass("hidden");
-    $("header nav .view-account .avatar").css("background-image", "");
-    usingAvatar = false;
-  }
+export function updateAvatar(avatar?: {
+  discordId?: string;
+  discordAvatar?: string;
+}): void {
+  const element = getAvatarElement(avatar ?? {}, {
+    userIcon: "fas fa-fw fa-user",
+  });
+  $("header nav .view-account .avatar").replaceWith(element);
 }
 
-export function update(snapshot: Snapshot | undefined): void {
+export function update(): void {
   if (isAuthenticated()) {
-    // this function is called after the snapshot is loaded (awaited), so it should be fine
-    const { xp, discordId, discordAvatar, name } = snapshot as Snapshot;
+    const snapshot = getSnapshot();
 
+    if (snapshot === undefined) return;
+
+    const { xp, name } = snapshot;
+
+    loading(false);
     updateName(name);
     updateFlags(snapshot ?? {});
     XpBar.setXp(xp);
-    updateAvatar(discordId ?? "", discordAvatar ?? "");
+    updateAvatar(snapshot);
 
     $("nav .accountButtonAndMenu .menu .items .goToProfile").attr(
       "href",
@@ -167,7 +71,7 @@ export function update(snapshot: Snapshot | undefined): void {
         updateName("");
         updateFlags({});
         XpBar.setXp(0);
-        updateAvatar(undefined, undefined);
+        updateAvatar();
       }
     );
   }
@@ -177,3 +81,12 @@ const coarse = window.matchMedia("(pointer:coarse)")?.matches;
 if (coarse) {
   $("nav .accountButtonAndMenu .textButton.view-account").attr("href", "");
 }
+
+AuthEvent.subscribe((event) => {
+  if (
+    (event.type === "authStateChanged" && !event.data.isUserSignedIn) ||
+    event.type === "snapshotUpdated"
+  ) {
+    update();
+  }
+});

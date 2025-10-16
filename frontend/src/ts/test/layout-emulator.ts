@@ -3,6 +3,9 @@ import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
+import * as KeyConverter from "../utils/key-converter";
+
+import { getActiveFunboxNames } from "./funbox/list";
 
 let isAltGrPressed = false;
 const isPunctuationPattern = /\p{P}/u;
@@ -12,12 +15,12 @@ export async function getCharFromEvent(
 ): Promise<string | null> {
   function emulatedLayoutGetVariant(
     event: JQuery.KeyDownEvent | JQuery.KeyUpEvent,
-    keyVariants: string
+    keyVariants: string[]
   ): string | undefined {
     let isCapitalized = event.shiftKey;
     const altGrIndex = isAltGrPressed && keyVariants.length > 2 ? 2 : 0;
     const isNotPunctuation = !isPunctuationPattern.test(
-      keyVariants.slice(altGrIndex, altGrIndex + 2)
+      keyVariants.slice(altGrIndex, altGrIndex + 2).join()
     );
     if (capsState && isNotPunctuation) {
       isCapitalized = !event.shiftKey;
@@ -29,8 +32,8 @@ export async function getCharFromEvent(
 
     return altVersion || nonAltVersion || defaultVersion;
   }
-  let layout;
 
+  let layout;
   try {
     layout = await JSONData.getLayout(Config.layout);
   } catch (e) {
@@ -39,6 +42,11 @@ export async function getCharFromEvent(
       -1
     );
     return null;
+  }
+
+  const funbox = getActiveFunboxNames().includes("layout_mirror");
+  if (funbox) {
+    layout = KeyConverter.mirrorLayoutKeys(layout);
   }
 
   let keyEventCodes: string[] = [];
@@ -221,7 +229,7 @@ export async function getCharFromEvent(
   }
   const charVariant = emulatedLayoutGetVariant(
     event,
-    layoutMap[mapIndex] ?? ""
+    layoutMap[mapIndex] ?? []
   );
   if (charVariant !== undefined) {
     return charVariant;

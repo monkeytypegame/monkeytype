@@ -3,10 +3,12 @@ import * as TestUI from "../../test/test-ui";
 import * as PractiseWordsModal from "../../modals/practise-words";
 import * as Notifications from "../../elements/notifications";
 import * as TestInput from "../../test/test-input";
+import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import Config from "../../config";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
+import * as TestScreenshot from "../../test/test-screenshot";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -52,7 +54,7 @@ const commands: Command[] = [
     alias: "restart start begin type test typing",
     icon: "fa-chevron-right",
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
     exec: (): void => {
       TestLogic.restart();
@@ -68,7 +70,7 @@ const commands: Command[] = [
       });
     },
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
   },
   {
@@ -77,7 +79,7 @@ const commands: Command[] = [
     icon: "fa-exclamation-triangle",
     subgroup: practiceSubgroup,
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
   },
   {
@@ -88,21 +90,35 @@ const commands: Command[] = [
       TestUI.toggleResultWords();
     },
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
   },
   {
-    id: "saveScreenshot",
+    id: "copyScreenshot",
     display: "Copy screenshot to clipboard",
-    icon: "fa-image",
-    alias: "save",
+    icon: "fa-copy",
+    alias: "copy image clipboard",
     exec: (): void => {
       setTimeout(() => {
-        void TestUI.screenshot();
+        void TestScreenshot.copyToClipboard();
       }, 500);
     },
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
+    },
+  },
+  {
+    id: "downloadScreenshot",
+    display: "Download screenshot",
+    icon: "fa-download",
+    alias: "save image download file",
+    exec: (): void => {
+      setTimeout(async () => {
+        void TestScreenshot.download();
+      }, 500);
+    },
+    available: (): boolean => {
+      return TestState.resultVisible;
     },
   },
   {
@@ -126,7 +142,7 @@ const commands: Command[] = [
       );
     },
     available: (): boolean => {
-      return TestUI.resultVisible;
+      return TestState.resultVisible;
     },
   },
 ];

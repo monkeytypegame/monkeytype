@@ -5,10 +5,7 @@ import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
-import {
-  CompletedEvent,
-  IncompleteTest,
-} from "@monkeytype/contracts/schemas/results";
+import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
 
 type CharCount = {
@@ -21,7 +18,7 @@ type CharCount = {
   correctSpaces: number;
 };
 
-type Stats = {
+export type Stats = {
   wpm: number;
   wpmRaw: number;
   acc: number;
@@ -74,13 +71,13 @@ export function getStats(): unknown {
   };
 
   try {
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.spacing.average =
       TestInput.keypressTimings.spacing.array.reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.spacing.array.length;
 
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.spacing.sd = Numbers.stdDev(
       TestInput.keypressTimings.spacing.array
     );
@@ -88,13 +85,13 @@ export function getStats(): unknown {
     //
   }
   try {
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.duration.average =
       TestInput.keypressTimings.duration.array.reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.duration.array.length;
 
-    // @ts-expect-error
+    // @ts-expect-error ---
     ret.keypressTimings.duration.sd = Numbers.stdDev(
       TestInput.keypressTimings.duration.array
     );
@@ -346,7 +343,7 @@ function countChars(): CharCount {
       }
       correctChars += toAdd.correct;
       incorrectChars += toAdd.incorrect;
-      if (i === inputWords.length - 1 && Config.mode === "time") {
+      if (i === inputWords.length - 1) {
         //last word - check if it was all correct - add to correct word chars
         if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
       } else {

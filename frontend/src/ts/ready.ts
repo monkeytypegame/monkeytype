@@ -1,18 +1,18 @@
 import * as Misc from "./utils/misc";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as MerchBanner from "./elements/merch-banner";
-import * as CookiesModal from "./modals/cookies";
 import * as ConnectionState from "./states/connection";
 import * as AccountButton from "./elements/account-button";
-//@ts-expect-error
+//@ts-expect-error no types for this package
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
 import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { loadPromise } from "./config";
+import { authPromise } from "./firebase";
 
 $(async (): Promise<void> => {
   await loadPromise;
-  CookiesModal.check();
+  await authPromise;
 
   //this line goes back to pretty much the beginning of the project and im pretty sure its here
   //to make sure the initial theme application doesnt animate the background color
@@ -52,5 +52,21 @@ $(async (): Promise<void> => {
           void registration.unregister();
         }
       });
+  } else {
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("/sw.js", { scope: "/" })
+          .then((registration) => {
+            console.log(
+              "ServiceWorker registration successful with scope: ",
+              registration.scope
+            );
+          })
+          .catch((error: unknown) => {
+            console.error("ServiceWorker registration failed: ", error);
+          });
+      });
+    }
   }
 });

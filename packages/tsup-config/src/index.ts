@@ -15,7 +15,7 @@ export function extendConfig(
       format: ["cjs", "esm"],
       dts: false,
       minify: true,
-      ...(overrideOptions || {}),
+      ...overrideOptions,
     };
 
     return defineConfig(config);

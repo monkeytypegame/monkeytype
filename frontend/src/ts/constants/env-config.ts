@@ -10,15 +10,15 @@ type Config = {
 
 //@ts-expect-error these get replaced by vite
 const backendUrl = BACKEND_URL;
-// @ts-expect-error
+// @ts-expect-error ---
 const isDevelopment = IS_DEVELOPMENT;
-// @ts-expect-error
+// @ts-expect-error ---
 const clientVersion = CLIENT_VERSION;
-// @ts-expect-error
+// @ts-expect-error ---
 const recaptchaSiteKey = RECAPTCHA_SITE_KEY;
-// @ts-expect-error
+// @ts-expect-error ---
 const quickLoginEmail = QUICK_LOGIN_EMAIL;
-// @ts-expect-error
+// @ts-expect-error ---
 const quickLoginPassword = QUICK_LOGIN_PASSWORD;
 
 export const envConfig: Config = {

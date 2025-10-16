@@ -131,6 +131,17 @@
         }
       }
     }
+    .section[data-config-name="fontFamily"] {
+      grid-template-areas:
+        "title"
+        "text"
+        "tabs"
+        "buttons";
+      .topRight {
+        grid-area: tabs;
+        align-self: start;
+      }
+    }
   }
   .profile {
     grid-template-columns: 1fr;
@@ -210,17 +221,7 @@
       }
     }
   }
-  #leaderboardsWrapper #leaderboards .leaderboardsTop {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: "title title" "subtitle yesterday" "buttons buttons";
-    .buttons .timeRange {
-      grid-template-columns: 1fr 1fr 1fr;
-      .languageSelect {
-        grid-column: span 1;
-      }
-    }
-  }
-  #testActivity {
+  .testActivity {
     --box-size: 0.58em;
     // .activity div,
     // .legend div {

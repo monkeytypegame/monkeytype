@@ -1,11 +1,11 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
-  extends: ["@monkeytype/eslint-config"],
+  plugins: ["compat"],
+  extends: ["@monkeytype/eslint-config", "plugin:compat/recommended"],
   globals: {
     $: "readonly",
     jQuery: "readonly",
-    html2canvas: "readonly",
     ClipboardItem: "readonly",
     grecaptcha: "readonly",
   },
@@ -20,5 +20,32 @@ module.exports = {
     "static/js/",
     "__tests__/",
     "jest.config.ts",
+  ],
+  settings: {
+    lintAllEsApis: true,
+  },
+  rules: {
+    // Prevent accessing __testing outside of test files
+    "no-restricted-syntax": [
+      "error",
+      {
+        selector: "MemberExpression[property.name='__testing']",
+        message:
+          "__testing should only be accessed in test files. Use the public API instead.",
+      },
+    ],
+  },
+  overrides: [
+    {
+      // Allow __testing access in test files
+      files: [
+        "**/__tests__/**/*.{js,ts,tsx}",
+        "**/*.{test,spec}.{js,ts,tsx}",
+        "**/tests/**/*.{js,ts,tsx}",
+      ],
+      rules: {
+        "no-restricted-syntax": "off",
+      },
+    },
   ],
 };

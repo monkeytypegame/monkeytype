@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-//@ts-nocheck
+// oxlint-disable ban-ts-comment
+//@ts-nocheck too many errors from 3rd party ad code
 
 import Config from "../config";
 import * as ActivePage from "../states/active-page";
-import * as TestUI from "../test/test-ui";
+import * as TestState from "../test/test-state";
 
 // Step 1: Create the Ramp Object, NOTE: selector id needed for tagged units only
 const resultUnits = [
@@ -206,7 +207,7 @@ function getUnits(): unknown {
 
 export async function reinstate(): boolean {
   if (!rampReady) return;
-  if (ActivePage.get() === "test" && !TestUI.resultVisible) {
+  if (ActivePage.get() === "test" && !TestState.resultVisible) {
     ramp.destroyUnits("all");
     return;
   }

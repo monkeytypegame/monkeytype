@@ -8,6 +8,7 @@
   - [Theme Guidelines](#theme-guidelines)
   - [Language Guidelines](#language-guidelines)
   - [Quote Guidelines](#quote-guidelines)
+  - [Layout Guidelines](#layout-guidelines)
 - [Questions](#questions)
 
 ## Getting Started
@@ -16,9 +17,9 @@ When contributing to Monkeytype, it's good to know our best practices, tips, and
 
 ## How to Contribute
 
-We have two separate contribution guides based on what you're looking to contribute. If you're simply looking to help us augment our language or quotes data, please refer to [CONTRIBUTING_BASIC.md](./CONTRIBUTING_BASIC.md). This guide will go over how to do so easily and without the need to set up a local development server.
+We have two separate contribution guides based on what you're looking to contribute. If you're simply looking to help us augment our language or quotes data, please refer to [CONTRIBUTING_BASIC.md](/docs/CONTRIBUTING_BASIC.md). This guide will go over how to do so easily and without the need to set up a local development server.
 
-If you're looking to make deeper code changes that affect functionality, or will require screenshots of the changes, please refer to [CONTRIBUTING_ADVANCED.md](./CONTRIBUTING_ADVANCED.md).
+If you're looking to make deeper code changes that affect functionality, or will require screenshots of the changes, please refer to [CONTRIBUTING_ADVANCED.md](/docs/CONTRIBUTING_ADVANCED.md).
 
 ## Standards and Guidelines
 
@@ -38,8 +39,8 @@ For types, we use the following:
 - `refactor`: A code change that neither fixes a bug nor adds a feature, but makes the code easier to read, understand, or improve
 - `perf`: A code change that improves performance
 - `test`: Adding missing tests or correcting existing tests
-- `build`: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
-- `ci`: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+- `build`: Changes that affect the build system or external dependencies (example scopes: vite, tsup-node, npm)
+- `ci`: Changes to our CI configuration files and scripts (example scopes: GitHub Workflows)
 - `revert`: Reverts a previous commit
 - `chore`: Other changes that don't apply to any of the above
 
@@ -54,7 +55,7 @@ Before submitting a theme make sure...
 - your theme has been added to the `_list` file and the `textColor` property is the theme's main color
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
 
-(If you want to contribute themes but don't know how, check [THEMES.md](./THEMES.md))
+If you want to contribute themes but don't know how, check [THEMES.md](/docs/THEMES.md) 
 
 ### Language Guidelines
 
@@ -63,7 +64,7 @@ Before submitting a theme make sure...
 - Be sure to add your language to the `_list` and `_groups` files
 - Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
 
-(If you want to contribute languages but don't know how, check [LANGUAGES.md](./LANGUAGES.md))
+If you want to contribute languages but don't know how, check [LANGUAGES.md](/docs/LANGUAGES.md)
 
 ### Quote Guidelines
 
@@ -77,7 +78,11 @@ Before submitting a theme make sure...
 - Remember to name your pull request properly. For example, if you are adding new quotes for the language `French`, your pull request should be named `impr(quotes): add French quotes`.
 
 
-(If you want to contribute quotes but don't know how, check [QUOTES.md](./QUOTES.md))
+If you want to contribute quotes but don't know how, check [QUOTES.md](/docs/QUOTES.md)
+
+### Layout Guidelines
+
+If you want to contribute layouts but don't know how, check [LAYOUTS.md](/docs/LAYOUTS.md)
 
 ## Questions
 

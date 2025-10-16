@@ -4,22 +4,23 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --watch src --exec \"node ./src/index.js --dry\"",
+    "dev-hotfix": "nodemon --watch src --exec \"node ./src/index.js --dry --hotfix\"",
     "dev-changelog": "nodemon ./src/buildChangelog.js",
-    "lint": "eslint \"./**/*.js\"",
+    "oxlint": "oxlint .",
+    "lint": "npm run oxlint",
     "purge-cf-cache": "./bin/purgeCfCache.sh"
   },
   "devDependencies": {
     "@monkeytype/eslint-config": "workspace:*",
     "eslint": "8.57.1",
-    "nodemon": "3.1.4"
+    "nodemon": "3.1.4",
+    "oxlint": "1.15.0"
   },
   "bin": {
-    "monkeytype-release": "./src/index.js",
-    "monkeytype-purge": "./bin/purgeCfCache.sh",
-    "monkeytype-deploy-be": "./bin/deployBackend.sh"
+    "monkeytype-release": "./src/index.js"
   },
   "dependencies": {
-    "@octokit/rest": "20.1.1",
+    "@octokit/rest": "21.1.1",
     "dotenv": "16.4.5",
     "readline-sync": "1.4.10"
   }

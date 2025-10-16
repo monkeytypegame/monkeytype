@@ -1,12 +1,19 @@
-import { CompletedEvent, Result } from "@monkeytype/contracts/schemas/results";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import {
+  ChartData,
+  CompletedEvent,
+  OldChartData,
+  Result,
+} from "@monkeytype/schemas/results";
+import { Mode } from "@monkeytype/schemas/shared";
 import { ObjectId } from "mongodb";
 import { WithObjectId } from "./misc";
+import { FunboxName } from "@monkeytype/schemas/configs";
 
 export type DBResult = WithObjectId<Result<Mode>> & {
   //legacy values
   correctChars?: number;
   incorrectChars?: number;
+  chartData: ChartData | OldChartData | "toolong";
 };
 
 export function buildDbResult(
@@ -52,7 +59,7 @@ export function buildDbResult(
   if (!ce.blindMode) delete res.blindMode;
   if (!ce.lazyMode) delete res.lazyMode;
   if (ce.difficulty === "normal") delete res.difficulty;
-  if (ce.funbox === "none") delete res.funbox;
+  if (ce.funbox.length === 0) delete res.funbox;
   if (ce.language === "english") delete res.language;
   if (!ce.numbers) delete res.numbers;
   if (!ce.punctuation) delete res.punctuation;
@@ -77,9 +84,43 @@ export function replaceLegacyValues(result: DBResult): DBResult {
     result.correctChars !== undefined &&
     result.incorrectChars !== undefined
   ) {
-    result.charStats = [result.correctChars, result.incorrectChars, 0, 0];
-    delete result.correctChars;
-    delete result.incorrectChars;
+    //super edge case but just in case
+    if (result.charStats !== undefined) {
+      result.charStats = [
+        result.charStats[0],
+        result.charStats[1],
+        result.charStats[2],
+        result.charStats[3],
+      ];
+      delete result.correctChars;
+      delete result.incorrectChars;
+    } else {
+      result.charStats = [result.correctChars, result.incorrectChars, 0, 0];
+      delete result.correctChars;
+      delete result.incorrectChars;
+    }
   }
+
+  if (typeof result.funbox === "string") {
+    if (result.funbox === "none") {
+      result.funbox = [];
+    } else {
+      result.funbox = (result.funbox as string).split("#") as FunboxName[];
+    }
+  }
+
+  if (
+    result.chartData !== undefined &&
+    result.chartData !== "toolong" &&
+    "raw" in result.chartData
+  ) {
+    const temp = result.chartData;
+    result.chartData = {
+      wpm: temp.wpm,
+      burst: temp.raw,
+      err: temp.err,
+    };
+  }
+
   return result;
 }

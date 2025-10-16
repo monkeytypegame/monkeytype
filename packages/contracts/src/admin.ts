@@ -1,12 +1,12 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
+import { IdSchema } from "@monkeytype/schemas/util";
 import {
   CommonResponses,
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
-import { IdSchema } from "./schemas/util";
+} from "./util/api";
 
 export const ToggleBanRequestSchema = z
   .object({
@@ -14,6 +14,15 @@ export const ToggleBanRequestSchema = z
   })
   .strict();
 export type ToggleBanRequest = z.infer<typeof ToggleBanRequestSchema>;
+
+export const ClearStreakHourOffsetRequestSchema = z
+  .object({
+    uid: IdSchema,
+  })
+  .strict();
+export type ClearStreakHourOffsetRequest = z.infer<
+  typeof ClearStreakHourOffsetRequestSchema
+>;
 
 export const ToggleBanResponseSchema = responseWithData(
   z.object({
@@ -71,6 +80,16 @@ export const adminContract = c.router(
       body: ToggleBanRequestSchema,
       responses: {
         200: ToggleBanResponseSchema,
+      },
+    },
+    clearStreakHourOffset: {
+      summary: "clear streak hour offset",
+      description: "Clear the streak hour offset for a user",
+      method: "POST",
+      path: "/clearStreakHourOffset",
+      body: ClearStreakHourOffsetRequestSchema,
+      responses: {
+        200: MonkeyResponseSchema,
       },
     },
     acceptReports: {

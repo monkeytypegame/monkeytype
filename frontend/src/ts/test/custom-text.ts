@@ -1,12 +1,7 @@
-import {
-  CustomTextLimitMode,
-  CustomTextLimitModeSchema,
-  CustomTextMode,
-  CustomTextModeSchema,
-} from "@monkeytype/contracts/schemas/util";
+import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import { CustomTextDataWithTextLen } from "@monkeytype/contracts/schemas/results";
+import { CompletedEventCustomTextSchema } from "@monkeytype/schemas/results";
 
 const CustomTextObjectSchema = z.record(z.string(), z.string());
 type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
@@ -29,11 +24,10 @@ const customTextLongLS = new LocalStorageWithSchema({
   fallback: {},
 });
 
-export const CustomTextSettingsSchema = z.object({
-  text: z.array(z.string()),
-  mode: CustomTextModeSchema,
-  limit: z.object({ value: z.number(), mode: CustomTextLimitModeSchema }),
-  pipeDelimiter: z.boolean(),
+export const CustomTextSettingsSchema = CompletedEventCustomTextSchema.omit({
+  textLen: true,
+}).extend({
+  text: z.array(z.string()).min(1),
 });
 
 export type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
@@ -51,7 +45,9 @@ const customTextSettings = new LocalStorageWithSchema({
   key: "customTextSettings",
   schema: CustomTextSettingsSchema,
   fallback: defaultCustomTextSettings,
-  migrate: (oldData, _zodIssues, fallback) => {
+  migrate: (oldData, _zodIssues) => {
+    const fallback = structuredClone(defaultCustomTextSettings);
+
     if (typeof oldData !== "object" || oldData === null) {
       return fallback;
     }
@@ -60,7 +56,7 @@ const customTextSettings = new LocalStorageWithSchema({
       "text" in oldData &&
       z.array(z.string()).safeParse(migratedData.text).success
     ) {
-      migratedData.text = oldData.text as string[];
+      migratedData.text = oldData["text"] as string[];
     }
     return migratedData;
   },
@@ -136,17 +132,8 @@ export function setPipeDelimiter(val: boolean): void {
   });
 }
 
-export type CustomTextData = Omit<CustomTextDataWithTextLen, "textLen"> & {
-  text: string[];
-};
-
-export function getData(): CustomTextData {
-  return {
-    text: getText(),
-    mode: getMode(),
-    limit: getLimit(),
-    pipeDelimiter: getPipeDelimiter(),
-  };
+export function getData(): CustomTextSettings {
+  return customTextSettings.get();
 }
 
 export function getCustomText(name: string, long = false): string[] {

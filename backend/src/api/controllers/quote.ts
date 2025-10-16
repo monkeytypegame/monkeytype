@@ -23,6 +23,7 @@ import {
 } from "@monkeytype/contracts/quotes";
 import { replaceObjectId, replaceObjectIds } from "../../utils/misc";
 import { MonkeyRequest } from "../types";
+import { Language } from "@monkeytype/schemas/languages";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -36,9 +37,9 @@ export async function getQuotes(
   const { uid } = req.ctx.decodedToken;
   const quoteMod = (await getPartialUser(uid, "get quotes", ["quoteMod"]))
     .quoteMod;
-  const quoteModString = quoteMod === true ? "all" : (quoteMod as string);
+  const quoteModLanguage = quoteMod === true ? "all" : (quoteMod as Language);
 
-  const data = await NewQuotesDAL.get(quoteModString);
+  const data = await NewQuotesDAL.get(quoteModLanguage);
   return new MonkeyResponse(
     "Quote submissions retrieved",
     replaceObjectIds(data)

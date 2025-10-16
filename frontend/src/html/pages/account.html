@@ -1,25 +1,9 @@
 <div class="page pageAccount hidden full-width" id="pageAccount">
-  <div class="preloader hidden">
-    <div class="icon">
-      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
-    </div>
-    <div class="barWrapper hidden">
-      <div class="bar">
-        <div class="fill"></div>
-      </div>
-      <div class="text">‎</div>
-    </div>
-  </div>
   <div class="content full-width content-grid">
     <div class="profile">
       <div class="details both">
         <div class="avatarAndName">
-          <div class="avatars">
-            <div class="placeholderAvatar">
-              <i class="fas fa-user-circle"></i>
-            </div>
-            <div class="avatar"></div>
-          </div>
+          <div class="avatar"></div>
           <div>
             <div class="user">
               <div class="name">-</div>
@@ -292,7 +276,7 @@
 
     <!-- <div class="group createdDate">Account created on -</div> -->
 
-    <div id="testActivity" class="hidden">
+    <div class="testActivity hidden">
       <div class="wrapper">
         <div class="top">
           <div class="year"><select class="yearSelect"></select></div>
@@ -312,6 +296,7 @@
         <div class="daysFull"></div>
         <div class="days"></div>
         <div class="nodata hidden">No data found.</div>
+        <div class="note">Note: All activity data is using UTC time.</div>
       </div>
     </div>
 
@@ -497,21 +482,42 @@
             <i class="fas fa-tag"></i>
             tags
           </div>
-          <div class="select filterGroup" group="tags"></div>
+          <div class="select filterGroup" group="tags">
+            <select
+              class="tagsSelect"
+              group="tags"
+              placeholder="select a tag"
+              multiple
+            ></select>
+          </div>
         </div>
         <div class="buttonsAndTitle funbox">
           <div class="title">
             <i class="fas fa-gamepad"></i>
             funbox
           </div>
-          <div class="select filterGroup" group="funbox"></div>
+          <div class="select filterGroup" group="funbox">
+            <select
+              class="funboxSelect"
+              group="funbox"
+              placeholder="select a funbox"
+              multiple
+            ></select>
+          </div>
         </div>
         <div class="buttonsAndTitle languages">
           <div class="title">
             <i class="fas fa-globe-americas"></i>
             language
           </div>
-          <div class="select filterGroup" group="language"></div>
+          <div class="select filterGroup" group="language">
+            <select
+              class="languageSelect"
+              group="language"
+              placeholder="select a language"
+              multiple
+            ></select>
+          </div>
         </div>
       </div>
     </div>
