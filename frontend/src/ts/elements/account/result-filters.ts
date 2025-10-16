@@ -793,10 +793,58 @@ export function updateTagsDropdownOptions(): void {
 }
 
 let buttonsAppended = false;
+let tagButtonsAppended = false;
 
 export async function appendButtons(
   selectChangeCallback: () => void
 ): Promise<void> {
+  //snapshot at this point is guaranteed to exist
+  const snapshot = DB.getSnapshot() as Snapshot;
+
+  if (buttonsAppended && (snapshot.tags.length !== 0) === tagButtonsAppended)
+    return;
+
+  const tagsSection = $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags"
+  );
+
+  if (snapshot.tags.length === 0) {
+    tagsSection.addClass("hidden");
+    setFilter("tags", "none", true);
+    tagButtonsAppended = false;
+  } else {
+    tagsSection.removeClass("hidden");
+    // updateTagsDropdownOptions();
+    const selectEl = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select .tagsSelect"
+    );
+    if (selectEl) {
+      if (groupSelects["tags"]) groupSelects["tags"].destroy();
+      groupSelects["tags"] = new SlimSelect({
+        select: selectEl,
+        settings: {
+          showSearch: true,
+          placeholderText: "select a tag",
+          allowDeselect: true,
+          closeOnSelect: false,
+        },
+        events: {
+          beforeChange: (selectedOptions, oldSelectedOptions): boolean => {
+            return selectBeforeChangeFn(
+              "tags",
+              selectedOptions,
+              oldSelectedOptions
+            );
+          },
+          beforeOpen: (): void => {
+            adjustScrollposition("tags");
+          },
+        },
+      });
+    }
+    tagButtonsAppended = true;
+  }
+
   if (buttonsAppended) return;
 
   selectChangeCallbackFn = selectChangeCallback;
@@ -863,46 +911,6 @@ export async function appendButtons(
       },
     },
   });
-
-  //snapshot at this point is guaranteed to exist
-  const snapshot = DB.getSnapshot() as Snapshot;
-
-  const tagsSection = $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.tags"
-  );
-
-  if (snapshot.tags.length === 0) {
-    tagsSection.addClass("hidden");
-  } else {
-    tagsSection.removeClass("hidden");
-    updateTagsDropdownOptions();
-    const selectEl = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select .tagsSelect"
-    );
-    if (selectEl) {
-      groupSelects["tags"] = new SlimSelect({
-        select: selectEl,
-        settings: {
-          showSearch: true,
-          placeholderText: "select a tag",
-          allowDeselect: true,
-          closeOnSelect: false,
-        },
-        events: {
-          beforeChange: (selectedOptions, oldSelectedOptions): boolean => {
-            return selectBeforeChangeFn(
-              "tags",
-              selectedOptions,
-              oldSelectedOptions
-            );
-          },
-          beforeOpen: (): void => {
-            adjustScrollposition("tags");
-          },
-        },
-      });
-    }
-  }
 
   void updateFilterPresets();
   buttonsAppended = true;
