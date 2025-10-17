@@ -62,6 +62,7 @@ export class Caret {
 
   public show(): void {
     this.element.classList.remove("hidden");
+    this.element.style.display = "";
   }
 
   public hide(): void {
