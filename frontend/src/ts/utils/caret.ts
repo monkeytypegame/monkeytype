@@ -404,10 +404,6 @@ export class Caret {
       options.isDirectionReversed
     );
 
-    console.log({
-      isWordRTL,
-    });
-
     //if the letter is not visible, use the closest visible letter (but only for full width carets)
     const isLetterVisible = options.letter.offsetWidth > 0;
     if (!isLetterVisible && this.isFullWidth()) {
