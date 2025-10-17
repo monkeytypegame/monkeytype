@@ -23,6 +23,7 @@ export function resetPosition(): void {
     wordIndex: 0,
     letterIndex: 0,
     isLanguageRightToLeft: TestState.isLanguageRightToLeft,
+    isDirectionReversed: TestState.isDirectionReversed,
     animate: false,
   });
 }
@@ -32,6 +33,7 @@ export function updatePosition(noAnim = false): void {
     wordIndex: TestState.activeWordIndex,
     letterIndex: TestInput.input.current.length,
     isLanguageRightToLeft: TestState.isLanguageRightToLeft,
+    isDirectionReversed: TestState.isDirectionReversed,
     animate: Config.smoothCaret !== "off" && !noAnim,
   });
 }

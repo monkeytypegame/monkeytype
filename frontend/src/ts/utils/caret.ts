@@ -277,6 +277,7 @@ export class Caret {
     wordIndex: number;
     letterIndex: number;
     isLanguageRightToLeft: boolean;
+    isDirectionReversed: boolean;
     animate?: boolean;
     animationOptions?: {
       duration?: number;
@@ -333,6 +334,7 @@ export class Caret {
         wordText,
         side,
         isLanguageRightToLeft: options.isLanguageRightToLeft,
+        isDirectionReversed: options.isDirectionReversed,
       });
 
       // animation uses inline styles, so its fine to read inline here instead
@@ -394,11 +396,17 @@ export class Caret {
     wordText: string;
     side: "beforeLetter" | "afterLetter";
     isLanguageRightToLeft: boolean;
+    isDirectionReversed: boolean;
   }): { left: number; top: number; width: number } {
     const isWordRTL = isWordRightToLeft(
       options.wordText,
-      options.isLanguageRightToLeft
+      options.isLanguageRightToLeft,
+      options.isDirectionReversed
     );
+
+    console.log({
+      isWordRTL,
+    });
 
     //if the letter is not visible, use the closest visible letter (but only for full width carets)
     const isLetterVisible = options.letter.offsetWidth > 0;

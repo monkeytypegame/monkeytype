@@ -48,6 +48,7 @@ export function resetCaretPosition(): void {
     wordIndex: 0,
     letterIndex: 0,
     isLanguageRightToLeft: TestState.isLanguageRightToLeft,
+    isDirectionReversed: TestState.isDirectionReversed,
     animate: false,
   });
 }
@@ -144,6 +145,7 @@ export async function update(duration: number): Promise<void> {
       wordIndex: settings.currentWordIndex,
       letterIndex: settings.currentLetterIndex,
       isLanguageRightToLeft: TestState.isLanguageRightToLeft,
+      isDirectionReversed: TestState.isDirectionReversed,
       animate: true,
       animationOptions: {
         duration,
