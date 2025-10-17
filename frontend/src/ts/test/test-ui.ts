@@ -135,9 +135,11 @@ export function reset(): void {
   currentTestLine = 0;
 }
 
-export function focusWords(): void {
+export function focusWords(force = false): void {
   const wordsInput = document.querySelector<HTMLElement>("#wordsInput");
-  wordsInput?.blur();
+  if (force) {
+    wordsInput?.blur();
+  }
   wordsInput?.focus({
     preventScroll: true,
   });
