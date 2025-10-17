@@ -26,7 +26,8 @@ type ConfigKeysWithoutCommands =
   | "autoSwitchTheme"
   | "themeLight"
   | "themeDark"
-  | "burstHeatmap";
+  | "burstHeatmap"
+  | "keymapCustom";
 
 type SkippedConfigKeys =
   | "minBurst" //this is skipped for now because it has 2 nested inputs;

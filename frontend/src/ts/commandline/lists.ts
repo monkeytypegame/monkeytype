@@ -6,6 +6,7 @@ import NavigationCommands from "./lists/navigation";
 import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundCommands from "./lists/custom-background";
 import FontFamilyCommands from "./lists/font-family";
+import KeymapStyleCommands from "./lists/keymap-style";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 import TagsCommands from "./lists/tags";
@@ -178,7 +179,7 @@ export const commands: CommandsSubgroup = {
       "fontSize",
       ...FontFamilyCommands,
       "keymapMode",
-      "keymapStyle",
+      ...KeymapStyleCommands,
       "keymapLegendStyle",
       "keymapSize",
       keymapLayoutCommand,
