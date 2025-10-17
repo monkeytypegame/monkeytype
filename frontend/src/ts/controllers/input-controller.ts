@@ -178,7 +178,7 @@ function backspaceToPrevious(): void {
     }
   }
 
-  void Caret.updatePosition();
+  Caret.updatePosition();
   Replay.addReplayEvent("backWord");
 }
 
@@ -258,7 +258,7 @@ async function handleSpace(): Promise<void> {
         dontInsertSpace = false;
         Replay.addReplayEvent("incorrectLetter", "_");
         void TestUI.updateActiveWordLetters();
-        void Caret.updatePosition();
+        Caret.updatePosition();
       }
       return;
     }
@@ -346,7 +346,7 @@ async function handleSpace(): Promise<void> {
     }
   } //end of line wrap
 
-  void Caret.updatePosition();
+  Caret.updatePosition();
 
   // enable if i decide that auto tab should also work after a space
   // if (
@@ -565,7 +565,7 @@ async function handleChar(
   ) {
     TestInput.input.current = resultingWord;
     void TestUI.updateActiveWordLetters();
-    void Caret.updatePosition();
+    Caret.updatePosition();
     return;
   }
 
@@ -768,7 +768,7 @@ async function handleChar(
   }, 0);
 
   if (char !== "\n") {
-    void Caret.updatePosition();
+    Caret.updatePosition();
   }
 }
 
@@ -1377,7 +1377,7 @@ $("#wordsInput").on("input", async (event) => {
     }
 
     void TestUI.updateActiveWordLetters();
-    void Caret.updatePosition();
+    Caret.updatePosition();
     if (!CompositionState.getComposing()) {
       const keyStroke = event?.originalEvent as InputEvent;
       if (keyStroke.inputType === "deleteWordBackward") {
