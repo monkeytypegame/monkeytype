@@ -405,9 +405,9 @@ export class Caret {
       options.isDirectionReversed
     );
 
-    //if the letter is not visible, use the closest visible letter (but only for full width carets)
+    //if the letter is not visible, use the closest visible letter
     const isLetterVisible = options.letter.offsetWidth > 0;
-    if (!isLetterVisible && this.isFullWidth()) {
+    if (!isLetterVisible) {
       const letters = options.word.querySelectorAll<HTMLElement>("letter");
       if (letters.length === 0) {
         throw new Error("Caret getLeftTopWidth: no letters found in word");
