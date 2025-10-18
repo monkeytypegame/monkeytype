@@ -36,7 +36,9 @@ import { MonkeyMail, UserStreak } from "@monkeytype/schemas/users";
 import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
+import * as ConnectionsDal from "../../../src/dal/connections";
 import { pb } from "../../__testData__/users";
+import { SuperTest } from "supertest";
 
 const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -224,7 +226,7 @@ describe("user controller test", () => {
       userIsNameAvailableMock.mockClear();
     });
 
-    it("returns ok if name is available", async () => {
+    it("returns available if name is available", async () => {
       //GIVEN
       userIsNameAvailableMock.mockResolvedValue(true);
 
@@ -236,13 +238,13 @@ describe("user controller test", () => {
 
       //THEN
       expect(body).toEqual({
-        message: "Username available",
-        data: null,
+        message: "Check username",
+        data: { available: true },
       });
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", "");
     });
 
-    it("returns 409 if name is not available", async () => {
+    it("returns taken if name is not available", async () => {
       //GIVEN
       userIsNameAvailableMock.mockResolvedValue(false);
 
@@ -250,10 +252,13 @@ describe("user controller test", () => {
       const { body } = await mockApp
         .get("/users/checkName/bob")
         //no authentication required
-        .expect(409);
+        .expect(200);
 
       //THEN
-      expect(body.message).toEqual("Username unavailable");
+      expect(body).toEqual({
+        message: "Check username",
+        data: { available: false },
+      });
 
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", "");
     });
@@ -269,10 +274,16 @@ describe("user controller test", () => {
 
       //THEN
       expect(body).toEqual({
-        message: "Username available",
-        data: null,
+        message: "Check username",
+        data: { available: true },
       });
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", uid);
+    });
+    it("returns 422 if username contains profanity", async () => {
+      await mockApp
+        .get("/users/checkName/newMiodec")
+        //no authentication required
+        .expect(422);
     });
   });
   describe("sendVerificationEmail", () => {
@@ -624,6 +635,7 @@ describe("user controller test", () => {
       "purgeUserFromXpLeaderboards"
     );
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
+    const connectionsDeletebyUidMock = vi.spyOn(ConnectionsDal, "deleteByUid");
     const logsDeleteUserMock = vi.spyOn(LogDal, "deleteUserLogs");
 
     beforeEach(() => {
@@ -636,6 +648,7 @@ describe("user controller test", () => {
         deleteConfigMock,
         purgeUserFromDailyLeaderboardsMock,
         purgeUserFromXpLeaderboardsMock,
+        connectionsDeletebyUidMock,
         logsDeleteUserMock,
       ].forEach((it) => it.mockResolvedValue(undefined));
 
@@ -654,6 +667,7 @@ describe("user controller test", () => {
         deleteAllPresetsMock,
         purgeUserFromDailyLeaderboardsMock,
         purgeUserFromXpLeaderboardsMock,
+        connectionsDeletebyUidMock,
         logsDeleteUserMock,
       ].forEach((it) => it.mockClear());
     });
@@ -684,6 +698,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -719,6 +734,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -749,6 +765,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -778,6 +795,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).not.toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).not.toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).not.toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).not.toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).not.toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -818,6 +836,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -858,6 +877,7 @@ describe("user controller test", () => {
       expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
       expect(deleteConfigMock).toHaveBeenCalledWith(uid);
       expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards
@@ -978,6 +998,7 @@ describe("user controller test", () => {
     const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
     const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
     const updateNameMock = vi.spyOn(UserDal, "updateName");
+    const connectionsUpdateNameMock = vi.spyOn(ConnectionsDal, "updateName");
     const addImportantLogMock = vi.spyOn(LogDal, "addImportantLog");
 
     beforeEach(() => {
@@ -985,6 +1006,7 @@ describe("user controller test", () => {
         blocklistContainsMock,
         getPartialUserMock,
         updateNameMock,
+        connectionsUpdateNameMock,
         addImportantLogMock,
       ].forEach((it) => {
         it.mockClear().mockResolvedValue(null as never);
@@ -1016,6 +1038,7 @@ describe("user controller test", () => {
         "changed name from Bob to newName",
         uid
       );
+      expect(connectionsUpdateNameMock).toHaveBeenCalledWith(uid, "newName");
     });
 
     it("should fail if username is blocked", async () => {
@@ -1032,6 +1055,7 @@ describe("user controller test", () => {
       //THEN
       expect(body.message).toEqual("Username blocked");
       expect(updateNameMock).not.toHaveBeenCalled();
+      expect(connectionsUpdateNameMock).not.toHaveBeenCalled();
     });
 
     it("should fail for banned users", async () => {
@@ -3875,6 +3899,62 @@ describe("user controller test", () => {
       });
     });
   });
+  describe("get friends", () => {
+    const getFriendsMock = vi.spyOn(UserDal, "getFriends");
+
+    beforeEach(() => {
+      enableConnectionsEndpoints(true);
+      getFriendsMock.mockClear();
+    });
+
+    it("gets with premium enabled", async () => {
+      //GIVEN
+      enablePremiumFeatures(true);
+      const friend: UserDal.DBFriend = {
+        name: "Bob",
+        isPremium: true,
+      } as any;
+      getFriendsMock.mockResolvedValue([friend]);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/users/friends")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body.data).toEqual([{ name: "Bob", isPremium: true }]);
+    });
+
+    it("gets with premium disabled", async () => {
+      //GIVEN
+      enablePremiumFeatures(false);
+      const friend: UserDal.DBFriend = {
+        name: "Bob",
+        isPremium: true,
+      } as any;
+      getFriendsMock.mockResolvedValue([friend]);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/users/friends")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body.data).toEqual([{ name: "Bob" }]);
+    });
+
+    it("should fail if friends endpoints are disabled", async () => {
+      await expectFailForDisabledEndpoint(
+        mockApp.get("/users/friends").set("Authorization", `Bearer ${uid}`)
+      );
+    });
+
+    it("should fail without authentication", async () => {
+      await mockApp.get("/users/friends").expect(401);
+    });
+  });
 });
 
 function fillYearWithDay(days: number): number[] {
@@ -3973,4 +4053,19 @@ async function enableReporting(enabled: boolean): Promise<void> {
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
   );
+}
+
+async function enableConnectionsEndpoints(enabled: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    connections: { enabled },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}
+async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
+  await enableConnectionsEndpoints(false);
+  const { body } = await call.expect(503);
+  expect(body.message).toEqual("Connections are not available at this time.");
 }

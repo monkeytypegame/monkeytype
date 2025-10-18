@@ -85,4 +85,13 @@
       }
     }
   }
+  .pageFriends {
+    .content .friends table {
+      font-size: 0.9rem;
+
+      .badge .text {
+        display: none;
+      }
+    }
+  }
 }
