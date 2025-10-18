@@ -62,6 +62,7 @@ export class Caret {
 
   public show(): void {
     this.element.classList.remove("hidden");
+    this.element.style.display = "";
   }
 
   public hide(): void {
@@ -518,10 +519,15 @@ export class Caret {
     top += options.letter.offsetTop;
     top += options.word.offsetTop;
 
-    // center the caret vertically and horizontally
-    if (this.style !== "underline") {
+    if (this.style === "underline") {
+      // if style is underline, add the height of the letter to the top
+      top += options.letter.offsetHeight;
+    } else {
+      // else center vertically in the letter
       top += (options.letter.offsetHeight - this.getHeight()) / 2;
     }
+
+    // also center horizontally
     if (!this.isFullWidth()) {
       left += (this.getWidth() / 2) * -1;
     }
