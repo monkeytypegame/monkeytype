@@ -3,6 +3,8 @@ import * as TestUI from "../test/test-ui";
 import * as TestStats from "../test/test-stats";
 import * as Monkey from "../test/monkey";
 import Config from "../config";
+import * as Stats from "../stats";
+import { isMinorSwap } from "../typing";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Numbers from "@monkeytype/util/numbers";
@@ -212,7 +214,24 @@ async function handleSpace(): Promise<void> {
   const isWordCorrect: boolean =
     currentWord === TestInput.input.current || Config.mode === "zen";
   void MonkeyPower.addPower(isWordCorrect, true);
-  TestInput.incrementAccuracy(isWordCorrect);
+
+  // Track typed word for potential WPM calculation
+  // Include space character in count (+1) unless nospace funbox is active
+  const charCountWithSpace = nospace
+    ? TestInput.input.current.length
+    : TestInput.input.current.length + 1;
+  Stats.processTypedWord(
+    TestInput.input.current,
+    currentWord,
+    charCountWithSpace
+  );
+
+  // For accuracy tracking: treat minor swaps as correct for potential accuracy
+  // Check if this word is a minor adjacent swap
+  const isAdjacentSwap = isMinorSwap(TestInput.input.current, currentWord);
+  const isCorrectOrMinorSwap = isWordCorrect || isAdjacentSwap;
+  TestInput.incrementAccuracy(isCorrectOrMinorSwap);
+
   if (isWordCorrect) {
     if (Config.stopOnError === "letter") {
       void TestUI.updateActiveWordLetters();

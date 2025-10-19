@@ -62,12 +62,22 @@ function updateTimer(): void {
   if (timerDebug) console.timeEnd("timer progress update");
 }
 
-function calculateWpmRaw(): { wpm: number; raw: number } {
+function calculateWpmRaw(): {
+  wpm: number;
+  raw: number;
+  potential: number;
+  minorSwapErrors: number;
+} {
   if (timerDebug) console.time("calculate wpm and raw");
   const wpmAndRaw = TestStats.calculateWpmAndRaw();
   if (timerDebug) console.timeEnd("calculate wpm and raw");
   if (timerDebug) console.time("update live wpm");
-  LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
+  LiveWpm.update(
+    wpmAndRaw.wpm,
+    wpmAndRaw.raw,
+    wpmAndRaw.potential,
+    wpmAndRaw.minorSwapErrors
+  );
   if (timerDebug) console.timeEnd("update live wpm");
   if (timerDebug) console.time("push to history");
   TestInput.pushToWpmHistory(wpmAndRaw.wpm);

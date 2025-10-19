@@ -212,6 +212,10 @@ let currentErrorHistory: ErrorHistoryObject = {
 export let afkHistory: boolean[] = [];
 let currentAfk = true;
 
+// Track minor swap errors (single adjacent character transpositions)
+export let minorSwapErrors: number[] = [];
+export let totalMinorSwapErrors = 0;
+
 export function incrementKeypressCount(): void {
   currentKeypressCount++;
 }
@@ -394,6 +398,14 @@ export function pushBurstToHistory(speed: number): void {
   }
 }
 
+export function incrementMinorSwapErrors(): void {
+  totalMinorSwapErrors++;
+}
+
+export function pushMinorSwapErrorsToHistory(count: number): void {
+  minorSwapErrors.push(count);
+}
+
 export function restart(): void {
   wpmHistory = [];
   rawHistory = [];
@@ -409,6 +421,8 @@ export function restart(): void {
   };
   currentBurstStart = 0;
   missedWords = {};
+  minorSwapErrors = [];
+  totalMinorSwapErrors = 0;
   accuracy = {
     correct: 0,
     incorrect: 0,

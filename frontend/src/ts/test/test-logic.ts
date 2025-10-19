@@ -11,6 +11,7 @@ import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
+import * as Stats from "../stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
 import * as AltTracker from "./alt-tracker";
@@ -25,6 +26,7 @@ import * as LiveSpeed from "./live-speed";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
+import type jQuery from "jquery";
 
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
@@ -38,6 +40,8 @@ import * as Result from "./result";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as ActivePage from "../states/active-page";
 import * as TestInput from "./test-input";
+
+declare const $: typeof jQuery;
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
@@ -273,6 +277,7 @@ export function restart(options = {} as RestartOptions): void {
   ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
+  Stats.resetTypingCounters();
   TestInput.restart();
   TestInput.corrected.reset();
   ShiftTracker.reset();

@@ -22,6 +22,7 @@ import * as PbCrown from "./pb-crown";
 import * as TestConfig from "./test-config";
 import * as TestInput from "./test-input";
 import * as TestStats from "./test-stats";
+import type { Stats as TestRunStats } from "./test-stats";
 import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
 import * as ConfigEvent from "../observables/config-event";
@@ -54,6 +55,115 @@ let useFakeChartData = false;
 
 let quoteLang: Language | undefined;
 let quoteId = "";
+
+let potentialWpmButton: HTMLButtonElement | null = null;
+let potentialPopup: HTMLDivElement | null = null;
+
+function createPotentialPopup(): HTMLDivElement {
+  const popup = document.createElement("div");
+  popup.className = "potential-wpm-popup";
+  popup.style.display = "none";
+  return popup;
+}
+
+function handlePotentialButtonClick(event: MouseEvent): void {
+  event.preventDefault();
+  event.stopPropagation();
+  const button = event.currentTarget as HTMLButtonElement;
+  const potentialWpm = parseFloat(button.dataset["potentialWpm"] ?? "0");
+  const officialWpm = parseFloat(button.dataset["officialWpm"] ?? "0");
+  const swapCount = parseInt(button.dataset["swapCount"] ?? "0", 10);
+
+  if (!potentialPopup) {
+    potentialPopup = createPotentialPopup();
+    document.body.appendChild(potentialPopup);
+  }
+
+  if (swapCount <= 0) {
+    potentialPopup.innerHTML = "No swap errors";
+    potentialPopup.style.display = "block";
+    setTimeout(() => {
+      if (potentialPopup) potentialPopup.style.display = "none";
+    }, 2000);
+    return;
+  }
+
+  const potentialText = Format.typingSpeed(potentialWpm, {
+    showDecimalPlaces: true,
+  });
+  const diff = Numbers.roundTo2(potentialWpm - officialWpm);
+  const errorLabel = swapCount === 1 ? "swap" : "swaps";
+
+  potentialPopup.innerHTML = `
+    <div class="potential-wpm-info">
+      <div class="potential-value">${potentialText}</div>
+      <div class="potential-detail">+${diff.toFixed(
+        2
+      )} (${swapCount} ${errorLabel})</div>
+    </div>
+  `;
+
+  // Position popup below button
+  const rect = button.getBoundingClientRect();
+  potentialPopup.style.left = `${rect.left}px`;
+  potentialPopup.style.top = `${rect.bottom + 5}px`;
+  potentialPopup.style.display = "block";
+
+  // Auto-hide after 3 seconds
+  setTimeout(() => {
+    if (potentialPopup) potentialPopup.style.display = "none";
+  }, 3000);
+}
+
+// Close popup when clicking outside
+document.addEventListener("click", (e) => {
+  if (
+    potentialPopup &&
+    e.target !== potentialWpmButton &&
+    !potentialPopup.contains(e.target as Node)
+  ) {
+    potentialPopup.style.display = "none";
+  }
+});
+
+function ensurePotentialWpmButton(): HTMLButtonElement | null {
+  const container = document.querySelector<HTMLElement>(
+    "#result .stats .wpm .bottom"
+  );
+  if (!container) {
+    return null;
+  }
+  container.classList.add("has-potential-wpm");
+  if (!potentialWpmButton) {
+    potentialWpmButton = document.createElement("button");
+    potentialWpmButton.type = "button";
+    potentialWpmButton.className = "potential-wpm-button";
+    potentialWpmButton.textContent = "";
+    potentialWpmButton.addEventListener("click", handlePotentialButtonClick);
+  }
+  if (!container.contains(potentialWpmButton)) {
+    container.appendChild(potentialWpmButton);
+  }
+  return potentialWpmButton;
+}
+
+function updatePotentialWpmUI(stats: TestRunStats | null): void {
+  const button = ensurePotentialWpmButton();
+  if (!button) return;
+  if (!stats || stats.minorSwapErrorsCount <= 0) {
+    button.classList.add("hidden");
+    return;
+  }
+  button.classList.remove("hidden");
+  const potentialText = Format.typingSpeed(stats.potentialWpm, {
+    showDecimalPlaces: true,
+  });
+  button.setAttribute("aria-label", `Potential: ${potentialText}`);
+  button.setAttribute("data-balloon-pos", "down");
+  button.dataset["swapCount"] = stats.minorSwapErrorsCount.toString();
+  button.dataset["potentialWpm"] = stats.potentialWpm.toString();
+  button.dataset["officialWpm"] = stats.wpm.toString();
+}
 
 export function toggleSmoothedBurst(): void {
   useSmoothedBurst = !useSmoothedBurst;
@@ -357,6 +467,8 @@ export async function updateGraphPBLine(): Promise<void> {
 }
 
 function updateWpmAndAcc(): void {
+  const statsSnapshot = TestStats.lastStats ?? null;
+
   let inf = false;
   if (result.wpm >= 1000) {
     inf = true;
@@ -376,13 +488,11 @@ function updateWpmAndAcc(): void {
 
   if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit !== "wpm") {
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        result.wpm.toFixed(2) + " wpm"
-      );
+      const wpmAria = `${result.wpm.toFixed(2)} wpm`;
+      $("#result .stats .wpm .bottom").attr("aria-label", wpmAria);
       $("#result .stats .raw .bottom").attr(
         "aria-label",
-        result.rawWpm.toFixed(2) + " wpm"
+        `${result.rawWpm.toFixed(2)} wpm`
       );
     } else {
       $("#result .stats .wpm .bottom").removeAttr("aria-label");
@@ -394,25 +504,18 @@ function updateWpmAndAcc(): void {
       time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
-    // $("#result .stats .acc .bottom").removeAttr("aria-label");
 
     $("#result .stats .acc .bottom").attr(
       "aria-label",
       `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`
     );
   } else {
-    //not showing decimal places
     const decimalsAndSuffix = {
       showDecimalPlaces: true,
       suffix: ` ${Config.typingSpeedUnit}`,
     };
-    let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
-    let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
-
-    if (Config.typingSpeedUnit !== "wpm") {
-      wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
-      rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
-    }
+    const wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
+    const rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
 
     $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
     $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
@@ -430,6 +533,8 @@ function updateWpmAndAcc(): void {
       )
       .attr("data-balloon-break", "");
   }
+
+  updatePotentialWpmUI(statsSnapshot);
 }
 
 function updateConsistency(): void {
