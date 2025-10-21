@@ -19,6 +19,6 @@ services:
     entrypoint: 'bash -c "echo starting, this may take a while... \
       && cd /monkeytype \
       && pnpm config set store-dir /pnpm-store
-      && pnpm i \
+      && pnpm i --force \
       && export SERVER_OPEN=false \
       && npm run dev-fe"'

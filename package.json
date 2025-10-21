@@ -32,7 +32,7 @@
     "start": "turbo run start",
     "start-be": "turbo run start --filter @monkeytype/backend",
     "start-fe": "turbo run start --filter @monkeytype/frontend",
-    "docker": "cd backend && docker compose up",
+    "docker": "cd backend && docker compose -f docker/compose.yml up",
     "audit-fe": "cd frontend && npm run audit",
     "release": "monkeytype-release",
     "release-fe": "monkeytype-release --fe",
