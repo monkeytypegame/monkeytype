@@ -794,9 +794,14 @@ export function updateTagsDropdownOptions(): void {
 
 let buttonsAppended = false;
 
-export async function appendButtons(
+export async function appendDropdowns(
   selectChangeCallback: () => void
 ): Promise<void> {
+  //snapshot at this point is guaranteed to exist
+  const snapshot = DB.getSnapshot() as Snapshot;
+
+  tagDropdownUpdate(snapshot);
+
   if (buttonsAppended) return;
 
   selectChangeCallbackFn = selectChangeCallback;
@@ -864,60 +869,58 @@ export async function appendButtons(
     },
   });
 
-  //snapshot at this point is guaranteed to exist
-  const snapshot = DB.getSnapshot() as Snapshot;
+  void updateFilterPresets();
+  buttonsAppended = true;
+}
 
+function tagDropdownUpdate(snapshot: Snapshot): void {
   const tagsSection = $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.tags"
   );
 
   if (snapshot.tags.length === 0) {
     tagsSection.addClass("hidden");
+    if (groupSelects["tags"]) {
+      groupSelects["tags"].destroy();
+      delete groupSelects["tags"];
+    }
+    setFilter("tags", "none", true);
   } else {
     tagsSection.removeClass("hidden");
+
     updateTagsDropdownOptions();
-    const selectEl = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select .tagsSelect"
-    );
-    if (selectEl) {
-      groupSelects["tags"] = new SlimSelect({
-        select: selectEl,
-        settings: {
-          showSearch: true,
-          placeholderText: "select a tag",
-          allowDeselect: true,
-          closeOnSelect: false,
-        },
-        events: {
-          beforeChange: (selectedOptions, oldSelectedOptions): boolean => {
-            return selectBeforeChangeFn(
-              "tags",
-              selectedOptions,
-              oldSelectedOptions
-            );
+
+    // Only create SlimSelect if it doesn't exist yet
+    if (!groupSelects["tags"]) {
+      const selectEl = document.querySelector(
+        ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select .tagsSelect"
+      );
+
+      if (selectEl) {
+        groupSelects["tags"] = new SlimSelect({
+          select: selectEl,
+          settings: {
+            showSearch: true,
+            placeholderText: "select a tag",
+            allowDeselect: true,
+            closeOnSelect: false,
           },
-          beforeOpen: (): void => {
-            adjustScrollposition("tags");
+          events: {
+            beforeChange: (selectedOptions, oldSelectedOptions): boolean => {
+              return selectBeforeChangeFn(
+                "tags",
+                selectedOptions,
+                oldSelectedOptions
+              );
+            },
+            beforeOpen: (): void => {
+              adjustScrollposition("tags");
+            },
           },
-        },
-      });
+        });
+      }
     }
   }
-
-  void updateFilterPresets();
-  buttonsAppended = true;
-}
-
-export function removeButtons(): void {
-  $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
-  ).empty();
-  $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-  ).empty();
-  $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-  ).empty();
 }
 
 $(".group.presetFilterButtons .filterBtns").on(
