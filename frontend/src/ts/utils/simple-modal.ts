@@ -86,6 +86,7 @@ export type ExecReturn = {
   notificationOptions?: Notifications.AddNotificationOptions;
   hideOptions?: HideOptions;
   afterHide?: () => void;
+  alwaysHide?: boolean;
 };
 
 type FormInput = CommonInputType & {
@@ -373,7 +374,7 @@ export class SimpleModal {
       if (res.showNotification ?? true) {
         Notifications.add(res.message, res.status, res.notificationOptions);
       }
-      if (res.status === 1) {
+      if (res.status === 1 || res.alwaysHide) {
         void this.hide(true, res.hideOptions).then(() => {
           if (res.afterHide) {
             res.afterHide();

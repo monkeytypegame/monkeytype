@@ -9,9 +9,11 @@ import {
   DefaultTimeModeSchema,
   QuoteLengthSchema,
   DifficultySchema,
+  PersonalBestSchema,
 } from "./shared";
 import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
 import { doesNotContainProfanity } from "./validation/validation";
+import { ConnectionSchema } from "./connections";
 
 const NoneFilterSchema = z.literal("none");
 export const ResultFiltersSchema = z.object({
@@ -382,3 +384,27 @@ export const PasswordSchema = z
     message: "must contain at least one special character",
   });
 export type Password = z.infer<typeof PasswordSchema>;
+
+export const FriendSchema = UserSchema.pick({
+  uid: true,
+  name: true,
+  discordId: true,
+  discordAvatar: true,
+  startedTests: true,
+  completedTests: true,
+  timeTyping: true,
+  xp: true,
+  banned: true,
+  lbOptOut: true,
+})
+  .extend({
+    connectionId: IdSchema.optional(),
+    top15: PersonalBestSchema.optional(),
+    top60: PersonalBestSchema.optional(),
+    badgeId: z.number().int().optional(),
+    isPremium: z.boolean().optional(),
+    streak: UserStreakSchema.pick({ length: true, maxLength: true }),
+  })
+  .merge(ConnectionSchema.pick({ lastModified: true }).partial());
+
+export type Friend = z.infer<typeof FriendSchema>;

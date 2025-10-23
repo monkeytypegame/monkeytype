@@ -406,10 +406,10 @@ key {
   line-height: 2em;
   color: transparent;
   border-radius: 100rem;
-  right: 0.5em;
-  top: 0.5em;
   box-shadow: 0 0 0 0.5em var(--bg-color);
   transition: 0.125s;
+  right: 0.5em;
+  top: 0.5em;
 }
 
 #fpsCounter {
@@ -446,5 +446,19 @@ key {
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
+  }
+}
+
+//sorted-tables
+.headerSorted {
+  font-weight: bold;
+}
+table {
+  z-index: 0;
+  td.sortable:hover {
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    background-color: var(--sub-alt-color);
   }
 }
