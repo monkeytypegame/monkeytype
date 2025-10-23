@@ -1,6 +1,6 @@
 import Config, { genericSet } from "../config";
 import { ConfigMetadata, configMetadata } from "../config-metadata";
-import { capitalizeFirstLetter } from "../utils/strings";
+import { capitalizeFirstLetter, stringifyConfigValue } from "../utils/strings";
 import {
   CommandlineConfigMetadata,
   commandlineConfigMetadata,
@@ -171,13 +171,13 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
     } else if (value === false) {
       displayString = "off";
     } else {
-      displayString = value.toString();
+      displayString = stringifyConfigValue(value);
     }
   }
 
   return {
     id: `set${capitalizeFirstLetter(key)}${capitalizeFirstLetter(
-      val.toString()
+      stringifyConfigValue(val)
     )}`,
     display: displayString,
     configValueMode: commandConfigValueMode?.(value),
@@ -223,7 +223,8 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   const result = {
     id: `set${capitalizeFirstLetter(key)}Custom`,
     defaultValue:
-      inputProps?.defaultValue ?? (() => Config[key]?.toString() ?? ""),
+      inputProps?.defaultValue ??
+      (() => stringifyConfigValue(Config[key]) ?? ""),
     configValue:
       inputProps !== undefined && "configValue" in inputProps
         ? inputProps.configValue ?? undefined
