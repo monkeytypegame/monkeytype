@@ -1,13 +1,11 @@
 import * as TestWords from "./test-words";
 import Config from "../config";
 import * as DB from "../db";
-import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
-import { convertRemToPixels } from "../utils/numbers";
 import { getActiveFunboxes } from "./funbox/list";
-import { isWordRightToLeft } from "../utils/strings";
+import { Caret } from "../utils/caret";
 
 type Settings = {
   wpm: number;
@@ -20,7 +18,14 @@ type Settings = {
   timeout: NodeJS.Timeout | null;
 };
 
+let startTimestamp = 0;
+
 export let settings: Settings | null = null;
+
+export const caret = new Caret(
+  document.getElementById("paceCaret") as HTMLElement,
+  Config.paceCaretStyle
+);
 
 let lastTestWpm = 0;
 
@@ -33,42 +38,25 @@ export function setLastTestWpm(wpm: number): void {
   }
 }
 
-async function resetCaretPosition(): Promise<void> {
+export function resetCaretPosition(): void {
   if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
-  if (!$("#paceCaret").hasClass("hidden")) {
-    $("#paceCaret").addClass("hidden");
-  }
   if (Config.mode === "zen") return;
 
-  const caret = $("#paceCaret");
-  const firstLetter = document
-    ?.querySelector("#words .word")
-    ?.querySelector("letter") as HTMLElement;
+  caret.hide();
+  caret.stopAllAnimations();
+  caret.clearMargins();
 
-  const firstLetterHeight = $(firstLetter).height();
-
-  if (firstLetter === undefined || firstLetterHeight === undefined) return;
-
-  const currentWord = TestWords.words.get(settings?.currentWordIndex ?? 0);
-
-  const isWordRTL = isWordRightToLeft(
-    currentWord,
-    TestState.isLanguageRightToLeft,
-    TestState.isDirectionReversed
-  );
-
-  caret.stop(true, true).animate(
-    {
-      top: firstLetter.offsetTop - firstLetterHeight / 4,
-      left: firstLetter.offsetLeft + (isWordRTL ? firstLetter.offsetWidth : 0),
-    },
-    0,
-    "linear"
-  );
+  caret.goTo({
+    wordIndex: 0,
+    letterIndex: 0,
+    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
+    isDirectionReversed: TestState.isDirectionReversed,
+    animate: false,
+  });
 }
 
 export async function init(): Promise<void> {
-  $("#paceCaret").addClass("hidden");
+  caret.hide();
   const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
   let wpm = 0;
   if (Config.paceCaret === "pb") {
@@ -137,29 +125,72 @@ export async function init(): Promise<void> {
     spc: spc,
     correction: 0,
     currentWordIndex: 0,
-    currentLetterIndex: -1,
+    currentLetterIndex: 0,
     wordsStatus: {},
     timeout: null,
   };
-  await resetCaretPosition();
 }
 
 export async function update(expectedStepEnd: number): Promise<void> {
   if (settings === null || !TestState.isActive || TestState.resultVisible) {
     return;
   }
-  // if ($("#paceCaret").hasClass("hidden")) {
-  //   $("#paceCaret").removeClass("hidden");
-  // }
+
+  if (caret.isHidden()) {
+    caret.show();
+  }
+
+  incrementLetterIndex();
+
+  try {
+    const now = performance.now();
+    const absoluteStepEnd = startTimestamp + expectedStepEnd;
+    const duration = absoluteStepEnd - now;
+
+    caret.goTo({
+      wordIndex: settings.currentWordIndex,
+      letterIndex: settings.currentLetterIndex,
+      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
+      isDirectionReversed: TestState.isDirectionReversed,
+      animate: true,
+      animationOptions: {
+        duration,
+        easing: "linear",
+      },
+    });
+
+    // Normal case - schedule next step
+    settings.timeout = setTimeout(() => {
+      update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
+        settings = null;
+      });
+    }, Math.max(0, duration));
+  } catch (e) {
+    console.error(e);
+    caret.hide();
+    return;
+  }
+}
+
+export function reset(): void {
+  if (settings?.timeout !== null && settings?.timeout !== undefined) {
+    clearTimeout(settings.timeout);
+  }
+  settings = null;
+  startTimestamp = 0;
+}
+
+function incrementLetterIndex(): void {
+  if (settings === null) return;
 
   try {
     settings.currentLetterIndex++;
     if (
       settings.currentLetterIndex >=
-      TestWords.words.get(settings.currentWordIndex).length
+      TestWords.words.get(settings.currentWordIndex).length + 1
     ) {
       //go to the next word
-      settings.currentLetterIndex = -1;
+      settings.currentLetterIndex = 0;
       settings.currentWordIndex++;
     }
     if (!Config.blindMode) {
@@ -182,7 +213,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
             TestWords.words.get(settings.currentWordIndex).length
           ) {
             //go to the next word
-            settings.currentLetterIndex = -1;
+            settings.currentLetterIndex = 0;
             settings.currentWordIndex++;
           }
           settings.correction--;
@@ -192,117 +223,10 @@ export async function update(expectedStepEnd: number): Promise<void> {
   } catch (e) {
     //out of words
     settings = null;
-    $("#paceCaret").addClass("hidden");
+    console.log("pace caret out of words");
+    caret.hide();
     return;
   }
-
-  try {
-    const caret = $("#paceCaret");
-    let currentLetter;
-    let newTop;
-    let newLeft;
-    try {
-      const word = document.querySelector<HTMLElement>(
-        `#words .word[data-wordindex='${settings.currentWordIndex}']`
-      );
-
-      if (!word) {
-        throw new Error("Word element not found");
-      }
-
-      if (settings.currentLetterIndex === -1) {
-        currentLetter = word.querySelectorAll("letter")[0] as HTMLElement;
-      } else {
-        currentLetter = word.querySelectorAll("letter")[
-          settings.currentLetterIndex
-        ] as HTMLElement;
-      }
-
-      const currentLetterHeight = $(currentLetter).height(),
-        currentLetterWidth = $(currentLetter).width(),
-        caretWidth = caret.width();
-
-      if (
-        currentLetterHeight === undefined ||
-        currentLetterWidth === undefined ||
-        caretWidth === undefined
-      ) {
-        throw new Error(
-          "Undefined current letter height, width or caret width."
-        );
-      }
-
-      const currentWord = TestWords.words.get(settings.currentWordIndex);
-
-      const isWordRTL = isWordRightToLeft(
-        currentWord,
-        TestState.isLanguageRightToLeft,
-        TestState.isDirectionReversed
-      );
-
-      newTop =
-        word.offsetTop +
-        currentLetter.offsetTop -
-        Config.fontSize * convertRemToPixels(1) * 0.1;
-      if (settings.currentLetterIndex === -1) {
-        newLeft =
-          word.offsetLeft +
-          currentLetter.offsetLeft -
-          caretWidth / 2 +
-          (isWordRTL ? currentLetterWidth : 0);
-      } else {
-        newLeft =
-          word.offsetLeft +
-          currentLetter.offsetLeft -
-          caretWidth / 2 +
-          (isWordRTL ? 0 : currentLetterWidth);
-      }
-      caret.removeClass("hidden");
-    } catch (e) {
-      caret.addClass("hidden");
-    }
-
-    const duration = expectedStepEnd - performance.now();
-
-    if (newTop !== undefined) {
-      $("#paceCaret").css({
-        top: newTop - TestState.lineScrollDistance,
-      });
-
-      if (Config.smoothCaret !== "off") {
-        caret.stop(true, true).animate(
-          {
-            left: newLeft,
-          },
-          SlowTimer.get() ? 0 : duration,
-          "linear"
-        );
-      } else {
-        caret.stop(true, true).animate(
-          {
-            left: newLeft,
-          },
-          0,
-          "linear"
-        );
-      }
-    }
-    settings.timeout = setTimeout(() => {
-      update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
-        settings = null;
-      });
-    }, duration);
-  } catch (e) {
-    console.error(e);
-    $("#paceCaret").addClass("hidden");
-  }
-}
-
-export function reset(): void {
-  if (settings?.timeout !== null && settings?.timeout !== undefined) {
-    clearTimeout(settings.timeout);
-  }
-  settings = null;
 }
 
 export function handleSpace(correct: boolean, currentWord: string): void {
@@ -328,24 +252,14 @@ export function handleSpace(correct: boolean, currentWord: string): void {
 }
 
 export function start(): void {
-  void update(performance.now() + (settings?.spc ?? 0) * 1000);
-}
-
-function updateStyle(): void {
-  const paceCaret = $("#paceCaret");
-  paceCaret.removeClass([
-    "off",
-    "default",
-    "underline",
-    "outline",
-    "block",
-    "carrot",
-    "banana",
-  ]);
-  paceCaret.addClass(Config.paceCaretStyle);
+  const now = performance.now();
+  startTimestamp = now;
+  void update((settings?.spc ?? 0) * 1000);
 }
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "paceCaret") void init();
-  if (eventKey === "paceCaretStyle") updateStyle();
+  if (eventKey === "paceCaretStyle") {
+    caret.setStyle(Config.paceCaretStyle);
+  }
 });

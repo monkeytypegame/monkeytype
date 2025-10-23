@@ -44,6 +44,7 @@ import {
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 import { canQuickRestart } from "../utils/quick-restart";
 import * as PageTransition from "../states/page-transition";
+import { areCharactersVisuallyEqual } from "../utils/strings";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -178,7 +179,7 @@ function backspaceToPrevious(): void {
     }
   }
 
-  void Caret.updatePosition();
+  Caret.updatePosition();
   Replay.addReplayEvent("backWord");
 }
 
@@ -258,7 +259,7 @@ async function handleSpace(): Promise<void> {
         dontInsertSpace = false;
         Replay.addReplayEvent("incorrectLetter", "_");
         void TestUI.updateActiveWordLetters();
-        void Caret.updatePosition();
+        Caret.updatePosition();
       }
       return;
     }
@@ -346,7 +347,7 @@ async function handleSpace(): Promise<void> {
     }
   } //end of line wrap
 
-  void Caret.updatePosition();
+  Caret.updatePosition();
 
   // enable if i decide that auto tab should also work after a space
   // if (
@@ -405,37 +406,8 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     }
   }
 
-  if (
-    (char === "’" ||
-      char === "‘" ||
-      char === "'" ||
-      char === "ʼ" ||
-      char === "׳" ||
-      char === "ʻ") &&
-    (originalChar === "’" ||
-      originalChar === "‘" ||
-      originalChar === "'" ||
-      originalChar === "ʼ" ||
-      originalChar === "׳" ||
-      originalChar === "ʻ")
-  ) {
-    return true;
-  }
-
-  if (
-    (char === `"` || char === "”" || char === "“" || char === "„") &&
-    (originalChar === `"` ||
-      originalChar === "”" ||
-      originalChar === "“" ||
-      originalChar === "„")
-  ) {
-    return true;
-  }
-
-  if (
-    (char === "–" || char === "—" || char === "-") &&
-    (originalChar === "-" || originalChar === "–" || originalChar === "—")
-  ) {
+  const visuallyEqual = areCharactersVisuallyEqual(char, originalChar);
+  if (visuallyEqual) {
     return true;
   }
 
@@ -565,7 +537,7 @@ async function handleChar(
   ) {
     TestInput.input.current = resultingWord;
     void TestUI.updateActiveWordLetters();
-    void Caret.updatePosition();
+    Caret.updatePosition();
     return;
   }
 
@@ -768,7 +740,7 @@ async function handleChar(
   }, 0);
 
   if (char !== "\n") {
-    void Caret.updatePosition();
+    Caret.updatePosition();
   }
 }
 
@@ -1377,7 +1349,7 @@ $("#wordsInput").on("input", async (event) => {
     }
 
     void TestUI.updateActiveWordLetters();
-    void Caret.updatePosition();
+    Caret.updatePosition();
     if (!CompositionState.getComposing()) {
       const keyStroke = event?.originalEvent as InputEvent;
       if (keyStroke.inputType === "deleteWordBackward") {

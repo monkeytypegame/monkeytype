@@ -246,6 +246,15 @@
         }
       }
 
+      &.debugCaret {
+        outline: 1px solid var(--sub-color);
+      }
+      &.debugCaretTarget {
+        outline: 2px solid red;
+      }
+      &.debugCaretTarget2 {
+        outline: 2px solid yellow;
+      }
       &.correct {
         color: var(--correct-letter-color);
         animation: var(--correct-letter-animation);
