@@ -495,6 +495,10 @@
         <i class="fas fa-filter"></i>
         words filter
       </div>
+      <div class="button customGenerator">
+        <i class="fas fa-wand-magic-sparkles"></i>
+        custom generator
+      </div>
     </div>
     <div class="savedTexts hidden" style="display: none">
       <div class="title">saved texts</div>
@@ -766,6 +770,79 @@
       <div class="tip">
         "Set" replaces the current custom word list with the filter result,
         "Add" appends the filter result to the current custom word list.
+      </div>
+      <button class="setButton">set</button>
+      <button class="addButton">add</button>
+    </div>
+  </div>
+</dialog>
+<dialog id="customGeneratorModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="top">
+      <div class="tip">
+        Enter characters or strings separated by spaces. Random combinations
+        will be generated using these inputs.
+      </div>
+    </div>
+    <div class="main">
+      <div class="group">
+        <div class="title">character set</div>
+        <input
+          class="characterInput"
+          id="characterInput"
+          autocomplete="off"
+          placeholder="a b c d 1 2 3 [ ] ;"
+          title="characters"
+        />
+      </div>
+      <div class="group lengthgrid">
+        <div class="title">min length</div>
+        <div class="title">max length</div>
+
+        <input
+          class="wordLength minLengthInput"
+          autocomplete="off"
+          type="number"
+          value="2"
+          min="1"
+          title="min"
+        />
+        <input
+          class="wordLength maxLengthInput"
+          autocomplete="off"
+          type="number"
+          value="5"
+          min="1"
+          title="max"
+        />
+      </div>
+      <div class="group">
+        <div class="title">word count</div>
+        <input
+          class="wordCountInput"
+          autocomplete="off"
+          type="number"
+          value="100"
+          min="1"
+          title="word count"
+        />
+      </div>
+      <div class="group">
+        <div class="title">presets</div>
+        <div class="presetButtons">
+          <button class="presetButton" data-preset="alphas">a-z</button>
+          <button class="presetButton" data-preset="numbers">0-9</button>
+          <button class="presetButton" data-preset="special">symbols</button>
+          <button class="presetButton" data-preset="bigrams">bigrams</button>
+          <button class="presetButton" data-preset="trigrams">trigrams</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <div class="tip">
+        "Set" replaces the current custom text with generated words, "Add"
+        appends generated words to the current custom text.
       </div>
       <button class="setButton">set</button>
       <button class="addButton">add</button>
