@@ -102,6 +102,7 @@ export class Caret {
     top: number;
     width?: number;
   }): void {
+    $(this.element).stop("pos", true, false);
     this.element.style.left = `${options.left}px`;
     this.element.style.top = `${options.top}px`;
     if (options.width !== undefined) {
