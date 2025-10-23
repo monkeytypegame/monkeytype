@@ -7,6 +7,7 @@ import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
+import { isSingleSwapError } from "../utils/swap-detection";
 
 type CharCount = {
   spaces: number;
@@ -16,11 +17,13 @@ type CharCount = {
   extraChars: number;
   missedChars: number;
   correctSpaces: number;
+  minorSwapErrors: number; // Count of words with minor swap errors
 };
 
 export type Stats = {
   wpm: number;
   wpmRaw: number;
+  potentialWpm: number; // WPM ignoring minor swap errors
   acc: number;
   correctChars: number;
   incorrectChars: number;
@@ -30,6 +33,7 @@ export type Stats = {
   time: number;
   spaces: number;
   correctSpaces: number;
+  minorSwapErrorsCount: number; // Count of minor swap errors
 };
 
 export let invalid = false;
@@ -39,6 +43,7 @@ export let start3: number, end3: number;
 export let lastSecondNotRound = false;
 
 export let lastResult: Omit<CompletedEvent, "hash" | "uid">;
+export let lastStats: Stats | null = null;
 
 export function setLastResult(result: CompletedEvent): void {
   lastResult = result;
@@ -107,6 +112,7 @@ export function restart(): void {
   end = 0;
   invalid = false;
   lastSecondNotRound = false;
+  lastStats = null;
 }
 
 export let restartCount = 0;
@@ -147,25 +153,45 @@ export function calculateTestSeconds(now?: number): number {
 export function calculateWpmAndRaw(withDecimalPoints?: true): {
   wpm: number;
   raw: number;
+  potential: number;
+  minorSwapErrors: number;
 } {
   const testSeconds = calculateTestSeconds(
     TestState.isActive ? performance.now() : end
   );
   const chars = countChars();
-  const wpm = Numbers.roundTo2(
-    ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
-  );
-  const raw = Numbers.roundTo2(
-    ((chars.allCorrectChars +
+  const safeSeconds = testSeconds === 0 ? Number.EPSILON : testSeconds;
+  const multiplier = 60 / safeSeconds / 5;
+  const wpmExact = (chars.correctWordChars + chars.correctSpaces) * multiplier;
+  const rawExact =
+    (chars.allCorrectChars +
       chars.spaces +
       chars.incorrectChars +
       chars.extraChars) *
-      (60 / testSeconds)) /
-      5
-  );
+    multiplier;
+  // Potential WPM: treat all characters in swapped words as correct
+  // For each minor swap, we have incorrectChars in that word that should be correct
+  // The formula: correctWordChars (fully correct words) + correctSpaces (after correct words)
+  //              + allCorrectChars in swap words + incorrect chars in swap words (treat as correct)
+  // Simplified: start with raw character count, but exclude non-swap errors
+  const potentialExact =
+    (chars.allCorrectChars + chars.spaces + chars.minorSwapErrors * 2) * // Each swap has 2 incorrect chars to add back
+    multiplier;
+
+  const wpm = withDecimalPoints
+    ? Numbers.roundTo2(wpmExact)
+    : Math.round(wpmExact);
+  const raw = withDecimalPoints
+    ? Numbers.roundTo2(rawExact)
+    : Math.round(rawExact);
+  const potential = withDecimalPoints
+    ? Numbers.roundTo2(potentialExact)
+    : Math.round(potentialExact);
   return {
-    wpm: withDecimalPoints ? wpm : Math.round(wpm),
-    raw: withDecimalPoints ? raw : Math.round(raw),
+    wpm: isNaN(wpm) ? 0 : wpm,
+    raw: isNaN(raw) ? 0 : raw,
+    potential: isNaN(potential) ? 0 : potential,
+    minorSwapErrors: chars.minorSwapErrors,
   };
 }
 
@@ -288,6 +314,7 @@ function countChars(): CharCount {
   let missedChars = 0;
   let spaces = 0;
   let correctspaces = 0;
+  let minorSwapErrorCount = 0;
 
   const inputWords = getInputWords();
   const targetWords = getTargetWords();
@@ -305,6 +332,17 @@ function countChars(): CharCount {
         Strings.getLastChar(inputWord) !== "\n"
       ) {
         correctspaces++;
+      }
+    } else if (isSingleSwapError(inputWord, targetWord)) {
+      // Minor swap error detected - count chars as correct for potential WPM
+      minorSwapErrorCount++;
+      // Still count individual character differences as incorrect for regular WPM
+      for (let c = 0; c < inputWord.length; c++) {
+        if (inputWord[c] === targetWord[c]) {
+          correctChars++;
+        } else {
+          incorrectChars++;
+        }
       }
     } else if (inputWord.length >= targetWord.length) {
       //too many chars
@@ -367,6 +405,7 @@ function countChars(): CharCount {
     extraChars: extraChars,
     missedChars: missedChars,
     correctSpaces: correctspaces,
+    minorSwapErrors: minorSwapErrorCount,
   };
 }
 
@@ -399,11 +438,13 @@ export function calculateStats(): Stats {
     );
   }
   const chars = countChars();
-  const { wpm, raw } = calculateWpmAndRaw(true);
+  const { wpm, raw, potential, minorSwapErrors } = calculateWpmAndRaw(true);
   const acc = Numbers.roundTo2(calculateAccuracy());
+  const potentialWpm = potential;
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(raw) ? 0 : raw,
+    potentialWpm: isNaN(potentialWpm) ? 0 : potentialWpm,
     acc: acc,
     correctChars: chars.correctWordChars,
     incorrectChars: chars.incorrectChars,
@@ -417,7 +458,9 @@ export function calculateStats(): Stats {
     time: Numbers.roundTo2(testSeconds),
     spaces: chars.spaces,
     correctSpaces: chars.correctSpaces,
+    minorSwapErrorsCount: minorSwapErrors,
   };
   console.debug("Result stats", ret);
+  lastStats = ret;
   return ret;
 }

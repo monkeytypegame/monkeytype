@@ -514,6 +514,7 @@ export function isPasswordStrong(password: string): boolean {
 export function htmlToText(html: string): string {
   const el = document.createElement("div");
   el.innerHTML = html;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   return (el.textContent as string) || el.innerText || "";
 }
 

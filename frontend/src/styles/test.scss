@@ -158,6 +158,53 @@
       gap: 0.5ch;
       line-height: 1;
     }
+
+    .wrapper .liveSpeed {
+      position: relative;
+
+      &.has-potential-wpm {
+        padding-right: 1rem;
+      }
+
+      .potential-wpm-button {
+        position: absolute;
+        bottom: 0.25rem;
+        right: -0.85rem;
+        width: 0.6rem;
+        height: 0.6rem;
+        border: none;
+        background: var(--sub-color);
+        cursor: pointer;
+        font-size: 0;
+        line-height: 1;
+        padding: 0;
+        pointer-events: auto;
+        border-radius: var(--roundness);
+        transition: all 0.15s ease;
+
+        &:hover {
+          background: var(--main-color);
+          transform: scale(1.3);
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
+
+        &:focus-visible {
+          outline: 0.125rem solid var(--sub-color);
+          border-radius: var(--roundness);
+        }
+
+        // Custom smaller tooltip for potential WPM button
+        &[data-balloon-pos]::before,
+        &[data-balloon-pos]::after {
+          font-size: 0.75rem !important;
+          line-height: 0.75rem !important;
+          padding: 0.25rem 0.5rem !important;
+        }
+      }
+    }
   }
 
   #liveStatsTextBottom.timerMain,
@@ -185,6 +232,48 @@
 
   #barTimerProgress.timerText .bar {
     background: var(--text-color);
+  }
+
+  .potential-wpm-popup {
+    position: fixed;
+    background: var(--sub-color);
+    color: var(--bg-color);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--roundness);
+    z-index: 9999;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    animation: popupFadeIn 0.15s ease;
+
+    .potential-wpm-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      align-items: center;
+    }
+
+    .potential-value {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--main-color);
+    }
+
+    .potential-detail {
+      font-size: 0.75rem;
+      opacity: 0.9;
+    }
+  }
+
+  @keyframes popupFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
@@ -1121,6 +1210,52 @@
         .bottom {
           font-size: 4rem;
           line-height: 4rem;
+
+          &.has-potential-wpm {
+            position: relative;
+            display: inline-flex;
+            align-items: flex-end;
+            padding-right: 1rem;
+          }
+        }
+
+        .potential-wpm-button {
+          position: absolute;
+          bottom: 0.25rem;
+          right: 0;
+          width: 0.7rem;
+          height: 0.7rem;
+          border: none;
+          background: var(--sub-color);
+          cursor: pointer;
+          font-size: 0;
+          line-height: 1;
+          padding: 0;
+          pointer-events: auto;
+          border-radius: var(--roundness);
+          transition: all 0.15s ease;
+
+          &:hover {
+            background: var(--main-color);
+            transform: scale(1.3);
+          }
+
+          &:active {
+            transform: scale(0.95);
+          }
+
+          &:focus-visible {
+            outline: 0.125rem solid var(--sub-color);
+            border-radius: var(--roundness);
+          }
+
+          // Custom smaller tooltip for potential WPM button
+          &[data-balloon-pos]::before,
+          &[data-balloon-pos]::after {
+            font-size: 0.75rem !important;
+            line-height: 0.75rem !important;
+            padding: 0.25rem 0.5rem !important;
+          }
         }
       }
 
