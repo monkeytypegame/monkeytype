@@ -181,6 +181,7 @@ export const ThemeNameSchema = z.enum(
     "tron_orange",
     "vaporwave",
     "vesper",
+    "vesper_light",
     "viridescent",
     "voc",
     "vscode",
