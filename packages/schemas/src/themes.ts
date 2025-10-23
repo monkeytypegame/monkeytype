@@ -188,6 +188,7 @@ export const ThemeNameSchema = z.enum(
     "watermelon",
     "wavez",
     "witch_girl",
+    "oscura",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a known theme"),
