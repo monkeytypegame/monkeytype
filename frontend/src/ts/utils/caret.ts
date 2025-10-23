@@ -144,6 +144,8 @@ export class Caret {
   }
 
   public handleTapeWordsRemoved(widthRemoved: number): void {
+    // Removing tape words reduces the absolute value of options.newValue passed to handleTapeScroll().
+    // To keep the target marginLeft accurate, we reduce the absolute value of cumulative correction by the same amount.
     this.cumulativeTapeMarginCorrection += widthRemoved;
   }
 
@@ -155,12 +157,14 @@ export class Caret {
     this.readyToResetMarginLeft = false;
 
     /**
-     * If we didn't reset marginLeft, then options.newValue gives the correct caret
-     * position by adding up the widths of all typed characters. But since we reset
-     * caret.style.marginLeft during the test, the caret ends up too far left.
+     * options.newValue is the total width of all previously typed characters, and assuming we didn't
+     * reset marginLeft or remove any tape words, then it would be the correct marginLeft to go to.
      *
-     * To fix this, we track how much marginLeft we've reset so far (cumulativeTapeMarginCorrection),
-     * and subtract it from options.newValue to get the correct newMarginLeft.
+     * Each time marginLeft is reset, the distance between options.newValue and the current
+     * marginLeft-after-reset increases, making the caret shift too much left (in LTR).
+     *
+     * To correct this, we decrease the new target marginLeft by how much we've
+     * reset the margin so far (cumulativeTapeMarginCorrection).
      */
     const newMarginLeft =
       options.newValue - this.cumulativeTapeMarginCorrection;
