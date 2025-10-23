@@ -1,0 +1,56 @@
+:root {
+  --bg-color: #ffffff;
+  --main-color: #fb7100;
+  --caret-color: #067a6e;
+  --sub-color: #a0a0a0;
+  --sub-alt-color: #fff8f4;
+  --text-color: #000000;
+  --error-color: #ed2839;
+  --error-extra-color: #ff6c72;
+  --colorful-error-color: #067a6e;
+  --colorful-error-extra-color: #00a693;
+}
+
+#testConfig .spacer {
+  background: #efefef;
+}
+
+/* Background & Text Colors */
+#notificationCenter .notif.bad {
+  --notif-border-color: #ed2939;
+  --notif-background-color: #ed2839;
+}
+
+#notificationCenter .notif.good {
+  --notif-border-color: #067a6e;
+  --notif-background-color: #067a6e;
+}
+
+#notificationCenter .notif.notice {
+  --notif-border-color: #1e90ff;
+  --notif-background-color: #1e90ff;
+}
+
+/* Hover Styles  */
+#notificationCenter .notif:hover.good {
+  --notif-background-color: #00a693;
+}
+#notificationCenter .notif:hover.bad {
+  --notif-background-color: #ff6c72;
+}
+#notificationCenter .notif:hover.notice {
+  --notif-background-color: #4ec5ff;
+}
+
+/* Content Colors  */
+#notificationCenter .notif .message {
+  color: var(--bg-color);
+}
+
+#notificationCenter .notif .message .title {
+  color: var(--bg-color);
+}
+
+#notificationCenter .notif .icon {
+  color: var(--bg-color);
+}
