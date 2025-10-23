@@ -90,6 +90,7 @@ dist/
 frontend/public/
 backend/globalConfig.json
 backend/server.version
+backend/src/server.version
 vite-build/
 
 #cloudflare y
