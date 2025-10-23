@@ -10,7 +10,6 @@ export let bailedOut = false;
 export let selectedQuoteId = 1;
 export let activeWordIndex = 0;
 export let testInitSuccess = true;
-export let lineScrollDistance = 0;
 export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
@@ -58,10 +57,6 @@ export function decreaseActiveWordIndex(): void {
 
 export function setTestInitSuccess(tf: boolean): void {
   testInitSuccess = tf;
-}
-
-export function setLineScrollDistance(val: number): void {
-  lineScrollDistance = val;
 }
 
 export function setIsLanguageRightToLeft(rtl: boolean): void {

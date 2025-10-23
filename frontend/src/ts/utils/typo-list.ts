@@ -89,7 +89,7 @@ export default [
   "homail.de",
   "hotmai.de",
   "hotmal.de",
-  "mx.de",
+  "@mx.de",
   "mx.net",
   "@otmail.com",
   "r-online.de",

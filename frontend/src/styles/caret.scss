@@ -20,6 +20,14 @@
 
 #caret,
 #paceCaret {
+  &.debug {
+    outline: 1px solid white;
+    &.hidden {
+      opacity: 0.5 !important;
+      display: block !important;
+    }
+  }
+
   &.off {
     width: 0;
   }
@@ -50,7 +58,7 @@
     width: 0.5em;
     border-radius: 0;
     z-index: -1;
-    border-radius: calc(var(--roundness) / 4);
+    border-radius: 0.05em;
   }
 
   &.outline {
@@ -58,12 +66,11 @@
     animation-name: none;
     background: transparent;
     border: 0.05em solid var(--caret-color);
-    border-radius: calc(var(--roundness) / 4);
+    border-radius: 0.05em;
   }
 
   &.underline {
     height: 0.1em;
     width: 0.5em;
-    margin-top: 1.2em;
   }
 }
