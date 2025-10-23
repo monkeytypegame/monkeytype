@@ -7,8 +7,8 @@
   --text-color: #000000;
   --error-color: #ed2839;
   --error-extra-color: #ff6c72;
-  --colorful-error-color: #067a6e;
-  --colorful-error-extra-color: #00a693;
+  --colorful-error-color: #ed2839;
+  --colorful-error-extra-color: #ff6c72;
 }
 
 #testConfig .spacer {
