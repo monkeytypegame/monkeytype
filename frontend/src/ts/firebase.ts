@@ -76,8 +76,6 @@ export async function init(callback: ReadyCallback): Promise<void> {
         await callback(true, user);
       }
     });
-
-    resolveAuthPromise();
   } catch (e) {
     app = undefined;
     Auth = undefined;
@@ -92,6 +90,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
         false
       );
     }
+  } finally {
     resolveAuthPromise();
   }
 }
