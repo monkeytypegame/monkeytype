@@ -6,6 +6,7 @@ import * as ChallengeController from "../controllers/challenge-controller";
 import Config, * as UpdateConfig from "../config";
 import * as Strings from "../utils/strings";
 import * as WordFilterPopup from "./word-filter";
+import * as CustomGeneratorPopup from "./custom-generator";
 import * as PractiseWords from "../test/practise-words";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts";
@@ -560,6 +561,13 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       modalChain: modal as AnimatedModal,
     });
   });
+  modalEl
+    .querySelector(".button.customGenerator")
+    ?.addEventListener("click", () => {
+      void CustomGeneratorPopup.show({
+        modalChain: modal as AnimatedModal,
+      });
+    });
   modalEl
     .querySelector(".button.showSavedTexts")
     ?.addEventListener("click", () => {
