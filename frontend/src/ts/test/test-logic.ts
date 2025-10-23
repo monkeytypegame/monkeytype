@@ -286,6 +286,7 @@ export function restart(options = {} as RestartOptions): void {
   TimerProgress.hide();
   Replay.pauseReplay();
   TestState.setBailedOut(false);
+  Caret.resetPosition();
   PaceCaret.reset();
   Monkey.hide();
   TestInput.input.setKoreanStatus(false);
