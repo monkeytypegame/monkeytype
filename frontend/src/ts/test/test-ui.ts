@@ -616,13 +616,15 @@ export function updateWordsWrapperHeight(force = false): void {
   } else {
     if (Config.tapeMode === "off") {
       //tape off, showAllLines off, non-zen mode
+      const wordElements =
+        document.querySelectorAll<HTMLElement>("#words .word");
       let lines = 0;
       let lastTop = 0;
       let wordIndex = 0;
       let wrapperHeight = 0;
 
       while (lines < 3) {
-        const word = getWordElement(wordIndex);
+        const word = wordElements[wordIndex];
         if (!word) break;
         const top = word.offsetTop;
         if (top > lastTop) {
