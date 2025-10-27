@@ -1116,8 +1116,8 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
   },
   lghs_wildchats: {
       bgColor: "#141414",
-      mainColor: "#f37128",
-      subColor: "#ffa061",
+      mainColor: "#ffffff",
+      subColor: "#ffffff",
       textColor: "#ffffff",
   },  
 };

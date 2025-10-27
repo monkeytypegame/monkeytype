@@ -1114,12 +1114,6 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#5b578e",
     textColor: "#f4e0c9",
   },
-  lghs_wildchats: {
-      bgColor: "#141414",
-      mainColor: "#f37128",
-      subColor: "#ffa061",
-      textColor: "#ffffff",
-  },  
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
