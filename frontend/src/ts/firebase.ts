@@ -54,13 +54,15 @@ export async function init(callback: ReadyCallback): Promise<void> {
   try {
     let firebaseConfig: FirebaseOptions | null;
 
-    const constants = import.meta.glob("./constants/*.ts");
+    const constants = import.meta.glob("./constants/firebase-config*.ts");
     const loader = constants["./constants/firebase-config.ts"];
     if (loader) {
       firebaseConfig = ((await loader()) as { firebaseConfig: FirebaseOptions })
         .firebaseConfig;
     } else {
-      throw new Error("No firebase config found.");
+      throw new Error(
+        "No config file found. Make sure frontend/src/ts/constants/firebase-config.ts exists"
+      );
     }
 
     readyCallback = callback;
@@ -79,12 +81,11 @@ export async function init(callback: ReadyCallback): Promise<void> {
   } catch (e) {
     app = undefined;
     Auth = undefined;
-    console.error("Authentication failed to initialize", e);
+    console.error("Firebase failed to initialize", e);
     await callback(false, null);
     if (isDevEnvironment()) {
       Notifications.addPSA(
-        createErrorMessage(e, "Authentication uninitialized") +
-          " Check your firebase-config.ts",
+        createErrorMessage(e, "Firebase uninitialized"),
         0,
         undefined,
         false
