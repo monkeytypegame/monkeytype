@@ -62,7 +62,7 @@
       "length": 242
     },
     {
-      "text": "fun insertionSort(arr: IntArray) {\n\tval n = arr.size\n\tfor (i in 1 until n) {\n\t\tval key = arr[i]\b\t\tvar j = i - 1\n\t\twhile (j >= 0 && arr[j] > key) {\n\t\t\tarr[j + 1] = arr[j]\n\t\t\tj--\n\t\t}\n\t\tarr[j + 1] = key\n\t}\n}",
+      "text": "fun insertionSort(arr: IntArray) {\n\tval n = arr.size\n\tfor (i in 1 until n) {\n\t\tval key = arr[i]\n\t\tvar j = i - 1\n\t\twhile (j >= 0 && arr[j] > key) {\n\t\t\tarr[j + 1] = arr[j]\n\t\t\tj--\n\t\t}\n\t\tarr[j + 1] = key\n\t}\n}",
       "source": "bealdung.com - InsertionSort",
       "id": 10,
       "length": 204
