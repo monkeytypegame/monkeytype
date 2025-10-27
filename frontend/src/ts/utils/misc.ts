@@ -514,7 +514,7 @@ export function isPasswordStrong(password: string): boolean {
 export function htmlToText(html: string): string {
   const el = document.createElement("div");
   el.innerHTML = html;
-  return (el.textContent as string) || el.innerText || "";
+  return el.textContent || el.innerText || "";
 }
 
 export function loadCSS(href: string, prepend = false): void {
