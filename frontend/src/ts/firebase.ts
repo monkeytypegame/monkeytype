@@ -54,7 +54,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
   try {
     let firebaseConfig: FirebaseOptions | null;
 
-    const constants = import.meta.glob("./constants/firebase-config*.ts");
+    const constants = import.meta.glob("./constants/firebase-config.ts");
     const loader = constants["./constants/firebase-config.ts"];
     if (loader) {
       firebaseConfig = ((await loader()) as { firebaseConfig: FirebaseOptions })
