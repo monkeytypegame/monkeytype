@@ -108,6 +108,7 @@ const debouncedEvent = debounce(250, () => {
     setTimeout(() => {
       TestUI.updateWordsInputPosition();
       TestUI.focusWords();
+      Caret.show();
     }, 250);
   }
 });

@@ -1,26 +1,41 @@
-const cachedAvatarUrlByAvatarId: Map<string, string | null> = new Map();
-
 type Options = { size?: number; userIcon?: string };
 
-function buildElement(
-  url: string | null,
-  options?: { loading?: boolean } & Options
-): HTMLElement {
+const knownBadUrls = new Set();
+
+function buildElement(url: string | null, options?: Options): HTMLElement {
   const avatar = document.createElement("div");
   avatar.classList.add("avatar");
-  if (url === null) {
-    if (options?.loading) {
-      avatar.innerHTML = `<div class="loading"><i class="fas fa-circle-notch fa-spin"><i></div>`;
-    } else {
-      avatar.innerHTML = `<div class="userIcon"><i class="${
-        options?.userIcon ?? "fas fa-user-circle"
-      }"><i></div>`;
-    }
+
+  if (url === null || knownBadUrls.has(url)) {
+    avatar.innerHTML = `<div class="userIcon"><i class="${
+      options?.userIcon ?? "fas fa-user-circle"
+    }"></i></div>`;
   } else {
-    avatar.innerHTML = `<div class="discordImage" style="background-image:url(${url}?size=${
-      options?.size ?? 32
-    })"></div>`;
+    const loading = document.createElement("div");
+    loading.className = "loading";
+    loading.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "discordImage";
+
+    const img = document.createElement("img");
+    img.src = `${url}?size=${options?.size ?? 32}`;
+
+    // Add event listeners directly to the img element
+    img.addEventListener("load", async () => {
+      loading.remove();
+    });
+
+    img.addEventListener("error", () => {
+      knownBadUrls.add(url);
+      avatar.replaceWith(buildElement(null, options));
+    });
+
+    imageContainer.appendChild(img);
+    avatar.appendChild(loading);
+    avatar.appendChild(imageContainer);
   }
+
   return avatar;
 }
 
@@ -43,40 +58,10 @@ export function getAvatarElement(
     return buildElement(null, options);
   }
 
-  const cachedUrl = cachedAvatarUrlByAvatarId.get(discordAvatar);
+  const element = buildElement(
+    `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png`,
+    options
+  );
 
-  if (cachedUrl !== undefined) {
-    return buildElement(cachedUrl, options);
-  } else {
-    const element = buildElement(null, { loading: true });
-
-    void getDiscordAvatarUrl({ discordId, discordAvatar }).then((url) => {
-      cachedAvatarUrlByAvatarId.set(discordAvatar, url);
-      element.replaceWith(buildElement(url, options));
-    });
-
-    return element;
-  }
-}
-
-async function getDiscordAvatarUrl({
-  discordId,
-  discordAvatar,
-}: {
-  discordId: string;
-  discordAvatar: string;
-}): Promise<string | null> {
-  // An invalid request to this URL will return a 404.
-  try {
-    const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png`;
-
-    const response = await fetch(avatarUrl, { method: "HEAD" });
-    if (!response.ok) {
-      return null;
-    }
-
-    return avatarUrl;
-  } catch (error) {}
-
-  return null;
+  return element;
 }

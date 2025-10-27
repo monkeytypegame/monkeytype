@@ -57,16 +57,28 @@ function findAccent(
 ): [string, string] | undefined {
   const lookup = wordSlice.toLowerCase();
 
-  const found = additionalAccents?.find((rule) => lookup.startsWith(rule[0]));
+  const additionalAccentsMap = new Map<string, string>(
+    additionalAccents?.flatMap((rule) =>
+      // ignoring for now but this might need a different approach
+      // eslint-disable-next-line @typescript-eslint/no-misused-spread
+      [...rule[0]].map((accent) => [accent, rule[1]])
+    ) ?? []
+  );
 
   const common = accentsMap.get(lookup[0] as string);
+  const additional = additionalAccentsMap.get(lookup[0] as string);
 
   const commonFound =
     common !== undefined
       ? ([lookup[0], common] as [string, string])
       : undefined;
 
-  return found !== undefined ? found : commonFound;
+  const additionalFound =
+    additional !== undefined
+      ? ([lookup[0], additional] as [string, string])
+      : undefined;
+
+  return additionalFound ?? commonFound;
 }
 
 export function replaceAccents(

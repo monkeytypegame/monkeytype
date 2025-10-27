@@ -32,7 +32,7 @@
     "start": "turbo run start",
     "start-be": "turbo run start --filter @monkeytype/backend",
     "start-fe": "turbo run start --filter @monkeytype/frontend",
-    "docker": "cd backend && docker compose up",
+    "docker": "cd backend && npm run docker",
     "audit-fe": "cd frontend && npm run audit",
     "release": "monkeytype-release",
     "release-fe": "monkeytype-release --fe",
@@ -61,7 +61,7 @@
     "knip": "knip"
   },
   "engines": {
-    "node": "20.19.4"
+    "node": "24.10.0"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",

@@ -350,14 +350,20 @@ key {
     line-height: 1em;
     font-size: var(--size);
     border-radius: 100%;
-    background-position: center center;
-    background-size: contain;
-    background-repeat: no-repeat;
     grid-column: 1/2;
     grid-row: 1/2;
     place-self: center center;
     display: grid;
     place-content: center center;
+    overflow: hidden;
+    display: inline-block;
+    z-index: 1; //place above the loading spinner
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
   }
 
   .loading {

@@ -761,4 +761,18 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
   });
 }
 
+export function addToGlobal(items: Record<string, unknown>): void {
+  for (const [name, item] of Object.entries(items)) {
+    //@ts-expect-error dev
+    window[name] = item;
+  }
+}
+
+export function getTotalInlineMargin(element: HTMLElement): number {
+  const computedStyle = window.getComputedStyle(element);
+  return (
+    parseInt(computedStyle.marginRight) + parseInt(computedStyle.marginLeft)
+  );
+}
+
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

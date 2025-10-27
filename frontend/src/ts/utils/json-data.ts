@@ -80,6 +80,12 @@ export async function getLayout(layoutName: string): Promise<LayoutObject> {
   return await cachedFetchJson<LayoutObject>(`/layouts/${layoutName}.json`);
 }
 
+// used for polyglot wordset language-specific properties
+export type LanguageProperties = Pick<
+  LanguageObject,
+  "noLazyMode" | "ligatures" | "rightToLeft" | "additionalAccents"
+>;
+
 let currentLanguage: LanguageObject;
 
 /**

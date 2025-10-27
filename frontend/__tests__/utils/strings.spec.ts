@@ -465,4 +465,44 @@ describe("string utils", () => {
       });
     });
   });
+
+  describe("areCharactersVisuallyEqual", () => {
+    it("should return true for identical characters", () => {
+      expect(Strings.areCharactersVisuallyEqual("a", "a")).toBe(true);
+      expect(Strings.areCharactersVisuallyEqual("!", "!")).toBe(true);
+    });
+
+    it("should return false for different characters", () => {
+      expect(Strings.areCharactersVisuallyEqual("a", "b")).toBe(false);
+      expect(Strings.areCharactersVisuallyEqual("!", "?")).toBe(false);
+    });
+
+    it("should return true for equivalent apostrophe variants", () => {
+      expect(Strings.areCharactersVisuallyEqual("'", "'")).toBe(true);
+      expect(Strings.areCharactersVisuallyEqual("'", "'")).toBe(true);
+      expect(Strings.areCharactersVisuallyEqual("'", "ʼ")).toBe(true);
+    });
+
+    it("should return true for equivalent quote variants", () => {
+      expect(Strings.areCharactersVisuallyEqual('"', '"')).toBe(true);
+      expect(Strings.areCharactersVisuallyEqual('"', '"')).toBe(true);
+      expect(Strings.areCharactersVisuallyEqual('"', "„")).toBe(true);
+    });
+
+    it("should return true for equivalent dash variants", () => {
+      expect(Strings.areCharactersVisuallyEqual("-", "–")).toBe(true);
+      expect(Strings.areCharactersVisuallyEqual("-", "—")).toBe(true);
+      expect(Strings.areCharactersVisuallyEqual("–", "—")).toBe(true);
+    });
+
+    it("should return true for equivalent comma variants", () => {
+      expect(Strings.areCharactersVisuallyEqual(",", "‚")).toBe(true);
+    });
+
+    it("should return false for characters from different equivalence groups", () => {
+      expect(Strings.areCharactersVisuallyEqual("'", '"')).toBe(false);
+      expect(Strings.areCharactersVisuallyEqual("-", "'")).toBe(false);
+      expect(Strings.areCharactersVisuallyEqual(",", '"')).toBe(false);
+    });
+  });
 });
