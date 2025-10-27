@@ -62,6 +62,9 @@ importers:
       '@monkeytype/funbox':
         specifier: workspace:*
         version: link:../packages/funbox
+      '@monkeytype/schemas':
+        specifier: workspace:*
+        version: link:../packages/schemas
       '@monkeytype/util':
         specifier: workspace:*
         version: link:../packages/util
@@ -168,9 +171,6 @@ importers:
       '@monkeytype/oxlint-config':
         specifier: workspace:*
         version: link:../packages/oxlint-config
-      '@monkeytype/schemas':
-        specifier: workspace:*
-        version: link:../packages/schemas
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../packages/typescript-config
@@ -276,6 +276,9 @@ importers:
       '@monkeytype/funbox':
         specifier: workspace:*
         version: link:../packages/funbox
+      '@monkeytype/schemas':
+        specifier: workspace:*
+        version: link:../packages/schemas
       '@monkeytype/util':
         specifier: workspace:*
         version: link:../packages/util
@@ -376,9 +379,6 @@ importers:
       '@monkeytype/oxlint-config':
         specifier: workspace:*
         version: link:../packages/oxlint-config
-      '@monkeytype/schemas':
-        specifier: workspace:*
-        version: link:../packages/schemas
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../packages/typescript-config
@@ -499,6 +499,9 @@ importers:
 
   packages/contracts:
     dependencies:
+      '@monkeytype/schemas':
+        specifier: workspace:*
+        version: link:../schemas
       '@ts-rest/core':
         specifier: 3.52.1
         version: 3.52.1(@types/node@20.14.11)(zod@3.23.8)
@@ -509,9 +512,6 @@ importers:
       '@monkeytype/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@monkeytype/schemas':
-        specifier: workspace:*
-        version: link:../schemas
       '@monkeytype/tsup-config':
         specifier: workspace:*
         version: link:../tsup-config
@@ -566,6 +566,9 @@ importers:
 
   packages/funbox:
     dependencies:
+      '@monkeytype/schemas':
+        specifier: workspace:*
+        version: link:../schemas
       '@monkeytype/util':
         specifier: workspace:*
         version: link:../util
@@ -573,9 +576,6 @@ importers:
       '@monkeytype/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@monkeytype/schemas':
-        specifier: workspace:*
-        version: link:../schemas
       '@monkeytype/tsup-config':
         specifier: workspace:*
         version: link:../tsup-config

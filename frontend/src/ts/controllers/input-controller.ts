@@ -46,6 +46,7 @@ import {
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 import { canQuickRestart } from "../utils/quick-restart";
 import * as PageTransition from "../states/page-transition";
+import { areCharactersVisuallyEqual } from "../utils/strings";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -424,37 +425,8 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     }
   }
 
-  if (
-    (char === "’" ||
-      char === "‘" ||
-      char === "'" ||
-      char === "ʼ" ||
-      char === "׳" ||
-      char === "ʻ") &&
-    (originalChar === "’" ||
-      originalChar === "‘" ||
-      originalChar === "'" ||
-      originalChar === "ʼ" ||
-      originalChar === "׳" ||
-      originalChar === "ʻ")
-  ) {
-    return true;
-  }
-
-  if (
-    (char === `"` || char === "”" || char === "“" || char === "„") &&
-    (originalChar === `"` ||
-      originalChar === "”" ||
-      originalChar === "“" ||
-      originalChar === "„")
-  ) {
-    return true;
-  }
-
-  if (
-    (char === "–" || char === "—" || char === "-") &&
-    (originalChar === "-" || originalChar === "–" || originalChar === "—")
-  ) {
+  const visuallyEqual = areCharactersVisuallyEqual(char, originalChar);
+  if (visuallyEqual) {
     return true;
   }
 

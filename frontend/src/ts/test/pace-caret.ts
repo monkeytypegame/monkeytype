@@ -18,6 +18,8 @@ type Settings = {
   timeout: NodeJS.Timeout | null;
 };
 
+let startTimestamp = 0;
+
 export let settings: Settings | null = null;
 
 export const caret = new Caret(
@@ -129,7 +131,7 @@ export async function init(): Promise<void> {
   };
 }
 
-export async function update(duration: number): Promise<void> {
+export async function update(expectedStepEnd: number): Promise<void> {
   if (settings === null || !TestState.isActive || TestState.resultVisible) {
     return;
   }
@@ -141,6 +143,10 @@ export async function update(duration: number): Promise<void> {
   incrementLetterIndex();
 
   try {
+    const now = performance.now();
+    const absoluteStepEnd = startTimestamp + expectedStepEnd;
+    const duration = absoluteStepEnd - now;
+
     caret.goTo({
       wordIndex: settings.currentWordIndex,
       letterIndex: settings.currentLetterIndex,
@@ -152,11 +158,13 @@ export async function update(duration: number): Promise<void> {
         easing: "linear",
       },
     });
+
+    // Normal case - schedule next step
     settings.timeout = setTimeout(() => {
-      update((settings?.spc ?? 0) * 1000).catch(() => {
+      update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
         settings = null;
       });
-    }, duration);
+    }, Math.max(0, duration));
   } catch (e) {
     console.error(e);
     caret.hide();
@@ -169,6 +177,7 @@ export function reset(): void {
     clearTimeout(settings.timeout);
   }
   settings = null;
+  startTimestamp = 0;
 }
 
 function incrementLetterIndex(): void {
@@ -243,6 +252,8 @@ export function handleSpace(correct: boolean, currentWord: string): void {
 }
 
 export function start(): void {
+  const now = performance.now();
+  startTimestamp = now;
   void update((settings?.spc ?? 0) * 1000);
 }
 
