@@ -1349,14 +1349,12 @@ export const page = new Page({
   },
   afterHide: async (): Promise<void> => {
     reset();
-    ResultFilters.removeButtons();
     Skeleton.remove("pageAccount");
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
     const snapshot = DB.getSnapshot();
-    ResultFilters.updateTagsDropdownOptions();
-    await ResultFilters.appendButtons(update);
+    await ResultFilters.appendDropdowns(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
 
