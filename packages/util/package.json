@@ -19,7 +19,7 @@
     "oxlint": "1.15.0",
     "tsup": "8.4.0",
     "typescript": "5.5.4",
-    "vitest": "3.2.4",
+    "vitest": "4.0.4",
     "zod": "3.23.8"
   },
   "exports": {
