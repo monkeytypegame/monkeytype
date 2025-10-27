@@ -60,7 +60,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
       firebaseConfig = ((await loader()) as { firebaseConfig: FirebaseOptions })
         .firebaseConfig;
     } else {
-      throw new Error("no firebase config found.");
+      throw new Error("No firebase config found.");
     }
 
     readyCallback = callback;
