@@ -1,6 +1,7 @@
 import {
   FirebaseApp,
   FirebaseError,
+  FirebaseOptions,
   getApp,
   getApps,
   initializeApp,
@@ -21,7 +22,6 @@ import {
   indexedDBLocalPersistence,
   getAdditionalUserInfo,
 } from "firebase/auth";
-import { firebaseConfig } from "./constants/firebase-config";
 import * as Notifications from "./elements/notifications";
 import {
   createErrorMessage,
@@ -52,6 +52,17 @@ const { promise: authPromise, resolve: resolveAuthPromise } =
 
 export async function init(callback: ReadyCallback): Promise<void> {
   try {
+    let firebaseConfig: FirebaseOptions | null;
+
+    const constants = import.meta.glob("./constants/*.ts");
+    const loader = constants["./constants/firebase-config.ts"];
+    if (loader) {
+      firebaseConfig = ((await loader()) as { firebaseConfig: FirebaseOptions })
+        .firebaseConfig;
+    } else {
+      throw new Error("No firebase config found.");
+    }
+
     readyCallback = callback;
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
     Auth = getAuth(app);
@@ -65,8 +76,6 @@ export async function init(callback: ReadyCallback): Promise<void> {
         await callback(true, user);
       }
     });
-
-    resolveAuthPromise();
   } catch (e) {
     app = undefined;
     Auth = undefined;
@@ -81,6 +90,8 @@ export async function init(callback: ReadyCallback): Promise<void> {
         false
       );
     }
+  } finally {
+    resolveAuthPromise();
   }
 }
 
