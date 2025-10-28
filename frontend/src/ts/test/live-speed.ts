@@ -2,6 +2,7 @@ import Config from "../config";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import Format from "../utils/format";
+import { applyReducedMotion } from "../utils/misc";
 
 const textElement = document.querySelector(
   "#liveStatsTextBottom .liveSpeed"
@@ -38,7 +39,7 @@ export function show(): void {
         {
           opacity: 1,
         },
-        125
+        applyReducedMotion(125)
       );
   } else {
     $(textElement)
@@ -49,7 +50,7 @@ export function show(): void {
         {
           opacity: 1,
         },
-        125
+        applyReducedMotion(125)
       );
   }
   state = true;
@@ -63,7 +64,7 @@ export function hide(): void {
       {
         opacity: 0,
       },
-      125,
+      applyReducedMotion(125),
       () => {
         textElement.classList.add("hidden");
       }
@@ -74,7 +75,7 @@ export function hide(): void {
       {
         opacity: 0,
       },
-      125,
+      applyReducedMotion(125),
       () => {
         miniElement.classList.add("hidden");
       }
