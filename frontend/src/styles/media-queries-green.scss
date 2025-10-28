@@ -283,4 +283,13 @@
       }
     }
   }
+  .pageFriends {
+    .content .friends table {
+      td:nth-child(4),
+      td:nth-child(7),
+      td:nth-child(8) {
+        display: none;
+      }
+    }
+  }
 }

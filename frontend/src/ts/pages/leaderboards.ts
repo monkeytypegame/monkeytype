@@ -434,7 +434,10 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
     entry.uid
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
-            ${getHtmlByUserFlags(entry)}
+            ${getHtmlByUserFlags({
+              ...entry,
+              isFriend: DB.isFriend(entry.uid),
+            })}
             ${
               isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
             }
@@ -489,7 +492,10 @@ function buildWeeklyTableRow(
     entry.uid
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
-            ${getHtmlByUserFlags(entry)}
+            ${getHtmlByUserFlags({
+              ...entry,
+              isFriend: DB.isFriend(entry.uid),
+            })}
             ${
               isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
             }
@@ -1417,7 +1423,7 @@ export const page = new PageWithUrlParams({
     stopTimer();
   },
   beforeShow: async (options): Promise<void> => {
-    await ServerConfiguration.configPromise;
+    await ServerConfiguration.configurationPromise;
     Skeleton.append("pageLeaderboards", "main");
     await updateValidDailyLeaderboards();
     await appendModeAndLanguageButtons();

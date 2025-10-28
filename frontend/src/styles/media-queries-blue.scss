@@ -100,7 +100,7 @@
       .tabs {
         padding: 0;
         display: grid;
-        grid-auto-flow: column;
+        grid-auto-flow: row;
         button {
           justify-content: center;
           padding: 1em 0.5em;
@@ -108,6 +108,7 @@
       }
     }
   }
+
   .pageSettings {
     .accountSettingsNotice {
       button {
@@ -235,8 +236,13 @@
     //   border-radius: 0.15em;
     // }
   }
-}
 
+  .pageFriends {
+    .content .friends table {
+      font-size: 0.75rem;
+    }
+  }
+}
 @media (pointer: coarse) and (max-width: 778px) {
   #restartTestButton {
     display: block !important;

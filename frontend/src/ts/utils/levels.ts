@@ -1,3 +1,5 @@
+import { abbreviateNumber } from "./numbers";
+
 /**
  * Calculates the level based on the total XP.
  * This is the inverse of the function getTotalXpToReachLevel()
@@ -50,4 +52,12 @@ export function getXpDetails(totalXp: number): XPDetails {
     levelCurrentXp: totalXp - getTotalXpToReachLevel(level),
     levelMaxXp: getLevelMaxXp(level),
   };
+}
+
+export function formatXp(xp: number): string {
+  if (xp < 1000) {
+    return Math.round(xp).toString();
+  } else {
+    return abbreviateNumber(xp);
+  }
 }

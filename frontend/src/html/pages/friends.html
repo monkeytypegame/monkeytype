@@ -1,0 +1,82 @@
+<div class="page pageFriends hidden" id="pageFriends">
+  <div class="preloader hidden">
+    <div class="icon">
+      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+    </div>
+    <div class="barWrapper hidden">
+      <div class="bar">
+        <div class="fill"></div>
+      </div>
+      <div class="text">‎</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="pendingRequests">
+      <div class="bigTitle">
+        <i class="fas fa-user-plus fa-fw"></i>
+        Incoming Requests
+      </div>
+      <div class="error hidden">
+        <i class="fas fa-times"></i>
+        <p>Something went wrong</p>
+      </div>
+      <table width="100%">
+        <thead>
+          <tr>
+            <td>user</td>
+            <td>date</td>
+            <td></td>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="friends">
+      <div class="titleAndButton">
+        <div class="bigTitle">
+          <i class="fas fa-user-friends fa-fw"></i>
+          Friends
+          <i class="spinner hidden fas fa-circle-notch fa-spin"></i>
+        </div>
+        <button class="button friendAdd">
+          <i class="fas fa-plus fa-fw"></i>
+          add friend
+        </button>
+      </div>
+
+      <div class="loading hidden">
+        <i class="fas fa-circle-notch fa-spin"></i>
+      </div>
+      <div class="error hidden">
+        <i class="fas fa-times"></i>
+        <p>Something went wrong</p>
+      </div>
+      <div class="nodata hidden">You don't have any friends :(</div>
+
+      <table width="100%">
+        <thead>
+          <tr>
+            <td data-sort-property="name">name</td>
+            <td data-sort-property="addedAt">friends for</td>
+            <td data-sort-property="xp">level</td>
+            <td
+              data-sort-property="completedTests"
+              aria-label="completed / started"
+              data-balloon-pos="up"
+            >
+              tests
+            </td>
+            <td data-sort-property="timeTyping">time typing</td>
+            <td data-sort-property="streak.length">streak</td>
+            <td data-sort-property="top15.wpm">time 15 pb</td>
+            <td data-sort-property="top60.wpm">time 60 pb</td>
+            <td width="1px"></td>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>

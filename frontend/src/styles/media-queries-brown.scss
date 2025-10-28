@@ -101,4 +101,20 @@
       }
     }
   }
+  .pageFriends {
+    .content .friends table {
+      td:nth-child(3) {
+        display: none;
+      }
+    }
+  }
+
+  .pageAccountSettings [data-tab="blockedUsers"] {
+    table {
+      font-size: 0.75rem;
+      td:nth-child(2) {
+        display: none;
+      }
+    }
+  }
 }
