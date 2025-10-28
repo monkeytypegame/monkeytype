@@ -85,24 +85,17 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         settings: {
           contentLocation: modalEl,
         },
-        events: {
-          afterChange: (newVal) => {
-            const presetName = newVal[0]?.value;
-            if (
-              presetName !== undefined &&
-              presetName !== "" &&
-              presets[presetName]
-            ) {
-              const preset = presets[presetName];
-              $("#customGeneratorModal .characterInput").val(
-                preset.characters.join(" ")
-              );
-            }
-          },
-        },
       });
     },
   });
+}
+
+function applyPreset(): void {
+  const presetName = $("#customGeneratorModal .presetInput").val() as string;
+  if (presetName !== undefined && presetName !== "" && presets[presetName]) {
+    const preset = presets[presetName];
+    $("#customGeneratorModal .characterInput").val(preset.characters.join(" "));
+  }
 }
 
 function hide(hideOptions?: HideOptions<OutgoingData>): void {
@@ -173,6 +166,10 @@ async function setup(modalEl: HTMLElement): Promise<void> {
 
   modalEl.querySelector(".addButton")?.addEventListener("click", () => {
     void apply(false);
+  });
+
+  modalEl.querySelector(".generateButton")?.addEventListener("click", () => {
+    applyPreset();
   });
 }
 

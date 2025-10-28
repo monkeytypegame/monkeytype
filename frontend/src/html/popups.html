@@ -496,7 +496,7 @@
         words filter
       </div>
       <div class="button customGenerator">
-        <i class="fas fa-wand-magic-sparkles"></i>
+        <i class="fas fa-cogs"></i>
         custom generator
       </div>
     </div>
@@ -763,7 +763,7 @@
         <select class="layoutInput"></select>
       </div>
       <!-- <div class="tip">Use the dropdowns above to generate presets</div> -->
-      <button class="generateButton">generate</button>
+      <button class="generateButton">apply</button>
     </div>
 
     <div class="bottom">
@@ -778,23 +778,22 @@
 </dialog>
 <dialog id="customGeneratorModal" class="modalWrapper hidden">
   <div class="modal">
-    <div class="top">
-      <div class="tip">
-        Enter characters or strings separated by spaces. Random combinations
-        will be generated using these inputs.
-      </div>
-    </div>
     <div class="main">
       <div class="group">
         <div class="title">presets</div>
         <select class="presetInput">
-          <option value="">None</option>
           <option value="alphas">a-z</option>
           <option value="numbers">0-9</option>
           <option value="special">symbols</option>
           <option value="bigrams">bigrams</option>
           <option value="trigrams">trigrams</option>
         </select>
+        <button class="generateButton">apply</button>
+      </div>
+      <div class="separator"></div>
+      <div class="tip">
+        Enter characters or strings separated by spaces. Random combinations
+        will be generated using these inputs.
       </div>
       <div class="group">
         <div class="title">character set</div>
@@ -802,7 +801,7 @@
           class="characterInput"
           id="characterInput"
           autocomplete="off"
-          placeholder="a b c d 1 2 3 [ ] ;"
+          placeholder=""
           title="characters"
         ></textarea>
       </div>

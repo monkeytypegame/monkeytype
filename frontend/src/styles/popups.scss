@@ -449,11 +449,6 @@ body.darkMode {
   .modal {
     max-width: 600px;
 
-    .top {
-      display: grid;
-      gap: 1rem;
-    }
-
     .main {
       display: grid;
       gap: 1.5rem;
@@ -463,6 +458,13 @@ body.darkMode {
       display: grid;
       gap: 1rem;
       margin-top: 1rem;
+    }
+
+    .separator {
+      height: 0.25rem;
+      width: 100%;
+      background-color: var(--sub-alt-color);
+      border-radius: var(--roundness);
     }
 
     .group {
