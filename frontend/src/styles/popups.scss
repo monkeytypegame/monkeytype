@@ -106,13 +106,18 @@ body.darkMode {
     //   "ok ok ok";
     grid-template-areas:
       "topButtons topButtons checkboxes"
+      "topButtons2 topButtons2 checkboxes"
       "textArea textArea checkboxes"
       "ok ok checkboxes";
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: min-content 1fr min-content;
+    grid-template-rows: min-content min-content 1fr min-content;
 
     .buttonsTop {
       grid-area: topButtons;
+    }
+
+    .buttonsTop2 {
+      grid-area: topButtons2;
     }
 
     .textAreaWrapper {
@@ -170,7 +175,13 @@ body.darkMode {
     .buttonsTop {
       display: grid;
       // grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .buttonsTop2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 1rem;
     }
 
@@ -199,7 +210,7 @@ body.darkMode {
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
-      min-height: 589px;
+      min-height: 489px;
       color: var(--text-color);
       overflow-x: hidden;
       overflow-y: scroll;
