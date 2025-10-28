@@ -9,7 +9,13 @@ import { checker } from "vite-plugin-checker";
 import { writeFileSync } from "fs";
 // eslint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+} from "node:fs";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { getFontsConig } from "./vite.config";
@@ -57,16 +63,10 @@ export default {
       name: "vite-plugin-fontawesome-subset",
       apply: "build",
       buildStart() {
-        try {
-          console.log("fontawesome plugin start");
-          const fontawesomeClasses = getFontawesomeConfig();
-          fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
-            targetFormats: ["woff2"],
-          });
-        } catch (e) {
-          console.log("fontawesome plugin error ", e);
-          this.error(e);
-        }
+        const fontawesomeClasses = getFontawesomeConfig();
+        fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
+          targetFormats: ["woff2"],
+        });
       },
     },
     {
@@ -74,9 +74,14 @@ export default {
       apply: "build",
 
       closeBundle() {
+        const distPath = path.resolve(__dirname, "dist");
+        if (!existsSync(distPath)) {
+          mkdirSync(distPath, { recursive: true });
+        }
+
         const version = CLIENT_VERSION;
         const versionJson = JSON.stringify({ version });
-        const versionPath = path.resolve(__dirname, "dist/version.json");
+        const versionPath = path.resolve(distPath, "version.json");
         writeFileSync(versionPath, versionJson);
       },
     },
