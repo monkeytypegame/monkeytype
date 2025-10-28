@@ -26,7 +26,7 @@ import { getAuthenticatedUser } from "../firebase";
 import * as ServerConfiguration from "../ape/server-configuration";
 import * as AuthEvent from "../observables/auth-event";
 import { Connection } from "@monkeytype/schemas/connections";
-import { Friend } from "@monkeytype/schemas/users";
+import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 import * as Loader from "../elements/loader";
 
 const pageElement = $(".page.pageFriends");
@@ -73,6 +73,7 @@ const addFriendModal = new SimpleModal({
       type: "text",
       initVal: "",
       validation: {
+        schema: UserNameSchema,
         isValid: async (name: string) => {
           const checkNameResponse = await Ape.users.getNameAvailability({
             params: { name: name },
