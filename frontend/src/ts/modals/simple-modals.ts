@@ -1137,7 +1137,7 @@ list.updateCustomTheme = new SimpleModal({
       for (const color of ThemeController.colorVars) {
         newColors.push(
           $(
-            `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+            `.pageSettings .customTheme .tabContent.customTheme #${color}[type='color']`
           ).attr("value") as string
         );
       }

@@ -76,6 +76,12 @@
           grid-template-columns: 1fr;
         }
       }
+
+      &.themes .tabContainer .tabContent.customTheme {
+        .customThemeInputs .customThemeInput {
+          grid-template-columns: 10em 1fr;
+        }
+      }
     }
     .settingsGroup.quickNav {
       justify-content: unset;
