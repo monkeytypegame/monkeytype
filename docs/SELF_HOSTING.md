@@ -18,7 +18,8 @@
     - [Upgrades](#upgrades)
         - [v.....](#v)
             - [Backup](#backup)
-            - [Upgrade MongoDB](#upgrade-mongodb)
+            - [Upgrade MongoDB  with dump/restore](#upgrade-mongodb--with-dumprestore)
+            - [Upgrade MongoDB incremental](#upgrade-mongodb-incremental)
             - [References](#references)
 
 <!-- /TOC -->
@@ -206,14 +207,85 @@ Make sure the container is _STOPPED_ and run this command:
 docker run --rm -v monkeytype_mongo_data:/from -v $(pwd):/backup alpine tar czf /backup/monkeytype-mongodb.tar.gz -C /from .
 ```
 
-In case you need to restore the backup run this command:
+In case you need to restore the backup run this commands:
 
 ```
+docker volume rm monkeytype_mongo_data
+docker volume create monkeytype_mongo_data
 docker run --rm -v monkeytype_mongo_data:/to -v $(pwd):/backup alpine tar xzf /backup/monkeytype-mongodb.tar.gz -C /to
 
 ```
 
-#### Upgrade MongoDB
+There are two ways to update your MongoDB instance to 8.2. You can use the dump/restore method if your database is not very huge and you have the storage for the full database dump. If not  follow the guide for [Upgrade MongoDB incremental](#upgrade-mongodb-incremental)
+
+#### Upgrade MongoDB  with dump/restore
+
+Make sure the container is _STOPPED_ and execute this command:
+
+```
+docker run -d \
+  --name mongodb-upgrade \
+  -v monkeytype_mongo_data:/data/db \
+  -v $(pwd):/backup \
+  -p 27017:27017 \
+  mongo:5.0.13
+```
+
+Then dump the data using
+
+```
+docker exec -it mongodb-upgrade \
+  mongodump --db=monkeytype --out=/backup
+```
+
+And stop the container again:
+
+```
+docker stop mongodb-upgrade 
+docker rm mongodb-upgrade
+```
+
+Then replace the volume with an empty one:
+
+```
+docker volume rm monkeytype_mongo_data
+docker volume create monkeytype_mongo_data
+```
+
+Now start a new container with version 8.2
+
+```
+docker run -d \
+  --name mongodb-upgrade \
+  -v monkeytype_mongo_data:/data/db \
+  -v $(pwd):/backup \
+  -p 27017:27017 \
+  mongodb/mongodb-community-server:8.2.1-ubi8
+```
+
+
+Then restore the data using
+
+```
+docker exec -it mongodb-upgrade \
+mongorestore --host=localhost --port=27017 \
+--db=monkeytype \
+--drop \
+/backup/monkeytype
+```
+
+And stop the container again:
+
+```
+docker stop mongodb-upgrade 
+docker rm mongodb-upgrade
+```
+
+At this point the MongoDB container is upgraded to version 8.2.
+
+Now you can start your instance with `docker compose` as normal.
+
+#### Upgrade MongoDB incremental
 
 MongoDB needs to be upgraded for each major version. Don't skip any of theese steps:
 
@@ -295,13 +367,13 @@ At this point the MongoDB container is upgraded to version 8.0.
 Make sure the container is _STOPPED_ and run this command:
 
 ```
-docker run --rm -v monkeytype_mongo-data:/data/db alpine chown -R 998:996 /data/db
+docker run --rm -v monkeytype_mongo_data:/data/db alpine chown -R 998:996 /data/db
 ```
 
 ```
 docker run -d \
   --name mongodb-upgrade \
-  -v monkeytype_mongo-data:/data/db \
+  -v monkeytype_mongo_data:/data/db \
   -p 27017:27017 \
   mongodb/mongodb-community-server:8.2.1-ubi8
 ```
