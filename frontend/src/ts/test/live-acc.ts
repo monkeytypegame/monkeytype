@@ -1,6 +1,7 @@
 import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
+import { applyReducedMotion } from "../utils/misc";
 
 const textEl = document.querySelector(
   "#liveStatsTextBottom .liveAcc"
@@ -32,14 +33,14 @@ export function show(): void {
       {
         opacity: 1,
       },
-      125
+      applyReducedMotion(125)
     );
   } else {
     $(textEl).stop(true, false).removeClass("hidden").css("opacity", 0).animate(
       {
         opacity: 1,
       },
-      125
+      applyReducedMotion(125)
     );
   }
   state = true;
@@ -53,7 +54,7 @@ export function hide(): void {
       {
         opacity: 0,
       },
-      125,
+      applyReducedMotion(125),
       () => {
         $(textEl).addClass("hidden");
       }
@@ -64,7 +65,7 @@ export function hide(): void {
       {
         opacity: 0,
       },
-      125,
+      applyReducedMotion(125),
       () => {
         $(miniEl).addClass("hidden");
       }

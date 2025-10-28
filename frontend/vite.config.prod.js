@@ -155,8 +155,8 @@ export default {
       {
         filter: ["src/ts/firebase.ts"],
         replace: {
-          from: `"./constants/firebase-config"`,
-          to: `"./constants/firebase-config-live"`,
+          from: `"./constants/firebase-config.ts"`,
+          to: `"./constants/firebase-config-live.ts"`,
         },
       },
       {
