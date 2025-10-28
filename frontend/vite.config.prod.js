@@ -57,10 +57,16 @@ export default {
       name: "vite-plugin-fontawesome-subset",
       apply: "build",
       buildStart() {
-        const fontawesomeClasses = getFontawesomeConfig();
-        fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
-          targetFormats: ["woff2"],
-        });
+        try {
+          console.log("fontawesome plugin start");
+          const fontawesomeClasses = getFontawesomeConfig();
+          fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
+            targetFormats: ["woff2"],
+          });
+        } catch (e) {
+          console.log("fontawesome plugin error ", e);
+          this.error(e);
+        }
       },
     },
     {
