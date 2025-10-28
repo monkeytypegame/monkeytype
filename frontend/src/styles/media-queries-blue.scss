@@ -120,15 +120,20 @@
       grid-template-areas:
         "title"
         "text" "buttons";
-      .customThemeEdit {
-        .spacer {
-          display: none;
-        }
-        .customThemeInputs {
-          grid-template-columns: 1fr 1.5fr;
-        }
-        .customThemeButtons {
-          grid-template-columns: 1fr;
+
+      &.themes {
+        grid-template-columns: 1fr 1fr;
+        gap: 1em;
+        .tabContainer .tabContent.customTheme {
+          .customThemeInputs {
+            grid-template-columns: 1fr;
+            .customThemeInput {
+              grid-template-columns: 1fr 1fr;
+            }
+          }
+          .customThemeButtons {
+            grid-template-columns: 1fr;
+          }
         }
       }
     }

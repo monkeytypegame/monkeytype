@@ -218,7 +218,7 @@ export async function fillCustomButtons(): Promise<void> {
   ).empty();
   const addButton = $(".pageSettings .section.themes .addCustomThemeButton");
   const saveButton = $(
-    ".pageSettings .section.themes .customThemeEdit #saveCustomThemeButton"
+    ".pageSettings .section.themes .tabContent.customTheme #saveCustomThemeButton"
   );
 
   if (!isAuthenticated()) {
@@ -284,9 +284,9 @@ function saveCustomThemeColors(): void {
   const newColors: string[] = [];
   for (const color of ThemeController.colorVars) {
     newColors.push(
-      $(
-        `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
-      ).attr("value") as string
+      $(`.pageSettings .tabContent.customTheme #${color}[type='color']`).attr(
+        "value"
+      ) as string
     );
   }
   UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
