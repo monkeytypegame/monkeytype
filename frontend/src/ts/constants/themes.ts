@@ -1114,6 +1114,12 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#5b578e",
     textColor: "#f4e0c9",
   },
+  constant_lehigh: {
+    bgColor: "#502d0e",
+    mainColor: "#f5e9ad",
+    subColor: "#ffffff",
+    textColor: "#fff5a8",
+  },
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
