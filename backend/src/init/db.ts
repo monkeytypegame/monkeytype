@@ -57,6 +57,11 @@ export async function connect(): Promise<void> {
   try {
     await mongoClient.connect();
     db = mongoClient.db(DB_NAME);
+
+    const info = (await db.command({ buildInfo: 1 })) as { version: string };
+    if (info.version !== "8.2.1") {
+      throw new Error("Expected version 8.2.1 but got " + info.version);
+    }
   } catch (error) {
     Logger.error(getErrorMessage(error) ?? "Unknown error");
     Logger.error(
