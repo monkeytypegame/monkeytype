@@ -786,14 +786,25 @@
     </div>
     <div class="main">
       <div class="group">
+        <div class="title">presets</div>
+        <select class="presetInput">
+          <option value="">None</option>
+          <option value="alphas">a-z</option>
+          <option value="numbers">0-9</option>
+          <option value="special">symbols</option>
+          <option value="bigrams">bigrams</option>
+          <option value="trigrams">trigrams</option>
+        </select>
+      </div>
+      <div class="group">
         <div class="title">character set</div>
-        <input
+        <textarea
           class="characterInput"
           id="characterInput"
           autocomplete="off"
           placeholder="a b c d 1 2 3 [ ] ;"
           title="characters"
-        />
+        ></textarea>
       </div>
       <div class="group lengthgrid">
         <div class="title">min length</div>
@@ -826,16 +837,6 @@
           min="1"
           title="word count"
         />
-      </div>
-      <div class="group">
-        <div class="title">presets</div>
-        <div class="presetButtons">
-          <button class="presetButton" data-preset="alphas">a-z</button>
-          <button class="presetButton" data-preset="numbers">0-9</button>
-          <button class="presetButton" data-preset="special">symbols</button>
-          <button class="presetButton" data-preset="bigrams">bigrams</button>
-          <button class="presetButton" data-preset="trigrams">trigrams</button>
-        </div>
       </div>
     </div>
 

@@ -1,5 +1,6 @@
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
+import SlimSelect from "slim-select";
 import AnimatedModal, {
   HideOptions,
   ShowOptions,
@@ -46,36 +47,6 @@ const presets: Record<string, Preset> = {
       "it",
       "al",
       "as",
-      "=>",
-      "::",
-      "//",
-      "/*",
-      "*/",
-      "{}",
-      "[]",
-      "()",
-      "<>",
-      "!=",
-      "==",
-      ">=",
-      "<=",
-      "&&",
-      "||",
-      "++",
-      "--",
-      "+=",
-      "-=",
-      "*=",
-      "/=",
-      "->",
-      ":=",
-      "??",
-      "?.",
-      "!.",
-      "..",
-      ";;",
-      ",,",
-      "|>",
     ],
   },
   trigrams: {
@@ -99,33 +70,38 @@ const presets: Record<string, Preset> = {
       "are",
       "rea",
       "int",
-      "var",
-      "let",
-      "def",
-      "fun",
-      "str",
-      "obj",
-      "arr",
-      "new",
-      "try",
-      "ret",
-      "if(",
-      "(){",
-      "});",
-      "===",
-      "!==",
-      "...",
-      "/**",
-      "**/",
-      "```",
-      "---",
     ],
   },
 };
 
+let _presetSelect: SlimSelect | undefined = undefined;
+
 export async function show(showOptions?: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
+    beforeAnimation: async (modalEl) => {
+      _presetSelect = new SlimSelect({
+        select: "#customGeneratorModal .presetInput",
+        settings: {
+          contentLocation: modalEl,
+        },
+        events: {
+          afterChange: (newVal) => {
+            const presetName = newVal[0]?.value;
+            if (
+              presetName !== undefined &&
+              presetName !== "" &&
+              presets[presetName]
+            ) {
+              const preset = presets[presetName];
+              $("#customGeneratorModal .characterInput").val(
+                preset.characters.join(" ")
+              );
+            }
+          },
+        },
+      });
+    },
   });
 }
 
@@ -191,22 +167,6 @@ async function apply(set: boolean): Promise<void> {
 }
 
 async function setup(modalEl: HTMLElement): Promise<void> {
-  for (const button of modalEl.querySelectorAll(".presetButton")) {
-    button.addEventListener("click", (e) => {
-      const presetName = (e.target as HTMLButtonElement).dataset["preset"];
-      if (
-        presetName !== undefined &&
-        presetName !== "" &&
-        presets[presetName]
-      ) {
-        const preset = presets[presetName];
-        $("#customGeneratorModal .characterInput").val(
-          preset.characters.join(" ")
-        );
-      }
-    });
-  }
-
   modalEl.querySelector(".setButton")?.addEventListener("click", () => {
     void apply(true);
   });
