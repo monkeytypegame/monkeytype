@@ -7,6 +7,7 @@ import * as Time from "../states/time";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
+import { applyReducedMotion } from "../utils/misc";
 
 const barEl = $("#barTimerProgress .bar");
 const barOpacityEl = $("#barTimerProgress .opacityWrapper");
@@ -23,21 +24,21 @@ export function show(): void {
         {
           opacity: 1,
         },
-        125
+        applyReducedMotion(125)
       );
   } else if (Config.timerStyle === "text") {
     textEl.stop(true, true).removeClass("hidden").css("opacity", 0).animate(
       {
         opacity: 1,
       },
-      125
+      applyReducedMotion(125)
     );
   } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
     miniEl.stop(true, true).removeClass("hidden").css("opacity", 0).animate(
       {
         opacity: 1,
       },
-      125
+      applyReducedMotion(125)
     );
   }
 }
@@ -65,13 +66,13 @@ export function hide(): void {
     {
       opacity: 0,
     },
-    125
+    applyReducedMotion(125)
   );
   miniEl.stop(true, true).animate(
     {
       opacity: 0,
     },
-    125,
+    applyReducedMotion(125),
     () => {
       miniEl.addClass("hidden");
     }
@@ -80,7 +81,7 @@ export function hide(): void {
     {
       opacity: 0,
     },
-    125
+    applyReducedMotion(125)
   );
 }
 

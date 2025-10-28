@@ -2,7 +2,7 @@ name: Prettier Check
 
 env:
   PNPM_VERSION: "9.6.0"
-  NODE_VERSION: "20.19.4"
+  NODE_VERSION: "24.10.0"
 
 on:
   pull_request:
