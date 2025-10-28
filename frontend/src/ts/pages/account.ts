@@ -44,6 +44,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
+//a change
 let filteredResults: SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
 let testActivityEl: HTMLElement | null;
