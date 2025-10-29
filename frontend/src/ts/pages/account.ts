@@ -676,8 +676,6 @@ async function fillContent(): Promise<void> {
     totalWpm += result.wpm;
   });
 
-  //restore sorting to timestamp descending when updating filters
-  historyTable.setSort({ property: "timestamp", descending: true });
   historyTable.setData(filteredResults);
 
   $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
@@ -1082,7 +1080,6 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   $(".resultRow").removeClass("active");
 
   const offset = element.offset()?.top ?? 0;
-  console.log("###", { index, element, offset });
   const scrollTo = offset - windowHeight / 2;
   $([document.documentElement, document.body])
     .stop(true)
@@ -1091,7 +1088,6 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
       {
         duration: Misc.applyReducedMotion(500),
         done: () => {
-          const element = $(`#result-${index}`);
           $(".resultRow").removeClass("active");
           requestAnimationFrame(() => element.addClass("active"));
         },
@@ -1156,17 +1152,6 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
   target.attr("aria-label", "View graph");
   MiniResultChartModal.show(chartData);
 });
-
-// Resets sorting to by date' when applying filers (normal or advanced)
-$(".pageAccount .group.history").on(
-  "click",
-  ".buttonsAndTitle .buttons button",
-  () => {
-    // We want to 'force' descending sort:
-    console.log("###reset sorting");
-    historyTable.setSort({ property: "timestamp", descending: true });
-  }
-);
 
 $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   "click",
