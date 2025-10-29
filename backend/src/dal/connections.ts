@@ -186,6 +186,29 @@ export async function deleteByUid(uid: string): Promise<void> {
   });
 }
 
+//TODO add test
+export async function getFriendsUids(uid: string): Promise<string[]> {
+  return Array.from(
+    new Set(
+      (
+        await getCollection()
+          .find(
+            {
+              $and: [
+                {
+                  $or: [{ initiatorUid: uid }, { receiverUid: uid }],
+                  status: "accepted",
+                },
+              ],
+            },
+            { projection: { initiatorUid: true, receiverUid: true } }
+          )
+          .toArray()
+      ).flatMap((it) => [it.initiatorUid, it.receiverUid])
+    )
+  );
+}
+
 function getKey(initiatorUid: string, receiverUid: string): string {
   const ids = [initiatorUid, receiverUid];
   ids.sort();

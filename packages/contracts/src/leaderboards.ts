@@ -27,6 +27,14 @@ const PaginationQuerySchema = z.object({
 
 export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;
 
+const FriendsOnlyQuerySchema = z.object({
+  friendsOnly: z
+    .boolean()
+    .optional()
+    .describe("include only users from your friends list, defaults to false."),
+});
+export type FriendsOnlyQuery = z.infer<typeof FriendsOnlyQuerySchema>;
+
 const LeaderboardResponseSchema = z.object({
   count: z.number().int().nonnegative(),
   pageSize: z.number().int().positive(),
@@ -36,7 +44,7 @@ const LeaderboardResponseSchema = z.object({
 
 export const GetLeaderboardQuerySchema = LanguageAndModeQuerySchema.merge(
   PaginationQuerySchema
-);
+).merge(FriendsOnlyQuerySchema);
 export type GetLeaderboardQuery = z.infer<typeof GetLeaderboardQuerySchema>;
 
 export const GetLeaderboardResponseSchema = responseWithData(
@@ -50,7 +58,9 @@ export type GetLeaderboardResponse = z.infer<
 
 //--------------------------------------------------------------------------
 
-export const GetLeaderboardRankQuerySchema = LanguageAndModeQuerySchema;
+export const GetLeaderboardRankQuerySchema = LanguageAndModeQuerySchema.merge(
+  FriendsOnlyQuerySchema
+);
 export type GetLeaderboardRankQuery = z.infer<
   typeof GetLeaderboardRankQuerySchema
 >;
@@ -65,7 +75,7 @@ export type GetLeaderboardRankResponse = z.infer<
 
 export const DailyLeaderboardQuerySchema = LanguageAndModeQuerySchema.extend({
   daysBefore: z.literal(1).optional(),
-});
+}).merge(FriendsOnlyQuerySchema);
 export type DailyLeaderboardQuery = z.infer<typeof DailyLeaderboardQuerySchema>;
 
 export const GetDailyLeaderboardQuerySchema = DailyLeaderboardQuerySchema.merge(

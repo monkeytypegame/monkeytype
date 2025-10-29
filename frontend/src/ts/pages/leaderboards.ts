@@ -35,7 +35,10 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import { PaginationQuery } from "@monkeytype/contracts/leaderboards";
+import {
+  PaginationQuery,
+  FriendsOnlyQuery,
+} from "@monkeytype/contracts/leaderboards";
 import { Language, LanguageSchema } from "@monkeytype/schemas/languages";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { Mode, Mode2, ModeSchema } from "@monkeytype/schemas/shared";
@@ -83,6 +86,7 @@ type State = {
   updating: boolean;
   page: number;
   pageSize: number;
+  friendsOnly: boolean;
   title: string;
   error?: string;
   scrollToUserAfterFill: boolean;
@@ -99,6 +103,7 @@ const state = {
   userData: null,
   page: 0,
   pageSize: 50,
+  friendsOnly: false,
   title: "All-time English Time 15 Leaderboard",
   scrollToUserAfterFill: false,
   goToUserPage: false,
@@ -111,6 +116,7 @@ const SelectorSchema = z.object({
   language: LanguageSchema.optional(),
   yesterday: z.boolean().optional(),
   lastWeek: z.boolean().optional(),
+  friendsOnly: z.boolean().optional(),
 });
 const UrlParameterSchema = SelectorSchema.extend({
   page: z.number(),
@@ -151,6 +157,8 @@ function updateTitle(): void {
       ? "Weekly XP"
       : "Daily";
 
+  const friend = state.friendsOnly ? "Friends " : "";
+
   const language =
     state.type !== "weekly" ? capitalizeFirstLetter(state.language) : "";
 
@@ -159,7 +167,7 @@ function updateTitle(): void {
       ? ` ${capitalizeFirstLetter(state.mode)} ${state.mode2}`
       : "";
 
-  state.title = `${type} ${language} ${mode} Leaderboard`;
+  state.title = `${type} ${language} ${mode} ${friend}Leaderboard`;
   $(".page.pageLeaderboards .bigtitle >.text").text(state.title);
 
   $(".page.pageLeaderboards .bigtitle .subtext").addClass("hidden");
@@ -255,17 +263,25 @@ async function requestData(update = false): Promise<void> {
   updateContent();
 
   const defineRequests = <TQuery, TRank, TData>(
-    data: (args: { query: TQuery & PaginationQuery }) => Promise<TData>,
+    data: (args: {
+      query: TQuery & PaginationQuery & FriendsOnlyQuery;
+    }) => Promise<TData>,
     rank: (args: { query: TQuery }) => Promise<TRank>,
     baseQuery: TQuery
   ): {
     rank: undefined | (() => Promise<TRank>);
     data: () => Promise<TData>;
   } => ({
-    rank: async () => rank({ query: baseQuery }),
+    rank: async () =>
+      rank({ query: { ...baseQuery, friendsOnly: state.friendsOnly } }),
     data: async () =>
       data({
-        query: { ...baseQuery, page: state.page, pageSize: state.pageSize },
+        query: {
+          ...baseQuery,
+          page: state.page,
+          pageSize: state.pageSize,
+          friendsOnly: state.friendsOnly,
+        },
       }),
   });
 
@@ -423,7 +439,7 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
   }
   element.dataset["uid"] = entry.uid;
   element.innerHTML = `
-    
+      <td>${entry.friendsRank ?? ""}</td>
       <td>${
         entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
       }</td>
@@ -537,6 +553,12 @@ function buildWeeklyTableRow(
 function fillTable(): void {
   const table = $(".page.pageLeaderboards table tbody");
   table.empty();
+
+  if (state.friendsOnly) {
+    table.parent().addClass("friendsOnly");
+  } else {
+    table.parent().removeClass("friendsOnly");
+  }
 
   $(".page.pageLeaderboards table thead").addClass("hidden");
   if (state.type === "allTime" || state.type === "daily") {
@@ -653,9 +675,13 @@ function fillUser(): void {
     }
 
     const userData = state.userData;
-    const percentile = (userData.rank / state.count) * 100;
+    const rank = state.friendsOnly
+      ? (userData.friendsRank as number)
+      : userData.rank;
+    const percentile = (rank / state.count) * 100;
+
     let percentileString = `Top ${percentile.toFixed(2)}%`;
-    if (userData.rank === 1) {
+    if (rank === 1) {
       percentileString = "GOAT";
     }
 
@@ -687,9 +713,7 @@ function fillUser(): void {
 
     const html = `
           <div class="rank">${
-            userData.rank === 1
-              ? '<i class="fas fa-fw fa-crown"></i>'
-              : userData.rank
+            rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : rank
           }</div>
         <div class="userInfo">
           <div class="top">You (${percentileString})</div>
@@ -889,6 +913,7 @@ function updateContent(): void {
 
 function updateSideButtons(): void {
   updateTypeButtons();
+  updateFriendsOnlyButton();
   updateModeButtons();
   updateLanguageButtons();
 }
@@ -897,6 +922,26 @@ function updateTypeButtons(): void {
   const el = $(".page.pageLeaderboards .buttonGroup.typeButtons");
   el.find("button").removeClass("active");
   el.find(`button[data-type=${state.type}]`).addClass("active");
+}
+
+function updateFriendsOnlyButton(): void {
+  const friendsOnlyGroup = $(
+    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons"
+  );
+  if (ServerConfiguration.get()?.connections.enabled ?? false) {
+    friendsOnlyGroup.removeClass("hidden");
+  } else {
+    friendsOnlyGroup.addClass("hidden");
+  }
+
+  const friendsOnlyButton = $(
+    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .friendsOnly"
+  );
+  if (state.friendsOnly) {
+    friendsOnlyButton.addClass("active");
+  } else {
+    friendsOnlyButton.removeClass("active");
+  }
 }
 
 function updateModeButtons(): void {
@@ -1253,6 +1298,9 @@ function updateGetParameters(): void {
 
   params.page = state.page + 1;
 
+  if (state.friendsOnly) {
+    params.friendsOnly = true;
+  }
   page.setUrlParams(params);
 
   selectorLS.set(state);
@@ -1267,6 +1315,8 @@ function readGetParameters(params?: UrlParameter): void {
   if (params.type !== undefined) {
     state.type = params.type;
   }
+
+  state.friendsOnly = params.friendsOnly ?? false;
 
   if (state.type === "allTime") {
     if (params.mode2 !== undefined) {
@@ -1407,6 +1457,20 @@ $(".page.pageLeaderboards .buttonGroup.languageButtons").on(
     void requestData();
     updateSideButtons();
     updateTitle();
+    updateContent();
+    updateGetParameters();
+  }
+);
+
+$(".page.pageLeaderboards .buttonGroup.friendsOnlyButtons").on(
+  "click",
+  "button",
+  () => {
+    state.friendsOnly = !state.friendsOnly;
+    state.page = 0;
+    void requestData();
+    updateTitle();
+    updateSideButtons();
     updateContent();
     updateGetParameters();
   }
