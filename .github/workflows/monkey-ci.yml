@@ -49,7 +49,7 @@ jobs:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
               - 'backend/package.json'
             fe-src:
-              - 'frontend/**/*.{ts,scss}'
+              - 'frontend/**/*.{ts,scss,html}'
               - 'frontend/package.json'
             pkg-src:
               - 'packages/**/*'
