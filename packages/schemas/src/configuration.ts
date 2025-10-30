@@ -123,5 +123,9 @@ export const ConfigurationSchema = z.object({
       xpRewardBrackets: z.array(RewardBracketSchema),
     }),
   }),
+  connections: z.object({
+    enabled: z.boolean(),
+    maxPerUser: z.number().int().nonnegative(),
+  }),
 });
 export type Configuration = z.infer<typeof ConfigurationSchema>;
