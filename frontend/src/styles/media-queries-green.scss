@@ -76,6 +76,12 @@
           grid-template-columns: 1fr;
         }
       }
+
+      &.themes .tabContainer .tabContent.customTheme {
+        .customThemeInputs .customThemeInput {
+          grid-template-columns: 10em 1fr;
+        }
+      }
     }
     .settingsGroup.quickNav {
       justify-content: unset;
@@ -274,6 +280,15 @@
             justify-content: center;
           }
         }
+      }
+    }
+  }
+  .pageFriends {
+    .content .friends table {
+      td:nth-child(4),
+      td:nth-child(7),
+      td:nth-child(8) {
+        display: none;
       }
     }
   }

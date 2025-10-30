@@ -11,6 +11,7 @@ import { PersonalBests } from "@monkeytype/schemas/shared";
 import * as TestActivity from "../elements/test-activity";
 import { TestActivityCalendar } from "../elements/test-activity-calendar";
 import { getFirstDayOfTheWeek } from "../utils/date-and-time";
+import { addFriend } from "./friends";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
@@ -74,11 +75,18 @@ function reset(): void {
         </div>
         <div class="buttonGroup">
           <button
-            class="userReportButton"
+            class="userReportButton hidden"
             data-balloon-pos="left"
             aria-label="Report user"
           >
             <i class="fas fa-flag"></i>
+          </button>
+          <button
+            class="addFriendButton hidden"
+            data-balloon-pos="left"
+            aria-label="Send friend request"
+          >
+            <i class="fas fa-user-plus"></i>
           </button>
         </div>
       </div>
@@ -235,6 +243,19 @@ $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
     ($(".page.pageProfile .profile").attr("lbOptOut") ?? "false") === "true";
 
   void UserReportModal.show({ uid, name, lbOptOut });
+});
+
+$(".page.pageProfile").on("click", ".profile .addFriendButton", async () => {
+  const friendName = $(".page.pageProfile .profile").attr("name") ?? "";
+
+  const result = await addFriend(friendName);
+
+  if (result === true) {
+    Notifications.add(`Request send to ${friendName}`);
+    $(".profile .details .addFriendButton").addClass("disabled");
+  } else {
+    Notifications.add(result, -1);
+  }
 });
 
 export const page = new Page<undefined | UserProfile>({

@@ -268,52 +268,6 @@
       margin-bottom: 1rem;
     }
 
-    & .customThemeEdit {
-      // grid-row: 3;
-      display: grid;
-      gap: 1rem;
-      // grid-template-columns: 1fr 1fr 1fr 1fr;
-      // justify-items: stretch;
-      // gap: 0.5rem 1rem;
-
-      .customThemeInputs {
-        display: grid;
-        grid-template-columns: 1fr 1.5fr 1fr 1.5fr;
-        gap: 1rem;
-      }
-
-      .customThemeButtons {
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: 1fr 1fr 1fr;
-      }
-
-      .inputAndButton {
-        grid-template-columns: 1fr auto;
-      }
-
-      input {
-        width: 100%;
-      }
-
-      label {
-        display: grid;
-        place-content: center start;
-        margin-left: 0.5rem;
-      }
-
-      & .spacer {
-        grid-column: span 4;
-      }
-
-      & .buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-column: 1/5;
-        gap: 0.5rem;
-      }
-    }
-
     .groupTitle {
       font-size: 1rem;
       color: var(--sub-color);
@@ -407,13 +361,48 @@
 
           &.customTheme {
             grid-template-columns: 1fr;
-            .colorText {
-              color: var(--text-color);
-            }
-          }
 
-          .text {
-            align-self: center;
+            .customThemeInputs {
+              display: grid;
+              // margin-block: 1em;
+              margin-bottom: 1em;
+              grid-template-columns: 1fr 1fr;
+              gap: 1rem;
+
+              .customThemeInput {
+                display: grid;
+                color: var(--text-color);
+                grid-template-columns: 20em 1fr;
+                align-items: center;
+                gap: 1em;
+
+                .inputAndButton {
+                  margin-bottom: 0;
+                  width: 100%;
+                  input {
+                    width: 100%;
+                  }
+
+                  .button {
+                    margin-left: 0.5em;
+                  }
+                }
+              }
+
+              .colorfulHeader {
+                grid-column: 1/-1;
+                // margin-left: 0.5em;
+                color: var(--sub-color);
+              }
+            }
+
+            .customThemeButtons {
+              display: grid;
+              margin-top: 0.5em;
+              grid-template-columns: 1fr 1fr 1fr;
+              grid-column: 1/-1;
+              gap: 0.5em;
+            }
           }
         }
       }
@@ -518,7 +507,6 @@
     &.themes {
       grid-template-areas:
         "title tabs"
-        "text text"
         "buttons buttons";
       column-gap: 2rem;
       // row-gap: 0.5rem;
