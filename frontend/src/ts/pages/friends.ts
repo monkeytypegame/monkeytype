@@ -96,7 +96,7 @@ const addFriendModal = new SimpleModal({
     const result = await addFriend(receiverName);
 
     if (result === true) {
-      return { status: 1, message: `Request send to ${receiverName}` };
+      return { status: 1, message: `Request sent to ${receiverName}` };
     }
 
     let status: -1 | 0 | 1 = -1;
