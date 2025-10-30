@@ -1114,6 +1114,12 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#5b578e",
     textColor: "#f4e0c9",
   },
+  simian_braille: {
+    bgColor: "#132516",
+    mainColor: "#3dff91",
+    subColor: "#eeff70",
+    textColor: "#a3ffd0",
+  },  
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
