@@ -933,10 +933,16 @@ function updateFriendsOnlyButton(): void {
   const friendsOnlyGroup = $(
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons"
   );
-  if (ServerConfiguration.get()?.connections.enabled ?? false) {
+  if (
+    state.type === "allTime" &&
+    isAuthenticated() &&
+    (ServerConfiguration.get()?.connections.enabled ?? false)
+  ) {
     friendsOnlyGroup.removeClass("hidden");
   } else {
     friendsOnlyGroup.addClass("hidden");
+    state.friendsOnly = false;
+    return;
   }
 
   const friendsOnlyButton = $(
@@ -952,11 +958,9 @@ function updateFriendsOnlyButton(): void {
 function updateModeButtons(): void {
   if (state.type !== "allTime" && state.type !== "daily") {
     $(".page.pageLeaderboards .buttonGroup.modeButtons").addClass("hidden");
-    $(".page.pageLeaderboards .sideButtons .divider").addClass("hidden");
     return;
   }
   $(".page.pageLeaderboards .buttonGroup.modeButtons").removeClass("hidden");
-  $(".page.pageLeaderboards .sideButtons .divider").removeClass("hidden");
 
   const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
   el.find("button").removeClass("active");
@@ -985,13 +989,11 @@ function updateModeButtons(): void {
 function updateLanguageButtons(): void {
   if (state.type !== "daily") {
     $(".page.pageLeaderboards .buttonGroup.languageButtons").addClass("hidden");
-    $(".page.pageLeaderboards .sideButtons .divider2").addClass("hidden");
     return;
   }
   $(".page.pageLeaderboards .buttonGroup.languageButtons").removeClass(
     "hidden"
   );
-  $(".page.pageLeaderboards .sideButtons .divider2").removeClass("hidden");
 
   const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
   el.find("button").removeClass("active");
@@ -1187,7 +1189,9 @@ async function appendModeAndLanguageButtons(): Promise<void> {
     </button>`
     );
   });
-  $(".modeButtons").html(mode2Buttons.join("\n"));
+  $(".modeButtons").html(
+    `<div class="divider"></div>` + mode2Buttons.join("\n")
+  );
 
   const availableLanguages = Array.from(
     new Set(
@@ -1205,7 +1209,9 @@ async function appendModeAndLanguageButtons(): Promise<void> {
           ${lang}
         </button>`
   );
-  $(".languageButtons").html(languageButtons.join("\n"));
+  $(".languageButtons").html(
+    `<div class="divider"></div>` + languageButtons.join("\n")
+  );
 }
 
 function disableButtons(): void {
