@@ -7,7 +7,9 @@ export async function setup(): Promise<void> {
   process.env.TZ = "UTC";
 
   //use testcontainer to start mongodb
-  const mongoContainer = new GenericContainer("mongo:5.0.13")
+  const mongoContainer = new GenericContainer(
+    "mongodb/mongodb-community-server:8.2.1-ubi8"
+  )
     .withExposedPorts(27017)
     .withWaitStrategy(Wait.forListeningPorts());
 
