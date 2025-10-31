@@ -101,6 +101,8 @@
 
     // consider these for the future
     "no-cycle": "off",
-    "no-nested-ternary": "off"
+    "no-nested-ternary": "off",
+    "no-array-sort": "off",
+    "preserve-caught-error": "off"
   }
 }
