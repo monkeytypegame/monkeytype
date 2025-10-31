@@ -15,6 +15,13 @@
   #testModesNotice {
     font-size: 0.8rem;
   }
+  #customTextModal {
+    .modal {
+      .buttonsTop2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
   #bannerCenter {
     font-size: 0.85rem;
     .banner.withImage {
