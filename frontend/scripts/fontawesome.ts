@@ -99,7 +99,9 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
     (it) => !(solid.includes(it) || regular.includes(it) || brands.includes(it))
   );
   if (leftOvers.length !== 0) {
-    throw new Error("unknown icons: " + leftOvers.toString());
+    throw new Error(
+      "Fontawesome failed with unknown icons: " + leftOvers.toString()
+    );
   }
 
   if (debug) {
