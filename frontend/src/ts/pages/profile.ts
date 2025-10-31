@@ -251,7 +251,7 @@ $(".page.pageProfile").on("click", ".profile .addFriendButton", async () => {
   const result = await addFriend(friendName);
 
   if (result === true) {
-    Notifications.add(`Request send to ${friendName}`);
+    Notifications.add(`Request sent to ${friendName}`);
     $(".profile .details .addFriendButton").addClass("disabled");
   } else {
     Notifications.add(result, -1);

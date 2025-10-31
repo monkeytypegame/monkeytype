@@ -1,34 +1,50 @@
-type Sort = {
-  property: string;
-  descending: boolean;
+import { z } from "zod";
+
+export const SortSchema = z.object({
+  property: z.string(),
+  descending: z.boolean(),
+});
+export type Sort = z.infer<typeof SortSchema>;
+
+type Persistence = {
+  get: () => Sort;
+  set: (sort: Sort) => boolean;
 };
 
 type SortedTableOptions<T> = {
   table: string;
   data?: T[];
   buildRow: (entry: T) => HTMLTableRowElement;
-  initialSort?: Sort;
-};
+} & (
+  | { initialSort?: Sort; persistence?: never }
+  | { persistence?: Persistence; initialSort?: never }
+);
+
 export class SortedTable<T> {
-  protected data: { source: T; element?: HTMLTableRowElement }[];
+  protected data: { source: T; element?: HTMLTableRowElement }[] = [];
   private table: JQuery<HTMLTableElement>;
   private buildRow: (entry: T) => HTMLTableRowElement;
   private sort?: Sort;
+  private persistence?: Persistence;
 
-  constructor({ table, data, buildRow, initialSort }: SortedTableOptions<T>) {
-    this.table = $(table);
+  constructor(options: SortedTableOptions<T>) {
+    this.table = $(options.table);
     if (this.table === undefined) {
-      throw new Error(`No element found for ${table}`);
+      throw new Error(`No element found for ${options.table}`);
     }
 
-    this.buildRow = buildRow;
-    this.data = [];
-    if (data !== undefined) {
-      this.setData(data);
+    this.buildRow = options.buildRow;
+
+    if (options.data !== undefined) {
+      this.setData(options.data);
     }
 
-    if (initialSort !== undefined) {
-      this.sort = initialSort;
+    if ("persistence" in options && options.persistence !== undefined) {
+      this.persistence = options.persistence;
+      this.sort = this.persistence.get();
+      this.doSort();
+    } else if ("initialSort" in options && options.initialSort !== undefined) {
+      this.sort = options.initialSort;
       this.doSort();
     }
 
@@ -43,13 +59,15 @@ export class SortedTable<T> {
           target.dataset["sortDefaultDirection"] === "desc";
         if (property === undefined) return;
 
-        if (this.sort === undefined || property !== this.sort.property) {
-          this.sort = { property, descending: defaultDirection };
-        } else {
-          this.sort.descending = !this.sort?.descending;
-        }
+        let updatedSort = this.sort;
 
-        this.doSort();
+        if (updatedSort === undefined || property !== updatedSort.property) {
+          updatedSort = { property, descending: defaultDirection };
+        } else {
+          updatedSort.descending = !updatedSort?.descending;
+        }
+        this.setSort(updatedSort);
+
         this.updateBody();
       };
     }
@@ -57,6 +75,7 @@ export class SortedTable<T> {
 
   public setSort(sort: Partial<Sort>): void {
     this.sort = { ...this.sort, ...sort } as Sort;
+    this.persistence?.set(this.sort);
     this.doSort();
   }
 

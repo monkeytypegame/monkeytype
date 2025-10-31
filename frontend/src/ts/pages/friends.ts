@@ -17,7 +17,7 @@ import { secondsToString } from "../utils/date-and-time";
 import { PersonalBest } from "@monkeytype/schemas/shared";
 import Format from "../utils/format";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
-import { SortedTable } from "../utils/sorted-table";
+import { SortedTable, SortSchema } from "../utils/sorted-table";
 import { getAvatarElement } from "../utils/discord-avatar";
 import { formatTypingStatsRatio } from "../utils/misc";
 import { getLanguageDisplayString } from "../utils/strings";
@@ -28,6 +28,7 @@ import * as AuthEvent from "../observables/auth-event";
 import { Connection } from "@monkeytype/schemas/connections";
 import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 import * as Loader from "../elements/loader";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
 const pageElement = $(".page.pageFriends");
 
@@ -95,7 +96,7 @@ const addFriendModal = new SimpleModal({
     const result = await addFriend(receiverName);
 
     if (result === true) {
-      return { status: 1, message: `Request send to ${receiverName}` };
+      return { status: 1, message: `Request sent to ${receiverName}` };
     }
 
     let status: -1 | 0 | 1 = -1;
@@ -230,7 +231,11 @@ function updateFriends(): void {
         table: ".pageFriends .friends table",
         data: friendsList,
         buildRow: buildFriendRow,
-        initialSort: { property: "name", descending: false },
+        persistence: new LocalStorageWithSchema({
+          key: "friendsListSort",
+          schema: SortSchema,
+          fallback: { property: "name", descending: false },
+        }),
       });
     } else {
       friendsTable.setData(friendsList);
