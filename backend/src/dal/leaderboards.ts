@@ -48,7 +48,11 @@ export async function get(
   const skip = page * pageSize;
   const limit = pageSize;
 
-  const pipeline: Document[] = [{ $skip: skip }, { $limit: limit }];
+  const pipeline: Document[] = [
+    { $sort: { rank: 1 } },
+    { $skip: skip },
+    { $limit: limit },
+  ];
 
   if (userIds !== undefined) {
     pipeline.splice(0, 0, { $match: { uid: { $in: userIds } } });

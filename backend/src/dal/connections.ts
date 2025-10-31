@@ -186,7 +186,11 @@ export async function deleteByUid(uid: string): Promise<void> {
   });
 }
 
-//TODO add test
+/**
+ * Return uids of all accepted connections for the given uid including the uid.
+ * @param uid
+ * @returns
+ */
 export async function getFriendsUids(uid: string): Promise<string[]> {
   return Array.from(
     new Set(
@@ -194,12 +198,8 @@ export async function getFriendsUids(uid: string): Promise<string[]> {
         await getCollection()
           .find(
             {
-              $and: [
-                {
-                  $or: [{ initiatorUid: uid }, { receiverUid: uid }],
-                  status: "accepted",
-                },
-              ],
+              status: "accepted",
+              $or: [{ initiatorUid: uid }, { receiverUid: uid }],
             },
             { projection: { initiatorUid: true, receiverUid: true } }
           )

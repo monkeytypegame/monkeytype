@@ -273,14 +273,19 @@ async function requestData(update = false): Promise<void> {
     data: () => Promise<TData>;
   } => ({
     rank: async () =>
-      rank({ query: { ...baseQuery, friendsOnly: state.friendsOnly } }),
+      rank({
+        query: {
+          ...baseQuery,
+          friendsOnly: state.friendsOnly || undefined,
+        },
+      }),
     data: async () =>
       data({
         query: {
           ...baseQuery,
           page: state.page,
           pageSize: state.pageSize,
-          friendsOnly: state.friendsOnly,
+          friendsOnly: state.friendsOnly || undefined,
         },
       }),
   });
