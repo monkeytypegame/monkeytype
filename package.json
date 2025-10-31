@@ -61,7 +61,7 @@
     "knip": "knip"
   },
   "engines": {
-    "node": "24.10.0"
+    "node": "24.11.0"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
