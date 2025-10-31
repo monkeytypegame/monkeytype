@@ -918,7 +918,7 @@ function updateContent(): void {
 
 function updateSideButtons(): void {
   updateTypeButtons();
-  updateFriendsOnlyButton();
+  updateFriendsButtons();
   updateModeButtons();
   updateLanguageButtons();
 }
@@ -929,7 +929,7 @@ function updateTypeButtons(): void {
   el.find(`button[data-type=${state.type}]`).addClass("active");
 }
 
-function updateFriendsOnlyButton(): void {
+function updateFriendsButtons(): void {
   const friendsOnlyGroup = $(
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons"
   );
@@ -945,13 +945,18 @@ function updateFriendsOnlyButton(): void {
     return;
   }
 
+  const everyoneButton = $(
+    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .everyone"
+  );
   const friendsOnlyButton = $(
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .friendsOnly"
   );
   if (state.friendsOnly) {
     friendsOnlyButton.addClass("active");
+    everyoneButton.removeClass("active");
   } else {
     friendsOnlyButton.removeClass("active");
+    everyoneButton.addClass("active");
   }
 }
 

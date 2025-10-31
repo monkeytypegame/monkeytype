@@ -55,13 +55,15 @@ export async function get(
   ];
 
   if (userIds !== undefined) {
-    pipeline.splice(0, 0, { $match: { uid: { $in: userIds } } });
-    pipeline.splice(1, 0, {
-      $setWindowFields: {
-        sortBy: { rank: 1 },
-        output: { friendsRank: { $documentNumber: {} } },
-      },
-    });
+    pipeline.unshift(
+      { $match: { uid: { $in: userIds } } },
+      {
+        $setWindowFields: {
+          sortBy: { rank: 1 },
+          output: { friendsRank: { $documentNumber: {} } },
+        },
+      }
+    );
   }
 
   try {
