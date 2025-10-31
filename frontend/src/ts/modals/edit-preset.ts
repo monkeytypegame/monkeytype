@@ -93,6 +93,7 @@ export function show(action: string, id?: string, name?: string): void {
         id !== undefined &&
         name !== undefined
       ) {
+        presetNameEl?.setValue(name);
         $("#editPresetModal .modal").attr("data-action", "remove");
         $("#editPresetModal .modal").attr("data-preset-id", id);
         $("#editPresetModal .modal .popupTitle").html("Delete preset");
