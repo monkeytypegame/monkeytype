@@ -1411,9 +1411,11 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     if (state.type === "daily") {
       state.language = "english";
       state.yesterday = false;
+      state.friendsOnly = false;
     }
     if (state.type === "weekly") {
       state.lastWeek = false;
+      state.friendsOnly = false;
     }
     checkIfLeaderboardIsValid();
     state.data = null;
