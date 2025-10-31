@@ -186,6 +186,29 @@ export async function deleteByUid(uid: string): Promise<void> {
   });
 }
 
+/**
+ * Return uids of all accepted connections for the given uid including the uid.
+ * @param uid
+ * @returns
+ */
+export async function getFriendsUids(uid: string): Promise<string[]> {
+  return Array.from(
+    new Set(
+      (
+        await getCollection()
+          .find(
+            {
+              status: "accepted",
+              $or: [{ initiatorUid: uid }, { receiverUid: uid }],
+            },
+            { projection: { initiatorUid: true, receiverUid: true } }
+          )
+          .toArray()
+      ).flatMap((it) => [it.initiatorUid, it.receiverUid])
+    )
+  );
+}
+
 function getKey(initiatorUid: string, receiverUid: string): string {
   const ids = [initiatorUid, receiverUid];
   ids.sort();

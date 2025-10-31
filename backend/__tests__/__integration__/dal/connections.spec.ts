@@ -362,4 +362,43 @@ describe("ConnectionsDal", () => {
       ).toEqual([decoy]);
     });
   });
+
+  describe("getFriendsUids", () => {
+    it("should return friend uids", async () => {
+      //GIVE
+      const uid = new ObjectId().toHexString();
+      const friendOne = await createConnection({
+        initiatorUid: uid,
+        status: "accepted",
+      });
+      const friendTwo = await createConnection({
+        receiverUid: uid,
+        status: "accepted",
+      });
+      const friendThree = await createConnection({
+        receiverUid: uid,
+        status: "accepted",
+      });
+      const _pending = await createConnection({
+        initiatorUid: uid,
+        status: "pending",
+      });
+      const _blocked = await createConnection({
+        initiatorUid: uid,
+        status: "blocked",
+      });
+      const _decoy = await createConnection({});
+
+      //WHEN
+      const friendUids = await ConnectionsDal.getFriendsUids(uid);
+
+      //THEN
+      expect(friendUids).toEqual([
+        uid,
+        friendOne.receiverUid,
+        friendTwo.initiatorUid,
+        friendThree.initiatorUid,
+      ]);
+    });
+  });
 });
