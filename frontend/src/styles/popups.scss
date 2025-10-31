@@ -105,11 +105,11 @@ body.darkMode {
     //   "textArea textArea checkboxes"
     //   "ok ok ok";
     grid-template-areas:
-      "topButtons topButtons checkboxes"
-      "topButtons2 topButtons2 checkboxes"
-      "textArea textArea checkboxes"
-      "ok ok checkboxes";
-    grid-template-columns: 1fr 1fr 1fr;
+      "topButtons checkboxes"
+      "topButtons2 checkboxes"
+      "textArea checkboxes"
+      "ok checkboxes";
+    grid-template-columns: auto 20rem;
     grid-template-rows: min-content min-content 1fr min-content;
 
     .buttonsTop {
@@ -210,7 +210,7 @@ body.darkMode {
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
-      min-height: 489px;
+      min-height: 524px;
       color: var(--text-color);
       overflow-x: hidden;
       overflow-y: scroll;
