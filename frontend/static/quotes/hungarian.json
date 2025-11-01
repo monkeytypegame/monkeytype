@@ -92,12 +92,6 @@
       "length": 572
     },
     {
-      "text": "A magyarság nem kalapdísz, hanem a szíve mélyében viseli a magyar, mint tenger csigája a gyöngyét. A magyarságunk érzése mélyen bent ég bennünk, hogy szinte magunk sem tudunk róla, mint a tűzhányó hegyek, amelyek hideg kőhegyek, de egyszer megmordulnak.",
-      "source": "Gárdonyi Géza",
-      "id": null,
-      "length": 253
-    },
-    {
       "text": "Csak a vér s a nyelv tudja összetartani az embereket s a közös múlt emléke. Ha ez megszűnik, fölbomlik a világ.",
       "source": "Ismeretlen",
       "id": 13,
@@ -330,6 +324,12 @@
       "source": "Zsolt Béla",
       "id": 51,
       "length": 103
+    },
+    {
+      "text": "A magyarság nem kalapdísz, hanem a szíve mélyében viseli a magyar, mint tenger csigája a gyöngyét. A magyarságunk érzése mélyen bent ég bennünk, hogy szinte magunk sem tudunk róla, mint a tűzhányó hegyek, amelyek hideg kőhegyek, de egyszer megmordulnak.",
+      "source": "Gárdonyi Géza",
+      "id": 52,
+      "length": 253
     }
   ]
 }
