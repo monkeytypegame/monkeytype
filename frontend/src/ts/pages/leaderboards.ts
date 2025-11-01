@@ -503,6 +503,7 @@ function buildWeeklyTableRow(
   }
   element.dataset["uid"] = entry.uid;
   element.innerHTML = `
+      <td></td>
       <td>${
         entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
       }</td>
