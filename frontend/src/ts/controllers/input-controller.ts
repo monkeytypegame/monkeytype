@@ -48,6 +48,7 @@ import {
 // import { tryCatchSync } from "@monkeytype/util/trycatch";
 import { canQuickRestart } from "../utils/quick-restart";
 import * as PageTransition from "../states/page-transition";
+import { areCharactersVisuallyEqual } from "../utils/strings";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -185,7 +186,7 @@ let awaitingNextWord = false;
 //     }
 //   }
 
-//   void Caret.updatePosition();
+//   Caret.updatePosition();
 //   Replay.addReplayEvent("backWord");
 // }
 
@@ -265,7 +266,7 @@ let awaitingNextWord = false;
 //       dontInsertSpace = false;
 //       Replay.addReplayEvent("incorrectLetter", "_");
 //       void TestUI.updateActiveWordLetters();
-//       void Caret.updatePosition();
+//       Caret.updatePosition();
 //     }
 //     return;
 //   }
@@ -351,8 +352,10 @@ let awaitingNextWord = false;
 
 //     if ((nextTop ?? 0) > currentTop) {
 //       void TestUI.lineJump(currentTop);
-//     } //end of line wrap
-//   }
+// //     }
+// } //end of line wrap
+
+// Caret.updatePosition();
 
 //   // enable if i decide that auto tab should also work after a space
 //   // if (
@@ -961,16 +964,14 @@ $(document).on("keydown", async (event) => {
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
   const pageTestActive: boolean = ActivePage.get() === "test";
   const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
-  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
 
   const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
-    !leaderboardsVisible &&
     !popupVisible &&
-    !TestUI.resultVisible &&
+    !TestState.resultVisible &&
     (wordsFocused || event.key !== "Enter") &&
     !awaitingNextWord;
 
@@ -1045,7 +1046,7 @@ $(document).on("keydown", async (event) => {
       return;
     }
 
-    if (TestUI.resultVisible) {
+    if (TestState.resultVisible) {
       TestLogic.restart({
         event,
       });
@@ -1075,7 +1076,7 @@ $(document).on("keydown", async (event) => {
 
   if (!allowTyping) return;
 
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     event.preventDefault();
     return;
   }
@@ -1327,7 +1328,7 @@ $("#wordsInput").on("beforeinput", (event) => {
 });
 
 $("#wordsInput").on("input", async (event) => {
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
     (event.target as HTMLInputElement).value = " ";
     return;
   }
@@ -1435,7 +1436,7 @@ $("#wordsInput").on("input", async (event) => {
     }
 
     void TestUI.updateActiveWordLetters();
-    void Caret.updatePosition();
+    Caret.updatePosition();
     if (!CompositionState.getComposing()) {
       const keyStroke = event?.originalEvent as InputEvent;
       if (keyStroke.inputType === "deleteWordBackward") {

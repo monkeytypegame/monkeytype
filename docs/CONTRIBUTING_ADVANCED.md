@@ -21,7 +21,7 @@
 
 ## Prerequisites
 
-This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 20.19.4. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, and Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
+This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 24.11.0. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, and Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
 
 ### Git
 
@@ -33,9 +33,9 @@ Git is optional but we recommend you utilize it. Monkeytype uses the Git source 
 
 ### NodeJS and PNPM
 
-Currently, the project is using version `20.19.4 LTS`.
+Currently, the project is using version `24.11.0 LTS`.
 
-If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 20.19.4` then `nvm use 20.19.4`) to use the version of Node.js in the `.nvmrc` file.
+If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 24.11.0` then `nvm use 24.11.0`) to use the version of Node.js in the `.nvmrc` file.
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
 
@@ -111,14 +111,14 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 | Manual                                                                                                                                                                                                                            | Docker (recommended)                                                                                                                                                        |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Install [Redis](https://redis.io/docs/install/install-redis/)</li><li>Make sure both are running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `npm run docker-db-only` from the `./backend` directory</li></ol> |
+| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Install [Redis](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/)</li><li>Make sure both are running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `npm run docker-db-only` from the `./backend` directory</li></ol> |
 
 3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your database visually.
    - To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The Monkeytype database will be created and shown after the server is started.
 
 ## Building and Running Monkeytype
 
-Its time to run Monkeytype. Just like with the databases, you can run the frontend and backend manually or with Docker.
+It's time to run Monkeytype. Just like with the databases, you can run the frontend and backend manually or with Docker.
 
 ### Dependencies (if running manually)
 

@@ -76,6 +76,12 @@
           grid-template-columns: 1fr;
         }
       }
+
+      &.themes .tabContainer .tabContent.customTheme {
+        .customThemeInputs .customThemeInput {
+          grid-template-columns: 10em 1fr;
+        }
+      }
     }
     .settingsGroup.quickNav {
       justify-content: unset;
@@ -221,41 +227,11 @@
       }
     }
   }
-  #leaderboardsWrapper #leaderboards {
-    .tables {
-      grid-template-columns: 1fr;
-      height: 100%;
-      .titleAndTable .title {
-        font-size: 1rem;
-      }
-      .rightTableWrapper,
-      .leftTableWrapper {
-        height: calc(50vh - 9rem);
-      }
-    }
-    .leaderboardsTop {
-      .buttons .timeRange {
-        font-size: 0.75rem;
-      }
-      // grid-template-columns: 1fr 1fr;
-      // grid-template-areas: "title title" "subtitle yesterday" "buttons buttons";
-      .mainTitle {
-        font-size: 1.5rem;
-      }
-
-      // .buttons .timeRange {
-      //   font-size: 0.75rem;
-      //   grid-template-columns: 1fr 1fr 1fr;
-      //   .languageSelect {
-      //     grid-column: span 1;
-      //   }
-      // }
-    }
-  }
   #customTextModal {
     .modal {
       grid-template-areas:
         "topButtons topButtons"
+        "topButtons2 topButtons2"
         "textArea textArea"
         "checkboxes checkboxes"
         "ok ok";
@@ -305,6 +281,15 @@
             justify-content: center;
           }
         }
+      }
+    }
+  }
+  .pageFriends {
+    .content .friends table {
+      td:nth-child(4),
+      td:nth-child(7),
+      td:nth-child(8) {
+        display: none;
       }
     }
   }

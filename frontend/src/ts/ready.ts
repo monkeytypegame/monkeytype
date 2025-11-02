@@ -36,6 +36,9 @@ $(async (): Promise<void> => {
         $(".login").addClass("hidden");
         $(".disabledNotification").removeClass("hidden");
       }
+      if (!ServerConfiguration.get()?.connections.enabled) {
+        $(".accountButtonAndMenu .goToFriends").addClass("hidden");
+      }
     });
   }
   MonkeyPower.init();

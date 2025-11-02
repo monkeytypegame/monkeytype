@@ -97,6 +97,28 @@ export function splitByAndKeep(text: string, delimiters: string[]): string[] {
 }
 
 /**
+ * Highlights all occurrences of specified words within a given text.
+ * Each match is wrapped in a <span class="highlight"> element.
+ * Matches are ignored if they appear as part of a larger word
+ * not included in the matches array.
+ * @param text The full text in which to highlight words.
+ * @param matches An array of words to highlight.
+ * @return The full text with all matching words highlighted.
+ */
+export function highlightMatches(text: string, matches: string[]): string {
+  matches = matches.filter((match) => match !== "");
+  if (matches.length === 0) return text;
+
+  // matches that don't have a letter before or after them
+  const pattern = new RegExp(
+    `(?<!\\p{L})(?:${matches.join("|")})(?!\\p{L})`,
+    "gu"
+  );
+
+  return text.replace(pattern, '<span class="highlight">$&</span>');
+}
+
+/**
  * Returns a display string for the given language, optionally removing the size indicator.
  * @param language The language string.
  * @param noSizeString Whether to remove the size indicator from the language string. Default is false.
@@ -214,26 +236,64 @@ export function clearWordDirectionCache(): void {
   wordDirectionCache.clear();
 }
 
-export function getWordDirection(
+export function isWordRightToLeft(
   word: string | undefined,
-  languageRTL: boolean
+  languageRTL: boolean,
+  reverseDirection?: boolean
 ): boolean {
-  if (word === undefined || word.length === 0) return languageRTL;
+  if (word === undefined || word.length === 0) {
+    return reverseDirection ? !languageRTL : languageRTL;
+  }
 
   // Strip leading/trailing punctuation and whitespace so attached opposite-direction
   // punctuation like "word؟" or "،word" doesn't flip the direction detection
   // and if only punctuation/symbols/whitespace, use main language direction
   const core = word.replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "");
-  if (core.length === 0) return languageRTL;
+  if (core.length === 0) return reverseDirection ? !languageRTL : languageRTL;
 
   // cache by core to handle variants like "word" vs "word؟"
   const cached = wordDirectionCache.get(core);
-  if (cached !== undefined) return cached;
+  if (cached !== undefined) return reverseDirection ? !cached : cached;
 
   const result = hasRTLCharacters(core);
   wordDirectionCache.set(core, result);
 
-  return result;
+  return reverseDirection ? !result : result;
+}
+
+export const CHAR_EQUIVALENCE_MAPS = [
+  new Map(
+    ["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"].map((char, index) => [char, index])
+  ),
+  new Map([`"`, "”", "“", "„"].map((char, index) => [char, index])),
+  new Map(["–", "—", "-", "‐"].map((char, index) => [char, index])),
+  new Map([",", "‚"].map((char, index) => [char, index])),
+];
+
+/**
+ * Checks if two characters are visually/typographically equivalent for typing purposes.
+ * This allows users to type different variants of the same character and still be considered correct.
+ * @param char1 The first character to compare
+ * @param char2 The second character to compare
+ * @returns true if the characters are equivalent, false otherwise
+ */
+export function areCharactersVisuallyEqual(
+  char1: string,
+  char2: string
+): boolean {
+  // If characters are exactly the same, they're equivalent
+  if (char1 === char2) {
+    return true;
+  }
+
+  // Check each equivalence map
+  for (const map of CHAR_EQUIVALENCE_MAPS) {
+    if (map.has(char1) && map.has(char2)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /**

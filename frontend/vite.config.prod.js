@@ -9,7 +9,13 @@ import { checker } from "vite-plugin-checker";
 import { writeFileSync } from "fs";
 // eslint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+} from "node:fs";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { getFontsConig } from "./vite.config";
@@ -68,9 +74,14 @@ export default {
       apply: "build",
 
       closeBundle() {
+        const distPath = path.resolve(__dirname, "dist");
+        if (!existsSync(distPath)) {
+          mkdirSync(distPath, { recursive: true });
+        }
+
         const version = CLIENT_VERSION;
         const versionJson = JSON.stringify({ version });
-        const versionPath = path.resolve(__dirname, "dist/version.json");
+        const versionPath = path.resolve(distPath, "version.json");
         writeFileSync(versionPath, versionJson);
       },
     },
@@ -155,8 +166,8 @@ export default {
       {
         filter: ["src/ts/firebase.ts"],
         replace: {
-          from: `"./constants/firebase-config"`,
-          to: `"./constants/firebase-config-live"`,
+          from: `"./constants/firebase-config.ts"`,
+          to: `"./constants/firebase-config-live.ts"`,
         },
       },
       {

@@ -49,6 +49,7 @@
       <table>
         <thead class="allTimeAndDaily">
           <tr>
+            <td><i class="fas fa-users"></i></td>
             <td>#</td>
             <td>name</td>
             <td class="stat narrow speedUnit">
@@ -68,6 +69,7 @@
         </thead>
         <thead class="weekly">
           <tr>
+            <td></td>
             <td>#</td>
             <td>name</td>
             <td class="stat wide">xp gained</td>
@@ -173,8 +175,21 @@
           daily
         </button>
       </div>
-      <div class="divider hidden"></div>
+
+      <div class="buttonGroup friendsOnlyButtons hidden">
+        <div class="divider"></div>
+        <button class="everyone">
+          <i class="fas fa-users"></i>
+          everyone
+        </button>
+        <button class="friendsOnly">
+          <i class="fas fa-user-friends"></i>
+          friends only
+        </button>
+      </div>
+
       <div class="buttonGroup hidden modeButtons">
+        <div class="divider"></div>
         <button data-mode="15">
           <i class="fas fa-clock"></i>
           time 15
@@ -184,8 +199,9 @@
           time 60
         </button>
       </div>
-      <div class="divider2 hidden"></div>
+
       <div class="buttonGroup hidden languageButtons">
+        <div class="divider"></div>
         <button data-language="english">
           <i class="fas fa-globe"></i>
           english

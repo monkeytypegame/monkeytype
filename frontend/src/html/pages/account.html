@@ -685,10 +685,19 @@
         <thead>
           <tr>
             <td></td>
-            <td type="button" class="sortable history-wpm-header">wpm</td>
-            <td type="button" class="sortable history-raw-header">raw</td>
-            <td type="button" class="sortable history-acc-header">accuracy</td>
-            <td type="button" class="sortable history-consistency-header">
+            <td data-sort-property="wpm" data-sort-default-direction="desc">
+              wpm
+            </td>
+            <td data-sort-property="rawWpm" data-sort-default-direction="desc">
+              raw
+            </td>
+            <td data-sort-property="acc" data-sort-default-direction="desc">
+              accuracy
+            </td>
+            <td
+              data-sort-property="consistency"
+              data-sort-default-direction="desc"
+            >
               consistency
             </td>
             <td
@@ -701,9 +710,11 @@
             <!-- <td>punctuation</td> -->
             <td>info</td>
             <td>tags</td>
-            <td type="button" class="sortable history-date-header">
+            <td
+              data-sort-property="timestamp"
+              data-sort-default-direction="desc"
+            >
               date
-              <i class="fas fa-sort-down" aria-hidden="true"></i>
             </td>
           </tr>
         </thead>

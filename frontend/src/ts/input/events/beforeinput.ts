@@ -1,5 +1,6 @@
 import Config from "../../config";
 import * as TestInput from "../../test/test-input";
+import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
@@ -12,7 +13,7 @@ import { shouldInsertSpaceCharacter } from "../helpers/validation";
 import { isSupportedInputType } from "../helpers/input-type";
 
 export function onBeforeInsertText(data: string): boolean {
-  if (TestUI.testRestarting) {
+  if (TestState.testRestarting) {
     return true;
   }
 

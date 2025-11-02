@@ -67,6 +67,7 @@
     <button class="showRealWordsInput">show real words input</button>
     <button class="xpBarTest">xp bar test</button>
     <button class="toggleFakeChartData">toggle fake chart data</button>
+    <button class="toggleCaretDebug">toggle caret debug</button>
   </div>
 </dialog>
 
@@ -178,7 +179,7 @@
           <div class="title">sentry</div>
           <div class="description">
             We use Sentry to track errors and performance issues on our site, as
-            well as record annonymized user sessions to help us debug issues and
+            well as record anonymized user sessions to help us debug issues and
             improve our product.
           </div>
           <input type="checkbox" />
@@ -485,6 +486,8 @@
         <i class="fas fa-folder"></i>
         saved texts
       </div>
+    </div>
+    <div class="buttonsTop2">
       <input id="fileInput" type="file" class="hidden" accept=".txt" />
       <label for="fileInput" class="button importText">
         <i class="fas fa-file-import"></i>
@@ -493,6 +496,10 @@
       <div class="button wordfilter">
         <i class="fas fa-filter"></i>
         words filter
+      </div>
+      <div class="button customGenerator">
+        <i class="fas fa-cogs"></i>
+        custom generator
       </div>
     </div>
     <div class="savedTexts hidden" style="display: none">
@@ -758,13 +765,86 @@
         <select class="layoutInput"></select>
       </div>
       <!-- <div class="tip">Use the dropdowns above to generate presets</div> -->
-      <button class="generateButton">generate</button>
+      <button class="generateButton">apply</button>
     </div>
 
     <div class="bottom">
       <div class="tip">
         "Set" replaces the current custom word list with the filter result,
         "Add" appends the filter result to the current custom word list.
+      </div>
+      <button class="setButton">set</button>
+      <button class="addButton">add</button>
+    </div>
+  </div>
+</dialog>
+<dialog id="customGeneratorModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="main">
+      <div class="group">
+        <div class="title">presets</div>
+        <select class="presetInput">
+          <option value="alphas">a-z</option>
+          <option value="numbers">0-9</option>
+          <option value="special">symbols</option>
+          <option value="bigrams">bigrams</option>
+          <option value="trigrams">trigrams</option>
+        </select>
+        <button class="generateButton">apply</button>
+      </div>
+      <div class="separator"></div>
+      <div class="tip">
+        Enter characters or strings separated by spaces. Random combinations
+        will be generated using these inputs.
+      </div>
+      <div class="group">
+        <div class="title">character set</div>
+        <textarea
+          class="characterInput"
+          id="characterInput"
+          autocomplete="off"
+          placeholder=""
+          title="characters"
+        ></textarea>
+      </div>
+      <div class="group lengthgrid">
+        <div class="title">min length</div>
+        <div class="title">max length</div>
+
+        <input
+          class="wordLength minLengthInput"
+          autocomplete="off"
+          type="number"
+          value="2"
+          min="1"
+          title="min"
+        />
+        <input
+          class="wordLength maxLengthInput"
+          autocomplete="off"
+          type="number"
+          value="5"
+          min="1"
+          title="max"
+        />
+      </div>
+      <div class="group">
+        <div class="title">word count</div>
+        <input
+          class="wordCountInput"
+          autocomplete="off"
+          type="number"
+          value="100"
+          min="1"
+          title="word count"
+        />
+      </div>
+    </div>
+
+    <div class="bottom">
+      <div class="tip">
+        "Set" replaces the current custom text with generated words, "Add"
+        appends generated words to the current custom text.
       </div>
       <button class="setButton">set</button>
       <button class="addButton">add</button>
@@ -1025,113 +1105,6 @@
     <button>copy link to clipboard</button>
   </div>
 </dialog>
-<div id="leaderboardsWrapper" class="popupWrapper hidden">
-  <div id="leaderboards">
-    <div class="leaderboardsTop">
-      <div class="mainTitle">All-Time English Leaderboards</div>
-      <div class="subTitle">Next update in: --:--</div>
-      <div class="textButton showYesterdayButton hidden">
-        <i class="fas fa-calendar-day"></i>
-        <div class="text">Show yesterday</div>
-      </div>
-      <div class="buttons">
-        <div class="buttonGroup timeRange">
-          <div class="button allTime">all-time</div>
-          <div class="button daily">daily</div>
-          <select class="languageSelect" disabled></select>
-        </div>
-      </div>
-    </div>
-    <div class="tables">
-      <div class="titleAndTable">
-        <div class="titleAndButtons">
-          <div class="title">
-            Time 15
-            <i
-              class="hidden leftTableLoader fas fa-fw fa-spin fa-circle-notch"
-            ></i>
-          </div>
-          <div class="buttons">
-            <div class="button leftTableJumpToTop">
-              <i class="fas fa-fw fas fa-crown"></i>
-              <!-- Top -->
-            </div>
-            <div class="button leftTableJumpToMe">
-              <i class="fas fa-fw fas fa-user"></i>
-              <!-- Me -->
-            </div>
-          </div>
-        </div>
-        <div class="leftTableWrapper invisible">
-          <table class="left">
-            <thead>
-              <tr>
-                <td width="1%">#</td>
-                <td>name</td>
-                <td class="alignRight" width="1%">
-                  wpm
-                  <br />
-                  <div class="sub">accuracy</div>
-                </td>
-                <td class="alignRight" width="1%">
-                  raw
-                  <br />
-                  <div class="sub">consistency</div>
-                </td>
-                <td class="alignRight" width="125px">date</td>
-              </tr>
-            </thead>
-            <tbody></tbody>
-            <tfoot></tfoot>
-          </table>
-        </div>
-      </div>
-      <div class="titleAndTable">
-        <div class="titleAndButtons">
-          <div class="title">
-            Time 60
-            <i
-              class="hidden rightTableLoader fas fa-fw fa-spin fa-circle-notch"
-            ></i>
-          </div>
-          <div class="buttons">
-            <div class="button rightTableJumpToTop">
-              <i class="fas fa-fw fas fa-crown"></i>
-              <!-- Top -->
-            </div>
-            <div class="button rightTableJumpToMe">
-              <i class="fas fa-fw fas fa-user"></i>
-              <!-- Me -->
-            </div>
-          </div>
-        </div>
-        <div class="rightTableWrapper invisible">
-          <table class="right">
-            <thead>
-              <tr>
-                <td width="1%">#</td>
-                <td>name</td>
-                <td class="alignRight" width="1%">
-                  wpm
-                  <br />
-                  <div class="sub">accuracy</div>
-                </td>
-                <td class="alignRight" width="1%">
-                  raw
-                  <br />
-                  <div class="sub">consistency</div>
-                </td>
-                <td class="alignRight" width="120px">date</td>
-              </tr>
-            </thead>
-            <tbody></tbody>
-            <tfoot></tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 <dialog id="versionHistoryModal" class="modalWrapper hidden">
   <div class="modal"></div>
 </dialog>

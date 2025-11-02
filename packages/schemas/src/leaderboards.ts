@@ -11,6 +11,12 @@ export const LeaderboardEntrySchema = z.object({
   discordId: z.string().optional(),
   discordAvatar: z.string().optional(),
   rank: z.number().nonnegative().int(),
+  friendsRank: z
+    .number()
+    .nonnegative()
+    .int()
+    .optional()
+    .describe("only available on friendsOnly leaderboard"),
   badgeId: z.number().int().optional(),
   isPremium: z.boolean().optional(),
 });
@@ -18,13 +24,11 @@ export type LeaderboardEntry = z.infer<typeof LeaderboardEntrySchema>;
 
 export const RedisDailyLeaderboardEntrySchema = LeaderboardEntrySchema.omit({
   rank: true,
+  friendsRank: true,
 });
 export type RedisDailyLeaderboardEntry = z.infer<
   typeof RedisDailyLeaderboardEntrySchema
 >;
-
-export const DailyLeaderboardRankSchema = LeaderboardEntrySchema;
-export type DailyLeaderboardRank = z.infer<typeof DailyLeaderboardRankSchema>;
 
 export const RedisXpLeaderboardEntrySchema = z.object({
   uid: z.string(),

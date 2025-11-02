@@ -86,6 +86,7 @@ export type ExecReturn = {
   notificationOptions?: Notifications.AddNotificationOptions;
   hideOptions?: HideOptions;
   afterHide?: () => void;
+  alwaysHide?: boolean;
 };
 
 type FormInput = CommonInputType & {
@@ -171,6 +172,7 @@ export class SimpleModal {
       el.find(".submitButton").remove();
     } else {
       el.find(".submitButton").text(this.buttonText);
+      this.updateSubmitButtonState();
     }
 
     if ((this.text ?? "") === "") {
@@ -178,8 +180,6 @@ export class SimpleModal {
     } else {
       el.find(".text").removeClass("hidden");
     }
-
-    // }
   }
 
   initInputs(): void {
@@ -315,9 +315,12 @@ export class SimpleModal {
         "#" + attributes["id"]
       ) as HTMLInputElement;
 
-      if (input.oninput !== undefined) {
-        element.oninput = input.oninput;
-      }
+      const originalOnInput = element.oninput;
+      element.oninput = (e) => {
+        if (originalOnInput) originalOnInput.call(element, e);
+        input.oninput?.(e);
+        this.updateSubmitButtonState();
+      };
 
       input.currentValue = () => {
         if (element.type === "checkbox")
@@ -338,6 +341,8 @@ export class SimpleModal {
 
           callback: (result: ValidationResult) => {
             input.hasError = result.status !== "success";
+
+            this.updateSubmitButtonState();
           },
           debounceDelay: input.validation.debounceDelay,
         };
@@ -351,16 +356,12 @@ export class SimpleModal {
 
   exec(): void {
     if (!this.canClose) return;
-    if (
-      this.inputs
-        .filter((i) => i.hidden !== true && i.optional !== true)
-        .some((v) => v.currentValue() === undefined || v.currentValue() === "")
-    ) {
+    if (this.hasMissingRequired()) {
       Notifications.add("Please fill in all fields", 0);
       return;
     }
 
-    if (this.inputs.some((i) => i.hasError === true)) {
+    if (this.hasValidationErrors()) {
       Notifications.add("Please solve all validation errors", 0);
       return;
     }
@@ -373,7 +374,7 @@ export class SimpleModal {
       if (res.showNotification ?? true) {
         Notifications.add(res.message, res.status, res.notificationOptions);
       }
-      if (res.status === 1) {
+      if (res.status === 1 || res.alwaysHide) {
         void this.hide(true, res.hideOptions).then(() => {
           if (res.afterHide) {
             res.afterHide();
@@ -427,6 +428,29 @@ export class SimpleModal {
     } else {
       activePopup = null;
       await modal.hide(hideOptions);
+    }
+  }
+
+  hasMissingRequired(): boolean {
+    return this.inputs
+      .filter((i) => i.hidden !== true && i.optional !== true)
+      .some((v) => v.currentValue() === undefined || v.currentValue() === "");
+  }
+
+  hasValidationErrors(): boolean {
+    return this.inputs.some((i) => i.hasError === true);
+  }
+
+  updateSubmitButtonState(): void {
+    const button = this.element.querySelector(
+      ".submitButton"
+    ) as HTMLButtonElement;
+    if (button === null) return;
+
+    if (this.hasMissingRequired() || this.hasValidationErrors()) {
+      button.disabled = true;
+    } else {
+      button.disabled = false;
     }
   }
 }

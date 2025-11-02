@@ -40,8 +40,11 @@ async function getLog() {
   function execPromise(command) {
     return new Promise((resolve, reject) => {
       exec(command, (err, stdout, _stderr) => {
-        if (err) reject(err);
-        resolve(stdout);
+        if (err) {
+          reject(err);
+        } else {
+          resolve(stdout);
+        }
       });
     });
   }

@@ -32,7 +32,7 @@
     "start": "turbo run start",
     "start-be": "turbo run start --filter @monkeytype/backend",
     "start-fe": "turbo run start --filter @monkeytype/frontend",
-    "docker": "cd backend && docker compose up",
+    "docker": "cd backend && npm run docker",
     "audit-fe": "cd frontend && npm run audit",
     "release": "monkeytype-release",
     "release-fe": "monkeytype-release --fe",
@@ -61,23 +61,23 @@
     "knip": "knip"
   },
   "engines": {
-    "node": "20.19.4"
+    "node": "24.11.0"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "19.2.2",
     "@monkeytype/release": "workspace:*",
-    "@vitest/coverage-v8": "3.2.4",
+    "@vitest/coverage-v8": "4.0.4",
     "conventional-changelog": "6.0.0",
     "eslint": "8.57.1",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "oxlint": "1.14.0",
+    "oxlint": "1.25.0",
     "prettier": "2.8.8",
     "turbo": "2.5.6",
-    "vitest": "3.2.4"
+    "vitest": "4.0.4"
   },
   "lint-staged": {
     "*.{json,scss,css,html}": [
@@ -89,6 +89,6 @@
       "eslint"
     ]
   },
-  "version": "25.36.0",
+  "version": "25.44.0",
   "packageManager": "pnpm@9.6.0"
 }

@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import _ from "lodash";
 import * as UserDAL from "../../../src/dal/user";
 import * as UserTestData from "../../__testData__/users";
+import { createConnection as createFriend } from "../../__testData__/connections";
 import { ObjectId } from "mongodb";
 import { MonkeyMail, ResultFilters } from "@monkeytype/schemas/users";
 import { PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
@@ -1978,6 +1979,123 @@ describe("UserDal", () => {
       //then
       const read = await UserDAL.getUser(uid, "read");
       expect(read.streak?.hourOffset).toBeUndefined();
+    });
+  });
+
+  describe("getFriends", () => {
+    it("get list of friends", async () => {
+      //GIVEN
+      const me = await UserTestData.createUser({ name: "Me" });
+      const uid = me.uid;
+
+      const friendOne = await UserTestData.createUser({
+        name: "One",
+        personalBests: {
+          time: {
+            "15": [UserTestData.pb(100)],
+            "60": [UserTestData.pb(85), UserTestData.pb(90)],
+          },
+        } as any,
+        inventory: {
+          badges: [{ id: 42, selected: true }, { id: 23 }, { id: 5 }],
+        },
+        banned: true,
+        lbOptOut: true,
+        premium: { expirationTimestamp: -1 } as any,
+      });
+      const friendOneRequest = await createFriend({
+        initiatorUid: uid,
+        receiverUid: friendOne.uid,
+        status: "accepted",
+        lastModified: 100,
+      });
+      const friendTwo = await UserTestData.createUser({
+        name: "Two",
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+        timeTyping: 600,
+        startedTests: 150,
+        completedTests: 125,
+        streak: {
+          length: 10,
+          maxLength: 50,
+          lastResultTimestamp: 0,
+          hourOffset: -1,
+        } as any,
+        xp: 42,
+        inventory: {
+          badges: [{ id: 23 }, { id: 5 }],
+        },
+        premium: {
+          expirationTimestamp: vi.getRealSystemTime() + 5000,
+        } as any,
+      });
+      const friendTwoRequest = await createFriend({
+        initiatorUid: uid,
+        receiverUid: friendTwo.uid,
+        status: "accepted",
+        lastModified: 200,
+      });
+
+      const friendThree = await UserTestData.createUser({ name: "Three" });
+      const friendThreeRequest = await createFriend({
+        receiverUid: uid,
+        initiatorUid: friendThree.uid,
+        status: "accepted",
+        lastModified: 300,
+      });
+
+      //non accepted
+      await createFriend({ receiverUid: uid, status: "pending" });
+      await createFriend({ initiatorUid: uid, status: "blocked" });
+
+      //WHEN
+      const friends = await UserDAL.getFriends(uid);
+
+      //THEN
+      expect(friends).toEqual([
+        {
+          uid: friendOne.uid,
+          name: "One",
+          lastModified: 100,
+          connectionId: friendOneRequest._id,
+          // oxlint-disable-next-line no-non-null-assertion
+          top15: friendOne.personalBests.time["15"]![0] as any,
+          // oxlint-disable-next-line no-non-null-assertion
+          top60: friendOne.personalBests.time["60"]![1] as any,
+          badgeId: 42,
+          banned: true,
+          lbOptOut: true,
+          isPremium: true,
+        },
+        {
+          uid: friendTwo.uid,
+          name: "Two",
+          lastModified: 200,
+          connectionId: friendTwoRequest._id,
+          discordId: friendTwo.discordId,
+          discordAvatar: friendTwo.discordAvatar,
+          timeTyping: friendTwo.timeTyping,
+          startedTests: friendTwo.startedTests,
+          completedTests: friendTwo.completedTests,
+          streak: {
+            length: friendTwo.streak?.length,
+            maxLength: friendTwo.streak?.maxLength,
+          },
+          xp: friendTwo.xp,
+          isPremium: true,
+        },
+        {
+          uid: friendThree.uid,
+          name: "Three",
+          lastModified: 300,
+          connectionId: friendThreeRequest._id,
+        },
+        {
+          uid: me.uid,
+          name: "Me",
+        },
+      ]);
     });
   });
 });

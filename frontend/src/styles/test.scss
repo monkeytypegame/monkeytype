@@ -246,6 +246,15 @@
         }
       }
 
+      &.debugCaret {
+        outline: 1px solid var(--sub-color);
+      }
+      &.debugCaretTarget {
+        outline: 2px solid red;
+      }
+      &.debugCaretTarget2 {
+        outline: 2px solid yellow;
+      }
       &.correct {
         color: var(--correct-letter-color);
         animation: var(--correct-letter-animation);
@@ -311,10 +320,6 @@
   &.rightToLeftTest {
     //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
     direction: rtl;
-    .word {
-      //flex-direction: row-reverse;
-      direction: rtl;
-    }
   }
   &.withLigatures {
     .word {
@@ -765,10 +770,6 @@
         &.rightToLeftTest {
           //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
           direction: rtl;
-          .word {
-            //flex-direction: row-reverse;
-            direction: rtl;
-          }
         }
         &.withLigatures {
           .word {

@@ -43,7 +43,7 @@ import "./states/connection";
 import "./test/tts";
 import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
-import { isDevEnvironment } from "./utils/misc";
+import { isDevEnvironment, addToGlobal } from "./utils/misc";
 import * as VersionButton from "./elements/version-button";
 import * as Focus from "./test/focus";
 import { getDevOptionsModal } from "./utils/async-modules";
@@ -71,13 +71,6 @@ Object.defineProperty(window, "Math", {
   configurable: false,
   enumerable: true,
 });
-
-function addToGlobal(items: Record<string, unknown>): void {
-  for (const [name, item] of Object.entries(items)) {
-    //@ts-expect-error dev
-    window[name] = item;
-  }
-}
 
 void loadFromLocalStorage();
 void VersionButton.update();

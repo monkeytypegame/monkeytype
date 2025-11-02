@@ -3,7 +3,11 @@ import * as TestWords from "../../test/test-words";
 import * as TestState from "../../test/test-state";
 import * as TestInput from "../../test/test-input";
 import { findSingleActiveFunboxWithFunction } from "../../test/funbox/list";
-import { isSpace, replaceSpaceLikeCharacters } from "../../utils/strings";
+import {
+  areCharactersVisuallyEqual,
+  isSpace,
+  replaceSpaceLikeCharacters,
+} from "../../utils/strings";
 
 export function isCharCorrect(
   data: string,
@@ -57,34 +61,8 @@ export function isCharCorrect(
     }
   }
 
-  if (
-    (input === "’" ||
-      input === "‘" ||
-      input === "'" ||
-      input === "ʼ" ||
-      input === "׳" ||
-      input === "ʻ") &&
-    (target === "’" ||
-      target === "‘" ||
-      target === "'" ||
-      target === "ʼ" ||
-      target === "׳" ||
-      target === "ʻ")
-  ) {
-    return true;
-  }
-
-  if (
-    (input === `"` || input === "”" || input === "“" || input === "„") &&
-    (target === `"` || target === "”" || target === "“" || target === "„")
-  ) {
-    return true;
-  }
-
-  if (
-    (input === "–" || input === "—" || input === "-") &&
-    (target === "-" || target === "–" || target === "—")
-  ) {
+  const visuallyEqual = areCharactersVisuallyEqual(input, target);
+  if (visuallyEqual) {
     return true;
   }
 

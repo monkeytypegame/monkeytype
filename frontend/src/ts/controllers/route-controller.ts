@@ -144,6 +144,21 @@ const routes: Route[] = [
       });
     },
   },
+  {
+    path: "/friends",
+    load: async (_params, options) => {
+      if (!isAuthAvailable()) {
+        await navigate("/", options);
+        return;
+      }
+      if (!isAuthenticated()) {
+        await navigate("/login", options);
+        return;
+      }
+
+      await PageController.change("friends", options);
+    },
+  },
 ];
 
 export async function navigate(
@@ -154,11 +169,13 @@ export async function navigate(
 ): Promise<void> {
   if (
     !options.force &&
-    (TestUI.testRestarting || TestUI.resultCalculating || PageTransition.get())
+    (TestState.testRestarting ||
+      TestUI.resultCalculating ||
+      PageTransition.get())
   ) {
     console.debug(
       `navigate: ${url} ignored, page is busy (testRestarting: ${
-        TestUI.testRestarting
+        TestState.testRestarting
       }, resultCalculating: ${
         TestUI.resultCalculating
       }, pageTransition: ${PageTransition.get()})`
