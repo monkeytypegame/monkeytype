@@ -436,7 +436,7 @@ function updateWordWrapperClasses(): void {
     $("#wordsWrapper").removeClass("blind");
   }
 
-  if (Config.indicateTypos === "below") {
+  if (Config.indicateTypos === "below" || Config.indicateTypos === "all") {
     $("#words").addClass("indicateTyposBelow");
     $("#wordsWrapper").addClass("indicateTyposBelow");
   } else {
@@ -791,7 +791,7 @@ export async function updateActiveWordLetters(
         !(containsKorean && !correctSoFar)
       ) {
         ret += `<letter class="dead">${
-          Config.indicateTypos === "replace"
+          Config.indicateTypos === "replace" || Config.indicateTypos === "all"
             ? inputChars[i] === " "
               ? "_"
               : inputChars[i]
@@ -806,13 +806,16 @@ export async function updateActiveWordLetters(
       } else {
         ret +=
           `<letter class="incorrect ${tabChar}${nlChar}">` +
-          (Config.indicateTypos === "replace"
+          (Config.indicateTypos === "replace" || Config.indicateTypos === "all"
             ? inputChars[i] === " "
               ? "_"
               : inputChars[i]
             : currentLetter) +
           "</letter>";
-        if (Config.indicateTypos === "below") {
+        if (
+          Config.indicateTypos === "below" ||
+          Config.indicateTypos === "all"
+        ) {
           const lastBlock = hintIndices[hintIndices.length - 1];
           if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1)
             lastBlock.push(i);
@@ -839,7 +842,12 @@ export async function updateActiveWordLetters(
 
   if (hintIndices?.length) {
     const activeWordLetters = activeWord.querySelectorAll("letter");
-    const hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
+    let hintsHtml;
+    if (Config.indicateTypos === "all") {
+      hintsHtml = createHintsHtml(hintIndices, activeWordLetters, currentWord);
+    } else {
+      hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
+    }
     activeWord.insertAdjacentHTML("beforeend", hintsHtml);
     const hintElements = activeWord.getElementsByTagName("hint");
     await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
