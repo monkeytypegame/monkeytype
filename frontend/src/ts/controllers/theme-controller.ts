@@ -323,29 +323,22 @@ export async function randomizeTheme(): Promise<void> {
     await changeThemeList();
     if (themesList.length === 0) return;
   }
+
+  let filter = (_: string): boolean => true;
   if (Config.randomTheme === "auto") {
-    const filter = prefersColorSchemeDark() ? isColorDark : isColorLight;
-    let theme = null;
+    filter = prefersColorSchemeDark() ? isColorDark : isColorLight;
+  }
 
-    while (theme === null || !filter(theme.bgColor)) {
-      randomThemeIndex++;
-
-      if (randomThemeIndex >= themesList.length) {
-        Arrays.shuffle(themesList);
-        randomThemeIndex = 0;
-      }
-
-      randomTheme = themesList[randomThemeIndex] as string;
-      theme = themes[themesList[randomThemeIndex] as ThemeName];
-    }
-  } else {
+  let nextTheme = null;
+  do {
     randomTheme = themesList[randomThemeIndex] as string;
+    nextTheme = themes[themesList[randomThemeIndex] as ThemeName];
     randomThemeIndex++;
     if (randomThemeIndex >= themesList.length) {
       Arrays.shuffle(themesList);
       randomThemeIndex = 0;
     }
-  }
+  } while (!filter(nextTheme.bgColor));
 
   let colorsOverride: string[] | undefined;
 
@@ -358,10 +351,10 @@ export async function randomizeTheme(): Promise<void> {
   }
 
   setCustomTheme(false, true);
-  await apply(randomTheme as string, colorsOverride);
+  await apply(randomTheme, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
-    let name = (randomTheme as string).replace(/_/g, " ");
+    let name = randomTheme.replace(/_/g, " ");
     if (Config.randomTheme === "custom") {
       name = (
         DB.getSnapshot()?.customThemes?.find((ct) => ct._id === randomTheme)
