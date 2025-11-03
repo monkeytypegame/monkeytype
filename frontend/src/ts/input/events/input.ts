@@ -70,7 +70,6 @@ export async function onInsertText({
   now,
   multiIndex,
   lastInMultiIndex,
-  isCompositionEnding,
 }: OnInsertTextParams): Promise<void> {
   if (data.length > 1) {
     for (let i = 0; i < data.length; i++) {
@@ -231,12 +230,7 @@ export async function onInsertText({
   }
 
   if (lastInMultiOrDisabled) {
-    TestUI.afterTestTextInput(
-      correct,
-      increasedWordIndex,
-      isCompositionEnding,
-      visualInputOverride
-    );
+    TestUI.afterTestTextInput(correct, increasedWordIndex, visualInputOverride);
   }
 }
 
