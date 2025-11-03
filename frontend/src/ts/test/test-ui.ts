@@ -1668,7 +1668,7 @@ function afterAnyTestInput(correctInput: boolean | null): void {
 export function afterTestTextInput(
   correct: boolean,
   increasedWordIndex: boolean | null,
-  compositionAutomaticallyEnded: boolean | null,
+  compositionEnding: boolean | undefined,
   inputOverride?: string
 ): void {
   let override: string | undefined;
@@ -1682,7 +1682,7 @@ export function afterTestTextInput(
   setActiveWordTop();
   if (!increasedWordIndex) void updateActiveWordLetters(override);
 
-  if (compositionAutomaticallyEnded) return;
+  if (compositionEnding) return;
   afterAnyTestInput(correct);
 }
 

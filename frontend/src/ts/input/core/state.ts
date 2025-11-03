@@ -3,7 +3,6 @@ let incorrectShiftsInARow = 0;
 let awaitingNextWord = false;
 let lastBailoutAttempt = -1;
 let lastInsertCompositionTextData = "";
-let lastCompositionUpdateSameAsInput = false;
 
 export function isCorrectShiftUsed(): boolean {
   return correctShiftUsed;
@@ -51,12 +50,4 @@ export function getLastInsertCompositionTextData(): string {
 
 export function setLastInsertCompositionTextData(value: string): void {
   lastInsertCompositionTextData = value;
-}
-
-export function getLastCompositionUpdateSameAsInput(): boolean {
-  return lastCompositionUpdateSameAsInput;
-}
-
-export function setLastCompositionUpdateSameAsInput(value: boolean): void {
-  lastCompositionUpdateSameAsInput = value;
 }

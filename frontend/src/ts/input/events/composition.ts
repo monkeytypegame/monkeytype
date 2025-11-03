@@ -3,11 +3,7 @@ import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestLogic from "../../test/test-logic";
 import { onInsertText } from "./input";
-import {
-  setLastCompositionUpdateSameAsInput,
-  setLastInsertCompositionTextData,
-} from "../core/state";
-import { getInputValue } from "../core/input-element";
+import { setLastInsertCompositionTextData } from "../core/state";
 
 export function handleCompositionStart(event: CompositionEvent): void {
   CompositionState.setComposing(true);
@@ -21,12 +17,6 @@ export function handleCompositionStart(event: CompositionEvent): void {
 
 export function handleCompositionUpdate(event: CompositionEvent): void {
   CompositionState.setData(event.data);
-  const { inputValue } = getInputValue();
-  if (inputValue.slice(-event.data.length) === event.data) {
-    setLastCompositionUpdateSameAsInput(true);
-  } else {
-    setLastCompositionUpdateSameAsInput(false);
-  }
 }
 
 export async function handleCompositionEnd(

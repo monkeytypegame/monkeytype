@@ -29,7 +29,6 @@ import {
   resetIncorrectShiftsInARow,
   getLastInsertCompositionTextData,
   setLastInsertCompositionTextData,
-  getLastCompositionUpdateSameAsInput,
 } from "../core/state";
 import * as Notifications from "../../elements/notifications";
 import { goToNextWord } from "../helpers/word-navigation";
@@ -232,18 +231,10 @@ export async function onInsertText({
   }
 
   if (lastInMultiOrDisabled) {
-    // this is not a bulletproof way to stop double sound on click with composition end,
-    // but it will work for now
-    let compositionAutomaticallyEnded = null;
-
-    if (isCompositionEnding) {
-      compositionAutomaticallyEnded = !getLastCompositionUpdateSameAsInput();
-    }
-
     TestUI.afterTestTextInput(
       correct,
       increasedWordIndex,
-      compositionAutomaticallyEnded,
+      isCompositionEnding,
       visualInputOverride
     );
   }
