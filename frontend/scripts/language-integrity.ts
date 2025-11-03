@@ -8,7 +8,7 @@ const resolvedVirtualModuleId = "\0" + virtualModuleId;
 
 export function languageHashes(): Plugin {
   return {
-    name: "virtual-build-info",
+    name: "virtual-language-hashes",
     resolveId(id) {
       if (id === virtualModuleId) return resolvedVirtualModuleId;
       return;
