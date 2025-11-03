@@ -10,61 +10,61 @@
     {
       "text": "echo \"Hello, World!\"",
       "source": "Basic Hello World in Bash",
-      "length": 22,
+      "length": 20,
       "id": 1
     },
     {
       "text": "#!/bin/bash\n\n# This script prints numbers from 1 to 10\nfor i in {1..10}\ndo\n  echo $i\ndone",
       "source": "Looping through numbers in Bash",
-      "length": 95,
+      "length": 89,
       "id": 2
     },
     {
       "text": "#!/bin/bash\n\n# Check if a file exists\nFILE=\"/path/to/file.txt\"\nif [ -f \"$FILE\" ]; then\n  echo \"$FILE exists.\"\nelse\n  echo \"$FILE does not exist.\"\nfi",
       "source": "File existence check in Bash",
-      "length": 164,
+      "length": 148,
       "id": 3
     },
     {
       "text": "#!/bin/bash\n\n# Read user input\necho \"Enter your name:\"\nread NAME\necho \"Hello, $NAME!\"",
       "source": "Reading user input in Bash",
-      "length": 94,
+      "length": 85,
       "id": 4
     },
     {
       "text": "#!/bin/bash\n\n# Function to greet a user\ngreet() {\n  echo \"Hello, $1!\"\n}\n\ngreet \"Alice\"",
       "source": "Defining and using functions in Bash",
-      "length": 97,
+      "length": 86,
       "id": 5
     },
     {
       "text": "#!/bin/bash\n\n# Using command line arguments\necho \"Script name: $0\"\necho \"First argument: $1\"\necho \"Second argument: $2\"",
       "source": "Using command line arguments in Bash",
-      "length": 130,
+      "length": 119,
       "id": 6
     },
     {
       "text": "#!/bin/bash\n\n# Simple case statement\necho \"Enter a number between 1 and 3:\"\nread NUM\ncase $NUM in\n  1)\n    echo \"You entered one.\" ;;\n  2)\n    echo \"You entered two.\" ;;\n  3)\n    echo \"You entered three.\" ;;\n  *)\n    echo \"Invalid input.\" ;;\nesac",
       "source": "Using case statements in Bash",
-      "length": 270,
+      "length": 246,
       "id": 7
     },
     {
       "text": "#!/bin/bash\n\n# Create a new directory\nNEW_DIR=\"/path/to/new_directory\"\nmkdir -p \"$NEW_DIR\"\necho \"Directory $NEW_DIR created successfully.\"",
       "source": "Creating a new directory in Bash",
-      "length": 149,
+      "length": 138,
       "id": 8
     },
     {
       "text": "#!/bin/bash\n\n# Backup a directory\nSOURCE_DIR=\"/path/to/source\"\nBACKUP_DIR=\"/path/to/backup\"\ntar -czf \"$BACKUP_DIR/backup_$(date +%F).tar.gz\" -C \"$SOURCE_DIR\" .",
       "source": "Backing up a directory in Bash",
-      "length": 172,
+      "length": 159,
       "id": 9
     },
     {
       "text": "#!/bin/bash\n\n# Monitor disk usage\ndf -h | grep '^/dev/' | while read line; do\n  USAGE=$(echo $line | awk '{print $5}' | sed 's/%//')\n  if [ $USAGE -gt 80 ]; then\n    echo \"Warning: Disk usage is at ${USAGE}%\"\n  fi\ndone",
       "source": "Monitoring disk usage in Bash",
-      "length": 228,
+      "length": 218,
       "id": 10
     }
   ]
