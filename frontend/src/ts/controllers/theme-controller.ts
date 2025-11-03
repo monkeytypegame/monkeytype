@@ -11,7 +11,7 @@ import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import { debounce } from "throttle-debounce";
 import { ThemeName } from "@monkeytype/schemas/configs";
-import { ThemesList } from "../constants/themes";
+import { themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 
 export let randomTheme: ThemeName | string | null = null;
@@ -307,7 +307,7 @@ async function changeThemeList(): Promise<void> {
     themesList = themes
       .filter((t) => isColorDark(t.bgColor))
       .map((t) => t.name);
-  } else if (Config.randomTheme === "on") {
+  } else if (Config.randomTheme === "on" || Config.randomTheme === "auto") {
     themesList = themes.map((t) => {
       return t.name;
     });
@@ -323,12 +323,28 @@ export async function randomizeTheme(): Promise<void> {
     await changeThemeList();
     if (themesList.length === 0) return;
   }
-  randomTheme = themesList[randomThemeIndex] as string;
-  randomThemeIndex++;
+  if (Config.randomTheme === "auto") {
+    const filter = prefersColorSchemeDark() ? isColorDark : isColorLight;
+    let theme = null;
 
-  if (randomThemeIndex >= themesList.length) {
-    Arrays.shuffle(themesList);
-    randomThemeIndex = 0;
+    while (theme === null || !filter(theme.bgColor)) {
+      randomThemeIndex++;
+
+      if (randomThemeIndex >= themesList.length) {
+        Arrays.shuffle(themesList);
+        randomThemeIndex = 0;
+      }
+
+      randomTheme = themesList[randomThemeIndex] as string;
+      theme = themes[themesList[randomThemeIndex] as ThemeName];
+    }
+  } else {
+    randomTheme = themesList[randomThemeIndex] as string;
+    randomThemeIndex++;
+    if (randomThemeIndex >= themesList.length) {
+      Arrays.shuffle(themesList);
+      randomThemeIndex = 0;
+    }
   }
 
   let colorsOverride: string[] | undefined;
@@ -342,10 +358,10 @@ export async function randomizeTheme(): Promise<void> {
   }
 
   setCustomTheme(false, true);
-  await apply(randomTheme, colorsOverride);
+  await apply(randomTheme as string, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
-    let name = randomTheme.replace(/_/g, " ");
+    let name = (randomTheme as string).replace(/_/g, " ");
     if (Config.randomTheme === "custom") {
       name = (
         DB.getSnapshot()?.customThemes?.find((ct) => ct._id === randomTheme)
@@ -484,7 +500,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     await clearRandom();
     await clearPreview(false);
     if (Config.autoSwitchTheme) {
-      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+      if (prefersColorSchemeDark()) {
         await set(Config.themeDark, true);
       } else {
         await set(Config.themeLight, true);
@@ -523,7 +539,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
   if (eventKey === "autoSwitchTheme") {
     if (eventValue as boolean) {
-      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+      if (prefersColorSchemeDark()) {
         await set(Config.themeDark, true);
       } else {
         await set(Config.themeLight, true);
@@ -535,7 +551,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (
     eventKey === "themeLight" &&
     Config.autoSwitchTheme &&
-    !window.matchMedia?.("(prefers-color-scheme: dark)").matches &&
+    !prefersColorSchemeDark() &&
     !nosave
   ) {
     await set(Config.themeLight, true);
@@ -569,3 +585,7 @@ window.addEventListener("customBackgroundFailed", () => {
     { duration: 5 }
   );
 });
+
+function prefersColorSchemeDark(): boolean {
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+}
