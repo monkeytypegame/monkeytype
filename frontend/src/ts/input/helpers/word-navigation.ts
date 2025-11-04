@@ -19,6 +19,7 @@ import { DeleteInputType } from "./input-type";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
+  isCompositionEnding: boolean;
 };
 
 type GoToNextWordReturn = {
@@ -28,13 +29,14 @@ type GoToNextWordReturn = {
 
 export async function goToNextWord({
   correctInsert,
+  isCompositionEnding,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
   const ret = {
     increasedWordIndex: false,
     lastBurst: 0,
   };
 
-  TestUI.beforeTestWordChange("forward", correctInsert);
+  TestUI.beforeTestWordChange("forward", correctInsert, isCompositionEnding);
 
   if (correctInsert) {
     Replay.addReplayEvent("submitCorrectWord");
@@ -87,7 +89,7 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
     return;
   }
 
-  TestUI.beforeTestWordChange("back", null);
+  TestUI.beforeTestWordChange("back", null, false);
 
   Replay.addReplayEvent("backWord");
 
