@@ -96,7 +96,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     return;
   }
 
-  const lastInMultiOrDisabled = multiIndex === undefined || lastInMultiIndex;
+  const lastInMultiOrDisabled =
+    multiIndex === undefined || (lastInMultiIndex ?? true);
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
 
@@ -192,6 +193,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     const result = await goToNextWord({
       correctInsert: correct,
       isCompositionEnding: isCompositionEnding === true,
+      lastInMultiOrDisabled,
     });
     lastBurst = result.lastBurst;
     increasedWordIndex = result.increasedWordIndex;
@@ -207,6 +209,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
    - increasedWordIndex: the only reason this is here because on the last word we dont move to the next word
   */
 
+  //this COULD be the next word because we are awaiting goToNextWord
   const currentWord = TestWords.words.getCurrent();
   const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
   const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
