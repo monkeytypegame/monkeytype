@@ -65,18 +65,15 @@ type OnInsertTextParams = {
   lastInMultiIndex?: boolean;
 };
 
-export async function onInsertText({
-  data,
-  now,
-  multiIndex,
-  lastInMultiIndex,
-}: OnInsertTextParams): Promise<void> {
+export async function onInsertText(options: OnInsertTextParams): Promise<void> {
+  const { data, now, multiIndex, lastInMultiIndex } = options;
+
   if (data.length > 1) {
     for (let i = 0; i < data.length; i++) {
       const char = data[i] as string;
       await onInsertText({
+        ...options,
         data: char,
-        now,
         multiIndex: i,
         lastInMultiIndex: i === data.length - 1,
       });
@@ -91,8 +88,8 @@ export async function onInsertText({
   ) {
     for (const char of charOverride) {
       await onInsertText({
+        ...options,
         data: char,
-        now,
       });
     }
     return;
