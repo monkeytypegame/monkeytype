@@ -210,6 +210,16 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
     },
   },
+  blindModeAudioFeedback: {
+    subgroup: {
+      options: "fromSchema",
+    },
+  },
+  blindModeSpeechRate: {
+    input: {
+      inputValueConvert: Number,
+    },
+  },
   alwaysShowWordsHistory: {
     subgroup: {
       options: "fromSchema",

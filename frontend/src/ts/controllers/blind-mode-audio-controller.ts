@@ -5,9 +5,9 @@ import * as SoundController from "./sound-controller";
 
 let voice: SpeechSynthesisUtterance | undefined;
 let isInitialized = false;
-let isSpeaking = false;
-let currentWordIndex = -1;
-let totalWords = 0;
+let _isSpeaking = false;
+let _currentWordIndex = -1;
+let _totalWords = 0;
 
 // Audio oscillator for additional feedback
 let audioContext: AudioContext | undefined;
@@ -33,22 +33,22 @@ export async function init(): Promise<void> {
   await initAudioContext();
 
   isInitialized = true;
-  currentWordIndex = -1;
-  totalWords = 0;
+  _currentWordIndex = -1;
+  _totalWords = 0;
 }
 
 export function clear(): void {
   window.speechSynthesis.cancel();
   voice = undefined;
   isInitialized = false;
-  isSpeaking = false;
-  currentWordIndex = -1;
-  totalWords = 0;
+  _isSpeaking = false;
+  _currentWordIndex = -1;
+  _totalWords = 0;
 }
 
 export function stop(): void {
   window.speechSynthesis.cancel();
-  isSpeaking = false;
+  _isSpeaking = false;
 }
 
 async function speak(text: string, rate?: number): Promise<void> {
@@ -60,13 +60,13 @@ async function speak(text: string, rate?: number): Promise<void> {
   voice.text = text;
   voice.rate = rate ?? Config.blindModeSpeechRate;
 
-  isSpeaking = true;
+  _isSpeaking = true;
 
   window.speechSynthesis.speak(voice);
 
   // Wait for speech to end
   voice.onend = () => {
-    isSpeaking = false;
+    _isSpeaking = false;
   };
 }
 
@@ -133,7 +133,7 @@ export async function announceNextWord(word: string, wordIndex: number): Promise
   if (Config.blindModeAudioFeedback === "off") return;
   if (!Config.blindMode) return;
 
-  currentWordIndex = wordIndex;
+  _currentWordIndex = wordIndex;
 
   if (Config.blindModeAudioFeedback === "full") {
     // In full mode, speak each word
@@ -192,7 +192,7 @@ export async function announceWordCompletion(isCorrect: boolean): Promise<void> 
 export async function announceTestStart(
   mode: string,
   value: number,
-  language: string
+  _language: string
 ): Promise<void> {
   if (Config.blindModeAudioFeedback === "off") return;
   if (!Config.blindMode) return;
@@ -201,7 +201,7 @@ export async function announceTestStart(
     if (mode === "time") {
       await speak(`${value} second test starting`);
     } else if (mode === "words") {
-      totalWords = value;
+      _totalWords = value;
       await speak(`${value} word test starting`);
     } else {
       await speak("Test starting");
@@ -228,19 +228,20 @@ export async function announceTestComplete(
   } else if (Config.blindModeAudioFeedback === "minimal") {
     // Play a completion sound sequence
     if (audioContext) {
+      const ctx = audioContext;
       const playNote = (freq: number, delay: number): void => {
         setTimeout(() => {
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
+          const oscillator = ctx.createOscillator();
+          const gainNode = ctx.createGain();
 
           oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
+          gainNode.connect(ctx.destination);
 
           oscillator.frequency.value = freq;
           gainNode.gain.value = 0.15 * Config.soundVolume;
 
           oscillator.start();
-          oscillator.stop(audioContext.currentTime + 0.15);
+          oscillator.stop(ctx.currentTime + 0.15);
         }, delay);
       };
 
@@ -264,7 +265,7 @@ export async function announceTimeWarning(secondsLeft: number): Promise<void> {
   }
 
   // Always play the time warning sound
-  SoundController.playTimeWarning();
+  void SoundController.playTimeWarning();
 }
 
 /**
