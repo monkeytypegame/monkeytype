@@ -66,7 +66,8 @@ type OnInsertTextParams = {
 };
 
 export async function onInsertText(options: OnInsertTextParams): Promise<void> {
-  const { data, now, multiIndex, lastInMultiIndex } = options;
+  const { data, now, multiIndex, lastInMultiIndex, isCompositionEnding } =
+    options;
 
   if (data.length > 1) {
     for (let i = 0; i < data.length; i++) {
@@ -95,6 +96,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     return;
   }
 
+  const lastInMultiOrDisabled = multiIndex === undefined || lastInMultiIndex;
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
 
@@ -126,7 +128,14 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
   const charIsNotSpace = !isSpace(data);
   if (charIsNotSpace || shouldInsertSpace) {
-    setTestInputToDOMValue(data === "\n");
+    if (lastInMultiOrDisabled) {
+      //if in single mode (or when multi mode is done) - set input to dom value
+      console.log(`calling setTestInputToDOMValue with data: '${data}'`);
+      setTestInputToDOMValue(data === "\n");
+    } else {
+      // in multi mode, we need to add each character one by one
+      TestInput.input.current += data;
+    }
   }
 
   TestInput.setCurrentNotAfk();
@@ -183,6 +192,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (shouldGoToNextWord) {
     const result = await goToNextWord({
       correctInsert: correct,
+      isCompositionEnding: isCompositionEnding === true,
     });
     lastBurst = result.lastBurst;
     increasedWordIndex = result.increasedWordIndex;
@@ -213,8 +223,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       void emulateInsertText("\t", now);
     }, 0);
   }
-
-  const lastInMultiOrDisabled = multiIndex === undefined || lastInMultiIndex;
 
   if (!CompositionState.getComposing() && lastInMultiOrDisabled) {
     if (checkIfFailedDueToDifficulty(spaceOrNewLine)) {
