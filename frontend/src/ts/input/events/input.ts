@@ -85,19 +85,10 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     for (let i = 0; i < data.length; i++) {
       const char = data[i] as string;
 
-      // // then add it one by one
-      // getWordsInput().value += char;
-
-      // await onInsertText({
-      //   ...options,
-      //   data: char,
-      //   multiIndex: i,
-      //   lastInMultiIndex: i === data.length - 1,
-      // });
-
-      // // then add it one by one
-      await emulateInsertText(char, now, {
+      // then add it one by one
+      await emulateInsertText({
         ...options,
+        data: char,
         multiIndex: i,
         lastInMultiIndex: i === data.length - 1,
       });
@@ -237,7 +228,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     isCurrentCharTab
   ) {
     setTimeout(() => {
-      void emulateInsertText("\t", now);
+      void emulateInsertText({ data: "\t", now });
     }, 0);
   }
 
@@ -257,11 +248,9 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 }
 
 export async function emulateInsertText(
-  data: string,
-  now: number,
-  insertTextOptions?: Partial<OnInsertTextParams>
+  options: OnInsertTextParams
 ): Promise<void> {
-  const preventDefault = onBeforeInsertText(data);
+  const preventDefault = onBeforeInsertText(options.data);
 
   if (preventDefault) {
     return;
@@ -272,13 +261,7 @@ export async function emulateInsertText(
   // because onBeforeInsertText can also block the event
   // setInputValue and setTestInputToDOMValue will be called later be updated in onInsertText
   const { inputValue } = getInputValue();
-  getWordsInput().value = " " + inputValue + data;
-
-  const options = {
-    ...insertTextOptions,
-    data,
-    now,
-  } as OnInsertTextParams;
+  getWordsInput().value = " " + inputValue + options.data;
 
   await onInsertText(options);
 }

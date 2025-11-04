@@ -61,7 +61,7 @@ async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
     }
   }
   if (TestWords.hasTab) {
-    await emulateInsertText("\t", now);
+    await emulateInsertText({ data: "\t", now });
     e.preventDefault();
     return;
   }
@@ -112,7 +112,7 @@ async function handleEnter(e: KeyboardEvent, now: number): Promise<void> {
     TestWords.hasNewline ||
     (Config.mode === "zen" && !CompositionState.getComposing())
   ) {
-    await emulateInsertText("\n", now);
+    await emulateInsertText({ data: "\n", now });
     e.preventDefault();
     return;
   }
@@ -154,7 +154,7 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
   for (const fb of getActiveFunboxesWithFunction("getEmulatedChar")) {
     const emulatedChar = fb.functions.getEmulatedChar(event);
     if (emulatedChar !== null) {
-      await emulateInsertText(emulatedChar, now);
+      await emulateInsertText({ data: emulatedChar, now });
       event.preventDefault();
       return;
     }
@@ -163,7 +163,7 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
   if (Config.layout !== "default") {
     const emulatedChar = await getCharFromEvent(event);
     if (emulatedChar !== null) {
-      await emulateInsertText(emulatedChar, now);
+      await emulateInsertText({ data: emulatedChar, now });
       event.preventDefault();
       return;
     }
