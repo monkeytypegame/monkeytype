@@ -28,6 +28,7 @@ export async function setLanguage(lang = Config.language): Promise<void> {
 export async function init(): Promise<void> {
   if (isInitialized) return;
 
+  console.log("[BlindModeAudio] Initializing...");
   voice = new SpeechSynthesisUtterance();
   await setLanguage();
   await initAudioContext();
@@ -35,6 +36,7 @@ export async function init(): Promise<void> {
   isInitialized = true;
   _currentWordIndex = -1;
   _totalWords = 0;
+  console.log("[BlindModeAudio] Initialized successfully");
 }
 
 export function clear(): void {
@@ -52,8 +54,12 @@ export function stop(): void {
 }
 
 async function speak(text: string, rate?: number): Promise<void> {
+  console.log("[BlindModeAudio] Speaking:", text);
   if (!isInitialized) await init();
-  if (voice === undefined) return;
+  if (voice === undefined) {
+    console.error("[BlindModeAudio] Voice is undefined!");
+    return;
+  }
 
   window.speechSynthesis.cancel();
 
@@ -72,8 +78,12 @@ async function speak(text: string, rate?: number): Promise<void> {
 
 // Play a short beep for correct keypress (minimal mode)
 async function playCorrectBeep(): Promise<void> {
+  console.log("[BlindModeAudio] Playing correct beep");
   if (!audioContext) await initAudioContext();
-  if (!audioContext) return;
+  if (!audioContext) {
+    console.error("[BlindModeAudio] AudioContext not available!");
+    return;
+  }
 
   const oscillator = audioContext.createOscillator();
   const gainNode = audioContext.createGain();
@@ -130,6 +140,13 @@ async function playWordCompletionSound(): Promise<void> {
  * Announces the next word to type
  */
 export async function announceNextWord(word: string, wordIndex: number): Promise<void> {
+  console.log("[BlindModeAudio] announceNextWord called:", {
+    word,
+    wordIndex,
+    blindMode: Config.blindMode,
+    audioFeedback: Config.blindModeAudioFeedback,
+  });
+
   if (Config.blindModeAudioFeedback === "off") return;
   if (!Config.blindMode) return;
 
@@ -148,6 +165,12 @@ export async function announceNextWord(word: string, wordIndex: number): Promise
  * Provides feedback on keypress (correct or incorrect)
  */
 export function feedbackOnKeypress(isCorrect: boolean): void {
+  console.log("[BlindModeAudio] feedbackOnKeypress:", {
+    isCorrect,
+    blindMode: Config.blindMode,
+    audioFeedback: Config.blindModeAudioFeedback,
+  });
+
   if (Config.blindModeAudioFeedback === "off") return;
   if (!Config.blindMode) return;
 
