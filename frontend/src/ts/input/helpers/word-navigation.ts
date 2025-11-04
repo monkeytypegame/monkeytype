@@ -22,7 +22,7 @@ type GoToNextWordParams = {
   // this is used to tell test ui to update the word before moving to the next word (in case of a composition that ends with a space)
   isCompositionEnding: boolean;
   // in case mulit mode (usually composition) inserts a space in the middle, we want to NOT clear the input
-  lastInMultiOrDisabled: boolean;
+  lastInMultiOrSingle: boolean;
 };
 
 type GoToNextWordReturn = {
@@ -33,7 +33,7 @@ type GoToNextWordReturn = {
 export async function goToNextWord({
   correctInsert,
   isCompositionEnding,
-  lastInMultiOrDisabled,
+  lastInMultiOrSingle,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
   const ret = {
     increasedWordIndex: false,
@@ -82,7 +82,7 @@ export async function goToNextWord({
   }
 
   if (isCompositionEnding) {
-    if (lastInMultiOrDisabled) {
+    if (lastInMultiOrSingle) {
       setInputValue("");
     } else {
       // in case composition inserts multiple words, we need to remove the first word

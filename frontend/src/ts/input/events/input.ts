@@ -56,14 +56,20 @@ type OnInsertTextParams = {
   // data being inserted
   data: string;
   // true if called by compositionEnd
-  isCompositionEnding?: boolean;
-
-  // this is for handling multi character inputs
-  // need to keep track which character we are checking
-  multiIndex?: number;
-  // are we on the last character of a multi character input
-  lastInMultiIndex?: boolean;
-};
+  isCompositionEnding?: true;
+} & (
+  | {
+      // this is for handling multi character inputs
+      // need to keep track which character we are checking
+      multiIndex: number;
+      // are we on the last character of a multi character input
+      lastInMultiIndex: boolean;
+    }
+  | {
+      multiIndex?: undefined;
+      lastInMultiIndex?: undefined;
+    }
+);
 
 export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const { data, now, multiIndex, lastInMultiIndex, isCompositionEnding } =
@@ -96,8 +102,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     return;
   }
 
-  const lastInMultiOrDisabled =
-    multiIndex === undefined || (lastInMultiIndex ?? true);
+  const lastInMultiOrSingle = multiIndex === undefined || lastInMultiIndex;
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
 
@@ -129,7 +134,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
   const charIsNotSpace = !isSpace(data);
   if (charIsNotSpace || shouldInsertSpace) {
-    if (lastInMultiOrDisabled) {
+    if (lastInMultiOrSingle) {
       //if in single mode (or when multi mode is done) - set input to dom value
       setTestInputToDOMValue(data === "\n");
     } else {
@@ -193,7 +198,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     const result = await goToNextWord({
       correctInsert: correct,
       isCompositionEnding: isCompositionEnding === true,
-      lastInMultiOrDisabled,
+      lastInMultiOrSingle,
     });
     lastBurst = result.lastBurst;
     increasedWordIndex = result.increasedWordIndex;
@@ -226,7 +231,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     }, 0);
   }
 
-  if (!CompositionState.getComposing() && lastInMultiOrDisabled) {
+  if (!CompositionState.getComposing() && lastInMultiOrSingle) {
     if (checkIfFailedDueToDifficulty(spaceOrNewLine)) {
       TestLogic.fail("difficulty");
     } else if (increasedWordIndex && checkIfFailedDueToMinBurst(lastBurst)) {
@@ -236,7 +241,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     }
   }
 
-  if (lastInMultiOrDisabled) {
+  if (lastInMultiOrSingle) {
     TestUI.afterTestTextInput(correct, increasedWordIndex, visualInputOverride);
   }
 }
