@@ -34,6 +34,8 @@ const obj = {
   freedomMode: false,
   difficulty: "normal",
   blindMode: false,
+  blindModeAudioFeedback: "off",
+  blindModeSpeechRate: 1.0,
   quickEnd: false,
   caretStyle: "default",
   paceCaretStyle: "default",

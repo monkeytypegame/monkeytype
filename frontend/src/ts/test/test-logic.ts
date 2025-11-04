@@ -47,6 +47,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
 import * as Last10Average from "../elements/last-10-average";
 import * as Monkey from "./monkey";
+import * as BlindModeAudio from "../controllers/blind-mode-audio-controller";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
@@ -138,6 +139,16 @@ export function startTest(now: number): boolean {
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(now);
   void TestTimer.start();
+
+  // Announce test start for blind mode
+  const modeValue = Config.mode === "time" ? Config.time : Config.words;
+  void BlindModeAudio.announceTestStart(Config.mode, modeValue, Config.language);
+
+  // Announce the first word
+  if (TestWords.words.length > 0) {
+    void BlindModeAudio.announceNextWord(TestWords.words.getCurrent(), 0);
+  }
+
   return true;
 }
 
@@ -974,6 +985,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   PaceCaret.setLastTestWpm(stats.wpm);
+
+  // Announce test completion for blind mode
+  void BlindModeAudio.announceTestComplete(stats.wpm, stats.acc);
 
   // if the last second was not rounded, add another data point to the history
   if (TestStats.lastSecondNotRound && !difficultyFailed) {

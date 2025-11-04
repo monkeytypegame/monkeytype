@@ -197,6 +197,38 @@
         </button>
       </div>
     </div>
+    <div class="section" data-config-name="blindModeAudioFeedback">
+      <div class="groupTitle">
+        <i class="fas fa-volume-up"></i>
+        <span>blind mode audio feedback</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Provides audio feedback when typing with eyes closed. "minimal" provides beeps for correct/incorrect keys and word completion. "full" announces words using text-to-speech and provides detailed feedback. Best used with blind mode enabled.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="minimal">minimal</button>
+        <button data-config-value="full">full</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="blindModeSpeechRate">
+      <div class="groupTitle">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>blind mode speech rate</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Controls the speed of text-to-speech announcements in blind mode. Range: 0.5 (slow) to 2.0 (fast). Default: 1.0 (normal).
+      </div>
+      <div class="inputs">
+        <input type="number" min="0.5" max="2.0" step="0.1" />
+      </div>
+    </div>
     <div class="section" data-config-name="alwaysShowWordsHistory">
       <div class="groupTitle">
         <i class="fas fa-align-left"></i>

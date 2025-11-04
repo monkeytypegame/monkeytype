@@ -10,6 +10,7 @@ import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";
 import * as Funbox from "../test/funbox/funbox";
 import * as Sound from "./sound-controller";
+import * as BlindModeAudio from "./blind-mode-audio-controller";
 import * as Caret from "../test/caret";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
@@ -227,6 +228,7 @@ async function handleSpace(): Promise<void> {
     if (!nospace) {
       void Sound.playClick();
     }
+    void BlindModeAudio.announceWordCompletion(true);
     Replay.addReplayEvent("submitCorrectWord");
   } else {
     if (!nospace) {
@@ -271,6 +273,7 @@ async function handleSpace(): Promise<void> {
     } else {
       TestUI.highlightBadWord(TestState.activeWordIndex);
     }
+    void BlindModeAudio.announceWordCompletion(false);
     TestInput.input.pushHistory();
     TestState.increaseActiveWordIndex();
     Funbox.toggleScript(TestWords.words.getCurrent());
@@ -327,6 +330,12 @@ async function handleSpace(): Promise<void> {
     void TestLogic.addWord();
   }
   TestUI.updateActiveElement();
+
+  // Announce the next word for blind mode
+  void BlindModeAudio.announceNextWord(
+    TestWords.words.getCurrent(),
+    TestState.activeWordIndex
+  );
 
   const shouldLimitToThreeLines =
     Config.mode === "time" ||
@@ -558,12 +567,14 @@ async function handleChar(
 
   if (thisCharCorrect) {
     void Sound.playClick();
+    BlindModeAudio.feedbackOnKeypress(true);
   } else {
     if (Config.playSoundOnError === "off" || Config.blindMode) {
       void Sound.playClick();
     } else {
       void Sound.playError();
     }
+    BlindModeAudio.feedbackOnKeypress(false);
   }
 
   //keymap

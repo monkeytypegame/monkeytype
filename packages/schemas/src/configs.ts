@@ -357,6 +357,18 @@ export const PlayTimeWarningSchema = z
   );
 export type PlayTimeWarning = z.infer<typeof PlayTimeWarningSchema>;
 
+export const BlindModeAudioFeedbackSchema = z.enum([
+  "off",
+  "minimal",
+  "full",
+]);
+export type BlindModeAudioFeedback = z.infer<
+  typeof BlindModeAudioFeedbackSchema
+>;
+
+export const BlindModeSpeechRateSchema = z.number().min(0.5).max(2.0);
+export type BlindModeSpeechRate = z.infer<typeof BlindModeSpeechRateSchema>;
+
 export const ConfigSchema = z
   .object({
     // test
@@ -374,6 +386,8 @@ export const ConfigSchema = z
     quickRestart: QuickRestartSchema,
     repeatQuotes: RepeatQuotesSchema,
     blindMode: z.boolean(),
+    blindModeAudioFeedback: BlindModeAudioFeedbackSchema,
+    blindModeSpeechRate: BlindModeSpeechRateSchema,
     alwaysShowWordsHistory: z.boolean(),
     singleListCommandLine: SingleListCommandLineSchema,
     minWpm: MinimumWordsPerMinuteSchema,
@@ -509,6 +523,8 @@ export const ConfigGroupsLiteral = {
   quickRestart: "behavior",
   repeatQuotes: "behavior",
   blindMode: "behavior",
+  blindModeAudioFeedback: "behavior",
+  blindModeSpeechRate: "behavior",
   alwaysShowWordsHistory: "behavior",
   singleListCommandLine: "behavior",
   minWpm: "behavior",

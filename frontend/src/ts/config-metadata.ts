@@ -198,6 +198,16 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "blind mode",
     changeRequiresRestart: false,
   },
+  blindModeAudioFeedback: {
+    icon: "fa-volume-up",
+    displayString: "blind mode audio feedback",
+    changeRequiresRestart: false,
+  },
+  blindModeSpeechRate: {
+    icon: "fa-tachometer-alt",
+    displayString: "blind mode speech rate",
+    changeRequiresRestart: false,
+  },
   alwaysShowWordsHistory: {
     icon: "fa-align-left",
     displayString: "always show words history",
