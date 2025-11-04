@@ -130,7 +130,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (charIsNotSpace || shouldInsertSpace) {
     if (lastInMultiOrDisabled) {
       //if in single mode (or when multi mode is done) - set input to dom value
-      console.log(`calling setTestInputToDOMValue with data: '${data}'`);
       setTestInputToDOMValue(data === "\n");
     } else {
       // in multi mode, we need to add each character one by one
