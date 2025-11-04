@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import _ from "lodash";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../../src/dal/user";
@@ -403,10 +403,10 @@ describe("LeaderboardsDal", () => {
   describe("getCount / getRank", () => {
     it("should get count", async () => {
       //GIVEN
-      await createUser(lbBests(undefined, pb(105)));
-      await createUser(lbBests(undefined, pb(100)));
-      const me = await createUser(lbBests(undefined, pb(95)));
-      await createUser(lbBests(undefined, pb(90)));
+      await createUser(lbBests(undefined, pb(105)), { name: "One" });
+      await createUser(lbBests(undefined, pb(100)), { name: "Two" });
+      const me = await createUser(lbBests(undefined, pb(95)), { name: "Me" });
+      await createUser(lbBests(undefined, pb(90)), { name: "Three" });
       await LeaderboardsDal.update("time", "60", "english");
 
       //WHEN / THEN
@@ -430,19 +430,26 @@ describe("LeaderboardsDal", () => {
       await createUser(lbBests(undefined, pb(95)));
       const friendTwo = await createUser(lbBests(undefined, pb(90)));
       const me = await createUser(lbBests(undefined, pb(99)));
-
-      console.log("me", me.uid);
-
       await LeaderboardsDal.update("time", "60", "english");
 
-      const friends = [friendOne.uid, friendTwo.uid, me.uid];
+      await createConnection({
+        initiatorUid: me.uid,
+        receiverUid: friendOne.uid,
+        status: "accepted",
+      });
+
+      await createConnection({
+        initiatorUid: friendTwo.uid,
+        receiverUid: me.uid,
+        status: "accepted",
+      });
 
       //WHEN / THEN
 
-      expect(await LeaderboardsDal.getCount("time", "60", "english", friends)) //
+      expect(await LeaderboardsDal.getCount("time", "60", "english", me.uid)) //
         .toEqual(3);
       expect(
-        await LeaderboardsDal.getRank("time", "60", "english", me.uid, friends)
+        await LeaderboardsDal.getRank("time", "60", "english", me.uid, true)
       ) //
         .toEqual(
           expect.objectContaining({

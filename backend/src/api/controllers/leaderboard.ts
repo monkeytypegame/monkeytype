@@ -1,7 +1,6 @@
 import _ from "lodash";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
-import * as ConnectionsDal from "../../dal/connections";
 import MonkeyError from "../../utils/error";
 import * as DailyLeaderboards from "../../utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
@@ -43,11 +42,7 @@ export async function getLeaderboard(
     throw new MonkeyError(404, "There is no leaderboard for this mode");
   }
 
-  const friendUids = await getFriendsUids(
-    uid,
-    friendsOnly === true,
-    connectionsConfig
-  );
+  const friendsOnlyUid = getFriendsOnlyUid(uid, friendsOnly, connectionsConfig);
 
   const leaderboard = await LeaderboardsDAL.get(
     mode,
@@ -56,7 +51,7 @@ export async function getLeaderboard(
     page,
     pageSize,
     req.ctx.configuration.users.premium.enabled,
-    getFriendsOnlyUid(uid, friendsOnly, connectionsConfig)
+    friendsOnlyUid
   );
 
   if (leaderboard === false) {
@@ -70,7 +65,7 @@ export async function getLeaderboard(
     mode,
     mode2,
     language,
-    friendUids
+    friendsOnlyUid
   );
   const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
 
@@ -88,18 +83,12 @@ export async function getRankFromLeaderboard(
   const { uid } = req.ctx.decodedToken;
   const connectionsConfig = req.ctx.configuration.connections;
 
-  const friendUids = await getFriendsUids(
-    uid,
-    friendsOnly === true,
-    connectionsConfig
-  );
-
   const data = await LeaderboardsDAL.getRank(
     mode,
     mode2,
     language,
     uid,
-    friendUids
+    getFriendsOnlyUid(uid, friendsOnly, connectionsConfig) !== undefined
   );
   if (data === false) {
     throw new MonkeyError(
@@ -240,20 +229,6 @@ export async function getWeeklyXpLeaderboardRank(
   );
 
   return new MonkeyResponse("Weekly xp leaderboard rank retrieved", rankEntry);
-}
-
-async function getFriendsUids(
-  uid: string,
-  friendsOnly: boolean,
-  friendsConfig: Configuration["connections"]
-): Promise<string[] | undefined> {
-  if (uid !== "" && friendsOnly) {
-    if (!friendsConfig.enabled) {
-      throw new MonkeyError(503, "This feature is currently unavailable.");
-    }
-    return await ConnectionsDal.getFriendsUids(uid);
-  }
-  return undefined;
 }
 
 function getFriendsOnlyUid(

@@ -11,6 +11,7 @@ import { ObjectId } from "mongodb";
 
 import * as ConnectionsDal from "../../../src/dal/connections";
 import { createConnection } from "../../__testData__/connections";
+import { createUser } from "../../__testData__/users";
 
 describe("ConnectionsDal", () => {
   beforeAll(async () => {
@@ -363,41 +364,90 @@ describe("ConnectionsDal", () => {
     });
   });
 
-  describe("getFriendsUids", () => {
+  describe("aggregateWithAcceptedConnections", () => {
     it("should return friend uids", async () => {
       //GIVE
-      const uid = new ObjectId().toHexString();
+      const uid = (await createUser()).uid;
       const friendOne = await createConnection({
         initiatorUid: uid,
+        receiverUid: (await createUser()).uid,
         status: "accepted",
       });
       const friendTwo = await createConnection({
+        initiatorUid: (await createUser()).uid,
         receiverUid: uid,
         status: "accepted",
       });
       const friendThree = await createConnection({
+        initiatorUid: (await createUser()).uid,
         receiverUid: uid,
         status: "accepted",
       });
       const _pending = await createConnection({
         initiatorUid: uid,
+        receiverUid: (await createUser()).uid,
         status: "pending",
       });
       const _blocked = await createConnection({
         initiatorUid: uid,
+        receiverUid: (await createUser()).uid,
         status: "blocked",
       });
-      const _decoy = await createConnection({});
+      const _decoy = await createConnection({
+        receiverUid: (await createUser()).uid,
+        status: "accepted",
+      });
 
       //WHEN
-      const friendUids = await ConnectionsDal.getFriendsUids(uid);
+      const friendUids = await ConnectionsDal.aggregateWithAcceptedConnections<{
+        uid: string;
+      }>({ collectionName: "users", uid }, [{ $project: { uid: true } }]);
 
       //THEN
-      expect(friendUids).toEqual([
+      expect(friendUids.flatMap((it) => it.uid).toSorted()).toEqual([
         uid,
         friendOne.receiverUid,
         friendTwo.initiatorUid,
         friendThree.initiatorUid,
+      ]);
+    });
+    it("should return friend uids and metaData", async () => {
+      //GIVE
+      const me = await createUser();
+      const friend = await createUser();
+
+      const connection = await createConnection({
+        initiatorUid: me.uid,
+        receiverUid: friend.uid,
+        status: "accepted",
+      });
+
+      //WHEN
+      const friendUids = await ConnectionsDal.aggregateWithAcceptedConnections(
+        { collectionName: "users", uid: me.uid, includeMetaData: true },
+        [
+          {
+            $project: {
+              uid: true,
+              lastModified: "$connectionMeta.lastModified",
+              connectionId: "$connectionMeta._id",
+            },
+          },
+        ]
+      );
+
+      //THEN
+      expect(friendUids).toEqual([
+        {
+          _id: friend._id,
+          connectionId: connection._id,
+          lastModified: connection.lastModified,
+          uid: friend.uid,
+        },
+        {
+          _id: me._id,
+          uid: me.uid,
+        },
       ]);
     });
   });

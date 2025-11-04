@@ -1239,8 +1239,8 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
         $project: {
           _id: false,
           uid: true,
-          connectionId: true,
-          lastModified: true,
+          connectionId: "$connectionMeta._id",
+          lastModified: "$connectionMeta.lastModified",
           name: true,
           discordId: true,
           discordAvatar: true,

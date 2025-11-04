@@ -187,29 +187,6 @@ export async function deleteByUid(uid: string): Promise<void> {
 }
 
 /**
- * Return uids of all accepted connections for the given uid including the uid.
- * @param uid
- * @returns
- */
-export async function getFriendsUids(uid: string): Promise<string[]> {
-  return Array.from(
-    new Set(
-      (
-        await getCollection()
-          .find(
-            {
-              status: "accepted",
-              $or: [{ initiatorUid: uid }, { receiverUid: uid }],
-            },
-            { projection: { initiatorUid: true, receiverUid: true } }
-          )
-          .toArray()
-      ).flatMap((it) => [it.initiatorUid, it.receiverUid])
-    )
-  );
-}
-
-/**
  * aggregate the given `pipeline` on the `collectionName` for each friendUid and the given `uid`.
 
  * @param pipeline
@@ -228,7 +205,7 @@ export async function aggregateWithAcceptedConnections<T>(
      */
     uidField?: string;
     /**
-     * add meta data `lastModified` and  *connectionId` to the document
+     * add meta data `connectionMeta.lastModified` and  *connectionMeta._id` to the document
      */
     includeMetaData?: boolean;
   },
@@ -243,8 +220,8 @@ export async function aggregateWithAcceptedConnections<T>(
         pipeline: [
           {
             $addFields: {
-              lastModified: "$$lastModified",
-              connectionId: "$$connectionId",
+              "connectionMeta.lastModified": "$$lastModified",
+              "connectionMeta._id": "$$connectionId",
             },
           },
         ],
@@ -309,6 +286,7 @@ export async function aggregateWithAcceptedConnections<T>(
       */
 
     {
+      //replace with $unionWith in MongoDB 6 or newer
       $lookup: {
         from: collectionName,
         localField: "uid",
@@ -322,6 +300,7 @@ export async function aggregateWithAcceptedConnections<T>(
     { $replaceRoot: { newRoot: { $first: "$result" } } },
     ...pipeline,
   ];
+
   console.log(JSON.stringify(fullPipeline, null, 4));
   return (await getCollection().aggregate(fullPipeline).toArray()) as T[];
 }
