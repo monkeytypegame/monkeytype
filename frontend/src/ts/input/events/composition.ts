@@ -22,6 +22,7 @@ export function handleCompositionUpdate(event: CompositionEvent): void {
 export async function handleCompositionEnd(
   event: CompositionEvent
 ): Promise<void> {
+  if (TestState.testRestarting) return;
   CompositionState.setComposing(false);
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
