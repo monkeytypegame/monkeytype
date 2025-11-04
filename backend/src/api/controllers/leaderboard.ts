@@ -56,7 +56,7 @@ export async function getLeaderboard(
     page,
     pageSize,
     req.ctx.configuration.users.premium.enabled,
-    friendUids
+    getFriendsOnlyUid(uid, friendsOnly, connectionsConfig)
   );
 
   if (leaderboard === false) {
@@ -252,6 +252,20 @@ async function getFriendsUids(
       throw new MonkeyError(503, "This feature is currently unavailable.");
     }
     return await ConnectionsDal.getFriendsUids(uid);
+  }
+  return undefined;
+}
+
+function getFriendsOnlyUid(
+  uid: string,
+  friendsOnly: boolean | undefined,
+  friendsConfig: Configuration["connections"]
+): string | undefined {
+  if (uid !== "" && friendsOnly === true) {
+    if (!friendsConfig.enabled) {
+      throw new MonkeyError(503, "This feature is currently unavailable.");
+    }
+    return uid;
   }
   return undefined;
 }

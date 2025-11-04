@@ -1,4 +1,4 @@
-import { Collection, Filter, ObjectId } from "mongodb";
+import { Collection, Document, Filter, ObjectId } from "mongodb";
 import * as db from "../init/db";
 import { Connection, ConnectionStatus } from "@monkeytype/schemas/connections";
 import MonkeyError from "../utils/error";
@@ -10,7 +10,7 @@ export type DBConnection = WithObjectId<
   }
 >;
 
-export const getCollection = (): Collection<DBConnection> =>
+const getCollection = (): Collection<DBConnection> =>
   db.collection("connections");
 
 export async function getConnections(options: {
@@ -209,6 +209,123 @@ export async function getFriendsUids(uid: string): Promise<string[]> {
   );
 }
 
+/**
+ * aggregate the given `pipeline` on the `collectionName` for each friendUid and the given `uid`.
+
+ * @param pipeline
+ * @param options
+ * @returns
+ */
+export async function aggregateWithAcceptedConnections<T>(
+  options: {
+    uid: string;
+    /**
+     * target collection
+     */
+    collectionName: string;
+    /**
+     * uid field on the collection, defaults to `uid`
+     */
+    uidField?: string;
+    /**
+     * add meta data `lastModified` and  *connectionId` to the document
+     */
+    includeMetaData?: boolean;
+  },
+  pipeline: Document[]
+): Promise<T[]> {
+  const metaData = options.includeMetaData
+    ? {
+        let: {
+          lastModified: "$lastModified",
+          connectionId: "$connectionId",
+        },
+        pipeline: [
+          {
+            $addFields: {
+              lastModified: "$$lastModified",
+              connectionId: "$$connectionId",
+            },
+          },
+        ],
+      }
+    : {};
+  const { uid, collectionName, uidField } = options;
+  const fullPipeline = [
+    {
+      $match: {
+        status: "accepted",
+        //uid is friend or initiator
+        $or: [{ initiatorUid: uid }, { receiverUid: uid }],
+      },
+    },
+    {
+      $project: {
+        lastModified: true,
+        uid: {
+          //pick the other user, not uid
+          $cond: {
+            if: { $eq: ["$receiverUid", uid] },
+            // oxlint-disable-next-line no-thenable
+            then: "$initiatorUid",
+            else: "$receiverUid",
+          },
+        },
+      },
+    },
+    // we want to fetch the data for our uid as well, add it to the list of documents
+    // workaround for missing unionWith + $documents in mongodb 5.0
+    {
+      $group: {
+        _id: null,
+        data: {
+          $push: {
+            uid: "$uid",
+            lastModified: "$lastModified",
+            connectionId: "$_id",
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        data: {
+          $concatArrays: ["$data", [{ uid }]],
+        },
+      },
+    },
+    { $unwind: "$data" },
+    { $replaceRoot: { newRoot: "$data" } },
+
+    /* end of workaround, this is the replacement for >= 5.1
+    
+      { $addFields: { connectionId: "$_id" } },
+      { $project: { uid: true, lastModified: true, connectionId: true } },
+      {
+        $unionWith: {
+          pipeline: [{ $documents: [{ uid }] }],
+        },
+      },
+      */
+
+    {
+      $lookup: {
+        from: collectionName,
+        localField: "uid",
+        foreignField: uidField ?? "uid",
+        as: "result",
+        ...metaData,
+      },
+    },
+
+    { $match: { result: { $ne: [] } } },
+    { $replaceRoot: { newRoot: { $first: "$result" } } },
+    ...pipeline,
+  ];
+  console.log(JSON.stringify(fullPipeline, null, 4));
+  return (await getCollection().aggregate(fullPipeline).toArray()) as T[];
+}
+
 function getKey(initiatorUid: string, receiverUid: string): string {
   const ids = [initiatorUid, receiverUid];
   ids.sort();
@@ -223,3 +340,7 @@ export async function createIndicies(): Promise<void> {
   //make sure there is only one connection for each initiatorr/receiver
   await getCollection().createIndex({ key: 1 }, { unique: true });
 }
+
+export const __testing = {
+  getCollection,
+};

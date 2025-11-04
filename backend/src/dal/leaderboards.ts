@@ -14,6 +14,7 @@ import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import { omit } from "lodash";
 import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";
+import { aggregateWithAcceptedConnections } from "./connections";
 
 export type DBLeaderboardEntry = LeaderboardEntry & {
   _id: ObjectId;
@@ -35,18 +36,16 @@ export async function get(
   page: number,
   pageSize: number,
   premiumFeaturesEnabled: boolean = false,
-  userIds?: string[]
+  uid?: string
 ): Promise<DBLeaderboardEntry[] | false> {
   if (page < 0 || pageSize < 0) {
     throw new MonkeyError(500, "Invalid page or pageSize");
   }
 
-  if (userIds?.length === 0) {
-    return [];
-  }
-
   const skip = page * pageSize;
   const limit = pageSize;
+
+  let leaderboard: DBLeaderboardEntry[] | false = [];
 
   const pipeline: Document[] = [
     { $sort: { rank: 1 } },
@@ -54,23 +53,30 @@ export async function get(
     { $limit: limit },
   ];
 
-  if (userIds !== undefined) {
-    pipeline.unshift(
-      { $match: { uid: { $in: userIds } } },
-      {
-        $setWindowFields: {
-          sortBy: { rank: 1 },
-          output: { friendsRank: { $documentNumber: {} } },
-        },
-      }
-    );
-  }
-
   try {
-    let leaderboard = (await getCollection({ language, mode, mode2 })
-      .aggregate(pipeline)
-      .toArray()) as DBLeaderboardEntry[];
-
+    if (uid !== undefined) {
+      console.log("with friends");
+      leaderboard = await aggregateWithAcceptedConnections(
+        {
+          uid,
+          collectionName: `leaderboards.${language}.${mode}.${mode2}`,
+        },
+        [
+          {
+            $setWindowFields: {
+              sortBy: { rank: 1 },
+              output: { friendsRank: { $documentNumber: {} } },
+            },
+          },
+          ...pipeline,
+        ]
+      );
+    } else {
+      console.log("no friends");
+      leaderboard = await getCollection({ language, mode, mode2 })
+        .aggregate<DBLeaderboardEntry>(pipeline)
+        .toArray();
+    }
     if (!premiumFeaturesEnabled) {
       leaderboard = leaderboard.map((it) => omit(it, "isPremium"));
     }

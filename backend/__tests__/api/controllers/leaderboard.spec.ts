@@ -180,7 +180,7 @@ describe("Loaderboard Controller", () => {
         0,
         50,
         false,
-        ["uidOne", "uidTwo"]
+        uid
       );
       expect(getLeaderboardCountMock).toHaveBeenCalledWith(
         "time",
