@@ -76,11 +76,28 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     options;
 
   if (data.length > 1) {
+    // remove the entire data from the input value
+    // not using setInputValue because we dont want to update TestInput yet
+    // it will be updated later in the body of onInsertText
+    const { inputValue } = getInputValue();
+    getWordsInput().value = " " + inputValue.slice(0, -data.length);
+
     for (let i = 0; i < data.length; i++) {
       const char = data[i] as string;
-      await onInsertText({
+
+      // // then add it one by one
+      // getWordsInput().value += char;
+
+      // await onInsertText({
+      //   ...options,
+      //   data: char,
+      //   multiIndex: i,
+      //   lastInMultiIndex: i === data.length - 1,
+      // });
+
+      // // then add it one by one
+      await emulateInsertText(char, now, {
         ...options,
-        data: char,
         multiIndex: i,
         lastInMultiIndex: i === data.length - 1,
       });
@@ -134,13 +151,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
   const charIsNotSpace = !isSpace(data);
   if (charIsNotSpace || shouldInsertSpace) {
-    if (lastInMultiOrSingle) {
-      //if in single mode (or when multi mode is done) - set input to dom value
-      setTestInputToDOMValue(data === "\n");
-    } else {
-      // in multi mode, we need to add each character one by one
-      TestInput.input.current += data;
-    }
+    setTestInputToDOMValue(data === "\n");
   }
 
   TestInput.setCurrentNotAfk();
@@ -198,7 +209,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     const result = await goToNextWord({
       correctInsert: correct,
       isCompositionEnding: isCompositionEnding === true,
-      lastInMultiOrSingle,
     });
     lastBurst = result.lastBurst;
     increasedWordIndex = result.increasedWordIndex;
@@ -248,7 +258,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
 export async function emulateInsertText(
   data: string,
-  now: number
+  now: number,
+  insertTextOptions?: Partial<OnInsertTextParams>
 ): Promise<void> {
   const preventDefault = onBeforeInsertText(data);
 
@@ -263,10 +274,13 @@ export async function emulateInsertText(
   const { inputValue } = getInputValue();
   getWordsInput().value = " " + inputValue + data;
 
-  await onInsertText({
+  const options = {
+    ...insertTextOptions,
     data,
     now,
-  });
+  } as OnInsertTextParams;
+
+  await onInsertText(options);
 }
 
 export async function handleInput(event: InputEvent): Promise<void> {

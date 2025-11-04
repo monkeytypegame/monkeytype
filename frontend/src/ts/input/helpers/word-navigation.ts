@@ -13,7 +13,7 @@ import * as TestStats from "../../test/test-stats";
 import * as Replay from "../../test/replay";
 import * as Funbox from "../../test/funbox/funbox";
 import * as Loader from "../../elements/loader";
-import { getInputValue, setInputValue } from "../core/input-element";
+import { setInputValue } from "../core/input-element";
 import { setAwaitingNextWord } from "../core/state";
 import { DeleteInputType } from "./input-type";
 
@@ -21,8 +21,6 @@ type GoToNextWordParams = {
   correctInsert: boolean;
   // this is used to tell test ui to update the word before moving to the next word (in case of a composition that ends with a space)
   isCompositionEnding: boolean;
-  // in case mulit mode (usually composition) inserts a space in the middle, we want to NOT clear the input
-  lastInMultiOrSingle: boolean;
 };
 
 type GoToNextWordReturn = {
@@ -33,7 +31,6 @@ type GoToNextWordReturn = {
 export async function goToNextWord({
   correctInsert,
   isCompositionEnding,
-  lastInMultiOrSingle,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
   const ret = {
     increasedWordIndex: false,
@@ -81,19 +78,7 @@ export async function goToNextWord({
     TestState.increaseActiveWordIndex();
   }
 
-  if (isCompositionEnding) {
-    if (lastInMultiOrSingle) {
-      setInputValue("");
-    } else {
-      // in case composition inserts multiple words, we need to remove the first word
-      const newValueArray = getInputValue().inputValue.split(" ");
-      newValueArray.shift();
-      const newValue = newValueArray.join(" ");
-      setInputValue(newValue);
-    }
-  } else {
-    setInputValue("");
-  }
+  setInputValue("");
   void TestUI.afterTestWordChange("forward");
 
   return ret;
