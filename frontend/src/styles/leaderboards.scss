@@ -161,9 +161,25 @@
           padding: var(--padding);
         }
 
+        .globalRank {
+          i {
+            display: none;
+          }
+          &::before {
+            content: "#";
+          }
+        }
         &.friendsOnly {
           td:first-child {
             display: table-cell;
+          }
+          .globalRank {
+            i {
+              display: inline;
+            }
+            &::before {
+              content: "";
+            }
           }
         }
         td:first-child {
