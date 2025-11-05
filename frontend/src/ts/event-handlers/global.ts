@@ -10,29 +10,30 @@ import { focusWords } from "../test/test-ui";
 import * as TestLogic from "../test/test-logic";
 import { navigate } from "../controllers/route-controller";
 
-document.addEventListener("keydown", async (e) => {
+document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
 
   const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
   const activeElement = document.activeElement as HTMLElement | null;
-
-  //autofocus
   const wordsFocused = wordsInput === activeElement;
   const pageTestActive: boolean = ActivePage.get() === "test";
-  const popupVisible: boolean = Misc.isAnyPopupVisible();
 
-  if (
-    pageTestActive &&
-    !wordsFocused &&
-    !popupVisible &&
-    !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
-    !e.metaKey &&
-    !e.ctrlKey
-  ) {
-    focusWords();
-    if (Config.showOutOfFocusWarning) {
-      e.preventDefault();
+  if (pageTestActive && !wordsFocused) {
+    const popupVisible: boolean = Misc.isAnyPopupVisible();
+    // this is nested because isAnyPopupVisible is a bit expensive
+    // and we don't want to call it during the test
+    if (
+      !popupVisible &&
+      !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
+      !e.metaKey &&
+      !e.ctrlKey
+    ) {
+      //autofocus
+      focusWords();
+      if (Config.showOutOfFocusWarning) {
+        e.preventDefault();
+      }
     }
   }
 
