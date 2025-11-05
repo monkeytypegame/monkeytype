@@ -46,18 +46,16 @@ export function onBeforeInsertText(data: string): boolean {
   // make sure to only check this when necessary (hide extra letters is off or input is longer than word)
   // because this check is expensive (causes layout reflows)
   if (
+    data !== null &&
+    data !== "" &&
     !Config.hideExtraLetters &&
-    TestInput.input.current.length >= TestWords.words.getCurrent().length
+    TestInput.input.current.length >= TestWords.words.getCurrent().length &&
+    ((isSpace(data) && shouldInsertSpace) || !isSpace(data)) &&
+    Config.mode !== "zen"
   ) {
     const topAfterAppend = TestUI.getActiveWordTopAfterAppend(data);
     const wordJumped = topAfterAppend > TestUI.activeWordTop;
-    if (
-      data !== null &&
-      data !== "" &&
-      ((isSpace(data) && shouldInsertSpace) || !isSpace(data)) &&
-      wordJumped &&
-      Config.mode !== "zen"
-    ) {
+    if (wordJumped) {
       return true;
     }
   }
