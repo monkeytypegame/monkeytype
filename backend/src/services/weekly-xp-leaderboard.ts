@@ -144,7 +144,8 @@ export class WeeklyXpLeaderboard {
       weeklyXpLeaderboardResultsKey,
       minRank,
       maxRank,
-      "true"
+      "true",
+      "" //TODO friends
     )) as string[][];
 
     if (results === undefined) {

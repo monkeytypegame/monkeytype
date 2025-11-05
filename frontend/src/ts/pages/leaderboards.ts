@@ -935,7 +935,7 @@ function updateFriendsButtons(): void {
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons"
   );
   if (
-    state.type === "allTime" &&
+    (state.type === "allTime" || state.type === "daily") &&
     isAuthenticated() &&
     (ServerConfiguration.get()?.connections.enabled ?? false)
   ) {
@@ -1412,7 +1412,6 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     if (state.type === "daily") {
       state.language = "english";
       state.yesterday = false;
-      state.friendsOnly = false;
     }
     if (state.type === "weekly") {
       state.lastWeek = false;

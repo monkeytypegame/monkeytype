@@ -137,7 +137,15 @@ function getDailyLeaderboardWithError(
 export async function getDailyLeaderboard(
   req: MonkeyRequest<GetDailyLeaderboardQuery>
 ): Promise<GetDailyLeaderboardResponse> {
-  const { page, pageSize } = req.query;
+  const { page, pageSize, friendsOnly } = req.query;
+  const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const friendUids = await getFriendsUids(
+    uid,
+    friendsOnly === true,
+    connectionsConfig
+  );
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
     req.query,
@@ -148,19 +156,14 @@ export async function getDailyLeaderboard(
     page,
     pageSize,
     req.ctx.configuration.dailyLeaderboards,
-    req.ctx.configuration.users.premium.enabled
+    req.ctx.configuration.users.premium.enabled,
+    friendUids
   );
-
-  const minWpm = await dailyLeaderboard.getMinWpm(
-    req.ctx.configuration.dailyLeaderboards
-  );
-
-  const count = await dailyLeaderboard.getCount();
 
   return new MonkeyResponse("Daily leaderboard retrieved", {
-    entries: results,
-    minWpm,
-    count,
+    entries: results?.entries ?? [],
+    count: results?.count ?? 0,
+    minWpm: results?.minWpm ?? 0,
     pageSize,
   });
 }
@@ -168,7 +171,15 @@ export async function getDailyLeaderboard(
 export async function getDailyLeaderboardRank(
   req: MonkeyRequest<GetDailyLeaderboardRankQuery>
 ): Promise<GetLeaderboardDailyRankResponse> {
+  const { friendsOnly } = req.query;
   const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const friendUids = await getFriendsUids(
+    uid,
+    friendsOnly === true,
+    connectionsConfig
+  );
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
     req.query,
@@ -177,7 +188,8 @@ export async function getDailyLeaderboardRank(
 
   const rank = await dailyLeaderboard.getRank(
     uid,
-    req.ctx.configuration.dailyLeaderboards
+    req.ctx.configuration.dailyLeaderboards,
+    friendUids
   );
 
   return new MonkeyResponse("Daily leaderboard rank retrieved", rank);
