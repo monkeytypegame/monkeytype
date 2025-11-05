@@ -1620,18 +1620,20 @@ export function getActiveWordTopAfterAppend(data: string): number {
 
   if (!activeWord) throw new Error("No active word element found");
 
-  if (data === " ") {
-    data = "_";
-  }
+  const displayData = data === " " ? "_" : data;
 
-  activeWord.insertAdjacentHTML(
-    "beforeend",
-    `<letter class="temp">${data}</letter>`
-  );
+  // Create element without DOM insertion for better performance
+  const tempLetter = document.createElement("letter");
+  tempLetter.className = "temp";
+  tempLetter.textContent = displayData;
+
+  // Single DOM operation
+  activeWord.appendChild(tempLetter);
 
   const top = activeWord.offsetTop;
 
-  activeWord.removeChild(activeWord.lastChild as Node);
+  // Remove using the reference (faster than removeChild)
+  tempLetter.remove();
 
   return top;
 }
