@@ -187,6 +187,29 @@ export async function deleteByUid(uid: string): Promise<void> {
 }
 
 /**
+ * Return uids of all accepted connections for the given uid including the uid.
+ * @param uid
+ * @returns
+ */
+export async function getFriendsUids(uid: string): Promise<string[]> {
+  return Array.from(
+    new Set(
+      (
+        await getCollection()
+          .find(
+            {
+              status: "accepted",
+              $or: [{ initiatorUid: uid }, { receiverUid: uid }],
+            },
+            { projection: { initiatorUid: true, receiverUid: true } }
+          )
+          .toArray()
+      ).flatMap((it) => [it.initiatorUid, it.receiverUid])
+    )
+  );
+}
+
+/**
  * aggregate the given `pipeline` on the `collectionName` for each friendUid and the given `uid`.
 
  * @param pipeline
@@ -301,7 +324,7 @@ export async function aggregateWithAcceptedConnections<T>(
     ...pipeline,
   ];
 
-  console.log(JSON.stringify(fullPipeline, null, 4));
+  //console.log(JSON.stringify(fullPipeline, null, 4));
   return (await getCollection().aggregate(fullPipeline).toArray()) as T[];
 }
 
