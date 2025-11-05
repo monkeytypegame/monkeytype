@@ -290,6 +290,7 @@ export function restart(options = {} as RestartOptions): void {
   QuoteRateModal.clearQuoteStats();
   TestUI.reset();
   CompositionState.setComposing(false);
+  CompositionState.setData("");
 
   if (TestState.resultVisible) {
     if (Config.randomTheme !== "off") {
