@@ -41,20 +41,25 @@ export function onBeforeInsertText(data: string): boolean {
   // while space skips to next word shouldnt
   const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
 
-  //prevent the word from jumping to the next line if the word is too long
-  //this will not work for the first word of each line, but that has a low chance of happening
-
-  const topAfterAppend = TestUI.getActiveWordTopAfterAppend(data);
-  const wordJumped = topAfterAppend > TestUI.activeWordTop;
+  // prevent the word from jumping to the next line if the word is too long
+  // this will not work for the first word of each line, but that has a low chance of happening
+  // make sure to only check this when necessary (hide extra letters is off or input is longer than word)
+  // because this check is expensive (causes layout reflows)
   if (
-    data !== null &&
-    data !== "" &&
-    ((isSpace(data) && shouldInsertSpace) || !isSpace(data)) &&
-    TestInput.input.current.length >= TestWords.words.getCurrent().length &&
-    wordJumped &&
-    Config.mode !== "zen"
+    !Config.hideExtraLetters &&
+    TestInput.input.current.length >= TestWords.words.getCurrent().length
   ) {
-    return true;
+    const topAfterAppend = TestUI.getActiveWordTopAfterAppend(data);
+    const wordJumped = topAfterAppend > TestUI.activeWordTop;
+    if (
+      data !== null &&
+      data !== "" &&
+      ((isSpace(data) && shouldInsertSpace) || !isSpace(data)) &&
+      wordJumped &&
+      Config.mode !== "zen"
+    ) {
+      return true;
+    }
   }
 
   // block input if the word is too long
