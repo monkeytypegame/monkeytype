@@ -3,6 +3,7 @@ import { Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { toHex } from "./strings";
 import { languageHashes } from "virtual:language-hashes";
+import { isDevEnvironment } from "./misc";
 
 //pin implementation
 const fetch = window.fetch;
@@ -103,15 +104,17 @@ export async function getLanguage(lang: Language): Promise<LanguageObject> {
       `/languages/${lang}.json`
     );
 
-    //check the content to make it less easy to manipulate
-    const encoder = new TextEncoder();
-    const data = encoder.encode(JSON.stringify(loaded, null, 0));
-    const hashBuffer = await cryptoSubtle.digest("SHA-256", data);
-    const hash = toHex(hashBuffer);
-    if (hash !== languageHashes[lang]) {
-      throw new Error(
-        "Integrity check failed, you've been added to the naughty list."
-      );
+    if (!isDevEnvironment()) {
+      //check the content to make it less easy to manipulate
+      const encoder = new TextEncoder();
+      const data = encoder.encode(JSON.stringify(loaded, null, 0));
+      const hashBuffer = await cryptoSubtle.digest("SHA-256", data);
+      const hash = toHex(hashBuffer);
+      if (hash !== languageHashes[lang]) {
+        throw new Error(
+          "Integrity check failed, you've been added to the naughty list.\nPlease refresh the page. If this error persists, please contact support."
+        );
+      }
     }
     currentLanguage = loaded;
   }
