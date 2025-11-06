@@ -47,8 +47,8 @@ type Route = {
 
 const route404: Route = {
   path: "404",
-  load: async () => {
-    await PageController.change("404");
+  load: async (_params, options) => {
+    await PageController.change("404", options);
   },
 };
 
@@ -224,7 +224,12 @@ async function router(options = {} as NavigateOptions): Promise<void> {
   };
 
   if (match === undefined) {
-    await route404.load({}, {});
+    await route404.load(
+      {},
+      {
+        force: true,
+      }
+    );
     return;
   }
 
