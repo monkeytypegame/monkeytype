@@ -45,7 +45,7 @@ if user_ids_csv ~= "" then
     for i = min_rank + 1, math.min(max_rank + 1, #scored_users) do
         local entry = scored_users[i]
         local user_id = entry.user_id
-        local score = entry.score
+        local score = tostring(entry.score)
 
         local result_data = redis_call('HGET', leaderboard_results_key, user_id)
 

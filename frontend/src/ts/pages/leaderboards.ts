@@ -501,7 +501,7 @@ function buildWeeklyTableRow(
   }
   element.dataset["uid"] = entry.uid;
   element.innerHTML = `
-      <td></td>
+      <td>${formatRank(entry.friendsRank)}</td>
       <td>${formatRank(entry.rank)}</td>
       <td>
         <div class="avatarNameBadge">
@@ -925,7 +925,6 @@ function updateFriendsButtons(): void {
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons"
   );
   if (
-    (state.type === "allTime" || state.type === "daily") &&
     isAuthenticated() &&
     (ServerConfiguration.get()?.connections.enabled ?? false)
   ) {

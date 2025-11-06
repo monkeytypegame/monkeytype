@@ -127,6 +127,7 @@ export class DailyLeaderboard {
     if (page < 0 || pageSize < 0) {
       throw new MonkeyError(500, "Invalid page or pageSize");
     }
+
     if (userIds?.length === 0) {
       return { entries: [], count: 0, minWpm: 0 };
     }
@@ -201,10 +202,10 @@ export class DailyLeaderboard {
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       throw new Error("Redis connection is unavailable");
     }
-
     if (userIds?.length === 0) {
       return null;
     }
+
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 

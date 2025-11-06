@@ -1036,11 +1036,11 @@ describe("Loaderboard Controller", () => {
   describe("get xp weekly leaderboard", () => {
     const getXpWeeklyLeaderboardMock = vi.spyOn(WeeklyXpLeaderboard, "get");
     const getResultMock = vi.fn();
-    const getCountMock = vi.fn();
+    const getFriendsUidsMock = vi.spyOn(ConnectionsDal, "getFriendsUids");
 
     beforeEach(async () => {
-      [getXpWeeklyLeaderboardMock, getResultMock, getCountMock].forEach((it) =>
-        it.mockClear()
+      [getXpWeeklyLeaderboardMock, getResultMock, getFriendsUidsMock].forEach(
+        (it) => it.mockClear()
       );
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
@@ -1048,11 +1048,9 @@ describe("Loaderboard Controller", () => {
 
       getXpWeeklyLeaderboardMock.mockReturnValue({
         getResults: getResultMock,
-        getCount: getCountMock,
       } as any);
 
-      getResultMock.mockResolvedValue([]);
-      getCountMock.mockResolvedValue(0);
+      getResultMock.mockResolvedValue(null);
     });
 
     afterEach(() => {
@@ -1086,8 +1084,7 @@ describe("Loaderboard Controller", () => {
         },
       ];
 
-      getResultMock.mockResolvedValue(resultData);
-      getCountMock.mockResolvedValue(2);
+      getResultMock.mockResolvedValue({ count: 2, entries: resultData });
 
       //WHEN
       const { body } = await mockApp
@@ -1107,7 +1104,13 @@ describe("Loaderboard Controller", () => {
 
       expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(lbConf, -1);
 
-      expect(getResultMock).toHaveBeenCalledWith(0, 50, lbConf, false);
+      expect(getResultMock).toHaveBeenCalledWith(
+        0,
+        50,
+        lbConf,
+        false,
+        undefined
+      );
     });
 
     it("should get for last week", async () => {
@@ -1144,9 +1147,6 @@ describe("Loaderboard Controller", () => {
       const page = 2;
       const pageSize = 25;
 
-      getResultMock.mockResolvedValue([]);
-      getCountMock.mockResolvedValue(0);
-
       //WHEN
       const { body } = await mockApp
         .get("/leaderboards/xp/weekly")
@@ -1168,7 +1168,49 @@ describe("Loaderboard Controller", () => {
 
       expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(lbConf, -1);
 
-      expect(getResultMock).toHaveBeenCalledWith(page, pageSize, lbConf, false);
+      expect(getResultMock).toHaveBeenCalledWith(
+        page,
+        pageSize,
+        lbConf,
+        false,
+        undefined
+      );
+    });
+
+    it("should get for friends", async () => {
+      //GIVEN
+      const lbConf = (await configuration).leaderboards.weeklyXp;
+      await enableConnectionsFeature(true);
+      const page = 2;
+      const pageSize = 25;
+      const friends = [
+        new ObjectId().toHexString(),
+        new ObjectId().toHexString(),
+      ];
+      getFriendsUidsMock.mockResolvedValue(friends);
+
+      //WHEN
+      await mockApp
+        .get("/leaderboards/xp/weekly")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({
+          page,
+          pageSize,
+          friendsOnly: true,
+        })
+        .expect(200);
+
+      //THEN
+
+      expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(lbConf, -1);
+
+      expect(getResultMock).toHaveBeenCalledWith(
+        page,
+        pageSize,
+        lbConf,
+        false,
+        friends
+      );
     });
 
     it("fails if daily leaderboards are disabled", async () => {

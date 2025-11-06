@@ -212,10 +212,19 @@ function getWeeklyXpLeaderboardWithError(
   return weeklyXpLeaderboard;
 }
 
-export async function getWeeklyXpLeaderboardResults(
+export async function getWeeklyXpLeaderboard(
   req: MonkeyRequest<GetWeeklyXpLeaderboardQuery>
 ): Promise<GetWeeklyXpLeaderboardResponse> {
-  const { page, pageSize, weeksBefore } = req.query;
+  const { page, pageSize, weeksBefore, friendsOnly } = req.query;
+
+  const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const friendUids = await getFriendsUids(
+    uid,
+    friendsOnly === true,
+    connectionsConfig
+  );
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
     req.ctx.configuration.leaderboards.weeklyXp,
@@ -225,14 +234,13 @@ export async function getWeeklyXpLeaderboardResults(
     page,
     pageSize,
     req.ctx.configuration.leaderboards.weeklyXp,
-    req.ctx.configuration.users.premium.enabled
+    req.ctx.configuration.users.premium.enabled,
+    friendUids
   );
 
-  const count = await weeklyXpLeaderboard.getCount();
-
   return new MonkeyResponse("Weekly xp leaderboard retrieved", {
-    entries: results,
-    count,
+    entries: results?.entries ?? [],
+    count: results?.count ?? 0,
     pageSize,
   });
 }
