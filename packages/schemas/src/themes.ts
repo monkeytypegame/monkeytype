@@ -40,6 +40,7 @@ export const ThemeNameSchema = z.enum(
     "dark_note",
     "darling",
     "deku",
+    "descent",
     "desert_oasis",
     "dev",
     "diner",

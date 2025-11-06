@@ -1,0 +1,13 @@
+/* theme by @bann6r */
+:root {
+    --bg-color: #17153b;
+    --main-color: #c8acd6;
+    --caret-color: #c8acd6;
+    --sub-color: #2e236c;
+    --sub-alt-color: #251c5a;
+    --text-color: #ffffff;
+    --error-color: #9290c3;
+    --error-extra-color: #9290c3;
+    --colorful-error-color: #837eff;
+    --colorful-error-extra-color: #837eff;
+  }
