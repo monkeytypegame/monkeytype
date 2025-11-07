@@ -196,7 +196,7 @@ async function init(): Promise<boolean> {
     );
   }
 
-  RWH_el = $("#resultWordsHistory")[0] as HTMLElement;
+  RWH_el = document.querySelector("#resultWordsHistory") as HTMLElement;
   RWH_rect = RWH_el.getBoundingClientRect();
   wordEls = $(RWH_el).find(".words .word[input]");
 
