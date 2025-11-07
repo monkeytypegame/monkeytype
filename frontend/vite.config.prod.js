@@ -312,14 +312,8 @@ export default {
     },
   },
   define: {
-    BACKEND_URL: JSON.stringify(
-      process.env.BACKEND_URL || "https://api.monkeytype.com"
-    ),
     IS_DEVELOPMENT: JSON.stringify(false),
     CLIENT_VERSION: JSON.stringify(CLIENT_VERSION),
-    RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),
-    QUICK_LOGIN_EMAIL: undefined,
-    QUICK_LOGIN_PASSWORD: undefined,
   },
 
   css: {

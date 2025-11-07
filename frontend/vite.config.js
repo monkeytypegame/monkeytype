@@ -7,10 +7,12 @@ import DEV_CONFIG from "./vite.config.dev";
 import MagicString from "magic-string";
 import { Fonts } from "./src/ts/constants/fonts";
 import { languageHashes } from "./scripts/language-hashes";
+import { envConfig } from "./scripts/env-config";
 
 /** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
   plugins: [
+    envConfig(),
     languageHashes(),
     {
       name: "simple-jquery-inject",

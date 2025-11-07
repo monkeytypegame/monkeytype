@@ -9,7 +9,8 @@
     "target": "ES6",
     "noEmit": true,
     "paths": {
-      "virtual:language-hashes": ["./src/ts/module.d.ts"]
+      "virtual:language-hashes": ["./src/ts/module.d.ts"],
+      "virtual:env-config": ["./src/ts/module.d.ts"]
     }
   },
   "include": ["./src/**/*.ts", "./scripts/**/*.ts"],
