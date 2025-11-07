@@ -13,6 +13,7 @@ import { MonkeyMail } from "@monkeytype/schemas/users";
 import * as XPBar from "../elements/xp-bar";
 import * as AuthEvent from "../observables/auth-event";
 import * as ActivePage from "../states/active-page";
+import { animate } from "animejs";
 
 let accountAlerts: MonkeyMail[] = [];
 let maxMail = 0;
@@ -165,6 +166,20 @@ async function getAccountAlerts(): Promise<void> {
   const inboxData = inboxResponse.body.data;
 
   accountAlerts = inboxData.inbox;
+
+  accountAlerts = [
+    {
+      timestamp: Date.now(),
+      id: "test-mail-1",
+      subject: "Welcome to Monkeytype!",
+      body: "Thank you for creating an account on Monkeytype. Enjoy typing!",
+      read: false,
+      rewards: [
+        { type: "xp", item: 100 },
+        { type: "badge", item: { id: "welcome-badge" } },
+      ],
+    },
+  ];
 
   updateClaimDeleteAllButton();
 
@@ -341,18 +356,16 @@ function markReadAlert(id: string): void {
     .append(
       `<button class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></button>`
     );
-  item.find(".rewards").animate(
-    {
-      opacity: 0,
-      height: 0,
-      marginTop: 0,
-    },
-    250,
-    "easeOutCubic",
-    () => {
+
+  animate(item.find(".rewards")[0] as HTMLElement, {
+    opacity: 0,
+    height: 0,
+    marginTop: 0,
+    duration: 250,
+    onComplete: () => {
       item.find(".rewards").remove();
-    }
-  );
+    },
+  });
 }
 
 function updateClaimDeleteAllButton(): void {
