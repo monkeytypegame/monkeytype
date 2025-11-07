@@ -60,6 +60,7 @@ function calcHash(file: string): string {
   const data = encoder.encode(currentLanguage);
   return createHash("sha256").update(data).digest("hex");
 }
+
 if (import.meta.url.endsWith(process.argv[1] as string)) {
   console.log(JSON.stringify(getHashes(), null, 4));
 }
