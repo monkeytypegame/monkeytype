@@ -109,10 +109,10 @@ export async function getLanguage(lang: Language): Promise<LanguageObject> {
       const encoder = new TextEncoder();
       const data = encoder.encode(JSON.stringify(loaded, null, 0));
       const hashBuffer = await cryptoSubtle.digest("SHA-256", data);
-      const hash = toHex(hashBuffer);
+      const hash = toHex(hashBuffer) + "1";
       if (hash !== languageHashes[lang]) {
         throw new Error(
-          "Integrity check failed, you've been added to the naughty list.\nPlease refresh the page. If this error persists, please contact support."
+          "Integrity check failed. Try refreshing the page. If this error persists, please contact support."
         );
       }
     }
