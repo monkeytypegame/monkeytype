@@ -1,5 +1,5 @@
 import { Plugin } from "vite";
-import { EnvConfig } from "../src/ts/constants/env-config";
+import { EnvConfig } from "virtual:env-config";
 
 const virtualModuleId = "virtual:env-config";
 const resolvedVirtualModuleId = "\0" + virtualModuleId;
