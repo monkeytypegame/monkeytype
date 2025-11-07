@@ -456,7 +456,6 @@ async function init(): Promise<boolean> {
   }
 
   if (!language || language.name !== Config.language) {
-    UpdateConfig.setLanguage("english");
     return await init();
   }
 
