@@ -1,4 +1,5 @@
 import { defineConfig } from "vitest/config";
+import { languageHashes } from "./scripts/language-hashes";
 
 export default defineConfig({
   test: {
@@ -17,4 +18,6 @@ export default defineConfig({
       },
     },
   },
+
+  plugins: [languageHashes()],
 });
