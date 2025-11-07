@@ -1088,12 +1088,6 @@ export async function update(
     },
     async () => {
       Focus.set(false);
-      $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
-        {
-          opacity: 1,
-        },
-        Misc.applyReducedMotion(125)
-      );
 
       const canQuickRestart = canQuickRestartFn(
         Config.mode,
