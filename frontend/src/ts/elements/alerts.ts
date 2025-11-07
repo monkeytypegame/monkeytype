@@ -167,20 +167,6 @@ async function getAccountAlerts(): Promise<void> {
 
   accountAlerts = inboxData.inbox;
 
-  accountAlerts = [
-    {
-      timestamp: Date.now(),
-      id: "test-mail-1",
-      subject: "Welcome to Monkeytype!",
-      body: "Thank you for creating an account on Monkeytype. Enjoy typing!",
-      read: false,
-      rewards: [
-        { type: "xp", item: 100 },
-        { type: "badge", item: { id: "welcome-badge" } },
-      ],
-    },
-  ];
-
   updateClaimDeleteAllButton();
 
   if (accountAlerts.length === 0) {
