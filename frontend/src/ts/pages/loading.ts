@@ -1,5 +1,6 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
+import { animate } from "animejs";
 
 const pageEl = $(".page.pageLoading");
 const barEl = pageEl.find(".bar");
@@ -12,18 +13,13 @@ export async function updateBar(
   duration: number
 ): Promise<void> {
   return new Promise((resolve) => {
-    barEl
-      .find(".fill")
-      .stop(true, false)
-      .animate(
-        {
-          width: percentage + "%",
-        },
-        duration,
-        () => {
-          resolve();
-        }
-      );
+    animate(barEl[0]?.querySelector(".fill") as HTMLElement, {
+      width: percentage + "%",
+      duration,
+      onComplete: () => {
+        resolve();
+      },
+    });
   });
 }
 
