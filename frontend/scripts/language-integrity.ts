@@ -28,7 +28,7 @@ export function languageHashes(): Plugin {
 function getHashes(): Record<string, string> {
   const start = performance.now();
 
-  console.log("Hashing languages...");
+  console.log("\nHashing languages...");
 
   const hashes = Object.fromEntries(
     readdirSync("./static/languages").map((file) => {
