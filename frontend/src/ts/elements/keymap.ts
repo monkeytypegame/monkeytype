@@ -16,6 +16,7 @@ import * as KeyConverter from "../utils/key-converter";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
+import { animate } from "animejs";
 
 export const keyDataDelimiter = "~~";
 
@@ -120,18 +121,13 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
       };
     }
 
-    $(key)
-      .stop(true, true)
-      .css(css)
-      .animate(
-        {
-          color: themecolors.sub,
-          backgroundColor: themecolors.subAlt,
-          borderColor: themecolors.sub,
-        },
-        SlowTimer.get() ? 0 : 500,
-        "easeOutExpo"
-      );
+    animate(key, {
+      color: [css.color, themecolors.sub],
+      backgroundColor: [css.backgroundColor, themecolors.subAlt],
+      borderColor: [css.borderColor, themecolors.sub],
+      duration: SlowTimer.get() ? 0 : 500,
+      easing: "out(5)",
+    });
   } catch (e) {}
 }
 
