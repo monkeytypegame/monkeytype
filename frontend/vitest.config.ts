@@ -1,5 +1,5 @@
 import { defineConfig } from "vitest/config";
-import { languageHashes } from "./scripts/language-integrity";
+import { languageHashes } from "./scripts/language-hashes";
 
 export default defineConfig({
   test: {
