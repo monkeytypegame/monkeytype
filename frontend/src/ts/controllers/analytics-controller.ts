@@ -28,7 +28,9 @@ export function activateAnalytics(): void {
   try {
     analytics = getAnalytics();
     setAnalyticsCollectionEnabled(analytics, true);
-    $("body").append(`
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      `
     <script
     async
     src="https://www.googletagmanager.com/gtag/js?id=UA-165993088-1"
@@ -41,7 +43,8 @@ export function activateAnalytics(): void {
     gtag("js", new Date());
 
     gtag("config", "UA-165993088-1");
-  </script>`);
+  </script>`
+    );
   } catch (e) {
     console.error(createErrorMessage(e, "Failed to activate analytics"));
   }

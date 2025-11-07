@@ -1103,9 +1103,13 @@ function updateAccountChartButton(
   isActive: boolean,
   className: ButtonBelowChart
 ): void {
-  isActive
-    ? $(`.pageAccount ${className}`).addClass("active")
-    : $(`.pageAccount ${className}`).removeClass("active");
+  const element = document.querySelector(`.pageAccount ${className}`);
+  if (!element) return;
+  if (isActive) {
+    element.classList.add("active");
+  } else {
+    element.classList.remove("active");
+  }
 }
 
 function updateResults(updateChart = true): void {
