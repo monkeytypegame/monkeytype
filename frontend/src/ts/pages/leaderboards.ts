@@ -1411,7 +1411,6 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     }
     if (state.type === "weekly") {
       state.lastWeek = false;
-      state.friendsOnly = false;
     }
     checkIfLeaderboardIsValid();
     state.data = null;
