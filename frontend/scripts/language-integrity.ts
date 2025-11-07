@@ -28,6 +28,8 @@ export function languageHashes(): Plugin {
 function getHashes(): Record<string, string> {
   const start = performance.now();
 
+  console.log("Hashing languages...");
+
   const hashes = Object.fromEntries(
     readdirSync("./static/languages").map((file) => {
       return [file.slice(0, -5), calcHash(file)];
