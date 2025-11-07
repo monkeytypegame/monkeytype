@@ -35,9 +35,10 @@ const throttledHandleState = debounce(5000, () => {
       Notifications.add("You're back online", 1, {
         customTitle: "Connection",
       });
-      $(
+      const closeButton = document.querySelector(
         `#bannerCenter .psa.notice[id="${noInternetBannerId}"] .closeButton`
-      ).trigger("click");
+      ) as HTMLElement;
+      closeButton?.click();
     }
     bannerAlreadyClosed = false;
   } else if (!TestState.isActive) {
