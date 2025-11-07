@@ -296,6 +296,20 @@ export function areCharactersVisuallyEqual(
   return false;
 }
 
+export function toHex(buffer: ArrayBuffer): string {
+  // @ts-expect-error modern browsers
+  if (Uint8Array.prototype.toHex !== undefined) {
+    // @ts-expect-error modern browsers
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    return new Uint8Array(buffer).toHex() as string;
+  }
+  const hashArray = Array.from(new Uint8Array(buffer));
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+}
+
 // Export testing utilities for unit tests
 export const __testing = {
   hasRTLCharacters,
