@@ -6,6 +6,7 @@ import * as ActivePage from "../states/active-page";
 import { applyReducedMotion } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as AuthEvent from "../observables/auth-event";
+import { animate } from "animejs";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
@@ -100,10 +101,12 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   };
 
   const animTime = applyReducedMotion(250);
+
+  const scale = 2;
   const easing = {
-    both: "easeInOutSine",
-    in: "easeInSine",
-    out: "easeOutSine",
+    both: `inOut(${scale})`,
+    in: `in(${scale})`,
+    out: `out(${scale})`,
   };
 
   const puncAndNumVisible = {
@@ -134,27 +137,25 @@ async function update(previous: Mode, current: Mode): Promise<void> {
       puncAndNumEl[0]?.getBoundingClientRect().width ?? 0
     );
 
-    puncAndNumEl
-      .stop(true, false)
-      .css({
-        width: puncAndNumVisible[previous] ? width : 0,
-        opacity: puncAndNumVisible[previous] ? 1 : 0,
-      })
-      .animate(
-        {
-          width: puncAndNumVisible[current] ? width : 0,
-          opacity: puncAndNumVisible[current] ? 1 : 0,
-        },
-        animTime,
-        easing.both,
-        () => {
-          if (puncAndNumVisible[current]) {
-            puncAndNumEl.css("width", "unset");
-          } else {
-            puncAndNumEl.addClass("hidden");
-          }
+    animate(puncAndNumEl[0] as HTMLElement, {
+      width: [
+        (puncAndNumVisible[previous] ? width : 0) + "px",
+        (puncAndNumVisible[current] ? width : 0) + "px",
+      ],
+      opacity: [
+        puncAndNumVisible[previous] ? 1 : 0,
+        puncAndNumVisible[current] ? 1 : 0,
+      ],
+      duration: animTime,
+      ease: easing.both,
+      onComplete: () => {
+        if (puncAndNumVisible[current]) {
+          puncAndNumEl.css("width", "unset");
+        } else {
+          puncAndNumEl.addClass("hidden");
         }
-      );
+      },
+    });
   }
 
   if (current === "zen") {
@@ -186,46 +187,36 @@ async function update(previous: Mode, current: Mode): Promise<void> {
 
   const widthStep = widthDifference / 2;
 
-  previousEl
-    .stop(true, false)
-    .css({
-      opacity: 1,
-      width: previousWidth,
-    })
-    .animate(
-      {
-        width: previousWidth + widthStep,
-        opacity: 0,
-      },
-      animTime / 2,
-      easing.in,
-      () => {
-        previousEl
-          .css({
-            opacity: 1,
-            width: "unset",
-          })
-          .addClass("hidden");
-        currentEl
-          .css({
-            opacity: 0,
-            width: previousWidth + widthStep,
-          })
-          .removeClass("hidden")
-          .stop(true, false)
-          .animate(
-            {
-              opacity: 1,
-              width: currentWidth,
-            },
-            animTime / 2,
-            easing.out,
-            () => {
-              currentEl.css("width", "unset");
-            }
-          );
-      }
-    );
+  animate(previousEl[0] as HTMLElement, {
+    opacity: [1, 0],
+    width: [previousWidth + "px", previousWidth + widthStep + "px"],
+    duration: animTime / 2,
+    ease: easing.in,
+    onComplete: () => {
+      previousEl
+        .css({
+          opacity: 1,
+          width: "unset",
+        })
+        .addClass("hidden");
+      currentEl
+        .css({
+          opacity: 0,
+          width: previousWidth + widthStep + "px",
+        })
+        .removeClass("hidden");
+
+      animate(currentEl[0] as HTMLElement, {
+        opacity: [0, 1],
+        width: [previousWidth + widthStep + "px", currentWidth + "px"],
+        duration: animTime / 2,
+        ease: easing.out,
+        onComplete: () => {
+          currentEl.css("width", "unset");
+        },
+      });
+    },
+  });
 }
 
 function updateActiveModeButtons(mode: Mode): void {
