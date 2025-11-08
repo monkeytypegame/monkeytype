@@ -1,16 +1,21 @@
+import { animate, AnimationParams } from "animejs";
 import { applyReducedMotion, isPopupVisible } from "./misc";
 import * as Skeleton from "./skeleton";
 
-type CustomAnimation = {
-  from: Record<string, string>;
-  to: Record<string, string>;
-  easing?: string;
-  durationMs?: number;
-};
+// type CustomAnimation = {
+//   from: Record<string, string>;
+//   to: Record<string, string>;
+//   easing?: string;
+//   durationMs?: number;
+// };
 
 type CustomWrapperAndModalAnimations = {
-  wrapper?: CustomAnimation;
-  modal?: CustomAnimation;
+  wrapper?: AnimationParams & {
+    duration?: number;
+  };
+  modal?: AnimationParams & {
+    duration?: number;
+  };
 };
 
 type ConstructorCustomAnimations = {
@@ -217,9 +222,9 @@ export default class AnimatedModal<
       }
 
       const modalAnimationDuration = applyReducedMotion(
-        (options?.customAnimation?.modal?.durationMs ??
+        (options?.customAnimation?.modal?.duration ??
           options?.animationDurationMs ??
-          this.customShowAnimations?.modal?.durationMs ??
+          this.customShowAnimations?.modal?.duration ??
           DEFAULT_ANIMATION_DURATION) *
           (options?.modalChain !== undefined
             ? MODAL_ONLY_ANIMATION_MULTIPLIER
@@ -250,17 +255,17 @@ export default class AnimatedModal<
         this.focusFirstInput(options?.focusFirstInput);
       }, 1);
 
-      const modalAnimation =
-        options?.customAnimation?.modal ?? this.customShowAnimations?.modal;
+      const modalAnimation = options?.customAnimation?.modal ??
+        this.customShowAnimations?.modal ?? {
+          opacity: [0, 1],
+        };
       const wrapperAnimation = options?.customAnimation?.wrapper ??
         this.customShowAnimations?.wrapper ?? {
-          from: { opacity: "0" },
-          to: { opacity: "1" },
-          easing: "swing",
+          opacity: [0, 1],
         };
       const wrapperAnimationDuration = applyReducedMotion(
-        options?.customAnimation?.wrapper?.durationMs ??
-          this.customShowAnimations?.wrapper?.durationMs ??
+        options?.customAnimation?.wrapper?.duration ??
+          this.customShowAnimations?.wrapper?.duration ??
           DEFAULT_ANIMATION_DURATION
       );
 
@@ -269,59 +274,42 @@ export default class AnimatedModal<
           ? "modalOnly"
           : options?.animationMode ?? "both";
 
-      $(this.modalEl).stop(true, false);
-      $(this.wrapperEl).stop(true, false);
-
       if (animationMode === "both" || animationMode === "none") {
-        if (modalAnimation?.from) {
-          $(this.modalEl).css(modalAnimation.from);
-          $(this.modalEl).animate(
-            modalAnimation.to,
-            animationMode === "none" ? 0 : modalAnimationDuration,
-            modalAnimation.easing ?? "swing"
-          );
-        } else {
-          $(this.modalEl).css("opacity", "1");
-        }
+        animate(this.modalEl, {
+          ...modalAnimation,
+          duration: animationMode === "none" ? 0 : modalAnimationDuration,
+        });
 
-        $(this.wrapperEl).css(wrapperAnimation.from);
-        $(this.wrapperEl)
-          .removeClass("hidden")
-          .css("opacity", "0")
-          .animate(
-            wrapperAnimation.to ?? { opacity: 1 },
-            animationMode === "none" ? 0 : wrapperAnimationDuration,
-            wrapperAnimation.easing ?? "swing",
-            async () => {
-              this.focusFirstInput(options?.focusFirstInput);
-              await options?.afterAnimation?.(
-                this.modalEl,
-                options?.modalChainData
-              );
-              resolve();
-            }
-          );
-      } else if (animationMode === "modalOnly") {
-        $(this.wrapperEl).removeClass("hidden").css("opacity", "1");
-
-        if (modalAnimation?.from) {
-          $(this.modalEl).css(modalAnimation.from);
-        } else {
-          $(this.modalEl).css("opacity", "0");
-        }
-        $(this.modalEl).animate(
-          modalAnimation?.to ?? { opacity: 1 },
-          modalAnimationDuration,
-          modalAnimation?.easing ?? "swing",
-          async () => {
+        animate(this.wrapperEl, {
+          ...wrapperAnimation,
+          duration: animationMode === "none" ? 0 : wrapperAnimationDuration,
+          onBegin: () => {
+            this.wrapperEl.classList.remove("hidden");
+          },
+          onComplete: async () => {
             this.focusFirstInput(options?.focusFirstInput);
             await options?.afterAnimation?.(
               this.modalEl,
               options?.modalChainData
             );
             resolve();
-          }
-        );
+          },
+        });
+      } else if (animationMode === "modalOnly") {
+        $(this.wrapperEl).removeClass("hidden").css("opacity", "1");
+
+        animate(this.modalEl, {
+          ...modalAnimation,
+          duration: modalAnimationDuration,
+          onComplete: async () => {
+            this.focusFirstInput(options?.focusFirstInput);
+            await options?.afterAnimation?.(
+              this.modalEl,
+              options?.modalChainData
+            );
+            resolve();
+          },
+        });
       }
     });
   }
@@ -340,12 +328,14 @@ export default class AnimatedModal<
 
       await options?.beforeAnimation?.(this.modalEl);
 
-      const modalAnimation =
-        options?.customAnimation?.modal ?? this.customHideAnimations?.modal;
+      const modalAnimation = options?.customAnimation?.modal ??
+        this.customHideAnimations?.modal ?? {
+          opacity: [1, 0],
+        };
       const modalAnimationDuration = applyReducedMotion(
-        (options?.customAnimation?.modal?.durationMs ??
+        (options?.customAnimation?.modal?.duration ??
           options?.animationDurationMs ??
-          this.customHideAnimations?.modal?.durationMs ??
+          this.customHideAnimations?.modal?.duration ??
           DEFAULT_ANIMATION_DURATION) *
           (this.previousModalInChain !== undefined
             ? MODAL_ONLY_ANIMATION_MULTIPLIER
@@ -353,13 +343,11 @@ export default class AnimatedModal<
       );
       const wrapperAnimation = options?.customAnimation?.wrapper ??
         this.customHideAnimations?.wrapper ?? {
-          from: { opacity: "1" },
-          to: { opacity: "0" },
-          easing: "swing",
+          opacity: [1, 0],
         };
       const wrapperAnimationDuration = applyReducedMotion(
-        options?.customAnimation?.wrapper?.durationMs ??
-          this.customHideAnimations?.wrapper?.durationMs ??
+        options?.customAnimation?.wrapper?.duration ??
+          this.customHideAnimations?.wrapper?.duration ??
           DEFAULT_ANIMATION_DURATION
       );
       const animationMode =
@@ -367,66 +355,47 @@ export default class AnimatedModal<
           ? "modalOnly"
           : options?.animationMode ?? "both";
 
-      $(this.modalEl).stop(true, false);
-      $(this.wrapperEl).stop(true, false);
-
       if (animationMode === "both" || animationMode === "none") {
-        if (modalAnimation?.from) {
-          $(this.modalEl).css(modalAnimation.from);
-          $(this.modalEl).animate(
-            modalAnimation.to,
-            animationMode === "none" ? 0 : modalAnimationDuration,
-            modalAnimation.easing ?? "swing"
-          );
-        } else {
-          $(this.modalEl).css("opacity", "1");
-        }
+        animate(this.modalEl, {
+          ...modalAnimation,
+          duration: animationMode === "none" ? 0 : modalAnimationDuration,
+        });
 
-        $(this.wrapperEl).css(wrapperAnimation.from);
-        $(this.wrapperEl)
-          .css("opacity", "1")
-          .animate(
-            wrapperAnimation?.to ?? { opacity: 0 },
-            animationMode === "none" ? 0 : wrapperAnimationDuration,
-            wrapperAnimation?.easing ?? "swing",
-            async () => {
-              this.wrapperEl.close();
-              this.wrapperEl.classList.add("hidden");
-              Skeleton.remove(this.dialogId);
-              this.open = false;
-              await options?.afterAnimation?.(this.modalEl);
-              void this.cleanup?.();
+        animate(this.wrapperEl, {
+          ...wrapperAnimation,
+          duration: animationMode === "none" ? 0 : wrapperAnimationDuration,
+          onComplete: async () => {
+            this.wrapperEl.close();
+            this.wrapperEl.classList.add("hidden");
+            Skeleton.remove(this.dialogId);
+            this.open = false;
+            await options?.afterAnimation?.(this.modalEl);
+            void this.cleanup?.();
 
-              if (
-                this.previousModalInChain !== undefined &&
-                !options?.dontShowPreviousModalInchain
-              ) {
-                await this.previousModalInChain.show({
-                  animationMode: "modalOnly",
-                  modalChainData: options?.modalChainData,
-                  animationDurationMs:
-                    modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
-                  ...this.previousModalInChain.showOptionsWhenInChain,
-                });
-                this.previousModalInChain = undefined;
-              }
-
-              resolve();
+            if (
+              this.previousModalInChain !== undefined &&
+              !options?.dontShowPreviousModalInchain
+            ) {
+              await this.previousModalInChain.show({
+                animationMode: "modalOnly",
+                modalChainData: options?.modalChainData,
+                animationDurationMs:
+                  modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
+                ...this.previousModalInChain.showOptionsWhenInChain,
+              });
+              this.previousModalInChain = undefined;
             }
-          );
+
+            resolve();
+          },
+        });
       } else if (animationMode === "modalOnly") {
         $(this.wrapperEl).removeClass("hidden").css("opacity", "1");
 
-        if (modalAnimation?.from) {
-          $(this.modalEl).css(modalAnimation.from);
-        } else {
-          $(this.modalEl).css("opacity", "1");
-        }
-        $(this.modalEl).animate(
-          modalAnimation?.to ?? { opacity: 0 },
-          modalAnimationDuration,
-          modalAnimation?.easing ?? "swing",
-          async () => {
+        animate(this.modalEl, {
+          ...modalAnimation,
+          duration: modalAnimationDuration,
+          onComplete: async () => {
             this.wrapperEl.close();
             $(this.wrapperEl).addClass("hidden").css("opacity", "0");
             Skeleton.remove(this.dialogId);
@@ -449,8 +418,8 @@ export default class AnimatedModal<
             }
 
             resolve();
-          }
-        );
+          },
+        });
       }
     });
   }

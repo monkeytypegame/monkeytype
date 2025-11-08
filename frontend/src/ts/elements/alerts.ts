@@ -413,24 +413,12 @@ const modal = new AnimatedModal({
   customAnimations: {
     show: {
       modal: {
-        from: {
-          marginRight: "-10rem",
-        },
-        to: {
-          marginRight: "0",
-        },
-        easing: "easeOutCirc",
+        marginRight: ["-10rem", "0"],
       },
     },
     hide: {
       modal: {
-        from: {
-          marginRight: "0",
-        },
-        to: {
-          marginRight: "-10rem",
-        },
-        easing: "easeInCirc",
+        marginRight: ["0", "-10rem"],
       },
     },
   },
