@@ -414,7 +414,7 @@ async function animateXpBar(
 async function flashLevel(): Promise<void> {
   const themecolors = await getAll();
 
-  levelEl.textContent = `${parseInt(levelEl.textContent) + 1}`;
+  levelEl.textContent = `${parseInt(levelEl.textContent ?? "0") + 1}`;
 
   const rand = Math.random() * 2 - 1;
   const rand2 = Math.random() + 1;
