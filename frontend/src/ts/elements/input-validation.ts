@@ -268,6 +268,8 @@ export function handleConfigInput<T extends ConfigKey>({
     });
   }
 
+  let shakeTimeout: null | NodeJS.Timeout;
+
   const handleStore = (): void => {
     if (input.value === "" && (validation?.resetIfEmpty ?? true)) {
       //use last config value, clear validation
@@ -275,13 +277,13 @@ export function handleConfigInput<T extends ConfigKey>({
       input.dispatchEvent(new Event("input"));
     }
     if (status === "failed") {
-      const parent = $(input.parentElement as HTMLElement);
-      parent
-        .stop(true, true)
-        .addClass("hasError")
-        .animate({ undefined: 1 }, 500, () => {
-          parent.removeClass("hasError");
-        });
+      input.parentElement?.classList.add("hasError");
+      if (shakeTimeout !== null) {
+        clearTimeout(shakeTimeout);
+      }
+      shakeTimeout = setTimeout(() => {
+        input.parentElement?.classList.remove("hasError");
+      }, 500);
       return;
     }
     const value = (inputValueConvert?.(input.value) ??

@@ -577,6 +577,8 @@ async function updateActiveCommand(): Promise<void> {
   command.hover?.();
 }
 
+let shakeTimeout: null | NodeJS.Timeout;
+
 function handleInputSubmit(): void {
   if (isAnimating) return;
   if (inputModeParams.command === null) {
@@ -587,13 +589,17 @@ function handleInputSubmit(): void {
     //validation ongoing, ignore the submit
     return;
   } else if (inputModeParams.validation?.status === "failed") {
-    const cmdLine = $("#commandLine .modal");
-    cmdLine
-      .stop(true, true)
-      .addClass("hasError")
-      .animate({ undefined: 1 }, 500, () => {
-        cmdLine.removeClass("hasError");
-      });
+    const cmdLine = document.querySelector(
+      "#commandLine .modal"
+    ) as HTMLElement;
+
+    cmdLine.classList.add("hasError");
+    if (shakeTimeout !== null) {
+      clearTimeout(shakeTimeout);
+    }
+    shakeTimeout = setTimeout(() => {
+      cmdLine.classList.remove("hasError");
+    }, 500);
     return;
   }
 
