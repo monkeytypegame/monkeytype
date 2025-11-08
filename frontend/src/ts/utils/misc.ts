@@ -490,17 +490,6 @@ export type JQueryEasing =
   | "easeOutBounce"
   | "easeInOutBounce";
 
-export async function promiseAnimation(
-  el: JQuery,
-  animation: Record<string, string>,
-  duration: number,
-  easing: JQueryEasing = "swing"
-): Promise<void> {
-  return new Promise((resolve) => {
-    el.animate(animation, applyReducedMotion(duration), easing, resolve);
-  });
-}
-
 export async function promiseAnimate(
   el: HTMLElement,
   options: AnimationParams
