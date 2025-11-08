@@ -5,6 +5,7 @@ import * as TestWords from "../test/test-words";
 import { getTotalInlineMargin } from "./misc";
 import { isWordRightToLeft } from "./strings";
 import { requestDebouncedAnimationFrame } from "./debounced-animation-frame";
+import { animate } from "animejs";
 
 const wordsCache = document.querySelector<HTMLElement>("#words") as HTMLElement;
 const wordsWrapperCache = document.querySelector<HTMLElement>(
@@ -152,6 +153,7 @@ export class Caret {
   public handleTapeScroll(options: {
     newValue: number;
     duration: number;
+    ease: string;
   }): void {
     if (this.isMainCaret && lockedMainCaretInTape) return;
     this.readyToResetMarginLeft = false;
@@ -177,23 +179,14 @@ export class Caret {
       return;
     }
 
-    $(this.element)
-      .stop("marginLeft", true, false)
-      .animate(
-        {
-          marginLeft: newMarginLeft,
-        },
-        {
-          // this NEEDS to be the same duration as the
-          // line scroll otherwise it will look weird
-          duration: options.duration,
-          queue: "marginLeft",
-          complete: () => {
-            this.readyToResetMarginLeft = true;
-          },
-        }
-      );
-    $(this.element).dequeue("marginLeft");
+    animate(this.element, {
+      marginLeft: newMarginLeft,
+      duration: options.duration,
+      easing: options.ease,
+      onComplete: () => {
+        this.readyToResetMarginLeft = true;
+      },
+    });
   }
 
   public handleLineJump(options: {
@@ -219,23 +212,13 @@ export class Caret {
       return;
     }
 
-    $(this.element)
-      .stop("marginTop", true, false)
-      .animate(
-        {
-          marginTop: options.newMarginTop,
-        },
-        {
-          // this NEEDS to be the same duration as the
-          // line scroll otherwise it will look weird
-          duration: options.duration,
-          queue: "marginTop",
-          complete: () => {
-            this.readyToResetMarginTop = true;
-          },
-        }
-      );
-    $(this.element).dequeue("marginTop");
+    animate(this.element, {
+      marginTop: options.newMarginTop,
+      duration: options.duration,
+      onComplete: () => {
+        this.readyToResetMarginTop = true;
+      },
+    });
   }
 
   public animatePosition(options: {
@@ -269,14 +252,10 @@ export class Caret {
       animation["width"] = options.width;
     }
 
-    $(this.element)
-      .stop("pos", true, false)
-      .animate(animation, {
-        duration: finalDuration,
-        easing: options.easing ?? "swing",
-        queue: "pos",
-      });
-    $(this.element).dequeue("pos");
+    animate(this.element, {
+      ...animation,
+      duration: finalDuration,
+    });
   }
 
   public goTo(options: {
