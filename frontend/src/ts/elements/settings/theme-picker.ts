@@ -305,14 +305,22 @@ export function updateActiveTab(): void {
 
   if (Config.customTheme) {
     void Misc.swapElements(
-      $('.pageSettings [tabContent="preset"]'),
-      $('.pageSettings [tabContent="custom"]'),
+      document.querySelector(
+        '.pageSettings [tabContent="preset"]'
+      ) as HTMLElement,
+      document.querySelector(
+        '.pageSettings [tabContent="custom"]'
+      ) as HTMLElement,
       250
     );
   } else {
     void Misc.swapElements(
-      $('.pageSettings [tabContent="custom"]'),
-      $('.pageSettings [tabContent="preset"]'),
+      document.querySelector(
+        '.pageSettings [tabContent="custom"]'
+      ) as HTMLElement,
+      document.querySelector(
+        '.pageSettings [tabContent="preset"]'
+      ) as HTMLElement,
       250
     );
   }

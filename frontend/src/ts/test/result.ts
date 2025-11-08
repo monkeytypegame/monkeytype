@@ -1072,8 +1072,8 @@ export async function update(
   TestConfig.hide();
 
   void Misc.swapElements(
-    $("#typingTest"),
-    $("#result"),
+    document.querySelector("#typingTest") as HTMLElement,
+    document.querySelector("#result") as HTMLElement,
     250,
     async () => {
       const result = document.querySelector<HTMLElement>("#result");

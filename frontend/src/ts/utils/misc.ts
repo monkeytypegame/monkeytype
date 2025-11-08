@@ -227,8 +227,8 @@ type LastIndex = {
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
 
 export async function swapElements(
-  el1: JQuery,
-  el2: JQuery,
+  el1: HTMLElement,
+  el2: HTMLElement,
   totalDuration: number,
   callback = async function (): Promise<void> {
     return Promise.resolve();
@@ -239,55 +239,43 @@ export async function swapElements(
 ): Promise<boolean | undefined> {
   totalDuration = applyReducedMotion(totalDuration);
   if (
-    (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
-    (!el1.hasClass("hidden") && el2.hasClass("hidden"))
+    (el1.classList.contains("hidden") && !el2.classList.contains("hidden")) ||
+    (!el1.classList.contains("hidden") && el2.classList.contains("hidden"))
   ) {
     //one of them is hidden and the other is visible
-    if (el1.hasClass("hidden")) {
+    if (el1.classList.contains("hidden")) {
       await middleCallback();
       await callback();
       return false;
     }
-    $(el1)
-      .removeClass("hidden")
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        totalDuration / 2,
-        async () => {
-          await middleCallback();
-          $(el1).addClass("hidden");
-          $(el2)
-            .removeClass("hidden")
-            .css("opacity", 0)
-            .animate(
-              {
-                opacity: 1,
-              },
-              totalDuration / 2,
-              async () => {
-                await callback();
-              }
-            );
-        }
-      );
-  } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
+
+    el1.classList.remove("hidden");
+    await promiseAnimate(el1, {
+      opacity: [1, 0],
+      duration: totalDuration / 2,
+    });
+    el1.classList.add("hidden");
+    await middleCallback();
+    el2.classList.remove("hidden");
+    await promiseAnimate(el2, {
+      opacity: [0, 1],
+      duration: totalDuration / 2,
+    });
+    await callback();
+  } else if (
+    el1.classList.contains("hidden") &&
+    el2.classList.contains("hidden")
+  ) {
     //both are hidden, only fade in the second
     await middleCallback();
-    $(el2)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        totalDuration,
-        async () => {
-          await callback();
-        }
-      );
+
+    el2.classList.remove("hidden");
+    await promiseAnimate(el2, {
+      opacity: [0, 1],
+      duration: totalDuration / 2,
+    });
+
+    await callback();
   } else {
     await middleCallback();
     await callback();
