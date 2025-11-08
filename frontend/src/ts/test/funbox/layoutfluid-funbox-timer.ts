@@ -8,14 +8,14 @@ const timerEl = document.querySelector(
 
 export function show(): void {
   animate(timerEl, {
-    opacity: [0, 1],
+    opacity: 1,
     duration: applyReducedMotion(125),
   });
 }
 
 export function hide(): void {
   animate(timerEl, {
-    opacity: [1, 0],
+    opacity: 0,
     duration: applyReducedMotion(125),
   });
 }
