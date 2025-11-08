@@ -125,7 +125,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
       color: [css.color, themecolors.sub],
       backgroundColor: [css.backgroundColor, themecolors.subAlt],
       borderColor: [css.borderColor, themecolors.sub],
-      duration: SlowTimer.get() ? 0 : 500,
+      duration: SlowTimer.get() ? 0 : 250,
       easing: "out(5)",
     });
   } catch (e) {}
