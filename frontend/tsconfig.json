@@ -7,7 +7,10 @@
     "module": "ESNext",
     "allowUmdGlobalAccess": true,
     "target": "ES6",
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "virtual:language-hashes": ["./src/ts/module.d.ts"]
+    }
   },
   "include": ["./src/**/*.ts", "./scripts/**/*.ts"],
   "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]
