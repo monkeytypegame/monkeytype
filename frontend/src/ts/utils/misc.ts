@@ -6,6 +6,7 @@ import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
 import { RankAndCount } from "@monkeytype/schemas/users";
 import { roundTo2 } from "@monkeytype/util/numbers";
+import { animate, AnimationParams } from "animejs";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -497,6 +498,20 @@ export async function promiseAnimation(
 ): Promise<void> {
   return new Promise((resolve) => {
     el.animate(animation, applyReducedMotion(duration), easing, resolve);
+  });
+}
+
+export async function promiseAnimate(
+  el: HTMLElement,
+  options: AnimationParams
+): Promise<void> {
+  return new Promise((resolve) => {
+    animate(el, {
+      ...options,
+      onComplete: () => {
+        resolve();
+      },
+    });
   });
 }
 

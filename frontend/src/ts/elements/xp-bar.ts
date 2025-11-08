@@ -3,7 +3,8 @@ import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import { XpBreakdown } from "@monkeytype/schemas/results";
-import { isSafeNumber, mapRange } from "@monkeytype/util/numbers";
+import { isSafeNumber } from "@monkeytype/util/numbers";
+import { animate } from "animejs";
 
 let breakdownVisible = false;
 let skip = false;
@@ -19,11 +20,15 @@ let lastUpdate: {
   breakdown: undefined,
 };
 
-const xpBreakdownTotalEl = $("nav .xpBar .xpBreakdown .total");
-const xpBreakdownListEl = $("nav .xpBar .xpBreakdown .list");
-const levelEl = $("nav .level");
-const barEl = $("nav .xpBar .bar");
-const barWrapperEl = $("nav .xpBar");
+const xpBreakdownTotalEl = document.querySelector(
+  "nav .xpBar .xpBreakdown .total"
+) as HTMLElement;
+const xpBreakdownListEl = document.querySelector(
+  "nav .xpBar .xpBreakdown .list"
+) as HTMLElement;
+const levelEl = document.querySelector("nav .level") as HTMLElement;
+const barEl = document.querySelector("nav .xpBar .bar") as HTMLElement;
+const barWrapperEl = document.querySelector("nav .xpBar") as HTMLElement;
 
 export async function skipBreakdown(): Promise<void> {
   skip = true;
@@ -33,13 +38,21 @@ export async function skipBreakdown(): Promise<void> {
   if (!breakdownDone) {
     void flashTotalXp(lastUpdate.addedXp, true);
   } else {
-    xpBreakdownTotalEl.text(`+${lastUpdate.addedXp}`);
+    xpBreakdownTotalEl.textContent = `+${lastUpdate.addedXp}`;
   }
 
-  xpBreakdownListEl.stop(true, true).empty().addClass("hidden");
-  levelEl.text(
-    Levels.getLevelFromTotalXp(lastUpdate.currentXp + lastUpdate.addedXp)
-  );
+  animate(xpBreakdownListEl, {
+    opacity: [1, 0],
+    duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(250),
+    onComplete: () => {
+      xpBreakdownListEl.innerHTML = "";
+      xpBreakdownListEl.classList.add("hidden");
+    },
+  });
+
+  levelEl.textContent = `${Levels.getLevelFromTotalXp(
+    lastUpdate.currentXp + lastUpdate.addedXp
+  )}`;
 
   const endingDetails = Levels.getXpDetails(
     lastUpdate.currentXp + lastUpdate.addedXp
@@ -48,27 +61,21 @@ export async function skipBreakdown(): Promise<void> {
     endingDetails.level +
     endingDetails.levelCurrentXp / endingDetails.levelMaxXp;
 
-  barEl.css("width", `${(endingLevel % 1) * 100}%`);
+  barEl.style.width = `${(endingLevel % 1) * 100}%`;
   await Misc.sleep(2000);
   breakdownVisible = false;
-  barWrapperEl
-    .stop(true, true)
-    .css("opacity", 1)
-    .animate(
-      {
-        opacity: 0,
-      },
-      SlowTimer.get() ? 0 : Misc.applyReducedMotion(250)
-    );
+
+  animate(barWrapperEl, {
+    opacity: [1, 0],
+    duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(250),
+  });
 }
 
 export function setXp(xp: number): void {
   const xpDetails = Levels.getXpDetails(xp);
   const levelCompletionRatio = xpDetails.levelCurrentXp / xpDetails.levelMaxXp;
-  levelEl.text(xpDetails.level);
-  barEl.css({
-    width: levelCompletionRatio * 100 + "%",
-  });
+  levelEl.textContent = `${xpDetails.level}`;
+  barEl.style.width = levelCompletionRatio * 100 + "%";
 }
 
 export async function update(
@@ -84,7 +91,7 @@ export async function update(
     breakdown,
   };
 
-  levelEl.text(Levels.getLevelFromTotalXp(currentXp));
+  levelEl.textContent = `${Levels.getLevelFromTotalXp(currentXp)}`;
 
   const startingXp = Levels.getXpDetails(currentXp);
   const endingXp = Levels.getXpDetails(currentXp + addedXp);
@@ -93,35 +100,28 @@ export async function update(
   const endingLevel =
     endingXp.level + endingXp.levelCurrentXp / endingXp.levelMaxXp;
 
-  const breakdownList = xpBreakdownListEl;
+  xpBreakdownListEl.style.opacity = "0";
+  xpBreakdownListEl.innerHTML = "";
+  barWrapperEl.style.opacity = "0";
+  xpBreakdownTotalEl.textContent = "";
 
-  xpBreakdownListEl.stop(true, true).css("opacity", 0).empty();
-  barWrapperEl.stop(true, true).css("opacity", 0);
-  xpBreakdownTotalEl.text("");
+  const showParent = Misc.promiseAnimate(barWrapperEl, {
+    opacity: 1,
+    duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(125),
+    ease: "linear",
+  });
 
-  const showParent = Misc.promiseAnimation(
-    barWrapperEl,
-    {
-      opacity: "1",
-    },
-    SlowTimer.get() ? 0 : Misc.applyReducedMotion(125),
-    "linear"
-  );
-
-  const showList = Misc.promiseAnimation(
-    xpBreakdownListEl,
-    {
-      opacity: "1",
-    },
-    SlowTimer.get() ? 0 : Misc.applyReducedMotion(125),
-    "linear"
-  );
+  const showList = Misc.promiseAnimate(xpBreakdownListEl, {
+    opacity: 1,
+    duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(125),
+    ease: "linear",
+  });
 
   if (breakdown !== undefined) {
-    breakdownList.removeClass("hidden");
+    xpBreakdownListEl.classList.remove("hidden");
     void Promise.all([showParent, showList]);
   } else {
-    breakdownList.addClass("hidden");
+    xpBreakdownListEl.classList.add("hidden");
     void showParent;
   }
 
@@ -139,60 +139,28 @@ export async function update(
   if (skip) return;
 
   breakdownVisible = false;
-  levelEl.text(Levels.getLevelFromTotalXp(currentXp + addedXp));
-  barWrapperEl
-    .stop(true, true)
-    .css("opacity", 1)
-    .animate(
-      {
-        opacity: 0,
-      },
-      SlowTimer.get() ? 0 : Misc.applyReducedMotion(250)
-    );
+  levelEl.textContent = `${Levels.getLevelFromTotalXp(currentXp + addedXp)}`;
+
+  animate(barWrapperEl, {
+    opacity: [1, 0],
+    duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(250),
+  });
 }
 
 async function flashTotalXp(totalXp: number, force = false): Promise<void> {
   if (!force && skip) return;
 
-  xpBreakdownTotalEl.text(`+${totalXp}`);
+  xpBreakdownTotalEl.textContent = `+${totalXp}`;
 
   const rand = (Math.random() * 2 - 1) / 4;
   const rand2 = (Math.random() + 1) / 2;
 
-  /**
-   * `borderSpacing` has no visible effect on this element,
-   * and is used in the animation only to provide numerical
-   * values for the `step(step)` function.
-   */
-  xpBreakdownTotalEl
-    .stop(true, true)
-    .css({
-      transition: "initial",
-      borderSpacing: 100,
-    })
-    .animate(
-      {
-        borderSpacing: 0,
-      },
-      {
-        step(step) {
-          xpBreakdownTotalEl.css(
-            "transform",
-            `scale(${1 + (step / 200) * rand2}) rotate(${
-              (step / 10) * rand
-            }deg)`
-          );
-        },
-        duration: Misc.applyReducedMotion(2000),
-        easing: "easeOutCubic",
-        complete: () => {
-          xpBreakdownTotalEl.css({
-            backgroundColor: "",
-            transition: "",
-          });
-        },
-      }
-    );
+  animate(xpBreakdownTotalEl, {
+    scale: [1 + 0.5 * rand2, 1],
+    rotate: [10 * rand, 0],
+    duration: Misc.applyReducedMotion(2000),
+    ease: "out(5)",
+  });
 }
 
 async function addBreakdownListItem(
@@ -203,11 +171,13 @@ async function addBreakdownListItem(
   if (skip) return;
 
   if (amount === undefined) {
-    xpBreakdownListEl.append(
+    xpBreakdownListEl.insertAdjacentHTML(
+      "beforeend",
       `<div class="line" data-string='${string}'><div>${string}</div><div></div></div>`
     );
   } else if (typeof amount === "string") {
-    xpBreakdownListEl.append(
+    xpBreakdownListEl.insertAdjacentHTML(
+      "beforeend",
       `
       <div class="line" data-string='${string}'>
       <div class="${options?.extraClass}">${string}</div>
@@ -217,29 +187,29 @@ async function addBreakdownListItem(
   } else {
     const positive = amount === undefined ? undefined : amount >= 0;
 
-    xpBreakdownListEl.append(`
+    xpBreakdownListEl.insertAdjacentHTML(
+      "beforeend",
+      `
       <div class="line" data-string='${string}'>
 
         <div class="${options?.extraClass}">${string}</div>
         <div class="${positive ? "positive" : "negative"} ${
-      options?.extraClass
-    }">${positive ? "+" : "-"}${Math.abs(amount)}</div>
-      </div>`);
+        options?.extraClass
+      }">${positive ? "+" : "-"}${Math.abs(amount)}</div>
+      </div>`
+    );
   }
 
   if (options?.noAnimation) return;
 
-  const el = xpBreakdownListEl.find(`.line[data-string='${string}']`);
+  const el = xpBreakdownListEl.querySelector(
+    `.line[data-string='${string}']`
+  ) as HTMLElement;
 
-  el.css("opacity", 0);
-  await Misc.promiseAnimation(
-    el,
-    {
-      opacity: "1",
-    },
-    Misc.applyReducedMotion(250),
-    "swing"
-  );
+  await Misc.promiseAnimate(el, {
+    opacity: [0, 1],
+    duration: Misc.applyReducedMotion(250),
+  });
 }
 
 async function animateXpBreakdown(
@@ -248,20 +218,20 @@ async function animateXpBreakdown(
 ): Promise<void> {
   if (skip) return;
 
-  xpBreakdownListEl.css("opacity", 1);
+  xpBreakdownListEl.style.opacity = "1";
   if (!breakdown) {
-    xpBreakdownTotalEl.text(`+${addedXp}`);
+    xpBreakdownTotalEl.textContent = `+${addedXp}`;
     return;
   }
   const delay = Misc.applyReducedMotion(250);
   let total = 0;
-  xpBreakdownListEl.empty();
-  xpBreakdownListEl.removeClass("hidden");
+  xpBreakdownListEl.innerHTML = "";
+  xpBreakdownListEl.classList.remove("hidden");
 
-  xpBreakdownTotalEl.text("+0");
+  xpBreakdownTotalEl.textContent = `+0`;
 
   total += breakdown.base ?? 0;
-  xpBreakdownTotalEl.text(`+${total}`);
+  xpBreakdownTotalEl.textContent = `+${total}`;
   await addBreakdownListItem("time typing", breakdown.base, {
     noAnimation: true,
   });
@@ -374,29 +344,27 @@ async function animateXpBar(
 
   const difference = endingLevel - startingLevel;
 
-  barEl.css("width", `${(startingLevel % 1) * 100}%`);
+  barEl.style.width = `${(startingLevel % 1) * 100}%`;
 
   if (endingLevel % 1 === 0) {
-    await Misc.promiseAnimation(
-      barEl,
-      {
-        width: "100%",
-      },
-      SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
-      "easeOutExpo"
-    );
+    //ending level is exactly round, meaning fill the bar to 100%, flash, set to 0
+    await Misc.promiseAnimate(barEl, {
+      width: "100%",
+      duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
+      ease: "out(5)",
+    });
 
     if (skip) return;
 
     void flashLevel();
-    barEl.css("width", `0%`);
+    barEl.style.width = `0%`;
   } else if (Math.floor(startingLevel) === Math.floor(endingLevel)) {
-    await Misc.promiseAnimation(
-      barEl,
-      { width: `${(endingLevel % 1) * 100}%` },
-      SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
-      "easeOutExpo"
-    );
+    //ending level is the same, just animate the bar to the correct percentage
+    await Misc.promiseAnimate(barEl, {
+      width: `${(endingLevel % 1) * 100}%`,
+      duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
+      ease: "out(5)",
+    });
   } else {
     // const quickSpeed = Misc.mapRange(difference, 10, 2000, 200, 1);
     const quickSpeed = Math.min(1000 / difference, 200);
@@ -404,29 +372,25 @@ async function animateXpBar(
 
     let firstOneDone = false;
     let animationDuration = quickSpeed;
-    let animationEasing: Misc.JQueryEasing = "linear";
     let decrement = 1 - (startingLevel % 1);
 
     do {
       if (skip) return;
 
-      if (toAnimate - 1 < 1) {
-        animationDuration = mapRange(toAnimate - 1, 0, 0.5, 1000, 200);
-        animationEasing = "easeOutQuad";
-      }
       if (firstOneDone) {
         void flashLevel();
-        barEl.css("width", "0%");
+        barEl.style.width = "0%";
         decrement = 1;
       }
-      await Misc.promiseAnimation(
-        barEl,
-        {
-          width: "100%",
-        },
-        SlowTimer.get() ? 0 : Misc.applyReducedMotion(animationDuration),
-        animationEasing
-      );
+
+      await Misc.promiseAnimate(barEl, {
+        width: "100%",
+        duration: SlowTimer.get()
+          ? 0
+          : Misc.applyReducedMotion(animationDuration),
+        ease: "linear",
+      });
+
       toAnimate -= decrement;
       firstOneDone = true;
     } while (toAnimate > 1);
@@ -434,18 +398,15 @@ async function animateXpBar(
     if (skip) return;
 
     void flashLevel();
-    barEl.css("width", "0%");
+    barEl.style.width = "0%";
 
     if (skip) return;
 
-    await Misc.promiseAnimation(
-      barEl,
-      {
-        width: `${(toAnimate % 1) * 100}%`,
-      },
-      SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
-      "easeOutExpo"
-    );
+    await Misc.promiseAnimate(barEl, {
+      width: `${(toAnimate % 1) * 100}%`,
+      duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
+      ease: "out(5)",
+    });
   }
   return;
 }
@@ -453,7 +414,7 @@ async function animateXpBar(
 async function flashLevel(): Promise<void> {
   const themecolors = await getAll();
 
-  levelEl.text(parseInt(levelEl.text()) + 1);
+  levelEl.textContent = `${parseInt(levelEl.textContent) + 1}`;
 
   const rand = Math.random() * 2 - 1;
   const rand2 = Math.random() + 1;
@@ -463,36 +424,12 @@ async function flashLevel(): Promise<void> {
    * and is used in the animation only to provide numerical
    * values for the `step(step)` function.
    */
-  levelEl
-    .stop(true, true)
-    .css({
-      backgroundColor: themecolors.main,
-      // transform: "scale(1.5) rotate(10deg)",
-      borderSpacing: 100,
-      transition: "initial",
-    })
-    .animate(
-      {
-        backgroundColor: themecolors.sub,
-        borderSpacing: 0,
-      },
-      {
-        step(step) {
-          levelEl.css(
-            "transform",
-            `scale(${1 + (step / 200) * rand2}) rotate(${
-              (step / 10) * rand
-            }deg)`
-          );
-        },
-        duration: Misc.applyReducedMotion(2000),
-        easing: "easeOutCubic",
-        complete: () => {
-          levelEl.css({
-            backgroundColor: "",
-            transition: "",
-          });
-        },
-      }
-    );
+
+  animate(levelEl, {
+    scale: [1 + 0.5 * rand2, 1],
+    backgroundColor: [themecolors.main, themecolors.sub],
+    rotate: [10 * rand, 0],
+    duration: Misc.applyReducedMotion(2000),
+    ease: "out(5)",
+  });
 }
