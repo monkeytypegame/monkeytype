@@ -25,12 +25,10 @@ function handleKeyupTiming(event: KeyboardEvent, now: number): void {
     eventCode = "NoCode";
   }
 
-  setTimeout(() => {
-    if (eventCode === "" || event.key === "Unidentified") {
-      eventCode = "NoCode";
-    }
-    TestInput.recordKeyupTime(now, eventCode);
-  }, 0);
+  if (eventCode === "" || event.key === "Unidentified") {
+    eventCode = "NoCode";
+  }
+  TestInput.recordKeyupTime(now, eventCode);
 }
 
 export async function handleKeyup(event: KeyboardEvent): Promise<void> {

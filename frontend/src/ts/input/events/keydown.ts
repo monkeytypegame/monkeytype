@@ -44,12 +44,10 @@ function handleKeydownTiming(event: KeyboardEvent, now: number): void {
     eventCode = "NoCode";
   }
 
-  setTimeout(() => {
-    if (eventCode === "" || event.key === "Unidentified") {
-      eventCode = "NoCode";
-    }
-    TestInput.recordKeydownTime(now, eventCode);
-  }, 0);
+  if (eventCode === "" || event.key === "Unidentified") {
+    eventCode = "NoCode";
+  }
+  TestInput.recordKeydownTime(now, eventCode);
 }
 
 async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
