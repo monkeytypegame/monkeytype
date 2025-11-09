@@ -31,6 +31,16 @@
     "not op_mini all",
     "not dead"
   ],
+  "lint-staged": {
+    "*.{json,scss,css,html}": [
+      "prettier --write"
+    ],
+    "*.{ts,js}": [
+      "prettier --write",
+      "oxlint",
+      "eslint"
+    ]
+  },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
     "@monkeytype/eslint-config": "workspace:*",
