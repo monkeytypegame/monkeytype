@@ -53,7 +53,9 @@ import "./utils/url-handler";
 import "./modals/last-signed-out-result";
 import { engine } from "animejs";
 
-engine.fps = 1000;
+engine.pauseOnDocumentHidden = false;
+engine.fps = 240;
+engine.defaults.frameRate = 240;
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
