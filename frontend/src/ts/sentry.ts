@@ -26,10 +26,10 @@ export async function activateSentry(): Promise<void> {
     environment: envConfig.isDevelopment ? "development" : "production",
     integrations: [
       Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration({
-        unmask: ["#notificationCenter"],
-        block: ["#commandLine .modal .suggestions"],
-      }),
+      // Sentry.replayIntegration({
+      //   unmask: ["#notificationCenter"],
+      //   block: ["#commandLine .modal .suggestions"],
+      // }),
       Sentry.thirdPartyErrorFilterIntegration({
         filterKeys: ["monkeytype-frontend"],
         // Defines how to handle errors that contain third party stack frames.
