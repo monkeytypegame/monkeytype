@@ -1170,11 +1170,9 @@ $("#wordsInput").on("keydown", (event) => {
   }
 
   const now = performance.now();
-  setTimeout(() => {
-    const eventCode =
-      event.code === "" || event.key === "Unidentified" ? "NoCode" : event.code;
-    TestInput.recordKeydownTime(now, eventCode);
-  }, 0);
+  const eventCode =
+    event.code === "" || event.key === "Unidentified" ? "NoCode" : event.code;
+  TestInput.recordKeydownTime(now, eventCode);
 });
 
 $("#wordsInput").on("keyup", (event) => {
@@ -1201,11 +1199,9 @@ $("#wordsInput").on("keyup", (event) => {
   }
 
   const now = performance.now();
-  setTimeout(() => {
-    const eventCode =
-      event.code === "" || event.key === "Unidentified" ? "NoCode" : event.code;
-    TestInput.recordKeyupTime(now, eventCode);
-  }, 0);
+  const eventCode =
+    event.code === "" || event.key === "Unidentified" ? "NoCode" : event.code;
+  TestInput.recordKeyupTime(now, eventCode);
 });
 
 $("#wordsInput").on("keyup", (event) => {
