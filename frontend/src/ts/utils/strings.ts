@@ -296,6 +296,20 @@ export function areCharactersVisuallyEqual(
   return false;
 }
 
+export function toHex(buffer: ArrayBuffer): string {
+  // @ts-expect-error modern browsers
+  if (Uint8Array.prototype.toHex !== undefined) {
+    // @ts-expect-error modern browsers
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    return new Uint8Array(buffer).toHex() as string;
+  }
+  const hashArray = Array.from(new Uint8Array(buffer));
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+}
+
 /**
  * Checks if a character is a directly typable space character on a standard keyboard.
  * These are space characters that can be typed without special input methods or copy-pasting.

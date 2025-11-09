@@ -1271,12 +1271,10 @@ $(document).on("keydown", async (event) => {
 //   }
 
 //   const now = performance.now();
-//   setTimeout(() => {
-//     const eventCode =
-//       event.code === "" || event.which === 231 ? "NoCode" : event.code;
-//     TestInput.recordKeydownTime(now, eventCode);
-//   }, 0);
-// });
+// //   const eventCode =
+//     event.code === "" || event.which === 231 ? "NoCode" : event.code;
+//   TestInput.recordKeydownTime(now, eventCode);
+// // });
 
 // $("#wordsInput").on("keyup", (event) => {
 //   if (event.originalEvent?.repeat) {
@@ -1300,12 +1298,10 @@ $(document).on("keydown", async (event) => {
 //   }
 
 //   const now = performance.now();
-//   setTimeout(() => {
-//     const eventCode =
-//       event.code === "" || event.which === 231 ? "NoCode" : event.code;
-//     TestInput.recordKeyupTime(now, eventCode);
-//   }, 0);
-// });
+// //   const eventCode =
+//     event.code === "" || event.which === 231 ? "NoCode" : event.code;
+//   TestInput.recordKeyupTime(now, eventCode);
+// // });
 
 // $("#wordsInput").on("keyup", (event) => {
 //   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
