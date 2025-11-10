@@ -39,6 +39,10 @@ export class Caret {
   private isMainCaret: boolean = false;
   private cumulativeTapeMarginCorrection: number = 0;
 
+  private posAnimation: JSAnimation | null = null;
+  private marginTopAnimation: JSAnimation | null = null;
+  private marginLeftAnimation: JSAnimation | null = null;
+
   constructor(element: HTMLElement, style: CaretStyle) {
     this.id = element.id;
     this.element = element;
@@ -103,7 +107,7 @@ export class Caret {
     top: number;
     width?: number;
   }): void {
-    $(this.element).stop("pos", true, false);
+    this.posAnimation?.cancel();
     this.element.style.left = `${options.left}px`;
     this.element.style.top = `${options.top}px`;
     if (options.width !== undefined) {
@@ -133,7 +137,9 @@ export class Caret {
   }
 
   public stopAllAnimations(): void {
-    $(this.element).stop(true, false);
+    this.posAnimation?.cancel();
+    this.marginTopAnimation?.cancel();
+    this.marginLeftAnimation?.cancel();
   }
 
   public clearMargins(): void {
@@ -172,14 +178,13 @@ export class Caret {
       options.newValue - this.cumulativeTapeMarginCorrection;
 
     if (options.duration === 0) {
-      $(this.element).stop("marginLeft", true, false).css({
-        marginLeft: newMarginLeft,
-      });
+      this.marginLeftAnimation?.cancel();
+      this.element.style.marginLeft = `${newMarginLeft}px`;
       this.readyToResetMarginLeft = true;
       return;
     }
 
-    animate(this.element, {
+    this.marginLeftAnimation = animate(this.element, {
       marginLeft: newMarginLeft,
       duration: options.duration,
       ease: options.ease,
@@ -205,14 +210,13 @@ export class Caret {
     this.readyToResetMarginTop = false;
 
     if (options.duration === 0) {
-      $(this.element).stop("marginTop", true, false).css({
-        marginTop: options.newMarginTop,
-      });
+      this.marginTopAnimation?.cancel();
+      this.element.style.marginTop = `${options.newMarginTop}px`;
       this.readyToResetMarginTop = true;
       return;
     }
 
-    animate(this.element, {
+    this.marginTopAnimation = animate(this.element, {
       marginTop: options.newMarginTop,
       duration: options.duration,
       onComplete: () => {
@@ -252,7 +256,7 @@ export class Caret {
       animation["width"] = options.width;
     }
 
-    animate(this.element, {
+    this.posAnimation = animate(this.element, {
       ...animation,
       duration: finalDuration,
       ease: options.easing ?? "out(2.5)",
