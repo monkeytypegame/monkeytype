@@ -5,35 +5,7 @@ import * as TestWords from "../test/test-words";
 import { getTotalInlineMargin } from "./misc";
 import { isWordRightToLeft } from "./strings";
 import { requestDebouncedAnimationFrame } from "./debounced-animation-frame";
-import { animate } from "animejs";
-
-animate(".red", {
-  marginLeft: [0, "90%"],
-  loop: true,
-  ease: "linear",
-  duration: 1000,
-});
-
-void jq();
-async function jq(): Promise<void> {
-  $(".orange")
-    .css({
-      marginLeft: 0,
-    })
-    .animate(
-      {
-        marginLeft: "90%",
-      },
-      {
-        duration: 1000,
-        easing: "linear",
-        loop: true,
-        complete: () => {
-          void jq();
-        },
-      }
-    );
-}
+import { animate, EasingParam, JSAnimation } from "animejs";
 
 const wordsCache = document.querySelector<HTMLElement>("#words") as HTMLElement;
 const wordsWrapperCache = document.querySelector<HTMLElement>(
