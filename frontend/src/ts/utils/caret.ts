@@ -225,18 +225,18 @@ export class Caret {
     left: number;
     top: number;
     duration?: number;
-    easing?: string;
+    easing?: EasingParam;
     width?: number;
   }): void {
     const smoothCaretSpeed =
       Config.smoothCaret === "off"
         ? 0
         : Config.smoothCaret === "slow"
-        ? 150
+        ? 300
         : Config.smoothCaret === "medium"
-        ? 100
+        ? 200
         : Config.smoothCaret === "fast"
-        ? 85
+        ? 150
         : 0;
 
     const finalDuration = SlowTimer.get()
@@ -255,7 +255,7 @@ export class Caret {
     animate(this.element, {
       ...animation,
       duration: finalDuration,
-      ease: "out(1.25)",
+      ease: options.easing ?? "out(2.5)",
     });
   }
 
