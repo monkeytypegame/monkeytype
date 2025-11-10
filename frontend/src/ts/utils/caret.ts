@@ -153,7 +153,7 @@ export class Caret {
   public handleTapeScroll(options: {
     newValue: number;
     duration: number;
-    ease: string;
+    ease: EasingParam;
   }): void {
     if (this.isMainCaret && lockedMainCaretInTape) return;
     this.readyToResetMarginLeft = false;
@@ -182,7 +182,7 @@ export class Caret {
     animate(this.element, {
       marginLeft: newMarginLeft,
       duration: options.duration,
-      easing: options.ease,
+      ease: options.ease,
       onComplete: () => {
         this.readyToResetMarginLeft = true;
       },
