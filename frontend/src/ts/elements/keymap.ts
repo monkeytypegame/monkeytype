@@ -1,6 +1,5 @@
 import Config from "../config";
 import * as ThemeColors from "./theme-colors";
-import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";
@@ -125,7 +124,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
       color: [css.color, themecolors.sub],
       backgroundColor: [css.backgroundColor, themecolors.subAlt],
       borderColor: [css.borderColor, themecolors.sub],
-      duration: SlowTimer.get() ? 0 : 250,
+      duration: 250,
       easing: "out(5)",
     });
   } catch (e) {}

@@ -1,6 +1,5 @@
 import { CaretStyle } from "@monkeytype/schemas/configs";
 import Config from "../config";
-import * as SlowTimer from "../states/slow-timer";
 import * as TestWords from "../test/test-words";
 import { getTotalInlineMargin } from "./misc";
 import { isWordRightToLeft } from "./strings";
@@ -116,7 +115,7 @@ export class Caret {
   }
 
   public startBlinking(): void {
-    if (Config.smoothCaret !== "off" && !SlowTimer.get()) {
+    if (Config.smoothCaret !== "off") {
       this.element.style.animationName = "caretFlashSmooth";
     } else {
       this.element.style.animationName = "caretFlashHard";
@@ -243,9 +242,7 @@ export class Caret {
         ? 150
         : 0;
 
-    const finalDuration = SlowTimer.get()
-      ? 0
-      : options.duration ?? smoothCaretSpeed;
+    const finalDuration = options.duration ?? smoothCaretSpeed;
 
     const animation: Record<string, number> = {
       left: options.left,

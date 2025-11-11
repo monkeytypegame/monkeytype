@@ -11,7 +11,6 @@ import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
@@ -1046,7 +1045,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     newMargin = wordRightMargin - newMargin;
   }
 
-  const duration = noAnimation ? 0 : SlowTimer.get() ? 0 : 500;
+  const duration = noAnimation ? 0 : 250;
   const ease = "out(2.5)";
   const caretScrollOptions = {
     newValue: newMarginOffset * -1,
@@ -1158,7 +1157,7 @@ export async function lineJump(
 
     const wordHeight = $(activeWordEl).outerHeight(true) as number;
     const newMarginTop = -1 * wordHeight * currentLinesJumping;
-    const duration = SlowTimer.get() ? 0 : 125;
+    const duration = 125;
 
     const caretLineJumpOptions = {
       newMarginTop,

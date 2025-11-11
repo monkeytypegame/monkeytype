@@ -1,7 +1,6 @@
 import * as Misc from "../utils/misc";
 import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
-import * as SlowTimer from "../states/slow-timer";
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { animate } from "animejs";
@@ -43,7 +42,7 @@ export async function skipBreakdown(): Promise<void> {
 
   animate(xpBreakdownListEl, {
     opacity: [1, 0],
-    duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(250),
+    duration: Misc.applyReducedMotion(250),
     onComplete: () => {
       xpBreakdownListEl.innerHTML = "";
       xpBreakdownListEl.classList.add("hidden");
@@ -67,7 +66,7 @@ export async function skipBreakdown(): Promise<void> {
 
   animate(barWrapperEl, {
     opacity: [1, 0],
-    duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(250),
+    duration: Misc.applyReducedMotion(250),
   });
 }
 
@@ -107,13 +106,13 @@ export async function update(
 
   const showParent = Misc.promiseAnimate(barWrapperEl, {
     opacity: 1,
-    duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(125),
+    duration: Misc.applyReducedMotion(125),
     ease: "linear",
   });
 
   const showList = Misc.promiseAnimate(xpBreakdownListEl, {
     opacity: 1,
-    duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(125),
+    duration: Misc.applyReducedMotion(125),
     ease: "linear",
   });
 
@@ -143,7 +142,7 @@ export async function update(
 
   animate(barWrapperEl, {
     opacity: [1, 0],
-    duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(250),
+    duration: Misc.applyReducedMotion(250),
   });
 }
 
@@ -350,7 +349,7 @@ async function animateXpBar(
     //ending level is exactly round, meaning fill the bar to 100%, flash, set to 0
     await Misc.promiseAnimate(barEl, {
       width: "100%",
-      duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
+      duration: Misc.applyReducedMotion(1000),
       ease: "out(5)",
     });
 
@@ -362,7 +361,7 @@ async function animateXpBar(
     //ending level is the same, just animate the bar to the correct percentage
     await Misc.promiseAnimate(barEl, {
       width: `${(endingLevel % 1) * 100}%`,
-      duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
+      duration: Misc.applyReducedMotion(1000),
       ease: "out(5)",
     });
   } else {
@@ -385,9 +384,7 @@ async function animateXpBar(
 
       await Misc.promiseAnimate(barEl, {
         width: "100%",
-        duration: SlowTimer.get()
-          ? 0
-          : Misc.applyReducedMotion(animationDuration),
+        duration: Misc.applyReducedMotion(animationDuration),
         ease: "linear",
       });
 
@@ -404,7 +401,7 @@ async function animateXpBar(
 
     await Misc.promiseAnimate(barEl, {
       width: `${(toAnimate % 1) * 100}%`,
-      duration: SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
+      duration: Misc.applyReducedMotion(1000),
       ease: "out(5)",
     });
   }

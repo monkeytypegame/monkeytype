@@ -4,7 +4,6 @@ import * as DateTime from "../utils/date-and-time";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as Time from "../states/time";
-import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { applyReducedMotion } from "../utils/misc";
@@ -114,7 +113,7 @@ export function update(): void {
 
       animate(barEl, {
         width: percent + "vw",
-        duration: SlowTimer.get() ? 0 : 1000,
+        duration: 1000,
         ease: "linear",
       });
     } else if (Config.timerStyle === "text") {
@@ -156,7 +155,7 @@ export function update(): void {
 
       animate(barEl, {
         width: percent + "vw",
-        duration: SlowTimer.get() ? 0 : 250,
+        duration: 250,
       });
     } else if (Config.timerStyle === "text") {
       if (outof === 0) {
