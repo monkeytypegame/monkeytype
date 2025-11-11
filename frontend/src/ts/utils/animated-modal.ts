@@ -258,6 +258,7 @@ export default class AnimatedModal<
       const modalAnimation = options?.customAnimation?.modal ??
         this.customShowAnimations?.modal ?? {
           opacity: [0, 1],
+          marginTop: ["1rem", 0],
         };
       const wrapperAnimation = options?.customAnimation?.wrapper ??
         this.customShowAnimations?.wrapper ?? {
@@ -331,6 +332,7 @@ export default class AnimatedModal<
       const modalAnimation = options?.customAnimation?.modal ??
         this.customHideAnimations?.modal ?? {
           opacity: [1, 0],
+          marginTop: [0, "1rem"],
         };
       const modalAnimationDuration = applyReducedMotion(
         (options?.customAnimation?.modal?.duration ??
