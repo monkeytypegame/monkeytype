@@ -105,11 +105,12 @@ class Notification {
             <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
         </div>
       `);
-      const notif = document.querySelector(
+      const notif = document.querySelector<HTMLElement>(
         `#notificationCenter .notif[id='${this.id}']`
-      ) as HTMLElement;
-      const notifHeight = notif.offsetHeight;
+      );
+      if (notif === null) return;
 
+      const notifHeight = notif.offsetHeight;
       const duration = 250;
 
       animate(notif, {
