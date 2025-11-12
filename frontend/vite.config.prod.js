@@ -19,8 +19,8 @@ import {
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { getFontsConig } from "./vite.config";
-import { envConfig } from "./scripts/env-config";
-import { languageHashes } from "./scripts/language-hashes";
+import { envConfig } from "./vite-plugins/env-config";
+import { languageHashes } from "./vite-plugins/language-hashes";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
