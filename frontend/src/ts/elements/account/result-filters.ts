@@ -179,7 +179,9 @@ function addFilterPresetToSnapshot(filter: ResultFilters): void {
 }
 
 // callback function called by popup once user inputs name
-export async function createFilterPreset(name: string): Promise<void> {
+export async function createFilterPreset(
+  name: string
+): Promise<number | undefined> {
   name = name.replace(/ /g, "_");
   Loader.show();
   const result = await Ape.users.addResultFilterPreset({
@@ -189,13 +191,10 @@ export async function createFilterPreset(name: string): Promise<void> {
   if (result.status === 200) {
     addFilterPresetToSnapshot({ ...filters, name, _id: result.body.data });
     void updateFilterPresets();
-    Notifications.add("Filter preset created", 1);
+    return 1;
   } else {
-    Notifications.add(
-      "Error creating filter preset: " + result.body.message,
-      -1
-    );
     console.log("error creating filter preset: " + result.body.message);
+    return 0;
   }
 }
 
