@@ -25,7 +25,7 @@ export async function instantUpdate(): Promise<void> {
   );
 
   $("#testConfig .puncAndNum").addClass("hidden");
-  $("#testConfig .spacer").css("transition", "none").addClass("scrolled");
+  $("#testConfig .spacer").addClass("hidden");
   $("#testConfig .time").addClass("hidden");
   $("#testConfig .wordCount").addClass("hidden");
   $("#testConfig .customText").addClass("hidden");
@@ -37,8 +37,8 @@ export async function instantUpdate(): Promise<void> {
       width: "",
       opacity: "",
     });
-    $("#testConfig .leftSpacer").removeClass("scrolled");
-    $("#testConfig .rightSpacer").removeClass("scrolled");
+    $("#testConfig .leftSpacer").removeClass("hidden");
+    $("#testConfig .rightSpacer").removeClass("hidden");
     $("#testConfig .time").removeClass("hidden");
 
     updateActiveExtraButtons("time", Config.time);
@@ -47,13 +47,13 @@ export async function instantUpdate(): Promise<void> {
       width: "",
       opacity: "",
     });
-    $("#testConfig .leftSpacer").removeClass("scrolled");
-    $("#testConfig .rightSpacer").removeClass("scrolled");
+    $("#testConfig .leftSpacer").removeClass("hidden");
+    $("#testConfig .rightSpacer").removeClass("hidden");
     $("#testConfig .wordCount").removeClass("hidden");
 
     updateActiveExtraButtons("words", Config.words);
   } else if (Config.mode === "quote") {
-    $("#testConfig .rightSpacer").removeClass("scrolled");
+    $("#testConfig .rightSpacer").removeClass("hidden");
     $("#testConfig .quoteLength").removeClass("hidden");
 
     updateActiveExtraButtons("quoteLength", Config.quoteLength);
@@ -62,18 +62,14 @@ export async function instantUpdate(): Promise<void> {
       width: "",
       opacity: "",
     });
-    $("#testConfig .leftSpacer").removeClass("scrolled");
-    $("#testConfig .rightSpacer").removeClass("scrolled");
+    $("#testConfig .leftSpacer").removeClass("hidden");
+    $("#testConfig .rightSpacer").removeClass("hidden");
     $("#testConfig .customText").removeClass("hidden");
   }
 
   updateActiveExtraButtons("quoteLength", Config.quoteLength);
   updateActiveExtraButtons("numbers", Config.numbers);
   updateActiveExtraButtons("punctuation", Config.punctuation);
-
-  setTimeout(() => {
-    $("#testConfig .spacer").css("transition", "");
-  }, 125);
 }
 
 async function update(previous: Mode, current: Mode): Promise<void> {
@@ -120,12 +116,6 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   const puncAndNumEl = $("#testConfig .puncAndNum");
 
   if (puncAndNumVisible[current] !== puncAndNumVisible[previous]) {
-    if (!puncAndNumVisible[current]) {
-      $("#testConfig .leftSpacer").addClass("scrolled");
-    } else {
-      $("#testConfig .leftSpacer").removeClass("scrolled");
-    }
-
     puncAndNumEl
       .css({
         width: "unset",
@@ -142,10 +132,12 @@ async function update(previous: Mode, current: Mode): Promise<void> {
         (puncAndNumVisible[previous] ? width : 0) + "px",
         (puncAndNumVisible[current] ? width : 0) + "px",
       ],
-      opacity: [
-        puncAndNumVisible[previous] ? 1 : 0,
-        puncAndNumVisible[current] ? 1 : 0,
-      ],
+      opacity: {
+        duration: animTime / 2,
+        delay: puncAndNumVisible[current] ? animTime / 2 : 0,
+        from: puncAndNumVisible[previous] ? 1 : 0,
+        to: puncAndNumVisible[current] ? 1 : 0,
+      },
       duration: animTime,
       ease: easing.both,
       onComplete: () => {
@@ -156,13 +148,66 @@ async function update(previous: Mode, current: Mode): Promise<void> {
         }
       },
     });
+
+    const leftSpacerEl = document.querySelector(
+      "#testConfig .leftSpacer"
+    ) as HTMLElement;
+
+    leftSpacerEl.style.width = "0.5em";
+    leftSpacerEl.style.opacity = "1";
+    leftSpacerEl.classList.remove("hidden");
+
+    animate(leftSpacerEl, {
+      width: [
+        puncAndNumVisible[previous] ? "0.5em" : 0,
+        puncAndNumVisible[current] ? "0.5em" : 0,
+      ],
+      // opacity: {
+      //   duration: animTime / 2,
+      //   // delay: puncAndNumVisible[current] ? animTime / 2 : 0,
+      //   from: puncAndNumVisible[previous] ? 1 : 0,
+      //   to: puncAndNumVisible[current] ? 1 : 0,
+      // },
+      duration: animTime,
+      ease: easing.both,
+      onComplete: () => {
+        if (puncAndNumVisible[current]) {
+          leftSpacerEl.style.width = "";
+        } else {
+          leftSpacerEl.classList.add("hidden");
+        }
+      },
+    });
   }
 
-  if (current === "zen") {
-    $("#testConfig .rightSpacer").addClass("scrolled");
-  } else {
-    $("#testConfig .rightSpacer").removeClass("scrolled");
-  }
+  const rightSpacerEl = document.querySelector(
+    "#testConfig .rightSpacer"
+  ) as HTMLElement;
+
+  rightSpacerEl.style.width = "0.5em";
+  rightSpacerEl.style.opacity = "1";
+  rightSpacerEl.classList.remove("hidden");
+
+  animate(rightSpacerEl, {
+    width: [
+      previous === "zen" ? "0px" : "0.5em",
+      current === "zen" ? "0px" : "0.5em",
+    ],
+    // opacity: {
+    //   duration: animTime / 2,
+    //   from: previous === "zen" ? 0 : 1,
+    //   to: current === "zen" ? 0 : 1,
+    // },
+    duration: animTime,
+    ease: easing.both,
+    onComplete: () => {
+      if (current === "zen") {
+        rightSpacerEl.classList.add("hidden");
+      } else {
+        rightSpacerEl.style.width = "";
+      }
+    },
+  });
 
   const currentEl = $(`#testConfig .${submenu[current]}`);
   const previousEl = $(`#testConfig .${submenu[previous]}`);
