@@ -9,14 +9,14 @@ import * as ConfigEvent from "../observables/config-event";
 import { applyReducedMotion } from "../utils/misc";
 import { animate } from "animejs";
 
-const barEl = document.querySelector("#barTimerProgress .bar") as Element;
+const barEl = document.querySelector("#barTimerProgress .bar") as HTMLElement;
 const barOpacityEl = document.querySelector(
   "#barTimerProgress .opacityWrapper"
-) as Element;
+) as HTMLElement;
 const textEl = document.querySelector(
   "#liveStatsTextTop .timerProgress"
-) as Element;
-const miniEl = document.querySelector("#liveStatsMini .time") as Element;
+) as HTMLElement;
+const miniEl = document.querySelector("#liveStatsMini .time") as HTMLElement;
 
 export function show(): void {
   if (!TestState.isActive) return;
@@ -159,36 +159,22 @@ export function update(): void {
       });
     } else if (Config.timerStyle === "text") {
       if (outof === 0) {
-        if (textEl !== null) {
-          textEl.innerHTML = `<div>${
-            TestInput.input.getHistory().length
-          }</div>`;
-        }
+        textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
       } else {
-        if (textEl !== null) {
-          textEl.innerHTML = `<div>${getCurrentCount()}/${outof}</div>`;
-        }
+        textEl.innerHTML = `<div>${getCurrentCount()}/${outof}</div>`;
       }
     } else if (Config.timerStyle === "mini") {
       if (outof === 0) {
-        if (miniEl !== null) {
-          miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
-        }
+        miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
       } else {
-        if (miniEl !== null) {
-          miniEl.innerHTML = `${getCurrentCount()}/${outof}`;
-        }
+        miniEl.innerHTML = `${getCurrentCount()}/${outof}`;
       }
     }
   } else if (Config.mode === "zen") {
     if (Config.timerStyle === "text") {
-      if (textEl !== null) {
-        textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
-      }
+      textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
     } else {
-      if (miniEl !== null) {
-        miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
-      }
+      miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
     }
   }
 }
