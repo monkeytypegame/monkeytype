@@ -1,7 +1,3 @@
-// this file should be concatenated at the top of the legacy ts files
-import "jquery-color";
-import "jquery.easing";
-
 import "./event-handlers/global";
 import "./event-handlers/footer";
 import "./event-handlers/keymap";
