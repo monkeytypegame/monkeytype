@@ -4,6 +4,36 @@ import { createRequire } from "module";
 import * as path from "path";
 import { fontawesomeSubset as createFontawesomeSubset } from "fontawesome-subset";
 
+/**
+ * Detect fontawesome icons used by the application and creates subset font files only containing the used icons.
+ * @param options
+ * @returns
+ */
+export function fontawesomeSubset(): Plugin {
+  return {
+    name: "vite-plugin-fontawesome-subset",
+    apply: "build",
+    async buildStart() {
+      const start = performance.now();
+      console.log("\nCreating fontawesome subset...");
+
+      const fontawesomeClasses = getFontawesomeConfig();
+      await createFontawesomeSubset(
+        fontawesomeClasses,
+        "src/webfonts-generated",
+        {
+          targetFormats: ["woff2"],
+        }
+      );
+
+      const end = performance.now();
+      console.log(
+        `Creating fontawesome subset took ${Math.round(end - start)} ms`
+      );
+    },
+  };
+}
+
 type FontawesomeConfig = {
   /* used regular icons without `fa-` prefix*/
   regular: string[];
@@ -52,33 +82,6 @@ const modules2 = {
   ],
   stacked: ["stack", "stack-1x", "stack-2x", "inverse"],
 };
-
-export function fontawesomeSubset(options: {
-  targetDirectory: string;
-}): Plugin {
-  return {
-    name: "vite-plugin-fontawesome-subset",
-    apply: "build",
-    async buildStart() {
-      const start = performance.now();
-      console.log("\nCreating fontawesome subset...");
-
-      const fontawesomeClasses = getFontawesomeConfig();
-      await createFontawesomeSubset(
-        fontawesomeClasses,
-        options.targetDirectory,
-        {
-          targetFormats: ["woff2"],
-        }
-      );
-
-      const end = performance.now();
-      console.log(
-        `Creating fontawesome subset took ${Math.round(end - start)} ms`
-      );
-    },
-  };
-}
 
 /**
  * Detect used fontawesome icons in the directories `src/**` and `static/**{.html|.css}`

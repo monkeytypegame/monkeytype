@@ -1,5 +1,5 @@
 import { fontawesomeSubset } from "./vite-plugins/fontawesome";
-import { generatePreviewFonts } from "./scripts/font-preview";
+import { fontPreview } from "./vite-plugins/font-preview";
 import { VitePWA } from "vite-plugin-pwa";
 import replace from "vite-plugin-filter-replace";
 import path from "node:path";
@@ -79,13 +79,7 @@ export default {
         writeFileSync(versionPath, versionJson);
       },
     },
-    {
-      name: "vite-plugin-webfonts-preview",
-      apply: "build",
-      buildStart() {
-        generatePreviewFonts();
-      },
-    },
+    fontPreview(),
     checker({
       typescript: {
         tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
