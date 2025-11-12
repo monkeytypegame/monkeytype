@@ -161,6 +161,7 @@ export const LanguageSchema = z.enum(
     "danish_1k",
     "danish_10k",
     "hungarian",
+    "hungarian_1k",
     "hungarian_2k",
     "norwegian_bokmal",
     "norwegian_bokmal_1k",

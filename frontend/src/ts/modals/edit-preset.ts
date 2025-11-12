@@ -254,17 +254,21 @@ async function apply(): Promise<void> {
     return;
   }
 
-  const noPresetName: boolean =
-    ["add", "edit"].includes(action) &&
-    presetName.replace(/^_+|_+$/g, "").length === 0; //all whitespace names are rejected
-  if (noPresetName) {
-    Notifications.add("Preset name cannot be empty", 0);
-    return;
-  }
+  const addOrEditAction = action === "add" || action === "edit";
+  if (addOrEditAction) {
+    //validate the preset name only in add or edit mode
 
-  if (presetNameEl?.getValidationResult().status === "failed") {
-    Notifications.add("Preset name is not valid", 0);
-    return;
+    const noPresetName: boolean =
+      presetName.replace(/^_+|_+$/g, "").length === 0; //all whitespace names are rejected
+    if (noPresetName) {
+      Notifications.add("Preset name cannot be empty", 0);
+      return;
+    }
+
+    if (presetNameEl?.getValidationResult().status === "failed") {
+      Notifications.add("Preset name is not valid", 0);
+      return;
+    }
   }
 
   hide();

@@ -2,7 +2,7 @@ name: Prettier Fix
 
 env:
   PNPM_VERSION: "9.6.0"
-  NODE_VERSION: "20.19.4"
+  NODE_VERSION: "24.11.0"
 
 permissions:
   contents: write

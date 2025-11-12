@@ -100,6 +100,12 @@ export function getOpenApi(): OpenAPIObject {
           "x-displayName": "Leaderboards",
         },
         {
+          name: "connections",
+          description: "Connections between users.",
+          "x-displayName": "Connections",
+          "x-public": "no",
+        },
+        {
           name: "psas",
           description: "Public service announcements.",
           "x-displayName": "PSAs",

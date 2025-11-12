@@ -31,7 +31,7 @@ async function generateUrl(): Promise<string> {
     c: ThemeController.colorVars.map(
       (color) =>
         $(
-          `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+          `.pageSettings .customTheme .tabContent.customTheme #${color}[type='color']`
         ).attr("value") as string
     ),
   };

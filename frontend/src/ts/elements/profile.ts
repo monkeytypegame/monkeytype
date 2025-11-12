@@ -1,5 +1,5 @@
 import * as DB from "../db";
-import { format } from "date-fns/format";
+import { format as dateFormat } from "date-fns/format";
 import { differenceInDays } from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import * as Numbers from "@monkeytype/util/numbers";
@@ -11,12 +11,15 @@ import * as ActivePage from "../states/active-page";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
-import { UserProfile, RankAndCount } from "@monkeytype/schemas/users";
-import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
+import { UserProfile } from "@monkeytype/schemas/users";
+import { convertRemToPixels } from "../utils/numbers";
 import { secondsToString } from "../utils/date-and-time";
 import { getAuthenticatedUser } from "../firebase";
 import { Snapshot } from "../constants/default-snapshot";
 import { getAvatarElement } from "../utils/discord-avatar";
+import { formatXp } from "../utils/levels";
+import { formatTopPercentage } from "../utils/misc";
+import { get as getServerConfiguration } from "../ape/server-configuration";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = UserProfile | Snapshot;
@@ -68,7 +71,11 @@ export async function update(
   }
 
   details.find(".name").text(profile.name);
-  details.find(".userFlags").html(getHtmlByUserFlags(profile));
+  details
+    .find(".userFlags")
+    .html(
+      getHtmlByUserFlags({ ...profile, isFriend: DB.isFriend(profile.uid) })
+    );
 
   if (profile.lbOptOut === true) {
     if (where === "profile") {
@@ -87,7 +94,8 @@ export async function update(
     updateNameFontSize(where);
   }, 10);
 
-  const joinedText = "Joined " + format(profile.addedAt ?? 0, "dd MMM yyyy");
+  const joinedText =
+    "Joined " + dateFormat(profile.addedAt ?? 0, "dd MMM yyyy");
   const creationDate = new Date(profile.addedAt);
   const diffDays = differenceInDays(new Date(), creationDate);
   const balloonText = `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
@@ -184,21 +192,9 @@ export async function update(
     .attr("aria-label", hoverText)
     .attr("data-balloon-break", "");
 
-  let completedPercentage = "";
-  let restartRatio = "";
-  if (
-    profile.typingStats.completedTests !== undefined &&
-    profile.typingStats.startedTests !== undefined
-  ) {
-    completedPercentage = Math.floor(
-      (profile.typingStats.completedTests / profile.typingStats.startedTests) *
-        100
-    ).toString();
-    restartRatio = (
-      (profile.typingStats.startedTests - profile.typingStats.completedTests) /
-      profile.typingStats.completedTests
-    ).toFixed(1);
-  }
+  const { completedPercentage, restartRatio } = Misc.formatTypingStatsRatio(
+    profile.typingStats
+  );
 
   const typingStatsEl = details.find(".typingStats");
   typingStatsEl
@@ -326,8 +322,6 @@ export async function update(
     profileElement.find(".userReportButton").removeClass("hidden");
   }
 
-  //structure
-
   const bioAndKey = bio || keyboard;
 
   if (!bio) {
@@ -371,6 +365,8 @@ export async function update(
   } else if (socials && bioAndKey) {
     details.addClass("both");
   }
+
+  updateFriendRequestButton();
 }
 
 export function updateXp(
@@ -439,6 +435,26 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   nameField.style.fontSize = `${finalFontSize}px`;
 }
 
+export function updateFriendRequestButton(): void {
+  const myUid = getAuthenticatedUser()?.uid;
+  const profileUid = document
+    .querySelector(".profile")
+    ?.getAttribute("uid") as string;
+  const button = document.querySelector(".profile .addFriendButton");
+
+  const myProfile = myUid === profileUid;
+  const hasRequest = DB.getSnapshot()?.connections[profileUid] !== undefined;
+  const featureEnabled = getServerConfiguration()?.connections.enabled;
+
+  if (!featureEnabled || myUid === undefined || myProfile) {
+    button?.classList.add("hidden");
+  } else if (hasRequest) {
+    button?.classList.add("disabled");
+  } else {
+    button?.classList.remove("disabled");
+    button?.classList.remove("hidden");
+  }
+}
 const throttledEvent = throttle(1000, () => {
   const activePage = ActivePage.get();
   if (activePage && ["account", "profile"].includes(activePage)) {
@@ -449,17 +465,3 @@ const throttledEvent = throttle(1000, () => {
 $(window).on("resize", () => {
   throttledEvent();
 });
-
-function formatTopPercentage(lbRank: RankAndCount): string {
-  if (lbRank.rank === undefined) return "-";
-  if (lbRank.rank === 1) return "GOAT";
-  return "Top " + Numbers.roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
-}
-
-function formatXp(xp: number): string {
-  if (xp < 1000) {
-    return Math.round(xp).toString();
-  } else {
-    return abbreviateNumber(xp);
-  }
-}

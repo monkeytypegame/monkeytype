@@ -9,7 +9,7 @@ import {
 } from "../init/configuration";
 
 import { addLog } from "./logs";
-import { Collection, ObjectId } from "mongodb";
+import { Collection, Document, ObjectId } from "mongodb";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import { omit } from "lodash";
 import { DBUser, getUsersCollection } from "./user";
@@ -34,28 +34,48 @@ export async function get(
   language: string,
   page: number,
   pageSize: number,
-  premiumFeaturesEnabled: boolean = false
+  premiumFeaturesEnabled: boolean = false,
+  userIds?: string[]
 ): Promise<DBLeaderboardEntry[] | false> {
   if (page < 0 || pageSize < 0) {
     throw new MonkeyError(500, "Invalid page or pageSize");
   }
 
+  if (userIds?.length === 0) {
+    return [];
+  }
+
   const skip = page * pageSize;
   const limit = pageSize;
 
+  const pipeline: Document[] = [
+    { $sort: { rank: 1 } },
+    { $skip: skip },
+    { $limit: limit },
+  ];
+
+  if (userIds !== undefined) {
+    pipeline.unshift(
+      { $match: { uid: { $in: userIds } } },
+      {
+        $setWindowFields: {
+          sortBy: { rank: 1 },
+          output: { friendsRank: { $documentNumber: {} } },
+        },
+      }
+    );
+  }
+
   try {
-    const preset = await getCollection({ language, mode, mode2 })
-      .find()
-      .sort({ rank: 1 })
-      .skip(skip)
-      .limit(limit)
-      .toArray();
+    let leaderboard = (await getCollection({ language, mode, mode2 })
+      .aggregate(pipeline)
+      .toArray()) as DBLeaderboardEntry[];
 
     if (!premiumFeaturesEnabled) {
-      return preset.map((it) => omit(it, "isPremium"));
+      leaderboard = leaderboard.map((it) => omit(it, "isPremium"));
     }
 
-    return preset;
+    return leaderboard;
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {
@@ -71,19 +91,25 @@ const cachedCounts = new Map<string, number>();
 export async function getCount(
   mode: string,
   mode2: string,
-  language: string
+  language: string,
+  userIds?: string[]
 ): Promise<number> {
   const key = `${language}_${mode}_${mode2}`;
-  if (cachedCounts.has(key)) {
+  if (userIds === undefined && cachedCounts.has(key)) {
     return cachedCounts.get(key) as number;
   } else {
-    const count = await getCollection({
+    const lb = getCollection({
       language,
       mode,
       mode2,
-    }).estimatedDocumentCount();
-    cachedCounts.set(key, count);
-    return count;
+    });
+    if (userIds === undefined) {
+      const count = await lb.estimatedDocumentCount();
+      cachedCounts.set(key, count);
+      return count;
+    } else {
+      return lb.countDocuments({ uid: { $in: userIds } });
+    }
   }
 }
 
@@ -91,14 +117,34 @@ export async function getRank(
   mode: string,
   mode2: string,
   language: string,
-  uid: string
+  uid: string,
+  userIds?: string[]
 ): Promise<LeaderboardEntry | null | false> {
   try {
-    const entry = await getCollection({ language, mode, mode2 }).findOne({
-      uid,
-    });
+    if (userIds === undefined) {
+      const entry = await getCollection({ language, mode, mode2 }).findOne({
+        uid,
+      });
 
-    return entry;
+      return entry;
+    } else if (userIds.length === 0) {
+      return null;
+    } else {
+      const entry = await getCollection({ language, mode, mode2 })
+        .aggregate([
+          { $match: { uid: { $in: userIds } } },
+          {
+            $setWindowFields: {
+              sortBy: { rank: 1 },
+              output: { friendsRank: { $documentNumber: {} } },
+            },
+          },
+          { $match: { uid } },
+        ])
+        .toArray();
+
+      return entry[0] as DBLeaderboardEntry;
+    }
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {

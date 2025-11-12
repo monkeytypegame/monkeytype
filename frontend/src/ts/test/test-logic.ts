@@ -286,6 +286,7 @@ export function restart(options = {} as RestartOptions): void {
   TimerProgress.hide();
   Replay.pauseReplay();
   TestState.setBailedOut(false);
+  Caret.resetPosition();
   PaceCaret.reset();
   Monkey.hide();
   TestInput.input.setKoreanStatus(false);
@@ -455,7 +456,6 @@ async function init(): Promise<boolean> {
   }
 
   if (!language || language.name !== Config.language) {
-    UpdateConfig.setLanguage("english");
     return await init();
   }
 
@@ -967,7 +967,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   // stats
-  const stats = TestStats.calculateStats();
+  const stats = TestStats.calculateFinalStats();
   if (stats.time % 1 !== 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }

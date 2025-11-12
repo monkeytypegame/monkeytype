@@ -155,13 +155,15 @@ function disableInput(): void {
 validateWithIndicator(nameInputEl, {
   schema: UserNameSchema,
   isValid: async (name: string) => {
-    const checkNameResponse = (
-      await Ape.users.getNameAvailability({
-        params: { name: name },
-      })
-    ).status;
+    const checkNameResponse = await Ape.users.getNameAvailability({
+      params: { name: name },
+    });
 
-    return checkNameResponse === 200 ? true : "Name not available";
+    return (
+      (checkNameResponse.status === 200 &&
+        checkNameResponse.body.data.available) ||
+      "Name not available"
+    );
   },
   debounceDelay: 1000,
   callback: (result) => {
