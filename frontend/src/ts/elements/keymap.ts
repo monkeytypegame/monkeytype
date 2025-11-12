@@ -100,20 +100,20 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
   const themecolors = await ThemeColors.getAll();
 
   try {
-    let css = {
+    let startingStyle = {
       color: themecolors.bg,
       backgroundColor: themecolors.sub,
       borderColor: themecolors.sub,
     };
 
     if (correct || Config.blindMode) {
-      css = {
+      startingStyle = {
         color: themecolors.bg,
         backgroundColor: themecolors.main,
         borderColor: themecolors.main,
       };
     } else {
-      css = {
+      startingStyle = {
         color: themecolors.bg,
         backgroundColor: themecolors.error,
         borderColor: themecolors.error,
@@ -121,9 +121,9 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
     }
 
     animate(key, {
-      color: [css.color, themecolors.sub],
-      backgroundColor: [css.backgroundColor, themecolors.subAlt],
-      borderColor: [css.borderColor, themecolors.sub],
+      color: [startingStyle.color, themecolors.sub],
+      backgroundColor: [startingStyle.backgroundColor, themecolors.subAlt],
+      borderColor: [startingStyle.borderColor, themecolors.sub],
       duration: 250,
       easing: "out(5)",
     });
