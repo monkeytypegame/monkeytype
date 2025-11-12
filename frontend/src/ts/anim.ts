@@ -5,8 +5,17 @@ import { z } from "zod";
 const maxFps = new LocalStorageWithSchema({
   key: "maxFps",
   schema: z.number().int().min(30),
-  fallback: 240,
+  fallback: 120,
 });
+
+export function setMaxFps(fps: number): void {
+  maxFps.set(fps);
+  applyEngineSettings();
+}
+
+export function getMaxFps(): number {
+  return maxFps.get();
+}
 
 export function applyEngineSettings(): void {
   engine.pauseOnDocumentHidden = false;
