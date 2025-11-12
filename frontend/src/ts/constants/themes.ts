@@ -1120,12 +1120,6 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#067a6e",
     textColor: "#000000",
   },
-  oscura: {
-    bgColor: "#0b0b0f",
-    mainColor: "#e2e3a0",
-    subColor: "#a0a0a0",
-    textColor: "#e6e6e6",
-  },
   pale_nimbus: {
     bgColor: "#433e4c",
     mainColor: "#94ffc2",

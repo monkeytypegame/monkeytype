@@ -188,7 +188,6 @@ export const ThemeNameSchema = z.enum(
     "watermelon",
     "wavez",
     "witch_girl",
-    "oscura",
     "pale_nimbus",
   ],
   {
