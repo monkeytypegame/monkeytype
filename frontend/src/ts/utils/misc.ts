@@ -237,6 +237,10 @@ export async function swapElements(
     return Promise.resolve();
   }
 ): Promise<boolean | undefined> {
+  if (el1 === null || el2 === null) {
+    return;
+  }
+
   totalDuration = applyReducedMotion(totalDuration);
   if (
     (el1.classList.contains("hidden") && !el2.classList.contains("hidden")) ||
