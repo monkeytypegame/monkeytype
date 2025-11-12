@@ -339,12 +339,6 @@ importers:
       jquery:
         specifier: 3.7.1
         version: 3.7.1
-      jquery-color:
-        specifier: 2.2.0
-        version: 2.2.0(jquery@3.7.1)
-      jquery.easing:
-        specifier: 1.4.1
-        version: 1.4.1
       konami:
         specifier: 1.7.0
         version: 1.7.0
@@ -6343,14 +6337,6 @@ packages:
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
     engines: {node: '>=10'}
-
-  jquery-color@2.2.0:
-    resolution: {integrity: sha512-4VoxsLMw860EQGNT/TmP3Lbr7/1OCQlBPS4ILj7bxRApJrPQfpqzdIOTY8Ll9nGY7UHtWqDuzR7cUcS1lcWjVw==}
-    peerDependencies:
-      jquery: '>=1.11.0'
-
-  jquery.easing@1.4.1:
-    resolution: {integrity: sha512-BVpRacWCbNfo/ALWxnLkIY/WRa4Ydg/LtwzIJZvDm7vrhV8Txv+ACi6EGnU11zT19sTc3KEPathWx6CtjWLD1w==}
 
   jquery@3.7.1:
     resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
@@ -16608,12 +16594,6 @@ snapshots:
   jose@4.15.9: {}
 
   joycon@3.1.1: {}
-
-  jquery-color@2.2.0(jquery@3.7.1):
-    dependencies:
-      jquery: 3.7.1
-
-  jquery.easing@1.4.1: {}
 
   jquery@3.7.1: {}
 
