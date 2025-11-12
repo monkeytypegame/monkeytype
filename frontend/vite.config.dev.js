@@ -2,8 +2,8 @@ import { checker } from "vite-plugin-checker";
 import Inspect from "vite-plugin-inspect";
 import path from "node:path";
 import { getFontsConig } from "./vite.config";
-import { envConfig } from "./scripts/env-config";
-import { languageHashes } from "./scripts/language-hashes";
+import { envConfig } from "./vite-plugins/env-config";
+import { languageHashes } from "./vite-plugins/language-hashes";
 
 /** @type {import("vite").UserConfig} */
 export default {

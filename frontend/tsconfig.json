@@ -13,6 +13,6 @@
       "virtual:env-config": ["./src/ts/virtual-env-config.d.ts"]
     }
   },
-  "include": ["./src/**/*.ts", "./scripts/**/*.ts"],
+  "include": ["./src/**/*.ts", "./scripts/**/*.ts", "vite-plugins/**/*.ts"],
   "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]
 }

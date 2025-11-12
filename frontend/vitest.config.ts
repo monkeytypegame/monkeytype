@@ -1,6 +1,6 @@
 import { defineConfig } from "vitest/config";
-import { languageHashes } from "./scripts/language-hashes";
-import { envConfig } from "./scripts/env-config";
+import { languageHashes } from "./vite-plugins/language-hashes";
+import { envConfig } from "./vite-plugins/env-config";
 
 export default defineConfig({
   test: {
