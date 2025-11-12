@@ -14,10 +14,9 @@ const developmentConfig: EnvConfig = {
   quickLoginEmail: process.env["QUICK_LOGIN_EMAIL"],
   quickLoginPassword: process.env["QUICK_LOGIN_PASSWORD"],
 };
-const productionConfig: EnvConfig = {
+const productionConfig: Omit<EnvConfig, "clientVersion"> = {
   isDevelopment,
   backendUrl: fallbackEnv("BACKEND_URL", "https://api.monkeytype.com"),
-  clientVersion,
   recaptchaSiteKey: process.env["RECAPTCHA_SITE_KEY"] ?? "",
   quickLoginEmail: undefined,
   quickLoginPassword: undefined,
@@ -32,7 +31,9 @@ export function envConfig(): Plugin {
     },
     load(id) {
       if (id === resolvedVirtualModuleId) {
-        const envConfig = isDevelopment ? developmentConfig : productionConfig;
+        const envConfig = isDevelopment
+          ? developmentConfig
+          : { ...productionConfig, clientVersion };
 
         return `
           export const envConfig = ${JSON.stringify(envConfig)};
