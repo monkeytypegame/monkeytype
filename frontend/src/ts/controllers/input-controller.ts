@@ -706,7 +706,7 @@ async function handleChar(
     if (
       Config.mode === "zen" ||
       Config.indicateTypos === "replace" ||
-      Config.indicateTypos === "all"
+      Config.indicateTypos === "both"
     ) {
       if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);
     } else {

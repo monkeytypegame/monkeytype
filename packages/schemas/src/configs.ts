@@ -50,7 +50,7 @@ export type CaretStyle = z.infer<typeof CaretStyleSchema>;
 export const ConfidenceModeSchema = z.enum(["off", "on", "max"]);
 export type ConfidenceMode = z.infer<typeof ConfidenceModeSchema>;
 
-export const IndicateTyposSchema = z.enum(["off", "below", "replace", "all"]);
+export const IndicateTyposSchema = z.enum(["off", "below", "replace", "both"]);
 export type IndicateTypos = z.infer<typeof IndicateTyposSchema>;
 
 export const TimerStyleSchema = z.enum(["off", "bar", "text", "mini"]);
