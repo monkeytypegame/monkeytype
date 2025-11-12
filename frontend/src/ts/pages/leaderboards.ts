@@ -501,7 +501,7 @@ function buildWeeklyTableRow(
   }
   element.dataset["uid"] = entry.uid;
   element.innerHTML = `
-      <td></td>
+      <td>${formatRank(entry.friendsRank)}</td>
       <td>${formatRank(entry.rank)}</td>
       <td>
         <div class="avatarNameBadge">
@@ -919,7 +919,6 @@ function updateFriendsButtons(): void {
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons"
   );
   if (
-    state.type === "allTime" &&
     isAuthenticated() &&
     (ServerConfiguration.get()?.connections.enabled ?? false)
   ) {
@@ -1403,11 +1402,9 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     if (state.type === "daily") {
       state.language = "english";
       state.yesterday = false;
-      state.friendsOnly = false;
     }
     if (state.type === "weekly") {
       state.lastWeek = false;
-      state.friendsOnly = false;
     }
     checkIfLeaderboardIsValid();
     state.data = null;

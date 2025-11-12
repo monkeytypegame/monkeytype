@@ -19,6 +19,8 @@ import {
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { getFontsConig } from "./vite.config";
+import { envConfig } from "./scripts/env-config";
+import { languageHashes } from "./scripts/language-hashes";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -59,6 +61,8 @@ function sassList(values) {
 /** @type {import("vite").UserConfig} */
 export default {
   plugins: [
+    envConfig({ isDevelopment: false, clientVersion: CLIENT_VERSION }),
+    languageHashes(),
     {
       name: "vite-plugin-fontawesome-subset",
       apply: "build",
@@ -311,17 +315,6 @@ export default {
       },
     },
   },
-  define: {
-    BACKEND_URL: JSON.stringify(
-      process.env.BACKEND_URL || "https://api.monkeytype.com"
-    ),
-    IS_DEVELOPMENT: JSON.stringify(false),
-    CLIENT_VERSION: JSON.stringify(CLIENT_VERSION),
-    RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),
-    QUICK_LOGIN_EMAIL: undefined,
-    QUICK_LOGIN_PASSWORD: undefined,
-  },
-
   css: {
     preprocessorOptions: {
       scss: {

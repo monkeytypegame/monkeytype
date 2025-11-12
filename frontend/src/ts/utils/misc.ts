@@ -1,5 +1,5 @@
 import * as Loader from "../elements/loader";
-import { envConfig } from "../constants/env-config";
+import { envConfig } from "virtual:env-config";
 import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";

@@ -18,8 +18,8 @@ importers:
         specifier: workspace:*
         version: link:packages/release
       '@vitest/coverage-v8':
-        specifier: 4.0.4
-        version: 4.0.4(vitest@4.0.4(@types/node@20.5.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))
+        specifier: 4.0.8
+        version: 4.0.8(vitest@4.0.8(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))
       conventional-changelog:
         specifier: 6.0.0
         version: 6.0.0(conventional-commits-filter@5.0.0)
@@ -48,8 +48,8 @@ importers:
         specifier: 2.5.6
         version: 2.5.6
       vitest:
-        specifier: 4.0.4
-        version: 4.0.4(@types/node@20.5.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
+        specifier: 4.0.8
+        version: 4.0.8(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
 
   backend:
     dependencies:
@@ -229,8 +229,8 @@ importers:
         specifier: 10.0.0
         version: 10.0.0
       '@vitest/coverage-v8':
-        specifier: 4.0.4
-        version: 4.0.4(vitest@4.0.4(@types/node@24.9.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))
+        specifier: 4.0.8
+        version: 4.0.8(vitest@4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))
       concurrently:
         specifier: 8.2.2
         version: 8.2.2
@@ -262,8 +262,8 @@ importers:
         specifier: 5.5.4
         version: 5.5.4
       vitest:
-        specifier: 4.0.4
-        version: 4.0.4(@types/node@24.9.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
+        specifier: 4.0.8
+        version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
 
   frontend:
     dependencies:
@@ -407,8 +407,8 @@ importers:
         specifier: 5.0.2
         version: 5.0.2
       '@vitest/coverage-v8':
-        specifier: 4.0.4
-        version: 4.0.4(vitest@4.0.4(@types/node@24.9.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))
+        specifier: 4.0.8
+        version: 4.0.8(vitest@4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))
       autoprefixer:
         specifier: 10.4.20
         version: 10.4.20(postcss@8.4.31)
@@ -431,8 +431,8 @@ importers:
         specifier: 4.4.0
         version: 4.4.0(@fortawesome/fontawesome-free@5.15.4)
       happy-dom:
-        specifier: 20.0.2
-        version: 20.0.2
+        specifier: 20.0.10
+        version: 20.0.10
       madge:
         specifier: 8.0.0
         version: 8.0.0(typescript@5.5.4)
@@ -488,8 +488,8 @@ importers:
         specifier: 1.1.0
         version: 1.1.0(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))(workbox-build@7.1.1)(workbox-window@7.1.0)
       vitest:
-        specifier: 4.0.4
-        version: 4.0.4(@types/node@24.9.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
+        specifier: 4.0.8
+        version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
 
   packages/contracts:
     dependencies:
@@ -528,8 +528,8 @@ importers:
         specifier: 5.5.4
         version: 5.5.4
       vitest:
-        specifier: 4.0.4
-        version: 4.0.4(@types/node@24.9.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
+        specifier: 4.0.8
+        version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
 
   packages/eslint-config:
     devDependencies:
@@ -592,8 +592,8 @@ importers:
         specifier: 5.5.4
         version: 5.5.4
       vitest:
-        specifier: 4.0.4
-        version: 4.0.4(@types/node@24.9.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
+        specifier: 4.0.8
+        version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
 
   packages/oxlint-config: {}
 
@@ -653,8 +653,8 @@ importers:
         specifier: 5.5.4
         version: 5.5.4
       vitest:
-        specifier: 4.0.4
-        version: 4.0.4(@types/node@24.9.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
+        specifier: 4.0.8
+        version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
 
   packages/tsup-config:
     dependencies:
@@ -704,8 +704,8 @@ importers:
         specifier: 5.5.4
         version: 5.5.4
       vitest:
-        specifier: 4.0.4
-        version: 4.0.4(@types/node@24.9.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
+        specifier: 4.0.8
+        version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -3421,20 +3421,20 @@ packages:
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
 
-  '@vitest/coverage-v8@4.0.4':
-    resolution: {integrity: sha512-YM7gDj2TX2AXyGLz0p/B7hvTsTfaQc+kSV/LU0nEnKlep/ZfbdCDppPND4YQiQC43OXyrhkG3y8ZSTqYb2CKqQ==}
+  '@vitest/coverage-v8@4.0.8':
+    resolution: {integrity: sha512-wQgmtW6FtPNn4lWUXi8ZSYLpOIb92j3QCujxX3sQ81NTfQ/ORnE0HtK7Kqf2+7J9jeveMGyGyc4NWc5qy3rC4A==}
     peerDependencies:
-      '@vitest/browser': 4.0.4
-      vitest: 4.0.4
+      '@vitest/browser': 4.0.8
+      vitest: 4.0.8
     peerDependenciesMeta:
       '@vitest/browser':
         optional: true
 
-  '@vitest/expect@4.0.4':
-    resolution: {integrity: sha512-0ioMscWJtfpyH7+P82sGpAi3Si30OVV73jD+tEqXm5+rIx9LgnfdaOn45uaFkKOncABi/PHL00Yn0oW/wK4cXw==}
+  '@vitest/expect@4.0.8':
+    resolution: {integrity: sha512-Rv0eabdP/xjAHQGr8cjBm+NnLHNoL268lMDK85w2aAGLFoVKLd8QGnVon5lLtkXQCoYaNL0wg04EGnyKkkKhPA==}
 
-  '@vitest/mocker@4.0.4':
-    resolution: {integrity: sha512-UTtKgpjWj+pvn3lUM55nSg34098obGhSHH+KlJcXesky8b5wCUgg7s60epxrS6yAG8slZ9W8T9jGWg4PisMf5Q==}
+  '@vitest/mocker@4.0.8':
+    resolution: {integrity: sha512-9FRM3MZCedXH3+pIh+ME5Up2NBBHDq0wqwhOKkN4VnvCiKbVxddqH9mSGPZeawjd12pCOGnl+lo/ZGHt0/dQSg==}
     peerDependencies:
       msw: ^2.4.9
       vite: ^6.0.0 || ^7.0.0-0
@@ -3444,20 +3444,20 @@ packages:
       vite:
         optional: true
 
-  '@vitest/pretty-format@4.0.4':
-    resolution: {integrity: sha512-lHI2rbyrLVSd1TiHGJYyEtbOBo2SDndIsN3qY4o4xe2pBxoJLD6IICghNCvD7P+BFin6jeyHXiUICXqgl6vEaQ==}
+  '@vitest/pretty-format@4.0.8':
+    resolution: {integrity: sha512-qRrjdRkINi9DaZHAimV+8ia9Gq6LeGz2CgIEmMLz3sBDYV53EsnLZbJMR1q84z1HZCMsf7s0orDgZn7ScXsZKg==}
 
-  '@vitest/runner@4.0.4':
-    resolution: {integrity: sha512-99EDqiCkncCmvIZj3qJXBZbyoQ35ghOwVWNnQ5nj0Hnsv4Qm40HmrMJrceewjLVvsxV/JSU4qyx2CGcfMBmXJw==}
+  '@vitest/runner@4.0.8':
+    resolution: {integrity: sha512-mdY8Sf1gsM8hKJUQfiPT3pn1n8RF4QBcJYFslgWh41JTfrK1cbqY8whpGCFzBl45LN028g0njLCYm0d7XxSaQQ==}
 
-  '@vitest/snapshot@4.0.4':
-    resolution: {integrity: sha512-XICqf5Gi4648FGoBIeRgnHWSNDp+7R5tpclGosFaUUFzY6SfcpsfHNMnC7oDu/iOLBxYfxVzaQpylEvpgii3zw==}
+  '@vitest/snapshot@4.0.8':
+    resolution: {integrity: sha512-Nar9OTU03KGiubrIOFhcfHg8FYaRaNT+bh5VUlNz8stFhCZPNrJvmZkhsr1jtaYvuefYFwK2Hwrq026u4uPWCw==}
 
-  '@vitest/spy@4.0.4':
-    resolution: {integrity: sha512-G9L13AFyYECo40QG7E07EdYnZZYCKMTSp83p9W8Vwed0IyCG1GnpDLxObkx8uOGPXfDpdeVf24P1Yka8/q1s9g==}
+  '@vitest/spy@4.0.8':
+    resolution: {integrity: sha512-nvGVqUunyCgZH7kmo+Ord4WgZ7lN0sOULYXUOYuHr55dvg9YvMz3izfB189Pgp28w0vWFbEEfNc/c3VTrqrXeA==}
 
-  '@vitest/utils@4.0.4':
-    resolution: {integrity: sha512-4bJLmSvZLyVbNsYFRpPYdJViG9jZyRvMZ35IF4ymXbRZoS+ycYghmwTGiscTXduUg2lgKK7POWIyXJNute1hjw==}
+  '@vitest/utils@4.0.8':
+    resolution: {integrity: sha512-pdk2phO5NDvEFfUTxcTP8RFYjVj/kfLSPIN5ebP2Mu9kcIMeAQTbknqcFEyBcC4z2pJlJI9aS5UQjcYfhmKAow==}
 
   '@vue/compiler-core@3.4.37':
     resolution: {integrity: sha512-ZDDT/KiLKuCRXyzWecNzC5vTcubGz4LECAtfGPENpo0nrmqJHwuWtRLxk/Sb9RAKtR9iFflFycbkjkY+W/PZUQ==}
@@ -5695,8 +5695,8 @@ packages:
   hangul-js@0.2.6:
     resolution: {integrity: sha512-48axU8LgjCD30FEs66Xc04/8knxMwCMQw0f67l67rlttW7VXT3qRJgQeHmhiuGwWXGvSbk6YM0fhQlcjE1JFQA==}
 
-  happy-dom@20.0.2:
-    resolution: {integrity: sha512-pYOyu624+6HDbY+qkjILpQGnpvZOusItCk+rvF5/V+6NkcgTKnbOldpIy22tBnxoaLtlM9nXgoqAcW29/B7CIw==}
+  happy-dom@20.0.10:
+    resolution: {integrity: sha512-6umCCHcjQrhP5oXhrHQQvLB0bwb1UzHAHdsXy+FjtKoYjUhmNZsQL8NivwM1vDvNEChJabVrUYxUnp/ZdYmy2g==}
     engines: {node: '>=20.0.0'}
 
   hard-rejection@2.1.0:
@@ -6741,8 +6741,8 @@ packages:
     resolution: {integrity: sha512-ISQTe55T2ao7XtlAStud6qwYPZjE4GK1S/BeVPus4jrq6JuOnQ00YKQC581RWhR122W7msZV263KzVeLoqidyQ==}
     engines: {node: '>=12'}
 
-  magicast@0.3.5:
-    resolution: {integrity: sha512-L0WhttDl+2BOsybvEOLK7fW3UA0OQ0IQ2d6Zl2x/a6vVRs3bAY0ECOSHHeL5jD+SbOpOCUEi0y1DgHEn9Qn1AQ==}
+  magicast@0.5.1:
+    resolution: {integrity: sha512-xrHS24IxaLrvuo613F719wvOIv9xPHFWQHuvGUBmPnCA/3MQxKI3b+r7n1jAoDHmsbC5bRhTZYR77invLAxVnw==}
 
   make-dir@3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
@@ -9561,18 +9561,18 @@ packages:
       yaml:
         optional: true
 
-  vitest@4.0.4:
-    resolution: {integrity: sha512-hV31h0/bGbtmDQc0KqaxsTO1v4ZQeF8ojDFuy4sZhFadwAqqvJA0LDw68QUocctI5EDpFMql/jVWKuPYHIf2Ew==}
+  vitest@4.0.8:
+    resolution: {integrity: sha512-urzu3NCEV0Qa0Y2PwvBtRgmNtxhj5t5ULw7cuKhIHh3OrkKTLlut0lnBOv9qe5OvbkMH2g38G7KPDCTpIytBVg==}
     engines: {node: ^20.0.0 || ^22.0.0 || >=24.0.0}
     hasBin: true
     peerDependencies:
       '@edge-runtime/vm': '*'
       '@types/debug': ^4.1.12
       '@types/node': ^20.0.0 || ^22.0.0 || >=24.0.0
-      '@vitest/browser-playwright': 4.0.4
-      '@vitest/browser-preview': 4.0.4
-      '@vitest/browser-webdriverio': 4.0.4
-      '@vitest/ui': 4.0.4
+      '@vitest/browser-playwright': 4.0.8
+      '@vitest/browser-preview': 4.0.8
+      '@vitest/browser-webdriverio': 4.0.8
+      '@vitest/ui': 4.0.8
       happy-dom: '*'
       jsdom: '*'
     peerDependenciesMeta:
@@ -11921,7 +11921,7 @@ snapshots:
 
   '@npmcli/fs@3.1.1':
     dependencies:
-      semver: 7.6.3
+      semver: 7.7.3
     optional: true
 
   '@npmcli/map-workspaces@3.0.6':
@@ -12894,7 +12894,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.18.0
       '@typescript-eslint/visitor-keys': 7.18.0
-      debug: 4.4.1
+      debug: 4.4.3
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.5
@@ -12944,85 +12944,85 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@vitest/coverage-v8@4.0.4(vitest@4.0.4(@types/node@20.5.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))':
+  '@vitest/coverage-v8@4.0.8(vitest@4.0.8(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
-      '@vitest/utils': 4.0.4
+      '@vitest/utils': 4.0.8
       ast-v8-to-istanbul: 0.3.8
       debug: 4.4.3
       istanbul-lib-coverage: 3.2.2
       istanbul-lib-report: 3.0.1
       istanbul-lib-source-maps: 5.0.6
       istanbul-reports: 3.2.0
-      magicast: 0.3.5
+      magicast: 0.5.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.4(@types/node@20.5.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
+      vitest: 4.0.8(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-v8@4.0.4(vitest@4.0.4(@types/node@24.9.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))':
+  '@vitest/coverage-v8@4.0.8(vitest@4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
-      '@vitest/utils': 4.0.4
+      '@vitest/utils': 4.0.8
       ast-v8-to-istanbul: 0.3.8
       debug: 4.4.3
       istanbul-lib-coverage: 3.2.2
       istanbul-lib-report: 3.0.1
       istanbul-lib-source-maps: 5.0.6
       istanbul-reports: 3.2.0
-      magicast: 0.3.5
+      magicast: 0.5.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.4(@types/node@24.9.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
+      vitest: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/expect@4.0.4':
+  '@vitest/expect@4.0.8':
     dependencies:
       '@standard-schema/spec': 1.0.0
       '@types/chai': 5.2.3
-      '@vitest/spy': 4.0.4
-      '@vitest/utils': 4.0.4
+      '@vitest/spy': 4.0.8
+      '@vitest/utils': 4.0.8
       chai: 6.2.0
       tinyrainbow: 3.0.3
 
-  '@vitest/mocker@4.0.4(vite@7.1.12(@types/node@20.5.1)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))':
+  '@vitest/mocker@4.0.8(vite@7.1.12(@types/node@20.5.1)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))':
     dependencies:
-      '@vitest/spy': 4.0.4
+      '@vitest/spy': 4.0.8
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
       vite: 7.1.12(@types/node@20.5.1)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
 
-  '@vitest/mocker@4.0.4(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))':
+  '@vitest/mocker@4.0.8(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))':
     dependencies:
-      '@vitest/spy': 4.0.4
+      '@vitest/spy': 4.0.8
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
       vite: 7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1)
 
-  '@vitest/pretty-format@4.0.4':
+  '@vitest/pretty-format@4.0.8':
     dependencies:
       tinyrainbow: 3.0.3
 
-  '@vitest/runner@4.0.4':
+  '@vitest/runner@4.0.8':
     dependencies:
-      '@vitest/utils': 4.0.4
+      '@vitest/utils': 4.0.8
       pathe: 2.0.3
 
-  '@vitest/snapshot@4.0.4':
+  '@vitest/snapshot@4.0.8':
     dependencies:
-      '@vitest/pretty-format': 4.0.4
+      '@vitest/pretty-format': 4.0.8
       magic-string: 0.30.21
       pathe: 2.0.3
 
-  '@vitest/spy@4.0.4': {}
+  '@vitest/spy@4.0.8': {}
 
-  '@vitest/utils@4.0.4':
+  '@vitest/utils@4.0.8':
     dependencies:
-      '@vitest/pretty-format': 4.0.4
+      '@vitest/pretty-format': 4.0.8
       tinyrainbow: 3.0.3
 
   '@vue/compiler-core@3.4.37':
@@ -14438,7 +14438,7 @@ snapshots:
 
   docker-modem@5.0.6:
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.3
       readable-stream: 3.6.2
       split-ca: 1.0.1
       ssh2: 1.16.0
@@ -15945,7 +15945,7 @@ snapshots:
 
   hangul-js@0.2.6: {}
 
-  happy-dom@20.0.2:
+  happy-dom@20.0.10:
     dependencies:
       '@types/node': 20.14.11
       '@types/whatwg-mimetype': 3.0.2
@@ -17016,7 +17016,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  magicast@0.3.5:
+  magicast@0.5.1:
     dependencies:
       '@babel/parser': 7.28.5
       '@babel/types': 7.28.5
@@ -17705,7 +17705,7 @@ snapshots:
       make-fetch-happen: 13.0.1
       nopt: 7.2.1
       proc-log: 4.2.0
-      semver: 7.6.3
+      semver: 7.7.3
       tar: 6.2.1
       which: 4.0.0
     transitivePeerDependencies:
@@ -20318,15 +20318,15 @@ snapshots:
       tsx: 4.16.2
       yaml: 2.8.1
 
-  vitest@4.0.4(@types/node@20.5.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1):
+  vitest@4.0.8(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1):
     dependencies:
-      '@vitest/expect': 4.0.4
-      '@vitest/mocker': 4.0.4(vite@7.1.12(@types/node@20.5.1)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))
-      '@vitest/pretty-format': 4.0.4
-      '@vitest/runner': 4.0.4
-      '@vitest/snapshot': 4.0.4
-      '@vitest/spy': 4.0.4
-      '@vitest/utils': 4.0.4
+      '@vitest/expect': 4.0.8
+      '@vitest/mocker': 4.0.8(vite@7.1.12(@types/node@20.5.1)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))
+      '@vitest/pretty-format': 4.0.8
+      '@vitest/runner': 4.0.8
+      '@vitest/snapshot': 4.0.8
+      '@vitest/spy': 4.0.8
+      '@vitest/utils': 4.0.8
       debug: 4.4.3
       es-module-lexer: 1.7.0
       expect-type: 1.2.2
@@ -20342,7 +20342,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 20.5.1
-      happy-dom: 20.0.2
+      happy-dom: 20.0.10
     transitivePeerDependencies:
       - jiti
       - less
@@ -20357,15 +20357,15 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.4(@types/node@24.9.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1):
+  vitest@4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1):
     dependencies:
-      '@vitest/expect': 4.0.4
-      '@vitest/mocker': 4.0.4(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))
-      '@vitest/pretty-format': 4.0.4
-      '@vitest/runner': 4.0.4
-      '@vitest/snapshot': 4.0.4
-      '@vitest/spy': 4.0.4
-      '@vitest/utils': 4.0.4
+      '@vitest/expect': 4.0.8
+      '@vitest/mocker': 4.0.8(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))
+      '@vitest/pretty-format': 4.0.8
+      '@vitest/runner': 4.0.8
+      '@vitest/snapshot': 4.0.8
+      '@vitest/spy': 4.0.8
+      '@vitest/utils': 4.0.8
       debug: 4.4.3
       es-module-lexer: 1.7.0
       expect-type: 1.2.2
@@ -20381,7 +20381,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.9.1
-      happy-dom: 20.0.2
+      happy-dom: 20.0.10
     transitivePeerDependencies:
       - jiti
       - less

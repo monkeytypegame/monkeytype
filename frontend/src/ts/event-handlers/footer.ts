@@ -6,7 +6,7 @@ import * as Commandline from "../commandline/commandline";
 import * as SupportPopup from "../modals/support";
 import * as ContactModal from "../modals/contact";
 import * as VersionHistoryModal from "../modals/version-history";
-import { envConfig } from "../constants/env-config";
+import { envConfig } from "virtual:env-config";
 import { COMPATIBILITY_CHECK } from "@monkeytype/contracts";
 import { lastSeenServerCompatibility } from "../ape/adapters/ts-rest-adapter";
 
