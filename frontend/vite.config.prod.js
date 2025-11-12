@@ -8,18 +8,13 @@ import { checker } from "vite-plugin-checker";
 import { writeFileSync } from "fs";
 // eslint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
-import {
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  statSync,
-} from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { getFontsConig } from "./vite.config";
 import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
+import { minifyJson } from "./vite-plugins/minify-json";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -189,68 +184,7 @@ export default {
       ],
       injectTo: "head-prepend",
     }),
-    {
-      name: "minify-json",
-      apply: "build",
-      generateBundle() {
-        let totalOriginalSize = 0;
-        let totalMinifiedSize = 0;
-
-        const minifyJsonFiles = (dir) => {
-          readdirSync(dir).forEach((file) => {
-            const sourcePath = path.join(dir, file);
-            const stat = statSync(sourcePath);
-
-            if (stat.isDirectory()) {
-              minifyJsonFiles(sourcePath);
-            } else if (path.extname(file) === ".json") {
-              const originalContent = readFileSync(sourcePath, "utf8");
-              const originalSize = Buffer.byteLength(originalContent, "utf8");
-              const minifiedContent = JSON.stringify(
-                JSON.parse(originalContent)
-              );
-              const minifiedSize = Buffer.byteLength(minifiedContent, "utf8");
-
-              totalOriginalSize += originalSize;
-              totalMinifiedSize += minifiedSize;
-
-              writeFileSync(sourcePath, minifiedContent);
-
-              // const savings =
-              //   ((originalSize - minifiedSize) / originalSize) * 100;
-              // console.log(
-              //   `\x1b[0m \x1b[36m${sourcePath}\x1b[0m | ` +
-              //     `\x1b[90mOriginal: ${originalSize} bytes\x1b[0m | ` +
-              //     `\x1b[90mMinified: ${minifiedSize} bytes\x1b[0m | ` +
-              //     `\x1b[32mSavings: ${savings.toFixed(2)}%\x1b[0m`
-              // );
-            }
-          });
-        };
-
-        // console.log("\n\x1b[1mMinifying JSON files...\x1b[0m\n");
-
-        minifyJsonFiles("./dist");
-
-        const totalSavings =
-          ((totalOriginalSize - totalMinifiedSize) / totalOriginalSize) * 100;
-
-        console.log(
-          `\n\n\x1b[1mJSON Minification Summary:\x1b[0m\n` +
-            `  \x1b[90mTotal original size: ${(
-              totalOriginalSize /
-              1024 /
-              1024
-            ).toFixed(2)} mB\x1b[0m\n` +
-            `  \x1b[90mTotal minified size: ${(
-              totalMinifiedSize /
-              1024 /
-              1024
-            ).toFixed(2)} mB\x1b[0m\n` +
-            `  \x1b[32mTotal savings: ${totalSavings.toFixed(2)}%\x1b[0m\n`
-        );
-      },
-    },
+    minifyJson(),
   ],
   build: {
     sourcemap: process.env.SENTRY,
