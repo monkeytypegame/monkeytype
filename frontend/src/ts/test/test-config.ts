@@ -3,7 +3,7 @@ import { Mode } from "@monkeytype/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import { applyReducedMotion } from "../utils/misc";
+import { applyReducedMotion, promiseAnimate } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as AuthEvent from "../observables/auth-event";
 import { animate } from "animejs";
@@ -172,7 +172,6 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   );
 
   previousEl.addClass("hidden");
-
   currentEl.removeClass("hidden");
 
   const currentWidth = Math.round(
@@ -180,42 +179,36 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   );
 
   previousEl.removeClass("hidden");
-
   currentEl.addClass("hidden");
 
   const widthDifference = currentWidth - previousWidth;
-
   const widthStep = widthDifference / 2;
 
-  animate(previousEl[0] as HTMLElement, {
+  await promiseAnimate(previousEl[0] as HTMLElement, {
     opacity: [1, 0],
     width: [previousWidth + "px", previousWidth + widthStep + "px"],
     duration: animTime / 2,
     ease: easing.in,
-    onComplete: () => {
-      previousEl
-        .css({
-          opacity: 1,
-          width: "unset",
-        })
-        .addClass("hidden");
-      currentEl
-        .css({
-          opacity: 0,
-          width: previousWidth + widthStep + "px",
-        })
-        .removeClass("hidden");
+  });
 
-      animate(currentEl[0] as HTMLElement, {
-        opacity: [0, 1],
-        width: [previousWidth + widthStep + "px", currentWidth + "px"],
-        duration: animTime / 2,
-        ease: easing.out,
-        onComplete: () => {
-          currentEl.css("width", "unset");
-        },
-      });
-    },
+  previousEl
+    .css({
+      opacity: 1,
+      width: "unset",
+    })
+    .addClass("hidden");
+  currentEl
+    .css({
+      opacity: 0,
+      width: previousWidth + widthStep + "px",
+    })
+    .removeClass("hidden");
+
+  await promiseAnimate(currentEl[0] as HTMLElement, {
+    opacity: [0, 1],
+    width: [previousWidth + widthStep + "px", currentWidth + "px"],
+    duration: animTime / 2,
+    ease: easing.out,
   });
 }
 
