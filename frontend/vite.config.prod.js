@@ -1,20 +1,19 @@
-import { fontawesomeSubset } from "./vite-plugins/fontawesome";
-import { fontPreview } from "./vite-plugins/font-preview";
 import { VitePWA } from "vite-plugin-pwa";
 import replace from "vite-plugin-filter-replace";
 import path from "node:path";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
-import { writeFileSync } from "fs";
 // eslint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
-import { existsSync, mkdirSync } from "node:fs";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { getFontsConig } from "./vite.config";
+import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
+import { fontPreview } from "./vite-plugins/font-preview";
 import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
 import { minifyJson } from "./vite-plugins/minify-json";
+import { versionFile } from "./vite-plugins/version-file";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -57,23 +56,8 @@ export default {
   plugins: [
     envConfig({ isDevelopment: false, clientVersion: CLIENT_VERSION }),
     languageHashes(),
-    fontawesomeSubset({ targetDirectory: "src/webfonts-generated" }),
-    {
-      name: "generate-version-json",
-      apply: "build",
-
-      closeBundle() {
-        const distPath = path.resolve(__dirname, "dist");
-        if (!existsSync(distPath)) {
-          mkdirSync(distPath, { recursive: true });
-        }
-
-        const version = CLIENT_VERSION;
-        const versionJson = JSON.stringify({ version });
-        const versionPath = path.resolve(distPath, "version.json");
-        writeFileSync(versionPath, versionJson);
-      },
-    },
+    fontawesomeSubset(),
+    versionFile({ clientVersion: CLIENT_VERSION }),
     fontPreview(),
     checker({
       typescript: {
