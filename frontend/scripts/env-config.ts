@@ -20,10 +20,16 @@ const productionConfig: Omit<EnvConfig, "clientVersion"> = {
   quickLoginPassword: undefined,
 };
 
-export function envConfig(options?: {
-  isDevelopment: boolean;
-  clientVersion?: string;
-}): Plugin {
+export function envConfig(
+  options:
+    | {
+        isDevelopment: true;
+      }
+    | {
+        isDevelopment: false;
+        clientVersion: string;
+      }
+): Plugin {
   return {
     name: "virtual-env-config",
     resolveId(id) {
@@ -32,13 +38,12 @@ export function envConfig(options?: {
     },
     load(id) {
       if (id === resolvedVirtualModuleId) {
-        const envConfig =
-          options?.isDevelopment ?? false
-            ? developmentConfig
-            : {
-                ...productionConfig,
-                clientVersion: options?.clientVersion ?? "unknown",
-              };
+        const envConfig = options.isDevelopment
+          ? developmentConfig
+          : {
+              ...productionConfig,
+              clientVersion: options.clientVersion,
+            };
 
         return `
           export const envConfig = ${JSON.stringify(envConfig)};

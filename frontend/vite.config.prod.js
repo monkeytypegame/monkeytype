@@ -61,7 +61,7 @@ function sassList(values) {
 /** @type {import("vite").UserConfig} */
 export default {
   plugins: [
-    envConfig({ clientVersion: CLIENT_VERSION }),
+    envConfig({ isDevelopment: false, clientVersion: CLIENT_VERSION }),
     languageHashes(),
     {
       name: "vite-plugin-fontawesome-subset",
