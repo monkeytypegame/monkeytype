@@ -1,6 +1,8 @@
+import { Plugin } from "vite";
 import * as fs from "fs";
 import { createRequire } from "module";
 import * as path from "path";
+import { fontawesomeSubset as createFontawesomeSubset } from "fontawesome-subset";
 
 type FontawesomeConfig = {
   /* used regular icons without `fa-` prefix*/
@@ -51,13 +53,39 @@ const modules2 = {
   stacked: ["stack", "stack-1x", "stack-2x", "inverse"],
 };
 
+export function fontawesomeSubset(options: {
+  targetDirectory: string;
+}): Plugin {
+  return {
+    name: "vite-plugin-fontawesome-subset",
+    apply: "build",
+    async buildStart() {
+      const start = performance.now();
+      console.log("\nCreating fontawesome subset...");
+
+      const fontawesomeClasses = getFontawesomeConfig();
+      await createFontawesomeSubset(
+        fontawesomeClasses,
+        options.targetDirectory,
+        {
+          targetFormats: ["woff2"],
+        }
+      );
+
+      const end = performance.now();
+      console.log(
+        `Creating fontawesome subset took ${Math.round(end - start)} ms`
+      );
+    },
+  };
+}
+
 /**
  * Detect used fontawesome icons in the directories `src/**` and `static/**{.html|.css}`
  * @param {boolean} debug - Enable debug output
  * @returns {FontawesomeConfig} - used icons
  */
-
-export function getFontawesomeConfig(debug = false): FontawesomeConfig {
+function getFontawesomeConfig(debug = false): FontawesomeConfig {
   const time = Date.now();
   const srcFiles = findAllFiles(
     "./src",

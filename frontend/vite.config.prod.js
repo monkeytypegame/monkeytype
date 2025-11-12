@@ -1,5 +1,4 @@
-import { fontawesomeSubset } from "fontawesome-subset";
-import { getFontawesomeConfig } from "./scripts/fontawesome";
+import { fontawesomeSubset } from "./vite-plugins/fontawesome";
 import { generatePreviewFonts } from "./scripts/font-preview";
 import { VitePWA } from "vite-plugin-pwa";
 import replace from "vite-plugin-filter-replace";
@@ -63,16 +62,7 @@ export default {
   plugins: [
     envConfig({ isDevelopment: false, clientVersion: CLIENT_VERSION }),
     languageHashes(),
-    {
-      name: "vite-plugin-fontawesome-subset",
-      apply: "build",
-      buildStart() {
-        const fontawesomeClasses = getFontawesomeConfig();
-        fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
-          targetFormats: ["woff2"],
-        });
-      },
-    },
+    fontawesomeSubset({ targetDirectory: "src/webfonts-generated" }),
     {
       name: "generate-version-json",
       apply: "build",
