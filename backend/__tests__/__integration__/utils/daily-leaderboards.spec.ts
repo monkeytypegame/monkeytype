@@ -120,10 +120,14 @@ describe("Daily Leaderboards", () => {
           true
         );
         //THEN
-        expect(results).toEqual([
-          { rank: 1, ...bestResult },
-          { rank: 2, ...user2 },
-        ]);
+        expect(results).toEqual({
+          count: 2,
+          minWpm: 20,
+          entries: [
+            { rank: 1, ...bestResult },
+            { rank: 2, ...user2 },
+          ],
+        });
       });
 
       it("limits max amount of results", async () => {
@@ -136,7 +140,10 @@ describe("Daily Leaderboards", () => {
             .fill(0)
             .map(() => givenResult({ wpm: 20 + Math.random() * 100 }))
         );
-        expect(await lb.getCount()).toEqual(maxResults);
+        expect(
+          await lb.getResults(0, 5, dailyLeaderboardsConfig, true)
+        ).toEqual(expect.objectContaining({ count: maxResults }));
+
         expect(await lb.getRank(bob.uid, dailyLeaderboardsConfig)).toEqual({
           rank: maxResults,
           ...bob,
@@ -147,7 +154,9 @@ describe("Daily Leaderboards", () => {
 
         //THEN
         //max count is still the same, but bob is no longer on the leaderboard
-        expect(await lb.getCount()).toEqual(maxResults);
+        expect(
+          await lb.getResults(0, 5, dailyLeaderboardsConfig, true)
+        ).toEqual(expect.objectContaining({ count: maxResults }));
         expect(await lb.getRank(bob.uid, dailyLeaderboardsConfig)).toBeNull();
       });
     });
@@ -166,11 +175,15 @@ describe("Daily Leaderboards", () => {
           true
         );
         //THEN
-        expect(results).toEqual([
-          { rank: 1, ...user2 },
-          { rank: 2, ...user1 },
-          { rank: 3, ...user3 },
-        ]);
+        expect(results).toEqual({
+          count: 3,
+          minWpm: 40,
+          entries: [
+            { rank: 1, ...user2 },
+            { rank: 2, ...user1 },
+            { rank: 3, ...user3 },
+          ],
+        });
       });
       it("gets result for page", async () => {
         //GIVEN
@@ -188,10 +201,14 @@ describe("Daily Leaderboards", () => {
           true
         );
         //THEN
-        expect(results).toEqual([
-          { rank: 3, ...user4 },
-          { rank: 4, ...user3 },
-        ]);
+        expect(results).toEqual({
+          count: 5,
+          minWpm: 20,
+          entries: [
+            { rank: 3, ...user4 },
+            { rank: 4, ...user3 },
+          ],
+        });
       });
 
       it("gets result without premium", async () => {
@@ -208,24 +225,87 @@ describe("Daily Leaderboards", () => {
           false
         );
         //THEN
-        expect(results).toEqual([
-          { rank: 1, ...user2, isPremium: undefined },
-          { rank: 2, ...user1, isPremium: undefined },
-          { rank: 3, ...user3, isPremium: undefined },
-        ]);
+        expect(results).toEqual({
+          count: 3,
+          minWpm: 40,
+          entries: [
+            { rank: 1, ...user2, isPremium: undefined },
+            { rank: 2, ...user1, isPremium: undefined },
+            { rank: 3, ...user3, isPremium: undefined },
+          ],
+        });
       });
-    });
 
-    describe("minWPm", () => {
-      it("gets min wpm", async () => {
+      it("should get for friends only", async () => {
         //GIVEN
-        await givenResult({ wpm: 50 });
-        await givenResult({ wpm: 60 });
+        const _user1 = await givenResult({ wpm: 90 });
+        const user2 = await givenResult({ wpm: 80 });
+        const _user3 = await givenResult({ wpm: 70 });
+        const user4 = await givenResult({ wpm: 60 });
+        const _user5 = await givenResult({ wpm: 50 });
 
         //WHEN
-        const minWpm = await lb.getMinWpm(dailyLeaderboardsConfig);
+        const results = await lb.getResults(
+          0,
+          5,
+          dailyLeaderboardsConfig,
+          true,
+          [user2.uid, user4.uid, new ObjectId().toHexString()]
+        );
         //THEN
-        expect(minWpm).toEqual(50);
+        expect(results).toEqual({
+          count: 2,
+          minWpm: 60,
+          entries: [
+            { rank: 2, friendsRank: 1, ...user2 },
+            { rank: 4, friendsRank: 2, ...user4 },
+          ],
+        });
+      });
+
+      it("should get for friends only with page", async () => {
+        //GIVEN
+        const user1 = await givenResult({ wpm: 105 });
+        const user2 = await givenResult({ wpm: 100 });
+        const _user3 = await givenResult({ wpm: 95 });
+        const user4 = await givenResult({ wpm: 90 });
+        const _user5 = await givenResult({ wpm: 70 });
+
+        //WHEN
+
+        const results = await lb.getResults(
+          1,
+          2,
+          dailyLeaderboardsConfig,
+          true,
+          [user1.uid, user2.uid, user4.uid, new ObjectId().toHexString()]
+        );
+
+        //THEN
+        expect(results).toEqual({
+          count: 3,
+          minWpm: 90,
+          entries: [{ rank: 4, friendsRank: 3, ...user4 }],
+        });
+      });
+
+      it("should return empty list if no friends", async () => {
+        //GIVEN
+
+        //WHEN
+        const results = await lb.getResults(
+          0,
+          5,
+          dailyLeaderboardsConfig,
+          true,
+          []
+        );
+        //THEN
+        expect(results).toEqual({
+          count: 0,
+          minWpm: 0,
+          entries: [],
+        });
       });
     });
 
@@ -233,32 +313,52 @@ describe("Daily Leaderboards", () => {
       it("gets rank", async () => {
         //GIVEN
         const user1 = await givenResult({ wpm: 50 });
-        const _user2 = await givenResult({ wpm: 60 });
+        const user2 = await givenResult({ wpm: 60 });
 
-        //WHEN
-        const rank = await lb.getRank(user1.uid, dailyLeaderboardsConfig);
-        //THEN
-        expect(rank).toEqual({ rank: 2, ...user1 });
+        //WHEN / THEN
+        expect(await lb.getRank(user1.uid, dailyLeaderboardsConfig)).toEqual({
+          rank: 2,
+          ...user1,
+        });
+        expect(await lb.getRank(user2.uid, dailyLeaderboardsConfig)).toEqual({
+          rank: 1,
+          ...user2,
+        });
       });
-    });
 
-    describe("getCount", () => {
-      it("gets count", async () => {
+      it("should return null for unknown user", async () => {
+        expect(await lb.getRank("decoy", dailyLeaderboardsConfig)).toBeNull();
+        expect(
+          await lb.getRank("decoy", dailyLeaderboardsConfig, [
+            "unknown",
+            "unknown2",
+          ])
+        ).toBeNull();
+      });
+
+      it("gets rank for friends", async () => {
         //GIVEN
-        await givenResult({ wpm: 50 });
-        await givenResult({ wpm: 60 });
+        const user1 = await givenResult({ wpm: 50 });
+        const user2 = await givenResult({ wpm: 60 });
+        const _user3 = await givenResult({ wpm: 70 });
+        const friends = [user1.uid, user2.uid, "decoy"];
 
-        //WHEN
-        const count = await lb.getCount();
-        //THEN
-        expect(count).toEqual(2);
+        //WHEN / THEN
+        expect(
+          await lb.getRank(user2.uid, dailyLeaderboardsConfig, friends)
+        ).toEqual({ rank: 2, friendsRank: 1, ...user2 });
+
+        expect(
+          await lb.getRank(user1.uid, dailyLeaderboardsConfig, friends)
+        ).toEqual({ rank: 3, friendsRank: 2, ...user1 });
       });
     });
 
     it("purgeUserFromDailyLeaderboards", async () => {
       //GIVEN
       const cheater = await givenResult({ wpm: 50 });
-      const validUser = await givenResult();
+      const user1 = await givenResult({ wpm: 60 });
+      const user2 = await givenResult({ wpm: 40 });
 
       //WHEN
       await DailyLeaderboards.purgeUserFromDailyLeaderboards(
@@ -268,7 +368,14 @@ describe("Daily Leaderboards", () => {
       //THEN
       expect(await lb.getRank(cheater.uid, dailyLeaderboardsConfig)).toBeNull();
       expect(await lb.getResults(0, 50, dailyLeaderboardsConfig, true)).toEqual(
-        [{ rank: 1, ...validUser }]
+        {
+          count: 2,
+          minWpm: 40,
+          entries: [
+            { rank: 1, ...user1 },
+            { rank: 2, ...user2 },
+          ],
+        }
       );
     });
 

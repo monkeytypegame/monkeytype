@@ -68,6 +68,7 @@ export const RandomThemeSchema = z.enum([
   "light",
   "dark",
   "custom",
+  "auto",
 ]);
 export type RandomTheme = z.infer<typeof RandomThemeSchema>;
 

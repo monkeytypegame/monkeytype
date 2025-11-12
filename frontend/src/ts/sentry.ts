@@ -1,4 +1,4 @@
-import { envConfig } from "./constants/env-config";
+import { envConfig } from "virtual:env-config";
 
 async function getSentry(): Promise<typeof import("@sentry/browser")> {
   return await import("@sentry/browser");
