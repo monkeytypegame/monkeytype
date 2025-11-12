@@ -1265,10 +1265,13 @@ describe("Loaderboard Controller", () => {
   describe("get xp weekly leaderboard rank", () => {
     const getXpWeeklyLeaderboardMock = vi.spyOn(WeeklyXpLeaderboard, "get");
     const getRankMock = vi.fn();
+    const getFriendsUidsMock = vi.spyOn(ConnectionsDal, "getFriendsUids");
 
     beforeEach(async () => {
-      getXpWeeklyLeaderboardMock.mockClear();
-      getRankMock.mockClear();
+      [getXpWeeklyLeaderboardMock, getRankMock, getFriendsUidsMock].forEach(
+        (it) => it.mockClear()
+      );
+
       await weeklyLeaderboardEnabled(true);
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
@@ -1313,25 +1316,13 @@ describe("Loaderboard Controller", () => {
 
       expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(lbConf, -1);
 
-      expect(getRankMock).toHaveBeenCalledWith(uid, lbConf);
+      expect(getRankMock).toHaveBeenCalledWith(uid, lbConf, undefined);
     });
 
     it("should get for last week", async () => {
       //GIVEN
       const lbConf = (await configuration).leaderboards.weeklyXp;
-
-      const resultData: XpLeaderboardEntry = {
-        totalXp: 100,
-        rank: 1,
-        timeTypedSeconds: 100,
-        uid: "user1",
-        name: "user1",
-        discordId: "discordId",
-        discordAvatar: "discordAvatar",
-        lastActivityTimestamp: 1000,
-      };
-
-      getRankMock.mockResolvedValue(resultData);
+      getRankMock.mockResolvedValue({});
 
       //WHEN
       const { body } = await mockApp
@@ -1343,7 +1334,7 @@ describe("Loaderboard Controller", () => {
       //THEN
       expect(body).toEqual({
         message: "Weekly xp leaderboard rank retrieved",
-        data: resultData,
+        data: {},
       });
 
       expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(
@@ -1351,7 +1342,33 @@ describe("Loaderboard Controller", () => {
         1721606400000
       );
 
-      expect(getRankMock).toHaveBeenCalledWith(uid, lbConf);
+      expect(getRankMock).toHaveBeenCalledWith(uid, lbConf, undefined);
+    });
+
+    it("should get for friendsOnly", async () => {
+      //GIVEN
+      const lbConf = (await configuration).leaderboards.weeklyXp;
+      await enableConnectionsFeature(true);
+      getRankMock.mockResolvedValue({});
+      const friends = ["friendOne", "friendTwo"];
+      getFriendsUidsMock.mockResolvedValue(friends);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly/rank")
+        .query({ friendsOnly: true })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Weekly xp leaderboard rank retrieved",
+        data: {},
+      });
+
+      expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(lbConf, -1);
+
+      expect(getRankMock).toHaveBeenCalledWith(uid, lbConf, friends);
     });
 
     it("fails if daily leaderboards are disabled", async () => {

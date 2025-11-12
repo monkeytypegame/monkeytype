@@ -248,7 +248,15 @@ export async function getWeeklyXpLeaderboard(
 export async function getWeeklyXpLeaderboardRank(
   req: MonkeyRequest<GetWeeklyXpLeaderboardRankQuery>
 ): Promise<GetWeeklyXpLeaderboardRankResponse> {
+  const { friendsOnly } = req.query;
   const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const friendUids = await getFriendsUids(
+    uid,
+    friendsOnly === true,
+    connectionsConfig
+  );
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
     req.ctx.configuration.leaderboards.weeklyXp,
@@ -256,7 +264,8 @@ export async function getWeeklyXpLeaderboardRank(
   );
   const rankEntry = await weeklyXpLeaderboard.getRank(
     uid,
-    req.ctx.configuration.leaderboards.weeklyXp
+    req.ctx.configuration.leaderboards.weeklyXp,
+    friendUids
   );
 
   return new MonkeyResponse("Weekly xp leaderboard rank retrieved", rankEntry);
