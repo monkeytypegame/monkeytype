@@ -431,18 +431,6 @@ async function handleChar(
     return;
   }
 
-  if (char === "œ" && TestWords.words.getCurrent()[charIndex] !== "œ") {
-    await handleChar("o", charIndex);
-    await handleChar("e", charIndex + 1);
-    return;
-  }
-
-  if (char === "æ" && TestWords.words.getCurrent()[charIndex] !== "æ") {
-    await handleChar("a", charIndex);
-    await handleChar("e", charIndex + 1);
-    return;
-  }
-
   console.debug("Handling char", char, charIndex, realInputValue);
 
   const now = performance.now();
