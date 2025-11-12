@@ -20,5 +20,5 @@ export default defineConfig({
     },
   },
 
-  plugins: [languageHashes(), envConfig()],
+  plugins: [languageHashes({ skip: true }), envConfig({ isDevelopment: true })],
 });
