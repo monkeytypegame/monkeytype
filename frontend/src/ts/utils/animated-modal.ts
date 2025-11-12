@@ -2,13 +2,6 @@ import { animate, AnimationParams } from "animejs";
 import { applyReducedMotion, isPopupVisible } from "./misc";
 import * as Skeleton from "./skeleton";
 
-// type CustomAnimation = {
-//   from: Record<string, string>;
-//   to: Record<string, string>;
-//   easing?: string;
-//   durationMs?: number;
-// };
-
 type CustomWrapperAndModalAnimations = {
   wrapper?: AnimationParams & {
     duration?: number;
