@@ -589,16 +589,12 @@ function handleInputSubmit(): void {
     //validation ongoing, ignore the submit
     return;
   } else if (inputModeParams.validation?.status === "failed") {
-    const cmdLine = document.querySelector(
-      "#commandLine .modal"
-    ) as HTMLElement;
-
-    cmdLine.classList.add("hasError");
+    modal.getModal().classList.add("hasError");
     if (shakeTimeout !== null) {
       clearTimeout(shakeTimeout);
     }
     shakeTimeout = setTimeout(() => {
-      cmdLine.classList.remove("hasError");
+      modal.getModal().classList.remove("hasError");
     }, 500);
     return;
   }
