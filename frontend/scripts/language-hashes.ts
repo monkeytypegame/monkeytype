@@ -5,7 +5,7 @@ import { createHash } from "crypto";
 
 const virtualModuleId = "virtual:language-hashes";
 const resolvedVirtualModuleId = "\0" + virtualModuleId;
-let skip = false;
+let isDevelopment = process.env["NODE_ENV"] === "development";
 
 export function languageHashes(): Plugin {
   return {
@@ -16,18 +16,16 @@ export function languageHashes(): Plugin {
     },
     load(id) {
       if (id === resolvedVirtualModuleId) {
-        const hashes: Record<string, string> = skip ? {} : getHashes();
+        if (isDevelopment) {
+          console.log("Skipping language hashing in dev environment.");
+        }
+
+        const hashes: Record<string, string> = isDevelopment ? {} : getHashes();
         return `
           export const languageHashes = ${JSON.stringify(hashes)};
         `;
       }
       return;
-    },
-    configResolved(resolvedConfig) {
-      if (resolvedConfig?.define?.["IS_DEVELOPMENT"] === "true") {
-        skip = true;
-        console.log("Skipping language hashing in dev environment.");
-      }
     },
   };
 }

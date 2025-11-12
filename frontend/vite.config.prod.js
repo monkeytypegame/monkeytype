@@ -312,7 +312,6 @@ export default {
     },
   },
   define: {
-    IS_DEVELOPMENT: JSON.stringify(false),
     CLIENT_VERSION: JSON.stringify(CLIENT_VERSION),
   },
 
