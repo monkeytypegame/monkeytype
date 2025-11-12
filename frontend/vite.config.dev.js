@@ -2,10 +2,14 @@ import { checker } from "vite-plugin-checker";
 import Inspect from "vite-plugin-inspect";
 import path from "node:path";
 import { getFontsConig } from "./vite.config";
+import { envConfig } from "./scripts/env-config";
+import { languageHashes } from "./scripts/language-hashes";
 
 /** @type {import("vite").UserConfig} */
 export default {
   plugins: [
+    envConfig({ isDevelopment: true }),
+    languageHashes({ skip: true }),
     checker({
       typescript: {
         tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
