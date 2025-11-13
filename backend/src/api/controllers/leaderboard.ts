@@ -43,11 +43,7 @@ export async function getLeaderboard(
     throw new MonkeyError(404, "There is no leaderboard for this mode");
   }
 
-  const friendUids = await getFriendsUids(
-    uid,
-    friendsOnly === true,
-    connectionsConfig
-  );
+  const friendsOnlyUid = getFriendsOnlyUid(uid, friendsOnly, connectionsConfig);
 
   const leaderboard = await LeaderboardsDAL.get(
     mode,
@@ -56,7 +52,7 @@ export async function getLeaderboard(
     page,
     pageSize,
     req.ctx.configuration.users.premium.enabled,
-    friendUids
+    friendsOnlyUid
   );
 
   if (leaderboard === false) {
@@ -70,7 +66,7 @@ export async function getLeaderboard(
     mode,
     mode2,
     language,
-    friendUids
+    friendsOnlyUid
   );
   const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
 
@@ -88,18 +84,12 @@ export async function getRankFromLeaderboard(
   const { uid } = req.ctx.decodedToken;
   const connectionsConfig = req.ctx.configuration.connections;
 
-  const friendUids = await getFriendsUids(
-    uid,
-    friendsOnly === true,
-    connectionsConfig
-  );
-
   const data = await LeaderboardsDAL.getRank(
     mode,
     mode2,
     language,
     uid,
-    friendUids
+    getFriendsOnlyUid(uid, friendsOnly, connectionsConfig) !== undefined
   );
   if (data === false) {
     throw new MonkeyError(
@@ -281,6 +271,20 @@ async function getFriendsUids(
       throw new MonkeyError(503, "This feature is currently unavailable.");
     }
     return await ConnectionsDal.getFriendsUids(uid);
+  }
+  return undefined;
+}
+
+function getFriendsOnlyUid(
+  uid: string,
+  friendsOnly: boolean | undefined,
+  friendsConfig: Configuration["connections"]
+): string | undefined {
+  if (uid !== "" && friendsOnly === true) {
+    if (!friendsConfig.enabled) {
+      throw new MonkeyError(503, "This feature is currently unavailable.");
+    }
+    return uid;
   }
   return undefined;
 }

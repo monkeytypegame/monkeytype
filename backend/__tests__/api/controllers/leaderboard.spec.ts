@@ -30,12 +30,10 @@ describe("Loaderboard Controller", () => {
   describe("get leaderboard", () => {
     const getLeaderboardMock = vi.spyOn(LeaderboardDal, "get");
     const getLeaderboardCountMock = vi.spyOn(LeaderboardDal, "getCount");
-    const getFriendsUidsMock = vi.spyOn(ConnectionsDal, "getFriendsUids");
 
     beforeEach(() => {
       getLeaderboardMock.mockClear();
       getLeaderboardCountMock.mockClear();
-      getFriendsUidsMock.mockClear();
       getLeaderboardCountMock.mockResolvedValue(42);
     });
 
@@ -154,7 +152,6 @@ describe("Loaderboard Controller", () => {
       //GIVEN
       await enableConnectionsFeature(true);
       getLeaderboardMock.mockResolvedValue([]);
-      getFriendsUidsMock.mockResolvedValue(["uidOne", "uidTwo"]);
       getLeaderboardCountMock.mockResolvedValue(2);
 
       //WHEN
@@ -180,13 +177,13 @@ describe("Loaderboard Controller", () => {
         0,
         50,
         false,
-        ["uidOne", "uidTwo"]
+        uid
       );
       expect(getLeaderboardCountMock).toHaveBeenCalledWith(
         "time",
         "60",
         "english",
-        ["uidOne", "uidTwo"]
+        uid
       );
     });
 
@@ -286,11 +283,9 @@ describe("Loaderboard Controller", () => {
 
   describe("get rank", () => {
     const getLeaderboardRankMock = vi.spyOn(LeaderboardDal, "getRank");
-    const getFriendsUidsMock = vi.spyOn(ConnectionsDal, "getFriendsUids");
 
     afterEach(() => {
       getLeaderboardRankMock.mockClear();
-      getFriendsUidsMock.mockClear();
     });
 
     it("fails withouth authentication", async () => {
@@ -335,14 +330,12 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         uid,
-        undefined
+        false
       );
     });
     it("should get for english time 60 friends only", async () => {
       //GIVEN
       await enableConnectionsFeature(true);
-      const friends = ["friendOne", "friendTwo"];
-      getFriendsUidsMock.mockResolvedValue(friends);
       getLeaderboardRankMock.mockResolvedValue({} as any);
 
       //WHEN
@@ -363,9 +356,8 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         uid,
-        friends
+        true
       );
-      expect(getFriendsUidsMock).toHaveBeenCalledWith(uid);
     });
     it("should get with ape key", async () => {
       await acceptApeKeys(true);
