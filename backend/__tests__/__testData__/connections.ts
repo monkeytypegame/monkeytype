@@ -16,9 +16,8 @@ export async function createConnection(
     },
     maxPerUser
   );
-  await ConnectionsDal.getCollection().updateOne(
-    { _id: result._id },
-    { $set: data }
-  );
+  await ConnectionsDal.__testing
+    .getCollection()
+    .updateOne({ _id: result._id }, { $set: data });
   return { ...result, ...data };
 }
