@@ -444,10 +444,8 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
   }
   element.dataset["uid"] = entry.uid;
   element.innerHTML = `
-      <td>${entry.friendsRank ?? ""}</td>
-      <td>${
-        entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
-      }</td>
+      <td>${formatRank(entry.friendsRank)}</td>
+      <td>${formatRank(entry.rank)}</td>
       <td>
         <div class="avatarNameBadge">
           <div class="avatarPlaceholder"></div>
@@ -503,10 +501,8 @@ function buildWeeklyTableRow(
   }
   element.dataset["uid"] = entry.uid;
   element.innerHTML = `
-      <td></td>
-      <td>${
-        entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
-      }</td>
+      <td>${formatRank(entry.friendsRank)}</td>
+      <td>${formatRank(entry.rank)}</td>
       <td>
         <div class="avatarNameBadge">
           <div class="avatarPlaceholder"></div>
@@ -718,9 +714,7 @@ function fillUser(): void {
     };
 
     const html = `
-          <div class="rank">${
-            rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : rank
-          }</div>
+          <div class="rank">${formatRank(rank)}</div>
         <div class="userInfo">
           <div class="top">You (${percentileString})</div>
           <div class="bottom">${diffText}</div>
@@ -772,9 +766,13 @@ function fillUser(): void {
     }
 
     const userData = state.userData;
-    const percentile = (userData.rank / state.count) * 100;
+    const rank = state.friendsOnly
+      ? (userData.friendsRank as number)
+      : userData.rank;
+    const percentile = (rank / state.count) * 100;
+
     let percentileString = `Top ${percentile.toFixed(2)}%`;
-    if (userData.rank === 1) {
+    if (rank === 1) {
       percentileString = "GOAT";
     }
 
@@ -811,11 +809,7 @@ function fillUser(): void {
     };
 
     const html = `
-          <div class="rank">${
-            userData.rank === 1
-              ? '<i class="fas fa-fw fa-crown"></i>'
-              : userData.rank
-          }</div>
+          <div class="rank">${formatRank(rank)}</div>
         <div class="userInfo">
           <div class="top">You (${percentileString})</div>
           <div class="bottom">${diffText}</div>
@@ -935,7 +929,6 @@ function updateFriendsButtons(): void {
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons"
   );
   if (
-    state.type === "allTime" &&
     isAuthenticated() &&
     (ServerConfiguration.get()?.connections.enabled ?? false)
   ) {
@@ -1390,6 +1383,13 @@ function updateTimeText(
   text.attr("aria-label", localDateString);
 }
 
+function formatRank(rank: number | undefined): string {
+  if (rank === undefined) return "";
+  if (rank === 1) return '<i class="fas fa-fw fa-crown"></i>';
+
+  return rank.toString();
+}
+
 $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
   const action = $(this).data("action") as Action;
   if (action !== "goToPage") {
@@ -1412,11 +1412,9 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     if (state.type === "daily") {
       state.language = "english";
       state.yesterday = false;
-      state.friendsOnly = false;
     }
     if (state.type === "weekly") {
       state.lastWeek = false;
-      state.friendsOnly = false;
     }
     checkIfLeaderboardIsValid();
     state.data = null;

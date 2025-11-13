@@ -45,7 +45,7 @@ async function handleDailyLeaderboardResults(
     false
   );
 
-  if (results.length === 0) {
+  if (results === null || results.entries.length === 0) {
     return;
   }
 
@@ -55,7 +55,7 @@ async function handleDailyLeaderboardResults(
       mail: MonkeyMail[];
     }[] = [];
 
-    results.forEach((entry) => {
+    results.entries.forEach((entry) => {
       const rank = entry.rank ?? maxResults;
       const wpm = Math.round(entry.wpm);
 
@@ -96,7 +96,7 @@ async function handleDailyLeaderboardResults(
     await addToInboxBulk(mailEntries, inboxConfig);
   }
 
-  const topResults = results.slice(
+  const topResults = results.entries.slice(
     0,
     dailyLeaderboardsConfig.topResultsToAnnounce
   );
@@ -136,7 +136,7 @@ async function handleWeeklyXpLeaderboardResults(
     false
   );
 
-  if (allResults.length === 0) {
+  if (allResults === null || allResults.entries.length === 0) {
     return;
   }
 
@@ -145,7 +145,7 @@ async function handleWeeklyXpLeaderboardResults(
     mail: MonkeyMail[];
   }[] = [];
 
-  allResults.forEach((entry) => {
+  allResults?.entries.forEach((entry) => {
     const { uid, name, rank = maxRankToGet, totalXp, timeTypedSeconds } = entry;
 
     const xp = Math.round(totalXp);
