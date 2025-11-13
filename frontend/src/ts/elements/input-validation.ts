@@ -14,6 +14,8 @@ export type ValidationResult = {
   errorMessage?: string;
 };
 
+export type IsValidResponse = true | string | { warning: string };
+
 export type Validation<T> = {
   /**
    * Zod schema to validate the input value against.
@@ -28,7 +30,7 @@ export type Validation<T> = {
    * @param thisPopup the current modal
    * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
    */
-  isValid?: (value: T) => Promise<true | string | { warning: string }>;
+  isValid?: (value: T) => Promise<IsValidResponse>;
 
   /** custom debounce delay for `isValid` call. defaults to 100 */
   debounceDelay?: number;
