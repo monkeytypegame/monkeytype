@@ -204,6 +204,7 @@ export function validateWithIndicator<T>(
     inputElement.value = val ?? "";
     if (val === null) {
       indicator.hide();
+      currentStatus = { status: "checking" };
     } else {
       inputElement.dispatchEvent(new Event("input"));
     }

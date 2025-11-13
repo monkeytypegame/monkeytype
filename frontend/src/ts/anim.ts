@@ -2,25 +2,28 @@ import { engine } from "animejs";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { z } from "zod";
 
-const maxFps = new LocalStorageWithSchema({
-  key: "maxFps",
-  schema: z.number().int().min(30),
-  fallback: 120,
+export const fpsLimitSchema = z.number().int().min(30).max(1000);
+
+const fpsLimit = new LocalStorageWithSchema({
+  key: "fpsLimit",
+  schema: fpsLimitSchema,
+  fallback: 1000,
 });
 
-export function setMaxFps(fps: number): void {
-  maxFps.set(fps);
+export function setfpsLimit(fps: number): boolean {
+  const result = fpsLimit.set(fps);
   applyEngineSettings();
+  return result;
 }
 
-export function getMaxFps(): number {
-  return maxFps.get();
+export function getfpsLimit(): number {
+  return fpsLimit.get();
 }
 
 export function applyEngineSettings(): void {
   engine.pauseOnDocumentHidden = false;
-  engine.fps = maxFps.get();
-  engine.defaults.frameRate = maxFps.get();
+  engine.fps = fpsLimit.get();
+  engine.defaults.frameRate = fpsLimit.get();
 }
 
 export function setLowFpsMode(): void {
@@ -29,6 +32,6 @@ export function setLowFpsMode(): void {
 }
 
 export function clearLowFpsMode(): void {
-  engine.fps = maxFps.get();
-  engine.defaults.frameRate = maxFps.get();
+  engine.fps = fpsLimit.get();
+  engine.defaults.frameRate = fpsLimit.get();
 }
