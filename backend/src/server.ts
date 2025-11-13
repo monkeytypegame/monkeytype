@@ -19,11 +19,24 @@ import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
 import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
 import { createIndicies as connectionsDbSetup } from "./dal/connections";
 import { getErrorMessage } from "./utils/error";
+import { exit } from "process";
 
 async function bootServer(port: number): Promise<Server> {
   try {
     Logger.info(`Starting server version ${version}`);
     Logger.info(`Starting server in ${process.env["MODE"]} mode`);
+
+    process.on("unhandledRejection", (err) => {
+      const isDbError =
+        err instanceof Error && /ECONNREFUSED.*27017/i.test(err.message);
+      if (isDbError) {
+        Logger.error("Failed to connect to database, ignore error");
+      } else {
+        Logger.error("Unhandled rejection: " + getErrorMessage(err));
+        exit(-1);
+      }
+    });
+
     Logger.info(`Connecting to database ${process.env["DB_NAME"]}...`);
     await db.connect();
     Logger.success("Connected to database");
