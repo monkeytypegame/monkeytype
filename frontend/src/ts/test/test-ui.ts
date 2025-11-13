@@ -1045,8 +1045,8 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     newMargin = wordRightMargin - newMargin;
   }
 
-  const duration = noAnimation ? 0 : 250;
-  const ease = "out(2)";
+  const duration = noAnimation ? 0 : 125;
+  const ease = "inOut(1.25)";
 
   const caretScrollOptions = {
     newValue: newMarginOffset * -1,
