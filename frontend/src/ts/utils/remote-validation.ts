@@ -18,8 +18,14 @@ export function remoteValidation<V, T>(
     if (result.status <= 299) {
       return options?.check?.(result.body.data as T) ?? true;
     }
-    const handler = result.status <= 499 ? options?.on4xx : options?.on5xx;
-    if (handler === undefined) return result.body.message;
+
+    let handler: IsValidResonseOrFunction | undefined;
+    if (result.status <= 499) {
+      handler = options?.on4xx ?? ((message) => message);
+    } else {
+      handler = options?.on5xx ?? "Server unavailable. Please try again later.";
+    }
+
     if (typeof handler === "function") return handler(result.body.message);
     return handler;
   };

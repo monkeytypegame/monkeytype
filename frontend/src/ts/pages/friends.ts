@@ -78,10 +78,7 @@ const addFriendModal = new SimpleModal({
         schema: UserNameSchema,
         isValid: remoteValidation(
           async (name) => Ape.users.getNameAvailability({ params: { name } }),
-          {
-            check: (data) => !data.available || "Unknown user",
-            on5xx: "Backend unavailable, try later.",
-          }
+          { check: (data) => !data.available || "Unknown user" }
         ),
         debounceDelay: 1000,
       },

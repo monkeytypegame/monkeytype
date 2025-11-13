@@ -482,10 +482,7 @@ list.updateName = new SimpleModal({
         schema: UserNameSchema,
         isValid: remoteValidation(
           async (name) => Ape.users.getNameAvailability({ params: { name } }),
-          {
-            check: (data) => data.available || "Name not available",
-            on5xx: "Backend unavailable, try later.",
-          }
+          { check: (data) => data.available || "Name not available" }
         ),
         debounceDelay: 1000,
       },
