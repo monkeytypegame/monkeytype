@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
+import * as ConnectionsDal from "../../dal/connections";
 import MonkeyError from "../../utils/error";
 import * as DailyLeaderboards from "../../utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
@@ -258,6 +259,20 @@ export async function getWeeklyXpLeaderboardRank(
   );
 
   return new MonkeyResponse("Weekly xp leaderboard rank retrieved", rankEntry);
+}
+
+async function getFriendsUids(
+  uid: string,
+  friendsOnly: boolean,
+  friendsConfig: Configuration["connections"]
+): Promise<string[] | undefined> {
+  if (uid !== "" && friendsOnly) {
+    if (!friendsConfig.enabled) {
+      throw new MonkeyError(503, "This feature is currently unavailable.");
+    }
+    return await ConnectionsDal.getFriendsUids(uid);
+  }
+  return undefined;
 }
 
 function getFriendsOnlyUid(
