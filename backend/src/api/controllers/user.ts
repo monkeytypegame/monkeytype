@@ -1041,7 +1041,12 @@ export async function updateProfile(
   const profileDetailsUpdates: Partial<UserProfileDetails> = {
     bio: sanitizeString(bio),
     keyboard: sanitizeString(keyboard),
-    socialProfiles: socialProfiles ?? {},
+    socialProfiles: Object.fromEntries(
+      Object.entries(socialProfiles ?? {}).map(([key, value]) => [
+        key,
+        sanitizeString(value),
+      ])
+    ),
     showActivityOnPublicProfile,
   };
 
