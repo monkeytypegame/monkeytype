@@ -235,11 +235,11 @@ export class Caret {
       Config.smoothCaret === "off"
         ? 0
         : Config.smoothCaret === "slow"
-        ? 300
-        : Config.smoothCaret === "medium"
-        ? 200
-        : Config.smoothCaret === "fast"
         ? 150
+        : Config.smoothCaret === "medium"
+        ? 100
+        : Config.smoothCaret === "fast"
+        ? 85
         : 0;
 
     const finalDuration = options.duration ?? smoothCaretSpeed;
@@ -256,7 +256,7 @@ export class Caret {
     this.posAnimation = animate(this.element, {
       ...animation,
       duration: finalDuration,
-      ease: options.easing ?? "out(2.5)",
+      ease: options.easing ?? "inOut(1.25)",
     });
   }
 
