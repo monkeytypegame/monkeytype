@@ -1,13 +1,8 @@
 # Monkeytype Self Hosting
 
-<!-- TOC ignore:true -->
-
-## Table of contents
-
 <!-- TOC -->
 
 - [Monkeytype Self Hosting](#monkeytype-self-hosting)
-    - [Table of contents](#table-of-contents)
     - [Prerequisites](#prerequisites)
     - [Quickstart](#quickstart)
     - [Account System](#account-system)
@@ -20,6 +15,12 @@
         - [env file](#env-file)
         - [serviceAccountKey.json](#serviceaccountkeyjson)
         - [backend-configuration.json](#backend-configurationjson)
+    - [Upgrades](#upgrades)
+        - [v.....](#v)
+            - [Backup](#backup)
+            - [Upgrade MongoDB  with dump/restore](#upgrade-mongodb--with-dumprestore)
+            - [Upgrade MongoDB incremental](#upgrade-mongodb-incremental)
+            - [References](#references)
 
 <!-- /TOC -->
 
@@ -190,3 +191,212 @@ Configuration of the backend. Check the [default configuration](https://github.c
 
 > [!NOTE]
 > Configuration changes are applied only on container startup. You must restart the container for your updates to take effect. 
+
+
+## Upgrades
+
+### v.....
+
+Starting with this version you will need to update the MongoDB container from 5.0 to 8.2. Follow the steps carefully.
+
+#### Backup
+
+Make sure the container is _STOPPED_ and run this command:
+
+```
+docker run --rm -v monkeytype_mongo_data:/from -v $(pwd):/backup alpine tar czf /backup/monkeytype-mongodb.tar.gz -C /from .
+```
+
+In case you need to restore the backup run this commands:
+
+```
+docker volume rm monkeytype_mongo_data
+docker volume create monkeytype_mongo_data
+docker run --rm -v monkeytype_mongo_data:/to -v $(pwd):/backup alpine tar xzf /backup/monkeytype-mongodb.tar.gz -C /to
+
+```
+
+There are two ways to update your MongoDB instance to 8.2. You can use the dump/restore method if your database is not very huge and you have the storage for the full database dump. If not  follow the guide for [Upgrade MongoDB incremental](#upgrade-mongodb-incremental)
+
+#### Upgrade MongoDB  with dump/restore
+
+Make sure the container is _STOPPED_ and execute this command:
+
+```
+docker run -d \
+  --name mongodb-upgrade \
+  -v monkeytype_mongo_data:/data/db \
+  -v $(pwd):/backup \
+  -p 27017:27017 \
+  mongo:5.0.13
+```
+
+Then dump the data using
+
+```
+docker exec -it mongodb-upgrade \
+  mongodump --db=monkeytype --out=/backup
+```
+
+And stop the container again:
+
+```
+docker stop mongodb-upgrade 
+docker rm mongodb-upgrade
+```
+
+Then replace the volume with an empty one:
+
+```
+docker volume rm monkeytype_mongo_data
+docker volume create monkeytype_mongo_data
+```
+
+Now start a new container with version 8.2
+
+```
+docker run -d \
+  --name mongodb-upgrade \
+  -v monkeytype_mongo_data:/data/db \
+  -v $(pwd):/backup \
+  -p 27017:27017 \
+  mongodb/mongodb-community-server:8.2.1-ubi8
+```
+
+
+Then restore the data using
+
+```
+docker exec -it mongodb-upgrade \
+mongorestore --host=localhost --port=27017 \
+--db=monkeytype \
+--drop \
+/backup/monkeytype
+```
+
+And stop the container again:
+
+```
+docker stop mongodb-upgrade 
+docker rm mongodb-upgrade
+```
+
+At this point the MongoDB container is upgraded to version 8.2.
+
+Now you can start your instance with `docker compose` as normal.
+
+#### Upgrade MongoDB incremental
+
+MongoDB needs to be upgraded for each major version. Don't skip any of theese steps:
+
+Make sure the container is _STOPPED_ and run this command:
+
+```
+docker run -d \
+  --name mongodb-upgrade \
+  -v monkeytype_mongo_data:/data/db \
+  -p 27017:27017 \
+  mongo:6.0
+```
+
+When the container is _HEALTHY_ run this command:
+
+```
+docker exec -it mongodb-upgrade  mongosh --eval 'db.adminCommand( { setFeatureCompatibilityVersion: "6.0" } )'
+```
+
+Wait a few seconds and execute:
+
+```
+docker stop mongodb-upgrade 
+docker rm mongodb-upgrade
+```
+
+At this point the MongoDB container is upgraded to version 6.0.
+
+Make sure the container is _STOPPED_ and run this command:
+
+```
+docker run -d \
+  --name mongodb-upgrade \
+  -v monkeytype_mongo_data:/data/db \
+  -p 27017:27017 \
+  mongo:7.0
+```
+
+When the container is _HEALTHY_ run this command:
+
+```
+docker exec -it mongodb-upgrade  mongosh --eval 'db.adminCommand( { setFeatureCompatibilityVersion: "7.0", confirm: true } )'
+```
+
+Wait a few seconds and execute:
+
+```
+docker stop mongodb-upgrade 
+docker rm mongodb-upgrade
+```
+
+At this point the MongoDB container is upgraded to version 7.0.
+
+Make sure the container is _STOPPED_ and run this command:
+
+```
+docker run -d \
+  --name mongodb-upgrade \
+  -v monkeytype_mongo_data:/data/db \
+  -p 27017:27017 \
+  mongo:8.0
+```
+
+When the container is _HEALTHY_ run this command:
+
+```
+docker exec -it mongodb-upgrade  mongosh --eval 'db.adminCommand( { setFeatureCompatibilityVersion: "8.0", confirm: true } )'
+```
+
+Wait a few seconds and execute:
+
+```
+docker stop mongodb-upgrade 
+docker rm mongodb-upgrade
+```
+
+At this point the MongoDB container is upgraded to version 8.0.
+
+Make sure the container is _STOPPED_ and run this command:
+
+```
+docker run --rm -v monkeytype_mongo_data:/data/db alpine chown -R 998:996 /data/db
+```
+
+```
+docker run -d \
+  --name mongodb-upgrade \
+  -v monkeytype_mongo_data:/data/db \
+  -p 27017:27017 \
+  mongodb/mongodb-community-server:8.2.1-ubi8
+```
+
+When the container is _HEALTHY_ run this command:
+
+```
+docker exec -it mongodb-upgrade  mongosh --eval 'db.adminCommand( { setFeatureCompatibilityVersion: "8.2", confirm: true } )'
+```
+
+Wait a few seconds and execute:
+
+```
+docker stop mongodb-upgrade 
+docker rm mongodb-upgrade
+```
+
+At this point the MongoDB container is upgraded to version 8.2.
+
+Now you can start your instance with `docker compose` as normal.
+
+#### References
+- https://www.mongodb.com/docs/v6.0/release-notes/6.0-upgrade-standalone/
+- https://www.mongodb.com/docs/v7.0/release-notes/7.0-upgrade-standalone/
+- https://www.mongodb.com/docs/v8.0/release-notes/8.0-upgrade-standalone/#std-label-8.0-upgrade-standalone
+- https://www.mongodb.com/docs/manual/release-notes/8.2-upgrade-standalone/
