@@ -144,6 +144,29 @@
       }
     }
 
+    .textareaAndButton {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+
+      span {
+        display: flex;
+        gap: 0.5rem;
+      }
+      .button {
+        height: auto;
+
+        .fas {
+          margin-right: 0rem;
+        }
+      }
+      .textarea {
+        height: 200px;
+        resize: none;
+      }
+    }
+
     .rangeGroup {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -169,6 +192,7 @@
     }
 
     &[data-config-name="fontFamily"],
+    &[data-config-name="keymapCustom"],
     &[data-config-name="customBackgroundSize"] {
       .separator {
         margin-bottom: 0.5rem;
@@ -187,6 +211,7 @@
       }
     }
 
+    &[data-config-name="keymapCustom"],
     &[data-config-name="fontFamily"] {
       grid-template-areas:
         "title title"
@@ -198,6 +223,7 @@
         .separator {
           margin-bottom: 0;
         }
+        .usingLocalKeymap,
         .usingLocalFont {
           button {
             width: 100%;
