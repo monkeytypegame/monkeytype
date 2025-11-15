@@ -1,16 +1,10 @@
-import AnimatedModal from "../utils/animated-modal";
+import { SimpleModal } from "../utils/simple-modal";
 
 export let minFilterLength: number = 0;
 export let maxFilterLength: number = 0;
 export let usingCustomLength = true;
 
-function handleFilterLength(
-  modalEl: HTMLElement,
-  minEl: HTMLInputElement,
-  maxEl: HTMLInputElement
-): void {
-  minFilterLength = +minEl?.value;
-  maxFilterLength = +maxEl?.value;
+function refresh(): void {
   let refreshButton = document.querySelector(
     ".refreshQuotes"
   ) as HTMLButtonElement;
@@ -21,38 +15,36 @@ export function setUsingCustomLength(value: boolean): void {
   usingCustomLength = value;
 }
 
-export function show(): void {
-  void modal.show();
-}
+export const quoteFilterModal = new SimpleModal({
+  id: "quoteFilter",
+  title: "Enter minimum and maximum values",
+  inputs: [
+    {
+      placeholder: "1",
+      type: "number",
+    },
+    {
+      placeholder: "100",
+      type: "number",
+    },
+  ],
+  buttonText: "save",
+  onlineOnly: true,
+  execFn: async (_thisPopup, min, max) => {
+    const minNum = parseInt(min, 10);
+    const maxNum = parseInt(max, 10);
+    if (isNaN(minNum) || isNaN(maxNum)) {
+      return {
+        status: 0,
+        message: "Invalid min/max values",
+      };
+    }
 
-function hide(): void {
-  void modal.hide();
-}
+    minFilterLength = minNum;
+    maxFilterLength = maxNum;
+    refresh();
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  let submitButton = modalEl.querySelector("button");
-  let minEl = modalEl.querySelector(".minFilterLength") as HTMLInputElement;
-  let maxEl = modalEl.querySelector(".maxFilterLength") as HTMLInputElement;
-  submitButton?.addEventListener("click", () => {
-    handleFilterLength(modalEl, minEl, maxEl);
-    hide();
-  });
-
-  minEl?.addEventListener("input", function () {
-    handleFilterLength(modalEl, minEl, maxEl);
-  });
-
-  maxEl?.addEventListener("input", () => {
-    handleFilterLength(modalEl, minEl, maxEl);
-  });
-}
-
-async function cleanup(): Promise<void> {
-  setUsingCustomLength(false);
-}
-
-const modal = new AnimatedModal({
-  dialogId: "quoteFilterModal",
-  setup,
-  cleanup,
+    let message: string = "saved custom filter";
+    return { status: 1, message };
+  },
 });

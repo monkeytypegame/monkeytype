@@ -62,7 +62,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
 
   if (quoteLengthFilterValue.includes("4")) {
     if (QuoteFilterPopup.usingCustomLength) {
-      QuoteFilterPopup.show();
+      QuoteFilterPopup.quoteFilterModal.show(undefined, {});
       QuoteFilterPopup.setUsingCustomLength(false);
     }
 
