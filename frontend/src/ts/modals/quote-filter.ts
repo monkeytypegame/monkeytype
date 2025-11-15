@@ -23,6 +23,10 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     let customFilterLength = +inputEl.value;
     handleLengthFilter(customFilterLength);
     hide(true);
+    let refreshButton = document.querySelector(
+      ".refreshQuotes"
+    ) as HTMLButtonElement;
+    refreshButton.click();
   });
 }
 
