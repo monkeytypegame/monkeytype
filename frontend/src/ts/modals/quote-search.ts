@@ -55,27 +55,25 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
     return quotes;
   }
 
+  let filteredQuotes = quotes;
+  const quoteLengthFilter = new Set(
+    quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10))
+  );
+
   if (quoteLengthFilterValue.includes("4")) {
     if (QuoteFilterPopup.usingCustomLength) {
       QuoteFilterPopup.show();
       QuoteFilterPopup.setUsingCustomLength(false);
     }
-  }
 
-  let filteredQuotes = quotes;
-  if (
-    !QuoteFilterPopup.usingCustomLength &&
-    quoteLengthFilterValue.length === 1
-  ) {
     filteredQuotes = quotes.filter(
       (quote) =>
-        quote.length >= QuoteFilterPopup.minFilterLength &&
-        quote.length <= QuoteFilterPopup.maxFilterLength
+        (quote.length >= QuoteFilterPopup.minFilterLength &&
+          quote.length <= QuoteFilterPopup.maxFilterLength) ||
+        quoteLengthFilter.has(quote.group)
     );
   } else {
-    const quoteLengthFilter = new Set(
-      quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10))
-    );
+    QuoteFilterPopup.setUsingCustomLength(true);
     filteredQuotes = quotes.filter((quote) =>
       quoteLengthFilter.has(quote.group)
     );
