@@ -243,7 +243,7 @@ export async function addResult(
     Logger.warning("Object hash check is disabled, skipping hash check");
   }
 
-  if (new Set(completedEvent.funbox).size !== completedEvent.funbox.length) {
+  if (completedEvent.funbox.length !== new Set(completedEvent.funbox).size) {
     throw new MonkeyError(400, "Duplicate funboxes");
   }
 
