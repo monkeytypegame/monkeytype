@@ -4,6 +4,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as QuoteSubmitPopup from "./quote-submit";
 import * as QuoteApprovePopup from "./quote-approve";
+import * as QuoteFilterPopup from "./quote-filter";
 import * as QuoteReportModal from "./quote-report";
 import {
   buildSearchService,
@@ -52,12 +53,25 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
     return quotes;
   }
 
-  const quoteLengthFilter = new Set(
-    quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10))
-  );
-  const filteredQuotes = quotes.filter((quote) =>
-    quoteLengthFilter.has(quote.group)
-  );
+  let filterLength = QuoteFilterPopup.filterLength;
+
+  if (quoteLengthFilterValue.includes("4")) {
+    QuoteFilterPopup.show();
+  } else {
+    filterLength = 0;
+  }
+
+  let filteredQuotes = quotes;
+  if (filterLength > 0) {
+    filteredQuotes = quotes.filter((quote) => quote.length <= filterLength);
+  } else {
+    const quoteLengthFilter = new Set(
+      quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10))
+    );
+    filteredQuotes = quotes.filter((quote) =>
+      quoteLengthFilter.has(quote.group)
+    );
+  }
 
   return filteredQuotes;
 }
@@ -280,6 +294,10 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
           {
             text: "thicc",
             value: "3",
+          },
+          {
+            text: "custom",
+            value: "4",
           },
         ],
       });
