@@ -691,7 +691,11 @@ async function handleChar(
     !TestUI.lineTransition
     // TestInput.input.current.length > 1
   ) {
-    if (Config.mode === "zen" || Config.indicateTypos === "replace") {
+    if (
+      Config.mode === "zen" ||
+      Config.indicateTypos === "replace" ||
+      Config.indicateTypos === "both"
+    ) {
       if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
