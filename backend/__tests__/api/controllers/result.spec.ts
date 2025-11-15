@@ -489,15 +489,14 @@ describe("result controller test", () => {
     it("should apply defaults on missing data", async () => {
       //GIVEN
       const result = givenDbResult(uid);
-      const partialResult = omit(
-        result,
+      const partialResult = omit(result, [
         "difficulty",
         "language",
         "funbox",
         "lazyMode",
         "punctuation",
-        "numbers"
-      );
+        "numbers",
+      ]);
 
       const resultIdString = result._id.toHexString();
       const tagIds = [

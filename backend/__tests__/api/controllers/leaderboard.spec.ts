@@ -1451,11 +1451,9 @@ async function weeklyLeaderboardEnabled(enabled: boolean): Promise<void> {
     mockConfig
   );
 }
-
 async function enableConnectionsFeature(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    connections: { enabled: { enabled } },
-  });
+  const mockConfig = await configuration;
+  mockConfig.connections = { ...mockConfig.connections, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig

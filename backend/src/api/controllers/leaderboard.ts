@@ -68,7 +68,7 @@ export async function getLeaderboard(
     language,
     friendsOnlyUid
   );
-  const normalizedLeaderboard = leaderboard.map((it) => omit(it, "_id"));
+  const normalizedLeaderboard = leaderboard.map((it) => omit(it, ["_id"]));
 
   return new MonkeyResponse("Leaderboard retrieved", {
     count,
@@ -98,7 +98,10 @@ export async function getRankFromLeaderboard(
     );
   }
 
-  return new MonkeyResponse("Rank retrieved", _.omit(data, "_id"));
+  return new MonkeyResponse(
+    "Rank retrieved",
+    omit(data as LeaderboardsDAL.DBLeaderboardEntry, ["_id"])
+  );
 }
 
 function getDailyLeaderboardWithError(

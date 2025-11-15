@@ -4,6 +4,7 @@ import IORedis, { Redis } from "ioredis";
 import Logger from "../utils/logger";
 import { isDevEnvironment } from "../utils/misc";
 import { getErrorMessage } from "../utils/error";
+import { kebabToCamelCase } from "@monkeytype/util/strings";
 
 // Define Redis connection with custom methods for type safety
 export type RedisConnectionWithCustomMethods = Redis & {
@@ -60,14 +61,10 @@ const REDIS_SCRIPTS_DIRECTORY_PATH = join(__dirname, "../../redis-scripts");
 function loadScripts(client: IORedis.Redis): void {
   const scriptFiles = fs.readdirSync(REDIS_SCRIPTS_DIRECTORY_PATH);
 
-  const toCamelCase = (kebab: string): string => {
-    return kebab.replace(/-([a-z])/g, (_, char: string) => char.toUpperCase());
-  };
-
   scriptFiles.forEach((scriptFile) => {
     const scriptPath = join(REDIS_SCRIPTS_DIRECTORY_PATH, scriptFile);
     const scriptSource = fs.readFileSync(scriptPath, "utf-8");
-    const scriptName = toCamelCase(scriptFile.split(".")[0] as string);
+    const scriptName = kebabToCamelCase(scriptFile.split(".")[0] as string);
 
     client.defineCommand(scriptName, {
       lua: scriptSource,

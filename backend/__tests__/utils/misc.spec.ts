@@ -408,26 +408,26 @@ describe("Misc Utils", () => {
   describe("omit()", () => {
     it("should omit a single key", () => {
       const input = { a: 1, b: 2, c: 3 };
-      const result = Misc.omit(input, "b");
+      const result = Misc.omit(input, ["b"]);
       expect(result).toEqual({ a: 1, c: 3 });
     });
 
     it("should omit multiple keys", () => {
       const input = { a: 1, b: 2, c: 3, d: 4 };
-      const result = Misc.omit(input, "a", "d");
+      const result = Misc.omit(input, ["a", "d"]);
       expect(result).toEqual({ b: 2, c: 3 });
     });
 
     it("should return the same object if no keys are omitted", () => {
       const input = { x: 1, y: 2 };
-      const result = Misc.omit(input);
+      const result = Misc.omit(input, []);
       expect(result).toEqual({ x: 1, y: 2 });
     });
 
     it("should not mutate the original object", () => {
       const input = { foo: "bar", baz: "qux" };
       const copy = { ...input };
-      Misc.omit(input, "baz");
+      Misc.omit(input, ["baz"]);
       expect(input).toEqual(copy);
     });
 
@@ -445,7 +445,7 @@ describe("Misc Utils", () => {
         obj: { x: 1 },
         arr: [1, 2, 3],
       };
-      const result = Misc.omit(input, "bool", "arr");
+      const result = Misc.omit(input, ["bool", "arr"]);
       expect(result).toEqual({
         str: "hello",
         num: 123,

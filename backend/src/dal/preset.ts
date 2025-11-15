@@ -61,7 +61,7 @@ export async function editPreset(
   uid: string,
   preset: EditPresetRequest
 ): Promise<void> {
-  const update: Partial<Omit<Preset, "_id">> = omit(preset, "_id");
+  const update: Partial<Omit<Preset, "_id">> = omit(preset, ["_id"]);
   if (
     preset.config === undefined ||
     preset.config === null ||

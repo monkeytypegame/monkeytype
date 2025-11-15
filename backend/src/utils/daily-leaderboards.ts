@@ -186,7 +186,7 @@ export class DailyLeaderboard {
     );
 
     if (!premiumFeaturesEnabled) {
-      resultsWithRanks = resultsWithRanks.map((it) => omit(it, "isPremium"));
+      resultsWithRanks = resultsWithRanks.map((it) => omit(it, ["isPremium"]));
     }
 
     return { entries: resultsWithRanks, count: parseInt(count), minWpm };

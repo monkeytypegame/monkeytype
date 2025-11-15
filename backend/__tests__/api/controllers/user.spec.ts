@@ -4042,14 +4042,14 @@ async function enableReporting(enabled: boolean): Promise<void> {
 }
 
 async function enableConnectionsEndpoints(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    connections: { enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.connections = { ...mockConfig.connections, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
   );
 }
+
 async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
   await enableConnectionsEndpoints(false);
   const { body } = await call.expect(503);

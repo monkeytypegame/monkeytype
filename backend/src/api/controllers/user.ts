@@ -517,8 +517,7 @@ type RelevantUserInfo = Omit<
 >;
 
 function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
-  return omit(
-    user,
+  return omit(user, [
     "bananas",
     "lbPersonalBests",
     "inbox",
@@ -529,8 +528,8 @@ function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
     "note",
     "ips",
     "testActivity",
-    "suspicious"
-  ) as RelevantUserInfo;
+    "suspicious",
+  ]) as RelevantUserInfo;
 }
 
 export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {

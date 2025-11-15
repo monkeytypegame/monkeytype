@@ -17,7 +17,7 @@ import { ApeKey } from "@monkeytype/schemas/ape-keys";
 import { MonkeyRequest } from "../types";
 
 function cleanApeKey(apeKey: ApeKeysDAL.DBApeKey): ApeKey {
-  return omit(apeKey, "hash", "_id", "uid", "useCount") as ApeKey;
+  return omit(apeKey, ["hash", "_id", "uid", "useCount"]) as ApeKey;
 }
 
 export async function getApeKeys(

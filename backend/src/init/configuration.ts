@@ -14,6 +14,7 @@ import { join } from "path";
 import { existsSync, readFileSync } from "fs";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { z } from "zod";
+import { intersect } from "@monkeytype/util/arrays";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 const SERVER_CONFIG_FILE_PATH = join(
@@ -30,9 +31,7 @@ function mergeConfigurations(
   }
 
   function merge(base: object, source: object): void {
-    const baseKeys = Object.keys(base);
-    const sourceKeys = Object.keys(source);
-    const commonKeys = baseKeys.filter((key) => sourceKeys.includes(key));
+    const commonKeys = intersect(Object.keys(base), Object.keys(source), true);
 
     commonKeys.forEach((key) => {
       const baseValue = base[key] as object;
@@ -81,10 +80,9 @@ export async function getLiveConfiguration(): Promise<Configuration> {
     if (liveConfiguration) {
       const baseConfiguration = structuredClone(BASE_CONFIGURATION);
 
-      const liveConfigurationWithoutId = omit(
-        liveConfiguration,
-        "_id"
-      ) as Configuration;
+      const liveConfigurationWithoutId = omit(liveConfiguration, [
+        "_id",
+      ]) as Configuration;
       mergeConfigurations(baseConfiguration, liveConfigurationWithoutId);
 
       await pushConfiguration(baseConfiguration);

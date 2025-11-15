@@ -80,7 +80,7 @@ export async function get(
         .toArray();
     }
     if (!premiumFeaturesEnabled) {
-      leaderboard = leaderboard.map((it) => omit(it, "isPremium"));
+      leaderboard = leaderboard.map((it) => omit(it, ["isPremium"]));
     }
 
     return leaderboard;
@@ -134,7 +134,7 @@ export async function getRank(
   language: string,
   uid: string,
   friendsOnly: boolean = false
-): Promise<LeaderboardEntry | null | false> {
+): Promise<DBLeaderboardEntry | null | false> {
   try {
     if (!friendsOnly) {
       const entry = await getCollection({ language, mode, mode2 }).findOne({

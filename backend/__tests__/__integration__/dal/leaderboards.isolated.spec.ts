@@ -60,7 +60,8 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => omit(it, "_id"));
+
+      const lb = results.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: rank1 }),
@@ -87,8 +88,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-
-      const lb = results.map((it) => omit(it, "_id"));
+      const lb = results.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 1, user: rank1 }),
@@ -202,7 +202,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => omit(it, "_id"));
+      const lb = result.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noBadge }),
@@ -241,7 +241,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => omit(it, "_id"));
+      const lb = result.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noPremium }),
@@ -299,7 +299,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => omit(it, "_id"));
+      const lb = results.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 3, user: rank3 }),
@@ -338,7 +338,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => omit(it, "_id"));
+      const lb = results.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 1, user: rank1, friendsRank: 1 }),
@@ -377,7 +377,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => omit(it, "_id"));
+      const lb = results.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 4, user: rank4, friendsRank: 3 }),

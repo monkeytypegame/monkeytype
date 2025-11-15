@@ -242,7 +242,7 @@ export type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
 
 export function omit<T extends object, K extends keyof T>(
   obj: T,
-  ...keys: K[]
+  keys: K[]
 ): Omit<T, K> {
   const result = { ...obj };
   for (const key of keys) {
