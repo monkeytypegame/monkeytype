@@ -27,7 +27,6 @@ const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
 const pageSize = 100;
 let currentPageNumber = 1;
-let usingCustomLength = true;
 
 function getSearchService<T>(
   language: string,
@@ -50,8 +49,10 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   const quoteLengthFilterValue = $(
     "#quoteSearchModal .quoteLengthFilter"
   ).val() as string[];
+
+  let usingCustomLength = QuoteFilterPopup.usingCustomLength;
   if (quoteLengthFilterValue.length === 0) {
-    usingCustomLength = true;
+    QuoteFilterPopup.setUsingCustomLength(true);
     return quotes;
   }
 
@@ -65,7 +66,6 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   } else {
     minFilterLength = 0;
     maxFilterLength = 0;
-    usingCustomLength = true;
   }
 
   let filteredQuotes = quotes;
@@ -470,7 +470,6 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     const searchText = (
       document.getElementById("searchBox") as HTMLInputElement
     ).value;
-    usingCustomLength = false;
     void updateResults(searchText);
   });
 }

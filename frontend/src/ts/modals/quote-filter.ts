@@ -2,6 +2,7 @@ import AnimatedModal from "../utils/animated-modal";
 
 export let minFilterLength: number = 0;
 export let maxFilterLength: number = 0;
+export let usingCustomLength = true;
 
 function handleFilterLength(
   modalEl: HTMLElement,
@@ -14,6 +15,10 @@ function handleFilterLength(
     ".refreshQuotes"
   ) as HTMLButtonElement;
   refreshButton.click();
+}
+
+export function setUsingCustomLength(value: boolean): void {
+  usingCustomLength = value;
 }
 
 export function show(): void {
@@ -42,7 +47,12 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
 }
 
+async function cleanup(): Promise<void> {
+  setUsingCustomLength(false);
+}
+
 const modal = new AnimatedModal({
   dialogId: "quoteFilterModal",
   setup,
+  cleanup,
 });
