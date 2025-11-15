@@ -2,17 +2,12 @@ import { SimpleModal } from "../utils/simple-modal";
 
 export let minFilterLength: number = 0;
 export let maxFilterLength: number = 0;
-export let usingCustomLength = true;
 
 function refresh(): void {
   let refreshButton = document.querySelector(
     ".refreshQuotes"
   ) as HTMLButtonElement;
   refreshButton.click();
-}
-
-export function setUsingCustomLength(value: boolean): void {
-  usingCustomLength = value;
 }
 
 export const quoteFilterModal = new SimpleModal({

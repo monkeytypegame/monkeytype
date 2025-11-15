@@ -27,6 +27,7 @@ const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
 const pageSize = 100;
 let currentPageNumber = 1;
+let usingCustomLength = true;
 
 function getSearchService<T>(
   language: string,
@@ -51,7 +52,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   ).val() as string[];
 
   if (quoteLengthFilterValue.length === 0) {
-    QuoteFilterPopup.setUsingCustomLength(true);
+    usingCustomLength = true;
     return quotes;
   }
 
@@ -61,9 +62,9 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   );
 
   if (quoteLengthFilterValue.includes("4")) {
-    if (QuoteFilterPopup.usingCustomLength) {
+    if (usingCustomLength) {
       QuoteFilterPopup.quoteFilterModal.show(undefined, {});
-      QuoteFilterPopup.setUsingCustomLength(false);
+      usingCustomLength = false;
     }
 
     filteredQuotes = quotes.filter(
@@ -73,7 +74,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
         quoteLengthFilter.has(quote.group)
     );
   } else {
-    QuoteFilterPopup.setUsingCustomLength(true);
+    usingCustomLength = true;
     filteredQuotes = quotes.filter((quote) =>
       quoteLengthFilter.has(quote.group)
     );
