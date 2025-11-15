@@ -42,6 +42,7 @@ import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
+import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 
 let settingsInitialized = false;
 
@@ -857,6 +858,7 @@ export async function update(
   await CustomBackgroundPicker.updateUI();
   await updateFilterSectionVisibility();
   await CustomFontPicker.updateUI();
+  FpsLimitSection.update();
 
   const setInputValue = (
     key: ConfigKey,

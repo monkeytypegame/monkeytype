@@ -1,10 +1,10 @@
 import { CaretStyle } from "@monkeytype/schemas/configs";
 import Config from "../config";
-import * as SlowTimer from "../states/slow-timer";
 import * as TestWords from "../test/test-words";
 import { getTotalInlineMargin } from "./misc";
 import { isWordRightToLeft } from "./strings";
 import { requestDebouncedAnimationFrame } from "./debounced-animation-frame";
+import { animate, EasingParam, JSAnimation } from "animejs";
 
 const wordsCache = document.querySelector<HTMLElement>("#words") as HTMLElement;
 const wordsWrapperCache = document.querySelector<HTMLElement>(
@@ -37,6 +37,10 @@ export class Caret {
   private readyToResetMarginLeft: boolean = false;
   private isMainCaret: boolean = false;
   private cumulativeTapeMarginCorrection: number = 0;
+
+  private posAnimation: JSAnimation | null = null;
+  private marginTopAnimation: JSAnimation | null = null;
+  private marginLeftAnimation: JSAnimation | null = null;
 
   constructor(element: HTMLElement, style: CaretStyle) {
     this.id = element.id;
@@ -102,7 +106,7 @@ export class Caret {
     top: number;
     width?: number;
   }): void {
-    $(this.element).stop("pos", true, false);
+    this.posAnimation?.cancel();
     this.element.style.left = `${options.left}px`;
     this.element.style.top = `${options.top}px`;
     if (options.width !== undefined) {
@@ -111,7 +115,7 @@ export class Caret {
   }
 
   public startBlinking(): void {
-    if (Config.smoothCaret !== "off" && !SlowTimer.get()) {
+    if (Config.smoothCaret !== "off") {
       this.element.style.animationName = "caretFlashSmooth";
     } else {
       this.element.style.animationName = "caretFlashHard";
@@ -132,7 +136,9 @@ export class Caret {
   }
 
   public stopAllAnimations(): void {
-    $(this.element).stop(true, false);
+    this.posAnimation?.cancel();
+    this.marginTopAnimation?.cancel();
+    this.marginLeftAnimation?.cancel();
   }
 
   public clearMargins(): void {
@@ -152,6 +158,7 @@ export class Caret {
   public handleTapeScroll(options: {
     newValue: number;
     duration: number;
+    ease: EasingParam;
   }): void {
     if (this.isMainCaret && lockedMainCaretInTape) return;
     this.readyToResetMarginLeft = false;
@@ -170,30 +177,20 @@ export class Caret {
       options.newValue - this.cumulativeTapeMarginCorrection;
 
     if (options.duration === 0) {
-      $(this.element).stop("marginLeft", true, false).css({
-        marginLeft: newMarginLeft,
-      });
+      this.marginLeftAnimation?.cancel();
+      this.element.style.marginLeft = `${newMarginLeft}px`;
       this.readyToResetMarginLeft = true;
       return;
     }
 
-    $(this.element)
-      .stop("marginLeft", true, false)
-      .animate(
-        {
-          marginLeft: newMarginLeft,
-        },
-        {
-          // this NEEDS to be the same duration as the
-          // line scroll otherwise it will look weird
-          duration: options.duration,
-          queue: "marginLeft",
-          complete: () => {
-            this.readyToResetMarginLeft = true;
-          },
-        }
-      );
-    $(this.element).dequeue("marginLeft");
+    this.marginLeftAnimation = animate(this.element, {
+      marginLeft: newMarginLeft,
+      duration: options.duration,
+      ease: options.ease,
+      onComplete: () => {
+        this.readyToResetMarginLeft = true;
+      },
+    });
   }
 
   public handleLineJump(options: {
@@ -212,37 +209,26 @@ export class Caret {
     this.readyToResetMarginTop = false;
 
     if (options.duration === 0) {
-      $(this.element).stop("marginTop", true, false).css({
-        marginTop: options.newMarginTop,
-      });
+      this.marginTopAnimation?.cancel();
+      this.element.style.marginTop = `${options.newMarginTop}px`;
       this.readyToResetMarginTop = true;
       return;
     }
 
-    $(this.element)
-      .stop("marginTop", true, false)
-      .animate(
-        {
-          marginTop: options.newMarginTop,
-        },
-        {
-          // this NEEDS to be the same duration as the
-          // line scroll otherwise it will look weird
-          duration: options.duration,
-          queue: "marginTop",
-          complete: () => {
-            this.readyToResetMarginTop = true;
-          },
-        }
-      );
-    $(this.element).dequeue("marginTop");
+    this.marginTopAnimation = animate(this.element, {
+      marginTop: options.newMarginTop,
+      duration: options.duration,
+      onComplete: () => {
+        this.readyToResetMarginTop = true;
+      },
+    });
   }
 
   public animatePosition(options: {
     left: number;
     top: number;
     duration?: number;
-    easing?: string;
+    easing?: EasingParam;
     width?: number;
   }): void {
     const smoothCaretSpeed =
@@ -256,9 +242,7 @@ export class Caret {
         ? 85
         : 0;
 
-    const finalDuration = SlowTimer.get()
-      ? 0
-      : options.duration ?? smoothCaretSpeed;
+    const finalDuration = options.duration ?? smoothCaretSpeed;
 
     const animation: Record<string, number> = {
       left: options.left,
@@ -269,14 +253,11 @@ export class Caret {
       animation["width"] = options.width;
     }
 
-    $(this.element)
-      .stop("pos", true, false)
-      .animate(animation, {
-        duration: finalDuration,
-        easing: options.easing ?? "swing",
-        queue: "pos",
-      });
-    $(this.element).dequeue("pos");
+    this.posAnimation = animate(this.element, {
+      ...animation,
+      duration: finalDuration,
+      ease: options.easing ?? "inOut(1.25)",
+    });
   }
 
   public goTo(options: {
