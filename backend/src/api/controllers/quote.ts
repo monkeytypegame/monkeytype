@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import { getPartialUser, updateQuoteRatings } from "../../dal/user";
 import * as ReportDAL from "../../dal/report";
@@ -126,7 +125,10 @@ export async function submitRating(
     shouldUpdateRating
   );
 
-  _.setWith(userQuoteRatings, `[${language}][${quoteId}]`, rating, Object);
+  if (!userQuoteRatings[language]) {
+    userQuoteRatings[language] = {};
+  }
+  userQuoteRatings[language][quoteId] = rating;
 
   await updateQuoteRatings(uid, userQuoteRatings);
 

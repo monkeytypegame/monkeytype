@@ -116,9 +116,6 @@ importers:
       ioredis:
         specifier: 4.28.5
         version: 4.28.5
-      lodash:
-        specifier: 4.17.21
-        version: 4.17.21
       lru-cache:
         specifier: 7.10.1
         version: 7.10.1
@@ -192,9 +189,6 @@ importers:
       '@types/ioredis':
         specifier: 4.28.10
         version: 4.28.10
-      '@types/lodash':
-        specifier: 4.14.178
-        version: 4.14.178
       '@types/mjml':
         specifier: 4.7.4
         version: 4.7.4
@@ -3218,9 +3212,6 @@ packages:
 
   '@types/jsonwebtoken@9.0.6':
     resolution: {integrity: sha512-/5hndP5dCjloafCXns6SZyESp3Ldq7YjH3zwzwczYnjxIT0Fqzk5ROSYVGfFyczIue7IUEj8hkvLbPoLQ18vQw==}
-
-  '@types/lodash@4.14.178':
-    resolution: {integrity: sha512-0d5Wd09ItQWH1qFbEyQ7oTQ3GZrMfth5JkbN3EvTKLXcHLRDSXeLnlvlOn0wvxVIwK5o2M8JzP/OWz7T3NRsbw==}
 
   '@types/long@4.0.2':
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
@@ -12700,8 +12691,6 @@ snapshots:
   '@types/jsonwebtoken@9.0.6':
     dependencies:
       '@types/node': 24.9.1
-
-  '@types/lodash@4.14.178': {}
 
   '@types/long@4.0.2': {}
 

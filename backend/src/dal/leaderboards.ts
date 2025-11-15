@@ -2,7 +2,7 @@ import * as db from "../init/db";
 import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
-import { isDevEnvironment } from "../utils/misc";
+import { isDevEnvironment, omit } from "../utils/misc";
 import {
   getCachedConfiguration,
   getLiveConfiguration,
@@ -11,7 +11,6 @@ import {
 import { addLog } from "./logs";
 import { Collection, Document, ObjectId } from "mongodb";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
-import { omit } from "lodash";
 import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";
 import { aggregateWithAcceptedConnections } from "./connections";
@@ -81,7 +80,7 @@ export async function get(
         .toArray();
     }
     if (!premiumFeaturesEnabled) {
-      leaderboard = leaderboard.map((it) => omit(it, "isPremium"));
+      leaderboard = leaderboard.map((it) => omit(it, ["isPremium"]));
     }
 
     return leaderboard;
@@ -135,7 +134,7 @@ export async function getRank(
   language: string,
   uid: string,
   friendsOnly: boolean = false
-): Promise<LeaderboardEntry | null | false> {
+): Promise<DBLeaderboardEntry | null | false> {
   try {
     if (!friendsOnly) {
       const entry = await getCollection({ language, mode, mode2 }).findOne({

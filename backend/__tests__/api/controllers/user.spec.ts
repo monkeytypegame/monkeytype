@@ -31,7 +31,6 @@ import { ObjectId } from "mongodb";
 import { PersonalBest } from "@monkeytype/schemas/shared";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { randomUUID } from "node:crypto";
-import _ from "lodash";
 import { MonkeyMail, UserStreak } from "@monkeytype/schemas/users";
 import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
@@ -3413,7 +3412,7 @@ describe("user controller test", () => {
       await enableInbox(true);
     });
 
-    it("shold get inbox", async () => {
+    it("should get inbox", async () => {
       //GIVEN
       const mailOne: MonkeyMail = {
         id: randomUUID(),
@@ -3965,31 +3964,18 @@ function fillYearWithDay(days: number): number[] {
   return result;
 }
 
-async function enablePremiumFeatures(premium: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    users: { premium: { enabled: premium } },
-  });
+async function enablePremiumFeatures(enabled: boolean): Promise<void> {
+  const mockConfig = await configuration;
+  mockConfig.users.premium = { ...mockConfig.users.premium, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
   );
 }
 
-// eslint-disable-next-line no-unused-vars
-async function enableAdminFeatures(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    admin: { endpointsEnabled: enabled },
-  });
-
-  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
-  );
-}
-
-async function enableSignup(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    users: { signUp: enabled },
-  });
+async function enableSignup(signUp: boolean): Promise<void> {
+  const mockConfig = await configuration;
+  mockConfig.users = { ...mockConfig.users, signUp };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
@@ -3997,9 +3983,11 @@ async function enableSignup(enabled: boolean): Promise<void> {
 }
 
 async function enableDiscordIntegration(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    users: { discordIntegration: { enabled } },
-  });
+  const mockConfig = await configuration;
+  mockConfig.users.discordIntegration = {
+    ...mockConfig.users.discordIntegration,
+    enabled,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
@@ -4007,19 +3995,20 @@ async function enableDiscordIntegration(enabled: boolean): Promise<void> {
 }
 
 async function enableResultFilterPresets(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    results: { filterPresets: { enabled } },
-  });
+  const mockConfig = await configuration;
+  mockConfig.results.filterPresets = {
+    ...mockConfig.results.filterPresets,
+    enabled,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
   );
 }
 
-async function acceptApeKeys(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    apeKeys: { acceptKeys: enabled },
-  });
+async function acceptApeKeys(acceptKeys: boolean): Promise<void> {
+  const mockConfig = await configuration;
+  mockConfig.apeKeys = { ...mockConfig.apeKeys, acceptKeys };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
@@ -4027,18 +4016,16 @@ async function acceptApeKeys(enabled: boolean): Promise<void> {
 }
 
 async function enableProfiles(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    users: { profiles: { enabled } },
-  });
+  const mockConfig = await configuration;
+  mockConfig.users.profiles = { ...mockConfig.users.profiles, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
   );
 }
 async function enableInbox(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    users: { inbox: { enabled } },
-  });
+  const mockConfig = await configuration;
+  mockConfig.users.inbox = { ...mockConfig.users.inbox, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
@@ -4046,9 +4033,8 @@ async function enableInbox(enabled: boolean): Promise<void> {
 }
 
 async function enableReporting(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    quotes: { reporting: { enabled } },
-  });
+  const mockConfig = await configuration;
+  mockConfig.quotes.reporting = { ...mockConfig.quotes.reporting, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
@@ -4056,14 +4042,14 @@ async function enableReporting(enabled: boolean): Promise<void> {
 }
 
 async function enableConnectionsEndpoints(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    connections: { enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.connections = { ...mockConfig.connections, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
   );
 }
+
 async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
   await enableConnectionsEndpoints(false);
   const { body } = await call.expect(503);

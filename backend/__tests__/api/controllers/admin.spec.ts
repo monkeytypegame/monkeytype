@@ -8,7 +8,7 @@ import * as ReportDal from "../../../src/dal/report";
 import * as LogsDal from "../../../src/dal/logs";
 import GeorgeQueue from "../../../src/queues/george-queue";
 import * as AuthUtil from "../../../src/utils/auth";
-import _ from "lodash";
+
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 
 const { mockApp, uid } = setup();
@@ -570,9 +570,8 @@ describe("AdminController", () => {
   }
 });
 async function enableAdminEndpoints(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    admin: { endpointsEnabled: enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.admin = { ...mockConfig.admin, endpointsEnabled: enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
