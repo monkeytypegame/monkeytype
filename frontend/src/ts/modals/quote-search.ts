@@ -51,6 +51,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
     "#quoteSearchModal .quoteLengthFilter"
   ).val() as string[];
   if (quoteLengthFilterValue.length === 0) {
+    usingCustomLength = true;
     return quotes;
   }
 
@@ -354,7 +355,6 @@ const searchForQuotes = debounce(250, (): void => {
   const searchText = (document.getElementById("searchBox") as HTMLInputElement)
     .value;
   currentPageNumber = 1;
-  usingCustomLength = true;
   void updateResults(searchText);
 });
 
