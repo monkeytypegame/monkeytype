@@ -57,13 +57,17 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   let minFilterLength = QuoteFilterPopup.minFilterLength;
   let maxFilterLength = QuoteFilterPopup.maxFilterLength;
 
-  if (quoteLengthFilterValue.includes("4")) {
+  if (
+    quoteLengthFilterValue[0] === "4" &&
+    quoteLengthFilterValue.length === 1
+  ) {
     if (usingCustomLength) {
       QuoteFilterPopup.show();
     }
   } else {
     minFilterLength = 0;
     maxFilterLength = 0;
+    usingCustomLength = false;
   }
 
   let filteredQuotes = quotes;
