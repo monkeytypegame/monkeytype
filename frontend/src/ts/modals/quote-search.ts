@@ -27,7 +27,7 @@ const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
 const pageSize = 100;
 let currentPageNumber = 1;
-let usingCustomLength = false;
+let usingCustomLength = true;
 
 function getSearchService<T>(
   language: string,
@@ -58,21 +58,18 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   let minFilterLength = QuoteFilterPopup.minFilterLength;
   let maxFilterLength = QuoteFilterPopup.maxFilterLength;
 
-  if (
-    quoteLengthFilterValue[0] === "4" &&
-    quoteLengthFilterValue.length === 1
-  ) {
+  if (quoteLengthFilterValue.includes("4")) {
     if (usingCustomLength) {
       QuoteFilterPopup.show();
     }
   } else {
     minFilterLength = 0;
     maxFilterLength = 0;
-    usingCustomLength = false;
+    usingCustomLength = true;
   }
 
   let filteredQuotes = quotes;
-  if (minFilterLength > 0) {
+  if (minFilterLength > 0 && quoteLengthFilterValue.length === 1) {
     filteredQuotes = quotes.filter(
       (quote) =>
         quote.length >= minFilterLength && quote.length <= maxFilterLength
