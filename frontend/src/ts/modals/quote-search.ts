@@ -54,19 +54,24 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
     return quotes;
   }
 
-  let filterLength = QuoteFilterPopup.filterLength;
+  let minFilterLength = QuoteFilterPopup.minFilterLength;
+  let maxFilterLength = QuoteFilterPopup.maxFilterLength;
 
   if (quoteLengthFilterValue.includes("4")) {
     if (usingCustomLength) {
       QuoteFilterPopup.show();
     }
   } else {
-    filterLength = 0;
+    minFilterLength = 0;
+    maxFilterLength = 0;
   }
 
   let filteredQuotes = quotes;
-  if (filterLength > 0) {
-    filteredQuotes = quotes.filter((quote) => quote.length <= filterLength);
+  if (minFilterLength > 0) {
+    filteredQuotes = quotes.filter(
+      (quote) =>
+        quote.length >= minFilterLength && quote.length <= maxFilterLength
+    );
   } else {
     const quoteLengthFilter = new Set(
       quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10))

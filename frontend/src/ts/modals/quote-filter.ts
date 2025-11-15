@@ -1,10 +1,7 @@
 import AnimatedModal from "../utils/animated-modal";
 
-export let filterLength = 0;
-
-function handleLengthFilter(customFilterLength: number): void {
-  filterLength = customFilterLength;
-}
+export let minFilterLength: number = 0;
+export let maxFilterLength: number = 0;
 
 export function show(): void {
   void modal.show();
@@ -19,9 +16,10 @@ function hide(clearModalChain: boolean): void {
 async function setup(modalEl: HTMLElement): Promise<void> {
   let submitButton = modalEl.querySelector("button");
   submitButton?.addEventListener("click", () => {
-    let inputEl = modalEl.querySelector(".filterLength") as HTMLInputElement;
-    let customFilterLength = +inputEl.value;
-    handleLengthFilter(customFilterLength);
+    let minEl = modalEl.querySelector(".minFilterLength") as HTMLInputElement;
+    let maxEl = modalEl.querySelector(".maxFilterLength") as HTMLInputElement;
+    minFilterLength = +minEl?.value;
+    maxFilterLength = +maxEl?.value;
     hide(true);
     let refreshButton = document.querySelector(
       ".refreshQuotes"
