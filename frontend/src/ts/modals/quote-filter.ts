@@ -14,17 +14,15 @@ export function show(): void {
   void modal.show();
 }
 
-function hide(clearModalChain: boolean): void {
-  void modal.hide({
-    clearModalChain,
-  });
+function hide(): void {
+  void modal.hide();
 }
 
 async function setup(modalEl: HTMLElement): Promise<void> {
   let submitButton = modalEl.querySelector("button");
   submitButton?.addEventListener("click", () => {
     handleFilterLength(modalEl);
-    hide(true);
+    hide();
   });
 }
 
