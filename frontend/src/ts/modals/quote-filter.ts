@@ -24,7 +24,6 @@ export const quoteFilterModal = new SimpleModal({
     },
   ],
   buttonText: "save",
-  onlineOnly: true,
   execFn: async (_thisPopup, min, max) => {
     const minNum = parseInt(min, 10);
     const maxNum = parseInt(max, 10);
