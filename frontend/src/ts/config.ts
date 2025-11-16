@@ -27,6 +27,7 @@ import { ZodSchema } from "zod";
 import * as TestState from "./test/test-state";
 import { ConfigMetadataObject, configMetadata } from "./config-metadata";
 import { FontName } from "@monkeytype/schemas/fonts";
+import { stringifyConfigValue } from "./utils/strings";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -178,7 +179,11 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
       const set = genericSet(targetKey, targetValue, nosave);
       if (!set) {
         throw new Error(
-          `Failed to set config key "${targetKey}" with value "${targetValue}" for ${metadata.displayString} config override.`
+          `Failed to set config key "${stringifyConfigValue(
+            targetKey
+          )}" with value "${stringifyConfigValue(targetValue)}" for ${
+            metadata.displayString
+          } config override.`
         );
       }
     }
@@ -710,6 +715,13 @@ export function setKeymapStyle(
   nosave?: boolean
 ): boolean {
   return genericSet("keymapStyle", style, nosave);
+}
+
+export function setKeymapCustom(
+  keymapCustom: ConfigSchemas.KeymapCustom,
+  nosave?: boolean
+): boolean {
+  return genericSet("keymapCustom", keymapCustom, nosave);
 }
 
 export function setKeymapLayout(

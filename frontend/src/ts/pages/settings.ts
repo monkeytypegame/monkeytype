@@ -24,6 +24,7 @@ import {
   FunboxName,
   ConfigKeySchema,
   ConfigKey,
+  KeymapCustom,
 } from "@monkeytype/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
@@ -40,8 +41,10 @@ import { z } from "zod";
 import { handleConfigInput } from "../elements/input-validation";
 import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
+import * as CustomKeymapPicker from "../elements/settings/custom-keymap-picker";
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
+import { keymapToString, stringToKeymap } from "../utils/custom-keymap";
 
 let settingsInitialized = false;
 
@@ -117,6 +120,9 @@ async function initGroups(): Promise<void> {
           $(".pageSettings .section[data-config-name='keymapSize']").addClass(
             "hidden"
           );
+          $(".pageSettings .section[data-config-name='keymapCustom']").addClass(
+            "hidden"
+          );
         } else {
           $(
             ".pageSettings .section[data-config-name='keymapStyle']"
@@ -133,6 +139,18 @@ async function initGroups(): Promise<void> {
           $(
             ".pageSettings .section[data-config-name='keymapSize']"
           ).removeClass("hidden");
+          $(
+            ".pageSettings .section[data-config-name='keymapSize']"
+          ).removeClass("hidden");
+          if (Config.keymapStyle === "custom") {
+            $(
+              ".pageSettings .section[data-config-name='keymapCustom']"
+            ).removeClass("hidden");
+          } else {
+            $(
+              ".pageSettings .section[data-config-name='keymapCustom']"
+            ).addClass("hidden");
+          }
         }
       },
     }
@@ -140,6 +158,11 @@ async function initGroups(): Promise<void> {
   groups["keymapStyle"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
+    "button"
+  );
+  groups["keymapCustom"] = new SettingsGroup(
+    "keymapCustom",
+    UpdateConfig.setKeymapCustom,
     "button"
   );
   groups["keymapLayout"] = new SettingsGroup(
@@ -857,6 +880,7 @@ export async function update(
   await CustomBackgroundPicker.updateUI();
   await updateFilterSectionVisibility();
   await CustomFontPicker.updateUI();
+  await CustomKeymapPicker.updateUI();
 
   const setInputValue = (
     key: ConfigKey,
@@ -916,6 +940,12 @@ export async function update(
     "fontSize",
     ".pageSettings .section[data-config-name='fontSize'] input",
     Config.fontSize
+  );
+
+  setInputValue(
+    "keymapCustom",
+    ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea",
+    keymapToString(Config.keymapCustom)
   );
 
   setInputValue(
@@ -1118,6 +1148,38 @@ $(".pageSettings .quickNav .links a").on("click", (e) => {
   }
 });
 
+$(
+  ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton button.save"
+).on("click", () => {
+  const stringValue = $(
+    ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+  ).val() as string;
+  const keymap: KeymapCustom = stringToKeymap(stringValue);
+  const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+).on("keypress", (e) => {
+  if (e.key === "Enter") {
+    const stringValue = $(
+      ".pageSettings .section[data-config-name='keymapCustom'] .textareaAndButton textarea"
+    ).val() as string;
+    const keymap: KeymapCustom = stringToKeymap(stringValue);
+    const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
+  }
+});
+
 let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
@@ -1209,11 +1271,15 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
   if (eventKey === "themeLight") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${eventValue}"]`
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${Strings.stringifyConfigValue(
+        eventValue
+      )}"]`
     ).attr("selected", "true");
   } else if (eventKey === "themeDark") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${eventValue}"]`
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${Strings.stringifyConfigValue(
+        eventValue
+      )}"]`
     ).attr("selected", "true");
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once

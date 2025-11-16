@@ -544,4 +544,39 @@
       position: relative;
     }
   }
+  &.custom {
+    grid-template-rows: 2rem 2rem 2rem 2rem;
+    .r1,
+    .r2,
+    .r3,
+    .r4,
+    .r5,
+    .r6 {
+      display: grid;
+      justify-content: start;
+      gap: 0;
+    }
+
+    .keyboard-grid {
+      display: grid;
+      grid-template-columns: repeat(var(--columns), var(--colSpan));
+      grid-template-rows: repeat(var(--rows), var(--rowSpan));
+    }
+
+    .keymapKey {
+      width: 100%;
+      height: auto;
+      margin: 0.125rem;
+    }
+
+    .keySpace {
+      font-size: 0.5rem;
+    }
+
+    .keymapSplitSpacer {
+      display: block;
+      width: 2rem;
+      height: 2rem;
+    }
+  }
 }
