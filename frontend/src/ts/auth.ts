@@ -30,6 +30,7 @@ import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import * as Sentry from "./sentry";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as AuthEvent from "./observables/auth-event";
+import { qs } from "./utils/dom";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -42,10 +43,12 @@ async function sendVerificationEmail(): Promise<void> {
     return;
   }
 
+  const sendVerificationEmailButton = qs(".sendVerificationEmail");
+
   Loader.show();
-  $(".sendVerificationEmail").prop("disabled", true);
+  sendVerificationEmailButton?.disable();
   const result = await Ape.users.verificationEmail();
-  $(".sendVerificationEmail").prop("disabled", false);
+  sendVerificationEmailButton?.enable();
   if (result.status !== 200) {
     Loader.hide();
     Notifications.add(
@@ -100,7 +103,7 @@ async function getDataAndInit(): Promise<boolean> {
   } catch (error) {
     console.error(error);
     LoginPage.enableInputs();
-    $("header nav .view-account").css("opacity", 1);
+    qs("header nav .view-account")?.setStyle({ opacity: "1" });
     if (error instanceof DB.SnapshotInitError) {
       if (error.responseCode === 429) {
         Notifications.add(
@@ -215,9 +218,9 @@ export async function signIn(email: string, password: string): Promise<void> {
     return;
   }
 
-  const rememberMe = $(".pageLogin .login #rememberMe input").prop(
-    "checked"
-  ) as boolean;
+  const rememberMe =
+    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.checked ??
+    false;
 
   const { error } = await tryCatch(
     signInWithEmailAndPassword(email, password, rememberMe)
@@ -249,9 +252,9 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  const rememberMe = $(".pageLogin .login #rememberMe input").prop(
-    "checked"
-  ) as boolean;
+  const rememberMe =
+    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.checked ??
+    false;
 
   const { error } = await tryCatch(signInWithPopup(provider, rememberMe));
 
@@ -406,24 +409,24 @@ async function signUp(): Promise<void> {
   }
 }
 
-$(".pageLogin .login form").on("submit", (e) => {
+qs(".pageLogin .login form")?.on("submit", (e) => {
   e.preventDefault();
-  const email =
-    ($(".pageLogin .login input")[0] as HTMLInputElement).value ?? "";
+  const email = qs<HTMLInputElement>(".pageLogin .login input")?.value ?? "";
   const password =
-    ($(".pageLogin .login input")[1] as HTMLInputElement).value ?? "";
+    qs<HTMLInputElement>(".pageLogin .login input[type='password']")?.value ??
+    "";
   void signIn(email, password);
 });
 
-$(".pageLogin .login button.signInWithGoogle").on("click", () => {
+qs(".pageLogin .login button.signInWithGoogle")?.on("click", () => {
   void signInWithGoogle();
 });
 
-$(".pageLogin .login button.signInWithGitHub").on("click", () => {
+qs(".pageLogin .login button.signInWithGitHub")?.on("click", () => {
   void signInWithGitHub();
 });
 
-$("nav .accountButtonAndMenu .menu button.signOut").on("click", () => {
+qs("nav .accountButtonAndMenu .menu button.signOut")?.on("click", () => {
   if (!isAuthAvailable()) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
@@ -433,19 +436,21 @@ $("nav .accountButtonAndMenu .menu button.signOut").on("click", () => {
   signOut();
 });
 
-$(".pageLogin .register form").on("submit", (e) => {
+qs(".pageLogin .register form")?.on("submit", (e) => {
   e.preventDefault();
   void signUp();
 });
 
-$(".pageAccountSettings").on("click", "#addGoogleAuth", () => {
+qs(".pageAccountSettings #addGoogleAuth")?.on("click", () => {
   void addGoogleAuth();
 });
-$(".pageAccountSettings").on("click", "#addGithubAuth", () => {
+
+qs(".pageAccountSettings #addGithubAuth")?.on("click", () => {
   void addGithubAuth();
 });
 
-$(".pageAccount").on("click", ".sendVerificationEmail", () => {
+//todo: this is broken because before it was a dynamic event handler
+qs(".pageAccount .sendVerificationEmail")?.on("click", () => {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
       duration: 2,

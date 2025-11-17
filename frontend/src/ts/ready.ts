@@ -18,8 +18,9 @@ onDocumentReady(async (): Promise<void> => {
 
   //this line goes back to pretty much the beginning of the project and im pretty sure its here
   //to make sure the initial theme application doesnt animate the background color
-  // $("body").css("transition", "background .25s, transform .05s");
-  qs("body", true).style.transition = "background .25s, transform .05s";
+  qs("body")?.setStyle({
+    transition: "background .25s, transform .05s",
+  });
   MerchBanner.showIfNotClosedBefore();
 
   for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
