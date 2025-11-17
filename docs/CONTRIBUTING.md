@@ -27,7 +27,8 @@ Below is a set of general guidelines for different types of changes.
 
 ### Pull Request Naming Guidelines
 
-We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for our pull request titles (and commit messages on the master branch). Please follow the guidelines below when naming pull requests.
+We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for our pull request titles (and commit messages on the master branch) and also include the author name at the end inside parenthesis.  Please follow the guidelines below when naming pull requests.
+
 
 For types, we use the following:
 
@@ -43,6 +44,12 @@ For types, we use the following:
 - `ci`: Changes to our CI configuration files and scripts (example scopes: GitHub Workflows)
 - `revert`: Reverts a previous commit
 - `chore`: Other changes that don't apply to any of the above
+
+#### Examples
+
+- `feat: add new feature (@github_username)`
+- `impr(quotes): add english quotes (@username)`
+- `fix(leaderboard): show user rank correctly (@user1, @user2, @user3)`
 
 ### Theme Guidelines
 

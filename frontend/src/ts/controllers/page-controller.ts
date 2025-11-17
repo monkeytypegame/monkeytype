@@ -54,11 +54,9 @@ function updateTitle(nextPage: { id: string; display?: string }): void {
 async function showSyncLoading({
   loadingOptions,
   totalDuration,
-  easingMethod,
 }: {
   loadingOptions: LoadingOptions[];
   totalDuration: number;
-  easingMethod: Misc.JQueryEasing;
 }): Promise<void> {
   PageLoading.page.element.removeClass("hidden").css("opacity", 0);
   await PageLoading.page.beforeShow({});
@@ -67,14 +65,10 @@ async function showSyncLoading({
   const fillOffset = 100 / fillDivider;
 
   //void here to run the loading promise as soon as possible
-  void Misc.promiseAnimation(
-    PageLoading.page.element,
-    {
-      opacity: "1",
-    },
-    totalDuration / 2,
-    easingMethod
-  );
+  void Misc.promiseAnimate(PageLoading.page.element[0] as HTMLElement, {
+    opacity: "1",
+    duration: totalDuration / 2,
+  });
 
   for (let i = 0; i < loadingOptions.length; i++) {
     const currentOffset = fillOffset * i;
@@ -102,14 +96,10 @@ async function showSyncLoading({
     }
   }
 
-  await Misc.promiseAnimation(
-    PageLoading.page.element,
-    {
-      opacity: "0",
-    },
-    totalDuration / 2,
-    easingMethod
-  );
+  await Misc.promiseAnimate(PageLoading.page.element[0] as HTMLElement, {
+    opacity: "0",
+    duration: totalDuration / 2,
+  });
 
   await PageLoading.page.afterHide();
   PageLoading.page.element.addClass("hidden");
@@ -208,7 +198,6 @@ export async function change(
   const previousPage = pages[ActivePage.get()];
   const nextPage = pages[pageName];
   const totalDuration = Misc.applyReducedMotion(250);
-  const easingMethod: Misc.JQueryEasing = "swing";
 
   //start
   PageTransition.set(true);
@@ -217,14 +206,10 @@ export async function change(
   //previous page
   await previousPage?.beforeHide?.();
   previousPage.element.removeClass("hidden").css("opacity", 1);
-  await Misc.promiseAnimation(
-    previousPage.element,
-    {
-      opacity: "0",
-    },
-    totalDuration / 2,
-    easingMethod
-  );
+  await Misc.promiseAnimate(previousPage.element[0] as HTMLElement, {
+    opacity: "0",
+    duration: totalDuration / 2,
+  });
   previousPage.element.addClass("hidden");
   await previousPage?.afterHide();
 
@@ -245,7 +230,6 @@ export async function change(
       await showSyncLoading({
         loadingOptions: syncLoadingOptions,
         totalDuration,
-        easingMethod,
       });
     }
 
@@ -297,14 +281,10 @@ export async function change(
   }
 
   nextPage.element.removeClass("hidden").css("opacity", 0);
-  await Misc.promiseAnimation(
-    nextPage.element,
-    {
-      opacity: "1",
-    },
-    totalDuration / 2,
-    easingMethod
-  );
+  await Misc.promiseAnimate(nextPage.element[0] as HTMLElement, {
+    opacity: "1",
+    duration: totalDuration / 2,
+  });
   nextPage.element.addClass("active");
   await nextPage?.afterShow();
 

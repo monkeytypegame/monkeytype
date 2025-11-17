@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+const FriendsRankSchema = z
+  .number()
+  .nonnegative()
+  .int()
+  .optional()
+  .describe("only available on friendsOnly leaderboard");
+
 export const LeaderboardEntrySchema = z.object({
   wpm: z.number().nonnegative(),
   acc: z.number().nonnegative().min(0).max(100),
@@ -11,12 +18,7 @@ export const LeaderboardEntrySchema = z.object({
   discordId: z.string().optional(),
   discordAvatar: z.string().optional(),
   rank: z.number().nonnegative().int(),
-  friendsRank: z
-    .number()
-    .nonnegative()
-    .int()
-    .optional()
-    .describe("only available on friendsOnly leaderboard"),
+  friendsRank: FriendsRankSchema,
   badgeId: z.number().int().optional(),
   isPremium: z.boolean().optional(),
 });
@@ -59,5 +61,6 @@ export const XpLeaderboardEntrySchema = RedisXpLeaderboardEntrySchema.extend({
   totalXp: RedisXpLeaderboardScoreSchema,
   // dynamically added when generating response on the backend
   rank: z.number().nonnegative().int(),
+  friendsRank: FriendsRankSchema,
 });
 export type XpLeaderboardEntry = z.infer<typeof XpLeaderboardEntrySchema>;

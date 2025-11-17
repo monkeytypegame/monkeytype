@@ -75,7 +75,7 @@ export type GetLeaderboardRankResponse = z.infer<
 
 export const DailyLeaderboardQuerySchema = LanguageAndModeQuerySchema.extend({
   daysBefore: z.literal(1).optional(),
-});
+}).merge(FriendsOnlyQuerySchema);
 export type DailyLeaderboardQuery = z.infer<typeof DailyLeaderboardQuerySchema>;
 
 export const GetDailyLeaderboardQuerySchema = DailyLeaderboardQuerySchema.merge(
@@ -86,7 +86,7 @@ export type GetDailyLeaderboardQuery = z.infer<
 >;
 export const GetDailyLeaderboardResponseSchema = responseWithData(
   LeaderboardResponseSchema.extend({
-    entries: z.array(LeaderboardEntrySchema.omit({ friendsRank: true })),
+    entries: z.array(LeaderboardEntrySchema),
     minWpm: z.number().nonnegative(),
   })
 );
@@ -102,7 +102,7 @@ export type GetDailyLeaderboardRankQuery = z.infer<
   typeof GetDailyLeaderboardRankQuerySchema
 >;
 export const GetLeaderboardDailyRankResponseSchema = responseWithNullableData(
-  LeaderboardEntrySchema.omit({ friendsRank: true })
+  LeaderboardEntrySchema
 );
 export type GetLeaderboardDailyRankResponse = z.infer<
   typeof GetLeaderboardDailyRankResponseSchema
@@ -110,9 +110,11 @@ export type GetLeaderboardDailyRankResponse = z.infer<
 
 //--------------------------------------------------------------------------
 
-const WeeklyXpLeaderboardQuerySchema = z.object({
-  weeksBefore: z.literal(1).optional(),
-});
+const WeeklyXpLeaderboardQuerySchema = z
+  .object({
+    weeksBefore: z.literal(1).optional(),
+  })
+  .merge(FriendsOnlyQuerySchema);
 
 export const GetWeeklyXpLeaderboardQuerySchema =
   WeeklyXpLeaderboardQuerySchema.merge(PaginationQuerySchema);

@@ -10,13 +10,13 @@ import { MonkeyRequest } from "../types";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as ConnectionsDal from "../../dal/connections";
 import * as UserDal from "../../dal/user";
-import { replaceObjectId } from "../../utils/misc";
+import { replaceObjectId, omit } from "../../utils/misc";
 import MonkeyError from "../../utils/error";
-import { omit } from "lodash";
+
 import { Connection } from "@monkeytype/schemas/connections";
 
 function convert(db: ConnectionsDal.DBConnection): Connection {
-  return replaceObjectId(omit(db, "key"));
+  return replaceObjectId(omit(db, ["key"]));
 }
 export async function getConnections(
   req: MonkeyRequest<GetConnectionsQuery>

@@ -5,6 +5,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import {
+  IsValidResponse,
   Validation,
   ValidationOptions,
   ValidationResult,
@@ -33,7 +34,10 @@ type CommonInput<TType, TValue> = {
      * @param thisPopup the current modal
      * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
      */
-    isValid?: (value: string, thisPopup: SimpleModal) => Promise<true | string>;
+    isValid?: (
+      value: string,
+      thisPopup: SimpleModal
+    ) => Promise<IsValidResponse>;
   };
 };
 

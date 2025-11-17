@@ -3,9 +3,10 @@ import { Mode } from "@monkeytype/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import { applyReducedMotion } from "../utils/misc";
+import { applyReducedMotion, promiseAnimate } from "../utils/misc";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as AuthEvent from "../observables/auth-event";
+import { animate } from "animejs";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
@@ -24,7 +25,7 @@ export async function instantUpdate(): Promise<void> {
   );
 
   $("#testConfig .puncAndNum").addClass("hidden");
-  $("#testConfig .spacer").css("transition", "none").addClass("scrolled");
+  $("#testConfig .spacer").addClass("hidden");
   $("#testConfig .time").addClass("hidden");
   $("#testConfig .wordCount").addClass("hidden");
   $("#testConfig .customText").addClass("hidden");
@@ -36,8 +37,8 @@ export async function instantUpdate(): Promise<void> {
       width: "",
       opacity: "",
     });
-    $("#testConfig .leftSpacer").removeClass("scrolled");
-    $("#testConfig .rightSpacer").removeClass("scrolled");
+    $("#testConfig .leftSpacer").removeClass("hidden");
+    $("#testConfig .rightSpacer").removeClass("hidden");
     $("#testConfig .time").removeClass("hidden");
 
     updateActiveExtraButtons("time", Config.time);
@@ -46,13 +47,13 @@ export async function instantUpdate(): Promise<void> {
       width: "",
       opacity: "",
     });
-    $("#testConfig .leftSpacer").removeClass("scrolled");
-    $("#testConfig .rightSpacer").removeClass("scrolled");
+    $("#testConfig .leftSpacer").removeClass("hidden");
+    $("#testConfig .rightSpacer").removeClass("hidden");
     $("#testConfig .wordCount").removeClass("hidden");
 
     updateActiveExtraButtons("words", Config.words);
   } else if (Config.mode === "quote") {
-    $("#testConfig .rightSpacer").removeClass("scrolled");
+    $("#testConfig .rightSpacer").removeClass("hidden");
     $("#testConfig .quoteLength").removeClass("hidden");
 
     updateActiveExtraButtons("quoteLength", Config.quoteLength);
@@ -61,18 +62,14 @@ export async function instantUpdate(): Promise<void> {
       width: "",
       opacity: "",
     });
-    $("#testConfig .leftSpacer").removeClass("scrolled");
-    $("#testConfig .rightSpacer").removeClass("scrolled");
+    $("#testConfig .leftSpacer").removeClass("hidden");
+    $("#testConfig .rightSpacer").removeClass("hidden");
     $("#testConfig .customText").removeClass("hidden");
   }
 
   updateActiveExtraButtons("quoteLength", Config.quoteLength);
   updateActiveExtraButtons("numbers", Config.numbers);
   updateActiveExtraButtons("punctuation", Config.punctuation);
-
-  setTimeout(() => {
-    $("#testConfig .spacer").css("transition", "");
-  }, 125);
 }
 
 async function update(previous: Mode, current: Mode): Promise<void> {
@@ -100,10 +97,12 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   };
 
   const animTime = applyReducedMotion(250);
+
+  const scale = 2;
   const easing = {
-    both: "easeInOutSine",
-    in: "easeInSine",
-    out: "easeOutSine",
+    both: `inOut(${scale})`,
+    in: `in(${scale})`,
+    out: `out(${scale})`,
   };
 
   const puncAndNumVisible = {
@@ -117,12 +116,6 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   const puncAndNumEl = $("#testConfig .puncAndNum");
 
   if (puncAndNumVisible[current] !== puncAndNumVisible[previous]) {
-    if (!puncAndNumVisible[current]) {
-      $("#testConfig .leftSpacer").addClass("scrolled");
-    } else {
-      $("#testConfig .leftSpacer").removeClass("scrolled");
-    }
-
     puncAndNumEl
       .css({
         width: "unset",
@@ -134,34 +127,87 @@ async function update(previous: Mode, current: Mode): Promise<void> {
       puncAndNumEl[0]?.getBoundingClientRect().width ?? 0
     );
 
-    puncAndNumEl
-      .stop(true, false)
-      .css({
-        width: puncAndNumVisible[previous] ? width : 0,
-        opacity: puncAndNumVisible[previous] ? 1 : 0,
-      })
-      .animate(
-        {
-          width: puncAndNumVisible[current] ? width : 0,
-          opacity: puncAndNumVisible[current] ? 1 : 0,
-        },
-        animTime,
-        easing.both,
-        () => {
-          if (puncAndNumVisible[current]) {
-            puncAndNumEl.css("width", "unset");
-          } else {
-            puncAndNumEl.addClass("hidden");
-          }
+    animate(puncAndNumEl[0] as HTMLElement, {
+      width: [
+        (puncAndNumVisible[previous] ? width : 0) + "px",
+        (puncAndNumVisible[current] ? width : 0) + "px",
+      ],
+      opacity: {
+        duration: animTime / 2,
+        delay: puncAndNumVisible[current] ? animTime / 2 : 0,
+        from: puncAndNumVisible[previous] ? 1 : 0,
+        to: puncAndNumVisible[current] ? 1 : 0,
+      },
+      duration: animTime,
+      ease: easing.both,
+      onComplete: () => {
+        if (puncAndNumVisible[current]) {
+          puncAndNumEl.css("width", "unset");
+        } else {
+          puncAndNumEl.addClass("hidden");
         }
-      );
+      },
+    });
+
+    const leftSpacerEl = document.querySelector(
+      "#testConfig .leftSpacer"
+    ) as HTMLElement;
+
+    leftSpacerEl.style.width = "0.5em";
+    leftSpacerEl.style.opacity = "1";
+    leftSpacerEl.classList.remove("hidden");
+
+    animate(leftSpacerEl, {
+      width: [
+        puncAndNumVisible[previous] ? "0.5em" : 0,
+        puncAndNumVisible[current] ? "0.5em" : 0,
+      ],
+      // opacity: {
+      //   duration: animTime / 2,
+      //   // delay: puncAndNumVisible[current] ? animTime / 2 : 0,
+      //   from: puncAndNumVisible[previous] ? 1 : 0,
+      //   to: puncAndNumVisible[current] ? 1 : 0,
+      // },
+      duration: animTime,
+      ease: easing.both,
+      onComplete: () => {
+        if (puncAndNumVisible[current]) {
+          leftSpacerEl.style.width = "";
+        } else {
+          leftSpacerEl.classList.add("hidden");
+        }
+      },
+    });
   }
 
-  if (current === "zen") {
-    $("#testConfig .rightSpacer").addClass("scrolled");
-  } else {
-    $("#testConfig .rightSpacer").removeClass("scrolled");
-  }
+  const rightSpacerEl = document.querySelector(
+    "#testConfig .rightSpacer"
+  ) as HTMLElement;
+
+  rightSpacerEl.style.width = "0.5em";
+  rightSpacerEl.style.opacity = "1";
+  rightSpacerEl.classList.remove("hidden");
+
+  animate(rightSpacerEl, {
+    width: [
+      previous === "zen" ? "0px" : "0.5em",
+      current === "zen" ? "0px" : "0.5em",
+    ],
+    // opacity: {
+    //   duration: animTime / 2,
+    //   from: previous === "zen" ? 0 : 1,
+    //   to: current === "zen" ? 0 : 1,
+    // },
+    duration: animTime,
+    ease: easing.both,
+    onComplete: () => {
+      if (current === "zen") {
+        rightSpacerEl.classList.add("hidden");
+      } else {
+        rightSpacerEl.style.width = "";
+      }
+    },
+  });
 
   const currentEl = $(`#testConfig .${submenu[current]}`);
   const previousEl = $(`#testConfig .${submenu[previous]}`);
@@ -171,7 +217,6 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   );
 
   previousEl.addClass("hidden");
-
   currentEl.removeClass("hidden");
 
   const currentWidth = Math.round(
@@ -179,53 +224,37 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   );
 
   previousEl.removeClass("hidden");
-
   currentEl.addClass("hidden");
 
   const widthDifference = currentWidth - previousWidth;
-
   const widthStep = widthDifference / 2;
 
+  await promiseAnimate(previousEl[0] as HTMLElement, {
+    opacity: [1, 0],
+    width: [previousWidth + "px", previousWidth + widthStep + "px"],
+    duration: animTime / 2,
+    ease: easing.in,
+  });
+
   previousEl
-    .stop(true, false)
     .css({
       opacity: 1,
-      width: previousWidth,
+      width: "unset",
     })
-    .animate(
-      {
-        width: previousWidth + widthStep,
-        opacity: 0,
-      },
-      animTime / 2,
-      easing.in,
-      () => {
-        previousEl
-          .css({
-            opacity: 1,
-            width: "unset",
-          })
-          .addClass("hidden");
-        currentEl
-          .css({
-            opacity: 0,
-            width: previousWidth + widthStep,
-          })
-          .removeClass("hidden")
-          .stop(true, false)
-          .animate(
-            {
-              opacity: 1,
-              width: currentWidth,
-            },
-            animTime / 2,
-            easing.out,
-            () => {
-              currentEl.css("width", "unset");
-            }
-          );
-      }
-    );
+    .addClass("hidden");
+  currentEl
+    .css({
+      opacity: 0,
+      width: previousWidth + widthStep + "px",
+    })
+    .removeClass("hidden");
+
+  await promiseAnimate(currentEl[0] as HTMLElement, {
+    opacity: [0, 1],
+    width: [previousWidth + widthStep + "px", currentWidth + "px"],
+    duration: animTime / 2,
+    ease: easing.out,
+  });
 }
 
 function updateActiveModeButtons(mode: Mode): void {

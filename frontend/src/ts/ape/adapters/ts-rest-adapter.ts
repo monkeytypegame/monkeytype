@@ -4,7 +4,7 @@ import {
   tsRestFetchApi,
   type ApiFetcherArgs,
 } from "@ts-rest/core";
-import { envConfig } from "../../constants/env-config";
+import { envConfig } from "virtual:env-config";
 import { getIdToken } from "../../firebase";
 import {
   COMPATIBILITY_CHECK,

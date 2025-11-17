@@ -29,6 +29,7 @@ import { Connection } from "@monkeytype/schemas/connections";
 import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 import * as Loader from "../elements/loader";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { remoteValidation } from "../utils/remote-validation";
 
 const pageElement = $(".page.pageFriends");
 
@@ -75,17 +76,10 @@ const addFriendModal = new SimpleModal({
       initVal: "",
       validation: {
         schema: UserNameSchema,
-        isValid: async (name: string) => {
-          const checkNameResponse = await Ape.users.getNameAvailability({
-            params: { name: name },
-          });
-
-          return (
-            (checkNameResponse.status === 200 &&
-              !checkNameResponse.body.data.available) ||
-            "Unknown user"
-          );
-        },
+        isValid: remoteValidation(
+          async (name) => Ape.users.getNameAvailability({ params: { name } }),
+          { check: (data) => !data.available || "Unknown user" }
+        ),
         debounceDelay: 1000,
       },
     },

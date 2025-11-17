@@ -20,7 +20,7 @@ export async function getCharFromEvent(
     let isCapitalized = event.shiftKey;
     const altGrIndex = isAltGrPressed && keyVariants.length > 2 ? 2 : 0;
     const isNotPunctuation = !isPunctuationPattern.test(
-      keyVariants.slice(altGrIndex, altGrIndex + 2).join()
+      keyVariants.slice(altGrIndex, altGrIndex + 2).join("")
     );
     if (capsState && isNotPunctuation) {
       isCapitalized = !event.shiftKey;

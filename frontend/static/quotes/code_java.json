@@ -168,6 +168,684 @@
       "source": "BogoSort",
       "id": 27,
       "length": 222
+    },
+    {
+      "text": "String[] parts = input.split(\",\");\nfor (String part : parts) {\n\tSystem.out.println(part.trim());\n}",
+      "source": "Split String and Trim Whitespace",
+      "id": 28,
+      "length": 98
+    },
+    {
+      "text": "List<String> list = new ArrayList<>(Arrays.asList(\"apple\", \"banana\", \"cherry\"));\nlist.remove(\"banana\");\nlist.add(\"date\");",
+      "source": "ArrayList Initialization and Manipulation",
+      "id": 29,
+      "length": 121
+    },
+    {
+      "text": "Map<String, Integer> map = new HashMap<>();\nmap.put(\"key\", 100);\nint value = map.getOrDefault(\"key\", 0);\nfor (Map.Entry<String, Integer> entry : map.entrySet()) {\n\tSystem.out.println(entry.getKey() + \": \" + entry.getValue());\n}",
+      "source": "HashMap Common Operations",
+      "id": 30,
+      "length": 227
+    },
+    {
+      "text": "try {\n\tint result = Integer.parseInt(input);\n\tSystem.out.println(result);\n} catch (NumberFormatException e) {\n\tSystem.out.println(\"Invalid number: \" + e.getMessage());\n}",
+      "source": "Parse String to Integer with Error Handling",
+      "id": 31,
+      "length": 169
+    },
+    {
+      "text": "List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);\nList<Integer> doubled = numbers.stream()\n\t.map(n -> n * 2)\n\t.filter(n -> n > 5)\n\t.collect(Collectors.toList());",
+      "source": "Stream API - Map and Filter",
+      "id": 32,
+      "length": 165
+    },
+    {
+      "text": "String json = \"{\\\"name\\\":\\\"John\\\",\\\"age\\\":30}\";\nString result = String.format(\"Name: %s, Age: %d\", name, age);\nString multiline = \"\"\"\\n\tThis is a\\n\tmulti-line\\n\ttext block\\n\t\"\"\";",
+      "source": "String Formatting and Text Blocks",
+      "id": 33,
+      "length": 178
+    },
+    {
+      "text": "public class Person {\n\tprivate String name;\n\tprivate int age;\n\t\n\tpublic Person(String name, int age) {\n\t\tthis.name = name;\n\t\tthis.age = age;\n\t}\n\t\n\tpublic String getName() { return name; }\n\tpublic void setName(String name) { this.name = name; }\n}",
+      "source": "Basic Class with Constructor and Getters/Setters",
+      "id": 34,
+      "length": 245
+    },
+    {
+      "text": "int max = Math.max(a, b);\nint min = Math.min(a, b);\ndouble sqrt = Math.sqrt(16);\ndouble power = Math.pow(2, 3);\nint random = (int)(Math.random() * 100);",
+      "source": "Common Math Operations",
+      "id": 35,
+      "length": 152
+    },
+    {
+      "text": "char[] chars = str.toCharArray();\nString upper = str.toUpperCase();\nString lower = str.toLowerCase();\nboolean startsWith = str.startsWith(\"prefix\");\nString sub = str.substring(0, 5);",
+      "source": "String Common Methods",
+      "id": 36,
+      "length": 182
+    },
+    {
+      "text": "Set<Integer> set = new HashSet<>();\nset.add(1);\nset.add(2);\nboolean contains = set.contains(1);\nset.remove(2);\nint size = set.size();",
+      "source": "HashSet Basic Operations",
+      "id": 37,
+      "length": 133
+    },
+    {
+      "text": "public static int gcd(int a, int b) {\n\tif (b == 0) return a;\n\treturn gcd(b, a % b);\n}\npublic static int lcm(int a, int b) {\n\treturn (a * b) / gcd(a, b);\n}",
+      "source": "GCD and LCM",
+      "id": 38,
+      "length": 154
+    },
+    {
+      "text": "public static boolean isPrime(int n) {\n\tif (n <= 1) return false;\n\tif (n <= 3) return true;\n\tif (n % 2 == 0 || n % 3 == 0) return false;\n\tfor (int i = 5; i * i <= n; i += 6) {\n\t\tif (n % i == 0 || n % (i + 2) == 0) return false;\n\t}\n\treturn true;\n}",
+      "source": "Check if Number is Prime",
+      "id": 39,
+      "length": 246
+    },
+    {
+      "text": "StringBuilder sb = new StringBuilder();\nsb.append(\"Hello\");\nsb.append(\" \");\nsb.append(\"World\");\nString result = sb.toString();\nsb.reverse();",
+      "source": "StringBuilder for Efficient String Concatenation",
+      "id": 40,
+      "length": 140
+    },
+    {
+      "text": "LocalDateTime now = LocalDateTime.now();\nLocalDate date = LocalDate.of(2024, 1, 1);\nLocalTime time = LocalTime.of(14, 30);\nDateTimeFormatter formatter = DateTimeFormatter.ofPattern(\"yyyy-MM-dd HH:mm\");",
+      "source": "Date and Time with java.time API",
+      "id": 41,
+      "length": 201
+    },
+    {
+      "text": "try (BufferedReader br = new BufferedReader(new FileReader(\"file.txt\"))) {\n\tString line;\n\twhile ((line = br.readLine()) != null) {\n\t\tSystem.out.println(line);\n\t}\n} catch (IOException e) {\n\te.printStackTrace();\n}",
+      "source": "Read File Line by Line with try-with-resources",
+      "id": 42,
+      "length": 211
+    },
+    {
+      "text": "int[] arr = {5, 2, 8, 1, 9};\nArrays.sort(arr);\nint index = Arrays.binarySearch(arr, 8);\nint[] copy = Arrays.copyOf(arr, arr.length);\nboolean equal = Arrays.equals(arr, copy);",
+      "source": "Arrays Utility Methods",
+      "id": 43,
+      "length": 174
+    },
+    {
+      "text": "List<String> list = Arrays.asList(\"a\", \"b\", \"c\");\nCollections.reverse(list);\nCollections.shuffle(list);\nCollections.sort(list);\nString max = Collections.max(list);",
+      "source": "Collections Utility Methods",
+      "id": 44,
+      "length": 163
+    },
+    {
+      "text": "public static <T> void printArray(T[] arr) {\n\tfor (T element : arr) {\n\t\tSystem.out.print(element + \" \");\n\t}\n\tSystem.out.println();\n}",
+      "source": "Generic Method Example",
+      "id": 45,
+      "length": 132
+    },
+    {
+      "text": "Queue<Integer> queue = new LinkedList<>();\nqueue.offer(1);\nqueue.offer(2);\nInteger front = queue.poll();\nInteger peek = queue.peek();\nboolean empty = queue.isEmpty();",
+      "source": "Queue Operations with LinkedList",
+      "id": 46,
+      "length": 166
+    },
+    {
+      "text": "PriorityQueue<Integer> pq = new PriorityQueue<>();\npq.offer(5);\npq.offer(1);\npq.offer(3);\nwhile (!pq.isEmpty()) {\n\tSystem.out.println(pq.poll());\n}",
+      "source": "PriorityQueue (Min Heap)",
+      "id": 47,
+      "length": 147
+    },
+    {
+      "text": "public ListNode reverseLinkedList(ListNode head) {\n\tListNode prev = null;\n\tListNode curr = head;\n\twhile (curr != null) {\n\t\tListNode next = curr.next;\n\t\tcurr.next = prev;\n\t\tprev = curr;\n\t\tcurr = next;\n\t}\n\treturn prev;\n}",
+      "source": "Reverse Linked List",
+      "id": 48,
+      "length": 218
+    },
+    {
+      "text": "public boolean hasCycle(ListNode head) {\n\tListNode slow = head, fast = head;\n\twhile (fast != null && fast.next != null) {\n\t\tslow = slow.next;\n\t\tfast = fast.next.next;\n\t\tif (slow == fast) return true;\n\t}\n\treturn false;\n}",
+      "source": "Detect Cycle in Linked List (Floyd's Algorithm)",
+      "id": 49,
+      "length": 219
+    },
+    {
+      "text": "public ListNode mergeTwoLists(ListNode l1, ListNode l2) {\n\tListNode dummy = new ListNode(0);\n\tListNode curr = dummy;\n\twhile (l1 != null && l2 != null) {\n\t\tif (l1.val < l2.val) {\n\t\t\tcurr.next = l1;\n\t\t\tl1 = l1.next;\n\t\t} else {\n\t\t\tcurr.next = l2;\n\t\t\tl2 = l2.next;\n\t\t}\n\t\tcurr = curr.next;\n\t}\n\tcurr.next = (l1 != null) ? l1 : l2;\n\treturn dummy.next;\n}",
+      "source": "Merge Two Sorted Linked Lists",
+      "id": 50,
+      "length": 346
+    },
+    {
+      "text": "public int maxSubArray(int[] nums) {\n\tint maxSum = nums[0];\n\tint currSum = nums[0];\n\tfor (int i = 1; i < nums.length; i++) {\n\t\tcurrSum = Math.max(nums[i], currSum + nums[i]);\n\t\tmaxSum = Math.max(maxSum, currSum);\n\t}\n\treturn maxSum;\n}",
+      "source": "Maximum Subarray (Kadane's Algorithm)",
+      "id": 51,
+      "length": 233
+    },
+    {
+      "text": "public int[] twoSum(int[] nums, int target) {\n\tMap<Integer, Integer> map = new HashMap<>();\n\tfor (int i = 0; i < nums.length; i++) {\n\t\tint complement = target - nums[i];\n\t\tif (map.containsKey(complement)) {\n\t\t\treturn new int[]{map.get(complement), i};\n\t\t}\n\t\tmap.put(nums[i], i);\n\t}\n\treturn new int[]{};\n}",
+      "source": "Two Sum Problem",
+      "id": 52,
+      "length": 304
+    },
+    {
+      "text": "public boolean isValid(String s) {\n\tStack<Character> stack = new Stack<>();\n\tfor (char c : s.toCharArray()) {\n\t\tif (c == '(') stack.push(')');\n\t\telse if (c == '{') stack.push('}');\n\t\telse if (c == '[') stack.push(']');\n\t\telse if (stack.isEmpty() || stack.pop() != c) return false;\n\t}\n\treturn stack.isEmpty();\n}",
+      "source": "Valid Parentheses",
+      "id": 53,
+      "length": 310
+    },
+    {
+      "text": "public int maxDepth(TreeNode root) {\n\tif (root == null) return 0;\n\treturn 1 + Math.max(maxDepth(root.left), maxDepth(root.right));\n}",
+      "source": "Maximum Depth of Binary Tree",
+      "id": 54,
+      "length": 132
+    },
+    {
+      "text": "public boolean isBalanced(TreeNode root) {\n\treturn height(root) != -1;\n}\nprivate int height(TreeNode node) {\n\tif (node == null) return 0;\n\tint left = height(node.left);\n\tif (left == -1) return -1;\n\tint right = height(node.right);\n\tif (right == -1) return -1;\n\tif (Math.abs(left - right) > 1) return -1;\n\treturn Math.max(left, right) + 1;\n}",
+      "source": "Check if Binary Tree is Balanced",
+      "id": 55,
+      "length": 339
+    },
+    {
+      "text": "public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n\tif (root == null || root == p || root == q) return root;\n\tTreeNode left = lowestCommonAncestor(root.left, p, q);\n\tTreeNode right = lowestCommonAncestor(root.right, p, q);\n\tif (left != null && right != null) return root;\n\treturn (left != null) ? left : right;\n}",
+      "source": "Lowest Common Ancestor in Binary Tree",
+      "id": 56,
+      "length": 339
+    },
+    {
+      "text": "public List<Integer> inorderTraversal(TreeNode root) {\n\tList<Integer> result = new ArrayList<>();\n\tStack<TreeNode> stack = new Stack<>();\n\tTreeNode curr = root;\n\twhile (curr != null || !stack.isEmpty()) {\n\t\twhile (curr != null) {\n\t\t\tstack.push(curr);\n\t\t\tcurr = curr.left;\n\t\t}\n\t\tcurr = stack.pop();\n\t\tresult.add(curr.val);\n\t\tcurr = curr.right;\n\t}\n\treturn result;\n}",
+      "source": "Binary Tree Inorder Traversal (Iterative)",
+      "id": 57,
+      "length": 363
+    },
+    {
+      "text": "public List<List<Integer>> levelOrder(TreeNode root) {\n\tList<List<Integer>> result = new ArrayList<>();\n\tif (root == null) return result;\n\tQueue<TreeNode> queue = new LinkedList<>();\n\tqueue.offer(root);\n\twhile (!queue.isEmpty()) {\n\t\tint size = queue.size();\n\t\tList<Integer> level = new ArrayList<>();\n\t\tfor (int i = 0; i < size; i++) {\n\t\t\tTreeNode node = queue.poll();\n\t\t\tlevel.add(node.val);\n\t\t\tif (node.left != null) queue.offer(node.left);\n\t\t\tif (node.right != null) queue.offer(node.right);\n\t\t}\n\t\tresult.add(level);\n\t}\n\treturn result;\n}",
+      "source": "Binary Tree Level Order Traversal (BFS)",
+      "id": 58,
+      "length": 540
+    },
+    {
+      "text": "public void dfs(int[][] grid, int i, int j) {\n\tif (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] == 0) return;\n\tgrid[i][j] = 0;\n\tdfs(grid, i+1, j);\n\tdfs(grid, i-1, j);\n\tdfs(grid, i, j+1);\n\tdfs(grid, i, j-1);\n}",
+      "source": "DFS on 2D Grid (Number of Islands Pattern)",
+      "id": 59,
+      "length": 235
+    },
+    {
+      "text": "public int climbStairs(int n) {\n\tif (n <= 2) return n;\n\tint[] dp = new int[n + 1];\n\tdp[1] = 1;\n\tdp[2] = 2;\n\tfor (int i = 3; i <= n; i++) {\n\t\tdp[i] = dp[i-1] + dp[i-2];\n\t}\n\treturn dp[n];\n}",
+      "source": "Climbing Stairs (Dynamic Programming)",
+      "id": 60,
+      "length": 187
+    },
+    {
+      "text": "public int coinChange(int[] coins, int amount) {\n\tint[] dp = new int[amount + 1];\n\tArrays.fill(dp, amount + 1);\n\tdp[0] = 0;\n\tfor (int i = 1; i <= amount; i++) {\n\t\tfor (int coin : coins) {\n\t\t\tif (i >= coin) {\n\t\t\t\tdp[i] = Math.min(dp[i], dp[i - coin] + 1);\n\t\t\t}\n\t\t}\n\t}\n\treturn dp[amount] > amount ? -1 : dp[amount];\n}",
+      "source": "Coin Change Problem (DP)",
+      "id": 61,
+      "length": 315
+    },
+    {
+      "text": "public int lengthOfLIS(int[] nums) {\n\tint[] dp = new int[nums.length];\n\tArrays.fill(dp, 1);\n\tfor (int i = 1; i < nums.length; i++) {\n\t\tfor (int j = 0; j < i; j++) {\n\t\t\tif (nums[i] > nums[j]) {\n\t\t\t\tdp[i] = Math.max(dp[i], dp[j] + 1);\n\t\t\t}\n\t\t}\n\t}\n\treturn Arrays.stream(dp).max().orElse(0);\n}",
+      "source": "Longest Increasing Subsequence (DP)",
+      "id": 62,
+      "length": 289
+    },
+    {
+      "text": "public int rob(int[] nums) {\n\tif (nums.length == 0) return 0;\n\tif (nums.length == 1) return nums[0];\n\tint prev2 = 0, prev1 = 0;\n\tfor (int num : nums) {\n\t\tint temp = prev1;\n\t\tprev1 = Math.max(prev2 + num, prev1);\n\t\tprev2 = temp;\n\t}\n\treturn prev1;\n}",
+      "source": "House Robber (DP Space Optimized)",
+      "id": 63,
+      "length": 247
+    },
+    {
+      "text": "public boolean canJump(int[] nums) {\n\tint maxReach = 0;\n\tfor (int i = 0; i < nums.length; i++) {\n\t\tif (i > maxReach) return false;\n\t\tmaxReach = Math.max(maxReach, i + nums[i]);\n\t\tif (maxReach >= nums.length - 1) return true;\n\t}\n\treturn true;\n}",
+      "source": "Jump Game (Greedy)",
+      "id": 64,
+      "length": 243
+    },
+    {
+      "text": "public int[] productExceptSelf(int[] nums) {\n\tint n = nums.length;\n\tint[] result = new int[n];\n\tresult[0] = 1;\n\tfor (int i = 1; i < n; i++) {\n\t\tresult[i] = result[i-1] * nums[i-1];\n\t}\n\tint right = 1;\n\tfor (int i = n-1; i >= 0; i--) {\n\t\tresult[i] *= right;\n\t\tright *= nums[i];\n\t}\n\treturn result;\n}",
+      "source": "Product of Array Except Self",
+      "id": 65,
+      "length": 296
+    },
+    {
+      "text": "public void rotate(int[] nums, int k) {\n\tk %= nums.length;\n\treverse(nums, 0, nums.length - 1);\n\treverse(nums, 0, k - 1);\n\treverse(nums, k, nums.length - 1);\n}\nprivate void reverse(int[] nums, int start, int end) {\n\twhile (start < end) {\n\t\tint temp = nums[start];\n\t\tnums[start++] = nums[end];\n\t\tnums[end--] = temp;\n\t}\n}",
+      "source": "Rotate Array",
+      "id": 66,
+      "length": 318
+    },
+    {
+      "text": "public String longestPalindrome(String s) {\n\tif (s.length() < 2) return s;\n\tint start = 0, maxLen = 0;\n\tfor (int i = 0; i < s.length(); i++) {\n\t\tint len1 = expandAroundCenter(s, i, i);\n\t\tint len2 = expandAroundCenter(s, i, i + 1);\n\t\tint len = Math.max(len1, len2);\n\t\tif (len > maxLen) {\n\t\t\tstart = i - (len - 1) / 2;\n\t\t\tmaxLen = len;\n\t\t}\n\t}\n\treturn s.substring(start, start + maxLen);\n}\nprivate int expandAroundCenter(String s, int left, int right) {\n\twhile (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {\n\t\tleft--;\n\t\tright++;\n\t}\n\treturn right - left - 1;\n}",
+      "source": "Longest Palindromic Substring",
+      "id": 67,
+      "length": 582
+    },
+    {
+      "text": "public int lengthOfLongestSubstring(String s) {\n\tMap<Character, Integer> map = new HashMap<>();\n\tint maxLen = 0, start = 0;\n\tfor (int end = 0; end < s.length(); end++) {\n\t\tchar c = s.charAt(end);\n\t\tif (map.containsKey(c)) {\n\t\t\tstart = Math.max(start, map.get(c) + 1);\n\t\t}\n\t\tmap.put(c, end);\n\t\tmaxLen = Math.max(maxLen, end - start + 1);\n\t}\n\treturn maxLen;\n}",
+      "source": "Longest Substring Without Repeating Characters",
+      "id": 68,
+      "length": 357
+    },
+    {
+      "text": "public int trap(int[] height) {\n\tint left = 0, right = height.length - 1;\n\tint leftMax = 0, rightMax = 0, water = 0;\n\twhile (left < right) {\n\t\tif (height[left] < height[right]) {\n\t\t\tif (height[left] >= leftMax) leftMax = height[left];\n\t\t\telse water += leftMax - height[left];\n\t\t\tleft++;\n\t\t} else {\n\t\t\tif (height[right] >= rightMax) rightMax = height[right];\n\t\t\telse water += rightMax - height[right];\n\t\t\tright--;\n\t\t}\n\t}\n\treturn water;\n}",
+      "source": "Trapping Rain Water (Two Pointers)",
+      "id": 69,
+      "length": 436
+    },
+    {
+      "text": "public List<List<Integer>> threeSum(int[] nums) {\n\tList<List<Integer>> result = new ArrayList<>();\n\tArrays.sort(nums);\n\tfor (int i = 0; i < nums.length - 2; i++) {\n\t\tif (i > 0 && nums[i] == nums[i-1]) continue;\n\t\tint left = i + 1, right = nums.length - 1;\n\t\twhile (left < right) {\n\t\t\tint sum = nums[i] + nums[left] + nums[right];\n\t\t\tif (sum == 0) {\n\t\t\t\tresult.add(Arrays.asList(nums[i], nums[left], nums[right]));\n\t\t\t\twhile (left < right && nums[left] == nums[left+1]) left++;\n\t\t\t\twhile (left < right && nums[right] == nums[right-1]) right--;\n\t\t\t\tleft++; right--;\n\t\t\t} else if (sum < 0) left++;\n\t\t\telse right--;\n\t\t}\n\t}\n\treturn result;\n}",
+      "source": "3Sum Problem",
+      "id": 70,
+      "length": 636
+    },
+    {
+      "text": "public int[][] merge(int[][] intervals) {\n\tif (intervals.length <= 1) return intervals;\n\tArrays.sort(intervals, (a, b) -> a[0] - b[0]);\n\tList<int[]> result = new ArrayList<>();\n\tint[] curr = intervals[0];\n\tfor (int i = 1; i < intervals.length; i++) {\n\t\tif (intervals[i][0] <= curr[1]) {\n\t\t\tcurr[1] = Math.max(curr[1], intervals[i][1]);\n\t\t} else {\n\t\t\tresult.add(curr);\n\t\t\tcurr = intervals[i];\n\t\t}\n\t}\n\tresult.add(curr);\n\treturn result.toArray(new int[result.size()][]);\n}",
+      "source": "Merge Intervals",
+      "id": 71,
+      "length": 469
+    },
+    {
+      "text": "public List<List<String>> groupAnagrams(String[] strs) {\n\tMap<String, List<String>> map = new HashMap<>();\n\tfor (String str : strs) {\n\t\tchar[] chars = str.toCharArray();\n\t\tArrays.sort(chars);\n\t\tString key = new String(chars);\n\t\tmap.computeIfAbsent(key, k -> new ArrayList<>()).add(str);\n\t}\n\treturn new ArrayList<>(map.values());\n}",
+      "source": "Group Anagrams",
+      "id": 72,
+      "length": 330
+    },
+    {
+      "text": "public int findKthLargest(int[] nums, int k) {\n\tPriorityQueue<Integer> pq = new PriorityQueue<>();\n\tfor (int num : nums) {\n\t\tpq.offer(num);\n\t\tif (pq.size() > k) pq.poll();\n\t}\n\treturn pq.peek();\n}",
+      "source": "Kth Largest Element in Array (Min Heap)",
+      "id": 73,
+      "length": 195
+    },
+    {
+      "text": "public int[] topKFrequent(int[] nums, int k) {\n\tMap<Integer, Integer> map = new HashMap<>();\n\tfor (int num : nums) map.put(num, map.getOrDefault(num, 0) + 1);\n\tPriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> map.get(a) - map.get(b));\n\tfor (int key : map.keySet()) {\n\t\tpq.offer(key);\n\t\tif (pq.size() > k) pq.poll();\n\t}\n\tint[] result = new int[k];\n\tfor (int i = 0; i < k; i++) result[i] = pq.poll();\n\treturn result;\n}",
+      "source": "Top K Frequent Elements",
+      "id": 74,
+      "length": 425
+    },
+    {
+      "text": "class TrieNode {\n\tTrieNode[] children = new TrieNode[26];\n\tboolean isEnd = false;\n}\npublic void insert(String word) {\n\tTrieNode node = root;\n\tfor (char c : word.toCharArray()) {\n\t\tif (node.children[c - 'a'] == null) {\n\t\t\tnode.children[c - 'a'] = new TrieNode();\n\t\t}\n\t\tnode = node.children[c - 'a'];\n\t}\n\tnode.isEnd = true;\n}",
+      "source": "Trie (Prefix Tree) Insert",
+      "id": 75,
+      "length": 323
+    },
+    {
+      "text": "class UnionFind {\n\tint[] parent, rank;\n\tpublic UnionFind(int n) {\n\t\tparent = new int[n];\n\t\trank = new int[n];\n\t\tfor (int i = 0; i < n; i++) parent[i] = i;\n\t}\n\tpublic int find(int x) {\n\t\tif (parent[x] != x) parent[x] = find(parent[x]);\n\t\treturn parent[x];\n\t}\n\tpublic void union(int x, int y) {\n\t\tint px = find(x), py = find(y);\n\t\tif (px == py) return;\n\t\tif (rank[px] < rank[py]) parent[px] = py;\n\t\telse if (rank[px] > rank[py]) parent[py] = px;\n\t\telse { parent[py] = px; rank[px]++; }\n\t}\n}",
+      "source": "Union Find (Disjoint Set Union)",
+      "id": 76,
+      "length": 488
+    },
+    {
+      "text": "public void backtrack(List<List<Integer>> result, List<Integer> temp, int[] nums, int start) {\n\tresult.add(new ArrayList<>(temp));\n\tfor (int i = start; i < nums.length; i++) {\n\t\ttemp.add(nums[i]);\n\t\tbacktrack(result, temp, nums, i + 1);\n\t\ttemp.remove(temp.size() - 1);\n\t}\n}",
+      "source": "Backtracking Template (Subsets)",
+      "id": 77,
+      "length": 273
+    },
+    {
+      "text": "public List<List<Integer>> permute(int[] nums) {\n\tList<List<Integer>> result = new ArrayList<>();\n\tbacktrack(result, new ArrayList<>(), nums, new boolean[nums.length]);\n\treturn result;\n}\nprivate void backtrack(List<List<Integer>> result, List<Integer> temp, int[] nums, boolean[] used) {\n\tif (temp.size() == nums.length) {\n\t\tresult.add(new ArrayList<>(temp));\n\t\treturn;\n\t}\n\tfor (int i = 0; i < nums.length; i++) {\n\t\tif (used[i]) continue;\n\t\tused[i] = true;\n\t\ttemp.add(nums[i]);\n\t\tbacktrack(result, temp, nums, used);\n\t\ttemp.remove(temp.size() - 1);\n\t\tused[i] = false;\n\t}\n}",
+      "source": "Permutations (Backtracking)",
+      "id": 78,
+      "length": 572
+    },
+    {
+      "text": "public boolean exist(char[][] board, String word) {\n\tfor (int i = 0; i < board.length; i++) {\n\t\tfor (int j = 0; j < board[0].length; j++) {\n\t\t\tif (dfs(board, word, i, j, 0)) return true;\n\t\t}\n\t}\n\treturn false;\n}\nprivate boolean dfs(char[][] board, String word, int i, int j, int idx) {\n\tif (idx == word.length()) return true;\n\tif (i < 0 || i >= board.length || j < 0 || j >= board[0].length || board[i][j] != word.charAt(idx)) return false;\n\tchar temp = board[i][j];\n\tboard[i][j] = '#';\n\tboolean found = dfs(board, word, i+1, j, idx+1) || dfs(board, word, i-1, j, idx+1) || dfs(board, word, i, j+1, idx+1) || dfs(board, word, i, j-1, idx+1);\n\tboard[i][j] = temp;\n\treturn found;\n}",
+      "source": "Word Search (Backtracking on Grid)",
+      "id": 79,
+      "length": 678
+    },
+    {
+      "text": "public int minWindow(String s, String t) {\n\tMap<Character, Integer> map = new HashMap<>();\n\tfor (char c : t.toCharArray()) map.put(c, map.getOrDefault(c, 0) + 1);\n\tint left = 0, minLen = Integer.MAX_VALUE, minStart = 0, count = t.length();\n\tfor (int right = 0; right < s.length(); right++) {\n\t\tchar c = s.charAt(right);\n\t\tif (map.containsKey(c)) {\n\t\t\tif (map.get(c) > 0) count--;\n\t\t\tmap.put(c, map.get(c) - 1);\n\t\t}\n\t\twhile (count == 0) {\n\t\t\tif (right - left + 1 < minLen) {\n\t\t\t\tminLen = right - left + 1;\n\t\t\t\tminStart = left;\n\t\t\t}\n\t\t\tchar leftChar = s.charAt(left);\n\t\t\tif (map.containsKey(leftChar)) {\n\t\t\t\tmap.put(leftChar, map.get(leftChar) + 1);\n\t\t\t\tif (map.get(leftChar) > 0) count++;\n\t\t\t}\n\t\t\tleft++;\n\t\t}\n\t}\n\treturn minLen == Integer.MAX_VALUE ? \"\" : s.substring(minStart, minStart + minLen);\n}",
+      "source": "Minimum Window Substring (Sliding Window)",
+      "id": 80,
+      "length": 797
+    },
+    {
+      "text": "public int maxProfit(int[] prices) {\n\tint minPrice = Integer.MAX_VALUE;\n\tint maxProfit = 0;\n\tfor (int price : prices) {\n\t\tif (price < minPrice) minPrice = price;\n\t\telse maxProfit = Math.max(maxProfit, price - minPrice);\n\t}\n\treturn maxProfit;\n}",
+      "source": "Best Time to Buy and Sell Stock",
+      "id": 81,
+      "length": 243
+    },
+    {
+      "text": "public boolean isValidBST(TreeNode root) {\n\treturn validate(root, null, null);\n}\nprivate boolean validate(TreeNode node, Integer min, Integer max) {\n\tif (node == null) return true;\n\tif ((min != null && node.val <= min) || (max != null && node.val >= max)) return false;\n\treturn validate(node.left, min, node.val) && validate(node.right, node.val, max);\n}",
+      "source": "Validate Binary Search Tree",
+      "id": 82,
+      "length": 354
+    },
+    {
+      "text": "CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {\n\treturn fetchData();\n}).thenApply(data -> processData(data))\n  .thenAccept(result -> System.out.println(result))\n  .exceptionally(ex -> { ex.printStackTrace(); return null; });",
+      "source": "CompletableFuture Async Processing",
+      "id": 83,
+      "length": 249
+    },
+    {
+      "text": "ExecutorService executor = Executors.newFixedThreadPool(10);\nList<Future<String>> futures = new ArrayList<>();\nfor (Task task : tasks) {\n\tfutures.add(executor.submit(() -> task.execute()));\n}\nfor (Future<String> future : futures) {\n\tString result = future.get();\n}\nexecutor.shutdown();",
+      "source": "Thread Pool and Future Management",
+      "id": 84,
+      "length": 285
+    },
+    {
+      "text": "private final ReentrantLock lock = new ReentrantLock();\npublic void threadSafeMethod() {\n\tlock.lock();\n\ttry {\n\t\t// critical section\n\t} finally {\n\t\tlock.unlock();\n\t}\n}",
+      "source": "ReentrantLock Thread Safety",
+      "id": 85,
+      "length": 166
+    },
+    {
+      "text": "private final AtomicInteger counter = new AtomicInteger(0);\npublic void increment() {\n\tcounter.incrementAndGet();\n}\npublic int get() {\n\treturn counter.get();\n}",
+      "source": "Atomic Variables for Lock-Free Operations",
+      "id": 86,
+      "length": 159
+    },
+    {
+      "text": "CountDownLatch latch = new CountDownLatch(3);\nfor (int i = 0; i < 3; i++) {\n\tnew Thread(() -> {\n\t\tdoWork();\n\t\tlatch.countDown();\n\t}).start();\n}\nlatch.await();",
+      "source": "CountDownLatch for Thread Coordination",
+      "id": 87,
+      "length": 158
+    },
+    {
+      "text": "ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>();\nmap.put(\"key\", 1);\nmap.computeIfAbsent(\"key\", k -> expensiveComputation(k));\nmap.merge(\"key\", 1, Integer::sum);",
+      "source": "ConcurrentHashMap Thread-Safe Operations",
+      "id": 88,
+      "length": 179
+    },
+    {
+      "text": "List<String> result = list.parallelStream()\n\t.filter(s -> s.length() > 5)\n\t.map(String::toUpperCase)\n\t.collect(Collectors.toList());",
+      "source": "Parallel Streams for Performance",
+      "id": 89,
+      "length": 132
+    },
+    {
+      "text": "Optional<String> optional = Optional.ofNullable(value);\nString result = optional\n\t.filter(s -> s.length() > 0)\n\t.map(String::toUpperCase)\n\t.orElse(\"DEFAULT\");\noptional.ifPresent(System.out::println);",
+      "source": "Optional API for Null Safety",
+      "id": 90,
+      "length": 199
+    },
+    {
+      "text": "Map<String, List<Person>> grouped = people.stream()\n\t.collect(Collectors.groupingBy(Person::getCity));\nMap<String, Long> counted = people.stream()\n\t.collect(Collectors.groupingBy(Person::getCity, Collectors.counting()));",
+      "source": "Advanced Collectors - GroupingBy",
+      "id": 91,
+      "length": 220
+    },
+    {
+      "text": "String joined = list.stream()\n\t.collect(Collectors.joining(\", \", \"[\", \"]\"));\nMap<Boolean, List<Integer>> partitioned = numbers.stream()\n\t.collect(Collectors.partitioningBy(n -> n % 2 == 0));",
+      "source": "Collectors - Joining and Partitioning",
+      "id": 92,
+      "length": 190
+    },
+    {
+      "text": "public class Singleton {\n\tprivate static volatile Singleton instance;\n\tprivate Singleton() {}\n\tpublic static Singleton getInstance() {\n\t\tif (instance == null) {\n\t\t\tsynchronized (Singleton.class) {\n\t\t\t\tif (instance == null) {\n\t\t\t\t\tinstance = new Singleton();\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\treturn instance;\n\t}\n}",
+      "source": "Thread-Safe Singleton (Double-Checked Locking)",
+      "id": 93,
+      "length": 296
+    },
+    {
+      "text": "public enum Singleton {\n\tINSTANCE;\n\tprivate Connection connection;\n\tprivate Singleton() {\n\t\tconnection = createConnection();\n\t}\n\tpublic Connection getConnection() {\n\t\treturn connection;\n\t}\n}",
+      "source": "Enum Singleton Pattern (Best Practice)",
+      "id": 94,
+      "length": 190
+    },
+    {
+      "text": "public interface Builder<T> {\n\tT build();\n}\npublic class Person {\n\tprivate final String name;\n\tprivate final int age;\n\tprivate Person(Builder builder) {\n\t\tthis.name = builder.name;\n\t\tthis.age = builder.age;\n\t}\n\tpublic static class Builder {\n\t\tprivate String name;\n\t\tprivate int age;\n\t\tpublic Builder name(String name) { this.name = name; return this; }\n\t\tpublic Builder age(int age) { this.age = age; return this; }\n\t\tpublic Person build() { return new Person(this); }\n\t}\n}",
+      "source": "Builder Pattern for Complex Objects",
+      "id": 95,
+      "length": 473
+    },
+    {
+      "text": "public interface Strategy {\n\tvoid execute();\n}\npublic class Context {\n\tprivate Strategy strategy;\n\tpublic void setStrategy(Strategy strategy) {\n\t\tthis.strategy = strategy;\n\t}\n\tpublic void executeStrategy() {\n\t\tstrategy.execute();\n\t}\n}",
+      "source": "Strategy Pattern",
+      "id": 96,
+      "length": 234
+    },
+    {
+      "text": "public interface Observer {\n\tvoid update(String message);\n}\npublic class Subject {\n\tprivate List<Observer> observers = new ArrayList<>();\n\tpublic void attach(Observer observer) { observers.add(observer); }\n\tpublic void notifyObservers(String message) {\n\t\tobservers.forEach(o -> o.update(message));\n\t}\n}",
+      "source": "Observer Pattern",
+      "id": 97,
+      "length": 302
+    },
+    {
+      "text": "public class CacheProxy implements Service {\n\tprivate Service realService;\n\tprivate Map<String, String> cache = new HashMap<>();\n\tpublic String getData(String key) {\n\t\treturn cache.computeIfAbsent(key, k -> realService.getData(k));\n\t}\n}",
+      "source": "Proxy Pattern with Caching",
+      "id": 98,
+      "length": 236
+    },
+    {
+      "text": "Function<Integer, Integer> multiply = x -> x * 2;\nFunction<Integer, Integer> add = x -> x + 3;\nFunction<Integer, Integer> composed = multiply.andThen(add);\nint result = composed.apply(5);",
+      "source": "Function Composition",
+      "id": 99,
+      "length": 187
+    },
+    {
+      "text": "Predicate<String> notNull = Objects::nonNull;\nPredicate<String> notEmpty = s -> !s.isEmpty();\nPredicate<String> valid = notNull.and(notEmpty);\nlist.stream().filter(valid).collect(Collectors.toList());",
+      "source": "Predicate Chaining",
+      "id": 100,
+      "length": 200
+    },
+    {
+      "text": "Supplier<String> lazyValue = () -> expensiveComputation();\nConsumer<String> printer = System.out::println;\nBiFunction<Integer, Integer, Integer> adder = (a, b) -> a + b;",
+      "source": "Functional Interfaces - Supplier, Consumer, BiFunction",
+      "id": 101,
+      "length": 169
+    },
+    {
+      "text": "public <T> T retry(Supplier<T> operation, int maxRetries) {\n\tint attempts = 0;\n\twhile (attempts < maxRetries) {\n\t\ttry {\n\t\t\treturn operation.get();\n\t\t} catch (Exception e) {\n\t\t\tattempts++;\n\t\t\tif (attempts >= maxRetries) throw e;\n\t\t}\n\t}\n\tthrow new RuntimeException(\"Max retries exceeded\");\n}",
+      "source": "Retry Logic Pattern",
+      "id": 102,
+      "length": 289
+    },
+    {
+      "text": "public class CircuitBreaker {\n\tprivate int failureCount = 0;\n\tprivate final int threshold = 5;\n\tprivate boolean open = false;\n\tpublic <T> T execute(Supplier<T> operation) {\n\t\tif (open) throw new RuntimeException(\"Circuit open\");\n\t\ttry {\n\t\t\tT result = operation.get();\n\t\t\tfailureCount = 0;\n\t\t\treturn result;\n\t\t} catch (Exception e) {\n\t\t\tif (++failureCount >= threshold) open = true;\n\t\t\tthrow e;\n\t\t}\n\t}\n}",
+      "source": "Circuit Breaker Pattern",
+      "id": 103,
+      "length": 402
+    },
+    {
+      "text": "try (Connection conn = dataSource.getConnection();\n     PreparedStatement stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\")) {\n\tstmt.setInt(1, userId);\n\tResultSet rs = stmt.executeQuery();\n\twhile (rs.next()) {\n\t\tSystem.out.println(rs.getString(\"name\"));\n\t}\n} catch (SQLException e) {\n\te.printStackTrace();\n}",
+      "source": "JDBC Best Practices with Try-With-Resources",
+      "id": 104,
+      "length": 322
+    },
+    {
+      "text": "@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)\npublic void updateAccount(Account account) {\n\taccountRepository.save(account);\n\tauditLog.log(\"Account updated\");\n}",
+      "source": "Spring Transaction Management",
+      "id": 105,
+      "length": 203
+    },
+    {
+      "text": "@Cacheable(value = \"users\", key = \"#id\")\npublic User getUserById(Long id) {\n\treturn userRepository.findById(id).orElse(null);\n}\n@CacheEvict(value = \"users\", key = \"#user.id\")\npublic void updateUser(User user) {\n\tuserRepository.save(user);\n}",
+      "source": "Spring Cache Annotations",
+      "id": 106,
+      "length": 240
+    },
+    {
+      "text": "@Async\npublic CompletableFuture<String> processAsync() {\n\treturn CompletableFuture.completedFuture(performTask());\n}\n@Scheduled(fixedRate = 5000)\npublic void scheduledTask() {\n\tSystem.out.println(\"Running scheduled task\");\n}",
+      "source": "Spring Async and Scheduled Tasks",
+      "id": 107,
+      "length": 224
+    },
+    {
+      "text": "public class CustomException extends RuntimeException {\n\tprivate final String errorCode;\n\tpublic CustomException(String message, String errorCode) {\n\t\tsuper(message);\n\t\tthis.errorCode = errorCode;\n\t}\n\tpublic String getErrorCode() { return errorCode; }\n}",
+      "source": "Custom Exception with Error Codes",
+      "id": 108,
+      "length": 253
+    },
+    {
+      "text": "public Result<T> operation() {\n\ttry {\n\t\tT data = riskyOperation();\n\t\treturn Result.success(data);\n\t} catch (Exception e) {\n\t\treturn Result.failure(e.getMessage());\n\t}\n}",
+      "source": "Result Type Pattern (Avoid Exception for Control Flow)",
+      "id": 109,
+      "length": 168
+    },
+    {
+      "text": "private static final Logger logger = LoggerFactory.getLogger(MyClass.class);\npublic void process() {\n\tlogger.info(\"Processing started\");\n\tlogger.debug(\"Debug info: {}\", data);\n\tlogger.error(\"Error occurred\", exception);\n}",
+      "source": "SLF4J Logging Best Practices",
+      "id": 110,
+      "length": 221
+    },
+    {
+      "text": "Instant now = Instant.now();\nZonedDateTime zdt = ZonedDateTime.now(ZoneId.of(\"UTC\"));\nDuration duration = Duration.between(start, end);\nPeriod period = Period.between(startDate, endDate);\nboolean isBefore = date1.isBefore(date2);",
+      "source": "Java Time API - Instant, Duration, Period",
+      "id": 111,
+      "length": 229
+    },
+    {
+      "text": "DateTimeFormatter formatter = DateTimeFormatter.ofPattern(\"yyyy-MM-dd HH:mm:ss\");\nString formatted = LocalDateTime.now().format(formatter);\nLocalDateTime parsed = LocalDateTime.parse(\"2024-01-01 12:00:00\", formatter);",
+      "source": "DateTimeFormatter Parsing and Formatting",
+      "id": 112,
+      "length": 217
+    },
+    {
+      "text": "public <T> List<T> toList(T... elements) {\n\treturn Arrays.asList(elements);\n}\npublic <K, V> Map<K, V> createMap(K key, V value) {\n\tMap<K, V> map = new HashMap<>();\n\tmap.put(key, value);\n\treturn map;\n}",
+      "source": "Generic Methods with Type Parameters",
+      "id": 113,
+      "length": 200
+    },
+    {
+      "text": "public class Box<T extends Comparable<T>> {\n\tprivate T value;\n\tpublic T max(T other) {\n\t\treturn value.compareTo(other) > 0 ? value : other;\n\t}\n}",
+      "source": "Bounded Type Parameters",
+      "id": 114,
+      "length": 144
+    },
+    {
+      "text": "List<? extends Number> numbers = new ArrayList<Integer>();\nvoid process(List<? super Integer> list) {\n\tlist.add(42);\n}",
+      "source": "Wildcards - Extends and Super (PECS)",
+      "id": 115,
+      "length": 118
+    },
+    {
+      "text": "var list = List.of(1, 2, 3);\nvar map = Map.of(\"key\", \"value\");\nvar stream = list.stream().filter(x -> x > 1);",
+      "source": "Local Variable Type Inference (var)",
+      "id": 116,
+      "length": 109
+    },
+    {
+      "text": "switch (day) {\n\tcase MONDAY, FRIDAY, SUNDAY -> System.out.println(\"6\");\n\tcase TUESDAY -> System.out.println(\"7\");\n\tdefault -> System.out.println(\"8\");\n}\nint numLetters = switch (day) {\n\tcase MONDAY -> 6;\n\tcase TUESDAY -> 7;\n\tdefault -> 8;\n};",
+      "source": "Switch Expressions (Java 12+)",
+      "id": 117,
+      "length": 241
+    },
+    {
+      "text": "if (obj instanceof String s) {\n\tSystem.out.println(s.toUpperCase());\n}\nif (obj instanceof Integer i && i > 0) {\n\tSystem.out.println(\"Positive: \" + i);\n}",
+      "source": "Pattern Matching for instanceof (Java 14+)",
+      "id": 118,
+      "length": 152
+    },
+    {
+      "text": "record Person(String name, int age) {\n\tpublic Person {\n\t\tif (age < 0) throw new IllegalArgumentException();\n\t}\n\tpublic boolean isAdult() {\n\t\treturn age >= 18;\n\t}\n}",
+      "source": "Records for Immutable Data (Java 14+)",
+      "id": 119,
+      "length": 163
+    },
+    {
+      "text": "sealed interface Shape permits Circle, Rectangle, Triangle {}\nfinal class Circle implements Shape {}\nfinal class Rectangle implements Shape {}\nfinal class Triangle implements Shape {}",
+      "source": "Sealed Classes (Java 17+)",
+      "id": 120,
+      "length": 183
+    },
+    {
+      "text": "String result = switch (shape) {\n\tcase Circle c -> \"Circle with radius \" + c.radius();\n\tcase Rectangle r -> \"Rectangle \" + r.width() + \"x\" + r.height();\n\tcase Triangle t -> \"Triangle\";\n};",
+      "source": "Pattern Matching with Sealed Classes",
+      "id": 121,
+      "length": 187
+    },
+    {
+      "text": "WeakHashMap<Key, Value> cache = new WeakHashMap<>();\nWeakReference<Object> weakRef = new WeakReference<>(object);\nSoftReference<Object> softRef = new SoftReference<>(object);",
+      "source": "Weak and Soft References for Memory Management",
+      "id": 122,
+      "length": 174
+    },
+    {
+      "text": "Runtime runtime = Runtime.getRuntime();\nlong totalMemory = runtime.totalMemory();\nlong freeMemory = runtime.freeMemory();\nlong maxMemory = runtime.maxMemory();\nruntime.gc();",
+      "source": "JVM Memory Management",
+      "id": 123,
+      "length": 173
+    },
+    {
+      "text": "Class<?> clazz = Class.forName(\"com.example.MyClass\");\nObject instance = clazz.getDeclaredConstructor().newInstance();\nMethod method = clazz.getMethod(\"methodName\", String.class);\nObject result = method.invoke(instance, \"parameter\");",
+      "source": "Reflection API Basics",
+      "id": 124,
+      "length": 233
+    },
+    {
+      "text": "@Retention(RetentionPolicy.RUNTIME)\n@Target(ElementType.METHOD)\npublic @interface Timed {\n\tString value() default \"\";\n}\npublic void processAnnotations(Method method) {\n\tif (method.isAnnotationPresent(Timed.class)) {\n\t\tTimed timed = method.getAnnotation(Timed.class);\n\t}\n}",
+      "source": "Custom Annotations and Processing",
+      "id": 125,
+      "length": 271
+    },
+    {
+      "text": "public interface Repository<T, ID> {\n\tOptional<T> findById(ID id);\n\tList<T> findAll();\n\tT save(T entity);\n\tvoid deleteById(ID id);\n\tdefault boolean existsById(ID id) {\n\t\treturn findById(id).isPresent();\n\t}\n}",
+      "source": "Generic Repository Pattern",
+      "id": 126,
+      "length": 207
+    },
+    {
+      "text": "public class ThreadLocalContext {\n\tprivate static final ThreadLocal<User> currentUser = ThreadLocal.withInitial(() -> null);\n\tpublic static void setUser(User user) { currentUser.set(user); }\n\tpublic static User getUser() { return currentUser.get(); }\n\tpublic static void clear() { currentUser.remove(); }\n}",
+      "source": "ThreadLocal for Context Management",
+      "id": 127,
+      "length": 306
+    },
+    {
+      "text": "Semaphore semaphore = new Semaphore(3);\npublic void limitedAccess() throws InterruptedException {\n\tsemaphore.acquire();\n\ttry {\n\t\t// limited access section\n\t} finally {\n\t\tsemaphore.release();\n\t}\n}",
+      "source": "Semaphore for Resource Limiting",
+      "id": 128,
+      "length": 195
+    },
+    {
+      "text": "CyclicBarrier barrier = new CyclicBarrier(3, () -> System.out.println(\"All threads reached barrier\"));\npublic void workerThread() throws Exception {\n\tdoWork();\n\tbarrier.await();\n\tdoMoreWork();\n}",
+      "source": "CyclicBarrier for Thread Synchronization",
+      "id": 129,
+      "length": 194
+    },
+    {
+      "text": "Phaser phaser = new Phaser(1);\nphaser.register();\nfor (int i = 0; i < 3; i++) {\n\tnew Thread(() -> {\n\t\tphaser.arriveAndAwaitAdvance();\n\t\tdoPhaseWork();\n\t}).start();\n}\nphaser.arriveAndDeregister();",
+      "source": "Phaser for Multi-Phase Concurrent Operations",
+      "id": 130,
+      "length": 195
+    },
+    {
+      "text": "BlockingQueue<Task> queue = new LinkedBlockingQueue<>(100);\npublic void producer() throws InterruptedException {\n\tqueue.put(new Task());\n}\npublic Task consumer() throws InterruptedException {\n\treturn queue.take();\n}",
+      "source": "BlockingQueue for Producer-Consumer Pattern",
+      "id": 131,
+      "length": 215
+    },
+    {
+      "text": "List<CompletableFuture<String>> futures = tasks.stream()\n\t.map(task -> CompletableFuture.supplyAsync(() -> task.execute()))\n\t.collect(Collectors.toList());\nCompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();\nList<String> results = futures.stream().map(CompletableFuture::join).collect(Collectors.toList());",
+      "source": "Parallel Task Execution with CompletableFuture",
+      "id": 132,
+      "length": 329
+    },
+    {
+      "text": "ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);\nscheduler.schedule(() -> doTask(), 5, TimeUnit.SECONDS);\nscheduler.scheduleAtFixedRate(() -> doTask(), 0, 1, TimeUnit.MINUTES);\nscheduler.scheduleWithFixedDelay(() -> doTask(), 0, 1, TimeUnit.MINUTES);",
+      "source": "ScheduledExecutorService for Delayed/Periodic Tasks",
+      "id": 133,
+      "length": 275
+    },
+    {
+      "text": "ForkJoinPool pool = new ForkJoinPool();\nRecursiveTask<Long> task = new SumTask(array, 0, array.length);\nLong result = pool.invoke(task);\nclass SumTask extends RecursiveTask<Long> {\n\tprotected Long compute() {\n\t\tif (high - low <= THRESHOLD) return computeDirectly();\n\t\tSumTask left = new SumTask(array, low, mid);\n\t\tleft.fork();\n\t\treturn right.compute() + left.join();\n\t}\n}",
+      "source": "ForkJoinPool for Divide-and-Conquer Algorithms",
+      "id": 134,
+      "length": 372
+    },
+    {
+      "text": "public static <T> Collector<T, ?, List<T>> toImmutableList() {\n\treturn Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList);\n}\nList<String> immutable = stream.collect(toImmutableList());",
+      "source": "Custom Collector Implementation",
+      "id": 135,
+      "length": 214
+    },
+    {
+      "text": "Stream.iterate(0, n -> n + 1)\n\t.limit(10)\n\t.forEach(System.out::println);\nStream.generate(Math::random)\n\t.limit(5)\n\t.forEach(System.out::println);",
+      "source": "Infinite Streams with iterate() and generate()",
+      "id": 136,
+      "length": 146
+    },
+    {
+      "text": "IntStream.range(0, 10).forEach(System.out::println);\nOptionalInt max = IntStream.of(1, 2, 3, 4, 5).max();\nint sum = IntStream.rangeClosed(1, 100).sum();\ndouble avg = DoubleStream.of(1.0, 2.0, 3.0).average().orElse(0.0);",
+      "source": "Primitive Streams - IntStream, LongStream, DoubleStream",
+      "id": 137,
+      "length": 219
+    },
+    {
+      "text": "public class LazyLoader<T> {\n\tprivate volatile T instance;\n\tprivate final Supplier<T> supplier;\n\tpublic LazyLoader(Supplier<T> supplier) { this.supplier = supplier; }\n\tpublic T get() {\n\t\tif (instance == null) {\n\t\t\tsynchronized(this) {\n\t\t\t\tif (instance == null) instance = supplier.get();\n\t\t\t}\n\t\t}\n\t\treturn instance;\n\t}\n}",
+      "source": "Lazy Initialization Pattern",
+      "id": 138,
+      "length": 320
+    },
+    {
+      "text": "public <T> T measurePerformance(Supplier<T> operation, String operationName) {\n\tlong start = System.nanoTime();\n\tT result = operation.get();\n\tlong duration = System.nanoTime() - start;\n\tlogger.info(\"{} took {} ms\", operationName, duration / 1_000_000);\n\treturn result;\n}",
+      "source": "Performance Measurement Wrapper",
+      "id": 139,
+      "length": 270
+    },
+    {
+      "text": "public String processWithMetrics(String input) {\n\tTimer.Sample sample = Timer.start(meterRegistry);\n\ttry {\n\t\tString result = process(input);\n\t\tcounter.increment();\n\t\treturn result;\n\t} finally {\n\t\tsample.stop(timer);\n\t}\n}",
+      "source": "Micrometer Metrics Integration",
+      "id": 140,
+      "length": 220
     }
   ]
 }

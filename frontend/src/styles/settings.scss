@@ -169,9 +169,11 @@
     }
 
     &[data-config-name="fontFamily"],
-    &[data-config-name="customBackgroundSize"] {
+    &[data-config-name="customBackgroundSize"],
+    &.fpsLimit {
       .separator {
         margin-bottom: 0.5rem;
+        margin-top: 0.5rem;
         grid-column: span 2;
         // color: var(--sub-color);
         display: grid;
@@ -184,6 +186,15 @@
         height: 0.25em;
         border-radius: 0.25em;
         background: var(--sub-alt-color);
+      }
+    }
+
+    &.fpsLimit {
+      .inputs {
+        button,
+        input {
+          width: 100%;
+        }
       }
     }
 

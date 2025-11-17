@@ -45,6 +45,7 @@ import {
 import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 import { z } from "zod";
+import { remoteValidation } from "../utils/remote-validation";
 
 type PopupKey =
   | "updateEmail"
@@ -479,17 +480,10 @@ list.updateName = new SimpleModal({
       initVal: "",
       validation: {
         schema: UserNameSchema,
-        isValid: async (newName: string) => {
-          const checkNameResponse = await Ape.users.getNameAvailability({
-            params: { name: newName },
-          });
-
-          return (
-            (checkNameResponse.status === 200 &&
-              checkNameResponse.body.data.available) ||
-            "Name not available"
-          );
-        },
+        isValid: remoteValidation(
+          async (name) => Ape.users.getNameAvailability({ params: { name } }),
+          { check: (data) => data.available || "Name not available" }
+        ),
         debounceDelay: 1000,
       },
     },

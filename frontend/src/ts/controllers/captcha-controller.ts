@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { envConfig } from "../constants/env-config";
+import { envConfig } from "virtual:env-config";
 const siteKey = envConfig.recaptchaSiteKey;
 
 const captchas: Record<string, number> = {};

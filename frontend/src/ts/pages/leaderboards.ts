@@ -27,7 +27,7 @@ import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import { applyReducedMotion, isDevEnvironment } from "../utils/misc";
+import { isDevEnvironment } from "../utils/misc";
 import { abbreviateNumber } from "../utils/numbers";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { z } from "zod";
@@ -501,7 +501,7 @@ function buildWeeklyTableRow(
   }
   element.dataset["uid"] = entry.uid;
   element.innerHTML = `
-      <td></td>
+      <td>${formatRank(entry.friendsRank)}</td>
       <td>${formatRank(entry.rank)}</td>
       <td>
         <div class="avatarNameBadge">
@@ -766,9 +766,13 @@ function fillUser(): void {
     }
 
     const userData = state.userData;
-    const percentile = (userData.rank / state.count) * 100;
+    const rank = state.friendsOnly
+      ? (userData.friendsRank as number)
+      : userData.rank;
+    const percentile = (rank / state.count) * 100;
+
     let percentileString = `Top ${percentile.toFixed(2)}%`;
-    if (userData.rank === 1) {
+    if (rank === 1) {
       percentileString = "GOAT";
     }
 
@@ -805,7 +809,7 @@ function fillUser(): void {
     };
 
     const html = `
-          <div class="rank">${formatRank(userData.rank)}</div>
+          <div class="rank">${formatRank(rank)}</div>
         <div class="userInfo">
           <div class="top">You (${percentileString})</div>
           <div class="bottom">${diffText}</div>
@@ -894,15 +898,9 @@ function updateContent(): void {
   }
 
   if (state.scrollToUserAfterFill) {
-    const windowHeight = $(window).height() ?? 0;
-    const offset = $(`.tableAndUser .me`).offset()?.top ?? 0;
-    const scrollTo = offset - windowHeight / 2;
-    $([document.documentElement, document.body]).animate(
-      {
-        scrollTop: scrollTo,
-      },
-      applyReducedMotion(500)
-    );
+    document.querySelector(".tableAndUser .me")?.scrollIntoView({
+      block: "center",
+    });
     state.scrollToUserAfterFill = false;
   }
 }
@@ -925,7 +923,6 @@ function updateFriendsButtons(): void {
     ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons"
   );
   if (
-    state.type === "allTime" &&
     isAuthenticated() &&
     (ServerConfiguration.get()?.connections.enabled ?? false)
   ) {
@@ -1409,11 +1406,9 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     if (state.type === "daily") {
       state.language = "english";
       state.yesterday = false;
-      state.friendsOnly = false;
     }
     if (state.type === "weekly") {
       state.lastWeek = false;
-      state.friendsOnly = false;
     }
     checkIfLeaderboardIsValid();
     state.data = null;

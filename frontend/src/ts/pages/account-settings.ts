@@ -133,8 +133,8 @@ function updateIntegrationSections(): void {
 
 function updateTabs(): void {
   void swapElements(
-    pageElement.find(".tab.active"),
-    pageElement.find(`.tab[data-tab="${state.tab}"]`),
+    pageElement.find(".tab.active")[0] as HTMLElement,
+    pageElement.find(`.tab[data-tab="${state.tab}"]`)[0] as HTMLElement,
     250,
     async () => {
       //

@@ -1,4 +1,3 @@
-import _ from "lodash";
 import IORedis from "ioredis";
 import { Worker, Job, type ConnectionOptions } from "bullmq";
 import Logger from "../utils/logger";
@@ -17,6 +16,7 @@ import { recordTimeToCompleteJob } from "../utils/prometheus";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
 import { MonkeyMail } from "@monkeytype/schemas/users";
 import { isSafeNumber, mapRange } from "@monkeytype/util/numbers";
+import { RewardBracket } from "@monkeytype/schemas/configuration";
 
 async function handleDailyLeaderboardResults(
   ctx: LaterTaskContexts["daily-leaderboard-results"]
@@ -45,7 +45,7 @@ async function handleDailyLeaderboardResults(
     false
   );
 
-  if (results.length === 0) {
+  if (results === null || results.entries.length === 0) {
     return;
   }
 
@@ -55,24 +55,13 @@ async function handleDailyLeaderboardResults(
       mail: MonkeyMail[];
     }[] = [];
 
-    results.forEach((entry) => {
+    results.entries.forEach((entry) => {
       const rank = entry.rank ?? maxResults;
       const wpm = Math.round(entry.wpm);
 
       const placementString = getOrdinalNumberString(rank);
 
-      const xpReward = _(xpRewardBrackets)
-        .filter((bracket) => rank >= bracket.minRank && rank <= bracket.maxRank)
-        .map((bracket) =>
-          mapRange(
-            rank,
-            bracket.minRank,
-            bracket.maxRank,
-            bracket.maxReward,
-            bracket.minReward
-          )
-        )
-        .max();
+      const xpReward = calculateXpReward(xpRewardBrackets, rank);
 
       if (!isSafeNumber(xpReward)) return;
 
@@ -96,7 +85,7 @@ async function handleDailyLeaderboardResults(
     await addToInboxBulk(mailEntries, inboxConfig);
   }
 
-  const topResults = results.slice(
+  const topResults = results.entries.slice(
     0,
     dailyLeaderboardsConfig.topResultsToAnnounce
   );
@@ -136,7 +125,7 @@ async function handleWeeklyXpLeaderboardResults(
     false
   );
 
-  if (allResults.length === 0) {
+  if (allResults === null || allResults.entries.length === 0) {
     return;
   }
 
@@ -145,24 +134,13 @@ async function handleWeeklyXpLeaderboardResults(
     mail: MonkeyMail[];
   }[] = [];
 
-  allResults.forEach((entry) => {
+  allResults?.entries.forEach((entry) => {
     const { uid, name, rank = maxRankToGet, totalXp, timeTypedSeconds } = entry;
 
     const xp = Math.round(totalXp);
     const placementString = getOrdinalNumberString(rank);
 
-    const xpReward = _(xpRewardBrackets)
-      .filter((bracket) => rank >= bracket.minRank && rank <= bracket.maxRank)
-      .map((bracket) =>
-        mapRange(
-          rank,
-          bracket.minRank,
-          bracket.maxRank,
-          bracket.maxReward,
-          bracket.minReward
-        )
-      )
-      .max();
+    const xpReward = calculateXpReward(xpRewardBrackets, rank);
 
     if (!isSafeNumber(xpReward)) return;
 
@@ -208,6 +186,24 @@ async function jobHandler(job: Job<LaterTask<LaterTaskType>>): Promise<void> {
   Logger.success(`Job: ${taskName} - completed in ${elapsed}ms`);
 }
 
+function calculateXpReward(
+  xpRewardBrackets: RewardBracket[],
+  rank: number
+): number | undefined {
+  const rewards = xpRewardBrackets
+    .filter((bracket) => rank >= bracket.minRank && rank <= bracket.maxRank)
+    .map((bracket) =>
+      mapRange(
+        rank,
+        bracket.minRank,
+        bracket.maxRank,
+        bracket.maxReward,
+        bracket.minReward
+      )
+    );
+  return rewards.length ? Math.max(...rewards) : undefined;
+}
+
 export default (redisConnection?: IORedis.Redis): Worker => {
   const worker = new Worker(LaterQueue.queueName, jobHandler, {
     autorun: false,
@@ -219,4 +215,8 @@ export default (redisConnection?: IORedis.Redis): Worker => {
     );
   });
   return worker;
+};
+
+export const __testing = {
+  calculateXpReward,
 };

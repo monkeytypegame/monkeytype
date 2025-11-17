@@ -38,11 +38,7 @@ export const projects: UserWorkspaceConfig[] = [
         groupOrder: 2,
       },
       pool: "threads",
-      poolOptions: {
-        threads: {
-          singleThread: true,
-        },
-      },
+      maxWorkers: 1,
     },
   },
 ];
