@@ -9,8 +9,10 @@
     "target": "ES6",
     "noEmit": true,
     "paths": {
-      "virtual:language-hashes": ["./src/ts/virtual-language-hashes.d.ts"],
-      "virtual:env-config": ["./src/ts/virtual-env-config.d.ts"]
+      "virtual:language-hashes": [
+        "./src/ts/types/virtual-language-hashes.d.ts"
+      ],
+      "virtual:env-config": ["./src/ts/types/virtual-env-config.d.ts"]
     }
   },
   "include": ["./src/**/*.ts", "./scripts/**/*.ts", "vite-plugins/**/*.ts"],
