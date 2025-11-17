@@ -111,11 +111,11 @@ class Notification {
       if (notif === null) return;
 
       const notifHeight = notif.offsetHeight;
-      const duration = 250;
+      const duration = Misc.applyReducedMotion(250);
 
       animate(notif, {
         opacity: [0, 1],
-        duration: Misc.applyReducedMotion(duration / 2),
+        duration: duration / 2,
         delay: duration / 2,
       });
       notif?.addEventListener("click", () => {
@@ -135,7 +135,7 @@ class Notification {
           from: "-=" + notifHeight,
           to: 0,
         },
-        duration: Misc.applyReducedMotion(duration / 2),
+        duration: duration / 2,
       });
       $(`#notificationCenter .notif[id='${this.id}']`).on("hover", () => {
         $(`#notificationCenter .notif[id='${this.id}']`).toggleClass("hover");
