@@ -1,3 +1,4 @@
+import { animate } from "animejs";
 import { applyReducedMotion } from "../utils/misc";
 
 export function hide(): void {
@@ -22,14 +23,17 @@ export function getCurrentType(): CrownType {
 export function show(): void {
   if (visible) return;
   visible = true;
-  const el = $("#result .stats .wpm .crown");
-  el.removeClass("hidden").css("opacity", "0").animate(
-    {
-      opacity: 1,
+  const el = document.querySelector(
+    "#result .stats .wpm .crown"
+  ) as HTMLElement;
+
+  animate(el, {
+    opacity: [0, 1],
+    duration: applyReducedMotion(125),
+    onBegin: () => {
+      el.classList.remove("hidden");
     },
-    applyReducedMotion(250),
-    "easeOutCubic"
-  );
+  });
 }
 
 export function update(type: CrownType): void {

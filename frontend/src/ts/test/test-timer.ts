@@ -18,6 +18,7 @@ import * as TimerEvent from "../observables/timer-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
+import { clearLowFpsMode, setLowFpsMode } from "../anim";
 
 type TimerStats = {
   dateNow: number;
@@ -37,6 +38,7 @@ export function enableTimerDebug(): void {
 }
 
 export function clear(): void {
+  clearLowFpsMode();
   Time.set(0);
   if (timer !== null) clearTimeout(timer);
 }
@@ -239,6 +241,7 @@ export async function start(): Promise<void> {
       if (delay < interval / 2) {
         //slow timer
         SlowTimer.set();
+        setLowFpsMode();
       }
       if (delay < interval / 10) {
         slowTimerCount++;

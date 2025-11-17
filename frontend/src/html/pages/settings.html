@@ -1887,6 +1887,35 @@
         <button>open</button>
       </div>
     </div>
+    <div class="section fpsLimit">
+      <div class="groupTitle">
+        <i class="fas fa-video"></i>
+        <span>animation fps limit</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Limit the maximum fps for animations. Setting this to "native" will run
+        the animations as fast as possible (at your monitor's refresh rate).
+        Setting this above your monitor's refresh rate will have no effect.
+      </div>
+      <!-- <div class="inputs">
+        <div class="rangeGroup">
+          <div class="value">---</div>
+          <input type="range" min="30" max="1000" step="10" />
+        </div>
+      </div> -->
+      <div class="inputs">
+        <button data-fpsLimit="native">native</button>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
+        <input type="number" placeholder="custom limit" min="30" max="1000" />
+      </div>
+    </div>
     <div class="section resetSettings" data-section-id="resetSettings">
       <div class="groupTitle">
         <i class="fas fa-redo-alt"></i>

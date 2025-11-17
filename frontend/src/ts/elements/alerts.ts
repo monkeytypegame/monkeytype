@@ -13,6 +13,7 @@ import { MonkeyMail } from "@monkeytype/schemas/users";
 import * as XPBar from "../elements/xp-bar";
 import * as AuthEvent from "../observables/auth-event";
 import * as ActivePage from "../states/active-page";
+import { animate } from "animejs";
 
 let accountAlerts: MonkeyMail[] = [];
 let maxMail = 0;
@@ -341,18 +342,16 @@ function markReadAlert(id: string): void {
     .append(
       `<button class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></button>`
     );
-  item.find(".rewards").animate(
-    {
-      opacity: 0,
-      height: 0,
-      marginTop: 0,
-    },
-    250,
-    "easeOutCubic",
-    () => {
+
+  animate(item.find(".rewards")[0] as HTMLElement, {
+    opacity: 0,
+    height: 0,
+    marginTop: 0,
+    duration: 250,
+    onComplete: () => {
       item.find(".rewards").remove();
-    }
-  );
+    },
+  });
 }
 
 function updateClaimDeleteAllButton(): void {
@@ -414,24 +413,12 @@ const modal = new AnimatedModal({
   customAnimations: {
     show: {
       modal: {
-        from: {
-          marginRight: "-10rem",
-        },
-        to: {
-          marginRight: "0",
-        },
-        easing: "easeOutCirc",
+        marginRight: ["-10rem", "0"],
       },
     },
     hide: {
       modal: {
-        from: {
-          marginRight: "0",
-        },
-        to: {
-          marginRight: "-10rem",
-        },
-        easing: "easeInCirc",
+        marginRight: ["0", "-10rem"],
       },
     },
   },

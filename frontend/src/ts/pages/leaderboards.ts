@@ -27,7 +27,7 @@ import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import { applyReducedMotion, isDevEnvironment } from "../utils/misc";
+import { isDevEnvironment } from "../utils/misc";
 import { abbreviateNumber } from "../utils/numbers";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { z } from "zod";
@@ -898,15 +898,9 @@ function updateContent(): void {
   }
 
   if (state.scrollToUserAfterFill) {
-    const windowHeight = $(window).height() ?? 0;
-    const offset = $(`.tableAndUser .me`).offset()?.top ?? 0;
-    const scrollTo = offset - windowHeight / 2;
-    $([document.documentElement, document.body]).animate(
-      {
-        scrollTop: scrollTo,
-      },
-      applyReducedMotion(500)
-    );
+    document.querySelector(".tableAndUser .me")?.scrollIntoView({
+      block: "center",
+    });
     state.scrollToUserAfterFill = false;
   }
 }
