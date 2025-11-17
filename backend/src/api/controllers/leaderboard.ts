@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import * as ConnectionsDal from "../../dal/connections";
@@ -27,6 +26,7 @@ import {
   MILLISECONDS_IN_DAY,
 } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
+import { omit } from "../../utils/misc";
 
 export async function getLeaderboard(
   req: MonkeyRequest<GetLeaderboardQuery>
@@ -68,7 +68,7 @@ export async function getLeaderboard(
     language,
     friendsOnlyUid
   );
-  const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
+  const normalizedLeaderboard = leaderboard.map((it) => omit(it, ["_id"]));
 
   return new MonkeyResponse("Leaderboard retrieved", {
     count,
@@ -98,7 +98,10 @@ export async function getRankFromLeaderboard(
     );
   }
 
-  return new MonkeyResponse("Rank retrieved", _.omit(data, "_id"));
+  return new MonkeyResponse(
+    "Rank retrieved",
+    omit(data as LeaderboardsDAL.DBLeaderboardEntry, ["_id"])
+  );
 }
 
 function getDailyLeaderboardWithError(
