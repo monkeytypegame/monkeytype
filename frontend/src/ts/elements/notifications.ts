@@ -135,7 +135,7 @@ class Notification {
           from: "-=" + notifHeight,
           to: 0,
         },
-        duration: Misc.applyReducedMotion(duration),
+        duration: Misc.applyReducedMotion(duration / 2),
       });
       $(`#notificationCenter .notif[id='${this.id}']`).on("hover", () => {
         $(`#notificationCenter .notif[id='${this.id}']`).toggleClass("hover");
@@ -212,12 +212,12 @@ class Notification {
         },
         height: {
           to: 0,
-          duration: Misc.applyReducedMotion(250),
+          duration: Misc.applyReducedMotion(125),
           delay: Misc.applyReducedMotion(125),
         },
         marginBottom: {
           to: 0,
-          duration: Misc.applyReducedMotion(250),
+          duration: Misc.applyReducedMotion(125),
           delay: Misc.applyReducedMotion(125),
         },
         onComplete: () => {
