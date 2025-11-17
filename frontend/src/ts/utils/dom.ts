@@ -7,13 +7,16 @@ export function onDocumentReady(callback: () => void): void {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-export function qs<T extends HTMLElement>(
+export function qs<T extends Element = HTMLElement>(
   selector: string,
   nonNull?: false
 ): T | null;
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-export function qs<T extends HTMLElement>(selector: string, nonNull: true): T;
-export function qs<T extends HTMLElement>(
+export function qs<T extends Element = HTMLElement>(
+  selector: string,
+  nonNull: true
+): T;
+export function qs<T extends Element = HTMLElement>(
   selector: string,
   nonNull = false
 ): T | null {
@@ -24,7 +27,7 @@ export function qs<T extends HTMLElement>(
   return element;
 }
 
-export function qsa<T extends HTMLElement>(
+export function qsa<T extends Element = HTMLElement>(
   selector: string,
   parent: Document | HTMLElement = document
 ): T[] {
