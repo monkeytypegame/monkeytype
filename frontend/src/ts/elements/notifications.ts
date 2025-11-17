@@ -205,20 +205,23 @@ class Notification {
       const elem = document.querySelector(
         `#notificationCenter .notif[id='${this.id}']`
       ) as HTMLElement;
+
+      const duration = Misc.applyReducedMotion(250);
+
       animate(elem, {
         opacity: {
           to: 0,
-          duration: Misc.applyReducedMotion(250),
+          duration: duration,
         },
         height: {
           to: 0,
-          duration: Misc.applyReducedMotion(125),
-          delay: Misc.applyReducedMotion(125),
+          duration: duration / 2,
+          delay: duration / 2,
         },
         marginBottom: {
           to: 0,
-          duration: Misc.applyReducedMotion(125),
-          delay: Misc.applyReducedMotion(125),
+          duration: duration / 2,
+          delay: duration / 2,
         },
         onComplete: () => {
           elem.remove();
