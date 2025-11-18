@@ -92,9 +92,11 @@ async function handleEnter(e: KeyboardEvent, now: number): Promise<void> {
             }
           );
         }
+        return;
       } else {
         TestState.setBailedOut(true);
         void TestLogic.finish();
+        return;
       }
     }
   }
