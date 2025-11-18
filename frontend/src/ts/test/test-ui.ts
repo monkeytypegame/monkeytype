@@ -1312,7 +1312,13 @@ async function loadWordsHistory(): Promise<boolean> {
       }
 
       const errorClass =
-        Config.mode === "zen" ? "" : input !== word ? "error" : "";
+        Config.mode === "zen"
+          ? ""
+          : input !== word
+          ? word.substring(0, input.length) === input
+            ? "incomplete"
+            : "error"
+          : "";
 
       if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean

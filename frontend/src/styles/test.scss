@@ -558,6 +558,16 @@
       0px 1px 0px var(--bg-color),
       1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
   }
+  &.incomplete {
+    /*   margin-bottom: 1px; */
+    border-bottom: 2px solid yellow;
+    text-shadow: 1px 0px 0px var(--bg-color),
+      // 2px 0px 0px var(--bg-color),
+      -1px 0px 0px var(--bg-color),
+      // -2px 0px 0px var(--bg-color),
+      0px 1px 0px var(--bg-color),
+      1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
+  }
 }
 
 #resultWordsHistory {
