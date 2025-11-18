@@ -37,6 +37,7 @@ export function onDelete(inputType: DeleteInputType): void {
     //   Config.freedomMode)
   ) {
     setInputValue("");
+    //todo move this to test ui when updateActiveWoedLetters accepts word index params
     void TestUI.updateActiveWordLetters();
     goToPreviousWord(inputType);
   } else {
