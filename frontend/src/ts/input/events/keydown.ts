@@ -171,7 +171,8 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
     event.key === "Home" ||
     event.key === "End" ||
     event.key === "PageUp" ||
-    event.key === "PageDown"
+    event.key === "PageDown" ||
+    event.key.startsWith("Arrow")
   ) {
     event.preventDefault();
     return;
