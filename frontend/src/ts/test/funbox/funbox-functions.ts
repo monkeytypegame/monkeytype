@@ -334,6 +334,30 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return randomcaseword;
     },
   },
+  rot13: {
+    alterText(word: string): string {
+      let alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+      let result = "";
+
+      for (let ch of word) {
+        let chIndex = alphabet.indexOf(ch.toLowerCase());
+        if (chIndex === -1) {
+          result += ch;
+          continue;
+        }
+
+        let rot13Ch = (chIndex + 13) % 26;
+        if (ch.toUpperCase() === ch) {
+          result += alphabet[rot13Ch]?.toUpperCase();
+        } else {
+          result += alphabet[rot13Ch];
+        }
+      }
+
+      return result;
+    },
+  },
   backwards: {
     alterText(word: string): string {
       return word.split("").reverse().join("");
