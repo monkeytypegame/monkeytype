@@ -1217,19 +1217,28 @@
   padding: 1em 2em;
 }
 
-#koInputVisualContainer {
-  position: relative;
-  padding-top: 1rem;
-  width: -moz-min-content;
-  width: min-content;
-  height: 3rem;
-  margin: 0 auto;
+#compositionDisplay {
+  // position: relative;
+  // padding-top: 1rem;
+  // width: -moz-min-content;
+  // width: min-content;
+  // height: 3rem;
+  // margin: 0 auto;
 
-  font-weight: bold;
-  font-size: 1.5rem;
-  color: var(--sub-color);
-  cursor: default;
+  // font-weight: bold;
+  // font-size: 1.5rem;
+  // color: var(--sub-color);
+  // cursor: default;
+  // user-select: none;
+  font-size: 0.5em;
+  display: flex;
+  margin: 1rem auto 0px;
+  padding: 1rem 2rem;
+  height: 1.25em;
+  box-sizing: content-box;
   user-select: none;
+  cursor: default;
+  color: var(--sub-color);
 
   &.blurred {
     opacity: 0.25;

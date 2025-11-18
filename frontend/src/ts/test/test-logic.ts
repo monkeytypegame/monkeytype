@@ -83,9 +83,9 @@ import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
+import * as CompositionDisplay from "../elements/composition-display";
 
 let failReason = "";
-const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
 export let notSignedInLastResult: CompletedEvent | null = null;
 
@@ -323,13 +323,11 @@ export function restart(options = {} as RestartOptions): void {
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       $("#wordsInput").css({ left: 0 }).val(" ");
 
-      if (Config.language.startsWith("korean")) {
-        koInputVisual.innerText = " ";
-        Config.mode !== "zen"
-          ? $("#koInputVisualContainer").show()
-          : $("#koInputVisualContainer").hide();
+      if (CompositionDisplay.shouldShow()) {
+        CompositionDisplay.update(" ");
+        CompositionDisplay.show();
       } else {
-        $("#koInputVisualContainer").hide();
+        CompositionDisplay.hide();
       }
 
       Focus.set(false);
