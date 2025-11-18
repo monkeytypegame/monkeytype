@@ -42,8 +42,8 @@ import { SupportedInputType } from "../helpers/input-type";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
-  ["œ", "oe"],
-  ["æ", "ae"],
+  // ["œ", "oe"],
+  // ["æ", "ae"],
 ]);
 
 type OnInsertTextParams = {
