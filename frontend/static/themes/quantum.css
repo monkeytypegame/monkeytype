@@ -1,0 +1,68 @@
+:root {
+  --bg-color: #040527;
+  --main-color: #2f93ff;
+  --caret-color: #00ffff;
+  --text-color: #dde5ed;
+  --error-color: #fd77d7;
+  --sub-color: #596594;
+  --sub-alt-color: #0a0a40;
+  --error-color: #ff5869;
+  --error-extra-color: #b03c47;
+  --colorful-error-color: #ff5869;
+  --colorful-error-extra-color: #b03c47;
+}
+
+header #logo .top {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+}
+
+#words .incorrect.extra {
+  transform: rotateY(180deg);
+  unicode-bidi: bidi-override;
+  direction: rtl;
+}
+
+nav {
+  gap: 0.5rem;
+}
+
+nav > .textButton:hover {
+  color: currentColor;
+}
+
+nav > .textButton {
+  border-radius: 10rem i !important;
+  color: var(--bg-color);
+}
+
+nav > .textButton:nth-child(1) {
+  color: #aaff4faa;
+}
+
+nav > .textButton:nth-child(2) {
+  color: #ffdd70aa;
+}
+
+nav > .textButton:nth-child(3) {
+  color: #00ddeeaa;
+}
+
+nav > .textButton:nth-child(4) {
+  color: #8f6fffaa;
+}
+
+nav > .textButton:nth-child(5) {
+  background: #aaff4faa;
+}
+
+nav > .textButton:nth-child(6) {
+  background: #ffdd70aa;
+}
+
+nav > .textButton:nth-child(7) {
+  background: #00ddeeaa;
+}
+
+nav > .textButton:nth-child(8) {
+  background: #8f6fffaa;
+}

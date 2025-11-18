@@ -1126,6 +1126,12 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#ffaca3",
     textColor: "#feffdb",
   },
+  quantum: {
+    bgColor: "#040527",
+    mainColor: "#2f93ff",
+    subColor: "#596594",
+    textColor: "#dde5ed",
+  },
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
