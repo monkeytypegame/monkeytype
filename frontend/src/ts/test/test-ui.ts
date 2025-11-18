@@ -1698,23 +1698,23 @@ export function afterTestDelete(): void {
 export function beforeTestWordChange(
   direction: "forward",
   correct: boolean,
-  isCompositionEnding: boolean
+  forceUpdateActiveWordLetters: boolean
 ): void;
 export function beforeTestWordChange(
   direction: "back",
   correct: null,
-  isCompositionEnding: false
+  forceUpdateActiveWordLetters: false
 ): void;
 export function beforeTestWordChange(
   direction: "forward" | "back",
   correct: boolean | null,
-  isCompositionEnding: boolean
+  forceUpdateActiveWordLetters: boolean
 ): void {
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
   if (
     (Config.stopOnError === "letter" && (correct || correct === null)) ||
     nospaceEnabled ||
-    isCompositionEnding
+    forceUpdateActiveWordLetters
   ) {
     void updateActiveWordLetters();
   }
