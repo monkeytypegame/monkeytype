@@ -19,7 +19,10 @@ import {
   setLastBailoutAttempt,
 } from "../core/state";
 import { emulateInsertText } from "./input";
-import { getActiveFunboxesWithFunction } from "../../test/funbox/list";
+import {
+  getActiveFunboxesWithFunction,
+  getActiveFunboxNames,
+} from "../../test/funbox/list";
 
 function handleKeydownTiming(event: KeyboardEvent, now: number): void {
   if (event.repeat) {
@@ -123,7 +126,7 @@ async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
     Config.oppositeShiftMode === "keymap" &&
     Config.keymapLayout !== "overrideSync"
   ) {
-    const keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
+    let keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
       () => undefined
     );
     if (keymapLayout === undefined) {
@@ -131,6 +134,12 @@ async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
 
       return;
     }
+
+    const funbox = getActiveFunboxNames().includes("layout_mirror");
+    if (funbox) {
+      keymapLayout = KeyConverter.mirrorLayoutKeys(keymapLayout);
+    }
+
     const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
 
     setCorrectShiftUsed(
@@ -149,6 +158,10 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
 
   for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
     void fb.functions.handleKeydown(event);
+  }
+
+  if (Config.oppositeShiftMode !== "off") {
+    await handleOppositeShift(event);
   }
 
   for (const fb of getActiveFunboxesWithFunction("getEmulatedChar")) {
@@ -178,10 +191,6 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
   ) {
     event.preventDefault();
     return;
-  }
-
-  if (Config.oppositeShiftMode !== "off") {
-    await handleOppositeShift(event);
   }
 
   if (!event.repeat) {
