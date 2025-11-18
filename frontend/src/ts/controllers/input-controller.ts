@@ -940,313 +940,313 @@ let awaitingNextWord = false;
 //   }
 // });
 
-let lastBailoutAttempt = -1;
+// let lastBailoutAttempt = -1;
 
-$(document).on("keydown", async (event) => {
-  if (PageTransition.get()) {
-    console.debug("Ignoring keydown during page transition.");
-    return;
-  }
+// $(document).on("keydown", async (event) => {
+//   if (PageTransition.get()) {
+//     console.debug("Ignoring keydown during page transition.");
+//     return;
+//   }
 
-  if (IgnoredKeys.includes(event.key)) {
-    console.debug(
-      `Key ${event.key} is on the list of ignored keys. Stopping keydown event.`
-    );
-    event.preventDefault();
-    return;
-  }
+//   if (IgnoredKeys.includes(event.key)) {
+//     console.debug(
+//       `Key ${event.key} is on the list of ignored keys. Stopping keydown event.`
+//     );
+//     event.preventDefault();
+//     return;
+//   }
 
-  // for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
-  //   void fb.functions.handleKeydown(event);
-  // }
+// for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
+//   void fb.functions.handleKeydown(event);
+// }
 
-  //autofocus
-  const wordsFocused: boolean = $("#wordsInput").is(":focus");
-  const pageTestActive: boolean = ActivePage.get() === "test";
-  const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
+//autofocus
+// const wordsFocused: boolean = $("#wordsInput").is(":focus");
+// const pageTestActive: boolean = ActivePage.get() === "test";
+// const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
 
-  const popupVisible: boolean = Misc.isAnyPopupVisible();
+// const popupVisible: boolean = Misc.isAnyPopupVisible();
 
-  const allowTyping: boolean =
-    pageTestActive &&
-    !commandLineVisible &&
-    !popupVisible &&
-    !TestState.resultVisible &&
-    (wordsFocused || event.key !== "Enter") &&
-    !awaitingNextWord;
+// const allowTyping: boolean =
+//   pageTestActive &&
+//   !commandLineVisible &&
+//   !popupVisible &&
+//   !TestState.resultVisible &&
+//   (wordsFocused || event.key !== "Enter") &&
+//   !awaitingNextWord;
 
-  // if (
-  //   allowTyping &&
-  //   !wordsFocused &&
-  //   !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(event.key) &&
-  //   !event.metaKey &&
-  //   !event.ctrlKey &&
-  //   !event.altKey &&
-  //   !event.shiftKey
-  // ) {
-  //   console.log("focusing", event);
-  //   TestUI.focusWords();
-  //   event.preventDefault();
-  // }
+// if (
+//   allowTyping &&
+//   !wordsFocused &&
+//   !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(event.key) &&
+//   !event.metaKey &&
+//   !event.ctrlKey &&
+//   !event.altKey &&
+//   !event.shiftKey
+// ) {
+//   console.log("focusing", event);
+//   TestUI.focusWords();
+//   event.preventDefault();
+// }
 
-  //tab
-  // if (event.key === "Tab") {
-  //   await handleTab(event, popupVisible);
-  // }
+//tab
+// if (event.key === "Tab") {
+//   await handleTab(event, popupVisible);
+// }
 
-  //esc
-  if (event.key === "Escape" && Config.quickRestart === "esc") {
-    const modalVisible: boolean =
-      Misc.isPopupVisible("commandLineWrapper") || popupVisible;
+//esc
+// if (event.key === "Escape" && Config.quickRestart === "esc") {
+//   const modalVisible: boolean =
+//     Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
-    if (modalVisible) return;
+//   if (modalVisible) return;
 
-    // change page if not on test page
-    if (ActivePage.get() !== "test") {
-      await navigate("/");
-      return;
-    }
+//   // change page if not on test page
+//   if (ActivePage.get() !== "test") {
+//     await navigate("/");
+//     return;
+//   }
 
-    // in case we are in a long test, setting manual restart
-    if (event.shiftKey) {
-      ManualRestart.set();
-    } else {
-      ManualRestart.reset();
-    }
+//   // in case we are in a long test, setting manual restart
+//   if (event.shiftKey) {
+//     ManualRestart.set();
+//   } else {
+//     ManualRestart.reset();
+//   }
 
-    //otherwise restart
-    TestLogic.restart({
-      event,
-    });
-  }
+//   //otherwise restart
+//   TestLogic.restart({
+//     event,
+//   });
+// }
 
-  //enter
-  if (event.key === "Enter" && Config.quickRestart === "enter") {
-    //check if active element is a button, anchor, or has class button, or textButton
-    const activeElement: HTMLElement | null =
-      document.activeElement as HTMLElement;
-    const activeElementIsButton: boolean =
-      activeElement?.tagName === "BUTTON" ||
-      activeElement?.tagName === "A" ||
-      activeElement?.classList.contains("button") ||
-      activeElement?.classList.contains("textButton") ||
-      (activeElement?.tagName === "INPUT" &&
-        activeElement?.id !== "wordsInput");
+//enter
+// if (event.key === "Enter" && Config.quickRestart === "enter") {
+//   //check if active element is a button, anchor, or has class button, or textButton
+//   const activeElement: HTMLElement | null =
+//     document.activeElement as HTMLElement;
+//   const activeElementIsButton: boolean =
+//     activeElement?.tagName === "BUTTON" ||
+//     activeElement?.tagName === "A" ||
+//     activeElement?.classList.contains("button") ||
+//     activeElement?.classList.contains("textButton") ||
+//     (activeElement?.tagName === "INPUT" &&
+//       activeElement?.id !== "wordsInput");
 
-    if (activeElementIsButton) return;
+//   if (activeElementIsButton) return;
 
-    const modalVisible: boolean =
-      Misc.isPopupVisible("commandLineWrapper") || popupVisible;
+//   const modalVisible: boolean =
+//     Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
-    if (modalVisible) return;
+//   if (modalVisible) return;
 
-    // change page if not on test page
-    if (ActivePage.get() !== "test") {
-      await navigate("/");
-      return;
-    }
+//   // change page if not on test page
+//   if (ActivePage.get() !== "test") {
+//     await navigate("/");
+//     return;
+//   }
 
-    if (TestState.resultVisible) {
-      TestLogic.restart({
-        event,
-      });
-      return;
-    }
+//   if (TestState.resultVisible) {
+//     TestLogic.restart({
+//       event,
+//     });
+//     return;
+//   }
 
-    if (Config.mode === "zen") {
-      //do nothing
-    } else if (
-      (!TestWords.hasNewline && !Config.funbox.includes("58008")) ||
-      ((TestWords.hasNewline || Config.funbox.includes("58008")) &&
-        event.shiftKey)
-    ) {
-      // in case we are in a long test, setting manual restart
-      if (event.shiftKey) {
-        ManualRestart.set();
-      } else {
-        ManualRestart.reset();
-      }
+//   if (Config.mode === "zen") {
+//     //do nothing
+//   } else if (
+//     (!TestWords.hasNewline && !Config.funbox.includes("58008")) ||
+//     ((TestWords.hasNewline || Config.funbox.includes("58008")) &&
+//       event.shiftKey)
+//   ) {
+//     // in case we are in a long test, setting manual restart
+//     if (event.shiftKey) {
+//       ManualRestart.set();
+//     } else {
+//       ManualRestart.reset();
+//     }
 
-      //otherwise restart
-      TestLogic.restart({
-        event,
-      });
-    }
-  }
+//     //otherwise restart
+//     TestLogic.restart({
+//       event,
+//     });
+//   }
+// }
 
-  if (!allowTyping) return;
+// if (!allowTyping) return;
 
-  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
-    event.preventDefault();
-    return;
-  }
+// if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
+//   event.preventDefault();
+//   return;
+// }
 
-  TestInput.setCurrentNotAfk();
+// TestInput.setCurrentNotAfk();
 
-  //blocking firefox from going back in history with backspace
-  if (event.key === "Backspace") {
-    void Sound.playClick();
-    const t = /INPUT|SELECT|TEXTAREA/i;
-    if (
-      !t.test((event.target as unknown as Element).tagName)
-      // if this breaks in the future, call mio and tell him to stop being lazy
-      // (event.target as unknown as KeyboardEvent).disabled ||
-      // (event.target as unknown as Element).readOnly
-    ) {
-      event.preventDefault();
-    }
+//blocking firefox from going back in history with backspace
+// if (event.key === "Backspace") {
+//   void Sound.playClick();
+//   const t = /INPUT|SELECT|TEXTAREA/i;
+//   if (
+//     !t.test((event.target as unknown as Element).tagName)
+//     // if this breaks in the future, call mio and tell him to stop being lazy
+//     // (event.target as unknown as KeyboardEvent).disabled ||
+//     // (event.target as unknown as Element).readOnly
+//   ) {
+//     event.preventDefault();
+//   }
 
-    if (Config.confidenceMode === "max") {
-      event.preventDefault();
-      return;
-    }
+//   if (Config.confidenceMode === "max") {
+//     event.preventDefault();
+//     return;
+//   }
 
-    // if the user backspaces the indentation in a code language we need to empty
-    // the current word so the user is set back to the end of the last line
-    if (
-      Config.codeUnindentOnBackspace &&
-      TestInput.input.current.length > 0 &&
-      /^\t*$/.test(TestInput.input.current) &&
-      Config.language.startsWith("code") &&
-      isCharCorrect(
-        TestInput.input.current.slice(-1),
-        TestInput.input.current.length - 1
-      ) &&
-      (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
-        TestWords.words.get(TestState.activeWordIndex - 1) ||
-        Config.freedomMode)
-    ) {
-      TestInput.input.current = "";
-      await TestUI.updateActiveWordLetters();
-    }
-  }
+// if the user backspaces the indentation in a code language we need to empty
+// the current word so the user is set back to the end of the last line
+//   if (
+//     Config.codeUnindentOnBackspace &&
+//     TestInput.input.current.length > 0 &&
+//     /^\t*$/.test(TestInput.input.current) &&
+//     Config.language.startsWith("code") &&
+//     isCharCorrect(
+//       TestInput.input.current.slice(-1),
+//       TestInput.input.current.length - 1
+//     ) &&
+//     (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
+//       TestWords.words.get(TestState.activeWordIndex - 1) ||
+//       Config.freedomMode)
+//   ) {
+//     TestInput.input.current = "";
+//     await TestUI.updateActiveWordLetters();
+//   }
+// }
 
-  if (event.key === "Backspace" && TestInput.input.current.length === 0) {
-    backspaceToPrevious();
-    if (TestInput.input.current) {
-      setWordsInput(" " + TestInput.input.current + " ");
-    }
-  }
+// if (event.key === "Backspace" && TestInput.input.current.length === 0) {
+//   backspaceToPrevious();
+//   if (TestInput.input.current) {
+//     setWordsInput(" " + TestInput.input.current + " ");
+//   }
+// }
 
-  if (event.key === "Enter") {
-    if (event.shiftKey) {
-      if (Config.mode === "zen") {
-        void TestLogic.finish();
-      } else if (
-        !canQuickRestart(
-          Config.mode,
-          Config.words,
-          Config.time,
-          CustomText.getData(),
-          CustomTextState.isCustomTextLong() ?? false
-        )
-      ) {
-        const delay = Date.now() - lastBailoutAttempt;
-        if (lastBailoutAttempt === -1 || delay > 200) {
-          lastBailoutAttempt = Date.now();
-          if (delay >= 5000) {
-            Notifications.add(
-              "Please double tap shift+enter to confirm bail out",
-              0,
-              {
-                important: true,
-                duration: 5,
-              }
-            );
-          }
-        } else {
-          TestState.setBailedOut(true);
-          void TestLogic.finish();
-        }
-      } else {
-        await handleChar("\n", TestInput.input.current.length);
-        setWordsInput(" " + TestInput.input.current);
-        updateUI();
-      }
-    } else {
-      await handleChar("\n", TestInput.input.current.length);
-      setWordsInput(" " + TestInput.input.current);
-      updateUI();
-    }
-  }
+// if (event.key === "Enter") {
+//   if (event.shiftKey) {
+//     if (Config.mode === "zen") {
+//       void TestLogic.finish();
+//     } else if (
+//       !canQuickRestart(
+//         Config.mode,
+//         Config.words,
+//         Config.time,
+//         CustomText.getData(),
+//         CustomTextState.isCustomTextLong() ?? false
+//       )
+//     ) {
+//       const delay = Date.now() - lastBailoutAttempt;
+//       if (lastBailoutAttempt === -1 || delay > 200) {
+//         lastBailoutAttempt = Date.now();
+//         if (delay >= 5000) {
+//           Notifications.add(
+//             "Please double tap shift+enter to confirm bail out",
+//             0,
+//             {
+//               important: true,
+//               duration: 5,
+//             }
+//           );
+//         }
+//       } else {
+//         TestState.setBailedOut(true);
+//         void TestLogic.finish();
+//       }
+//     } else {
+//       await handleChar("\n", TestInput.input.current.length);
+//       setWordsInput(" " + TestInput.input.current);
+//       updateUI();
+//     }
+//   } else {
+//     await handleChar("\n", TestInput.input.current.length);
+//     setWordsInput(" " + TestInput.input.current);
+//     updateUI();
+//   }
+// }
 
-  //show dead keys
-  if (event.key === "Dead" && !CompositionState.getComposing()) {
-    void Sound.playClick();
-    const activeWord = TestUI.getActiveWordElement();
-    const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
+//show dead keys
+// if (event.key === "Dead" && !CompositionState.getComposing()) {
+//   void Sound.playClick();
+//   const activeWord = TestUI.getActiveWordElement();
+//   const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
-    // Check to see if the letter actually exists to toggle it as dead
-    const deadLetter: Element | undefined =
-      activeWord?.querySelectorAll("letter")[len];
-    if (deadLetter) {
-      deadLetter.classList.toggle("dead");
-    }
-  }
+//   // Check to see if the letter actually exists to toggle it as dead
+//   const deadLetter: Element | undefined =
+//     activeWord?.querySelectorAll("letter")[len];
+//   if (deadLetter) {
+//     deadLetter.classList.toggle("dead");
+//   }
+// }
 
-  if (Config.oppositeShiftMode !== "off") {
-    if (
-      Config.oppositeShiftMode === "keymap" &&
-      Config.keymapLayout !== "overrideSync"
-    ) {
-      let keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
-        () => undefined
-      );
+// if (Config.oppositeShiftMode !== "off") {
+//   if (
+//     Config.oppositeShiftMode === "keymap" &&
+//     Config.keymapLayout !== "overrideSync"
+//   ) {
+//     let keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
+//       () => undefined
+//     );
 
-      if (keymapLayout === undefined) {
-        Notifications.add("Failed to load keymap layout", -1);
+//     if (keymapLayout === undefined) {
+//       Notifications.add("Failed to load keymap layout", -1);
 
-        return;
-      }
+//       return;
+//     }
 
-      const funbox = getActiveFunboxNames().includes("layout_mirror");
-      if (funbox) {
-        keymapLayout = KeyConverter.mirrorLayoutKeys(keymapLayout);
-      }
+//     const funbox = getActiveFunboxNames().includes("layout_mirror");
+//     if (funbox) {
+//       keymapLayout = KeyConverter.mirrorLayoutKeys(keymapLayout);
+//     }
 
-      const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
+//     const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
 
-      correctShiftUsed =
-        keycode === undefined
-          ? true
-          : ShiftTracker.isUsingOppositeShift(keycode);
-    } else {
-      correctShiftUsed = ShiftTracker.isUsingOppositeShift(
-        event.code as KeyConverter.Keycode
-      );
-    }
-  }
+//     correctShiftUsed =
+//       keycode === undefined
+//         ? true
+//         : ShiftTracker.isUsingOppositeShift(keycode);
+//   } else {
+//     correctShiftUsed = ShiftTracker.isUsingOppositeShift(
+//       event.code as KeyConverter.Keycode
+//     );
+//   }
+// }
 
-  for (const fb of getActiveFunboxesWithFunction("preventDefaultEvent")) {
-    if (
-      await fb.functions.preventDefaultEvent(
-        //i cant figure this type out, but it works fine
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        event as JQuery.KeyDownEvent
-      )
-    ) {
-      event.preventDefault();
-      await handleChar(event.key, TestInput.input.current.length);
-      updateUI();
-      setWordsInput(" " + TestInput.input.current);
-    }
-  }
+//   for (const fb of getActiveFunboxesWithFunction("preventDefaultEvent")) {
+//     if (
+//       await fb.functions.preventDefaultEvent(
+//         //i cant figure this type out, but it works fine
+//         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+//         event as JQuery.KeyDownEvent
+//       )
+//     ) {
+//       event.preventDefault();
+//       await handleChar(event.key, TestInput.input.current.length);
+//       updateUI();
+//       setWordsInput(" " + TestInput.input.current);
+//     }
+//   }
 
-  if (
-    Config.layout !== "default" &&
-    !(event.ctrlKey || (event.altKey && Misc.isLinux()))
-  ) {
-    const char: string | null = await LayoutEmulator.getCharFromEvent(event);
-    if (char !== null) {
-      event.preventDefault();
-      await handleChar(char, TestInput.input.current.length);
-      updateUI();
-      setWordsInput(" " + TestInput.input.current);
-    }
-  }
+//   if (
+//     Config.layout !== "default" &&
+//     !(event.ctrlKey || (event.altKey && Misc.isLinux()))
+//   ) {
+//     const char: string | null = await LayoutEmulator.getCharFromEvent(event);
+//     if (char !== null) {
+//       event.preventDefault();
+//       await handleChar(char, TestInput.input.current.length);
+//       updateUI();
+//       setWordsInput(" " + TestInput.input.current);
+//     }
+//   }
 
-  isBackspace = event.key === "Backspace" || event.key === "delete";
-});
+//   isBackspace = event.key === "Backspace" || event.key === "delete";
+// });
 
 // $("#wordsInput").on("keydown", (event) => {
 //   if (event.originalEvent?.repeat) {
@@ -1316,224 +1316,224 @@ $(document).on("keydown", async (event) => {
 //   if (TestUI.resultVisible) return;
 // });
 
-$("#wordsInput").on("beforeinput", (event) => {
-  if (!event.originalEvent?.isTrusted) return;
-  if ((event.target as HTMLInputElement).value === "") {
-    (event.target as HTMLInputElement).value = " ";
-  }
-});
+// $("#wordsInput").on("beforeinput", (event) => {
+//   if (!event.originalEvent?.isTrusted) return;
+//   if ((event.target as HTMLInputElement).value === "") {
+//     (event.target as HTMLInputElement).value = " ";
+//   }
+// });
 
-$("#wordsInput").on("input", async (event) => {
-  if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
-    (event.target as HTMLInputElement).value = " ";
-    return;
-  }
+// $("#wordsInput").on("input", async (event) => {
+//   if (!event.originalEvent?.isTrusted || TestState.testRestarting) {
+//     (event.target as HTMLInputElement).value = " ";
+//     return;
+//   }
 
-  const popupVisible = Misc.isAnyPopupVisible();
-  if (popupVisible) {
-    event.preventDefault();
-    return;
-  }
+//   const popupVisible = Misc.isAnyPopupVisible();
+//   if (popupVisible) {
+//     event.preventDefault();
+//     return;
+//   }
 
-  TestInput.setCurrentNotAfk();
+//   TestInput.setCurrentNotAfk();
 
-  if (
-    (Config.layout === "default" || Config.layout === "korean") &&
-    (event.target as HTMLInputElement).value
-      .normalize()
-      .match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
-      )
-  ) {
-    TestInput.input.setKoreanStatus(true);
-  }
+//   if (
+//     (Config.layout === "default" || Config.layout === "korean") &&
+//     (event.target as HTMLInputElement).value
+//       .normalize()
+//       .match(
+//         /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+//       )
+//   ) {
+//     TestInput.input.setKoreanStatus(true);
+//   }
 
-  const containsKorean = TestInput.input.getKoreanStatus();
-  const containsChinese = Config.language.startsWith("chinese");
+//   const containsKorean = TestInput.input.getKoreanStatus();
+//   const containsChinese = Config.language.startsWith("chinese");
 
-  //Hangul.disassemble breaks down Korean characters into its components
-  //allowing it to be treated as normal latin characters
-  //Hangul.disassemble('한글') //['ㅎ','ㅏ','ㄴ','ㄱ','ㅡ','ㄹ']
-  //Hangul.disassemble('한글',true) //[['ㅎ','ㅏ','ㄴ'],['ㄱ','ㅡ','ㄹ']]
-  const realInputValue = (event.target as HTMLInputElement).value.normalize();
-  const inputValue = containsKorean
-    ? Hangul.disassemble(realInputValue).join("").slice(1)
-    : realInputValue.slice(1);
+//   //Hangul.disassemble breaks down Korean characters into its components
+//   //allowing it to be treated as normal latin characters
+//   //Hangul.disassemble('한글') //['ㅎ','ㅏ','ㄴ','ㄱ','ㅡ','ㄹ']
+//   //Hangul.disassemble('한글',true) //[['ㅎ','ㅏ','ㄴ'],['ㄱ','ㅡ','ㄹ']]
+//   const realInputValue = (event.target as HTMLInputElement).value.normalize();
+//   const inputValue = containsKorean
+//     ? Hangul.disassemble(realInputValue).join("").slice(1)
+//     : realInputValue.slice(1);
 
-  const currTestInput = containsKorean
-    ? Hangul.disassemble(TestInput.input.current).join("")
-    : TestInput.input.current;
+//   const currTestInput = containsKorean
+//     ? Hangul.disassemble(TestInput.input.current).join("")
+//     : TestInput.input.current;
 
-  //checks to see if a korean word has compiled into two characters.
-  //inputs: ㄱ, 가, 갇, 가다
-  //what it actually reads: ㄱ, 가, 갇, , 가, 가다
-  //this skips this part (, , 가,)
-  if (containsKorean && !isBackspace) {
-    if (
-      isKoCompiling ||
-      (realInputValue.slice(1).length < TestInput.input.current.length &&
-        Hangul.disassemble(TestInput.input.current.slice(-1)).length > 1)
-    ) {
-      isKoCompiling = !isKoCompiling;
-      return;
-    }
-  }
+//checks to see if a korean word has compiled into two characters.
+//inputs: ㄱ, 가, 갇, 가다
+//what it actually reads: ㄱ, 가, 갇, , 가, 가다
+//this skips this part (, , 가,)
+// if (containsKorean && !isBackspace) {
+//   if (
+//     isKoCompiling ||
+//     (realInputValue.slice(1).length < TestInput.input.current.length &&
+//       Hangul.disassemble(TestInput.input.current.slice(-1)).length > 1)
+//   ) {
+//     isKoCompiling = !isKoCompiling;
+//     return;
+//   }
+// }
 
-  // input will be modified even with the preventDefault() in
-  // beforeinput/keydown if it's part of a compose sequence. this undoes
-  // the effects of that and takes the input out of compose mode.
-  if (
-    Config.layout !== "default" &&
-    inputValue.length >= currTestInput.length
-  ) {
-    setWordsInput(" " + currTestInput);
-    updateUI();
-    return;
-  }
+// input will be modified even with the preventDefault() in
+// beforeinput/keydown if it's part of a compose sequence. this undoes
+// the effects of that and takes the input out of compose mode.
+// if (
+//   Config.layout !== "default" &&
+//   inputValue.length >= currTestInput.length
+// ) {
+//   setWordsInput(" " + currTestInput);
+//   updateUI();
+//   return;
+// }
 
-  if (realInputValue.length === 0 && currTestInput.length === 0) {
-    // fallback for when no Backspace keydown event (mobile)
-    backspaceToPrevious();
-  } else if (inputValue.length < currTestInput.length) {
-    if (containsChinese) {
-      if (
-        currTestInput.length - inputValue.length <= 2 &&
-        currTestInput.startsWith(currTestInput)
-      ) {
-        TestInput.input.current = inputValue;
-      } else {
-        // IME has converted pinyin to Chinese Character(s)
-        let diffStart = 0;
-        while (inputValue[diffStart] === currTestInput[diffStart]) {
-          diffStart++;
-        }
+// if (realInputValue.length === 0 && currTestInput.length === 0) {
+//   // fallback for when no Backspace keydown event (mobile)
+//   backspaceToPrevious();
+// } else if (inputValue.length < currTestInput.length) {
+//   if (containsChinese) {
+//     if (
+//       currTestInput.length - inputValue.length <= 2 &&
+//       currTestInput.startsWith(currTestInput)
+//     ) {
+//       TestInput.input.current = inputValue;
+//     } else {
+//       // IME has converted pinyin to Chinese Character(s)
+//       let diffStart = 0;
+//       while (inputValue[diffStart] === currTestInput[diffStart]) {
+//         diffStart++;
+//       }
 
-        let iOffset = 0;
-        if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
-          iOffset = inputValue.indexOf(" ") + 1;
-        }
-        for (let i = diffStart; i < inputValue.length; i++) {
-          await handleChar(
-            inputValue[i] as string,
-            i - iOffset,
-            realInputValue
-          );
-        }
-      }
-    } else if (containsKorean) {
-      const realInput = (event.target as HTMLInputElement).value
-        .normalize()
-        .slice(1);
+//       let iOffset = 0;
+//       if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
+//         iOffset = inputValue.indexOf(" ") + 1;
+//       }
+//       for (let i = diffStart; i < inputValue.length; i++) {
+//         await handleChar(
+//           inputValue[i] as string,
+//           i - iOffset,
+//           realInputValue
+//         );
+//       }
+//     }
+//   } else if (containsKorean) {
+//     const realInput = (event.target as HTMLInputElement).value
+//       .normalize()
+//       .slice(1);
 
-      TestInput.input.current = realInput;
-      koInputVisual.innerText = realInput.slice(-1);
-    } else {
-      TestInput.input.current = inputValue;
-    }
+//     TestInput.input.current = realInput;
+//     koInputVisual.innerText = realInput.slice(-1);
+//   } else {
+//     TestInput.input.current = inputValue;
+//   }
 
-    void TestUI.updateActiveWordLetters();
-    Caret.updatePosition();
-    if (!CompositionState.getComposing()) {
-      const keyStroke = event?.originalEvent as InputEvent;
-      if (keyStroke.inputType === "deleteWordBackward") {
-        Replay.addReplayEvent("setLetterIndex", 0); // Letter index will be 0 on CTRL + Backspace Event
-      } else {
-        Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
-      }
-    }
-  }
-  if (inputValue !== currTestInput) {
-    let diffStart = 0;
-    while (inputValue[diffStart] === currTestInput[diffStart]) {
-      diffStart++;
-    }
+// void TestUI.updateActiveWordLetters();
+// Caret.updatePosition();
+// if (!CompositionState.getComposing()) {
+//   const keyStroke = event?.originalEvent as InputEvent;
+//   if (keyStroke.inputType === "deleteWordBackward") {
+//     Replay.addReplayEvent("setLetterIndex", 0); // Letter index will be 0 on CTRL + Backspace Event
+//   } else {
+//     Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
+//   }
+// }
+// }
+// if (inputValue !== currTestInput) {
+//   let diffStart = 0;
+//   while (inputValue[diffStart] === currTestInput[diffStart]) {
+//     diffStart++;
+//   }
 
-    let iOffset = 0;
-    if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
-      iOffset = inputValue.indexOf(" ") + 1;
-    }
-    for (let i = diffStart; i < inputValue.length; i++) {
-      // passing realInput to allow for correct Korean character compilation
-      await handleChar(inputValue[i] as string, i - iOffset, realInputValue);
-    }
-  }
+//   let iOffset = 0;
+//   if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
+//     iOffset = inputValue.indexOf(" ") + 1;
+//   }
+//   for (let i = diffStart; i < inputValue.length; i++) {
+//     // passing realInput to allow for correct Korean character compilation
+//     await handleChar(inputValue[i] as string, i - iOffset, realInputValue);
+//   }
+// }
 
-  setWordsInput(" " + TestInput.input.current);
-  updateUI();
-  const statebefore = CompositionState.getComposing();
-  setTimeout(() => {
-    // checking composition state during the input event and on the next loop
-    // this is done because some browsers (e.g. Chrome) will fire the input
-    // event before the compositionend event.
-    // this ensures the UI is correct
+// setWordsInput(" " + TestInput.input.current);
+// updateUI();
+// const statebefore = CompositionState.getComposing();
+// setTimeout(() => {
+//   // checking composition state during the input event and on the next loop
+//   // this is done because some browsers (e.g. Chrome) will fire the input
+//   // event before the compositionend event.
+//   // this ensures the UI is correct
 
-    const stateafter = CompositionState.getComposing();
-    if (statebefore !== stateafter) {
-      void TestUI.updateActiveWordLetters();
-    }
+//   const stateafter = CompositionState.getComposing();
+//   if (statebefore !== stateafter) {
+//     void TestUI.updateActiveWordLetters();
+//   }
 
-    // force caret at end of input
-    // doing it on next cycle because Chromium on Android won't let me edit
-    // the selection inside the input event
-    if (
-      (event.target as HTMLInputElement).selectionStart !==
-        (event.target as HTMLInputElement).value.length &&
-      (!Misc.trailingComposeChars.test(
-        (event.target as HTMLInputElement).value
-      ) ||
-        ((event.target as HTMLInputElement).selectionStart ?? 0) <
-          (event.target as HTMLInputElement).value.search(
-            Misc.trailingComposeChars
-          ))
-    ) {
-      (event.target as HTMLInputElement).selectionStart = (
-        event.target as HTMLInputElement
-      ).selectionEnd = (event.target as HTMLInputElement).value.length;
-    }
-  }, 0);
-});
+//   // force caret at end of input
+//   // doing it on next cycle because Chromium on Android won't let me edit
+//   // the selection inside the input event
+//   if (
+//     (event.target as HTMLInputElement).selectionStart !==
+//       (event.target as HTMLInputElement).value.length &&
+//     (!Misc.trailingComposeChars.test(
+//       (event.target as HTMLInputElement).value
+//     ) ||
+//       ((event.target as HTMLInputElement).selectionStart ?? 0) <
+//         (event.target as HTMLInputElement).value.search(
+//           Misc.trailingComposeChars
+//         ))
+//   ) {
+//     (event.target as HTMLInputElement).selectionStart = (
+//       event.target as HTMLInputElement
+//     ).selectionEnd = (event.target as HTMLInputElement).value.length;
+//   }
+// }, 0);
+// });
 
-document.querySelector("#wordsInput")?.addEventListener("focus", (event) => {
-  const target = event.target as HTMLInputElement;
-  const value = target.value;
-  target.setSelectionRange(value.length, value.length);
-});
+// document.querySelector("#wordsInput")?.addEventListener("focus", (event) => {
+//   const target = event.target as HTMLInputElement;
+//   const value = target.value;
+//   target.setSelectionRange(value.length, value.length);
+// });
 
-$("#wordsInput").on("copy paste", (event) => {
-  event.preventDefault();
-});
+// $("#wordsInput").on("copy paste", (event) => {
+//   event.preventDefault();
+// });
 
-$("#wordsInput").on("select selectstart", (event) => {
-  event.preventDefault();
-});
+// $("#wordsInput").on("select selectstart", (event) => {
+//   event.preventDefault();
+// });
 
-$("#wordsInput").on("selectionchange", (event) => {
-  const target = event.target as HTMLInputElement;
-  const value = target.value;
+// $("#wordsInput").on("selectionchange", (event) => {
+//   const target = event.target as HTMLInputElement;
+//   const value = target.value;
 
-  const hasSelectedText = target.selectionStart !== target.selectionEnd;
-  const isCursorAtEnd = target.selectionStart === value.length;
+//   const hasSelectedText = target.selectionStart !== target.selectionEnd;
+//   const isCursorAtEnd = target.selectionStart === value.length;
 
-  if (hasSelectedText || !isCursorAtEnd) {
-    // force caret at end of input
-    target.setSelectionRange(value.length, value.length);
-  }
-});
+//   if (hasSelectedText || !isCursorAtEnd) {
+//     // force caret at end of input
+//     target.setSelectionRange(value.length, value.length);
+//   }
+// });
 
-$("#wordsInput").on("keydown", (event) => {
-  if (event.key.startsWith("Arrow")) {
-    event.preventDefault();
-  }
-});
+// $("#wordsInput").on("keydown", (event) => {
+//   if (event.key.startsWith("Arrow")) {
+//     event.preventDefault();
+//   }
+// });
 
 // Composing events
-$("#wordsInput").on("compositionstart", () => {
-  if (Config.layout !== "default") return;
-  CompositionState.setComposing(true);
-  CompositionState.setStartPos(TestInput.input.current.length);
-});
+// $("#wordsInput").on("compositionstart", () => {
+//   if (Config.layout !== "default") return;
+//   CompositionState.setComposing(true);
+//   CompositionState.setStartPos(TestInput.input.current.length);
+// });
 
-$("#wordsInput").on("compositionend", () => {
-  if (Config.layout !== "default") return;
-  CompositionState.setComposing(false);
-});
+// $("#wordsInput").on("compositionend", () => {
+//   if (Config.layout !== "default") return;
+//   CompositionState.setComposing(false);
+// });
