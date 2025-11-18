@@ -332,7 +332,7 @@ export async function addResult(
     ResultDAL.getLastResultTimestamp(uid)
   );
 
-  //convert result test duration to miliseconds
+  //convert result test duration to milliseconds
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
 
   //check if now is earlier than last result plus duration (-1 second as a buffer)
