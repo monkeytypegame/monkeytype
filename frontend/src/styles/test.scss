@@ -1281,6 +1281,7 @@
     border-radius: var(--roundness);
     z-index: 2;
     // width: max-content;
+    overflow: hidden;
   }
   .spacer {
     height: auto;
@@ -1288,11 +1289,6 @@
     border-radius: calc(var(--roundness) / 2);
     background: var(--bg-color);
     margin: 0.75em 0;
-    transition: 250ms;
-    &.scrolled {
-      opacity: 0;
-      width: 0;
-    }
   }
 
   .wordCount,
@@ -1351,6 +1347,12 @@
     transition: opacity 0.25s, right 0.25s;
     opacity: 0;
   }
+
+  .mode {
+    background: var(--sub-alt-color);
+    z-index: 2;
+  }
+
   &:hover {
     .shareButton {
       opacity: 1;

@@ -1,7 +1,3 @@
-// this file should be concatenated at the top of the legacy ts files
-import "jquery-color";
-import "jquery.easing";
-
 import "./event-handlers/global";
 import "./event-handlers/footer";
 import "./event-handlers/keymap";
@@ -52,6 +48,7 @@ import * as Cookies from "./cookies";
 import "./elements/psa";
 import "./utils/url-handler";
 import "./modals/last-signed-out-result";
+import { applyEngineSettings } from "./anim";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -72,6 +69,7 @@ Object.defineProperty(window, "Math", {
   enumerable: true,
 });
 
+applyEngineSettings();
 void loadFromLocalStorage();
 void VersionButton.update();
 Focus.set(true, true);

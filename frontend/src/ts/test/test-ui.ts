@@ -11,7 +11,6 @@ import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
@@ -38,6 +37,7 @@ import * as TimerProgress from "../test/timer-progress";
 import * as LiveBurst from "./live-burst";
 import * as LiveSpeed from "./live-speed";
 import * as Monkey from "./monkey";
+import { animate } from "animejs";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -345,7 +345,7 @@ async function updateHintsPosition(): Promise<void> {
   if (
     ActivePage.get() !== "test" ||
     TestState.resultVisible ||
-    Config.indicateTypos !== "below"
+    (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   )
     return;
 
@@ -450,7 +450,7 @@ function updateWordWrapperClasses(): void {
     $("#wordsWrapper").removeClass("blind");
   }
 
-  if (Config.indicateTypos === "below") {
+  if (Config.indicateTypos === "below" || Config.indicateTypos === "both") {
     $("#words").addClass("indicateTyposBelow");
     $("#wordsWrapper").addClass("indicateTyposBelow");
   } else {
@@ -779,13 +779,16 @@ export async function updateActiveWordLetters(
       } else {
         ret +=
           `<letter class="incorrect ${tabChar}${nlChar}">` +
-          (Config.indicateTypos === "replace"
+          (Config.indicateTypos === "replace" || Config.indicateTypos === "both"
             ? inputChars[i] === " "
               ? "_"
               : inputChars[i]
             : currentLetter) +
           "</letter>";
-        if (Config.indicateTypos === "below") {
+        if (
+          Config.indicateTypos === "below" ||
+          Config.indicateTypos === "both"
+        ) {
           const lastBlock = hintIndices[hintIndices.length - 1];
           if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1)
             lastBlock.push(i);
@@ -832,7 +835,12 @@ export async function updateActiveWordLetters(
 
   if (hintIndices?.length) {
     const activeWordLetters = activeWord.querySelectorAll("letter");
-    const hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
+    let hintsHtml;
+    if (Config.indicateTypos === "both") {
+      hintsHtml = createHintsHtml(hintIndices, activeWordLetters, currentWord);
+    } else {
+      hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
+    }
     activeWord.insertAdjacentHTML("beforeend", hintsHtml);
     const hintElements = activeWord.getElementsByTagName("hint");
     await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
@@ -1038,32 +1046,32 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     newMargin = wordRightMargin - newMargin;
   }
 
-  const duration = noAnimation ? 0 : SlowTimer.get() ? 0 : 125;
+  const duration = noAnimation ? 0 : 125;
+  const ease = "inOut(1.25)";
+
   const caretScrollOptions = {
     newValue: newMarginOffset * -1,
     duration: Config.smoothLineScroll ? duration : 0,
+    ease,
   };
 
   Caret.caret.handleTapeScroll(caretScrollOptions);
   PaceCaret.caret.handleTapeScroll(caretScrollOptions);
 
   if (Config.smoothLineScroll) {
-    const jqWords = $(wordsEl).stop("marginLeft", true, false);
-    jqWords.animate(
-      {
-        marginLeft: newMargin,
-      },
-      {
-        duration,
-        queue: "marginLeft",
-      }
-    );
-    jqWords.dequeue("marginLeft");
+    animate(wordsEl, {
+      marginLeft: newMargin,
+      duration,
+      ease,
+    });
+
     for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
-      $(afterNewLineEls[i] as Element)
-        .stop(true, false)
-        .animate({ marginLeft: newMargin }, duration);
+      animate(afterNewLineEls[i] as Element, {
+        marginLeft: newMargin,
+        duration,
+        ease,
+      });
     }
   } else {
     wordsEl.style.marginLeft = `${newMargin}px`;
@@ -1151,7 +1159,7 @@ export async function lineJump(
 
     const wordHeight = $(activeWordEl).outerHeight(true) as number;
     const newMarginTop = -1 * wordHeight * currentLinesJumping;
-    const duration = SlowTimer.get() ? 0 : 125;
+    const duration = 125;
 
     const caretLineJumpOptions = {
       newMarginTop,
@@ -1162,23 +1170,18 @@ export async function lineJump(
 
     if (Config.smoothLineScroll) {
       lineTransition = true;
-      const jqWords = $(wordsEl);
-      jqWords.stop("marginTop", true, false).animate(
-        { marginTop: `${newMarginTop}px` },
-        {
-          duration,
-          queue: "marginTop",
-          complete: () => {
-            currentLinesJumping = 0;
-            activeWordTop = activeWordEl.offsetTop;
-            removeTestElements(lastElementIndexToRemove);
-            wordsEl.style.marginTop = "0";
-            lineTransition = false;
-            resolve();
-          },
-        }
-      );
-      jqWords.dequeue("marginTop");
+      animate(wordsEl, {
+        marginTop: newMarginTop,
+        duration,
+        onComplete: () => {
+          currentLinesJumping = 0;
+          activeWordTop = activeWordEl.offsetTop;
+          removeTestElements(lastElementIndexToRemove);
+          wordsEl.style.marginTop = "0";
+          lineTransition = false;
+          resolve();
+        },
+      });
     } else {
       currentLinesJumping = 0;
       removeTestElements(lastElementIndexToRemove);

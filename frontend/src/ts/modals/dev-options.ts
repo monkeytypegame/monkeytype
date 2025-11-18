@@ -1,4 +1,4 @@
-import { envConfig } from "../constants/env-config";
+import { envConfig } from "virtual:env-config";
 import AnimatedModal from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
 import * as Notifications from "../elements/notifications";

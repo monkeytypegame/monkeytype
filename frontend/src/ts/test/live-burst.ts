@@ -3,6 +3,7 @@ import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 import Format from "../utils/format";
 import { applyReducedMotion } from "../utils/misc";
+import { animate } from "animejs";
 
 const textEl = document.querySelector(
   "#liveStatsTextBottom .liveBurst"
@@ -27,47 +28,37 @@ export function show(): void {
   if (!TestState.isActive) return;
   if (state) return;
   if (Config.liveBurstStyle === "mini") {
-    $(miniEl).stop(true, false).removeClass("hidden").css("opacity", 0).animate(
-      {
-        opacity: 1,
-      },
-      applyReducedMotion(125)
-    );
+    miniEl.classList.remove("hidden");
+    animate(miniEl, {
+      opacity: [0, 1],
+      duration: applyReducedMotion(125),
+    });
   } else {
-    $(textEl).stop(true, false).removeClass("hidden").css("opacity", 0).animate(
-      {
-        opacity: 1,
-      },
-      applyReducedMotion(125)
-    );
+    textEl.classList.remove("hidden");
+    animate(textEl, {
+      opacity: [0, 1],
+      duration: applyReducedMotion(125),
+    });
   }
   state = true;
 }
 
 export function hide(): void {
   if (!state) return;
-  $(textEl)
-    .stop(true, false)
-    .animate(
-      {
-        opacity: 0,
-      },
-      applyReducedMotion(125),
-      () => {
-        $(textEl).addClass("hidden");
-      }
-    );
-  $(miniEl)
-    .stop(true, false)
-    .animate(
-      {
-        opacity: 0,
-      },
-      applyReducedMotion(125),
-      () => {
-        $(miniEl).addClass("hidden");
-      }
-    );
+  animate(textEl, {
+    opacity: [1, 0],
+    duration: applyReducedMotion(125),
+    onComplete: () => {
+      textEl.classList.add("hidden");
+    },
+  });
+  animate(miniEl, {
+    opacity: [1, 0],
+    duration: applyReducedMotion(125),
+    onComplete: () => {
+      miniEl.classList.add("hidden");
+    },
+  });
   state = false;
 }
 

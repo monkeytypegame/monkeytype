@@ -58,14 +58,14 @@ export function update(): void {
       `/profile/${name}`
     );
     void Misc.swapElements(
-      $("nav .textButton.view-login"),
-      $("nav .accountButtonAndMenu"),
+      document.querySelector("nav .textButton.view-login") as HTMLElement,
+      document.querySelector("nav .accountButtonAndMenu") as HTMLElement,
       250
     );
   } else {
     void Misc.swapElements(
-      $("nav .accountButtonAndMenu"),
-      $("nav .textButton.view-login"),
+      document.querySelector("nav .accountButtonAndMenu") as HTMLElement,
+      document.querySelector("nav .textButton.view-login") as HTMLElement,
       250,
       async () => {
         updateName("");

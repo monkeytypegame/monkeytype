@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { canFunboxGetPb, checkAndUpdatePb, LbPersonalBests } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
@@ -9,7 +8,7 @@ import {
   type UpdateFilter,
   type Filter,
 } from "mongodb";
-import { flattenObjectDeep, WithObjectId } from "../utils/misc";
+import { flattenObjectDeep, isPlainObject, WithObjectId } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
@@ -34,7 +33,7 @@ import { Result as ResultType } from "@monkeytype/schemas/results";
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
 import GeorgeQueue from "../queues/george-queue";
-import { getCollection as getConnectionCollection } from "./connections";
+import { aggregateWithAcceptedConnections } from "./connections";
 
 export type DBUserTag = WithObjectId<UserTag>;
 
@@ -56,11 +55,13 @@ export type DBUser = Omit<
   inbox?: MonkeyMail[];
   ips?: string[];
   canReport?: boolean;
+  nameHistory?: string[];
   lastNameChange?: number;
   canManageApeKeys?: boolean;
   bananas?: number;
   testActivity?: CountByYearAndDay;
   suspicious?: boolean;
+  note?: string;
 };
 
 const SECONDS_PER_HOUR = 3600;
@@ -603,10 +604,10 @@ export async function linkDiscord(
   discordId: string,
   discordAvatar?: string
 ): Promise<void> {
-  const updates: Partial<DBUser> = _.pickBy(
-    { discordId, discordAvatar },
-    _.identity
-  );
+  const updates: Partial<DBUser> = { discordId };
+  if (discordAvatar !== undefined && discordAvatar !== null)
+    updates.discordAvatar = discordAvatar;
+
   await updateUser({ uid }, { $set: updates }, { stack: "link discord" });
 }
 
@@ -907,10 +908,15 @@ export async function updateProfile(
   profileDetailUpdates: Partial<UserProfileDetails>,
   inventory?: UserInventory
 ): Promise<void> {
-  const profileUpdates = _.omitBy(
-    flattenObjectDeep(profileDetailUpdates, "profileDetails"),
-    (value) =>
-      value === undefined || (_.isPlainObject(value) && _.isEmpty(value))
+  let profileUpdates = flattenObjectDeep(
+    Object.fromEntries(
+      Object.entries(profileDetailUpdates).filter(
+        ([_, value]) =>
+          value !== undefined &&
+          !(isPlainObject(value) && Object.keys(value).length === 0)
+      )
+    ),
+    "profileDetails"
   );
 
   const updates = {
@@ -1228,210 +1234,118 @@ async function updateUser(
 }
 
 export async function getFriends(uid: string): Promise<DBFriend[]> {
-  return (await getConnectionCollection()
-    .aggregate([
-      {
-        $match: {
-          //uid is friend or initiator
-          $and: [
-            {
-              $or: [{ initiatorUid: uid }, { receiverUid: uid }],
-              status: "accepted",
-            },
-          ],
-        },
-      },
+  return await aggregateWithAcceptedConnections(
+    {
+      uid,
+      collectionName: "users",
+      includeMetaData: true,
+    },
+    [
       {
         $project: {
-          receiverUid: true,
-          initiatorUid: true,
-          lastModified: true,
+          _id: false,
+          uid: true,
+          connectionId: "$connectionMeta._id",
+          lastModified: "$connectionMeta.lastModified",
+          name: true,
+          discordId: true,
+          discordAvatar: true,
+          startedTests: true,
+          completedTests: true,
+          timeTyping: true,
+          xp: true,
+          "streak.length": true,
+          "streak.maxLength": true,
+          personalBests: true,
+          "inventory.badges": true,
+          "premium.expirationTimestamp": true,
+          banned: 1,
+          lbOptOut: 1,
         },
       },
       {
         $addFields: {
-          //pick the other user, not uid
-          uid: {
+          top15: {
+            $reduce: {
+              //find highest wpm from time 15 PBs
+              input: "$personalBests.time.15",
+              initialValue: {},
+              in: {
+                $cond: [
+                  { $gte: ["$$this.wpm", "$$value.wpm"] },
+                  "$$this",
+                  "$$value",
+                ],
+              },
+            },
+          },
+          top60: {
+            $reduce: {
+              //find highest wpm from time 60 PBs
+              input: "$personalBests.time.60",
+              initialValue: {},
+              in: {
+                $cond: [
+                  { $gte: ["$$this.wpm", "$$value.wpm"] },
+                  "$$this",
+                  "$$value",
+                ],
+              },
+            },
+          },
+          badgeId: {
+            $ifNull: [
+              {
+                $first: {
+                  $map: {
+                    input: {
+                      $filter: {
+                        input: "$inventory.badges",
+                        as: "badge",
+                        cond: { $eq: ["$$badge.selected", true] },
+                      },
+                    },
+                    as: "selectedBadge",
+                    in: "$$selectedBadge.id",
+                  },
+                },
+              },
+              "$$REMOVE",
+            ],
+          },
+          isPremium: {
             $cond: {
-              if: { $eq: ["$receiverUid", uid] },
+              if: {
+                $or: [
+                  { $eq: ["$premium.expirationTimestamp", -1] },
+                  {
+                    $gt: ["$premium.expirationTimestamp", { $toLong: "$$NOW" }],
+                  },
+                ],
+              },
               // oxlint-disable-next-line no-thenable
-              then: "$initiatorUid",
-              else: "$receiverUid",
+              then: true,
+              else: "$$REMOVE",
             },
           },
         },
       },
-      // we want to fetch the data for our uid as well, add it to the list of documents
-      // workaround for missing unionWith + $documents in mongodb 5.0
       {
-        $group: {
-          _id: null,
-          data: {
-            $push: {
-              uid: "$uid",
-              lastModified: "$lastModified",
-              connectionId: "$_id",
-            },
-          },
+        $addFields: {
+          //remove nulls
+          top15: { $ifNull: ["$top15", "$$REMOVE"] },
+          top60: { $ifNull: ["$top60", "$$REMOVE"] },
+          badgeId: { $ifNull: ["$badgeId", "$$REMOVE"] },
+          lastModified: "$lastModified",
         },
       },
       {
         $project: {
-          data: {
-            $concatArrays: ["$data", [{ uid }]],
-          },
+          personalBests: false,
+          inventory: false,
+          premium: false,
         },
       },
-      {
-        $unwind: "$data",
-      },
-
-      /* end of workaround, this is the replacement for >= 5.1
-    
-      { $addFields: { connectionId: "$_id" } },
-      { $project: { uid: true, lastModified: true, connectionId: true } },
-      {
-        $unionWith: {
-          pipeline: [{ $documents: [{ uid }] }],
-        },
-      },
-      */
-
-      {
-        $lookup: {
-          /* query users to get the friend data */
-          from: "users",
-          localField: "data.uid", //just uid if we remove the workaround above
-          foreignField: "uid",
-          as: "result",
-          let: {
-            lastModified: "$data.lastModified", //just $lastModified if we remove the workaround above
-            connectionId: "$data.connectionId", //just $connectionId if we remove the workaround above
-          },
-          pipeline: [
-            {
-              $project: {
-                _id: false,
-                uid: true,
-                connectionId: true,
-                name: true,
-                discordId: true,
-                discordAvatar: true,
-                startedTests: true,
-                completedTests: true,
-                timeTyping: true,
-                xp: true,
-                "streak.length": true,
-                "streak.maxLength": true,
-                personalBests: true,
-                "inventory.badges": true,
-                "premium.expirationTimestamp": true,
-                banned: 1,
-                lbOptOut: 1,
-              },
-            },
-            {
-              $addFields: {
-                lastModified: "$$lastModified",
-                connectionId: "$$connectionId",
-                top15: {
-                  $reduce: {
-                    //find highest wpm from time 15 PBs
-                    input: "$personalBests.time.15",
-                    initialValue: {},
-                    in: {
-                      $cond: [
-                        { $gte: ["$$this.wpm", "$$value.wpm"] },
-                        "$$this",
-                        "$$value",
-                      ],
-                    },
-                  },
-                },
-                top60: {
-                  $reduce: {
-                    //find highest wpm from time 60 PBs
-                    input: "$personalBests.time.60",
-                    initialValue: {},
-                    in: {
-                      $cond: [
-                        { $gte: ["$$this.wpm", "$$value.wpm"] },
-                        "$$this",
-                        "$$value",
-                      ],
-                    },
-                  },
-                },
-                badgeId: {
-                  $ifNull: [
-                    {
-                      $first: {
-                        $map: {
-                          input: {
-                            $filter: {
-                              input: "$inventory.badges",
-                              as: "badge",
-                              cond: { $eq: ["$$badge.selected", true] },
-                            },
-                          },
-                          as: "selectedBadge",
-                          in: "$$selectedBadge.id",
-                        },
-                      },
-                    },
-                    "$$REMOVE",
-                  ],
-                },
-                isPremium: {
-                  $cond: {
-                    if: {
-                      $or: [
-                        { $eq: ["$premium.expirationTimestamp", -1] },
-                        {
-                          $gt: [
-                            "$premium.expirationTimestamp",
-                            { $toLong: "$$NOW" },
-                          ],
-                        },
-                      ],
-                    },
-                    // oxlint-disable-next-line no-thenable
-                    then: true,
-                    else: "$$REMOVE",
-                  },
-                },
-              },
-            },
-            {
-              $addFields: {
-                //remove nulls
-                top15: { $ifNull: ["$top15", "$$REMOVE"] },
-                top60: { $ifNull: ["$top60", "$$REMOVE"] },
-                badgeId: { $ifNull: ["$badgeId", "$$REMOVE"] },
-                lastModified: "$lastModified",
-              },
-            },
-            {
-              $project: {
-                personalBests: false,
-                inventory: false,
-                premium: false,
-              },
-            },
-          ],
-        },
-      },
-      {
-        $replaceRoot: {
-          newRoot: {
-            $cond: [
-              { $gt: [{ $size: "$result" }, 0] },
-              { $first: "$result" },
-              {}, // empty document fallback, this can happen if the user is not present
-            ],
-          },
-        },
-      },
-    ])
-    .toArray()) as DBFriend[];
+    ]
+  );
 }
