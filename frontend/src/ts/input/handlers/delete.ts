@@ -15,12 +15,14 @@ import { DeleteInputType } from "../helpers/input-type";
 export function onDelete(inputType: DeleteInputType): void {
   const { realInputValue } = getInputValue();
 
+  const inputBeforeDelete = TestInput.input.current;
+
   setTestInputToDOMValue();
 
   Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
   TestInput.setCurrentNotAfk();
 
-  const onlyTabs = /^\t*$/.test(TestInput.input.current);
+  const beforeDeleteOnlyTabs = /^\t*$/.test(inputBeforeDelete);
   const allTabsCorrect = TestWords.words
     .getCurrent()
     .startsWith(TestInput.input.current);
@@ -29,8 +31,8 @@ export function onDelete(inputType: DeleteInputType): void {
   if (
     Config.language.startsWith("code") &&
     Config.codeUnindentOnBackspace &&
-    TestInput.input.current.length > 0 &&
-    onlyTabs &&
+    inputBeforeDelete.length > 0 &&
+    beforeDeleteOnlyTabs &&
     allTabsCorrect
     // (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
     //   TestWords.words.get(TestState.activeWordIndex - 1) ||
