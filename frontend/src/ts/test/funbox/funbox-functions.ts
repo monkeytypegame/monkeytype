@@ -338,24 +338,24 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     alterText(word: string): string {
       let alphabet = "abcdefghijklmnopqrstuvwxyz";
 
-      let result = "";
+      let rot13Word = "";
 
       for (let ch of word) {
         let chIndex = alphabet.indexOf(ch.toLowerCase());
         if (chIndex === -1) {
-          result += ch;
+          rot13Word += ch;
           continue;
         }
 
         let rot13Ch = (chIndex + 13) % 26;
         if (ch.toUpperCase() === ch) {
-          result += alphabet[rot13Ch]?.toUpperCase();
+          rot13Word += alphabet[rot13Ch]?.toUpperCase();
         } else {
-          result += alphabet[rot13Ch];
+          rot13Word += alphabet[rot13Ch];
         }
       }
 
-      return result;
+      return rot13Word;
     },
   },
   backwards: {
