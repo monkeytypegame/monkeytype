@@ -1703,7 +1703,7 @@ export function beforeTestWordChange(
 export function beforeTestWordChange(
   direction: "back",
   correct: null,
-  forceUpdateActiveWordLetters: false
+  forceUpdateActiveWordLetters: boolean
 ): void;
 export function beforeTestWordChange(
   direction: "forward" | "back",

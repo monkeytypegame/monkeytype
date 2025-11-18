@@ -84,13 +84,16 @@ export async function goToNextWord({
   return ret;
 }
 
-export function goToPreviousWord(inputType: DeleteInputType): void {
+export function goToPreviousWord(
+  inputType: DeleteInputType,
+  forceUpdateActiveWordLetters = false
+): void {
   if (TestState.activeWordIndex === 0) {
     setInputValue("");
     return;
   }
 
-  TestUI.beforeTestWordChange("back", null, false);
+  TestUI.beforeTestWordChange("back", null, forceUpdateActiveWordLetters);
 
   Replay.addReplayEvent("backWord");
 
