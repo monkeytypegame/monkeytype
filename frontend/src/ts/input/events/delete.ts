@@ -29,6 +29,7 @@ export function onDelete(inputType: DeleteInputType): void {
   if (
     Config.language.startsWith("code") &&
     Config.codeUnindentOnBackspace &&
+    TestInput.input.current.length > 0 &&
     onlyTabs &&
     allTabsCorrect
     // (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
@@ -36,6 +37,7 @@ export function onDelete(inputType: DeleteInputType): void {
     //   Config.freedomMode)
   ) {
     setInputValue("");
+    void TestUI.updateActiveWordLetters();
     goToPreviousWord(inputType);
   } else {
     //normal backspace
