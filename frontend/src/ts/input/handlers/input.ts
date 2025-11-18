@@ -117,19 +117,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const { inputValue } = getInputValue();
   const correct = isCharCorrect(data, inputValue, correctShiftUsed, multiIndex);
 
-  if (!isSpace(data) && correctShiftUsed === false) {
-    replaceLastInputValueChar("");
-    incrementIncorrectShiftsInARow();
-    if (getIncorrectShiftsInARow() >= 5) {
-      Notifications.add("Opposite shift mode is on.", 0, {
-        important: true,
-        customTitle: "Reminder",
-      });
-    }
-  } else {
-    resetIncorrectShiftsInARow();
-  }
-
   if (!TestState.isActive) {
     TestUI.setActiveWordTop();
     TestLogic.startTest(now);
@@ -165,6 +152,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   WeakSpot.updateScore(data, correct);
 
+  let removeLastChar = false;
   let visualInputOverride: string | undefined;
   if (
     Config.stopOnError === "letter" &&
@@ -176,6 +164,24 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     }
     // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
     // like accuracy, keypress errors, and missed words
+    removeLastChar = true;
+  }
+
+  if (!isSpace(data) && correctShiftUsed === false) {
+    removeLastChar = true;
+    visualInputOverride = undefined;
+    incrementIncorrectShiftsInARow();
+    if (getIncorrectShiftsInARow() >= 5) {
+      Notifications.add("Opposite shift mode is on.", 0, {
+        important: true,
+        customTitle: "Reminder",
+      });
+    }
+  } else {
+    resetIncorrectShiftsInARow();
+  }
+
+  if (removeLastChar) {
     replaceLastInputValueChar("");
   }
 
