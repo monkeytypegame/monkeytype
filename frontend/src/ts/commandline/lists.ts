@@ -8,7 +8,6 @@ import CustomBackgroundCommands from "./lists/custom-background";
 import FontFamilyCommands from "./lists/font-family";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
-// import CodeUnindentOnBackspace from "./lists/code-unindent-on-backspace";
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
