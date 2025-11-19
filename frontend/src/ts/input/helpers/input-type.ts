@@ -22,7 +22,7 @@ export function isSupportedInputType(
 }
 
 const IGNORED_INPUT_TYPES = [
-  "insertReplacementText", //todo reconsider
+  "insertReplacementText", // not allowing autocomplete replacements
   "insertParagraph",
   "insertOrderedList",
   "insertUnorderedList",
@@ -40,7 +40,7 @@ const IGNORED_INPUT_TYPES = [
   "deleteHardLineForward",
   "deleteByDrag",
   "deleteByCut",
-  "deleteContent", // might break things?
+  "deleteContent",
   "deleteContentForward",
   "history*",
   "format*",
