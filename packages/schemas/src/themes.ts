@@ -176,7 +176,6 @@ export const ThemeNameSchema = z.enum(
     "terrazzo",
     "terror_below",
     "tiramisu",
-    "tokyo_night",
     "trackday",
     "trance",
     "tron_orange",
@@ -190,6 +189,7 @@ export const ThemeNameSchema = z.enum(
     "wavez",
     "witch_girl",
     "pale_nimbus",
+    "tokyonight_storm",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a known theme"),

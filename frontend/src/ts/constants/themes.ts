@@ -916,12 +916,12 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#9f8ad4",
     textColor: "#2e2e2e",
   },
-  tokyo_night: {
-  bgColor: "#1a1b26",
-  mainColor: "#7aa2f7",
-  subColor: "#565f89",
-  textColor: "#c0caf5",
-},
+  tokyonight_storm: {
+    bgColor: "#24283b",
+    mainColor: "#7aa2f7",
+    subColor: "#565f89",
+    textColor: "#a9b1d6",
+  },
   passion_fruit: {
     bgColor: "#7c2142",
     mainColor: "#f4a3b4",
