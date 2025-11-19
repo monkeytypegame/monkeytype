@@ -72,6 +72,8 @@ export function onBeforeInsertText(data: string): boolean {
 }
 
 export async function handleBeforeInput(event: InputEvent): Promise<void> {
+  // todo: this check might not be necessary because this function only fires
+  // if wordsInput is focused
   const popupVisible = isAnyPopupVisible();
   if (popupVisible) {
     event.preventDefault();
