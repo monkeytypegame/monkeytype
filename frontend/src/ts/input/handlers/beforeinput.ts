@@ -39,6 +39,15 @@ export function onBeforeInsertText(data: string): boolean {
   // space characters sometimes are inserted as a character, need this distinction
   const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
 
+  // block input if the word is too long
+  const inputLimit =
+    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
+  const overLimit = TestInput.input.current.length >= inputLimit;
+  if (overLimit && ((isSpace(data) && shouldInsertSpace) || !isSpace(data))) {
+    console.error("Hitting word limit");
+    return true;
+  }
+
   // prevent the word from jumping to the next line if the word is too long
   // this will not work for the first word of each line, but that has a low chance of happening
   // make sure to only check this when necessary (hide extra letters is off or input is longer than word)
@@ -63,15 +72,6 @@ export function onBeforeInsertText(data: string): boolean {
     if (wordJumped) {
       return true;
     }
-  }
-
-  // block input if the word is too long
-  const inputLimit =
-    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
-  const overLimit = TestInput.input.current.length >= inputLimit;
-  if (overLimit && ((isSpace(data) && shouldInsertSpace) || !isSpace(data))) {
-    console.error("Hitting word limit");
-    return true;
   }
 
   return false;
