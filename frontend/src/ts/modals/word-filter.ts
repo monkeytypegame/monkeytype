@@ -165,10 +165,20 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 }
 
 async function filter(language: Language): Promise<string[]> {
+  const ignoreExcludesInput = $("#wordFilterModal #ignoreExcludesInput").is(
+    ":checked"
+  );
   let filterin = $("#wordFilterModal .wordIncludeInput").val() as string;
   filterin = Misc.escapeRegExp(filterin?.trim());
   filterin = filterin.replace(/\s+/gi, "|");
-  const regincl = new RegExp(filterin, "i");
+  let regincl;
+
+  if (ignoreExcludesInput) {
+    regincl = new RegExp("^[" + filterin + "]+$", "i");
+  } else {
+    regincl = new RegExp(filterin, "i");
+  }
+
   let filterout = $("#wordFilterModal .wordExcludeInput").val() as string;
   filterout = Misc.escapeRegExp(filterout.trim());
   filterout = filterout.replace(/\s+/gi, "|");
@@ -202,7 +212,7 @@ async function filter(language: Language): Promise<string[]> {
   }
   for (const word of languageWordList.words) {
     const test1 = regincl.test(word);
-    const test2 = regexcl.test(word);
+    const test2 = ignoreExcludesInput ? false : regexcl.test(word);
     if (
       ((test1 && !test2) || (test1 && filterout === "")) &&
       word.length <= maxLength &&
@@ -276,21 +286,6 @@ async function setup(): Promise<void> {
         .map((x) => x[0])
         .join(" ")
     );
-  });
-
-  $("#wordFilterModal button#excludeOthers").on("click", () => {
-    const alphabet = "abcdefghijklmnopqrstuvwxyz";
-    const currentIncludeChars = $("#wordIncludeInput").val() as string;
-    const includeCharsArray = currentIncludeChars.split(" ");
-    let excludeChars = [];
-
-    for (let char of alphabet) {
-      if (!includeCharsArray.includes(char)) {
-        excludeChars.push(char);
-      }
-    }
-
-    $("#wordExcludeInput").val(excludeChars.join(" "));
   });
 
   $("#wordFilterModal button.addButton").on("click", () => {

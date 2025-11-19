@@ -98,6 +98,10 @@ label.checkboxWithSub {
   }
 }
 
+#wordFilterModal .modal #ignoreExcludesInput {
+  width: 1.25em;
+}
+
 input[type="checkbox"] {
   appearance: none;
   height: 1.25em;
