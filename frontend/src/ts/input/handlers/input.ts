@@ -121,7 +121,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // start if needed
   if (!TestState.isActive) {
-    TestUI.setActiveWordTop();
     TestLogic.startTest(now);
   }
 

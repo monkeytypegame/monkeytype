@@ -1764,6 +1764,7 @@ export async function afterTestWordChange(
 }
 
 export function afterTestStart(): void {
+  setActiveWordTop();
   Focus.set(true);
   Monkey.show();
   TimerProgress.show();
