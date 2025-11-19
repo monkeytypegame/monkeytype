@@ -1637,6 +1637,7 @@ export function getActiveWordTopAfterAppend(data: string): number {
   return top;
 }
 
+// this means input, delete or composition
 function afterAnyTestInput(correctInput: boolean | null): void {
   if (
     correctInput === true ||
