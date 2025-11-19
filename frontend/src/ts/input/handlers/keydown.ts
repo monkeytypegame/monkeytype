@@ -156,6 +156,19 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
   const now = performance.now();
   handleKeydownTiming(event, now);
 
+  // allow arrows in arrows funbox
+  const arrowsActive = Config.funbox.includes("arrows");
+  if (
+    event.key === "Home" ||
+    event.key === "End" ||
+    event.key === "PageUp" ||
+    event.key === "PageDown" ||
+    (event.key.startsWith("Arrow") && !arrowsActive)
+  ) {
+    event.preventDefault();
+    return;
+  }
+
   for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
     void fb.functions.handleKeydown(event);
   }
@@ -180,17 +193,6 @@ export async function handleKeydown(event: KeyboardEvent): Promise<void> {
       event.preventDefault();
       return;
     }
-  }
-
-  if (
-    event.key === "Home" ||
-    event.key === "End" ||
-    event.key === "PageUp" ||
-    event.key === "PageDown" ||
-    event.key.startsWith("Arrow")
-  ) {
-    event.preventDefault();
-    return;
   }
 
   if (!event.repeat) {

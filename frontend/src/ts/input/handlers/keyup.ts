@@ -32,21 +32,18 @@ function handleKeyupTiming(event: KeyboardEvent, now: number): void {
 }
 
 export async function handleKeyup(event: KeyboardEvent): Promise<void> {
+  const now = performance.now();
+  handleKeyupTiming(event, now);
+
+  // allow arrows in arrows funbox
+  const arrowsActive = Config.funbox.includes("arrows");
   if (
     event.key === "Home" ||
     event.key === "End" ||
     event.key === "PageUp" ||
-    event.key === "PageDown"
+    event.key === "PageDown" ||
+    (event.key.startsWith("Arrow") && !arrowsActive)
   ) {
-    event.preventDefault();
-    return;
-  }
-
-  const now = performance.now();
-  handleKeyupTiming(event, now);
-
-  const arrowsActive = Config.funbox.includes("arrows");
-  if (event.key.startsWith("Arrow") && !arrowsActive) {
     event.preventDefault();
     return;
   }
