@@ -1128,8 +1128,8 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
   },
   quantum: {
     bgColor: "#040527",
-    mainColor: "#2f93ff",
-    subColor: "#596594",
+    mainColor: "#3fa3ff",
+    subColor: "#607faf",
     textColor: "#dde5ed",
   },
 };

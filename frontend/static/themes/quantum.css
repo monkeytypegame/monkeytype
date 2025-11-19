@@ -1,15 +1,25 @@
 :root {
-  --bg-color: #040527;
-  --main-color: #2f93ff;
-  --caret-color: #00ffff;
+  --bg-color: linear-gradient(-45deg, #040527, #041537, #040547, #16026f);
+  --main-color: #3fa3ff;
+  --caret-color: #00ddee;
   --text-color: #dde5ed;
   --error-color: #fd77d7;
-  --sub-color: #596594;
-  --sub-alt-color: #0a0a40;
+  --sub-color: #607faf;
+  --sub-alt-color: #101060;
   --error-color: #ff5869;
   --error-extra-color: #b03c47;
   --colorful-error-color: #ff5869;
   --colorful-error-extra-color: #b03c47;
+}
+
+key {
+    background-color: #ffffff20;
+    color: var(--caret-color);
+}
+
+button:hover {
+    background-color: #3fa3ff88;
+    color: #fff;
 }
 
 header #logo .top {
@@ -30,11 +40,6 @@ nav > .textButton:hover {
   color: currentColor;
 }
 
-nav > .textButton {
-  border-radius: 10rem i !important;
-  color: var(--bg-color);
-}
-
 nav > .textButton:nth-child(1) {
   color: #aaff4faa;
 }
@@ -48,7 +53,7 @@ nav > .textButton:nth-child(3) {
 }
 
 nav > .textButton:nth-child(4) {
-  color: #8f6fffaa;
+  color: #af8fffaa;
 }
 
 nav > .textButton:nth-child(5) {
