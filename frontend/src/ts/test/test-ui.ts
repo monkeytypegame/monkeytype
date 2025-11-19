@@ -1625,17 +1625,13 @@ export function getActiveWordTopAfterAppend(data: string): number {
 
   const displayData = data === " " ? "_" : data;
 
-  // Create element without DOM insertion for better performance
   const tempLetter = document.createElement("letter");
   tempLetter.className = "temp";
   tempLetter.textContent = displayData;
 
-  // Single DOM operation
   activeWord.appendChild(tempLetter);
 
   const top = activeWord.offsetTop;
-
-  // Remove using the reference (faster than removeChild)
   tempLetter.remove();
 
   return top;
