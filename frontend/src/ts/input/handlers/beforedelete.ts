@@ -14,7 +14,7 @@ export function onBeforeDelete(event: InputEvent): void {
   const inputIsEmpty = inputValue === "";
 
   if (inputIsEmpty) {
-    //this is nested because we only wanna pull the element from the dom if needed
+    // this is nested because we only wanna pull the element from the dom if needed
     const previousWordElement = TestUI.getWordElement(
       TestState.activeWordIndex - 1
     );
@@ -37,13 +37,16 @@ export function onBeforeDelete(event: InputEvent): void {
 
   if (confidence === "on" && inputIsEmpty && !previousWordCorrect) {
     event.preventDefault();
+    return;
   }
 
   if (confidence === "max") {
     event.preventDefault();
+    return;
   }
 
   if (inputIsEmpty && previousWordCorrect) {
     event.preventDefault();
+    return;
   }
 }
