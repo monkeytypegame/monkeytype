@@ -24,7 +24,7 @@ import {
   getActiveFunboxNames,
 } from "../../test/funbox/list";
 
-function handleKeydownTiming(event: KeyboardEvent, now: number): void {
+function recordTiming(event: KeyboardEvent, now: number): void {
   if (event.repeat) {
     console.log(
       "spacing debug keydown STOPPED - repeat",
@@ -154,7 +154,7 @@ async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
 
 export async function handleKeydown(event: KeyboardEvent): Promise<void> {
   const now = performance.now();
-  handleKeydownTiming(event, now);
+  recordTiming(event, now);
 
   // allow arrows in arrows funbox
   const arrowsActive = Config.funbox.includes("arrows");

@@ -2,7 +2,7 @@ import Config from "../../config";
 import * as TestInput from "../../test/test-input";
 import * as Monkey from "../../test/monkey";
 
-function handleKeyupTiming(event: KeyboardEvent, now: number): void {
+function recordTiming(event: KeyboardEvent, now: number): void {
   if (event.repeat) {
     console.log(
       "spacing debug keyup STOPPED - repeat",
@@ -33,7 +33,7 @@ function handleKeyupTiming(event: KeyboardEvent, now: number): void {
 
 export async function handleKeyup(event: KeyboardEvent): Promise<void> {
   const now = performance.now();
-  handleKeyupTiming(event, now);
+  recordTiming(event, now);
 
   // allow arrows in arrows funbox
   const arrowsActive = Config.funbox.includes("arrows");
