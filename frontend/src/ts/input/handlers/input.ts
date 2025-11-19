@@ -254,9 +254,9 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 export async function emulateInsertText(
   options: OnInsertTextParams
 ): Promise<void> {
-  const preventDefault = onBeforeInsertText(options.data);
+  const inputStopped = onBeforeInsertText(options.data);
 
-  if (preventDefault) {
+  if (inputStopped) {
     return;
   }
 
