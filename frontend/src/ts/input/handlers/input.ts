@@ -274,7 +274,7 @@ export async function handleInput(event: InputEvent): Promise<void> {
   const now = performance.now();
 
   // this is ok to cast because we are preventing default
-  // in handleBeforeInput for unsupported input types
+  // in the input listener for unsupported input types
   const inputType = event.inputType as SupportedInputType;
 
   if (inputType === "insertText" && event.data !== null) {
