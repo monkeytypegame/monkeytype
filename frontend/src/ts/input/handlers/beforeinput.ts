@@ -12,12 +12,11 @@ import { onBeforeDelete } from "./beforedelete";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
 import { isSupportedInputType } from "../helpers/input-type";
 
+// returns true if input should be blocked
 export function onBeforeInsertText(data: string): boolean {
   if (TestState.testRestarting) {
     return true;
   }
-
-  let preventDefault = false;
 
   const { inputValue } = getInputValue();
 
@@ -29,12 +28,12 @@ export function onBeforeInsertText(data: string): boolean {
     Config.difficulty === "normal" &&
     !Config.strictSpace
   ) {
-    preventDefault = true;
+    return true;
   }
 
   //prevent space in nospace funbox
   if (isSpace(data) && isFunboxActiveWithProperty("nospace")) {
-    preventDefault = true;
+    return true;
   }
 
   // we need this here because space characters sometimes need to be blocked,
@@ -66,10 +65,10 @@ export function onBeforeInsertText(data: string): boolean {
   const overLimit = TestInput.input.current.length >= inputLimit;
   if (overLimit && ((isSpace(data) && shouldInsertSpace) || !isSpace(data))) {
     console.error("Hitting word limit");
-    preventDefault = true;
+    return true;
   }
 
-  return preventDefault;
+  return false;
 }
 
 export async function handleBeforeInput(event: InputEvent): Promise<void> {
