@@ -13,13 +13,13 @@
 }
 
 key {
-    background-color: #ffffff20;
-    color: var(--caret-color);
+  background-color: #ffffff20;
+  color: var(--caret-color);
 }
 
 button:hover {
-    background-color: #3fa3ff88;
-    color: #fff;
+  background-color: #3fa3ff88;
+  color: #fff;
 }
 
 header #logo .top {
