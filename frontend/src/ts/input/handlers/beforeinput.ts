@@ -103,7 +103,6 @@ export async function handleBeforeInput(event: InputEvent): Promise<void> {
   }
 
   const inputType = event.inputType;
-  // const now = performance.now();
 
   if (inputType === "insertText" && event.data !== null) {
     const preventDefault = onBeforeInsertText(event.data);
