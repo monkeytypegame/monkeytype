@@ -36,8 +36,7 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  // we need this here because space characters sometimes need to be blocked,
-  // while space skips to next word shouldnt
+  // space characters sometimes are inserted as a character, need this distinction
   const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
 
   // prevent the word from jumping to the next line if the word is too long
@@ -48,7 +47,8 @@ export function onBeforeInsertText(data: string): boolean {
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
     TestInput.input.current.length >= TestWords.words.getCurrent().length;
-  const isSpaceAndShouldInsert = isSpace(data) && shouldInsertSpace;
+  const isSpaceAndShouldInsert =
+    isSpace(data) && shouldInsertSpaceCharacter(data) === true;
   const isNotSpace = !isSpace(data);
 
   if (
