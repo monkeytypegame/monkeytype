@@ -86,6 +86,8 @@ function updateColors(
     }
   }
 
+  color = color.replace("##", "#");
+
   $(".colorConverter").css("color", color);
   const hexColor: string | undefined = Colors.rgbStringtoHex(
     $(".colorConverter").css("color")

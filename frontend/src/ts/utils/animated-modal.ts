@@ -248,6 +248,10 @@ export default class AnimatedModal<
         this.focusFirstInput(options?.focusFirstInput);
       }, 1);
 
+      const hasModalAnimation =
+        (options?.customAnimation?.modal ??
+          this.customHideAnimations?.modal) !== undefined;
+
       const modalAnimation = options?.customAnimation?.modal ??
         this.customShowAnimations?.modal ?? {
           opacity: [0, 1],
@@ -269,10 +273,14 @@ export default class AnimatedModal<
           : options?.animationMode ?? "both";
 
       if (animationMode === "both" || animationMode === "none") {
-        animate(this.modalEl, {
-          ...modalAnimation,
-          duration: animationMode === "none" ? 0 : modalAnimationDuration,
-        });
+        if (hasModalAnimation) {
+          animate(this.modalEl, {
+            ...modalAnimation,
+            duration: animationMode === "none" ? 0 : modalAnimationDuration,
+          });
+        } else {
+          this.modalEl.style.opacity = "1";
+        }
 
         animate(this.wrapperEl, {
           ...wrapperAnimation,
@@ -322,6 +330,10 @@ export default class AnimatedModal<
 
       await options?.beforeAnimation?.(this.modalEl);
 
+      const hasModalAnimation =
+        (options?.customAnimation?.modal ??
+          this.customHideAnimations?.modal) !== undefined;
+
       const modalAnimation = options?.customAnimation?.modal ??
         this.customHideAnimations?.modal ?? {
           opacity: [1, 0],
@@ -351,10 +363,14 @@ export default class AnimatedModal<
           : options?.animationMode ?? "both";
 
       if (animationMode === "both" || animationMode === "none") {
-        animate(this.modalEl, {
-          ...modalAnimation,
-          duration: animationMode === "none" ? 0 : modalAnimationDuration,
-        });
+        if (hasModalAnimation) {
+          animate(this.modalEl, {
+            ...modalAnimation,
+            duration: animationMode === "none" ? 0 : modalAnimationDuration,
+          });
+        } else {
+          this.modalEl.style.opacity = "1";
+        }
 
         animate(this.wrapperEl, {
           ...wrapperAnimation,

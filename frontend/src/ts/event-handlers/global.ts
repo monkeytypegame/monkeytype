@@ -94,6 +94,16 @@ window.addEventListener("keydown", function (e) {
   }
 });
 
+//stop space scrolling
+window.addEventListener("keydown", function (e) {
+  if (
+    e.code === "Space" &&
+    (e.target === document.body || (e.target as HTMLElement)?.id === "result")
+  ) {
+    e.preventDefault();
+  }
+});
+
 window.onerror = function (message, url, line, column, error): void {
   if (Misc.isDevEnvironment()) {
     Notifications.add(error?.message ?? "Undefined message", -1, {
