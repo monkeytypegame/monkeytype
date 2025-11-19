@@ -44,12 +44,18 @@ export function onBeforeInsertText(data: string): boolean {
   // this will not work for the first word of each line, but that has a low chance of happening
   // make sure to only check this when necessary (hide extra letters is off or input is longer than word)
   // because this check is expensive (causes layout reflows)
+
+  const dataIsNotFalsy = data !== null && data !== "";
+  const inputIsLongerThanOrEqualToWord =
+    TestInput.input.current.length >= TestWords.words.getCurrent().length;
+  const isSpaceAndShouldInsert = isSpace(data) && shouldInsertSpace;
+  const isNotSpace = !isSpace(data);
+
   if (
-    data !== null &&
-    data !== "" &&
+    dataIsNotFalsy &&
     !Config.hideExtraLetters &&
-    TestInput.input.current.length >= TestWords.words.getCurrent().length &&
-    ((isSpace(data) && shouldInsertSpace) || !isSpace(data)) &&
+    inputIsLongerThanOrEqualToWord &&
+    (isSpaceAndShouldInsert || isNotSpace) &&
     Config.mode !== "zen"
   ) {
     const topAfterAppend = TestUI.getActiveWordTopAfterAppend(data);
