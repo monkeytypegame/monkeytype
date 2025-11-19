@@ -110,48 +110,50 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     return;
   }
 
+  // helper consts
   const lastInMultiOrSingle = multiIndex === undefined || lastInMultiIndex;
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
-
   const { inputValue } = getInputValue();
   const correct = isCharCorrect(data, inputValue, correctShiftUsed, multiIndex);
+  const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
+  const charIsNotSpace = !isSpace(data);
 
+  // start if needed
   if (!TestState.isActive) {
     TestUI.setActiveWordTop();
     TestLogic.startTest(now);
   }
 
+  // burst calculation needs to run at the start of a word, before updating input state
   if (TestInput.input.current.length === 0) {
     TestInput.setBurstStart(now);
   }
 
-  const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
-  const charIsNotSpace = !isSpace(data);
+  // update test input state
   if (charIsNotSpace || shouldInsertSpace) {
     setTestInputToDOMValue(data === "\n");
   }
 
+  // general per keypress updates
   TestInput.setCurrentNotAfk();
-
   Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
-
   void MonkeyPower.addPower(correct);
   TestInput.incrementAccuracy(correct);
-
+  WeakSpot.updateScore(data, correct);
+  TestInput.incrementKeypressCount();
+  TestInput.pushKeypressWord(TestState.activeWordIndex);
   if (!correct) {
     TestInput.incrementKeypressErrors();
     TestInput.pushMissedWord(TestWords.words.getCurrent());
   }
-  TestInput.incrementKeypressCount();
-  TestInput.pushKeypressWord(TestState.activeWordIndex);
-
   if (Config.keymapMode === "react") {
     void KeymapEvent.flash(data, correct);
   }
 
-  WeakSpot.updateScore(data, correct);
-
+  // handing cases where last char needs to be removed
+  // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
+  // like accuracy, keypress errors, and missed words
   let removeLastChar = false;
   let visualInputOverride: string | undefined;
   if (
@@ -162,8 +164,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     if (!Config.blindMode) {
       visualInputOverride = TestInput.input.current;
     }
-    // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
-    // like accuracy, keypress errors, and missed words
     removeLastChar = true;
   }
 
@@ -186,7 +186,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   // going to next word
-
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
   const noSpaceForce =
     nospaceEnabled &&
