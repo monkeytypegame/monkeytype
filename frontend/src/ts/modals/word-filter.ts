@@ -277,6 +277,22 @@ async function setup(): Promise<void> {
         .join(" ")
     );
   });
+
+  $("#wordFilterModal button#excludeOthers").on("click", () => {
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+    const currentIncludeChars = $("#wordIncludeInput").val() as string;
+    const includeCharsArray = currentIncludeChars.split(" ");
+    let excludeChars = [];
+
+    for (let char of alphabet) {
+      if (!includeCharsArray.includes(char)) {
+        excludeChars.push(char);
+      }
+    }
+
+    $("#wordExcludeInput").val(excludeChars.join(" "));
+  });
+
   $("#wordFilterModal button.addButton").on("click", () => {
     $("#wordFilterModal .loadingIndicator").removeClass("hidden");
     disableButtons();
