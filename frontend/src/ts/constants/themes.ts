@@ -916,12 +916,6 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#9f8ad4",
     textColor: "#2e2e2e",
   },
-  tokyonight_storm: {
-    bgColor: "#24283b",
-    mainColor: "#7aa2f7",
-    subColor: "#565f89",
-    textColor: "#a9b1d6",
-  },
   passion_fruit: {
     bgColor: "#7c2142",
     mainColor: "#f4a3b4",
@@ -1131,6 +1125,12 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     mainColor: "#94ffc2",
     subColor: "#ffaca3",
     textColor: "#feffdb",
+  },
+  tokyonight_storm: {
+    bgColor: "#24283b",
+    mainColor: "#7aa2f7",
+    subColor: "#565f89",
+    textColor: "#a9b1d6",
   },
 };
 
