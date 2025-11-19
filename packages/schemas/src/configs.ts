@@ -44,6 +44,7 @@ export const CaretStyleSchema = z.enum([
   "underline",
   "carrot",
   "banana",
+  "monkey",
 ]);
 export type CaretStyle = z.infer<typeof CaretStyleSchema>;
 

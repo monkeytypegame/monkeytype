@@ -55,7 +55,16 @@ export class Caret {
     this.style = style;
     this.element.style.width = "";
     this.element.classList.remove(
-      ...["off", "default", "underline", "outline", "block", "carrot", "banana"]
+      ...[
+        "off",
+        "default",
+        "underline",
+        "outline",
+        "block",
+        "carrot",
+        "banana",
+        "monkey",
+      ]
     );
     this.element.classList.add(style);
   }

@@ -38,7 +38,7 @@
 
   &.carrot {
     background-color: transparent;
-    background-image: url("/images/carrot.png");
+    background-image: url("/images/caret/carrot.png");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -47,7 +47,16 @@
 
   &.banana {
     background-color: transparent;
-    background-image: url("/images/banana.png");
+    background-image: url("/images/caret/banana.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 1em;
+  }
+
+  &.monkey {
+    background-color: transparent;
+    background-image: url("/images/caret/monkey.png");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
