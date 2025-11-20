@@ -62,6 +62,7 @@ export function onBeforeInsertText(data: string): boolean {
 
   if (
     dataIsNotFalsy &&
+    !Config.blindMode &&
     !Config.hideExtraLetters &&
     inputIsLongerThanOrEqualToWord &&
     (isSpaceAndShouldInsert || isNotSpace) &&
