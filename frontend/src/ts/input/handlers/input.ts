@@ -114,7 +114,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const lastInMultiOrSingle = multiIndex === undefined || lastInMultiIndex;
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
-  const correct = isCharCorrect(data, inputValue, correctShiftUsed, multiIndex);
+  const correct = isCharCorrect(data, inputValue, correctShiftUsed);
   const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
   const charIsNotSpace = !isSpace(data);
 

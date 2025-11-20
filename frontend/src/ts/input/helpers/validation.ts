@@ -14,13 +14,11 @@ import {
  * @param data - Input data
  * @param inputValue - Current input value
  * @param correctShiftUsed - Whether the correct shift state was used. Null means disabled
- * @param indexOverride - Optional index to check instead of the last character
  */
 export function isCharCorrect(
   data: string,
   inputValue: string,
-  correctShiftUsed: boolean | null, //null means disabled
-  indexOverride?: number
+  correctShiftUsed: boolean | null //null means disabled
 ): boolean {
   if (Config.mode === "zen") return true;
 
@@ -30,13 +28,10 @@ export function isCharCorrect(
     inputValue += "\n";
   }
 
-  const index =
-    indexOverride !== undefined ? indexOverride : inputValue.length - 1;
-
   const targetWord = TestWords.words.get(TestState.activeWordIndex);
 
-  const input = inputValue[index];
-  const target = targetWord[index];
+  const input = inputValue[inputValue.length - 1];
+  const target = targetWord[inputValue.length - 1];
 
   if (replaceSpaceLikeCharacters(inputValue) === targetWord + " ") {
     return true;
