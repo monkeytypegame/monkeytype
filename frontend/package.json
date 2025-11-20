@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "eslint": "eslint \"./**/*.ts\"",
-    "oxlint": "oxlint .",
+    "oxlint": "oxlint . --type-aware",
     "lint": "npm run oxlint && npm run eslint",
     "check-assets": "tsx ./scripts/check-assets.ts",
     "audit": "vite-bundle-visualizer",
@@ -113,6 +113,7 @@
     "lz-ts": "1.1.2",
     "modern-screenshot": "4.6.5",
     "object-hash": "3.0.0",
+    "oxlint-tsgolint": "0.7.3",
     "slim-select": "2.9.2",
     "stemmer": "2.0.1",
     "throttle-debounce": "5.0.2",

@@ -12,7 +12,8 @@
     "lint": "npm run oxlint && npm run eslint"
   },
   "dependencies": {
-    "@monkeytype/schemas": "workspace:*"
+    "@monkeytype/schemas": "workspace:*",
+    "oxlint-tsgolint": "0.7.3"
   },
   "peerDependencies": {
     "@ts-rest/core": "3.52.1",

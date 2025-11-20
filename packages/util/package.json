@@ -28,5 +28,8 @@
       "import": "./dist/*.mjs",
       "require": "./dist/*.js"
     }
+  },
+  "dependencies": {
+    "oxlint-tsgolint": "0.7.3"
   }
 }

@@ -104,6 +104,80 @@
     "no-cycle": "off",
     "no-nested-ternary": "off",
     "no-array-sort": "off",
-    "preserve-caught-error": "off"
+    "preserve-caught-error": "off",
+
+    // ---------------- typescript rules
+
+    // not using
+    "typescript/non-nullable-type-assertion-style": "off",
+    "typescript/switch-exhaustiveness-check": "off",
+    "typescript/unbound-method": "off",
+    "typescript/prefer-promise-reject-errors": "off",
+    "typescript/no-redundant-type-constituents": "off",
+    "typescript/require-array-sort-compare": "off",
+    //unnecessary, might aswell keep template strings in case a string might be added in the future
+    "typescript/no-unnecessary-template-expression": "off",
+
+    //todo: consider some of these?
+    //936, no options on this one. super strict, it doesnt allow casting to a narrower type
+    "typescript/no-unsafe-type-assertion": "off",
+    //224 errors, very easy to fix.
+    // adds unnecessary promise overhead and pushing the function to the microtask queue, creating a delay
+    // all though performance impact probably minimal
+    // anything that needs to be absolutely as fast as possible should not be async (if not using await)
+    "typescript/require-await": "off",
+    //388, when allowing numbers only 27, when also allowing arrays 12
+    // could be nice to avoid some weird things showing up in templated strings
+    "typescript/restrict-template-expressions": [
+      "off",
+      {
+        "allowNumber": true,
+        "allowArray": true
+      }
+    ],
+
+    // using
+    "typescript/only-throw-error": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/no-confusing-void-expression": [
+      "error",
+      { "ignoreArrowShorthand": true }
+    ],
+    "typescript/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": false
+      }
+    ],
+    "typescript/promise-function-async": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-array-delete": "error",
+    "typescript/no-base-to-string": "error",
+    "typescript/no-duplicate-type-constituents": "error",
+    "typescript/no-for-in-array": "error",
+    "typescript/no-implied-eval": "error",
+    "typescript/no-meaningless-void-operator": "error",
+    "typescript/no-mixed-enums": "error",
+    "typescript/no-unnecessary-boolean-literal-compare": "error",
+    "typescript/no-unsafe-enum-comparison": "error",
+    "typescript/no-unsafe-return": "error",
+    "typescript/no-unsafe-unary-minus": "error",
+    "typescript/prefer-reduce-type-parameter": "error",
+    "typescript/prefer-return-this-type": "error",
+    "typescript/related-getter-setter-pairs": "error",
+    "typescript/return-await": ["error", "in-try-catch"],
+    "typescript/use-unknown-in-catch-callback-variable": "error",
+    "typescript/await-thenable": "error",
+    "typescript/no-unnecessary-type-arguments": "error",
+    "typescript/restrict-plus-operands": [
+      "error",
+      {
+        "allowNumberAndString": true
+      }
+    ]
   }
 }

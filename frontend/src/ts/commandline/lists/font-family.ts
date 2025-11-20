@@ -98,7 +98,7 @@ if (fromMeta.subgroup) {
           icon: "fa-trash",
           alias: "remove font",
           available: async (): Promise<boolean> => {
-            return await FileStorage.hasFile("LocalFontFamilyFile");
+            return FileStorage.hasFile("LocalFontFamilyFile");
           },
           exec: async (): Promise<void> => {
             try {

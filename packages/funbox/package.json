@@ -24,7 +24,8 @@
   },
   "dependencies": {
     "@monkeytype/schemas": "workspace:*",
-    "@monkeytype/util": "workspace:*"
+    "@monkeytype/util": "workspace:*",
+    "oxlint-tsgolint": "0.7.3"
   },
   "exports": {
     ".": {

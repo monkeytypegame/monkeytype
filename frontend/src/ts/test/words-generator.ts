@@ -381,7 +381,7 @@ async function applyBritishEnglishToWord(
     return word;
   }
 
-  return await BritishEnglish.replace(word, previousWord);
+  return BritishEnglish.replace(word, previousWord);
 }
 
 function applyLazyModeToWord(word: string, language: LanguageObject): string {

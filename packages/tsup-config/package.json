@@ -24,5 +24,8 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
+  },
+  "dependencies": {
+    "oxlint-tsgolint": "0.7.3"
   }
 }
