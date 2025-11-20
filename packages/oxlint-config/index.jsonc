@@ -137,6 +137,10 @@
     ],
 
     // using
+    "typescript/strict-boolean-expressions": [
+      "error",
+      { "allowNullableBoolean": true }
+    ],
     "typescript/only-throw-error": "error",
     "typescript/no-unsafe-member-access": "error",
     "typescript/no-unsafe-call": "error",

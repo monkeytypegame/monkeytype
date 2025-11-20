@@ -7,9 +7,8 @@
     "test": "vitest run",
     "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
-    "eslint": "eslint \"./src/**/*.ts\"",
-    "oxlint": "oxlint .",
-    "lint": "npm run oxlint && npm run eslint"
+    "oxlint": "oxlint . --type-aware",
+    "lint": "npm run oxlint"
   },
   "dependencies": {
     "@monkeytype/schemas": "workspace:*",
@@ -20,10 +19,8 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@monkeytype/eslint-config": "workspace:*",
     "@monkeytype/tsup-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
-    "eslint": "8.57.1",
     "madge": "8.0.0",
     "oxlint": "1.29.0",
     "tsup": "8.4.0",

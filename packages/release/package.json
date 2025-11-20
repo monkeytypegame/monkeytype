@@ -11,8 +11,6 @@
     "purge-cf-cache": "./bin/purgeCfCache.sh"
   },
   "devDependencies": {
-    "@monkeytype/eslint-config": "workspace:*",
-    "eslint": "8.57.1",
     "nodemon": "3.1.4",
     "oxlint": "1.29.0"
   },

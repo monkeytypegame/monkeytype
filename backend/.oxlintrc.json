@@ -30,7 +30,8 @@
         "typescript/promise-function-async": "off",
         "typescript/no-confusing-void-expression": "off",
         "typescript/return-await": "off",
-        "typescript/no-unsafe-return": "off"
+        "typescript/no-unsafe-return": "off",
+        "typescript/strict-boolean-expressions": "off"
       }
     },
     {

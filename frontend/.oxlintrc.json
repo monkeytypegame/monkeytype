@@ -28,7 +28,8 @@
         "typescript/no-unsafe-call": "off",
         "typescript/no-unsafe-return": "off",
         "typescript/promise-function-async": "off",
-        "typescript/no-confusing-void-expression": "off"
+        "typescript/no-confusing-void-expression": "off",
+        "typescript/strict-boolean-expressions": "off"
       }
     },
     {
@@ -47,7 +48,8 @@
         "typescript/promise-function-async": "off",
         "typescript/no-unsafe-return": "off",
         "typescript/return-await": "off",
-        "typescript/no-unsafe-argument": "off"
+        "typescript/no-unsafe-argument": "off",
+        "typescript/strict-boolean-expressions": "off"
       }
     }
   ]

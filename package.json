@@ -69,7 +69,6 @@
     "@monkeytype/release": "workspace:*",
     "@vitest/coverage-v8": "4.0.8",
     "conventional-changelog": "6.0.0",
-    "eslint": "8.57.1",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
@@ -85,8 +84,7 @@
     ],
     "*.{ts,js}": [
       "prettier --write",
-      "oxlint",
-      "eslint"
+      "oxlint --type-aware"
     ]
   },
   "version": "25.46.0",

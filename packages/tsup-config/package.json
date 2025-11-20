@@ -5,16 +5,14 @@
     "dev": "tsup-node --watch",
     "build": "tsup-node",
     "ts-check": "tsc --noEmit",
-    "eslint": "eslint \"./src/**/*.ts\"",
-    "oxlint": "oxlint .",
-    "lint": "npm run oxlint && npm run eslint"
+    "oxlint": "oxlint . --type-aware",
+    "lint": "npm run oxlint"
   },
   "peerDependencies": {
     "tsup": "8.4.0"
   },
   "devDependencies": {
     "@monkeytype/typescript-config": "workspace:*",
-    "eslint": "8.57.1",
     "oxlint": "1.29.0",
     "typescript": "5.5.4"
   },
