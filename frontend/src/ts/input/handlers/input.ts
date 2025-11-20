@@ -58,7 +58,7 @@ type OnInsertTextParams = {
   // true if called by compositionEnd
   isCompositionEnding?: true;
   // are we on the last character of a multi character input
-  lastInMultiIndex: boolean | undefined;
+  lastInMultiIndex?: boolean;
 };
 
 export async function onInsertText(options: OnInsertTextParams): Promise<void> {
