@@ -74,12 +74,12 @@ type OnInsertTextParams = {
 export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const { data, now, multiIndex, lastInMultiIndex, isCompositionEnding } =
     options;
+  const { inputValue } = getInputValue();
 
   if (data.length > 1) {
     // remove the entire data from the input value
     // not using setInputValue because we dont want to update TestInput yet
     // it will be updated later in the body of onInsertText
-    const { inputValue } = getInputValue();
     getWordsInput().value = " " + inputValue.slice(0, -data.length);
 
     for (let i = 0; i < data.length; i++) {
@@ -114,7 +114,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const lastInMultiOrSingle = multiIndex === undefined || lastInMultiIndex;
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
-  const { inputValue } = getInputValue();
   const correct = isCharCorrect(data, inputValue, correctShiftUsed, multiIndex);
   const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
   const charIsNotSpace = !isSpace(data);
