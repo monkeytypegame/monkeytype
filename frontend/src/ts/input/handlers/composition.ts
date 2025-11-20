@@ -1,6 +1,5 @@
 import * as CompositionState from "../../states/composition";
 import * as TestState from "../../test/test-state";
-import * as TestUI from "../../test/test-ui";
 import * as TestLogic from "../../test/test-logic";
 import { onInsertText } from "./input";
 import { setLastInsertCompositionTextData } from "../core/state";
@@ -11,7 +10,6 @@ export function handleCompositionStart(event: CompositionEvent): void {
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
   if (!TestState.isActive) {
-    TestUI.setActiveWordTop();
     TestLogic.startTest(performance.now());
   }
 }
