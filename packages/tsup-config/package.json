@@ -14,6 +14,7 @@
   "devDependencies": {
     "@monkeytype/typescript-config": "workspace:*",
     "oxlint": "1.29.0",
+    "oxlint-tsgolint": "0.8.0",
     "typescript": "5.5.4"
   },
   "exports": {
@@ -22,8 +23,5 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
-  },
-  "dependencies": {
-    "oxlint-tsgolint": "0.7.3"
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "@monkeytype/typescript-config",
   "private": true,
-  "dependencies": {
-    "oxlint-tsgolint": "0.7.3"
+  "devDependencies": {
+    "oxlint-tsgolint": "0.8.0"
   }
 }

@@ -15,14 +15,14 @@
     "@monkeytype/typescript-config": "workspace:*",
     "madge": "8.0.0",
     "oxlint": "1.29.0",
+    "oxlint-tsgolint": "0.8.0",
     "tsup": "8.4.0",
     "typescript": "5.5.4",
     "vitest": "4.0.8"
   },
   "dependencies": {
     "@monkeytype/schemas": "workspace:*",
-    "@monkeytype/util": "workspace:*",
-    "oxlint-tsgolint": "0.7.3"
+    "@monkeytype/util": "workspace:*"
   },
   "exports": {
     ".": {

@@ -12,7 +12,8 @@
   },
   "devDependencies": {
     "nodemon": "3.1.4",
-    "oxlint": "1.29.0"
+    "oxlint": "1.29.0",
+    "oxlint-tsgolint": "0.8.0"
   },
   "bin": {
     "monkeytype-release": "./src/index.js"
@@ -20,7 +21,6 @@
   "dependencies": {
     "@octokit/rest": "21.1.1",
     "dotenv": "16.4.5",
-    "oxlint-tsgolint": "0.7.3",
     "readline-sync": "1.4.10"
   }
 }
