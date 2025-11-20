@@ -19,11 +19,12 @@ export function onBeforeInsertText(data: string): boolean {
   }
 
   const { inputValue } = getInputValue();
+  const dataIsSpace = isSpace(data);
 
   //prevent space from being inserted if input is empty
   //allow if strict space is enabled
   if (
-    isSpace(data) &&
+    dataIsSpace &&
     inputValue === "" &&
     Config.difficulty === "normal" &&
     !Config.strictSpace
@@ -32,7 +33,7 @@ export function onBeforeInsertText(data: string): boolean {
   }
 
   //prevent space in nospace funbox
-  if (isSpace(data) && isFunboxActiveWithProperty("nospace")) {
+  if (dataIsSpace && isFunboxActiveWithProperty("nospace")) {
     return true;
   }
 
@@ -43,7 +44,7 @@ export function onBeforeInsertText(data: string): boolean {
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
   const overLimit = TestInput.input.current.length >= inputLimit;
-  if (overLimit && ((isSpace(data) && shouldInsertSpace) || !isSpace(data))) {
+  if (overLimit && ((dataIsSpace && shouldInsertSpace) || !dataIsSpace)) {
     console.error("Hitting word limit");
     return true;
   }
@@ -57,15 +58,14 @@ export function onBeforeInsertText(data: string): boolean {
   const inputIsLongerThanOrEqualToWord =
     TestInput.input.current.length >= TestWords.words.getCurrent().length;
   const isSpaceAndShouldInsert =
-    isSpace(data) && shouldInsertSpaceCharacter(data) === true;
-  const isNotSpace = !isSpace(data);
+    dataIsSpace && shouldInsertSpaceCharacter(data) === true;
 
   if (
     dataIsNotFalsy &&
     !Config.blindMode &&
     !Config.hideExtraLetters &&
     inputIsLongerThanOrEqualToWord &&
-    (isSpaceAndShouldInsert || isNotSpace) &&
+    (isSpaceAndShouldInsert || !dataIsSpace) &&
     Config.mode !== "zen"
   ) {
     const topAfterAppend = TestUI.getActiveWordTopAfterAppend(data);
