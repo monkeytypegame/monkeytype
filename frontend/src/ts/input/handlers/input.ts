@@ -89,12 +89,10 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     charOverride !== undefined &&
     TestWords.words.getCurrent()[TestInput.input.current.length] !== data
   ) {
-    for (const char of charOverride) {
-      await onInsertText({
-        ...options,
-        data: char,
-      });
-    }
+    await onInsertText({
+      ...options,
+      data: charOverride,
+    });
     return;
   }
 
