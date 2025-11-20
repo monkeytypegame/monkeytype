@@ -284,6 +284,10 @@
         opacity: 0.5;
       }
     }
+    //todo remove
+    &.active {
+      outline: 1px solid var(--main-color);
+    }
     & .hints hint {
       position: absolute;
       bottom: -1.1em;
@@ -353,6 +357,10 @@
       & .hints hint {
         display: none;
       }
+
+      &.error {
+        border-bottom: 2px solid transparent;
+      }
     }
     // &.highlight-word {
     //   .word.typed.error,
@@ -385,6 +393,9 @@
     --untyped-letter-color: var(--sub-color);
     --incorrect-letter-color: var(--colorful-error-color);
     --extra-letter-color: var(--colorful-error-extra-color);
+    &.blind .word.error {
+      border-bottom: 2px solid transparent;
+    }
   }
 
   &.flipped.colorfulMode {
@@ -592,6 +603,12 @@
   cursor: default;
   pointer-events: none;
   border-radius: 0;
+
+  //todo remove
+  margin-top: 5rem;
+  padding: 2rem;
+  opacity: 1;
+  min-width: 5em;
 }
 
 #capsWarning {
@@ -1200,19 +1217,16 @@
   padding: 1em 2em;
 }
 
-#koInputVisualContainer {
-  position: relative;
-  padding-top: 1rem;
-  width: -moz-min-content;
-  width: min-content;
-  height: 3rem;
-  margin: 0 auto;
-
-  font-weight: bold;
-  font-size: 1.5rem;
-  color: var(--sub-color);
-  cursor: default;
+#compositionDisplay {
+  font-size: 0.5em;
+  display: flex;
+  margin: 1rem auto 0px;
+  padding: 1rem 2rem;
+  height: 1.25em;
+  box-sizing: content-box;
   user-select: none;
+  cursor: default;
+  color: var(--sub-color);
 
   &.blurred {
     opacity: 0.25;

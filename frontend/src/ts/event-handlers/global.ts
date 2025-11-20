@@ -4,10 +4,38 @@ import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Commandline from "../commandline/commandline";
 import * as Notifications from "../elements/notifications";
+import * as ActivePage from "../states/active-page";
+import { ModifierKeys } from "../constants/modifier-keys";
+import { focusWords } from "../test/test-ui";
+import * as TestLogic from "../test/test-logic";
+import { navigate } from "../controllers/route-controller";
 
-document.addEventListener("keydown", async (e) => {
+document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
+
+  const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
+  const activeElement = document.activeElement as HTMLElement | null;
+  const wordsFocused = wordsInput === activeElement;
+  const pageTestActive: boolean = ActivePage.get() === "test";
+
+  if (pageTestActive && !wordsFocused) {
+    const popupVisible: boolean = Misc.isAnyPopupVisible();
+    // this is nested because isAnyPopupVisible is a bit expensive
+    // and we don't want to call it during the test
+    if (
+      !popupVisible &&
+      !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
+      !e.metaKey &&
+      !e.ctrlKey
+    ) {
+      //autofocus
+      focusWords();
+      if (Config.showOutOfFocusWarning) {
+        e.preventDefault();
+      }
+    }
+  }
 
   if (
     (e.key === "Escape" && Config.quickRestart !== "esc") ||
@@ -25,6 +53,33 @@ document.addEventListener("keydown", async (e) => {
     const popupVisible = Misc.isAnyPopupVisible();
     if (!popupVisible) {
       Commandline.show();
+    }
+  }
+
+  if (!wordsFocused) {
+    const keyboardInputNeeded =
+      activeElement?.tagName === "INPUT" ||
+      activeElement?.tagName === "TEXTAREA" ||
+      activeElement?.tagName === "SELECT" ||
+      activeElement?.tagName === "BUTTON" ||
+      activeElement?.classList.contains("button") ||
+      activeElement?.classList.contains("textButton");
+
+    if (
+      (e.key === "Tab" &&
+        Config.quickRestart === "tab" &&
+        !keyboardInputNeeded) ||
+      (e.key === "Escape" && Config.quickRestart === "esc") ||
+      (e.key === "Enter" &&
+        Config.quickRestart === "enter" &&
+        !keyboardInputNeeded)
+    ) {
+      e.preventDefault();
+      if (ActivePage.get() === "test") {
+        TestLogic.restart();
+      } else {
+        void navigate("");
+      }
     }
   }
 });
