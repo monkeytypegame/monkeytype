@@ -25,9 +25,14 @@ export function checkIfFailedDueToMinBurst(lastBurst: number | null): boolean {
   return false;
 }
 
-// Using space or newline instead of shouldInsertSapce or increasedWordIndex
-// because we want expert mode to fail no matter if confidence or stop on error is on
+/**
+ * Check if the test should fail due to difficulty settings
+ * @param spaceOrNewLine - Is the input a space or newline
+ */
 export function checkIfFailedDueToDifficulty(spaceOrNewLine: boolean): boolean {
+  // Using space or newline instead of shouldInsertSapce or increasedWordIndex
+  // because we want expert mode to fail no matter if confidence or stop on error is on
+
   if (Config.mode === "zen") return false;
 
   const correctSoFar = TestWords.words

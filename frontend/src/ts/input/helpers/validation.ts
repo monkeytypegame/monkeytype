@@ -9,6 +9,13 @@ import {
   replaceSpaceLikeCharacters,
 } from "../../utils/strings";
 
+/**
+ * Check if the input data is correct
+ * @param data - Input data
+ * @param inputValue - Current input value
+ * @param correctShiftUsed - Whether the correct shift state was used. Null means disabled
+ * @param indexOverride - Optional index to check instead of the last character
+ */
 export function isCharCorrect(
   data: string,
   inputValue: string,
@@ -69,7 +76,12 @@ export function isCharCorrect(
   return false;
 }
 
-// boolean if data is space, null if not
+/**
+ * Determines if a space character should be inserted as a character, or act
+ * as a "control character" (moving to the next word)
+ * @param data - Input data
+ * @returns Boolean if data is space, null if not
+ */
 export function shouldInsertSpaceCharacter(data: string): boolean | null {
   if (!isSpace(data)) {
     return null;
