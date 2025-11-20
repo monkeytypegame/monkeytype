@@ -57,23 +57,12 @@ type OnInsertTextParams = {
   data: string;
   // true if called by compositionEnd
   isCompositionEnding?: true;
-} & (
-  | {
-      // this is for handling multi character inputs
-      // need to keep track which character we are checking
-      multiIndex: number;
-      // are we on the last character of a multi character input
-      lastInMultiIndex: boolean;
-    }
-  | {
-      multiIndex?: undefined;
-      lastInMultiIndex?: undefined;
-    }
-);
+  // are we on the last character of a multi character input
+  lastInMultiIndex: boolean | undefined;
+};
 
 export async function onInsertText(options: OnInsertTextParams): Promise<void> {
-  const { data, now, multiIndex, lastInMultiIndex, isCompositionEnding } =
-    options;
+  const { data, now, lastInMultiIndex, isCompositionEnding } = options;
   const { inputValue } = getInputValue();
 
   if (data.length > 1) {
@@ -89,7 +78,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       await emulateInsertText({
         ...options,
         data: char,
-        multiIndex: i,
         lastInMultiIndex: i === data.length - 1,
       });
     }
@@ -111,7 +99,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   // helper consts
-  const lastInMultiOrSingle = multiIndex === undefined || lastInMultiIndex;
+  const lastInMultiOrSingle =
+    lastInMultiIndex === true || lastInMultiIndex === undefined;
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
   const correct = isCharCorrect(data, inputValue, correctShiftUsed);
