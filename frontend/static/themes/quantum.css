@@ -1,11 +1,11 @@
 :root {
-  --bg-color: linear-gradient(-45deg, #040527, #041537, #040547, #16026f);
-  --main-color: #3fa3ff;
+  --bg-color: linear-gradient(-45deg, #040527, #041557, #040537, #16025f);
+  --main-color: #3aaaff;
   --caret-color: #00ddee;
-  --text-color: #dde5ed;
+  --text-color: #ddeeee;
   --error-color: #fd77d7;
-  --sub-color: #607faf;
-  --sub-alt-color: #101060;
+  --sub-color: #8f9fcf;
+  --sub-alt-color: #101050;
   --error-color: #ff5869;
   --error-extra-color: #b03c47;
   --colorful-error-color: #ff5869;
@@ -13,13 +13,28 @@
 }
 
 key {
-  background-color: #ffffff20;
-  color: var(--caret-color);
+  background-color: #ddddff20;
+  color: #aaaabb;
 }
 
 button:hover {
-  background-color: #3fa3ff88;
+  background-color: #3fa3ffaa;
   color: #fff;
+}
+
+button.active {
+  background-color: #3fa3ffaa;
+  color: #ffffff;
+}
+
+button.active:hover {
+  background-color: #3fa3ff88;
+  color: #ffffff;
+}
+
+.spacer {
+  background: #3aaaff44 !important;
+  width: 4px !important;
 }
 
 header #logo .top {
@@ -38,6 +53,16 @@ nav {
 
 nav > .textButton:hover {
   color: currentColor;
+}
+
+a.textButton.view-account .level {
+  background: #ffffff20;
+  color: #cccccc;
+}
+
+a.textButton.view-account:hover .level {
+  background-color: #3fa3ff88;
+  color: #ffffff;
 }
 
 nav > .textButton:nth-child(1) {
