@@ -1,6 +1,5 @@
 const compositionState = {
   composing: false,
-  startPos: -1,
   data: "",
 };
 
