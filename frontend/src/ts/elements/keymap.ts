@@ -58,27 +58,29 @@ const stenoKeys: LayoutObject = {
   },
 };
 
+function findKeyElements(char: string): JQuery {
+  if (char === " ") {
+    return $("#keymap .keySpace");
+  }
+  return $("#keymap .keymapKey").filter((_, el) => {
+    const val = el.getAttribute("data-key");
+    if (val === null) return false;
+    return val.split(keyDataDelimiter).includes(char);
+  });
+}
+
 function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
   if (currentKey === "") currentKey = " ";
   try {
     $(".activeKey").removeClass("activeKey");
 
-    let highlightKey;
     if (Config.language.startsWith("korean")) {
       currentKey = Hangul.disassemble(currentKey)[0] ?? currentKey;
     }
-    if (currentKey === " ") {
-      highlightKey = "#keymap .keySpace";
-    } else if (currentKey === '"') {
-      highlightKey = `#keymap .keymapKey[data-key*='${currentKey}']`;
-    } else {
-      highlightKey = `#keymap .keymapKey[data-key*="${currentKey}"]`;
-    }
 
-    // console.log("highlighting", highlightKey);
-
-    $(highlightKey).addClass("activeKey");
+    const $target = findKeyElements(currentKey);
+    $target.addClass("activeKey");
   } catch (e) {
     if (e instanceof Error) {
       console.log("could not update highlighted keymap key: " + e.message);
@@ -88,14 +90,11 @@ function highlightKey(currentKey: string): void {
 
 async function flashKey(key: string, correct?: boolean): Promise<void> {
   if (key === undefined) return;
-  //console.log("key", key);
-  if (key === " ") {
-    key = "#keymap .keySpace";
-  } else if (key === '"') {
-    key = `#keymap .keymapKey[data-key*='${key}']`;
-  } else {
-    key = `#keymap .keymapKey[data-key*="${key}"]`;
-  }
+
+  const $target = findKeyElements(key);
+
+  const elements = $target.toArray();
+  if (elements.length === 0) return;
 
   const themecolors = await ThemeColors.getAll();
 
@@ -120,7 +119,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
       };
     }
 
-    animate(key, {
+    animate(elements, {
       color: [startingStyle.color, themecolors.sub],
       backgroundColor: [startingStyle.backgroundColor, themecolors.subAlt],
       borderColor: [startingStyle.borderColor, themecolors.sub],
