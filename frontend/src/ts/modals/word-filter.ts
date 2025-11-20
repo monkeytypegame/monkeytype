@@ -246,6 +246,17 @@ async function apply(set: boolean): Promise<void> {
   });
 }
 
+function switchWordExcludeInput(): void {
+  const wordExcludeInputEl = $("#wordFilterModal #wordExcludeInput");
+
+  if (wordExcludeInputEl.attr("disabled") === "disabled") {
+    wordExcludeInputEl.removeAttr("disabled");
+    return;
+  }
+
+  wordExcludeInputEl.attr("disabled", "disabled");
+}
+
 function disableButtons(): void {
   for (const button of modal.getModal().querySelectorAll("button")) {
     button.setAttribute("disabled", "true");
@@ -286,6 +297,11 @@ async function setup(): Promise<void> {
         .map((x) => x[0])
         .join(" ")
     );
+  });
+
+  $("#wordFilterModal #ignoreExcludesInput").on("change", () => {
+    $("#wordFilterModal #wordExcludeInput").val("");
+    switchWordExcludeInput();
   });
 
   $("#wordFilterModal button.addButton").on("click", () => {
