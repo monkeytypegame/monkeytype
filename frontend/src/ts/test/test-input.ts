@@ -321,21 +321,23 @@ export function forceKeyup(now: number): void {
 }
 
 function getEventCode(event: KeyboardEvent): string {
-  let eventCode = event.code;
-
   if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
-    eventCode = "Space";
+    return "Space";
   }
 
   if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
-    eventCode = "NoCode";
+    return "NoCode";
   }
 
-  if (eventCode === "" || event.key === "Unidentified") {
-    eventCode = "NoCode";
+  if (
+    event.code === "" ||
+    event.code === undefined ||
+    event.key === "Unidentified"
+  ) {
+    return "NoCode";
   }
 
-  return eventCode;
+  return event.code;
 }
 
 let noCodeIndex = 0;
