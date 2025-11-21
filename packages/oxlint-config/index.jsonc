@@ -98,6 +98,7 @@
         "ignoreLastCallback": true
       }
     ],
+    "unicorn/prefer-includes": "error",
 
     // todo: enable
     "no-array-for-each": "off",

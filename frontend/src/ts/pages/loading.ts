@@ -1,5 +1,6 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
+import { promiseAnimate } from "../utils/misc";
 
 const pageEl = $(".page.pageLoading");
 const barEl = pageEl.find(".bar");
@@ -11,19 +12,9 @@ export async function updateBar(
   percentage: number,
   duration: number
 ): Promise<void> {
-  return new Promise((resolve) => {
-    barEl
-      .find(".fill")
-      .stop(true, false)
-      .animate(
-        {
-          width: percentage + "%",
-        },
-        duration,
-        () => {
-          resolve();
-        }
-      );
+  await promiseAnimate(barEl[0]?.querySelector(".fill") as HTMLElement, {
+    width: percentage + "%",
+    duration,
   });
 }
 

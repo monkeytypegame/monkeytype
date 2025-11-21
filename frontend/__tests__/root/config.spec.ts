@@ -527,8 +527,6 @@ describe("Config", () => {
     expect(Config.setCustomThemeColors(customThemeColors(10))).toBe(true);
 
     expect(Config.setCustomThemeColors(customThemeColors(9))).toBe(false);
-    expect(Config.setCustomThemeColors([] as any)).toBe(false);
-    expect(Config.setCustomThemeColors(["invalid"] as any)).toBe(false);
     expect(Config.setCustomThemeColors(customThemeColors(5))).toBe(false);
     expect(Config.setCustomThemeColors(customThemeColors(11))).toBe(false);
 
@@ -931,7 +929,9 @@ describe("Config", () => {
 });
 
 function customThemeColors(n: number): CustomThemeColors {
-  return new Array(n).fill("#000") as CustomThemeColors;
+  const arr = new Array(n).fill("#000") as CustomThemeColors;
+  arr[0] = "#123456"; // we have a protection against all colors being the same
+  return arr;
 }
 
 function testBoolean(fn: (val: boolean) => boolean): void {

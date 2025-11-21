@@ -2,7 +2,7 @@ import * as db from "../init/db";
 import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
-import { isDevEnvironment } from "../utils/misc";
+import { isDevEnvironment, omit } from "../utils/misc";
 import {
   getCachedConfiguration,
   getLiveConfiguration,
@@ -11,22 +11,27 @@ import {
 import { addLog } from "./logs";
 import { Collection, Document, ObjectId } from "mongodb";
 import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
-import { omit } from "lodash";
 import { DBUser, getUsersCollection } from "./user";
 import MonkeyError from "../utils/error";
+import { aggregateWithAcceptedConnections } from "./connections";
 
 export type DBLeaderboardEntry = LeaderboardEntry & {
   _id: ObjectId;
 };
 
+function getCollectionName(key: {
+  language: string;
+  mode: string;
+  mode2: string;
+}): string {
+  return `leaderboards.${key.language}.${key.mode}.${key.mode2}`;
+}
 export const getCollection = (key: {
   language: string;
   mode: string;
   mode2: string;
 }): Collection<DBLeaderboardEntry> =>
-  db.collection<DBLeaderboardEntry>(
-    `leaderboards.${key.language}.${key.mode}.${key.mode2}`
-  );
+  db.collection<DBLeaderboardEntry>(getCollectionName(key));
 
 export async function get(
   mode: string,
@@ -35,18 +40,16 @@ export async function get(
   page: number,
   pageSize: number,
   premiumFeaturesEnabled: boolean = false,
-  userIds?: string[]
+  uid?: string
 ): Promise<DBLeaderboardEntry[] | false> {
   if (page < 0 || pageSize < 0) {
     throw new MonkeyError(500, "Invalid page or pageSize");
   }
 
-  if (userIds?.length === 0) {
-    return [];
-  }
-
   const skip = page * pageSize;
   const limit = pageSize;
+
+  let leaderboard: DBLeaderboardEntry[] | false = [];
 
   const pipeline: Document[] = [
     { $sort: { rank: 1 } },
@@ -54,25 +57,30 @@ export async function get(
     { $limit: limit },
   ];
 
-  if (userIds !== undefined) {
-    pipeline.unshift(
-      { $match: { uid: { $in: userIds } } },
-      {
-        $setWindowFields: {
-          sortBy: { rank: 1 },
-          output: { friendsRank: { $documentNumber: {} } },
-        },
-      }
-    );
-  }
-
   try {
-    let leaderboard = (await getCollection({ language, mode, mode2 })
-      .aggregate(pipeline)
-      .toArray()) as DBLeaderboardEntry[];
-
+    if (uid !== undefined) {
+      leaderboard = await aggregateWithAcceptedConnections(
+        {
+          uid,
+          collectionName: getCollectionName({ language, mode, mode2 }),
+        },
+        [
+          {
+            $setWindowFields: {
+              sortBy: { rank: 1 },
+              output: { friendsRank: { $documentNumber: {} } },
+            },
+          },
+          ...pipeline,
+        ]
+      );
+    } else {
+      leaderboard = await getCollection({ language, mode, mode2 })
+        .aggregate<DBLeaderboardEntry>(pipeline)
+        .toArray();
+    }
     if (!premiumFeaturesEnabled) {
-      leaderboard = leaderboard.map((it) => omit(it, "isPremium"));
+      leaderboard = leaderboard.map((it) => omit(it, ["isPremium"]));
     }
 
     return leaderboard;
@@ -92,23 +100,30 @@ export async function getCount(
   mode: string,
   mode2: string,
   language: string,
-  userIds?: string[]
+  uid?: string
 ): Promise<number> {
   const key = `${language}_${mode}_${mode2}`;
-  if (userIds === undefined && cachedCounts.has(key)) {
+  if (uid === undefined && cachedCounts.has(key)) {
     return cachedCounts.get(key) as number;
   } else {
-    const lb = getCollection({
-      language,
-      mode,
-      mode2,
-    });
-    if (userIds === undefined) {
-      const count = await lb.estimatedDocumentCount();
+    if (uid === undefined) {
+      const count = await getCollection({
+        language,
+        mode,
+        mode2,
+      }).estimatedDocumentCount();
       cachedCounts.set(key, count);
       return count;
     } else {
-      return lb.countDocuments({ uid: { $in: userIds } });
+      return (
+        await aggregateWithAcceptedConnections(
+          {
+            collectionName: getCollectionName({ language, mode, mode2 }),
+            uid,
+          },
+          [{ $project: { _id: true } }]
+        )
+      ).length;
     }
   }
 }
@@ -118,32 +133,33 @@ export async function getRank(
   mode2: string,
   language: string,
   uid: string,
-  userIds?: string[]
-): Promise<LeaderboardEntry | null | false> {
+  friendsOnly: boolean = false
+): Promise<DBLeaderboardEntry | null | false> {
   try {
-    if (userIds === undefined) {
+    if (!friendsOnly) {
       const entry = await getCollection({ language, mode, mode2 }).findOne({
         uid,
       });
 
       return entry;
-    } else if (userIds.length === 0) {
-      return null;
     } else {
-      const entry = await getCollection({ language, mode, mode2 })
-        .aggregate([
-          { $match: { uid: { $in: userIds } } },
+      const results =
+        await aggregateWithAcceptedConnections<DBLeaderboardEntry>(
           {
-            $setWindowFields: {
-              sortBy: { rank: 1 },
-              output: { friendsRank: { $documentNumber: {} } },
-            },
+            collectionName: getCollectionName({ language, mode, mode2 }),
+            uid,
           },
-          { $match: { uid } },
-        ])
-        .toArray();
-
-      return entry[0] as DBLeaderboardEntry;
+          [
+            {
+              $setWindowFields: {
+                sortBy: { rank: 1 },
+                output: { friendsRank: { $documentNumber: {} } },
+              },
+            },
+            { $match: { uid } },
+          ]
+        );
+      return results[0] ?? null;
     }
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -164,7 +180,7 @@ export async function update(
   rank?: number;
 }> {
   const key = `lbPersonalBests.${mode}.${mode2}.${language}`;
-  const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
+  const lbCollectionName = getCollectionName({ language, mode, mode2 });
   const minTimeTyping = (await getCachedConfiguration(true)).leaderboards
     .minTimeTyping;
   const lb = db.collection<DBUser>("users").aggregate<LeaderboardEntry>(

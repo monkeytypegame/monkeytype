@@ -1,12 +1,11 @@
 import { describe, it, expect } from "vitest";
-import _ from "lodash";
 import * as pb from "../../src/utils/pb";
 import { Mode, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
 import { FunboxName } from "@monkeytype/schemas/configs";
 
 describe("Pb Utils", () => {
-  it("funboxCatGetPb", () => {
+  describe("funboxCatGetPb", () => {
     const testCases: { funbox: FunboxName[] | undefined; expected: boolean }[] =
       [
         {
@@ -31,16 +30,15 @@ describe("Pb Utils", () => {
         },
       ];
 
-    _.each(testCases, (testCase) => {
-      const { funbox, expected } = testCase;
-      //@ts-ignore ignore because this expects a whole result object
-      const result = pb.canFunboxGetPb({
-        funbox,
-      });
-
-      expect(result).toBe(expected);
-    });
+    it.each(testCases)(
+      "canFunboxGetPb with $funbox = $expected",
+      ({ funbox, expected }) => {
+        const result = pb.canFunboxGetPb({ funbox } as any);
+        expect(result).toBe(expected);
+      }
+    );
   });
+
   describe("checkAndUpdatePb", () => {
     it("should update personal best", () => {
       const userPbs: PersonalBests = {
@@ -175,7 +173,7 @@ describe("Pb Utils", () => {
       for (const lbPb of lbpbstartingvalues) {
         const lbPbPb = pb.updateLeaderboardPersonalBests(
           userPbs,
-          _.cloneDeep(lbPb) as pb.LbPersonalBests,
+          structuredClone(lbPb) as pb.LbPersonalBests,
           result15
         );
 

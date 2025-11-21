@@ -2,14 +2,17 @@
   width: 350px;
   z-index: 99999999;
   display: grid;
-  gap: 1rem;
+  // gap: 1rem;
+  // margin-top: 1rem;
+  padding-top: 1rem;
   position: fixed;
   right: 1rem;
-  top: 1rem;
+  // top: 1rem;
   transition: 0.125s opacity;
 
   .clearAll.button {
     font-size: 0.75em;
+    margin-bottom: 1rem;
   }
   &.focus .clearAll {
     visibility: hidden;
@@ -22,13 +25,14 @@
   }
   .history {
     display: grid;
-    gap: 1rem;
+    // gap: 1rem;
   }
 
   .notif {
     --notif-border-color: rgba(0, 130, 251, 0.985);
     --notif-background-color: rgba(0, 77, 148, 0.9);
     transition: 0.125s background;
+    margin-bottom: 1rem;
 
     -webkit-user-select: none;
     user-select: none;

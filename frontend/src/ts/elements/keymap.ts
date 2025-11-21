@@ -1,6 +1,5 @@
 import Config from "../config";
 import * as ThemeColors from "./theme-colors";
-import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";
@@ -16,6 +15,7 @@ import * as KeyConverter from "../utils/key-converter";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
+import { animate } from "animejs";
 
 export const keyDataDelimiter = "~~";
 
@@ -100,38 +100,33 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
   const themecolors = await ThemeColors.getAll();
 
   try {
-    let css = {
+    let startingStyle = {
       color: themecolors.bg,
       backgroundColor: themecolors.sub,
       borderColor: themecolors.sub,
     };
 
     if (correct || Config.blindMode) {
-      css = {
+      startingStyle = {
         color: themecolors.bg,
         backgroundColor: themecolors.main,
         borderColor: themecolors.main,
       };
     } else {
-      css = {
+      startingStyle = {
         color: themecolors.bg,
         backgroundColor: themecolors.error,
         borderColor: themecolors.error,
       };
     }
 
-    $(key)
-      .stop(true, true)
-      .css(css)
-      .animate(
-        {
-          color: themecolors.sub,
-          backgroundColor: themecolors.subAlt,
-          borderColor: themecolors.sub,
-        },
-        SlowTimer.get() ? 0 : 500,
-        "easeOutExpo"
-      );
+    animate(key, {
+      color: [startingStyle.color, themecolors.sub],
+      backgroundColor: [startingStyle.backgroundColor, themecolors.subAlt],
+      borderColor: [startingStyle.borderColor, themecolors.sub],
+      duration: 250,
+      easing: "out(5)",
+    });
   } catch (e) {}
 }
 
