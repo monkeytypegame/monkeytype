@@ -7,7 +7,7 @@ import {
 } from "../elements/input-validation";
 import { UserNameSchema, UserProfile } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
-import { navigate } from "../controllers/route-controller";
+import * as NavigationEvent from "../observables/navigation-event";
 
 let nameInputEl: ValidatedHtmlInputElement | null = null;
 let lastProfile: UserProfile | null = null;
@@ -71,7 +71,8 @@ export const page = new Page({
 $(".page.pageProfileSearch form").on("submit", (e) => {
   e.preventDefault();
   if (lastProfile === null) return;
-  void navigate(`/profile/${lastProfile.name}`, {
+  NavigationEvent.dispatch({
+    url: `/profile/${lastProfile.name}`,
     data: lastProfile,
   });
 });

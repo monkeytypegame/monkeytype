@@ -6,6 +6,7 @@ import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import * as Notifications from "../elements/notifications";
 import { LoadingOptions } from "../pages/page";
+import * as NavigationEvent from "../observables/navigation-event";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -248,4 +249,8 @@ document.addEventListener("DOMContentLoaded", () => {
       void navigate(target.href);
     }
   });
+});
+
+NavigationEvent.subscribe((it) => {
+  void navigate(it.url, { data: it.data });
 });
