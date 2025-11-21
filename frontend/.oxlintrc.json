@@ -21,7 +21,8 @@
         "explicit-function-return-type": "off",
         "no-array-for-each": "off",
         "eqeqeq": "off",
-        "ban-ts-comment": "off"
+        "ban-ts-comment": "off",
+        "plugin/no-testing-access": "off"
       }
     },
     {
