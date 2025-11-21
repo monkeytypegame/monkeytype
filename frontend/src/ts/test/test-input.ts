@@ -1,6 +1,7 @@
 import { lastElementFromArray } from "../utils/arrays";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestState from "./test-state";
+import Config from "../config";
 
 const keysToTrack = new Set([
   "NumpadMultiply",
@@ -319,9 +320,40 @@ export function forceKeyup(now: number): void {
   }
 }
 
-let noCodeIndex = 0;
+function getEventCode(event: KeyboardEvent): string {
+  let eventCode = event.code;
 
-export function recordKeyupTime(now: number, key: string): void {
+  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+    eventCode = "Space";
+  }
+
+  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+    eventCode = "NoCode";
+  }
+
+  if (eventCode === "" || event.key === "Unidentified") {
+    eventCode = "NoCode";
+  }
+
+  return eventCode;
+}
+
+let noCodeIndex = 0;
+export function recordKeyupTime(now: number, event: KeyboardEvent): void {
+  if (event.repeat) {
+    console.log(
+      "Keyup not recorded - repeat",
+      event.key,
+      event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      event.which
+    );
+    return;
+  }
+
+  let key = getEventCode(event);
+
   if (!keysToTrack.has(key)) return;
 
   if (key === "NoCode") {
@@ -343,20 +375,34 @@ export function recordKeyupTime(now: number, key: string): void {
   updateOverlap(now);
 }
 
-export function recordKeydownTime(now: number, key: string): void {
+export function recordKeydownTime(now: number, event: KeyboardEvent): void {
+  if (event.repeat) {
+    console.log(
+      "Keydown not recorded - repeat",
+      event.key,
+      event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      event.which
+    );
+    return;
+  }
+
+  let key = getEventCode(event);
+
   if (!keysToTrack.has(key)) {
-    console.debug("Key not tracked", key);
+    console.debug("Keydown not recorded - not tracked", key);
+    return;
+  }
+
+  if (keyDownData[key] !== undefined) {
+    console.debug("Key already down", key);
     return;
   }
 
   if (key === "NoCode") {
     key = "NoCode" + noCodeIndex;
     noCodeIndex++;
-  }
-
-  if (keyDownData[key] !== undefined) {
-    console.debug("Key already down", key);
-    return;
   }
 
   keyDownData[key] = {

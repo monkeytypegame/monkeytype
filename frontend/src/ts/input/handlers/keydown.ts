@@ -24,35 +24,6 @@ import {
   getActiveFunboxNames,
 } from "../../test/funbox/list";
 
-function recordTiming(event: KeyboardEvent, now: number): void {
-  if (event.repeat) {
-    console.log(
-      "spacing debug keydown STOPPED - repeat",
-      event.key,
-      event.code,
-      //ignore for logging
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-      event.which
-    );
-    return;
-  }
-
-  let eventCode = event.code;
-
-  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
-    eventCode = "Space";
-  }
-
-  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
-    eventCode = "NoCode";
-  }
-
-  if (eventCode === "" || event.key === "Unidentified") {
-    eventCode = "NoCode";
-  }
-  TestInput.recordKeydownTime(now, eventCode);
-}
-
 async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (Config.quickRestart === "tab") {
     e.preventDefault();
@@ -154,7 +125,7 @@ async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
 
 export async function handleKeydown(event: KeyboardEvent): Promise<void> {
   const now = performance.now();
-  recordTiming(event, now);
+  TestInput.recordKeydownTime(now, event);
 
   // allow arrows in arrows funbox
   const arrowsActive = Config.funbox.includes("arrows");
