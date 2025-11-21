@@ -63,16 +63,17 @@ function findKeyElements(char: string): JQuery {
     return $("#keymap .keySpace");
   }
 
-  const escapedChar = char.replace(/["\\]/g, "\\$&");
+  if (char === '"') {
+    return $(`#keymap .keymapKey[data-key*='${char}']`);
+  }
 
-  const selector = [
-    `[data-key="${escapedChar}"]`,
-    `[data-key^="${escapedChar}${keyDataDelimiter}"]`,
-    `[data-key$="${keyDataDelimiter}${escapedChar}"]`,
-    `[data-key*="${keyDataDelimiter}${escapedChar}${keyDataDelimiter}"]`,
-  ].join(", ");
+  if (char === "~") {
+    return $(
+      `#keymap .keymapKey[data-key*="~~~"], #keymap .keymapKey[data-key="~"]`
+    );
+  }
 
-  return $("#keymap .keymapKey").filter(selector);
+  return $(`#keymap .keymapKey[data-key*="${char}"]`);
 }
 
 function highlightKey(currentKey: string): void {
