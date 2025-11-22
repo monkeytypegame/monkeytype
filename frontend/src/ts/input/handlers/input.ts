@@ -142,7 +142,12 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // update test input state
   if (!charIsSpace || shouldInsertSpace) {
-    setTestInputToDOMValue(data === "\n");
+    setTestInputToDOMValue();
+
+    // because \n cannot be added to the input element, we need to manually add it to TestInput
+    if (data === "\n") {
+      TestInput.input.current += "\n";
+    }
   }
 
   // general per keypress updates

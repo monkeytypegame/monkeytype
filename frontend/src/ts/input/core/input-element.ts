@@ -15,9 +15,8 @@ export function setInputValue(value: string): void {
   setTestInputToDOMValue();
 }
 
-export function setTestInputToDOMValue(appendNewLine = false): void {
-  TestInput.input.current =
-    getInputValue().inputValue + (appendNewLine ? "\n" : "");
+export function setTestInputToDOMValue(): void {
+  TestInput.input.current = getInputValue().inputValue;
 }
 
 export function getInputValue(): {
