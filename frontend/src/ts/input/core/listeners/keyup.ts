@@ -1,8 +1,17 @@
-import Config from "../../config";
-import * as TestInput from "../../test/test-input";
-import * as Monkey from "../../test/monkey";
+import { getInputElement } from "../input-element";
+import Config from "../../../config";
+import * as TestInput from "../../../test/test-input";
+import * as Monkey from "../../../test/monkey";
 
-export async function handleKeyupEvent(event: KeyboardEvent): Promise<void> {
+const inputEl = getInputElement();
+
+inputEl.addEventListener("keyup", async (event) => {
+  console.debug("wordsInput event keyup", {
+    event,
+    key: event.key,
+    code: event.code,
+  });
+
   const now = performance.now();
   TestInput.recordKeyupTime(now, event);
 
@@ -22,4 +31,4 @@ export async function handleKeyupEvent(event: KeyboardEvent): Promise<void> {
   setTimeout(() => {
     Monkey.stop(event);
   }, 0);
-}
+});

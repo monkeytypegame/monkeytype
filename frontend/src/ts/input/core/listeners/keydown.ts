@@ -1,30 +1,33 @@
-import Config from "../../config";
-import * as TestInput from "../../test/test-input";
-import * as TestState from "../../test/test-state";
-import * as TestLogic from "../../test/test-logic";
-import * as TestWords from "../../test/test-words";
-import * as JSONData from "../../utils/json-data";
-import * as Notifications from "../../elements/notifications";
-import * as KeyConverter from "../../utils/key-converter";
-import * as ShiftTracker from "../../test/shift-tracker";
-import * as CompositionState from "../../states/composition";
-import { getCharFromEvent } from "../../test/layout-emulator";
-import * as Monkey from "../../test/monkey";
-import { canQuickRestart } from "../../utils/quick-restart";
-import * as CustomText from "../../test/custom-text";
-import * as CustomTextState from "../../states/custom-text-name";
+import { getInputElement } from "../input-element";
+import Config from "../../../config";
+import * as TestInput from "../../../test/test-input";
+import * as TestLogic from "../../../test/test-logic";
+import { getCharFromEvent } from "../../../test/layout-emulator";
+import * as Monkey from "../../../test/monkey";
+import { emulateInsertText } from "../../handlers/input";
+import * as TestState from "../../../test/test-state";
+import * as TestWords from "../../../test/test-words";
+import * as JSONData from "../../../utils/json-data";
+import * as Notifications from "../../../elements/notifications";
+import * as KeyConverter from "../../../utils/key-converter";
+import * as ShiftTracker from "../../../test/shift-tracker";
+import * as CompositionState from "../../../states/composition";
+import { canQuickRestart } from "../../../utils/quick-restart";
+import * as CustomText from "../../../test/custom-text";
+import * as CustomTextState from "../../../states/custom-text-name";
 import {
   getLastBailoutAttempt,
   setCorrectShiftUsed,
   setLastBailoutAttempt,
-} from "../core/state";
-import { emulateInsertText } from "./input";
+} from "../../core/state";
 import {
   getActiveFunboxesWithFunction,
   getActiveFunboxNames,
-} from "../../test/funbox/list";
+} from "../../../test/funbox/list";
 
-async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
+const inputEl = getInputElement();
+
+export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (Config.quickRestart === "tab") {
     e.preventDefault();
     if ((TestWords.hasTab && e.shiftKey) || !TestWords.hasTab) {
@@ -39,7 +42,10 @@ async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   }
 }
 
-async function handleEnter(e: KeyboardEvent, now: number): Promise<void> {
+export async function handleEnter(
+  e: KeyboardEvent,
+  now: number
+): Promise<void> {
   if (e.shiftKey) {
     if (Config.mode === "zen") {
       void TestLogic.finish();
@@ -92,7 +98,7 @@ async function handleEnter(e: KeyboardEvent, now: number): Promise<void> {
   }
 }
 
-async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
+export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
   if (
     Config.oppositeShiftMode === "keymap" &&
     Config.keymapLayout !== "overrideSync"
@@ -123,7 +129,13 @@ async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
   }
 }
 
-export async function handleKeydownEvent(event: KeyboardEvent): Promise<void> {
+inputEl.addEventListener("keydown", async (event) => {
+  console.debug("wordsInput event keydown", {
+    event,
+    key: event.key,
+    code: event.code,
+  });
+
   const now = performance.now();
   TestInput.recordKeydownTime(now, event);
 
@@ -189,4 +201,4 @@ export async function handleKeydownEvent(event: KeyboardEvent): Promise<void> {
     TestLogic.restart();
     return;
   }
-}
+});

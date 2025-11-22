@@ -30,18 +30,14 @@ import {
   getIncorrectShiftsInARow,
   incrementIncorrectShiftsInARow,
   resetIncorrectShiftsInARow,
-  getLastInsertCompositionTextData,
-  setLastInsertCompositionTextData,
 } from "../core/state";
 import * as Notifications from "../../elements/notifications";
 import { goToNextWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-input";
-import { onDelete } from "./delete";
 import {
   isCharCorrect,
   shouldInsertSpaceCharacter,
 } from "../helpers/validation";
-import { SupportedInputType } from "../helpers/input-type";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -295,41 +291,4 @@ export async function emulateInsertText(
   appendToInputElementValue(options.data);
 
   await onInsertText(options);
-}
-
-export async function handleInputEvent(event: InputEvent): Promise<void> {
-  const now = performance.now();
-
-  // this is ok to cast because we are preventing default
-  // in the input listener for unsupported input types
-  const inputType = event.inputType as SupportedInputType;
-
-  if (
-    (inputType === "insertText" && event.data !== null) ||
-    inputType === "insertLineBreak"
-  ) {
-    let data = event.data as string;
-    if (inputType === "insertLineBreak") {
-      // insertLineBreak events dont have data set
-      data = "\n";
-    }
-
-    await onInsertText({
-      data,
-      now,
-    });
-  } else if (
-    inputType === "deleteWordBackward" ||
-    inputType === "deleteContentBackward"
-  ) {
-    onDelete(inputType);
-  } else if (inputType === "insertCompositionText") {
-    // in case the data is the same as the last one, just ignore it
-    if (getLastInsertCompositionTextData() !== event.data) {
-      setLastInsertCompositionTextData(event.data ?? "");
-      TestUI.afterTestCompositionUpdate();
-    }
-  } else {
-    throw new Error("Unhandled input type: " + inputType);
-  }
 }

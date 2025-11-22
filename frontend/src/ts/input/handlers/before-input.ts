@@ -7,9 +7,7 @@ import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../core/input-element";
 import { isAwaitingNextWord } from "../core/state";
-import { onBeforeDelete } from "./before-delete";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
-import { isSupportedInputType } from "../helpers/input-type";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -92,41 +90,4 @@ export function onBeforeInsertText(data: string): boolean {
   }
 
   return false;
-}
-
-export async function handleBeforeInputEvent(event: InputEvent): Promise<void> {
-  if (!isSupportedInputType(event.inputType)) {
-    event.preventDefault();
-    return;
-  }
-
-  const inputType = event.inputType;
-
-  if (
-    (inputType === "insertText" && event.data !== null) ||
-    inputType === "insertLineBreak"
-  ) {
-    let data = event.data as string;
-    if (inputType === "insertLineBreak") {
-      // insertLineBreak events dont have data set
-      data = "\n";
-    }
-
-    const preventDefault = onBeforeInsertText(data);
-    if (preventDefault) {
-      event.preventDefault();
-    }
-  } else if (
-    inputType === "deleteWordBackward" ||
-    inputType === "deleteContentBackward"
-  ) {
-    onBeforeDelete(event);
-  } else if (inputType === "insertCompositionText") {
-    // firefox fires this extra event which we dont want to handle
-    if (!event.isComposing) {
-      event.preventDefault();
-    }
-  } else {
-    throw new Error("Unhandled beforeinput type: " + inputType);
-  }
 }
