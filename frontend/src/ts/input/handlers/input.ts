@@ -35,7 +35,7 @@ import {
 } from "../core/state";
 import * as Notifications from "../../elements/notifications";
 import { goToNextWord } from "../helpers/word-navigation";
-import { onBeforeInsertText } from "./beforeinput";
+import { onBeforeInsertText } from "./before-input";
 import { onDelete } from "./delete";
 import {
   isCharCorrect,

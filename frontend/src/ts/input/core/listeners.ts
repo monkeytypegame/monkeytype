@@ -1,4 +1,4 @@
-import { handleBeforeInputEvent } from "../handlers/beforeinput";
+import { handleBeforeInputEvent } from "../handlers/before-input";
 import {
   handleCompositionEndEvent,
   handleCompositionStartEvent,

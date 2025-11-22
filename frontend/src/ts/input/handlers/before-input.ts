@@ -7,7 +7,7 @@ import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../core/input-element";
 import { isAwaitingNextWord } from "../core/state";
-import { onBeforeDelete } from "./beforedelete";
+import { onBeforeDelete } from "./before-delete";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
 import { isSupportedInputType } from "../helpers/input-type";
 
