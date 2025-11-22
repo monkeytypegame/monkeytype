@@ -22,7 +22,7 @@ export function getInputElementValue(): {
   };
 }
 
-export function moveCaretToTheEnd(): void {
+export function moveInputElementCaretToTheEnd(): void {
   el.setSelectionRange(el.value.length, el.value.length);
 }
 

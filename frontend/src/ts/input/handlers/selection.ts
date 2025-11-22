@@ -1,4 +1,4 @@
-import { moveCaretToTheEnd } from "../core/input-element";
+import { moveInputElementCaretToTheEnd } from "../core/input-element";
 
 export function handleSelectionChange(event: Event): void {
   const el = event.target;
@@ -9,6 +9,6 @@ export function handleSelectionChange(event: Event): void {
   const hasSelectedText = el.selectionStart !== el.selectionEnd;
   const isCursorAtEnd = el.selectionStart === el.value.length;
   if (hasSelectedText || !isCursorAtEnd) {
-    moveCaretToTheEnd();
+    moveInputElementCaretToTheEnd();
   }
 }

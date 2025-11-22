@@ -8,12 +8,15 @@ import { handleInput } from "../handlers/input";
 import { handleKeydown } from "../handlers/keydown";
 import { handleKeyup } from "../handlers/keyup";
 import { handleSelectionChange } from "../handlers/selection";
-import { getInputElement, moveCaretToTheEnd } from "./input-element";
+import {
+  getInputElement,
+  moveInputElementCaretToTheEnd,
+} from "./input-element";
 
 const wordsInput = getInputElement();
 
 wordsInput.addEventListener("focus", () => {
-  moveCaretToTheEnd();
+  moveInputElementCaretToTheEnd();
 });
 
 wordsInput.addEventListener("copy paste", (event) => {
