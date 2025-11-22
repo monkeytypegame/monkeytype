@@ -12,7 +12,11 @@ import { onBeforeDelete } from "./beforedelete";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
 import { isSupportedInputType } from "../helpers/input-type";
 
-// returns true if input should be blocked
+/**
+ * Handles logic before inserting text into the input element.
+ * @param data - The text data to be inserted.
+ * @returns Whether to prevent the default insertion behavior.
+ */
 export function onBeforeInsertText(data: string): boolean {
   if (TestState.testRestarting) {
     return true;
