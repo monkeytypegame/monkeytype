@@ -47,6 +47,7 @@ import { z } from "zod";
 import * as TestState from "./test-state";
 
 let result: CompletedEvent;
+export { result };
 let maxChartVal: number;
 
 let useSmoothedBurst = true;
@@ -491,15 +492,229 @@ export function updateTodayTracker(): void {
 }
 
 function updateKey(): void {
+  if (!result.charStats) {
+    return;
+  }
+
+  let correct = 0;
+  let incorrect = 0;
+  let extra = 0;
+  let missed = 0;
+
+  for (const char in result.charStats) {
+    const stats = result.charStats[char];
+    if (stats) {
+      correct += stats.correct;
+      incorrect += stats.incorrect;
+      extra += stats.extra;
+      missed += stats.missed;
+    }
+  }
+
   $("#result .stats .key .bottom").text(
-    result.charStats[0] +
-      "/" +
-      result.charStats[1] +
-      "/" +
-      result.charStats[2] +
-      "/" +
-      result.charStats[3]
+    correct + "/" + incorrect + "/" + extra + "/" + missed
   );
+}
+
+let charStatsChart: Chart<"bar"> | null = null;
+
+function updateCharStats(): void {
+  const charStatsElement = $("#result .stats .charStats");
+  if (!result.charStats) {
+    charStatsElement.addClass("hidden");
+    $("#result #showCharStatsButton").addClass("hidden");
+    return;
+  }
+
+  charStatsElement.removeClass("hidden");
+  $("#result #showCharStatsButton").removeClass("hidden");
+
+  // this would mean the most erroed char
+  let maxErrorRate = 0;
+  let mostMistakenChars: Array<{
+    char: string;
+    errorRate: number;
+    errors: number;
+    total: number;
+  }> = [];
+
+  for (const [char, stats] of Object.entries(result.charStats)) {
+    if (char.trim() === "") continue;
+
+    const charStat = stats;
+    const errors = charStat.incorrect + charStat.missed + charStat.extra;
+    const total = charStat.total;
+    const errorRate = total > 0 ? (errors / total) * 100 : 0;
+
+    if (errors > 0 && errorRate > maxErrorRate) {
+      maxErrorRate = errorRate;
+      mostMistakenChars = [{ char, errorRate, errors, total }];
+    } else if (errors > 0 && errorRate === maxErrorRate && maxErrorRate > 0) {
+      mostMistakenChars.push({ char, errorRate, errors, total });
+    }
+  }
+}
+
+export async function toggleCharStats(noAnimation = false): Promise<void> {
+  if (!TestState.resultVisible || !result.charStats) return;
+
+  if ($("#resultCharStats").stop(true, true).hasClass("hidden")) {
+    // Show
+    await renderCharStatsChart();
+    $("#resultCharStats")
+      .removeClass("hidden")
+      .css("display", "none")
+      .slideDown(noAnimation ? 0 : 250);
+  } else {
+    // Hide
+    $("#resultCharStats").slideUp(250, () => {
+      $("#resultCharStats").addClass("hidden");
+      if (charStatsChart) {
+        charStatsChart.destroy();
+        charStatsChart = null;
+      }
+    });
+  }
+}
+
+async function renderCharStatsChart(): Promise<void> {
+  if (!result.charStats || Object.keys(result.charStats).length === 0) return;
+
+  const charData: Array<{
+    char: string;
+    errorRate: number;
+    errors: number;
+    total: number;
+    correct: number;
+  }> = [];
+
+  for (const [char, stats] of Object.entries(result.charStats)) {
+    const charStat = stats;
+    if (char.trim() === "" && charStat.total === 0) continue;
+
+    const errors = charStat.incorrect + charStat.missed + charStat.extra;
+    const total = charStat.total;
+    const errorRate = total > 0 ? (errors / total) * 100 : 0;
+
+    if (total > 0) {
+      charData.push({
+        char: char === " " ? "space" : char,
+        errorRate,
+        errors,
+        total,
+        correct: charStat.correct,
+      });
+    }
+  }
+  // error rate > total occurance
+
+  charData.sort((a, b) => {
+    if (b.errorRate !== a.errorRate) {
+      return b.errorRate - a.errorRate;
+    }
+    return b.total - a.total;
+  });
+
+  // limit only for 30 char as we might have more (punctuation, numbers, etc)
+  const topChars = charData.slice(0, 30);
+
+  // this will be called only once
+  if (charStatsChart !== null) {
+    charStatsChart.destroy();
+  }
+
+  const canvas = document.getElementById("charStatsChart") as HTMLCanvasElement;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  const subColor = await ThemeColors.get("sub");
+  const errorColor = await ThemeColors.get("error");
+
+  const labels = topChars.map((d) => d.char);
+  const errorRates = topChars.map((d) => Numbers.roundTo2(d.errorRate));
+
+  charStatsChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Error Rate (%)",
+          data: errorRates,
+          backgroundColor: errorColor,
+          borderColor: errorColor,
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              const index = context.dataIndex;
+              const char = topChars[index];
+              if (!char) return [];
+              return [
+                `Error Rate: ${Numbers.roundTo2(char.errorRate)}%`,
+                `Errors: ${char.errors}/${char.total}`,
+                `Correct: ${char.correct}/${char.total}`,
+              ];
+            },
+          },
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            color: subColor,
+            callback: (value) => `${value}%`,
+          },
+          grid: {
+            color: subColor,
+          },
+        },
+        x: {
+          ticks: {
+            color: subColor,
+            maxRotation: 45,
+            minRotation: 45,
+          },
+          grid: {
+            color: subColor,
+          },
+        },
+      },
+    },
+  });
+
+  let listHTML = "<div class='charStatsListContent'>";
+  listHTML +=
+    "<div class='charStatsHeader'><strong>Character</strong><strong>Error Rate</strong><strong>Errors/Total</strong></div>";
+
+  for (const item of topChars) {
+    const displayChar = item.char === "space" ? "space" : item.char;
+    const charDisplay =
+      displayChar.length > 1 ? `"${displayChar}"` : displayChar;
+    listHTML += `<div class='charStatsItem'>`;
+    listHTML += `<span class='charStatsChar'>${charDisplay}</span>`;
+    listHTML += `<span class='charStatsRate'>${Numbers.roundTo2(
+      item.errorRate
+    )}%</span>`;
+    listHTML += `<span class='charStatsCount'>${item.errors}/${item.total}</span>`;
+    listHTML += `</div>`;
+  }
+
+  listHTML += "</div>";
+  $("#charStatsList").html(listHTML);
 }
 
 export function showCrown(type: PbCrown.CrownType): void {
@@ -983,6 +1198,12 @@ export async function update(
   hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
+  $("#resultCharStats").addClass("hidden");
+  $("#result #showCharStatsButton").addClass("hidden");
+  if (charStatsChart) {
+    charStatsChart.destroy();
+    charStatsChart = null;
+  }
   $("#retrySavingResultButton").addClass("hidden");
   $(".pageTest #result #rateQuoteButton .icon")
     .removeClass("fas")
@@ -1006,6 +1227,7 @@ export async function update(
   updateConsistency();
   updateTime();
   updateKey();
+  updateCharStats();
   updateTestType(randomQuote);
   updateQuoteSource(randomQuote);
   updateQuoteFavorite(randomQuote);

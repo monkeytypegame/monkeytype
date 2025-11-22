@@ -5,7 +5,11 @@ import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
-import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
+import {
+  CompletedEvent,
+  IncompleteTest,
+  PerCharStats,
+} from "@monkeytype/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
 import * as CustomText from "./custom-text";
 
@@ -17,6 +21,7 @@ type CharCount = {
   extraChars: number;
   missedChars: number;
   correctSpaces: number;
+  charStats: Map<string, PerCharStats>;
 };
 
 export type Stats = {
@@ -31,6 +36,7 @@ export type Stats = {
   time: number;
   spaces: number;
   correctSpaces: number;
+  charStats: Map<string, PerCharStats>;
 };
 
 export let invalid = false;
@@ -292,9 +298,35 @@ function countChars(final = false): CharCount {
   let missedChars = 0;
   let spaces = 0;
   let correctspaces = 0;
-
+  let countperchar: Map<string, number> = new Map();
+  const charStats: Map<string, PerCharStats> = new Map();
   const inputWords = getInputWords();
   const targetWords = getTargetWords();
+
+  // Helper function to update character statistics
+  function updateCharStats(
+    char: string,
+    type: "correct" | "incorrect" | "missed" | "extra"
+  ): void {
+    if (char.trim() === "" && type !== "missed") return; // Don't track spaces except for missed
+
+    let stats = charStats.get(char);
+    if (!stats) {
+      stats = { total: 0, correct: 0, incorrect: 0, missed: 0, extra: 0 };
+      charStats.set(char, stats);
+    }
+
+    stats.total++;
+    if (type === "correct") {
+      stats.correct++;
+    } else if (type === "incorrect") {
+      stats.incorrect++;
+    } else if (type === "missed") {
+      stats.missed++;
+    } else if (type === "extra") {
+      stats.extra++;
+    }
+  }
 
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i] as string;
@@ -304,6 +336,10 @@ function countChars(final = false): CharCount {
       //the word is correct
       correctWordChars += targetWord.length;
       correctChars += targetWord.length;
+      // Track all correct characters
+      for (const char of targetWord) {
+        updateCharStats(char, "correct");
+      }
       if (
         i < inputWords.length - 1 &&
         Strings.getLastChar(inputWord) !== "\n"
@@ -315,14 +351,21 @@ function countChars(final = false): CharCount {
       for (let c = 0; c < inputWord.length; c++) {
         if (c < targetWord.length) {
           //on char that still has a word list pair
-          if (inputWord[c] === targetWord[c]) {
+          const targetChar = targetWord[c] ?? "";
+          if (inputWord[c] === targetChar) {
             correctChars++;
+            updateCharStats(targetChar, "correct");
           } else {
             incorrectChars++;
+            updateCharStats(targetChar, "incorrect");
+            const v: number = (countperchar.get(targetChar) ?? 0) + 1;
+            countperchar.set(targetChar, v);
           }
         } else {
           //on char that is extra
           extraChars++;
+          const extraChar = inputWord[c] ?? "";
+          updateCharStats(extraChar, "extra");
         }
       }
     } else {
@@ -333,16 +376,22 @@ function countChars(final = false): CharCount {
         missed: 0,
       };
       for (let c = 0; c < targetWord.length; c++) {
+        const targetChar = targetWord[c] ?? "";
         if (c < inputWord.length) {
           //on char that still has a word list pair
-          if (inputWord[c] === targetWord[c]) {
+          if (inputWord[c] === targetChar) {
             toAdd.correct++;
+            updateCharStats(targetChar, "correct");
           } else {
             toAdd.incorrect++;
+            updateCharStats(targetChar, "incorrect");
+            const v = (countperchar.get(targetChar) ?? 0) + 1;
+            countperchar.set(targetChar, v);
           }
         } else {
-          //on char that is extra
+          //on char that is missed
           toAdd.missed++;
+          updateCharStats(targetChar, "missed");
         }
       }
       correctChars += toAdd.correct;
@@ -377,6 +426,7 @@ function countChars(final = false): CharCount {
     extraChars: extraChars,
     missedChars: missedChars,
     correctSpaces: correctspaces,
+    charStats: charStats,
   };
 }
 
@@ -429,6 +479,7 @@ export function calculateFinalStats(): Stats {
     time: Numbers.roundTo2(testSeconds),
     spaces: chars.spaces,
     correctSpaces: chars.correctSpaces,
+    charStats: chars.charStats,
   };
   console.debug("Result stats", ret);
   return ret;

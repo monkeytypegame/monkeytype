@@ -329,6 +329,18 @@
           </div>
           <div class="bottom">-</div>
         </div>
+
+        <div class="group charStats">
+          <div class="top">character stats</div>
+          <div
+            class="bottom"
+            id="mostMistakenChar"
+            aria-label=""
+            data-balloon-pos="up"
+          >
+            -
+          </div>
+        </div>
       </div>
       <div class="chart">
         <div class="chartLegend">
@@ -402,6 +414,25 @@
           </div>
           <div class="words"></div>
         </div>
+        <div id="resultCharStats" class="hidden">
+          <div class="title">
+            <span>character statistics</span>
+            <button
+              id="copyCharStatsButton"
+              class="textButton"
+              aria-label="Copy character stats"
+              data-balloon-pos="up"
+              style="display: inline-block"
+              tabindex="-1"
+            >
+              <i class="fas fa-fw fa-copy"></i>
+            </button>
+          </div>
+          <div id="charStatsChartContainer">
+            <canvas id="charStatsChart"></canvas>
+          </div>
+          <div id="charStatsList" class="charStatsList"></div>
+        </div>
         <div id="resultReplay" class="hidden">
           <div class="title">
             watch replay
@@ -461,6 +492,15 @@
             data-balloon-pos="down"
           >
             <i class="fas fa-fw fa-align-left"></i>
+          </button>
+          <button
+            class="text"
+            id="showCharStatsButton"
+            aria-label="Toggle character statistics"
+            role="button"
+            data-balloon-pos="down"
+          >
+            <i class="fas fa-fw fa-chart-bar"></i>
           </button>
           <button
             class="text"

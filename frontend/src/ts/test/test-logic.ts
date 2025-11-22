@@ -864,12 +864,6 @@ function buildCompletedEvent(
   const completedEvent: Omit<CompletedEvent, "hash" | "uid"> = {
     wpm: stats.wpm,
     rawWpm: stats.wpmRaw,
-    charStats: [
-      stats.correctChars + stats.correctSpaces,
-      stats.incorrectChars,
-      stats.extraChars,
-      stats.missedChars,
-    ],
     charTotal: stats.allChars,
     acc: stats.acc,
     mode: Config.mode,
@@ -904,8 +898,19 @@ function buildCompletedEvent(
     testDuration: duration,
     afkDuration: afkDuration,
     stopOnLetter: Config.stopOnError === "letter",
+    charStats: Object.fromEntries(
+      Array.from(stats.charStats.entries()).map(([char, stats]) => [
+        char,
+        {
+          total: stats.total,
+          correct: stats.correct,
+          incorrect: stats.incorrect,
+          missed: stats.missed,
+          extra: stats.extra,
+        },
+      ])
+    ),
   };
-
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
   if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
 

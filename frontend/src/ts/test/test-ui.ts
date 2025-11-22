@@ -25,6 +25,8 @@ import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
 import * as PaceCaret from "./pace-caret";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import * as Result from "./result";
+import * as Numbers from "@monkeytype/util/numbers";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -1644,6 +1646,61 @@ $(".pageTest #copyMissedWordsListButton").on("click", async () => {
   await copyToClipboard(words);
 });
 
+$(".pageTest #copyCharStatsButton").on("click", async () => {
+  if (!Result.result?.charStats) return;
+
+  let statsText = "Character Statistics:\n\n";
+  statsText += "Character | Error Rate | Errors/Total | Correct/Total\n";
+  statsText += "----------|------------|-------------|-------------\n";
+
+  const charData: Array<{
+    char: string;
+    errorRate: number;
+    errors: number;
+    total: number;
+    correct: number;
+  }> = [];
+
+  for (const [char, stats] of Object.entries(Result.result.charStats)) {
+    const charStat = stats;
+    if (char.trim() === "" && charStat.total === 0) continue;
+
+    const errors = charStat.incorrect + charStat.missed + charStat.extra;
+    const total = charStat.total;
+    const errorRate = total > 0 ? (errors / total) * 100 : 0;
+
+    if (total > 0) {
+      charData.push({
+        char: char === " " ? "space" : char,
+        errorRate,
+        errors,
+        total,
+        correct: charStat.correct,
+      });
+    }
+  }
+
+  charData.sort((a, b) => {
+    if (b.errorRate !== a.errorRate) {
+      return b.errorRate - a.errorRate;
+    }
+    return b.total - a.total;
+  });
+
+  for (const item of charData) {
+    const displayChar = item.char.length > 1 ? `"${item.char}"` : item.char;
+    statsText += `${displayChar.padEnd(10)} | ${Numbers.roundTo2(item.errorRate)
+      .toString()
+      .padStart(10)}% | ${item.errors.toString().padStart(5)}/${item.total
+      .toString()
+      .padStart(5)} | ${item.correct.toString().padStart(6)}/${item.total
+      .toString()
+      .padStart(5)}\n`;
+  }
+
+  await copyToClipboard(statsText);
+});
+
 async function copyToClipboard(content: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(content);
@@ -1720,6 +1777,10 @@ $("#wordsInput").on("focusout", () => {
 
 $(".pageTest").on("click", "#showWordHistoryButton", () => {
   toggleResultWords();
+});
+
+$(".pageTest").on("click", "#showCharStatsButton", () => {
+  void Result.toggleCharStats();
 });
 
 $("#wordsWrapper").on("click", () => {
