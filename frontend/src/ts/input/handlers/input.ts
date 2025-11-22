@@ -253,7 +253,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       TestLogic.fail("min burst");
     } else if (
       checkIfFinished({
-        data,
+        shouldGoToNextWord,
         testInputResult: testInput + data,
         currentWord,
         allWordsTyped: wordIndex >= TestWords.words.length - 1,

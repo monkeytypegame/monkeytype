@@ -1,7 +1,6 @@
 import Config from "../../config";
 import { whorf } from "../../utils/misc";
 import { areAllTestWordsGenerated } from "../../test/test-logic";
-import { isSpace } from "../../utils/strings";
 
 /**
  * Check if the test should fail due to minimum burst settings
@@ -70,20 +69,20 @@ export function checkIfFailedDueToDifficulty(options: {
 /**
  * Determines if the test should finish
  * @param options - Options object
- * @param options.data - Input data
+ * @param options.shouldGoToNextWord - Should go to next word
  * @param options.testInputResult - Current test input result (after adding data)
  * @param options.currentWord - Current target word
  * @param options.allWordsTyped - Have all words been typed
  * @returns Boolean if test should finish
  */
 export function checkIfFinished(options: {
-  data: string;
+  shouldGoToNextWord: boolean;
   testInputResult: string;
   currentWord: string;
   allWordsTyped: boolean;
 }): boolean {
-  const { data, testInputResult, currentWord, allWordsTyped } = options;
-  const charIsSpace = isSpace(data);
+  const { shouldGoToNextWord, testInputResult, currentWord, allWordsTyped } =
+    options;
   const allWordGenerated = areAllTestWordsGenerated();
   const wordIsCorrect = testInputResult === currentWord;
   const shouldQuickEnd =
@@ -93,7 +92,7 @@ export function checkIfFinished(options: {
   if (
     allWordsTyped &&
     allWordGenerated &&
-    (wordIsCorrect || shouldQuickEnd || charIsSpace)
+    (wordIsCorrect || shouldQuickEnd || shouldGoToNextWord)
   ) {
     return true;
   }
