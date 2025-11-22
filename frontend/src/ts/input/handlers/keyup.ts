@@ -2,7 +2,7 @@ import Config from "../../config";
 import * as TestInput from "../../test/test-input";
 import * as Monkey from "../../test/monkey";
 
-export async function handleKeyup(event: KeyboardEvent): Promise<void> {
+export async function handleKeyupEvent(event: KeyboardEvent): Promise<void> {
   const now = performance.now();
   TestInput.recordKeyupTime(now, event);
 

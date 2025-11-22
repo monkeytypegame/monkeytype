@@ -1,6 +1,6 @@
 import { moveInputElementCaretToTheEnd } from "../core/input-element";
 
-export function handleSelectionChange(event: Event): void {
+export function handleSelectionChangeEvent(event: Event): void {
   const el = event.target;
   if (el === null || !(el instanceof HTMLInputElement)) {
     return;

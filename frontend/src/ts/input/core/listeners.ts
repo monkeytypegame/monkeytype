@@ -1,13 +1,13 @@
-import { handleBeforeInput } from "../handlers/beforeinput";
+import { handleBeforeInputEvent } from "../handlers/beforeinput";
 import {
-  handleCompositionEnd,
-  handleCompositionStart,
-  handleCompositionUpdate,
+  handleCompositionEndEvent,
+  handleCompositionStartEvent,
+  handleCompositionUpdateEvent,
 } from "../handlers/composition";
-import { handleInput } from "../handlers/input";
-import { handleKeydown } from "../handlers/keydown";
-import { handleKeyup } from "../handlers/keyup";
-import { handleSelectionChange } from "../handlers/selection";
+import { handleInputEvent } from "../handlers/input";
+import { handleKeydownEvent } from "../handlers/keydown";
+import { handleKeyupEvent } from "../handlers/keyup";
+import { handleSelectionChangeEvent } from "../handlers/selection";
 import {
   getInputElement,
   moveInputElementCaretToTheEnd,
@@ -37,7 +37,7 @@ inputEl.addEventListener("selectionchange", (event) => {
     selectionStart: (event.target as HTMLInputElement).selectionStart,
     selectionEnd: (event.target as HTMLInputElement).selectionEnd,
   });
-  handleSelectionChange(event);
+  handleSelectionChangeEvent(event);
 });
 
 inputEl.addEventListener("keyup", async (event) => {
@@ -46,7 +46,7 @@ inputEl.addEventListener("keyup", async (event) => {
     key: event.key,
     code: event.code,
   });
-  await handleKeyup(event);
+  await handleKeyupEvent(event);
 });
 
 inputEl.addEventListener("keydown", async (event) => {
@@ -55,7 +55,7 @@ inputEl.addEventListener("keydown", async (event) => {
     key: event.key,
     code: event.code,
   });
-  await handleKeydown(event);
+  await handleKeydownEvent(event);
 });
 
 inputEl.addEventListener("beforeinput", async (event) => {
@@ -72,7 +72,7 @@ inputEl.addEventListener("beforeinput", async (event) => {
     data: event.data,
     value: (event.target as HTMLInputElement).value,
   });
-  await handleBeforeInput(event);
+  await handleBeforeInputEvent(event);
 });
 
 inputEl.addEventListener("input", async (event) => {
@@ -88,7 +88,7 @@ inputEl.addEventListener("input", async (event) => {
     data: event.data,
     value: (event.target as HTMLInputElement).value,
   });
-  await handleInput(event);
+  await handleInputEvent(event);
 });
 
 inputEl.addEventListener("compositionstart", (event) => {
@@ -96,7 +96,7 @@ inputEl.addEventListener("compositionstart", (event) => {
     event,
     data: event.data,
   });
-  handleCompositionStart(event);
+  handleCompositionStartEvent(event);
 });
 
 inputEl.addEventListener("compositionupdate", (event) => {
@@ -104,10 +104,10 @@ inputEl.addEventListener("compositionupdate", (event) => {
     event,
     data: event.data,
   });
-  handleCompositionUpdate(event);
+  handleCompositionUpdateEvent(event);
 });
 
 inputEl.addEventListener("compositionend", async (event) => {
   console.debug("wordsInput event compositionend", { event, data: event.data });
-  await handleCompositionEnd(event);
+  await handleCompositionEndEvent(event);
 });

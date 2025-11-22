@@ -5,7 +5,7 @@ import { onInsertText } from "./input";
 import { setLastInsertCompositionTextData } from "../core/state";
 import * as CompositionDisplay from "../../elements/composition-display";
 
-export function handleCompositionStart(event: CompositionEvent): void {
+export function handleCompositionStartEvent(event: CompositionEvent): void {
   CompositionState.setComposing(true);
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
@@ -14,12 +14,12 @@ export function handleCompositionStart(event: CompositionEvent): void {
   }
 }
 
-export function handleCompositionUpdate(event: CompositionEvent): void {
+export function handleCompositionUpdateEvent(event: CompositionEvent): void {
   CompositionState.setData(event.data);
   CompositionDisplay.update(event.data);
 }
 
-export async function handleCompositionEnd(
+export async function handleCompositionEndEvent(
   event: CompositionEvent
 ): Promise<void> {
   if (TestState.testRestarting) return;

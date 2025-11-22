@@ -297,7 +297,7 @@ export async function emulateInsertText(
   await onInsertText(options);
 }
 
-export async function handleInput(event: InputEvent): Promise<void> {
+export async function handleInputEvent(event: InputEvent): Promise<void> {
   const now = performance.now();
 
   // this is ok to cast because we are preventing default

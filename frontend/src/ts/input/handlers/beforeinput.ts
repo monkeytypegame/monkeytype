@@ -94,7 +94,7 @@ export function onBeforeInsertText(data: string): boolean {
   return false;
 }
 
-export async function handleBeforeInput(event: InputEvent): Promise<void> {
+export async function handleBeforeInputEvent(event: InputEvent): Promise<void> {
   if (!isSupportedInputType(event.inputType)) {
     event.preventDefault();
     return;
