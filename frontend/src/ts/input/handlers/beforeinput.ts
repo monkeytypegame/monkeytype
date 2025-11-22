@@ -47,14 +47,11 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  // space characters sometimes are inserted as a character, need this distinction
-  const shouldInsertSpace = shouldInsertSpaceAsCharacter === true;
-
   // block input if the word is too long
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
   const overLimit = TestInput.input.current.length >= inputLimit;
-  if (overLimit && ((dataIsSpace && shouldInsertSpace) || !dataIsSpace)) {
+  if (overLimit && (shouldInsertSpaceAsCharacter === true || !dataIsSpace)) {
     console.error("Hitting word limit");
     return true;
   }
@@ -67,15 +64,13 @@ export function onBeforeInsertText(data: string): boolean {
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
     TestInput.input.current.length >= TestWords.words.getCurrent().length;
-  const isSpaceAndShouldInsert =
-    dataIsSpace && shouldInsertSpaceAsCharacter === true;
 
   if (
     dataIsNotFalsy &&
     !Config.blindMode &&
     !Config.hideExtraLetters &&
     inputIsLongerThanOrEqualToWord &&
-    (isSpaceAndShouldInsert || !dataIsSpace) &&
+    (shouldInsertSpaceAsCharacter === true || !dataIsSpace) &&
     Config.mode !== "zen"
   ) {
     const topAfterAppend = TestUI.getActiveWordTopAfterAppend(data);
