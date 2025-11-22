@@ -326,5 +326,7 @@ export async function handleInput(event: InputEvent): Promise<void> {
     // in case the data is the same as the last one, just ignore it
     setLastInsertCompositionTextData(event.data ?? "");
     TestUI.afterTestCompositionUpdate();
+  } else {
+    throw new Error("Unhandled input type: " + inputType);
   }
 }

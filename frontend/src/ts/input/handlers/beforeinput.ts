@@ -123,5 +123,7 @@ export async function handleBeforeInput(event: InputEvent): Promise<void> {
   } else if (inputType === "insertCompositionText" && !event.isComposing) {
     // firefox fires this extra event which we dont want to handle
     event.preventDefault();
+  } else {
+    throw new Error("Unhandled beforeinput type: " + inputType);
   }
 }
