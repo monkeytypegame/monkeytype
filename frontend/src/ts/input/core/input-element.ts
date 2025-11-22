@@ -2,6 +2,10 @@ import * as TestInput from "../../test/test-input";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
+if (wordsInput === null) {
+  throw new Error("Words input element not found");
+}
+
 export function getWordsInput(): HTMLInputElement {
   return wordsInput;
 }
