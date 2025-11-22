@@ -1,0 +1,98 @@
+:root {
+  --bg-color: linear-gradient(-45deg, #040527, #041557, #040537, #16025f);
+  --main-color: #3aaaff;
+  --caret-color: #00ddee;
+  --text-color: #ddeeee;
+  --error-color: #fd77d7;
+  --sub-color: #8f9fcf;
+  --sub-alt-color: #101050;
+  --error-color: #ff5869;
+  --error-extra-color: #b03c47;
+  --colorful-error-color: #ff5869;
+  --colorful-error-extra-color: #b03c47;
+}
+
+key {
+  background-color: #ddddff20;
+  color: #aaaabb;
+}
+
+button:hover {
+  background-color: #3fa3ffaa;
+  color: #fff;
+}
+
+button.active {
+  background-color: #3fa3ffaa;
+  color: #ffffff;
+}
+
+button.active:hover {
+  background-color: #3fa3ff88;
+  color: #ffffff;
+}
+
+.spacer {
+  background: #3aaaff44 !important;
+  width: 4px !important;
+}
+
+header #logo .top {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+}
+
+#words .incorrect.extra {
+  transform: rotateY(180deg);
+  unicode-bidi: bidi-override;
+  direction: rtl;
+}
+
+nav {
+  gap: 0.5rem;
+}
+
+nav > .textButton:hover {
+  color: currentColor;
+}
+
+a.textButton.view-account .level {
+  background: #ffffff20;
+  color: #cccccc;
+}
+
+a.textButton.view-account:hover .level {
+  background-color: #3fa3ff88;
+  color: #ffffff;
+}
+
+nav > .textButton:nth-child(1) {
+  color: #aaff4faa;
+}
+
+nav > .textButton:nth-child(2) {
+  color: #ffdd70aa;
+}
+
+nav > .textButton:nth-child(3) {
+  color: #00ddeeaa;
+}
+
+nav > .textButton:nth-child(4) {
+  color: #af8fffaa;
+}
+
+nav > .textButton:nth-child(5) {
+  background: #aaff4faa;
+}
+
+nav > .textButton:nth-child(6) {
+  background: #ffdd70aa;
+}
+
+nav > .textButton:nth-child(7) {
+  background: #00ddeeaa;
+}
+
+nav > .textButton:nth-child(8) {
+  background: #8f6fffaa;
+}
