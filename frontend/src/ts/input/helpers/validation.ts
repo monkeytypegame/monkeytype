@@ -63,6 +63,7 @@ export function isCharCorrect(
  * as a "control character" (moving to the next word)
  * @param data - Input data
  * @param inputValue - Current input value (use TestInput.input.current, not input element value)
+ * @param targetWord - Target word
  * @returns Boolean if data is space, null if not
  */
 export function shouldInsertSpaceCharacter(
