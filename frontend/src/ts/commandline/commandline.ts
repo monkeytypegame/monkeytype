@@ -8,7 +8,6 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
 import * as OutOfFocus from "../test/out-of-focus";
 import * as ActivePage from "../states/active-page";
-import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
@@ -175,20 +174,13 @@ export function show(
 function hide(clearModalChain = false): void {
   clearFontPreview();
   void ThemeController.clearPreview();
-  if (ActivePage.get() === "test") {
-    focusWords();
-  }
   isAnimating = true;
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
       hideWarning();
       addCommandlineBackground();
-      if (ActivePage.get() === "test") {
-        if (ActivePage.get() === "test" && !isInputElementFocused()) {
-          focusWords();
-        }
-      } else {
+      if (ActivePage.get() !== "test") {
         (document.activeElement as HTMLElement | undefined)?.blur();
       }
       isAnimating = false;
