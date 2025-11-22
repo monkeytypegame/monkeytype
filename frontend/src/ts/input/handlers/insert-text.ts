@@ -103,17 +103,24 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // helper consts
   const lastInMultiOrSingle =
     lastInMultiIndex === true || lastInMultiIndex === undefined;
-  const correctShiftUsed =
-    Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
-
   const testInput = TestInput.input.current;
   const currentWord = TestWords.words.getCurrent();
   const wordIndex = TestState.activeWordIndex;
+  const charIsSpace = isSpace(data);
+  const charIsNewline = data === "\n";
+  const shouldInsertSpace =
+    shouldInsertSpaceCharacter({
+      data,
+      inputValue: testInput,
+      targetWord: currentWord,
+    }) === true;
+  const correctShiftUsed =
+    Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
 
+  // is char correct
   const funboxCorrect = findSingleActiveFunboxWithFunction(
     "isCharCorrect"
   )?.functions.isCharCorrect(data, currentWord[inputValue.length] ?? "");
-
   const correct =
     funboxCorrect ??
     isCharCorrect({
@@ -123,13 +130,12 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       correctShiftUsed,
     });
 
-  const shouldInsertSpace =
-    shouldInsertSpaceCharacter({
-      data,
-      inputValue: testInput,
-      targetWord: currentWord,
-    }) === true;
-  const charIsSpace = isSpace(data);
+  // word navigation check
+  const noSpaceForce =
+    isFunboxActiveWithProperty("nospace") &&
+    TestInput.input.current.length === TestWords.words.getCurrent().length;
+  const shouldGoToNextWord =
+    ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
 
   // update test input state
   if (!charIsSpace || shouldInsertSpace) {
@@ -153,6 +159,9 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
   if (testInput.length === 0) {
     TestInput.setBurstStart(now);
+  }
+  if (!shouldGoToNextWord) {
+    TestInput.corrected.update(data, correct);
   }
 
   // handing cases where last char needs to be removed
@@ -187,19 +196,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   // going to next word
-  const nospaceEnabled = isFunboxActiveWithProperty("nospace");
-  const noSpaceForce =
-    nospaceEnabled &&
-    TestInput.input.current.length === TestWords.words.getCurrent().length;
-  const spaceOrNewline = isSpace(data) || data === "\n";
-
-  const shouldGoToNextWord =
-    (spaceOrNewline && !shouldInsertSpace) || noSpaceForce;
-
-  if (!shouldGoToNextWord) {
-    TestInput.corrected.update(data, correct);
-  }
-
   let increasedWordIndex: null | boolean = null;
   let lastBurst: null | number = null;
   if (shouldGoToNextWord) {
@@ -243,7 +239,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       checkIfFailedDueToDifficulty({
         testInputWithData: testInput + data,
         correct,
-        spaceOrNewline,
+        spaceOrNewline: charIsSpace || charIsNewline,
       })
     ) {
       TestLogic.fail("difficulty");
