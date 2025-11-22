@@ -95,6 +95,11 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     return;
   }
 
+  // start if needed
+  if (!TestState.isActive) {
+    TestLogic.startTest(now);
+  }
+
   // helper consts
   const lastInMultiOrSingle =
     lastInMultiIndex === true || lastInMultiIndex === undefined;
@@ -126,16 +131,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     }) === true;
   const charIsSpace = isSpace(data);
 
-  // start if needed
-  if (!TestState.isActive) {
-    TestLogic.startTest(now);
-  }
-
-  // burst calculation needs to run at the start of a word, before updating input state
-  if (testInput.length === 0) {
-    TestInput.setBurstStart(now);
-  }
-
   // update test input state
   if (!charIsSpace || shouldInsertSpace) {
     TestInput.input.syncWithInputElement();
@@ -155,6 +150,9 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
   if (Config.keymapMode === "react") {
     void KeymapEvent.flash(data, correct);
+  }
+  if (testInput.length === 0) {
+    TestInput.setBurstStart(now);
   }
 
   // handing cases where last char needs to be removed
