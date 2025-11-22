@@ -2,7 +2,7 @@ import { engine } from "animejs";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { z } from "zod";
 
-export const fpsLimitSchema = z.number().int().min(30).max(1000);
+export const fpsLimitSchema = z.number().int().min(15).max(1000);
 
 const fpsLimit = new LocalStorageWithSchema({
   key: "fpsLimit",
