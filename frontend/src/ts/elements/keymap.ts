@@ -17,7 +17,7 @@ import { areSortedArraysEqual } from "../utils/arrays";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
 
-export const keyDataDelimiter = "~~";
+export const keyDataDelimiter = "\uE000";
 
 const stenoKeys: LayoutObject = {
   keymapShowTopRow: true,
@@ -65,12 +65,6 @@ function findKeyElements(char: string): JQuery {
 
   if (char === '"') {
     return $(`#keymap .keymapKey[data-key*='${char}']`);
-  }
-
-  if (char === "~") {
-    return $(
-      `#keymap .keymapKey[data-key*="~~~"], #keymap .keymapKey[data-key="~"]`
-    );
   }
 
   return $(`#keymap .keymapKey[data-key*="${char}"]`);
