@@ -58,7 +58,7 @@ function initializeReplayPrompt(): void {
     x.className = "word";
     for (const letter of word) {
       const elem = document.createElement("letter");
-      const tabClass = letter === "\t" ? "tabClass" : "";
+      const tabClass = letter === "\t" ? "tabChar" : "";
       elem.className = tabClass;
       elem.innerHTML = tabClass
         ? "<i class='fas fa-long-arrow-alt-right fa-fw'></i>"
