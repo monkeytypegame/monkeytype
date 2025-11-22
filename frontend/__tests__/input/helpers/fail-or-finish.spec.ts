@@ -284,7 +284,7 @@ describe("checkIfFinished", () => {
     },
     {
       desc: "false if not all words generated, but on the last word",
-      allGenerated: false,
+      allWordsGenerated: false,
       allWordsTyped: true,
       testInputWithData: "word",
       currentWord: "word",
@@ -331,7 +331,7 @@ describe("checkIfFinished", () => {
   ] as {
     desc: string;
     allWordsTyped: boolean;
-    allGenerated?: boolean;
+    allWordsGenerated?: boolean;
     shouldGoToNextWord: boolean;
     testInputWithData: string;
     currentWord: string;
@@ -342,7 +342,7 @@ describe("checkIfFinished", () => {
     "$desc",
     ({
       allWordsTyped,
-      allGenerated,
+      allWordsGenerated,
       shouldGoToNextWord,
       testInputWithData,
       currentWord,
@@ -350,15 +350,13 @@ describe("checkIfFinished", () => {
       expected,
     }) => {
       if (config) replaceConfig(config as any);
-      (TestLogic.areAllTestWordsGenerated as any).mockReturnValue(
-        allGenerated ?? true
-      );
 
       const result = checkIfFinished({
         shouldGoToNextWord,
         testInputWithData,
         currentWord,
         allWordsTyped,
+        allWordsGenerated: allWordsGenerated ?? true,
       });
 
       expect(result).toBe(expected);

@@ -1,6 +1,5 @@
 import Config from "../../config";
 import { whorf } from "../../utils/misc";
-import { areAllTestWordsGenerated } from "../../test/test-logic";
 
 /**
  * Check if the test should fail due to minimum burst settings
@@ -80,10 +79,15 @@ export function checkIfFinished(options: {
   testInputWithData: string;
   currentWord: string;
   allWordsTyped: boolean;
+  allWordsGenerated: boolean;
 }): boolean {
-  const { shouldGoToNextWord, testInputWithData, currentWord, allWordsTyped } =
-    options;
-  const allWordGenerated = areAllTestWordsGenerated();
+  const {
+    shouldGoToNextWord,
+    testInputWithData,
+    currentWord,
+    allWordsTyped,
+    allWordsGenerated,
+  } = options;
   const wordIsCorrect = testInputWithData === currentWord;
   const shouldQuickEnd =
     Config.quickEnd &&
@@ -91,7 +95,7 @@ export function checkIfFinished(options: {
     Config.stopOnError === "off";
   if (
     allWordsTyped &&
-    allWordGenerated &&
+    allWordsGenerated &&
     (wordIsCorrect || shouldQuickEnd || shouldGoToNextWord)
   ) {
     return true;

@@ -257,6 +257,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
         testInputWithData: testInput + data,
         currentWord,
         allWordsTyped: wordIndex >= TestWords.words.length - 1,
+        allWordsGenerated: TestLogic.areAllTestWordsGenerated(),
       })
     ) {
       void TestLogic.finish();
