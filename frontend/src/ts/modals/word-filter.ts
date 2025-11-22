@@ -165,10 +165,20 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 }
 
 async function filter(language: Language): Promise<string[]> {
+  const ignoreExcludesInput = $("#wordFilterModal #ignoreExcludesInput").is(
+    ":checked"
+  );
   let filterin = $("#wordFilterModal .wordIncludeInput").val() as string;
   filterin = Misc.escapeRegExp(filterin?.trim());
   filterin = filterin.replace(/\s+/gi, "|");
-  const regincl = new RegExp(filterin, "i");
+  let regincl;
+
+  if (ignoreExcludesInput) {
+    regincl = new RegExp("^[" + filterin + "]+$", "i");
+  } else {
+    regincl = new RegExp(filterin, "i");
+  }
+
   let filterout = $("#wordFilterModal .wordExcludeInput").val() as string;
   filterout = Misc.escapeRegExp(filterout.trim());
   filterout = filterout.replace(/\s+/gi, "|");
@@ -202,7 +212,7 @@ async function filter(language: Language): Promise<string[]> {
   }
   for (const word of languageWordList.words) {
     const test1 = regincl.test(word);
-    const test2 = regexcl.test(word);
+    const test2 = ignoreExcludesInput ? false : regexcl.test(word);
     if (
       ((test1 && !test2) || (test1 && filterout === "")) &&
       word.length <= maxLength &&
@@ -234,6 +244,17 @@ async function apply(set: boolean): Promise<void> {
       set,
     },
   });
+}
+
+function switchWordExcludeInput(): void {
+  const wordExcludeInputEl = $("#wordFilterModal #wordExcludeInput");
+
+  if (wordExcludeInputEl.attr("disabled") === "disabled") {
+    wordExcludeInputEl.removeAttr("disabled");
+    return;
+  }
+
+  wordExcludeInputEl.attr("disabled", "disabled");
 }
 
 function disableButtons(): void {
@@ -277,6 +298,12 @@ async function setup(): Promise<void> {
         .join(" ")
     );
   });
+
+  $("#wordFilterModal #ignoreExcludesInput").on("change", () => {
+    $("#wordFilterModal #wordExcludeInput").val("");
+    switchWordExcludeInput();
+  });
+
   $("#wordFilterModal button.addButton").on("click", () => {
     $("#wordFilterModal .loadingIndicator").removeClass("hidden");
     disableButtons();
