@@ -15,7 +15,10 @@ import {
 import { isSpace } from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
-import { isFunboxActiveWithProperty } from "../../test/funbox/list";
+import {
+  findSingleActiveFunboxWithFunction,
+  isFunboxActiveWithProperty,
+} from "../../test/funbox/list";
 import * as Replay from "../../test/replay";
 import * as MonkeyPower from "../../elements/monkey-power";
 import Config from "../../config";
@@ -106,12 +109,19 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const currentWord = TestWords.words.getCurrent();
   const wordIndex = TestState.activeWordIndex;
 
-  const correct = isCharCorrect({
+  const isCorrect = isCharCorrect({
     data,
     inputValue: testInput,
     targetWord: currentWord,
     correctShiftUsed,
   });
+
+  const funboxCorrect = findSingleActiveFunboxWithFunction(
+    "isCharCorrect"
+  )?.functions.isCharCorrect(data, currentWord[inputValue.length] ?? "");
+
+  const correct = funboxCorrect !== undefined ? funboxCorrect : isCorrect;
+
   const shouldInsertSpace =
     shouldInsertSpaceCharacter({
       data,

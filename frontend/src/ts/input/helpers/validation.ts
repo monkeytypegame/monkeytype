@@ -1,5 +1,4 @@
 import Config from "../../config";
-import { findSingleActiveFunboxWithFunction } from "../../test/funbox/list";
 import { areCharactersVisuallyEqual, isSpace } from "../../utils/strings";
 
 /**
@@ -38,11 +37,6 @@ export function isCharCorrect(options: {
 
   if (data === targetChar) {
     return true;
-  }
-
-  const funbox = findSingleActiveFunboxWithFunction("isCharCorrect");
-  if (funbox) {
-    return funbox.functions.isCharCorrect(data, targetChar);
   }
 
   if (Config.language.startsWith("russian")) {
