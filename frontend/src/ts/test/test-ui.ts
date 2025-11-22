@@ -1298,7 +1298,7 @@ function buildWordLettersHTML(
       }
     } else {
       out +=
-        '<letter class="incorrect extra ${tabClassInput}">' +
+        `<letter class="incorrect extra ${tabClassInput}">` +
         inputChar +
         "</letter>";
     }
