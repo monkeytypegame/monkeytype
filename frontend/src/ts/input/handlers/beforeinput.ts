@@ -21,6 +21,14 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
+  if (isAwaitingNextWord()) {
+    return true;
+  }
+
+  if (TestUI.resultCalculating) {
+    return true;
+  }
+
   const { inputValue } = getInputElementValue();
   const dataIsSpace = isSpace(data);
   const shouldInsertSpaceAsCharacter = shouldInsertSpaceCharacter({
@@ -88,16 +96,6 @@ export function onBeforeInsertText(data: string): boolean {
 
 export async function handleBeforeInput(event: InputEvent): Promise<void> {
   if (!isSupportedInputType(event.inputType)) {
-    event.preventDefault();
-    return;
-  }
-
-  if (isAwaitingNextWord()) {
-    event.preventDefault();
-    return;
-  }
-
-  if (TestUI.resultCalculating) {
     event.preventDefault();
     return;
   }
