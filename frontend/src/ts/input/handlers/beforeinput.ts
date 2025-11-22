@@ -20,11 +20,11 @@ export function onBeforeInsertText(data: string): boolean {
 
   const { inputValue } = getInputValue();
   const dataIsSpace = isSpace(data);
-  const shouldInsertSpaceAsCharacter = shouldInsertSpaceCharacter(
+  const shouldInsertSpaceAsCharacter = shouldInsertSpaceCharacter({
     data,
     inputValue,
-    TestWords.words.getCurrent()
-  );
+    targetWord: TestWords.words.getCurrent(),
+  });
 
   //prevent space from being inserted if input is empty
   //allow if strict space is enabled

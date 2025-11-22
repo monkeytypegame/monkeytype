@@ -5,15 +5,17 @@ import { isSpace } from "../../utils/strings";
 
 /**
  * Check if the test should fail due to minimum burst settings
- * @param testInputResult - Current test input result (after adding data)
- * @param currentWord - Current target word
- * @param lastBurst - Burst speed in WPM
+ * @param options - Options object
+ * @param options.testInputResult - Current test input result (after adding data)
+ * @param options.currentWord - Current target word
+ * @param options.lastBurst - Burst speed in WPM
  */
-export function checkIfFailedDueToMinBurst(
-  testInputResult: string,
-  currentWord: string,
-  lastBurst: number | null
-): boolean {
+export function checkIfFailedDueToMinBurst(options: {
+  testInputResult: string;
+  currentWord: string;
+  lastBurst: number | null;
+}): boolean {
+  const { testInputResult, currentWord, lastBurst } = options;
   if (Config.minBurst !== "off" && lastBurst !== null) {
     let wordLength: number;
     if (Config.mode === "zen") {
@@ -35,15 +37,17 @@ export function checkIfFailedDueToMinBurst(
 
 /**
  * Check if the test should fail due to difficulty settings
- * @param testInputResult - Current test input result (after adding data)
- * @param correct - Was the last input correct
- * @param spaceOrNewLine - Is the input a space or newline
+ * @param options - Options object
+ * @param options.testInputResult - Current test input result (after adding data)
+ * @param options.correct - Was the last input correct
+ * @param options.spaceOrNewline - Is the input a space or newline
  */
-export function checkIfFailedDueToDifficulty(
-  testInputResult: string,
-  correct: boolean,
-  spaceOrNewline: boolean
-): boolean {
+export function checkIfFailedDueToDifficulty(options: {
+  testInputResult: string;
+  correct: boolean;
+  spaceOrNewline: boolean;
+}): boolean {
+  const { testInputResult, correct, spaceOrNewline } = options;
   // Using space or newline instead of shouldInsertSpace or increasedWordIndex
   // because we want expert mode to fail no matter if confidence or stop on error is on
 
@@ -65,18 +69,20 @@ export function checkIfFailedDueToDifficulty(
 
 /**
  * Determines if the test should finish
- * @param data - Input data
- * @param testInputResult - Current test input result (after adding data)
- * @param currentWord - Current target word
- * @param allWordsTyped - Have all words been typed
+ * @param options - Options object
+ * @param options.data - Input data
+ * @param options.testInputResult - Current test input result (after adding data)
+ * @param options.currentWord - Current target word
+ * @param options.allWordsTyped - Have all words been typed
  * @returns Boolean if test should finish
  */
-export function checkIfFinished(
-  data: string,
-  testInputResult: string,
-  currentWord: string,
-  allWordsTyped: boolean
-): boolean {
+export function checkIfFinished(options: {
+  data: string;
+  testInputResult: string;
+  currentWord: string;
+  allWordsTyped: boolean;
+}): boolean {
+  const { data, testInputResult, currentWord, allWordsTyped } = options;
   const charIsSpace = isSpace(data);
   const allWordGenerated = TestLogic.areAllTestWordsGenerated();
   const wordIsCorrect = testInputResult === currentWord;

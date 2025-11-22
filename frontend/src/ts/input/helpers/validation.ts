@@ -4,16 +4,20 @@ import { areCharactersVisuallyEqual, isSpace } from "../../utils/strings";
 
 /**
  * Check if the input data is correct
- * @param data - Input data
- * @param inputValue - Current input value (use TestInput.input.current, not input element value)
- * @param correctShiftUsed - Whether the correct shift state was used. Null means disabled
+ * @param options - Options object
+ * @param options.data - Input data
+ * @param options.inputValue - Current input value (use TestInput.input.current, not input element value)
+ * @param options.targetWord - Target word
+ * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
  */
-export function isCharCorrect(
-  data: string,
-  inputValue: string,
-  targetWord: string,
-  correctShiftUsed: boolean | null //null means disabled
-): boolean {
+export function isCharCorrect(options: {
+  data: string;
+  inputValue: string;
+  targetWord: string;
+  correctShiftUsed: boolean | null; //null means disabled
+}): boolean {
+  const { data, inputValue, targetWord, correctShiftUsed } = options;
+
   if (Config.mode === "zen") return true;
 
   if (correctShiftUsed === false) return false;
@@ -61,16 +65,18 @@ export function isCharCorrect(
 /**
  * Determines if a space character should be inserted as a character, or act
  * as a "control character" (moving to the next word)
- * @param data - Input data
- * @param inputValue - Current input value (use TestInput.input.current, not input element value)
- * @param targetWord - Target word
+ * @param options - Options object
+ * @param options.data - Input data
+ * @param options.inputValue - Current input value (use TestInput.input.current, not input element value)
+ * @param options.targetWord - Target word
  * @returns Boolean if data is space, null if not
  */
-export function shouldInsertSpaceCharacter(
-  data: string,
-  inputValue: string,
-  targetWord: string
-): boolean | null {
+export function shouldInsertSpaceCharacter(options: {
+  data: string;
+  inputValue: string;
+  targetWord: string;
+}): boolean | null {
+  const { data, inputValue, targetWord } = options;
   if (!isSpace(data)) {
     return null;
   }

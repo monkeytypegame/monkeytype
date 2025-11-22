@@ -24,7 +24,7 @@ describe("isCharCorrect", () => {
     vi.clearAllMocks();
     // Reset Config defaults
     replaceConfig({
-      mode: "time",
+      mode: "words",
       language: "english",
       stopOnError: "off",
       difficulty: "normal",
@@ -44,13 +44,27 @@ describe("isCharCorrect", () => {
   describe("Zen Mode", () => {
     it("always returns true", () => {
       replaceConfig({ mode: "zen" });
-      expect(isCharCorrect("a", "test", "word", true)).toBe(true);
+      expect(
+        isCharCorrect({
+          data: "a",
+          inputValue: "test",
+          targetWord: "word",
+          correctShiftUsed: true,
+        })
+      ).toBe(true);
     });
   });
 
   describe("Shift Key", () => {
     it("returns false if correct shift was not used", () => {
-      expect(isCharCorrect("A", "test", "testA", false)).toBe(false);
+      expect(
+        isCharCorrect({
+          data: "A",
+          inputValue: "test",
+          targetWord: "testA",
+          correctShiftUsed: false,
+        })
+      ).toBe(false);
     });
   });
 
@@ -74,7 +88,14 @@ describe("isCharCorrect", () => {
         false,
       ],
     ])("%s", (_desc, char, input, word, expected) => {
-      expect(isCharCorrect(char, input, word, true)).toBe(expected);
+      expect(
+        isCharCorrect({
+          data: char,
+          inputValue: input,
+          targetWord: word,
+          correctShiftUsed: true,
+        })
+      ).toBe(expected);
     });
   });
 
@@ -86,7 +107,14 @@ describe("isCharCorrect", () => {
     ])(
       "char '%s' for input '%s' (current word '%s') -> %s",
       (char, input, word, expected) => {
-        expect(isCharCorrect(char, input, word, true)).toBe(expected);
+        expect(
+          isCharCorrect({
+            data: char,
+            inputValue: input,
+            targetWord: word,
+            correctShiftUsed: true,
+          })
+        ).toBe(expected);
       }
     );
   });
@@ -103,7 +131,14 @@ describe("isCharCorrect", () => {
     ])(
       "allows interchangeable characters: %s vs target in %s",
       (char, input, word) => {
-        expect(isCharCorrect(char, input, word, true)).toBe(true);
+        expect(
+          isCharCorrect({
+            data: char,
+            inputValue: input,
+            targetWord: word,
+            correctShiftUsed: true,
+          })
+        ).toBe(true);
       }
     );
   });
@@ -118,14 +153,26 @@ describe("isCharCorrect", () => {
         (Strings.areCharactersVisuallyEqual as any).mockReturnValue(
           visuallyEqual
         );
-        expect(isCharCorrect(char, input, word, true)).toBe(expected);
+        expect(
+          isCharCorrect({
+            data: char,
+            inputValue: input,
+            targetWord: word,
+            correctShiftUsed: true,
+          })
+        ).toBe(expected);
       }
     );
   });
 
   it("throws error if data is undefined", () => {
     expect(() =>
-      isCharCorrect(undefined as any, "val", "word", true)
+      isCharCorrect({
+        data: undefined as any,
+        inputValue: "val",
+        targetWord: "word",
+        correctShiftUsed: true,
+      })
     ).toThrow();
   });
 
@@ -139,7 +186,12 @@ describe("isCharCorrect", () => {
       funboxMock
     );
 
-    const result = isCharCorrect("x", "te", "tea", true);
+    const result = isCharCorrect({
+      data: "x",
+      inputValue: "te",
+      targetWord: "tea",
+      correctShiftUsed: true,
+    });
 
     expect(FunboxList.findSingleActiveFunboxWithFunction).toHaveBeenCalledWith(
       "isCharCorrect"
@@ -166,12 +218,24 @@ describe("shouldInsertSpaceCharacter", () => {
 
   it("returns null if data is not a space", () => {
     (Strings.isSpace as any).mockReturnValue(false);
-    expect(shouldInsertSpaceCharacter("a", "test", "test")).toBe(null);
+    expect(
+      shouldInsertSpaceCharacter({
+        data: "a",
+        inputValue: "test",
+        targetWord: "test",
+      })
+    ).toBe(null);
   });
 
   it("returns false in zen mode", () => {
     replaceConfig({ mode: "zen" });
-    expect(shouldInsertSpaceCharacter(" ", "test", "test")).toBe(false);
+    expect(
+      shouldInsertSpaceCharacter({
+        data: " ",
+        inputValue: "test",
+        targetWord: "test",
+      })
+    ).toBe(false);
   });
 
   describe("Logic Checks", () => {
@@ -269,9 +333,13 @@ describe("shouldInsertSpaceCharacter", () => {
       },
     ])("$desc", ({ inputValue, targetWord, config, expected }) => {
       replaceConfig(config as any);
-      expect(shouldInsertSpaceCharacter(" ", inputValue, targetWord)).toBe(
-        expected
-      );
+      expect(
+        shouldInsertSpaceCharacter({
+          data: " ",
+          inputValue,
+          targetWord,
+        })
+      ).toBe(expected);
     });
   });
 });

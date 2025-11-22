@@ -106,9 +106,18 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const currentWord = TestWords.words.getCurrent();
   const wordIndex = TestState.activeWordIndex;
 
-  const correct = isCharCorrect(data, testInput, currentWord, correctShiftUsed);
+  const correct = isCharCorrect({
+    data,
+    inputValue: testInput,
+    targetWord: currentWord,
+    correctShiftUsed,
+  });
   const shouldInsertSpace =
-    shouldInsertSpaceCharacter(data, testInput, currentWord) === true;
+    shouldInsertSpaceCharacter({
+      data,
+      inputValue: testInput,
+      targetWord: currentWord,
+    }) === true;
   const charIsSpace = isSpace(data);
 
   // start if needed
@@ -226,21 +235,29 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   if (!CompositionState.getComposing() && lastInMultiOrSingle) {
     if (
-      checkIfFailedDueToDifficulty(testInput + data, correct, spaceOrNewLine)
+      checkIfFailedDueToDifficulty({
+        testInputResult: testInput + data,
+        correct,
+        spaceOrNewline: spaceOrNewLine,
+      })
     ) {
       TestLogic.fail("difficulty");
     } else if (
       increasedWordIndex &&
-      checkIfFailedDueToMinBurst(testInput + data, currentWord, lastBurst)
+      checkIfFailedDueToMinBurst({
+        testInputResult: testInput + data,
+        currentWord,
+        lastBurst,
+      })
     ) {
       TestLogic.fail("min burst");
     } else if (
-      checkIfFinished(
+      checkIfFinished({
         data,
-        testInput + data,
+        testInputResult: testInput + data,
         currentWord,
-        wordIndex >= TestWords.words.length - 1
-      )
+        allWordsTyped: wordIndex >= TestWords.words.length - 1,
+      })
     ) {
       void TestLogic.finish();
     }
