@@ -3,8 +3,9 @@ import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
 import {
   getInputElementValue,
-  getInputElement,
   replaceInputElementLastValueChar,
+  setInputElementValue,
+  appendToInputElementValue,
 } from "../core/input-element";
 import {
   checkIfFailedDueToDifficulty,
@@ -69,9 +70,9 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   if (data.length > 1) {
     // remove the entire data from the input value
-    // not using setInputValue because we dont want to update TestInput yet
+    // make sure to not call TestInput.input.syncWithInputElement in here
     // it will be updated later in the body of onInsertText
-    getInputElement().value = " " + inputValue.slice(0, -data.length);
+    setInputElementValue(inputValue.slice(0, -data.length));
 
     for (let i = 0; i < data.length; i++) {
       const char = data[i] as string;
@@ -289,11 +290,9 @@ export async function emulateInsertText(
   }
 
   // default is prevented so we need to manually update the input value.
-  // remember to not call setInputValue or setTestInputToDOMValue in here
-  // because onBeforeInsertText can also block the event
-  // setInputValue and setTestInputToDOMValue will be called later be updated in onInsertText
-  const { inputValue } = getInputElementValue();
-  getInputElement().value = " " + inputValue + options.data;
+  // remember to not call TestInput.input.syncWithInputElement in here
+  // it will be called later be updated in onInsertText
+  appendToInputElementValue(options.data);
 
   await onInsertText(options);
 }

@@ -12,6 +12,10 @@ export function setInputElementValue(value: string): void {
   el.value = " " + value;
 }
 
+export function appendToInputElementValue(value: string): void {
+  el.value += value;
+}
+
 export function getInputElementValue(): {
   inputValue: string;
   realInputValue: string;
