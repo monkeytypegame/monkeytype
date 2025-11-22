@@ -2,7 +2,7 @@ import { lastElementFromArray } from "../utils/arrays";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestState from "./test-state";
 import Config from "../config";
-import { getInputElementValue } from "../input/core/input-element";
+import { getInputElementValue } from "../input/input-element";
 
 const keysToTrack = new Set([
   "NumpadMultiply",

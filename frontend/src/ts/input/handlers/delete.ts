@@ -1,10 +1,7 @@
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
-import {
-  getInputElementValue,
-  setInputElementValue,
-} from "../core/input-element";
+import { getInputElementValue, setInputElementValue } from "../input-element";
 
 import * as Replay from "../../test/replay";
 import Config from "../../config";

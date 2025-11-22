@@ -43,7 +43,7 @@ import {
   focusInputElement,
   getInputElement,
   isInputElementFocused,
-} from "../input/core/input-element";
+} from "../input/input-element";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);

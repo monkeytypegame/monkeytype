@@ -1,6 +1,6 @@
-import { onBeforeDelete } from "../../handlers/before-delete";
-import { onBeforeInsertText } from "../../handlers/before-insert-text";
-import { isSupportedInputType } from "../../helpers/input-type";
+import { onBeforeDelete } from "../handlers/before-delete";
+import { onBeforeInsertText } from "../handlers/before-insert-text";
+import { isSupportedInputType } from "../helpers/input-type";
 import { getInputElement } from "../input-element";
 
 const inputEl = getInputElement();

@@ -88,7 +88,7 @@ import {
   getInputElement,
   isInputElementFocused,
   setInputElementValue,
-} from "../input/core/input-element";
+} from "../input/input-element";
 
 let failReason = "";
 

@@ -8,7 +8,7 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
 import * as TestConfig from "../test/test-config";
 import * as ScrollToTop from "../elements/scroll-to-top";
-import { blurInputElement } from "../input/core/input-element";
+import { blurInputElement } from "../input/input-element";
 
 export const page = new Page({
   id: "test",

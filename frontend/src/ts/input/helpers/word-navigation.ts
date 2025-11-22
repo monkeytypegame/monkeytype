@@ -13,8 +13,8 @@ import * as TestStats from "../../test/test-stats";
 import * as Replay from "../../test/replay";
 import * as Funbox from "../../test/funbox/funbox";
 import * as Loader from "../../elements/loader";
-import { setInputElementValue } from "../core/input-element";
-import { setAwaitingNextWord } from "../core/state";
+import { setInputElementValue } from "../input-element";
+import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
 
 type GoToNextWordParams = {

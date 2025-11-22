@@ -5,8 +5,8 @@ import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isSpace } from "../../utils/strings";
-import { getInputElementValue } from "../core/input-element";
-import { isAwaitingNextWord } from "../core/state";
+import { getInputElementValue } from "../input-element";
+import { isAwaitingNextWord } from "../state";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
 
 /**

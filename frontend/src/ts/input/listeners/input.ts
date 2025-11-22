@@ -1,12 +1,12 @@
-import { onDelete } from "../../handlers/delete";
-import { onInsertText } from "../../handlers/insert-text";
-import { SupportedInputType } from "../../helpers/input-type";
+import { onDelete } from "../handlers/delete";
+import { onInsertText } from "../handlers/insert-text";
+import { SupportedInputType } from "../helpers/input-type";
 import { getInputElement } from "../input-element";
 import {
   getLastInsertCompositionTextData,
   setLastInsertCompositionTextData,
 } from "../state";
-import * as TestUI from "../../../test/test-ui";
+import * as TestUI from "../../test/test-ui";
 
 const inputEl = getInputElement();
 

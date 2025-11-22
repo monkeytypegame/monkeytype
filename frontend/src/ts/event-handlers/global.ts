@@ -9,7 +9,7 @@ import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
 import * as TestLogic from "../test/test-logic";
 import { navigate } from "../controllers/route-controller";
-import { isInputElementFocused } from "../input/core/input-element";
+import { isInputElementFocused } from "../input/input-element";
 
 document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;

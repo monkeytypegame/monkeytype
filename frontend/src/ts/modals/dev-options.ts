@@ -8,7 +8,7 @@ import * as Loader from "../elements/loader";
 import { update } from "../elements/xp-bar";
 import { toggleUserFakeChartData } from "../test/result";
 import { toggleCaretDebug } from "../utils/caret";
-import { getInputElement } from "../input/core/input-element";
+import { getInputElement } from "../input/input-element";
 
 let mediaQueryDebugLevel = 0;
 

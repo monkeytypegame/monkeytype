@@ -18,7 +18,7 @@ import {
   createInputEventHandler,
   ValidationResult,
 } from "../elements/input-validation";
-import { isInputElementFocused } from "../input/core/input-element";
+import { isInputElementFocused } from "../input/input-element";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {

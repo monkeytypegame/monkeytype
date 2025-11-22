@@ -6,7 +6,7 @@ import {
   replaceInputElementLastValueChar,
   setInputElementValue,
   appendToInputElementValue,
-} from "../core/input-element";
+} from "../input-element";
 import {
   checkIfFailedDueToDifficulty,
   checkIfFailedDueToMinBurst,
@@ -30,7 +30,7 @@ import {
   getIncorrectShiftsInARow,
   incrementIncorrectShiftsInARow,
   resetIncorrectShiftsInARow,
-} from "../core/state";
+} from "../state";
 import * as Notifications from "../../elements/notifications";
 import { goToNextWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";

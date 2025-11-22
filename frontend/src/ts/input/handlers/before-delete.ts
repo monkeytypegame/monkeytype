@@ -2,7 +2,7 @@ import Config from "../../config";
 import * as TestInput from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
-import { getInputElementValue } from "../core/input-element";
+import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
 
 export function onBeforeDelete(event: InputEvent): void {

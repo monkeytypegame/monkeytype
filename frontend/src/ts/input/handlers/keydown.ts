@@ -18,7 +18,7 @@ import {
   getLastBailoutAttempt,
   setCorrectShiftUsed,
   setLastBailoutAttempt,
-} from "../core/state";
+} from "../state";
 import {
   getActiveFunboxesWithFunction,
   getActiveFunboxNames,
