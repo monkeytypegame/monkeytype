@@ -186,10 +186,10 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const noSpaceForce =
     nospaceEnabled &&
     TestInput.input.current.length === TestWords.words.getCurrent().length;
-  const spaceOrNewLine = isSpace(data) || data === "\n";
+  const spaceOrNewline = isSpace(data) || data === "\n";
 
   const shouldGoToNextWord =
-    (spaceOrNewLine && !shouldInsertSpace) || noSpaceForce;
+    (spaceOrNewline && !shouldInsertSpace) || noSpaceForce;
 
   if (!shouldGoToNextWord) {
     TestInput.corrected.update(data, correct);
@@ -238,7 +238,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       checkIfFailedDueToDifficulty({
         testInputResult: testInput + data,
         correct,
-        spaceOrNewline: spaceOrNewLine,
+        spaceOrNewline,
       })
     ) {
       TestLogic.fail("difficulty");
