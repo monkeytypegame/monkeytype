@@ -599,13 +599,8 @@
   cursor: default;
   pointer-events: none;
   border-radius: 0;
-
-  //todo remove
-  margin-top: 5rem;
-  padding: 0;
-  opacity: 1;
-  min-width: 5em;
-  overflow-y: hidden;
+  resize: none;
+  overflow: hidden;
 }
 
 #capsWarning {
