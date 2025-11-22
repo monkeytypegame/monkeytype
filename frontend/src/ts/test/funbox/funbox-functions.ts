@@ -47,6 +47,7 @@ export type FunboxFunctions = {
   getResultContent?: () => string;
   start?: () => void;
   restart?: () => void;
+  stop?: () => void;
   getWordHtml?: (char: string, letterTag?: boolean) => string;
   getWordsFrequencyMode?: () => FunboxWordsFrequency;
 };
@@ -601,6 +602,58 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         .replace(/[.!?]$/g, "\n") //replace .?! with enter
         .replace(/[().'"]/g, "") //remove special characters
         .replace(/\n+/g, "\n"); //make sure there is only one enter
+    },
+  },
+  slow_scroll: {
+    start(): void {
+      // Only start the animation when a test is active (defensive check)
+      if (!TestState.isActive) return;
+
+      const words = document.querySelector<HTMLElement>("#words");
+      const caret = document.querySelector<HTMLElement>("#caret");
+      const paceCaret = document.querySelector<HTMLElement>("#paceCaret");
+      if (words) words.classList.add("slow-scroll-running");
+      if (caret) caret.classList.add("slow-scroll-running");
+      if (paceCaret) paceCaret.classList.add("slow-scroll-running");
+    },
+    restart(): void {
+      const words = document.querySelector<HTMLElement>("#words");
+      const caret = document.querySelector<HTMLElement>("#caret");
+      const paceCaret = document.querySelector<HTMLElement>("#paceCaret");
+      if (words) {
+        words.classList.remove("slow-scroll-running");
+      }
+      if (caret) {
+        caret.classList.remove("slow-scroll-running");
+      }
+      if (paceCaret) {
+        paceCaret.classList.remove("slow-scroll-running");
+      }
+      // Force reflow on the words container so animation restarts consistently
+      const trigger = words ?? caret ?? paceCaret;
+      if (trigger) {
+        void trigger.offsetWidth;
+      }
+      if (words) words.classList.add("slow-scroll-running");
+      if (caret) caret.classList.add("slow-scroll-running");
+      if (paceCaret) paceCaret.classList.add("slow-scroll-running");
+    },
+    clearGlobal(): void {
+      const words = document.querySelector<HTMLElement>("#words");
+      const caret = document.querySelector<HTMLElement>("#caret");
+      const paceCaret = document.querySelector<HTMLElement>("#paceCaret");
+      if (words) words.classList.remove("slow-scroll-running");
+      if (caret) caret.classList.remove("slow-scroll-running");
+      if (paceCaret) paceCaret.classList.remove("slow-scroll-running");
+    },
+    stop(): void {
+      // Called when a test stops. Ensure the animation is removed immediately.
+      const words = document.querySelector<HTMLElement>("#words");
+      const caret = document.querySelector<HTMLElement>("#caret");
+      const paceCaret = document.querySelector<HTMLElement>("#paceCaret");
+      if (words) words.classList.remove("slow-scroll-running");
+      if (caret) caret.classList.remove("slow-scroll-running");
+      if (paceCaret) paceCaret.classList.remove("slow-scroll-running");
     },
   },
   morse: {

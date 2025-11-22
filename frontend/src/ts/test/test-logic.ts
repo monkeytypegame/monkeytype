@@ -280,6 +280,9 @@ export function restart(options = {} as RestartOptions): void {
   AltTracker.reset();
   Caret.hide();
   TestState.setActive(false);
+  for (const fb of getActiveFunboxesWithFunction("stop")) {
+    fb.functions.stop();
+  }
   Replay.stopReplayRecording();
   LiveSpeed.hide();
   LiveAcc.hide();
@@ -943,6 +946,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   TestState.setResultVisible(true);
   TestState.setActive(false);
+  // Ensure any test-specific funbox behaviour is stopped when the test ends
+  for (const fb of getActiveFunboxesWithFunction("stop")) {
+    fb.functions.stop();
+  }
   Replay.stopReplayRecording();
   Caret.hide();
   LiveSpeed.hide();

@@ -467,6 +467,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     difficultyLevel: 0,
     name: "no_quit",
   },
+  slow_scroll: {
+    name: "slow_scroll",
+    description: "Wait, where are you going? Come back... no... I'm sorry...",
+    canGetPb: false,
+    difficultyLevel: 2,
+    properties: ["hasCssFile", "ignoreReducedMotion"],
+    frontendFunctions: ["start", "restart", "clearGlobal"],
+  },
 };
 
 export function getFunbox(name: FunboxName): FunboxMetadata;

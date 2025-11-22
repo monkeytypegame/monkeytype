@@ -1,0 +1,35 @@
+@keyframes slow_scroll_up {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-40vh);
+  }
+}
+
+#words.slow-scroll-running {
+  animation: slow_scroll_up 60s linear infinite;
+  will-change: transform;
+}
+
+/* also animate the carets so they visually remain synced with the word list */
+#caret.slow-scroll-running,
+#paceCaret.slow-scroll-running {
+  animation: slow_scroll_up 60s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #words.slow-scroll-running,
+  #caret.slow-scroll-running,
+  #paceCaret.slow-scroll-running {
+    animation: none !important;
+  }
+}
+
+body.ignore-reduced-motion #words.slow-scroll-running,
+body.ignore-reduced-motion #caret.slow-scroll-running,
+body.ignore-reduced-motion #paceCaret.slow-scroll-running {
+  animation: slow_scroll_up 120s linear infinite !important;
+}
