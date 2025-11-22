@@ -141,12 +141,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // update test input state
   if (!charIsSpace || shouldInsertSpace) {
-    if (data === "\n") {
-      // because \n cannot be added to the input element, we need to manually add it to TestInput
-      TestInput.input.current = getInputValue().inputValue + "\n";
-    } else {
-      TestInput.input.syncWithInputElement();
-    }
+    TestInput.input.syncWithInputElement();
   }
 
   // general per keypress updates
@@ -193,6 +188,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   if (removeLastChar) {
     replaceLastInputValueChar("");
+    TestInput.input.syncWithInputElement();
   }
 
   // going to next word
@@ -309,9 +305,18 @@ export async function handleInput(event: InputEvent): Promise<void> {
   // in the input listener for unsupported input types
   const inputType = event.inputType as SupportedInputType;
 
-  if (inputType === "insertText" && event.data !== null) {
+  if (
+    (inputType === "insertText" && event.data !== null) ||
+    inputType === "insertLineBreak"
+  ) {
+    let data = event.data as string;
+    if (inputType === "insertLineBreak") {
+      // insertLineBreak events dont have data set
+      data = "\n";
+    }
+
     await onInsertText({
-      data: event.data,
+      data,
       now,
     });
   } else if (

@@ -42,6 +42,11 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
+  //only allow newlines if the test has newlines
+  if (data === "\n" && !TestWords.hasNewline) {
+    return true;
+  }
+
   // space characters sometimes are inserted as a character, need this distinction
   const shouldInsertSpace = shouldInsertSpaceAsCharacter === true;
 
@@ -110,8 +115,17 @@ export async function handleBeforeInput(event: InputEvent): Promise<void> {
 
   const inputType = event.inputType;
 
-  if (inputType === "insertText" && event.data !== null) {
-    const preventDefault = onBeforeInsertText(event.data);
+  if (
+    (inputType === "insertText" && event.data !== null) ||
+    inputType === "insertLineBreak"
+  ) {
+    let data = event.data as string;
+    if (inputType === "insertLineBreak") {
+      // insertLineBreak events dont have data set
+      data = "\n";
+    }
+
+    const preventDefault = onBeforeInsertText(data);
     if (preventDefault) {
       event.preventDefault();
     }

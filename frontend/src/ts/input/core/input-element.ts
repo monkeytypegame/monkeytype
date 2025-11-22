@@ -1,5 +1,3 @@
-import * as TestInput from "../../test/test-input";
-
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
 if (wordsInput === null) {
@@ -34,5 +32,4 @@ export function moveCaretToTheEnd(): void {
 export function replaceLastInputValueChar(char: string): void {
   const { inputValue } = getInputValue();
   setInputValue(inputValue.slice(0, -1) + char);
-  TestInput.input.syncWithInputElement();
 }
