@@ -34,3 +34,11 @@ export function replaceInputElementLastValueChar(char: string): void {
 export function isInputElementFocused(): boolean {
   return document.activeElement === el;
 }
+
+export function focusInputElement(): void {
+  el.focus();
+}
+
+export function blurInputElement(): void {
+  el.blur();
+}

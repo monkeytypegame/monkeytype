@@ -38,6 +38,7 @@ import * as LiveBurst from "./live-burst";
 import * as LiveSpeed from "./live-speed";
 import * as Monkey from "./monkey";
 import { animate } from "animejs";
+import { getInputElement } from "../input/core/input-element";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -150,7 +151,7 @@ export function reset(): void {
 }
 
 export function focusWords(force = false): void {
-  const wordsInput = document.querySelector<HTMLElement>("#wordsInput");
+  const wordsInput = getInputElement();
   if (force) {
     wordsInput?.blur();
   }
@@ -163,10 +164,6 @@ export function focusWords(force = false): void {
     const typingTest = document.querySelector<HTMLElement>("#typingTest");
     Misc.scrollToCenterOrTop(typingTest);
   }
-}
-
-export function blurWords(): void {
-  $("#wordsInput").trigger("blur");
 }
 
 export function keepWordsInputInTheCenter(force = false): void {

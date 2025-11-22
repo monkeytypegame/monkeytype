@@ -84,6 +84,11 @@ import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
 import * as CompositionDisplay from "../elements/composition-display";
+import {
+  getInputElement,
+  isInputElementFocused,
+  setInputElementValue,
+} from "../input/core/input-element";
 
 let failReason = "";
 
@@ -321,7 +326,8 @@ export function restart(options = {} as RestartOptions): void {
     onComplete: async () => {
       $("#result").addClass("hidden");
       $("#typingTest").css("opacity", 0).removeClass("hidden");
-      $("#wordsInput").css({ left: 0 }).val(" ");
+      getInputElement().style.left = "0";
+      setInputElementValue("");
 
       if (CompositionDisplay.shouldShow()) {
         CompositionDisplay.update(" ");
@@ -372,8 +378,7 @@ export function restart(options = {} as RestartOptions): void {
         void ModesNotice.update();
       }
 
-      const isWordsFocused = $("#wordsInput").is(":focus");
-      if (isWordsFocused) OutOfFocus.hide();
+      if (isInputElementFocused()) OutOfFocus.hide();
       TestUI.focusWords(true);
 
       const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
