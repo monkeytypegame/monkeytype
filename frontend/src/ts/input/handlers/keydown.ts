@@ -126,6 +126,24 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
   }
 }
 
+async function handleFunboxes(
+  event: KeyboardEvent,
+  now: number
+): Promise<boolean> {
+  for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
+    void fb.functions.handleKeydown(event);
+  }
+
+  for (const fb of getActiveFunboxesWithFunction("getEmulatedChar")) {
+    const emulatedChar = fb.functions.getEmulatedChar(event);
+    if (emulatedChar !== null) {
+      await emulateInsertText({ data: emulatedChar, now });
+      return true;
+    }
+  }
+  return false;
+}
+
 export async function onKeydown(event: KeyboardEvent): Promise<void> {
   console.debug("wordsInput event keydown", {
     event,
@@ -149,21 +167,14 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
     return;
   }
 
-  for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
-    void fb.functions.handleKeydown(event);
-  }
-
   if (Config.oppositeShiftMode !== "off") {
     await handleOppositeShift(event);
   }
 
-  for (const fb of getActiveFunboxesWithFunction("getEmulatedChar")) {
-    const emulatedChar = fb.functions.getEmulatedChar(event);
-    if (emulatedChar !== null) {
-      await emulateInsertText({ data: emulatedChar, now });
-      event.preventDefault();
-      return;
-    }
+  const prevent = await handleFunboxes(event, now);
+  if (prevent) {
+    event.preventDefault();
+    return;
   }
 
   if (Config.layout !== "default") {
