@@ -13,22 +13,22 @@ import {
   moveInputElementCaretToTheEnd,
 } from "./input-element";
 
-const wordsInput = getInputElement();
+const inputEl = getInputElement();
 
-wordsInput.addEventListener("focus", () => {
+inputEl.addEventListener("focus", () => {
   moveInputElementCaretToTheEnd();
 });
 
-wordsInput.addEventListener("copy paste", (event) => {
+inputEl.addEventListener("copy paste", (event) => {
   event.preventDefault();
 });
 
 //this might not do anything
-wordsInput.addEventListener("select selectstart", (event) => {
+inputEl.addEventListener("select selectstart", (event) => {
   event.preventDefault();
 });
 
-wordsInput.addEventListener("selectionchange", (event) => {
+inputEl.addEventListener("selectionchange", (event) => {
   const selection = window.getSelection();
   console.debug("wordsInput event selectionchange", {
     event,
@@ -40,7 +40,7 @@ wordsInput.addEventListener("selectionchange", (event) => {
   handleSelectionChange(event);
 });
 
-wordsInput.addEventListener("keyup", async (event) => {
+inputEl.addEventListener("keyup", async (event) => {
   console.debug("wordsInput event keyup", {
     event,
     key: event.key,
@@ -49,7 +49,7 @@ wordsInput.addEventListener("keyup", async (event) => {
   await handleKeyup(event);
 });
 
-wordsInput.addEventListener("keydown", async (event) => {
+inputEl.addEventListener("keydown", async (event) => {
   console.debug("wordsInput event keydown", {
     event,
     key: event.key,
@@ -58,7 +58,7 @@ wordsInput.addEventListener("keydown", async (event) => {
   await handleKeydown(event);
 });
 
-wordsInput.addEventListener("beforeinput", async (event) => {
+inputEl.addEventListener("beforeinput", async (event) => {
   if (!(event instanceof InputEvent)) {
     //beforeinput is typed as inputevent but input is not?
     //@ts-expect-error just doing this as a sanity check
@@ -75,7 +75,7 @@ wordsInput.addEventListener("beforeinput", async (event) => {
   await handleBeforeInput(event);
 });
 
-wordsInput.addEventListener("input", async (event) => {
+inputEl.addEventListener("input", async (event) => {
   if (!(event instanceof InputEvent)) {
     //since the listener is on an input element, this should never trigger
     //but its here to narrow the type of "event"
@@ -91,7 +91,7 @@ wordsInput.addEventListener("input", async (event) => {
   await handleInput(event);
 });
 
-wordsInput.addEventListener("compositionstart", (event) => {
+inputEl.addEventListener("compositionstart", (event) => {
   console.debug("wordsInput event compositionstart", {
     event,
     data: event.data,
@@ -99,7 +99,7 @@ wordsInput.addEventListener("compositionstart", (event) => {
   handleCompositionStart(event);
 });
 
-wordsInput.addEventListener("compositionupdate", (event) => {
+inputEl.addEventListener("compositionupdate", (event) => {
   console.debug("wordsInput event compositionupdate", {
     event,
     data: event.data,
@@ -107,7 +107,7 @@ wordsInput.addEventListener("compositionupdate", (event) => {
   handleCompositionUpdate(event);
 });
 
-wordsInput.addEventListener("compositionend", async (event) => {
+inputEl.addEventListener("compositionend", async (event) => {
   console.debug("wordsInput event compositionend", { event, data: event.data });
   await handleCompositionEnd(event);
 });
