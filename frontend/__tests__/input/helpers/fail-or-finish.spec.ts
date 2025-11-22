@@ -278,81 +278,86 @@ describe("checkIfFinished", () => {
     {
       desc: "returns false if not all words typed",
       allWordsTyped: false,
-      allGenerated: true,
-      input: "word",
-      current: "word",
+      testInputResult: "word",
+      currentWord: "word",
       expected: false,
     },
     {
       desc: "returns false if not all words generated",
-      allWordsTyped: true,
       allGenerated: false,
-      input: "word",
-      current: "word",
+      allWordsTyped: true,
+      testInputResult: "word",
+      currentWord: "word",
       expected: false,
     },
     {
       desc: "returns true if word is correct",
       allWordsTyped: true,
-      allGenerated: true,
-      input: "word",
-      current: "word",
+      testInputResult: "word",
+      currentWord: "word",
       expected: true,
     },
     {
       desc: "returns true if quickEnd enabled and lengths match",
       allWordsTyped: true,
-      allGenerated: true,
-      input: "wor",
-      current: "wor",
+      testInputResult: "wor",
+      currentWord: "wor",
       config: { quickEnd: true, stopOnError: "off" },
       expected: true,
     },
     {
       desc: "returns false if quickEnd enabled but stopOnError is on",
       allWordsTyped: true,
-      allGenerated: true,
-      input: "wor",
-      current: "word",
+      testInputResult: "wor",
+      currentWord: "word",
       config: { quickEnd: true, stopOnError: "letter" },
       expected: false,
     },
     {
-      desc: "returns true if input char is space",
+      desc: "returns true if space on the last word",
       allWordsTyped: true,
-      allGenerated: true,
-      input: "wor",
-      current: "word",
-      isSpace: true,
+      testInputResult: "word ",
+      currentWord: "word",
+      shouldGoToNextWord: true,
       expected: true,
     },
     {
       desc: "returns false if incorrect, no quickEnd, no space",
       allWordsTyped: true,
-      allGenerated: true,
-      input: "wor",
-      current: "word",
+      testInputResult: "wor",
+      currentWord: "word",
       expected: false,
     },
-  ])(
+  ] as {
+    desc: string;
+    allWordsTyped: boolean;
+    allGenerated?: boolean;
+    shouldGoToNextWord: boolean;
+    testInputResult: string;
+    currentWord: string;
+    config?: Record<string, any>;
+    isSpace?: boolean;
+    expected: boolean;
+  }[])(
     "$desc",
     ({
       allWordsTyped,
       allGenerated,
-      input,
-      current,
+      shouldGoToNextWord,
+      testInputResult,
+      currentWord,
       config,
-      isSpace,
       expected,
     }) => {
       if (config) replaceConfig(config as any);
-      (TestLogic.areAllTestWordsGenerated as any).mockReturnValue(allGenerated);
-      (Strings.isSpace as any).mockReturnValue(isSpace || false);
+      (TestLogic.areAllTestWordsGenerated as any).mockReturnValue(
+        allGenerated ?? true
+      );
 
       const result = checkIfFinished({
-        data: isSpace ? " " : "a",
-        testInputResult: input,
-        currentWord: current,
+        shouldGoToNextWord,
+        testInputResult,
+        currentWord,
         allWordsTyped,
       });
 
