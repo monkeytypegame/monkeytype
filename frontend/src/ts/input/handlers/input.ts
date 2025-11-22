@@ -114,14 +114,13 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   )?.functions.isCharCorrect(data, currentWord[inputValue.length] ?? "");
 
   const correct =
-    funboxCorrect !== undefined
-      ? funboxCorrect
-      : isCharCorrect({
-          data,
-          inputValue: testInput,
-          targetWord: currentWord,
-          correctShiftUsed,
-        });
+    funboxCorrect ??
+    isCharCorrect({
+      data,
+      inputValue: testInput,
+      targetWord: currentWord,
+      correctShiftUsed,
+    });
 
   const shouldInsertSpace =
     shouldInsertSpaceCharacter({
