@@ -2,6 +2,7 @@ import config from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as TestInput from "./test-input";
 import * as Arrays from "../utils/arrays";
+import { convertToTabArrows } from "./test-ui";
 
 type ReplayAction =
   | "correctLetter"
@@ -58,11 +59,9 @@ function initializeReplayPrompt(): void {
     x.className = "word";
     for (const letter of word) {
       const elem = document.createElement("letter");
-      const tabClass = letter === "\t" ? "tabChar" : "";
+      const [letterToShow, tabClass] = convertToTabArrows(letter);
       elem.className = tabClass;
-      elem.innerHTML = tabClass
-        ? "<i class='fas fa-long-arrow-alt-right fa-fw'></i>"
-        : letter;
+      elem.innerHTML = letterToShow;
       x.appendChild(elem);
     }
     replayWordsElement.appendChild(x);

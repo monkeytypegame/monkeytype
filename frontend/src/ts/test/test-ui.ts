@@ -1225,7 +1225,7 @@ export function setLigatures(isEnabled: boolean): void {
   }
 }
 
-function convertToTabArrows(char: string): string[] {
+export function convertToTabArrows(char: string): [string, string] {
   if (char === "\t") {
     char = "<i class='fas fa-long-arrow-alt-right fa-fw'></i>";
     return [char, "tabChar"];
