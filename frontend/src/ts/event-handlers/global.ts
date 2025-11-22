@@ -57,7 +57,7 @@ document.addEventListener("keydown", (e) => {
   }
 
   if (!wordsFocused) {
-    const keyboardInputNeeded =
+    const isInteractiveElement =
       activeElement?.tagName === "INPUT" ||
       activeElement?.tagName === "TEXTAREA" ||
       activeElement?.tagName === "SELECT" ||
@@ -68,11 +68,11 @@ document.addEventListener("keydown", (e) => {
     if (
       (e.key === "Tab" &&
         Config.quickRestart === "tab" &&
-        !keyboardInputNeeded) ||
+        !isInteractiveElement) ||
       (e.key === "Escape" && Config.quickRestart === "esc") ||
       (e.key === "Enter" &&
         Config.quickRestart === "enter" &&
-        !keyboardInputNeeded)
+        !isInteractiveElement)
     ) {
       e.preventDefault();
       if (ActivePage.get() === "test") {
