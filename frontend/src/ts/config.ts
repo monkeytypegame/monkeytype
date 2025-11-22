@@ -921,7 +921,11 @@ export default config;
 export const __testing = {
   configMetadata,
   replaceConfig: (setConfig: Partial<Config>): void => {
-    config = { ...getDefaultConfig(), ...setConfig };
+    const newConfig = { ...getDefaultConfig(), ...setConfig };
+    for (const key of Object.keys(config)) {
+      Reflect.deleteProperty(config, key);
+    }
+    Object.assign(config, newConfig);
     configToSend = {} as Config;
   },
   getConfig: () => config,
