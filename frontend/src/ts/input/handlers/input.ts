@@ -236,7 +236,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (!CompositionState.getComposing() && lastInMultiOrSingle) {
     if (
       checkIfFailedDueToDifficulty({
-        testInputResult: testInput + data,
+        testInputWithData: testInput + data,
         correct,
         spaceOrNewline,
       })
@@ -245,7 +245,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     } else if (
       increasedWordIndex &&
       checkIfFailedDueToMinBurst({
-        testInputResult: testInput + data,
+        testInputWithData: testInput + data,
         currentWord,
         lastBurst,
       })
@@ -254,7 +254,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     } else if (
       checkIfFinished({
         shouldGoToNextWord,
-        testInputResult: testInput + data,
+        testInputWithData: testInput + data,
         currentWord,
         allWordsTyped: wordIndex >= TestWords.words.length - 1,
       })

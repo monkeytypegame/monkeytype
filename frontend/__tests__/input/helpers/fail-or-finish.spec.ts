@@ -91,7 +91,7 @@ describe("checkIfFailedDueToMinBurst", () => {
     }
 
     const result = checkIfFailedDueToMinBurst({
-      testInputResult: "test",
+      testInputWithData: "test",
       currentWord: "test",
       lastBurst,
     });
@@ -102,7 +102,7 @@ describe("checkIfFailedDueToMinBurst", () => {
   it("uses correct length for whorf calculation in zen mode", () => {
     replaceConfig({ minBurst: "flex", mode: "zen", minBurstCustomSpeed: 100 });
     checkIfFailedDueToMinBurst({
-      testInputResult: "zeninput",
+      testInputWithData: "zeninput",
       currentWord: "ignored",
       lastBurst: 50,
     });
@@ -112,7 +112,7 @@ describe("checkIfFailedDueToMinBurst", () => {
   it("uses correct length for whorf calculation in normal mode", () => {
     replaceConfig({ minBurst: "flex", mode: "time", minBurstCustomSpeed: 100 });
     checkIfFailedDueToMinBurst({
-      testInputResult: "input",
+      testInputWithData: "input",
       currentWord: "target",
       lastBurst: 50,
     });
@@ -251,7 +251,7 @@ describe("checkIfFailedDueToDifficulty", () => {
   ])("$desc", ({ config, correct, spaceOrNewline, input, expected }) => {
     replaceConfig(config as any);
     const result = checkIfFailedDueToDifficulty({
-      testInputResult: input,
+      testInputWithData: input,
       correct,
       spaceOrNewline,
     });
@@ -278,7 +278,7 @@ describe("checkIfFinished", () => {
     {
       desc: "false if not all words typed",
       allWordsTyped: false,
-      testInputResult: "word",
+      testInputWithData: "word",
       currentWord: "word",
       expected: false,
     },
@@ -286,21 +286,21 @@ describe("checkIfFinished", () => {
       desc: "false if not all words generated, but on the last word",
       allGenerated: false,
       allWordsTyped: true,
-      testInputResult: "word",
+      testInputWithData: "word",
       currentWord: "word",
       expected: false,
     },
     {
       desc: "true if last word is correct",
       allWordsTyped: true,
-      testInputResult: "word",
+      testInputWithData: "word",
       currentWord: "word",
       expected: true,
     },
     {
       desc: "true if quickEnd enabled and lengths match",
       allWordsTyped: true,
-      testInputResult: "asdf",
+      testInputWithData: "asdf",
       currentWord: "word",
       config: { quickEnd: true },
       expected: true,
@@ -308,7 +308,7 @@ describe("checkIfFinished", () => {
     {
       desc: "false if quickEnd disabled and lengths match",
       allWordsTyped: true,
-      testInputResult: "asdf",
+      testInputWithData: "asdf",
       currentWord: "word",
       config: { quickEnd: false },
       expected: false,
@@ -316,7 +316,7 @@ describe("checkIfFinished", () => {
     {
       desc: "true if space on the last word",
       allWordsTyped: true,
-      testInputResult: "wo ",
+      testInputWithData: "wo ",
       currentWord: "word",
       shouldGoToNextWord: true,
       expected: true,
@@ -324,7 +324,7 @@ describe("checkIfFinished", () => {
     {
       desc: "false if still typing, quickend disabled",
       allWordsTyped: true,
-      testInputResult: "wordwordword",
+      testInputWithData: "wordwordword",
       currentWord: "word",
       expected: false,
     },
@@ -333,7 +333,7 @@ describe("checkIfFinished", () => {
     allWordsTyped: boolean;
     allGenerated?: boolean;
     shouldGoToNextWord: boolean;
-    testInputResult: string;
+    testInputWithData: string;
     currentWord: string;
     config?: Record<string, any>;
     isSpace?: boolean;
@@ -344,7 +344,7 @@ describe("checkIfFinished", () => {
       allWordsTyped,
       allGenerated,
       shouldGoToNextWord,
-      testInputResult,
+      testInputWithData,
       currentWord,
       config,
       expected,
@@ -356,7 +356,7 @@ describe("checkIfFinished", () => {
 
       const result = checkIfFinished({
         shouldGoToNextWord,
-        testInputResult,
+        testInputWithData,
         currentWord,
         allWordsTyped,
       });
