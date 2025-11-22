@@ -48,6 +48,8 @@ export type FunboxFunctions = {
   start?: () => void;
   restart?: () => void;
   stop?: () => void;
+  pause?: () => void;
+  resume?: () => void;
   getWordHtml?: (char: string, letterTag?: boolean) => string;
   getWordsFrequencyMode?: () => FunboxWordsFrequency;
 };
@@ -606,12 +608,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   slow_scroll: {
     start(): void {
-      // Only start the animation when a test is active (defensive check)
-      if (!TestState.isActive) return;
-
       const words = document.querySelector<HTMLElement>("#words");
       const caret = document.querySelector<HTMLElement>("#caret");
       const paceCaret = document.querySelector<HTMLElement>("#paceCaret");
+      if (!TestState.isActive) return;
+
       if (words) words.classList.add("slow-scroll-running");
       if (caret) caret.classList.add("slow-scroll-running");
       if (paceCaret) paceCaret.classList.add("slow-scroll-running");
@@ -634,6 +635,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       if (trigger) {
         void trigger.offsetWidth;
       }
+      // Only re-enable the animation while the test is active; during
+      // initialization/restart the test is inactive and the animation should
+      // stay paused so it doesn't impair the user pre-start.
+      if (!TestState.isActive) return;
+
       if (words) words.classList.add("slow-scroll-running");
       if (caret) caret.classList.add("slow-scroll-running");
       if (paceCaret) paceCaret.classList.add("slow-scroll-running");
@@ -654,6 +660,24 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       if (words) words.classList.remove("slow-scroll-running");
       if (caret) caret.classList.remove("slow-scroll-running");
       if (paceCaret) paceCaret.classList.remove("slow-scroll-running");
+    },
+    pause(): void {
+      // Pause the animation without resetting it
+      const words = document.querySelector<HTMLElement>("#words");
+      const caret = document.querySelector<HTMLElement>("#caret");
+      const paceCaret = document.querySelector<HTMLElement>("#paceCaret");
+      if (words) words.style.animationPlayState = "paused";
+      if (caret) caret.style.animationPlayState = "paused";
+      if (paceCaret) paceCaret.style.animationPlayState = "paused";
+    },
+    resume(): void {
+      // Resume previously paused animation
+      const words = document.querySelector<HTMLElement>("#words");
+      const caret = document.querySelector<HTMLElement>("#caret");
+      const paceCaret = document.querySelector<HTMLElement>("#paceCaret");
+      if (words) words.style.animationPlayState = "running";
+      if (caret) caret.style.animationPlayState = "running";
+      if (paceCaret) paceCaret.style.animationPlayState = "running";
     },
   },
   morse: {

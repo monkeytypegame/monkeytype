@@ -20,7 +20,10 @@ import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
 import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
-import { findSingleActiveFunboxWithFunction } from "./funbox/list";
+import {
+  findSingleActiveFunboxWithFunction,
+  isFunboxActive,
+} from "./funbox/list";
 import * as TestState from "./test-state";
 import * as PaceCaret from "./pace-caret";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
@@ -58,12 +61,15 @@ export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
 );
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+  // Run language/funbox dependent checks
   if (
     (eventKey === "language" || eventKey === "funbox") &&
     Config.funbox.includes("zipf")
   ) {
     debouncedZipfCheck();
   }
+
+  // Update font size for caret/pace elements and refresh layout when needed
   if (eventKey === "fontSize") {
     $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
       "fontSize",
@@ -74,6 +80,8 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       updateWordWrapperClasses();
     }
   }
+
+  // Some config changes affect hint positions
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
       eventKey
@@ -82,13 +90,18 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     void updateHintsPositionDebounced();
   }
 
+  // Theme change can affect pre-rendered heatmaps
   if (eventKey === "theme") void applyBurstHeatmap();
 
+  // If the new value is undefined, no further updates are needed
   if (eventValue === undefined) return;
+
+  // Update the active element if highlight mode changed while on test page
   if (eventKey === "highlightMode") {
     if (ActivePage.get() === "test") updateActiveElement();
   }
 
+  // A bunch of config changes require re-applying classes / layout updates
   if (
     [
       "highlightMode",
@@ -112,6 +125,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     }
   }
 
+  // Final boolean-valued config toggles
   if (typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
@@ -423,9 +437,13 @@ function updateWordWrapperClasses(): void {
   if (Config.tapeMode !== "off") {
     $("#words").addClass("tape");
     $("#wordsWrapper").addClass("tape");
+    $("#caret").addClass("tape");
+    $("#paceCaret").addClass("tape");
   } else {
     $("#words").removeClass("tape");
     $("#wordsWrapper").removeClass("tape");
+    $("#caret").removeClass("tape");
+    $("#paceCaret").removeClass("tape");
   }
 
   if (Config.blindMode) {
@@ -1175,7 +1193,10 @@ export async function lineJump(
     Caret.caret.handleLineJump(caretLineJumpOptions);
     PaceCaret.caret.handleLineJump(caretLineJumpOptions);
 
-    if (Config.smoothLineScroll) {
+    // Don't animate words element if slow_scroll is active to avoid interfering with the animation
+    const isSlowScrollActive = isFunboxActive("slow_scroll");
+
+    if (Config.smoothLineScroll && !isSlowScrollActive) {
       lineTransition = true;
       animate(wordsEl, {
         marginTop: newMarginTop,
@@ -1190,8 +1211,15 @@ export async function lineJump(
         },
       });
     } else {
+      // For slow_scroll or when smooth scroll is off, just update immediately
+      if (!isSlowScrollActive) {
+        wordsEl.style.marginTop = newMarginTop + "px";
+      }
       currentLinesJumping = 0;
       removeTestElements(lastElementIndexToRemove);
+      if (!isSlowScrollActive) {
+        wordsEl.style.marginTop = "0";
+      }
       resolve();
     }
   }

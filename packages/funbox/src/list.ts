@@ -473,7 +473,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: false,
     difficultyLevel: 2,
     properties: ["hasCssFile", "ignoreReducedMotion"],
-    frontendFunctions: ["start", "restart", "clearGlobal", "stop"],
+    frontendFunctions: [
+      "start",
+      "restart",
+      "clearGlobal",
+      "stop",
+      "pause",
+      "resume",
+    ],
   },
 };
 

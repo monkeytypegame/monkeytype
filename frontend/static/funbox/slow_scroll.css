@@ -8,15 +8,40 @@
   }
 }
 
-#words.slow-scroll-running {
-  animation: slow_scroll_up 60s linear infinite;
+@keyframes slow_scroll_left {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-100vw);
+  }
+}
+
+/* Vertical scrolling for normal mode */
+#words.slow-scroll-running:not(.tape) {
+  animation: slow_scroll_up 120s linear infinite;
+  will-change: transform;
+}
+
+/* Horizontal scrolling for tape mode */
+#words.slow-scroll-running.tape {
+  animation: slow_scroll_left 120s linear infinite;
   will-change: transform;
 }
 
 /* also animate the carets so they visually remain synced with the word list */
-#caret.slow-scroll-running,
-#paceCaret.slow-scroll-running {
-  animation: slow_scroll_up 60s linear infinite;
+/* Vertical scrolling for normal mode */
+#caret.slow-scroll-running:not(.tape),
+#paceCaret.slow-scroll-running:not(.tape) {
+  animation: slow_scroll_up 120s linear infinite;
+  will-change: transform;
+}
+
+/* Horizontal scrolling for tape mode - carets need to scroll with the words */
+#caret.slow-scroll-running.tape,
+#paceCaret.slow-scroll-running.tape {
+  animation: slow_scroll_left 120s linear infinite;
   will-change: transform;
 }
 
@@ -28,8 +53,17 @@
   }
 }
 
-body.ignore-reduced-motion #words.slow-scroll-running,
-body.ignore-reduced-motion #caret.slow-scroll-running,
-body.ignore-reduced-motion #paceCaret.slow-scroll-running {
-  animation: slow_scroll_up 120s linear infinite !important;
+body.ignore-reduced-motion #words.slow-scroll-running:not(.tape),
+body.ignore-reduced-motion #caret.slow-scroll-running:not(.tape),
+body.ignore-reduced-motion #paceCaret.slow-scroll-running:not(.tape) {
+  animation: slow_scroll_up 240s linear infinite !important;
+}
+
+body.ignore-reduced-motion #words.slow-scroll-running.tape {
+  animation: slow_scroll_left 240s linear infinite !important;
+}
+
+body.ignore-reduced-motion #caret.slow-scroll-running.tape,
+body.ignore-reduced-motion #paceCaret.slow-scroll-running.tape {
+  animation: slow_scroll_left 240s linear infinite !important;
 }
