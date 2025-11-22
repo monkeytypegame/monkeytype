@@ -4,6 +4,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as QuoteSubmitPopup from "./quote-submit";
 import * as QuoteApprovePopup from "./quote-approve";
+import * as QuoteFilterPopup from "./quote-filter";
 import * as QuoteReportModal from "./quote-report";
 import {
   buildSearchService,
@@ -26,6 +27,7 @@ const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
 const pageSize = 100;
 let currentPageNumber = 1;
+let usingCustomLength = true;
 
 function getSearchService<T>(
   language: string,
@@ -48,16 +50,35 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   const quoteLengthFilterValue = $(
     "#quoteSearchModal .quoteLengthFilter"
   ).val() as string[];
+
   if (quoteLengthFilterValue.length === 0) {
+    usingCustomLength = true;
     return quotes;
   }
 
+  let filteredQuotes = quotes;
   const quoteLengthFilter = new Set(
     quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10))
   );
-  const filteredQuotes = quotes.filter((quote) =>
-    quoteLengthFilter.has(quote.group)
-  );
+
+  if (quoteLengthFilterValue.includes("4")) {
+    if (usingCustomLength) {
+      QuoteFilterPopup.quoteFilterModal.show(undefined, {});
+      usingCustomLength = false;
+    }
+
+    filteredQuotes = quotes.filter(
+      (quote) =>
+        (quote.length >= QuoteFilterPopup.minFilterLength &&
+          quote.length <= QuoteFilterPopup.maxFilterLength) ||
+        quoteLengthFilter.has(quote.group)
+    );
+  } else {
+    usingCustomLength = true;
+    filteredQuotes = quotes.filter((quote) =>
+      quoteLengthFilter.has(quote.group)
+    );
+  }
 
   return filteredQuotes;
 }
@@ -281,6 +302,10 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
             text: "thicc",
             value: "3",
           },
+          {
+            text: "custom",
+            value: "4",
+          },
         ],
       });
     },
@@ -435,6 +460,13 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       document.getElementById("searchBox") as HTMLInputElement
     ).value;
     currentPageNumber--;
+    void updateResults(searchText);
+  });
+
+  modalEl.querySelector(".refreshQuotes")?.addEventListener("click", () => {
+    const searchText = (
+      document.getElementById("searchBox") as HTMLInputElement
+    ).value;
     void updateResults(searchText);
   });
 }
