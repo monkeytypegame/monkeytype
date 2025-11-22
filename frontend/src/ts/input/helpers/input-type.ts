@@ -10,8 +10,8 @@ export type SupportedInputType = InsertInputType | DeleteInputType;
 const SUPPORTED_INPUT_TYPES: Set<SupportedInputType> = new Set([
   "insertText",
   "insertCompositionText",
-  "deleteWordBackward",
   "insertLineBreak",
+  "deleteWordBackward",
   "deleteContentBackward",
 ]);
 
