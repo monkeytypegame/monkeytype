@@ -34,6 +34,16 @@ const practiceSubgroup: CommandsSubgroup = {
       },
     },
     {
+      id: "practiseWordsBoth",
+      display: "both",
+      exec: (): void => {
+        PractiseWords.init("words", true);
+        TestLogic.restart({
+          practiseMissed: true,
+        });
+      },
+    },
+    {
       id: "practiseWordsCustom",
       display: "custom...",
       opensModal: true,
