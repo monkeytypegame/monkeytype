@@ -1225,12 +1225,13 @@ export function setLigatures(isEnabled: boolean): void {
   }
 }
 
-function convertToTabArrows(char: string): string {
+function convertToTabArrows(char: string): string[] {
   if (char === "\t") {
     char = "<i class='fas fa-long-arrow-alt-right fa-fw'></i>";
+    return [char, "tabChar"];
   }
 
-  return char;
+  return [char, ""];
 }
 
 function buildWordLettersHTML(
@@ -1244,10 +1245,12 @@ function buildWordLettersHTML(
 ): string {
   let out = "";
   for (let c = 0; c < charCount; c++) {
-    const inputChar = convertToTabArrows(inputCharacters[c] ?? "");
-    const wordChar = convertToTabArrows(wordCharacters[c] ?? "");
-    const tabClassInput = inputCharacters[c] === "\t" ? "tabChar" : "";
-    const tabClassWord = wordCharacters[c] === "\t" ? "tabChar" : "";
+    const [inputChar, tabClassInput] = convertToTabArrows(
+      inputCharacters[c] ?? ""
+    );
+    const [wordChar, tabClassWord] = convertToTabArrows(
+      wordCharacters[c] ?? ""
+    );
 
     let correctedChar;
     try {
