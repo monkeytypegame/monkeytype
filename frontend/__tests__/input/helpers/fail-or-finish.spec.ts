@@ -11,9 +11,15 @@ import * as Strings from "../../../src/ts/utils/strings";
 
 const { replaceConfig } = __testing;
 
-vi.mock("../../../src/ts/utils/misc", () => ({
-  whorf: vi.fn(),
-}));
+vi.mock("../../../src/ts/utils/misc", async (importOriginal) => {
+  const actual = await importOriginal<
+    typeof import("../../../src/ts/utils/misc")
+  >();
+  return {
+    ...actual,
+    whorf: vi.fn(),
+  };
+});
 
 vi.mock("../../../src/ts/test/test-logic", () => ({
   areAllTestWordsGenerated: vi.fn(),
@@ -32,6 +38,7 @@ describe("checkIfFailedDueToMinBurst", () => {
       minBurstCustomSpeed: 100,
     });
     (Misc.whorf as any).mockReturnValue(0);
+    (TestLogic.areAllTestWordsGenerated as any).mockReturnValue(true);
   });
 
   afterAll(() => {
@@ -127,73 +134,124 @@ describe("checkIfFailedDueToDifficulty", () => {
 
   it.each([
     {
-      desc: "returns false in zen mode even if master",
+      desc: "zen mode, master - never fails",
       config: { mode: "zen", difficulty: "master" },
       correct: false,
       spaceOrNewline: true,
-      inputLen: 5,
+      input: "hello",
       expected: false,
     },
     {
-      desc: "returns false for normal difficulty",
+      desc: "zen mode - never fails",
+      config: { mode: "zen", difficulty: "normal" },
+      correct: false,
+      spaceOrNewline: true,
+      input: "hello",
+      expected: false,
+    },
+    //
+    {
+      desc: "normal typing incorrect- never fails",
+      config: { difficulty: "normal" },
+      correct: false,
+      spaceOrNewline: false,
+      input: "hello",
+      expected: false,
+    },
+    {
+      desc: "normal typing space incorrect - never fails",
       config: { difficulty: "normal" },
       correct: false,
       spaceOrNewline: true,
-      inputLen: 5,
+      input: "hello",
       expected: false,
     },
     {
-      desc: "expert: returns true if incorrect, space, and input > 0",
+      desc: "normal typing correct - never fails",
+      config: { difficulty: "normal" },
+      correct: true,
+      spaceOrNewline: false,
+      input: "hello",
+      expected: false,
+    },
+    {
+      desc: "normal typing space correct - never fails",
+      config: { difficulty: "normal" },
+      correct: true,
+      spaceOrNewline: true,
+      input: "hello",
+      expected: false,
+    },
+    //
+    {
+      desc: "expert - fail if incorrect space",
       config: { difficulty: "expert" },
       correct: false,
       spaceOrNewline: true,
-      inputLen: 1,
+      input: "he",
       expected: true,
     },
     {
-      desc: "expert: returns false if correct",
+      desc: "expert - dont fail if space is the first character",
       config: { difficulty: "expert" },
-      correct: true,
+      correct: false,
       spaceOrNewline: true,
-      inputLen: 1,
+      input: " ",
       expected: false,
     },
     {
-      desc: "expert: returns false if not space/newline",
+      desc: "expert: - dont fail if just typing",
       config: { difficulty: "expert" },
       correct: false,
       spaceOrNewline: false,
-      inputLen: 1,
+      input: "h",
       expected: false,
     },
     {
-      desc: "expert: returns false if input length is 0",
+      desc: "expert: - dont fail if just typing",
       config: { difficulty: "expert" },
-      correct: false,
-      spaceOrNewline: true,
-      inputLen: 0,
+      correct: true,
+      spaceOrNewline: false,
+      input: "h",
       expected: false,
     },
+    //
     {
-      desc: "master: returns true if incorrect",
+      desc: "master - fail if incorrect char",
       config: { difficulty: "master" },
       correct: false,
       spaceOrNewline: false,
-      inputLen: 1,
+      input: "h",
       expected: true,
     },
     {
-      desc: "master: returns false if correct",
+      desc: "master - fail if incorrect first space",
+      config: { difficulty: "master" },
+      correct: true,
+      spaceOrNewline: true,
+      input: " ",
+      expected: false,
+    },
+    {
+      desc: "master - dont fail if correct char",
       config: { difficulty: "master" },
       correct: true,
       spaceOrNewline: false,
-      inputLen: 1,
+      input: "a",
       expected: false,
     },
-  ])("$desc", ({ config, correct, spaceOrNewline, inputLen, expected }) => {
+    {
+      desc: "master - dont fail if correct space",
+      config: { difficulty: "master" },
+      correct: true,
+      spaceOrNewline: true,
+      input: " ",
+      expected: false,
+    },
+  ])("$desc", ({ config, correct, spaceOrNewline, input, expected }) => {
     replaceConfig(config as any);
     const result = checkIfFailedDueToDifficulty({
-      testInputResult: "a".repeat(inputLen),
+      testInputResult: input,
       correct,
       spaceOrNewline,
     });
@@ -255,7 +313,7 @@ describe("checkIfFinished", () => {
       allWordsTyped: true,
       allGenerated: true,
       input: "wor",
-      current: "wor",
+      current: "word",
       config: { quickEnd: true, stopOnError: "letter" },
       expected: false,
     },

@@ -1,6 +1,6 @@
 import Config from "../../config";
 import { whorf } from "../../utils/misc";
-import * as TestLogic from "../../test/test-logic";
+import { areAllTestWordsGenerated } from "../../test/test-logic";
 import { isSpace } from "../../utils/strings";
 
 /**
@@ -57,7 +57,7 @@ export function checkIfFailedDueToDifficulty(options: {
     Config.difficulty === "expert" &&
     !correct &&
     spaceOrNewline &&
-    testInputResult.length > 0;
+    testInputResult.length > 1;
 
   const shouldFailDueToMaster = Config.difficulty === "master" && !correct;
 
@@ -84,7 +84,7 @@ export function checkIfFinished(options: {
 }): boolean {
   const { data, testInputResult, currentWord, allWordsTyped } = options;
   const charIsSpace = isSpace(data);
-  const allWordGenerated = TestLogic.areAllTestWordsGenerated();
+  const allWordGenerated = areAllTestWordsGenerated();
   const wordIsCorrect = testInputResult === currentWord;
   const shouldQuickEnd =
     Config.quickEnd &&
