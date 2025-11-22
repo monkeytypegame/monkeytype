@@ -1126,6 +1126,12 @@ export const themes: Record<ThemeName, Omit<Theme, "name">> = {
     subColor: "#ffaca3",
     textColor: "#feffdb",
   },
+  tokyonight_storm: {
+    bgColor: "#24283b",
+    mainColor: "#7aa2f7",
+    subColor: "#565f89",
+    textColor: "#a9b1d6",
+  },
 };
 
 export const ThemesList: Theme[] = Object.keys(themes)
