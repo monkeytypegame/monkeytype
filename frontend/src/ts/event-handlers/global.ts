@@ -9,17 +9,15 @@ import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
 import * as TestLogic from "../test/test-logic";
 import { navigate } from "../controllers/route-controller";
+import * as InputElement from "../input/core/input-element";
 
 document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
 
-  const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
-  const activeElement = document.activeElement as HTMLElement | null;
-  const wordsFocused = wordsInput === activeElement;
   const pageTestActive: boolean = ActivePage.get() === "test";
 
-  if (pageTestActive && !wordsFocused) {
+  if (pageTestActive && !InputElement.isFocused()) {
     const popupVisible: boolean = Misc.isAnyPopupVisible();
     // this is nested because isAnyPopupVisible is a bit expensive
     // and we don't want to call it during the test
@@ -56,14 +54,14 @@ document.addEventListener("keydown", (e) => {
     }
   }
 
-  if (!wordsFocused) {
+  if (!InputElement.isFocused()) {
     const isInteractiveElement =
-      activeElement?.tagName === "INPUT" ||
-      activeElement?.tagName === "TEXTAREA" ||
-      activeElement?.tagName === "SELECT" ||
-      activeElement?.tagName === "BUTTON" ||
-      activeElement?.classList.contains("button") ||
-      activeElement?.classList.contains("textButton");
+      document.activeElement?.tagName === "INPUT" ||
+      document.activeElement?.tagName === "TEXTAREA" ||
+      document.activeElement?.tagName === "SELECT" ||
+      document.activeElement?.tagName === "BUTTON" ||
+      document.activeElement?.classList.contains("button") ||
+      document.activeElement?.classList.contains("textButton");
 
     if (
       (e.key === "Tab" &&

@@ -33,3 +33,7 @@ export function replaceLastInputValueChar(char: string): void {
   const { inputValue } = getInputValue();
   setInputValue(inputValue.slice(0, -1) + char);
 }
+
+export function isFocused(): boolean {
+  return document.activeElement === wordsInput;
+}
