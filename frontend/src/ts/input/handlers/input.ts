@@ -2,9 +2,9 @@ import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
 import {
-  getInputValue,
-  getWordsInput,
-  replaceLastInputValueChar,
+  getInputElementValue,
+  getInputElement,
+  replaceInputElementLastValueChar,
 } from "../core/input-element";
 import {
   checkIfFailedDueToDifficulty,
@@ -65,13 +65,13 @@ type OnInsertTextParams = {
 
 export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const { data, now, lastInMultiIndex, isCompositionEnding } = options;
-  const { inputValue } = getInputValue();
+  const { inputValue } = getInputElementValue();
 
   if (data.length > 1) {
     // remove the entire data from the input value
     // not using setInputValue because we dont want to update TestInput yet
     // it will be updated later in the body of onInsertText
-    getWordsInput().value = " " + inputValue.slice(0, -data.length);
+    getInputElement().value = " " + inputValue.slice(0, -data.length);
 
     for (let i = 0; i < data.length; i++) {
       const char = data[i] as string;
@@ -187,7 +187,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   if (removeLastChar) {
-    replaceLastInputValueChar("");
+    replaceInputElementLastValueChar("");
     TestInput.input.syncWithInputElement();
   }
 
@@ -292,8 +292,8 @@ export async function emulateInsertText(
   // remember to not call setInputValue or setTestInputToDOMValue in here
   // because onBeforeInsertText can also block the event
   // setInputValue and setTestInputToDOMValue will be called later be updated in onInsertText
-  const { inputValue } = getInputValue();
-  getWordsInput().value = " " + inputValue + options.data;
+  const { inputValue } = getInputElementValue();
+  getInputElement().value = " " + inputValue + options.data;
 
   await onInsertText(options);
 }

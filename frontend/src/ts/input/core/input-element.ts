@@ -1,39 +1,36 @@
-const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
+const el = document.querySelector("#wordsInput") as HTMLInputElement;
 
-if (wordsInput === null) {
+if (el === null) {
   throw new Error("Words input element not found");
 }
 
-export function getWordsInput(): HTMLInputElement {
-  return wordsInput;
+export function getInputElement(): HTMLInputElement {
+  return el;
 }
 
-export function setInputValue(value: string): void {
-  wordsInput.value = " " + value;
+export function setInputElementValue(value: string): void {
+  el.value = " " + value;
 }
 
-export function getInputValue(): {
+export function getInputElementValue(): {
   inputValue: string;
   realInputValue: string;
 } {
   return {
-    inputValue: wordsInput.value.slice(1),
-    realInputValue: wordsInput.value,
+    inputValue: el.value.slice(1),
+    realInputValue: el.value,
   };
 }
 
 export function moveCaretToTheEnd(): void {
-  wordsInput.setSelectionRange(
-    wordsInput.value.length,
-    wordsInput.value.length
-  );
+  el.setSelectionRange(el.value.length, el.value.length);
 }
 
-export function replaceLastInputValueChar(char: string): void {
-  const { inputValue } = getInputValue();
-  setInputValue(inputValue.slice(0, -1) + char);
+export function replaceInputElementLastValueChar(char: string): void {
+  const { inputValue } = getInputElementValue();
+  setInputElementValue(inputValue.slice(0, -1) + char);
 }
 
-export function isFocused(): boolean {
-  return document.activeElement === wordsInput;
+export function isInputElementFocused(): boolean {
+  return document.activeElement === el;
 }

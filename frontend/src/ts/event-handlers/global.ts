@@ -9,7 +9,7 @@ import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
 import * as TestLogic from "../test/test-logic";
 import { navigate } from "../controllers/route-controller";
-import * as InputElement from "../input/core/input-element";
+import { isInputElementFocused } from "../input/core/input-element";
 
 document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
@@ -17,7 +17,7 @@ document.addEventListener("keydown", (e) => {
 
   const pageTestActive: boolean = ActivePage.get() === "test";
 
-  if (pageTestActive && !InputElement.isFocused()) {
+  if (pageTestActive && !isInputElementFocused()) {
     const popupVisible: boolean = Misc.isAnyPopupVisible();
     // this is nested because isAnyPopupVisible is a bit expensive
     // and we don't want to call it during the test
@@ -54,7 +54,7 @@ document.addEventListener("keydown", (e) => {
     }
   }
 
-  if (!InputElement.isFocused()) {
+  if (!isInputElementFocused()) {
     const isInteractiveElement =
       document.activeElement?.tagName === "INPUT" ||
       document.activeElement?.tagName === "TEXTAREA" ||

@@ -1,4 +1,3 @@
-import { getWordsInput, moveCaretToTheEnd } from "./input-element";
 import { handleBeforeInput } from "../handlers/beforeinput";
 import {
   handleCompositionEnd,
@@ -9,8 +8,9 @@ import { handleInput } from "../handlers/input";
 import { handleKeydown } from "../handlers/keydown";
 import { handleKeyup } from "../handlers/keyup";
 import { handleSelectionChange } from "../handlers/selection";
+import { getInputElement, moveCaretToTheEnd } from "./input-element";
 
-const wordsInput = getWordsInput();
+const wordsInput = getInputElement();
 
 wordsInput.addEventListener("focus", () => {
   moveCaretToTheEnd();

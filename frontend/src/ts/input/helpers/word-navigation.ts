@@ -13,7 +13,7 @@ import * as TestStats from "../../test/test-stats";
 import * as Replay from "../../test/replay";
 import * as Funbox from "../../test/funbox/funbox";
 import * as Loader from "../../elements/loader";
-import { setInputValue } from "../core/input-element";
+import { setInputElementValue } from "../core/input-element";
 import { setAwaitingNextWord } from "../core/state";
 import { DeleteInputType } from "./input-type";
 
@@ -78,7 +78,7 @@ export async function goToNextWord({
     TestState.increaseActiveWordIndex();
   }
 
-  setInputValue("");
+  setInputElementValue("");
   TestInput.input.syncWithInputElement();
   void TestUI.afterTestWordChange("forward");
 
@@ -90,7 +90,7 @@ export function goToPreviousWord(
   forceUpdateActiveWordLetters = false
 ): void {
   if (TestState.activeWordIndex === 0) {
-    setInputValue("");
+    setInputElementValue("");
     TestInput.input.syncWithInputElement();
     return;
   }
@@ -108,14 +108,14 @@ export function goToPreviousWord(
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
 
   if (inputType === "deleteWordBackward") {
-    setInputValue("");
+    setInputElementValue("");
   } else if (inputType === "deleteContentBackward") {
     if (nospaceEnabled) {
-      setInputValue(word.slice(0, -1));
+      setInputElementValue(word.slice(0, -1));
     } else if (word.endsWith("\n")) {
-      setInputValue(word.slice(0, -1));
+      setInputElementValue(word.slice(0, -1));
     } else {
-      setInputValue(word);
+      setInputElementValue(word);
     }
   }
   TestInput.input.syncWithInputElement();

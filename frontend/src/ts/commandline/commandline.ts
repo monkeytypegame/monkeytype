@@ -19,7 +19,7 @@ import {
   createInputEventHandler,
   ValidationResult,
 } from "../elements/input-validation";
-import * as InputElement from "../input/core/input-element";
+import { isInputElementFocused } from "../input/core/input-element";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -64,7 +64,7 @@ function removeCommandlineBackground(): void {
 
 function addCommandlineBackground(): void {
   $("#commandLine").removeClass("noBackground");
-  if (Config.showOutOfFocusWarning && !InputElement.isFocused()) {
+  if (Config.showOutOfFocusWarning && !isInputElementFocused()) {
     OutOfFocus.show();
   }
 }
@@ -185,7 +185,7 @@ function hide(clearModalChain = false): void {
       hideWarning();
       addCommandlineBackground();
       if (ActivePage.get() === "test") {
-        if (ActivePage.get() === "test" && !InputElement.isFocused()) {
+        if (ActivePage.get() === "test" && !isInputElementFocused()) {
           focusWords();
         }
       } else {

@@ -1,7 +1,10 @@
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
-import { getInputValue, setInputValue } from "../core/input-element";
+import {
+  getInputElementValue,
+  setInputElementValue,
+} from "../core/input-element";
 
 import * as Replay from "../../test/replay";
 import Config from "../../config";
@@ -9,7 +12,7 @@ import { goToPreviousWord } from "../helpers/word-navigation";
 import { DeleteInputType } from "../helpers/input-type";
 
 export function onDelete(inputType: DeleteInputType): void {
-  const { realInputValue } = getInputValue();
+  const { realInputValue } = getInputElementValue();
 
   const inputBeforeDelete = TestInput.input.current;
 
@@ -34,7 +37,7 @@ export function onDelete(inputType: DeleteInputType): void {
     //   TestWords.words.get(TestState.activeWordIndex - 1) ||
     //   Config.freedomMode)
   ) {
-    setInputValue("");
+    setInputElementValue("");
     TestInput.input.syncWithInputElement();
     goToPreviousWord(inputType, true);
   } else {

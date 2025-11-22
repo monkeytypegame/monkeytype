@@ -6,7 +6,7 @@ import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isAnyPopupVisible } from "../../utils/misc";
 import { isSpace } from "../../utils/strings";
-import { getInputValue } from "../core/input-element";
+import { getInputElementValue } from "../core/input-element";
 import { isAwaitingNextWord } from "../core/state";
 import { onBeforeDelete } from "./beforedelete";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
@@ -18,7 +18,7 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  const { inputValue } = getInputValue();
+  const { inputValue } = getInputElementValue();
   const dataIsSpace = isSpace(data);
   const shouldInsertSpaceAsCharacter = shouldInsertSpaceCharacter({
     data,
