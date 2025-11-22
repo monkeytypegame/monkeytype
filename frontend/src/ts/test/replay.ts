@@ -58,7 +58,11 @@ function initializeReplayPrompt(): void {
     x.className = "word";
     for (const letter of word) {
       const elem = document.createElement("letter");
-      elem.innerHTML = letter;
+      const tabClass = letter === "\t" ? "tabClass" : "";
+      elem.className = tabClass;
+      elem.innerHTML = tabClass
+        ? "<i class='fas fa-long-arrow-alt-right fa-fw'></i>"
+        : letter;
       x.appendChild(elem);
     }
     replayWordsElement.appendChild(x);
@@ -325,11 +329,24 @@ $("#replayWords").on("click", "letter", (event) => {
   const replayWords = document.querySelector("#replayWords");
 
   const words = [...(replayWords?.children ?? [])];
-  targetWordPos = words.indexOf(
-    (event.target as HTMLElement).parentNode as HTMLElement
-  );
+
+  const origTargetWord = (event.target as HTMLElement)
+    .parentNode as HTMLElement;
+  let targetWord = origTargetWord;
+
+  // if we clicked on a tab, use the parent element
+  if (!$(origTargetWord).hasClass("word")) {
+    targetWord = origTargetWord.parentNode as HTMLElement;
+  }
+
+  targetWordPos = words.indexOf(targetWord);
+
   const letters = [...(words[targetWordPos] as HTMLElement).children];
-  targetCurPos = letters.indexOf(event.target as HTMLElement);
+  // check if event.target is a letter or a tab
+  const isLetter = $(event.target).prop("nodeName") === "LETTER";
+  targetCurPos = letters.indexOf(
+    isLetter ? (event.target as HTMLElement) : origTargetWord
+  );
 
   initializeReplayPrompt();
   loadOldReplay();

@@ -1225,6 +1225,14 @@ export function setLigatures(isEnabled: boolean): void {
   }
 }
 
+function convertToTabArrows(char: string): string {
+  if (char === "\t") {
+    char = "<i class='fas fa-long-arrow-alt-right fa-fw'></i>";
+  }
+
+  return char;
+}
+
 function buildWordLettersHTML(
   charCount: number,
   input: string,
@@ -1236,6 +1244,11 @@ function buildWordLettersHTML(
 ): string {
   let out = "";
   for (let c = 0; c < charCount; c++) {
+    const inputChar = convertToTabArrows(inputCharacters[c] ?? "");
+    const wordChar = convertToTabArrows(wordCharacters[c] ?? "");
+    const tabClassInput = inputCharacters[c] === "\t" ? "tabChar" : "";
+    const tabClassWord = wordCharacters[c] === "\t" ? "tabChar" : "";
+
     let correctedChar;
     try {
       correctedChar = !containsKorean
@@ -1261,31 +1274,33 @@ function buildWordLettersHTML(
           correctedChar === inputCharacters[c] ||
           correctedChar === undefined
         ) {
-          out += `<letter class="correct ${extraCorrected}">${inputCharacters[c]}</letter>`;
+          out += `<letter class="correct ${extraCorrected} ${tabClassInput}">${inputChar}</letter>`;
         } else {
           out +=
-            `<letter class="corrected ${extraCorrected}">` +
-            inputCharacters[c] +
+            `<letter class="corrected ${extraCorrected} ${tabClassInput}">` +
+            inputChar +
             "</letter>";
         }
       } else {
         if (inputCharacters[c] === TestInput.input.current) {
           out +=
-            `<letter class='correct ${extraCorrected}'>` +
-            wordCharacters[c] +
+            `<letter class='correct ${extraCorrected} ${tabClassWord}'>` +
+            wordChar +
             "</letter>";
         } else if (inputCharacters[c] === undefined) {
-          out += "<letter>" + wordCharacters[c] + "</letter>";
+          out += "<letter ${tabClassWord}>" + wordChar + "</letter>";
         } else {
           out +=
-            `<letter class="incorrect ${extraCorrected}">` +
-            wordCharacters[c] +
+            `<letter class="incorrect ${extraCorrected} ${tabClassWord}">` +
+            wordChar +
             "</letter>";
         }
       }
     } else {
       out +=
-        '<letter class="incorrect extra">' + inputCharacters[c] + "</letter>";
+        '<letter class="incorrect extra ${tabClassInput}">' +
+        inputChar +
+        "</letter>";
     }
   }
   return out;
@@ -1686,10 +1701,13 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
         `<div class="wordInputHighlight withSpeed">
           <div class="text">
           ${input
-            .replace(/\t/g, "_")
             .replace(/\n/g, "_")
             .replace(/</g, "&lt")
-            .replace(/>/g, "&gt")}
+            .replace(/>/g, "&gt")
+            .replace(
+              /\t/g,
+              "<i class='fas fa-long-arrow-alt-right fa-fw'></i>"
+            )}
           </div>
           <div class="speed">
           ${Format.typingSpeed(burst, { showDecimalPlaces: false })}
