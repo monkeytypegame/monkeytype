@@ -24,8 +24,7 @@ export function onBeforeDelete(event: InputEvent): void {
     }
   }
 
-  const freedomMode = Config.freedomMode;
-  if (freedomMode) {
+  if (Config.freedomMode) {
     //allow anything in freedom mode
     return;
   }
