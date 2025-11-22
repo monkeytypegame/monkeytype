@@ -33,7 +33,7 @@ import {
 } from "../core/state";
 import * as Notifications from "../../elements/notifications";
 import { goToNextWord } from "../helpers/word-navigation";
-import { onBeforeInsertText } from "./before-input";
+import { onBeforeInsertText } from "./before-insert-text";
 import {
   isCharCorrect,
   shouldInsertSpaceCharacter,

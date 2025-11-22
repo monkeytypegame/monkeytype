@@ -1,5 +1,5 @@
 import { onDelete } from "../../handlers/delete";
-import { onInsertText } from "../../handlers/input";
+import { onInsertText } from "../../handlers/insert-text";
 import { SupportedInputType } from "../../helpers/input-type";
 import { getInputElement } from "../input-element";
 import {

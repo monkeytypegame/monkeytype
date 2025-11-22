@@ -4,7 +4,7 @@ import * as TestState from "../../../test/test-state";
 import * as TestLogic from "../../../test/test-logic";
 import { setLastInsertCompositionTextData } from "../../core/state";
 import * as CompositionDisplay from "../../../elements/composition-display";
-import { onInsertText } from "../../handlers/input";
+import { onInsertText } from "../../handlers/insert-text";
 
 const inputEl = getInputElement();
 

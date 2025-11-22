@@ -1,31 +1,28 @@
-import { getInputElement } from "../input-element";
-import Config from "../../../config";
-import * as TestInput from "../../../test/test-input";
-import * as TestLogic from "../../../test/test-logic";
-import { getCharFromEvent } from "../../../test/layout-emulator";
-import * as Monkey from "../../../test/monkey";
-import { emulateInsertText } from "../../handlers/input";
-import * as TestState from "../../../test/test-state";
-import * as TestWords from "../../../test/test-words";
-import * as JSONData from "../../../utils/json-data";
-import * as Notifications from "../../../elements/notifications";
-import * as KeyConverter from "../../../utils/key-converter";
-import * as ShiftTracker from "../../../test/shift-tracker";
-import * as CompositionState from "../../../states/composition";
-import { canQuickRestart } from "../../../utils/quick-restart";
-import * as CustomText from "../../../test/custom-text";
-import * as CustomTextState from "../../../states/custom-text-name";
+import Config from "../../config";
+import * as TestInput from "../../test/test-input";
+import * as TestLogic from "../../test/test-logic";
+import { getCharFromEvent } from "../../test/layout-emulator";
+import * as Monkey from "../../test/monkey";
+import { emulateInsertText } from "./insert-text";
+import * as TestState from "../../test/test-state";
+import * as TestWords from "../../test/test-words";
+import * as JSONData from "../../utils/json-data";
+import * as Notifications from "../../elements/notifications";
+import * as KeyConverter from "../../utils/key-converter";
+import * as ShiftTracker from "../../test/shift-tracker";
+import * as CompositionState from "../../states/composition";
+import { canQuickRestart } from "../../utils/quick-restart";
+import * as CustomText from "../../test/custom-text";
+import * as CustomTextState from "../../states/custom-text-name";
 import {
   getLastBailoutAttempt,
   setCorrectShiftUsed,
   setLastBailoutAttempt,
-} from "../../core/state";
+} from "../core/state";
 import {
   getActiveFunboxesWithFunction,
   getActiveFunboxNames,
-} from "../../../test/funbox/list";
-
-const inputEl = getInputElement();
+} from "../../test/funbox/list";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (Config.quickRestart === "tab") {
@@ -129,7 +126,7 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
   }
 }
 
-inputEl.addEventListener("keydown", async (event) => {
+export async function onKeydown(event: KeyboardEvent): Promise<void> {
   console.debug("wordsInput event keydown", {
     event,
     key: event.key,
@@ -201,4 +198,4 @@ inputEl.addEventListener("keydown", async (event) => {
     TestLogic.restart();
     return;
   }
-});
+}
