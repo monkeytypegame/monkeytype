@@ -35,8 +35,10 @@ export function isInputElementFocused(): boolean {
   return document.activeElement === el;
 }
 
-export function focusInputElement(): void {
-  el.focus();
+export function focusInputElement(preventScroll = false): void {
+  el.focus({
+    preventScroll,
+  });
 }
 
 export function blurInputElement(): void {

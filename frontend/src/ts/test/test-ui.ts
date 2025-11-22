@@ -38,7 +38,12 @@ import * as LiveBurst from "./live-burst";
 import * as LiveSpeed from "./live-speed";
 import * as Monkey from "./monkey";
 import { animate } from "animejs";
-import { getInputElement } from "../input/core/input-element";
+import {
+  blurInputElement,
+  focusInputElement,
+  getInputElement,
+  isInputElementFocused,
+} from "../input/core/input-element";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -151,13 +156,10 @@ export function reset(): void {
 }
 
 export function focusWords(force = false): void {
-  const wordsInput = getInputElement();
   if (force) {
-    wordsInput?.blur();
+    blurInputElement();
   }
-  wordsInput?.focus({
-    preventScroll: true,
-  });
+  focusInputElement(true);
   if (TestState.isActive) {
     keepWordsInputInTheCenter(true);
   } else {
@@ -167,9 +169,9 @@ export function focusWords(force = false): void {
 }
 
 export function keepWordsInputInTheCenter(force = false): void {
-  const wordsInput = document.querySelector<HTMLElement>("#wordsInput");
+  const wordsInput = getInputElement();
   const wordsWrapper = document.querySelector<HTMLElement>("#wordsWrapper");
-  if (!wordsInput || !wordsWrapper) return;
+  if (wordsInput === null || wordsWrapper === null) return;
 
   const wordsWrapperHeight = wordsWrapper.offsetHeight;
   const windowHeight = window.innerHeight;
@@ -517,10 +519,10 @@ export function updateWordsInputPosition(): void {
       ? !TestState.isLanguageRightToLeft
       : TestState.isLanguageRightToLeft;
 
-    const el = document.querySelector<HTMLElement>("#wordsInput");
+    const el = getInputElement();
     const wrapperElement = document.querySelector<HTMLElement>("#wordsWrapper");
 
-    if (!el || !wrapperElement) return;
+    if (el === null || wrapperElement === null) return;
 
     const activeWord = getActiveWordElement();
 
@@ -1850,8 +1852,7 @@ addEventListener("resize", () => {
 });
 
 $("#wordsInput").on("focus", (e) => {
-  const wordsFocused = e.target === document.activeElement;
-  if (!wordsFocused) return;
+  if (!isInputElementFocused()) return;
   if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
