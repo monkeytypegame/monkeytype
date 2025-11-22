@@ -12,11 +12,6 @@ export function getWordsInput(): HTMLInputElement {
 
 export function setInputValue(value: string): void {
   wordsInput.value = " " + value;
-  setTestInputToDOMValue();
-}
-
-export function setTestInputToDOMValue(): void {
-  TestInput.input.current = getInputValue().inputValue;
 }
 
 export function getInputValue(): {
@@ -39,4 +34,5 @@ export function moveCaretToTheEnd(): void {
 export function replaceLastInputValueChar(char: string): void {
   const { inputValue } = getInputValue();
   setInputValue(inputValue.slice(0, -1) + char);
+  TestInput.input.syncWithInputElement();
 }

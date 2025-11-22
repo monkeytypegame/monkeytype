@@ -79,6 +79,7 @@ export async function goToNextWord({
   }
 
   setInputValue("");
+  TestInput.input.syncWithInputElement();
   void TestUI.afterTestWordChange("forward");
 
   return ret;
@@ -90,6 +91,7 @@ export function goToPreviousWord(
 ): void {
   if (TestState.activeWordIndex === 0) {
     setInputValue("");
+    TestInput.input.syncWithInputElement();
     return;
   }
 
@@ -116,5 +118,7 @@ export function goToPreviousWord(
       setInputValue(word);
     }
   }
+  TestInput.input.syncWithInputElement();
+
   void TestUI.afterTestWordChange("back");
 }

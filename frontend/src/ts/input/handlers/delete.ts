@@ -1,11 +1,7 @@
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
-import {
-  getInputValue,
-  setInputValue,
-  setTestInputToDOMValue,
-} from "../core/input-element";
+import { getInputValue, setInputValue } from "../core/input-element";
 
 import * as Replay from "../../test/replay";
 import Config from "../../config";
@@ -17,7 +13,7 @@ export function onDelete(inputType: DeleteInputType): void {
 
   const inputBeforeDelete = TestInput.input.current;
 
-  setTestInputToDOMValue();
+  TestInput.input.syncWithInputElement();
 
   Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
   TestInput.setCurrentNotAfk();
@@ -39,6 +35,7 @@ export function onDelete(inputType: DeleteInputType): void {
     //   Config.freedomMode)
   ) {
     setInputValue("");
+    TestInput.input.syncWithInputElement();
     goToPreviousWord(inputType, true);
   } else {
     //normal backspace

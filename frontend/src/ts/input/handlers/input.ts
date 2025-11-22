@@ -5,7 +5,6 @@ import {
   getInputValue,
   getWordsInput,
   replaceLastInputValueChar,
-  setTestInputToDOMValue,
 } from "../core/input-element";
 import {
   checkIfFailedDueToDifficulty,
@@ -142,11 +141,11 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // update test input state
   if (!charIsSpace || shouldInsertSpace) {
-    setTestInputToDOMValue();
-
-    // because \n cannot be added to the input element, we need to manually add it to TestInput
     if (data === "\n") {
-      TestInput.input.current += "\n";
+      // because \n cannot be added to the input element, we need to manually add it to TestInput
+      TestInput.input.current = getInputValue().inputValue + "\n";
+    } else {
+      TestInput.input.syncWithInputElement();
     }
   }
 
