@@ -337,10 +337,6 @@ export function isSpace(char: string): boolean {
   );
 }
 
-export function replaceSpaceLikeCharacters(text: string): string {
-  return text.replace(/[\u0020\u2002\u2003\u2009\u3000]/g, " ");
-}
-
 // Export testing utilities for unit tests
 export const __testing = {
   hasRTLCharacters,

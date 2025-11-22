@@ -101,9 +101,15 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     lastInMultiIndex === true || lastInMultiIndex === undefined;
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
-  const correct = isCharCorrect(data, inputValue, correctShiftUsed);
-  const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
-  const charIsNotSpace = !isSpace(data);
+
+  const testInput = TestInput.input.current;
+  const currentWord = TestWords.words.getCurrent();
+  const wordIndex = TestState.activeWordIndex;
+
+  const correct = isCharCorrect(data, testInput, currentWord, correctShiftUsed);
+  const shouldInsertSpace =
+    shouldInsertSpaceCharacter(data, testInput, currentWord) === true;
+  const charIsSpace = isSpace(data);
 
   // start if needed
   if (!TestState.isActive) {
@@ -111,12 +117,12 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   // burst calculation needs to run at the start of a word, before updating input state
-  if (TestInput.input.current.length === 0) {
+  if (testInput.length === 0) {
     TestInput.setBurstStart(now);
   }
 
   // update test input state
-  if (charIsNotSpace || shouldInsertSpace) {
+  if (!charIsSpace || shouldInsertSpace) {
     setTestInputToDOMValue(data === "\n");
   }
 
@@ -127,7 +133,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   TestInput.incrementAccuracy(correct);
   WeakSpot.updateScore(data, correct);
   TestInput.incrementKeypressCount();
-  TestInput.pushKeypressWord(TestState.activeWordIndex);
+  TestInput.pushKeypressWord(wordIndex);
   if (!correct) {
     TestInput.incrementKeypressErrors();
     TestInput.pushMissedWord(TestWords.words.getCurrent());
@@ -141,13 +147,9 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // like accuracy, keypress errors, and missed words
   let removeLastChar = false;
   let visualInputOverride: string | undefined;
-  if (
-    Config.stopOnError === "letter" &&
-    !correct &&
-    Config.difficulty === "normal"
-  ) {
+  if (Config.stopOnError === "letter" && !correct) {
     if (!Config.blindMode) {
-      visualInputOverride = TestInput.input.current;
+      visualInputOverride = testInput + data;
     }
     removeLastChar = true;
   }
@@ -206,15 +208,15 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   */
 
   //this COULD be the next word because we are awaiting goToNextWord
-  const currentWord = TestWords.words.getCurrent();
-  const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
-  const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
+  const nextWord = TestWords.words.getCurrent();
+  const doesNextWordHaveTab = /^\t+/.test(nextWord);
+  const isCurrentCharTab = nextWord[TestInput.input.current.length] === "\t";
 
   //code mode - auto insert tabs
   if (
     Config.language.startsWith("code") &&
     correct &&
-    doesCurrentWordHaveTab &&
+    doesNextWordHaveTab &&
     isCurrentCharTab
   ) {
     setTimeout(() => {
@@ -223,11 +225,23 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   if (!CompositionState.getComposing() && lastInMultiOrSingle) {
-    if (checkIfFailedDueToDifficulty(spaceOrNewLine)) {
+    if (
+      checkIfFailedDueToDifficulty(testInput + data, correct, spaceOrNewLine)
+    ) {
       TestLogic.fail("difficulty");
-    } else if (increasedWordIndex && checkIfFailedDueToMinBurst(lastBurst)) {
+    } else if (
+      increasedWordIndex &&
+      checkIfFailedDueToMinBurst(testInput + data, currentWord, lastBurst)
+    ) {
       TestLogic.fail("min burst");
-    } else if (checkIfFinished(shouldGoToNextWord, increasedWordIndex)) {
+    } else if (
+      checkIfFinished(
+        data,
+        testInput + data,
+        currentWord,
+        wordIndex >= TestWords.words.length - 1
+      )
+    ) {
       void TestLogic.finish();
     }
   }

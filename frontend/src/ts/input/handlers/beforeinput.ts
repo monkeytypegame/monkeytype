@@ -20,6 +20,11 @@ export function onBeforeInsertText(data: string): boolean {
 
   const { inputValue } = getInputValue();
   const dataIsSpace = isSpace(data);
+  const shouldInsertSpaceAsCharacter = shouldInsertSpaceCharacter(
+    data,
+    inputValue,
+    TestWords.words.getCurrent()
+  );
 
   //prevent space from being inserted if input is empty
   //allow if strict space is enabled
@@ -38,7 +43,7 @@ export function onBeforeInsertText(data: string): boolean {
   }
 
   // space characters sometimes are inserted as a character, need this distinction
-  const shouldInsertSpace = shouldInsertSpaceCharacter(data) === true;
+  const shouldInsertSpace = shouldInsertSpaceAsCharacter === true;
 
   // block input if the word is too long
   const inputLimit =
@@ -58,7 +63,7 @@ export function onBeforeInsertText(data: string): boolean {
   const inputIsLongerThanOrEqualToWord =
     TestInput.input.current.length >= TestWords.words.getCurrent().length;
   const isSpaceAndShouldInsert =
-    dataIsSpace && shouldInsertSpaceCharacter(data) === true;
+    dataIsSpace && shouldInsertSpaceAsCharacter === true;
 
   if (
     dataIsNotFalsy &&
