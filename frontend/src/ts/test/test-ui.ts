@@ -1288,7 +1288,7 @@ function buildWordLettersHTML(
             wordChar +
             "</letter>";
         } else if (inputCharacters[c] === undefined) {
-          out += "<letter ${tabClassWord}>" + wordChar + "</letter>";
+          out += `<letter ${tabClassWord}>` + wordChar + "</letter>";
         } else {
           out +=
             `<letter class="incorrect ${extraCorrected} ${tabClassWord}">` +
