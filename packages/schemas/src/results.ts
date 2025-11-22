@@ -58,6 +58,15 @@ export const CharStatsSchema = z.tuple([
 ]);
 export type CharStats = z.infer<typeof CharStatsSchema>;
 
+export const PerCharStatsSchema = z.object({
+  total: z.number().int().nonnegative(),
+  correct: z.number().int().nonnegative(),
+  incorrect: z.number().int().nonnegative(),
+  missed: z.number().int().nonnegative(),
+  extra: z.number().int().nonnegative(),
+});
+export type PerCharStats = z.infer<typeof PerCharStatsSchema>;
+
 const ResultBaseSchema = z.object({
   wpm: WpmSchema,
   rawWpm: WpmSchema,
@@ -112,20 +121,21 @@ export const ResultMinifiedSchema = ResultSchema.omit({
 });
 export type ResultMinified = z.infer<typeof ResultMinifiedSchema>;
 
-export const CompletedEventSchema = ResultBaseSchema.required({
-  restartCount: true,
-  incompleteTestSeconds: true,
-  afkDuration: true,
-  tags: true,
-  bailedOut: true,
-  blindMode: true,
-  lazyMode: true,
-  funbox: true,
-  language: true,
-  difficulty: true,
-  numbers: true,
-  punctuation: true,
-})
+export const CompletedEventSchema = ResultBaseSchema.omit({ charStats: true })
+  .required({
+    restartCount: true,
+    incompleteTestSeconds: true,
+    afkDuration: true,
+    tags: true,
+    bailedOut: true,
+    blindMode: true,
+    lazyMode: true,
+    funbox: true,
+    language: true,
+    difficulty: true,
+    numbers: true,
+    punctuation: true,
+  })
   .extend({
     charTotal: z.number().int().nonnegative(),
     challenge: token().max(100).optional(),
@@ -139,6 +149,7 @@ export const CompletedEventSchema = ResultBaseSchema.required({
     wpmConsistency: PercentageSchema,
     stopOnLetter: z.boolean(),
     incompleteTests: z.array(IncompleteTestSchema),
+    charStats: z.record(z.string(), PerCharStatsSchema).optional(),
   })
   .strict();
 

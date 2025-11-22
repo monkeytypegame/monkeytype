@@ -17,6 +17,9 @@ importers:
       '@monkeytype/release':
         specifier: workspace:*
         version: link:packages/release
+      '@typescript-eslint/eslint-plugin':
+        specifier: 8.46.2
+        version: 8.46.2(@typescript-eslint/parser@8.46.2(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
       '@vitest/coverage-v8':
         specifier: 4.0.4
         version: 4.0.4(vitest@4.0.4(@types/node@20.5.1)(happy-dom@20.0.2)(sass@1.70.0)(terser@5.44.0)(tsx@4.16.2)(yaml@2.8.1))
@@ -26,6 +29,15 @@ importers:
       eslint:
         specifier: 8.57.1
         version: 8.57.1
+      eslint-plugin-import:
+        specifier: 2.29.0
+        version: 2.29.0(@typescript-eslint/parser@8.46.2(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1)
+      eslint-plugin-json:
+        specifier: 3.1.0
+        version: 3.1.0
+      eslint-plugin-oxlint:
+        specifier: 0.16.5
+        version: 0.16.5
       husky:
         specifier: 8.0.1
         version: 8.0.1

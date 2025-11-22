@@ -67,9 +67,13 @@
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "19.2.2",
     "@monkeytype/release": "workspace:*",
+    "@typescript-eslint/eslint-plugin": "8.46.2",
     "@vitest/coverage-v8": "4.0.4",
     "conventional-changelog": "6.0.0",
     "eslint": "8.57.1",
+    "eslint-plugin-import": "2.29.0",
+    "eslint-plugin-json": "3.1.0",
+    "eslint-plugin-oxlint": "0.16.5",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
@@ -90,5 +94,10 @@
     ]
   },
   "version": "25.44.0",
-  "packageManager": "pnpm@9.6.0"
+  "packageManager": "pnpm@9.6.0",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "packages/*"
+  ]
 }

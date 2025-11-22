@@ -450,9 +450,10 @@ export async function addResult(
   let tagPbs: string[] = [];
 
   if (!completedEvent.bailedOut) {
+    const dbResultForPbCheck = buildDbResult(completedEvent, user.name, false);
     [isPb, tagPbs] = await Promise.all([
-      UserDAL.checkIfPb(uid, user, completedEvent),
-      UserDAL.checkIfTagPb(uid, user, completedEvent),
+      UserDAL.checkIfPb(uid, user, dbResultForPbCheck),
+      UserDAL.checkIfTagPb(uid, user, dbResultForPbCheck),
     ]);
   }
 
@@ -727,20 +728,27 @@ async function calculateXp(
   breakdown.base = baseXp;
 
   let modifier = 1;
+  // check if charstats is undefined
+  if (charStats !== undefined) {
+    const { incorrect, missed } = Object.values(charStats).reduce(
+      (acc, stats) => {
+        acc.incorrect += stats.incorrect;
+        acc.missed += stats.missed;
+        return acc;
+      },
+      { incorrect: 0, missed: 0 }
+    );
+    const correctedEverything = incorrect === 0 && missed === 0;
 
-  const correctedEverything = charStats
-    .slice(1)
-    .every((charStat: number) => charStat === 0);
-
-  if (acc === 100) {
-    modifier += 0.5;
-    breakdown.fullAccuracy = Math.round(baseXp * 0.5);
-  } else if (correctedEverything) {
-    // corrected everything bonus
-    modifier += 0.25;
-    breakdown["corrected"] = Math.round(baseXp * 0.25);
+    if (acc === 100) {
+      modifier += 0.5;
+      breakdown.fullAccuracy = Math.round(baseXp * 0.5);
+    } else if (correctedEverything) {
+      // corrected everything bonus
+      modifier += 0.25;
+      breakdown["corrected"] = Math.round(baseXp * 0.25);
+    }
   }
-
   if (mode === "quote") {
     // real sentences bonus
     modifier += 0.5;
