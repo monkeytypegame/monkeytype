@@ -4,7 +4,6 @@ import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
-import { isAnyPopupVisible } from "../../utils/misc";
 import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../core/input-element";
 import { isAwaitingNextWord } from "../core/state";
@@ -88,15 +87,6 @@ export function onBeforeInsertText(data: string): boolean {
 }
 
 export async function handleBeforeInput(event: InputEvent): Promise<void> {
-  // todo: this check might not be necessary because this function only fires
-  // if wordsInput is focused
-  const popupVisible = isAnyPopupVisible();
-  if (popupVisible) {
-    event.preventDefault();
-    console.warn("Prevented beforeinput due to popup visibility");
-    return;
-  }
-
   if (!isSupportedInputType(event.inputType)) {
     event.preventDefault();
     return;
