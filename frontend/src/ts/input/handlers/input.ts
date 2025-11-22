@@ -324,13 +324,12 @@ export async function handleInput(event: InputEvent): Promise<void> {
     inputType === "deleteContentBackward"
   ) {
     onDelete(inputType);
-  } else if (
-    inputType === "insertCompositionText" &&
-    getLastInsertCompositionTextData() !== event.data
-  ) {
+  } else if (inputType === "insertCompositionText") {
     // in case the data is the same as the last one, just ignore it
-    setLastInsertCompositionTextData(event.data ?? "");
-    TestUI.afterTestCompositionUpdate();
+    if (getLastInsertCompositionTextData() !== event.data) {
+      setLastInsertCompositionTextData(event.data ?? "");
+      TestUI.afterTestCompositionUpdate();
+    }
   } else {
     throw new Error("Unhandled input type: " + inputType);
   }
