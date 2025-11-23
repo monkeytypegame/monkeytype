@@ -742,6 +742,11 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "show average",
     changeRequiresRestart: false,
   },
+  showPb: {
+    icon: "fa-crown",
+    displayString: "show personal best",
+    changeRequiresRestart: false,
+  },
 
   // other (hidden)
   accountChart: {

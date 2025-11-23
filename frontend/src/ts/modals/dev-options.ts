@@ -8,6 +8,7 @@ import * as Loader from "../elements/loader";
 import { update } from "../elements/xp-bar";
 import { toggleUserFakeChartData } from "../test/result";
 import { toggleCaretDebug } from "../utils/caret";
+import { getInputElement } from "../input/input-element";
 
 let mediaQueryDebugLevel = 0;
 
@@ -49,7 +50,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl
     .querySelector(".showRealWordsInput")
     ?.addEventListener("click", () => {
-      $("#wordsInput").css("opacity", "1");
+      getInputElement().style.opacity = "1";
       void modal.hide();
     });
   modalEl.querySelector(".quickLogin")?.addEventListener("click", () => {

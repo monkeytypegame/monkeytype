@@ -4,10 +4,36 @@ import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Commandline from "../commandline/commandline";
 import * as Notifications from "../elements/notifications";
+import * as ActivePage from "../states/active-page";
+import { ModifierKeys } from "../constants/modifier-keys";
+import { focusWords } from "../test/test-ui";
+import * as TestLogic from "../test/test-logic";
+import { navigate } from "../controllers/route-controller";
+import { isInputElementFocused } from "../input/input-element";
 
-document.addEventListener("keydown", async (e) => {
+document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
+
+  const pageTestActive: boolean = ActivePage.get() === "test";
+
+  if (pageTestActive && !isInputElementFocused()) {
+    const popupVisible: boolean = Misc.isAnyPopupVisible();
+    // this is nested because isAnyPopupVisible is a bit expensive
+    // and we don't want to call it during the test
+    if (
+      !popupVisible &&
+      !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
+      !e.metaKey &&
+      !e.ctrlKey
+    ) {
+      //autofocus
+      focusWords();
+      if (Config.showOutOfFocusWarning) {
+        e.preventDefault();
+      }
+    }
+  }
 
   if (
     (e.key === "Escape" && Config.quickRestart !== "esc") ||
@@ -25,6 +51,33 @@ document.addEventListener("keydown", async (e) => {
     const popupVisible = Misc.isAnyPopupVisible();
     if (!popupVisible) {
       Commandline.show();
+    }
+  }
+
+  if (!isInputElementFocused()) {
+    const isInteractiveElement =
+      document.activeElement?.tagName === "INPUT" ||
+      document.activeElement?.tagName === "TEXTAREA" ||
+      document.activeElement?.tagName === "SELECT" ||
+      document.activeElement?.tagName === "BUTTON" ||
+      document.activeElement?.classList.contains("button") ||
+      document.activeElement?.classList.contains("textButton");
+
+    if (
+      (e.key === "Tab" &&
+        Config.quickRestart === "tab" &&
+        !isInteractiveElement) ||
+      (e.key === "Escape" && Config.quickRestart === "esc") ||
+      (e.key === "Enter" &&
+        Config.quickRestart === "enter" &&
+        !isInteractiveElement)
+    ) {
+      e.preventDefault();
+      if (ActivePage.get() === "test") {
+        TestLogic.restart();
+      } else {
+        void navigate("");
+      }
     }
   }
 });

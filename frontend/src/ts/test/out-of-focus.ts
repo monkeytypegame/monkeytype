@@ -3,7 +3,7 @@ import * as Misc from "../utils/misc";
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
 
 export function hide(): void {
-  $("#words, #koInputVisualContainer")
+  $("#words, #compositionDisplay")
     .css("transition", "none")
     .removeClass("blurred");
   $(".outOfFocusWarning").addClass("hidden");
@@ -13,7 +13,7 @@ export function hide(): void {
 export function show(): void {
   outOfFocusTimeouts.push(
     setTimeout(() => {
-      $("#words, #koInputVisualContainer")
+      $("#words, #compositionDisplay")
         .css("transition", "0.25s")
         .addClass("blurred");
       $(".outOfFocusWarning").removeClass("hidden");

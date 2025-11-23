@@ -8,7 +8,6 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
 import * as OutOfFocus from "../test/out-of-focus";
 import * as ActivePage from "../states/active-page";
-import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
 import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
@@ -19,6 +18,7 @@ import {
   createInputEventHandler,
   ValidationResult,
 } from "../elements/input-validation";
+import { isInputElementFocused } from "../input/input-element";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -63,8 +63,7 @@ function removeCommandlineBackground(): void {
 
 function addCommandlineBackground(): void {
   $("#commandLine").removeClass("noBackground");
-  const isWordsFocused = $("#wordsInput").is(":focus");
-  if (Config.showOutOfFocusWarning && !isWordsFocused) {
+  if (Config.showOutOfFocusWarning && !isInputElementFocused()) {
     OutOfFocus.show();
   }
 }
@@ -175,21 +174,13 @@ export function show(
 function hide(clearModalChain = false): void {
   clearFontPreview();
   void ThemeController.clearPreview();
-  if (ActivePage.get() === "test") {
-    focusWords();
-  }
   isAnimating = true;
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
       hideWarning();
       addCommandlineBackground();
-      if (ActivePage.get() === "test") {
-        const isWordsFocused = $("#wordsInput").is(":focus");
-        if (ActivePage.get() === "test" && !isWordsFocused) {
-          focusWords();
-        }
-      } else {
+      if (ActivePage.get() !== "test") {
         (document.activeElement as HTMLElement | undefined)?.blur();
       }
       isAnimating = false;
