@@ -336,19 +336,24 @@ export function isSpace(char: string): boolean {
   const codePoint = char.codePointAt(0);
   if (codePoint === undefined) return false;
 
-  // Directly typable spaces:
-  // U+0020 - Regular space (spacebar)
-  // U+2002 - En space (Option+Space on Mac)
-  // U+2003 - Em space (Option+Shift+Space on Mac)
-  // U+2009 - Thin space (various input methods)
-  // U+3000 - Ideographic space (CJK input methods)
-  return (
-    codePoint === 0x0020 ||
-    codePoint === 0x2002 ||
-    codePoint === 0x2003 ||
-    codePoint === 0x2009 ||
-    codePoint === 0x3000
-  );
+  const spaces = new Set([
+    0x0020, // Regular space (spacebar)
+    0x2002, // En space (Option+Space on Mac)
+    0x2003, // Em space (Option+Shift+Space on Mac)
+    0x2009, // Thin space (various input methods)
+    0x3000, // Ideographic space (CJK input methods)
+    0x00a0, // Non-breaking space (Alt+0160 on Windows, Option+Space on Mac)
+    0x1680, // Ogham space mark (rare, but included for completeness)
+    0x202f, // Narrow no-break space (various input methods)
+    0xfeff, // Zero width no-break space (various input methods)
+    0x2007, // Figure space (various input methods)
+    0x2008, // Punctuation space (various input methods)
+    0x2004, // Three-per-em space (various input methods)
+    0x200a, // Hair space (various input methods)
+    0x200b, // Zero width space (various input methods)
+  ]);
+
+  return spaces.has(codePoint);
 }
 
 // Export testing utilities for unit tests
