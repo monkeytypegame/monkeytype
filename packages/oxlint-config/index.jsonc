@@ -5,11 +5,8 @@
     "suspicious": "error",
     "perf": "error"
   },
-  "jsPlugins": ["./plugin.js"],
   "plugins": ["typescript", "unicorn", "oxc", "import", "node", "promise"],
   "rules": {
-    "plugin/no-testing-access": "error",
-
     // disabled rules
     "no-await-in-loop": "off",
     "consistent-function-scoping": "off",

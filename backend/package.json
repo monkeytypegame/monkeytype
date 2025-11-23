@@ -6,7 +6,8 @@
   "scripts": {
     "eslint": "eslint \"./src/**/*.ts\"",
     "oxlint": "oxlint .",
-    "lint": "npm run oxlint && npm run eslint",
+    "oxlint-plugin": "oxlint -c .oxlintrc-plugin.json",
+    "lint": "npm run oxlint && npm run oxlint-plugin && npm run eslint",
     "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",

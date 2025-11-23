@@ -6,7 +6,8 @@
   "scripts": {
     "eslint": "eslint \"./**/*.ts\"",
     "oxlint": "oxlint .",
-    "lint": "npm run oxlint && npm run eslint",
+    "oxlint-plugin": "oxlint -c .oxlintrc-plugin.json",
+    "lint": "npm run oxlint && npm run oxlint-plugin && npm run eslint",
     "check-assets": "tsx ./scripts/check-assets.ts",
     "audit": "vite-bundle-visualizer",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",

@@ -17,7 +17,7 @@ const rule = defineRule({
 
 const plugin = {
   meta: {
-    name: "plugin",
+    name: "monkeytype-rules",
   },
   rules: {
     "no-testing-access": rule,
