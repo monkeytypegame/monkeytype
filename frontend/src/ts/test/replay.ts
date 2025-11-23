@@ -59,8 +59,7 @@ function initializeReplayPrompt(): void {
     x.className = "word";
     for (const letter of word) {
       const elem = document.createElement("letter");
-      const [letterToShow, tabClass] = convertToTabArrows(letter);
-      elem.className = tabClass;
+      const letterToShow = convertToTabArrows(letter);
       elem.innerHTML = letterToShow;
       x.appendChild(elem);
     }

@@ -1225,13 +1225,13 @@ export function setLigatures(isEnabled: boolean): void {
   }
 }
 
-export function convertToTabArrows(char: string): [string, string] {
+export function convertToTabArrows(char: string): string {
   if (char === "\t") {
     char = "<i class='fas fa-long-arrow-alt-right fa-fw'></i>";
-    return [char, "tabChar"];
+    return char;
   }
 
-  return [char, ""];
+  return char;
 }
 
 function buildWordLettersHTML(
@@ -1245,12 +1245,8 @@ function buildWordLettersHTML(
 ): string {
   let out = "";
   for (let c = 0; c < charCount; c++) {
-    const [inputChar, tabClassInput] = convertToTabArrows(
-      inputCharacters[c] ?? ""
-    );
-    const [wordChar, tabClassWord] = convertToTabArrows(
-      wordCharacters[c] ?? ""
-    );
+    const inputChar = convertToTabArrows(inputCharacters[c] ?? "");
+    const wordChar = convertToTabArrows(wordCharacters[c] ?? "");
 
     let correctedChar;
     try {
@@ -1277,33 +1273,30 @@ function buildWordLettersHTML(
           correctedChar === inputCharacters[c] ||
           correctedChar === undefined
         ) {
-          out += `<letter class="correct ${extraCorrected} ${tabClassInput}">${inputChar}</letter>`;
+          out += `<letter class="correct ${extraCorrected}">${inputChar}</letter>`;
         } else {
           out +=
-            `<letter class="corrected ${extraCorrected} ${tabClassInput}">` +
+            `<letter class="corrected ${extraCorrected}">` +
             inputChar +
             "</letter>";
         }
       } else {
         if (inputCharacters[c] === TestInput.input.current) {
           out +=
-            `<letter class='correct ${extraCorrected} ${tabClassWord}'>` +
+            `<letter class='correct ${extraCorrected}'>` +
             wordChar +
             "</letter>";
         } else if (inputCharacters[c] === undefined) {
-          out += `<letter ${tabClassWord}>` + wordChar + "</letter>";
+          out += "<letter>" + wordChar + "</letter>";
         } else {
           out +=
-            `<letter class="incorrect ${extraCorrected} ${tabClassWord}">` +
+            `<letter class="incorrect ${extraCorrected}">` +
             wordChar +
             "</letter>";
         }
       }
     } else {
-      out +=
-        `<letter class="incorrect extra ${tabClassInput}">` +
-        inputChar +
-        "</letter>";
+      out += '<letter class="incorrect extra">' + inputChar + "</letter>";
     }
   }
   return out;
