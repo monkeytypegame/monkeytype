@@ -193,7 +193,9 @@ class Corrected {
   }
 
   popHistory(): string {
-    return this.history.pop() ?? "";
+    const popped = this.history.pop() ?? "";
+    this.current = popped;
+    return popped;
   }
 
   pushHistory(): void {
