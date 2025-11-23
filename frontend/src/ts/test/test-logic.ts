@@ -667,10 +667,7 @@ export async function addWord(): Promise<void> {
   const toPushCount = funboxToPush?.split(":")[1];
   if (toPushCount !== undefined) bound = +toPushCount - 1;
 
-  if (
-    TestWords.words.length - (TestInput.input.getHistory().length + 1) >
-    bound
-  ) {
+  if (TestWords.words.length - TestInput.input.getHistory().length > bound) {
     console.debug("Not adding word, enough words already");
     return;
   }
