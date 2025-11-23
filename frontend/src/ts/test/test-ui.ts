@@ -1792,7 +1792,24 @@ export async function afterTestWordChange(
     }
   } else if (direction === "back") {
     if (Config.mode === "zen") {
-      getWordElement(TestState.activeWordIndex + 1)?.remove();
+      const wordsChildren = [
+        ...(document.querySelector("#words")?.children ?? []),
+      ] as HTMLElement[];
+
+      let deleteElements = false;
+      for (const child of wordsChildren) {
+        if (
+          !deleteElements &&
+          parseInt(child.getAttribute("data-wordindex") ?? "-1", 10) ===
+            TestState.activeWordIndex
+        ) {
+          deleteElements = true;
+          continue;
+        }
+        if (deleteElements) {
+          child.remove();
+        }
+      }
     }
   }
 }

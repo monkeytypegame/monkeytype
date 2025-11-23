@@ -600,6 +600,17 @@ async function init(): Promise<boolean> {
     void Keymap.refresh();
   }
 
+  if (
+    generatedWords
+      .join()
+      .normalize()
+      .match(
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+      )
+  ) {
+    TestInput.input.setKoreanStatus(true);
+  }
+
   for (let i = 0; i < generatedWords.length; i++) {
     TestWords.words.push(
       generatedWords[i] as string,
