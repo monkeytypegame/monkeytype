@@ -1677,6 +1677,13 @@ export function afterTestTextInput(
   setActiveWordTop();
   if (!increasedWordIndex) void updateActiveWordLetters(inputOverride);
 
+  if (Config.mode === "zen") {
+    const currentTop = getActiveWordElement()?.offsetTop;
+    if (currentTop !== undefined && currentTop > activeWordTop) {
+      void lineJump(activeWordTop, true);
+    }
+  }
+
   afterAnyTestInput(correct);
 }
 
