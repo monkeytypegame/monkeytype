@@ -109,6 +109,10 @@ export function checkCompatibility(
     funboxesToCheck.filter((f) =>
       f.frontendFunctions?.includes("punctuateWord")
     ).length <= 1;
+  const oneGetEmulatedCharMax =
+    funboxesToCheck.filter((f) =>
+      f.frontendFunctions?.includes("getEmulatedChar")
+    ).length <= 1;
   const oneCharCheckerMax =
     funboxesToCheck.filter((f) =>
       f.frontendFunctions?.includes("isCharCorrect")
@@ -170,6 +174,7 @@ export function checkCompatibility(
     hasLanguageToSpeakAndNoUnspeakable &&
     oneToPushOrPullSectionMax &&
     onePunctuateWordMax &&
+    oneGetEmulatedCharMax &&
     oneCharCheckerMax &&
     oneCharReplacerMax &&
     oneChangesCapitalisationMax &&

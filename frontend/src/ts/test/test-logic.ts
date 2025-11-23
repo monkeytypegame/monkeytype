@@ -83,9 +83,14 @@ import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
+import * as CompositionDisplay from "../elements/composition-display";
+import {
+  getInputElement,
+  isInputElementFocused,
+  setInputElementValue,
+} from "../input/input-element";
 
 let failReason = "";
-const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
 export let notSignedInLastResult: CompletedEvent | null = null;
 
@@ -116,13 +121,7 @@ export function startTest(now: number): boolean {
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
-  TimerProgress.show();
-  LiveSpeed.show();
-  LiveAcc.show();
-  LiveBurst.show();
-  TimerProgress.update();
   TestTimer.clear();
-  Monkey.show();
 
   for (const fb of getActiveFunboxesWithFunction("start")) {
     fb.functions.start();
@@ -139,6 +138,7 @@ export function startTest(now: number): boolean {
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(now);
   void TestTimer.start();
+  TestUI.afterTestStart();
   return true;
 }
 
@@ -299,6 +299,7 @@ export function restart(options = {} as RestartOptions): void {
   QuoteRateModal.clearQuoteStats();
   TestUI.reset();
   CompositionState.setComposing(false);
+  CompositionState.setData("");
 
   if (TestState.resultVisible) {
     if (Config.randomTheme !== "off") {
@@ -328,15 +329,14 @@ export function restart(options = {} as RestartOptions): void {
     onComplete: async () => {
       $("#result").addClass("hidden");
       $("#typingTest").css("opacity", 0).removeClass("hidden");
-      $("#wordsInput").css({ left: 0 }).val(" ");
+      getInputElement().style.left = "0";
+      setInputElementValue("");
 
-      if (Config.language.startsWith("korean")) {
-        koInputVisual.innerText = " ";
-        Config.mode !== "zen"
-          ? $("#koInputVisualContainer").show()
-          : $("#koInputVisualContainer").hide();
+      if (CompositionDisplay.shouldShow()) {
+        CompositionDisplay.update(" ");
+        CompositionDisplay.show();
       } else {
-        $("#koInputVisualContainer").hide();
+        CompositionDisplay.hide();
       }
 
       Focus.set(false);
@@ -381,8 +381,7 @@ export function restart(options = {} as RestartOptions): void {
         void ModesNotice.update();
       }
 
-      const isWordsFocused = $("#wordsInput").is(":focus");
-      if (isWordsFocused) OutOfFocus.hide();
+      if (isInputElementFocused()) OutOfFocus.hide();
       TestUI.focusWords(true);
 
       const typingTestEl = document.querySelector("#typingTest") as HTMLElement;

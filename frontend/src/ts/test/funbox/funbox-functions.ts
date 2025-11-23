@@ -36,14 +36,9 @@ export type FunboxFunctions = {
   toggleScript?: (params: string[]) => void;
   pullSection?: (language?: Language) => Promise<JSONData.Section | false>;
   handleSpace?: () => void;
-  handleChar?: (char: string) => string;
+  getEmulatedChar?: (event: KeyboardEvent) => string | null;
   isCharCorrect?: (char: string, originalChar: string) => boolean;
-  preventDefaultEvent?: (
-    event: JQuery.KeyDownEvent<Document, null, Document, Document>
-  ) => Promise<boolean>;
-  handleKeydown?: (
-    event: JQuery.KeyDownEvent<Document, undefined, Document, Document>
-  ) => Promise<void>;
+  handleKeydown?: (event: KeyboardEvent) => Promise<void>;
   getResultContent?: () => string;
   start?: () => void;
   restart?: () => void;
@@ -54,9 +49,7 @@ export type FunboxFunctions = {
   getWordsFrequencyMode?: () => FunboxWordsFrequency;
 };
 
-async function readAheadHandleKeydown(
-  event: JQuery.KeyDownEvent<Document, undefined, Document, Document>
-): Promise<void> {
+async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
   const inputCurrentChar = (TestInput.input.current ?? "").slice(-1);
   const wordCurrentChar = TestWords.words
     .getCurrent()
@@ -208,11 +201,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     rememberSettings(): void {
       save("numbers", Config.numbers, UpdateConfig.setNumbers);
     },
-    handleChar(char: string): string {
-      if (char === "\n") {
+    getEmulatedChar(event: KeyboardEvent): string | null {
+      if (event.key === "Enter") {
         return " ";
       }
-      return char;
+      return null;
     },
   },
   simon_says: {
@@ -249,20 +242,21 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         UpdateConfig.setHighlightMode
       );
     },
-    handleChar(char: string): string {
-      if (char === "a" || char === "ArrowLeft" || char === "j") {
+    getEmulatedChar(event: KeyboardEvent): string | null {
+      const ekey = event.key;
+      if (ekey === "a" || ekey === "ArrowLeft" || ekey === "j") {
         return "←";
       }
-      if (char === "s" || char === "ArrowDown" || char === "k") {
+      if (ekey === "s" || ekey === "ArrowDown" || ekey === "k") {
         return "↓";
       }
-      if (char === "w" || char === "ArrowUp" || char === "i") {
+      if (ekey === "w" || ekey === "ArrowUp" || ekey === "i") {
         return "↑";
       }
-      if (char === "d" || char === "ArrowRight" || char === "l") {
+      if (ekey === "d" || ekey === "ArrowRight" || ekey === "l") {
         return "→";
       }
-      return char;
+      return null;
     },
     isCharCorrect(char: string, originalChar: string): boolean {
       if (
@@ -290,11 +284,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         return true;
       }
       return false;
-    },
-    async preventDefaultEvent(event: JQuery.KeyDownEvent): Promise<boolean> {
-      return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
-        event.key
-      );
     },
     getWordHtml(char: string, letterTag?: boolean): string {
       let retval = "";
