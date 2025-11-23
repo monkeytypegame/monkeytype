@@ -261,20 +261,17 @@ export function isWordRightToLeft(
   return reverseDirection ? !result : result;
 }
 
-export const CHAR_EQUIVALENCE_MAPS = [
-  new Map(
-    ["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"].map((char, index) => [char, index])
-  ),
-  new Map([`"`, "”", "“", "„"].map((char, index) => [char, index])),
-  new Map(["–", "—", "-", "‐"].map((char, index) => [char, index])),
-  new Map([",", "‚"].map((char, index) => [char, index])),
+export const CHAR_EQUIVALENCE_SETS = [
+  new Set(["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"]),
+  new Set([`"`, "”", "“", "„"]),
+  new Set(["–", "—", "-", "‐"]),
+  new Set([",", "‚"]),
 ];
 
-export const LANGUAGE_EQUIVALENCE_MAPS: Partial<
-  Record<Language, Map<string, number>>
-> = {
-  russian: new Map(["ё", "е", "e"].map((char, index) => [char, index])),
-};
+export const LANGUAGE_EQUIVALENCE_SETS: Partial<Record<Language, Set<string>>> =
+  {
+    russian: new Set(["ё", "е", "e"]),
+  };
 
 /**
  * Checks if two characters are visually/typographically equivalent for typing purposes.
@@ -294,14 +291,14 @@ export function areCharactersVisuallyEqual(
   }
 
   // Check each equivalence map
-  for (const map of CHAR_EQUIVALENCE_MAPS) {
+  for (const map of CHAR_EQUIVALENCE_SETS) {
     if (map.has(char1) && map.has(char2)) {
       return true;
     }
   }
 
   if (language !== undefined) {
-    const langMap = LANGUAGE_EQUIVALENCE_MAPS[removeLanguageSize(language)];
+    const langMap = LANGUAGE_EQUIVALENCE_SETS[removeLanguageSize(language)];
     if (langMap !== undefined) {
       if (langMap.has(char1) && langMap.has(char2)) {
         return true;
