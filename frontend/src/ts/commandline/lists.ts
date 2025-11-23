@@ -52,6 +52,7 @@ const confidenceModeCommand = buildCommandForConfigKey("confidenceMode");
 const lazyModeCommand = buildCommandForConfigKey("lazyMode");
 const layoutCommand = buildCommandForConfigKey("layout");
 const showAverageCommand = buildCommandForConfigKey("showAverage");
+const showPbCommand = buildCommandForConfigKey("showPb");
 const keymapLayoutCommand = buildCommandForConfigKey("keymapLayout");
 const customThemeCommand = buildCommandForConfigKey("customTheme");
 const adsCommand = buildCommandForConfigKey("ads");
@@ -216,6 +217,7 @@ export const commands: CommandsSubgroup = {
       "showOutOfFocusWarning",
       "capsLockWarning",
       showAverageCommand,
+      showPbCommand,
       "monkeyPowerLevel",
       "monkey"
     ),
@@ -377,6 +379,7 @@ const lists = {
   lazyMode: lazyModeCommand.subgroup,
   paceCaretMode: paceCaretCommand.subgroup,
   showAverage: showAverageCommand.subgroup,
+  showPb: showPbCommand.subgroup,
   minWpm: minSpeedCommand.subgroup,
   minAcc: minAccCommand.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
