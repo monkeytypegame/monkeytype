@@ -11,6 +11,7 @@ import * as Notifications from "../../elements/notifications";
 import * as KeyConverter from "../../utils/key-converter";
 import * as ShiftTracker from "../../test/shift-tracker";
 import * as CompositionState from "../../states/composition";
+import * as ManualRestart from "../../test/manual-restart-tracker";
 import { canQuickRestart } from "../../utils/quick-restart";
 import * as CustomText from "../../test/custom-text";
 import * as CustomTextState from "../../states/custom-text-name";
@@ -28,6 +29,9 @@ export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (Config.quickRestart === "tab") {
     e.preventDefault();
     if ((TestWords.hasTab && e.shiftKey) || !TestWords.hasTab) {
+      if (e.shiftKey) {
+        ManualRestart.set();
+      }
       TestLogic.restart();
       return;
     }
@@ -81,6 +85,9 @@ export async function handleEnter(
   if (Config.quickRestart === "enter") {
     e.preventDefault();
     if ((TestWords.hasNewline && e.shiftKey) || !TestWords.hasNewline) {
+      if (e.shiftKey) {
+        ManualRestart.set();
+      }
       TestLogic.restart();
       return;
     }
@@ -206,6 +213,11 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
 
   if (event.key === "Escape" && Config.quickRestart === "esc") {
     event.preventDefault();
+
+    if (event.shiftKey) {
+      ManualRestart.set();
+    }
+
     TestLogic.restart();
     return;
   }
