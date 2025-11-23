@@ -10,6 +10,7 @@ import { focusWords } from "../test/test-ui";
 import * as TestLogic from "../test/test-logic";
 import { navigate } from "../controllers/route-controller";
 import { isInputElementFocused } from "../input/input-element";
+import * as ManualRestart from "../test/manual-restart-tracker";
 
 document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
@@ -74,6 +75,9 @@ document.addEventListener("keydown", (e) => {
     ) {
       e.preventDefault();
       if (ActivePage.get() === "test") {
+        if (e.shiftKey) {
+          ManualRestart.set();
+        }
         TestLogic.restart();
       } else {
         void navigate("");
