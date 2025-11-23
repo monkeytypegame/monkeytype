@@ -3,8 +3,5 @@
   "private": true,
   "exports": {
     ".": "./index.json"
-  },
-  "devDependencies": {
-    "oxlint-tsgolint": "0.8.0"
   }
 }

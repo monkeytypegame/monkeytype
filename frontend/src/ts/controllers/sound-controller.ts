@@ -11,7 +11,7 @@ import type { Howl } from "howler";
 import { PlaySoundOnClick } from "@monkeytype/schemas/configs";
 
 async function gethowler(): Promise<typeof import("howler")> {
-  return import("howler");
+  return await import("howler");
 }
 
 type ClickSounds = Record<

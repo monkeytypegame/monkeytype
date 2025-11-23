@@ -38,7 +38,7 @@ const BASE_CONFIG = {
   server: {
     open: process.env.SERVER_OPEN !== "false",
     port: 3000,
-    host: true,
+    host: process.env.BACKEND_URL !== undefined,
     watch: {
       //we rebuild the whole contracts package when a file changes
       //so we only want to watch one file

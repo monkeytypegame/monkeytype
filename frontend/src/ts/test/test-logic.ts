@@ -454,7 +454,7 @@ async function init(): Promise<boolean> {
   }
 
   if (!language || language.name !== Config.language) {
-    return init();
+    return await init();
   }
 
   if (ActivePage.get() === "test") {
@@ -576,7 +576,7 @@ async function init(): Promise<boolean> {
       );
     }
 
-    return init();
+    return await init();
   }
 
   const beforeHasNumbers = TestWords.hasNumbers;

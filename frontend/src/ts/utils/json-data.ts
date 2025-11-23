@@ -81,7 +81,7 @@ export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
  * @throws {Error} If the layout list or layout doesn't exist.
  */
 export async function getLayout(layoutName: string): Promise<LayoutObject> {
-  return cachedFetchJson<LayoutObject>(`/layouts/${layoutName}.json`);
+  return await cachedFetchJson<LayoutObject>(`/layouts/${layoutName}.json`);
 }
 
 // used for polyglot wordset language-specific properties
@@ -138,7 +138,7 @@ export async function checkIfLanguageSupportsZipf(
 export async function getCurrentLanguage(
   languageName: Language
 ): Promise<LanguageObject> {
-  return getLanguage(languageName);
+  return await getLanguage(languageName);
 }
 
 export class Section {
