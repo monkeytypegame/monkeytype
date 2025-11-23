@@ -279,17 +279,17 @@ async function set(
 export async function clearPreview(applyTheme = true): Promise<void> {
   previewState = null;
 
+  if (applyTheme || isPreviewingTheme) {
+    if (randomTheme !== null) {
+      await apply(randomTheme);
+    } else if (Config.customTheme) {
+      await apply("custom");
+    } else {
+      await apply(Config.theme);
+    }
+  }
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
-    if (applyTheme) {
-      if (randomTheme !== null) {
-        await apply(randomTheme);
-      } else if (Config.customTheme) {
-        await apply("custom");
-      } else {
-        await apply(Config.theme);
-      }
-    }
   }
 }
 
