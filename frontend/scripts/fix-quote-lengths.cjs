@@ -26,4 +26,4 @@ function fixQuoteLengths() {
   });
 }
 
-void fixQuoteLengths();
+fixQuoteLengths();
