@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "oxlint": "oxlint . --type-aware",
-    "lint": "npm run oxlint",
+    "oxlint": "oxlint .",
+    "oxlint-plugin": "oxlint -c .oxlintrc-plugin.json",
+    "lint": "npm run oxlint && npm run oxlint-plugin",
     "check-assets": "tsx ./scripts/check-assets.ts",
     "audit": "vite-bundle-visualizer",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
