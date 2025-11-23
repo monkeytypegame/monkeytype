@@ -11,7 +11,6 @@ import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as LineJumpEvent from "../observables/line-jump-event";
@@ -24,7 +23,9 @@ import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
+import * as PaceCaret from "./pace-caret";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { animate } from "animejs";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -135,9 +136,11 @@ export function reset(): void {
   currentTestLine = 0;
 }
 
-export function focusWords(): void {
+export function focusWords(force = false): void {
   const wordsInput = document.querySelector<HTMLElement>("#wordsInput");
-  wordsInput?.blur();
+  if (force) {
+    wordsInput?.blur();
+  }
   wordsInput?.focus({
     preventScroll: true,
   });
@@ -329,7 +332,7 @@ async function updateHintsPosition(): Promise<void> {
   if (
     ActivePage.get() !== "test" ||
     TestState.resultVisible ||
-    Config.indicateTypos !== "below"
+    (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   )
     return;
 
@@ -434,7 +437,7 @@ function updateWordWrapperClasses(): void {
     $("#wordsWrapper").removeClass("blind");
   }
 
-  if (Config.indicateTypos === "below") {
+  if (Config.indicateTypos === "below" || Config.indicateTypos === "both") {
     $("#words").addClass("indicateTyposBelow");
     $("#wordsWrapper").addClass("indicateTyposBelow");
   } else {
@@ -463,11 +466,16 @@ function updateWordWrapperClasses(): void {
 
   updateWordsWidth();
   updateWordsWrapperHeight(true);
-  updateWordsMargin(updateWordsInputPosition, []);
+  updateWordsMargin();
+  updateWordsInputPosition();
+  void updateHintsPositionDebounced();
+  Caret.updatePosition();
 }
 
 export function showWords(): void {
-  $("#words").empty();
+  const words = $("#words");
+
+  words.empty();
 
   if (Config.mode === "zen") {
     appendEmptyWordElement();
@@ -476,14 +484,12 @@ export function showWords(): void {
     for (let i = 0; i < TestWords.words.length; i++) {
       wordsHTML += buildWordHTML(TestWords.words.get(i), i);
     }
-    $("#words").html(wordsHTML);
+    words.html(wordsHTML);
   }
 
   updateActiveElement(undefined, true);
   updateWordWrapperClasses();
-  setTimeout(() => {
-    void Caret.updatePosition();
-  }, 125);
+  PaceCaret.resetCaretPosition();
 }
 
 export function appendEmptyWordElement(
@@ -611,13 +617,15 @@ export function updateWordsWrapperHeight(force = false): void {
   } else {
     if (Config.tapeMode === "off") {
       //tape off, showAllLines off, non-zen mode
+      const wordElements =
+        document.querySelectorAll<HTMLElement>("#words .word");
       let lines = 0;
       let lastTop = 0;
       let wordIndex = 0;
       let wrapperHeight = 0;
 
       while (lines < 3) {
-        const word = getWordElement(wordIndex);
+        const word = wordElements[wordIndex];
         if (!word) break;
         const top = word.offsetTop;
         if (top > lastTop) {
@@ -647,42 +655,20 @@ export function updateWordsWrapperHeight(force = false): void {
   outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
 }
 
-function updateWordsMargin<T extends unknown[]>(
-  afterCompleteFn: (...args: T) => void,
-  args: T
-): void {
-  const afterComplete = (): void => {
-    afterCompleteFn(...args);
-    void updateHintsPositionDebounced();
-  };
+function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
-    void scrollTape(true, afterComplete);
+    void scrollTape(true);
   } else {
     const wordsEl = document.getElementById("words") as HTMLElement;
+
+    $(wordsEl).stop(true, false);
+
     const afterNewlineEls =
       wordsEl.querySelectorAll<HTMLElement>(".afterNewline");
-    if (Config.smoothLineScroll) {
-      const jqWords = $(wordsEl);
-      jqWords.stop("leftMargin", true, false).animate(
-        {
-          marginLeft: 0,
-        },
-        {
-          duration: SlowTimer.get() ? 0 : 125,
-          queue: "leftMargin",
-          complete: afterComplete,
-        }
-      );
-      jqWords.dequeue("leftMargin");
-      $(afterNewlineEls)
-        .stop(true, false)
-        .animate({ marginLeft: 0 }, SlowTimer.get() ? 0 : 125);
-    } else {
-      wordsEl.style.marginLeft = `0`;
-      for (const afterNewline of afterNewlineEls) {
-        afterNewline.style.marginLeft = `0`;
-      }
-      afterComplete();
+    wordsEl.style.marginLeft = `0`;
+    wordsEl.style.marginTop = `0`;
+    for (const afterNewline of afterNewlineEls) {
+      afterNewline.style.marginLeft = `0`;
     }
   }
 }
@@ -807,7 +793,7 @@ export async function updateActiveWordLetters(
         !(containsKorean && !correctSoFar)
       ) {
         ret += `<letter class="dead">${
-          Config.indicateTypos === "replace"
+          Config.indicateTypos === "replace" || Config.indicateTypos === "both"
             ? inputChars[i] === " "
               ? "_"
               : inputChars[i]
@@ -822,13 +808,16 @@ export async function updateActiveWordLetters(
       } else {
         ret +=
           `<letter class="incorrect ${tabChar}${nlChar}">` +
-          (Config.indicateTypos === "replace"
+          (Config.indicateTypos === "replace" || Config.indicateTypos === "both"
             ? inputChars[i] === " "
               ? "_"
               : inputChars[i]
             : currentLetter) +
           "</letter>";
-        if (Config.indicateTypos === "below") {
+        if (
+          Config.indicateTypos === "below" ||
+          Config.indicateTypos === "both"
+        ) {
           const lastBlock = hintIndices[hintIndices.length - 1];
           if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1)
             lastBlock.push(i);
@@ -855,7 +844,12 @@ export async function updateActiveWordLetters(
 
   if (hintIndices?.length) {
     const activeWordLetters = activeWord.querySelectorAll("letter");
-    const hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
+    let hintsHtml;
+    if (Config.indicateTypos === "both") {
+      hintsHtml = createHintsHtml(hintIndices, activeWordLetters, currentWord);
+    } else {
+      hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
+    }
     activeWord.insertAdjacentHTML("beforeend", hintsHtml);
     const hintElements = activeWord.getElementsByTagName("hint");
     await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
@@ -894,10 +888,7 @@ function getNlCharWidth(
   return nlChar.offsetWidth + letterMargin;
 }
 
-export async function scrollTape(
-  noRemove = false,
-  afterCompleteFn?: () => void
-): Promise<void> {
+export async function scrollTape(noAnimation = false): Promise<void> {
   if (ActivePage.get() !== "test" || TestState.resultVisible) return;
 
   await centeringActiveLine;
@@ -1015,7 +1006,7 @@ export async function scrollTape(
   }
 
   /* remove overflown elements */
-  if (toRemove.length > 0 && !noRemove) {
+  if (toRemove.length > 0) {
     for (const el of toRemove) el.remove();
     for (let i = 0; i < widthRemovedFromLine.length; i++) {
       const afterNewlineEl = afterNewLineEls[i] as HTMLElement;
@@ -1028,6 +1019,8 @@ export async function scrollTape(
     if (isTestRightToLeft) widthRemoved *= -1;
     const currentWordsMargin = parseFloat(wordsEl.style.marginLeft) || 0;
     wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
+    Caret.caret.handleTapeWordsRemoved(widthRemoved);
+    PaceCaret.caret.handleTapeWordsRemoved(widthRemoved);
   }
 
   /* calculate current word width to add to #words margin */
@@ -1054,30 +1047,40 @@ export async function scrollTape(
   }
 
   /* change to new #words & .afterNewline margins */
-  let newMargin =
-    wordsWrapperWidth * (Config.tapeMargin / 100) -
-    wordsWidthBeforeActive -
-    currentWordWidth;
-  if (isTestRightToLeft) newMargin = wordRightMargin - newMargin;
+  const tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
+  let newMarginOffset = wordsWidthBeforeActive + currentWordWidth;
+  let newMargin = tapeMarginPx - newMarginOffset;
+  if (isTestRightToLeft) {
+    newMarginOffset *= -1;
+    newMargin = wordRightMargin - newMargin;
+  }
 
-  const jqWords = $(wordsEl);
+  const duration = noAnimation ? 0 : 125;
+  const ease = "inOut(1.25)";
+
+  const caretScrollOptions = {
+    newValue: newMarginOffset * -1,
+    duration: Config.smoothLineScroll ? duration : 0,
+    ease,
+  };
+
+  Caret.caret.handleTapeScroll(caretScrollOptions);
+  PaceCaret.caret.handleTapeScroll(caretScrollOptions);
+
   if (Config.smoothLineScroll) {
-    jqWords.stop("leftMargin", true, false).animate(
-      {
-        marginLeft: newMargin,
-      },
-      {
-        duration: SlowTimer.get() ? 0 : 125,
-        queue: "leftMargin",
-        complete: afterCompleteFn,
-      }
-    );
-    jqWords.dequeue("leftMargin");
+    animate(wordsEl, {
+      marginLeft: newMargin,
+      duration,
+      ease,
+    });
+
     for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
-      $(afterNewLineEls[i] as Element)
-        .stop(true, false)
-        .animate({ marginLeft: newMargin }, SlowTimer.get() ? 0 : 125);
+      animate(afterNewLineEls[i] as Element, {
+        marginLeft: newMargin,
+        duration,
+        ease,
+      });
     }
   } else {
     wordsEl.style.marginLeft = `${newMargin}px`;
@@ -1085,7 +1088,6 @@ export async function scrollTape(
       const newMargin = afterNewlinesNewMargins[i] ?? 0;
       (afterNewLineEls[i] as HTMLElement).style.marginLeft = `${newMargin}px`;
     }
-    if (afterCompleteFn) afterCompleteFn();
   }
 }
 
@@ -1115,7 +1117,7 @@ function removeTestElements(lastElementIndexToRemove: number): void {
   }
 }
 
-let currentLinesAnimating = 0;
+let currentLinesJumping = 0;
 
 export async function lineJump(
   currentTop: number,
@@ -1155,45 +1157,33 @@ export async function lineJump(
       }
     }
 
-    const wordHeight = $(activeWordEl).outerHeight(true) as number;
-    const paceCaretElement = document.querySelector(
-      "#paceCaret"
-    ) as HTMLElement;
-
     if (lastElementIndexToRemove === undefined) {
       resolve();
-    } else if (Config.smoothLineScroll) {
+      currentTestLine++;
+      updateWordsWrapperHeight();
+      return promise;
+    }
+
+    currentLinesJumping++;
+
+    const wordHeight = $(activeWordEl).outerHeight(true) as number;
+    const newMarginTop = -1 * wordHeight * currentLinesJumping;
+    const duration = 125;
+
+    const caretLineJumpOptions = {
+      newMarginTop,
+      duration: Config.smoothLineScroll ? duration : 0,
+    };
+    Caret.caret.handleLineJump(caretLineJumpOptions);
+    PaceCaret.caret.handleLineJump(caretLineJumpOptions);
+
+    if (Config.smoothLineScroll) {
       lineTransition = true;
-
-      $(paceCaretElement)
-        .stop(true, false)
-        .animate(
-          {
-            top: paceCaretElement?.offsetTop - wordHeight,
-          },
-          SlowTimer.get() ? 0 : 125
-        );
-
-      const scrollDistance = TestState.lineScrollDistance + wordHeight;
-      TestState.setLineScrollDistance(scrollDistance);
-      currentLinesAnimating++;
-      const newCss: Record<string, string> = {
-        marginTop: `-${wordHeight * currentLinesAnimating}px`,
-      };
-
-      const jqWords = $(wordsEl);
-      jqWords.stop("topMargin", true, false).animate(newCss, {
-        duration: SlowTimer.get() ? 0 : 125,
-        queue: "topMargin",
-        step: (now, fx) => {
-          const completionRate = (now - fx.start) / (fx.end - fx.start);
-          TestState.setLineScrollDistance(
-            scrollDistance * (1 - completionRate)
-          );
-        },
-        complete: () => {
-          currentLinesAnimating = 0;
-          TestState.setLineScrollDistance(0);
+      animate(wordsEl, {
+        marginTop: newMarginTop,
+        duration,
+        onComplete: () => {
+          currentLinesJumping = 0;
           activeWordTop = activeWordEl.offsetTop;
           removeTestElements(lastElementIndexToRemove);
           wordsEl.style.marginTop = "0";
@@ -1201,12 +1191,9 @@ export async function lineJump(
           resolve();
         },
       });
-      jqWords.dequeue("topMargin");
     } else {
+      currentLinesJumping = 0;
       removeTestElements(lastElementIndexToRemove);
-      paceCaretElement.style.top = `${
-        paceCaretElement.offsetTop - wordHeight
-      }px`;
       resolve();
     }
     LineJumpEvent.dispatch(wordHeight);

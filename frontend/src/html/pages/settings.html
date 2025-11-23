@@ -538,13 +538,16 @@
         </button>
       </div>
       <div class="text">
-        Shows typos that you've made. Below shows what you typed below the
-        letters and replace will replace the letters with the ones you typed.
+        Shows typos that you've made. "Below" shows what you typed below the
+        letters, "replace" will replace the letters with the ones you typed and
+        "both" will do the same as replace and below, but it will show the
+        correct letters below your mistakes.
       </div>
       <div class="buttons">
         <button data-config-value="off">off</button>
         <button data-config-value="below">below</button>
         <button data-config-value="replace">replace</button>
+        <button data-config-value="both">both</button>
       </div>
     </div>
     <div class="section" data-config-name="hideExtraLetters">
@@ -1623,7 +1626,9 @@
         random themes are not saved to your config. If set to 'favorite' only
         favorite themes will be randomized. If set to 'light' or 'dark', only
         presets with light or dark background colors will be randomized,
-        respectively. If set to 'custom', custom themes will be randomized.
+        respectively. If set to 'auto' dark or light themes are used, depending
+        on your system theme. If set to 'custom', custom themes will be
+        randomized.
       </div>
       <div class="buttons">
         <button data-config-value="off">off</button>
@@ -1631,6 +1636,7 @@
         <button data-config-value="fav">favorite</button>
         <button data-config-value="light">light</button>
         <button data-config-value="dark">dark</button>
+        <button data-config-value="auto">auto</button>
         <button data-config-value="custom">custom</button>
       </div>
     </div>
@@ -1656,8 +1662,8 @@
           <!-- Used to convert colors to hex  -->
           <div class="colorConverter"></div>
           <div class="allCustomThemes buttons"></div>
-          <div class="customThemeEdit">
-            <div class="customThemeInputs">
+          <div class="customThemeInputs">
+            <div class="customThemeInput">
               <label class="colorText">background</label>
               <div class="colorPicker inputAndButton">
                 <input
@@ -1683,6 +1689,8 @@
                   id="--bg-color"
                 />
               </div>
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">sub alt</label>
               <div class="colorPicker inputAndButton">
                 <input
@@ -1708,6 +1716,8 @@
                   id="--sub-alt-color"
                 />
               </div>
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">main</label>
               <div class="colorPicker inputAndButton">
                 <input
@@ -1726,6 +1736,8 @@
                   id="--main-color"
                 />
               </div>
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">sub</label>
               <div class="colorPicker inputAndButton">
                 <input
@@ -1744,6 +1756,8 @@
                   id="--sub-color"
                 />
               </div>
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">caret</label>
               <div class="colorPicker inputAndButton">
                 <input
@@ -1762,6 +1776,8 @@
                   id="--caret-color"
                 />
               </div>
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">text</label>
               <div class="colorPicker inputAndButton">
                 <input
@@ -1780,9 +1796,11 @@
                   id="--text-color"
                 />
               </div>
+            </div>
 
-              <span class="spacer"></span>
+            <!-- <span class="spacer"></span> -->
 
+            <div class="customThemeInput">
               <label class="colorText">error</label>
               <div class="colorPicker inputAndButton">
                 <input
@@ -1801,6 +1819,8 @@
                   id="--error-color"
                 />
               </div>
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">extra error</label>
               <div class="colorPicker inputAndButton">
                 <input
@@ -1819,6 +1839,10 @@
                   id="--error-extra-color"
                 />
               </div>
+            </div>
+
+            <span class="colorfulHeader">colorful mode</span>
+            <div class="customThemeInput">
               <label class="colorText">error</label>
               <div class="colorPicker inputAndButton">
                 <input
@@ -1837,7 +1861,8 @@
                   id="--colorful-error-color"
                 />
               </div>
-
+            </div>
+            <div class="customThemeInput">
               <label class="colorText">extra error</label>
               <div class="colorPicker inputAndButton">
                 <input
@@ -1857,11 +1882,11 @@
                 />
               </div>
             </div>
-            <div class="customThemeButtons">
-              <button id="loadCustomColorsFromPreset">load from preset</button>
-              <button id="shareCustomThemeButton">share</button>
-              <button id="saveCustomThemeButton">save as new</button>
-            </div>
+          </div>
+          <div class="customThemeButtons">
+            <button id="loadCustomColorsFromPreset">load from preset</button>
+            <button id="shareCustomThemeButton">share</button>
+            <button id="saveCustomThemeButton">save as new</button>
           </div>
         </div>
         <div tabContent="preset" class="tabContent">
@@ -2014,6 +2039,35 @@
       </div>
       <div class="buttons">
         <button>open</button>
+      </div>
+    </div>
+    <div class="section fpsLimit">
+      <div class="groupTitle">
+        <i class="fas fa-video"></i>
+        <span>animation fps limit</span>
+        <button class="text" tabindex="-1">
+          <i class="fas fa-fw fa-link"></i>
+        </button>
+      </div>
+      <div class="text">
+        Limit the maximum fps for animations. Setting this to "native" will run
+        the animations as fast as possible (at your monitor's refresh rate).
+        Setting this above your monitor's refresh rate will have no effect.
+      </div>
+      <!-- <div class="inputs">
+        <div class="rangeGroup">
+          <div class="value">---</div>
+          <input type="range" min="30" max="1000" step="10" />
+        </div>
+      </div> -->
+      <div class="inputs">
+        <button data-fpsLimit="native">native</button>
+        <div class="separator">
+          <div class="line"></div>
+          or
+          <div class="line"></div>
+        </div>
+        <input type="number" placeholder="custom limit" min="30" max="1000" />
       </div>
     </div>
     <div class="section resetSettings" data-section-id="resetSettings">

@@ -10,6 +10,7 @@ import * as PageLoading from "../pages/loading";
 import * as PageTribe from "../pages/tribe";
 import * as PageProfile from "../pages/profile";
 import * as PageProfileSearch from "../pages/profile-search";
+import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
 import * as PageLeaderboards from "../pages/leaderboards";
 import * as PageAccountSettings from "../pages/account-settings";
@@ -55,11 +56,9 @@ function updateTitle(nextPage: { id: string; display?: string }): void {
 async function showSyncLoading({
   loadingOptions,
   totalDuration,
-  easingMethod,
 }: {
   loadingOptions: LoadingOptions[];
   totalDuration: number;
-  easingMethod: Misc.JQueryEasing;
 }): Promise<void> {
   PageLoading.page.element.removeClass("hidden").css("opacity", 0);
   await PageLoading.page.beforeShow({});
@@ -68,14 +67,10 @@ async function showSyncLoading({
   const fillOffset = 100 / fillDivider;
 
   //void here to run the loading promise as soon as possible
-  void Misc.promiseAnimation(
-    PageLoading.page.element,
-    {
-      opacity: "1",
-    },
-    totalDuration / 2,
-    easingMethod
-  );
+  void Misc.promiseAnimate(PageLoading.page.element[0] as HTMLElement, {
+    opacity: "1",
+    duration: totalDuration / 2,
+  });
 
   for (let i = 0; i < loadingOptions.length; i++) {
     const currentOffset = fillOffset * i;
@@ -103,18 +98,17 @@ async function showSyncLoading({
     }
   }
 
-  await Misc.promiseAnimation(
-    PageLoading.page.element,
-    {
-      opacity: "0",
-    },
-    totalDuration / 2,
-    easingMethod
-  );
+  await Misc.promiseAnimate(PageLoading.page.element[0] as HTMLElement, {
+    opacity: "0",
+    duration: totalDuration / 2,
+  });
 
   await PageLoading.page.afterHide();
   PageLoading.page.element.addClass("hidden");
 }
+
+// Global abort controller for keyframe promises
+let keyframeAbortController: AbortController | null = null;
 
 async function getLoadingPromiseWithBarKeyframes(
   loadingOptions: Extract<
@@ -124,13 +118,16 @@ async function getLoadingPromiseWithBarKeyframes(
   fillDivider: number,
   fillOffset: number
 ): Promise<void> {
-  let aborted = false;
   let loadingPromise = loadingOptions.loadingPromise();
 
-  // Animate bar keyframes, but allow aborting if loading.promise finishes first
+  // Create abort controller for this keyframe sequence
+  const localAbortController = new AbortController();
+  keyframeAbortController = localAbortController;
+
+  // Animate bar keyframes, but allow aborting if loading.promise finishes first or if globally aborted
   const keyframePromise = (async () => {
     for (const keyframe of loadingOptions.keyframes) {
-      if (aborted) break;
+      if (localAbortController.signal.aborted) break;
       if (keyframe.text !== undefined) {
         PageLoading.updateText(keyframe.text);
       }
@@ -146,12 +143,18 @@ async function getLoadingPromiseWithBarKeyframes(
     keyframePromise,
     (async () => {
       await loadingPromise;
-      aborted = true;
+      localAbortController.abort();
     })(),
   ]);
 
   // Always wait for loading.promise to finish before continuing
   await loadingPromise;
+
+  // Clean up the abort controller
+  if (keyframeAbortController === localAbortController) {
+    keyframeAbortController = null;
+  }
+
   return;
 }
 
@@ -190,6 +193,7 @@ export async function change(
     tribe: PageTribe.page,
     profile: PageProfile.page,
     profileSearch: PageProfileSearch.page,
+    friends: Friends.page,
     404: Page404.page,
     accountSettings: PageAccountSettings.page,
     leaderboards: PageLeaderboards.page,
@@ -198,7 +202,6 @@ export async function change(
   const previousPage = pages[ActivePage.get()];
   const nextPage = pages[pageName];
   const totalDuration = Misc.applyReducedMotion(250);
-  const easingMethod: Misc.JQueryEasing = "swing";
 
   //start
   PageTransition.set(true);
@@ -209,14 +212,10 @@ export async function change(
     tribeOverride: options.tribeOverride ?? false,
   });
   previousPage.element.removeClass("hidden").css("opacity", 1);
-  await Misc.promiseAnimation(
-    previousPage.element,
-    {
-      opacity: "0",
-    },
-    totalDuration / 2,
-    easingMethod
-  );
+  await Misc.promiseAnimate(previousPage.element[0] as HTMLElement, {
+    opacity: "0",
+    duration: totalDuration / 2,
+  });
   previousPage.element.addClass("hidden");
   await previousPage?.afterHide();
 
@@ -237,10 +236,20 @@ export async function change(
       await showSyncLoading({
         loadingOptions: syncLoadingOptions,
         totalDuration,
-        easingMethod,
       });
     }
+
+    // Clean up abort controller after successful loading
+    if (keyframeAbortController) {
+      keyframeAbortController = null;
+    }
   } catch (error) {
+    // Abort any running keyframe promises
+    if (keyframeAbortController) {
+      keyframeAbortController.abort();
+      keyframeAbortController = null;
+    }
+
     pages.loading.element.addClass("active");
     ActivePage.set(pages.loading.id);
     Focus.set(false);
@@ -279,14 +288,10 @@ export async function change(
   }
 
   nextPage.element.removeClass("hidden").css("opacity", 0);
-  await Misc.promiseAnimation(
-    nextPage.element,
-    {
-      opacity: "1",
-    },
-    totalDuration / 2,
-    easingMethod
-  );
+  await Misc.promiseAnimate(nextPage.element[0] as HTMLElement, {
+    opacity: "1",
+    duration: totalDuration / 2,
+  });
   nextPage.element.addClass("active");
   await nextPage?.afterShow();
 

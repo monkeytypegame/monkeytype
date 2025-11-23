@@ -14,6 +14,8 @@ export type ValidationResult = {
   errorMessage?: string;
 };
 
+export type IsValidResponse = true | string | { warning: string };
+
 export type Validation<T> = {
   /**
    * Zod schema to validate the input value against.
@@ -28,13 +30,10 @@ export type Validation<T> = {
    * @param thisPopup the current modal
    * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
    */
-  isValid?: (value: T) => Promise<true | string | { warning: string }>;
+  isValid?: (value: T) => Promise<IsValidResponse>;
 
   /** custom debounce delay for `isValid` call. defaults to 100 */
   debounceDelay?: number;
-
-  /** Resets the value to the current config if empty */
-  resetIfEmpty?: false;
 };
 
 // oxlint-disable-next-line no-explicit-any
@@ -144,7 +143,9 @@ export type ValidationOptions<T> = (T extends string
 };
 
 export type ValidatedHtmlInputElement = HTMLInputElement & {
-  isValid: () => boolean | undefined;
+  getValidationResult: () => ValidationResult;
+  setValue: (val: string | null) => void;
+  triggerValidation: () => void;
 };
 /**
  * adds an 'InputIndicator` to the given `inputElement` and updates its status depending on the given validation
@@ -176,9 +177,11 @@ export function validateWithIndicator<T>(
     },
   });
 
-  let isValid: boolean | undefined = undefined;
+  let currentStatus: ValidationResult = {
+    status: "checking",
+  };
   const callback = (result: ValidationResult): void => {
-    isValid = result.status === "success" || result.status === "warning";
+    currentStatus = result;
     if (result.status === "failed" || result.status === "warning") {
       indicator.show(result.status, result.errorMessage);
     } else {
@@ -196,7 +199,21 @@ export function validateWithIndicator<T>(
   inputElement.addEventListener("input", handler);
 
   const result = inputElement as ValidatedHtmlInputElement;
-  result.isValid = () => isValid;
+  result.getValidationResult = () => {
+    return currentStatus;
+  };
+  result.setValue = (val: string | null) => {
+    inputElement.value = val ?? "";
+    if (val === null) {
+      indicator.hide();
+      currentStatus = { status: "checking" };
+    } else {
+      inputElement.dispatchEvent(new Event("input"));
+    }
+  };
+  result.triggerValidation = () => {
+    inputElement.dispatchEvent(new Event("input"));
+  };
 
   return result;
 }
@@ -213,6 +230,8 @@ export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
     schema: boolean;
     /** optional callback is called for each change of the validation result */
     validationCallback?: (result: ValidationResult) => void;
+    /** Resets the value to the current config if empty */
+    resetIfEmpty?: false;
   };
 };
 
@@ -252,6 +271,8 @@ export function handleConfigInput<T extends ConfigKey>({
     });
   }
 
+  let shakeTimeout: null | NodeJS.Timeout;
+
   const handleStore = (): void => {
     if (input.value === "" && (validation?.resetIfEmpty ?? true)) {
       //use last config value, clear validation
@@ -259,13 +280,13 @@ export function handleConfigInput<T extends ConfigKey>({
       input.dispatchEvent(new Event("input"));
     }
     if (status === "failed") {
-      const parent = $(input.parentElement as HTMLElement);
-      parent
-        .stop(true, true)
-        .addClass("hasError")
-        .animate({ undefined: 1 }, 500, () => {
-          parent.removeClass("hasError");
-        });
+      input.parentElement?.classList.add("hasError");
+      if (shakeTimeout !== null) {
+        clearTimeout(shakeTimeout);
+      }
+      shakeTimeout = setTimeout(() => {
+        input.parentElement?.classList.remove("hasError");
+      }, 500);
       return;
     }
     const value = (inputValueConvert?.(input.value) ??

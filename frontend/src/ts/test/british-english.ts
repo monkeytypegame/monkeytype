@@ -658,6 +658,11 @@ export async function replace(
   word: string,
   previousWord: string
 ): Promise<string> {
+  // Convert American-style double quotes to British-style single quotes
+  if (word.includes('"')) {
+    word = word.replace(/"/g, "'");
+  }
+
   if (word.includes("-")) {
     //this handles hyphenated words (for example "cream-colored") to make sure
     //we don't have to add every possible combination to the list

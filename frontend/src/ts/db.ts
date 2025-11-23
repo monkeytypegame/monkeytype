@@ -1,6 +1,6 @@
 import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
-import { isAuthenticated } from "./firebase";
+import { isAuthenticated, getAuthenticatedUser } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { migrateConfig } from "./utils/config";
@@ -31,6 +31,11 @@ import { FunboxMetadata } from "../../../packages/funbox/src/types";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
 import * as AuthEvent from "./observables/auth-event";
+import {
+  configurationPromise,
+  get as getServerConfiguration,
+} from "./ape/server-configuration";
+import { Connection } from "@monkeytype/schemas/connections";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -82,14 +87,22 @@ export function setSnapshot(
 export async function initSnapshot(): Promise<Snapshot | false> {
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = getDefaultSnapshot();
+  await configurationPromise;
+
   try {
     if (!isAuthenticated()) return false;
 
-    const [userResponse, configResponse, presetsResponse] = await Promise.all([
-      Ape.users.get(),
-      Ape.configs.get(),
-      Ape.presets.get(),
-    ]);
+    const connectionsRequest = getServerConfiguration()?.connections.enabled
+      ? Ape.connections.get()
+      : { status: 200, body: { message: "", data: [] } };
+
+    const [userResponse, configResponse, presetsResponse, connectionsResponse] =
+      await Promise.all([
+        Ape.users.get(),
+        Ape.configs.get(),
+        Ape.presets.get(),
+        connectionsRequest,
+      ]);
 
     if (userResponse.status !== 200) {
       throw new SnapshotInitError(
@@ -109,10 +122,17 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         presetsResponse.status
       );
     }
+    if (connectionsResponse.status !== 200) {
+      throw new SnapshotInitError(
+        `${connectionsResponse.body.message} (connections)`,
+        connectionsResponse.status
+      );
+    }
 
     const userData = userResponse.body.data;
     const configData = configResponse.body.data;
     const presetsData = presetsResponse.body.data;
+    const connectionsData = connectionsResponse.body.data;
 
     if (userData === null) {
       throw new SnapshotInitError(
@@ -248,6 +268,8 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         }
       );
     }
+
+    snap.connections = convertConnections(connectionsData);
 
     dbSnapshot = snap;
     return dbSnapshot;
@@ -951,16 +973,16 @@ export function saveLocalResult(data: SaveLocalResultData): void {
         startedTests: 0,
         completedTests: 0,
       };
-
-      const time =
-        data.result.testDuration +
-        data.result.incompleteTestSeconds -
-        data.result.afkDuration;
-
-      snapshot.typingStats.timeTyping += time;
-      snapshot.typingStats.startedTests += data.result.restartCount + 1;
-      snapshot.typingStats.completedTests += 1;
     }
+
+    const time =
+      data.result.testDuration +
+      data.result.incompleteTestSeconds -
+      data.result.afkDuration;
+
+    snapshot.typingStats.timeTyping += time;
+    snapshot.typingStats.startedTests += data.result.restartCount + 1;
+    snapshot.typingStats.completedTests += 1;
 
     if (data.isPb) {
       saveLocalPB(
@@ -1081,6 +1103,48 @@ export async function getTestActivityCalendar(
   }
 
   return dbSnapshot.testActivityByYear[yearString];
+}
+
+export function mergeConnections(connections: Connection[]): void {
+  const snapshot = getSnapshot();
+  if (!snapshot) return;
+
+  const update = convertConnections(connections);
+
+  for (const [key, value] of Object.entries(update)) {
+    snapshot.connections[key] = value;
+  }
+
+  setSnapshot(snapshot);
+}
+
+function convertConnections(
+  connectionsData: Connection[]
+): Snapshot["connections"] {
+  return Object.fromEntries(
+    connectionsData.map((connection) => {
+      const isMyRequest =
+        getAuthenticatedUser()?.uid === connection.initiatorUid;
+
+      return [
+        isMyRequest ? connection.receiverUid : connection.initiatorUid,
+        connection.status === "pending" && !isMyRequest
+          ? "incoming"
+          : connection.status,
+      ];
+    })
+  );
+}
+
+export function isFriend(uid: string | undefined): boolean {
+  if (uid === undefined || uid === getAuthenticatedUser()?.uid) return false;
+
+  const snapshot = getSnapshot();
+  if (!snapshot) return false;
+
+  return Object.entries(snapshot.connections).some(
+    ([receiverUid, status]) => receiverUid === uid && status === "accepted"
+  );
 }
 
 // export async function DB.getLocalTagPB(tagId) {

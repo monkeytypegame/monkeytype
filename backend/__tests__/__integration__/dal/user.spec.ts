@@ -1,7 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
-import _ from "lodash";
+
 import * as UserDAL from "../../../src/dal/user";
 import * as UserTestData from "../../__testData__/users";
+import { createConnection as createFriend } from "../../__testData__/connections";
 import { ObjectId } from "mongodb";
 import { MonkeyMail, ResultFilters } from "@monkeytype/schemas/users";
 import { PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
@@ -235,9 +236,13 @@ describe("UserDal", () => {
 
     // then
     const updatedUser = (await UserDAL.getUser(testUser.uid, "test")) ?? {};
-    expect(_.values(updatedUser.personalBests).filter(_.isEmpty)).toHaveLength(
-      5
-    );
+    expect(updatedUser.personalBests).toStrictEqual({
+      time: {},
+      words: {},
+      quote: {},
+      custom: {},
+      zen: {},
+    });
   });
 
   it("autoBan should automatically ban after configured anticheat triggers", async () => {
@@ -620,97 +625,129 @@ describe("UserDal", () => {
     });
   });
 
-  it("updateProfile should appropriately handle multiple profile updates", async () => {
-    const uid = new ObjectId().toHexString();
-    await UserDAL.addUser("test name", "test email", uid);
+  describe("updateProfile", () => {
+    it("updateProfile should appropriately handle multiple profile updates", async () => {
+      const uid = new ObjectId().toHexString();
+      await UserDAL.addUser("test name", "test email", uid);
 
-    await UserDAL.updateProfile(
-      uid,
-      {
+      await UserDAL.updateProfile(
+        uid,
+        {
+          bio: "test bio",
+        },
+        {
+          badges: [],
+        }
+      );
+
+      const user = await UserDAL.getUser(uid, "test add result filters");
+      expect(user.profileDetails).toStrictEqual({
         bio: "test bio",
-      },
-      {
+      });
+      expect(user.inventory).toStrictEqual({
         badges: [],
-      }
-    );
+      });
 
-    const user = await UserDAL.getUser(uid, "test add result filters");
-    expect(user.profileDetails).toStrictEqual({
-      bio: "test bio",
-    });
-    expect(user.inventory).toStrictEqual({
-      badges: [],
-    });
+      await UserDAL.updateProfile(
+        uid,
+        {
+          keyboard: "test keyboard",
+          socialProfiles: {
+            twitter: "test twitter",
+          },
+        },
+        {
+          badges: [
+            {
+              id: 1,
+              selected: true,
+            },
+          ],
+        }
+      );
 
-    await UserDAL.updateProfile(
-      uid,
-      {
+      const updatedUser = await UserDAL.getUser(uid, "test add result filters");
+      expect(updatedUser.profileDetails).toStrictEqual({
+        bio: "test bio",
         keyboard: "test keyboard",
         socialProfiles: {
           twitter: "test twitter",
         },
-      },
-      {
+      });
+      expect(updatedUser.inventory).toStrictEqual({
         badges: [
           {
             id: 1,
             selected: true,
           },
         ],
-      }
-    );
+      });
 
-    const updatedUser = await UserDAL.getUser(uid, "test add result filters");
-    expect(updatedUser.profileDetails).toStrictEqual({
-      bio: "test bio",
-      keyboard: "test keyboard",
-      socialProfiles: {
-        twitter: "test twitter",
-      },
-    });
-    expect(updatedUser.inventory).toStrictEqual({
-      badges: [
+      await UserDAL.updateProfile(
+        uid,
         {
-          id: 1,
-          selected: true,
+          bio: "test bio 2",
+          socialProfiles: {
+            github: "test github",
+            website: "test website",
+          },
         },
-      ],
-    });
+        {
+          badges: [
+            {
+              id: 1,
+            },
+          ],
+        }
+      );
 
-    await UserDAL.updateProfile(
-      uid,
-      {
+      const updatedUser2 = await UserDAL.getUser(
+        uid,
+        "test add result filters"
+      );
+      expect(updatedUser2.profileDetails).toStrictEqual({
         bio: "test bio 2",
+        keyboard: "test keyboard",
         socialProfiles: {
+          twitter: "test twitter",
           github: "test github",
           website: "test website",
         },
-      },
-      {
+      });
+      expect(updatedUser2.inventory).toStrictEqual({
         badges: [
           {
             id: 1,
           },
         ],
-      }
-    );
-
-    const updatedUser2 = await UserDAL.getUser(uid, "test add result filters");
-    expect(updatedUser2.profileDetails).toStrictEqual({
-      bio: "test bio 2",
-      keyboard: "test keyboard",
-      socialProfiles: {
-        twitter: "test twitter",
-        github: "test github",
-        website: "test website",
-      },
+      });
     });
-    expect(updatedUser2.inventory).toStrictEqual({
-      badges: [
-        {
-          id: 1,
+    it("should omit undefined or empty object values", async () => {
+      //GIVEN
+      const givenUser = await UserTestData.createUser({
+        profileDetails: {
+          bio: "test bio",
+          keyboard: "test keyboard",
+          socialProfiles: {
+            twitter: "test twitter",
+            github: "test github",
+          },
         },
-      ],
+      });
+
+      //WHEN
+      await UserDAL.updateProfile(givenUser.uid, {
+        bio: undefined, //ignored
+        keyboard: "updates",
+        socialProfiles: {}, //ignored
+      });
+
+      //THEN
+      const read = await UserDAL.getUser(givenUser.uid, "read");
+      expect(read.profileDetails).toStrictEqual({
+        ...givenUser.profileDetails,
+        keyboard: "updates",
+      });
     });
   });
 
@@ -1176,7 +1213,6 @@ describe("UserDal", () => {
         discordId: "discordId",
         discordAvatar: "discordAvatar",
       });
-
       //when
       await UserDAL.linkDiscord(uid, "newId", "newAvatar");
 
@@ -1184,6 +1220,21 @@ describe("UserDal", () => {
       const read = await UserDAL.getUser(uid, "read");
       expect(read.discordId).toEqual("newId");
       expect(read.discordAvatar).toEqual("newAvatar");
+    });
+    it("should update without avatar", async () => {
+      //given
+      const { uid } = await UserTestData.createUser({
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+      });
+
+      //when
+      await UserDAL.linkDiscord(uid, "newId");
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.discordId).toEqual("newId");
+      expect(read.discordAvatar).toEqual("discordAvatar");
     });
   });
   describe("unlinkDiscord", () => {
@@ -1978,6 +2029,123 @@ describe("UserDal", () => {
       //then
       const read = await UserDAL.getUser(uid, "read");
       expect(read.streak?.hourOffset).toBeUndefined();
+    });
+  });
+
+  describe("getFriends", () => {
+    it("get list of friends", async () => {
+      //GIVEN
+      const me = await UserTestData.createUser({ name: "Me" });
+      const uid = me.uid;
+
+      const friendOne = await UserTestData.createUser({
+        name: "One",
+        personalBests: {
+          time: {
+            "15": [UserTestData.pb(100)],
+            "60": [UserTestData.pb(85), UserTestData.pb(90)],
+          },
+        } as any,
+        inventory: {
+          badges: [{ id: 42, selected: true }, { id: 23 }, { id: 5 }],
+        },
+        banned: true,
+        lbOptOut: true,
+        premium: { expirationTimestamp: -1 } as any,
+      });
+      const friendOneRequest = await createFriend({
+        initiatorUid: uid,
+        receiverUid: friendOne.uid,
+        status: "accepted",
+        lastModified: 100,
+      });
+      const friendTwo = await UserTestData.createUser({
+        name: "Two",
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+        timeTyping: 600,
+        startedTests: 150,
+        completedTests: 125,
+        streak: {
+          length: 10,
+          maxLength: 50,
+          lastResultTimestamp: 0,
+          hourOffset: -1,
+        } as any,
+        xp: 42,
+        inventory: {
+          badges: [{ id: 23 }, { id: 5 }],
+        },
+        premium: {
+          expirationTimestamp: vi.getRealSystemTime() + 5000,
+        } as any,
+      });
+      const friendTwoRequest = await createFriend({
+        initiatorUid: uid,
+        receiverUid: friendTwo.uid,
+        status: "accepted",
+        lastModified: 200,
+      });
+
+      const friendThree = await UserTestData.createUser({ name: "Three" });
+      const friendThreeRequest = await createFriend({
+        receiverUid: uid,
+        initiatorUid: friendThree.uid,
+        status: "accepted",
+        lastModified: 300,
+      });
+
+      //non accepted
+      await createFriend({ receiverUid: uid, status: "pending" });
+      await createFriend({ initiatorUid: uid, status: "blocked" });
+
+      //WHEN
+      const friends = await UserDAL.getFriends(uid);
+
+      //THEN
+      expect(friends).toEqual([
+        {
+          uid: friendOne.uid,
+          name: "One",
+          lastModified: 100,
+          connectionId: friendOneRequest._id,
+          // oxlint-disable-next-line no-non-null-assertion
+          top15: friendOne.personalBests.time["15"]![0] as any,
+          // oxlint-disable-next-line no-non-null-assertion
+          top60: friendOne.personalBests.time["60"]![1] as any,
+          badgeId: 42,
+          banned: true,
+          lbOptOut: true,
+          isPremium: true,
+        },
+        {
+          uid: friendTwo.uid,
+          name: "Two",
+          lastModified: 200,
+          connectionId: friendTwoRequest._id,
+          discordId: friendTwo.discordId,
+          discordAvatar: friendTwo.discordAvatar,
+          timeTyping: friendTwo.timeTyping,
+          startedTests: friendTwo.startedTests,
+          completedTests: friendTwo.completedTests,
+          streak: {
+            length: friendTwo.streak?.length,
+            maxLength: friendTwo.streak?.maxLength,
+          },
+          xp: friendTwo.xp,
+          isPremium: true,
+        },
+        {
+          uid: friendThree.uid,
+          name: "Three",
+          lastModified: 300,
+          connectionId: friendThreeRequest._id,
+        },
+        {
+          uid: me.uid,
+          name: "Me",
+        },
+      ]);
     });
   });
 });

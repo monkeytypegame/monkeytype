@@ -1,10 +1,13 @@
 import * as Loader from "../elements/loader";
 import * as Random from "../utils/random";
-import { envConfig } from "../constants/env-config";
+import { envConfig } from "virtual:env-config";
 import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
+import { RankAndCount } from "@monkeytype/schemas/users";
+import { roundTo2 } from "@monkeytype/util/numbers";
+import { animate, AnimationParams } from "animejs";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -166,7 +169,7 @@ export function escapeRegExp(str: string): string {
 }
 
 //https://portswigger.net/web-security/cross-site-scripting/preventing
-export function escapeHTML(str: string): string {
+export function escapeHTML<T extends string | null | undefined>(str: T): T {
   if (str === null || str === undefined) {
     return str;
   }
@@ -217,8 +220,8 @@ type LastIndex = {
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
 
 export async function swapElements(
-  el1: JQuery,
-  el2: JQuery,
+  el1: HTMLElement,
+  el2: HTMLElement,
   totalDuration: number,
   callback = async function (): Promise<void> {
     return Promise.resolve();
@@ -227,57 +230,49 @@ export async function swapElements(
     return Promise.resolve();
   }
 ): Promise<boolean | undefined> {
+  if (el1 === null || el2 === null) {
+    return;
+  }
+
   totalDuration = applyReducedMotion(totalDuration);
   if (
-    (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
-    (!el1.hasClass("hidden") && el2.hasClass("hidden"))
+    (el1.classList.contains("hidden") && !el2.classList.contains("hidden")) ||
+    (!el1.classList.contains("hidden") && el2.classList.contains("hidden"))
   ) {
     //one of them is hidden and the other is visible
-    if (el1.hasClass("hidden")) {
+    if (el1.classList.contains("hidden")) {
       await middleCallback();
       await callback();
       return false;
     }
-    $(el1)
-      .removeClass("hidden")
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        totalDuration / 2,
-        async () => {
-          await middleCallback();
-          $(el1).addClass("hidden");
-          $(el2)
-            .removeClass("hidden")
-            .css("opacity", 0)
-            .animate(
-              {
-                opacity: 1,
-              },
-              totalDuration / 2,
-              async () => {
-                await callback();
-              }
-            );
-        }
-      );
-  } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
+
+    el1.classList.remove("hidden");
+    await promiseAnimate(el1, {
+      opacity: [1, 0],
+      duration: totalDuration / 2,
+    });
+    el1.classList.add("hidden");
+    await middleCallback();
+    el2.classList.remove("hidden");
+    await promiseAnimate(el2, {
+      opacity: [0, 1],
+      duration: totalDuration / 2,
+    });
+    await callback();
+  } else if (
+    el1.classList.contains("hidden") &&
+    el2.classList.contains("hidden")
+  ) {
     //both are hidden, only fade in the second
     await middleCallback();
-    $(el2)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        totalDuration,
-        async () => {
-          await callback();
-        }
-      );
+
+    el2.classList.remove("hidden");
+    await promiseAnimate(el2, {
+      opacity: [0, 1],
+      duration: totalDuration / 2,
+    });
+
+    await callback();
   } else {
     await middleCallback();
     await callback();
@@ -480,14 +475,17 @@ export type JQueryEasing =
   | "easeOutBounce"
   | "easeInOutBounce";
 
-export async function promiseAnimation(
-  el: JQuery,
-  animation: Record<string, string>,
-  duration: number,
-  easing: JQueryEasing = "swing"
+export async function promiseAnimate(
+  el: HTMLElement,
+  options: AnimationParams
 ): Promise<void> {
   return new Promise((resolve) => {
-    el.animate(animation, applyReducedMotion(duration), easing, resolve);
+    animate(el, {
+      ...options,
+      onComplete: () => {
+        resolve();
+      },
+    });
   });
 }
 
@@ -507,7 +505,7 @@ export function isPasswordStrong(password: string): boolean {
 export function htmlToText(html: string): string {
   const el = document.createElement("div");
   el.innerHTML = html;
-  return (el.textContent as string) || el.innerText || "";
+  return el.textContent || el.innerText || "";
 }
 
 export function loadCSS(href: string, prepend = false): void {
@@ -752,6 +750,47 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
   el.scrollIntoView({
     block: elementHeight < windowHeight ? "center" : "start",
   });
+}
+
+export function formatTopPercentage(lbRank: RankAndCount): string {
+  if (lbRank.rank === undefined) return "-";
+  if (lbRank.rank === 1) return "GOAT";
+  return "Top " + roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+}
+
+export function formatTypingStatsRatio(stats: {
+  startedTests?: number;
+  completedTests?: number;
+}): {
+  completedPercentage: string;
+  restartRatio: string;
+} {
+  if (stats.completedTests === undefined || stats.startedTests === undefined) {
+    return { completedPercentage: "", restartRatio: "" };
+  }
+  return {
+    completedPercentage: Math.floor(
+      (stats.completedTests / stats.startedTests) * 100
+    ).toString(),
+    restartRatio: (
+      (stats.startedTests - stats.completedTests) /
+      stats.completedTests
+    ).toFixed(1),
+  };
+}
+
+export function addToGlobal(items: Record<string, unknown>): void {
+  for (const [name, item] of Object.entries(items)) {
+    //@ts-expect-error dev
+    window[name] = item;
+  }
+}
+
+export function getTotalInlineMargin(element: HTMLElement): number {
+  const computedStyle = window.getComputedStyle(element);
+  return (
+    parseInt(computedStyle.marginRight) + parseInt(computedStyle.marginLeft)
+  );
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

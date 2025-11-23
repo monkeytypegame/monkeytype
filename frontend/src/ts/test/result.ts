@@ -1078,8 +1078,8 @@ export async function update(
   TestConfig.hide();
 
   void Misc.swapElements(
-    $("#typingTest"),
-    $("#result"),
+    document.querySelector("#typingTest") as HTMLElement,
+    document.querySelector("#result") as HTMLElement,
     250,
     async () => {
       const result = document.querySelector<HTMLElement>("#result");
@@ -1104,12 +1104,6 @@ export async function update(
     },
     async () => {
       Focus.set(false);
-      $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
-        {
-          opacity: 1,
-        },
-        Misc.applyReducedMotion(125)
-      );
 
       const canQuickRestart = canQuickRestartFn(
         Config.mode,

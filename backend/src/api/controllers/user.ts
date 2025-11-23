@@ -1,4 +1,3 @@
-import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError, {
   getErrorMessage,
@@ -9,6 +8,7 @@ import * as DiscordUtils from "../../utils/discord";
 import {
   buildAgentLog,
   getFrontendUrl,
+  omit,
   replaceObjectId,
   replaceObjectIds,
   sanitizeString,
@@ -51,6 +51,7 @@ import {
   AddTagRequest,
   AddTagResponse,
   CheckNamePathParameters,
+  CheckNameResponse,
   CreateUserRequest,
   DeleteCustomThemeRequest,
   EditCustomThemeRequst,
@@ -60,6 +61,7 @@ import {
   GetCustomThemesResponse,
   GetDiscordOauthLinkResponse,
   GetFavoriteQuotesResponse,
+  GetFriendsResponse,
   GetPersonalBestsQuery,
   GetPersonalBestsResponse,
   GetProfilePathParams,
@@ -89,6 +91,8 @@ import {
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import * as ConnectionsDal from "../../dal/connections";
+import { PersonalBest } from "@monkeytype/schemas/shared";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   const { data: verified, error } = await tryCatch(verify(captcha));
@@ -292,6 +296,7 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
       uid,
       req.ctx.configuration.leaderboards.weeklyXp
     ),
+    ConnectionsDal.deleteByUid(uid),
   ]);
 
   try {
@@ -382,6 +387,8 @@ export async function updateName(
   }
 
   await UserDAL.updateName(uid, name, user.name);
+
+  await ConnectionsDal.updateName(uid, name);
   void addImportantLog(
     "user_name_updated",
     `changed name from ${user.name} to ${name}`,
@@ -425,16 +432,15 @@ export async function optOutOfLeaderboards(
 
 export async function checkName(
   req: MonkeyRequest<undefined, undefined, CheckNamePathParameters>
-): Promise<MonkeyResponse> {
+): Promise<CheckNameResponse> {
   const { name } = req.params;
   const { uid } = req.ctx.decodedToken;
 
   const available = await UserDAL.isNameAvailable(name, uid);
-  if (!available) {
-    throw new MonkeyError(409, "Username unavailable");
-  }
 
-  return new MonkeyResponse("Username available", null);
+  return new MonkeyResponse("Check username", {
+    available,
+  });
 }
 
 export async function updateEmail(
@@ -511,7 +517,7 @@ type RelevantUserInfo = Omit<
 >;
 
 function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
-  return _.omit(user, [
+  return omit(user, [
     "bananas",
     "lbPersonalBests",
     "inbox",
@@ -578,7 +584,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
 
   let inboxUnreadSize = 0;
   if (req.ctx.configuration.users.inbox.enabled) {
-    inboxUnreadSize = _.filter(userInfo.inbox, { read: false }).length;
+    inboxUnreadSize = userInfo.inbox?.filter((mail) => !mail.read).length ?? 0;
   }
 
   if (!userInfo.name) {
@@ -929,8 +935,30 @@ export async function getProfile(
     lbOptOut,
   } = user;
 
-  const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
-  const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
+  const extractValid = (
+    src: Record<string, PersonalBest[]>,
+    validKeys: string[]
+  ): Record<string, PersonalBest[]> => {
+    return validKeys.reduce((obj, key) => {
+      if (src?.[key] !== undefined) {
+        obj[key] = src[key];
+      }
+      return obj;
+    }, {});
+  };
+
+  const validTimePbs = extractValid(personalBests.time, [
+    "15",
+    "30",
+    "60",
+    "120",
+  ]);
+  const validWordsPbs = extractValid(personalBests.words, [
+    "10",
+    "25",
+    "50",
+    "100",
+  ]);
 
   const typingStats = {
     completedTests,
@@ -1012,10 +1040,12 @@ export async function updateProfile(
   const profileDetailsUpdates: Partial<UserProfileDetails> = {
     bio: sanitizeString(bio),
     keyboard: sanitizeString(keyboard),
-    socialProfiles: _.mapValues(
-      socialProfiles,
-      sanitizeString
-    ) as UserProfileDetails["socialProfiles"],
+    socialProfiles: Object.fromEntries(
+      Object.entries(socialProfiles ?? {}).map(([key, value]) => [
+        key,
+        sanitizeString(value),
+      ])
+    ),
     showActivityOnPublicProfile,
   };
 
@@ -1260,4 +1290,20 @@ export async function getStreak(
   const user = await UserDAL.getPartialUser(uid, "streak", ["streak"]);
 
   return new MonkeyResponse("Streak data retrieved", user.streak ?? null);
+}
+
+export async function getFriends(
+  req: MonkeyRequest
+): Promise<GetFriendsResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const premiumEnabled = req.ctx.configuration.users.premium.enabled;
+  const data = await UserDAL.getFriends(uid);
+
+  if (!premiumEnabled) {
+    for (const friend of data) {
+      delete friend.isPremium;
+    }
+  }
+
+  return new MonkeyResponse("Friends retrieved", data);
 }

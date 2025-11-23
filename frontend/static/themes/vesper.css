@@ -7,8 +7,8 @@
   --text-color: #ffffff;
   --error-color: #ff8080;
   --error-extra-color: #b25959;
-  --colorful-error-color: #99ffe4;
-  --colorful-error-extra-color: #99ffe4;
+  --colorful-error-color: #ff8080;
+  --colorful-error-extra-color: #b25959;
 }
 
 /* Background & Text Colors */

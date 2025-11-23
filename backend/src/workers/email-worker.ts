@@ -1,4 +1,3 @@
-import _ from "lodash";
 import IORedis from "ioredis";
 import { Worker, Job, type ConnectionOptions } from "bullmq";
 import Logger from "../utils/logger";

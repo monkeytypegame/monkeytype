@@ -27,6 +27,14 @@
 #caret,
 #paceCaret,
 .tribeCaret {
+  &.debug {
+    outline: 1px solid white;
+    &.hidden {
+      opacity: 0.5 !important;
+      display: block !important;
+    }
+  }
+
   &.off {
     width: 0;
   }
@@ -37,7 +45,7 @@
 
   &.carrot {
     background-color: transparent;
-    background-image: url("/images/carrot.png");
+    background-image: url("/images/caret/carrot.png");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -46,7 +54,16 @@
 
   &.banana {
     background-color: transparent;
-    background-image: url("/images/banana.png");
+    background-image: url("/images/caret/banana.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 1em;
+  }
+
+  &.monkey {
+    background-color: transparent;
+    background-image: url("/images/caret/monkey.png");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -57,7 +74,7 @@
     width: 0.5em;
     border-radius: 0;
     z-index: -1;
-    border-radius: calc(var(--roundness) / 4);
+    border-radius: 0.05em;
   }
 
   &.outline {
@@ -65,12 +82,11 @@
     animation-name: none;
     background: transparent;
     border: 0.05em solid var(--caret-color);
-    border-radius: calc(var(--roundness) / 4);
+    border-radius: 0.05em;
   }
 
   &.underline {
     height: 0.1em;
     width: 0.5em;
-    margin-top: 1.2em;
   }
 }

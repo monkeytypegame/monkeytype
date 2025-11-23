@@ -1,7 +1,3 @@
-// this file should be concatenated at the top of the legacy ts files
-import "jquery-color";
-import "jquery.easing";
-
 import "./event-handlers/global";
 import "./event-handlers/footer";
 import "./event-handlers/keymap";
@@ -49,7 +45,7 @@ import "./elements/fps-counter";
 import "./popups/tribe-room-code-popup";
 import "./popups/tribe-browse-public-rooms-popup";
 import "./controllers/profile-search-controller";
-import { isDevEnvironment } from "./utils/misc";
+import { isDevEnvironment, addToGlobal } from "./utils/misc";
 import * as VersionButton from "./elements/version-button";
 import * as Focus from "./test/focus";
 import { getDevOptionsModal } from "./utils/async-modules";
@@ -58,6 +54,7 @@ import * as Cookies from "./cookies";
 import "./elements/psa";
 import "./utils/url-handler";
 import "./modals/last-signed-out-result";
+import { applyEngineSettings } from "./anim";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -78,13 +75,7 @@ Object.defineProperty(window, "Math", {
   enumerable: true,
 });
 
-function addToGlobal(items: Record<string, unknown>): void {
-  for (const [name, item] of Object.entries(items)) {
-    //@ts-expect-error dev
-    window[name] = item;
-  }
-}
-
+applyEngineSettings();
 void loadFromLocalStorage();
 void VersionButton.update();
 Focus.set(true, true);

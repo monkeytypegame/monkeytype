@@ -14,6 +14,10 @@
           <i class="fas fa-key"></i>
           authentication
         </button>
+        <button class="text" data-tab="blockedUsers">
+          <i class="fas fa-user-shield"></i>
+          blocked users
+        </button>
         <button class="text" data-tab="apeKeys">
           <i class="fas fa-code"></i>
           ape keys
@@ -240,6 +244,27 @@
               </button>
             </div>
           </div>
+        </div>
+        <div class="tab hidden" data-tab="blockedUsers">
+          <div class="section blockedUsers">
+            <div class="title">
+              <i class="fas fa-user-shield"></i>
+              <span>blocked users</span>
+            </div>
+            <div class="text">
+              Blocked users cannot send you friend requests.
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <td>name</td>
+                <td>blocked on</td>
+                <td></td>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
         <div class="tab hidden" data-tab="dangerZone">
           <div class="section resetAccount">

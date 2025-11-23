@@ -193,7 +193,7 @@
       }
 
       .active {
-        animation: accountRowHighlight 4s linear 0s 1;
+        animation: accountRowHighlight 5s linear 0s 1;
       }
 
       .loadMoreButton {
@@ -440,18 +440,6 @@
     }
   }
 }
-
-.headerSorted {
-  font-weight: bold;
-}
-
-.sortable:hover {
-  cursor: pointer;
-  -webkit-user-select: none;
-  user-select: none;
-  background-color: var(--sub-alt-color);
-}
-
 .testActivity {
   // width: max-content;
   // justify-self: center;

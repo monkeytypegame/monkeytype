@@ -58,14 +58,14 @@ export function update(): void {
       `/profile/${name}`
     );
     void Misc.swapElements(
-      $("nav .textButton.view-login"),
-      $("nav .accountButtonAndMenu"),
+      document.querySelector("nav .textButton.view-login") as HTMLElement,
+      document.querySelector("nav .accountButtonAndMenu") as HTMLElement,
       250
     );
   } else {
     void Misc.swapElements(
-      $("nav .accountButtonAndMenu"),
-      $("nav .textButton.view-login"),
+      document.querySelector("nav .accountButtonAndMenu") as HTMLElement,
+      document.querySelector("nav .textButton.view-login") as HTMLElement,
       250,
       async () => {
         updateName("");
@@ -75,6 +75,28 @@ export function update(): void {
       }
     );
   }
+
+  updateFriendRequestsIndicator();
+}
+
+export function updateFriendRequestsIndicator(): void {
+  const friends = getSnapshot()?.connections;
+
+  if (friends !== undefined) {
+    const pendingFriendRequests = Object.values(friends).filter(
+      (it) => it === "incoming"
+    ).length;
+    if (pendingFriendRequests > 0) {
+      $("nav .view-account > .notificationBubble").removeClass("hidden");
+      $("nav .goToFriends > .notificationBubble")
+        .removeClass("hidden")
+        .text(pendingFriendRequests);
+      return;
+    }
+  }
+
+  $("nav .view-account > .notificationBubble").addClass("hidden");
+  $("nav .goToFriends > .notificationBubble").addClass("hidden");
 }
 
 const coarse = window.matchMedia("(pointer:coarse)")?.matches;

@@ -7,6 +7,7 @@ import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
+import * as CustomText from "./custom-text";
 
 type CharCount = {
   spaces: number;
@@ -137,21 +138,31 @@ export function setInvalid(): void {
 }
 
 export function calculateTestSeconds(now?: number): number {
-  if (now === undefined) {
-    return (end - start) / 1000;
-  } else {
-    return (now - start) / 1000;
+  let duration = (end - start) / 1000;
+
+  if (now !== undefined) {
+    duration = (now - start) / 1000;
   }
+
+  if (Config.mode === "zen" && duration < 0) {
+    duration = 0;
+    console.log("Zen mode with negative duration detected, setting to 0");
+  }
+
+  return duration;
 }
 
-export function calculateWpmAndRaw(withDecimalPoints?: true): {
+export function calculateWpmAndRaw(
+  withDecimalPoints?: true,
+  final = false
+): {
   wpm: number;
   raw: number;
 } {
   const testSeconds = calculateTestSeconds(
     TestState.isActive ? performance.now() : end
   );
-  const chars = countChars();
+  const chars = countChars(final);
   const wpm = Numbers.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
@@ -280,7 +291,7 @@ function getTargetWords(): string[] {
   return targetWords;
 }
 
-function countChars(): CharCount {
+function countChars(final = false): CharCount {
   let correctWordChars = 0;
   let correctChars = 0;
   let incorrectChars = 0;
@@ -343,7 +354,13 @@ function countChars(): CharCount {
       }
       correctChars += toAdd.correct;
       incorrectChars += toAdd.incorrect;
-      if (i === inputWords.length - 1) {
+
+      const isTimedTest =
+        Config.mode === "time" ||
+        (Config.mode === "custom" && CustomText.getLimit().mode === "time");
+      const shouldCountPartialLastWord = !final || (final && isTimedTest);
+
+      if (i === inputWords.length - 1 && shouldCountPartialLastWord) {
         //last word - check if it was all correct - add to correct word chars
         if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
       } else {
@@ -370,7 +387,7 @@ function countChars(): CharCount {
   };
 }
 
-export function calculateStats(): Stats {
+export function calculateFinalStats(): Stats {
   console.debug("Calculating result stats");
   let testSeconds = calculateTestSeconds();
   console.debug(
@@ -398,8 +415,10 @@ export function calculateStats(): Stats {
       testSeconds
     );
   }
-  const chars = countChars();
-  const { wpm, raw } = calculateWpmAndRaw(true);
+
+  //todo: this counts chars twice - once here and once in calculateWpmAndRaw
+  const chars = countChars(true);
+  const { wpm, raw } = calculateWpmAndRaw(true, true);
   const acc = Numbers.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) || !isFinite(wpm) ? 0 : wpm,

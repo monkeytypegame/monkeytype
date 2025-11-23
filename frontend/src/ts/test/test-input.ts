@@ -262,16 +262,37 @@ export function forceKeyup(now: number): void {
   //using mean here because for words mode, the last keypress ends the test.
   //if we then force keyup on that last keypress, it will record a duration of 0
   //skewing the average and standard deviation
-  const avg = roundTo2(mean(keypressTimings.duration.array));
-  const keysOrder = Object.entries(keyDownData);
-  keysOrder.sort((a, b) => a[1].timestamp - b[1].timestamp);
-  for (const keyOrder of keysOrder) {
-    recordKeyupTime(now, keyOrder[0]);
+
+  const indexesToRemove = new Set(
+    Object.values(keyDownData).map((data) => data.index)
+  );
+
+  const keypressDurations = keypressTimings.duration.array.filter(
+    (_, index) => !indexesToRemove.has(index)
+  );
+  if (keypressDurations.length === 0) {
+    // this means the test ended while all keys were still held - probably safe to ignore
+    // since this will result in a "too short" test anyway
+    return;
   }
-  const last = lastElementFromArray(keysOrder)?.[0] as string;
-  const index = keyDownData[last]?.index;
-  if (last !== undefined && index !== undefined) {
+
+  const avg = roundTo2(mean(keypressDurations));
+
+  const orderedKeys = Object.entries(keyDownData).sort(
+    (a, b) => a[1].timestamp - b[1].timestamp
+  );
+
+  for (const [key, { index }] of orderedKeys) {
     keypressTimings.duration.array[index] = avg;
+
+    if (key === "NoCode") {
+      noCodeIndex--;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete keyDownData[key];
+
+    updateOverlap(now);
   }
 }
 
@@ -350,6 +371,21 @@ function updateOverlap(now: number): void {
 }
 
 export function resetKeypressTimings(): void {
+  //because keydown triggers before input, we need to grab the first keypress data here and carry it over
+
+  //take the key with the largest index
+  const lastKey = Object.keys(keyDownData).reduce((a, b) => {
+    const aIndex = keyDownData[a]?.index;
+    const bIndex = keyDownData[b]?.index;
+    if (aIndex === undefined) return b;
+    if (bIndex === undefined) return a;
+    return aIndex > bIndex ? a : b;
+  }, "");
+
+  //get the data
+  const lastKeyData = keyDownData[lastKey];
+
+  //reset
   keypressTimings = {
     spacing: {
       first: -1,
@@ -366,6 +402,26 @@ export function resetKeypressTimings(): void {
   };
   keyDownData = {};
   noCodeIndex = 0;
+
+  //carry over
+  if (lastKeyData !== undefined) {
+    keypressTimings = {
+      spacing: {
+        first: lastKeyData.timestamp,
+        last: lastKeyData.timestamp,
+        array: [],
+      },
+      duration: {
+        array: [0],
+      },
+    };
+    keyDownData[lastKey] = {
+      timestamp: lastKeyData.timestamp,
+      // make sure to set it to the first index
+      index: 0,
+    };
+  }
+
   console.debug("Keypress timings reset");
 }
 
@@ -412,15 +468,5 @@ export function restart(): void {
   accuracy = {
     correct: 0,
     incorrect: 0,
-  };
-  keypressTimings = {
-    spacing: {
-      first: -1,
-      last: -1,
-      array: [],
-    },
-    duration: {
-      array: [],
-    },
   };
 }

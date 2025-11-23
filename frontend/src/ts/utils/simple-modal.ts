@@ -5,6 +5,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import {
+  IsValidResponse,
   Validation,
   ValidationOptions,
   ValidationResult,
@@ -33,7 +34,10 @@ type CommonInput<TType, TValue> = {
      * @param thisPopup the current modal
      * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
      */
-    isValid?: (value: string, thisPopup: SimpleModal) => Promise<true | string>;
+    isValid?: (
+      value: string,
+      thisPopup: SimpleModal
+    ) => Promise<IsValidResponse>;
   };
 };
 
@@ -86,6 +90,7 @@ export type ExecReturn = {
   notificationOptions?: Notifications.AddNotificationOptions;
   hideOptions?: HideOptions;
   afterHide?: () => void;
+  alwaysHide?: boolean;
 };
 
 type FormInput = CommonInputType & {
@@ -373,7 +378,7 @@ export class SimpleModal {
       if (res.showNotification ?? true) {
         Notifications.add(res.message, res.status, res.notificationOptions);
       }
-      if (res.status === 1) {
+      if (res.status === 1 || res.alwaysHide) {
         void this.hide(true, res.hideOptions).then(() => {
           if (res.afterHide) {
             res.afterHide();

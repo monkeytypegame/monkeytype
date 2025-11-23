@@ -13,17 +13,17 @@
   },
   "devDependencies": {
     "@monkeytype/eslint-config": "workspace:*",
-    "@monkeytype/schemas": "workspace:*",
     "@monkeytype/tsup-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "eslint": "8.57.1",
     "madge": "8.0.0",
-    "oxlint": "1.15.0",
+    "oxlint": "1.29.0",
     "tsup": "8.4.0",
     "typescript": "5.5.4",
-    "vitest": "3.2.4"
+    "vitest": "4.0.8"
   },
   "dependencies": {
+    "@monkeytype/schemas": "workspace:*",
     "@monkeytype/util": "workspace:*"
   },
   "exports": {

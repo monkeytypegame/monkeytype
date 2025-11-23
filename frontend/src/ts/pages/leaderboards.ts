@@ -27,7 +27,7 @@ import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import { applyReducedMotion, isDevEnvironment } from "../utils/misc";
+import { isDevEnvironment } from "../utils/misc";
 import { abbreviateNumber } from "../utils/numbers";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { z } from "zod";
@@ -35,7 +35,10 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { UTCDateMini } from "@date-fns/utc";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import { PaginationQuery } from "@monkeytype/contracts/leaderboards";
+import {
+  PaginationQuery,
+  FriendsOnlyQuery,
+} from "@monkeytype/contracts/leaderboards";
 import { Language, LanguageSchema } from "@monkeytype/schemas/languages";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { Mode, Mode2, ModeSchema } from "@monkeytype/schemas/shared";
@@ -83,6 +86,7 @@ type State = {
   updating: boolean;
   page: number;
   pageSize: number;
+  friendsOnly: boolean;
   title: string;
   error?: string;
   scrollToUserAfterFill: boolean;
@@ -99,6 +103,7 @@ const state = {
   userData: null,
   page: 0,
   pageSize: 50,
+  friendsOnly: false,
   title: "All-time English Time 15 Leaderboard",
   scrollToUserAfterFill: false,
   goToUserPage: false,
@@ -111,6 +116,7 @@ const SelectorSchema = z.object({
   language: LanguageSchema.optional(),
   yesterday: z.boolean().optional(),
   lastWeek: z.boolean().optional(),
+  friendsOnly: z.boolean().optional(),
 });
 const UrlParameterSchema = SelectorSchema.extend({
   page: z.number(),
@@ -151,6 +157,8 @@ function updateTitle(): void {
       ? "Weekly XP"
       : "Daily";
 
+  const friend = state.friendsOnly ? "Friends " : "";
+
   const language =
     state.type !== "weekly" ? capitalizeFirstLetter(state.language) : "";
 
@@ -159,7 +167,7 @@ function updateTitle(): void {
       ? ` ${capitalizeFirstLetter(state.mode)} ${state.mode2}`
       : "";
 
-  state.title = `${type} ${language} ${mode} Leaderboard`;
+  state.title = `${type} ${language} ${mode} ${friend}Leaderboard`;
   $(".page.pageLeaderboards .bigtitle >.text").text(state.title);
 
   $(".page.pageLeaderboards .bigtitle .subtext").addClass("hidden");
@@ -255,17 +263,30 @@ async function requestData(update = false): Promise<void> {
   updateContent();
 
   const defineRequests = <TQuery, TRank, TData>(
-    data: (args: { query: TQuery & PaginationQuery }) => Promise<TData>,
+    data: (args: {
+      query: TQuery & PaginationQuery & FriendsOnlyQuery;
+    }) => Promise<TData>,
     rank: (args: { query: TQuery }) => Promise<TRank>,
     baseQuery: TQuery
   ): {
     rank: undefined | (() => Promise<TRank>);
     data: () => Promise<TData>;
   } => ({
-    rank: async () => rank({ query: baseQuery }),
+    rank: async () =>
+      rank({
+        query: {
+          ...baseQuery,
+          friendsOnly: state.friendsOnly || undefined,
+        },
+      }),
     data: async () =>
       data({
-        query: { ...baseQuery, page: state.page, pageSize: state.pageSize },
+        query: {
+          ...baseQuery,
+          page: state.page,
+          pageSize: state.pageSize,
+          friendsOnly: state.friendsOnly || undefined,
+        },
       }),
   });
 
@@ -423,10 +444,8 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
   }
   element.dataset["uid"] = entry.uid;
   element.innerHTML = `
-    
-      <td>${
-        entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
-      }</td>
+      <td>${formatRank(entry.friendsRank)}</td>
+      <td>${formatRank(entry.rank)}</td>
       <td>
         <div class="avatarNameBadge">
           <div class="avatarPlaceholder"></div>
@@ -434,7 +453,10 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
     entry.uid
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
-            ${getHtmlByUserFlags(entry)}
+            ${getHtmlByUserFlags({
+              ...entry,
+              isFriend: DB.isFriend(entry.uid),
+            })}
             ${
               isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
             }
@@ -479,9 +501,8 @@ function buildWeeklyTableRow(
   }
   element.dataset["uid"] = entry.uid;
   element.innerHTML = `
-      <td>${
-        entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
-      }</td>
+      <td>${formatRank(entry.friendsRank)}</td>
+      <td>${formatRank(entry.rank)}</td>
       <td>
         <div class="avatarNameBadge">
           <div class="avatarPlaceholder"></div>
@@ -489,7 +510,10 @@ function buildWeeklyTableRow(
     entry.uid
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
-            ${getHtmlByUserFlags(entry)}
+            ${getHtmlByUserFlags({
+              ...entry,
+              isFriend: DB.isFriend(entry.uid),
+            })}
             ${
               isSafeNumber(entry.badgeId) ? getBadgeHTMLbyId(entry.badgeId) : ""
             }
@@ -531,6 +555,12 @@ function buildWeeklyTableRow(
 function fillTable(): void {
   const table = $(".page.pageLeaderboards table tbody");
   table.empty();
+
+  if (state.friendsOnly) {
+    table.parent().addClass("friendsOnly");
+  } else {
+    table.parent().removeClass("friendsOnly");
+  }
 
   $(".page.pageLeaderboards table thead").addClass("hidden");
   if (state.type === "allTime" || state.type === "daily") {
@@ -647,9 +677,13 @@ function fillUser(): void {
     }
 
     const userData = state.userData;
-    const percentile = (userData.rank / state.count) * 100;
+    const rank = state.friendsOnly
+      ? (userData.friendsRank as number)
+      : userData.rank;
+    const percentile = (rank / state.count) * 100;
+
     let percentileString = `Top ${percentile.toFixed(2)}%`;
-    if (userData.rank === 1) {
+    if (rank === 1) {
       percentileString = "GOAT";
     }
 
@@ -680,11 +714,7 @@ function fillUser(): void {
     };
 
     const html = `
-          <div class="rank">${
-            userData.rank === 1
-              ? '<i class="fas fa-fw fa-crown"></i>'
-              : userData.rank
-          }</div>
+          <div class="rank">${formatRank(rank)}</div>
         <div class="userInfo">
           <div class="top">You (${percentileString})</div>
           <div class="bottom">${diffText}</div>
@@ -736,9 +766,13 @@ function fillUser(): void {
     }
 
     const userData = state.userData;
-    const percentile = (userData.rank / state.count) * 100;
+    const rank = state.friendsOnly
+      ? (userData.friendsRank as number)
+      : userData.rank;
+    const percentile = (rank / state.count) * 100;
+
     let percentileString = `Top ${percentile.toFixed(2)}%`;
-    if (userData.rank === 1) {
+    if (rank === 1) {
       percentileString = "GOAT";
     }
 
@@ -775,11 +809,7 @@ function fillUser(): void {
     };
 
     const html = `
-          <div class="rank">${
-            userData.rank === 1
-              ? '<i class="fas fa-fw fa-crown"></i>'
-              : userData.rank
-          }</div>
+          <div class="rank">${formatRank(rank)}</div>
         <div class="userInfo">
           <div class="top">You (${percentileString})</div>
           <div class="bottom">${diffText}</div>
@@ -868,21 +898,16 @@ function updateContent(): void {
   }
 
   if (state.scrollToUserAfterFill) {
-    const windowHeight = $(window).height() ?? 0;
-    const offset = $(`.tableAndUser .me`).offset()?.top ?? 0;
-    const scrollTo = offset - windowHeight / 2;
-    $([document.documentElement, document.body]).animate(
-      {
-        scrollTop: scrollTo,
-      },
-      applyReducedMotion(500)
-    );
+    document.querySelector(".tableAndUser .me")?.scrollIntoView({
+      block: "center",
+    });
     state.scrollToUserAfterFill = false;
   }
 }
 
 function updateSideButtons(): void {
   updateTypeButtons();
+  updateFriendsButtons();
   updateModeButtons();
   updateLanguageButtons();
 }
@@ -893,14 +918,42 @@ function updateTypeButtons(): void {
   el.find(`button[data-type=${state.type}]`).addClass("active");
 }
 
+function updateFriendsButtons(): void {
+  const friendsOnlyGroup = $(
+    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons"
+  );
+  if (
+    isAuthenticated() &&
+    (ServerConfiguration.get()?.connections.enabled ?? false)
+  ) {
+    friendsOnlyGroup.removeClass("hidden");
+  } else {
+    friendsOnlyGroup.addClass("hidden");
+    state.friendsOnly = false;
+    return;
+  }
+
+  const everyoneButton = $(
+    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .everyone"
+  );
+  const friendsOnlyButton = $(
+    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .friendsOnly"
+  );
+  if (state.friendsOnly) {
+    friendsOnlyButton.addClass("active");
+    everyoneButton.removeClass("active");
+  } else {
+    friendsOnlyButton.removeClass("active");
+    everyoneButton.addClass("active");
+  }
+}
+
 function updateModeButtons(): void {
   if (state.type !== "allTime" && state.type !== "daily") {
     $(".page.pageLeaderboards .buttonGroup.modeButtons").addClass("hidden");
-    $(".page.pageLeaderboards .sideButtons .divider").addClass("hidden");
     return;
   }
   $(".page.pageLeaderboards .buttonGroup.modeButtons").removeClass("hidden");
-  $(".page.pageLeaderboards .sideButtons .divider").removeClass("hidden");
 
   const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
   el.find("button").removeClass("active");
@@ -929,13 +982,11 @@ function updateModeButtons(): void {
 function updateLanguageButtons(): void {
   if (state.type !== "daily") {
     $(".page.pageLeaderboards .buttonGroup.languageButtons").addClass("hidden");
-    $(".page.pageLeaderboards .sideButtons .divider2").addClass("hidden");
     return;
   }
   $(".page.pageLeaderboards .buttonGroup.languageButtons").removeClass(
     "hidden"
   );
-  $(".page.pageLeaderboards .sideButtons .divider2").removeClass("hidden");
 
   const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
   el.find("button").removeClass("active");
@@ -1131,7 +1182,9 @@ async function appendModeAndLanguageButtons(): Promise<void> {
     </button>`
     );
   });
-  $(".modeButtons").html(mode2Buttons.join("\n"));
+  $(".modeButtons").html(
+    `<div class="divider"></div>` + mode2Buttons.join("\n")
+  );
 
   const availableLanguages = Array.from(
     new Set(
@@ -1149,7 +1202,9 @@ async function appendModeAndLanguageButtons(): Promise<void> {
           ${lang}
         </button>`
   );
-  $(".languageButtons").html(languageButtons.join("\n"));
+  $(".languageButtons").html(
+    `<div class="divider"></div>` + languageButtons.join("\n")
+  );
 }
 
 function disableButtons(): void {
@@ -1247,6 +1302,9 @@ function updateGetParameters(): void {
 
   params.page = state.page + 1;
 
+  if (state.friendsOnly) {
+    params.friendsOnly = true;
+  }
   page.setUrlParams(params);
 
   selectorLS.set(state);
@@ -1261,6 +1319,8 @@ function readGetParameters(params?: UrlParameter): void {
   if (params.type !== undefined) {
     state.type = params.type;
   }
+
+  state.friendsOnly = params.friendsOnly ?? false;
 
   if (state.type === "allTime") {
     if (params.mode2 !== undefined) {
@@ -1315,6 +1375,13 @@ function updateTimeText(
   const text = $(".page.pageLeaderboards .bigtitle .subtext > .text");
   text.text(`${dateString}`);
   text.attr("aria-label", localDateString);
+}
+
+function formatRank(rank: number | undefined): string {
+  if (rank === undefined) return "";
+  if (rank === 1) return '<i class="fas fa-fw fa-crown"></i>';
+
+  return rank.toString();
 }
 
 $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
@@ -1406,6 +1473,20 @@ $(".page.pageLeaderboards .buttonGroup.languageButtons").on(
   }
 );
 
+$(".page.pageLeaderboards .buttonGroup.friendsOnlyButtons").on(
+  "click",
+  "button",
+  () => {
+    state.friendsOnly = !state.friendsOnly;
+    state.page = 0;
+    void requestData();
+    updateTitle();
+    updateSideButtons();
+    updateContent();
+    updateGetParameters();
+  }
+);
+
 export const page = new PageWithUrlParams({
   id: "leaderboards",
   element: $(".page.pageLeaderboards"),
@@ -1417,7 +1498,7 @@ export const page = new PageWithUrlParams({
     stopTimer();
   },
   beforeShow: async (options): Promise<void> => {
-    await ServerConfiguration.configPromise;
+    await ServerConfiguration.configurationPromise;
     Skeleton.append("pageLeaderboards", "main");
     await updateValidDailyLeaderboards();
     await appendModeAndLanguageButtons();

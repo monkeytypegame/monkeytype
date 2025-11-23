@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { ObjectId } from "mongodb";
 import * as PresetDal from "../../../src/dal/preset";
-import _ from "lodash";
 
 describe("PresetDal", () => {
   describe("readPreset", () => {
@@ -382,7 +381,7 @@ describe("PresetDal", () => {
       ).presetId;
 
       //WHEN
-      PresetDal.removePreset(uid, first);
+      await PresetDal.removePreset(uid, first);
 
       //THEN
       const read = await PresetDal.getPresets(uid);

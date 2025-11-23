@@ -67,6 +67,7 @@
     <button class="showRealWordsInput">show real words input</button>
     <button class="xpBarTest">xp bar test</button>
     <button class="toggleFakeChartData">toggle fake chart data</button>
+    <button class="toggleCaretDebug">toggle caret debug</button>
   </div>
 </dialog>
 
@@ -577,6 +578,8 @@
         <i class="fas fa-folder"></i>
         saved texts
       </div>
+    </div>
+    <div class="buttonsTop2">
       <input id="fileInput" type="file" class="hidden" accept=".txt" />
       <label for="fileInput" class="button importText">
         <i class="fas fa-file-import"></i>
@@ -585,6 +588,10 @@
       <div class="button wordfilter">
         <i class="fas fa-filter"></i>
         words filter
+      </div>
+      <div class="button customGenerator">
+        <i class="fas fa-cogs"></i>
+        custom generator
       </div>
     </div>
     <div class="savedTexts hidden" style="display: none">
@@ -850,13 +857,86 @@
         <select class="layoutInput"></select>
       </div>
       <!-- <div class="tip">Use the dropdowns above to generate presets</div> -->
-      <button class="generateButton">generate</button>
+      <button class="generateButton">apply</button>
     </div>
 
     <div class="bottom">
       <div class="tip">
         "Set" replaces the current custom word list with the filter result,
         "Add" appends the filter result to the current custom word list.
+      </div>
+      <button class="setButton">set</button>
+      <button class="addButton">add</button>
+    </div>
+  </div>
+</dialog>
+<dialog id="customGeneratorModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="main">
+      <div class="group">
+        <div class="title">presets</div>
+        <select class="presetInput">
+          <option value="alphas">a-z</option>
+          <option value="numbers">0-9</option>
+          <option value="special">symbols</option>
+          <option value="bigrams">bigrams</option>
+          <option value="trigrams">trigrams</option>
+        </select>
+        <button class="generateButton">apply</button>
+      </div>
+      <div class="separator"></div>
+      <div class="tip">
+        Enter characters or strings separated by spaces. Random combinations
+        will be generated using these inputs.
+      </div>
+      <div class="group">
+        <div class="title">character set</div>
+        <textarea
+          class="characterInput"
+          id="characterInput"
+          autocomplete="off"
+          placeholder=""
+          title="characters"
+        ></textarea>
+      </div>
+      <div class="group lengthgrid">
+        <div class="title">min length</div>
+        <div class="title">max length</div>
+
+        <input
+          class="wordLength minLengthInput"
+          autocomplete="off"
+          type="number"
+          value="2"
+          min="1"
+          title="min"
+        />
+        <input
+          class="wordLength maxLengthInput"
+          autocomplete="off"
+          type="number"
+          value="5"
+          min="1"
+          title="max"
+        />
+      </div>
+      <div class="group">
+        <div class="title">word count</div>
+        <input
+          class="wordCountInput"
+          autocomplete="off"
+          type="number"
+          value="100"
+          min="1"
+          title="word count"
+        />
+      </div>
+    </div>
+
+    <div class="bottom">
+      <div class="tip">
+        "Set" replaces the current custom text with generated words, "Add"
+        appends generated words to the current custom text.
       </div>
       <button class="setButton">set</button>
       <button class="addButton">add</button>
@@ -1286,14 +1366,6 @@
     </div>
     <div class="suggestions"></div>
   </div>
-</dialog>
-
-<dialog id="newFilterPresetModal" class="modalWrapper hidden">
-  <form class="modal">
-    <div class="title">New filter preset</div>
-    <input type="text" value="" />
-    <button>add</button>
-  </form>
 </dialog>
 
 <dialog id="editProfileModal" class="modalWrapper hidden">

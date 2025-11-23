@@ -2,7 +2,7 @@ name: Monkey CI
 
 env:
   PNPM_VERSION: "9.6.0"
-  NODE_VERSION: "20.19.4"
+  NODE_VERSION: "24.11.0"
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
 permissions:
@@ -49,7 +49,7 @@ jobs:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
               - 'backend/package.json'
             fe-src:
-              - 'frontend/**/*.{ts,scss}'
+              - 'frontend/**/*.{ts,scss,html}'
               - 'frontend/package.json'
             pkg-src:
               - 'packages/**/*'
@@ -239,14 +239,14 @@ jobs:
         with:
           filters: |
             languages:
-              - 'frontend/static/languages/*.json'
+              - 'frontend/static/languages/**'
             quotes:
-              - 'frontend/static/quotes/*.json'
+              - 'frontend/static/quotes/**'
             others:
-              - 'frontend/static/layouts/*.json'
+              - 'frontend/static/layouts/**'
               - 'frontend/static/themes/**'
               - 'frontend/static/webfonts/**'
-              - 'frontend/static/challenges/*.json'
+              - 'frontend/static/challenges/**'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4

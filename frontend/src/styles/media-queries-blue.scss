@@ -15,6 +15,13 @@
   #testModesNotice {
     font-size: 0.8rem;
   }
+  #customTextModal {
+    .modal {
+      .buttonsTop2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
   #bannerCenter {
     font-size: 0.85rem;
     .banner.withImage {
@@ -100,7 +107,7 @@
       .tabs {
         padding: 0;
         display: grid;
-        grid-auto-flow: column;
+        grid-auto-flow: row;
         button {
           justify-content: center;
           padding: 1em 0.5em;
@@ -108,6 +115,7 @@
       }
     }
   }
+
   .pageSettings {
     .accountSettingsNotice {
       button {
@@ -119,15 +127,20 @@
       grid-template-areas:
         "title"
         "text" "buttons";
-      .customThemeEdit {
-        .spacer {
-          display: none;
-        }
-        .customThemeInputs {
-          grid-template-columns: 1fr 1.5fr;
-        }
-        .customThemeButtons {
-          grid-template-columns: 1fr;
+
+      &.themes {
+        grid-template-columns: 1fr 1fr;
+        gap: 1em;
+        .tabContainer .tabContent.customTheme {
+          .customThemeInputs {
+            grid-template-columns: 1fr;
+            .customThemeInput {
+              grid-template-columns: 1fr 1fr;
+            }
+          }
+          .customThemeButtons {
+            grid-template-columns: 1fr;
+          }
         }
       }
     }
@@ -230,8 +243,13 @@
     //   border-radius: 0.15em;
     // }
   }
-}
 
+  .pageFriends {
+    .content .friends table {
+      font-size: 0.75rem;
+    }
+  }
+}
 @media (pointer: coarse) and (max-width: 778px) {
   #restartTestButton {
     display: block !important;

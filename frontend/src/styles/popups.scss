@@ -105,14 +105,19 @@ body.darkMode {
     //   "textArea textArea checkboxes"
     //   "ok ok ok";
     grid-template-areas:
-      "topButtons topButtons checkboxes"
-      "textArea textArea checkboxes"
-      "ok ok checkboxes";
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: min-content 1fr min-content;
+      "topButtons checkboxes"
+      "topButtons2 checkboxes"
+      "textArea checkboxes"
+      "ok checkboxes";
+    grid-template-columns: auto 20rem;
+    grid-template-rows: min-content min-content 1fr min-content;
 
     .buttonsTop {
       grid-area: topButtons;
+    }
+
+    .buttonsTop2 {
+      grid-area: topButtons2;
     }
 
     .textAreaWrapper {
@@ -170,7 +175,13 @@ body.darkMode {
     .buttonsTop {
       display: grid;
       // grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .buttonsTop2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 1rem;
     }
 
@@ -199,7 +210,7 @@ body.darkMode {
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
-      min-height: 589px;
+      min-height: 524px;
       color: var(--text-color);
       overflow-x: hidden;
       overflow-y: scroll;
@@ -787,6 +798,70 @@ body.darkMode {
 
     .text {
       color: var(--text-color);
+    }
+  }
+}
+
+#customGeneratorModal {
+  .modal {
+    max-width: 600px;
+
+    .main {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .bottom {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .separator {
+      height: 0.25rem;
+      width: 100%;
+      background-color: var(--sub-alt-color);
+      border-radius: var(--roundness);
+    }
+
+    .group {
+      display: grid;
+      gap: 0.5rem;
+
+      .title {
+        color: var(--sub-color);
+      }
+    }
+
+    .lengthgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr;
+      column-gap: 1rem;
+    }
+
+    .tip {
+      color: var(--sub-color);
+      font-size: 0.8rem;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.5rem;
+      background: var(--sub-alt-color);
+      color: var(--text-color);
+      border: none;
+      border-radius: var(--roundness);
+
+      &::placeholder {
+        color: var(--sub-color);
+      }
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
     }
   }
 }
@@ -1922,12 +1997,6 @@ body.darkMode {
         align-self: center;
       }
     }
-  }
-}
-
-#newFilterPresetModal {
-  .modal {
-    max-width: 450px;
   }
 }
 

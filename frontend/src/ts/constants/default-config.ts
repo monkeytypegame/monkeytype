@@ -1,6 +1,6 @@
 import { Config, CustomThemeColors } from "@monkeytype/schemas/configs";
 
-const obj = {
+const obj: Config = {
   theme: "serika_dark",
   themeLight: "serika",
   themeDark: "serika_dark",
@@ -103,7 +103,7 @@ const obj = {
   tribeDelta: "bar",
   tribeCarets: "on",
   playTimeWarning: "off",
-} as Config;
+};
 
 export function getDefaultConfig(): Config {
   return structuredClone(obj);

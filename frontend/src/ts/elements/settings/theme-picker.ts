@@ -86,6 +86,8 @@ function updateColors(
     }
   }
 
+  color = color.replace("##", "#");
+
   $(".colorConverter").css("color", color);
   const hexColor: string | undefined = Colors.rgbStringtoHex(
     $(".colorConverter").css("color")
@@ -218,7 +220,7 @@ export async function fillCustomButtons(): Promise<void> {
   ).empty();
   const addButton = $(".pageSettings .section.themes .addCustomThemeButton");
   const saveButton = $(
-    ".pageSettings .section.themes .customThemeEdit #saveCustomThemeButton"
+    ".pageSettings .section.themes .tabContent.customTheme #saveCustomThemeButton"
   );
 
   if (!isAuthenticated()) {
@@ -284,9 +286,9 @@ function saveCustomThemeColors(): void {
   const newColors: string[] = [];
   for (const color of ThemeController.colorVars) {
     newColors.push(
-      $(
-        `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
-      ).attr("value") as string
+      $(`.pageSettings .tabContent.customTheme #${color}[type='color']`).attr(
+        "value"
+      ) as string
     );
   }
   UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
@@ -305,14 +307,22 @@ export function updateActiveTab(): void {
 
   if (Config.customTheme) {
     void Misc.swapElements(
-      $('.pageSettings [tabContent="preset"]'),
-      $('.pageSettings [tabContent="custom"]'),
+      document.querySelector(
+        '.pageSettings [tabContent="preset"]'
+      ) as HTMLElement,
+      document.querySelector(
+        '.pageSettings [tabContent="custom"]'
+      ) as HTMLElement,
       250
     );
   } else {
     void Misc.swapElements(
-      $('.pageSettings [tabContent="custom"]'),
-      $('.pageSettings [tabContent="preset"]'),
+      document.querySelector(
+        '.pageSettings [tabContent="custom"]'
+      ) as HTMLElement,
+      document.querySelector(
+        '.pageSettings [tabContent="preset"]'
+      ) as HTMLElement,
       250
     );
   }

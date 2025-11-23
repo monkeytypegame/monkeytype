@@ -7,6 +7,7 @@ import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { capitalizeFirstLetter } from "./utils/strings";
+import { getDefaultConfig } from "./constants/default-config";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -744,6 +745,14 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-palette",
     displayString: "custom theme colors",
     changeRequiresRestart: false,
+    overrideValue: ({ value }) => {
+      const allColorsThesame = value.every((color) => color === value[0]);
+      if (allColorsThesame) {
+        return getDefaultConfig().customThemeColors;
+      } else {
+        return value;
+      }
+    },
   },
 
   // hide elements

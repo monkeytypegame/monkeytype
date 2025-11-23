@@ -261,6 +261,55 @@ export function isWordRightToLeft(
   return reverseDirection ? !result : result;
 }
 
+export const CHAR_EQUIVALENCE_MAPS = [
+  new Map(
+    ["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"].map((char, index) => [char, index])
+  ),
+  new Map([`"`, "”", "“", "„"].map((char, index) => [char, index])),
+  new Map(["–", "—", "-", "‐"].map((char, index) => [char, index])),
+  new Map([",", "‚"].map((char, index) => [char, index])),
+];
+
+/**
+ * Checks if two characters are visually/typographically equivalent for typing purposes.
+ * This allows users to type different variants of the same character and still be considered correct.
+ * @param char1 The first character to compare
+ * @param char2 The second character to compare
+ * @returns true if the characters are equivalent, false otherwise
+ */
+export function areCharactersVisuallyEqual(
+  char1: string,
+  char2: string
+): boolean {
+  // If characters are exactly the same, they're equivalent
+  if (char1 === char2) {
+    return true;
+  }
+
+  // Check each equivalence map
+  for (const map of CHAR_EQUIVALENCE_MAPS) {
+    if (map.has(char1) && map.has(char2)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function toHex(buffer: ArrayBuffer): string {
+  // @ts-expect-error modern browsers
+  if (Uint8Array.prototype.toHex !== undefined) {
+    // @ts-expect-error modern browsers
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    return new Uint8Array(buffer).toHex() as string;
+  }
+  const hashArray = Array.from(new Uint8Array(buffer));
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+}
+
 // Export testing utilities for unit tests
 export const __testing = {
   hasRTLCharacters,

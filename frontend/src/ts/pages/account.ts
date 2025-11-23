@@ -34,6 +34,7 @@ import defaultResultFilters from "../constants/default-result-filters";
 import { SnapshotResult } from "../constants/default-snapshot";
 import Ape from "../ape";
 import { AccountChart } from "@monkeytype/schemas/configs";
+import { SortedTableWithLimit } from "../utils/sorted-table";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -47,6 +48,7 @@ export function toggleFilterDebug(): void {
 let filteredResults: SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
 let testActivityEl: HTMLElement | null;
+let historyTable: SortedTableWithLimit<SnapshotResult<Mode>>;
 
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults === undefined || filteredResults.length === 0) return;
@@ -56,104 +58,115 @@ function loadMoreLines(lineIndex?: number): void {
   } else {
     newVisibleLines = visibleTableLines + 10;
   }
-  for (let i = visibleTableLines; i < newVisibleLines; i++) {
-    const result = filteredResults[i];
-    if (!result) continue;
-    let diff = result.difficulty;
-    if (diff === undefined) {
-      diff = "normal";
-    }
 
-    let icons = `<span aria-label="${result.language?.replace(
-      "_",
-      " "
-    )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i></span>`;
+  visibleTableLines = newVisibleLines;
+  if (visibleTableLines >= filteredResults.length) {
+    $(".pageAccount .loadMoreButton").addClass("hidden");
+  } else {
+    $(".pageAccount .loadMoreButton").removeClass("hidden");
+  }
 
-    if (diff === "normal") {
-      icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="far fa-fw fa-star"></i></span>`;
-    } else if (diff === "expert") {
-      icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star-half-alt"></i></span>`;
-    } else if (diff === "master") {
-      icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i></span>`;
-    }
+  historyTable.setLimit(newVisibleLines);
+  historyTable.updateBody();
+}
 
-    if (result.punctuation) {
-      icons += `<span aria-label="punctuation" data-balloon-pos="up"><i class="fas fa-fw fa-at"></i></span>`;
-    }
+function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
+  let diff = result.difficulty;
+  if (diff === undefined) {
+    diff = "normal";
+  }
 
-    if (result.numbers) {
-      icons += `<span aria-label="numbers" data-balloon-pos="up"><i class="fas fa-fw fa-hashtag"></i></span>`;
-    }
+  let icons = `<span aria-label="${result.language?.replace(
+    "_",
+    " "
+  )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i></span>`;
 
-    if (result.blindMode) {
-      icons += `<span aria-label="blind mode" data-balloon-pos="up"><i class="fas fa-fw fa-eye-slash"></i></span>`;
-    }
+  if (diff === "normal") {
+    icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="far fa-fw fa-star"></i></span>`;
+  } else if (diff === "expert") {
+    icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star-half-alt"></i></span>`;
+  } else if (diff === "master") {
+    icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i></span>`;
+  }
 
-    if (result.lazyMode) {
-      icons += `<span aria-label="lazy mode" data-balloon-pos="up"><i class="fas fa-fw fa-couch"></i></span>`;
-    }
+  if (result.punctuation) {
+    icons += `<span aria-label="punctuation" data-balloon-pos="up"><i class="fas fa-fw fa-at"></i></span>`;
+  }
 
-    if (result.funbox !== undefined && result.funbox.length > 0) {
-      icons += `<span aria-label="${result.funbox
-        .map((it) => it.replace(/_/g, " "))
-        .join(
-          ", "
-        )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
-    }
+  if (result.numbers) {
+    icons += `<span aria-label="numbers" data-balloon-pos="up"><i class="fas fa-fw fa-hashtag"></i></span>`;
+  }
 
-    if (result.chartData === "toolong" || result.testDuration > 122) {
-      icons += `<span class="miniResultChartButton disabled" aria-label="Graph history is not available for long tests" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
-    } else {
-      icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}"><i class="fas fa-fw fa-chart-line"></i></span>`;
-    }
+  if (result.blindMode) {
+    icons += `<span aria-label="blind mode" data-balloon-pos="up"><i class="fas fa-fw fa-eye-slash"></i></span>`;
+  }
 
-    let tagNames = "no tags";
+  if (result.lazyMode) {
+    icons += `<span aria-label="lazy mode" data-balloon-pos="up"><i class="fas fa-fw fa-couch"></i></span>`;
+  }
 
-    if (result.tags !== undefined && result.tags.length > 0) {
-      tagNames = "";
-      result.tags.forEach((tag) => {
-        DB.getSnapshot()?.tags?.forEach((snaptag) => {
-          if (tag === snaptag._id) {
-            tagNames += snaptag.display + ", ";
-          }
-        });
+  if (result.funbox !== undefined && result.funbox.length > 0) {
+    icons += `<span aria-label="${result.funbox
+      .map((it) => it.replace(/_/g, " "))
+      .join(
+        ", "
+      )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
+  }
+
+  if (result.chartData === "toolong" || result.testDuration > 122) {
+    icons += `<span class="miniResultChartButton disabled" aria-label="Graph history is not available for long tests" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
+  } else {
+    icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up"><i class="fas fa-fw fa-chart-line"></i></span>`;
+  }
+
+  let tagNames = "no tags";
+
+  if (result.tags !== undefined && result.tags.length > 0) {
+    tagNames = "";
+    result.tags.forEach((tag) => {
+      DB.getSnapshot()?.tags?.forEach((snaptag) => {
+        if (tag === snaptag._id) {
+          tagNames += snaptag.display + ", ";
+        }
       });
-      tagNames = tagNames.substring(0, tagNames.length - 2);
-    }
+    });
+    tagNames = tagNames.substring(0, tagNames.length - 2);
+  }
 
-    let restags;
-    if (result.tags === undefined) {
-      restags = "[]";
-    } else {
-      restags = JSON.stringify(result.tags);
-    }
+  let restags;
+  if (result.tags === undefined) {
+    restags = "[]";
+  } else {
+    restags = JSON.stringify(result.tags);
+  }
 
-    const isActive = result.tags !== undefined && result.tags.length > 0;
-    const icon =
-      result.tags !== undefined && result.tags.length > 1
-        ? "fa-tags"
-        : "fa-tag";
+  const isActive = result.tags !== undefined && result.tags.length > 0;
+  const icon =
+    result.tags !== undefined && result.tags.length > 1 ? "fa-tags" : "fa-tag";
 
-    const resultTagsButton = `<button class="textButton resultEditTagsButton ${
-      isActive ? "active" : ""
-    }" data-result-id="${
-      result._id
-    }" data-tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw ${icon}"></i></button>`;
+  const resultTagsButton = `<button class="textButton resultEditTagsButton ${
+    isActive ? "active" : ""
+  }" data-result-id="${
+    result._id
+  }" data-tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw ${icon}"></i></button>`;
 
-    let pb = "";
-    if (result.isPb) {
-      pb = '<i class="fas fa-fw fa-crown"></i>';
-    } else {
-      pb = "";
-    }
+  let pb = "";
+  if (result.isPb) {
+    pb = '<i class="fas fa-fw fa-crown"></i>';
+  } else {
+    pb = "";
+  }
 
-    const charStats = result.charStats.join("/");
+  const charStats = result.charStats.join("/");
 
-    const mode2 = result.mode === "custom" ? "" : result.mode2;
+  const mode2 = result.mode === "custom" ? "" : result.mode2;
 
-    const date = new Date(result.timestamp);
-    $(".pageAccount .history table tbody").append(`
-    <tr class="resultRow" id="result-${i}">
+  const date = new Date(result.timestamp);
+
+  const element = document.createElement("tr");
+  element.classList.add("resultRow");
+  element.dataset["id"] = result._id;
+  element.innerHTML = `
     <td>${pb}</td>
     <td>${Format.typingSpeed(result.wpm, { showDecimalPlaces: true })}</td>
     <td>${Format.typingSpeed(result.rawWpm, { showDecimalPlaces: true })}</td>
@@ -168,14 +181,9 @@ function loadMoreLines(lineIndex?: number): void {
     <td>${format(date, "dd MMM yyyy")}<br>
     ${format(date, "HH:mm")}
     </td>
-    </tr>`);
-  }
-  visibleTableLines = newVisibleLines;
-  if (visibleTableLines >= filteredResults.length) {
-    $(".pageAccount .loadMoreButton").addClass("hidden");
-  } else {
-    $(".pageAccount .loadMoreButton").removeClass("hidden");
-  }
+    `;
+
+  return element;
 }
 
 async function updateChartColors(): Promise<void> {
@@ -188,7 +196,8 @@ async function updateChartColors(): Promise<void> {
 }
 
 function reset(): void {
-  $(".pageAccount .history table tbody").empty();
+  historyTable.setData([]);
+  historyTable.updateBody();
 
   ChartController.accountHistogram.getDataset("count").data = [];
   ChartController.accountActivity.getDataset("count").data = [];
@@ -667,6 +676,8 @@ async function fillContent(): Promise<void> {
     totalWpm += result.wpm;
   });
 
+  historyTable.setData(filteredResults);
+
   $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
     Config.typingSpeedUnit
   );
@@ -1027,81 +1038,6 @@ export function updateTagsForResult(resultId: string, tagIds: string[]): void {
   }
 }
 
-function sortAndRefreshHistory(
-  keyString: string,
-  headerClass: string,
-  forceDescending: null | boolean = null
-): void {
-  // Removes styling from previous sorting requests:
-  $("td").removeClass("headerSorted");
-  $("td").children("i").remove();
-  $(headerClass).addClass("headerSorted");
-
-  if (filteredResults.length < 2) return;
-
-  const key = keyString as keyof (typeof filteredResults)[0];
-
-  // This allows to reverse the sorting order when clicking multiple times on the table header
-  let descending = true;
-  if (forceDescending !== null) {
-    if (forceDescending) {
-      $(headerClass).append(
-        '<i class="fas fa-sort-down" aria-hidden="true"></i>'
-      );
-    } else {
-      descending = false;
-      $(headerClass).append(
-        '<i class="fas fa-sort-up" aria-hidden="true"></i>'
-      );
-    }
-  } else if (
-    parseInt(filteredResults?.[0]?.[key] as string) <=
-    parseInt(filteredResults?.[filteredResults.length - 1]?.[key] as string)
-  ) {
-    descending = true;
-    $(headerClass).append(
-      '<i class="fas fa-sort-down" aria-hidden="true"></i>'
-    );
-  } else {
-    descending = false;
-    $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
-  }
-
-  const temp: SnapshotResult<Mode>[] = [];
-  const parsedIndexes: number[] = [];
-
-  while (temp.length < filteredResults.length) {
-    let lowest = Number.MAX_VALUE;
-    let highest = -1;
-    let idx = -1;
-
-    // for (let i = 0; i < filteredResults.length; i++) {
-    for (const [i, result] of filteredResults.entries()) {
-      //find the lowest wpm with index not already parsed
-      if (!descending) {
-        if ((result[key] as number) <= lowest && !parsedIndexes.includes(i)) {
-          lowest = result[key] as number;
-          idx = i;
-        }
-      } else {
-        if ((result[key] as number) >= highest && !parsedIndexes.includes(i)) {
-          highest = result[key] as number;
-          idx = i;
-        }
-      }
-    }
-
-    // @ts-expect-error temp
-    temp.push(filteredResults[idx]);
-    parsedIndexes.push(idx);
-  }
-  filteredResults = temp;
-
-  $(".pageAccount .history table tbody").empty();
-  visibleTableLines = 0;
-  loadMoreLines();
-}
-
 $(".pageAccount button.toggleResultsOnChart").on("click", () => {
   const newValue = [...Config.accountChart] as AccountChart;
   newValue[0] = newValue[0] === "on" ? "off" : "on";
@@ -1134,33 +1070,28 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const index: number = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
   if (window === undefined) return;
-  const windowHeight = $(window).height() ?? 0;
-  const offset = $(`#result-${index}`).offset()?.top ?? 0;
-  const scrollTo = offset - windowHeight / 2;
-  $([document.documentElement, document.body])
-    .stop(true)
-    .animate(
-      { scrollTop: scrollTo },
-      {
-        duration: Misc.applyReducedMotion(500),
-        done: () => {
-          const element = $(`#result-${index}`);
-          $(".resultRow").removeClass("active");
-          requestAnimationFrame(() => element.addClass("active"));
-        },
-      }
-    );
+
+  const resultId = filteredResults[index]?._id;
+  if (resultId === undefined) {
+    throw new Error("Cannot find result for index " + index);
+  }
+  const element = $(`.resultRow[data-id="${resultId}"`);
+  $(".resultRow").removeClass("active");
+
+  element[0]?.scrollIntoView({
+    block: "center",
+  });
+
+  element.addClass("active");
 });
 
 $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
   const target = $(event.currentTarget);
+  const resultId: string = target.parents("tr").data("id") as string;
   if (target.hasClass("loading")) return;
   if (target.hasClass("disabled")) return;
 
-  const filteredId = target.attr("filteredResultsId");
-  if (filteredId === undefined) return;
-
-  const result = filteredResults[parseInt(filteredId)];
+  const result = filteredResults.find((it) => it._id === resultId);
   if (result === undefined) return;
 
   let chartData = result.chartData as ChartData;
@@ -1211,56 +1142,6 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
   target.attr("aria-label", "View graph");
   MiniResultChartModal.show(chartData);
 });
-
-$(".pageAccount .group.history").on("click", ".history-wpm-header", () => {
-  sortAndRefreshHistory("wpm", ".history-wpm-header");
-});
-
-$(".pageAccount .group.history").on("click", ".history-raw-header", () => {
-  sortAndRefreshHistory("rawWpm", ".history-raw-header");
-});
-
-$(".pageAccount .group.history").on("click", ".history-acc-header", () => {
-  sortAndRefreshHistory("acc", ".history-acc-header");
-});
-
-$(".pageAccount .group.history").on(
-  "click",
-  ".history-correct-chars-header",
-  () => {
-    sortAndRefreshHistory("correctChars", ".history-correct-chars-header");
-  }
-);
-
-$(".pageAccount .group.history").on(
-  "click",
-  ".history-incorrect-chars-header",
-  () => {
-    sortAndRefreshHistory("incorrectChars", ".history-incorrect-chars-header");
-  }
-);
-
-$(".pageAccount .group.history").on(
-  "click",
-  ".history-consistency-header",
-  () => {
-    sortAndRefreshHistory("consistency", ".history-consistency-header");
-  }
-);
-
-$(".pageAccount .group.history").on("click", ".history-date-header", () => {
-  sortAndRefreshHistory("timestamp", ".history-date-header");
-});
-
-// Resets sorting to by date' when applying filers (normal or advanced)
-$(".pageAccount .group.history").on(
-  "click",
-  ".buttonsAndTitle .buttons button",
-  () => {
-    // We want to 'force' descending sort:
-    sortAndRefreshHistory("timestamp", ".history-date-header", true);
-  }
-);
 
 $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   "click",
@@ -1318,7 +1199,7 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
-export const page = new Page({
+export const page = new Page<undefined>({
   id: "account",
   element: $(".page.pageAccount"),
   path: "/account",
@@ -1349,14 +1230,12 @@ export const page = new Page({
   },
   afterHide: async (): Promise<void> => {
     reset();
-    ResultFilters.removeButtons();
     Skeleton.remove("pageAccount");
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
     const snapshot = DB.getSnapshot();
-    ResultFilters.updateTagsDropdownOptions();
-    await ResultFilters.appendButtons(update);
+    await ResultFilters.appendDropdowns(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
 
@@ -1369,6 +1248,18 @@ export const page = new Page({
       "current",
       snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
     );
+
+    if (historyTable === undefined) {
+      historyTable = new SortedTableWithLimit<SnapshotResult<Mode>>({
+        limit: 10,
+        table: ".pageAccount .content .history table",
+        data: filteredResults,
+        buildRow: (val) => {
+          return buildResultRow(val);
+        },
+        initialSort: { property: "timestamp", descending: true },
+      });
+    }
 
     await update().then(() => {
       void updateChartColors();

@@ -23,7 +23,7 @@ export default s.router(leaderboardsContract, {
   },
   getWeeklyXp: {
     handler: async (r) =>
-      callController(LeaderboardController.getWeeklyXpLeaderboardResults)(r),
+      callController(LeaderboardController.getWeeklyXpLeaderboard)(r),
   },
   getWeeklyXpRank: {
     handler: async (r) =>

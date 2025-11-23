@@ -1,4 +1,4 @@
-import { envConfig } from "../constants/env-config";
+import { envConfig } from "virtual:env-config";
 import AnimatedModal from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
 import * as Notifications from "../elements/notifications";
@@ -7,6 +7,7 @@ import { signIn } from "../auth";
 import * as Loader from "../elements/loader";
 import { update } from "../elements/xp-bar";
 import { toggleUserFakeChartData } from "../test/result";
+import { toggleCaretDebug } from "../utils/caret";
 
 let mediaQueryDebugLevel = 0;
 
@@ -89,6 +90,9 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     ?.addEventListener("click", () => {
       toggleUserFakeChartData();
     });
+  modalEl.querySelector(".toggleCaretDebug")?.addEventListener("click", () => {
+    toggleCaretDebug();
+  });
 }
 
 const modal = new AnimatedModal({

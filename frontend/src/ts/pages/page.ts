@@ -15,8 +15,9 @@ export type PageName =
   | "profileSearch"
   | "404"
   | "accountSettings"
-  | "tribe"
-  | "leaderboards";
+  | "leaderboards"
+  | "friends"
+  | "tribe";
 
 type Options<T> = {
   params?: Record<string, string>;

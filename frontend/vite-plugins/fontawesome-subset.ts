@@ -1,6 +1,38 @@
+import { Plugin } from "vite";
 import * as fs from "fs";
 import { createRequire } from "module";
 import * as path from "path";
+import { fontawesomeSubset as createFontawesomeSubset } from "fontawesome-subset";
+
+/**
+ * Detect fontawesome icons used by the application and creates subset font files only containing the used icons.
+ * @param options
+ * @returns
+ */
+export function fontawesomeSubset(): Plugin {
+  return {
+    name: "vite-plugin-fontawesome-subset",
+    apply: "build",
+    async buildStart() {
+      const start = performance.now();
+      console.log("\nCreating fontawesome subset...");
+
+      const fontawesomeClasses = getFontawesomeConfig();
+      await createFontawesomeSubset(
+        fontawesomeClasses,
+        "src/webfonts-generated",
+        {
+          targetFormats: ["woff2"],
+        }
+      );
+
+      const end = performance.now();
+      console.log(
+        `Creating fontawesome subset took ${Math.round(end - start)} ms`
+      );
+    },
+  };
+}
 
 type FontawesomeConfig = {
   /* used regular icons without `fa-` prefix*/
@@ -56,8 +88,7 @@ const modules2 = {
  * @param {boolean} debug - Enable debug output
  * @returns {FontawesomeConfig} - used icons
  */
-
-export function getFontawesomeConfig(debug = false): FontawesomeConfig {
+function getFontawesomeConfig(debug = false): FontawesomeConfig {
   const time = Date.now();
   const srcFiles = findAllFiles(
     "./src",
@@ -99,7 +130,9 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
     (it) => !(solid.includes(it) || regular.includes(it) || brands.includes(it))
   );
   if (leftOvers.length !== 0) {
-    throw new Error("unknown icons: " + leftOvers.toString());
+    throw new Error(
+      "Fontawesome failed with unknown icons: " + leftOvers.toString()
+    );
   }
 
   if (debug) {

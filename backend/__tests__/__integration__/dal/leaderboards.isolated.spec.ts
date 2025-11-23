@@ -1,5 +1,4 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
-import _ from "lodash";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../../src/dal/user";
 import * as LeaderboardsDal from "../../../src/dal/leaderboards";
@@ -11,6 +10,8 @@ import * as DB from "../../../src/init/db";
 import { LbPersonalBests } from "../../../src/utils/pb";
 
 import { pb } from "../../__testData__/users";
+import { createConnection } from "../../__testData__/connections";
+import { omit } from "../../../src/utils/misc";
 
 describe("LeaderboardsDal", () => {
   afterEach(async () => {
@@ -32,12 +33,12 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
-      const result = await LeaderboardsDal.get("time", "15", "english", 0, 50);
+      const results = await LeaderboardsDal.get("time", "15", "english", 0, 50);
 
       //THEN
-      expect(result).toHaveLength(1);
+      expect(results).toHaveLength(1);
       expect(
-        (result as LeaderboardsDal.DBLeaderboardEntry[])[0]
+        (results as LeaderboardsDal.DBLeaderboardEntry[])[0]
       ).toHaveProperty("uid", applicableUser.uid);
     });
 
@@ -50,7 +51,7 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
-      const result = (await LeaderboardsDal.get(
+      const results = (await LeaderboardsDal.get(
         "time",
         "15",
         "english",
@@ -59,7 +60,8 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+
+      const lb = results.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: rank1 }),
@@ -77,7 +79,7 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
       await LeaderboardsDal.update("time", "60", "english");
-      const result = (await LeaderboardsDal.get(
+      const results = (await LeaderboardsDal.get(
         "time",
         "60",
         "english",
@@ -86,7 +88,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = results.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 1, user: rank1 }),
@@ -200,7 +202,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = result.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noBadge }),
@@ -239,7 +241,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => _.omit(it, ["_id"]));
+      const lb = result.map((it) => omit(it, ["_id"]));
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noPremium }),
@@ -262,7 +264,7 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
-      const result = (await LeaderboardsDal.get(
+      const results = (await LeaderboardsDal.get(
         "time",
         "15",
         "english",
@@ -272,14 +274,200 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      expect(result[0]?.isPremium).toBeUndefined();
+      expect(results[0]?.isPremium).toBeUndefined();
+    });
+  });
+
+  describe("get", () => {
+    it("should get for page", async () => {
+      //GIVEN
+      const _rank1 = await createUser(lbBests(pb(90), pb(105, 90, 2)));
+      const _rank2 = await createUser(lbBests(undefined, pb(100, 90, 1)));
+      const rank3 = await createUser(lbBests(undefined, pb(95, 80, 2)));
+      const rank4 = await createUser(lbBests(undefined, pb(90, 100, 1)));
+      await LeaderboardsDal.update("time", "60", "english");
+
+      //WHEN
+
+      const results = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        1,
+        2,
+        true
+      )) as LeaderboardsDal.DBLeaderboardEntry[];
+
+      //THEN
+      const lb = results.map((it) => omit(it, ["_id"]));
+
+      expect(lb).toEqual([
+        expectedLbEntry("60", { rank: 3, user: rank3 }),
+        expectedLbEntry("60", { rank: 4, user: rank4 }),
+      ]);
+    });
+    it("should get for friends only", async () => {
+      //GIVEN
+      const rank1 = await createUser(lbBests(pb(90), pb(100, 90, 2)));
+      const uid = rank1.uid;
+      const _rank2 = await createUser(lbBests(undefined, pb(100, 90, 1)));
+      const _rank3 = await createUser(lbBests(undefined, pb(100, 80, 2)));
+      const rank4 = await createUser(lbBests(undefined, pb(90, 100, 1)));
+
+      //two friends, one is not on the leaderboard
+      await createConnection({
+        initiatorUid: uid,
+        receiverUid: rank4.uid,
+        status: "accepted",
+      });
+
+      await createConnection({ initiatorUid: uid, status: "accepted" });
+
+      await LeaderboardsDal.update("time", "60", "english");
+
+      //WHEN
+
+      const results = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        0,
+        50,
+        false,
+        uid
+      )) as LeaderboardsDal.DBLeaderboardEntry[];
+
+      //THEN
+      const lb = results.map((it) => omit(it, ["_id"]));
+
+      expect(lb).toEqual([
+        expectedLbEntry("60", { rank: 1, user: rank1, friendsRank: 1 }),
+        expectedLbEntry("60", { rank: 4, user: rank4, friendsRank: 2 }),
+      ]);
+    });
+    it("should get for friends only with page", async () => {
+      //GIVEN
+      const rank1 = await createUser(lbBests(pb(90), pb(105, 90, 2)));
+      const uid = rank1.uid;
+      const rank2 = await createUser(lbBests(undefined, pb(100, 90, 1)));
+      const _rank3 = await createUser(lbBests(undefined, pb(95, 80, 2)));
+      const rank4 = await createUser(lbBests(undefined, pb(90, 100, 1)));
+      await LeaderboardsDal.update("time", "60", "english");
+
+      await createConnection({
+        initiatorUid: uid,
+        receiverUid: rank2.uid,
+        status: "accepted",
+      });
+      await createConnection({
+        initiatorUid: rank4.uid,
+        receiverUid: uid,
+        status: "accepted",
+      });
+
+      //WHEN
+      const results = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        1,
+        2,
+        false,
+        uid
+      )) as LeaderboardsDal.DBLeaderboardEntry[];
+
+      //THEN
+      const lb = results.map((it) => omit(it, ["_id"]));
+
+      expect(lb).toEqual([
+        expectedLbEntry("60", { rank: 4, user: rank4, friendsRank: 3 }),
+      ]);
+    });
+    it("should return empty list if no friends", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+
+      //WHEN
+      const results = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        1,
+        2,
+        false,
+        uid
+      )) as LeaderboardsDal.DBLeaderboardEntry[];
+      //THEN
+      expect(results).toEqual([]);
+    });
+  });
+  describe("getCount / getRank", () => {
+    it("should get count", async () => {
+      //GIVEN
+      await createUser(lbBests(undefined, pb(105)), { name: "One" });
+      await createUser(lbBests(undefined, pb(100)), { name: "Two" });
+      const me = await createUser(lbBests(undefined, pb(95)), { name: "Me" });
+      await createUser(lbBests(undefined, pb(90)), { name: "Three" });
+      await LeaderboardsDal.update("time", "60", "english");
+
+      //WHEN / THEN
+
+      expect(await LeaderboardsDal.getCount("time", "60", "english")) //
+        .toEqual(4);
+      expect(await LeaderboardsDal.getRank("time", "60", "english", me.uid)) //
+        .toEqual(
+          expect.objectContaining({
+            wpm: 95,
+            rank: 3,
+            name: me.name,
+            uid: me.uid,
+          })
+        );
+    });
+    it("should get for friends only", async () => {
+      //GIVEN
+      const friendOne = await createUser(lbBests(undefined, pb(105)));
+      await createUser(lbBests(undefined, pb(100)));
+      await createUser(lbBests(undefined, pb(95)));
+      const friendTwo = await createUser(lbBests(undefined, pb(90)));
+      const me = await createUser(lbBests(undefined, pb(99)));
+      await LeaderboardsDal.update("time", "60", "english");
+
+      await createConnection({
+        initiatorUid: me.uid,
+        receiverUid: friendOne.uid,
+        status: "accepted",
+      });
+
+      await createConnection({
+        initiatorUid: friendTwo.uid,
+        receiverUid: me.uid,
+        status: "accepted",
+      });
+
+      //WHEN / THEN
+
+      expect(await LeaderboardsDal.getCount("time", "60", "english", me.uid)) //
+        .toEqual(3);
+      expect(
+        await LeaderboardsDal.getRank("time", "60", "english", me.uid, true)
+      ) //
+        .toEqual(
+          expect.objectContaining({
+            wpm: 99,
+            rank: 3,
+            friendsRank: 2,
+            name: me.name,
+            uid: me.uid,
+          })
+        );
     });
   });
 });
 
 function expectedLbEntry(
   time: string,
-  { rank, user, badgeId, isPremium }: ExpectedLbEntry
+  { rank, user, badgeId, isPremium, friendsRank }: ExpectedLbEntry
 ) {
   // @ts-expect-error
   const lbBest: PersonalBest =
@@ -299,6 +487,7 @@ function expectedLbEntry(
     discordAvatar: user.discordAvatar,
     badgeId,
     isPremium,
+    friendsRank,
   };
 }
 
@@ -351,4 +540,5 @@ type ExpectedLbEntry = {
   user: UserDal.DBUser;
   badgeId?: number;
   isPremium?: boolean;
+  friendsRank?: number;
 };
