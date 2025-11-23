@@ -729,25 +729,15 @@ async function calculateXp(
 
   let modifier = 1;
   // check if charstats is undefined
-  if (charStats !== undefined) {
-    const { incorrect, missed } = Object.values(charStats).reduce(
-      (acc, stats) => {
-        acc.incorrect += stats.incorrect;
-        acc.missed += stats.missed;
-        return acc;
-      },
-      { incorrect: 0, missed: 0 }
-    );
-    const correctedEverything = incorrect === 0 && missed === 0;
+  const correctedEverything = charStats[1] === 0 && charStats[3] === 0;
 
-    if (acc === 100) {
-      modifier += 0.5;
-      breakdown.fullAccuracy = Math.round(baseXp * 0.5);
-    } else if (correctedEverything) {
-      // corrected everything bonus
-      modifier += 0.25;
-      breakdown["corrected"] = Math.round(baseXp * 0.25);
-    }
+  if (acc === 100) {
+    modifier += 0.5;
+    breakdown.fullAccuracy = Math.round(baseXp * 0.5);
+  } else if (correctedEverything) {
+    // corrected everything bonus
+    modifier += 0.25;
+    breakdown["corrected"] = Math.round(baseXp * 0.25);
   }
   if (mode === "quote") {
     // real sentences bonus
