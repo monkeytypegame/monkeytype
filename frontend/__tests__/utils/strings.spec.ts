@@ -466,6 +466,49 @@ describe("string utils", () => {
     });
   });
 
+  describe("isSpace", () => {
+    it.each([
+      // Should return true for directly typable spaces
+      [" ", 0x0020, "regular space", true],
+      ["\u2002", 0x2002, "en space", true],
+      ["\u2003", 0x2003, "em space", true],
+      ["\u2009", 0x2009, "thin space", true],
+      ["　", 0x3000, "ideographic space", true],
+
+      // Should return false for other characters
+      ["\t", 0x0009, "tab", false],
+      ["\u00A0", 0x00a0, "non-breaking space", false],
+      ["\u2007", 0x2007, "figure space", false],
+      ["\u2008", 0x2008, "punctuation space", false],
+      ["\u200A", 0x200a, "hair space", false],
+      ["​", 0x200b, "zero-width space", false],
+      ["a", 0x0061, "letter a", false],
+      ["A", 0x0041, "letter A", false],
+      ["1", 0x0031, "digit 1", false],
+      ["!", 0x0021, "exclamation mark", false],
+      ["\n", 0x000a, "newline", false],
+      ["\r", 0x000d, "carriage return", false],
+
+      // Edge cases
+      ["", null, "empty string", false],
+      ["  ", null, "two spaces", false],
+      ["ab", null, "two letters", false],
+    ])(
+      "should return %s for %s (U+%s - %s)",
+      (
+        char: string,
+        expectedCodePoint: number | null,
+        description: string,
+        expected: boolean
+      ) => {
+        if (expectedCodePoint !== null && char.length === 1) {
+          expect(char.codePointAt(0)).toBe(expectedCodePoint);
+        }
+        expect(Strings.isSpace(char)).toBe(expected);
+      }
+    );
+  });
+
   describe("areCharactersVisuallyEqual", () => {
     it("should return true for identical characters", () => {
       expect(Strings.areCharactersVisuallyEqual("a", "a")).toBe(true);
@@ -503,6 +546,45 @@ describe("string utils", () => {
       expect(Strings.areCharactersVisuallyEqual("'", '"')).toBe(false);
       expect(Strings.areCharactersVisuallyEqual("-", "'")).toBe(false);
       expect(Strings.areCharactersVisuallyEqual(",", '"')).toBe(false);
+    });
+
+    describe("should check russian specific equivalences", () => {
+      it.each([
+        {
+          desc: "е and ё are equivalent",
+          char1: "е",
+          char2: "ё",
+          expected: true,
+        },
+        {
+          desc: "e and ё are equivalent",
+          char1: "e",
+          char2: "ё",
+          expected: true,
+        },
+        {
+          desc: "е and e are equivalent",
+          char1: "е",
+          char2: "e",
+          expected: true,
+        },
+        {
+          desc: "non-equivalent characters return false",
+          char1: "а",
+          char2: "б",
+          expected: false,
+        },
+        {
+          desc: "non-equivalent characters return false (2)",
+          char1: "a",
+          char2: "б",
+          expected: false,
+        },
+      ])("$desc", ({ char1, char2, expected }) => {
+        expect(
+          Strings.areCharactersVisuallyEqual(char1, char2, "russian")
+        ).toBe(expected);
+      });
     });
   });
 });

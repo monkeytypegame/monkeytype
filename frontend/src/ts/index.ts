@@ -26,7 +26,7 @@ import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
 import "./modals/simple-modals";
 import * as CookiesModal from "./modals/cookies";
-import "./controllers/input-controller";
+import "./input/listeners";
 import "./ready";
 import "./controllers/route-controller";
 import "./pages/about";

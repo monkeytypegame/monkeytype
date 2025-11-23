@@ -261,25 +261,30 @@ export function isWordRightToLeft(
   return reverseDirection ? !result : result;
 }
 
-export const CHAR_EQUIVALENCE_MAPS = [
-  new Map(
-    ["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"].map((char, index) => [char, index])
-  ),
-  new Map([`"`, "”", "“", "„"].map((char, index) => [char, index])),
-  new Map(["–", "—", "-", "‐"].map((char, index) => [char, index])),
-  new Map([",", "‚"].map((char, index) => [char, index])),
+export const CHAR_EQUIVALENCE_SETS = [
+  new Set(["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"]),
+  new Set([`"`, "”", "“", "„"]),
+  new Set(["–", "—", "-", "‐"]),
+  new Set([",", "‚"]),
 ];
+
+export const LANGUAGE_EQUIVALENCE_SETS: Partial<Record<Language, Set<string>>> =
+  {
+    russian: new Set(["ё", "е", "e"]),
+  };
 
 /**
  * Checks if two characters are visually/typographically equivalent for typing purposes.
  * This allows users to type different variants of the same character and still be considered correct.
  * @param char1 The first character to compare
  * @param char2 The second character to compare
+ * @param language Optional language context to check for language-specific equivalences
  * @returns true if the characters are equivalent, false otherwise
  */
 export function areCharactersVisuallyEqual(
   char1: string,
-  char2: string
+  char2: string,
+  language?: Language
 ): boolean {
   // If characters are exactly the same, they're equivalent
   if (char1 === char2) {
@@ -287,9 +292,18 @@ export function areCharactersVisuallyEqual(
   }
 
   // Check each equivalence map
-  for (const map of CHAR_EQUIVALENCE_MAPS) {
+  for (const map of CHAR_EQUIVALENCE_SETS) {
     if (map.has(char1) && map.has(char2)) {
       return true;
+    }
+  }
+
+  if (language !== undefined) {
+    const langMap = LANGUAGE_EQUIVALENCE_SETS[removeLanguageSize(language)];
+    if (langMap !== undefined) {
+      if (langMap.has(char1) && langMap.has(char2)) {
+        return true;
+      }
     }
   }
 
@@ -308,6 +322,33 @@ export function toHex(buffer: ArrayBuffer): string {
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
   return hashHex;
+}
+
+/**
+ * Checks if a character is a directly typable space character on a standard keyboard.
+ * These are space characters that can be typed without special input methods or copy-pasting.
+ * @param char The character to check.
+ * @returns True if the character is a directly typable space, false otherwise.
+ */
+export function isSpace(char: string): boolean {
+  if (char.length !== 1) return false;
+
+  const codePoint = char.codePointAt(0);
+  if (codePoint === undefined) return false;
+
+  // Directly typable spaces:
+  // U+0020 - Regular space (spacebar)
+  // U+2002 - En space (Option+Space on Mac)
+  // U+2003 - Em space (Option+Shift+Space on Mac)
+  // U+2009 - Thin space (various input methods)
+  // U+3000 - Ideographic space (CJK input methods)
+  return (
+    codePoint === 0x0020 ||
+    codePoint === 0x2002 ||
+    codePoint === 0x2003 ||
+    codePoint === 0x2009 ||
+    codePoint === 0x3000
+  );
 }
 
 // Export testing utilities for unit tests

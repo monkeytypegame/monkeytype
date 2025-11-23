@@ -17,3 +17,7 @@ vi.mock("../src/ts/firebase", () => ({
   Auth: undefined,
   isAuthenticated: () => false,
 }));
+
+const input = document.createElement("input");
+input.id = "wordsInput";
+document.body.appendChild(input);
