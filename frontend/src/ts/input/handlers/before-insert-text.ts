@@ -51,8 +51,8 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  //only allow newlines if the test has newlines
-  if (data === "\n" && !TestWords.hasNewline) {
+  //only allow newlines if the test has newlines or in zen mode
+  if (data === "\n" && !TestWords.hasNewline && Config.mode !== "zen") {
     return true;
   }
 
