@@ -123,14 +123,9 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 export let activeWordTop = 0;
 export let lineTransition = false;
 export let currentTestLine = 0;
-export let resultCalculating = false;
 
 export function setActiveWordTop(val: number): void {
   activeWordTop = val;
-}
-
-export function setResultCalculating(val: boolean): void {
-  resultCalculating = val;
 }
 
 export function reset(): void {

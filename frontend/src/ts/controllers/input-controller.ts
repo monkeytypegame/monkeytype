@@ -419,7 +419,7 @@ async function handleChar(
   charIndex: number,
   realInputValue?: string
 ): Promise<void> {
-  if (TestUI.resultCalculating || TestState.resultVisible) {
+  if (TestState.resultCalculating || TestState.resultVisible) {
     return;
   }
 
@@ -740,7 +740,7 @@ async function handleTab(
   event: JQuery.KeyDownEvent,
   popupVisible: boolean
 ): Promise<void> {
-  if (TestUI.resultCalculating) {
+  if (TestState.resultCalculating) {
     event.preventDefault();
     return;
   }

@@ -14,6 +14,11 @@ export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
+export let resultCalculating = false;
+
+export function setResultCalculating(val: boolean): void {
+  resultCalculating = val;
+}
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;

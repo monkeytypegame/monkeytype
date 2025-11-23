@@ -1313,7 +1313,7 @@ export async function update(
       });
       Misc.scrollToCenterOrTop(result);
       void AdController.renderResult();
-      TestUI.setResultCalculating(false);
+      TestState.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
     },
