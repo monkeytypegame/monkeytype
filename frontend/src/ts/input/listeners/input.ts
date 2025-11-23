@@ -1,9 +1,6 @@
 import { onDelete } from "../handlers/delete";
 import { onInsertText } from "../handlers/insert-text";
-import {
-  isSupportedInputType,
-  SupportedInputType,
-} from "../helpers/input-type";
+import { isSupportedInputType } from "../helpers/input-type";
 import { getInputElement } from "../input-element";
 import {
   getLastInsertCompositionTextData,
@@ -56,7 +53,10 @@ inputEl.addEventListener("beforeinput", async (event) => {
     inputType === "deleteContentBackward"
   ) {
     onBeforeDelete(event);
-  } else if (inputType === "insertCompositionText") {
+  } else if (
+    inputType === "insertCompositionText" ||
+    inputType === "insertFromComposition"
+  ) {
     // firefox fires this extra event which we dont want to handle
     if (!event.isComposing) {
       event.preventDefault();
@@ -80,11 +80,16 @@ inputEl.addEventListener("input", async (event) => {
     value: (event.target as HTMLInputElement).value,
   });
 
+  // this shouldnt be neccesary because beforeinput already prevents default
+  // but some browsers (LIKE SAFARI) seem to ignore that, so just double checking here
+  if (!isSupportedInputType(event.inputType)) {
+    event.preventDefault();
+    return;
+  }
+
   const now = performance.now();
 
-  // this is ok to cast because we are preventing default
-  // in the input listener for unsupported input types
-  const inputType = event.inputType as SupportedInputType;
+  const inputType = event.inputType;
 
   if (
     (inputType === "insertText" && event.data !== null) ||
@@ -105,7 +110,10 @@ inputEl.addEventListener("input", async (event) => {
     inputType === "deleteContentBackward"
   ) {
     onDelete(inputType);
-  } else if (inputType === "insertCompositionText") {
+  } else if (
+    inputType === "insertCompositionText" ||
+    inputType === "insertFromComposition"
+  ) {
     // in case the data is the same as the last one, just ignore it
     if (getLastInsertCompositionTextData() !== event.data) {
       setLastInsertCompositionTextData(event.data ?? "");
