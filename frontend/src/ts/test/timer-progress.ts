@@ -36,6 +36,14 @@ export function show(): void {
         textEl.classList.remove("hidden");
       },
     });
+  } else if (Config.timerStyle === "flash") {
+    animate(textEl, {
+      opacity: [0, 1],
+      duration: applyReducedMotion(125),
+      onBegin: () => {
+        textEl.classList.remove("hidden");
+      },
+    });
   } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
     animate(miniEl, {
       opacity: [0, 1],
@@ -132,7 +140,7 @@ export function update(): void {
       if (textEl !== null) {
         textEl.innerHTML =
           "<div>" +
-          `${parseInt(displayTime) % 15 !== 0 ? "" : displayTime}` +
+          `${(maxtime - time) % 15 !== 0 ? "" : displayTime}` +
           "</div>";
       }
     } else if (Config.timerStyle === "mini") {
