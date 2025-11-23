@@ -2,44 +2,5 @@
   "extends": [
     "../packages/oxlint-config/index.jsonc"
     // "@monkeytype/oxlint-config"
-  ],
-  "overrides": [
-    {
-      "files": ["__tests__/**"],
-      "plugins": [
-        "typescript",
-        "unicorn",
-        "oxc",
-        "import",
-        "node",
-        "promise",
-        "jest",
-        "vitest"
-      ],
-      "rules": {
-        "no-explicit-any": "allow",
-        "explicit-function-return-type": "off",
-        "ban-ts-comment": "off",
-        "typescript/no-floating-promises": "off",
-        "typescript/await-thenable": "off",
-        "typescript/no-unnecessary-type-assertion": "off",
-        "typescript/no-unsafe-assignment": "off",
-        "typescript/no-unsafe-call": "off",
-        "typescript/no-unsafe-argument": "off",
-        "typescript/no-unsafe-member-access": "off",
-        "typescript/promise-function-async": "off",
-        "typescript/no-confusing-void-expression": "off",
-        "typescript/return-await": "off",
-        "typescript/no-unsafe-return": "off",
-        "typescript/strict-boolean-expressions": "off"
-      }
-    },
-    {
-      "files": ["__tests__/**/*.d.ts"],
-      "rules": {
-        "typescript/consistent-type-definitions": "off",
-        "typescript/no-empty-object-type": "off"
-      }
-    }
   ]
 }
