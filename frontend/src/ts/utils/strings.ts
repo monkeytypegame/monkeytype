@@ -278,6 +278,7 @@ export const LANGUAGE_EQUIVALENCE_SETS: Partial<Record<Language, Set<string>>> =
  * This allows users to type different variants of the same character and still be considered correct.
  * @param char1 The first character to compare
  * @param char2 The second character to compare
+ * @param language Optional language context to check for language-specific equivalences
  * @returns true if the characters are equivalent, false otherwise
  */
 export function areCharactersVisuallyEqual(
