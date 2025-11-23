@@ -1,7 +1,7 @@
 export type InsertInputType =
   | "insertText"
   | "insertCompositionText"
-  | "insertFromComposition"
+  | "insertFromComposition" // safari firing a deprecated input type - thanks apple!
   | "insertLineBreak";
 export type DeleteInputType = "deleteWordBackward" | "deleteContentBackward";
 
