@@ -308,15 +308,12 @@ function countChars(final = false): CharCount {
     char: string,
     type: "correct" | "incorrect" | "missed" | "extra"
   ): void {
-    if (char.trim() === "" && type !== "missed") return; // Don't track spaces except for missed
-
+    if (char.trim() === "" && type !== "missed") return;
     let stats = charStats.get(char);
     if (!stats) {
-      stats = { total: 0, correct: 0, incorrect: 0, missed: 0, extra: 0 };
+      stats = { correct: 0, incorrect: 0, missed: 0, extra: 0 };
       charStats.set(char, stats);
     }
-
-    stats.total++;
     if (type === "correct") {
       stats.correct++;
     } else if (type === "incorrect") {

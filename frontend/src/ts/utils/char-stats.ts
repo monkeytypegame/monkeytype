@@ -1,27 +1,12 @@
 import { roundTo2 } from "@monkeytype/util/numbers";
+import { PerCharStats } from "@monkeytype/schemas/results";
 
-export type PerCharStats = {
-  correct: number;
-  incorrect: number;
-  missed: number;
-  extra: number;
-};
-
-export type CharStatsBreakdown = {
-  correct: number;
-  incorrect: number;
-  missed: number;
-  extra: number;
+export type CharStatsBreakdown = PerCharStats & {
   total: number;
 };
 
-export type CharacterStat = {
+export type CharacterStat = CharStatsBreakdown & {
   char: string;
-  total: number;
-  correct: number;
-  incorrect: number;
-  missed: number;
-  extra: number;
   accuracy: number;
   errorRate: number;
 };

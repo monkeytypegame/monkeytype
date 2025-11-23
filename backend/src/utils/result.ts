@@ -22,25 +22,13 @@ export function buildDbResult(
   isPb: boolean
 ): DBResult {
   const ce = completedEvent;
-  const charStats = (ce.charStats ? Object.values(ce.charStats) : []).reduce<
-    [number, number, number, number]
-  >(
-    (acc, val) => {
-      acc[0] += val.correct ?? 0;
-      acc[1] += val.incorrect ?? 0;
-      acc[2] += val.missed ?? 0;
-      acc[3] += val.extra ?? 0;
-      return acc;
-    },
-    [0, 0, 0, 0]
-  );
 
   const res: DBResult = {
     _id: new ObjectId(),
     uid: ce.uid,
     wpm: ce.wpm,
     rawWpm: ce.rawWpm,
-    charStats: charStats,
+    charStats: ce.charStats,
     acc: ce.acc,
     mode: ce.mode,
     mode2: ce.mode2,
@@ -64,6 +52,7 @@ export function buildDbResult(
     bailedOut: ce.bailedOut,
     blindMode: ce.blindMode,
     name: userName,
+    detailedCharStats: ce.detailedCharStats,
   };
 
   //compress object by omitting default values. Frontend will add them back after reading

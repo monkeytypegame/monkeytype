@@ -492,17 +492,13 @@ export function updateTodayTracker(): void {
 }
 
 function updateKey(): void {
-  if (!result.charStats) {
-    return;
-  }
-
   let correct = 0;
   let incorrect = 0;
   let extra = 0;
   let missed = 0;
 
-  for (const char in result.charStats) {
-    const stats = result.charStats[char];
+  for (const char in result.detailedCharStats) {
+    const stats = result.detailedCharStats[char];
     if (stats) {
       correct += stats.correct;
       incorrect += stats.incorrect;
@@ -520,7 +516,7 @@ let charStatsChart: Chart<"bar"> | null = null;
 
 function updateCharStats(): void {
   const charStatsElement = $("#result .stats .charStats");
-  if (!result.charStats) {
+  if (!result.detailedCharStats) {
     charStatsElement.addClass("hidden");
     $("#result #showCharStatsButton").addClass("hidden");
     return;
@@ -538,12 +534,13 @@ function updateCharStats(): void {
     total: number;
   }> = [];
 
-  for (const [char, stats] of Object.entries(result.charStats)) {
+  for (const [char, stats] of Object.entries(result.detailedCharStats)) {
     if (char.trim() === "") continue;
 
     const charStat = stats;
     const errors = charStat.incorrect + charStat.missed + charStat.extra;
-    const total = charStat.total;
+    const total =
+      charStat.correct + charStat.incorrect + charStat.missed + charStat.extra;
     const errorRate = total > 0 ? (errors / total) * 100 : 0;
 
     if (errors > 0 && errorRate > maxErrorRate) {
@@ -556,7 +553,7 @@ function updateCharStats(): void {
 }
 
 export async function toggleCharStats(noAnimation = false): Promise<void> {
-  if (!TestState.resultVisible || !result.charStats) return;
+  if (!TestState.resultVisible || !result.detailedCharStats) return;
 
   if ($("#resultCharStats").stop(true, true).hasClass("hidden")) {
     // Show
@@ -578,7 +575,11 @@ export async function toggleCharStats(noAnimation = false): Promise<void> {
 }
 
 async function renderCharStatsChart(): Promise<void> {
-  if (!result.charStats || Object.keys(result.charStats).length === 0) return;
+  if (
+    !result.detailedCharStats ||
+    Object.keys(result.detailedCharStats).length === 0
+  )
+    return;
 
   const charData: Array<{
     char: string;
@@ -588,12 +589,12 @@ async function renderCharStatsChart(): Promise<void> {
     correct: number;
   }> = [];
 
-  for (const [char, stats] of Object.entries(result.charStats)) {
+  for (const [char, stats] of Object.entries(result.detailedCharStats)) {
     const charStat = stats;
-    if (char.trim() === "" && charStat.total === 0) continue;
+    if (char.trim() === "") continue;
 
     const errors = charStat.incorrect + charStat.missed + charStat.extra;
-    const total = charStat.total;
+    const total = errors + charStat.correct;
     const errorRate = total > 0 ? (errors / total) * 100 : 0;
 
     if (total > 0) {

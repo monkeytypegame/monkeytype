@@ -61,34 +61,11 @@ function fillData(): void {
   fillGroup("acc", r.acc + "%");
   fillGroup("raw", r.rawWpm);
   fillGroup("con", r.consistency + "%");
-  /*   if (r.charStats) {
-2     const { correct, incorrect, extra, missed } = Object.values(r.charStats).reduce(
-3       (acc, stats) => {
-4         acc.correct += stats.correct;
-5         acc.incorrect += stats.incorrect;
-6         acc.extra += stats.extra;
-7         acc.missed += stats.missed;
-8         return acc;
-9       },
-10       { correct: 0, incorrect: 0, extra: 0, missed: 0 }
-11     );
-12     fillGroup("chardata", `${correct}/${incorrect}/${extra}/${missed}`);
-13   } */
-  if (r.charStats) {
-    const { correct, missed, incorrect, extra } = Object.values(
-      r.charStats
-    ).reduce(
-      (acc, stats) => {
-        acc.correct += stats.correct;
-        acc.incorrect += stats.incorrect;
-        acc.extra += stats.extra;
-        acc.missed += stats.missed;
-        return acc;
-      },
-      { correct: 0, missed: 0, incorrect: 0, extra: 0 }
-    );
-    fillGroup("chardata", `${correct}/${missed}/${incorrect}/${extra}`);
-  }
+
+  const [correct, missed, incorrect, extra] = r.charStats;
+
+  fillGroup("chardata", `${correct}/${missed}/${incorrect}/${extra}`);
+
   let tt = r.mode + " " + r.mode2;
 
   tt += "<br>" + r.language;

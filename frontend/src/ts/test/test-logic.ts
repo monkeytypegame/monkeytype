@@ -865,6 +865,12 @@ function buildCompletedEvent(
     wpm: stats.wpm,
     rawWpm: stats.wpmRaw,
     charTotal: stats.allChars,
+    charStats: [
+      stats.correctChars + stats.correctSpaces,
+      stats.incorrectChars,
+      stats.extraChars,
+      stats.missedChars,
+    ],
     acc: stats.acc,
     mode: Config.mode,
     mode2: Misc.getMode2(Config, TestWords.currentQuote),
@@ -898,11 +904,10 @@ function buildCompletedEvent(
     testDuration: duration,
     afkDuration: afkDuration,
     stopOnLetter: Config.stopOnError === "letter",
-    charStats: Object.fromEntries(
+    detailedCharStats: Object.fromEntries(
       Array.from(stats.charStats.entries()).map(([char, stats]) => [
         char,
         {
-          total: stats.total,
           correct: stats.correct,
           incorrect: stats.incorrect,
           missed: stats.missed,

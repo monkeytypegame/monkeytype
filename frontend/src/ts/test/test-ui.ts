@@ -1647,8 +1647,6 @@ $(".pageTest #copyMissedWordsListButton").on("click", async () => {
 });
 
 $(".pageTest #copyCharStatsButton").on("click", async () => {
-  if (!Result.result?.charStats) return;
-
   let statsText = "Character Statistics:\n\n";
   statsText += "Character | Error Rate | Errors/Total | Correct/Total\n";
   statsText += "----------|------------|-------------|-------------\n";
@@ -1660,13 +1658,14 @@ $(".pageTest #copyCharStatsButton").on("click", async () => {
     total: number;
     correct: number;
   }> = [];
+  if (!Result.result.detailedCharStats) return;
 
-  for (const [char, stats] of Object.entries(Result.result.charStats)) {
+  for (const [char, stats] of Object.entries(Result.result.detailedCharStats)) {
     const charStat = stats;
-    if (char.trim() === "" && charStat.total === 0) continue;
+    if (char.trim() === "") continue;
 
     const errors = charStat.incorrect + charStat.missed + charStat.extra;
-    const total = charStat.total;
+    const total = errors + charStat.correct;
     const errorRate = total > 0 ? (errors / total) * 100 : 0;
 
     if (total > 0) {
