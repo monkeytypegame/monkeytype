@@ -124,6 +124,17 @@ export function update(): void {
       if (textEl !== null) {
         textEl.innerHTML = "<div>" + displayTime + "</div>";
       }
+    } else if (Config.timerStyle === "flash") {
+      let displayTime = DateTime.secondsToString(maxtime - time);
+      if (maxtime === 0) {
+        displayTime = DateTime.secondsToString(time);
+      }
+      if (textEl !== null) {
+        textEl.innerHTML =
+          "<div>" +
+          `${parseInt(displayTime) % 15 !== 0 ? "" : displayTime}` +
+          "</div>";
+      }
     } else if (Config.timerStyle === "mini") {
       let displayTime = DateTime.secondsToString(maxtime - time);
       if (maxtime === 0) {
@@ -163,6 +174,12 @@ export function update(): void {
       } else {
         textEl.innerHTML = `<div>${getCurrentCount()}/${outof}</div>`;
       }
+    } else if (Config.timerStyle === "flash") {
+      if (outof === 0) {
+        textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
+      } else {
+        textEl.innerHTML = `<div>${getCurrentCount()}/${outof}</div>`;
+      }
     } else if (Config.timerStyle === "mini") {
       if (outof === 0) {
         miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
@@ -172,6 +189,8 @@ export function update(): void {
     }
   } else if (Config.mode === "zen") {
     if (Config.timerStyle === "text") {
+      textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
+    } else if (Config.timerStyle === "flash") {
       textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
     } else {
       miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
