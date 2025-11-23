@@ -1734,27 +1734,32 @@ export async function afterTestWordChange(
   if (Numbers.isSafeNumber(lastBurst)) {
     void LiveBurst.update(Math.round(lastBurst));
   }
-  if (
-    direction === "forward" &&
-    (!Config.showAllLines ||
+  if (direction === "forward") {
+    if (
+      !Config.showAllLines ||
       Config.mode === "time" ||
       (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||
-      (Config.mode === "custom" && CustomText.getLimitMode() === "time"))
-  ) {
-    const previousWord = getWordElement(TestState.activeWordIndex - 1);
-    const activeWord = getActiveWordElement();
-
-    if (!previousWord || !activeWord) return;
-
-    const previousTop = previousWord.offsetTop;
-    const activeTop = activeWord.offsetTop;
-
-    if (
-      activeTop !== null &&
-      previousTop !== null &&
-      Math.floor(activeTop) > Math.floor(previousTop)
+      (Config.mode === "custom" && CustomText.getLimitMode() === "time")
     ) {
-      void lineJump(previousTop);
+      const previousWord = getWordElement(TestState.activeWordIndex - 1);
+      const activeWord = getActiveWordElement();
+
+      if (!previousWord || !activeWord) return;
+
+      const previousTop = previousWord.offsetTop;
+      const activeTop = activeWord.offsetTop;
+
+      if (
+        activeTop !== null &&
+        previousTop !== null &&
+        Math.floor(activeTop) > Math.floor(previousTop)
+      ) {
+        void lineJump(previousTop);
+      }
+    }
+  } else if (direction === "back") {
+    if (Config.mode === "zen") {
+      getWordElement(TestState.activeWordIndex + 1)?.remove();
     }
   }
 }
