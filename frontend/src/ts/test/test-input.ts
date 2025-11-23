@@ -380,7 +380,7 @@ export function resetKeypressTimings(): void {
     if (aIndex === undefined) return b;
     if (bIndex === undefined) return a;
     return aIndex > bIndex ? a : b;
-  });
+  }, "");
 
   //get the data
   const lastKeyData = keyDownData[lastKey];

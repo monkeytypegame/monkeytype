@@ -17,8 +17,8 @@ export function hide(): void {
 }
 
 export function resetPosition(): void {
-  caret.clearMargins();
   caret.stopAllAnimations();
+  caret.clearMargins();
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,

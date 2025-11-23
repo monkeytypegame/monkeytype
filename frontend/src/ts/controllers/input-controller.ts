@@ -431,18 +431,6 @@ async function handleChar(
     return;
   }
 
-  if (char === "œ" && TestWords.words.getCurrent()[charIndex] !== "œ") {
-    await handleChar("o", charIndex);
-    await handleChar("e", charIndex + 1);
-    return;
-  }
-
-  if (char === "æ" && TestWords.words.getCurrent()[charIndex] !== "æ") {
-    await handleChar("a", charIndex);
-    await handleChar("e", charIndex + 1);
-    return;
-  }
-
   console.debug("Handling char", char, charIndex, realInputValue);
 
   const now = performance.now();
@@ -703,7 +691,11 @@ async function handleChar(
     !TestUI.lineTransition
     // TestInput.input.current.length > 1
   ) {
-    if (Config.mode === "zen" || Config.indicateTypos === "replace") {
+    if (
+      Config.mode === "zen" ||
+      Config.indicateTypos === "replace" ||
+      Config.indicateTypos === "both"
+    ) {
       if (!Config.showAllLines) void TestUI.lineJump(activeWordTopBeforeJump);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);

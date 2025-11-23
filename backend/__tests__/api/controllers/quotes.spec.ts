@@ -9,7 +9,6 @@ import * as ReportDal from "../../../src/dal/report";
 import * as LogsDal from "../../../src/dal/logs";
 import * as Captcha from "../../../src/utils/captcha";
 import { ObjectId } from "mongodb";
-import _ from "lodash";
 import { ApproveQuote } from "@monkeytype/schemas/quotes";
 
 const { mockApp, uid } = setup();
@@ -874,9 +873,8 @@ describe("QuotesController", () => {
 });
 
 async function enableQuotes(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    quotes: { submissionsEnabled: enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.quotes = { ...mockConfig.quotes, submissionsEnabled: enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig
@@ -884,9 +882,13 @@ async function enableQuotes(enabled: boolean): Promise<void> {
 }
 
 async function enableQuoteReporting(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    quotes: { reporting: { enabled, maxReports: 10, contentReportLimit: 20 } },
-  });
+  const mockConfig = await configuration;
+  mockConfig.quotes.reporting = {
+    ...mockConfig.quotes.reporting,
+    enabled,
+    maxReports: 10,
+    contentReportLimit: 20,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig

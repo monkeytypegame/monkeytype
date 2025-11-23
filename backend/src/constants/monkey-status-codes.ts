@@ -1,5 +1,3 @@
-import _ from "lodash";
-
 type Status = {
   code: number;
   message: string;
@@ -71,8 +69,8 @@ const statuses: Statuses = {
   },
 };
 
-const CUSTOM_STATUS_CODES = new Set(
-  _.map(statuses, (status: Status) => status.code)
+const CUSTOM_STATUS_CODES = new Set<number>(
+  Object.values(statuses).map((status) => status.code)
 );
 
 export function isCustomCode(code: number): boolean {

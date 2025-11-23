@@ -3,6 +3,7 @@ import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as KeyConverter from "../utils/key-converter";
+import { animate } from "animejs";
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "monkey" && TestState.isActive) {
@@ -64,7 +65,10 @@ function update(): void {
 export function updateFastOpacity(num: number): void {
   if (!Config.monkey) return;
   const opacity = mapRange(num, 130, 180, 0, 1);
-  $("#monkey .fast").animate({ opacity: opacity }, 1000);
+  animate("#monkey .fast", {
+    opacity: opacity,
+    duration: 1000,
+  });
   let animDuration = mapRange(num, 130, 180, 0.25, 0.01);
   if (animDuration === 0.25) animDuration = 0;
   $("#monkey").css({ animationDuration: animDuration + "s" });
@@ -137,18 +141,20 @@ export function stop(event: JQuery.KeyUpEvent): void {
 
 export function show(): void {
   if (!Config.monkey) return;
-  $("#monkey")
-    .css("opacity", 0)
-    .removeClass("hidden")
-    .animate({ opacity: 1 }, 125);
+  $("#monkey").removeClass("hidden");
+  animate("#monkey", {
+    opacity: [0, 1],
+    duration: 125,
+  });
 }
 
 export function hide(): void {
-  $("#monkey")
-    .css("opacity", 1)
-    .animate({ opacity: 1 }, 125, () => {
-      $("#monkey").addClass("hidden");
-      $("#monkey .fast").stop(true, true).css("opacity", 0);
-      $("#monkey").stop(true, true).css({ animationDuration: "0s" });
-    });
+  animate("#monkey", {
+    opacity: [1, 0],
+    duration: 125,
+    onComplete: () => {
+      $("#monkey").addClass("hidden").css({ animationDuration: "0s" });
+      $("#monkey .fast").css("opacity", 0);
+    },
+  });
 }

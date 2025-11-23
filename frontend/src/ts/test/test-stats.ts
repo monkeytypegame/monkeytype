@@ -144,11 +144,18 @@ export function setInvalid(): void {
 }
 
 export function calculateTestSeconds(now?: number): number {
-  if (now === undefined) {
-    return (end - start) / 1000;
-  } else {
-    return (now - start) / 1000;
+  let duration = (end - start) / 1000;
+
+  if (now !== undefined) {
+    duration = (now - start) / 1000;
   }
+
+  if (Config.mode === "zen" && duration < 0) {
+    duration = 0;
+    console.log("Zen mode with negative duration detected, setting to 0");
+  }
+
+  return duration;
 }
 
 export function calculateWpmAndRaw(

@@ -82,6 +82,7 @@ import * as Sentry from "../sentry";
 import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
+import { animate } from "animejs";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -307,22 +308,21 @@ export function restart(options = {} as RestartOptions): void {
     ConnectionState.showOfflineBanner();
   }
 
-  let el = null;
+  let el: HTMLElement;
   if (TestState.resultVisible) {
     //results are being displayed
-    el = $("#result");
+    el = document.querySelector("#result") as HTMLElement;
   } else {
     //words are being displayed
-    el = $("#typingTest");
+    el = document.querySelector("#typingTest") as HTMLElement;
   }
   TestState.setResultVisible(false);
   TestState.setTestRestarting(true);
-  el.stop(true, true).animate(
-    {
-      opacity: 0,
-    },
-    animationTime,
-    async () => {
+
+  animate(el, {
+    opacity: 0,
+    duration: animationTime,
+    onComplete: async () => {
       $("#result").addClass("hidden");
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       $("#wordsInput").css({ left: 0 }).val(" ");
@@ -382,27 +382,26 @@ export function restart(options = {} as RestartOptions): void {
       if (isWordsFocused) OutOfFocus.hide();
       TestUI.focusWords(true);
 
-      $("#typingTest")
-        .css("opacity", 0)
-        .removeClass("hidden")
-        .stop(true, true)
-        .animate(
-          {
-            opacity: 1,
-          },
-          animationTime,
-          () => {
-            TimerProgress.reset();
-            LiveSpeed.reset();
-            LiveAcc.reset();
-            LiveBurst.reset();
-            TestUI.updatePremid();
-            ManualRestart.reset();
-            TestState.setTestRestarting(false);
-          }
-        );
-    }
-  );
+      const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
+
+      animate(typingTestEl, {
+        opacity: [0, 1],
+        onBegin: () => {
+          typingTestEl.classList.remove("hidden");
+        },
+        duration: animationTime,
+        onComplete: () => {
+          TimerProgress.reset();
+          LiveSpeed.reset();
+          LiveAcc.reset();
+          LiveBurst.reset();
+          TestUI.updatePremid();
+          ManualRestart.reset();
+          TestState.setTestRestarting(false);
+        },
+      });
+    },
+  });
 
   ResultWordHighlight.destroy();
 }
@@ -1406,22 +1405,21 @@ async function saveResult(
     Result.showErrorCrownIfNeeded();
   }
 
+  const dailyLeaderboardEl = document.querySelector(
+    "#result .stats .dailyLeaderboard"
+  ) as HTMLElement;
+
   if (data.dailyLeaderboardRank === undefined) {
-    $("#result .stats .dailyLeaderboard").addClass("hidden");
+    dailyLeaderboardEl.classList.add("hidden");
   } else {
-    $("#result .stats .dailyLeaderboard")
-      .css({
-        maxWidth: "13rem",
-        opacity: 0,
-      })
-      .removeClass("hidden")
-      .animate(
-        {
-          // maxWidth: "10rem",
-          opacity: 1,
-        },
-        Misc.applyReducedMotion(500)
-      );
+    dailyLeaderboardEl.classList.remove("hidden");
+    dailyLeaderboardEl.style.maxWidth = "13rem";
+
+    animate(dailyLeaderboardEl, {
+      opacity: [0, 1],
+      duration: Misc.applyReducedMotion(250),
+    });
+
     $("#result .stats .dailyLeaderboard .bottom").html(
       Format.rank(data.dailyLeaderboardRank, { fallback: "" })
     );

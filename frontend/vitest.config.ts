@@ -1,5 +1,6 @@
 import { defineConfig } from "vitest/config";
-import { languageHashes } from "./scripts/language-hashes";
+import { languageHashes } from "./vite-plugins/language-hashes";
+import { envConfig } from "./vite-plugins/env-config";
 
 export default defineConfig({
   test: {
@@ -19,5 +20,5 @@ export default defineConfig({
     },
   },
 
-  plugins: [languageHashes()],
+  plugins: [languageHashes({ skip: true }), envConfig({ isDevelopment: true })],
 });
