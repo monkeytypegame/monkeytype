@@ -1,5 +1,6 @@
 import { Challenge } from "@monkeytype/schemas/challenges";
 import { promiseWithResolvers } from "../utils/misc";
+import { CompletedEvent } from "@monkeytype/schemas/results";
 
 export let isRepeated = false;
 export let isPaceRepeat = false;
@@ -15,7 +16,11 @@ export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
 export let resultCalculating = false;
+export let lastResult: CompletedEvent | null = null;
 
+export function setLastResult(result: CompletedEvent): void {
+  lastResult = result;
+}
 export function setResultCalculating(val: boolean): void {
   resultCalculating = val;
 }

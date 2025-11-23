@@ -1204,6 +1204,7 @@ export async function update(
 ): Promise<void> {
   resultAnnotation = [];
   result = structuredClone(res);
+  TestState.setLastResult(result);
   hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
@@ -1484,6 +1485,9 @@ $(".pageTest #result .chart .chartLegend button").on("click", (event) => {
   updateResultChartDataVisibility(true);
 });
 
+$(".pageTest").on("click", "#showCharStatsButton", () => {
+  void toggleCharStats();
+});
 $(".pageTest #favoriteQuoteButton").on("click", async () => {
   if (quoteLang === undefined || quoteId === "") {
     Notifications.add("Could not get quote stats!", -1);

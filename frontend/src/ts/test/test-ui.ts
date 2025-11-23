@@ -24,7 +24,6 @@ import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
 import * as PaceCaret from "./pace-caret";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import * as Result from "./result";
 import * as Numbers from "@monkeytype/util/numbers";
 import { animate } from "animejs";
 
@@ -1656,9 +1655,11 @@ $(".pageTest #copyCharStatsButton").on("click", async () => {
     total: number;
     correct: number;
   }> = [];
-  if (!Result.result.detailedCharStats) return;
+  if (!TestState.lastResult?.detailedCharStats) return;
 
-  for (const [char, stats] of Object.entries(Result.result.detailedCharStats)) {
+  for (const [char, stats] of Object.entries(
+    TestState.lastResult.detailedCharStats
+  )) {
     const charStat = stats;
     if (char.trim() === "") continue;
 
@@ -1774,10 +1775,6 @@ $("#wordsInput").on("focusout", () => {
 
 $(".pageTest").on("click", "#showWordHistoryButton", () => {
   toggleResultWords();
-});
-
-$(".pageTest").on("click", "#showCharStatsButton", () => {
-  void Result.toggleCharStats();
 });
 
 $("#wordsWrapper").on("click", () => {
