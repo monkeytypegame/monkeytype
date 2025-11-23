@@ -119,52 +119,6 @@ describe("isCharCorrect", () => {
     );
   });
 
-  describe("Russian Language", () => {
-    beforeEach(() => {
-      replaceConfig({ language: "russian" });
-    });
-
-    it.each([
-      ["ё", "t", "tе"], // target is е
-      ["е", "t", "tё"], // target is ё
-      ["e", "t", "tе"], // latin e vs cyrillic е
-    ])(
-      "allows interchangeable characters: %s vs target in %s",
-      (char, input, word) => {
-        expect(
-          isCharCorrect({
-            data: char,
-            inputValue: input,
-            targetWord: word,
-            correctShiftUsed: true,
-          })
-        ).toBe(true);
-      }
-    );
-  });
-
-  describe("Visual Equality", () => {
-    it.each([
-      [true, "’", "don", "don'", true],
-      [false, "x", "te", "tea", false],
-    ])(
-      "returns %s when visually equal is %s",
-      (visuallyEqual, char, input, word, expected) => {
-        (Strings.areCharactersVisuallyEqual as any).mockReturnValue(
-          visuallyEqual
-        );
-        expect(
-          isCharCorrect({
-            data: char,
-            inputValue: input,
-            targetWord: word,
-            correctShiftUsed: true,
-          })
-        ).toBe(expected);
-      }
-    );
-  });
-
   it("throws error if data is undefined", () => {
     expect(() =>
       isCharCorrect({

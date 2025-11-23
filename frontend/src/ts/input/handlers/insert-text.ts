@@ -12,7 +12,7 @@ import {
   checkIfFailedDueToMinBurst,
   checkIfFinished,
 } from "../helpers/fail-or-finish";
-import { isSpace } from "../../utils/strings";
+import { areCharactersVisuallyEqual, isSpace } from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
 import {
@@ -61,32 +61,32 @@ type OnInsertTextParams = {
 };
 
 export async function onInsertText(options: OnInsertTextParams): Promise<void> {
-  const { data, now, lastInMultiIndex, isCompositionEnding } = options;
+  const { now, lastInMultiIndex, isCompositionEnding } = options;
   const { inputValue } = getInputElementValue();
 
-  if (data.length > 1) {
+  if (options.data.length > 1) {
     // remove the entire data from the input value
     // make sure to not call TestInput.input.syncWithInputElement in here
     // it will be updated later in the body of onInsertText
-    setInputElementValue(inputValue.slice(0, -data.length));
-
-    for (let i = 0; i < data.length; i++) {
-      const char = data[i] as string;
+    setInputElementValue(inputValue.slice(0, -options.data.length));
+    for (let i = 0; i < options.data.length; i++) {
+      const char = options.data[i] as string;
 
       // then add it one by one
       await emulateInsertText({
         ...options,
         data: char,
-        lastInMultiIndex: i === data.length - 1,
+        lastInMultiIndex: i === options.data.length - 1,
       });
     }
     return;
   }
 
-  const charOverride = charOverrides.get(data);
+  const charOverride = charOverrides.get(options.data);
   if (
     charOverride !== undefined &&
-    TestWords.words.getCurrent()[TestInput.input.current.length] !== data
+    TestWords.words.getCurrent()[TestInput.input.current.length] !==
+      options.data
   ) {
     await onInsertText({
       ...options,
@@ -94,6 +94,21 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     });
     return;
   }
+
+  // if the character is visually equal, replace it with the target character
+  // this ensures all future equivalence checks work correctly
+  let normalizedData: string | null = null;
+  const targetChar =
+    TestWords.words.getCurrent()[TestInput.input.current.length];
+  if (
+    targetChar !== undefined &&
+    areCharactersVisuallyEqual(options.data, targetChar, Config.language)
+  ) {
+    replaceInputElementLastValueChar(targetChar);
+    normalizedData = targetChar;
+  }
+
+  const data = normalizedData ?? options.data;
 
   // start if needed
   if (!TestState.isActive) {

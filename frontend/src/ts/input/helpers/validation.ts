@@ -1,5 +1,5 @@
 import Config from "../../config";
-import { areCharactersVisuallyEqual, isSpace } from "../../utils/strings";
+import { isSpace } from "../../utils/strings";
 
 /**
  * Check if the input data is correct
@@ -36,20 +36,6 @@ export function isCharCorrect(options: {
   }
 
   if (data === targetChar) {
-    return true;
-  }
-
-  if (Config.language.startsWith("russian")) {
-    if (
-      (data === "ё" || data === "е" || data === "e") &&
-      (targetChar === "ё" || targetChar === "е" || targetChar === "e")
-    ) {
-      return true;
-    }
-  }
-
-  const visuallyEqual = areCharactersVisuallyEqual(data, targetChar);
-  if (visuallyEqual) {
     return true;
   }
 

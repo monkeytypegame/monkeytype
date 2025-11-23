@@ -270,6 +270,12 @@ export const CHAR_EQUIVALENCE_MAPS = [
   new Map([",", "‚"].map((char, index) => [char, index])),
 ];
 
+export const LANGUAGE_EQUIVALENCE_MAPS: Partial<
+  Record<Language, Map<string, number>>
+> = {
+  russian: new Map(["ё", "е", "e"].map((char, index) => [char, index])),
+};
+
 /**
  * Checks if two characters are visually/typographically equivalent for typing purposes.
  * This allows users to type different variants of the same character and still be considered correct.
@@ -279,7 +285,8 @@ export const CHAR_EQUIVALENCE_MAPS = [
  */
 export function areCharactersVisuallyEqual(
   char1: string,
-  char2: string
+  char2: string,
+  language?: Language
 ): boolean {
   // If characters are exactly the same, they're equivalent
   if (char1 === char2) {
@@ -290,6 +297,15 @@ export function areCharactersVisuallyEqual(
   for (const map of CHAR_EQUIVALENCE_MAPS) {
     if (map.has(char1) && map.has(char2)) {
       return true;
+    }
+  }
+
+  if (language !== undefined) {
+    const langMap = LANGUAGE_EQUIVALENCE_MAPS[removeLanguageSize(language)];
+    if (langMap !== undefined) {
+      if (langMap.has(char1) && langMap.has(char2)) {
+        return true;
+      }
     }
   }
 

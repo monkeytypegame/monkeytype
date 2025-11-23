@@ -547,5 +547,44 @@ describe("string utils", () => {
       expect(Strings.areCharactersVisuallyEqual("-", "'")).toBe(false);
       expect(Strings.areCharactersVisuallyEqual(",", '"')).toBe(false);
     });
+
+    describe("should check russian specific equivalences", () => {
+      it.each([
+        {
+          desc: "е and ё are equivalent",
+          char1: "е",
+          char2: "ё",
+          expected: true,
+        },
+        {
+          desc: "e and ё are equivalent",
+          char1: "e",
+          char2: "ё",
+          expected: true,
+        },
+        {
+          desc: "е and e are equivalent",
+          char1: "е",
+          char2: "e",
+          expected: true,
+        },
+        {
+          desc: "non-equivalent characters return false",
+          char1: "а",
+          char2: "б",
+          expected: false,
+        },
+        {
+          desc: "non-equivalent characters return false (2)",
+          char1: "a",
+          char2: "б",
+          expected: false,
+        },
+      ])("$desc", ({ char1, char2, expected }) => {
+        expect(
+          Strings.areCharactersVisuallyEqual(char1, char2, "russian")
+        ).toBe(expected);
+      });
+    });
   });
 });
