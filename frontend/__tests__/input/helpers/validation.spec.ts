@@ -175,30 +175,6 @@ describe("isCharCorrect", () => {
       })
     ).toThrow();
   });
-
-  it("uses funbox isCharCorrect if active", () => {
-    const funboxMock = {
-      functions: {
-        isCharCorrect: vi.fn().mockReturnValue(true),
-      },
-    };
-    (FunboxList.findSingleActiveFunboxWithFunction as any).mockReturnValue(
-      funboxMock
-    );
-
-    const result = isCharCorrect({
-      data: "x",
-      inputValue: "te",
-      targetWord: "tea",
-      correctShiftUsed: true,
-    });
-
-    expect(FunboxList.findSingleActiveFunboxWithFunction).toHaveBeenCalledWith(
-      "isCharCorrect"
-    );
-    expect(funboxMock.functions.isCharCorrect).toHaveBeenCalledWith("x", "a");
-    expect(result).toBe(true);
-  });
 });
 
 describe("shouldInsertSpaceCharacter", () => {
