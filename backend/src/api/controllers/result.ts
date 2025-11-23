@@ -450,10 +450,9 @@ export async function addResult(
   let tagPbs: string[] = [];
 
   if (!completedEvent.bailedOut) {
-    const dbResultForPbCheck = buildDbResult(completedEvent, user.name, false);
     [isPb, tagPbs] = await Promise.all([
-      UserDAL.checkIfPb(uid, user, dbResultForPbCheck),
-      UserDAL.checkIfTagPb(uid, user, dbResultForPbCheck),
+      UserDAL.checkIfPb(uid, user, completedEvent),
+      UserDAL.checkIfTagPb(uid, user, completedEvent),
     ]);
   }
 
@@ -729,7 +728,9 @@ async function calculateXp(
 
   let modifier = 1;
   // check if charstats is undefined
-  const correctedEverything = charStats[1] === 0 && charStats[3] === 0;
+  const correctedEverything = charStats
+    .slice(1)
+    .every((charStat: number) => charStat === 0);
 
   if (acc === 100) {
     modifier += 0.5;

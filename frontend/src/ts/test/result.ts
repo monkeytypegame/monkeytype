@@ -52,6 +52,7 @@ let maxChartVal: number;
 
 let useSmoothedBurst = true;
 let useFakeChartData = false;
+let charStatsChart: Chart<"bar"> | null = null;
 
 let quoteLang: Language | undefined;
 let quoteId = "";
@@ -512,8 +513,6 @@ function updateKey(): void {
   );
 }
 
-let charStatsChart: Chart<"bar"> | null = null;
-
 function updateCharStats(): void {
   const charStatsElement = $("#result .stats .charStats");
   if (!result.detailedCharStats) {
@@ -525,33 +524,67 @@ function updateCharStats(): void {
   charStatsElement.removeClass("hidden");
   $("#result #showCharStatsButton").removeClass("hidden");
 
-  // this would mean the most erroed char
-  let maxErrorRate = 0;
-  let mostMistakenChars: Array<{
-    char: string;
-    errorRate: number;
-    errors: number;
-    total: number;
-  }> = [];
+  let easiestChar: { char: string; successRate: number; total: number } | null =
+    null;
+  let hardestChar: { char: string; errorRate: number; total: number } | null =
+    null;
 
   for (const [char, stats] of Object.entries(result.detailedCharStats)) {
     if (char.trim() === "") continue;
 
-    const charStat = stats;
-    const errors = charStat.incorrect + charStat.missed + charStat.extra;
-    const total =
-      charStat.correct + charStat.incorrect + charStat.missed + charStat.extra;
-    const errorRate = total > 0 ? (errors / total) * 100 : 0;
+    const errors = stats.incorrect + stats.missed + stats.extra;
+    const total = errors + stats.correct;
+    if (total === 0) continue;
 
-    if (errors > 0 && errorRate > maxErrorRate) {
-      maxErrorRate = errorRate;
-      mostMistakenChars = [{ char, errorRate, errors, total }];
-    } else if (errors > 0 && errorRate === maxErrorRate && maxErrorRate > 0) {
-      mostMistakenChars.push({ char, errorRate, errors, total });
+    const successRate = (stats.correct / total) * 100;
+    const errorRate = (errors / total) * 100;
+
+    // Determine hardest character (highest error rate, then by total count)
+    if (
+      hardestChar === null ||
+      errorRate > hardestChar.errorRate ||
+      (errorRate === hardestChar.errorRate && total > hardestChar.total)
+    ) {
+      hardestChar = { char, errorRate, total };
+    }
+
+    // Determine easiest character (highest success rate, then by total count)
+    if (
+      easiestChar === null ||
+      successRate > easiestChar.successRate ||
+      (successRate === easiestChar.successRate && total > easiestChar.total)
+    ) {
+      easiestChar = { char, successRate, total };
     }
   }
-}
 
+  const bottomEl = charStatsElement.find(".bottom");
+  let tooltipText = "";
+
+  if (hardestChar) {
+    $("#hardestChar").text(
+      hardestChar.char === " " ? "space" : hardestChar.char
+    );
+    tooltipText += `Miss: ${Numbers.roundTo2(hardestChar.errorRate)}% error`;
+  } else {
+    $("#hardestChar").text("-");
+    tooltipText += `Miss: -`;
+  }
+
+  if (easiestChar) {
+    $("#easiestChar").text(
+      easiestChar.char === " " ? "space" : easiestChar.char
+    );
+    tooltipText += `\nNail: ${Numbers.roundTo2(
+      easiestChar.successRate
+    )}% success`;
+  } else {
+    $("#easiestChar").text("-");
+    tooltipText += `\nNail: -`;
+  }
+
+  bottomEl.attr("aria-label", tooltipText);
+}
 export async function toggleCharStats(noAnimation = false): Promise<void> {
   if (!TestState.resultVisible || !result.detailedCharStats) return;
 
@@ -583,9 +616,7 @@ async function renderCharStatsChart(): Promise<void> {
 
   const charData: Array<{
     char: string;
-    errorRate: number;
     errors: number;
-    total: number;
     correct: number;
   }> = [];
 
@@ -595,31 +626,25 @@ async function renderCharStatsChart(): Promise<void> {
 
     const errors = charStat.incorrect + charStat.missed + charStat.extra;
     const total = errors + charStat.correct;
-    const errorRate = total > 0 ? (errors / total) * 100 : 0;
 
     if (total > 0) {
       charData.push({
         char: char === " " ? "space" : char,
-        errorRate,
         errors,
-        total,
         correct: charStat.correct,
       });
     }
   }
-  // error rate > total occurance
 
   charData.sort((a, b) => {
-    if (b.errorRate !== a.errorRate) {
-      return b.errorRate - a.errorRate;
+    if (b.errors !== a.errors) {
+      return b.errors - a.errors;
     }
-    return b.total - a.total;
+    return b.correct - a.correct;
   });
 
-  // limit only for 30 char as we might have more (punctuation, numbers, etc)
   const topChars = charData.slice(0, 30);
 
-  // this will be called only once
   if (charStatsChart !== null) {
     charStatsChart.destroy();
   }
@@ -631,9 +656,11 @@ async function renderCharStatsChart(): Promise<void> {
 
   const subColor = await ThemeColors.get("sub");
   const errorColor = await ThemeColors.get("error");
+  const correctColor = await ThemeColors.get("main");
 
   const labels = topChars.map((d) => d.char);
-  const errorRates = topChars.map((d) => Numbers.roundTo2(d.errorRate));
+  const correctData = topChars.map((d) => d.correct);
+  const errorData = topChars.map((d) => d.errors);
 
   charStatsChart = new Chart(ctx, {
     type: "bar",
@@ -641,8 +668,15 @@ async function renderCharStatsChart(): Promise<void> {
       labels: labels,
       datasets: [
         {
-          label: "Error Rate (%)",
-          data: errorRates,
+          label: "Correct",
+          data: correctData,
+          backgroundColor: correctColor,
+          borderColor: correctColor,
+          borderWidth: 1,
+        },
+        {
+          label: "Errors",
+          data: errorData,
           backgroundColor: errorColor,
           borderColor: errorColor,
           borderWidth: 1,
@@ -654,7 +688,7 @@ async function renderCharStatsChart(): Promise<void> {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false,
+          display: true,
         },
         tooltip: {
           callbacks: {
@@ -662,11 +696,7 @@ async function renderCharStatsChart(): Promise<void> {
               const index = context.dataIndex;
               const char = topChars[index];
               if (!char) return [];
-              return [
-                `Error Rate: ${Numbers.roundTo2(char.errorRate)}%`,
-                `Errors: ${char.errors}/${char.total}`,
-                `Correct: ${char.correct}/${char.total}`,
-              ];
+              return [`Correct: ${char.correct}`, `Errors: ${char.errors}`];
             },
           },
         },
@@ -674,10 +704,8 @@ async function renderCharStatsChart(): Promise<void> {
       scales: {
         y: {
           beginAtZero: true,
-          max: 100,
           ticks: {
             color: subColor,
-            callback: (value) => `${value}%`,
           },
           grid: {
             color: subColor,
@@ -696,26 +724,6 @@ async function renderCharStatsChart(): Promise<void> {
       },
     },
   });
-
-  let listHTML = "<div class='charStatsListContent'>";
-  listHTML +=
-    "<div class='charStatsHeader'><strong>Character</strong><strong>Error Rate</strong><strong>Errors/Total</strong></div>";
-
-  for (const item of topChars) {
-    const displayChar = item.char === "space" ? "space" : item.char;
-    const charDisplay =
-      displayChar.length > 1 ? `"${displayChar}"` : displayChar;
-    listHTML += `<div class='charStatsItem'>`;
-    listHTML += `<span class='charStatsChar'>${charDisplay}</span>`;
-    listHTML += `<span class='charStatsRate'>${Numbers.roundTo2(
-      item.errorRate
-    )}%</span>`;
-    listHTML += `<span class='charStatsCount'>${item.errors}/${item.total}</span>`;
-    listHTML += `</div>`;
-  }
-
-  listHTML += "</div>";
-  $("#charStatsList").html(listHTML);
 }
 
 export function showCrown(type: PbCrown.CrownType): void {

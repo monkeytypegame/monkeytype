@@ -73,21 +73,6 @@
         </button>
       </div>
 
-      <div class="zen">
-        <div
-          class="textButton"
-          style="
-            width: 0;
-            padding-left: 0;
-            padding-right: 0;
-            margin-left: 0;
-            margin-right: 0;
-          "
-        >
-           
-        </div>
-      </div>
-
       <div class="customText">
         <button class="textButton">change</button>
       </div>
@@ -331,14 +316,11 @@
         </div>
 
         <div class="group charStats">
-          <div class="top">character stats</div>
-          <div
-            class="bottom"
-            id="mostMistakenChar"
-            aria-label=""
-            data-balloon-pos="up"
-          >
-            -
+          <div class="top">miss / nail</div>
+          <div class="bottom" aria-label="" data-balloon-pos="up">
+            <span id="hardestChar">-</span>
+            /
+            <span id="easiestChar">-</span>
           </div>
         </div>
       </div>
@@ -431,7 +413,6 @@
           <div id="charStatsChartContainer">
             <canvas id="charStatsChart"></canvas>
           </div>
-          <div id="charStatsList" class="charStatsList"></div>
         </div>
         <div id="resultReplay" class="hidden">
           <div class="title">
