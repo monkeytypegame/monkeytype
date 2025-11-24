@@ -92,7 +92,7 @@
     "supertest": "7.1.4",
     "testcontainers": "11.4.0",
     "tsx": "4.16.2",
-    "typescript": "5.5.4",
+    "typescript": "5.9.3",
     "vitest": "4.0.8"
   }
 }

@@ -21,6 +21,7 @@ type GoToNextWordParams = {
   correctInsert: boolean;
   // this is used to tell test ui to update the word before moving to the next word (in case of a composition that ends with a space)
   isCompositionEnding: boolean;
+  zenNewline?: boolean;
 };
 
 type GoToNextWordReturn = {
@@ -31,13 +32,18 @@ type GoToNextWordReturn = {
 export async function goToNextWord({
   correctInsert,
   isCompositionEnding,
+  zenNewline,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
   const ret = {
     increasedWordIndex: false,
     lastBurst: 0,
   };
 
-  TestUI.beforeTestWordChange("forward", correctInsert, isCompositionEnding);
+  TestUI.beforeTestWordChange(
+    "forward",
+    correctInsert,
+    isCompositionEnding || zenNewline === true
+  );
 
   if (correctInsert) {
     Replay.addReplayEvent("submitCorrectWord");

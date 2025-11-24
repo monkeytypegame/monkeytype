@@ -229,6 +229,9 @@ export type MinimumBurst = z.infer<typeof MinimumBurstSchema>;
 export const ShowAverageSchema = z.enum(["off", "speed", "acc", "both"]);
 export type ShowAverage = z.infer<typeof ShowAverageSchema>;
 
+export const ShowPbSchema = z.boolean();
+export type ShowPb = z.infer<typeof ShowPbSchema>;
+
 export const ColorHexValueSchema = z.string().regex(/^#([\da-f]{3}){1,2}$/i);
 export type ColorHexValue = z.infer<typeof ColorHexValueSchema>;
 
@@ -461,6 +464,7 @@ export const ConfigSchema = z
     showOutOfFocusWarning: z.boolean(),
     capsLockWarning: z.boolean(),
     showAverage: ShowAverageSchema,
+    showPb: ShowPbSchema,
 
     // other (hidden)
     accountChart: AccountChartSchema,
@@ -596,6 +600,7 @@ export const ConfigGroupsLiteral = {
   showOutOfFocusWarning: "hideElements",
   capsLockWarning: "hideElements",
   showAverage: "hideElements",
+  showPb: "hideElements",
 
   //other
   accountChart: "hidden",

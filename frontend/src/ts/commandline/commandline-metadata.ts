@@ -703,6 +703,12 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
     },
   },
+  showPb: {
+    subgroup: {
+      options: "fromSchema",
+    },
+    alias: "pb",
+  },
   monkeyPowerLevel: {
     alias: "powermode",
     isVisible: false,

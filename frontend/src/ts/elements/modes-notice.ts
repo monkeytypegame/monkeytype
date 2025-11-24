@@ -9,8 +9,8 @@ import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
 import Format from "../utils/format";
-import { getActiveFunboxNames } from "../test/funbox/list";
-import { escapeHTML } from "../utils/misc";
+import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
+import { escapeHTML, getMode2 } from "../utils/misc";
 
 ConfigEvent.subscribe((eventKey) => {
   const configKeys: ConfigEvent.ConfigEventKey[] = [
@@ -26,6 +26,7 @@ ConfigEvent.subscribe((eventKey) => {
     "confidenceMode",
     "layout",
     "showAverage",
+    "showPb",
     "typingSpeedUnit",
     "quickRestart",
     "customPolyglot",
@@ -191,6 +192,36 @@ export async function update(): Promise<void> {
     }
   }
 
+  if (Config.showPb) {
+    if (!isAuthenticated()) {
+      return;
+    }
+    const mode2 = getMode2(Config, TestWords.currentQuote);
+    const pb = await DB.getLocalPB(
+      Config.mode,
+      mode2,
+      Config.punctuation,
+      Config.numbers,
+      Config.language,
+      Config.difficulty,
+      Config.lazyMode,
+      getActiveFunboxes()
+    );
+
+    let str = "no pb";
+
+    if (pb !== undefined) {
+      str = `${Format.typingSpeed(pb.wpm, {
+        showDecimalPlaces: true,
+        suffix: ` ${Config.typingSpeedUnit}`,
+      })} ${pb?.acc}% acc`;
+    }
+
+    $(".pageTest #testModesNotice").append(
+      `<button class="textButton" commands="showPb"><i class="fas fa-crown"></i>${str}</button>`
+    );
+  }
+
   if (Config.minWpm !== "off") {
     $(".pageTest #testModesNotice").append(
       `<button class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
@@ -276,16 +307,4 @@ export async function update(): Promise<void> {
       );
     }
   } catch {}
-}
-
-if (import.meta.hot !== undefined) {
-  import.meta.hot.dispose(() => {
-    //
-  });
-  import.meta.hot.accept(() => {
-    //
-  });
-  import.meta.hot.on("vite:afterUpdate", () => {
-    void update();
-  });
 }

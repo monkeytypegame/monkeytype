@@ -21,8 +21,8 @@ importers:
         specifier: 8.46.2
         version: 8.46.2(@typescript-eslint/parser@8.46.2(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
       '@vitest/coverage-v8':
-        specifier: 4.0.4
-        version: 4.0.4(vitest@4.0.8(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
+        specifier: 4.0.8
+        version: 4.0.8(vitest@4.0.8(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
       conventional-changelog:
         specifier: 6.0.0
         version: 6.0.0(conventional-commits-filter@5.0.0)
@@ -265,8 +265,8 @@ importers:
         specifier: 4.16.2
         version: 4.16.2
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       vitest:
         specifier: 4.0.8
         version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
@@ -441,7 +441,7 @@ importers:
         version: 20.0.10
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@5.5.4)
+        version: 8.0.0(typescript@5.9.3)
       magic-string:
         specifier: 0.30.17
         version: 0.30.17
@@ -464,8 +464,8 @@ importers:
         specifier: 4.16.2
         version: 4.16.2
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       unplugin-inject-preload:
         specifier: 3.0.0
         version: 3.0.0
@@ -477,7 +477,7 @@ importers:
         version: 1.2.1(rollup@2.79.2)
       vite-plugin-checker:
         specifier: 0.11.0
-        version: 0.11.0(eslint@8.57.1)(meow@13.2.0)(optionator@0.9.4)(oxlint@1.29.0)(typescript@5.5.4)(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
+        version: 0.11.0(eslint@8.57.1)(meow@13.2.0)(optionator@0.9.4)(oxlint@1.29.0)(typescript@5.9.3)(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
       vite-plugin-filter-replace:
         specifier: 0.1.14
         version: 0.1.14
@@ -523,16 +523,16 @@ importers:
         version: 8.57.1
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@5.5.4)
+        version: 8.0.0(typescript@5.9.3)
       oxlint:
         specifier: 1.29.0
         version: 1.29.0
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.8.1)
+        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       vitest:
         specifier: 4.0.8
         version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
@@ -587,16 +587,16 @@ importers:
         version: 8.57.1
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@5.5.4)
+        version: 8.0.0(typescript@5.9.3)
       oxlint:
         specifier: 1.29.0
         version: 1.29.0
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.8.1)
+        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       vitest:
         specifier: 4.0.8
         version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
@@ -648,16 +648,16 @@ importers:
         version: 8.57.1
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@5.5.4)
+        version: 8.0.0(typescript@5.9.3)
       oxlint:
         specifier: 1.29.0
         version: 1.29.0
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.8.1)
+        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       vitest:
         specifier: 4.0.8
         version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
@@ -678,8 +678,8 @@ importers:
         specifier: 1.29.0
         version: 1.29.0
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
 
   packages/typescript-config: {}
 
@@ -699,16 +699,16 @@ importers:
         version: 8.57.1
       madge:
         specifier: 8.0.0
-        version: 8.0.0(typescript@5.5.4)
+        version: 8.0.0(typescript@5.9.3)
       oxlint:
         specifier: 1.29.0
         version: 1.29.0
       tsup:
         specifier: 8.4.0
-        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.5.4)(yaml@2.8.1)
+        version: 8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
-        specifier: 5.5.4
-        version: 5.5.4
+        specifier: 5.9.3
+        version: 5.9.3
       vitest:
         specifier: 4.0.8
         version: 4.0.8(@types/node@24.9.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
@@ -12910,7 +12910,7 @@ snapshots:
 
   '@typescript-eslint/types@8.46.2': {}
 
-  '@typescript-eslint/typescript-estree@7.18.0(typescript@5.5.4)':
+  '@typescript-eslint/typescript-estree@7.18.0(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/types': 7.18.0
       '@typescript-eslint/visitor-keys': 7.18.0
@@ -12919,9 +12919,9 @@ snapshots:
       is-glob: 4.0.3
       minimatch: 9.0.5
       semver: 7.7.3
-      ts-api-utils: 1.4.3(typescript@5.5.4)
+      ts-api-utils: 1.4.3(typescript@5.9.3)
     optionalDependencies:
-      typescript: 5.5.4
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -12964,17 +12964,17 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@vitest/coverage-v8@4.0.4(vitest@4.0.8(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))':
+  '@vitest/coverage-v8@4.0.8(vitest@4.0.8(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
-      '@vitest/utils': 4.0.4
+      '@vitest/utils': 4.0.8
       ast-v8-to-istanbul: 0.3.8
       debug: 4.4.3
       istanbul-lib-coverage: 3.2.2
       istanbul-lib-report: 3.0.1
       istanbul-lib-source-maps: 5.0.6
       istanbul-reports: 3.2.0
-      magicast: 0.3.5
+      magicast: 0.5.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
       vitest: 4.0.8(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
@@ -14379,7 +14379,7 @@ snapshots:
       commander: 12.1.0
       filing-cabinet: 5.0.2
       precinct: 12.1.2
-      typescript: 5.5.4
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -14423,24 +14423,24 @@ snapshots:
 
   detective-stylus@5.0.0: {}
 
-  detective-typescript@13.0.0(typescript@5.5.4):
+  detective-typescript@13.0.0(typescript@5.9.3):
     dependencies:
-      '@typescript-eslint/typescript-estree': 7.18.0(typescript@5.5.4)
+      '@typescript-eslint/typescript-estree': 7.18.0(typescript@5.9.3)
       ast-module-types: 6.0.0
       node-source-walk: 7.0.0
-      typescript: 5.5.4
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  detective-vue2@2.0.3(typescript@5.5.4):
+  detective-vue2@2.0.3(typescript@5.9.3):
     dependencies:
       '@vue/compiler-sfc': 3.4.37
       detective-es6: 5.0.0
       detective-sass: 6.0.0
       detective-scss: 5.0.0
       detective-stylus: 5.0.0
-      detective-typescript: 13.0.0(typescript@5.5.4)
-      typescript: 5.5.4
+      detective-typescript: 13.0.0(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -15345,7 +15345,7 @@ snapshots:
       sass-lookup: 6.0.1
       stylus-lookup: 6.0.0
       tsconfig-paths: 4.2.0
-      typescript: 5.5.4
+      typescript: 5.9.3
 
   fill-range@7.1.1:
     dependencies:
@@ -17006,7 +17006,7 @@ snapshots:
 
   lz-ts@1.1.2: {}
 
-  madge@8.0.0(typescript@5.5.4):
+  madge@8.0.0(typescript@5.9.3):
     dependencies:
       chalk: 4.1.2
       commander: 7.2.0
@@ -17021,7 +17021,7 @@ snapshots:
       ts-graphviz: 2.1.2
       walkdir: 0.4.1
     optionalDependencies:
-      typescript: 5.5.4
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -18305,12 +18305,12 @@ snapshots:
       detective-sass: 6.0.0
       detective-scss: 5.0.0
       detective-stylus: 5.0.0
-      detective-typescript: 13.0.0(typescript@5.5.4)
-      detective-vue2: 2.0.3(typescript@5.5.4)
+      detective-typescript: 13.0.0(typescript@5.9.3)
+      detective-vue2: 2.0.3(typescript@5.9.3)
       module-definition: 6.0.0
       node-source-walk: 7.0.0
       postcss: 8.5.6
-      typescript: 5.5.4
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -19836,9 +19836,9 @@ snapshots:
 
   ts-algebra@1.2.2: {}
 
-  ts-api-utils@1.4.3(typescript@5.5.4):
+  ts-api-utils@1.4.3(typescript@5.9.3):
     dependencies:
-      typescript: 5.5.4
+      typescript: 5.9.3
 
   ts-api-utils@2.1.0(typescript@5.9.3):
     dependencies:
@@ -19915,6 +19915,33 @@ snapshots:
     optionalDependencies:
       postcss: 8.5.6
       typescript: 5.5.4
+    transitivePeerDependencies:
+      - jiti
+      - supports-color
+      - tsx
+      - yaml
+
+  tsup@8.4.0(postcss@8.5.6)(tsx@4.16.2)(typescript@5.9.3)(yaml@2.8.1):
+    dependencies:
+      bundle-require: 5.1.0(esbuild@0.25.0)
+      cac: 6.7.14
+      chokidar: 4.0.3
+      consola: 3.4.0
+      debug: 4.4.1
+      esbuild: 0.25.0
+      joycon: 3.1.1
+      picocolors: 1.1.1
+      postcss-load-config: 6.0.1(postcss@8.5.6)(tsx@4.16.2)(yaml@2.8.1)
+      resolve-from: 5.0.0
+      rollup: 4.40.0
+      source-map: 0.8.0-beta.0
+      sucrase: 3.35.0
+      tinyexec: 0.3.2
+      tinyglobby: 0.2.13
+      tree-kill: 1.2.2
+    optionalDependencies:
+      postcss: 8.5.6
+      typescript: 5.9.3
     transitivePeerDependencies:
       - jiti
       - supports-color
@@ -20055,7 +20082,8 @@ snapshots:
     dependencies:
       is-typedarray: 1.0.0
 
-  typescript@5.5.4: {}
+  typescript@5.5.4:
+    optional: true
 
   typescript@5.9.3: {}
 
@@ -20265,7 +20293,7 @@ snapshots:
     dependencies:
       vite: 7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)
 
-  vite-plugin-checker@0.11.0(eslint@8.57.1)(meow@13.2.0)(optionator@0.9.4)(oxlint@1.29.0)(typescript@5.5.4)(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)):
+  vite-plugin-checker@0.11.0(eslint@8.57.1)(meow@13.2.0)(optionator@0.9.4)(oxlint@1.29.0)(typescript@5.9.3)(vite@7.1.12(@types/node@24.9.1)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1)):
     dependencies:
       '@babel/code-frame': 7.27.1
       chokidar: 4.0.3
@@ -20281,7 +20309,7 @@ snapshots:
       meow: 13.2.0
       optionator: 0.9.4
       oxlint: 1.29.0
-      typescript: 5.5.4
+      typescript: 5.9.3
 
   vite-plugin-filter-replace@0.1.14:
     dependencies:

@@ -217,6 +217,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     const result = await goToNextWord({
       correctInsert: correct,
       isCompositionEnding: isCompositionEnding === true,
+      zenNewline: charIsNewline && Config.mode === "zen",
     });
     lastBurst = result.lastBurst;
     increasedWordIndex = result.increasedWordIndex;

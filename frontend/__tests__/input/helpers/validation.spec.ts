@@ -14,10 +14,15 @@ vi.mock("../../../src/ts/test/funbox/list", () => ({
   findSingleActiveFunboxWithFunction: vi.fn(),
 }));
 
-vi.mock("../../../src/ts/utils/strings", () => ({
-  areCharactersVisuallyEqual: vi.fn(),
-  isSpace: vi.fn(),
-}));
+vi.mock("../../../src/ts/utils/strings", async () => {
+  const actual = await vi.importActual<typeof Strings>(
+    "../../../src/ts/utils/strings"
+  );
+  return {
+    ...actual,
+    areCharactersVisuallyEqual: vi.fn(),
+  };
+});
 
 describe("isCharCorrect", () => {
   beforeEach(() => {
@@ -34,7 +39,6 @@ describe("isCharCorrect", () => {
       null
     );
     (Strings.areCharactersVisuallyEqual as any).mockReturnValue(false);
-    (Strings.isSpace as any).mockReturnValue(false);
   });
 
   afterAll(() => {
@@ -133,7 +137,6 @@ describe("isCharCorrect", () => {
 
 describe("shouldInsertSpaceCharacter", () => {
   beforeEach(() => {
-    (Strings.isSpace as any).mockReturnValue(true);
     replaceConfig({
       mode: "time",
       stopOnError: "off",
@@ -147,7 +150,6 @@ describe("shouldInsertSpaceCharacter", () => {
   });
 
   it("returns null if data is not a space", () => {
-    (Strings.isSpace as any).mockReturnValue(false);
     expect(
       shouldInsertSpaceCharacter({
         data: "a",

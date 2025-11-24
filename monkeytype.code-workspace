@@ -1,5 +1,10 @@
 {
   "folders": [
+    //root needs to be first
+    {
+      "name": "root",
+      "path": "./"
+    },
     {
       "name": "backend",
       "path": "backend"
@@ -11,10 +16,6 @@
     {
       "name": "packages",
       "path": "packages"
-    },
-    {
-      "name": "root",
-      "path": "./"
     }
   ],
   "settings": {

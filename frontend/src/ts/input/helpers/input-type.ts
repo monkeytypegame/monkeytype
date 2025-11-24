@@ -1,15 +1,15 @@
 export type InsertInputType =
   | "insertText"
   | "insertCompositionText"
+  | "insertFromComposition" // safari firing a deprecated input type - thanks apple!
   | "insertLineBreak";
-
 export type DeleteInputType = "deleteWordBackward" | "deleteContentBackward";
 
-export type SupportedInputType = InsertInputType | DeleteInputType;
-
+type SupportedInputType = InsertInputType | DeleteInputType;
 const SUPPORTED_INPUT_TYPES: Set<SupportedInputType> = new Set([
   "insertText",
   "insertCompositionText",
+  "insertFromComposition",
   "insertLineBreak",
   "deleteWordBackward",
   "deleteContentBackward",

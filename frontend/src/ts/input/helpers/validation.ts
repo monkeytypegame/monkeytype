@@ -25,7 +25,7 @@ export function isCharCorrect(options: {
     throw new Error("Failed to check if char is correct - data is undefined");
   }
 
-  if (data === " ") {
+  if (isSpace(data)) {
     return inputValue === targetWord;
   }
 
