@@ -20,6 +20,7 @@ import { CompletedEvent } from "@monkeytype/schemas/results";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Challenge } from "@monkeytype/schemas/challenges";
+import { qs } from "../utils/dom";
 
 let challengeLoading = false;
 
@@ -219,8 +220,8 @@ export async function setup(challengeName: string): Promise<boolean> {
     Notifications.add(message, -1);
     ManualRestart.set();
     setTimeout(() => {
-      $("header .config").removeClass("hidden");
-      $(".page.pageTest").removeClass("hidden");
+      qs("header .config")?.removeClass("hidden");
+      qs(".page.pageTest")?.removeClass("hidden");
     }, 250);
     return false;
   }
@@ -234,8 +235,8 @@ export async function setup(challengeName: string): Promise<boolean> {
       Notifications.add("Challenge not found", 0);
       ManualRestart.set();
       setTimeout(() => {
-        $("header .config").removeClass("hidden");
-        $(".page.pageTest").removeClass("hidden");
+        qs("header .config")?.removeClass("hidden");
+        qs(".page.pageTest")?.removeClass("hidden");
       }, 250);
       return false;
     }
@@ -316,8 +317,8 @@ export async function setup(challengeName: string): Promise<boolean> {
     }
     ManualRestart.set();
     notitext = challenge.message;
-    $("header .config").removeClass("hidden");
-    $(".page.pageTest").removeClass("hidden");
+    qs("header .config")?.removeClass("hidden");
+    qs(".page.pageTest")?.removeClass("hidden");
 
     if (notitext === undefined) {
       Notifications.add(`Challenge '${challenge.display}' loaded.`, 0);
