@@ -11,6 +11,7 @@ import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
 import { applyFontFamily } from "./controllers/theme-controller";
+import { qs } from "./utils/dom";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -48,7 +49,7 @@ function updateKeytips(): void {
       : "ctrl";
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  $("footer .keyTips").html(`
+  qs("footer .keyTips")?.html(`
     ${
       Config.quickRestart === "off"
         ? "<key>tab</key> + <key>enter</key>"
@@ -58,9 +59,11 @@ function updateKeytips(): void {
 }
 
 if (isDevEnvironment()) {
-  $("header #logo .top").text("localhost");
-  $("head title").text($("head title").text() + " (localhost)");
-  $("body").append(
+  qs("header #logo .top")?.text("localhost");
+  qs("head title")?.text(
+    (qs("head title")?.textContent ?? "") + " (localhost)"
+  );
+  qs("body")?.append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
   );
 }
@@ -115,10 +118,11 @@ $(window).on("resize", () => {
 ConfigEvent.subscribe(async (eventKey) => {
   if (eventKey === "quickRestart") updateKeytips();
   if (eventKey === "showKeyTips") {
+    const keyTipsElement = qs("footer .keyTips");
     if (Config.showKeyTips) {
-      $("footer .keyTips").removeClass("hidden");
+      keyTipsElement?.removeClass("hidden");
     } else {
-      $("footer .keyTips").addClass("hidden");
+      keyTipsElement?.addClass("hidden");
     }
   }
   if (eventKey === "fontFamily") {
