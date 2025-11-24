@@ -45,6 +45,7 @@ import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import * as TestState from "./test-state";
+import { blurInputElement } from "../input/input-element";
 
 let result: CompletedEvent;
 export { result };
@@ -1221,7 +1222,7 @@ export async function update(
   $(".pageTest #result #rateQuoteButton .rating").text("");
   $(".pageTest #result #rateQuoteButton").addClass("hidden");
   $("#words").removeClass("blurred");
-  $("#wordsInput").trigger("blur");
+  blurInputElement();
   $("#result .stats .time .bottom .afk").text("");
   if (isAuthenticated()) {
     $("#result .loginTip").addClass("hidden");
