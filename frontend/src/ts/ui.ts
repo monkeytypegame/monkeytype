@@ -59,8 +59,8 @@ function updateKeytips(): void {
 }
 
 if (isDevEnvironment()) {
-  qs("header #logo .top")?.text("localhost");
-  qs("head title")?.text(
+  qs("header #logo .top")?.setText("localhost");
+  qs("head title")?.setText(
     (qs("head title")?.textContent ?? "") + " (localhost)"
   );
   qs("body")?.append(

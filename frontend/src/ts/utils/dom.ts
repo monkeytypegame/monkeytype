@@ -92,7 +92,7 @@ function addUtilsToElement<T extends HTMLElement>(
     this.innerHTML = content;
   };
 
-  el.text = function (content: string) {
+  el.setText = function (content: string) {
     //@ts-expect-error this is fine
     this.textContent = content;
   };
@@ -190,7 +190,10 @@ type ElementUtils<T> = {
     handler: EventListenerOrEventListenerObject
   ): void;
   html(content: string): void;
-  text(content: string): void;
+  /**
+   * Set textContent of the element
+   */
+  setText(content: string): void;
   remove(): void;
   setStyle(object: Partial<CSSStyleDeclaration>): void;
   isFocused(): boolean;
