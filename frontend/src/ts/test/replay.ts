@@ -332,7 +332,6 @@ $("#replayWords").on("click", "letter", (event) => {
     .parentNode as HTMLElement;
   let targetWord = origTargetWord;
 
-  // if we clicked on a tab, use the parent element
   if (!$(origTargetWord).hasClass("word")) {
     targetWord = origTargetWord.parentNode as HTMLElement;
   }
@@ -340,7 +339,7 @@ $("#replayWords").on("click", "letter", (event) => {
   targetWordPos = words.indexOf(targetWord);
 
   const letters = [...(words[targetWordPos] as HTMLElement).children];
-  // check if event.target is a letter or a tab
+  // check if event.target is a letter
   const isLetter = $(event.target).prop("nodeName") === "LETTER";
   targetCurPos = letters.indexOf(
     isLetter ? (event.target as HTMLElement) : origTargetWord
