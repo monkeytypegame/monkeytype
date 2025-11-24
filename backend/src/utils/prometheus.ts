@@ -216,7 +216,7 @@ export function recordAuthTime(
   req: Request
 ): void {
   // for some reason route is not in the types
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  // oxlint-disable-next-line no-unsafe-member-access
   const reqPath = req.baseUrl + req.route.path;
 
   let normalizedPath = "/";
