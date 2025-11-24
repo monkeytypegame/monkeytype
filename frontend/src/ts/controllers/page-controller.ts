@@ -17,6 +17,7 @@ import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 import Page, { PageName, LoadingOptions } from "../pages/page";
+import { qsa } from "../utils/dom";
 
 type ChangeOptions = {
   force?: boolean;
@@ -201,7 +202,7 @@ export async function change(
 
   //start
   PageTransition.set(true);
-  $(".page").removeClass("active");
+  qsa(".page")?.removeClass("active");
 
   //previous page
   await previousPage?.beforeHide?.();
