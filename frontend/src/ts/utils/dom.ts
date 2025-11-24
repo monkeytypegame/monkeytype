@@ -200,7 +200,9 @@ type ElementUtils<T> = {
   setStyle(object: Partial<CSSStyleDeclaration>): void;
   isFocused(): boolean;
   qs<T extends HTMLElement>(selector: string): ElementWithUtils<T> | null;
-  qsa(selector: string): ArrayWithUtils<ElementWithUtils>;
+  qsa<T extends HTMLElement>(
+    selector: string
+  ): ArrayWithUtils<ElementWithUtils<T>>;
   empty(): void;
   appendHtml(htmlString: string): void;
   prependHtml(htmlString: string): void;
