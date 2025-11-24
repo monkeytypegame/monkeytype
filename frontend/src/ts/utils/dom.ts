@@ -123,15 +123,14 @@ export function addUtilsToElement<T extends HTMLElement>(
     return found ? addUtilsToElement(found) : null;
   };
 
-  el.qsa = function (selector: string): ArrayWithUtils<ElementWithUtils> {
-    const nodeList = this.querySelectorAll(selector);
-    const elements: ElementWithUtils[] = [];
-    for (const node of nodeList) {
-      const elWithUtils = addUtilsToElement(node as HTMLElement);
-      if (elWithUtils === null) continue;
-      elements.push(elWithUtils);
-    }
-    return new ArrayWithUtils<ElementWithUtils>(...elements);
+  el.qsa = function <T extends HTMLElement = HTMLElement>(
+    selector: string
+  ): ArrayWithUtils<ElementWithUtils<T>> {
+    const elements = Array.from(this.querySelectorAll<T>(selector))
+      .filter((el) => el !== null)
+      .map((el) => addUtilsToElement(el));
+
+    return new ArrayWithUtils<ElementWithUtils<T>>(...elements);
   };
 
   el.empty = function () {
