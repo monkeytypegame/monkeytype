@@ -24,7 +24,7 @@ export function qsa<T extends HTMLElement = HTMLElement>(
   return new ArrayWithUtils<ElementWithUtils<T>>(...elements);
 }
 
-function addUtilsToElement<T extends HTMLElement>(
+export function addUtilsToElement<T extends HTMLElement>(
   element: T
 ): T & ElementUtils<T> {
   type SafeProps = "innerHTML";
