@@ -171,6 +171,9 @@ type ElementUtils<T> = {
    * Remove disabled attribute
    */
   enable(): void;
+  /**
+   * Check if the element is disabled
+   */
   isDisabled(): boolean;
   isChecked(): boolean;
   addClass(className: string): void;
