@@ -119,12 +119,12 @@ export function addUtilsToElement<T extends HTMLElement>(
   el.qs = function <T extends HTMLElement>(
     selector: string
   ): ElementWithUtils<T> | null {
-    const found = qs<T>(selector);
-    return found ? found : null;
+    const found = this.querySelector<T>(selector);
+    return found ? addUtilsToElement(found) : null;
   };
 
   el.qsa = function (selector: string): ArrayWithUtils<ElementWithUtils> {
-    const nodeList = qsa(selector);
+    const nodeList = this.querySelectorAll(selector);
     const elements: ElementWithUtils[] = [];
     for (const node of nodeList) {
       const elWithUtils = addUtilsToElement(node as HTMLElement);
