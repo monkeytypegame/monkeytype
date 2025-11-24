@@ -233,7 +233,7 @@ export function getFirstDayOfTheWeek(): Day {
 
   if ("getWeekInfo" in locale) {
     // @ts-expect-error getWeekInfo is not in the type definition
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     return (locale.getWeekInfo().firstDay as number) % 7;
   }
 

@@ -81,7 +81,7 @@ window.addEventListener("beforeunload", (event) => {
     if (TestState.isActive) {
       event.preventDefault();
       // Included for legacy support, e.g. Chrome/Edge < 119
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      // oxlint-disable-next-line no-deprecated
       event.returnValue = "";
     }
   }

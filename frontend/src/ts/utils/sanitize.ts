@@ -20,7 +20,7 @@ function removeProblems<T extends object | unknown[]>(
 
 function getNestedValue(obj: [] | object, path: string[]): [] | object {
   //@ts-expect-error can be array or object
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  // oxlint-disable-next-line no-unsafe-return
   return path.slice(0, -1).reduce((acc, it: string) => acc[it], obj);
 }
 
@@ -43,7 +43,7 @@ export function sanitize<T extends z.ZodTypeAny>(
 
     if (result.success) {
       //use the parsed data, not the obj. keys might been removed
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      // oxlint-disable-next-line no-unsafe-return
       return result.data as z.infer<T>;
     }
     if (attempt === maxAttempts) {
@@ -74,16 +74,16 @@ export function sanitize<T extends z.ZodTypeAny>(
         const key = path.at(-1) as string;
 
         //@ts-expect-error can be object or array
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        // oxlint-disable-next-line no-unsafe-assignment
         const cleaned = removeProblems(parent[key], problems);
 
         if (cleaned === undefined) {
           //@ts-expect-error can be object or array
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+          // oxlint-disable-next-line no-dynamic-delete
           delete parent[key];
         } else {
           //@ts-expect-error can be object or array
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          // oxlint-disable-next-line no-unsafe-assignment
           parent[key] = cleaned;
         }
       }

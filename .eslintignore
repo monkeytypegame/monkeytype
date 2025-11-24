@@ -1,7 +1,4 @@
-backend/dist
-backend/__migration__
+dist
 docker
-backend/scripts
-backend/private
-**/vitest.config.ts
 node_modules
+backend/__migration__

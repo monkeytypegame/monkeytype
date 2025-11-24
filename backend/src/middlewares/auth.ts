@@ -202,7 +202,7 @@ async function authenticateWithBearerToken(
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     const errorCode = error?.errorInfo?.code as string | undefined;
 
     if (errorCode?.includes("auth/id-token-expired")) {

@@ -41,7 +41,7 @@ export function onlyAvailableOnDev(): RequestHandler {
 }
 
 export function getMetadata(req: TsRestRequestWithContext): EndpointMetadata {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  // oxlint-disable-next-line no-unsafe-member-access
   return (req.tsRestRoute["metadata"] ?? {}) as EndpointMetadata;
 }
 

@@ -3,7 +3,7 @@ import replace from "vite-plugin-filter-replace";
 import path from "node:path";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
-// eslint-disable-next-line import/no-unresolved
+// oxlint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { sentryVitePlugin } from "@sentry/vite-plugin";

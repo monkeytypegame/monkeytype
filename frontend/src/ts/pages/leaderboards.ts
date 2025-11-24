@@ -351,7 +351,7 @@ async function requestData(update = false): Promise<void> {
 
     if (state.type === "daily") {
       //@ts-expect-error not sure why this is causing errors when it's clearly defined in the schema
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      // oxlint-disable-next-line no-unsafe-assignment
       state.minWpm = dataResponse.body.data.minWpm;
     }
   } else {

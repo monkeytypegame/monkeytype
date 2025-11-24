@@ -10,7 +10,7 @@ export async function getDevOptionsModal(): Promise<
 > {
   try {
     Loader.show();
-    // eslint-disable-next-line import/no-unresolved
+    // oxlint-disable-next-line import/no-unresolved
     const module = await import("../modals/dev-options.js");
     Loader.hide();
     return module;

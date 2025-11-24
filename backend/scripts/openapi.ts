@@ -219,14 +219,15 @@ function addRateLimit(
   metadata: EndpointMetadata | undefined
 ): void {
   if (metadata === undefined || metadata.rateLimit === undefined) return;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // oxlint-disable-next-line no-unsafe-assignment
   const okResponse = operation.responses["200"];
   if (okResponse === undefined) return;
 
   operation.description += getRateLimitDescription(metadata.rateLimit);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // oxlint-disable-next-line no-unsafe-assignment no-unsafe-member-access
   okResponse["headers"] = {
+    // oxlint-disable-next-line no-unsafe-member-access
     ...okResponse["headers"],
     "x-ratelimit-limit": {
       schema: { type: "integer" },

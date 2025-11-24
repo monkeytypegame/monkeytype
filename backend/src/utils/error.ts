@@ -8,18 +8,18 @@ type FirebaseErrorParent = {
   errorInfo: FirebaseError;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line no-explicit-any
 export function isFirebaseError(err: any): err is FirebaseErrorParent {
   return (
     typeof err === "object" &&
     "code" in err &&
     "errorInfo" in err &&
     "codePrefix" in err &&
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     typeof err.errorInfo === "object" &&
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     "code" in err.errorInfo &&
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     "message" in err.errorInfo
   );
 }
