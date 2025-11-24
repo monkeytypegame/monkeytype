@@ -3,9 +3,10 @@ import { sleep } from "../utils/misc";
 import Ape from "../ape";
 import { navigate } from "../controllers/route-controller";
 import * as Skeleton from "../utils/skeleton";
+import { qs } from "../utils/dom";
 
 const searchIndicator = new InputIndicator(
-  $(".page.pageProfileSearch .search input"),
+  qs(".page.pageProfileSearch .search input") as HTMLInputElement,
   {
     notFound: {
       icon: "fa-user-slash",
@@ -24,28 +25,27 @@ const searchIndicator = new InputIndicator(
 );
 
 function disableInputs(): void {
-  $(".page.pageProfileSearch .search button").addClass("disabled");
-  $(".page.pageProfileSearch .search input").attr("disabled", "disabled");
+  qs(".page.pageProfileSearch .search button")?.addClass("disabled");
+  qs(".page.pageProfileSearch .search input")?.disable();
 }
 
 function enableInputs(): void {
-  $(".page.pageProfileSearch .search button").removeClass("disabled");
-  $(".page.pageProfileSearch .search input").removeAttr("disabled");
+  qs(".page.pageProfileSearch .search button")?.removeClass("disabled");
+  qs(".page.pageProfileSearch .search input")?.enable();
 }
 
 function areInputsDisabled(): boolean {
-  return (
-    $(".page.pageProfileSearch .search input").attr("disabled") !== undefined
-  );
+  return qs(".page.pageProfileSearch .search input")?.isDisabled() ?? false;
 }
 
 function focusInput(): void {
-  $(".page.pageProfileSearch .search input").trigger("focus");
+  qs(".page.pageProfileSearch .search input")?.trigger("focus");
 }
 
 async function lookupProfile(): Promise<void> {
   searchIndicator.hide();
-  const name = $(".page.pageProfileSearch .search input").val() as string;
+  const name =
+    qs<HTMLInputElement>(".page.pageProfileSearch .search input")?.value ?? "";
   if (name === "") return;
 
   searchIndicator.show("checking");
@@ -70,7 +70,7 @@ async function lookupProfile(): Promise<void> {
   });
 }
 
-$(".page.pageProfileSearch form").on("submit", (e) => {
+qs(".page.pageProfileSearch form")?.on("submit", (e) => {
   e.preventDefault();
   if (areInputsDisabled()) return;
   void lookupProfile();
