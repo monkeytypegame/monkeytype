@@ -157,6 +157,30 @@ export function addUtilsToElement<T extends HTMLElement>(
     return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
   };
 
+  el.wrapWith = function (htmlString: string) {
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = htmlString;
+    const wrapperElement = wrapper.firstElementChild;
+    if (wrapperElement === null) {
+      throw new Error("Invalid HTML string provided to wrapWith.");
+    }
+
+    this.parentNode?.insertBefore(wrapperElement, this);
+    wrapperElement.appendChild(this);
+    return addUtilsToElement(
+      wrapperElement as HTMLElement
+    ) as ElementWithUtils<T>;
+  };
+
+  el.setValue = function (value: string) {
+    if (
+      this instanceof HTMLInputElement ||
+      this instanceof HTMLTextAreaElement
+    ) {
+      this.value = value;
+    }
+  };
+
   return el as T & ElementUtils<T>;
 }
 
@@ -211,6 +235,8 @@ type ElementUtils<T> = {
     top: number;
     left: number;
   };
+  wrapWith(htmlString: string): ElementWithUtils<T>;
+  setValue(value: string): void;
 };
 
 class ArrayWithUtils<T> extends Array<ElementWithUtils<T>> {
