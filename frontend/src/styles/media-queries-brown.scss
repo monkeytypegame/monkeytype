@@ -107,6 +107,11 @@
         display: none;
       }
     }
+    .content .pendingRequests table {
+      td:nth-child(2) {
+        display: none;
+      }
+    }
   }
 
   .pageAccountSettings [data-tab="blockedUsers"] {
