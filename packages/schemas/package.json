@@ -22,7 +22,7 @@
     "madge": "8.0.0",
     "oxlint": "1.29.0",
     "tsup": "8.4.0",
-    "typescript": "5.5.4",
+    "typescript": "5.9.3",
     "vitest": "4.0.8"
   },
   "exports": {
