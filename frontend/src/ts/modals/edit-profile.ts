@@ -15,6 +15,7 @@ import {
   WebsiteSchema,
 } from "@monkeytype/schemas/users";
 import { InputIndicator } from "../elements/input-indicator";
+import { ElementWithUtils, qs } from "../utils/dom";
 
 export function show(): void {
   if (!ConnectionState.get()) {
@@ -42,14 +43,22 @@ function hide(): void {
   });
 }
 
-const bioInput: JQuery<HTMLTextAreaElement> = $("#editProfileModal .bio");
-const keyboardInput: JQuery<HTMLTextAreaElement> = $(
+const bioInput = qs(
+  "#editProfileModal .bio"
+) as ElementWithUtils<HTMLTextAreaElement>;
+const keyboardInput = qs(
   "#editProfileModal .keyboard"
-);
-const twitterInput = $("#editProfileModal .twitter");
-const githubInput = $("#editProfileModal .github");
-const websiteInput = $("#editProfileModal .website");
-const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
+) as ElementWithUtils<HTMLTextAreaElement>;
+const twitterInput = qs(
+  "#editProfileModal .twitter"
+) as ElementWithUtils<HTMLInputElement>;
+const githubInput = qs(
+  "#editProfileModal .github"
+) as ElementWithUtils<HTMLInputElement>;
+const websiteInput = qs(
+  "#editProfileModal .website"
+) as ElementWithUtils<HTMLInputElement>;
+const badgeIdsSelect = qs("#editProfileModal .badgeSelectionContainer");
 const showActivityOnPublicProfileInput = document.querySelector(
   "#editProfileModal .editProfileShowActivityOnPublicProfile"
 ) as HTMLInputElement;
@@ -70,12 +79,12 @@ function hydrateInputs(): void {
     snapshot.details ?? {};
   currentSelectedBadgeId = -1;
 
-  bioInput.val(bio ?? "");
-  keyboardInput.val(keyboard ?? "");
-  twitterInput.val(socialProfiles?.twitter ?? "");
-  githubInput.val(socialProfiles?.github ?? "");
-  websiteInput.val(socialProfiles?.website ?? "");
-  badgeIdsSelect.html("");
+  bioInput.setValue(bio ?? "");
+  keyboardInput.setValue(keyboard ?? "");
+  twitterInput.setValue(socialProfiles?.twitter ?? "");
+  githubInput.setValue(socialProfiles?.github ?? "");
+  websiteInput.setValue(socialProfiles?.website ?? "");
+  badgeIdsSelect?.html("");
   showActivityOnPublicProfileInput.checked =
     showActivityOnPublicProfile || false;
 
@@ -88,10 +97,10 @@ function hydrateInputs(): void {
     const badgeWrapper = `<button type="button" class="badgeSelectionItem ${
       badge.selected ? "selected" : ""
     }" selection-id=${badge.id}>${badgeOption}</button>`;
-    badgeIdsSelect.append(badgeWrapper);
+    badgeIdsSelect?.appendHtml(badgeWrapper);
   });
 
-  badgeIdsSelect.prepend(
+  badgeIdsSelect?.prependHtml(
     `<button type="button" class="badgeSelectionItem ${
       currentSelectedBadgeId === -1 ? "selected" : ""
     }" selection-id=${-1}>
@@ -106,7 +115,7 @@ function hydrateInputs(): void {
     const selectionId = $(currentTarget).attr("selection-id") as string;
     currentSelectedBadgeId = parseInt(selectionId, 10);
 
-    badgeIdsSelect.find(".badgeSelectionItem").removeClass("selected");
+    badgeIdsSelect?.qsa(".badgeSelectionItem")?.removeClass("selected");
     $(currentTarget).addClass("selected");
   });
 
@@ -119,11 +128,11 @@ function initializeCharacterCounters(): void {
 }
 
 function buildUpdatesFromInputs(): UserProfileDetails {
-  const bio = (bioInput.val() ?? "") as string;
-  const keyboard = (keyboardInput.val() ?? "") as string;
-  const twitter = (twitterInput.val() ?? "") as string;
-  const github = (githubInput.val() ?? "") as string;
-  const website = (websiteInput.val() ?? "") as string;
+  const bio = bioInput.value ?? "";
+  const keyboard = keyboardInput.value ?? "";
+  const twitter = twitterInput.value ?? "";
+  const github = githubInput.value ?? "";
+  const website = websiteInput.value ?? "";
   const showActivityOnPublicProfile =
     showActivityOnPublicProfileInput.checked ?? false;
 
@@ -199,7 +208,10 @@ async function updateProfile(): Promise<void> {
   hide();
 }
 
-function addValidation(element: JQuery, schema: Zod.Schema): InputIndicator {
+function addValidation(
+  element: HTMLInputElement,
+  schema: Zod.Schema
+): InputIndicator {
   const indicator = new InputIndicator(element, {
     valid: {
       icon: "fa-check",
@@ -216,7 +228,7 @@ function addValidation(element: JQuery, schema: Zod.Schema): InputIndicator {
     },
   });
 
-  element.on("input", (event) => {
+  element.addEventListener("input", (event) => {
     const value = (event.target as HTMLInputElement).value;
     if (value === undefined || value === "") {
       indicator.hide();
