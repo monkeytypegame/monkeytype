@@ -1227,8 +1227,9 @@ export function setLigatures(isEnabled: boolean): void {
 
 export function convertToTabArrows(char: string): string {
   if (char === "\t") {
-    char = "<i class='fas fa-long-arrow-alt-right fa-fw'></i>";
-    return char;
+    char = '<i class="fas fa-long-arrow-alt-right fa-fw"></i>';
+  } else if (char === "\n") {
+    char = '<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>';
   }
 
   return char;
@@ -1697,12 +1698,15 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
         `<div class="wordInputHighlight withSpeed">
           <div class="text">
           ${input
-            .replace(/\n/g, "_")
             .replace(/</g, "&lt")
             .replace(/>/g, "&gt")
             .replace(
+              /\n/g,
+              '<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>'
+            )
+            .replace(
               /\t/g,
-              "<i class='fas fa-long-arrow-alt-right fa-fw'></i>"
+              '<i class="fas fa-long-arrow-alt-right fa-fw"></i>'
             )}
           </div>
           <div class="speed">
