@@ -181,6 +181,13 @@ export function addUtilsToElement<T extends HTMLElement>(
     }
   };
 
+  el.getParent = function (): ElementWithUtils | null {
+    if (this.parentElement) {
+      return addUtilsToElement(this.parentElement);
+    }
+    return null;
+  };
+
   return el as T & ElementUtils<T>;
 }
 
@@ -240,6 +247,10 @@ type ElementUtils<T> = {
   };
   wrapWith(htmlString: string): ElementWithUtils<T>;
   setValue(value: string): void;
+  /**
+   * Get the parent element
+   */
+  getParent(): ElementWithUtils | null;
 };
 
 class ArrayWithUtils<T> extends Array<ElementWithUtils<T>> {

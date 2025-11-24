@@ -12,26 +12,20 @@ export class CharacterCounter {
 
     this.textareaElement.setAttribute("maxlength", this.maxLength.toString());
 
-    // Wrap the textarea element in a div if not already wrapped
-    if (
-      !this.textareaElement.parentElement?.classList.contains(
-        "textareaWithCounter"
-      )
-    ) {
+    const textAreaParent = this.textareaElement.getParent();
+    if (!textAreaParent) {
+      // Wrap the textarea element in a div if not already wrapped
       const wrapper = this.textareaElement?.wrapWith(
         `<div class="textareaWithCounter"></div>`
       );
       this.parentElement = wrapper;
     } else {
-      this.parentElement = addUtilsToElement(
-        this.textareaElement.parentElement
-      );
+      this.parentElement = textAreaParent;
     }
 
-    const counterElements = this.parentElement.qsa(".char-counter");
-
-    if (counterElements.length > 0) {
-      this.counterElement = counterElements[0] as ElementWithUtils;
+    const counterElement = this.parentElement.qs(".char-counter");
+    if (counterElement !== null) {
+      this.counterElement = counterElement;
     } else {
       // const counterHtml = `<span class="char-counter"></span>`;
       const element = document.createElement("span");
