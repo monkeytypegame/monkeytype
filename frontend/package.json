@@ -69,7 +69,7 @@
     "sass": "1.70.0",
     "subset-font": "2.3.0",
     "tsx": "4.16.2",
-    "typescript": "5.5.4",
+    "typescript": "5.9.3",
     "unplugin-inject-preload": "3.0.0",
     "vite": "7.1.12",
     "vite-bundle-visualizer": "1.2.1",
