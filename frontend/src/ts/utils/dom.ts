@@ -65,7 +65,7 @@ export function addUtilsToElement<T extends HTMLElement>(
   };
 
   el.on = function (
-    event: string,
+    event: keyof HTMLElementEventMap,
     handler: EventListenerOrEventListenerObject
   ) {
     this.addEventListener(event, handler);
@@ -73,7 +73,7 @@ export function addUtilsToElement<T extends HTMLElement>(
 
   el.onChild = function (
     query: string,
-    event: string,
+    event: keyof HTMLElementEventMap,
     handler: EventListenerOrEventListenerObject
   ) {
     this.addEventListener(event, (e) => {
@@ -206,13 +206,16 @@ type ElementUtils<T> = {
   /**
    * Attach an event listener to the element
    */
-  on(event: string, handler: EventListenerOrEventListenerObject): void;
+  on(
+    event: keyof HTMLElementEventMap,
+    handler: EventListenerOrEventListenerObject
+  ): void;
   /**
    * Attach an event listener to child elements matching the query. Useful for dynamically added elements.
    */
   onChild(
     query: string,
-    event: string,
+    event: keyof HTMLElementEventMap,
     handler: EventListenerOrEventListenerObject
   ): void;
   html(content: string): void;
