@@ -63,7 +63,7 @@ if (isDevEnvironment()) {
   qs("head title")?.setText(
     (qs("head title")?.textContent ?? "") + " (localhost)"
   );
-  qs("body")?.append(
+  qs("body")?.appendHtml(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
   );
 }
