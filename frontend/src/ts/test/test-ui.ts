@@ -1225,7 +1225,7 @@ export function setLigatures(isEnabled: boolean): void {
   }
 }
 
-export function convertToTabArrows(char: string): string {
+export function renderTabsAndNewlines(char: string): string {
   if (char === "\t") {
     char = '<i class="fas fa-long-arrow-alt-right fa-fw"></i>';
   } else if (char === "\n") {
@@ -1246,8 +1246,8 @@ function buildWordLettersHTML(
 ): string {
   let out = "";
   for (let c = 0; c < charCount; c++) {
-    const inputChar = convertToTabArrows(inputCharacters[c] ?? "");
-    const wordChar = convertToTabArrows(wordCharacters[c] ?? "");
+    const inputChar = renderTabsAndNewlines(inputCharacters[c] ?? "");
+    const wordChar = renderTabsAndNewlines(wordCharacters[c] ?? "");
 
     let correctedChar;
     try {

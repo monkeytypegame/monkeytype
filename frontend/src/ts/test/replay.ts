@@ -2,7 +2,7 @@ import config from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as TestInput from "./test-input";
 import * as Arrays from "../utils/arrays";
-import { convertToTabArrows } from "./test-ui";
+import { renderTabsAndNewlines } from "./test-ui";
 
 type ReplayAction =
   | "correctLetter"
@@ -59,7 +59,7 @@ function initializeReplayPrompt(): void {
     x.className = "word";
     for (const letter of word) {
       const elem = document.createElement("letter");
-      const letterToShow = convertToTabArrows(letter);
+      const letterToShow = renderTabsAndNewlines(letter);
       elem.innerHTML = letterToShow;
       x.appendChild(elem);
     }
