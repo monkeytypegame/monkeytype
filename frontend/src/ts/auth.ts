@@ -217,7 +217,8 @@ export async function signIn(email: string, password: string): Promise<void> {
   }
 
   const rememberMe =
-    qs(".pageLogin .login #rememberMe input")?.isChecked() ?? false;
+    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
+    false;
 
   const { error } = await tryCatch(
     signInWithEmailAndPassword(email, password, rememberMe)
@@ -250,7 +251,8 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
   const rememberMe =
-    qs(".pageLogin .login #rememberMe input")?.isChecked() ?? false;
+    qs<HTMLInputElement>(".pageLogin .login #rememberMe input")?.isChecked() ??
+    false;
 
   const { error } = await tryCatch(signInWithPopup(provider, rememberMe));
 
@@ -408,9 +410,9 @@ async function signUp(): Promise<void> {
 qs(".pageLogin .login form")?.on("submit", (e) => {
   e.preventDefault();
   const email =
-    qsa<HTMLInputElement>(".pageLogin .login input")?.[0]?.value ?? "";
+    qsa<HTMLInputElement>(".pageLogin .login input")?.[0]?.getValue() ?? "";
   const password =
-    qsa<HTMLInputElement>(".pageLogin .login input")?.[1]?.value ?? "";
+    qsa<HTMLInputElement>(".pageLogin .login input")?.[1]?.getValue() ?? "";
   void signIn(email, password);
 });
 

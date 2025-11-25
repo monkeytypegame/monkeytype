@@ -128,11 +128,11 @@ function initializeCharacterCounters(): void {
 }
 
 function buildUpdatesFromInputs(): UserProfileDetails {
-  const bio = bioInput.value ?? "";
-  const keyboard = keyboardInput.value ?? "";
-  const twitter = twitterInput.value ?? "";
-  const github = githubInput.value ?? "";
-  const website = websiteInput.value ?? "";
+  const bio = bioInput.getValue() ?? "";
+  const keyboard = keyboardInput.getValue() ?? "";
+  const twitter = twitterInput.getValue() ?? "";
+  const github = githubInput.getValue() ?? "";
+  const website = websiteInput.getValue() ?? "";
   const showActivityOnPublicProfile =
     showActivityOnPublicProfileInput.checked ?? false;
 
@@ -209,7 +209,7 @@ async function updateProfile(): Promise<void> {
 }
 
 function addValidation(
-  element: HTMLInputElement,
+  element: ElementWithUtils<HTMLInputElement>,
   schema: Zod.Schema
 ): InputIndicator {
   const indicator = new InputIndicator(element, {
@@ -228,7 +228,7 @@ function addValidation(
     },
   });
 
-  element.addEventListener("input", (event) => {
+  element.on("input", (event) => {
     const value = (event.target as HTMLInputElement).value;
     if (value === undefined || value === "") {
       indicator.hide();

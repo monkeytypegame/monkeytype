@@ -43,6 +43,7 @@ import * as CustomBackgroundPicker from "../elements/settings/custom-background-
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
+import { qs } from "../utils/dom";
 
 let settingsInitialized = false;
 
@@ -643,9 +644,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: document.querySelector(
-      ".pageSettings .section[data-config-name='minWpm'] input"
-    ),
+    input: qs(".pageSettings .section[data-config-name='minWpm'] input"),
     configName: "minWpmCustomSpeed",
     validation: {
       schema: true,
@@ -657,9 +656,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: document.querySelector(
-      ".pageSettings .section[data-config-name='minAcc'] input"
-    ),
+    input: qs(".pageSettings .section[data-config-name='minAcc'] input"),
     configName: "minAccCustom",
     validation: {
       schema: true,
@@ -668,9 +665,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: document.querySelector(
-      ".pageSettings .section[data-config-name='minBurst'] input"
-    ),
+    input: qs(".pageSettings .section[data-config-name='minBurst'] input"),
     configName: "minBurstCustomSpeed",
     validation: {
       schema: true,
@@ -682,9 +677,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: document.querySelector(
-      ".pageSettings .section[data-config-name='paceCaret'] input"
-    ),
+    input: qs(".pageSettings .section[data-config-name='paceCaret'] input"),
     configName: "paceCaretCustomSpeed",
     validation: {
       schema: true,
@@ -693,7 +686,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: document.querySelector(
+    input: qs(
       ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']"
     ),
     configName: "customBackground",

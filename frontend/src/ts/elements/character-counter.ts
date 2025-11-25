@@ -1,4 +1,4 @@
-import { ElementWithUtils } from "../utils/dom";
+import { createElementWithUtils, ElementWithUtils } from "../utils/dom";
 
 export class CharacterCounter {
   private textareaElement: ElementWithUtils<HTMLTextAreaElement>;
@@ -30,11 +30,11 @@ export class CharacterCounter {
     if (counterElement !== null) {
       this.counterElement = counterElement;
     } else {
-      // const counterHtml = `<span class="char-counter"></span>`;
-      const element = document.createElement("span");
-      element.className = "char-counter";
-      this.parentElement.append(element);
-      this.counterElement = new ElementWithUtils(element);
+      const counterElement = createElementWithUtils("span", {
+        className: "char-counter",
+      });
+      this.parentElement.append(counterElement);
+      this.counterElement = counterElement;
     }
 
     this.updateCounter();

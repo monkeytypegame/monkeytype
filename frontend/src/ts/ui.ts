@@ -61,7 +61,7 @@ function updateKeytips(): void {
 if (isDevEnvironment()) {
   qs("header #logo .top")?.setText("localhost");
   qs("head title")?.setText(
-    (qs("head title")?.textContent ?? "") + " (localhost)"
+    (qs("head title")?.native.textContent ?? "") + " (localhost)"
   );
   qs("body")?.appendHtml(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`

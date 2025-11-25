@@ -17,6 +17,7 @@ import { resetIgnoreAuthCallback } from "../firebase";
 import { validateWithIndicator } from "../elements/input-validation";
 import { UserNameSchema } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
+import { qs } from "../utils/dom";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -141,16 +142,14 @@ function disableButton(): void {
   $("#googleSignUpModal button").prop("disabled", true);
 }
 
-const nameInputEl = document.querySelector(
-  "#googleSignUpModal input"
-) as HTMLInputElement;
+const nameInputEl = qs<HTMLInputElement>("#googleSignUpModal input");
 
 function enableInput(): void {
-  nameInputEl.disabled = false;
+  nameInputEl?.enable();
 }
 
 function disableInput(): void {
-  nameInputEl.disabled = true;
+  nameInputEl?.disable();
 }
 
 validateWithIndicator(nameInputEl, {

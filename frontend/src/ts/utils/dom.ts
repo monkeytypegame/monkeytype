@@ -115,7 +115,7 @@ export function createElementWithUtils<T extends HTMLElement>(
 //   getParent(): ElementWithUtils | null;
 // };
 
-type ValueElement = HTMLInputElement | HTMLTextAreaElement;
+type ValueElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
 export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
@@ -145,6 +145,14 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
 
   isDisabled(): boolean {
     return this.native.hasAttribute("disabled");
+  }
+
+  getAttribute(attribute: string): string | null {
+    return this.native.getAttribute(attribute);
+  }
+
+  hasAttribute(attribute: string): boolean {
+    return this.native.hasAttribute(attribute);
   }
 
   isChecked(this: ElementWithUtils<HTMLInputElement>): boolean {
@@ -276,8 +284,12 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
-  append(element: HTMLElement): this {
-    this.native.append(element);
+  append(element: HTMLElement | ElementWithUtils): this {
+    if (element instanceof ElementWithUtils) {
+      this.native.appendChild(element.native);
+    } else {
+      this.native.append(element);
+    }
     return this;
   }
 

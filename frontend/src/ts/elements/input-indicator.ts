@@ -18,9 +18,10 @@ export class InputIndicator {
     options: Record<string, InputIndicatorOption>
   ) {
     this.inputElement = inputElement;
-    this.inputElement.wrapWith(`<div class="inputAndIndicator"></div>`);
-    // oxlint-disable-next-line no-non-null-assertion
-    this.parentElement = inputElement.getParent()!;
+    const wrapper = this.inputElement.wrapWith(
+      `<div class="inputAndIndicator"></div>`
+    );
+    this.parentElement = wrapper;
     this.options = options;
     this.currentStatus = null;
 

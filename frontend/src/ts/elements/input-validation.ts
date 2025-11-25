@@ -8,6 +8,7 @@ import {
 } from "@monkeytype/schemas/configs";
 import Config, * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
+import { ElementWithUtils } from "../utils/dom";
 
 export type ValidationResult = {
   status: "checking" | "success" | "failed" | "warning";
@@ -122,13 +123,13 @@ export function createInputEventHandler<T>(
     if (callIsValid === undefined) {
       callback({ status: "success" });
       //call original handler if defined
-      originalInput.oninput?.(e);
+      originalInput.oninput?.(e as InputEvent);
       return;
     }
 
     await callIsValid(originalInput, currentValue, checkValue as T);
     //call original handler if defined
-    originalInput.oninput?.(e);
+    originalInput.oninput?.(e as InputEvent);
   };
 }
 
@@ -142,9 +143,9 @@ export type ValidationOptions<T> = (T extends string
   callback?: (result: ValidationResult) => void;
 };
 
-export type ValidatedHtmlInputElement = HTMLInputElement & {
+export type ValidatedHtmlInputElement = ElementWithUtils<HTMLInputElement> & {
   getValidationResult: () => ValidationResult;
-  setValue: (val: string | null) => void;
+  setValueAndDispatchEvent: (val: string | null) => void;
   triggerValidation: () => void;
 };
 /**
@@ -153,7 +154,7 @@ export type ValidatedHtmlInputElement = HTMLInputElement & {
  * @param options
  */
 export function validateWithIndicator<T>(
-  inputElement: HTMLInputElement,
+  inputElement: ElementWithUtils<HTMLInputElement>,
   options: ValidationOptions<T>
 ): ValidatedHtmlInputElement {
   //use indicator
@@ -196,30 +197,30 @@ export function validateWithIndicator<T>(
     "inputValueConvert" in options ? options.inputValueConvert : undefined
   );
 
-  inputElement.addEventListener("input", handler);
+  inputElement.on("input", handler);
 
-  const result = inputElement as ValidatedHtmlInputElement;
+  const result = inputElement as unknown as ValidatedHtmlInputElement;
   result.getValidationResult = () => {
     return currentStatus;
   };
-  result.setValue = (val: string | null) => {
-    inputElement.value = val ?? "";
+  result.setValueAndDispatchEvent = (val: string | null) => {
+    inputElement.setValue(val ?? "");
     if (val === null) {
       indicator.hide();
       currentStatus = { status: "checking" };
     } else {
-      inputElement.dispatchEvent(new Event("input"));
+      inputElement.native.dispatchEvent(new Event("input"));
     }
   };
   result.triggerValidation = () => {
-    inputElement.dispatchEvent(new Event("input"));
+    inputElement.native.dispatchEvent(new Event("input"));
   };
 
   return result;
 }
 
 export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
-  input: HTMLInputElement | null;
+  input: ElementWithUtils<HTMLInputElement> | null;
   configName: K;
   validation?: (T extends string
     ? Omit<Validation<T>, "schema">
@@ -274,23 +275,23 @@ export function handleConfigInput<T extends ConfigKey>({
   let shakeTimeout: null | NodeJS.Timeout;
 
   const handleStore = (): void => {
-    if (input.value === "" && (validation?.resetIfEmpty ?? true)) {
+    if (input.getValue() === "" && (validation?.resetIfEmpty ?? true)) {
       //use last config value, clear validation
-      input.value = new String(Config[configName]).toString();
-      input.dispatchEvent(new Event("input"));
+      input.setValue(new String(Config[configName]).toString());
+      input.native.dispatchEvent(new Event("input"));
     }
     if (status === "failed") {
-      input.parentElement?.classList.add("hasError");
+      input.getParent()?.addClass("hasError");
       if (shakeTimeout !== null) {
         clearTimeout(shakeTimeout);
       }
       shakeTimeout = setTimeout(() => {
-        input.parentElement?.classList.remove("hasError");
+        input.getParent()?.removeClass("hasError");
       }, 500);
       return;
     }
-    const value = (inputValueConvert?.(input.value) ??
-      input.value) as ConfigType[T];
+    const value = (inputValueConvert?.(input.getValue()) ??
+      input.getValue()) as ConfigType[T];
 
     if (Config[configName] === value) {
       return;
@@ -304,10 +305,10 @@ export function handleConfigInput<T extends ConfigKey>({
     }
   };
 
-  input.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
+  input.on("keypress", (e) => {
+    if ((e as KeyboardEvent).key === "Enter") {
       handleStore();
     }
   });
-  input.addEventListener("focusout", (e) => handleStore());
+  input.on("focusout", (e) => handleStore());
 }
