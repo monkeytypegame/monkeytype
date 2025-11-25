@@ -461,6 +461,15 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     }
     return null;
   }
+
+  replaceWith(element: HTMLElement | ElementWithUtils): this {
+    if (element instanceof ElementWithUtils) {
+      this.native.replaceWith(element.native);
+    } else {
+      this.native.replaceWith(element);
+    }
+    return this;
+  }
 }
 
 class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
