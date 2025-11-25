@@ -48,7 +48,7 @@ function addUtilsToElement<T extends HTMLElement>(
   const el = element as (Readonly<Omit<T, SafeProps>> & Pick<T, SafeProps>) &
     ElementUtils<T>;
 
-  el.disable = function () {
+  disable = function () {
     this.setAttribute("disabled", "true");
   };
 
@@ -208,7 +208,7 @@ function addUtilsToElement<T extends HTMLElement>(
   return el as T & ElementUtils<T>;
 }
 
-export type ElementWithUtils<T = HTMLElement> = T & ElementUtils<T>;
+// export type ElementWithUtils<T = HTMLElement> = T & ElementUtils<T>;
 
 type ElementUtils<T> = {
   /**
@@ -270,7 +270,181 @@ type ElementUtils<T> = {
   getParent(): ElementWithUtils | null;
 };
 
-class ArrayWithUtils<T> extends Array<ElementWithUtils<T>> {
+class ElementWithUtils<T extends HTMLElement = HTMLElement> {
+  public native: T;
+
+  constructor(native: T) {
+    this.native = native;
+  }
+
+  disable(): this {
+    this.native.setAttribute("disabled", "true");
+    return this;
+  }
+
+  enable(): this {
+    this.native.removeAttribute("disabled");
+    return this;
+  }
+
+  isDisabled(): boolean {
+    return this.native.hasAttribute("disabled");
+  }
+
+  isChecked(): boolean {
+    if (this instanceof HTMLInputElement) {
+      return this.checked;
+    }
+    return false;
+  }
+
+  addClass(className: string): this {
+    this.native.classList.add(className);
+    return this;
+  }
+
+  removeClass(className: string): this {
+    this.native.classList.remove(className);
+    return this;
+  }
+
+  hasClass(className: string): boolean {
+    return this.native.classList.contains(className);
+  }
+
+  on(
+    event: keyof HTMLElementEventMap,
+    handler: EventListenerOrEventListenerObject
+  ): this {
+    this.native.addEventListener(event, handler);
+    return this;
+  }
+
+  onChild(
+    query: string,
+    event: keyof HTMLElementEventMap,
+    handler: EventListenerOrEventListenerObject
+  ): this {
+    this.native.addEventListener(event, (e) => {
+      const target = e.target as HTMLElement;
+      if (target !== null && target.matches(query)) {
+        if (typeof handler === "function") {
+          handler.call(target, e);
+        } else {
+          handler.handleEvent(e);
+        }
+      }
+    });
+    return this;
+  }
+
+  html(content: string): this {
+    this.native.innerHTML = content;
+    return this;
+  }
+
+  setText(content: string): this {
+    this.native.textContent = content;
+    return this;
+  }
+
+  remove(): void {
+    if (this.native.parentNode) {
+      this.native.parentNode.removeChild(this.native);
+    }
+  }
+
+  setStyle(object: Partial<CSSStyleDeclaration>): this {
+    for (const [key, value] of Object.entries(object)) {
+      if (value !== undefined) {
+        //@ts-expect-error -- Index signature issue
+        this.native.style[key] = value;
+      }
+    }
+    return this;
+  }
+
+  isFocused(): boolean {
+    return this.native === document.activeElement;
+  }
+
+  qs<T extends HTMLElement>(selector: string): ElementWithUtils<T> | null {
+    const found = this.native.querySelector<T>(selector);
+    return found ? new ElementWithUtils(found) : null;
+  }
+
+  qsa<T extends HTMLElement = HTMLElement>(
+    selector: string
+  ): ArrayWithUtils<ElementWithUtils<T>> {
+    const elements = Array.from(this.native.querySelectorAll<T>(selector))
+      .filter((el) => el !== null)
+      .map((el) => new ElementWithUtils<T>(el));
+
+    return new ArrayWithUtils<ElementWithUtils<T>>(...elements);
+  }
+
+  empty(): this {
+    this.native.innerHTML = "";
+    return this;
+  }
+
+  appendHtml(htmlString: string): this {
+    this.native.insertAdjacentHTML("beforeend", htmlString);
+    return this;
+  }
+
+  prependHtml(htmlString: string): this {
+    this.native.insertAdjacentHTML("afterbegin", htmlString);
+    return this;
+  }
+
+  trigger(event: string): this {
+    this.native.dispatchEvent(new Event(event));
+    return this;
+  }
+
+  offset(): { top: number; left: number } {
+    const rect = this.native.getBoundingClientRect();
+    const scrollLeft =
+      window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
+  }
+
+  wrapWith(htmlString: string): ElementWithUtils<T> {
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = htmlString;
+    const wrapperElement = wrapper.firstElementChild;
+    if (wrapperElement === null) {
+      throw new Error("Invalid HTML string provided to wrapWith.");
+    }
+
+    this.native.parentNode?.insertBefore(wrapperElement, this.native);
+    wrapperElement.appendChild(this.native);
+    return new ElementWithUtils(wrapperElement as T);
+  }
+
+  setValue(value: string): this {
+    if (
+      this.native instanceof HTMLInputElement ||
+      this.native instanceof HTMLTextAreaElement
+    ) {
+      this.native.value = value;
+    }
+    return this;
+  }
+
+  getParent(): ElementWithUtils | null {
+    if (this.native.parentElement) {
+      return new ElementWithUtils(this.native.parentElement);
+    }
+    return null;
+  }
+}
+
+class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
+  ElementWithUtils<T>
+> {
   remove(): void {
     for (const item of this) {
       item.remove();
