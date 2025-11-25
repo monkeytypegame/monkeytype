@@ -6,7 +6,9 @@ import * as Skeleton from "../utils/skeleton";
 import { qs } from "../utils/dom";
 
 const searchIndicator = new InputIndicator(
-  qs(".page.pageProfileSearch .search input") as HTMLInputElement,
+  //TODO: null handling
+  // oxlint-disable-next-line no-non-null-assertion
+  qs(".page.pageProfileSearch .search input")!,
   {
     notFound: {
       icon: "fa-user-slash",
@@ -45,7 +47,8 @@ function focusInput(): void {
 async function lookupProfile(): Promise<void> {
   searchIndicator.hide();
   const name =
-    qs<HTMLInputElement>(".page.pageProfileSearch .search input")?.value ?? "";
+    qs<HTMLInputElement>(".page.pageProfileSearch .search input")?.getValue() ??
+    "";
   if (name === "") return;
 
   searchIndicator.show("checking");

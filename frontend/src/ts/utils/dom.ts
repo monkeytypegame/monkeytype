@@ -101,6 +101,8 @@ export function createElementWithUtils<T extends HTMLElement>(
 //   getParent(): ElementWithUtils | null;
 // };
 
+type ValueElement = HTMLInputElement | HTMLTextAreaElement;
+
 export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * The native dom element
@@ -131,11 +133,18 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this.native.hasAttribute("disabled");
   }
 
-  isChecked(): boolean {
-    if (this instanceof HTMLInputElement) {
-      return this.checked;
-    }
-    return false;
+  isChecked(this: ElementWithUtils<HTMLInputElement>): boolean {
+    return this.native.checked;
+  }
+
+  hide(): this {
+    this.addClass("hidden");
+    return this;
+  }
+
+  show(): this {
+    this.removeClass("hidden");
+    return this;
   }
 
   addClass(className: string): this {
@@ -214,6 +223,16 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  setAttribute(qualifiedName: string, value: string): this {
+    this.native.setAttribute(qualifiedName, value);
+    return this;
+  }
+
+  removeAttribute(qualifiedName: string): this {
+    this.native.removeAttribute(qualifiedName);
+    return this;
+  }
+
   isFocused(): boolean {
     return this.native === document.activeElement;
   }
@@ -240,6 +259,11 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
 
   appendHtml(htmlString: string): this {
     this.native.insertAdjacentHTML("beforeend", htmlString);
+    return this;
+  }
+
+  append(element: HTMLElement): this {
+    this.native.append(element);
     return this;
   }
 
@@ -274,14 +298,19 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return new ElementWithUtils(wrapperElement as T);
   }
 
-  setValue(value: string): this {
-    if (
-      this.native instanceof HTMLInputElement ||
-      this.native instanceof HTMLTextAreaElement
-    ) {
-      this.native.value = value;
-    }
-    return this;
+  /**
+   * Set value of input or textarea to a string.
+   */
+  setValue(this: ElementWithUtils<ValueElement>, value: string): this {
+    this.native.value = value;
+    return this as unknown as this;
+  }
+
+  /**
+   * Get value of input or textarea
+   */
+  getValue(this: ElementWithUtils<ValueElement>): string {
+    return this.native.value;
   }
 
   /**
@@ -335,6 +364,20 @@ class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
   enable(): this {
     for (const item of this) {
       item.enable();
+    }
+    return this;
+  }
+
+  hide(): this {
+    for (const item of this) {
+      item.hide();
+    }
+    return this;
+  }
+
+  show(): this {
+    for (const item of this) {
+      item.show();
     }
     return this;
   }

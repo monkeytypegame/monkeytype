@@ -1,4 +1,4 @@
-import { addUtilsToElement, ElementWithUtils } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 
 type InputIndicatorOption = {
   icon: string;
@@ -14,14 +14,13 @@ export class InputIndicator {
   private currentStatus: keyof typeof this.options | null;
 
   constructor(
-    inputElement: HTMLInputElement,
+    inputElement: ElementWithUtils<HTMLInputElement>,
     options: Record<string, InputIndicatorOption>
   ) {
-    this.inputElement = addUtilsToElement(inputElement);
+    this.inputElement = inputElement;
     this.inputElement.wrapWith(`<div class="inputAndIndicator"></div>`);
-    this.parentElement = addUtilsToElement(
-      this.inputElement.parentElement as HTMLElement
-    );
+    // oxlint-disable-next-line no-non-null-assertion
+    this.parentElement = inputElement.getParent()!;
     this.options = options;
     this.currentStatus = null;
 
@@ -54,9 +53,9 @@ export class InputIndicator {
   }
 
   hide(): void {
-    this.parentElement.qsa(".statusIndicator div")?.addClass("hidden");
+    this.parentElement.qsa(".statusIndicator div")?.hide();
     this.currentStatus = null;
-    $(this.inputElement).css("padding-right", "0.5em");
+    this.inputElement.setStyle({ paddingRight: "0.5em" });
   }
 
   show(optionId: keyof typeof this.options, messageOverride?: string): void {
@@ -66,7 +65,7 @@ export class InputIndicator {
 
     const indicator = this.parentElement.qs(`[data-option-id="${optionId}"]`);
 
-    indicator?.removeClass("hidden");
+    indicator?.show();
 
     if (messageOverride !== undefined && messageOverride !== "") {
       if (messageOverride.length > 20) {
@@ -77,7 +76,7 @@ export class InputIndicator {
       indicator?.setAttribute("aria-label", messageOverride);
     }
 
-    $(this.inputElement).css("padding-right", "2.1em");
+    this.inputElement.setStyle({ paddingRight: "2.1em" });
     this.parentElement.setAttribute("data-indicator-status", optionId);
   }
 

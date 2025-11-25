@@ -1,4 +1,4 @@
-import { addUtilsToElement, ElementWithUtils } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 
 export class CharacterCounter {
   private textareaElement: ElementWithUtils<HTMLTextAreaElement>;
@@ -6,8 +6,11 @@ export class CharacterCounter {
   private counterElement: ElementWithUtils;
   private maxLength: number;
 
-  constructor(textareaElement: HTMLTextAreaElement, maxLength: number) {
-    this.textareaElement = addUtilsToElement(textareaElement);
+  constructor(
+    textareaElement: ElementWithUtils<HTMLTextAreaElement>,
+    maxLength: number
+  ) {
+    this.textareaElement = textareaElement;
     this.maxLength = maxLength;
 
     this.textareaElement.setAttribute("maxlength", this.maxLength.toString());
@@ -31,7 +34,7 @@ export class CharacterCounter {
       const element = document.createElement("span");
       element.className = "char-counter";
       this.parentElement.append(element);
-      this.counterElement = addUtilsToElement(element);
+      this.counterElement = new ElementWithUtils(element);
     }
 
     this.updateCounter();
@@ -40,7 +43,7 @@ export class CharacterCounter {
 
   private updateCounter(): void {
     const maxLength = this.maxLength;
-    const currentLength = this.textareaElement.value.length;
+    const currentLength = this.textareaElement.getValue().length;
     const remaining = maxLength - currentLength;
     this.counterElement.setText(`${currentLength}/${maxLength}`);
 
