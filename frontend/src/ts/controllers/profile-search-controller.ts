@@ -39,7 +39,7 @@ function areInputsDisabled(): boolean {
 }
 
 function focusInput(): void {
-  qs(".page.pageProfileSearch .search input")?.trigger("focus");
+  qs(".page.pageProfileSearch .search input")?.dispatch("focus");
 }
 
 async function lookupProfile(): Promise<void> {
