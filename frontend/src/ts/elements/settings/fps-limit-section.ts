@@ -1,5 +1,5 @@
 import { getfpsLimit, fpsLimitSchema, setfpsLimit } from "../../anim";
-import { validateWithIndicator } from "../input-validation";
+import { ValidatedHtmlInputElement } from "../input-validation";
 import * as Notifications from "../notifications";
 
 const section = document.querySelector(
@@ -10,7 +10,7 @@ const button = section.querySelector(
   "button[data-fpsLimit='native']"
 ) as HTMLButtonElement;
 
-const input = validateWithIndicator(
+const input = new ValidatedHtmlInputElement(
   section.querySelector('input[type="number"]') as HTMLInputElement,
   {
     schema: fpsLimitSchema,

@@ -6,10 +6,10 @@ import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import {
   IsValidResponse,
+  ValidatedHtmlInputElement,
   Validation,
   ValidationOptions,
   ValidationResult,
-  validateWithIndicator as withValidation,
 } from "../elements/input-validation";
 
 type CommonInput<TType, TValue> = {
@@ -351,7 +351,7 @@ export class SimpleModal {
           debounceDelay: input.validation.debounceDelay,
         };
 
-        withValidation(element, options);
+        new ValidatedHtmlInputElement(element, options);
       }
     });
 

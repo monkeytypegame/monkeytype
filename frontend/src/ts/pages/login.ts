@@ -7,7 +7,7 @@ import {
   UserEmailSchema,
   UserNameSchema,
 } from "@monkeytype/schemas/users";
-import { validateWithIndicator } from "../elements/input-validation";
+import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
@@ -72,7 +72,7 @@ export function getSignupData(): SignupData | false {
 const nameInputEl = document.querySelector(
   ".page.pageLogin .register.side input.usernameInput"
 ) as HTMLInputElement;
-validateWithIndicator(nameInputEl, {
+new ValidatedHtmlInputElement(nameInputEl, {
   schema: UserNameSchema,
   isValid: remoteValidation(
     async (name) => Ape.users.getNameAvailability({ params: { name } }),
@@ -90,7 +90,7 @@ let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
   null;
 let moduleLoadAttempted = false;
 
-const emailInputEl = validateWithIndicator(
+const emailInputEl = new ValidatedHtmlInputElement(
   document.querySelector(
     ".page.pageLogin .register.side input.emailInput"
   ) as HTMLInputElement,
@@ -157,7 +157,7 @@ emailInputEl.native.addEventListener("focus", async () => {
 const emailVerifyInputEl = document.querySelector(
   ".page.pageLogin .register.side input.verifyEmailInput"
 ) as HTMLInputElement;
-validateWithIndicator(emailVerifyInputEl, {
+new ValidatedHtmlInputElement(emailVerifyInputEl, {
   isValid: async (emailVerify: string) => {
     return emailInputEl.getValue() === emailVerify
       ? true
@@ -174,7 +174,7 @@ validateWithIndicator(emailVerifyInputEl, {
   },
 });
 
-const passwordInputEl = validateWithIndicator(
+const passwordInputEl = new ValidatedHtmlInputElement(
   document.querySelector(
     ".page.pageLogin .register.side .passwordInput"
   ) as HTMLInputElement,
@@ -192,7 +192,7 @@ const passwordInputEl = validateWithIndicator(
 const passwordVerifyInputEl = document.querySelector(
   ".page.pageLogin .register.side .verifyPasswordInput"
 ) as HTMLInputElement;
-validateWithIndicator(passwordVerifyInputEl, {
+new ValidatedHtmlInputElement(passwordVerifyInputEl, {
   isValid: async (passwordVerify: string) => {
     return passwordInputEl.getValue() === passwordVerify
       ? true

@@ -14,7 +14,7 @@ import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import AnimatedModal from "../utils/animated-modal";
 import { resetIgnoreAuthCallback } from "../firebase";
-import { validateWithIndicator } from "../elements/input-validation";
+import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
 
@@ -153,7 +153,7 @@ function disableInput(): void {
   nameInputEl.disabled = true;
 }
 
-validateWithIndicator(nameInputEl, {
+new ValidatedHtmlInputElement(nameInputEl, {
   schema: UserNameSchema,
   isValid: remoteValidation(
     async (name) => Ape.users.getNameAvailability({ params: { name } }),

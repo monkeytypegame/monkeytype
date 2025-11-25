@@ -142,17 +142,14 @@ export type ValidationOptions<T> = (T extends string
   callback?: (result: ValidationResult) => void;
 };
 
-export class ValidatedHtmlInputElement {
+export class ValidatedHtmlInputElement<T = string> {
   public native: HTMLInputElement;
   private indicator: InputIndicator;
   private currentStatus: ValidationResult = {
     status: "checking",
   };
 
-  constructor(
-    inputElement: HTMLInputElement,
-    options: ValidationOptions<unknown>
-  ) {
+  constructor(inputElement: HTMLInputElement, options: ValidationOptions<T>) {
     this.native = inputElement;
 
     this.indicator = new InputIndicator(inputElement, {
@@ -215,20 +212,6 @@ export class ValidatedHtmlInputElement {
     this.native.dispatchEvent(new Event("input"));
   }
 }
-/**
- * adds an 'InputIndicator` to the given `inputElement` and updates its status depending on the given validation
- * @param inputElement
- * @param options
- */
-export function validateWithIndicator<T>(
-  inputElement: HTMLInputElement,
-  options: ValidationOptions<T>
-): ValidatedHtmlInputElement {
-  return new ValidatedHtmlInputElement(
-    inputElement,
-    options as ValidationOptions<unknown>
-  );
-}
 
 export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
   input: HTMLInputElement | null;
@@ -272,7 +255,7 @@ export function handleConfigInput<T extends ConfigKey>({
   if (validation !== undefined) {
     const schema = ConfigSchema.shape[configName] as ZodType;
 
-    validateWithIndicator(input, {
+    new ValidatedHtmlInputElement(input, {
       schema: validation.schema ? schema : undefined,
       //@ts-expect-error this is fine
       isValid: validation.isValid,

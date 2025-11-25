@@ -21,10 +21,7 @@ import {
 } from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
-import {
-  ValidatedHtmlInputElement,
-  validateWithIndicator,
-} from "../elements/input-validation";
+import { ValidatedHtmlInputElement } from "../elements/input-validation";
 
 const state = {
   presetType: "full" as PresetType,
@@ -50,7 +47,7 @@ export function show(action: string, id?: string, name?: string): void {
       $("#editPresetModal .modal .text").addClass("hidden");
       addCheckBoxes();
       if (!presetNameEl) {
-        presetNameEl = validateWithIndicator(
+        presetNameEl = new ValidatedHtmlInputElement(
           document.querySelector(
             "#editPresetModal .modal input"
           ) as HTMLInputElement,
