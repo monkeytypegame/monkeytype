@@ -105,6 +105,7 @@ export const ThemeNameSchema = z.enum(
     "miami_nights",
     "midnight",
     "milkshake",
+    "milkyway",
     "mint",
     "mizu",
     "modern_dolch",
