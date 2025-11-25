@@ -44,8 +44,7 @@ button?.on("click", () => {
   update();
 });
 
-input?.on("keypress", (ev) => {
-  const e = ev as KeyboardEvent;
+input?.on("keypress", (e) => {
   if (e.key === "Enter") {
     saveFromInput();
   }

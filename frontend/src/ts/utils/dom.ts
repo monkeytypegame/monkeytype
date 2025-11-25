@@ -186,22 +186,45 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Attach an event listener to the element
    */
+  on<K extends keyof HTMLElementEventMap>(
+    event: K,
+    handler: (this: T, ev: HTMLElementEventMap[K]) => void
+  ): this;
+  on(event: string, handler: EventListenerOrEventListenerObject): this;
   on(
-    event: keyof HTMLElementEventMap,
-    handler: EventListenerOrEventListenerObject
+    event: keyof HTMLElementEventMap | string,
+    handler: EventListenerOrEventListenerObject | ((this: T, ev: Event) => void)
   ): this {
-    this.native.addEventListener(event, handler);
+    // this type was some AI magic but if it works it works
+    this.native.addEventListener(
+      event,
+      handler as EventListenerOrEventListenerObject
+    );
     return this;
   }
 
   /**
-   * Attach an event listener to child elements matching the query. Useful for dynamically added elements.
+   * Attach an event listener to child elements matching the query.
+   * Useful for dynamically added elements.
    */
+  onChild<K extends keyof HTMLElementEventMap>(
+    query: string,
+    event: K,
+    handler: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void
+  ): this;
   onChild(
     query: string,
-    event: keyof HTMLElementEventMap,
+    event: string,
     handler: EventListenerOrEventListenerObject
+  ): this;
+  onChild(
+    query: string,
+    event: keyof HTMLElementEventMap | string,
+    handler:
+      | EventListenerOrEventListenerObject
+      | ((this: HTMLElement, ev: Event) => void)
   ): this {
+    // this type was some AI magic but if it works it works
     this.native.addEventListener(event, (e) => {
       const target = e.target as HTMLElement;
       if (target !== null && target.matches(query)) {

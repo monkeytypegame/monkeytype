@@ -302,7 +302,7 @@ export function handleConfigInput<T extends ConfigKey>({
   };
 
   input.on("keypress", (e) => {
-    if ((e as KeyboardEvent).key === "Enter") {
+    if (e.key === "Enter") {
       handleStore();
     }
   });
