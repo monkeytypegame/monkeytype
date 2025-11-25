@@ -95,19 +95,17 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     return;
   }
 
+  // input and target word
+  const testInput = TestInput.input.current;
+  const currentWord = TestWords.words.getCurrent();
+
   // if the character is visually equal, replace it with the target character
   // this ensures all future equivalence checks work correctly
-  let normalizedData: string | null = null;
-  const targetChar =
-    TestWords.words.getCurrent()[TestInput.input.current.length];
-  if (
-    targetChar !== undefined &&
-    areCharactersVisuallyEqual(options.data, targetChar, Config.language)
-  ) {
-    replaceInputElementLastValueChar(targetChar);
-    normalizedData = targetChar;
-  }
-
+  const normalizedData = normalizeDataAndUpdateInputIfNeeded(
+    options.data,
+    testInput,
+    currentWord
+  );
   const data = normalizedData ?? options.data;
 
   // start if needed
@@ -118,8 +116,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // helper consts
   const lastInMultiOrSingle =
     lastInMultiIndex === true || lastInMultiIndex === undefined;
-  const testInput = TestInput.input.current;
-  const currentWord = TestWords.words.getCurrent();
   const wordIndex = TestState.activeWordIndex;
   const charIsSpace = isSpace(data);
   const charIsNewline = data === "\n";
@@ -287,6 +283,23 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (lastInMultiOrSingle) {
     TestUI.afterTestTextInput(correct, increasedWordIndex, visualInputOverride);
   }
+}
+
+function normalizeDataAndUpdateInputIfNeeded(
+  data: string,
+  testInput: string,
+  currentWord: string
+): string | null {
+  let normalizedData: string | null = null;
+  const targetChar = currentWord[testInput.length];
+  if (
+    targetChar !== undefined &&
+    areCharactersVisuallyEqual(data, targetChar, Config.language)
+  ) {
+    replaceInputElementLastValueChar(targetChar);
+    normalizedData = targetChar;
+  }
+  return normalizedData;
 }
 
 export async function emulateInsertText(
