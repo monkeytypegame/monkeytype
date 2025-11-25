@@ -85,7 +85,7 @@ export async function show(showOptions: ShowOptions): Promise<void> {
       $("#quoteSubmitModal input").val("");
 
       new CharacterCounter(
-        qs("#quoteSubmitModal .newQuoteText", { mandatory: true }),
+        qs("#quoteSubmitModal .newQuoteText", { guaranteed: true }),
         250
       );
     },

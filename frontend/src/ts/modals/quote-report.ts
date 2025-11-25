@@ -63,7 +63,7 @@ export async function show(
 
       new CharacterCounter(
         qs("#quoteReportModal .comment", {
-          mandatory: true,
+          guaranteed: true,
         }),
         250
       );

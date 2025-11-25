@@ -11,17 +11,17 @@ export function qs<T extends HTMLElement = HTMLElement>(
 ): ElementWithUtils<T> | null;
 export function qs<T extends HTMLElement = HTMLElement>(
   selector: string,
-  options: { mandatory: true }
+  options: { guaranteed: true }
 ): ElementWithUtils<T>;
 
 export function qs<T extends HTMLElement = HTMLElement>(
   selector: string,
-  options?: { mandatory?: boolean }
+  options?: { guaranteed?: boolean }
 ): ElementWithUtils<T> | null {
   const el = document.querySelector<T>(selector);
 
-  if (options?.mandatory && el === null) {
-    throw new Error(`Element not found: ${selector}`);
+  if (options?.guaranteed && el === null) {
+    throw new Error(`Guaranteed element not found: ${selector}`);
   }
 
   return el ? new ElementWithUtils(el) : null;

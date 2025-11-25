@@ -70,7 +70,7 @@ export async function show(options: ShowOptions): Promise<void> {
   });
 
   new CharacterCounter(
-    qs("#userReportModal .comment", { mandatory: true }),
+    qs("#userReportModal .comment", { guaranteed: true }),
     250
   );
 }

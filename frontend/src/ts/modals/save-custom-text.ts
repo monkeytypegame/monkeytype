@@ -19,7 +19,7 @@ const state: State = {
 };
 
 const validatedInput = validateWithIndicator(
-  qs("#saveCustomTextModal .textName", { mandatory: true }),
+  qs("#saveCustomTextModal .textName", { guaranteed: true }),
   {
     debounceDelay: 500,
     schema: z
