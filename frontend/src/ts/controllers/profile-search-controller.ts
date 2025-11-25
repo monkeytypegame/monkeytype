@@ -6,9 +6,7 @@ import * as Skeleton from "../utils/skeleton";
 import { qs } from "../utils/dom";
 
 const searchIndicator = new InputIndicator(
-  //TODO: null handling
-  // oxlint-disable-next-line no-non-null-assertion
-  qs(".page.pageProfileSearch .search input")!,
+  qs(".page.pageProfileSearch .search input", { mandatory: true }),
   {
     notFound: {
       icon: "fa-user-slash",

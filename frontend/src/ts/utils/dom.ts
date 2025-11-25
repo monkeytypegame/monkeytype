@@ -8,9 +8,23 @@ export function onDocumentReady(callback: () => void): void {
 
 export function qs<T extends HTMLElement = HTMLElement>(
   selector: string
+): ElementWithUtils<T> | null;
+export function qs<T extends HTMLElement = HTMLElement>(
+  selector: string,
+  options: { mandatory: true }
+): ElementWithUtils<T>;
+
+export function qs<T extends HTMLElement = HTMLElement>(
+  selector: string,
+  options?: { mandatory?: boolean }
 ): ElementWithUtils<T> | null {
-  const element = document.querySelector<T>(selector);
-  return element ? new ElementWithUtils(element) : null;
+  const el = document.querySelector<T>(selector);
+
+  if (options?.mandatory && el === null) {
+    throw new Error(`Element not found: ${selector}`);
+  }
+
+  return el ? new ElementWithUtils(el) : null;
 }
 
 export function qsa<T extends HTMLElement = HTMLElement>(
