@@ -209,11 +209,11 @@ export function validateWithIndicator<T>(
       indicator.hide();
       currentStatus = { status: "checking" };
     } else {
-      inputElement.native.dispatchEvent(new Event("input"));
+      inputElement.trigger("input");
     }
   };
   result.triggerValidation = () => {
-    inputElement.native.dispatchEvent(new Event("input"));
+    inputElement.trigger("input");
   };
 
   return result;
@@ -274,7 +274,7 @@ export function handleConfigInput<T extends ConfigKey>({
     if (input.getValue() === "" && (validation?.resetIfEmpty ?? true)) {
       //use last config value, clear validation
       input.setValue(new String(Config[configName]).toString());
-      input.native.dispatchEvent(new Event("input"));
+      input.trigger("input");
     }
     if (status === "failed") {
       input.getParent()?.addClass("hasError");

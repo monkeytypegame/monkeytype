@@ -137,7 +137,7 @@ const emailInputEl = validateWithIndicator(
     callback: (result) => {
       if (result.status === "success") {
         //re-validate the verify email
-        emailVerifyInputEl?.native.dispatchEvent(new Event("input"));
+        emailVerifyInputEl?.trigger("input");
       }
     },
   }
@@ -182,7 +182,7 @@ const passwordInputEl = validateWithIndicator(
     callback: (result) => {
       if (result.status === "success") {
         //re-validate the verify password
-        passwordVerifyInputEl?.native.dispatchEvent(new Event("input"));
+        passwordVerifyInputEl?.trigger("input");
       }
     },
   }

@@ -399,8 +399,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Dispatch an event on the element
    */
-  trigger(event: string): this {
-    this.native.dispatchEvent(new Event(event));
+  trigger(event: keyof HTMLElementEventMap, eventInitDict?: EventInit): this {
+    this.native.dispatchEvent(new Event(event, eventInitDict));
     return this;
   }
 
