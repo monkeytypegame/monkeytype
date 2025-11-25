@@ -220,7 +220,7 @@ export function validateWithIndicator<T>(
 }
 
 export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
-  input: ElementWithUtils<HTMLInputElement> | null;
+  input: ElementWithUtils<HTMLInputElement>;
   configName: K;
   validation?: (T extends string
     ? Omit<Validation<T>, "schema">
@@ -248,10 +248,6 @@ export function handleConfigInput<T extends ConfigKey>({
   configName,
   validation,
 }: ConfigInputOptions<T, ConfigType[T]>): void {
-  if (input === null) {
-    throw new Error(`Failed to find input element for ${configName}`);
-  }
-
   const inputValueConvert =
     validation !== undefined && "inputValueConvert" in validation
       ? validation.inputValueConvert

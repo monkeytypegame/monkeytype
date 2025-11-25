@@ -25,7 +25,7 @@ import {
   ValidatedHtmlInputElement,
   validateWithIndicator,
 } from "../elements/input-validation";
-import { ElementWithUtils, qs } from "../utils/dom";
+import { qs } from "../utils/dom";
 
 const state = {
   presetType: "full" as PresetType,
@@ -52,9 +52,7 @@ export function show(action: string, id?: string, name?: string): void {
       addCheckBoxes();
       if (!presetNameEl) {
         presetNameEl = validateWithIndicator(
-          qs(
-            "#editPresetModal .modal input"
-          ) as ElementWithUtils<HTMLInputElement>,
+          qs("#editPresetModal .modal input", { guaranteed: true }),
           {
             schema: PresetNameSchema,
           }

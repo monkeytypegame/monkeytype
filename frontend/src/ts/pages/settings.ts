@@ -644,7 +644,9 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: qs(".pageSettings .section[data-config-name='minWpm'] input"),
+    input: qs(".pageSettings .section[data-config-name='minWpm'] input", {
+      guaranteed: true,
+    }),
     configName: "minWpmCustomSpeed",
     validation: {
       schema: true,
@@ -656,7 +658,9 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: qs(".pageSettings .section[data-config-name='minAcc'] input"),
+    input: qs(".pageSettings .section[data-config-name='minAcc'] input", {
+      guaranteed: true,
+    }),
     configName: "minAccCustom",
     validation: {
       schema: true,
@@ -665,7 +669,9 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: qs(".pageSettings .section[data-config-name='minBurst'] input"),
+    input: qs(".pageSettings .section[data-config-name='minBurst'] input", {
+      guaranteed: true,
+    }),
     configName: "minBurstCustomSpeed",
     validation: {
       schema: true,
@@ -677,7 +683,9 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: qs(".pageSettings .section[data-config-name='paceCaret'] input"),
+    input: qs(".pageSettings .section[data-config-name='paceCaret'] input", {
+      guaranteed: true,
+    }),
     configName: "paceCaretCustomSpeed",
     validation: {
       schema: true,
@@ -687,7 +695,8 @@ async function fillSettingsPage(): Promise<void> {
 
   handleConfigInput({
     input: qs(
-      ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']"
+      ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']",
+      { guaranteed: true }
     ),
     configName: "customBackground",
     validation: {
