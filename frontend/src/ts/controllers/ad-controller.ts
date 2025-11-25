@@ -220,7 +220,7 @@ export async function renderResult(): Promise<void> {
   await checkCookieblocker();
 
   if (adBlock) {
-    qs("#ad-result-wrapper .iconAndText .text")?.html(`
+    qs("#ad-result-wrapper .iconAndText .text")?.setHtml(`
     Using an ad blocker? No worries
     <div class="smalltext">
       We understand ads can be annoying
@@ -234,7 +234,7 @@ export async function renderResult(): Promise<void> {
   }
 
   if (cookieBlocker) {
-    qs("#ad-result-wrapper .iconAndText .text")?.html(`
+    qs("#ad-result-wrapper .iconAndText .text")?.setHtml(`
     Ads not working? Ooops
     <div class="smalltext">
       You may have a cookie popup blocker enabled - ads will not show without your consent

@@ -3,12 +3,12 @@ import { qs } from "../../utils/dom";
 import { validateWithIndicator } from "../input-validation";
 import * as Notifications from "../notifications";
 
-const section = qs("#pageSettings .section.fpsLimit");
+const section = qs("#pageSettings .section.fpsLimit", { guaranteed: true });
 
 const button = section?.qs("button[data-fpsLimit='native']");
 
 const input = validateWithIndicator(
-  section?.qs<HTMLInputElement>('input[type="number"]'),
+  section.qs('input[type="number"]', { guaranteed: true }),
   {
     schema: fpsLimitSchema,
     inputValueConvert: (val: string) => parseInt(val, 10),

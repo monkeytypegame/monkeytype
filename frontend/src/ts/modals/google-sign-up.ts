@@ -142,7 +142,9 @@ function disableButton(): void {
   $("#googleSignUpModal button").prop("disabled", true);
 }
 
-const nameInputEl = qs<HTMLInputElement>("#googleSignUpModal input");
+const nameInputEl = qs<HTMLInputElement>("#googleSignUpModal input", {
+  guaranteed: true,
+});
 
 function enableInput(): void {
   nameInputEl?.enable();

@@ -72,7 +72,7 @@ export function getSignupData(): SignupData | false {
 
 const nameInputEl = qs<HTMLInputElement>(
   ".page.pageLogin .register.side input.usernameInput",
-  { mandatory: true }
+  { guaranteed: true }
 );
 validateWithIndicator(nameInputEl, {
   schema: UserNameSchema,
@@ -93,7 +93,7 @@ let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
 let moduleLoadAttempted = false;
 
 const emailInputEl = validateWithIndicator(
-  qs(".page.pageLogin .register.side input.emailInput", { mandatory: true }),
+  qs(".page.pageLogin .register.side input.emailInput", { guaranteed: true }),
   {
     schema: UserEmailSchema,
     isValid: async (email: string) => {
@@ -156,7 +156,7 @@ emailInputEl.on("focus", async () => {
 
 const emailVerifyInputEl = qs<HTMLInputElement>(
   ".page.pageLogin .register.side input.verifyEmailInput",
-  { mandatory: true }
+  { guaranteed: true }
 );
 validateWithIndicator(emailVerifyInputEl, {
   isValid: async (emailVerify: string) => {
@@ -176,7 +176,7 @@ validateWithIndicator(emailVerifyInputEl, {
 });
 
 const passwordInputEl = validateWithIndicator(
-  qs(".page.pageLogin .register.side .passwordInput", { mandatory: true }),
+  qs(".page.pageLogin .register.side .passwordInput", { guaranteed: true }),
   {
     schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
     callback: (result) => {
@@ -190,7 +190,7 @@ const passwordInputEl = validateWithIndicator(
 
 const passwordVerifyInputEl = qs<HTMLInputElement>(
   ".page.pageLogin .register.side .verifyPasswordInput",
-  { mandatory: true }
+  { guaranteed: true }
 );
 validateWithIndicator(passwordVerifyInputEl, {
   isValid: async (passwordVerify: string) => {

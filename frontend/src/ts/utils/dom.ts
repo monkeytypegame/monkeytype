@@ -258,8 +258,21 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this.native === document.activeElement;
   }
 
-  qs<U extends HTMLElement>(selector: string): ElementWithUtils<U> | null {
+  qs<U extends HTMLElement = HTMLElement>(
+    selector: string
+  ): ElementWithUtils<U> | null;
+  qs<U extends HTMLElement = HTMLElement>(
+    selector: string,
+    options: { guaranteed: true }
+  ): ElementWithUtils<U>;
+  qs<U extends HTMLElement>(
+    selector: string,
+    options?: { guaranteed?: boolean }
+  ): ElementWithUtils<U> | null {
     const found = this.native.querySelector<U>(selector);
+    if (options?.guaranteed && found === null) {
+      throw new Error(`Guaranteed child element not found: ${selector}`);
+    }
     return found ? new ElementWithUtils(found) : null;
   }
 
