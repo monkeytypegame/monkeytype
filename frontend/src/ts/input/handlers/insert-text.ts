@@ -62,12 +62,12 @@ type OnInsertTextParams = {
 
 export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const { now, lastInMultiIndex, isCompositionEnding } = options;
-  const { inputValue } = getInputElementValue();
 
   if (options.data.length > 1) {
     // remove the entire data from the input value
     // make sure to not call TestInput.input.syncWithInputElement in here
     // it will be updated later in the body of onInsertText
+    const { inputValue } = getInputElementValue();
     setInputElementValue(inputValue.slice(0, -options.data.length));
     for (let i = 0; i < options.data.length; i++) {
       const char = options.data[i] as string;
