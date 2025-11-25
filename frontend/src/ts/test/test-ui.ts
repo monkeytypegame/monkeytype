@@ -1637,15 +1637,22 @@ export function getActiveWordTopAfterAppend(data: string): number {
 }
 
 // this means input, delete or composition
-function afterAnyTestInput(correctInput: boolean | null): void {
-  if (
-    correctInput === true ||
-    Config.playSoundOnError === "off" ||
-    Config.blindMode
-  ) {
+function afterAnyTestInput(
+  type: "textInput" | "delete" | "compositionUpdate",
+  correctInput: boolean | null
+): void {
+  if (type === "textInput") {
+    if (
+      correctInput === true ||
+      Config.playSoundOnError === "off" ||
+      Config.blindMode
+    ) {
+      void SoundController.playClick();
+    } else {
+      void SoundController.playError();
+    }
+  } else if (type === "delete") {
     void SoundController.playClick();
-  } else {
-    void SoundController.playError();
   }
 
   const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
@@ -1684,18 +1691,18 @@ export function afterTestTextInput(
     }
   }
 
-  afterAnyTestInput(correct);
+  afterAnyTestInput("textInput", correct);
 }
 
 export function afterTestCompositionUpdate(): void {
   void updateActiveWordLetters();
   // correct needs to be true to get the normal click sound
-  afterAnyTestInput(true);
+  afterAnyTestInput("compositionUpdate", true);
 }
 
 export function afterTestDelete(): void {
   void updateActiveWordLetters();
-  afterAnyTestInput(null);
+  afterAnyTestInput("delete", null);
 }
 
 export function beforeTestWordChange(
