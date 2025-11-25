@@ -142,11 +142,79 @@ export type ValidationOptions<T> = (T extends string
   callback?: (result: ValidationResult) => void;
 };
 
-export type ValidatedHtmlInputElement = HTMLInputElement & {
-  getValidationResult: () => ValidationResult;
-  setValue: (val: string | null) => void;
-  triggerValidation: () => void;
-};
+export class ValidatedHtmlInputElement {
+  public native: HTMLInputElement;
+  private indicator: InputIndicator;
+  private currentStatus: ValidationResult = {
+    status: "checking",
+  };
+
+  constructor(
+    inputElement: HTMLInputElement,
+    options: ValidationOptions<unknown>
+  ) {
+    this.native = inputElement;
+
+    this.indicator = new InputIndicator(inputElement, {
+      success: {
+        icon: "fa-check",
+        level: 1,
+      },
+      failed: {
+        icon: "fa-times",
+        level: -1,
+      },
+      warning: {
+        icon: "fa-exclamation-triangle",
+        level: 1,
+      },
+      checking: {
+        icon: "fa-circle-notch",
+        spinIcon: true,
+        level: 0,
+      },
+    });
+
+    const callback = (result: ValidationResult): void => {
+      this.currentStatus = result;
+      if (result.status === "failed" || result.status === "warning") {
+        this.indicator.show(result.status, result.errorMessage);
+      } else {
+        this.indicator.show(result.status);
+      }
+      options.callback?.(result);
+    };
+
+    const handler = createInputEventHandler(
+      callback,
+      options,
+      "inputValueConvert" in options ? options.inputValueConvert : undefined
+    );
+
+    inputElement.addEventListener("input", handler);
+  }
+
+  getValidationResult(): ValidationResult {
+    return this.currentStatus;
+  }
+  setValue(val: string | null): this {
+    this.native.value = val ?? "";
+    if (val === null) {
+      this.indicator.hide();
+      this.currentStatus = { status: "checking" };
+    } else {
+      this.native.dispatchEvent(new Event("input"));
+    }
+
+    return this;
+  }
+  getValue(): string {
+    return this.native.value;
+  }
+  triggerValidation(): void {
+    this.native.dispatchEvent(new Event("input"));
+  }
+}
 /**
  * adds an 'InputIndicator` to the given `inputElement` and updates its status depending on the given validation
  * @param inputElement
@@ -156,66 +224,10 @@ export function validateWithIndicator<T>(
   inputElement: HTMLInputElement,
   options: ValidationOptions<T>
 ): ValidatedHtmlInputElement {
-  //use indicator
-  const indicator = new InputIndicator(inputElement, {
-    success: {
-      icon: "fa-check",
-      level: 1,
-    },
-    failed: {
-      icon: "fa-times",
-      level: -1,
-    },
-    warning: {
-      icon: "fa-exclamation-triangle",
-      level: 1,
-    },
-    checking: {
-      icon: "fa-circle-notch",
-      spinIcon: true,
-      level: 0,
-    },
-  });
-
-  let currentStatus: ValidationResult = {
-    status: "checking",
-  };
-  const callback = (result: ValidationResult): void => {
-    currentStatus = result;
-    if (result.status === "failed" || result.status === "warning") {
-      indicator.show(result.status, result.errorMessage);
-    } else {
-      indicator.show(result.status);
-    }
-    options.callback?.(result);
-  };
-
-  const handler = createInputEventHandler(
-    callback,
-    options,
-    "inputValueConvert" in options ? options.inputValueConvert : undefined
+  return new ValidatedHtmlInputElement(
+    inputElement,
+    options as ValidationOptions<unknown>
   );
-
-  inputElement.addEventListener("input", handler);
-
-  const result = inputElement as ValidatedHtmlInputElement;
-  result.getValidationResult = () => {
-    return currentStatus;
-  };
-  result.setValue = (val: string | null) => {
-    inputElement.value = val ?? "";
-    if (val === null) {
-      indicator.hide();
-      currentStatus = { status: "checking" };
-    } else {
-      inputElement.dispatchEvent(new Event("input"));
-    }
-  };
-  result.triggerValidation = () => {
-    inputElement.dispatchEvent(new Event("input"));
-  };
-
-  return result;
 }
 
 export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {

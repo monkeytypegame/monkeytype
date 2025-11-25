@@ -143,7 +143,7 @@ const emailInputEl = validateWithIndicator(
   }
 );
 
-emailInputEl.addEventListener("focus", async () => {
+emailInputEl.native.addEventListener("focus", async () => {
   if (!moduleLoadAttempted) {
     moduleLoadAttempted = true;
     try {
@@ -159,7 +159,7 @@ const emailVerifyInputEl = document.querySelector(
 ) as HTMLInputElement;
 validateWithIndicator(emailVerifyInputEl, {
   isValid: async (emailVerify: string) => {
-    return emailInputEl.value === emailVerify
+    return emailInputEl.getValue() === emailVerify
       ? true
       : "verify email not matching email";
   },
@@ -168,7 +168,7 @@ validateWithIndicator(emailVerifyInputEl, {
     registerForm.email =
       emailInputEl.getValidationResult().status === "success" &&
       result.status === "success"
-        ? emailInputEl.value
+        ? emailInputEl.getValue()
         : undefined;
     updateSignupButton();
   },
@@ -194,7 +194,7 @@ const passwordVerifyInputEl = document.querySelector(
 ) as HTMLInputElement;
 validateWithIndicator(passwordVerifyInputEl, {
   isValid: async (passwordVerify: string) => {
-    return passwordInputEl.value === passwordVerify
+    return passwordInputEl.getValue() === passwordVerify
       ? true
       : "verify password not matching password";
   },
@@ -203,7 +203,7 @@ validateWithIndicator(passwordVerifyInputEl, {
     registerForm.password =
       passwordInputEl.getValidationResult().status === "success" &&
       result.status === "success"
-        ? passwordInputEl.value
+        ? passwordInputEl.getValue()
         : undefined;
     updateSignupButton();
   },

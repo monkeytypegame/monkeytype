@@ -24,7 +24,7 @@ export function update(): void {
     input.setValue(null);
     button.classList.add("active");
   } else {
-    input.value = fpsLimit.toString();
+    input.setValue(fpsLimit.toString());
     button.classList.remove("active");
   }
 }
@@ -38,7 +38,7 @@ function save(value: number): void {
 
 function saveFromInput(): void {
   if (input.getValidationResult().status !== "success") return;
-  const val = parseInt(input.value, 10);
+  const val = parseInt(input.getValue(), 10);
   save(val);
 }
 
@@ -47,10 +47,10 @@ button.addEventListener("click", () => {
   update();
 });
 
-input.addEventListener("keypress", (e) => {
+input.native.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
     saveFromInput();
   }
 });
 
-input.addEventListener("focusout", (e) => saveFromInput());
+input.native.addEventListener("focusout", (e) => saveFromInput());
