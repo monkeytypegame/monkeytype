@@ -143,42 +143,69 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /**
+   * Check if the element is disabled
+   */
   isDisabled(): boolean {
     return this.native.hasAttribute("disabled");
   }
 
+  /**
+   * Get attribute value
+   */
   getAttribute(attribute: string): string | null {
     return this.native.getAttribute(attribute);
   }
 
+  /**
+   * Check if the element has the specified attribute
+   */
   hasAttribute(attribute: string): boolean {
     return this.native.hasAttribute(attribute);
   }
 
+  /**
+   * Check if the input element is checked
+   */
   isChecked(this: ElementWithUtils<HTMLInputElement>): boolean {
     return this.native.checked;
   }
 
+  /**
+   * Add the "hidden" class to the element
+   */
   hide(): this {
     this.addClass("hidden");
     return this;
   }
 
+  /**
+   * Remove the "hidden" class from the element
+   */
   show(): this {
     this.removeClass("hidden");
     return this;
   }
 
+  /**
+   * Add a class to the element
+   */
   addClass(className: string): this {
     this.native.classList.add(className);
     return this;
   }
 
+  /**
+   * Remove a class from the element
+   */
   removeClass(className: string): this {
     this.native.classList.remove(className);
     return this;
   }
 
+  /**
+   * Check if the element has a class
+   */
   hasClass(className: string): boolean {
     return this.native.classList.contains(className);
   }
@@ -238,6 +265,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /**
+   * Set innerHTML of the element
+   */
   setHtml(content: string): this {
     this.native.innerHTML = content;
     return this;
@@ -251,12 +281,18 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /**
+   * Remove the element from the DOM
+   */
   remove(): void {
     if (this.native.parentNode) {
       this.native.parentNode.removeChild(this.native);
     }
   }
 
+  /**
+   * Set multiple style properties on the element
+   */
   setStyle(object: Partial<CSSStyleDeclaration>): this {
     for (const [key, value] of Object.entries(object)) {
       if (value !== undefined) {
@@ -267,20 +303,32 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /**
+   * Set attribute value
+   */
   setAttribute(qualifiedName: string, value: string): this {
     this.native.setAttribute(qualifiedName, value);
     return this;
   }
 
+  /**
+   * Remove attribute
+   */
   removeAttribute(qualifiedName: string): this {
     this.native.removeAttribute(qualifiedName);
     return this;
   }
 
+  /**
+   * Check if the element is focused
+   */
   isFocused(): boolean {
     return this.native === document.activeElement;
   }
 
+  /**
+   * Query the element for a child element matching the selector
+   */
   qs<U extends HTMLElement = HTMLElement>(
     selector: string
   ): ElementWithUtils<U> | null;
@@ -299,6 +347,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return found ? new ElementWithUtils(found) : null;
   }
 
+  /**
+   * Query the element for all child elements matching the selector
+   */
   qsa<U extends HTMLElement = HTMLElement>(
     selector: string
   ): ArrayWithUtils<U> {
@@ -309,16 +360,25 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return new ArrayWithUtils<U>(...elements);
   }
 
+  /**
+   * Empty the element's innerHTML
+   */
   empty(): this {
     this.native.innerHTML = "";
     return this;
   }
 
+  /**
+   * Append HTML string to the element's innerHTML
+   */
   appendHtml(htmlString: string): this {
     this.native.insertAdjacentHTML("beforeend", htmlString);
     return this;
   }
 
+  /**
+   * Append a child element
+   */
   append(element: HTMLElement | ElementWithUtils): this {
     if (element instanceof ElementWithUtils) {
       this.native.appendChild(element.native);
@@ -328,16 +388,25 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  /**
+   * Prepend HTML string to the element's innerHTML
+   */
   prependHtml(htmlString: string): this {
     this.native.insertAdjacentHTML("afterbegin", htmlString);
     return this;
   }
 
+  /**
+   * Dispatch an event on the element
+   */
   trigger(event: string): this {
     this.native.dispatchEvent(new Event(event));
     return this;
   }
 
+  /**
+   * Get the element's bounding client rect offset
+   */
   offset(): { top: number; left: number } {
     const rect = this.native.getBoundingClientRect();
     const scrollLeft =
@@ -346,6 +415,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
   }
 
+  /**
+   * Wrap the element with the provided HTML string
+   */
   wrapWith(htmlString: string): ElementWithUtils<T> {
     const wrapper = document.createElement("div");
     wrapper.innerHTML = htmlString;
@@ -388,12 +460,18 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
 class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
   ElementWithUtils<T>
 > {
+  /**
+   * Remove all elements in the array from the DOM
+   */
   remove(): void {
     for (const item of this) {
       item.remove();
     }
   }
 
+  /**
+   * Remove a class from all elements in the array
+   */
   removeClass(className: string): this {
     for (const item of this) {
       item.removeClass(className);
@@ -401,6 +479,9 @@ class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
     return this;
   }
 
+  /**
+   * Add a class to all elements in the array
+   */
   addClass(className: string): this {
     for (const item of this) {
       item.addClass(className);
@@ -408,13 +489,19 @@ class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
     return this;
   }
 
-  html(htmlString: string): this {
+  /**
+   * Set innerHTML of all elements in the array
+   */
+  setHtml(htmlString: string): this {
     for (const item of this) {
       item.setHtml(htmlString);
     }
     return this;
   }
 
+  /**
+   * Set the disabled attribute on all elements in the array
+   */
   disable(): this {
     for (const item of this) {
       item.disable();
@@ -422,6 +509,9 @@ class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
     return this;
   }
 
+  /**
+   * Remove the disabled attribute from all elements in the array
+   */
   enable(): this {
     for (const item of this) {
       item.enable();
@@ -429,6 +519,9 @@ class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
     return this;
   }
 
+  /**
+   * Add the "hidden" class to all elements in the array
+   */
   hide(): this {
     for (const item of this) {
       item.hide();
@@ -436,6 +529,9 @@ class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
     return this;
   }
 
+  /**
+   * Remove the "hidden" class from all elements in the array
+   */
   show(): this {
     for (const item of this) {
       item.show();
