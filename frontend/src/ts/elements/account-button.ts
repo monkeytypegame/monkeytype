@@ -8,13 +8,11 @@ import * as XpBar from "./xp-bar";
 import { getAvatarElement } from "../utils/discord-avatar";
 import * as AuthEvent from "../observables/auth-event";
 import { getSnapshot } from "../db";
-import { qs } from "../utils/dom";
+import { qsr } from "../utils/dom";
 
-const nav = qs("header nav ", { guaranteed: true });
-const accountButtonAndMenuEl = nav.qs(".accountButtonAndMenu", {
-  guaranteed: true,
-});
-const loginButtonEl = nav.qs(".textButton.view-login", { guaranteed: true });
+const nav = qsr("header nav ");
+const accountButtonAndMenuEl = nav.qsr(".accountButtonAndMenu");
+const loginButtonEl = nav.qsr(".textButton.view-login");
 
 export function hide(): void {
   accountButtonAndMenuEl.addClass("hidden");

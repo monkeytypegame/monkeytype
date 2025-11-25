@@ -1,19 +1,16 @@
 import { getfpsLimit, fpsLimitSchema, setfpsLimit } from "../../anim";
-import { qs } from "../../utils/dom";
+import { qsr } from "../../utils/dom";
 import { validateWithIndicator } from "../input-validation";
 import * as Notifications from "../notifications";
 
-const section = qs("#pageSettings .section.fpsLimit", { guaranteed: true });
+const section = qsr("#pageSettings .section.fpsLimit");
 
 const button = section?.qs("button[data-fpsLimit='native']");
 
-const input = validateWithIndicator(
-  section.qs('input[type="number"]', { guaranteed: true }),
-  {
-    schema: fpsLimitSchema,
-    inputValueConvert: (val: string) => parseInt(val, 10),
-  }
-);
+const input = validateWithIndicator(section.qsr('input[type="number"]'), {
+  schema: fpsLimitSchema,
+  inputValueConvert: (val: string) => parseInt(val, 10),
+});
 
 export function update(): void {
   const fpsLimit = getfpsLimit();

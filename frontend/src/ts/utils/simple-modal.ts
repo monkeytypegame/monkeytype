@@ -11,7 +11,7 @@ import {
   ValidationResult,
   validateWithIndicator as withValidation,
 } from "../elements/input-validation";
-import { qs } from "./dom";
+import { qsr } from "./dom";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -316,9 +316,7 @@ export class SimpleModal {
         }
         inputs.append(buildTag({ tagname, classes, attributes }));
       }
-      const element = qs<HTMLInputElement>("#" + attributes["id"], {
-        guaranteed: true,
-      });
+      const element = qsr<HTMLInputElement>("#" + attributes["id"]);
 
       const originalOnInput = element.native.oninput;
       element.native.oninput = (e) => {

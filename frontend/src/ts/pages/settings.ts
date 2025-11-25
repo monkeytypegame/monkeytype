@@ -43,7 +43,7 @@ import * as CustomBackgroundPicker from "../elements/settings/custom-background-
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
 import * as FpsLimitSection from "../elements/settings/fps-limit-section";
-import { qs } from "../utils/dom";
+import { qsr } from "../utils/dom";
 
 let settingsInitialized = false;
 
@@ -644,9 +644,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: qs(".pageSettings .section[data-config-name='minWpm'] input", {
-      guaranteed: true,
-    }),
+    input: qsr(".pageSettings .section[data-config-name='minWpm'] input"),
     configName: "minWpmCustomSpeed",
     validation: {
       schema: true,
@@ -658,9 +656,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: qs(".pageSettings .section[data-config-name='minAcc'] input", {
-      guaranteed: true,
-    }),
+    input: qsr(".pageSettings .section[data-config-name='minAcc'] input"),
     configName: "minAccCustom",
     validation: {
       schema: true,
@@ -669,9 +665,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: qs(".pageSettings .section[data-config-name='minBurst'] input", {
-      guaranteed: true,
-    }),
+    input: qsr(".pageSettings .section[data-config-name='minBurst'] input"),
     configName: "minBurstCustomSpeed",
     validation: {
       schema: true,
@@ -683,9 +677,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: qs(".pageSettings .section[data-config-name='paceCaret'] input", {
-      guaranteed: true,
-    }),
+    input: qsr(".pageSettings .section[data-config-name='paceCaret'] input"),
     configName: "paceCaretCustomSpeed",
     validation: {
       schema: true,
@@ -694,9 +686,8 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   handleConfigInput({
-    input: qs(
-      ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']",
-      { guaranteed: true }
+    input: qsr(
+      ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']"
     ),
     configName: "customBackground",
     validation: {

@@ -3,10 +3,10 @@ import { sleep } from "../utils/misc";
 import Ape from "../ape";
 import { navigate } from "../controllers/route-controller";
 import * as Skeleton from "../utils/skeleton";
-import { qs } from "../utils/dom";
+import { qs, qsr } from "../utils/dom";
 
 const searchIndicator = new InputIndicator(
-  qs(".page.pageProfileSearch .search input", { guaranteed: true }),
+  qsr(".page.pageProfileSearch .search input"),
   {
     notFound: {
       icon: "fa-user-slash",

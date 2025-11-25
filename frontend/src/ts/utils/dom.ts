@@ -6,35 +6,44 @@ export function onDocumentReady(callback: () => void): void {
   }
 }
 
+/**
+ * Query the document for a single element matching the selector.
+ * @returns An ElementWithUtils wrapping the found element, null if not found.
+ */
 export function qs<T extends HTMLElement = HTMLElement>(
   selector: string
-): ElementWithUtils<T> | null;
-export function qs<T extends HTMLElement = HTMLElement>(
-  selector: string,
-  options: { guaranteed: true }
-): ElementWithUtils<T>;
-
-export function qs<T extends HTMLElement = HTMLElement>(
-  selector: string,
-  options?: { guaranteed?: boolean }
 ): ElementWithUtils<T> | null {
   const el = document.querySelector<T>(selector);
-
-  if (options?.guaranteed && el === null) {
-    throw new Error(`Guaranteed element not found: ${selector}`);
-  }
-
   return el ? new ElementWithUtils(el) : null;
 }
 
+/**
+ * Query the document for all elements matching the selector.
+ * @returns An ArrayWithUtils containing ElementWithUtils wrapping each found element.
+ */
 export function qsa<T extends HTMLElement = HTMLElement>(
   selector: string
 ): ArrayWithUtils<T> {
   const elements = Array.from(document.querySelectorAll<T>(selector))
     .filter((el) => el !== null)
     .map((el) => new ElementWithUtils(el));
-
   return new ArrayWithUtils<T>(...elements);
+}
+
+/**
+ * Query the document for a single element matching the selector.
+ * This element must exist, otherwise an error is thrown.
+ * @returns An ElementWithUtils wrapping the found element.
+ * @throws Error if the element is not found.
+ */
+export function qsr<T extends HTMLElement = HTMLElement>(
+  selector: string
+): ElementWithUtils<T> {
+  const el = document.querySelector<T>(selector);
+  if (el === null) {
+    throw new Error(`Required element not found: ${selector}`);
+  }
+  return new ElementWithUtils(el);
 }
 
 export function createElementWithUtils<T extends HTMLElement>(
@@ -335,21 +344,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Query the element for a child element matching the selector
    */
-  qs<U extends HTMLElement = HTMLElement>(
-    selector: string
-  ): ElementWithUtils<U> | null;
-  qs<U extends HTMLElement = HTMLElement>(
-    selector: string,
-    options: { guaranteed: true }
-  ): ElementWithUtils<U>;
-  qs<U extends HTMLElement>(
-    selector: string,
-    options?: { guaranteed?: boolean }
-  ): ElementWithUtils<U> | null {
+  qs<U extends HTMLElement>(selector: string): ElementWithUtils<U> | null {
     const found = this.native.querySelector<U>(selector);
-    if (options?.guaranteed && found === null) {
-      throw new Error(`Guaranteed child element not found: ${selector}`);
-    }
     return found ? new ElementWithUtils(found) : null;
   }
 
@@ -364,6 +360,19 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       .map((el) => new ElementWithUtils<U>(el));
 
     return new ArrayWithUtils<U>(...elements);
+  }
+
+  /**
+   * Query the element for a child element matching the selector.
+   * This element must exist, otherwise an error is thrown.
+   * @throws Error if the element is not found.
+   */
+  qsr<U extends HTMLElement>(selector: string): ElementWithUtils<U> {
+    const found = this.native.querySelector<U>(selector);
+    if (found === null) {
+      throw new Error(`Required element not found: ${selector}`);
+    }
+    return new ElementWithUtils(found);
   }
 
   /**

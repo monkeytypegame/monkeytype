@@ -11,7 +11,7 @@ import { validateWithIndicator } from "../elements/input-validation";
 import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
-import { qs } from "../utils/dom";
+import { qsr } from "../utils/dom";
 
 let registerForm: {
   name?: string;
@@ -70,9 +70,8 @@ export function getSignupData(): SignupData | false {
   return isFormComplete() ? (registerForm as SignupData) : false;
 }
 
-const nameInputEl = qs<HTMLInputElement>(
-  ".page.pageLogin .register.side input.usernameInput",
-  { guaranteed: true }
+const nameInputEl = qsr<HTMLInputElement>(
+  ".page.pageLogin .register.side input.usernameInput"
 );
 validateWithIndicator(nameInputEl, {
   schema: UserNameSchema,
@@ -93,7 +92,7 @@ let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
 let moduleLoadAttempted = false;
 
 const emailInputEl = validateWithIndicator(
-  qs(".page.pageLogin .register.side input.emailInput", { guaranteed: true }),
+  qsr(".page.pageLogin .register.side input.emailInput"),
   {
     schema: UserEmailSchema,
     isValid: async (email: string) => {
@@ -154,9 +153,8 @@ emailInputEl.on("focus", async () => {
   }
 });
 
-const emailVerifyInputEl = qs<HTMLInputElement>(
-  ".page.pageLogin .register.side input.verifyEmailInput",
-  { guaranteed: true }
+const emailVerifyInputEl = qsr<HTMLInputElement>(
+  ".page.pageLogin .register.side input.verifyEmailInput"
 );
 validateWithIndicator(emailVerifyInputEl, {
   isValid: async (emailVerify: string) => {
@@ -176,7 +174,7 @@ validateWithIndicator(emailVerifyInputEl, {
 });
 
 const passwordInputEl = validateWithIndicator(
-  qs(".page.pageLogin .register.side .passwordInput", { guaranteed: true }),
+  qsr(".page.pageLogin .register.side .passwordInput"),
   {
     schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
     callback: (result) => {
@@ -188,9 +186,8 @@ const passwordInputEl = validateWithIndicator(
   }
 );
 
-const passwordVerifyInputEl = qs<HTMLInputElement>(
-  ".page.pageLogin .register.side .verifyPasswordInput",
-  { guaranteed: true }
+const passwordVerifyInputEl = qsr<HTMLInputElement>(
+  ".page.pageLogin .register.side .verifyPasswordInput"
 );
 validateWithIndicator(passwordVerifyInputEl, {
   isValid: async (passwordVerify: string) => {
