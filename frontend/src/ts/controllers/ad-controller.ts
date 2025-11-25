@@ -7,7 +7,7 @@ import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
-import { qs } from "../utils/dom";
+import { onDocumentReady, qs } from "../utils/dom";
 
 const breakpoint = 900;
 let widerThanBreakpoint = true;
@@ -294,7 +294,7 @@ const debouncedMarginUpdate = debounce(500, updateVerticalMargin);
 const debouncedBreakpointUpdate = debounce(500, updateBreakpoint);
 const debouncedBreakpoint2Update = debounce(500, updateBreakpoint2);
 
-$(window).on("resize", () => {
+window.addEventListener("resize", () => {
   debouncedMarginUpdate();
   debouncedBreakpointUpdate();
   debouncedBreakpoint2Update();
@@ -317,7 +317,7 @@ BannerEvent.subscribe(() => {
   updateVerticalMargin();
 });
 
-$(() => {
+onDocumentReady(() => {
   updateBreakpoint(true);
   updateBreakpoint2();
 });

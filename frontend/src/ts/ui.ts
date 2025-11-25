@@ -110,7 +110,7 @@ const throttledEvent = throttle(250, () => {
   Caret.hide();
 });
 
-$(window).on("resize", () => {
+window.addEventListener("resize", () => {
   throttledEvent();
   debouncedEvent();
 });
