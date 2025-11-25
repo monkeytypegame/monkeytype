@@ -24,7 +24,24 @@ export function qsa<T extends HTMLElement = HTMLElement>(
   return new ArrayWithUtils<ElementWithUtils<T>>(...elements);
 }
 
-export function addUtilsToElement<T extends HTMLElement>(
+export function createElementWithUtils<T extends HTMLElement>(
+  tagName: string,
+  options?: {
+    className?: string;
+    classList?: string[];
+  }
+): ElementWithUtils<T> {
+  const element = document.createElement(tagName) as T;
+  if (options?.className !== undefined) {
+    element.className = options.className;
+  }
+  if (options?.classList !== undefined) {
+    element.classList.add(...options.classList);
+  }
+  return addUtilsToElement(element);
+}
+
+function addUtilsToElement<T extends HTMLElement>(
   element: T
 ): T & ElementUtils<T> {
   type SafeProps = "innerHTML";
