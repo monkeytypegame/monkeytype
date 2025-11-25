@@ -215,8 +215,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
-  //TODO setHtml?
-  html(content: string): this {
+  setHtml(content: string): this {
     this.native.innerHTML = content;
     return this;
   }
@@ -375,7 +374,7 @@ class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
 
   html(htmlString: string): this {
     for (const item of this) {
-      item.html(htmlString);
+      item.setHtml(htmlString);
     }
     return this;
   }

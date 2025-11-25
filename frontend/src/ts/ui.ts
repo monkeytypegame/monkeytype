@@ -49,7 +49,7 @@ function updateKeytips(): void {
       : "ctrl";
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  qs("footer .keyTips")?.html(`
+  qs("footer .keyTips")?.setHtml(`
     ${
       Config.quickRestart === "off"
         ? "<key>tab</key> + <key>enter</key>"

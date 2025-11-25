@@ -84,7 +84,7 @@ function hydrateInputs(): void {
   twitterInput.setValue(socialProfiles?.twitter ?? "");
   githubInput.setValue(socialProfiles?.github ?? "");
   websiteInput.setValue(socialProfiles?.website ?? "");
-  badgeIdsSelect?.html("");
+  badgeIdsSelect?.setHtml("");
   showActivityOnPublicProfileInput.checked =
     showActivityOnPublicProfile || false;
 
