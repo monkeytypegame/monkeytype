@@ -291,10 +291,16 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Set multiple style properties on the element
+   * Set multiple style properties on the element.
+   * Empty object clears all styles.
    */
   setStyle(object: Partial<CSSStyleDeclaration>): this {
-    for (const [key, value] of Object.entries(object)) {
+    const entries = Object.entries(object);
+    if (entries.length === 0) {
+      this.native.style.cssText = "";
+      return this;
+    }
+    for (const [key, value] of entries) {
       if (value !== undefined) {
         //@ts-expect-error -- Index signature issue
         this.native.style[key] = value;
@@ -535,6 +541,17 @@ class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
   show(): this {
     for (const item of this) {
       item.show();
+    }
+    return this;
+  }
+
+  /**
+   * Set multiple style properties on all elements in the array.
+   * An empty object clears all styles.
+   */
+  setStyle(object: Partial<CSSStyleDeclaration>): this {
+    for (const item of this) {
+      item.setStyle(object);
     }
     return this;
   }
