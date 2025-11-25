@@ -135,7 +135,10 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // is char correct
   const funboxCorrect = findSingleActiveFunboxWithFunction(
     "isCharCorrect"
-  )?.functions.isCharCorrect(data, currentWord[inputValue.length] ?? "");
+  )?.functions.isCharCorrect(
+    data,
+    currentWord[(testInput + data).length - 1] ?? ""
+  );
   const correct =
     funboxCorrect ??
     isCharCorrect({
