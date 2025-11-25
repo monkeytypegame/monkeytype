@@ -260,25 +260,34 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     isCharCorrect(char: string, originalChar: string): boolean {
       if (
-        (char === "a" || char === "ArrowLeft" || char === "j") &&
+        (char === "a" ||
+          char === "ArrowLeft" ||
+          char === "j" ||
+          char === "←") &&
         originalChar === "←"
       ) {
         return true;
       }
       if (
-        (char === "s" || char === "ArrowDown" || char === "k") &&
+        (char === "s" ||
+          char === "ArrowDown" ||
+          char === "k" ||
+          char === "↓") &&
         originalChar === "↓"
       ) {
         return true;
       }
       if (
-        (char === "w" || char === "ArrowUp" || char === "i") &&
+        (char === "w" || char === "ArrowUp" || char === "i" || char === "↑") &&
         originalChar === "↑"
       ) {
         return true;
       }
       if (
-        (char === "d" || char === "ArrowRight" || char === "l") &&
+        (char === "d" ||
+          char === "ArrowRight" ||
+          char === "l" ||
+          char === "→") &&
         originalChar === "→"
       ) {
         return true;
