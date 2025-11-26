@@ -5,15 +5,15 @@ const timings = new Map<string, number[]>();
 // Overloads for sync and async functions
 export function debugFunctionExecutionTime<T>(
   func: (...options: unknown[]) => T,
-  funcName: string
+  funcName: string,
 ): T;
 export function debugFunctionExecutionTime<T>(
   func: (...options: unknown[]) => Promise<T>,
-  funcName: string
+  funcName: string,
 ): Promise<T>;
 export function debugFunctionExecutionTime<T>(
   func: (...options: unknown[]) => T | Promise<T>,
-  funcName: string
+  funcName: string,
 ): T | Promise<T> {
   const start = performance.now();
   const ret = func();
@@ -58,7 +58,7 @@ function logTiming(start: number, funcName: string): void {
     start,
     end,
     funcName,
-    "monkeytype"
+    "monkeytype",
   );
   console.timeStamp(
     `#${arr.length} profiling overhead`,
@@ -66,6 +66,6 @@ function logTiming(start: number, funcName: string): void {
     end,
     endOverhead,
     funcName,
-    "monkeytype"
+    "monkeytype",
   );
 }

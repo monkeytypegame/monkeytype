@@ -89,7 +89,7 @@ function hide(): void {
             duration: 5,
             customTitle: "Reward",
             customIcon: "gift",
-          }
+          },
         );
       }
 
@@ -203,7 +203,7 @@ async function getAccountAlerts(): Promise<void> {
       <div class="item" data-id="${ie.id}">
         <div class="indicator ${ie.read ? "" : "main"}"></div>
         <div class="timestamp">${formatDistanceToNowStrict(
-          new Date(ie.timestamp)
+          new Date(ie.timestamp),
         )} ago</div>
         <div class="title">${ie.subject}</div>
         <div class="body">
@@ -237,7 +237,7 @@ export function addPSA(message: string, level: number): void {
 function fillPSAs(): void {
   if (state.psas.length === 0) {
     $("#alertsPopup .psas .list").html(
-      `<div class="nothing">Nothing to show</div>`
+      `<div class="nothing">Nothing to show</div>`,
     );
   } else {
     $("#alertsPopup .psas .list").empty();
@@ -267,7 +267,7 @@ function fillPSAs(): void {
 function fillNotifications(): void {
   if (state.notifications.length === 0) {
     $("#alertsPopup .notificationHistory .list").html(
-      `<div class="nothing">Nothing to show</div>`
+      `<div class="nothing">Nothing to show</div>`,
     );
   } else {
     $("#alertsPopup .notificationHistory .list").empty();
@@ -312,7 +312,7 @@ export function setNotificationBubbleVisible(tf: boolean): void {
 function updateInboxSize(): void {
   const remainingItems = accountAlerts.length - mailToDelete.length;
   $("#alertsPopup .accountAlerts .title .right").text(
-    `${remainingItems}/${maxMail}`
+    `${remainingItems}/${maxMail}`,
   );
 }
 
@@ -340,7 +340,7 @@ function markReadAlert(id: string): void {
   item
     .find(".buttons")
     .append(
-      `<button class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></button>`
+      `<button class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></button>`,
     );
 
   animate(item.find(".rewards")[0] as HTMLElement, {
@@ -457,7 +457,7 @@ const modal = new AnimatedModal({
           .closest(".item")
           .attr("data-id") as string;
         deleteAlert(id);
-      }
+      },
     );
 
     $("#alertsPopup .accountAlerts .list").on(
@@ -468,7 +468,7 @@ const modal = new AnimatedModal({
           .closest(".item")
           .attr("data-id") as string;
         markReadAlert(id);
-      }
+      },
     );
   },
 });

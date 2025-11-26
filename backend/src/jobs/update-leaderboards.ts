@@ -8,26 +8,26 @@ const RECENT_AGE_MINUTES = 10;
 const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
 async function getTop10(
-  leaderboardTime: string
+  leaderboardTime: string,
 ): Promise<LeaderboardsDAL.DBLeaderboardEntry[]> {
   return (await LeaderboardsDAL.get(
     "time",
     leaderboardTime,
     "english",
     0,
-    10
+    10,
   )) as LeaderboardsDAL.DBLeaderboardEntry[]; //can do that because gettop10 will not be called during an update
 }
 
 async function updateLeaderboardAndNotifyChanges(
-  leaderboardTime: string
+  leaderboardTime: string,
 ): Promise<void> {
   const top10BeforeUpdate = await getTop10(leaderboardTime);
 
   const previousRecordsMap = Object.fromEntries(
     top10BeforeUpdate.map((record) => {
       return [record.uid, record];
-    })
+    }),
   );
 
   await LeaderboardsDAL.update("time", leaderboardTime, "english");

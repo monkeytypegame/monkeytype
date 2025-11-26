@@ -17,7 +17,7 @@ export type TsRestRequestWithContext = {
 export type MonkeyRequest<
   TQuery = undefined,
   TBody = undefined,
-  TParams = undefined
+  TParams = undefined,
 > = {
   query: Readonly<TQuery>;
   body: Readonly<TBody>;

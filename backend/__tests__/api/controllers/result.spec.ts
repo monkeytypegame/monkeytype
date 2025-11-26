@@ -126,7 +126,7 @@ describe("result controller test", () => {
       expect(body.message).toEqual(
         `Max results limit of ${
           (await configuration).results.limits.regularUser
-        } exceeded.`
+        } exceeded.`,
       );
     });
     it("should get with higher max limit for premium user", async () => {
@@ -199,7 +199,7 @@ describe("result controller test", () => {
       expect(body.message).toEqual(
         `Max results limit of ${
           (await configuration).results.limits.premiumUser
-        } exceeded.`
+        } exceeded.`,
       );
     });
     it("should get results within regular limits for premium users even if premium is globally disabled", async () => {
@@ -274,7 +274,7 @@ describe("result controller test", () => {
     });
     it("should be rate limited", async () => {
       await expect(
-        mockApp.get("/results").set("Authorization", `Bearer ${uid}`)
+        mockApp.get("/results").set("Authorization", `Bearer ${uid}`),
       ).toBeRateLimited({ max: 60, windowMs: 60 * 60 * 1000 });
     });
     it("should be rate limited for ape keys", async () => {
@@ -284,7 +284,7 @@ describe("result controller test", () => {
 
       //WHEN
       await expect(
-        mockApp.get("/results").set("Authorization", `ApeKey ${apeKey}`)
+        mockApp.get("/results").set("Authorization", `ApeKey ${apeKey}`),
       ).toBeRateLimited({ max: 30, windowMs: 24 * 60 * 60 * 1000 });
     });
   });
@@ -340,7 +340,7 @@ describe("result controller test", () => {
       await expect(
         mockApp
           .get(`/results/id/${result._id}`)
-          .set("Authorization", `ApeKey ${apeKey}`)
+          .set("Authorization", `ApeKey ${apeKey}`),
       ).toBeRateLimited({ max: 60, windowMs: 60 * 60 * 1000 });
     });
   });
@@ -394,7 +394,7 @@ describe("result controller test", () => {
 
       //WHEN
       await expect(
-        mockApp.get("/results/last").set("Authorization", `ApeKey ${apeKey}`)
+        mockApp.get("/results/last").set("Authorization", `ApeKey ${apeKey}`),
       ).toBeRateLimited({ max: 30, windowMs: 60 * 1000 }); //should use defaultApeRateLimit
     });
   });
@@ -672,18 +672,18 @@ describe("result controller test", () => {
           testDuration: 15.1,
           uid: uid,
           wpm: 80,
-        })
+        }),
       );
 
       expect(publicUpdateStatsMock).toHaveBeenCalledWith(
         4,
-        15.1 + 2 - 5 //duration + incompleteTestSeconds-afk
+        15.1 + 2 - 5, //duration + incompleteTestSeconds-afk
       );
       expect(userIncrementXpMock).toHaveBeenCalledWith(uid, 0);
       expect(userUpdateTypingStatsMock).toHaveBeenCalledWith(
         uid,
         4,
-        15.1 + 2 - 5 //duration + incompleteTestSeconds-afk
+        15.1 + 2 - 5, //duration + incompleteTestSeconds-afk
       );
     });
     it("should fail if result saving is disabled", async () => {
@@ -826,7 +826,7 @@ async function enablePremiumFeatures(enabled: boolean): Promise<void> {
   mockConfig.users.premium = { ...mockConfig.users.premium, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 function givenDbResult(uid: string, customize?: Partial<DBResult>): DBResult {
@@ -869,7 +869,7 @@ async function acceptApeKeys(enabled: boolean): Promise<void> {
   };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
@@ -878,7 +878,7 @@ async function enableResultsSaving(enabled: boolean): Promise<void> {
   mockConfig.results = { ...mockConfig.results, savingEnabled: enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 async function enableUsersXpGain(enabled: boolean): Promise<void> {
@@ -886,6 +886,6 @@ async function enableUsersXpGain(enabled: boolean): Promise<void> {
   mockConfig.users.xp = { ...mockConfig.users.xp, enabled, funboxBonus: 1 };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }

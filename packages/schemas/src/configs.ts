@@ -32,7 +32,7 @@ export const QuoteLengthConfigSchema = z
       "|1|Medium quotes|",
       "|2|Long quotes|",
       "|3|Thicc quotes|",
-    ].join("\n")
+    ].join("\n"),
   );
 export type QuoteLengthConfig = z.infer<typeof QuoteLengthConfigSchema>;
 
@@ -359,7 +359,7 @@ export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 export const PlayTimeWarningSchema = z
   .enum(["off", "1", "3", "5", "10"])
   .describe(
-    "How many seconds before the end of the test to play a warning sound."
+    "How many seconds before the end of the test to play a warning sound.",
   );
 export type PlayTimeWarning = z.infer<typeof PlayTimeWarningSchema>;
 

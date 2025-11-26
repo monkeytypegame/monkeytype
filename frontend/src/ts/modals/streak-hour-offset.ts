@@ -36,7 +36,7 @@ export function show(): void {
 function updatePreview(): void {
   const inputValue = parseInt(
     modal.getModal().querySelector("input")?.value as string,
-    10
+    10,
   );
 
   const preview = modal.getModal().querySelector(".preview") as HTMLElement;
@@ -68,7 +68,7 @@ function hide(): void {
 async function apply(): Promise<void> {
   const value = parseInt(
     modal.getModal().querySelector("input")?.value as string,
-    10
+    10,
   );
 
   if (isNaN(value)) {
@@ -90,7 +90,7 @@ async function apply(): Promise<void> {
   if (response.status !== 200) {
     Notifications.add(
       "Failed to set streak hour offset: " + response.body.message,
-      -1
+      -1,
     );
   } else {
     Notifications.add("Streak hour offset set", 1);

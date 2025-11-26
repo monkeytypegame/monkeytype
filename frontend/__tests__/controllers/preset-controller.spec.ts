@@ -19,11 +19,11 @@ describe("PresetController", () => {
     const configApplyMock = vi.spyOn(UpdateConfig, "apply");
     const configSaveFullConfigMock = vi.spyOn(
       UpdateConfig,
-      "saveFullConfigToLocalStorage"
+      "saveFullConfigToLocalStorage",
     );
     const configGetConfigChangesMock = vi.spyOn(
       UpdateConfig,
-      "getConfigChanges"
+      "getConfigChanges",
     );
     const notificationAddMock = vi.spyOn(Notifications, "add");
     const testRestartMock = vi.spyOn(TestLogic, "restart");
@@ -31,7 +31,7 @@ describe("PresetController", () => {
     const tagControllerSetMock = vi.spyOn(TagController, "set");
     const tagControllerSaveActiveMock = vi.spyOn(
       TagController,
-      "saveActiveToLocalStorage"
+      "saveActiveToLocalStorage",
     );
 
     beforeEach(() => {
@@ -82,13 +82,13 @@ describe("PresetController", () => {
         1,
         "tagOne",
         true,
-        false
+        false,
       );
       expect(tagControllerSetMock).toHaveBeenNthCalledWith(
         2,
         "tagTwo",
         true,
-        false
+        false,
       );
       expect(tagControllerSaveActiveMock).toHaveBeenCalled();
     });
@@ -143,13 +143,13 @@ describe("PresetController", () => {
         1,
         "tagOne",
         true,
-        false
+        false,
       );
       expect(tagControllerSetMock).toHaveBeenNthCalledWith(
         2,
         "tagTwo",
         true,
-        false
+        false,
       );
       expect(tagControllerSaveActiveMock).toHaveBeenCalled();
     });

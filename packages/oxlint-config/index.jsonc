@@ -3,7 +3,7 @@
   "categories": {
     "correctness": "error",
     "suspicious": "error",
-    "perf": "error"
+    "perf": "error",
   },
   "plugins": ["typescript", "unicorn", "oxc", "import", "node", "promise"],
   "rules": {
@@ -25,8 +25,8 @@
       {
         "argsIgnorePattern": "^(_|e|event)",
         "caughtErrorsIgnorePattern": "^(_|e|error)",
-        "varsIgnorePattern": "^_"
-      }
+        "varsIgnorePattern": "^_",
+      },
     ],
     "no-var": "error",
     "no-non-null-assertion": "error",
@@ -36,14 +36,14 @@
     "explicit-function-return-type": [
       "error",
       {
-        "allowExpressions": true
-      }
+        "allowExpressions": true,
+      },
     ],
     "no-unused-expressions": [
       "error",
       {
-        "allowTernary": true
-      }
+        "allowTernary": true,
+      },
     ],
     "no-unsafe-function-type": "error",
     "prefer-for-of": "error",
@@ -60,8 +60,8 @@
     "no-empty": [
       "error",
       {
-        "allowEmptyCatch": true
-      }
+        "allowEmptyCatch": true,
+      },
     ],
     "no-self-compare": "error",
     "no-throw-literal": "error",
@@ -86,14 +86,14 @@
     "max-depth": [
       "error",
       {
-        "max": 5
-      }
+        "max": 5,
+      },
     ],
     "always-return": [
       "error",
       {
-        "ignoreLastCallback": true
-      }
+        "ignoreLastCallback": true,
+      },
     ],
     "unicorn/prefer-includes": "error",
 
@@ -104,6 +104,6 @@
     "no-cycle": "off",
     "no-nested-ternary": "off",
     "no-array-sort": "off",
-    "preserve-caught-error": "off"
-  }
+    "preserve-caught-error": "off",
+  },
 }

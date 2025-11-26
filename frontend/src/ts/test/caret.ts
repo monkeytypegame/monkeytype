@@ -42,7 +42,7 @@ export function updatePosition(noAnim = false): void {
 
 export const caret = new Caret(
   document.getElementById("caret") as HTMLElement,
-  Config.caretStyle
+  Config.caretStyle,
 );
 
 subscribe((eventKey) => {

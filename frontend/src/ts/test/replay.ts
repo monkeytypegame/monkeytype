@@ -82,7 +82,7 @@ export function pauseReplay(): void {
   toggleButton.className = "fas fa-play";
   (toggleButton.parentNode as Element)?.setAttribute(
     "aria-label",
-    "Resume replay"
+    "Resume replay",
   );
 }
 
@@ -192,7 +192,7 @@ function toggleReplayDisplay(): void {
     //show
     if (!$("#watchReplayButton").hasClass("loaded")) {
       $("#words").html(
-        `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
+        `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`,
       );
       $("#resultReplay")
         .removeClass("hidden")
@@ -259,7 +259,7 @@ function playReplay(): void {
   toggleButton.className = "fas fa-pause";
   (toggleButton.parentNode as Element)?.setAttribute(
     "aria-label",
-    "Pause replay"
+    "Pause replay",
   );
   initializeReplayPrompt();
   const startingIndex = loadOldReplay();
@@ -271,14 +271,17 @@ function playReplay(): void {
 
   let swTime = Math.round(lastTime / 1000); //starting time
   const swEndTime = Math.round(
-    (Arrays.lastElementFromArray(replayData) as Replay).time / 1000
+    (Arrays.lastElementFromArray(replayData) as Replay).time / 1000,
   );
   while (swTime <= swEndTime) {
     const time = swTime;
     stopwatchList.push(
-      setTimeout(() => {
-        updateStatsString(time);
-      }, time * 1000 - lastTime)
+      setTimeout(
+        () => {
+          updateStatsString(time);
+        },
+        time * 1000 - lastTime,
+      ),
     );
     swTime++;
   }
@@ -287,20 +290,23 @@ function playReplay(): void {
     timeoutList.push(
       setTimeout(() => {
         handleDisplayLogic(item);
-      }, item.time - lastTime)
+      }, item.time - lastTime),
     );
   });
   timeoutList.push(
-    setTimeout(() => {
-      //after the replay has finished, this will run
-      targetCurPos = 0;
-      targetWordPos = 0;
-      toggleButton.className = "fas fa-play";
-      (toggleButton.parentNode as Element).setAttribute(
-        "aria-label",
-        "Start replay"
-      );
-    }, (Arrays.lastElementFromArray(replayData) as Replay).time - lastTime)
+    setTimeout(
+      () => {
+        //after the replay has finished, this will run
+        targetCurPos = 0;
+        targetWordPos = 0;
+        toggleButton.className = "fas fa-play";
+        (toggleButton.parentNode as Element).setAttribute(
+          "aria-label",
+          "Start replay",
+        );
+      },
+      (Arrays.lastElementFromArray(replayData) as Replay).time - lastTime,
+    ),
   );
 }
 
@@ -326,7 +332,7 @@ $("#replayWords").on("click", "letter", (event) => {
 
   const words = [...(replayWords?.children ?? [])];
   targetWordPos = words.indexOf(
-    (event.target as HTMLElement).parentNode as HTMLElement
+    (event.target as HTMLElement).parentNode as HTMLElement,
   );
   const letters = [...(words[targetWordPos] as HTMLElement).children];
   targetCurPos = letters.indexOf(event.target as HTMLElement);

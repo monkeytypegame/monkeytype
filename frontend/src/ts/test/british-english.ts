@@ -656,7 +656,7 @@ const replacementRules: BritishEnglishReplacements = {
 
 export async function replace(
   word: string,
-  previousWord: string
+  previousWord: string,
 ): Promise<string> {
   // Convert American-style double quotes to British-style single quotes
   if (word.includes('"')) {
@@ -668,7 +668,7 @@ export async function replace(
     //we don't have to add every possible combination to the list
     return (
       await Promise.all(
-        word.split("-").map(async (w) => replace(w, previousWord))
+        word.split("-").map(async (w) => replace(w, previousWord)),
       )
     ).join("-");
   } else {
@@ -695,7 +695,7 @@ export async function replace(
             ? britishWord.toUpperCase()
             : capitalizeFirstLetterOfEachWord(britishWord)
           : britishWord) +
-        $3
+        $3,
     );
   }
 }

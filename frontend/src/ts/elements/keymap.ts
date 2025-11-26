@@ -313,7 +313,7 @@ function buildRow(options: {
       const keyElement = `<div class="keymapKey${hide}" data-key="${key
         .map((it) => it.replace('"', "&quot;"))
         .join(
-          keyDataDelimiter
+          keyDataDelimiter,
         )}"><span class="letter" ${letterStyle}>${keyDisplay}</span>${
         bump ? "<div class='bump'></div>" : ""
       }</div>`;
@@ -409,7 +409,7 @@ export async function refresh(): Promise<void> {
     } catch (e) {
       Notifications.add(
         Misc.createErrorMessage(e, `Failed to load keymap ${layoutName}`),
-        -1
+        -1,
       );
       return;
     }
@@ -466,7 +466,7 @@ export async function refresh(): Promise<void> {
   } catch (e) {
     if (e instanceof Error) {
       console.log(
-        "something went wrong when changing layout, resettings: " + e.message
+        "something went wrong when changing layout, resettings: " + e.message,
       );
       // UpdateConfig.setKeymapLayout("qwerty", true);
     }
@@ -520,11 +520,11 @@ async function updateLegends(): Promise<void> {
       const isNotSpace = !el.classList.contains("keySpace");
 
       return isKeymapKey && isNotSpace;
-    }
+    },
   ) as HTMLElement[];
 
   const layoutKeys = keymapKeys.map((el) =>
-    el.dataset["key"]?.split(keyDataDelimiter)
+    el.dataset["key"]?.split(keyDataDelimiter),
   );
   if (layoutKeys.includes(undefined)) return;
 
@@ -561,7 +561,7 @@ async function updateLegends(): Promise<void> {
       continue;
 
     const keyIsSymbol = [lowerCaseCharacter, upperCaseCharacter].some(
-      (character) => symbolsPattern.test(character ?? "")
+      (character) => symbolsPattern.test(character ?? ""),
     );
 
     const keycode = KeyConverter.layoutKeyToKeycode(lowerCaseCharacter, layout);

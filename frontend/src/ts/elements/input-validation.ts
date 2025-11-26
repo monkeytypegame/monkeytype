@@ -39,7 +39,7 @@ export type Validation<T> = {
 // oxlint-disable-next-line no-explicit-any
 export function debounceIfNeeded<T extends (...args: any[]) => any>(
   delay: number,
-  callback: T
+  callback: T,
 ): T | debounce<T> {
   if (delay <= 0) {
     return callback;
@@ -58,7 +58,7 @@ export function debounceIfNeeded<T extends (...args: any[]) => any>(
 export function createInputEventHandler<T>(
   callback: (result: ValidationResult) => void,
   validation: Validation<T>,
-  inputValueConvert?: (val: string) => T
+  inputValueConvert?: (val: string) => T,
 ): (e: Event) => Promise<void> {
   let callIsValid =
     validation.isValid !== undefined
@@ -67,7 +67,7 @@ export function createInputEventHandler<T>(
           async (
             originalInput: HTMLInputElement,
             currentValue: string,
-            checkValue: T
+            checkValue: T,
           ) => {
             const result = await validation.isValid?.(checkValue);
             if (originalInput.value !== currentValue) {
@@ -90,7 +90,7 @@ export function createInputEventHandler<T>(
                 });
               }
             }
-          }
+          },
         )
       : undefined;
 
@@ -185,7 +185,7 @@ export class ValidatedHtmlInputElement<T = string> {
     const handler = createInputEventHandler(
       callback,
       options,
-      "inputValueConvert" in options ? options.inputValueConvert : undefined
+      "inputValueConvert" in options ? options.inputValueConvert : undefined,
     );
 
     inputElement.addEventListener("input", handler);

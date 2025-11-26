@@ -25,14 +25,14 @@ export function onlyAvailableOnDev(): RequestHandler {
   return (
     _req: TsRestRequestWithContext,
     _res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     if (!isDevEnvironment()) {
       next(
         new MonkeyError(
           503,
-          "Development endpoints are only available in DEV mode."
-        )
+          "Development endpoints are only available in DEV mode.",
+        ),
       );
     } else {
       next();
@@ -55,7 +55,7 @@ export function getMetadata(req: TsRestRequestWithContext): EndpointMetadata {
 export async function v4RequestBody(
   req: Request,
   _res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   if (req.body === undefined) {
     req.body = {};

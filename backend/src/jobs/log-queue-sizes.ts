@@ -24,7 +24,7 @@ async function main(): Promise<void> {
       setQueueLength(queue.queueName, "active", active);
       setQueueLength(queue.queueName, "failed", failed);
       setQueueLength(queue.queueName, "waiting", waitingTotal);
-    })
+    }),
   );
 }
 

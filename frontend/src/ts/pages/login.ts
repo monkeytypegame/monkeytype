@@ -70,13 +70,13 @@ export function getSignupData(): SignupData | false {
 }
 
 const nameInputEl = document.querySelector(
-  ".page.pageLogin .register.side input.usernameInput"
+  ".page.pageLogin .register.side input.usernameInput",
 ) as HTMLInputElement;
 new ValidatedHtmlInputElement(nameInputEl, {
   schema: UserNameSchema,
   isValid: remoteValidation(
     async (name) => Ape.users.getNameAvailability({ params: { name } }),
-    { check: (data) => data.available || "Name not available" }
+    { check: (data) => data.available || "Name not available" },
   ),
   debounceDelay: 1000,
   callback: (result) => {
@@ -92,7 +92,7 @@ let moduleLoadAttempted = false;
 
 const emailInputEl = new ValidatedHtmlInputElement(
   document.querySelector(
-    ".page.pageLogin .register.side input.emailInput"
+    ".page.pageLogin .register.side input.emailInput",
   ) as HTMLInputElement,
   {
     schema: UserEmailSchema,
@@ -140,7 +140,7 @@ const emailInputEl = new ValidatedHtmlInputElement(
         emailVerifyInputEl.dispatchEvent(new Event("input"));
       }
     },
-  }
+  },
 );
 
 emailInputEl.native.addEventListener("focus", async () => {
@@ -155,7 +155,7 @@ emailInputEl.native.addEventListener("focus", async () => {
 });
 
 const emailVerifyInputEl = document.querySelector(
-  ".page.pageLogin .register.side input.verifyEmailInput"
+  ".page.pageLogin .register.side input.verifyEmailInput",
 ) as HTMLInputElement;
 new ValidatedHtmlInputElement(emailVerifyInputEl, {
   isValid: async (emailVerify: string) => {
@@ -176,7 +176,7 @@ new ValidatedHtmlInputElement(emailVerifyInputEl, {
 
 const passwordInputEl = new ValidatedHtmlInputElement(
   document.querySelector(
-    ".page.pageLogin .register.side .passwordInput"
+    ".page.pageLogin .register.side .passwordInput",
   ) as HTMLInputElement,
   {
     schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
@@ -186,11 +186,11 @@ const passwordInputEl = new ValidatedHtmlInputElement(
         passwordVerifyInputEl.dispatchEvent(new Event("input"));
       }
     },
-  }
+  },
 );
 
 const passwordVerifyInputEl = document.querySelector(
-  ".page.pageLogin .register.side .verifyPasswordInput"
+  ".page.pageLogin .register.side .verifyPasswordInput",
 ) as HTMLInputElement;
 new ValidatedHtmlInputElement(passwordVerifyInputEl, {
   isValid: async (passwordVerify: string) => {

@@ -36,7 +36,7 @@ const DEFAULT_OPTIONS: SearchServiceOptions = {
 
 function inverseDocumentFrequency(
   numberOfDocuments: number,
-  numberOfDocumentsWithTerm: number
+  numberOfDocumentsWithTerm: number,
 ): number {
   if (numberOfDocumentsWithTerm === 0) {
     return 0;
@@ -49,7 +49,7 @@ const ALPHA = 0.4; // Smoothing term that dampens the contribution of tf/max tf
 
 function normalizedTermFrequency(
   term: string,
-  document: InternalDocument
+  document: InternalDocument,
 ): number {
   return (
     ALPHA +
@@ -65,7 +65,7 @@ function tokenize(text: string): string[] {
 export const buildSearchService = <T>(
   documents: T[],
   getSearchableText: TextExtractor<T>,
-  options: SearchServiceOptions = DEFAULT_OPTIONS
+  options: SearchServiceOptions = DEFAULT_OPTIONS,
 ): SearchService<T> => {
   const reverseIndex: ReverseIndex = {};
   const normalizedTokenToOriginal: TokenMap = {};
@@ -101,7 +101,7 @@ export const buildSearchService = <T>(
       (internalDocument.termFrequencies[stemmedToken] as number)++;
       maxTermFrequency = Math.max(
         maxTermFrequency,
-        internalDocument.termFrequencies[stemmedToken] as number
+        internalDocument.termFrequencies[stemmedToken] as number,
       );
     });
 
@@ -117,7 +117,7 @@ export const buildSearchService = <T>(
     };
 
     const normalizedSearchQuery = new Set<string>(
-      tokenize(searchQuery).map((token) => stemmer(token))
+      tokenize(searchQuery).map((token) => stemmer(token)),
     );
     if (normalizedSearchQuery.size === 0) {
       return searchResult;
@@ -138,7 +138,7 @@ export const buildSearchService = <T>(
 
           const idf = inverseDocumentFrequency(
             documents.length,
-            documentMatches.size
+            documentMatches.size,
           );
           documentMatches.forEach((document) => {
             const currentScore = results.get(document.id) ?? 0;

@@ -4,7 +4,7 @@ export const StringNumberSchema = z
   .string()
   .regex(
     /^\d+$/,
-    'Needs to be a number or a number represented as a string e.g. "10".'
+    'Needs to be a number or a number represented as a string e.g. "10".',
   )
   .or(z.number().transform(String));
 export type StringNumber = z.infer<typeof StringNumberSchema>;
@@ -41,6 +41,6 @@ export function customEnumErrorHandler(message: string): ZodErrorMap {
     message:
       issue.code === "invalid_enum_value"
         ? `Invalid enum value. ${message}`
-        : issue.message ?? "Required",
+        : (issue.message ?? "Required"),
   });
 }

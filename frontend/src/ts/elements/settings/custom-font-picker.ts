@@ -3,7 +3,7 @@ import * as Notifications from "../notifications";
 import { applyFontFamily } from "../../controllers/theme-controller";
 
 const parentEl = document.querySelector(
-  ".pageSettings .section[data-config-name='fontFamily']"
+  ".pageSettings .section[data-config-name='fontFamily']",
 );
 const usingLocalFontEl = parentEl?.querySelector(".usingLocalFont");
 const separatorEl = parentEl?.querySelector(".separator");
@@ -58,7 +58,7 @@ uploadContainerEl
     ) {
       Notifications.add(
         "Unsupported font format, must be woff, woff2, ttf or otf.",
-        0
+        0,
       );
       fileInput.value = "";
       return;

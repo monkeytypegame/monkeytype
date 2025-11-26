@@ -30,5 +30,5 @@ export const psasContract = c.router(
       rateLimit: "psaGet",
     }),
     commonResponses: CommonResponses,
-  }
+  },
 );

@@ -12,9 +12,8 @@ import * as Strings from "../../../src/ts/utils/strings";
 const { replaceConfig } = __testing;
 
 vi.mock("../../../src/ts/utils/misc", async (importOriginal) => {
-  const actual = await importOriginal<
-    typeof import("../../../src/ts/utils/misc")
-  >();
+  const actual =
+    await importOriginal<typeof import("../../../src/ts/utils/misc")>();
   return {
     ...actual,
     whorf: vi.fn(),
@@ -360,6 +359,6 @@ describe("checkIfFinished", () => {
       });
 
       expect(result).toBe(expected);
-    }
+    },
   );
 });

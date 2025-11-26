@@ -11,7 +11,7 @@ import { EditPresetRequest } from "@monkeytype/schemas/presets";
 import { MonkeyRequest } from "../types";
 
 export async function getPresets(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetPresetResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -26,7 +26,7 @@ export async function getPresets(
 }
 
 export async function addPreset(
-  req: MonkeyRequest<undefined, AddPresetRequest>
+  req: MonkeyRequest<undefined, AddPresetRequest>,
 ): Promise<AddPresetResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -36,7 +36,7 @@ export async function addPreset(
 }
 
 export async function editPreset(
-  req: MonkeyRequest<undefined, EditPresetRequest>
+  req: MonkeyRequest<undefined, EditPresetRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -46,7 +46,7 @@ export async function editPreset(
 }
 
 export async function removePreset(
-  req: MonkeyRequest<undefined, undefined, DeletePresetsParams>
+  req: MonkeyRequest<undefined, undefined, DeletePresetsParams>,
 ): Promise<MonkeyResponse> {
   const { presetId } = req.params;
   const { uid } = req.ctx.decodedToken;

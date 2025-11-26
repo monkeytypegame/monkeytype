@@ -22,7 +22,7 @@ import * as AuthEvent from "../../observables/auth-event";
 import { sanitize } from "../../utils/sanitize";
 
 export function mergeWithDefaultFilters(
-  filters: Partial<ResultFilters>
+  filters: Partial<ResultFilters>,
 ): ResultFilters {
   try {
     const merged = {} as ResultFilters;
@@ -58,7 +58,7 @@ const resultFiltersLS = new LocalStorageWithSchema({
       return defaultResultFilters;
     }
     return mergeWithDefaultFilters(
-      sanitize(ResultFiltersSchema.partial().strip(), unknown as ResultFilters)
+      sanitize(ResultFiltersSchema.partial().strip(), unknown as ResultFilters),
     );
   },
 });
@@ -115,7 +115,7 @@ export async function load(): Promise<void> {
 async function updateFilterPresets(): Promise<void> {
   const parent = document.querySelector(".pageAccount .presetFilterButtons");
   const buttons = document.querySelector(
-    ".pageAccount .presetFilterButtons .filterBtns"
+    ".pageAccount .presetFilterButtons .filterBtns",
   );
 
   if (!parent || !buttons) return;
@@ -148,7 +148,7 @@ async function updateFilterPresets(): Promise<void> {
 // sets the current filter to be a user custom filter
 export async function setFilterPreset(id: string): Promise<void> {
   const filter = DB.getSnapshot()?.filterPresets.find(
-    (filter) => filter._id === id
+    (filter) => filter._id === id,
   );
   if (filter) {
     // deep copy filter
@@ -160,12 +160,12 @@ export async function setFilterPreset(id: string): Promise<void> {
 
   // make all filter preset butons inactive
   $(
-    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset`
+    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset`,
   ).removeClass("active");
 
   // make current filter presest button active
   $(
-    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset[data-id=${id}]`
+    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset[data-id=${id}]`,
   ).addClass("active");
 }
 
@@ -180,7 +180,7 @@ function addFilterPresetToSnapshot(filter: ResultFilters): void {
 
 // callback function called by popup once user inputs name
 export async function createFilterPreset(
-  name: string
+  name: string,
 ): Promise<number | undefined> {
   name = name.replace(/ /g, "_");
   Loader.show();
@@ -225,7 +225,7 @@ async function deleteFilterPreset(id: string): Promise<void> {
   } else {
     Notifications.add(
       "Error deleting filter preset: " + result.body.message,
-      -1
+      -1,
     );
     console.log("error deleting filter preset", result.body.message);
   }
@@ -234,7 +234,7 @@ async function deleteFilterPreset(id: string): Promise<void> {
 function deSelectFilterPreset(): void {
   // make all filter preset buttons inactive
   $(
-    ".pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset"
+    ".pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset",
   ).removeClass("active");
 }
 
@@ -252,7 +252,7 @@ function getGroup<G extends ResultFiltersGroup>(group: G): ResultFilters[G] {
 
 export function getFilter<G extends ResultFiltersGroup>(
   group: G,
-  filter: ResultFiltersGroupItem<G>
+  filter: ResultFiltersGroupItem<G>,
 ): ResultFilters[G][ResultFiltersGroupItem<G>] {
   return filters[group][filter];
 }
@@ -260,7 +260,7 @@ export function getFilter<G extends ResultFiltersGroup>(
 function setFilter<G extends ResultFiltersGroup>(
   group: G,
   filter: ResultFiltersGroupItem<G>,
-  value: boolean
+  value: boolean,
 ): void {
   filters[group][filter] = value as (typeof filters)[G][typeof filter];
 }
@@ -312,7 +312,7 @@ export function updateActive(): void {
 
       const filterValue = getFilter(
         group,
-        filter as ResultFiltersGroupItem<typeof group>
+        filter as ResultFiltersGroupItem<typeof group>,
       );
       if (filterValue === true) {
         groupAboveChartDisplay.array?.push(filter);
@@ -324,7 +324,7 @@ export function updateActive(): void {
 
       if (groupsUsingSelect.has(group)) {
         const option = $(
-          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[value="${filter}"]`
+          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[value="${filter}"]`,
         );
         if (filterValue === true) {
           option.prop("selected", true);
@@ -335,11 +335,11 @@ export function updateActive(): void {
         let buttonEl;
         if (group === "date") {
           buttonEl = $(
-            `.pageAccount .group.topFilters .filterGroup[group="${group}"] button[filter="${filter}"]`
+            `.pageAccount .group.topFilters .filterGroup[group="${group}"] button[filter="${filter}"]`,
           );
         } else {
           buttonEl = $(
-            `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`
+            `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`,
           );
         }
         if (filterValue === true) {
@@ -359,7 +359,7 @@ export function updateActive(): void {
     const newData = ss.store.getData();
 
     const allOption = $(
-      `.pageAccount .group.filterButtons .filterGroup[group="${id}"] option[value="all"]`
+      `.pageAccount .group.filterButtons .filterGroup[group="${id}"] option[value="all"]`,
     );
 
     if (everythingSelected) {
@@ -497,7 +497,7 @@ export function updateActive(): void {
 
 function toggle<G extends ResultFiltersGroup>(
   group: G,
-  filter: ResultFiltersGroupItem<G>
+  filter: ResultFiltersGroupItem<G>,
 ): void {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
@@ -514,7 +514,7 @@ function toggle<G extends ResultFiltersGroup>(
   } catch (e) {
     Notifications.add(
       "Something went wrong toggling filter. Reverting to defaults.",
-      0
+      0,
     );
     console.log("toggling filter error");
     console.error(e);
@@ -524,7 +524,7 @@ function toggle<G extends ResultFiltersGroup>(
 }
 
 $(
-  ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons"
+  ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons",
 ).on("click", "button", (e) => {
   const group = $(e.target)
     .parents(".buttons")
@@ -676,13 +676,13 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
 $(".pageAccount .topFilters button.toggleAdvancedFilters").on("click", () => {
   $(".pageAccount .filterButtons").slideToggle(250);
   $(".pageAccount .topFilters button.toggleAdvancedFilters").toggleClass(
-    "active"
+    "active",
   );
 });
 
 function adjustScrollposition(
   group: ResultFiltersGroup,
-  topItem: number = 0
+  topItem: number = 0,
 ): void {
   const slimSelect = groupSelects[group];
   if (slimSelect === undefined) return;
@@ -695,25 +695,25 @@ function adjustScrollposition(
 function selectBeforeChangeFn(
   group: ResultFiltersGroup,
   selectedOptions: Option[],
-  oldSelectedOptions: Option[]
+  oldSelectedOptions: Option[],
 ): boolean {
   const includesAllNow = selectedOptions.some(
-    (option) => option.value === "all"
+    (option) => option.value === "all",
   );
   const includedAllBefore = oldSelectedOptions.some(
-    (option) => option.value === "all"
+    (option) => option.value === "all",
   );
 
   if (includesAllNow) {
     if (!includedAllBefore) {
       // all option was selected
       selectedOptions = selectedOptions.filter(
-        (option) => option.value === "all"
+        (option) => option.value === "all",
       );
     } else if (selectedOptions.length < oldSelectedOptions.length) {
       // options other than all were deselcted
       selectedOptions = selectedOptions.filter(
-        (option) => option.value !== "all"
+        (option) => option.value !== "all",
       );
     }
   } else {
@@ -733,7 +733,7 @@ function selectBeforeChangeFn(
     setFilter(
       group,
       selectedOption.value as ResultFiltersGroupItem<typeof group>,
-      true
+      true,
     );
   }
 
@@ -755,7 +755,7 @@ export function updateTagsDropdownOptions(): void {
   }
 
   const newTags = snapshot.tags.filter(
-    (it) => defaultResultFilters.tags[it._id] === undefined
+    (it) => defaultResultFilters.tags[it._id] === undefined,
   );
   if (newTags.length > 0) {
     const everythingSelected = Object.values(filters.tags).every((v) => v);
@@ -768,13 +768,13 @@ export function updateTagsDropdownOptions(): void {
     filters.tags = {
       ...filters.tags,
       ...Object.fromEntries(
-        newTags.map((tag) => [tag._id, everythingSelected])
+        newTags.map((tag) => [tag._id, everythingSelected]),
       ),
     };
   }
 
   const el = document.querySelector<HTMLElement>(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select select"
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select select",
   );
 
   if (!(el instanceof HTMLElement)) return;
@@ -794,7 +794,7 @@ export function updateTagsDropdownOptions(): void {
 let buttonsAppended = false;
 
 export async function appendDropdowns(
-  selectChangeCallback: () => void
+  selectChangeCallback: () => void,
 ): Promise<void> {
   //snapshot at this point is guaranteed to exist
   const snapshot = DB.getSnapshot() as Snapshot;
@@ -827,7 +827,7 @@ export async function appendDropdowns(
         return selectBeforeChangeFn(
           "language",
           selectedOptions,
-          oldSelectedOptions
+          oldSelectedOptions,
         );
       },
       beforeOpen: (): void => {
@@ -859,7 +859,7 @@ export async function appendDropdowns(
         return selectBeforeChangeFn(
           "funbox",
           selectedOptions,
-          oldSelectedOptions
+          oldSelectedOptions,
         );
       },
       beforeOpen: (): void => {
@@ -874,7 +874,7 @@ export async function appendDropdowns(
 
 function tagDropdownUpdate(snapshot: Snapshot): void {
   const tagsSection = $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.tags"
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags",
   );
 
   if (snapshot.tags.length === 0) {
@@ -892,7 +892,7 @@ function tagDropdownUpdate(snapshot: Snapshot): void {
     // Only create SlimSelect if it doesn't exist yet
     if (!groupSelects["tags"]) {
       const selectEl = document.querySelector(
-        ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select .tagsSelect"
+        ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select .tagsSelect",
       );
 
       if (selectEl) {
@@ -909,7 +909,7 @@ function tagDropdownUpdate(snapshot: Snapshot): void {
               return selectBeforeChangeFn(
                 "tags",
                 selectedOptions,
-                oldSelectedOptions
+                oldSelectedOptions,
               );
             },
             beforeOpen: (): void => {
@@ -927,12 +927,12 @@ $(".group.presetFilterButtons .filterBtns").on(
   ".filterPresets .delete-filter-preset",
   (e) => {
     void deleteFilterPreset($(e.currentTarget).data("id") as string);
-  }
+  },
 );
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   const filter = mergeWithDefaultFilters(
-    sanitize(ResultFiltersSchema.partial().strip(), structuredClone(filterIn))
+    sanitize(ResultFiltersSchema.partial().strip(), structuredClone(filterIn)),
   );
 
   return filter;

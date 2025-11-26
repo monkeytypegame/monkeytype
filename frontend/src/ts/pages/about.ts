@@ -26,7 +26,7 @@ function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {
     void ChartController.globalSpeedHistogram.updateColors();
     const bucketedSpeedStats = getHistogramDataBucketed(
-      speedHistogramResponseData
+      speedHistogramResponseData,
     );
     ChartController.globalSpeedHistogram.data.labels =
       bucketedSpeedStats.labels;
@@ -43,46 +43,46 @@ function updateStatsAndHistogram(): void {
     });
 
     $(".pageAbout #totalTimeTypingStat .val").text(
-      timeTypingDuration.years?.toString() ?? ""
+      timeTypingDuration.years?.toString() ?? "",
     );
     $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
     $(".pageAbout #totalTimeTypingStat").attr(
       "aria-label",
-      numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
+      numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours",
     );
 
     const startedWithMagnitude = getNumberWithMagnitude(
-      typingStatsResponseData.testsStarted
+      typingStatsResponseData.testsStarted,
     );
 
     $(".pageAbout #totalStartedTestsStat .val").text(
       startedWithMagnitude.rounded < 10
         ? startedWithMagnitude.roundedTo2
-        : startedWithMagnitude.rounded
+        : startedWithMagnitude.rounded,
     );
     $(".pageAbout #totalStartedTestsStat .valSmall").text(
-      startedWithMagnitude.orderOfMagnitude
+      startedWithMagnitude.orderOfMagnitude,
     );
     $(".pageAbout #totalStartedTestsStat").attr(
       "aria-label",
-      numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
+      numberWithSpaces(typingStatsResponseData.testsStarted) + " tests",
     );
 
     const completedWIthMagnitude = getNumberWithMagnitude(
-      typingStatsResponseData.testsCompleted
+      typingStatsResponseData.testsCompleted,
     );
 
     $(".pageAbout #totalCompletedTestsStat .val").text(
       completedWIthMagnitude.rounded < 10
         ? completedWIthMagnitude.roundedTo2
-        : completedWIthMagnitude.rounded
+        : completedWIthMagnitude.rounded,
     );
     $(".pageAbout #totalCompletedTestsStat .valSmall").text(
-      completedWIthMagnitude.orderOfMagnitude
+      completedWIthMagnitude.orderOfMagnitude,
     );
     $(".pageAbout #totalCompletedTestsStat").attr(
       "aria-label",
-      numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests"
+      numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests",
     );
   }
 }
@@ -109,7 +109,7 @@ async function getStatsAndHistogramData(): Promise<void> {
   } else {
     Notifications.add(
       `Failed to get global speed stats for histogram: ${speedStats.body.message}`,
-      -1
+      -1,
     );
   }
   const typingStats = await Ape.public.getTypingStats();
@@ -118,29 +118,29 @@ async function getStatsAndHistogramData(): Promise<void> {
   } else {
     Notifications.add(
       `Failed to get global typing stats: ${speedStats.body.message}`,
-      -1
+      -1,
     );
   }
 }
 
 async function fill(): Promise<void> {
   const { data: supporters, error: supportersError } = await tryCatch(
-    JSONData.getSupportersList()
+    JSONData.getSupportersList(),
   );
   if (supportersError) {
     Notifications.add(
       Misc.createErrorMessage(supportersError, "Failed to get supporters"),
-      -1
+      -1,
     );
   }
 
   const { data: contributors, error: contributorsError } = await tryCatch(
-    JSONData.getContributorsList()
+    JSONData.getContributorsList(),
   );
   if (contributorsError) {
     Notifications.add(
       Misc.createErrorMessage(contributorsError, "Failed to get contributors"),
-      -1
+      -1,
     );
   }
 
@@ -176,7 +176,7 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   const labels: string[] = [];
 
   const keys = Object.keys(data).sort(
-    (a, b) => parseInt(a, 10) - parseInt(b, 10)
+    (a, b) => parseInt(a, 10) - parseInt(b, 10),
   );
   // for (let i = 0; i < keys.length; i++) {
   for (const [i, key] of keys.entries()) {
