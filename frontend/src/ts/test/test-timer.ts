@@ -297,36 +297,9 @@ async function _startOld(): Promise<void> {
       expected: expected,
       nextDelay: delay,
     });
-    // if (
-    //   (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
-    //   (Config.mode === "words" && Config.words < 250 && Config.words > 0)
-    // ) {
-    //   if (delay < interval / 2) {
-    //     //slow timer
-    //     SlowTimer.set();
-    //     setLowFpsMode();
-    //   }
-    //   if (delay < interval / 10) {
-    //     slowTimerCount++;
-    //     if (slowTimerCount > 5) {
-    //       //slow timer
-
-    //       Notifications.add(
-    //         'This could be caused by "efficiency mode" on Microsoft Edge.'
-    //       );
-
-    //       Notifications.add(
-    //         "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
-    //         -1
-    //       );
-
-    //       TimerEvent.dispatch("fail", "slow timer");
-    //     }
-    //   }
-    // }
+    const drift = Math.abs(interval - delay);
+    checkIfTimerIsSlow(drift);
     timer = setTimeout(function () {
-      // time++;
-
       if (!TestState.isActive) {
         if (timer !== null) clearTimeout(timer);
         SlowTimer.clear();
