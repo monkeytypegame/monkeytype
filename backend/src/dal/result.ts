@@ -1,7 +1,7 @@
-import _ from "lodash";
 import {
   Collection,
   type DeleteResult,
+  Filter,
   ObjectId,
   type UpdateResult,
 } from "mongodb";
@@ -111,24 +111,25 @@ export async function getResults(
   opts?: GetResultsOpts
 ): Promise<DBResult[]> {
   const { onOrAfterTimestamp, offset, limit } = opts ?? {};
+
+  const condition: Filter<DBResult> = { uid };
+  if (
+    onOrAfterTimestamp !== undefined &&
+    onOrAfterTimestamp !== null &&
+    !isNaN(onOrAfterTimestamp)
+  ) {
+    condition.timestamp = { $gte: onOrAfterTimestamp };
+  }
+
   let query = getResultCollection()
-    .find(
-      {
-        uid,
-        ...(!_.isNil(onOrAfterTimestamp) &&
-          !_.isNaN(onOrAfterTimestamp) && {
-            timestamp: { $gte: onOrAfterTimestamp },
-          }),
+    .find(condition, {
+      projection: {
+        chartData: 0,
+        keySpacingStats: 0,
+        keyDurationStats: 0,
+        name: 0,
       },
-      {
-        projection: {
-          chartData: 0,
-          keySpacingStats: 0,
-          keyDurationStats: 0,
-          name: 0,
-        },
-      }
-    )
+    })
     .sort({ timestamp: -1 });
 
   if (limit !== undefined) {

@@ -45,6 +45,7 @@ import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import * as TestState from "./test-state";
+import { blurInputElement } from "../input/input-element";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -990,7 +991,7 @@ export async function update(
   $(".pageTest #result #rateQuoteButton .rating").text("");
   $(".pageTest #result #rateQuoteButton").addClass("hidden");
   $("#words").removeClass("blurred");
-  $("#wordsInput").trigger("blur");
+  blurInputElement();
   $("#result .stats .time .bottom .afk").text("");
   if (isAuthenticated()) {
     $("#result .loginTip").addClass("hidden");
@@ -1072,8 +1073,8 @@ export async function update(
   TestConfig.hide();
 
   void Misc.swapElements(
-    $("#typingTest"),
-    $("#result"),
+    document.querySelector("#typingTest") as HTMLElement,
+    document.querySelector("#result") as HTMLElement,
     250,
     async () => {
       const result = document.querySelector<HTMLElement>("#result");
@@ -1088,12 +1089,6 @@ export async function update(
     },
     async () => {
       Focus.set(false);
-      $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
-        {
-          opacity: 1,
-        },
-        Misc.applyReducedMotion(125)
-      );
 
       const canQuickRestart = canQuickRestartFn(
         Config.mode,

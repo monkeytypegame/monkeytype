@@ -1070,7 +1070,6 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const index: number = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
   if (window === undefined) return;
-  const windowHeight = $(window).height() ?? 0;
 
   const resultId = filteredResults[index]?._id;
   if (resultId === undefined) {
@@ -1079,20 +1078,11 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const element = $(`.resultRow[data-id="${resultId}"`);
   $(".resultRow").removeClass("active");
 
-  const offset = element.offset()?.top ?? 0;
-  const scrollTo = offset - windowHeight / 2;
-  $([document.documentElement, document.body])
-    .stop(true)
-    .animate(
-      { scrollTop: scrollTo },
-      {
-        duration: Misc.applyReducedMotion(500),
-        done: () => {
-          $(".resultRow").removeClass("active");
-          requestAnimationFrame(() => element.addClass("active"));
-        },
-      }
-    );
+  element[0]?.scrollIntoView({
+    block: "center",
+  });
+
+  element.addClass("active");
 });
 
 $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {

@@ -82,9 +82,15 @@ import * as Sentry from "../sentry";
 import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
+import { animate } from "animejs";
+import * as CompositionDisplay from "../elements/composition-display";
+import {
+  getInputElement,
+  isInputElementFocused,
+  setInputElementValue,
+} from "../input/input-element";
 
 let failReason = "";
-const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
 export let notSignedInLastResult: CompletedEvent | null = null;
 
@@ -115,13 +121,7 @@ export function startTest(now: number): boolean {
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
-  TimerProgress.show();
-  LiveSpeed.show();
-  LiveAcc.show();
-  LiveBurst.show();
-  TimerProgress.update();
   TestTimer.clear();
-  Monkey.show();
 
   for (const fb of getActiveFunboxesWithFunction("start")) {
     fb.functions.start();
@@ -138,6 +138,7 @@ export function startTest(now: number): boolean {
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(now);
   void TestTimer.start();
+  TestUI.afterTestStart();
   return true;
 }
 
@@ -295,6 +296,7 @@ export function restart(options = {} as RestartOptions): void {
   QuoteRateModal.clearQuoteStats();
   TestUI.reset();
   CompositionState.setComposing(false);
+  CompositionState.setData("");
 
   if (TestState.resultVisible) {
     if (Config.randomTheme !== "off") {
@@ -307,33 +309,31 @@ export function restart(options = {} as RestartOptions): void {
     ConnectionState.showOfflineBanner();
   }
 
-  let el = null;
+  let el: HTMLElement;
   if (TestState.resultVisible) {
     //results are being displayed
-    el = $("#result");
+    el = document.querySelector("#result") as HTMLElement;
   } else {
     //words are being displayed
-    el = $("#typingTest");
+    el = document.querySelector("#typingTest") as HTMLElement;
   }
   TestState.setResultVisible(false);
   TestState.setTestRestarting(true);
-  el.stop(true, true).animate(
-    {
-      opacity: 0,
-    },
-    animationTime,
-    async () => {
+
+  animate(el, {
+    opacity: 0,
+    duration: animationTime,
+    onComplete: async () => {
       $("#result").addClass("hidden");
       $("#typingTest").css("opacity", 0).removeClass("hidden");
-      $("#wordsInput").css({ left: 0 }).val(" ");
+      getInputElement().style.left = "0";
+      setInputElementValue("");
 
-      if (Config.language.startsWith("korean")) {
-        koInputVisual.innerText = " ";
-        Config.mode !== "zen"
-          ? $("#koInputVisualContainer").show()
-          : $("#koInputVisualContainer").hide();
+      if (CompositionDisplay.shouldShow()) {
+        CompositionDisplay.update(" ");
+        CompositionDisplay.show();
       } else {
-        $("#koInputVisualContainer").hide();
+        CompositionDisplay.hide();
       }
 
       Focus.set(false);
@@ -378,31 +378,29 @@ export function restart(options = {} as RestartOptions): void {
         void ModesNotice.update();
       }
 
-      const isWordsFocused = $("#wordsInput").is(":focus");
-      if (isWordsFocused) OutOfFocus.hide();
+      if (isInputElementFocused()) OutOfFocus.hide();
       TestUI.focusWords(true);
 
-      $("#typingTest")
-        .css("opacity", 0)
-        .removeClass("hidden")
-        .stop(true, true)
-        .animate(
-          {
-            opacity: 1,
-          },
-          animationTime,
-          () => {
-            TimerProgress.reset();
-            LiveSpeed.reset();
-            LiveAcc.reset();
-            LiveBurst.reset();
-            TestUI.updatePremid();
-            ManualRestart.reset();
-            TestState.setTestRestarting(false);
-          }
-        );
-    }
-  );
+      const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
+
+      animate(typingTestEl, {
+        opacity: [0, 1],
+        onBegin: () => {
+          typingTestEl.classList.remove("hidden");
+        },
+        duration: animationTime,
+        onComplete: () => {
+          TimerProgress.reset();
+          LiveSpeed.reset();
+          LiveAcc.reset();
+          LiveBurst.reset();
+          TestUI.updatePremid();
+          ManualRestart.reset();
+          TestState.setTestRestarting(false);
+        },
+      });
+    },
+  });
 
   ResultWordHighlight.destroy();
 }
@@ -597,6 +595,17 @@ async function init(): Promise<boolean> {
 
   if (beforeHasNumbers !== hasNumbers) {
     void Keymap.refresh();
+  }
+
+  if (
+    generatedWords
+      .join()
+      .normalize()
+      .match(
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+      )
+  ) {
+    TestInput.input.setKoreanStatus(true);
   }
 
   for (let i = 0; i < generatedWords.length; i++) {
@@ -1396,22 +1405,21 @@ async function saveResult(
     Result.showErrorCrownIfNeeded();
   }
 
+  const dailyLeaderboardEl = document.querySelector(
+    "#result .stats .dailyLeaderboard"
+  ) as HTMLElement;
+
   if (data.dailyLeaderboardRank === undefined) {
-    $("#result .stats .dailyLeaderboard").addClass("hidden");
+    dailyLeaderboardEl.classList.add("hidden");
   } else {
-    $("#result .stats .dailyLeaderboard")
-      .css({
-        maxWidth: "13rem",
-        opacity: 0,
-      })
-      .removeClass("hidden")
-      .animate(
-        {
-          // maxWidth: "10rem",
-          opacity: 1,
-        },
-        Misc.applyReducedMotion(500)
-      );
+    dailyLeaderboardEl.classList.remove("hidden");
+    dailyLeaderboardEl.style.maxWidth = "13rem";
+
+    animate(dailyLeaderboardEl, {
+      opacity: [0, 1],
+      duration: Misc.applyReducedMotion(250),
+    });
+
     $("#result .stats .dailyLeaderboard .bottom").html(
       Format.rank(data.dailyLeaderboardRank, { fallback: "" })
     );

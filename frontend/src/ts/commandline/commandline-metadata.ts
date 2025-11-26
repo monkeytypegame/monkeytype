@@ -457,7 +457,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   caretStyle: {
     subgroup: {
       options: "fromSchema",
-      isVisible: (value) => !["banana", "carrot"].includes(value),
+      isVisible: (value) => !["banana", "carrot", "monkey"].includes(value),
     },
   },
   paceCaret: {
@@ -489,7 +489,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   paceCaretStyle: {
     subgroup: {
       options: "fromSchema",
-      isVisible: (value) => !["banana", "carrot"].includes(value),
+      isVisible: (value) => !["banana", "carrot", "monkey"].includes(value),
     },
   },
 
@@ -702,6 +702,12 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
     },
+  },
+  showPb: {
+    subgroup: {
+      options: "fromSchema",
+    },
+    alias: "pb",
   },
   monkeyPowerLevel: {
     alias: "powermode",
