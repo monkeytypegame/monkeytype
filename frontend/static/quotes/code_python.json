@@ -455,13 +455,13 @@
       "text": "def redirect(link:str, text=\"\"):\n\treturn render_template(\"redirect.html\", link=link, text=text)",
       "source": "eChat source code line 35-36",
       "id": 76,
-      "length": 94
+      "length": 95
     },
     {
       "text": "def isEnglish(s):\n\ttry:\n\t\ts.encode(encoding='utf-8').decode('ascii')\n\texcept UnicodeDecodeError:\n\t\treturn False\n\telse:\n\t\treturn True",
       "source": "eChat source code line 96-102",
       "id": 77,
-      "length": 126
+      "length": 132
     }
   ]
 }
