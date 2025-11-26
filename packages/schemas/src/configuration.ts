@@ -115,7 +115,7 @@ export const ConfigurationSchema = z.object({
       .number()
       .min(0)
       .describe(
-        "Minimum typing time (in seconds) the user needs to get on a leaderboard"
+        "Minimum typing time (in seconds) the user needs to get on a leaderboard",
       ),
     weeklyXp: z.object({
       enabled: z.boolean(),

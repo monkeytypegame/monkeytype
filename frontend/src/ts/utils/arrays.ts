@@ -10,7 +10,7 @@ import { randomIntFromRange } from "@monkeytype/util/numbers";
 export function smooth(
   arr: number[],
   windowSize: number,
-  getter = (value: number): number => value
+  getter = (value: number): number => value,
 ): number[] {
   const get = getter;
   const result = [];
@@ -47,7 +47,7 @@ export function smoothWithValueWindow(
   arr: number[],
   windowSize: number,
   valueWindowSize: number,
-  getter = (value: number): number => value
+  getter = (value: number): number => value,
 ): number[] {
   const get = getter;
   const result = [];
@@ -139,7 +139,7 @@ export function randomElementFromArray<T>(array: T[]): T {
  */
 export function nthElementFromArray<T>(
   array: T[],
-  index: number
+  index: number,
 ): T | undefined {
   index = index < 0 ? array.length + index : index;
   return array[index];

@@ -31,7 +31,7 @@ const validatedInput = new ValidatedHtmlInputElement(
       }),
     isValid: async (value) => {
       const checkbox = $("#saveCustomTextModal .isLongText").prop(
-        "checked"
+        "checked",
       ) as boolean;
       const names = CustomText.getCustomTextNames(checkbox);
       return !names.includes(value) ? true : "Duplicate name";
@@ -43,7 +43,7 @@ const validatedInput = new ValidatedHtmlInputElement(
         $("#saveCustomTextModal button.save").prop("disabled", true);
       }
     },
-  }
+  },
 );
 
 export async function show(options: ShowOptions<IncomingData>): Promise<void> {
@@ -62,7 +62,7 @@ export async function show(options: ShowOptions<IncomingData>): Promise<void> {
 function save(): boolean {
   const name = $("#saveCustomTextModal .textName").val() as string;
   const checkbox = $("#saveCustomTextModal .isLongText").prop(
-    "checked"
+    "checked",
   ) as boolean;
 
   if (!name) {

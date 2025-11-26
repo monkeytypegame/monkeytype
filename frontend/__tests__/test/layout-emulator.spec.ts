@@ -15,7 +15,7 @@ describe("LayoutEmulator", () => {
 
     const createEvent = (
       code: string,
-      type: string
+      type: string,
     ): JQuery.KeyboardEventBase =>
       ({
         code,

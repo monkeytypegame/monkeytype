@@ -479,7 +479,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
 export function getFunbox(name: FunboxName): FunboxMetadata;
 export function getFunbox(names: FunboxName[]): FunboxMetadata[];
 export function getFunbox(
-  nameOrNames: FunboxName | FunboxName[]
+  nameOrNames: FunboxName | FunboxName[],
 ): FunboxMetadata | FunboxMetadata[] {
   if (nameOrNames === undefined) return [];
   if (Array.isArray(nameOrNames)) {
@@ -488,7 +488,7 @@ export function getFunbox(
     //@ts-expect-error sanity check
     if (out.includes(undefined)) {
       throw new Error(
-        "One of the funboxes is invalid: " + nameOrNames.toString()
+        "One of the funboxes is invalid: " + nameOrNames.toString(),
       );
     }
 

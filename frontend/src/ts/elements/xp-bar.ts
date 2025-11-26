@@ -20,10 +20,10 @@ let lastUpdate: {
 };
 
 const xpBreakdownTotalEl = document.querySelector(
-  "nav .xpBar .xpBreakdown .total"
+  "nav .xpBar .xpBreakdown .total",
 ) as HTMLElement;
 const xpBreakdownListEl = document.querySelector(
-  "nav .xpBar .xpBreakdown .list"
+  "nav .xpBar .xpBreakdown .list",
 ) as HTMLElement;
 const levelEl = document.querySelector("nav .level") as HTMLElement;
 const barEl = document.querySelector("nav .xpBar .bar") as HTMLElement;
@@ -50,11 +50,11 @@ export async function skipBreakdown(): Promise<void> {
   });
 
   levelEl.textContent = `${Levels.getLevelFromTotalXp(
-    lastUpdate.currentXp + lastUpdate.addedXp
+    lastUpdate.currentXp + lastUpdate.addedXp,
   )}`;
 
   const endingDetails = Levels.getXpDetails(
-    lastUpdate.currentXp + lastUpdate.addedXp
+    lastUpdate.currentXp + lastUpdate.addedXp,
   );
   const endingLevel =
     endingDetails.level +
@@ -80,7 +80,7 @@ export function setXp(xp: number): void {
 export async function update(
   currentXp: number,
   addedXp: number,
-  breakdown?: XpBreakdown
+  breakdown?: XpBreakdown,
 ): Promise<void> {
   skip = false;
   breakdownVisible = true;
@@ -165,14 +165,14 @@ async function flashTotalXp(totalXp: number, force = false): Promise<void> {
 async function addBreakdownListItem(
   string: string,
   amount: number | string | undefined,
-  options?: { extraClass?: string; noAnimation?: boolean }
+  options?: { extraClass?: string; noAnimation?: boolean },
 ): Promise<void> {
   if (skip) return;
 
   if (amount === undefined) {
     xpBreakdownListEl.insertAdjacentHTML(
       "beforeend",
-      `<div class="line" data-string='${string}'><div>${string}</div><div></div></div>`
+      `<div class="line" data-string='${string}'><div>${string}</div><div></div></div>`,
     );
   } else if (typeof amount === "string") {
     xpBreakdownListEl.insertAdjacentHTML(
@@ -181,7 +181,7 @@ async function addBreakdownListItem(
       <div class="line" data-string='${string}'>
       <div class="${options?.extraClass}">${string}</div>
       <div class="${options?.extraClass}">${amount}</div>
-      </div>`
+      </div>`,
     );
   } else {
     const positive = amount === undefined ? undefined : amount >= 0;
@@ -195,14 +195,14 @@ async function addBreakdownListItem(
         <div class="${positive ? "positive" : "negative"} ${
           options?.extraClass
         }">${positive ? "+" : "-"}${Math.abs(amount)}</div>
-      </div>`
+      </div>`,
     );
   }
 
   if (options?.noAnimation) return;
 
   const el = xpBreakdownListEl.querySelector(
-    `.line[data-string='${string}']`
+    `.line[data-string='${string}']`,
   ) as HTMLElement;
 
   await Misc.promiseAnimate(el, {
@@ -213,7 +213,7 @@ async function addBreakdownListItem(
 
 async function animateXpBreakdown(
   addedXp: number,
-  breakdown?: XpBreakdown
+  breakdown?: XpBreakdown,
 ): Promise<void> {
   if (skip) return;
 
@@ -315,7 +315,7 @@ async function animateXpBreakdown(
     void flashTotalXp(total);
     await addBreakdownListItem(
       "global multiplier",
-      `x${breakdown.configMultiplier}`
+      `x${breakdown.configMultiplier}`,
     );
   }
 
@@ -337,7 +337,7 @@ async function animateXpBreakdown(
 
 async function animateXpBar(
   startingLevel: number,
-  endingLevel: number
+  endingLevel: number,
 ): Promise<void> {
   if (skip) return;
 

@@ -6,7 +6,7 @@ export default defineConfig({
     projects: [
       ...backendProjects.map(
         (it) =>
-          ({ test: { ...it.test, root: "backend" } }) as UserWorkspaceConfig
+          ({ test: { ...it.test, root: "backend" } }) as UserWorkspaceConfig,
       ),
       "frontend/vitest.config.ts",
       "packages/**/vitest.config.ts",

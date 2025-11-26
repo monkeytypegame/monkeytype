@@ -36,7 +36,7 @@ type State = {
 
 const state: State = {
   textarea: CustomText.getText().join(
-    CustomText.getPipeDelimiter() ? "|" : " "
+    CustomText.getPipeDelimiter() ? "|" : " ",
   ),
   longCustomTextWarning: false,
   challengeWarning: false,
@@ -56,47 +56,47 @@ const state: State = {
 function updateUI(): void {
   $(`${popup} .inputs .group[data-id="mode"] button`).removeClass("active");
   $(
-    `${popup} .inputs .group[data-id="mode"] button[value="${state.customTextMode}"]`
+    `${popup} .inputs .group[data-id="mode"] button[value="${state.customTextMode}"]`,
   ).addClass("active");
 
   $(`${popup} .inputs .group[data-id="limit"] input.words`).addClass("hidden");
   $(`${popup} .inputs .group[data-id="limit"] input.sections`).addClass(
-    "hidden"
+    "hidden",
   );
 
   $(`${popup} .inputs .group[data-id="limit"] input.words`).val(
-    state.customTextLimits.word
+    state.customTextLimits.word,
   );
   $(`${popup} .inputs .group[data-id="limit"] input.time`).val(
-    state.customTextLimits.time
+    state.customTextLimits.time,
   );
   $(`${popup} .inputs .group[data-id="limit"] input.sections`).val(
-    state.customTextLimits.section
+    state.customTextLimits.section,
   );
   if (state.customTextLimits.word !== "") {
     $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
-      "hidden"
+      "hidden",
     );
   }
   if (state.customTextLimits.section !== "") {
     $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
-      "hidden"
+      "hidden",
     );
   }
 
   if (state.customTextPipeDelimiter) {
     $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
-      "hidden"
+      "hidden",
     );
     $(`${popup} .inputs .group[data-id="limit"] input.words`).addClass(
-      "hidden"
+      "hidden",
     );
   } else {
     $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
-      "hidden"
+      "hidden",
     );
     $(`${popup} .inputs .group[data-id="limit"] input.sections`).addClass(
-      "hidden"
+      "hidden",
     );
   }
 
@@ -111,31 +111,31 @@ function updateUI(): void {
 
   $(`${popup} .inputs .group[data-id="fancy"] button`).removeClass("active");
   $(
-    `${popup} .inputs .group[data-id="fancy"] button[value="${state.removeFancyTypographyEnabled}"]`
+    `${popup} .inputs .group[data-id="fancy"] button[value="${state.removeFancyTypographyEnabled}"]`,
   ).addClass("active");
 
   $(`${popup} .inputs .group[data-id="control"] button`).removeClass("active");
   $(
-    `${popup} .inputs .group[data-id="control"] button[value="${state.replaceControlCharactersEnabled}"]`
+    `${popup} .inputs .group[data-id="control"] button[value="${state.replaceControlCharactersEnabled}"]`,
   ).addClass("active");
 
   $(`${popup} .inputs .group[data-id="zeroWidth"] button`).removeClass(
-    "active"
+    "active",
   );
   $(
-    `${popup} .inputs .group[data-id="zeroWidth"] button[value="${state.removeZeroWidthCharactersEnabled}"]`
+    `${popup} .inputs .group[data-id="zeroWidth"] button[value="${state.removeZeroWidthCharactersEnabled}"]`,
   ).addClass("active");
 
   $(`${popup} .inputs .group[data-id="delimiter"] button`).removeClass(
-    "active"
+    "active",
   );
   $(
-    `${popup} .inputs .group[data-id="delimiter"] button[value="${state.customTextPipeDelimiter}"]`
+    `${popup} .inputs .group[data-id="delimiter"] button[value="${state.customTextPipeDelimiter}"]`,
   ).addClass("active");
 
   $(`${popup} .inputs .group[data-id="newlines"] button`).removeClass("active");
   $(
-    `${popup} .inputs .group[data-id="newlines"] button[value="${state.replaceNewlines}"]`
+    `${popup} .inputs .group[data-id="newlines"] button[value="${state.replaceNewlines}"]`,
   ).addClass("active");
 
   $(`${popup} textarea`).val(state.textarea);
@@ -167,7 +167,7 @@ function updateUI(): void {
 
 async function beforeAnimation(
   modalEl: HTMLElement,
-  modalChainData?: IncomingData
+  modalChainData?: IncomingData,
 ): Promise<void> {
   state.customTextMode = CustomText.getMode();
 
@@ -349,7 +349,7 @@ function apply(): void {
       0,
       {
         duration: 7,
-      }
+      },
     );
   }
 
@@ -425,7 +425,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   }
 
   for (const button of modalEl.querySelectorAll(
-    ".group[data-id='fancy'] button"
+    ".group[data-id='fancy'] button",
   )) {
     button.addEventListener("click", (e) => {
       state.removeFancyTypographyEnabled =
@@ -435,7 +435,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   }
 
   for (const button of modalEl.querySelectorAll(
-    ".group[data-id='control'] button"
+    ".group[data-id='control'] button",
   )) {
     button.addEventListener("click", (e) => {
       state.replaceControlCharactersEnabled =
@@ -445,7 +445,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   }
 
   for (const button of modalEl.querySelectorAll(
-    ".group[data-id='zeroWidth'] button"
+    ".group[data-id='zeroWidth'] button",
   )) {
     button.addEventListener("click", (e) => {
       state.removeZeroWidthCharactersEnabled =
@@ -455,7 +455,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   }
 
   for (const button of modalEl.querySelectorAll(
-    ".group[data-id='delimiter'] button"
+    ".group[data-id='delimiter'] button",
   )) {
     button.addEventListener("click", (e) => {
       state.customTextPipeDelimiter =
@@ -475,7 +475,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   }
 
   for (const button of modalEl.querySelectorAll(
-    ".group[data-id='newlines'] button"
+    ".group[data-id='newlines'] button",
   )) {
     button.addEventListener("click", (e) => {
       state.replaceNewlines = (e.target as HTMLButtonElement).value as

@@ -22,7 +22,7 @@ export async function getDevOptionsModal(): Promise<
     ) {
       Notifications.add(
         "Failed to load dev options module: could not fetch",
-        -1
+        -1,
       );
     } else {
       const msg = createErrorMessage(e, "Failed to load dev options module");

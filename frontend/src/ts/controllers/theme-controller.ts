@@ -77,7 +77,7 @@ export async function loadStyle(name: string): Promise<void> {
       const next = $("#nextTheme");
       if (next.length === 0) {
         console.debug(
-          "Theme controller failed to swap elements, next is missing"
+          "Theme controller failed to swap elements, next is missing",
         );
         return;
       }
@@ -89,7 +89,7 @@ export async function loadStyle(name: string): Promise<void> {
     loadStyleLoaderTimeouts.push(
       setTimeout(() => {
         Loader.show();
-      }, 100)
+      }, 100),
     );
     $("#nextTheme").remove();
     const headScript = document.querySelector("#currentTheme");
@@ -129,7 +129,7 @@ export async function loadStyle(name: string): Promise<void> {
     } else {
       console.debug(
         "Theme controller inserting link after current theme",
-        link
+        link,
       );
       headScript.after(link);
     }
@@ -146,13 +146,13 @@ export async function loadStyle(name: string): Promise<void> {
 async function apply(
   themeName: string,
   customColorsOverride?: string[],
-  isPreview = false
+  isPreview = false,
 ): Promise<void> {
   console.debug(
     "Theme controller applying theme",
     themeName,
     customColorsOverride,
-    isPreview
+    isPreview,
   );
 
   const name = customColorsOverride ? "custom" : themeName;
@@ -196,7 +196,7 @@ async function apply(
 
 function updateFooterIndicator(nameOverride?: string): void {
   const indicator = document.querySelector<HTMLElement>(
-    "footer .right .current-theme"
+    "footer .right .current-theme",
   );
   const text = indicator?.querySelector<HTMLElement>(".text");
   const favIcon = indicator?.querySelector<HTMLElement>(".favIndicator");
@@ -246,7 +246,7 @@ let previewState: PreviewState = null;
 
 export function preview(
   themeIdentifier: string,
-  customColorsOverride?: string[]
+  customColorsOverride?: string[],
 ): void {
   previewState = { theme: themeIdentifier, colors: customColorsOverride };
   debouncedPreview();
@@ -261,12 +261,12 @@ const debouncedPreview = debounce<() => void>(250, () => {
 
 async function set(
   themeIdentifier: string,
-  isAutoSwitch = false
+  isAutoSwitch = false,
 ): Promise<void> {
   console.debug(
     "Theme controller setting theme",
     themeIdentifier,
-    isAutoSwitch
+    isAutoSwitch,
   );
   await apply(themeIdentifier, undefined, isAutoSwitch);
 
@@ -344,7 +344,7 @@ export async function randomizeTheme(): Promise<void> {
 
   if (Config.randomTheme === "custom") {
     const theme = DB.getSnapshot()?.customThemes?.find(
-      (ct) => ct._id === randomTheme
+      (ct) => ct._id === randomTheme,
     );
     colorsOverride = theme?.colors;
     randomTheme = "custom";
@@ -398,7 +398,7 @@ export async function applyCustomBackground(): Promise<void> {
   let backgroundUrl = Config.customBackground;
 
   $(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']"
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']",
   ).val(backgroundUrl);
 
   //if there is a localBackgroundFile available, use it.
@@ -410,7 +410,7 @@ export async function applyCustomBackground(): Promise<void> {
 
   // hide the filter section initially and always
   $(
-    ".pageSettings .section[data-config-name='customBackgroundFilter']"
+    ".pageSettings .section[data-config-name='customBackgroundFilter']",
   ).addClass("hidden");
 
   if (backgroundUrl === "") {
@@ -428,12 +428,12 @@ export async function applyCustomBackground(): Promise<void> {
     img.setAttribute("src", backgroundUrl);
     img.setAttribute(
       "onError",
-      "javascript:this.style.display='none'; window.dispatchEvent(new Event('customBackgroundFailed'))"
+      "javascript:this.style.display='none'; window.dispatchEvent(new Event('customBackgroundFailed'))",
     );
     img.onload = () => {
       // show the filter section only if the image loads successfully
       $(
-        ".pageSettings .section[data-config-name='customBackgroundFilter']"
+        ".pageSettings .section[data-config-name='customBackgroundFilter']",
       ).removeClass("hidden");
     };
 
@@ -466,7 +466,7 @@ export async function applyFontFamily(): Promise<void> {
 
   document.documentElement.style.setProperty(
     "--font",
-    `"${font}", "Roboto Mono", "Vazirmatn", monospace`
+    `"${font}", "Roboto Mono", "Vazirmatn", monospace`,
   );
 }
 
@@ -575,7 +575,7 @@ window.addEventListener("customBackgroundFailed", () => {
   Notifications.add(
     "Custom background link is either temporarily unavailable or expired. Please make sure the URL is correct or change it",
     0,
-    { duration: 5 }
+    { duration: 5 },
   );
 });
 

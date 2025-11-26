@@ -32,14 +32,14 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
  * remove all values from the config which are not valid
  */
 function sanitizeConfig(
-  config: ConfigSchemas.PartialConfig
+  config: ConfigSchemas.PartialConfig,
 ): ConfigSchemas.PartialConfig {
   //make sure to use strip()
   return sanitize(ConfigSchemas.PartialConfigSchema.strip(), config);
 }
 
 function replaceLegacyValues(
-  configObj: ConfigSchemas.PartialConfig
+  configObj: ConfigSchemas.PartialConfig,
 ): ConfigSchemas.PartialConfig {
   //@ts-expect-error legacy configs
   if (configObj.quickTab === true && configObj.quickRestart === undefined) {
@@ -128,14 +128,14 @@ function replaceLegacyValues(
       configObj.funbox = [];
     } else {
       configObj.funbox = (configObj.funbox as string).split(
-        "#"
+        "#",
       ) as FunboxName[];
     }
   }
 
   if (typeof configObj.customLayoutfluid === "string") {
     configObj.customLayoutfluid = (configObj.customLayoutfluid as string).split(
-      "#"
+      "#",
     ) as ConfigSchemas.CustomLayoutFluid;
   }
 

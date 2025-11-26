@@ -30,7 +30,7 @@ export const page = new Page({
     if (nameInputEl === null) {
       nameInputEl = new ValidatedHtmlInputElement(
         document.querySelector(
-          ".page.pageProfileSearch input"
+          ".page.pageProfileSearch input",
         ) as HTMLInputElement,
         {
           schema: UserNameSchema,
@@ -43,7 +43,7 @@ export const page = new Page({
                 return true;
               },
               on4xx: () => "Unknown user",
-            }
+            },
           ),
           callback: (result) => {
             if (result.status === "success") {
@@ -53,7 +53,7 @@ export const page = new Page({
               lastProfile = null;
             }
           },
-        }
+        },
       );
     }
 

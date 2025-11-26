@@ -33,7 +33,7 @@ export async function add(user: BlocklistEntryProperties): Promise<void> {
         usernameHash,
         timestamp,
       },
-      { upsert: true }
+      { upsert: true },
     ),
     getCollection().replaceOne(
       { emailHash },
@@ -41,8 +41,8 @@ export async function add(user: BlocklistEntryProperties): Promise<void> {
         emailHash,
         timestamp,
       },
-      { upsert: true }
-    )
+      { upsert: true },
+    ),
   );
 
   if (user.discordId !== undefined && user.discordId !== "") {
@@ -54,15 +54,15 @@ export async function add(user: BlocklistEntryProperties): Promise<void> {
           discordIdHash,
           timestamp,
         },
-        { upsert: true }
-      )
+        { upsert: true },
+      ),
     );
   }
   await Promise.all(inserts);
 }
 
 export async function remove(
-  user: Partial<BlocklistEntryProperties>
+  user: Partial<BlocklistEntryProperties>,
 ): Promise<void> {
   const filter = getFilter(user);
   if (filter.length === 0) return;
@@ -70,7 +70,7 @@ export async function remove(
 }
 
 export async function contains(
-  user: Partial<BlocklistEntryProperties>
+  user: Partial<BlocklistEntryProperties>,
 ): Promise<boolean> {
   const filter = getFilter(user);
   if (filter.length === 0) return false;
@@ -86,7 +86,7 @@ export function hash(value: string): string {
 }
 
 function getFilter(
-  user: Partial<BlocklistEntryProperties>
+  user: Partial<BlocklistEntryProperties>,
 ): Partial<DBBlocklistEntry>[] {
   const filter: Partial<DBBlocklistEntry>[] = [];
   if (user.email !== undefined) {
@@ -107,20 +107,20 @@ export async function createIndicies(): Promise<void> {
     {
       unique: true,
       partialFilterExpression: { usernameHash: { $exists: true } },
-    }
+    },
   );
   await getCollection().createIndex(
     { emailHash: 1 },
     {
       unique: true,
       partialFilterExpression: { emailHash: { $exists: true } },
-    }
+    },
   );
   await getCollection().createIndex(
     { discordIdHash: 1 },
     {
       unique: true,
       partialFilterExpression: { discordIdHash: { $exists: true } },
-    }
+    },
   );
 }

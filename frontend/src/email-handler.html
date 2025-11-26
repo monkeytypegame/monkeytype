@@ -187,7 +187,7 @@
       const hasCapital = !!password.match(/[A-Z]/);
       const hasNumber = !!password.match(/[\d]/);
       const hasSpecial = !!password.match(
-        /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/
+        /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/,
       );
       const isLong = password.length >= 8;
       const isShort = password.length <= 64;
@@ -201,7 +201,7 @@
 
           $("main .preloader .icon").html(`<i class="fas fa-fw fa-check"></i>`);
           $("main .preloader .text").text(
-            `Your email address has been verified`
+            `Your email address has been verified`,
           );
           $("main .preloader .subText").text(`You can now close this tab`);
         })
@@ -209,7 +209,7 @@
           console.error(error);
           $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
           $("main .preloader .text").text(
-            `Fatal error: ${error.message}. If this issue persists, please report it.`
+            `Fatal error: ${error.message}. If this issue persists, please report it.`,
           );
           // Code is invalid or expired. Ask the user to verify their email address
           // again.
@@ -245,7 +245,7 @@
 
           if (!isPasswordStrong(newPassword)) {
             alert(
-              "Password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long"
+              "Password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
             );
             showResetPassword();
             return;
@@ -256,7 +256,7 @@
             .then((resp) => {
               // Password reset has been confirmed and new password updated.
               $("main .preloader .icon").html(
-                `<i class="fas fa-fw fa-check"></i>`
+                `<i class="fas fa-fw fa-check"></i>`,
               );
               $("main .preloader .text").text(`Your password has been changed`);
               $("main .preloader .subText").text(`You can now close this tab`);
@@ -266,10 +266,10 @@
             .catch((error) => {
               console.error(error);
               $("main .preloader .icon").html(
-                `<i class="fas fa-fw fa-times"></i>`
+                `<i class="fas fa-fw fa-times"></i>`,
               );
               $("main .preloader .text").text(
-                `Fatal error: ${error.message}. If this issue persists, please report it.`
+                `Fatal error: ${error.message}. If this issue persists, please report it.`,
               );
               // Error occurred during confirmation. The code might have expired or the
               // password is too weak.
@@ -279,7 +279,7 @@
           console.error(error);
           $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
           $("main .preloader .text").text(
-            `Fatal error: ${error.message}. If this issue persists, please report it.`
+            `Fatal error: ${error.message}. If this issue persists, please report it.`,
           );
 
           // $("main .preloader .subText").text(error);
@@ -377,7 +377,7 @@
 
           if (!mode) {
             $("main .preloader .icon").html(
-              `<i class="fas fa-fw fa-times"></i>`
+              `<i class="fas fa-fw fa-times"></i>`,
             );
             $("main .preloader .text").text(`Mode parameter not found`);
             return;
@@ -385,7 +385,7 @@
 
           if (!actionCode) {
             $("main .preloader .icon").html(
-              `<i class="fas fa-fw fa-times"></i>`
+              `<i class="fas fa-fw fa-times"></i>`,
             );
             $("main .preloader .text").text(`Action code parameter not found`);
             return;
@@ -411,7 +411,7 @@
               break;
             default:
               $("main .preloader .icon").html(
-                `<i class="fas fa-fw fa-times"></i>`
+                `<i class="fas fa-fw fa-times"></i>`,
               );
               $("main .preloader .text").text(`Invalid mode`);
               console.error("no mode found");
@@ -428,11 +428,11 @@
         } catch (e) {
           $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
           $("main .preloader .text").text(
-            `Fatal error: ${e.message}. If this issue persists, please report it.`
+            `Fatal error: ${e.message}. If this issue persists, please report it.`,
           );
         }
       },
-      false
+      false,
     );
 
     document.querySelector("header").addEventListener("click", () => {

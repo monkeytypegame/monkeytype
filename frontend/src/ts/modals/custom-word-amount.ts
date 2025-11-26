@@ -24,7 +24,7 @@ function hide(clearChain = false): void {
 function apply(): void {
   const val = parseInt(
     modal.getModal().querySelector("input")?.value as string,
-    10
+    10,
   );
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
@@ -39,7 +39,7 @@ function apply(): void {
           0,
           {
             duration: 7,
-          }
+          },
         );
       }
     }

@@ -76,7 +76,7 @@ type ShowSettings = {
 
 export function show(
   settings?: ShowSettings,
-  modalShowSettings?: ShowOptions
+  modalShowSettings?: ShowOptions,
 ): void {
   void modal.show({
     ...modalShowSettings,
@@ -96,12 +96,12 @@ export function show(
       if (settings?.subgroupOverride !== undefined) {
         if (typeof settings.subgroupOverride === "string") {
           const exists = CommandlineLists.doesListExist(
-            settings.subgroupOverride
+            settings.subgroupOverride,
           );
           if (exists) {
             Loader.show();
             subgroupOverride = await CommandlineLists.getList(
-              settings.subgroupOverride as CommandlineLists.ListsObjectKeys
+              settings.subgroupOverride as CommandlineLists.ListsObjectKeys,
             );
             Loader.hide();
           } else {
@@ -109,7 +109,7 @@ export function show(
             usingSingleList = Config.singleListCommandLine === "on";
             Notifications.add(
               `Command list ${settings.subgroupOverride} not found`,
-              0
+              0,
             );
           }
         } else {
@@ -125,14 +125,14 @@ export function show(
 
       if (settings?.commandOverride !== undefined) {
         const command = (await getList()).find(
-          (c) => c.id === settings.commandOverride
+          (c) => c.id === settings.commandOverride,
         );
         if (command === undefined) {
           Notifications.add(`Command ${settings.commandOverride} not found`, 0);
         } else if (command?.input !== true) {
           Notifications.add(
             `Command ${settings.commandOverride} is not an input command`,
-            0
+            0,
           );
         } else {
           showInputCommand = command;
@@ -266,7 +266,7 @@ async function filterSubgroup(): Promise<void> {
 
     const displayAliasSplit = displaySplit.concat(aliasSplit);
     const displayAliasMatchArray: (number | null)[] = displayAliasSplit.map(
-      () => null
+      () => null,
     );
 
     let matchStrength = 0;
@@ -416,11 +416,11 @@ async function showCommands(): Promise<void> {
             if (Array.isArray(command.configValue)) {
               isActive = areUnsortedArraysEqual(
                 intersect(Config[configKey] as unknown[], command.configValue),
-                command.configValue
+                command.configValue,
               );
             } else {
               isActive = (Config[configKey] as unknown[]).includes(
-                command.configValue
+                command.configValue,
               );
             }
           } else {
@@ -465,7 +465,7 @@ async function showCommands(): Promise<void> {
         display = display.replace(
           `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>`,
           `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>` +
-            configIconHtml
+            configIconHtml,
         );
       }
     }
@@ -660,7 +660,7 @@ function keepActiveCommandInView(): void {
   if (mouseMode) return;
 
   const active: HTMLElement | null = document.querySelector(
-    ".suggestions .command.active"
+    ".suggestions .command.active",
   );
 
   if (active === null || active.dataset["index"] === lastActiveIndex) {
@@ -673,7 +673,7 @@ function keepActiveCommandInView(): void {
 
 async function updateInput(setInput?: string): Promise<void> {
   const iconElement: HTMLElement | null = document.querySelector(
-    "#commandLine .searchicon"
+    "#commandLine .searchicon",
   );
   const element: HTMLInputElement | null =
     document.querySelector("#commandLine input");
@@ -779,7 +779,7 @@ function hideWarning(): void {
 }
 
 function updateValidationResult(
-  validation: NonNullable<InputModeParams["validation"]>
+  validation: NonNullable<InputModeParams["validation"]>,
 ): void {
   inputModeParams.validation = validation;
   if (validation.status === "checking") {
@@ -809,7 +809,7 @@ function createValidationHandler(command: Command): void {
       commandWithValidation.validation,
       "inputValueConvert" in commandWithValidation
         ? commandWithValidation.inputValueConvert
-        : undefined
+        : undefined,
     );
     handlersCache.set(command.id, handler);
   }
@@ -846,7 +846,7 @@ const modal = new AnimatedModal({
         await filterSubgroup();
         await showCommands();
         await updateActiveCommand();
-      })
+      }),
     );
 
     input.addEventListener("keydown", async (e) => {
@@ -917,7 +917,7 @@ const modal = new AnimatedModal({
       const handler = handlersCache.get(inputModeParams.command.id);
       if (handler === undefined) {
         throw new Error(
-          `Expected handler for command ${inputModeParams.command.id} is missing`
+          `Expected handler for command ${inputModeParams.command.id} is missing`,
         );
       }
 

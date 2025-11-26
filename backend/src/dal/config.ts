@@ -33,16 +33,16 @@ const getConfigCollection = (): Collection<DBConfig> =>
 
 export async function saveConfig(
   uid: string,
-  config: Partial<Config>
+  config: Partial<Config>,
 ): Promise<UpdateResult> {
   const configChanges = Object.fromEntries(
-    Object.entries(config).map(([key, value]) => [`config.${key}`, value])
+    Object.entries(config).map(([key, value]) => [`config.${key}`, value]),
   );
 
   return await getConfigCollection().updateOne(
     { uid },
     { $set: configChanges, $unset: configLegacyProperties },
-    { upsert: true }
+    { upsert: true },
   );
 }
 

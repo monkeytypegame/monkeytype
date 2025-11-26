@@ -14,7 +14,7 @@ export function callController<
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   TStatus = 200,
 >(
-  handler: MonkeyHandler<TQuery, TBody, TParams, TResponse>
+  handler: MonkeyHandler<TQuery, TBody, TParams, TResponse>,
 ): (all: TypeSafeTsRestRequest<TRoute, TQuery, TBody, TParams>) => Promise<{
   status: TStatus;
   body: MonkeyResponse<TResponse>;
@@ -63,7 +63,7 @@ type WithoutParams = {
 };
 
 type MonkeyHandler<TQuery, TBody, TParams, TResponse> = (
-  req: MonkeyRequest<TQuery, TBody, TParams>
+  req: MonkeyRequest<TQuery, TBody, TParams>,
 ) => Promise<MonkeyResponse<TResponse>>;
 
 type TypeSafeTsRestRequest<

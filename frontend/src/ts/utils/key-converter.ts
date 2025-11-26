@@ -237,7 +237,7 @@ const rightSideKeys: Set<Keycode> = new Set([
  */
 export function layoutKeyToKeycode(
   key: string,
-  layout: LayoutObject
+  layout: LayoutObject,
 ): Keycode | undefined {
   const rows: string[][][] = Object.values(layout.keys);
 

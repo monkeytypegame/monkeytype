@@ -66,7 +66,7 @@ export function getStats(): unknown {
     keyOverlap: TestInput.keyOverlap,
     wordsHistory: TestWords.words.list.slice(
       0,
-      TestInput.input.getHistory().length
+      TestInput.input.getHistory().length,
     ),
     inputHistory: TestInput.input.getHistory(),
   };
@@ -75,12 +75,12 @@ export function getStats(): unknown {
     // @ts-expect-error ---
     ret.keypressTimings.spacing.average =
       TestInput.keypressTimings.spacing.array.reduce(
-        (previous, current) => (current += previous)
+        (previous, current) => (current += previous),
       ) / TestInput.keypressTimings.spacing.array.length;
 
     // @ts-expect-error ---
     ret.keypressTimings.spacing.sd = Numbers.stdDev(
-      TestInput.keypressTimings.spacing.array
+      TestInput.keypressTimings.spacing.array,
     );
   } catch (e) {
     //
@@ -89,12 +89,12 @@ export function getStats(): unknown {
     // @ts-expect-error ---
     ret.keypressTimings.duration.average =
       TestInput.keypressTimings.duration.array.reduce(
-        (previous, current) => (current += previous)
+        (previous, current) => (current += previous),
       ) / TestInput.keypressTimings.duration.array.length;
 
     // @ts-expect-error ---
     ret.keypressTimings.duration.sd = Numbers.stdDev(
-      TestInput.keypressTimings.duration.array
+      TestInput.keypressTimings.duration.array,
     );
   } catch (e) {
     //
@@ -154,17 +154,17 @@ export function calculateTestSeconds(now?: number): number {
 
 export function calculateWpmAndRaw(
   withDecimalPoints?: true,
-  final = false
+  final = false,
 ): {
   wpm: number;
   raw: number;
 } {
   const testSeconds = calculateTestSeconds(
-    TestState.isActive ? performance.now() : end
+    TestState.isActive ? performance.now() : end,
   );
   const chars = countChars(final);
   const wpm = Numbers.roundTo2(
-    ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
+    ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5,
   );
   const raw = Numbers.roundTo2(
     ((chars.allCorrectChars +
@@ -172,7 +172,7 @@ export function calculateWpmAndRaw(
       chars.incorrectChars +
       chars.extraChars) *
       (60 / testSeconds)) /
-      5
+      5,
   );
   return {
     wpm: withDecimalPoints ? wpm : Math.round(wpm),
@@ -280,7 +280,7 @@ function getTargetWords(): string[] {
     targetWords.push(
       Config.mode === "zen"
         ? TestInput.input.current
-        : TestWords.words.getCurrent()
+        : TestWords.words.getCurrent(),
     );
   }
 
@@ -397,7 +397,7 @@ export function calculateFinalStats(): Stats {
     (end2 - start2) / 1000,
     " (performance.now based)",
     (end3 - start3) / 1000,
-    " (new Date based)"
+    " (new Date based)",
   );
   console.debug(
     "Test seconds",
@@ -406,13 +406,13 @@ export function calculateFinalStats(): Stats {
     Numbers.roundTo1((end2 - start2) / 1000),
     " (performance.now based)",
     Numbers.roundTo1((end3 - start3) / 1000),
-    " (new Date based)"
+    " (new Date based)",
   );
   if (Config.mode !== "custom") {
     testSeconds = Numbers.roundTo2(testSeconds);
     console.debug(
       "Mode is not custom - rounding to 2. New time: ",
-      testSeconds
+      testSeconds,
     );
   }
 

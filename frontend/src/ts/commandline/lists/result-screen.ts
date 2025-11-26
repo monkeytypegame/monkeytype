@@ -148,7 +148,7 @@ const commands: Command[] = [
         },
         () => {
           Notifications.add("Failed to copy!", -1);
-        }
+        },
       );
     },
     available: (): boolean => {

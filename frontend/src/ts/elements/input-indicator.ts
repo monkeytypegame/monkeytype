@@ -13,7 +13,7 @@ export class InputIndicator {
 
   constructor(
     inputElement: JQuery | HTMLInputElement,
-    options: Record<string, InputIndicatorOption>
+    options: Record<string, InputIndicatorOption>,
   ) {
     this.inputElement = inputElement;
     $(this.inputElement).wrap(`<div class="inputAndIndicator"></div>`);

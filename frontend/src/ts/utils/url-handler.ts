@@ -87,7 +87,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   if (getValue === null) return;
 
   const { data: decoded, error } = tryCatchSync(() =>
-    parseJsonWithSchema(atob(getValue), customThemeUrlDataSchema)
+    parseJsonWithSchema(atob(getValue), customThemeUrlDataSchema),
   );
   if (error) {
     console.log("Custom theme URL decoding failed", error);
@@ -167,13 +167,13 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   // otherwise eiko will be sad
 
   const { data: de, error } = tryCatchSync(() =>
-    parseJsonWithSchema(decompressFromURI(getValue) ?? "", TestSettingsSchema)
+    parseJsonWithSchema(decompressFromURI(getValue) ?? "", TestSettingsSchema),
   );
   if (error) {
     console.error("Failed to parse test settings:", error);
     Notifications.add(
       "Failed to load test settings from URL: " + error.message,
-      0
+      0,
     );
     return;
   }

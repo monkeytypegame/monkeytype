@@ -3,7 +3,7 @@
   "useTabs": false,
   "htmlWhitespaceSensitivity": "ignore",
   "endOfLine": "lf",
-  "trailingComma": "es5",
+  "trailingComma": "all",
   "overrides": [
     {
       "files": ["*.ts"],

@@ -21,7 +21,7 @@ type NavigateOptions = {
 
 function pathToRegex(path: string): RegExp {
   return new RegExp(
-    "^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$"
+    "^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$",
   );
 }
 
@@ -31,7 +31,7 @@ function getParams(match: {
 }): Record<string, string> {
   const values = match.result.slice(1);
   const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
-    (result) => result[1]
+    (result) => result[1],
   );
 
   const a = keys.map((key, index) => [key, values[index]]);
@@ -42,7 +42,7 @@ type Route = {
   path: string;
   load: (
     params: Record<string, string>,
-    navigateOptions: NavigateOptions
+    navigateOptions: NavigateOptions,
   ) => Promise<void>;
 };
 
@@ -166,7 +166,7 @@ export async function navigate(
   url = window.location.pathname +
     window.location.search +
     window.location.hash,
-  options = {} as NavigateOptions
+  options = {} as NavigateOptions,
 ): Promise<void> {
   if (
     !options.force &&
@@ -179,7 +179,7 @@ export async function navigate(
         TestState.testRestarting
       }, resultCalculating: ${
         TestUI.resultCalculating
-      }, pageTransition: ${PageTransition.get()})`
+      }, pageTransition: ${PageTransition.get()})`,
     );
     return;
   }
@@ -229,7 +229,7 @@ async function router(options = {} as NavigateOptions): Promise<void> {
       {},
       {
         force: true,
-      }
+      },
     );
     return;
   }

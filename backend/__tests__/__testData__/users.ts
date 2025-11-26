@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 import { PersonalBest } from "@monkeytype/schemas/shared";
 
 export async function createUser(
-  user?: Partial<UserDAL.DBUser>
+  user?: Partial<UserDAL.DBUser>,
 ): Promise<UserDAL.DBUser> {
   const uid = new ObjectId().toHexString();
   await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
@@ -13,14 +13,14 @@ export async function createUser(
 }
 
 export async function createUserWithoutMigration(
-  user?: Partial<UserDAL.DBUser>
+  user?: Partial<UserDAL.DBUser>,
 ): Promise<UserDAL.DBUser> {
   const uid = new ObjectId().toHexString();
   await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
   await DB.collection("users").updateOne({ uid }, { $set: { ...user } });
   await DB.collection("users").updateOne(
     { uid },
-    { $unset: { testActivity: "" } }
+    { $unset: { testActivity: "" } },
   );
 
   return await UserDAL.getUser(uid, "test");
@@ -29,7 +29,7 @@ export async function createUserWithoutMigration(
 export function pb(
   wpm: number,
   acc: number = 90,
-  timestamp: number = 1
+  timestamp: number = 1,
 ): PersonalBest {
   return {
     acc,

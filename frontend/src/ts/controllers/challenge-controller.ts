@@ -37,7 +37,7 @@ export function clearActive(): void {
 function verifyRequirement(
   result: CompletedEvent,
   requirements: NonNullable<Challenge["requirements"]>,
-  requirementType: keyof NonNullable<Challenge["requirements"]>
+  requirementType: keyof NonNullable<Challenge["requirements"]>,
 ): [boolean, string[]] {
   let requirementsMet = true;
   let failReasons: string[] = [];
@@ -154,19 +154,19 @@ export function verify(result: CompletedEvent): string | null {
     if (TestState.activeChallenge.requirements === undefined) {
       Notifications.add(
         `${TestState.activeChallenge.display} challenge passed!`,
-        1
+        1,
       );
       return TestState.activeChallenge.name;
     } else {
       let requirementsMet = true;
       const failReasons: string[] = [];
       for (const requirementType of Misc.typedKeys(
-        TestState.activeChallenge.requirements
+        TestState.activeChallenge.requirements,
       )) {
         const [passed, requirementFailReasons] = verifyRequirement(
           result,
           TestState.activeChallenge.requirements,
-          requirementType
+          requirementType,
         );
         if (!passed) {
           requirementsMet = false;
@@ -180,12 +180,12 @@ export function verify(result: CompletedEvent): string | null {
             1,
             {
               duration: 5,
-            }
+            },
           );
         }
         Notifications.add(
           `${TestState.activeChallenge.display} challenge passed!`,
-          1
+          1,
         );
         return TestState.activeChallenge.name;
       } else {
@@ -193,7 +193,7 @@ export function verify(result: CompletedEvent): string | null {
           `${
             TestState.activeChallenge.display
           } challenge failed: ${failReasons.join(", ")}`,
-          0
+          0,
         );
         return null;
       }
@@ -202,7 +202,7 @@ export function verify(result: CompletedEvent): string | null {
     console.error(e);
     Notifications.add(
       `Something went wrong when verifying challenge: ${(e as Error).message}`,
-      0
+      0,
     );
     return null;
   }
@@ -226,7 +226,7 @@ export async function setup(challengeName: string): Promise<boolean> {
   }
 
   const challenge = list.find(
-    (c) => c.name.toLowerCase() === challengeName.toLowerCase()
+    (c) => c.name.toLowerCase() === challengeName.toLowerCase(),
   );
   let notitext;
   try {
@@ -263,7 +263,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     } else if (challenge.type === "script") {
       Loader.show();
       const response = await fetch(
-        "/challenges/" + (challenge.parameters[0] as string)
+        "/challenges/" + (challenge.parameters[0] as string),
       );
       Loader.hide();
       if (response.status !== 200) {
@@ -330,7 +330,7 @@ export async function setup(challengeName: string): Promise<boolean> {
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to load challenge"),
-      -1
+      -1,
     );
     return false;
   }

@@ -26,7 +26,7 @@ import { ValidatedHtmlInputElement } from "../elements/input-validation";
 const state = {
   presetType: "full" as PresetType,
   checkboxes: new Map(
-    ConfigGroupNameSchema.options.map((key: ConfigGroupName) => [key, true])
+    ConfigGroupNameSchema.options.map((key: ConfigGroupName) => [key, true]),
   ),
   setPresetToCurrent: false,
 };
@@ -49,11 +49,11 @@ export function show(action: string, id?: string, name?: string): void {
       if (!presetNameEl) {
         presetNameEl = new ValidatedHtmlInputElement(
           document.querySelector(
-            "#editPresetModal .modal input"
+            "#editPresetModal .modal input",
           ) as HTMLInputElement,
           {
             schema: PresetNameSchema,
-          }
+          },
         );
       }
       if (action === "add") {
@@ -64,7 +64,7 @@ export function show(action: string, id?: string, name?: string): void {
         presetNameEl?.native.parentElement?.classList.remove("hidden");
         $("#editPresetModal .modal input").removeClass("hidden");
         $(
-          "#editPresetModal .modal label.changePresetToCurrentCheckbox"
+          "#editPresetModal .modal label.changePresetToCurrentCheckbox",
         ).addClass("hidden");
         $("#editPresetModal .modal .inputs").removeClass("hidden");
         $("#editPresetModal .modal .presetType").removeClass("hidden");
@@ -80,7 +80,7 @@ export function show(action: string, id?: string, name?: string): void {
 
         $("#editPresetModal .modal input").removeClass("hidden");
         $(
-          "#editPresetModal .modal label.changePresetToCurrentCheckbox"
+          "#editPresetModal .modal label.changePresetToCurrentCheckbox",
         ).removeClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
         state.setPresetToCurrent = false;
@@ -96,11 +96,11 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .submit").html("delete");
         $("#editPresetModal .modal input").addClass("hidden");
         $(
-          "#editPresetModal .modal label.changePresetToCurrentCheckbox"
+          "#editPresetModal .modal label.changePresetToCurrentCheckbox",
         ).addClass("hidden");
         $("#editPresetModal .modal .text").removeClass("hidden");
         $("#editPresetModal .modal .deletePrompt").text(
-          `Are you sure you want to delete the preset ${name}?`
+          `Are you sure you want to delete the preset ${name}?`,
         );
         $("#editPresetModal .modal .inputs").addClass("hidden");
         $("#editPresetModal .modal .presetType").addClass("hidden");
@@ -132,7 +132,7 @@ async function initializeEditState(id: string): Promise<void> {
   } else {
     state.presetType = "partial";
     edittedPreset.settingGroups.forEach((currentActiveSettingGroup) =>
-      state.checkboxes.set(currentActiveSettingGroup, true)
+      state.checkboxes.set(currentActiveSettingGroup, true),
     );
   }
   state.setPresetToCurrent = false;
@@ -142,22 +142,22 @@ async function initializeEditState(id: string): Promise<void> {
 function addCheckboxListeners(): void {
   ConfigGroupNameSchema.options.forEach((settingGroup: ConfigGroupName) => {
     const checkboxInput = $(
-      `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
+      `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`,
     );
     checkboxInput.on("change", (e) => {
       state.checkboxes.set(
         settingGroup,
-        checkboxInput.prop("checked") as boolean
+        checkboxInput.prop("checked") as boolean,
       );
     });
   });
 
   const presetToCurrentCheckbox = $(
-    `#editPresetModal .modal .changePresetToCurrentCheckbox input`
+    `#editPresetModal .modal .changePresetToCurrentCheckbox input`,
   );
   presetToCurrentCheckbox.on("change", async () => {
     state.setPresetToCurrent = presetToCurrentCheckbox.prop(
-      "checked"
+      "checked",
     ) as boolean;
     await updateEditPresetUI();
   });
@@ -168,7 +168,7 @@ function addCheckBoxes(): void {
     return input.replace(/([a-z])([A-Z])/g, "$1 $2");
   }
   const settingGroupListEl = $(
-    "#editPresetModal .modal .inputs .checkboxList"
+    "#editPresetModal .modal .inputs .checkboxList",
   ).empty();
   ConfigGroupNameSchema.options.forEach((currSettingGroup) => {
     const currSettingGroupTitle = camelCaseToSpaced(currSettingGroup);
@@ -187,12 +187,12 @@ function addCheckBoxes(): void {
 function updateUI(): void {
   ConfigGroupNameSchema.options.forEach((settingGroup: ConfigGroupName) => {
     $(
-      `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
+      `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`,
     ).prop("checked", state.checkboxes.get(settingGroup));
   });
   $(`#editPresetModal .modal .presetType button`).removeClass("active");
   $(
-    `#editPresetModal .modal .presetType button[value="${state.presetType}"]`
+    `#editPresetModal .modal .presetType button[value="${state.presetType}"]`,
   ).addClass("active");
   $(`#editPresetModal .modal .partialPresetGroups`).removeClass("hidden");
   if (state.presetType === "full") {
@@ -202,11 +202,11 @@ function updateUI(): void {
 async function updateEditPresetUI(): Promise<void> {
   $("#editPresetModal .modal label.changePresetToCurrentCheckbox input").prop(
     "checked",
-    state.setPresetToCurrent
+    state.setPresetToCurrent,
   );
   if (state.setPresetToCurrent) {
     const presetId = $("#editPresetModal .modal").attr(
-      "data-preset-id"
+      "data-preset-id",
     ) as string;
     await initializeEditState(presetId);
     $("#editPresetModal .modal .inputs").removeClass("hidden");
@@ -226,11 +226,11 @@ async function apply(): Promise<void> {
   const propPresetName = $("#editPresetModal .modal input").val() as string;
   const presetName = propPresetName.replaceAll(" ", "_");
   const presetId = $("#editPresetModal .modal").attr(
-    "data-preset-id"
+    "data-preset-id",
   ) as string;
 
   const updateConfig = $("#editPresetModal .modal label input").prop(
-    "checked"
+    "checked",
   ) as boolean;
 
   const snapshotPresets = DB.getSnapshot()?.presets ?? [];
@@ -246,7 +246,7 @@ async function apply(): Promise<void> {
   if (noPartialGroupSelected) {
     Notifications.add(
       "At least one setting group must be active while saving partial presets",
-      0
+      0,
     );
     return;
   }
@@ -289,7 +289,7 @@ async function apply(): Promise<void> {
       Notifications.add(
         "Failed to add preset: " +
           response.body.message.replace(presetName, propPresetName),
-        -1
+        -1,
       );
     } else {
       Notifications.add("Preset added", 1, {
@@ -307,7 +307,7 @@ async function apply(): Promise<void> {
     }
   } else if (action === "edit") {
     const preset = snapshotPresets.find(
-      (preset: SnapshotPreset) => preset._id === presetId
+      (preset: SnapshotPreset) => preset._id === presetId,
     ) as SnapshotPreset;
     if (preset === undefined) {
       Notifications.add("Preset not found", -1);
@@ -349,7 +349,7 @@ async function apply(): Promise<void> {
     if (response.status !== 200) {
       Notifications.add(
         "Failed to remove preset: " + response.body.message,
-        -1
+        -1,
       );
     } else {
       Notifications.add("Preset removed", 1);
@@ -370,7 +370,7 @@ function getSettingGroup(configFieldName: ConfigKey): ConfigGroupName {
 }
 
 function getPartialConfigChanges(
-  configChanges: Partial<ConfigType>
+  configChanges: Partial<ConfigType>,
 ): Partial<ConfigType> {
   const activeConfigChanges: Partial<ConfigType> = {};
   const defaultConfig = getDefaultConfig();
@@ -427,7 +427,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
   PresetTypeSchema.options.forEach((presetType) => {
     const presetOption = modalEl.querySelector(
-      `.presetType button[value="${presetType}"]`
+      `.presetType button[value="${presetType}"]`,
     );
     if (presetOption === null) return;
 

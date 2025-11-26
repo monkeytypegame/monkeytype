@@ -45,7 +45,7 @@ function _buildCommandForConfigKey<
   commandMeta:
     | CommandlineConfigMetadata<K, keyof ConfigSchemas.Config>
     | undefined,
-  schema: ZodSchema
+  schema: ZodSchema,
 ): Command {
   if (commandMeta === undefined || commandMeta === null) {
     throw new Error(`No commandline metadata found for config key "${key}".`);
@@ -60,7 +60,7 @@ function _buildCommandForConfigKey<
       commandMeta.alias,
       commandMeta.subgroup,
       configMeta,
-      schema
+      schema,
     );
   }
 
@@ -89,7 +89,7 @@ function _buildCommandForConfigKey<
 
   if (result === undefined) {
     throw new Error(
-      `Nothing returned for config key "${key}". This is a bug in the commandline metadata.`
+      `Nothing returned for config key "${key}". This is a bug in the commandline metadata.`,
     );
   }
   return result;
@@ -101,7 +101,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   rootAlias: string | undefined,
   subgroupProps: SubgroupProps<K>,
   configMeta: ConfigMetadata<K>,
-  schema: ZodSchema
+  schema: ZodSchema,
 ): Command {
   if (subgroupProps === null) {
     throw new Error(`No commandline metadata found for config key "${key}".`);
@@ -121,11 +121,11 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   if (values === undefined) {
     throw new Error(
       //@ts-expect-error todo
-      `Unsupported schema type for key "${key}": ${schema._def.typeName}`
+      `Unsupported schema type for key "${key}": ${schema._def.typeName}`,
     );
   }
   const list = values.map((value) =>
-    buildSubgroupCommand<K>(key, value, subgroupProps)
+    buildSubgroupCommand<K>(key, value, subgroupProps),
   );
 
   list.sort((a, b) => {
@@ -159,7 +159,7 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
     isVisible: isCommandVisible,
     isAvailable: isCommandAvailable,
     customData: commandCustomData,
-  }: SubgroupProps<K>
+  }: SubgroupProps<K>,
 ): Command {
   const val = value;
 
@@ -177,7 +177,7 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
 
   return {
     id: `set${capitalizeFirstLetter(key)}${capitalizeFirstLetter(
-      val.toString()
+      val.toString(),
     )}`,
     display: displayString,
     configValueMode: commandConfigValueMode?.(value),

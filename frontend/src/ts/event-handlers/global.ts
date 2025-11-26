@@ -115,7 +115,7 @@ window.onunhandledrejection = function (e): void {
         customTitle: "DEV: Unhandled rejection",
         duration: 5,
         important: true,
-      }
+      },
     );
   }
 };
