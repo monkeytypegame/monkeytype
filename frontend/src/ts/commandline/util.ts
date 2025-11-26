@@ -29,7 +29,7 @@ function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
 
 export function buildCommandForConfigKey<
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-  K extends keyof CommandlineConfigMetadataObject
+  K extends keyof CommandlineConfigMetadataObject,
 >(key: K): Command {
   const configMeta = configMetadata[key];
   const commandMeta = commandlineConfigMetadata[key];
@@ -38,7 +38,7 @@ export function buildCommandForConfigKey<
   return _buildCommandForConfigKey(key, configMeta, commandMeta, schema);
 }
 function _buildCommandForConfigKey<
-  K extends keyof CommandlineConfigMetadataObject
+  K extends keyof CommandlineConfigMetadataObject,
 >(
   key: K,
   configMeta: ConfigMetadata<K>,
@@ -226,7 +226,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
       inputProps?.defaultValue ?? (() => Config[key]?.toString() ?? ""),
     configValue:
       inputProps !== undefined && "configValue" in inputProps
-        ? inputProps.configValue ?? undefined
+        ? (inputProps.configValue ?? undefined)
         : undefined,
     display: displayString,
     alias: inputProps?.alias ?? undefined,

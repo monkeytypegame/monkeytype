@@ -72,7 +72,7 @@ const permissionChecks: Record<PermissionId, PermissionCheck> = {
 };
 
 export function verifyPermissions<
-  T extends AppRouter | AppRoute
+  T extends AppRouter | AppRoute,
 >(): TsRestRequestHandler<T> {
   return async (
     req: TsRestRequestWithContext,

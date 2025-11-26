@@ -73,9 +73,8 @@ export function show(showOptions?: ShowOptions): void {
     ...showOptions,
     focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
-      (
-        modalEl.querySelector("input") as HTMLInputElement
-      ).value = `${Config.time}`;
+      (modalEl.querySelector("input") as HTMLInputElement).value =
+        `${Config.time}`;
       previewDuration();
     },
   });

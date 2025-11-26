@@ -12,7 +12,7 @@ import { TsRestRequestWithContext } from "../api/types";
 import { AppRoute, AppRouter } from "@ts-rest/core";
 
 export function verifyRequiredConfiguration<
-  T extends AppRouter | AppRoute
+  T extends AppRouter | AppRoute,
 >(): TsRestRequestHandler<T> {
   return async (
     req: TsRestRequestWithContext,

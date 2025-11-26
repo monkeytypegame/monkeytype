@@ -193,8 +193,8 @@ async function addBreakdownListItem(
 
         <div class="${options?.extraClass}">${string}</div>
         <div class="${positive ? "positive" : "negative"} ${
-        options?.extraClass
-      }">${positive ? "+" : "-"}${Math.abs(amount)}</div>
+          options?.extraClass
+        }">${positive ? "+" : "-"}${Math.abs(amount)}</div>
       </div>`
     );
   }

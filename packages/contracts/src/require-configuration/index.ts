@@ -6,12 +6,12 @@ type BooleanPaths<T, P extends string = ""> = {
       ? K
       : `${P}.${Extract<K, string | number>}`
     : T[K] extends object
-    ? `${P}.${Extract<K, string | number>}` extends infer D
-      ? D extends string
-        ? BooleanPaths<T[K], D>
+      ? `${P}.${Extract<K, string | number>}` extends infer D
+        ? D extends string
+          ? BooleanPaths<T[K], D>
+          : never
         : never
-      : never
-    : never;
+      : never;
 }[keyof T];
 
 // Helper type to remove leading dot

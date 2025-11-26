@@ -95,7 +95,7 @@ export const requestLimiters: Record<RateLimiterId, RateLimitRequestHandler> =
   initialiseLimiters();
 
 export function rateLimitRequest<
-  T extends AppRouter | AppRoute
+  T extends AppRouter | AppRoute,
 >(): TsRestRequestHandler<T> {
   return async (
     req: TsRestRequestWithContext,

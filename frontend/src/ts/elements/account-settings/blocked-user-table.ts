@@ -61,8 +61,8 @@ function refreshList(): void {
     (blocked) => `
     <tr data-id="${blocked._id}" data-uid="${getReceiverUid(blocked)}">
        <td><a href="${location.origin}/profile/${
-      blocked.initiatorUid
-    }?isUid" router-link>${blocked.initiatorName}</a></td>
+         blocked.initiatorUid
+       }?isUid" router-link>${blocked.initiatorName}</a></td>
        <td>${format(new Date(blocked.lastModified), "dd MMM yyyy HH:mm")}</td>
        <td>
          <button class="delete">

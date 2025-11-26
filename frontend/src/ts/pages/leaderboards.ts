@@ -154,8 +154,8 @@ function updateTitle(): void {
     state.type === "allTime"
       ? "All-time"
       : state.type === "weekly"
-      ? "Weekly XP"
-      : "Daily";
+        ? "Weekly XP"
+        : "Daily";
 
   const friend = state.friendsOnly ? "Friends " : "";
 
@@ -450,8 +450,8 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
         <div class="avatarNameBadge">
           <div class="avatarPlaceholder"></div>
           <a href="${location.origin}/profile/${
-    entry.uid
-  }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
+            entry.uid
+          }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
             ${getHtmlByUserFlags({
               ...entry,
@@ -507,8 +507,8 @@ function buildWeeklyTableRow(
         <div class="avatarNameBadge">
           <div class="avatarPlaceholder"></div>
           <a href="${location.origin}/profile/${
-    entry.uid
-  }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
+            entry.uid
+          }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
             ${getHtmlByUserFlags({
               ...entry,

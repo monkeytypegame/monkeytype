@@ -9,9 +9,8 @@ export function show(showOptions?: ShowOptions): void {
     ...showOptions,
     focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
-      (
-        modalEl.querySelector("input") as HTMLInputElement
-      ).value = `${Config.words}`;
+      (modalEl.querySelector("input") as HTMLInputElement).value =
+        `${Config.words}`;
     },
   });
 }

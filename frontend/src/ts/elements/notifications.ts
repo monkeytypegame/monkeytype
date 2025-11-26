@@ -151,8 +151,8 @@ class Notification {
 
       $("#bannerCenter").prepend(`
         <div class="${this.type} ${cls} content-grid ${
-        withImage ? "withImage" : ""
-      }" id="${this.id}">
+          withImage ? "withImage" : ""
+        }" id="${this.id}">
         <div class="container">
           ${leftside}
           <div class="text">

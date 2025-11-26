@@ -160,11 +160,14 @@ export async function update(expectedStepEnd: number): Promise<void> {
     });
 
     // Normal case - schedule next step
-    settings.timeout = setTimeout(() => {
-      update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
-        settings = null;
-      });
-    }, Math.max(0, duration));
+    settings.timeout = setTimeout(
+      () => {
+        update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
+          settings = null;
+        });
+      },
+      Math.max(0, duration)
+    );
   } catch (e) {
     console.error(e);
     caret.hide();

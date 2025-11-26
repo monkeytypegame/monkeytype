@@ -138,7 +138,7 @@ export function isFunboxActiveWithFunction(
  * @throws Error if there are multiple funboxes implementing the function name
  */
 export function findSingleActiveFunboxWithFunction<
-  F extends keyof FunboxFunctions
+  F extends keyof FunboxFunctions,
 >(functionName: F): FunboxWithFunction<F> | undefined {
   const matching = getActiveFunboxesWithFunction(functionName);
   if (matching.length === 0) return undefined;

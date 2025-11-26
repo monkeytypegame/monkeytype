@@ -54,7 +54,7 @@ const MODAL_ONLY_ANIMATION_MULTIPLIER = 0.75;
 
 export default class AnimatedModal<
   IncomingModalChainData = unknown,
-  OutgoingModalChainData = unknown
+  OutgoingModalChainData = unknown,
 > {
   private wrapperEl: HTMLDialogElement;
   private modalEl: HTMLElement;
@@ -270,7 +270,7 @@ export default class AnimatedModal<
       const animationMode =
         this.previousModalInChain !== undefined
           ? "modalOnly"
-          : options?.animationMode ?? "both";
+          : (options?.animationMode ?? "both");
 
       if (animationMode === "both" || animationMode === "none") {
         if (hasModalAnimation) {
@@ -360,7 +360,7 @@ export default class AnimatedModal<
       const animationMode =
         this.previousModalInChain !== undefined
           ? "modalOnly"
-          : options?.animationMode ?? "both";
+          : (options?.animationMode ?? "both");
 
       if (animationMode === "both" || animationMode === "none") {
         if (hasModalAnimation) {

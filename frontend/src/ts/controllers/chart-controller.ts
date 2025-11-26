@@ -73,7 +73,7 @@ class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
   TData = DefaultDataPoint<TType>,
   TLabel = unknown,
-  DatasetIds = never
+  DatasetIds = never,
 > extends Chart<TType, TData, TLabel> {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(
@@ -1186,7 +1186,7 @@ async function updateColors<
     | AccChartData[]
     | ActivityChartDataPoint[]
     | number[],
-  TLabel = string
+  TLabel = string,
 >(chart: ChartWithUpdateColors<TType, TData, TLabel>): Promise<void> {
   const bgcolor = await ThemeColors.get("bg");
   const subcolor = await ThemeColors.get("sub");

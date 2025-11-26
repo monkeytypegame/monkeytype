@@ -41,6 +41,6 @@ export function customEnumErrorHandler(message: string): ZodErrorMap {
     message:
       issue.code === "invalid_enum_value"
         ? `Invalid enum value. ${message}`
-        : issue.message ?? "Required",
+        : (issue.message ?? "Required"),
   });
 }

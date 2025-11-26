@@ -129,7 +129,7 @@ export function findLineByLeastSquares(
   const returnpoint1 = [1, 1 * m + b] as [number, number];
   const returnpoint2 = [values_length, values_length * m + b] as [
     number,
-    number
+    number,
   ];
   return [returnpoint1, returnpoint2];
 }

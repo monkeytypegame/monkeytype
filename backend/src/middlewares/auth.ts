@@ -42,7 +42,7 @@ const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
  * @returns
  */
 export function authenticateTsRestRequest<
-  T extends AppRouter | AppRoute
+  T extends AppRouter | AppRoute,
 >(): TsRestRequestHandler<T> {
   return async (
     req: TsRestRequestWithContext,

@@ -21,7 +21,7 @@ type SharedTestSettings = [
   boolean | null,
   string | null,
   Difficulty | null,
-  FunboxName[] | null
+  FunboxName[] | null,
 ];
 
 function updateURL(): void {

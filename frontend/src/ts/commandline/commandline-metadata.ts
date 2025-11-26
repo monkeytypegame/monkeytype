@@ -66,7 +66,7 @@ export type SecondaryInputProps<T extends keyof ConfigSchemas.Config> = {
 
 export type CommandlineConfigMetadata<
   T extends keyof ConfigSchemas.Config,
-  T2 extends keyof ConfigSchemas.Config
+  T2 extends keyof ConfigSchemas.Config,
 > = {
   alias?: string;
   display?: string;

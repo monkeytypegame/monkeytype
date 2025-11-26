@@ -159,14 +159,14 @@ export async function update(): Promise<void> {
         Config.paceCaret === "average"
           ? "average"
           : Config.paceCaret === "pb"
-          ? "pb"
-          : Config.paceCaret === "tagPb"
-          ? "tag pb"
-          : Config.paceCaret === "last"
-          ? "last"
-          : Config.paceCaret === "daily"
-          ? "daily"
-          : "custom"
+            ? "pb"
+            : Config.paceCaret === "tagPb"
+              ? "tag pb"
+              : Config.paceCaret === "last"
+                ? "last"
+                : Config.paceCaret === "daily"
+                  ? "daily"
+                  : "custom"
       } pace ${speed}</button>`
     );
   }

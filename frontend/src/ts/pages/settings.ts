@@ -764,8 +764,8 @@ function refreshTagsSettingsSection(): void {
         tag.name
       }" data-display="${tag.display}">
         <button class="tagButton ${tag.active ? "active" : ""}" active="${
-        tag.active
-      }">
+          tag.active
+        }">
           ${tag.display}
         </button>
         <button class="clearPbButton" aria-label="clear tags personal bests" data-balloon-pos="left" >
@@ -1137,7 +1137,7 @@ function getLanguageDropdownData(
           value: language,
           selected: isActive(language),
         })),
-      } as Optgroup)
+      }) as Optgroup
   );
 }
 

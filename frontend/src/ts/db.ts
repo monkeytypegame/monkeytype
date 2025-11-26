@@ -41,7 +41,10 @@ let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
 export class SnapshotInitError extends Error {
-  constructor(message: string, public responseCode: number) {
+  constructor(
+    message: string,
+    public responseCode: number
+  ) {
     super(message);
     this.name = "SnapshotInitError";
     // TODO INVESTIGATE
