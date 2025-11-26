@@ -88,10 +88,10 @@ describe("Daily Leaderboards", () => {
           language,
           mode,
           mode2 as any,
-          dailyLeaderboardsConfig
+          dailyLeaderboardsConfig,
         );
         expect(!!result).toBe(expected);
-      }
+      },
     );
   });
   describe("DailyLeaderboard class", () => {
@@ -100,7 +100,7 @@ describe("Daily Leaderboards", () => {
       "english",
       "time",
       "60",
-      dailyLeaderboardsConfig
+      dailyLeaderboardsConfig,
     )!;
     describe("addResult", () => {
       it("adds best result for user", async () => {
@@ -117,7 +117,7 @@ describe("Daily Leaderboards", () => {
           0,
           5,
           dailyLeaderboardsConfig,
-          true
+          true,
         );
         //THEN
         expect(results).toEqual({
@@ -138,10 +138,10 @@ describe("Daily Leaderboards", () => {
         await Promise.all(
           new Array(maxResults - 1)
             .fill(0)
-            .map(() => givenResult({ wpm: 20 + Math.random() * 100 }))
+            .map(() => givenResult({ wpm: 20 + Math.random() * 100 })),
         );
         expect(
-          await lb.getResults(0, 5, dailyLeaderboardsConfig, true)
+          await lb.getResults(0, 5, dailyLeaderboardsConfig, true),
         ).toEqual(expect.objectContaining({ count: maxResults }));
 
         expect(await lb.getRank(bob.uid, dailyLeaderboardsConfig)).toEqual({
@@ -155,7 +155,7 @@ describe("Daily Leaderboards", () => {
         //THEN
         //max count is still the same, but bob is no longer on the leaderboard
         expect(
-          await lb.getResults(0, 5, dailyLeaderboardsConfig, true)
+          await lb.getResults(0, 5, dailyLeaderboardsConfig, true),
         ).toEqual(expect.objectContaining({ count: maxResults }));
         expect(await lb.getRank(bob.uid, dailyLeaderboardsConfig)).toBeNull();
       });
@@ -172,7 +172,7 @@ describe("Daily Leaderboards", () => {
           0,
           5,
           dailyLeaderboardsConfig,
-          true
+          true,
         );
         //THEN
         expect(results).toEqual({
@@ -198,7 +198,7 @@ describe("Daily Leaderboards", () => {
           1,
           2,
           dailyLeaderboardsConfig,
-          true
+          true,
         );
         //THEN
         expect(results).toEqual({
@@ -222,7 +222,7 @@ describe("Daily Leaderboards", () => {
           0,
           5,
           dailyLeaderboardsConfig,
-          false
+          false,
         );
         //THEN
         expect(results).toEqual({
@@ -250,7 +250,7 @@ describe("Daily Leaderboards", () => {
           5,
           dailyLeaderboardsConfig,
           true,
-          [user2.uid, user4.uid, new ObjectId().toHexString()]
+          [user2.uid, user4.uid, new ObjectId().toHexString()],
         );
         //THEN
         expect(results).toEqual({
@@ -278,7 +278,7 @@ describe("Daily Leaderboards", () => {
           2,
           dailyLeaderboardsConfig,
           true,
-          [user1.uid, user2.uid, user4.uid, new ObjectId().toHexString()]
+          [user1.uid, user2.uid, user4.uid, new ObjectId().toHexString()],
         );
 
         //THEN
@@ -298,7 +298,7 @@ describe("Daily Leaderboards", () => {
           5,
           dailyLeaderboardsConfig,
           true,
-          []
+          [],
         );
         //THEN
         expect(results).toEqual({
@@ -332,7 +332,7 @@ describe("Daily Leaderboards", () => {
           await lb.getRank("decoy", dailyLeaderboardsConfig, [
             "unknown",
             "unknown2",
-          ])
+          ]),
         ).toBeNull();
       });
 
@@ -345,11 +345,11 @@ describe("Daily Leaderboards", () => {
 
         //WHEN / THEN
         expect(
-          await lb.getRank(user2.uid, dailyLeaderboardsConfig, friends)
+          await lb.getRank(user2.uid, dailyLeaderboardsConfig, friends),
         ).toEqual({ rank: 2, friendsRank: 1, ...user2 });
 
         expect(
-          await lb.getRank(user1.uid, dailyLeaderboardsConfig, friends)
+          await lb.getRank(user1.uid, dailyLeaderboardsConfig, friends),
         ).toEqual({ rank: 3, friendsRank: 2, ...user1 });
       });
     });
@@ -363,7 +363,7 @@ describe("Daily Leaderboards", () => {
       //WHEN
       await DailyLeaderboards.purgeUserFromDailyLeaderboards(
         cheater.uid,
-        dailyLeaderboardsConfig
+        dailyLeaderboardsConfig,
       );
       //THEN
       expect(await lb.getRank(cheater.uid, dailyLeaderboardsConfig)).toBeNull();
@@ -375,12 +375,12 @@ describe("Daily Leaderboards", () => {
             { rank: 1, ...user1 },
             { rank: 2, ...user2 },
           ],
-        }
+        },
       );
     });
 
     async function givenResult(
-      entry?: Partial<RedisDailyLeaderboardEntry>
+      entry?: Partial<RedisDailyLeaderboardEntry>,
     ): Promise<RedisDailyLeaderboardEntry> {
       const uid = new ObjectId().toHexString();
       const result = {

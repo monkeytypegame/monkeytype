@@ -37,7 +37,7 @@ describe("Result Utils", () => {
           expect(result.charStats).toEqual(expectedCharStats);
           expect(result.correctChars).toBeUndefined();
           expect(result.incorrectChars).toBeUndefined();
-        }
+        },
       );
 
       it("should prioritise charStats when legacy data exists", () => {
@@ -86,7 +86,7 @@ describe("Result Utils", () => {
           expect(result.charStats).toBe(expectedCharStats);
           expect(result.correctChars).toBe(expectedCorrectChars);
           expect(result.incorrectChars).toBe(expectedIncorrectChars);
-        }
+        },
       );
     });
 

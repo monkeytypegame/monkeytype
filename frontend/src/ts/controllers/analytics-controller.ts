@@ -10,7 +10,7 @@ let analytics: AnalyticsType;
 
 export async function log(
   eventName: string,
-  params?: Record<string, string>
+  params?: Record<string, string>,
 ): Promise<void> {
   try {
     logEvent(analytics, eventName, params);

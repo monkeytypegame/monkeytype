@@ -24,7 +24,7 @@ export type GetQuotesResponse = z.infer<typeof GetQuotesResponseSchema>;
 export const IsSubmissionEnabledResponseSchema = responseWithData(
   z.object({
     isEnabled: z.boolean(),
-  })
+  }),
 );
 export type IsSubmissionEnabledResponse = z.infer<
   typeof IsSubmissionEnabledResponseSchema
@@ -213,5 +213,5 @@ export const quotesContract = c.router(
       openApiTags: "quotes",
     }),
     commonResponses: CommonResponses,
-  }
+  },
 );

@@ -31,7 +31,7 @@ const QuoteDataSchema = z.object({
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 
 const { data: git, error } = tryCatchSync(() =>
-  simpleGit(path.join(__dirname, PATH_TO_REPO))
+  simpleGit(path.join(__dirname, PATH_TO_REPO)),
 );
 
 if (error) {
@@ -54,7 +54,7 @@ export async function add(
   text: string,
   source: string,
   language: string,
-  uid: string
+  uid: string,
 ): Promise<AddQuoteReturn | undefined> {
   if (git === undefined) throw new MonkeyError(500, "Git not available.");
   const quote = {
@@ -78,14 +78,14 @@ export async function add(
   if (count >= 100) {
     throw new MonkeyError(
       409,
-      "There are already 100 quotes in the queue for this language."
+      "There are already 100 quotes in the queue for this language.",
     );
   }
 
   //check for duplicate first
   const fileDir = path.join(
     __dirname,
-    `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`
+    `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`,
   );
   let duplicateId = -1;
   let similarityScore = -1;
@@ -93,7 +93,7 @@ export async function add(
     const quoteFile = await readFile(fileDir);
     const quoteFileJSON = parseJsonWithSchema(
       quoteFile.toString(),
-      QuoteDataSchema
+      QuoteDataSchema,
     );
     quoteFileJSON.quotes.every((old) => {
       if (compareTwoStrings(old.text, quote.text) > 0.9) {
@@ -145,7 +145,7 @@ export async function approve(
   quoteId: string,
   editQuote: string | undefined,
   editSource: string | undefined,
-  name: string
+  name: string,
 ): Promise<ApproveReturn> {
   if (git === null) throw new MonkeyError(500, "Git not available.");
   //check mod status
@@ -155,7 +155,7 @@ export async function approve(
   if (!targetQuote) {
     throw new MonkeyError(
       404,
-      "Quote not found. It might have already been reviewed. Please refresh the list."
+      "Quote not found. It might have already been reviewed. Please refresh the list.",
     );
   }
   const language = targetQuote.language;
@@ -174,14 +174,14 @@ export async function approve(
 
   const fileDir = path.join(
     __dirname,
-    `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`
+    `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`,
   );
   await git.pull("upstream", "master");
   if (existsSync(fileDir)) {
     const quoteFile = await readFile(fileDir);
     const quoteObject = parseJsonWithSchema(
       quoteFile.toString(),
-      QuoteDataSchema
+      QuoteDataSchema,
     );
     quoteObject.quotes.every((old) => {
       if (compareTwoStrings(old.text, quote.text) > 0.8) {
@@ -218,7 +218,7 @@ export async function approve(
           [601, 9999],
         ],
         quotes: [quote],
-      })
+      }),
     );
     message = `Created file ${language}.json and added quote.`;
   }

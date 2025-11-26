@@ -83,7 +83,7 @@ function fillData(): void {
 function fillGroup(
   groupClass: string,
   text: string | number,
-  html = false
+  html = false,
 ): void {
   if (html) {
     $(modal.getModal()).find(`.group.${groupClass} .val`).html(`${text}`);
@@ -96,7 +96,7 @@ export function show(): void {
   if (!TestLogic.notSignedInLastResult) {
     Notifications.add(
       "Failed to show last signed out result modal: no last result",
-      -1
+      -1,
     );
     return;
   }

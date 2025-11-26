@@ -150,7 +150,7 @@ function render(): void {
     ctx.context2d.beginPath();
     ctx.context2d.moveTo(
       Math.round(particle.prev.x),
-      Math.round(particle.prev.y)
+      Math.round(particle.prev.y),
     );
     ctx.context2d.lineTo(Math.round(particle.x), Math.round(particle.y));
     ctx.context2d.stroke();
@@ -180,7 +180,7 @@ export function reset(immediate = false): void {
       html.style.overflow = "inherit";
       html.style.overflowY = "scroll";
     },
-    immediate ? 0 : 1000
+    immediate ? 0 : 1000,
   );
 }
 
@@ -229,7 +229,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
     for (
       let i = Math.round(
         (particleCreateCount[0] + Math.random() * particleCreateCount[1]) *
-          (extra ? 2 : 1)
+          (extra ? 2 : 1),
       );
       i > 0;
       i--
@@ -237,10 +237,10 @@ export async function addPower(good = true, extra = false): Promise<void> {
       const color = ["2", "4"].includes(Config.monkeyPowerLevel)
         ? randomColor()
         : good
-        ? await ThemeColors.get("caret")
-        : await ThemeColors.get("error");
+          ? await ThemeColors.get("caret")
+          : await ThemeColors.get("error");
       ctx.particles.push(
-        createParticle(...(coords as [x: number, y: number]), color)
+        createParticle(...(coords as [x: number, y: number]), color),
       );
     }
 

@@ -6,7 +6,7 @@ import { animate } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 
 const textEl = document.querySelector(
-  "#liveStatsTextBottom .liveAcc"
+  "#liveStatsTextBottom .liveAcc",
 ) as Element;
 const miniEl = document.querySelector("#liveStatsMini .acc") as Element;
 

@@ -11,7 +11,9 @@ textarea {
   caret-color: var(--main-color);
   line-height: 1.25em;
   &:focus-visible {
-    box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
+    box-shadow:
+      0 0 0 0.1rem var(--bg-color),
+      0 0 0 0.2rem var(--text-color);
   }
 }
 
@@ -76,7 +78,9 @@ input[type="range"] {
     }
   }
   &:focus-visible {
-    box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
+    box-shadow:
+      0 0 0 0.1rem var(--bg-color),
+      0 0 0 0.2rem var(--text-color);
   }
 }
 
@@ -220,7 +224,9 @@ select:-webkit-autofill:focus {
     box-shadow: inherit;
   }
   &:focus-visible {
-    box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
+    box-shadow:
+      0 0 0 0.1rem var(--bg-color),
+      0 0 0 0.2rem var(--text-color);
   }
   .ss-arrow path {
     stroke: var(--text-color);
@@ -299,7 +305,9 @@ select:-webkit-autofill:focus {
       font-size: 1em;
       padding: 0.5em;
       &:focus-visible {
-        box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
+        box-shadow:
+          0 0 0 0.1rem var(--bg-color),
+          0 0 0 0.2rem var(--text-color);
       }
       &:focus {
         border: none;

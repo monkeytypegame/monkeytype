@@ -9,7 +9,7 @@ export const GenerateDataRequestSchema = z.object({
     .boolean()
     .optional()
     .describe(
-      "If `true` create user with <username>@example.com and password `password`. If false user has to exist."
+      "If `true` create user with <username>@example.com and password `password`. If false user has to exist.",
     ),
   firstTestTimestamp: z.number().int().nonnegative().optional(),
   lastTestTimestamp: z.number().int().nonnegative().optional(),
@@ -22,7 +22,7 @@ export const GenerateDataResponseSchema = responseWithData(
   z.object({
     uid: IdSchema,
     email: z.string().email(),
-  })
+  }),
 );
 export type GenerateDataResponse = z.infer<typeof GenerateDataResponseSchema>;
 
@@ -50,5 +50,5 @@ export const devContract = c.router(
       },
     }),
     commonResponses: CommonResponses,
-  }
+  },
 );

@@ -17,7 +17,7 @@ export async function update(): Promise<void> {
 
   if (results === undefined) {
     console.error(
-      "(Result batches) Results are missing but they should be available at the time of drawing the account page?"
+      "(Result batches) Results are missing but they should be available at the time of drawing the account page?",
     );
     hide();
     return;
@@ -27,7 +27,7 @@ export async function update(): Promise<void> {
 
   const completedTests = DB.getSnapshot()?.typingStats?.completedTests ?? 0;
   const percentageDownloaded = Math.round(
-    (results.length / completedTests) * 100
+    (results.length / completedTests) * 100,
   );
   const limits = ServerConfiguration.get()?.results.limits ?? {
     regularUser: 0,
@@ -53,7 +53,7 @@ export async function update(): Promise<void> {
 
   bars.downloaded.fill.css("width", Math.min(percentageDownloaded, 100) + "%");
   bars.downloaded.rightText.text(
-    `${results?.length} / ${completedTests} (${percentageDownloaded}%)`
+    `${results?.length} / ${completedTests} (${percentageDownloaded}%)`,
   );
 
   const colors = await ThemeColors.getAll();
@@ -63,11 +63,11 @@ export async function update(): Promise<void> {
     background: blendTwoHexColors(
       colors.sub,
       colors.error,
-      mapRange(percentageLimit, 50, 100, 0, 1)
+      mapRange(percentageLimit, 50, 100, 0, 1),
     ),
   });
   bars.limit.rightText.text(
-    `${results?.length} / ${currentLimit} (${percentageLimit}%)`
+    `${results?.length} / ${currentLimit} (${percentageLimit}%)`,
   );
 
   const text = $(".pageAccount .resultBatches > .text");

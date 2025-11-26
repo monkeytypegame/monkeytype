@@ -69,7 +69,7 @@ export async function activateSentry(): Promise<void> {
       if (envConfig.isDevelopment) {
         console.debug(
           "Sentry beforeSend, not sending in development mode",
-          event
+          event,
         );
         return null;
       } else {

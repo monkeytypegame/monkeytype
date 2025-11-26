@@ -7,7 +7,7 @@ import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-fra
 import { animate } from "animejs";
 
 const textElement = document.querySelector(
-  "#liveStatsTextBottom .liveSpeed"
+  "#liveStatsTextBottom .liveSpeed",
 ) as Element;
 const miniElement = document.querySelector("#liveStatsMini .speed") as Element;
 

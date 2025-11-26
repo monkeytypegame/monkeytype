@@ -56,5 +56,5 @@ export const webhooksContract = c.router(
       rateLimit: "webhookLimit",
     }),
     commonResponses: CommonResponses,
-  }
+  },
 );

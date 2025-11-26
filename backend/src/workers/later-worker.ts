@@ -19,7 +19,7 @@ import { isSafeNumber, mapRange } from "@monkeytype/util/numbers";
 import { RewardBracket } from "@monkeytype/schemas/configuration";
 
 async function handleDailyLeaderboardResults(
-  ctx: LaterTaskContexts["daily-leaderboard-results"]
+  ctx: LaterTaskContexts["daily-leaderboard-results"],
 ): Promise<void> {
   const { yesterdayTimestamp, modeRule } = ctx;
   const { language, mode, mode2 } = modeRule;
@@ -33,7 +33,7 @@ async function handleDailyLeaderboardResults(
 
   const maxRankToGet = Math.max(
     topResultsToAnnounce,
-    ...xpRewardBrackets.map((bracket) => bracket.maxRank)
+    ...xpRewardBrackets.map((bracket) => bracket.maxRank),
   );
 
   const dailyLeaderboard = new DailyLeaderboard(modeRule, yesterdayTimestamp);
@@ -42,7 +42,7 @@ async function handleDailyLeaderboardResults(
     0,
     maxRankToGet,
     dailyLeaderboardsConfig,
-    false
+    false,
   );
 
   if (results === null || results.entries.length === 0) {
@@ -87,19 +87,19 @@ async function handleDailyLeaderboardResults(
 
   const topResults = results.entries.slice(
     0,
-    dailyLeaderboardsConfig.topResultsToAnnounce
+    dailyLeaderboardsConfig.topResultsToAnnounce,
   );
 
   const leaderboardId = `${mode} ${mode2} ${language}`;
   await GeorgeQueue.announceDailyLeaderboardTopResults(
     leaderboardId,
     yesterdayTimestamp,
-    topResults
+    topResults,
   );
 }
 
 async function handleWeeklyXpLeaderboardResults(
-  ctx: LaterTaskContexts["weekly-xp-leaderboard-results"]
+  ctx: LaterTaskContexts["weekly-xp-leaderboard-results"],
 ): Promise<void> {
   const {
     leaderboards: { weeklyXp: weeklyXpConfig },
@@ -115,14 +115,14 @@ async function handleWeeklyXpLeaderboardResults(
   const weeklyXpLeaderboard = new WeeklyXpLeaderboard(lastWeekTimestamp);
 
   const maxRankToGet = Math.max(
-    ...xpRewardBrackets.map((bracket) => bracket.maxRank)
+    ...xpRewardBrackets.map((bracket) => bracket.maxRank),
   );
 
   const allResults = await weeklyXpLeaderboard.getResults(
     0,
     maxRankToGet,
     weeklyXpConfig,
-    false
+    false,
   );
 
   if (allResults === null || allResults.entries.length === 0) {
@@ -147,7 +147,7 @@ async function handleWeeklyXpLeaderboardResults(
     const rewardMail = buildMonkeyMail({
       subject: "Weekly XP Leaderboard placement",
       body: `Congratulations ${name} on placing ${placementString} with ${xp} xp! Last week, you typed for a total of ${formatSeconds(
-        timeTypedSeconds
+        timeTypedSeconds,
       )}! Keep up the good work :)`,
       rewards: [
         {
@@ -188,7 +188,7 @@ async function jobHandler(job: Job<LaterTask<LaterTaskType>>): Promise<void> {
 
 function calculateXpReward(
   xpRewardBrackets: RewardBracket[],
-  rank: number
+  rank: number,
 ): number | undefined {
   const rewards = xpRewardBrackets
     .filter((bracket) => rank >= bracket.minRank && rank <= bracket.maxRank)
@@ -198,8 +198,8 @@ function calculateXpReward(
         bracket.minRank,
         bracket.maxRank,
         bracket.maxReward,
-        bracket.minReward
-      )
+        bracket.minReward,
+      ),
     );
   return rewards.length ? Math.max(...rewards) : undefined;
 }
@@ -211,7 +211,7 @@ export default (redisConnection?: IORedis.Redis): Worker => {
   });
   worker.on("failed", (job, error) => {
     Logger.error(
-      `Job: ${job.data.taskName} - failed with error "${error.message}"`
+      `Job: ${job.data.taskName} - failed with error "${error.message}"`,
     );
   });
   return worker;

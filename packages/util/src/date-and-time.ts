@@ -20,7 +20,7 @@ export function getCurrentDayTimestamp(hourOffset = 0): number {
  */
 export function getStartOfDayTimestamp(
   timestamp: number,
-  offsetMilis = 0
+  offsetMilis = 0,
 ): number {
   return timestamp - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY);
 }
@@ -35,7 +35,7 @@ export function isYesterday(timestamp: number, hourOffset = 0): boolean {
   const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
   const yesterday = getStartOfDayTimestamp(
     Date.now() - MILLISECONDS_IN_DAY,
-    offsetMilis
+    offsetMilis,
   );
   const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 

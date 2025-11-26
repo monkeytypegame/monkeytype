@@ -13,7 +13,7 @@ type SubscribeFunction = (
   newValue?: ConfigValue,
   nosave?: boolean,
   previousValue?: ConfigValue,
-  fullConfig?: Config
+  fullConfig?: Config,
 ) => void;
 
 const subscribers: SubscribeFunction[] = [];
@@ -27,7 +27,7 @@ export function dispatch(
   newValue?: ConfigValue,
   nosave?: boolean,
   previousValue?: ConfigValue,
-  fullConfig?: Config
+  fullConfig?: Config,
 ): void {
   subscribers.forEach((fn) => {
     try {

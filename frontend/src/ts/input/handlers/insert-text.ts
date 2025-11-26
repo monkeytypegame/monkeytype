@@ -90,7 +90,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   ) {
     // replace the data with the override
     setInputElementValue(
-      inputValue.slice(0, -options.data.length) + charOverride
+      inputValue.slice(0, -options.data.length) + charOverride,
     );
     await onInsertText({
       ...options,
@@ -108,7 +108,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const normalizedData = normalizeDataAndUpdateInputIfNeeded(
     options.data,
     testInput,
-    currentWord
+    currentWord,
   );
   const data = normalizedData ?? options.data;
 
@@ -134,10 +134,10 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // is char correct
   const funboxCorrect = findSingleActiveFunboxWithFunction(
-    "isCharCorrect"
+    "isCharCorrect",
   )?.functions.isCharCorrect(
     data,
-    currentWord[(testInput + data).length - 1] ?? ""
+    currentWord[(testInput + data).length - 1] ?? "",
   );
   const correct =
     funboxCorrect ??
@@ -292,7 +292,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 function normalizeDataAndUpdateInputIfNeeded(
   data: string,
   testInput: string,
-  currentWord: string
+  currentWord: string,
 ): string | null {
   let normalizedData: string | null = null;
   const targetChar = currentWord[testInput.length];
@@ -307,7 +307,7 @@ function normalizeDataAndUpdateInputIfNeeded(
 }
 
 export async function emulateInsertText(
-  options: OnInsertTextParams
+  options: OnInsertTextParams,
 ): Promise<void> {
   const inputStopped = onBeforeInsertText(options.data);
 
