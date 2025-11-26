@@ -460,6 +460,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "asl",
     cssModifications: ["words"],
   },
+  rot13: {
+    description: "Vg znl abg or frpher, ohg vg vf sha gb glcr!",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: [],
+    frontendFunctions: ["alterText"],
+    name: "rot13",
+  },
   no_quit: {
     description: "You can't restart the test.",
     canGetPb: true,
