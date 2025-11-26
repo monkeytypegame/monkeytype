@@ -165,15 +165,13 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 }
 
 async function filter(language: Language): Promise<string[]> {
-  const ignoreExcludesInput = $("#wordFilterModal #ignoreExcludesInput").is(
-    ":checked"
-  );
+  const exactMatchOnly = $("#wordFilterModal #exactMatchOnly").is(":checked");
   let filterin = $("#wordFilterModal .wordIncludeInput").val() as string;
   filterin = Misc.escapeRegExp(filterin?.trim());
   filterin = filterin.replace(/\s+/gi, "|");
   let regincl;
 
-  if (ignoreExcludesInput) {
+  if (exactMatchOnly) {
     regincl = new RegExp("^[" + filterin + "]+$", "i");
   } else {
     regincl = new RegExp(filterin, "i");
@@ -212,7 +210,7 @@ async function filter(language: Language): Promise<string[]> {
   }
   for (const word of languageWordList.words) {
     const test1 = regincl.test(word);
-    const test2 = ignoreExcludesInput ? false : regexcl.test(word);
+    const test2 = exactMatchOnly ? false : regexcl.test(word);
     if (
       ((test1 && !test2) || (test1 && filterout === "")) &&
       word.length <= maxLength &&
@@ -299,7 +297,7 @@ async function setup(): Promise<void> {
     );
   });
 
-  $("#wordFilterModal #ignoreExcludesInput").on("change", () => {
+  $("#wordFilterModal #exactMatchOnly").on("change", () => {
     $("#wordFilterModal #wordExcludeInput").val("");
     switchWordExcludeInput();
   });
