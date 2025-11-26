@@ -112,54 +112,11 @@ export function objectToQueryString<T extends string | number | boolean>(
   return str.join("&");
 }
 
-declare global {
-  // type gets a "Duplicate identifier" error
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface Document {
-    mozCancelFullScreen?: () => Promise<void>;
-    msRequestFullscreen?: () => Promise<void>;
-    msExitFullscreen?: () => Promise<void>;
-    webkitExitFullscreen?: () => Promise<void>;
-    mozFullScreenElement?: Element;
-    msFullscreenElement?: Element;
-    webkitFullscreenElement?: Element;
-  }
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface HTMLElement {
-    msRequestFullscreen?: () => Promise<void>;
-    mozRequestFullScreen?: () => Promise<void>;
-    webkitRequestFullscreen?: () => Promise<void>;
-  }
-}
-
 export function toggleFullscreen(): void {
-  const elem = document.documentElement;
-  if (
-    !document.fullscreenElement &&
-    !document.mozFullScreenElement &&
-    !document.webkitFullscreenElement &&
-    !document.msFullscreenElement
-  ) {
-    if (elem.requestFullscreen !== undefined) {
-      void elem.requestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-      void elem.msRequestFullscreen();
-    } else if (elem.mozRequestFullScreen) {
-      void elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) {
-      // @ts-expect-error some code i found online
-      void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-    }
+  if (!document.fullscreenElement) {
+    void document.documentElement.requestFullscreen();
   } else {
-    if (document.exitFullscreen !== undefined) {
-      void document.exitFullscreen();
-    } else if (document.msExitFullscreen) {
-      void document.msExitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      void document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-      void document.webkitExitFullscreen();
-    }
+    void document.exitFullscreen();
   }
 }
 
