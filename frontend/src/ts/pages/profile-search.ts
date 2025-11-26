@@ -1,10 +1,7 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
 import Ape from "../ape";
-import {
-  ValidatedHtmlInputElement,
-  validateWithIndicator,
-} from "../elements/input-validation";
+import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema, UserProfile } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
 import * as NavigationEvent from "../observables/navigation-event";
@@ -31,7 +28,7 @@ export const page = new Page({
     Skeleton.append("pageProfileSearch", "main");
 
     if (nameInputEl === null) {
-      nameInputEl = validateWithIndicator(
+      nameInputEl = new ValidatedHtmlInputElement(
         document.querySelector(
           ".page.pageProfileSearch input"
         ) as HTMLInputElement,
