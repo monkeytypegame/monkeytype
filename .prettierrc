@@ -2,8 +2,8 @@
   "tabWidth": 2,
   "useTabs": false,
   "htmlWhitespaceSensitivity": "ignore",
-  "endOfLine": "lf",
   "trailingComma": "all",
+  "endOfLine": "lf",
   "overrides": [
     {
       "files": ["*.ts"],
