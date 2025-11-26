@@ -21,10 +21,7 @@ import {
 } from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { SnapshotPreset } from "../constants/default-snapshot";
-import {
-  ValidatedHtmlInputElement,
-  validateWithIndicator,
-} from "../elements/input-validation";
+import { ValidatedHtmlInputElement } from "../elements/input-validation";
 
 const state = {
   presetType: "full" as PresetType,
@@ -50,7 +47,7 @@ export function show(action: string, id?: string, name?: string): void {
       $("#editPresetModal .modal .text").addClass("hidden");
       addCheckBoxes();
       if (!presetNameEl) {
-        presetNameEl = validateWithIndicator(
+        presetNameEl = new ValidatedHtmlInputElement(
           document.querySelector(
             "#editPresetModal .modal input"
           ) as HTMLInputElement,
@@ -64,7 +61,7 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .popupTitle").html("Add new preset");
         $("#editPresetModal .modal .submit").html(`add`);
         presetNameEl?.setValue(null);
-        presetNameEl?.parentElement?.classList.remove("hidden");
+        presetNameEl?.native.parentElement?.classList.remove("hidden");
         $("#editPresetModal .modal input").removeClass("hidden");
         $(
           "#editPresetModal .modal label.changePresetToCurrentCheckbox"
@@ -79,7 +76,7 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .popupTitle").html("Edit preset");
         $("#editPresetModal .modal .submit").html(`save`);
         presetNameEl?.setValue(name);
-        presetNameEl?.parentElement?.classList.remove("hidden");
+        presetNameEl?.native.parentElement?.classList.remove("hidden");
 
         $("#editPresetModal .modal input").removeClass("hidden");
         $(
@@ -108,7 +105,7 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .inputs").addClass("hidden");
         $("#editPresetModal .modal .presetType").addClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").addClass("hidden");
-        presetNameEl?.parentElement?.classList.add("hidden");
+        presetNameEl?.native.parentElement?.classList.add("hidden");
       }
       updateUI();
     },

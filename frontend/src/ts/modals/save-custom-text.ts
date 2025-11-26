@@ -2,7 +2,7 @@ import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
 import * as CustomTextState from "../states/custom-text-name";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { validateWithIndicator } from "../elements/input-validation";
+import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { z } from "zod";
 
 type IncomingData = {
@@ -17,7 +17,7 @@ const state: State = {
   textToSave: [],
 };
 
-const validatedInput = validateWithIndicator(
+const validatedInput = new ValidatedHtmlInputElement(
   $("#saveCustomTextModal .textName")[0] as HTMLInputElement,
   {
     debounceDelay: 500,

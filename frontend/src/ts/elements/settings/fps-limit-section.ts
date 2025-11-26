@@ -1,5 +1,5 @@
 import { getfpsLimit, fpsLimitSchema, setfpsLimit } from "../../anim";
-import { validateWithIndicator } from "../input-validation";
+import { ValidatedHtmlInputElement } from "../input-validation";
 import * as Notifications from "../notifications";
 
 const section = document.querySelector(
@@ -10,7 +10,7 @@ const button = section.querySelector(
   "button[data-fpsLimit='native']"
 ) as HTMLButtonElement;
 
-const input = validateWithIndicator(
+const input = new ValidatedHtmlInputElement(
   section.querySelector('input[type="number"]') as HTMLInputElement,
   {
     schema: fpsLimitSchema,
@@ -24,7 +24,7 @@ export function update(): void {
     input.setValue(null);
     button.classList.add("active");
   } else {
-    input.value = fpsLimit.toString();
+    input.setValue(fpsLimit.toString());
     button.classList.remove("active");
   }
 }
@@ -38,7 +38,7 @@ function save(value: number): void {
 
 function saveFromInput(): void {
   if (input.getValidationResult().status !== "success") return;
-  const val = parseInt(input.value, 10);
+  const val = parseInt(input.getValue(), 10);
   save(val);
 }
 
@@ -47,10 +47,10 @@ button.addEventListener("click", () => {
   update();
 });
 
-input.addEventListener("keypress", (e) => {
+input.native.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
     saveFromInput();
   }
 });
 
-input.addEventListener("focusout", (e) => saveFromInput());
+input.native.addEventListener("focusout", (e) => saveFromInput());
