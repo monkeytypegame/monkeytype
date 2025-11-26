@@ -618,7 +618,7 @@ async function init(): Promise<boolean> {
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     void KeymapEvent.highlight(
       // ignoring for now but this might need a different approach
-      // eslint-disable-next-line @typescript-eslint/no-misused-spread
+      // oxlint-disable-next-line no-misused-spread
       Arrays.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
     );
   }
@@ -1606,7 +1606,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
         void KeymapEvent.highlight(
           Arrays.nthElementFromArray(
             // ignoring for now but this might need a different approach
-            // eslint-disable-next-line @typescript-eslint/no-misused-spread
+            // oxlint-disable-next-line no-misused-spread
             [...TestWords.words.getCurrent()],
             0
           ) as string

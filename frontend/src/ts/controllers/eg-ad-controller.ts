@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* oxlint-disable no-unsafe-member-access */
 export function init(): void {
   $("head").append(`<script>
   !function(e){var s=new XMLHttpRequest;s.open("GET","https://api.enthusiastgaming.net/scripts/cdn.enthusiast.gg/script/eg-aps/release/eg-aps-bootstrap-v2.0.0.bundle.js?site=monkeytype.com",!0),s.onreadystatechange=function(){var t;4==s.readyState&&(200<=s.status&&s.status<300||304==s.status)&&((t=e.createElement("script")).type="text/javascript",t.text=s.responseText,e.head.appendChild(t))},s.send(null)}(document);
@@ -16,7 +16,7 @@ export function init(): void {
 export function renderResult(widerThanBreakpoint: boolean): void {
   if (widerThanBreakpoint) {
     //@ts-expect-error 3rd party ad code
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // oxlint-disable-next-line no-unsafe-call
     window.egAps.render([
       "ad-result",
       "ad-vertical-left",
@@ -25,7 +25,7 @@ export function renderResult(widerThanBreakpoint: boolean): void {
     ]);
   } else {
     //@ts-expect-error 3rd party ad code
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // oxlint-disable-next-line no-unsafe-call
     window.egAps.render([
       "ad-result-small",
       "ad-vertical-left",
@@ -38,7 +38,7 @@ export function renderResult(widerThanBreakpoint: boolean): void {
 export function reinstate(): boolean {
   try {
     //@ts-expect-error 3rd party ad code
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // oxlint-disable-next-line no-unsafe-call
     window.egAps.reinstate();
     return true;
   } catch (e) {

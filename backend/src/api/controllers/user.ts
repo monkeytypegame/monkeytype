@@ -553,7 +553,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
           uid
         );
       } catch (e) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        // oxlint-disable-next-line no-unsafe-member-access
         if (e.code === "auth/user-not-found") {
           throw new MonkeyError(
             404,

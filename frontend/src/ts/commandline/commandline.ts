@@ -595,7 +595,7 @@ function handleInputSubmit(): void {
       commandlineModal: modal,
 
       // @ts-expect-error this is fine
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      // oxlint-disable-next-line no-unsafe-assignment
       input: inputModeParams.command.inputValueConvert(inputValue),
     });
   } else {

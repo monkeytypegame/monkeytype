@@ -14,10 +14,8 @@ export default {
       typescript: {
         tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
       },
-      oxlint: true,
-      eslint: {
-        lintCommand: `eslint "${path.resolve(__dirname, "./src/ts/**/*.ts")}"`,
-        watchPath: path.resolve(__dirname, "./src/"),
+      oxlint: {
+        lintCommand: "oxlint . --type-aware",
       },
       overlay: {
         initialIsOpen: false,

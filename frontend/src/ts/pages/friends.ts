@@ -58,7 +58,7 @@ export async function addFriend(receiverName: string): Promise<true | string> {
     const snapshot = DB.getSnapshot();
     if (snapshot !== undefined) {
       const receiverUid = getReceiverUid(result.body.data);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      // oxlint-disable-next-line no-unsafe-member-access
       snapshot.connections[receiverUid] = result.body.data.status;
       updatePendingConnections();
     }
@@ -435,7 +435,7 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
       }
 
       if (action === "rejected") {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
+        // oxlint-disable-next-line no-dynamic-delete, no-unsafe-member-access
         delete snapshot.connections[receiverUid];
       } else {
         snapshot.connections[receiverUid] = action;

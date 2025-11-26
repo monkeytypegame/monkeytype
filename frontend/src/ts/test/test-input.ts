@@ -320,7 +320,7 @@ export function forceKeyup(now: number): void {
       noCodeIndex--;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    // oxlint-disable-next-line no-dynamic-delete
     delete keyDownData[key];
 
     updateOverlap(now);
@@ -355,7 +355,7 @@ export function recordKeyupTime(now: number, event: KeyboardEvent): void {
       event.key,
       event.code,
       //ignore for logging
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      // oxlint-disable-next-line no-deprecated
       event.which
     );
     return;
@@ -378,7 +378,7 @@ export function recordKeyupTime(now: number, event: KeyboardEvent): void {
   keypressTimings.duration.array[keyDownDataForKey.index] = diff;
 
   console.debug("Keyup recorded", key, diff);
-  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+  // oxlint-disable-next-line no-dynamic-delete
   delete keyDownData[key];
 
   updateOverlap(now);
@@ -391,7 +391,7 @@ export function recordKeydownTime(now: number, event: KeyboardEvent): void {
       event.key,
       event.code,
       //ignore for logging
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      // oxlint-disable-next-line no-deprecated
       event.which
     );
     return;

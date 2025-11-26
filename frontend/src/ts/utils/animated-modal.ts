@@ -196,7 +196,7 @@ export default class AnimatedModal<
   }
 
   async show(options?: ShowOptions<IncomingModalChainData>): Promise<void> {
-    // eslint-disable-next-line no-async-promise-executor
+    // oxlint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       if (this.open) {
         resolve();
@@ -317,7 +317,7 @@ export default class AnimatedModal<
   }
 
   async hide(options?: HideOptions<OutgoingModalChainData>): Promise<void> {
-    // eslint-disable-next-line no-async-promise-executor
+    // oxlint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       if (!isPopupVisible(this.dialogId)) {
         resolve();

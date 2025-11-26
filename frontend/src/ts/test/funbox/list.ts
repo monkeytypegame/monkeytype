@@ -116,7 +116,7 @@ export function getActiveFunboxesWithFunction<F extends keyof FunboxFunctions>(
   functionName: F
 ): FunboxWithFunction<F>[] {
   return getActiveFunboxes().filter(
-    (fb) => fb.functions?.[functionName]
+    (fb) => fb.functions?.[functionName] !== undefined
   ) as FunboxWithFunction<F>[];
 }
 
