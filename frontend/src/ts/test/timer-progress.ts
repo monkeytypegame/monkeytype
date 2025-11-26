@@ -146,10 +146,12 @@ export function update(): void {
         displayTime = DateTime.secondsToString(time);
       }
       if (miniEl !== null) {
-        miniEl.innerHTML =
-          "<div>" +
-          `${(maxtime - time) % 15 !== 0 ? "" : displayTime}` +
-          "</div>";
+        if ((maxtime - time) % 15 !== 0) {
+          miniEl.style.opacity = "0";
+        } else {
+          miniEl.style.opacity = "1";
+        }
+        miniEl.innerHTML = "<div>" + displayTime + "</div>";
       }
     } else if (Config.timerStyle === "flash text") {
       let displayTime = DateTime.secondsToString(maxtime - time);
