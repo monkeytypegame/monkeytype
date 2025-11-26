@@ -11,14 +11,14 @@ import * as TestLogic from "../test/test-logic";
 import { navigate } from "../controllers/route-controller";
 import { isInputElementFocused } from "../input/input-element";
 import * as ManualRestart from "../test/manual-restart-tracker";
+import * as TestState from "../test/test-state";
 
 document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
 
   const pageTestActive: boolean = ActivePage.get() === "test";
-
-  if (pageTestActive && !isInputElementFocused()) {
+  if (pageTestActive && !TestState.resultVisible && !isInputElementFocused()) {
     const popupVisible: boolean = Misc.isAnyPopupVisible();
     // this is nested because isAnyPopupVisible is a bit expensive
     // and we don't want to call it during the test

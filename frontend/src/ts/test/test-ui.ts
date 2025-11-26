@@ -1667,7 +1667,7 @@ function afterAnyTestInput(
   type: "textInput" | "delete" | "compositionUpdate",
   correctInput: boolean | null
 ): void {
-  if (type === "textInput") {
+  if (type === "textInput" || type === "compositionUpdate") {
     if (
       correctInput === true ||
       Config.playSoundOnError === "off" ||
