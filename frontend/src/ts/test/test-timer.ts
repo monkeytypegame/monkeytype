@@ -4,7 +4,7 @@
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
-import * as LiveWpm from "./live-speed";
+import * as LiveSpeed from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as Monkey from "./monkey";
@@ -19,6 +19,28 @@ import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
+import { createTimer } from "animejs";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+
+let lastLoop = 0;
+const newTimer = createTimer({
+  duration: 1000,
+  loop: true,
+  autoplay: false,
+  onBegin: () => {
+    lastLoop = performance.now();
+  },
+  onLoop: () => {
+    const drift = Math.abs(1000 - (performance.now() - lastLoop));
+    lastLoop = performance.now();
+    checkIfTimerIsSlow(drift);
+    timerStep();
+  },
+});
+
+export function getTimerTime(): number {
+  return newTimer.currentTime;
+}
 
 type TimerStats = {
   dateNow: number;
@@ -32,7 +54,7 @@ let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
 let expected = 0;
 
-let timerDebug = false;
+let timerDebug = true;
 export function enableTimerDebug(): void {
   timerDebug = true;
 }
@@ -40,6 +62,7 @@ export function enableTimerDebug(): void {
 export function clear(): void {
   clearLowFpsMode();
   Time.set(0);
+  newTimer.reset();
   if (timer !== null) clearTimeout(timer);
 }
 
@@ -53,24 +76,10 @@ function premid(): void {
   if (timerDebug) console.timeEnd("premid");
 }
 
-function updateTimer(): void {
-  if (timerDebug) console.time("timer progress update");
-  if (
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
-  ) {
-    TimerProgress.update();
-  }
-  if (timerDebug) console.timeEnd("timer progress update");
-}
-
 function calculateWpmRaw(): { wpm: number; raw: number } {
   if (timerDebug) console.time("calculate wpm and raw");
   const wpmAndRaw = TestStats.calculateWpmAndRaw();
   if (timerDebug) console.timeEnd("calculate wpm and raw");
-  if (timerDebug) console.time("update live wpm");
-  LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
-  if (timerDebug) console.timeEnd("update live wpm");
   if (timerDebug) console.time("push to history");
   TestInput.pushToWpmHistory(wpmAndRaw.wpm);
   TestInput.pushToRawHistory(wpmAndRaw.raw);
@@ -206,22 +215,76 @@ export function getTimerStats(): TimerStats[] {
   return timerStats;
 }
 
-async function timerStep(): Promise<void> {
+function timerStep(): void {
   if (timerDebug) console.time("timer step -----------------------------");
+
+  //calc
   Time.increment();
-  premid();
-  updateTimer();
-  if (Config.playTimeWarning !== "off") playTimeWarning();
   const wpmAndRaw = calculateWpmRaw();
   const acc = calculateAcc();
-  monkey(wpmAndRaw);
+
+  //ui updates
+  requestDebouncedAnimationFrame("test-timer.timerStep", () => {
+    premid();
+    monkey(wpmAndRaw);
+  });
+
+  // already using raf
+  TimerProgress.update();
+  LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
+
+  //logic
+  if (Config.playTimeWarning !== "off") playTimeWarning();
   layoutfluid();
   const failed = checkIfFailed(wpmAndRaw, acc);
   if (!failed) checkIfTimeIsUp();
+
   if (timerDebug) console.timeEnd("timer step -----------------------------");
 }
 
+function checkIfTimerIsSlow(drift: number): void {
+  if (
+    (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
+    (Config.mode === "words" && Config.words < 250 && Config.words > 0)
+  ) {
+    if (drift > 125) {
+      //slow timer
+      SlowTimer.set();
+      setLowFpsMode();
+    }
+    if (drift > 250) {
+      slowTimerCount++;
+    }
+
+    if (drift > 500 || slowTimerCount > 5) {
+      //slow timer
+
+      Notifications.add(
+        'This could be caused by "efficiency mode" on Microsoft Edge.'
+      );
+
+      Notifications.add(
+        "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+        -1
+      );
+
+      TimerEvent.dispatch("fail", "slow timer");
+    }
+  }
+}
+
 export async function start(): Promise<void> {
+  void _startNew();
+  // void _startOld();
+}
+
+async function _startNew(): Promise<void> {
+  SlowTimer.clear();
+  slowTimerCount = 0;
+  newTimer.play();
+}
+
+async function _startOld(): Promise<void> {
   SlowTimer.clear();
   slowTimerCount = 0;
   timerStats = [];
@@ -234,33 +297,33 @@ export async function start(): Promise<void> {
       expected: expected,
       nextDelay: delay,
     });
-    if (
-      (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
-      (Config.mode === "words" && Config.words < 250 && Config.words > 0)
-    ) {
-      if (delay < interval / 2) {
-        //slow timer
-        SlowTimer.set();
-        setLowFpsMode();
-      }
-      if (delay < interval / 10) {
-        slowTimerCount++;
-        if (slowTimerCount > 5) {
-          //slow timer
+    // if (
+    //   (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
+    //   (Config.mode === "words" && Config.words < 250 && Config.words > 0)
+    // ) {
+    //   if (delay < interval / 2) {
+    //     //slow timer
+    //     SlowTimer.set();
+    //     setLowFpsMode();
+    //   }
+    //   if (delay < interval / 10) {
+    //     slowTimerCount++;
+    //     if (slowTimerCount > 5) {
+    //       //slow timer
 
-          Notifications.add(
-            'This could be caused by "efficiency mode" on Microsoft Edge.'
-          );
+    //       Notifications.add(
+    //         'This could be caused by "efficiency mode" on Microsoft Edge.'
+    //       );
 
-          Notifications.add(
-            "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
-            -1
-          );
+    //       Notifications.add(
+    //         "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+    //         -1
+    //       );
 
-          TimerEvent.dispatch("fail", "slow timer");
-        }
-      }
-    }
+    //       TimerEvent.dispatch("fail", "slow timer");
+    //     }
+    //   }
+    // }
     timer = setTimeout(function () {
       // time++;
 
@@ -271,7 +334,7 @@ export async function start(): Promise<void> {
         return;
       }
 
-      void timerStep();
+      timerStep();
 
       expected += interval;
       loop();

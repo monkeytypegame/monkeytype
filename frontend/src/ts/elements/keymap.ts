@@ -16,6 +16,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 
 export const keyDataDelimiter = "~~";
 
@@ -60,74 +61,78 @@ const stenoKeys: LayoutObject = {
 
 function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
-  if (currentKey === "") currentKey = " ";
-  try {
-    $(".activeKey").removeClass("activeKey");
+  requestDebouncedAnimationFrame("keymap.highlightKey", async () => {
+    if (currentKey === "") currentKey = " ";
+    try {
+      document
+        .querySelectorAll(".activeKey")
+        .forEach((el) => el.classList.remove("activeKey"));
 
-    let highlightKey;
-    if (Config.language.startsWith("korean")) {
-      currentKey = Hangul.disassemble(currentKey)[0] ?? currentKey;
-    }
-    if (currentKey === " ") {
-      highlightKey = "#keymap .keySpace";
-    } else if (currentKey === '"') {
-      highlightKey = `#keymap .keymapKey[data-key*='${currentKey}']`;
-    } else {
-      highlightKey = `#keymap .keymapKey[data-key*="${currentKey}"]`;
-    }
+      let highlightKey;
+      if (Config.language.startsWith("korean")) {
+        currentKey = Hangul.disassemble(currentKey)[0] ?? currentKey;
+      }
+      if (currentKey === " ") {
+        highlightKey = "#keymap .keySpace";
+      } else if (currentKey === '"') {
+        highlightKey = `#keymap .keymapKey[data-key*='${currentKey}']`;
+      } else {
+        highlightKey = `#keymap .keymapKey[data-key*="${currentKey}"]`;
+      }
 
-    // console.log("highlighting", highlightKey);
-
-    $(highlightKey).addClass("activeKey");
-  } catch (e) {
-    if (e instanceof Error) {
-      console.log("could not update highlighted keymap key: " + e.message);
+      document.querySelector(highlightKey)?.classList.add("activeKey");
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log("could not update highlighted keymap key: " + e.message);
+      }
     }
-  }
+  });
 }
 
 async function flashKey(key: string, correct?: boolean): Promise<void> {
-  if (key === undefined) return;
-  //console.log("key", key);
-  if (key === " ") {
-    key = "#keymap .keySpace";
-  } else if (key === '"') {
-    key = `#keymap .keymapKey[data-key*='${key}']`;
-  } else {
-    key = `#keymap .keymapKey[data-key*="${key}"]`;
-  }
-
-  const themecolors = await ThemeColors.getAll();
-
-  try {
-    let startingStyle = {
-      color: themecolors.bg,
-      backgroundColor: themecolors.sub,
-      borderColor: themecolors.sub,
-    };
-
-    if (correct || Config.blindMode) {
-      startingStyle = {
-        color: themecolors.bg,
-        backgroundColor: themecolors.main,
-        borderColor: themecolors.main,
-      };
+  requestDebouncedAnimationFrame(`keymap.flashKey.${key}`, async () => {
+    if (key === undefined) return;
+    //console.log("key", key);
+    if (key === " ") {
+      key = "#keymap .keySpace";
+    } else if (key === '"') {
+      key = `#keymap .keymapKey[data-key*='${key}']`;
     } else {
-      startingStyle = {
-        color: themecolors.bg,
-        backgroundColor: themecolors.error,
-        borderColor: themecolors.error,
-      };
+      key = `#keymap .keymapKey[data-key*="${key}"]`;
     }
 
-    animate(key, {
-      color: [startingStyle.color, themecolors.sub],
-      backgroundColor: [startingStyle.backgroundColor, themecolors.subAlt],
-      borderColor: [startingStyle.borderColor, themecolors.sub],
-      duration: 250,
-      easing: "out(5)",
-    });
-  } catch (e) {}
+    const themecolors = await ThemeColors.getAll();
+
+    try {
+      let startingStyle = {
+        color: themecolors.bg,
+        backgroundColor: themecolors.sub,
+        borderColor: themecolors.sub,
+      };
+
+      if (correct || Config.blindMode) {
+        startingStyle = {
+          color: themecolors.bg,
+          backgroundColor: themecolors.main,
+          borderColor: themecolors.main,
+        };
+      } else {
+        startingStyle = {
+          color: themecolors.bg,
+          backgroundColor: themecolors.error,
+          borderColor: themecolors.error,
+        };
+      }
+
+      animate(key, {
+        color: [startingStyle.color, themecolors.sub],
+        backgroundColor: [startingStyle.backgroundColor, themecolors.subAlt],
+        borderColor: [startingStyle.borderColor, themecolors.sub],
+        duration: 250,
+        easing: "out(5)",
+      });
+    } catch (e) {}
+  });
 }
 
 export function hide(): void {

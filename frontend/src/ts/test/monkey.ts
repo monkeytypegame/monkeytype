@@ -5,6 +5,8 @@ import * as TestState from "../test/test-state";
 import * as KeyConverter from "../utils/key-converter";
 import { animate } from "animejs";
 
+const monkey = document.querySelector("#monkey") as HTMLElement;
+
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "monkey" && TestState.isActive) {
     if (Config.monkey) {
@@ -71,7 +73,7 @@ export function updateFastOpacity(num: number): void {
   });
   let animDuration = mapRange(num, 130, 180, 0.25, 0.01);
   if (animDuration === 0.25) animDuration = 0;
-  $("#monkey").css({ animationDuration: animDuration + "s" });
+  monkey.style.animationDuration = animDuration + "s";
 }
 
 export function type(event: JQuery.KeyDownEvent | KeyboardEvent): void {
