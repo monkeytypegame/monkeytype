@@ -38,15 +38,16 @@
       "**/.firebase/**": true,
       "**/.turbo/**": true
     },
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "oxc.fmt.experimental": true,
+    "editor.defaultFormatter": "oxc.oxc-vscode",
     "editor.formatOnSaveMode": "file",
     "editor.formatOnSave": true,
     "testing.automaticallyOpenTestResults": "neverOpen",
     "[json]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode"
+      "editor.defaultFormatter": "oxc.oxc-vscode"
     },
     "[html]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode"
+      "editor.defaultFormatter": "oxc.oxc-vscode"
     },
     "vitest.maximumConfigs": 10
   },
