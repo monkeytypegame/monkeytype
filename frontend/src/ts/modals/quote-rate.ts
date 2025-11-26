@@ -47,7 +47,7 @@ function getRatingAverage(quoteStats: QuoteStats): number {
 }
 
 export async function getQuoteStats(
-  quote?: Quote
+  quote?: Quote,
 ): Promise<QuoteStats | undefined> {
   if (!quote) {
     return;
@@ -62,7 +62,7 @@ export async function getQuoteStats(
   if (response.status !== 200) {
     Notifications.add(
       "Failed to get quote ratings: " + response.body.message,
-      -1
+      -1,
     );
     return;
   }
@@ -91,7 +91,7 @@ async function updateRatingStats(): Promise<void> {
   if (!quoteStats) await getQuoteStats();
   $("#quoteRateModal .ratingCount .val").text(quoteStats?.ratings ?? "0");
   $("#quoteRateModal .ratingAverage .val").text(
-    quoteStats?.average?.toFixed(1) ?? "-"
+    quoteStats?.average?.toFixed(1) ?? "-",
   );
 }
 
@@ -158,7 +158,7 @@ async function submit(): Promise<void> {
   if (response.status !== 200) {
     Notifications.add(
       "Failed to submit quote rating: " + response.body.message,
-      -1
+      -1,
     );
     return;
   }
@@ -208,7 +208,7 @@ async function submit(): Promise<void> {
 
   quoteStats.average = getRatingAverage(quoteStats);
   $(".pageTest #result #rateQuoteButton .rating").text(
-    quoteStats.average?.toFixed(1)
+    quoteStats.average?.toFixed(1),
   );
   $(".pageTest #result #rateQuoteButton .icon").removeClass("far");
   $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
@@ -222,14 +222,14 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   for (const button of starButtons) {
     button.addEventListener("click", (e) => {
       const ratingValue = parseInt(
-        (e.currentTarget as HTMLElement).getAttribute("data-rating") as string
+        (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
       );
       rating = ratingValue;
       refreshStars();
     });
     button.addEventListener("mouseenter", (e) => {
       const ratingHover = parseInt(
-        (e.currentTarget as HTMLElement).getAttribute("data-rating") as string
+        (e.currentTarget as HTMLElement).getAttribute("data-rating") as string,
       );
       refreshStars(ratingHover);
     });

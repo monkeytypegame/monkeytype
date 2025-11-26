@@ -31,7 +31,7 @@ function updateActiveButton(): void {
     });
   document
     .querySelector(
-      `.pageSettings .section.themes .theme[theme='${activeThemeName}']`
+      `.pageSettings .section.themes .theme[theme='${activeThemeName}']`,
     )
     ?.classList.add("active");
 }
@@ -40,7 +40,7 @@ function updateColors(
   colorPicker: JQuery,
   color: string,
   onlyStyle = false,
-  noThemeUpdate = false
+  noThemeUpdate = false,
 ): void {
   if (onlyStyle) {
     const colorID = colorPicker.find("input.color").attr("id");
@@ -90,7 +90,7 @@ function updateColors(
 
   $(".colorConverter").css("color", color);
   const hexColor: string | undefined = Colors.rgbStringtoHex(
-    $(".colorConverter").css("color")
+    $(".colorConverter").css("color"),
   );
   if (hexColor === undefined) {
     return;
@@ -120,10 +120,10 @@ function updateColors(
 export async function fillPresetButtons(): Promise<void> {
   // Update theme buttons
   const favThemesEl = document.querySelector<HTMLElement>(
-    ".pageSettings .section.themes .favThemes.buttons"
+    ".pageSettings .section.themes .favThemes.buttons",
   );
   const themesEl = document.querySelector<HTMLElement>(
-    ".pageSettings .section.themes .allThemes.buttons"
+    ".pageSettings .section.themes .allThemes.buttons",
   );
 
   if (favThemesEl === null || themesEl === null) {
@@ -216,11 +216,11 @@ export async function fillPresetButtons(): Promise<void> {
 export async function fillCustomButtons(): Promise<void> {
   // Update custom theme buttons
   const customThemesEl = $(
-    ".pageSettings .section.themes .allCustomThemes.buttons"
+    ".pageSettings .section.themes .allCustomThemes.buttons",
   ).empty();
   const addButton = $(".pageSettings .section.themes .addCustomThemeButton");
   const saveButton = $(
-    ".pageSettings .section.themes .tabContent.customTheme #saveCustomThemeButton"
+    ".pageSettings .section.themes .tabContent.customTheme #saveCustomThemeButton",
   );
 
   if (!isAuthenticated()) {
@@ -251,18 +251,18 @@ export async function fillCustomButtons(): Promise<void> {
       <div class="editButton"><i class="fas fa-pen"></i></div>
       <div class="text">${customTheme.name.replace(/_/g, " ")}</div>
       <div class="delButton"><i class="fas fa-trash fa-fw"></i></div>
-      </div>`
+      </div>`,
     );
   }
 }
 
 export function setCustomInputs(noThemeUpdate = false): void {
   $(
-    ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
+    ".pageSettings .section.themes .tabContainer .customTheme .colorPicker",
   ).each((_index, element: HTMLElement) => {
     const currentColor = Config.customThemeColors[
       ThemeController.colorVars.indexOf(
-        $(element).find("input.color").attr("id") as string
+        $(element).find("input.color").attr("id") as string,
       )
     ] as string;
     updateColors($(element), currentColor, false, noThemeUpdate);
@@ -287,8 +287,8 @@ function saveCustomThemeColors(): void {
   for (const color of ThemeController.colorVars) {
     newColors.push(
       $(`.pageSettings .tabContent.customTheme #${color}[type='color']`).attr(
-        "value"
-      ) as string
+        "value",
+      ) as string,
     );
   }
   UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
@@ -302,28 +302,28 @@ export function updateActiveTab(): void {
   $(
     `.pageSettings .section.themes .tabs button[data-tab="${
       Config.customTheme ? "custom" : "preset"
-    }"]`
+    }"]`,
   ).addClass("active");
 
   if (Config.customTheme) {
     void Misc.swapElements(
       document.querySelector(
-        '.pageSettings [tabContent="preset"]'
+        '.pageSettings [tabContent="preset"]',
       ) as HTMLElement,
       document.querySelector(
-        '.pageSettings [tabContent="custom"]'
+        '.pageSettings [tabContent="custom"]',
       ) as HTMLElement,
-      250
+      250,
     );
   } else {
     void Misc.swapElements(
       document.querySelector(
-        '.pageSettings [tabContent="custom"]'
+        '.pageSettings [tabContent="custom"]',
       ) as HTMLElement,
       document.querySelector(
-        '.pageSettings [tabContent="preset"]'
+        '.pageSettings [tabContent="preset"]',
       ) as HTMLElement,
-      250
+      250,
     );
   }
 }
@@ -357,14 +357,14 @@ $(".pageSettings").on("click", " .section.themes .customTheme.button", (e) => {
   if ($(e.target).hasClass("editButton")) return;
   const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
   const theme = DB.getSnapshot()?.customThemes?.find(
-    (e) => e._id === customThemeId
+    (e) => e._id === customThemeId,
   );
 
   if (theme === undefined) {
     //this shouldnt happen but typescript needs this check
     console.error(
       "Could not find custom theme in snapshot for id ",
-      customThemeId
+      customThemeId,
     );
     return;
   }
@@ -381,7 +381,7 @@ $(".pageSettings").on("click", ".section.themes .theme .favButton", (e) => {
     toggleFavourite(theme);
   } else {
     console.error(
-      "Could not find the theme attribute attached to the button clicked!"
+      "Could not find the theme attribute attached to the button clicked!",
     );
   }
 });
@@ -395,7 +395,7 @@ $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
 });
 
 $(
-  ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
+  ".pageSettings .section.themes .tabContainer .customTheme input[type=color]",
 ).on("input", (e) => {
   const $colorVar = $(e.currentTarget).attr("id") as string;
   const $pickedColor = $(e.currentTarget).val() as string;
@@ -404,7 +404,7 @@ $(
 });
 
 $(
-  ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
+  ".pageSettings .section.themes .tabContainer .customTheme input[type=color]",
 ).on("change", (e) => {
   const $colorVar = $(e.currentTarget).attr("id") as string;
   const $pickedColor = $(e.currentTarget).val() as string;

@@ -3,11 +3,11 @@ import { ValidatedHtmlInputElement } from "../input-validation";
 import * as Notifications from "../notifications";
 
 const section = document.querySelector(
-  "#pageSettings .section.fpsLimit"
+  "#pageSettings .section.fpsLimit",
 ) as HTMLElement;
 
 const button = section.querySelector(
-  "button[data-fpsLimit='native']"
+  "button[data-fpsLimit='native']",
 ) as HTMLButtonElement;
 
 const input = new ValidatedHtmlInputElement(
@@ -15,7 +15,7 @@ const input = new ValidatedHtmlInputElement(
   {
     schema: fpsLimitSchema,
     inputValueConvert: (val: string) => parseInt(val, 10),
-  }
+  },
 );
 
 export function update(): void {

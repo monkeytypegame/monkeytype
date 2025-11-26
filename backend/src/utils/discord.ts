@@ -18,7 +18,7 @@ type DiscordIdAndAvatar = z.infer<typeof DiscordIdAndAvatarSchema>;
 
 export async function getDiscordUser(
   tokenType: string,
-  accessToken: string
+  accessToken: string,
 ): Promise<DiscordIdAndAvatar> {
   const response = await fetch(`${BASE_URL}/users/@me`, {
     headers: {
@@ -28,7 +28,7 @@ export async function getDiscordUser(
 
   const parsed = parseJsonWithSchema(
     await response.text(),
-    DiscordIdAndAvatarSchema
+    DiscordIdAndAvatarSchema,
   );
 
   return parsed;
@@ -53,7 +53,7 @@ export async function getOauthLink(uid: string): Promise<string> {
 
 export async function iStateValidForUser(
   state: string,
-  uid: string
+  uid: string,
 ): Promise<boolean> {
   const connection = RedisClient.getConnection();
   if (!connection) {

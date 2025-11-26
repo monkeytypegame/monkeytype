@@ -66,7 +66,7 @@ describe("url-handler", () => {
     it("handles mode2 as number", () => {
       //GIVEN
       findGetParameterMock.mockReturnValue(
-        urlData({ mode: "time", mode2: 60 })
+        urlData({ mode: "time", mode2: 60 }),
       );
 
       //WHEN
@@ -80,7 +80,7 @@ describe("url-handler", () => {
     it("sets time", () => {
       //GIVEN
       findGetParameterMock.mockReturnValue(
-        urlData({ mode: "time", mode2: "30" })
+        urlData({ mode: "time", mode2: "30" }),
       );
 
       //WHEN
@@ -94,7 +94,7 @@ describe("url-handler", () => {
     it("sets word count", () => {
       //GIVEN
       findGetParameterMock.mockReturnValue(
-        urlData({ mode: "words", mode2: "50" })
+        urlData({ mode: "words", mode2: "50" }),
       );
 
       //WHEN
@@ -108,7 +108,7 @@ describe("url-handler", () => {
     it("sets quote length", () => {
       //GIVEN
       findGetParameterMock.mockReturnValue(
-        urlData({ mode: "quote", mode2: "512" })
+        urlData({ mode: "quote", mode2: "512" }),
       );
 
       //WHEN
@@ -167,7 +167,7 @@ describe("url-handler", () => {
     it("sets funbox", () => {
       //GIVEN
       findGetParameterMock.mockReturnValue(
-        urlData({ funbox: ["crt", "choo_choo"] })
+        urlData({ funbox: ["crt", "choo_choo"] }),
       );
 
       //WHEN
@@ -180,7 +180,7 @@ describe("url-handler", () => {
     it("sets funbox legacy", () => {
       //GIVEN
       findGetParameterMock.mockReturnValue(
-        urlData({ funbox: "crt#choo_choo" })
+        urlData({ funbox: "crt#choo_choo" }),
       );
 
       //WHEN
@@ -207,7 +207,7 @@ describe("url-handler", () => {
           language: "english",
           difficulty: "master",
           funbox: ["ascii", "crt"],
-        })
+        }),
       );
 
       //WHEN
@@ -220,7 +220,7 @@ describe("url-handler", () => {
         {
           duration: 10,
           allowHTML: true,
-        }
+        },
       );
     });
     it("rejects invalid values", () => {
@@ -240,7 +240,7 @@ describe("url-handler", () => {
           language: "invalid",
           difficulty: "invalid",
           funbox: ["invalid"],
-        } as any)
+        } as any),
       );
 
       //WHEN
@@ -249,7 +249,7 @@ describe("url-handler", () => {
       //THEN
       expect(addNotificationMock).toHaveBeenCalledWith(
         `Failed to load test settings from URL: JSON does not match schema: "0" invalid enum value. expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'invalidmode', "1" needs to be a number or a number represented as a string e.g. "10"., "2.mode" invalid enum value. expected 'repeat' | 'random' | 'shuffle', received 'invalid', "2.pipeDelimiter" expected boolean, received string, "2.limit" expected object, received string, "2.text" expected array, received string, "3" expected boolean, received string, "4" expected boolean, received string, "6" invalid enum value. expected 'normal' | 'expert' | 'master', received 'invalid', "7" invalid input`,
-        0
+        0,
       );
     });
   });
@@ -265,7 +265,7 @@ const urlData = (
     language: string;
     difficulty: Difficulty;
     funbox: FunboxName[] | string;
-  }>
+  }>,
 ): string => {
   return compressToURI(
     JSON.stringify([
@@ -277,6 +277,6 @@ const urlData = (
       data.language ?? null,
       data.difficulty ?? null,
       data.funbox ?? null,
-    ])
+    ]),
   );
 };

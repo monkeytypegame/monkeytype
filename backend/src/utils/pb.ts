@@ -23,7 +23,7 @@ export function canFunboxGetPb(result: Result): boolean {
 export function checkAndUpdatePb(
   userPersonalBests: PersonalBests,
   lbPersonalBests: LbPersonalBests | undefined,
-  result: Result
+  result: Result,
 ): CheckAndUpdatePbResult {
   const mode = result.mode;
   const mode2 = result.mode2;
@@ -33,7 +33,7 @@ export function checkAndUpdatePb(
   userPb[mode][mode2] ??= [];
 
   const personalBestMatch = (userPb[mode][mode2] as PersonalBest[]).find((pb) =>
-    matchesPersonalBest(result, pb)
+    matchesPersonalBest(result, pb),
   );
 
   let isPb = true;
@@ -49,7 +49,7 @@ export function checkAndUpdatePb(
     const newLbPb = updateLeaderboardPersonalBests(
       userPb,
       lbPersonalBests,
-      result
+      result,
     );
     if (newLbPb !== null) {
       lbPersonalBests = newLbPb;
@@ -65,7 +65,7 @@ export function checkAndUpdatePb(
 
 function matchesPersonalBest(
   result: Result,
-  personalBest: PersonalBest
+  personalBest: PersonalBest,
 ): boolean {
   if (
     result.difficulty === undefined ||
@@ -97,7 +97,7 @@ function matchesPersonalBest(
 
 function updatePersonalBest(
   personalBest: PersonalBest,
-  result: Result
+  result: Result,
 ): boolean {
   if (personalBest.wpm >= result.wpm) {
     return false;
@@ -162,7 +162,7 @@ function buildPersonalBest(result: Result): PersonalBest {
 export function updateLeaderboardPersonalBests(
   userPersonalBests: PersonalBests,
   lbPersonalBests: LbPersonalBests,
-  result: Result
+  result: Result,
 ): LbPersonalBests | null {
   if (!shouldUpdateLeaderboardPersonalBests(result)) {
     return null;
@@ -183,7 +183,7 @@ export function updateLeaderboardPersonalBests(
       ) {
         bestForEveryLanguage[language] = pb;
       }
-    }
+    },
   );
   Object.entries(bestForEveryLanguage).forEach(([language, pb]) => {
     const languageDoesNotExist = lbPb[mode][mode2]?.[language] === undefined;

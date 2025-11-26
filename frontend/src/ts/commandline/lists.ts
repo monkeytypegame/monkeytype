@@ -39,7 +39,7 @@ challengesPromise
   })
   .catch((e: unknown) => {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update challenges commands")
+      Misc.createErrorMessage(e, "Failed to update challenges commands"),
     );
   });
 
@@ -122,7 +122,7 @@ export const commands: CommandsSubgroup = {
       "britishEnglish",
       ...FunboxCommands,
       "customLayoutfluid",
-      "customPolyglot"
+      "customPolyglot",
     ),
 
     //input
@@ -137,7 +137,7 @@ export const commands: CommandsSubgroup = {
       "hideExtraLetters",
       lazyModeCommand,
       layoutCommand,
-      "codeUnindentOnBackspace"
+      "codeUnindentOnBackspace",
     ),
 
     //sound
@@ -145,7 +145,7 @@ export const commands: CommandsSubgroup = {
       "soundVolume",
       "playSoundOnClick",
       "playSoundOnError",
-      "playTimeWarning"
+      "playTimeWarning",
     ),
 
     //caret
@@ -154,7 +154,7 @@ export const commands: CommandsSubgroup = {
       "caretStyle",
       paceCaretCommand,
       "repeatedPace",
-      "paceCaretStyle"
+      "paceCaretStyle",
     ),
 
     //appearence
@@ -183,7 +183,7 @@ export const commands: CommandsSubgroup = {
       "keymapLegendStyle",
       "keymapSize",
       keymapLayoutCommand,
-      "keymapShowTopRow"
+      "keymapShowTopRow",
     ),
 
     //theme
@@ -198,7 +198,7 @@ export const commands: CommandsSubgroup = {
       ...CustomBackgroundCommands,
       "customBackgroundSize",
       ...CustomBackgroundFilterCommands,
-      "randomTheme"
+      "randomTheme",
     ),
 
     {
@@ -219,7 +219,7 @@ export const commands: CommandsSubgroup = {
       showAverageCommand,
       showPbCommand,
       "monkeyPowerLevel",
-      "monkey"
+      "monkey",
     ),
 
     //danger zone
@@ -301,7 +301,7 @@ export const commands: CommandsSubgroup = {
           .catch((e: unknown) => {
             const message = Misc.createErrorMessage(
               e,
-              "Failed to copy to clipboard"
+              "Failed to copy to clipboard",
             );
             Notifications.add(message, -1);
           });
@@ -352,7 +352,7 @@ export const commands: CommandsSubgroup = {
             .querySelector(".centerbox")
             ?.insertAdjacentHTML(
               "beforeend",
-              `<p style="margin-top:1rem;font-size:1.5rem;">If your skill issue is not fixed yet, please wait a bit longer...</p>`
+              `<p style="margin-top:1rem;font-size:1.5rem;">If your skill issue is not fixed yet, please wait a bit longer...</p>`,
             );
         }, 5000);
       },
@@ -398,7 +398,7 @@ export function doesListExist(listName: string): boolean {
 }
 
 export async function getList(
-  listName: ListsObjectKeys
+  listName: ListsObjectKeys,
 ): Promise<CommandsSubgroup> {
   await Promise.allSettled([challengesPromise]);
 
@@ -458,7 +458,7 @@ export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
 
 function buildSingleListCommands(
   command: Command,
-  parentCommand?: Command
+  parentCommand?: Command,
 ): Command[] {
   const commands: Command[] = [];
   if (command.subgroup) {
@@ -479,7 +479,7 @@ function buildSingleListCommands(
     if (parentCommand) {
       const parentCommandDisplay = parentCommand.display.replace(
         /\s?\.\.\.$/g,
-        ""
+        "",
       );
       const singleListDisplay =
         parentCommandDisplay +
@@ -524,6 +524,6 @@ function buildCommands(
   ...commands: (Command | keyof CommandlineConfigMetadataObject)[]
 ): Command[] {
   return commands.map((it) =>
-    typeof it === "string" ? buildCommandForConfigKey(it) : it
+    typeof it === "string" ? buildCommandForConfigKey(it) : it,
   );
 }

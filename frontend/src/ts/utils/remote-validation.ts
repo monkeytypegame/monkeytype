@@ -5,13 +5,13 @@ type IsValidResonseOrFunction =
   | IsValidResponse;
 export function remoteValidation<V, T>(
   call: (
-    val: V
+    val: V,
   ) => Promise<{ status: number; body: { data?: T; message: string } }>,
   options?: {
     check?: (data: T) => IsValidResponse;
     on4xx?: IsValidResonseOrFunction;
     on5xx?: IsValidResonseOrFunction;
-  }
+  },
 ): (val: V) => Promise<IsValidResponse> {
   return async (val) => {
     const result = await call(val);

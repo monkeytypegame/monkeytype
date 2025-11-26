@@ -3,7 +3,7 @@ import { capitalizeFirstLetter } from "../../utils/strings";
 import { applyReducedMotion } from "../../utils/misc";
 
 const timerEl = document.querySelector(
-  "#typingTest #layoutfluidTimer"
+  "#typingTest #layoutfluidTimer",
 ) as HTMLElement;
 
 export function show(): void {

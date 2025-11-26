@@ -26,11 +26,11 @@ describe("Config", () => {
   describe("test with mocks", () => {
     const canSetConfigWithCurrentFunboxesMock = vi.spyOn(
       FunboxValidation,
-      "canSetConfigWithCurrentFunboxes"
+      "canSetConfigWithCurrentFunboxes",
     );
     const isConfigValueValidMock = vi.spyOn(
       ConfigValidation,
-      "isConfigValueValid"
+      "isConfigValueValid",
     );
     const dispatchConfigEventMock = vi.spyOn(ConfigEvent, "dispatch");
     const dbSaveConfigMock = vi.spyOn(DB, "saveConfig");
@@ -76,7 +76,7 @@ describe("Config", () => {
       expect(() => {
         Config.genericSet("nonExistentKey" as ConfigKey, true);
       }).toThrowError(
-        `Config metadata for key "nonExistentKey" is not defined.`
+        `Config metadata for key "nonExistentKey" is not defined.`,
       );
     });
 
@@ -93,7 +93,7 @@ describe("Config", () => {
         0,
         {
           important: true,
-        }
+        },
       );
     });
 
@@ -123,7 +123,7 @@ describe("Config", () => {
       expect(isConfigValueValidMock).toHaveBeenCalledWith(
         "caret style",
         "banana",
-        CaretStyleSchema
+        CaretStyleSchema,
       );
     });
 
@@ -151,21 +151,21 @@ describe("Config", () => {
         "freedomMode",
         false,
         true,
-        true
+        true,
       );
 
       expect(dispatchConfigEventMock).toHaveBeenCalledWith(
         "stopOnError",
         "off",
         false,
-        "letter"
+        "letter",
       );
 
       expect(dispatchConfigEventMock).toHaveBeenCalledWith(
         "confidenceMode",
         "max",
         false,
-        "off"
+        "off",
       );
     });
 
@@ -192,7 +192,7 @@ describe("Config", () => {
       //send event
       expect(dispatchConfigEventMock).toHaveBeenCalledWith(
         "saveToLocalStorage",
-        expect.stringContaining("numbers")
+        expect.stringContaining("numbers"),
       );
     });
 
@@ -216,11 +216,11 @@ describe("Config", () => {
       //send event
       expect(dispatchConfigEventMock).toHaveBeenCalledWith(
         "saveToLocalStorage",
-        expect.stringContaining("minWpmCustomSpeed")
+        expect.stringContaining("minWpmCustomSpeed"),
       );
       expect(dispatchConfigEventMock).toHaveBeenCalledWith(
         "saveToLocalStorage",
-        expect.stringContaining("minWpm")
+        expect.stringContaining("minWpm"),
       );
     });
 
@@ -241,7 +241,7 @@ describe("Config", () => {
 
       expect(dispatchConfigEventMock).not.toHaveBeenCalledWith(
         "saveToLocalStorage",
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -258,7 +258,7 @@ describe("Config", () => {
         "numbers",
         true,
         true,
-        false
+        false,
       );
     });
 
@@ -294,7 +294,7 @@ describe("Config", () => {
       //THEN
       expect(notificationAddMock).toHaveBeenCalledWith(
         "Ad settings changed. Refreshing...",
-        0
+        0,
       );
       expect(miscReloadAfterMock).toHaveBeenCalledWith(3);
     });
@@ -329,7 +329,7 @@ describe("Config", () => {
     //arrays not having 4 values will get [on, on, on, on] as default
     expect(Config.setAccountChart(["on", "off"] as any)).toBe(false);
     expect(Config.setAccountChart(["on", "off", "on", "true"] as any)).toBe(
-      false
+      false,
     );
   });
   it("setStopOnError", () => {
@@ -509,12 +509,12 @@ describe("Config", () => {
     expect(Config.setCustomBackgroundFilter([0, 1, 2, 3])).toBe(true);
 
     expect(Config.setCustomBackgroundFilter([0, 1, 2, 3, 4] as any)).toBe(
-      false
+      false,
     );
     expect(Config.setCustomBackgroundFilter([] as any)).toBe(false);
     expect(Config.setCustomBackgroundFilter(["invalid"] as any)).toBe(false);
     expect(Config.setCustomBackgroundFilter([1, 2, 3, 4, 5, 6] as any)).toBe(
-      false
+      false,
     );
   });
   it("setMonkeyPowerLevel", () => {
@@ -551,7 +551,7 @@ describe("Config", () => {
     expect(Config.setAccountChart(["on", "off", "off", "on"])).toBe(true);
     expect(Config.setAccountChart(["on", "off"] as any)).toBe(false);
     expect(Config.setAccountChart(["on", "off", "on", "true"] as any)).toBe(
-      false
+      false,
     );
   });
   it("setAlwaysShowDecimalPlaces", () => {
@@ -732,28 +732,30 @@ describe("Config", () => {
   });
   it("setCustomBackground", () => {
     expect(Config.setCustomBackground("http://example.com/test.png")).toBe(
-      true
+      true,
     );
     expect(Config.setCustomBackground("https://www.example.com/test.gif")).toBe(
-      true
+      true,
     );
     expect(Config.setCustomBackground("https://example.com/test.jpg")).toBe(
-      true
+      true,
     );
     expect(Config.setCustomBackground("http://www.example.com/test.jpeg")).toBe(
-      true
+      true,
     );
 
     //gets converted
     expect(
-      Config.setCustomBackground("     http://example.com/test.png   ")
+      Config.setCustomBackground("     http://example.com/test.png   "),
     ).toBe(true);
 
     expect(Config.setCustomBackground("http://www.example.com/test.tiff")).toBe(
-      false
+      false,
     );
     expect(
-      Config.setCustomBackground("http://www.example.com/test?test=foo&bar=baz")
+      Config.setCustomBackground(
+        "http://www.example.com/test?test=foo&bar=baz",
+      ),
     ).toBe(false);
     expect(Config.setCustomBackground("invalid")).toBe(false);
   });
@@ -836,8 +838,8 @@ describe("Config", () => {
         const config = getConfig();
         const applied = Object.fromEntries(
           Object.entries(config).filter(([key]) =>
-            Object.keys(expected).includes(key)
-          )
+            Object.keys(expected).includes(key),
+          ),
         );
         expect(applied).toEqual(expected);
       });
@@ -872,8 +874,8 @@ describe("Config", () => {
         const config = getConfig();
         const applied = Object.fromEntries(
           Object.entries(config).filter(([key]) =>
-            Object.keys(expected).includes(key)
-          )
+            Object.keys(expected).includes(key),
+          ),
         );
         expect(applied).toEqual(expected);
       });

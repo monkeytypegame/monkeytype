@@ -17,12 +17,12 @@ const practiseModal = "#practiseWordsModal .modal";
 function updateUI(): void {
   $(`${practiseModal} .group[data-id="missed"] button`).removeClass("active");
   $(
-    `${practiseModal} .group[data-id="missed"] button[value="${state.missed}"]`
+    `${practiseModal} .group[data-id="missed"] button[value="${state.missed}"]`,
   ).addClass("active");
 
   $(`${practiseModal} .group[data-id="slow"] button`).removeClass("active");
   $(
-    `${practiseModal} .group[data-id="slow"] button[value="${state.slow}"]`
+    `${practiseModal} .group[data-id="slow"] button[value="${state.slow}"]`,
   ).addClass("active");
 
   if (state.missed === "off" && !state.slow) {
@@ -34,7 +34,7 @@ function updateUI(): void {
 
 async function setup(modalEl: HTMLElement): Promise<void> {
   for (const button of modalEl.querySelectorAll(
-    ".group[data-id='missed'] button"
+    ".group[data-id='missed'] button",
   )) {
     button.addEventListener("click", (e) => {
       state.missed = (e.target as HTMLButtonElement).value as
@@ -46,7 +46,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   }
 
   for (const button of modalEl.querySelectorAll(
-    ".group[data-id='slow'] button"
+    ".group[data-id='slow'] button",
   )) {
     button.addEventListener("click", (e) => {
       state.slow = (e.target as HTMLButtonElement).value === "true";

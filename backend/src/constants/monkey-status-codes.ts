@@ -70,7 +70,7 @@ const statuses: Statuses = {
 };
 
 const CUSTOM_STATUS_CODES = new Set<number>(
-  Object.values(statuses).map((status) => status.code)
+  Object.values(statuses).map((status) => status.code),
 );
 
 export function isCustomCode(code: number): boolean {

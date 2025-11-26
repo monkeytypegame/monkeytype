@@ -24,7 +24,7 @@ export function showOfflineBanner(): void {
       () => {
         bannerAlreadyClosed = true;
         noInternetBannerId = undefined;
-      }
+      },
     );
   }
 }
@@ -36,7 +36,7 @@ const throttledHandleState = debounce(5000, () => {
         customTitle: "Connection",
       });
       $(
-        `#bannerCenter .psa.notice[id="${noInternetBannerId}"] .closeButton`
+        `#bannerCenter .psa.notice[id="${noInternetBannerId}"] .closeButton`,
       ).trigger("click");
     }
     bannerAlreadyClosed = false;

@@ -97,7 +97,7 @@ export class SortedTable<T> {
       .append(
         `<i class="fas ${
           descending ? "fa-sort-down" : "fa-sort-up"
-        } aria-hidden="true"></i>`
+        } aria-hidden="true"></i>`,
       );
 
     this.data.sort((a, b) => {
@@ -132,7 +132,7 @@ export class SortedTable<T> {
           data.element = this.buildRow(data.source);
         }
         return data.element;
-      })
+      }),
     );
   }
   protected getData(): { source: T; element?: HTMLTableRowElement }[] {

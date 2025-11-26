@@ -27,7 +27,7 @@ export class Formatting {
 
   typingSpeed(
     wpm: number | null | undefined,
-    formatOptions: FormatOptions = {}
+    formatOptions: FormatOptions = {},
   ): string {
     const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
     if (wpm === undefined || wpm === null) return options.fallback ?? "";
@@ -39,7 +39,7 @@ export class Formatting {
 
   percentage(
     percentage: number | null | undefined,
-    formatOptions: FormatOptions = {}
+    formatOptions: FormatOptions = {},
   ): string {
     const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
     options.suffix = "%" + (options.suffix ?? "");
@@ -49,7 +49,7 @@ export class Formatting {
 
   accuracy(
     accuracy: number | null | undefined,
-    formatOptions: FormatOptions = {}
+    formatOptions: FormatOptions = {},
   ): string {
     return this.percentage(accuracy, {
       rounding: Math.floor,
@@ -59,7 +59,7 @@ export class Formatting {
 
   decimals(
     value: number | null | undefined,
-    formatOptions: FormatOptions = {}
+    formatOptions: FormatOptions = {},
   ): string {
     const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
     return this.number(value, options);
@@ -67,7 +67,7 @@ export class Formatting {
 
   private number(
     value: number | null | undefined,
-    formatOptions: FormatOptions
+    formatOptions: FormatOptions,
   ): string {
     if (value === undefined || value === null)
       return formatOptions.fallback ?? "";
@@ -85,7 +85,7 @@ export class Formatting {
 
   rank(
     position: number | null | undefined,
-    formatOptions: FallbackOptions = {}
+    formatOptions: FallbackOptions = {},
   ): string {
     const options = { fallback: "-", ...formatOptions };
 

@@ -27,7 +27,7 @@ $(accountPage).on("click", ".editProfileButton", () => {
   if (!snapshot) {
     Notifications.add(
       "Failed to open edit profile modal: No user snapshot found",
-      -1
+      -1,
     );
     return;
   }
@@ -47,7 +47,7 @@ $(accountPage).on("click", ".group.history .resultEditTagsButton", (e) => {
   EditResultTagsModal.show(
     resultid ?? "",
     parseJsonWithSchema(tags ?? "[]", TagsArraySchema),
-    "accountPage"
+    "accountPage",
   );
 });
 

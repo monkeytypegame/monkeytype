@@ -25,7 +25,7 @@ const state: State = {
 export function show(
   resultId: string,
   tags: string[],
-  source: "accountPage" | "resultPage"
+  source: "accountPage" | "resultPage",
 ): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
@@ -36,7 +36,7 @@ export function show(
   if (resultId === "") {
     Notifications.add(
       "Failed to show edit result tags modal: result id is empty",
-      -1
+      -1,
     );
     return;
   }
@@ -64,7 +64,7 @@ function appendButtons(): void {
   if (buttonsEl === null) {
     Notifications.add(
       "Failed to append buttons to edit result tags modal: could not find buttons element",
-      -1
+      -1,
     );
     return;
   }
@@ -123,7 +123,7 @@ async function save(): Promise<void> {
   if (response.status !== 200) {
     Notifications.add(
       "Failed to update result tags: " + response.body.message,
-      -1
+      -1,
     );
     return;
   }

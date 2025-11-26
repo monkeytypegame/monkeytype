@@ -16,7 +16,7 @@ vi.mock("../../../src/ts/test/funbox/list", () => ({
 
 vi.mock("../../../src/ts/utils/strings", async () => {
   const actual = await vi.importActual<typeof Strings>(
-    "../../../src/ts/utils/strings"
+    "../../../src/ts/utils/strings",
   );
   return {
     ...actual,
@@ -36,7 +36,7 @@ describe("isCharCorrect", () => {
       strictSpace: false,
     });
     (FunboxList.findSingleActiveFunboxWithFunction as any).mockReturnValue(
-      null
+      null,
     );
     (Strings.areCharactersVisuallyEqual as any).mockReturnValue(false);
   });
@@ -54,7 +54,7 @@ describe("isCharCorrect", () => {
           inputValue: "test",
           targetWord: "word",
           correctShiftUsed: true,
-        })
+        }),
       ).toBe(true);
     });
   });
@@ -67,7 +67,7 @@ describe("isCharCorrect", () => {
           inputValue: "test",
           targetWord: "testA",
           correctShiftUsed: false,
-        })
+        }),
       ).toBe(false);
     });
   });
@@ -98,7 +98,7 @@ describe("isCharCorrect", () => {
           inputValue: input,
           targetWord: word,
           correctShiftUsed: true,
-        })
+        }),
       ).toBe(expected);
     });
   });
@@ -117,9 +117,9 @@ describe("isCharCorrect", () => {
             inputValue: input,
             targetWord: word,
             correctShiftUsed: true,
-          })
+          }),
         ).toBe(expected);
-      }
+      },
     );
   });
 
@@ -130,7 +130,7 @@ describe("isCharCorrect", () => {
         inputValue: "val",
         targetWord: "word",
         correctShiftUsed: true,
-      })
+      }),
     ).toThrow();
   });
 });
@@ -155,7 +155,7 @@ describe("shouldInsertSpaceCharacter", () => {
         data: "a",
         inputValue: "test",
         targetWord: "test",
-      })
+      }),
     ).toBe(null);
   });
 
@@ -166,7 +166,7 @@ describe("shouldInsertSpaceCharacter", () => {
         data: " ",
         inputValue: "test",
         targetWord: "test",
-      })
+      }),
     ).toBe(false);
   });
 
@@ -270,7 +270,7 @@ describe("shouldInsertSpaceCharacter", () => {
           data: " ",
           inputValue,
           targetWord,
-        })
+        }),
       ).toBe(expected);
     });
   });

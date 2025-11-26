@@ -5,7 +5,7 @@ import { GetConfigResponse } from "@monkeytype/contracts/configs";
 import { MonkeyRequest } from "../types";
 
 export async function getConfig(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetConfigResponse> {
   const { uid } = req.ctx.decodedToken;
   const data = (await ConfigDAL.getConfig(uid))?.config ?? null;
@@ -14,7 +14,7 @@ export async function getConfig(
 }
 
 export async function saveConfig(
-  req: MonkeyRequest<undefined, PartialConfig>
+  req: MonkeyRequest<undefined, PartialConfig>,
 ): Promise<MonkeyResponse> {
   const config = req.body;
   const { uid } = req.ctx.decodedToken;
@@ -25,7 +25,7 @@ export async function saveConfig(
 }
 
 export async function deleteConfig(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 

@@ -136,19 +136,19 @@ describe("string utils", () => {
       "should highlight $description",
       ({ text, matches, expected }) => {
         expect(Strings.highlightMatches(text, matches)).toBe(expected);
-      }
+      },
     );
     it.each(shouldNotHighlight)(
       "should not highlight $description",
       ({ text, matches }) => {
         expect(Strings.highlightMatches(text, matches)).toBe(text);
-      }
+      },
     );
     it.each(returnOriginal)(
       "should return original text $description",
       ({ text, matches }) => {
         expect(Strings.highlightMatches(text, matches)).toBe(text);
-      }
+      },
     );
   });
 
@@ -213,7 +213,7 @@ describe("string utils", () => {
       "should convert %s to %s (%s)",
       (input: string, expected: string, _description: string) => {
         expect(Strings.replaceControlCharacters(input)).toBe(expected);
-      }
+      },
     );
   });
 
@@ -266,7 +266,7 @@ describe("string utils", () => {
       "should return %s for word '%s' (%s)",
       (expected: boolean, word: string, _description: string) => {
         expect(Strings.__testing.hasRTLCharacters(word)).toBe(expected);
-      }
+      },
     );
   });
 
@@ -319,10 +319,10 @@ describe("string utils", () => {
         expected: boolean,
         word: string,
         languageRTL: boolean,
-        _description: string
+        _description: string,
       ) => {
         expect(Strings.isWordRightToLeft(word, languageRTL)).toBe(expected);
-      }
+      },
     );
 
     it("should return languageRTL for undefined word", () => {
@@ -499,13 +499,13 @@ describe("string utils", () => {
         char: string,
         expectedCodePoint: number | null,
         description: string,
-        expected: boolean
+        expected: boolean,
       ) => {
         if (expectedCodePoint !== null && char.length === 1) {
           expect(char.codePointAt(0)).toBe(expectedCodePoint);
         }
         expect(Strings.isSpace(char)).toBe(expected);
-      }
+      },
     );
   });
 
@@ -582,7 +582,7 @@ describe("string utils", () => {
         },
       ])("$desc", ({ char1, char2, expected }) => {
         expect(
-          Strings.areCharactersVisuallyEqual(char1, char2, "russian")
+          Strings.areCharactersVisuallyEqual(char1, char2, "russian"),
         ).toBe(expected);
       });
     });
