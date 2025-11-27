@@ -1307,10 +1307,11 @@ async function loadWordsHistory(): Promise<boolean> {
         Config.mode === "zen"
           ? ""
           : input !== word
-          ? word.substring(0, input.length) === input
-            ? "incomplete"
-            : "error"
-          : "";
+            ? word.substring(0, input.length) === input &&
+              Config.mode === "time"
+              ? ""
+              : "error"
+            : "";
 
       if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean
