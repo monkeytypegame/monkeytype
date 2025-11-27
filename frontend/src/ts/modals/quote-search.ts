@@ -71,7 +71,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
       (quote) =>
         (quote.length >= QuoteFilterPopup.minFilterLength &&
           quote.length <= QuoteFilterPopup.maxFilterLength) ||
-        quoteLengthFilter.has(quote.group)
+        quoteLengthFilter.has(quote.group),
     );
   } else {
     usingCustomLength = true;
