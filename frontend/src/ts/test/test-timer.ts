@@ -54,7 +54,7 @@ let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
 let expected = 0;
 
-let timerDebug = true;
+let timerDebug = false;
 export function enableTimerDebug(): void {
   timerDebug = true;
 }
