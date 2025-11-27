@@ -223,7 +223,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
     const offset = ctx.caret?.getBoundingClientRect();
     const coords = [
       offset?.left ?? 0,
-      (offset?.top ?? 0) + (ctx.caret?.offsetHeight ?? 0),
+      (offset?.top ?? 0) + (ctx.caret?.offsetHeight ?? 0) / 2,
     ];
 
     for (
