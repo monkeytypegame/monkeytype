@@ -1304,13 +1304,16 @@ async function loadWordsHistory(): Promise<boolean> {
         throw new Error("empty input word");
       }
 
+      const isIncorrectWord = input !== word;
+      const isLastWord = i === inputHistoryLength - 1;
+      const isTimeMode = Config.mode === "time";
+      const isPartiallyCorrect = word.substring(0, input.length) === input;
+
       const errorClass =
         Config.mode === "zen"
           ? ""
-          : input !== word
-            ? i === inputHistoryLength - 1 &&
-              Config.mode === "time" &&
-              word.substring(0, input.length) === input
+          : isIncorrectWord
+            ? isLastWord && isTimeMode && isPartiallyCorrect
               ? ""
               : "error"
             : "";
