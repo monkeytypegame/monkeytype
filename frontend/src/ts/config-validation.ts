@@ -11,7 +11,7 @@ import * as Sentry from "./sentry";
 export function invalid(
   key: string,
   val: unknown,
-  customMessage?: string
+  customMessage?: string,
 ): void {
   let message = `Invalid value for ${key} (${val}). Please try to change this setting again.`;
 
@@ -27,7 +27,7 @@ export function invalid(
 export function isConfigValueValid<T>(
   key: string,
   val: T,
-  schema: ZodSchema<T>
+  schema: ZodSchema<T>,
 ): boolean {
   const isValid = schema.safeParse(val).success;
   if (!isValid) invalid(key, val, undefined);

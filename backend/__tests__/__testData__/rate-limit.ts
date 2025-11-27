@@ -7,7 +7,7 @@ export function enableRateLimitExpects(): void {
   expect.extend({
     toBeRateLimited: async (
       received: SuperTest,
-      expected: ExpectedRateLimit
+      expected: ExpectedRateLimit,
     ): Promise<MatcherResult> => {
       const now = Date.now();
       const { headers } = await received.expect(200);

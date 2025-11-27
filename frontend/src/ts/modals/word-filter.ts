@@ -121,7 +121,7 @@ async function initSelectOptions(): Promise<void> {
 
   for (const [presetId, preset] of Object.entries(presets)) {
     $("#wordFilterModal .presetInput").append(
-      `<option value=${presetId}>${preset.display}</option>`
+      `<option value=${presetId}>${preset.display}</option>`,
     );
   }
 }
@@ -184,12 +184,12 @@ async function filter(language: Language): Promise<string[]> {
   const filteredWords = [];
 
   const { data: languageWordList, error } = await tryCatch(
-    JSONData.getLanguage(language)
+    JSONData.getLanguage(language),
   );
   if (error) {
     Notifications.add(
       Misc.createErrorMessage(error, "Failed to filter language words"),
-      -1
+      -1,
     );
     return [];
   }
@@ -233,7 +233,7 @@ async function apply(set: boolean): Promise<void> {
   }
 
   const customText = filteredWords.join(
-    CustomText.getPipeDelimiter() ? "|" : " "
+    CustomText.getPipeDelimiter() ? "|" : " ",
   );
 
   hide({
@@ -289,13 +289,13 @@ async function setup(): Promise<void> {
       presetToApply
         .getIncludeString(layout)
         .map((x) => x[0])
-        .join(" ")
+        .join(" "),
     );
     $("#wordExcludeInput").val(
       presetToApply
         .getExcludeString(layout)
         .map((x) => x[0])
-        .join(" ")
+        .join(" "),
     );
   });
 

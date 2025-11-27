@@ -23,7 +23,7 @@ const subgroup: CommandsSubgroup = {
         if (input === undefined || input === "") return;
         UpdateConfig.setMinBurst("fixed");
         const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-          parseInt(input)
+          parseInt(input),
         );
         UpdateConfig.setMinBurstCustomSpeed(newVal);
       },
@@ -37,7 +37,7 @@ const subgroup: CommandsSubgroup = {
         if (input === undefined || input === "") return;
         UpdateConfig.setMinBurst("flex");
         const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-          parseInt(input)
+          parseInt(input),
         );
         UpdateConfig.setMinBurstCustomSpeed(newVal);
       },

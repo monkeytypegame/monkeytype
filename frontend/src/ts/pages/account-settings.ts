@@ -41,13 +41,13 @@ function updateAuthenticationSections(): void {
   if (user === null) return;
 
   const passwordProvider = user.providerData.some(
-    (provider) => provider.providerId === "password"
+    (provider) => provider.providerId === "password",
   );
   const googleProvider = user.providerData.some(
-    (provider) => provider.providerId === "google.com"
+    (provider) => provider.providerId === "google.com",
   );
   const githubProvider = user.providerData.some(
-    (provider) => provider.providerId === "github.com"
+    (provider) => provider.providerId === "github.com",
   );
 
   if (passwordProvider) {
@@ -142,7 +142,7 @@ function updateTabs(): void {
     async () => {
       pageElement.find(".tab").removeClass("active");
       pageElement.find(`.tab[data-tab="${state.tab}"]`).addClass("active");
-    }
+    },
   );
   pageElement.find("button").removeClass("active");
   pageElement.find(`button[data-tab="${state.tab}"]`).addClass("active");
@@ -201,7 +201,7 @@ $(".page.pageAccountSettings").on("click", ".tabs button", (event) => {
 });
 
 $(
-  ".page.pageAccountSettings .section.discordIntegration .getLinkAndGoToOauth"
+  ".page.pageAccountSettings .section.discordIntegration .getLinkAndGoToOauth",
 ).on("click", () => {
   Loader.show();
   void Ape.users.getDiscordOAuth().then((response) => {
@@ -210,7 +210,7 @@ $(
     } else {
       Notifications.add(
         "Failed to get OAuth from discord: " + response.body.message,
-        -1
+        -1,
       );
     }
   });

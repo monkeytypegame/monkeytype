@@ -24,7 +24,7 @@ export const AddApeKeyResponseSchema = responseWithData(
     apeKeyId: IdSchema,
     apeKey: z.string().base64(),
     apeKeyDetails: ApeKeySchema,
-  })
+  }),
 );
 export type AddApeKeyResponse = z.infer<typeof AddApeKeyResponseSchema>;
 
@@ -106,5 +106,5 @@ export const apeKeysContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );

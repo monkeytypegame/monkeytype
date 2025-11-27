@@ -192,7 +192,7 @@ describe("QuotesController", () => {
         newQuote.text,
         newQuote.source,
         newQuote.language,
-        uid
+        uid,
       );
 
       expect(verifyCaptchaMock).toHaveBeenCalledWith(newQuote.captcha);
@@ -212,7 +212,7 @@ describe("QuotesController", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up."
+        "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up.",
       );
     });
     it("should fail without mandatory properties", async () => {
@@ -315,7 +315,7 @@ describe("QuotesController", () => {
         quoteId,
         "editedText",
         "editedSource",
-        "Bob"
+        "Bob",
       );
     });
     it("should approve with optional parameters as null", async () => {
@@ -343,7 +343,7 @@ describe("QuotesController", () => {
         quoteId,
         undefined,
         undefined,
-        "Bob"
+        "Bob",
       );
     });
     it("should approve without optional parameters", async () => {
@@ -371,7 +371,7 @@ describe("QuotesController", () => {
         quoteId,
         undefined,
         undefined,
-        "Bob"
+        "Bob",
       );
     });
     it("should fail without mandatory properties", async () => {
@@ -794,7 +794,7 @@ describe("QuotesController", () => {
           comment: "I don't like this.",
         }),
         10, //configuration maxReport
-        20 //configuration contentReportLimit
+        20, //configuration contentReportLimit
       );
     });
 
@@ -877,7 +877,7 @@ async function enableQuotes(enabled: boolean): Promise<void> {
   mockConfig.quotes = { ...mockConfig.quotes, submissionsEnabled: enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
@@ -891,6 +891,6 @@ async function enableQuoteReporting(enabled: boolean): Promise<void> {
   };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }

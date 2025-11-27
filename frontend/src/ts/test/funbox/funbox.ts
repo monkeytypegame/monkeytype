@@ -46,9 +46,9 @@ export function toggleFunbox(funbox: FunboxName): void {
   ) {
     Notifications.add(
       `${Strings.capitalizeFirstLetter(
-        funbox.replace(/_/g, " ")
+        funbox.replace(/_/g, " "),
       )} funbox is not compatible with the current funbox selection`,
-      0
+      0,
     );
     return;
   }
@@ -69,7 +69,7 @@ export async function clear(): Promise<boolean> {
       ?.attr("class")
       ?.split(/\s+/)
       ?.filter((it) => !it.startsWith("fb-"))
-      ?.join(" ") ?? ""
+      ?.join(" ") ?? "",
   );
 
   $(".funBoxTheme").remove();
@@ -81,7 +81,7 @@ export async function clear(): Promise<boolean> {
 }
 
 export async function activate(
-  funbox?: FunboxName[]
+  funbox?: FunboxName[],
 ): Promise<boolean | undefined> {
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
@@ -97,9 +97,9 @@ export async function activate(
         undefined,
         `Failed to activate funbox: funboxes ${Config.funbox
           .map((it) => it.replace(/_/g, " "))
-          .join(", ")} are not compatible`
+          .join(", ")} are not compatible`,
       ),
-      -1
+      -1,
     );
     UpdateConfig.setFunbox([], true);
     await clear();
@@ -113,12 +113,12 @@ export async function activate(
   $("#wordsWrapper").removeClass("hidden");
 
   const { data: language, error } = await tryCatch(
-    JSONData.getCurrentLanguage(Config.language)
+    JSONData.getCurrentLanguage(Config.language),
   );
   if (error) {
     Notifications.add(
       Misc.createErrorMessage(error, "Failed to activate funbox"),
-      -1
+      -1,
     );
     UpdateConfig.setFunbox([], true);
     await clear();
@@ -129,7 +129,7 @@ export async function activate(
     if (isFunboxActiveWithProperty("noLigatures")) {
       Notifications.add(
         "Current language does not support this funbox mode",
-        0
+        0,
       );
       UpdateConfig.setFunbox([], true);
       await clear();
@@ -143,7 +143,7 @@ export async function activate(
     const check = checkForcedConfig(
       configKey,
       configValue,
-      getActiveFunboxes()
+      getActiveFunboxes(),
     );
     if (check.result) continue;
     if (!check.result) {
@@ -165,7 +165,7 @@ export async function activate(
         }
         if (configKey === "highlightMode") {
           UpdateConfig.setHighlightMode(
-            check.forcedConfigs[0] as HighlightMode
+            check.forcedConfigs[0] as HighlightMode,
           );
         }
       } else {
@@ -179,12 +179,12 @@ export async function activate(
     if (Config.funbox.length > 1) {
       Notifications.add(
         `Failed to activate funboxes ${Config.funbox}: no intersecting forced configs. Disabling funbox`,
-        -1
+        -1,
       );
     } else {
       Notifications.add(
         `Failed to activate funbox ${Config.funbox}: no forced configs. Disabling funbox`,
-        -1
+        -1,
       );
     }
     UpdateConfig.setFunbox([], true);
@@ -210,7 +210,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
   const $body = $("body");
 
   const activeFbClasses = getActiveFunboxNames().map(
-    (name) => "fb-" + name.replaceAll("_", "-")
+    (name) => "fb-" + name.replaceAll("_", "-"),
   );
 
   const currentClasses =
@@ -225,7 +225,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
 
   $body.attr(
     "class",
-    [...new Set([...currentClasses, ...activeFbClasses]).keys()].join(" ")
+    [...new Set([...currentClasses, ...activeFbClasses]).keys()].join(" "),
   );
 
   return true;

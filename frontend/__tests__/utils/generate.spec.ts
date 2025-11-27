@@ -6,7 +6,7 @@ describe("hexadecimal", () => {
     const hex = generate.getHexadecimal();
     expect(hex.length).toSatisfy(
       (len: number) => len % 2 === 0,
-      "The length of the hexadecimal string should be even."
+      "The length of the hexadecimal string should be even.",
     );
 
     expect(hex.length).toBeGreaterThanOrEqual(2);

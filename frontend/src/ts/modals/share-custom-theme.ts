@@ -30,9 +30,9 @@ async function generateUrl(): Promise<string> {
   } = {
     c: ThemeController.colorVars.map(
       (color) =>
-        $(
-          `.pageSettings .customTheme .tabContent.customTheme #${color}[type='color']`
-        ).attr("value") as string
+        $(`.pageSettings .tabContent.customTheme #${color}[type='color']`).attr(
+          "value",
+        ) as string,
     ),
   };
 
@@ -60,7 +60,7 @@ async function copy(): Promise<void> {
       0,
       {
         duration: 5,
-      }
+      },
     );
     void urlModal.show({
       modalChain: modal,

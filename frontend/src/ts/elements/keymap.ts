@@ -17,7 +17,7 @@ import { areSortedArraysEqual } from "../utils/arrays";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
 
-export const keyDataDelimiter = "~~";
+export const keyDataDelimiter = "\uE000";
 
 const stenoKeys: LayoutObject = {
   keymapShowTopRow: true,
@@ -58,27 +58,30 @@ const stenoKeys: LayoutObject = {
   },
 };
 
+function findKeyElements(char: string): JQuery {
+  if (char === " ") {
+    return $("#keymap .keySpace");
+  }
+
+  if (char === '"') {
+    return $(`#keymap .keymapKey[data-key*='${char}']`);
+  }
+
+  return $(`#keymap .keymapKey[data-key*="${char}"]`);
+}
+
 function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
   if (currentKey === "") currentKey = " ";
   try {
     $(".activeKey").removeClass("activeKey");
 
-    let highlightKey;
     if (Config.language.startsWith("korean")) {
       currentKey = Hangul.disassemble(currentKey)[0] ?? currentKey;
     }
-    if (currentKey === " ") {
-      highlightKey = "#keymap .keySpace";
-    } else if (currentKey === '"') {
-      highlightKey = `#keymap .keymapKey[data-key*='${currentKey}']`;
-    } else {
-      highlightKey = `#keymap .keymapKey[data-key*="${currentKey}"]`;
-    }
 
-    // console.log("highlighting", highlightKey);
-
-    $(highlightKey).addClass("activeKey");
+    const $target = findKeyElements(currentKey);
+    $target.addClass("activeKey");
   } catch (e) {
     if (e instanceof Error) {
       console.log("could not update highlighted keymap key: " + e.message);
@@ -88,14 +91,11 @@ function highlightKey(currentKey: string): void {
 
 async function flashKey(key: string, correct?: boolean): Promise<void> {
   if (key === undefined) return;
-  //console.log("key", key);
-  if (key === " ") {
-    key = "#keymap .keySpace";
-  } else if (key === '"') {
-    key = `#keymap .keymapKey[data-key*='${key}']`;
-  } else {
-    key = `#keymap .keymapKey[data-key*="${key}"]`;
-  }
+
+  const $target = findKeyElements(key);
+
+  const elements = $target.toArray();
+  if (elements.length === 0) return;
 
   const themecolors = await ThemeColors.getAll();
 
@@ -120,7 +120,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
       };
     }
 
-    animate(key, {
+    animate(elements, {
       color: [startingStyle.color, themecolors.sub],
       backgroundColor: [startingStyle.backgroundColor, themecolors.subAlt],
       borderColor: [startingStyle.borderColor, themecolors.sub],
@@ -313,7 +313,7 @@ function buildRow(options: {
       const keyElement = `<div class="keymapKey${hide}" data-key="${key
         .map((it) => it.replace('"', "&quot;"))
         .join(
-          keyDataDelimiter
+          keyDataDelimiter,
         )}"><span class="letter" ${letterStyle}>${keyDisplay}</span>${
         bump ? "<div class='bump'></div>" : ""
       }</div>`;
@@ -409,7 +409,7 @@ export async function refresh(): Promise<void> {
     } catch (e) {
       Notifications.add(
         Misc.createErrorMessage(e, `Failed to load keymap ${layoutName}`),
-        -1
+        -1,
       );
       return;
     }
@@ -466,7 +466,7 @@ export async function refresh(): Promise<void> {
   } catch (e) {
     if (e instanceof Error) {
       console.log(
-        "something went wrong when changing layout, resettings: " + e.message
+        "something went wrong when changing layout, resettings: " + e.message,
       );
       // UpdateConfig.setKeymapLayout("qwerty", true);
     }
@@ -520,11 +520,11 @@ async function updateLegends(): Promise<void> {
       const isNotSpace = !el.classList.contains("keySpace");
 
       return isKeymapKey && isNotSpace;
-    }
+    },
   ) as HTMLElement[];
 
   const layoutKeys = keymapKeys.map((el) =>
-    el.dataset["key"]?.split(keyDataDelimiter)
+    el.dataset["key"]?.split(keyDataDelimiter),
   );
   if (layoutKeys.includes(undefined)) return;
 
@@ -561,7 +561,7 @@ async function updateLegends(): Promise<void> {
       continue;
 
     const keyIsSymbol = [lowerCaseCharacter, upperCaseCharacter].some(
-      (character) => symbolsPattern.test(character ?? "")
+      (character) => symbolsPattern.test(character ?? ""),
     );
 
     const keycode = KeyConverter.layoutKeyToKeycode(lowerCaseCharacter, layout);

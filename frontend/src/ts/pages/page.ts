@@ -126,7 +126,7 @@ type PagePropertiesWithUrlParams<T, U extends UrlParamsSchema> = Omit<
 export class PageWithUrlParams<T, U extends UrlParamsSchema> extends Page<T> {
   private urlSchema: U;
   protected override _beforeShow: (
-    options: OptionsWithUrlParams<T, U>
+    options: OptionsWithUrlParams<T, U>,
   ) => Promise<void>;
 
   constructor(props: PagePropertiesWithUrlParams<T, U>) {

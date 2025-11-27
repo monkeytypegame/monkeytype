@@ -22,7 +22,7 @@ describe("Weekly XP Leaderboards", () => {
   describe("get", () => {
     it("should get if enabled", () => {
       expect(WeeklyXpLeaderboard.get(leaderboardsConfig)).toBeInstanceOf(
-        WeeklyXpLeaderboard.WeeklyXpLeaderboard
+        WeeklyXpLeaderboard.WeeklyXpLeaderboard,
       );
     });
     it("should return null if disabled", () => {
@@ -203,7 +203,10 @@ describe("Weekly XP Leaderboards", () => {
       it("should return null for unknown user", async () => {
         expect(await lb.getRank("decoy", leaderboardsConfig)).toBeNull();
         expect(
-          await lb.getRank("decoy", leaderboardsConfig, ["unknown", "unknown2"])
+          await lb.getRank("decoy", leaderboardsConfig, [
+            "unknown",
+            "unknown2",
+          ]),
         ).toBeNull();
       });
 
@@ -217,11 +220,11 @@ describe("Weekly XP Leaderboards", () => {
 
         //WHEN / THEN
         expect(
-          await lb.getRank(user2.uid, leaderboardsConfig, friends)
+          await lb.getRank(user2.uid, leaderboardsConfig, friends),
         ).toEqual({ rank: 2, friendsRank: 1, totalXp: 60, ...user2 });
 
         expect(
-          await lb.getRank(user1.uid, leaderboardsConfig, friends)
+          await lb.getRank(user1.uid, leaderboardsConfig, friends),
         ).toEqual({ rank: 3, friendsRank: 2, totalXp: 50, ...user1 });
       });
     });
@@ -234,7 +237,7 @@ describe("Weekly XP Leaderboards", () => {
       //WHEN
       await WeeklyXpLeaderboard.purgeUserFromXpLeaderboards(
         cheater.uid,
-        leaderboardsConfig
+        leaderboardsConfig,
       );
       //THEN
       expect(await lb.getRank(cheater.uid, leaderboardsConfig)).toBeNull();
@@ -246,7 +249,7 @@ describe("Weekly XP Leaderboards", () => {
 
     async function givenResult(
       xpGained: number,
-      entry?: Partial<RedisXpLeaderboardEntry>
+      entry?: Partial<RedisXpLeaderboardEntry>,
     ): Promise<RedisXpLeaderboardEntry> {
       const uid = new ObjectId().toHexString();
       const result: RedisXpLeaderboardEntry = {

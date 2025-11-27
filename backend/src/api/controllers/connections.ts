@@ -19,7 +19,7 @@ function convert(db: ConnectionsDal.DBConnection): Connection {
   return replaceObjectId(omit(db, ["key"]));
 }
 export async function getConnections(
-  req: MonkeyRequest<GetConnectionsQuery>
+  req: MonkeyRequest<GetConnectionsQuery>,
 ): Promise<GetConnectionsResponse> {
   const { uid } = req.ctx.decodedToken;
   const { status, type } = req.query;
@@ -36,7 +36,7 @@ export async function getConnections(
 }
 
 export async function createConnection(
-  req: MonkeyRequest<undefined, CreateConnectionRequest>
+  req: MonkeyRequest<undefined, CreateConnectionRequest>,
 ): Promise<CreateConnectionResponse> {
   const { uid } = req.ctx.decodedToken;
   const { receiverName } = req.body;
@@ -44,7 +44,7 @@ export async function createConnection(
 
   const receiver = await UserDal.getUserByName(
     receiverName,
-    "create connection"
+    "create connection",
   );
 
   if (uid === receiver.uid) {
@@ -62,7 +62,7 @@ export async function createConnection(
 }
 
 export async function deleteConnection(
-  req: MonkeyRequest<undefined, undefined, IdPathParams>
+  req: MonkeyRequest<undefined, undefined, IdPathParams>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { id } = req.params;
@@ -73,7 +73,7 @@ export async function deleteConnection(
 }
 
 export async function updateConnection(
-  req: MonkeyRequest<undefined, UpdateConnectionRequest, IdPathParams>
+  req: MonkeyRequest<undefined, UpdateConnectionRequest, IdPathParams>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { id } = req.params;

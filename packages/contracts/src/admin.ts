@@ -27,7 +27,7 @@ export type ClearStreakHourOffsetRequest = z.infer<
 export const ToggleBanResponseSchema = responseWithData(
   z.object({
     banned: z.boolean(),
-  })
+  }),
 ).strict();
 export type ToggleBanResponse = z.infer<typeof ToggleBanResponseSchema>;
 
@@ -44,7 +44,7 @@ export const RejectReportsRequestSchema = z
       .array(
         z
           .object({ reportId: z.string(), reason: z.string().optional() })
-          .strict()
+          .strict(),
       )
       .nonempty(),
   })
@@ -138,5 +138,5 @@ export const adminContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );
