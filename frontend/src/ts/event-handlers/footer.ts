@@ -38,8 +38,8 @@ document
             lastSeenServerCompatibility,
           },
           null,
-          2
-        )
+          2,
+        ),
       );
     } else {
       VersionHistoryModal.show();

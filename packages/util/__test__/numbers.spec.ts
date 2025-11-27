@@ -92,8 +92,8 @@ describe("numbers", () => {
             input.inMax,
             input.outMin,
             input.outMax,
-            input.clamp
-          )
+            input.clamp,
+          ),
         ).toEqual(expected);
       });
     });
@@ -122,7 +122,7 @@ describe("numbers", () => {
         "should return $expected for $input",
         ({ input, expected }) => {
           expect(Numbers.isSafeNumber(input)).toEqual(expected);
-        }
+        },
       );
     });
   });
@@ -150,7 +150,7 @@ describe("numbers", () => {
         "should return $expected for $input",
         ({ input, expected }) => {
           expect(Numbers.safeNumber(input as number)).toEqual(expected);
-        }
+        },
       );
     });
   });

@@ -6,7 +6,7 @@ import { applyReducedMotion } from "../utils/misc";
 import { animate } from "animejs";
 
 const textEl = document.querySelector(
-  "#liveStatsTextBottom .liveBurst"
+  "#liveStatsTextBottom .liveBurst",
 ) as Element;
 const miniEl = document.querySelector("#liveStatsMini .burst") as Element;
 

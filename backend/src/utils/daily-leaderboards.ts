@@ -55,7 +55,7 @@ export class DailyLeaderboard {
 
   public async addResult(
     entry: RedisDailyLeaderboardEntry,
-    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
   ): Promise<number> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -71,7 +71,8 @@ export class DailyLeaderboard {
       leaderboardExpirationTimeInDays * 24 * 60 * 60 * 1000;
 
     const leaderboardExpirationTimeInSeconds = Math.floor(
-      (currentDayTimestamp + leaderboardExpirationDurationInMilliseconds) / 1000
+      (currentDayTimestamp + leaderboardExpirationDurationInMilliseconds) /
+        1000,
     );
 
     const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
@@ -84,19 +85,19 @@ export class DailyLeaderboard {
       leaderboardExpirationTimeInSeconds,
       entry.uid,
       resultScore,
-      JSON.stringify(entry)
+      JSON.stringify(entry),
     );
 
     if (
       isValidModeRule(
         this.modeRule,
-        dailyLeaderboardsConfig.scheduleRewardsModeRules
+        dailyLeaderboardsConfig.scheduleRewardsModeRules,
       )
     ) {
       await LaterQueue.scheduleForTomorrow(
         "daily-leaderboard-results",
         this.leaderboardModeKey,
-        this.modeRule
+        this.modeRule,
       );
     }
 
@@ -112,7 +113,7 @@ export class DailyLeaderboard {
     pageSize: number,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
     premiumFeaturesEnabled: boolean,
-    userIds?: string[]
+    userIds?: string[],
   ): Promise<{
     entries: LeaderboardEntry[];
     count: number;
@@ -146,7 +147,7 @@ export class DailyLeaderboard {
         minRank,
         maxRank,
         "false",
-        userIds?.join(",") ?? ""
+        userIds?.join(",") ?? "",
       );
 
     const minWpm =
@@ -156,7 +157,7 @@ export class DailyLeaderboard {
 
     if (results === undefined) {
       throw new Error(
-        "Redis returned undefined when getting daily leaderboard results"
+        "Redis returned undefined when getting daily leaderboard results",
       );
     }
 
@@ -165,7 +166,7 @@ export class DailyLeaderboard {
         try {
           const parsed = parseJsonWithSchema(
             resultJSON,
-            RedisDailyLeaderboardEntrySchema
+            RedisDailyLeaderboardEntrySchema,
           );
 
           return {
@@ -179,10 +180,10 @@ export class DailyLeaderboard {
           throw new Error(
             `Failed to parse leaderboard entry at index ${index}: ${
               error instanceof Error ? error.message : String(error)
-            }`
+            }`,
           );
         }
-      }
+      },
     );
 
     if (!premiumFeaturesEnabled) {
@@ -195,7 +196,7 @@ export class DailyLeaderboard {
   public async getRank(
     uid: string,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
-    userIds?: string[]
+    userIds?: string[],
   ): Promise<LeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -214,7 +215,7 @@ export class DailyLeaderboard {
       leaderboardResultsKey,
       uid,
       "false",
-      userIds?.join(",") ?? ""
+      userIds?.join(",") ?? "",
     );
 
     if (rank === null || rank === undefined) {
@@ -225,7 +226,7 @@ export class DailyLeaderboard {
       return {
         ...parseJsonWithSchema(
           result ?? "null",
-          RedisDailyLeaderboardEntrySchema
+          RedisDailyLeaderboardEntrySchema,
         ),
         rank: rank + 1,
         friendsRank: friendsRank !== undefined ? friendsRank + 1 : undefined,
@@ -234,7 +235,7 @@ export class DailyLeaderboard {
       throw new Error(
         `Failed to parse leaderboard entry: ${
           error instanceof Error ? error.message : String(error)
-        }`
+        }`,
       );
     }
   }
@@ -242,7 +243,7 @@ export class DailyLeaderboard {
 
 export async function purgeUserFromDailyLeaderboards(
   uid: string,
-  configuration: Configuration["dailyLeaderboards"]
+  configuration: Configuration["dailyLeaderboards"],
 ): Promise<void> {
   const connection = RedisClient.getConnection();
   if (!connection || !configuration.enabled) {
@@ -254,7 +255,7 @@ export async function purgeUserFromDailyLeaderboards(
 
 function isValidModeRule(
   modeRule: ValidModeRule,
-  modeRules: ValidModeRule[]
+  modeRules: ValidModeRule[],
 ): boolean {
   const { language, mode, mode2 } = modeRule;
 
@@ -271,7 +272,7 @@ export function getDailyLeaderboard(
   mode: Mode,
   mode2: Mode2<Mode>,
   dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
-  customTimestamp = -1
+  customTimestamp = -1,
 ): DailyLeaderboard | null {
   const { validModeRules, enabled } = dailyLeaderboardsConfig;
 

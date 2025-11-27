@@ -40,7 +40,7 @@ import { CustomThemeColorsSchema } from "@monkeytype/schemas/configs";
 export const GetUserResponseSchema = responseWithData(
   UserSchema.extend({
     inboxUnreadSize: z.number().int().nonnegative(),
-  })
+  }),
 );
 export type GetUserResponse = z.infer<typeof GetUserResponseSchema>;
 
@@ -62,7 +62,7 @@ export type CheckNamePathParameters = z.infer<
 export const CheckNameResponseSchema = responseWithData(
   z.object({
     available: z.boolean(),
-  })
+  }),
 );
 export type CheckNameResponse = z.infer<typeof CheckNameResponseSchema>;
 
@@ -109,7 +109,7 @@ export type AddResultFilterPresetRequest = z.infer<
   typeof AddResultFilterPresetRequestSchema
 >;
 export const AddResultFilterPresetResponseSchema = responseWithData(
-  IdSchema.describe("Id of the created result filter preset")
+  IdSchema.describe("Id of the created result filter preset"),
 );
 export type AddResultFilterPresetResponse = z.infer<
   typeof AddResultFilterPresetResponseSchema
@@ -145,7 +145,7 @@ export const TagIdPathParamsSchema = z.object({
 export type TagIdPathParams = z.infer<typeof TagIdPathParamsSchema>;
 
 export const GetCustomThemesResponseSchema = responseWithData(
-  z.array(CustomThemeSchema)
+  z.array(CustomThemeSchema),
 );
 export type GetCustomThemesResponse = z.infer<
   typeof GetCustomThemesResponseSchema
@@ -158,7 +158,7 @@ export const AddCustomThemeRequestSchema = z.object({
 export type AddCustomThemeRequest = z.infer<typeof AddCustomThemeRequestSchema>;
 
 export const AddCustomThemeResponseSchema = responseWithData(
-  CustomThemeSchema.pick({ _id: true, name: true })
+  CustomThemeSchema.pick({ _id: true, name: true }),
 );
 export type AddCustomThemeResponse = z.infer<
   typeof AddCustomThemeResponseSchema
@@ -180,7 +180,7 @@ export type EditCustomThemeRequst = z.infer<typeof EditCustomThemeRequstSchema>;
 export const GetDiscordOauthLinkResponseSchema = responseWithData(
   z.object({
     url: z.string().url(),
-  })
+  }),
 );
 export type GetDiscordOauthLinkResponse = z.infer<
   typeof GetDiscordOauthLinkResponseSchema
@@ -194,7 +194,7 @@ export const LinkDiscordRequestSchema = z.object({
 export type LinkDiscordRequest = z.infer<typeof LinkDiscordRequestSchema>;
 
 export const LinkDiscordResponseSchema = responseWithData(
-  UserSchema.pick({ discordId: true, discordAvatar: true })
+  UserSchema.pick({ discordId: true, discordAvatar: true }),
 );
 export type LinkDiscordResponse = z.infer<typeof LinkDiscordResponseSchema>;
 
@@ -203,7 +203,7 @@ export const GetStatsResponseSchema = responseWithData(
     completedTests: true,
     startedTests: true,
     timeTyping: true,
-  })
+  }),
 );
 export type GetStatsResponse = z.infer<typeof GetStatsResponseSchema>;
 
@@ -268,7 +268,7 @@ export type UpdateUserProfileRequest = z.infer<
 >;
 
 export const UpdateUserProfileResponseSchema = responseWithData(
-  UserProfileDetailsSchema
+  UserProfileDetailsSchema,
 );
 export type UpdateUserProfileResponse = z.infer<
   typeof UpdateUserProfileResponseSchema
@@ -278,7 +278,7 @@ export const GetUserInboxResponseSchema = responseWithData(
   z.object({
     inbox: z.array(MonkeyMailSchema),
     maxMail: z.number().int(),
-  })
+  }),
 );
 export type GetUserInboxResponse = z.infer<typeof GetUserInboxResponseSchema>;
 
@@ -312,7 +312,7 @@ export type ForgotPasswordEmailRequest = z.infer<
 >;
 
 export const GetTestActivityResponseSchema = responseWithNullableData(
-  CountByYearAndDaySchema
+  CountByYearAndDaySchema,
 );
 export type GetTestActivityResponse = z.infer<
   typeof GetTestActivityResponseSchema
@@ -961,5 +961,5 @@ export const usersContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );

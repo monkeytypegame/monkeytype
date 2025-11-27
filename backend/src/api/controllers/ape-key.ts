@@ -21,20 +21,20 @@ function cleanApeKey(apeKey: ApeKeysDAL.DBApeKey): ApeKey {
 }
 
 export async function getApeKeys(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetApeKeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const apeKeys = await ApeKeysDAL.getApeKeys(uid);
   const cleanedKeys: Record<string, ApeKey> = Object.fromEntries(
-    apeKeys.map((item) => [item._id.toHexString(), cleanApeKey(item)])
+    apeKeys.map((item) => [item._id.toHexString(), cleanApeKey(item)]),
   );
 
   return new MonkeyResponse("ApeKeys retrieved", cleanedKeys);
 }
 
 export async function generateApeKey(
-  req: MonkeyRequest<undefined, AddApeKeyRequest>
+  req: MonkeyRequest<undefined, AddApeKeyRequest>,
 ): Promise<AddApeKeyResponse> {
   const { name, enabled } = req.body;
   const { uid } = req.ctx.decodedToken;
@@ -72,7 +72,7 @@ export async function generateApeKey(
 }
 
 export async function editApeKey(
-  req: MonkeyRequest<undefined, EditApeKeyRequest, ApeKeyParams>
+  req: MonkeyRequest<undefined, EditApeKeyRequest, ApeKeyParams>,
 ): Promise<MonkeyResponse> {
   const { apeKeyId } = req.params;
   const { name, enabled } = req.body;
@@ -84,7 +84,7 @@ export async function editApeKey(
 }
 
 export async function deleteApeKey(
-  req: MonkeyRequest<undefined, undefined, ApeKeyParams>
+  req: MonkeyRequest<undefined, undefined, ApeKeyParams>,
 ): Promise<MonkeyResponse> {
   const { apeKeyId } = req.params;
   const { uid } = req.ctx.decodedToken;

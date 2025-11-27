@@ -40,7 +40,7 @@ class LaterQueue extends MonkeyQueue<LaterTask<LaterTaskType>> {
     taskName: string,
     task: LaterTask<LaterTaskType>,
     jobId: string,
-    delay: number
+    delay: number,
   ): Promise<void> {
     await this.add(taskName, task, {
       delay,
@@ -52,13 +52,13 @@ class LaterQueue extends MonkeyQueue<LaterTask<LaterTaskType>> {
     this.scheduledJobCache.set(jobId, true);
 
     Logger.info(
-      `Scheduled ${task.taskName} for ${new Date(Date.now() + delay)}`
+      `Scheduled ${task.taskName} for ${new Date(Date.now() + delay)}`,
     );
   }
 
   async scheduleForNextWeek(
     taskName: LaterTaskType,
-    taskId: string
+    taskId: string,
   ): Promise<void> {
     const currentWeekTimestamp = getCurrentWeekTimestamp();
     const jobId = `${taskName}:${currentWeekTimestamp}:${taskId}`;
@@ -86,7 +86,7 @@ class LaterQueue extends MonkeyQueue<LaterTask<LaterTaskType>> {
   async scheduleForTomorrow(
     taskName: LaterTaskType,
     taskId: string,
-    modeRule: ValidModeRule
+    modeRule: ValidModeRule,
   ): Promise<void> {
     const currentDayTimestamp = getCurrentDayTimestamp();
     const jobId = `${taskName}:${currentDayTimestamp}:${taskId}`;

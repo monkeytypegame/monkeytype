@@ -36,7 +36,7 @@ class Notification {
     closeCallback = (): void => {
       //
     },
-    allowHTML?: boolean
+    allowHTML?: boolean,
   ) {
     this.type = type;
     this.message = allowHTML ? message : Misc.escapeHTML(message);
@@ -106,7 +106,7 @@ class Notification {
         </div>
       `);
       const notif = document.querySelector<HTMLElement>(
-        `#notificationCenter .notif[id='${this.id}']`
+        `#notificationCenter .notif[id='${this.id}']`,
       );
       if (notif === null) return;
 
@@ -128,7 +128,7 @@ class Notification {
       });
 
       const historyElement = document.querySelector(
-        "#notificationCenter .history"
+        "#notificationCenter .history",
       ) as HTMLElement;
       animate(historyElement, {
         marginTop: {
@@ -151,8 +151,8 @@ class Notification {
 
       $("#bannerCenter").prepend(`
         <div class="${this.type} ${cls} content-grid ${
-        withImage ? "withImage" : ""
-      }" id="${this.id}">
+          withImage ? "withImage" : ""
+        }" id="${this.id}">
         <div class="container">
           ${leftside}
           <div class="text">
@@ -174,7 +174,7 @@ class Notification {
       BannerEvent.dispatch();
       if (this.duration >= 0) {
         $(
-          `#bannerCenter .banner[id='${this.id}'] .closeButton, #bannerCenter .psa[id='${this.id}'] .closeButton`
+          `#bannerCenter .banner[id='${this.id}'] .closeButton, #bannerCenter .psa[id='${this.id}'] .closeButton`,
         ).on("click", () => {
           this.hide();
           this.closeCallback();
@@ -184,11 +184,11 @@ class Notification {
       if (/please (<a.*>)?refresh/i.test(this.message)) {
         // add pointer when refresh is needed
         $(
-          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`,
         ).addClass("clickable");
         // refresh on clicking banner
         $(
-          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`,
         ).on("click", () => {
           window.location.reload();
         });
@@ -203,7 +203,7 @@ class Notification {
   hide(): void {
     if (this.type === "notification") {
       const elem = document.querySelector(
-        `#notificationCenter .notif[id='${this.id}']`
+        `#notificationCenter .notif[id='${this.id}']`,
       ) as HTMLElement;
 
       const duration = Misc.applyReducedMotion(250);
@@ -229,7 +229,7 @@ class Notification {
       });
     } else if (this.type === "banner" || this.type === "psa") {
       $(
-        `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+        `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`,
       ).remove();
       updateMargin();
       BannerEvent.dispatch();
@@ -259,7 +259,7 @@ export type AddNotificationOptions = {
 export function add(
   message: string,
   level = 0,
-  options: AddNotificationOptions = {}
+  options: AddNotificationOptions = {},
 ): void {
   NotificationEvent.dispatch(message, level, options.customTitle);
 
@@ -272,7 +272,7 @@ export function add(
     options.customTitle,
     options.customIcon,
     options.closeCallback,
-    options.allowHTML
+    options.allowHTML,
   ).show();
 }
 
@@ -282,7 +282,7 @@ export function addBanner(
   customIcon = "bullhorn",
   sticky = false,
   closeCallback?: () => void,
-  allowHTML?: boolean
+  allowHTML?: boolean,
 ): number {
   const banner = new Notification(
     "banner",
@@ -293,7 +293,7 @@ export function addBanner(
     undefined,
     customIcon,
     closeCallback,
-    allowHTML
+    allowHTML,
   );
   banner.show();
   return banner.id;
@@ -305,7 +305,7 @@ export function addPSA(
   customIcon = "bullhorn",
   sticky = false,
   closeCallback?: () => void,
-  allowHTML?: boolean
+  allowHTML?: boolean,
 ): number {
   const psa = new Notification(
     "psa",
@@ -316,7 +316,7 @@ export function addPSA(
     undefined,
     customIcon,
     closeCallback,
-    allowHTML
+    allowHTML,
   );
   psa.show();
   return psa.id;

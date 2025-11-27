@@ -3,7 +3,7 @@ import * as ConnectionsDal from "../../src/dal/connections";
 
 export async function createConnection(
   data: Partial<ConnectionsDal.DBConnection>,
-  maxPerUser = 25
+  maxPerUser = 25,
 ): Promise<ConnectionsDal.DBConnection> {
   const result = await ConnectionsDal.create(
     {
@@ -14,7 +14,7 @@ export async function createConnection(
       uid: data.receiverUid ?? new ObjectId().toHexString(),
       name: data.receiverName ?? "user" + new ObjectId().toHexString(),
     },
-    maxPerUser
+    maxPerUser,
   );
   await ConnectionsDal.__testing
     .getCollection()

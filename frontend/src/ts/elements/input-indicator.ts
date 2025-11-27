@@ -13,7 +13,7 @@ export class InputIndicator {
 
   constructor(
     inputElement: JQuery | HTMLInputElement,
-    options: Record<string, InputIndicatorOption>
+    options: Record<string, InputIndicatorOption>,
   ) {
     this.inputElement = inputElement;
     $(this.inputElement).wrap(`<div class="inputAndIndicator"></div>`);
@@ -35,11 +35,11 @@ export class InputIndicator {
             : ""
         }
         data-balloon-pos="left"
-        ${option.message ?? "" ? `aria-label="${option.message}"` : ""}
+        ${(option.message ?? "") ? `aria-label="${option.message}"` : ""}
       >
         <i class="fas fa-fw ${option.icon} ${
-        option.spinIcon ? "fa-spin" : ""
-      }"></i>
+          option.spinIcon ? "fa-spin" : ""
+        }"></i>
       </div>
       `;
     }

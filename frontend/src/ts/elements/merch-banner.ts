@@ -18,7 +18,7 @@ export function showIfNotClosedBefore(): void {
       () => {
         closed.set(true);
       },
-      true
+      true,
     );
   }
 }

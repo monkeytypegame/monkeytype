@@ -87,12 +87,12 @@
     "eslint": "8.57.1",
     "eslint-watch": "8.0.0",
     "openapi3-ts": "2.0.2",
-    "oxlint": "1.25.0",
+    "oxlint": "1.29.0",
     "readline-sync": "1.4.10",
     "supertest": "7.1.4",
     "testcontainers": "11.4.0",
     "tsx": "4.16.2",
-    "typescript": "5.5.4",
+    "typescript": "5.9.3",
     "vitest": "4.0.8"
   }
 }

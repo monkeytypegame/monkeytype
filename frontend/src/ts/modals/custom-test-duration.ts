@@ -73,9 +73,8 @@ export function show(showOptions?: ShowOptions): void {
     ...showOptions,
     focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
-      (
-        modalEl.querySelector("input") as HTMLInputElement
-      ).value = `${Config.time}`;
+      (modalEl.querySelector("input") as HTMLInputElement).value =
+        `${Config.time}`;
       previewDuration();
     },
   });
@@ -102,7 +101,7 @@ function apply(): void {
         0,
         {
           duration: 7,
-        }
+        },
       );
     }
   } else {

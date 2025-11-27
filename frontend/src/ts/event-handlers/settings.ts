@@ -38,7 +38,7 @@ settingsPage
       ) {
         Notifications.add(
           "Failed to edit preset: Could not find preset id or name",
-          -1
+          -1,
         );
         return;
       }
@@ -56,7 +56,7 @@ settingsPage
       ) {
         Notifications.add(
           "Failed to remove preset: Could not find preset id or name",
-          -1
+          -1,
         );
         return;
       }
@@ -81,7 +81,7 @@ settingsPage?.querySelector(".section.tags")?.addEventListener("click", (e) => {
     ) {
       Notifications.add(
         "Failed to edit tag: Could not find tag id or name",
-        -1
+        -1,
       );
       return;
     }
@@ -99,7 +99,7 @@ settingsPage?.querySelector(".section.tags")?.addEventListener("click", (e) => {
     ) {
       Notifications.add(
         "Failed to clear tag PB: Could not find tag id or name",
-        -1
+        -1,
       );
       return;
     }
@@ -117,7 +117,7 @@ settingsPage?.querySelector(".section.tags")?.addEventListener("click", (e) => {
     ) {
       Notifications.add(
         "Failed to remove tag: Could not find tag id or name",
-        -1
+        -1,
       );
       return;
     }

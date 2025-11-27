@@ -16,7 +16,7 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
   if (response.status !== 200) {
     Notifications.add(
       "Failed to save last result: " + response.body.message,
-      -1
+      -1,
     );
     return;
   }
@@ -25,7 +25,7 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
   // but now with the stronger types it shows that we are forcing completed event
   // into a snapshot result - might not cuase issues but worth investigating
   const result = structuredClone(
-    notSignedInLastResult
+    notSignedInLastResult,
   ) as unknown as SnapshotResult<Mode>;
 
   const dataToSave: DB.SaveLocalResultData = {
@@ -43,6 +43,6 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
   TestLogic.clearNotSignedInResult();
   Notifications.add(
     `Last test result saved ${response.body.data.isPb ? `(new pb!)` : ""}`,
-    1
+    1,
   );
 }

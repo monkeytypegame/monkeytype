@@ -60,7 +60,7 @@ let isInitInProgress = false;
 // Highlights .word elements in range [firstWordIndex, lastWordIndex]
 export async function highlightWordsInRange(
   firstWordIndex: number,
-  lastWordIndex: number
+  lastWordIndex: number,
 ): Promise<boolean> {
   // Early exit if not hovering over chart
   if (!isHoveringChart) {
@@ -102,7 +102,7 @@ export async function highlightWordsInRange(
   const newHighlightElementPositions = getHighlightElementPositions(
     firstWordIndex,
     lastWordIndex,
-    TestState.isLanguageRightToLeft
+    TestState.isLanguageRightToLeft,
   );
 
   // For each line...
@@ -191,8 +191,8 @@ async function init(): Promise<boolean> {
     await new Promise((resolve) =>
       setTimeout(
         resolve,
-        TOGGLE_RESULT_WORDS_BUFFER - TIME_DIFF_SINCE_LAST_TOGGLE
-      )
+        TOGGLE_RESULT_WORDS_BUFFER - TIME_DIFF_SINCE_LAST_TOGGLE,
+      ),
     );
   }
 
@@ -346,7 +346,7 @@ type HighlightPosition = {
 function getHighlightElementPositions(
   firstWordIndex: number,
   lastWordIndex: number,
-  isRTL = false
+  isRTL = false,
 ): HighlightPosition[] {
   const lineIndexOfFirstWord = wordIndexToLineIndexDict[
     firstWordIndex
@@ -360,7 +360,7 @@ function getHighlightElementPositions(
 
   const highlightWidth: number = getHighlightWidth(
     firstWordIndex,
-    lastWordIndex
+    lastWordIndex,
   );
 
   const firstWordEl = wordEls[firstWordIndex];
@@ -500,7 +500,7 @@ function getHighlightElementPositions(
 // Function to calculate the width of the highlight for a given range of words
 function getHighlightWidth(
   wordStartIndex: number,
-  wordEndIndex: number
+  wordEndIndex: number,
 ): number {
   const lineIndexOfWordStart = wordIndexToLineIndexDict[wordStartIndex];
   const lineIndexOfWordEnd = wordIndexToLineIndexDict[wordEndIndex];

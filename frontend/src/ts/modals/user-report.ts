@@ -35,7 +35,7 @@ export async function show(options: ShowOptions): Promise<void> {
   if (!CaptchaController.isCaptchaAvailable()) {
     Notifications.add(
       "Could not show user report popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-      -1
+      -1,
     );
     return;
   }
@@ -46,7 +46,7 @@ export async function show(options: ShowOptions): Promise<void> {
     beforeAnimation: async (modalEl) => {
       CaptchaController.render(
         modalEl.querySelector(".g-recaptcha") as HTMLElement,
-        "userReportModal"
+        "userReportModal",
       );
 
       const { name } = options;
@@ -102,7 +102,7 @@ async function submitReport(): Promise<void> {
       0,
       {
         duration: 10,
-      }
+      },
     );
     return;
   }
@@ -110,7 +110,7 @@ async function submitReport(): Promise<void> {
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
     Notifications.add(
-      `Report comment is ${characterDifference} character(s) too long`
+      `Report comment is ${characterDifference} character(s) too long`,
     );
     return;
   }

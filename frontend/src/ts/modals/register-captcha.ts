@@ -11,7 +11,7 @@ export async function show(): Promise<void> {
   if (!CaptchaController.isCaptchaAvailable()) {
     Notifications.add(
       "Could not show register popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-      -1
+      -1,
     );
     resolve(undefined);
     return;
@@ -29,7 +29,7 @@ export async function show(): Promise<void> {
         (token) => {
           resolve(token);
           hide();
-        }
+        },
       );
     },
   });

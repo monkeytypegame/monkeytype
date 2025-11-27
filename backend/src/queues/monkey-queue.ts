@@ -51,7 +51,7 @@ export class MonkeyQueue<T> {
   }
 
   async addBulk(
-    tasks: { name: string; data: T; opts?: BulkJobOptions }[]
+    tasks: { name: string; data: T; opts?: BulkJobOptions }[],
   ): Promise<void> {
     if (this.jobQueue === undefined) {
       return;

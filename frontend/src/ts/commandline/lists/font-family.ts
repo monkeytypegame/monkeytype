@@ -65,7 +65,7 @@ if (fromMeta.subgroup) {
               ) {
                 Notifications.add(
                   "Unsupported font format, must be woff, woff2, ttf or otf.",
-                  0
+                  0,
                 );
                 cleanup();
                 return;
@@ -81,7 +81,7 @@ if (fromMeta.subgroup) {
                 } catch (e) {
                   Notifications.add(
                     "Error uploading font: " + (e as Error).message,
-                    0
+                    0,
                   );
                 }
                 cleanup();
@@ -108,7 +108,7 @@ if (fromMeta.subgroup) {
             } catch (e) {
               Notifications.add(
                 "Error removing font: " + (e as Error).message,
-                0
+                0,
               );
             }
           },
