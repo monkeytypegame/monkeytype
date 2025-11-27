@@ -60,7 +60,7 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .popupTitle").html("Add new preset");
         $("#editPresetModal .modal .submit").html(`add`);
         presetNameEl.setValue(null);
-        presetNameEl.element.getParent()?.removeClass("hidden");
+        presetNameEl.getParent()?.removeClass("hidden");
         $("#editPresetModal .modal input").removeClass("hidden");
         $(
           "#editPresetModal .modal label.changePresetToCurrentCheckbox",
@@ -75,7 +75,7 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .popupTitle").html("Edit preset");
         $("#editPresetModal .modal .submit").html(`save`);
         presetNameEl?.setValue(name);
-        presetNameEl?.element.getParent()?.removeClass("hidden");
+        presetNameEl?.getParent()?.removeClass("hidden");
 
         $("#editPresetModal .modal input").removeClass("hidden");
         $(
@@ -104,7 +104,7 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .inputs").addClass("hidden");
         $("#editPresetModal .modal .presetType").addClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").addClass("hidden");
-        presetNameEl?.element.getParent()?.addClass("hidden");
+        presetNameEl?.getParent()?.addClass("hidden");
       }
       updateUI();
     },

@@ -142,7 +142,7 @@ const emailInputEl = new ValidatedHtmlInputElement(
   },
 );
 
-emailInputEl.element.on("focus", async () => {
+emailInputEl.on("focus", async () => {
   if (!moduleLoadAttempted) {
     moduleLoadAttempted = true;
     try {

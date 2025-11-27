@@ -44,10 +44,10 @@ button?.on("click", () => {
   update();
 });
 
-input.element.on("keypress", (e) => {
+input.on("keypress", (e) => {
   if (e.key === "Enter") {
     saveFromInput();
   }
 });
 
-input.element.on("focusout", (e) => saveFromInput());
+input.on("focusout", (e) => saveFromInput());

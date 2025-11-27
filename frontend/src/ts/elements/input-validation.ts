@@ -143,20 +143,28 @@ export type ValidationOptions<T> = (T extends string
   callback?: (result: ValidationResult) => void;
 };
 
-export class ValidatedHtmlInputElement<T = string> {
-  public element: ElementWithUtils<HTMLInputElement>;
+export class ValidatedHtmlInputElement<
+  T = string,
+> extends ElementWithUtils<HTMLInputElement> {
+  // public element: ElementWithUtils<HTMLInputElement>;
   private indicator: InputIndicator;
   private currentStatus: ValidationResult = {
     status: "checking",
   };
 
   constructor(
-    inputElement: ElementWithUtils<HTMLInputElement>,
+    inputElement: HTMLInputElement | ElementWithUtils<HTMLInputElement>,
     options: ValidationOptions<T>,
   ) {
-    this.element = inputElement;
+    if (inputElement instanceof HTMLInputElement) {
+      //@ts-expect-error huh?
+      super(inputElement);
+    } else {
+      super(inputElement.native);
+    }
+    // this.element = inputElement;
 
-    this.indicator = new InputIndicator(inputElement, {
+    this.indicator = new InputIndicator(this, {
       success: {
         icon: "fa-check",
         level: 1,
@@ -192,28 +200,27 @@ export class ValidatedHtmlInputElement<T = string> {
       "inputValueConvert" in options ? options.inputValueConvert : undefined,
     );
 
-    inputElement.on("input", handler);
+    this.on("input", handler);
   }
 
   getValidationResult(): ValidationResult {
     return this.currentStatus;
   }
-  setValue(val: string | null): this {
-    this.element.setValue(val ?? "");
+
+  override setValue(val: string | null): this {
     if (val === null) {
       this.indicator.hide();
       this.currentStatus = { status: "checking" };
     } else {
-      this.element.dispatch("input");
+      super.setValue(val);
+      this.dispatch("input");
     }
 
     return this;
   }
-  getValue(): string {
-    return this.element.getValue();
-  }
+
   triggerValidation(): void {
-    this.element.dispatch("input");
+    this.dispatch("input");
   }
 }
 
