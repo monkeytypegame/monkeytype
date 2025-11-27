@@ -1306,20 +1306,17 @@ async function loadWordsHistory(): Promise<boolean> {
 
       const isIncorrectWord = input !== word;
       const isLastWord = i === inputHistoryLength - 1;
-      const isTestTimed =
+      const isTimedTest =
         Config.mode === "time" ||
         (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
         (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-      const isZenMode = Config.mode === "zen";
       const isPartiallyCorrect = word.substring(0, input.length) === input;
 
-      const errorClass = isZenMode
-        ? ""
-        : isIncorrectWord
-          ? isLastWord && isTestTimed && isPartiallyCorrect
-            ? ""
-            : "error"
-          : "";
+      const shouldShowError =
+        Config.mode !== "zen" &&
+        !(isLastWord && isTimedTest && isPartiallyCorrect);
+
+      const errorClass = isIncorrectWord && shouldShowError ? "error" : "";
 
       if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean
