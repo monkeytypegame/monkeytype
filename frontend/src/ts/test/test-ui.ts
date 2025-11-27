@@ -734,20 +734,26 @@ export function colorful(tc: boolean): void {
   }
 }
 
-type UpdateActiveWordLettersParams = {
-  wordIndex: number;
-  input: string;
-  compositionData: string;
-};
+// because of the requestAnimationFrame, multiple calls to updateWordLetters
+// can be made before the actual update happens. This map keeps track of the
+// latest input for each word and is used in before-insert-text to
+// make sure the currently typed word will not overflow to the next line
+export let pendingWordData: Map<number, string> = new Map();
 
 export async function updateWordLetters({
   wordIndex,
   input,
   compositionData,
-}: UpdateActiveWordLettersParams): Promise<void> {
+}: {
+  wordIndex: number;
+  input: string;
+  compositionData: string;
+}): Promise<void> {
+  pendingWordData.set(wordIndex, input);
   requestDebouncedAnimationFrame(
     `test-ui.updateWordLetters.${wordIndex}`,
     async () => {
+      pendingWordData.delete(wordIndex);
       const currentWord = TestWords.words.get(wordIndex);
       if (!currentWord && Config.mode !== "zen") return;
       let ret = "";
@@ -1682,21 +1688,25 @@ function updateLiveStatsColor(value: TimerColor): void {
   }
 }
 
-export function getActiveWordTopAfterAppend(data: string): number {
+export function getActiveWordTopWithDifferentData(data: string): number {
   const activeWord = getActiveWordElement();
 
   if (!activeWord) throw new Error("No active word element found");
 
-  const displayData = data === " " ? "_" : data;
+  const nodes = [];
+  for (let i = activeWord.children.length; i < data.length; i++) {
+    const tempLetter = document.createElement("letter");
+    const displayData = data[i] === " " ? "_" : data[i];
+    tempLetter.textContent = displayData as string;
+    nodes.push(tempLetter);
+  }
 
-  const tempLetter = document.createElement("letter");
-  tempLetter.className = "temp";
-  tempLetter.textContent = displayData;
-
-  activeWord.appendChild(tempLetter);
+  activeWord.append(...nodes);
 
   const top = activeWord.offsetTop;
-  tempLetter.remove();
+  for (const node of nodes) {
+    node.remove();
+  }
 
   return top;
 }

@@ -81,7 +81,14 @@ export function onBeforeInsertText(data: string): boolean {
   ) {
     // make sure to only check this when really necessary
     // because this check is expensive (causes layout reflows)
-    const topAfterAppend = TestUI.getActiveWordTopAfterAppend(data);
+
+    // if there is pending word data, wwe need to account for that
+    const pendingWordData = TestUI.pendingWordData.get(
+      TestState.activeWordIndex,
+    );
+    const topAfterAppend = TestUI.getActiveWordTopWithDifferentData(
+      (pendingWordData ?? TestInput.input.current) + data,
+    );
     const wordJumped = topAfterAppend > TestUI.activeWordTop;
     if (wordJumped) {
       return true;
