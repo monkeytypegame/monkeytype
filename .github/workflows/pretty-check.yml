@@ -35,8 +35,8 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Install prettier
-        run: pnpm add -g prettier@3.7.1 @prettier/plugin-oxc@0.1.1
+      - name: Install Prettier deps only
+        run: pnpm add -D -w prettier @prettier/plugin-oxc
 
 
       - name: Get changed files
