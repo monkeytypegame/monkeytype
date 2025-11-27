@@ -39,7 +39,7 @@ export type Validation<T> = {
 // oxlint-disable-next-line no-explicit-any
 export function debounceIfNeeded<T extends (...args: any[]) => any>(
   delay: number,
-  callback: T
+  callback: T,
 ): T | debounce<T> {
   if (delay <= 0) {
     return callback;
@@ -58,7 +58,7 @@ export function debounceIfNeeded<T extends (...args: any[]) => any>(
 export function createInputEventHandler<T>(
   callback: (result: ValidationResult) => void,
   validation: Validation<T>,
-  inputValueConvert?: (val: string) => T
+  inputValueConvert?: (val: string) => T,
 ): (e: Event) => Promise<void> {
   let callIsValid =
     validation.isValid !== undefined
@@ -67,7 +67,7 @@ export function createInputEventHandler<T>(
           async (
             originalInput: HTMLInputElement,
             currentValue: string,
-            checkValue: T
+            checkValue: T,
           ) => {
             const result = await validation.isValid?.(checkValue);
             if (originalInput.value !== currentValue) {
@@ -90,7 +90,7 @@ export function createInputEventHandler<T>(
                 });
               }
             }
-          }
+          },
         )
       : undefined;
 
@@ -142,80 +142,75 @@ export type ValidationOptions<T> = (T extends string
   callback?: (result: ValidationResult) => void;
 };
 
-export type ValidatedHtmlInputElement = HTMLInputElement & {
-  getValidationResult: () => ValidationResult;
-  setValue: (val: string | null) => void;
-  triggerValidation: () => void;
-};
-/**
- * adds an 'InputIndicator` to the given `inputElement` and updates its status depending on the given validation
- * @param inputElement
- * @param options
- */
-export function validateWithIndicator<T>(
-  inputElement: HTMLInputElement,
-  options: ValidationOptions<T>
-): ValidatedHtmlInputElement {
-  //use indicator
-  const indicator = new InputIndicator(inputElement, {
-    success: {
-      icon: "fa-check",
-      level: 1,
-    },
-    failed: {
-      icon: "fa-times",
-      level: -1,
-    },
-    warning: {
-      icon: "fa-exclamation-triangle",
-      level: 1,
-    },
-    checking: {
-      icon: "fa-circle-notch",
-      spinIcon: true,
-      level: 0,
-    },
-  });
-
-  let currentStatus: ValidationResult = {
+export class ValidatedHtmlInputElement<T = string> {
+  public native: HTMLInputElement;
+  private indicator: InputIndicator;
+  private currentStatus: ValidationResult = {
     status: "checking",
   };
-  const callback = (result: ValidationResult): void => {
-    currentStatus = result;
-    if (result.status === "failed" || result.status === "warning") {
-      indicator.show(result.status, result.errorMessage);
-    } else {
-      indicator.show(result.status);
-    }
-    options.callback?.(result);
-  };
 
-  const handler = createInputEventHandler(
-    callback,
-    options,
-    "inputValueConvert" in options ? options.inputValueConvert : undefined
-  );
+  constructor(inputElement: HTMLInputElement, options: ValidationOptions<T>) {
+    this.native = inputElement;
 
-  inputElement.addEventListener("input", handler);
+    this.indicator = new InputIndicator(inputElement, {
+      success: {
+        icon: "fa-check",
+        level: 1,
+      },
+      failed: {
+        icon: "fa-times",
+        level: -1,
+      },
+      warning: {
+        icon: "fa-exclamation-triangle",
+        level: 1,
+      },
+      checking: {
+        icon: "fa-circle-notch",
+        spinIcon: true,
+        level: 0,
+      },
+    });
 
-  const result = inputElement as ValidatedHtmlInputElement;
-  result.getValidationResult = () => {
-    return currentStatus;
-  };
-  result.setValue = (val: string | null) => {
-    inputElement.value = val ?? "";
+    const callback = (result: ValidationResult): void => {
+      this.currentStatus = result;
+      if (result.status === "failed" || result.status === "warning") {
+        this.indicator.show(result.status, result.errorMessage);
+      } else {
+        this.indicator.show(result.status);
+      }
+      options.callback?.(result);
+    };
+
+    const handler = createInputEventHandler(
+      callback,
+      options,
+      "inputValueConvert" in options ? options.inputValueConvert : undefined,
+    );
+
+    inputElement.addEventListener("input", handler);
+  }
+
+  getValidationResult(): ValidationResult {
+    return this.currentStatus;
+  }
+  setValue(val: string | null): this {
+    this.native.value = val ?? "";
     if (val === null) {
-      indicator.hide();
-      currentStatus = { status: "checking" };
+      this.indicator.hide();
+      this.currentStatus = { status: "checking" };
     } else {
-      inputElement.dispatchEvent(new Event("input"));
+      this.native.dispatchEvent(new Event("input"));
     }
-  };
-  result.triggerValidation = () => {
-    inputElement.dispatchEvent(new Event("input"));
-  };
 
-  return result;
+    return this;
+  }
+  getValue(): string {
+    return this.native.value;
+  }
+  triggerValidation(): void {
+    this.native.dispatchEvent(new Event("input"));
+  }
 }
 
 export type ConfigInputOptions<K extends ConfigKey, T = ConfigType[K]> = {
@@ -260,7 +255,7 @@ export function handleConfigInput<T extends ConfigKey>({
   if (validation !== undefined) {
     const schema = ConfigSchema.shape[configName] as ZodType;
 
-    validateWithIndicator(input, {
+    new ValidatedHtmlInputElement(input, {
       schema: validation.schema ? schema : undefined,
       //@ts-expect-error this is fine
       isValid: validation.isValid,

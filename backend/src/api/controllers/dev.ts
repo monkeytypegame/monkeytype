@@ -28,7 +28,7 @@ const CREATE_RESULT_DEFAULT_OPTIONS = {
 };
 
 export async function createTestData(
-  req: MonkeyRequest<undefined, GenerateDataRequest>
+  req: MonkeyRequest<undefined, GenerateDataRequest>,
 ): Promise<GenerateDataResponse> {
   const { username, createUser } = req.body;
   const user = await getOrCreateUser(username, "password", createUser);
@@ -45,7 +45,7 @@ export async function createTestData(
 async function getOrCreateUser(
   username: string,
   password: string,
-  createUser = false
+  createUser = false,
 ): Promise<UserDal.DBUser> {
   const existingUser = await UserDal.findByName(username);
 
@@ -70,7 +70,7 @@ async function getOrCreateUser(
 
 async function createTestResults(
   user: UserDal.DBUser,
-  configOptions: GenerateDataRequest
+  configOptions: GenerateDataRequest,
 ): Promise<void> {
   const config = {
     ...CREATE_RESULT_DEFAULT_OPTIONS,
@@ -90,11 +90,11 @@ async function createTestResults(
   for (const day of days) {
     Logger.success(
       `User ${user.name} insert ${day.amount} results on ${new Date(
-        day.timestamp
-      )}`
+        day.timestamp,
+      )}`,
     );
     const results = createArray(day.amount, () =>
-      createResult(user, day.timestamp)
+      createResult(user, day.timestamp),
     );
     if (results.length > 0)
       await ResultDal.getResultCollection().insertMany(results);
@@ -111,7 +111,7 @@ function random(min: number, max: number): number {
 
 function createResult(
   user: UserDal.DBUser,
-  timestamp: Date //evil, we modify this value
+  timestamp: Date, //evil, we modify this value
 ): DBResult {
   const mode: Mode = randomValue(["time", "words"]);
   const mode2: number =
@@ -183,7 +183,7 @@ async function updateUser(uid: string): Promise<void> {
   const timeTyping = stats.reduce((a, c) => (a + c["timeTyping"]) as number, 0);
   const completedTests = stats.reduce(
     (a, c) => (a + c["completedTests"]) as number,
-    0
+    0,
   );
 
   //update PBs
@@ -207,7 +207,7 @@ async function updateUser(uid: string): Promise<void> {
         language: Language;
         mode: "time" | "custom" | "words" | "quote" | "zen";
         mode2: `${number}` | "custom" | "zen";
-      }
+      },
   );
 
   for (const mode of modes) {
@@ -218,7 +218,7 @@ async function updateUser(uid: string): Promise<void> {
         mode: mode.mode,
         mode2: mode.mode2,
       },
-      { sort: { wpm: -1, timestamp: 1 } }
+      { sort: { wpm: -1, timestamp: 1 } },
     )) as DBResult;
 
     if (personalBests[mode.mode] === undefined) personalBests[mode.mode] = {};
@@ -263,7 +263,7 @@ async function updateUser(uid: string): Promise<void> {
         personalBests: personalBests,
         lbPersonalBests: lbPersonalBests,
       },
-    }
+    },
   );
 }
 
@@ -391,7 +391,7 @@ async function updateTestActicity(uid: string): Promise<void> {
           },
         },
       ],
-      { allowDiskUse: true }
+      { allowDiskUse: true },
     )
     .toArray();
 }

@@ -40,7 +40,7 @@ export async function get(
   page: number,
   pageSize: number,
   premiumFeaturesEnabled: boolean = false,
-  uid?: string
+  uid?: string,
 ): Promise<DBLeaderboardEntry[] | false> {
   if (page < 0 || pageSize < 0) {
     throw new MonkeyError(500, "Invalid page or pageSize");
@@ -72,7 +72,7 @@ export async function get(
             },
           },
           ...pipeline,
-        ]
+        ],
       );
     } else {
       leaderboard = await getCollection({ language, mode, mode2 })
@@ -100,7 +100,7 @@ export async function getCount(
   mode: string,
   mode2: string,
   language: string,
-  uid?: string
+  uid?: string,
 ): Promise<number> {
   const key = `${language}_${mode}_${mode2}`;
   if (uid === undefined && cachedCounts.has(key)) {
@@ -121,7 +121,7 @@ export async function getCount(
             collectionName: getCollectionName({ language, mode, mode2 }),
             uid,
           },
-          [{ $project: { _id: true } }]
+          [{ $project: { _id: true } }],
         )
       ).length;
     }
@@ -133,7 +133,7 @@ export async function getRank(
   mode2: string,
   language: string,
   uid: string,
-  friendsOnly: boolean = false
+  friendsOnly: boolean = false,
 ): Promise<DBLeaderboardEntry | null | false> {
   try {
     if (!friendsOnly) {
@@ -157,7 +157,7 @@ export async function getRank(
               },
             },
             { $match: { uid } },
-          ]
+          ],
         );
       return results[0] ?? null;
     }
@@ -174,7 +174,7 @@ export async function getRank(
 export async function update(
   mode: string,
   mode2: string,
-  language: string
+  language: string,
 ): Promise<{
   message: string;
   rank?: number;
@@ -271,7 +271,7 @@ export async function update(
       },
       { $out: lbCollectionName },
     ],
-    { allowDiskUse: true }
+    { allowDiskUse: true },
   );
 
   const start1 = performance.now();
@@ -322,7 +322,7 @@ export async function update(
         },
       },
     ],
-    { allowDiskUse: true }
+    { allowDiskUse: true },
   );
   const start3 = performance.now();
   await histogram.toArray();
@@ -334,7 +334,7 @@ export async function update(
 
   void addLog(
     `system_lb_update_${language}_${mode}_${mode2}`,
-    `Aggregate ${timeToRunAggregate}s, loop 0s, insert 0s, index ${timeToRunIndex}s, histogram ${timeToSaveHistogram}`
+    `Aggregate ${timeToRunAggregate}s, loop 0s, insert 0s, index ${timeToRunIndex}s, histogram ${timeToSaveHistogram}`,
   );
 
   setLeaderboard(language, mode, mode2, [
@@ -352,7 +352,7 @@ export async function update(
 async function createIndex(
   key: string,
   minTimeTyping: number,
-  dropIfMismatch = true
+  dropIfMismatch = true,
 ): Promise<void> {
   const index = {
     [`${key}.wpm`]: -1,
@@ -387,7 +387,7 @@ async function createIndex(
     if (!dropIfMismatch) throw e;
     if (
       (e as Error).message.startsWith(
-        "An existing index has the same name as the requested index"
+        "An existing index has the same name as the requested index",
       )
     ) {
       Logger.warning(`Index ${key} not matching, dropping and recreating...`);

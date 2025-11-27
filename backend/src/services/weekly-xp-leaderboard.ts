@@ -53,7 +53,7 @@ export class WeeklyXpLeaderboard {
 
   public async addResult(
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
-    opts: AddResultOpts
+    opts: AddResultOpts,
   ): Promise<number> {
     const { entry, xpGained } = opts;
 
@@ -75,12 +75,12 @@ export class WeeklyXpLeaderboard {
     const weeklyXpLeaderboardExpirationTimeInSeconds = Math.floor(
       (currentWeekTimestamp +
         weeklyXpLeaderboardExpirationDurationInMilliseconds) /
-        1000
+        1000,
     );
 
     const currentEntry = await connection.hget(
       weeklyXpLeaderboardResultsKey,
-      entry.uid
+      entry.uid,
     );
 
     const currentEntryTimeTypedSeconds =
@@ -104,12 +104,12 @@ export class WeeklyXpLeaderboard {
           RedisXpLeaderboardEntrySchema.parse({
             ...entry,
             timeTypedSeconds: totalTimeTypedSeconds,
-          })
-        )
+          }),
+        ),
       ),
       LaterQueue.scheduleForNextWeek(
         "weekly-xp-leaderboard-results",
-        "weekly-xp"
+        "weekly-xp",
       ),
     ]);
 
@@ -121,7 +121,7 @@ export class WeeklyXpLeaderboard {
     pageSize: number,
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
     premiumFeaturesEnabled: boolean,
-    userIds?: string[]
+    userIds?: string[],
   ): Promise<{
     entries: XpLeaderboardEntry[];
     count: number;
@@ -153,18 +153,18 @@ export class WeeklyXpLeaderboard {
       minRank,
       maxRank,
       "true",
-      userIds?.join(",") ?? ""
+      userIds?.join(",") ?? "",
     );
 
     if (results === undefined) {
       throw new Error(
-        "Redis returned undefined when getting weekly leaderboard results"
+        "Redis returned undefined when getting weekly leaderboard results",
       );
     }
 
     if (scores === undefined) {
       throw new Error(
-        "Redis returned undefined when getting weekly leaderboard scores"
+        "Redis returned undefined when getting weekly leaderboard scores",
       );
     }
 
@@ -173,13 +173,13 @@ export class WeeklyXpLeaderboard {
         try {
           const parsed = parseJsonWithSchema(
             resultJSON,
-            RedisXpLeaderboardEntrySchema
+            RedisXpLeaderboardEntrySchema,
           );
           const scoreValue = scores[index];
 
           if (typeof scoreValue !== "string") {
             throw new Error(
-              `Invalid score value at index ${index}: ${scoreValue}`
+              `Invalid score value at index ${index}: ${scoreValue}`,
             );
           }
 
@@ -195,10 +195,10 @@ export class WeeklyXpLeaderboard {
           throw new Error(
             `Failed to parse leaderboard entry at index ${index}: ${
               error instanceof Error ? error.message : String(error)
-            }`
+            }`,
           );
         }
-      }
+      },
     );
 
     if (!premiumFeaturesEnabled) {
@@ -211,7 +211,7 @@ export class WeeklyXpLeaderboard {
   public async getRank(
     uid: string,
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
-    userIds?: string[]
+    userIds?: string[],
   ): Promise<XpLeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
@@ -230,7 +230,7 @@ export class WeeklyXpLeaderboard {
       weeklyXpLeaderboardResultsKey,
       uid,
       "true",
-      userIds?.join(",") ?? ""
+      userIds?.join(",") ?? "",
     );
 
     if (rank === null || result === null) {
@@ -248,7 +248,7 @@ export class WeeklyXpLeaderboard {
       throw new Error(
         `Failed to parse leaderboard entry: ${
           error instanceof Error ? error.message : String(error)
-        }`
+        }`,
       );
     }
   }
@@ -256,7 +256,7 @@ export class WeeklyXpLeaderboard {
 
 export function get(
   weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
-  customTimestamp?: number
+  customTimestamp?: number,
 ): WeeklyXpLeaderboard | null {
   const { enabled } = weeklyXpLeaderboardConfig;
 
@@ -269,7 +269,7 @@ export function get(
 
 export async function purgeUserFromXpLeaderboards(
   uid: string,
-  weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
+  weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
 ): Promise<void> {
   const connection = RedisClient.getConnection();
   if (!connection || !weeklyXpLeaderboardConfig.enabled) {
@@ -279,7 +279,7 @@ export async function purgeUserFromXpLeaderboards(
   await connection.purgeResults(
     0,
     uid,
-    weeklyXpLeaderboardLeaderboardNamespace
+    weeklyXpLeaderboardLeaderboardNamespace,
   );
 }
 

@@ -24,7 +24,7 @@ export async function verify(captcha: string): Promise<boolean> {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `secret=${recaptchaSecret}&response=${captcha}`,
-    }
+    },
   );
 
   if (!response.ok) {

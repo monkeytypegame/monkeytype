@@ -24,7 +24,7 @@ export function show(): void {
   if (visible) return;
   visible = true;
   const el = document.querySelector(
-    "#result .stats .wpm .crown"
+    "#result .stats .wpm .crown",
   ) as HTMLElement;
 
   animate(el, {

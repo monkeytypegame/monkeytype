@@ -29,7 +29,7 @@ export function show(): void {
               //replace links with a tags
               body = body.replace(
                 /\[(.*?)\]\((.*?)\)/g,
-                '<a href="$2" target="_blank">$1</a>'
+                '<a href="$2" target="_blank">$1</a>',
               );
 
               $("#versionHistoryModal .modal .releases").append(`
@@ -37,7 +37,7 @@ export function show(): void {
           <div class="title">${release.name}</div>
           <div class="date">${format(
             new Date(release.published_at),
-            "dd MMM yyyy"
+            "dd MMM yyyy",
           )}</div>
           <div class="body">${body}</div>
         </div>
@@ -48,7 +48,7 @@ export function show(): void {
         .catch((e: unknown) => {
           const msg = createErrorMessage(e, "Failed to fetch version history");
           $("#versionHistoryModal .modal").html(
-            `<div class="releases">${msg}</div`
+            `<div class="releases">${msg}</div`,
           );
         });
       $("#newVersionIndicator").addClass("hidden");

@@ -34,6 +34,16 @@ const practiceSubgroup: CommandsSubgroup = {
       },
     },
     {
+      id: "practiseWordsBoth",
+      display: "both",
+      exec: (): void => {
+        PractiseWords.init("words", true);
+        TestLogic.restart({
+          practiseMissed: true,
+        });
+      },
+    },
+    {
       id: "practiseWordsCustom",
       display: "custom...",
       opensModal: true,
@@ -138,7 +148,7 @@ const commands: Command[] = [
         },
         () => {
           Notifications.add("Failed to copy!", -1);
-        }
+        },
       );
     },
     available: (): boolean => {

@@ -37,7 +37,7 @@ function getHashes(): Record<string, string> {
   const hashes = Object.fromEntries(
     readdirSync("./static/languages").map((file) => {
       return [file.slice(0, -5), calcHash(file)];
-    })
+    }),
   );
 
   const end = performance.now();
@@ -51,7 +51,7 @@ function calcHash(file: string): string {
   const currentLanguage = JSON.stringify(
     JSON.parse(readFileSync("./static/languages/" + file).toString()),
     null,
-    0
+    0,
   );
   const encoder = new TextEncoder();
   const data = encoder.encode(currentLanguage);

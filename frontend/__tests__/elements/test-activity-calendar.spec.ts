@@ -312,7 +312,7 @@ describe("test-activity-calendar.ts", () => {
           [],
           getDate("2023-05-10"),
           0,
-          true
+          true,
         );
 
         expect(calendar.getMonths()).toEqual([
@@ -371,7 +371,7 @@ describe("test-activity-calendar.ts", () => {
           [],
           getDate("2023-05-10"),
           1,
-          true
+          true,
         );
 
         expect(calendar.getMonths()).toEqual([
@@ -430,7 +430,7 @@ describe("test-activity-calendar.ts", () => {
           [],
           getDate("2024-05-10"),
           0,
-          true
+          true,
         );
 
         expect(calendar.getMonths()).toEqual([
@@ -489,7 +489,7 @@ describe("test-activity-calendar.ts", () => {
           [],
           getDate("2024-05-10"),
           1,
-          true
+          true,
         );
 
         expect(calendar.getMonths()).toEqual([
@@ -668,7 +668,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new TestActivityCalendar(
           data,
           getDate("2024-04-10"),
-          0
+          0,
         );
         const days = calendar.getDays();
 
@@ -707,7 +707,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new TestActivityCalendar(
           data,
           getDate("2024-04-10"),
-          1
+          1,
         );
         const days = calendar.getDays();
 
@@ -748,7 +748,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new TestActivityCalendar(
           data,
           getDate("2024-12-31"),
-          0
+          0,
         );
 
         //WHEN
@@ -780,7 +780,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new TestActivityCalendar(
           data,
           getDate("2024-12-31"),
-          1
+          1,
         );
 
         //WHEN
@@ -812,7 +812,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new TestActivityCalendar(
           data,
           new Date("2023-12-31T23:59:59Z"),
-          0
+          0,
         ); //2023-12-31T23:59:59Z
 
         //WHEN
@@ -849,7 +849,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new TestActivityCalendar(
           data,
           getDate("2024-04-10"),
-          0
+          0,
         );
 
         //WHEN
@@ -875,7 +875,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new TestActivityCalendar(
           data,
           getDate("2024-04-10"),
-          0
+          0,
         );
 
         //WHEN
@@ -907,7 +907,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new TestActivityCalendar(
           data,
           getDate("2023-02-10"),
-          0
+          0,
         );
 
         //WHEN
@@ -945,7 +945,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new TestActivityCalendar(
           data,
           getDate("2023-02-10"),
-          0
+          0,
         );
 
         //WHEN
@@ -978,7 +978,7 @@ describe("test-activity-calendar.ts", () => {
           data,
           getDate("2024-02-10"),
           0,
-          true
+          true,
         );
 
         //WHEN
@@ -1007,7 +1007,7 @@ describe("test-activity-calendar.ts", () => {
           data,
           getDate("2024-02-10"),
           1,
-          true
+          true,
         );
 
         //WHEN
@@ -1040,7 +1040,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new ModifiableTestActivityCalendar(
           [1, 2, 3],
           lastDate,
-          0
+          0,
         );
 
         //WHEN
@@ -1062,7 +1062,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new ModifiableTestActivityCalendar(
           [1, 2, 3],
           lastDate,
-          0
+          0,
         );
 
         //WHEN
@@ -1100,7 +1100,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new ModifiableTestActivityCalendar(
           [1, 2, 3],
           getDate("2024-04-10"),
-          0
+          0,
         );
 
         //WHEN
@@ -1125,7 +1125,7 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new ModifiableTestActivityCalendar(
           getData("2023-12-20", "2024-12-24"),
           getDate("2024-12-24"),
-          0
+          0,
         );
 
         //WHEN
@@ -1146,12 +1146,12 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new ModifiableTestActivityCalendar(
           [1, 2, 3],
           getDate("2024-04-10"),
-          0
+          0,
         );
 
         //WHEN
         expect(() => calendar.increment(getDate("2024-04-09"))).toThrowError(
-          new Error("cannot alter data in the past.")
+          new Error("cannot alter data in the past."),
         );
       });
     });
@@ -1166,7 +1166,7 @@ describe("test-activity-calendar.ts", () => {
       const calendar = new ModifiableTestActivityCalendar(
         [1, 2, 3, 4],
         lastDate,
-        0
+        0,
       );
 
       //WHEN
@@ -1199,7 +1199,7 @@ describe("test-activity-calendar.ts", () => {
       const calendar = new ModifiableTestActivityCalendar(
         [1, 2, 3, 4],
         lastDate,
-        0
+        0,
       );
 
       //THEN
@@ -1221,7 +1221,7 @@ function getData(from: string, to: string): number[] {
   const end = getDate(to);
 
   return Dates.eachDayOfInterval({ start, end }).map((it) =>
-    Dates.getDayOfYear(it)
+    Dates.getDayOfYear(it),
   );
 }
 
@@ -1250,7 +1250,7 @@ expect.extend({
   },
   toHaveLevel(
     received: TestActivityDay,
-    expected: string | number
+    expected: string | number,
   ): MatcherResult {
     return {
       pass: received.level === expected.toString(),

@@ -157,7 +157,7 @@ export function show(
   action: Action,
   id?: string,
   name?: string,
-  modalChain?: AnimatedModal
+  modalChain?: AnimatedModal,
 ): void {
   const options: ShowOptions = {
     modalChain,

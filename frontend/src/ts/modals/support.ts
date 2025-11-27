@@ -13,7 +13,7 @@ const modal = new AnimatedModal({
         { subgroupOverride: "enableAds" },
         {
           modalChain: modal,
-        }
+        },
       );
     });
   },

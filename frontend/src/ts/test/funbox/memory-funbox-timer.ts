@@ -5,7 +5,7 @@ let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
 
 const timerEl = document.querySelector(
-  "#typingTest #memoryTimer"
+  "#typingTest #memoryTimer",
 ) as HTMLElement;
 
 export function show(): void {

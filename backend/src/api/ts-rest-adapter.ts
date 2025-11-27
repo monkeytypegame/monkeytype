@@ -12,9 +12,9 @@ export function callController<
   TResponse,
   //ignoring as it might be used in the future
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-  TStatus = 200
+  TStatus = 200,
 >(
-  handler: MonkeyHandler<TQuery, TBody, TParams, TResponse>
+  handler: MonkeyHandler<TQuery, TBody, TParams, TResponse>,
 ): (all: TypeSafeTsRestRequest<TRoute, TQuery, TBody, TParams>) => Promise<{
   status: TStatus;
   body: MonkeyResponse<TResponse>;
@@ -63,14 +63,14 @@ type WithoutParams = {
 };
 
 type MonkeyHandler<TQuery, TBody, TParams, TResponse> = (
-  req: MonkeyRequest<TQuery, TBody, TParams>
+  req: MonkeyRequest<TQuery, TBody, TParams>,
 ) => Promise<MonkeyResponse<TResponse>>;
 
 type TypeSafeTsRestRequest<
   TRoute extends AppRoute | AppRouter,
   TQuery,
   TBody,
-  TParams
+  TParams,
 > = {
   req: TsRestRequest<TRoute>;
 } & (TQuery extends undefined ? WithoutQuery : WithQuery<TQuery>) &

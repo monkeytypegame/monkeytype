@@ -106,7 +106,7 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 
 function generateWords(): string[] {
   const characterInput = $(
-    "#customGeneratorModal .characterInput"
+    "#customGeneratorModal .characterInput",
   ).val() as string;
   const minLength =
     parseInt($("#customGeneratorModal .minLengthInput").val() as string) || 2;
@@ -148,7 +148,7 @@ async function apply(set: boolean): Promise<void> {
   }
 
   const customText = generatedWords.join(
-    CustomText.getPipeDelimiter() ? "|" : " "
+    CustomText.getPipeDelimiter() ? "|" : " ",
   );
 
   hide({

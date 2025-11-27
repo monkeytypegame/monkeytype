@@ -3,7 +3,7 @@ import * as Notifications from "../notifications";
 import { applyCustomBackground } from "../../controllers/theme-controller";
 
 const parentEl = document.querySelector(
-  ".pageSettings .section[data-config-name='customBackgroundSize']"
+  ".pageSettings .section[data-config-name='customBackgroundSize']",
 );
 const usingLocalImageEl = parentEl?.querySelector(".usingLocalImage");
 const separatorEl = parentEl?.querySelector(".separator");

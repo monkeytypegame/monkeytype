@@ -23,6 +23,8 @@ nav .textButton:hover {
 }
 
 body.crtmode nav .textButton {
-  box-shadow: 3px 0 1px var(--crt-text-color-glow),
-    -3px 0 var(--crt-text-color-glow), 0 0 3px;
+  box-shadow:
+    3px 0 1px var(--crt-text-color-glow),
+    -3px 0 var(--crt-text-color-glow),
+    0 0 3px;
 }

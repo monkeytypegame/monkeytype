@@ -23,13 +23,13 @@ function getMemory(): string {
 
 async function check(): Promise<void> {
   const { data: currentVersion, error } = await tryCatch(
-    getLatestReleaseFromGitHub()
+    getLatestReleaseFromGitHub(),
   );
 
   if (error) {
     const msg = createErrorMessage(
       error,
-      "Failed to fetch version number from GitHub"
+      "Failed to fetch version number from GitHub",
     );
     console.error(msg);
     return;

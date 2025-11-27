@@ -38,7 +38,7 @@ describe("LeaderboardsDal", () => {
       //THEN
       expect(results).toHaveLength(1);
       expect(
-        (results as LeaderboardsDal.DBLeaderboardEntry[])[0]
+        (results as LeaderboardsDal.DBLeaderboardEntry[])[0],
       ).toHaveProperty("uid", applicableUser.uid);
     });
 
@@ -56,7 +56,7 @@ describe("LeaderboardsDal", () => {
         "15",
         "english",
         0,
-        50
+        50,
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -84,7 +84,7 @@ describe("LeaderboardsDal", () => {
         "60",
         "english",
         0,
-        50
+        50,
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
@@ -111,7 +111,7 @@ describe("LeaderboardsDal", () => {
         "60",
         "english",
         0,
-        50
+        50,
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -135,7 +135,7 @@ describe("LeaderboardsDal", () => {
         "15",
         "english",
         0,
-        50
+        50,
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -198,7 +198,7 @@ describe("LeaderboardsDal", () => {
         "15",
         "english",
         0,
-        50
+        50,
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -237,7 +237,7 @@ describe("LeaderboardsDal", () => {
         "english",
         0,
         50,
-        true
+        true,
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -270,7 +270,7 @@ describe("LeaderboardsDal", () => {
         "english",
         0,
         50,
-        false
+        false,
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -295,7 +295,7 @@ describe("LeaderboardsDal", () => {
         "english",
         1,
         2,
-        true
+        true,
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
@@ -334,7 +334,7 @@ describe("LeaderboardsDal", () => {
         0,
         50,
         false,
-        uid
+        uid,
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
@@ -373,7 +373,7 @@ describe("LeaderboardsDal", () => {
         1,
         2,
         false,
-        uid
+        uid,
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
@@ -395,7 +395,7 @@ describe("LeaderboardsDal", () => {
         1,
         2,
         false,
-        uid
+        uid,
       )) as LeaderboardsDal.DBLeaderboardEntry[];
       //THEN
       expect(results).toEqual([]);
@@ -421,7 +421,7 @@ describe("LeaderboardsDal", () => {
             rank: 3,
             name: me.name,
             uid: me.uid,
-          })
+          }),
         );
     });
     it("should get for friends only", async () => {
@@ -450,7 +450,7 @@ describe("LeaderboardsDal", () => {
       expect(await LeaderboardsDal.getCount("time", "60", "english", me.uid)) //
         .toEqual(3);
       expect(
-        await LeaderboardsDal.getRank("time", "60", "english", me.uid, true)
+        await LeaderboardsDal.getRank("time", "60", "english", me.uid, true),
       ) //
         .toEqual(
           expect.objectContaining({
@@ -459,7 +459,7 @@ describe("LeaderboardsDal", () => {
             friendsRank: 2,
             name: me.name,
             uid: me.uid,
-          })
+          }),
         );
     });
   });
@@ -467,7 +467,7 @@ describe("LeaderboardsDal", () => {
 
 function expectedLbEntry(
   time: string,
-  { rank, user, badgeId, isPremium, friendsRank }: ExpectedLbEntry
+  { rank, user, badgeId, isPremium, friendsRank }: ExpectedLbEntry,
 ) {
   // @ts-expect-error
   const lbBest: PersonalBest =
@@ -493,7 +493,7 @@ function expectedLbEntry(
 
 async function createUser(
   lbPersonalBests?: LbPersonalBests,
-  userProperties?: Partial<UserDal.DBUser>
+  userProperties?: Partial<UserDal.DBUser>,
 ): Promise<UserDal.DBUser> {
   const uid = new ObjectId().toHexString();
   await UserDal.addUser("User " + uid, uid + "@example.com", uid);
@@ -510,7 +510,7 @@ async function createUser(
           ...userProperties,
           lbPersonalBests,
         },
-      }
+      },
     );
 
   return await UserDal.getUser(uid, "test");

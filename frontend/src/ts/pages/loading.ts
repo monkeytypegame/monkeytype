@@ -10,7 +10,7 @@ const textEl = pageEl.find(".text");
 
 export async function updateBar(
   percentage: number,
-  duration: number
+  duration: number,
 ): Promise<void> {
   await promiseAnimate(barEl[0]?.querySelector(".fill") as HTMLElement, {
     width: percentage + "%",

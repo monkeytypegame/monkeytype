@@ -3,14 +3,7 @@
   "tabWidth": 2,
   "useTabs": false,
   "htmlWhitespaceSensitivity": "ignore",
+  "trailingComma": "all",
   "endOfLine": "lf",
-  "trailingComma": "es5",
-  "overrides": [
-    {
-      "files": ["*.ts"],
-      "options": {
-        "parser": "typescript"
-      }
-    }
-  ]
+  "plugins": ["@prettier/plugin-oxc"]
 }

@@ -51,8 +51,8 @@ async function getLog() {
 
   return execPromise(`git describe --tags --abbrev=0 HEAD^`).then((lastTag) =>
     execPromise(
-      `git log --oneline ${lastTag.trim()}..HEAD --pretty="format:${lineDelimiter}%H${logDelimiter}%h${logDelimiter}%s${logDelimiter}%b"`
-    )
+      `git log --oneline ${lastTag.trim()}..HEAD --pretty="format:${lineDelimiter}%H${logDelimiter}%h${logDelimiter}%s${logDelimiter}%b"`,
+    ),
   );
 }
 
@@ -124,7 +124,7 @@ function buildSection(type, allItems) {
   let ret = `### ${titles[type]}\n\n`;
 
   const items = allItems.filter(
-    (item) => item.type === type && !item.body.includes("!nuf")
+    (item) => item.type === type && !item.body.includes("!nuf"),
   );
 
   if (items.length === 0) {
@@ -139,13 +139,13 @@ function buildFooter(logs) {
     "\n### Nerd stuff\n\nThese changes will not be visible to users, but are included for completeness and to credit contributors.\n\n";
 
   const featLogs = logs.filter(
-    (item) => item.type === "feat" && item.body.includes("!nuf")
+    (item) => item.type === "feat" && item.body.includes("!nuf"),
   );
   const imprLogs = logs.filter(
-    (item) => item.type === "impr" && item.body.includes("!nuf")
+    (item) => item.type === "impr" && item.body.includes("!nuf"),
   );
   const fixLogs = logs.filter(
-    (item) => item.type === "fix" && item.body.includes("!nuf")
+    (item) => item.type === "fix" && item.body.includes("!nuf"),
   );
   const styleLogs = logs.filter((item) => item.type === "style");
   const docLogs = logs.filter((item) => item.type === "docs");
@@ -173,7 +173,7 @@ function buildFooter(logs) {
   //remove dupes based on hash
   const uniqueOtherLogs = allOtherLogs.filter(
     (item, index, self) =>
-      index === self.findIndex((t) => t.hashes[0].full === item.hashes[0].full)
+      index === self.findIndex((t) => t.hashes[0].full === item.hashes[0].full),
   );
 
   // console.log(uniqueOtherLogs);
@@ -255,7 +255,7 @@ function convertStringToLog(logString) {
     //split message using regex based on fix(language): spelling mistakes in Nepali wordlist and quotes (sapradhan) (#4528)
     //scope is optional, username is optional, pr number is optional
     const [_, type, scope, message, username, pr] = title.split(
-      /^(\w+)(?:\(([^)]+)\))?:\s+(.+?)(?:\s*\((@[^)]+)\))?(?:\s+\((#[^)]+)\))?$/
+      /^(\w+)(?:\(([^)]+)\))?:\s+(.+?)(?:\s*\((@[^)]+)\))?(?:\s+\((#[^)]+)\))?$/,
     );
 
     const usernames = username ? username.split(", ") : [];
@@ -345,7 +345,7 @@ async function main() {
   log = log.filter((item) => !itemIsAddingQuotes(item));
 
   let quoteReportCommits = log.filter((item) =>
-    itemIsAddressingQuoteReports(item)
+    itemIsAddressingQuoteReports(item),
   );
   log = log.filter((item) => !itemIsAddressingQuoteReports(item));
 
