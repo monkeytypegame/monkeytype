@@ -244,11 +244,12 @@ async function apply(set: boolean): Promise<void> {
   });
 }
 
-function switchWordExcludeInput(): void {
+function switchExactMatchInput(applyPreset: boolean): void {
   const wordExcludeInputEl = $("#wordFilterModal #wordExcludeInput");
 
-  if (wordExcludeInputEl.attr("disabled") === "disabled") {
+  if (wordExcludeInputEl.attr("disabled") === "disabled" || applyPreset) {
     wordExcludeInputEl.removeAttr("disabled");
+    $("#wordFilterModal #exactMatchOnly").prop("checked", false);
     return;
   }
 
@@ -283,6 +284,7 @@ async function setup(): Promise<void> {
 
     const layout = await JSONData.getLayout(layoutName);
 
+    switchExactMatchInput(true);
     $("#wordIncludeInput").val(
       presetToApply
         .getIncludeString(layout)
@@ -299,7 +301,7 @@ async function setup(): Promise<void> {
 
   $("#wordFilterModal #exactMatchOnly").on("change", () => {
     $("#wordFilterModal #wordExcludeInput").val("");
-    switchWordExcludeInput();
+    switchExactMatchInput(false);
   });
 
   $("#wordFilterModal button.addButton").on("click", () => {
