@@ -463,7 +463,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     void updateResults(searchText);
   });
 
-  modalEl.querySelector(".refreshQuotes")?.addEventListener("click", () => {
+  document?.addEventListener("refresh", () => {
     const searchText = (
       document.getElementById("searchBox") as HTMLInputElement
     ).value;

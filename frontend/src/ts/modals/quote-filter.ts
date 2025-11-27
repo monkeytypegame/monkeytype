@@ -4,10 +4,8 @@ export let minFilterLength: number = 0;
 export let maxFilterLength: number = 0;
 
 function refresh(): void {
-  let refreshButton = document.querySelector(
-    ".refreshQuotes"
-  ) as HTMLButtonElement;
-  refreshButton.click();
+  const refreshEvent = new CustomEvent("refresh");
+  document.dispatchEvent(refreshEvent);
 }
 
 export const quoteFilterModal = new SimpleModal({
