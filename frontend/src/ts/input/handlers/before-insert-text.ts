@@ -8,6 +8,7 @@ import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
+import * as SlowTimer from "../../states/slow-timer";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -72,6 +73,7 @@ export function onBeforeInsertText(data: string): boolean {
     TestInput.input.current.length >= TestWords.words.getCurrent().length;
 
   if (
+    !SlowTimer.get() && // don't do this check if slow timer is active
     dataIsNotFalsy &&
     !Config.blindMode &&
     !Config.hideExtraLetters &&

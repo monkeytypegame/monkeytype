@@ -45,6 +45,7 @@ import {
   isInputElementFocused,
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
+import * as SlowTimer from "../states/slow-timer";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -904,9 +905,11 @@ export async function updateWordLetters({
       if (Config.tapeMode !== "off") {
         void scrollTape();
       }
-      if (Config.mode === "zen") {
+      if (Config.mode === "zen" || SlowTimer.get()) {
         // because we block word jumps in before-insert-text
         // this check only needs to happen in zen mode
+        // unless slow timer is on, then it needs to happen
+        // because the word jump check is disabled
         if (!Config.showAllLines) {
           const wordTopAfterUpdate = wordAtIndex.offsetTop;
           if (wordTopAfterUpdate > activeWordTop) {
