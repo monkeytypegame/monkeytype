@@ -44,6 +44,7 @@ import {
   getInputElement,
   isInputElementFocused,
 } from "../input/input-element";
+import * as MonkeyPower from "../elements/monkey-power";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -1745,6 +1746,7 @@ export function afterTestTextInput(
   //nospace cant be handled here becauseword index
   // is already increased at this point
 
+  void MonkeyPower.addPower(correct);
   setActiveWordTop();
   if (!increasedWordIndex) {
     void updateWordLetters({
