@@ -67,6 +67,7 @@
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "19.2.2",
     "@monkeytype/release": "workspace:*",
+    "@prettier/plugin-oxc": "0.1.1",
     "@vitest/coverage-v8": "4.0.8",
     "conventional-changelog": "6.0.0",
     "eslint": "8.57.1",
