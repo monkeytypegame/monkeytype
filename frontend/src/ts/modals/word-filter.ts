@@ -16,8 +16,15 @@ import { LayoutObject } from "@monkeytype/schemas/layouts";
 type FilterPreset = {
   display: string;
   getIncludeString: (layout: LayoutObject) => string[][];
-  getExcludeString?: (layout: LayoutObject) => string[][];
-};
+} & (
+  | {
+      exactMatch: true;
+    }
+  | {
+      exactMatch?: false;
+      getExcludeString?: (layout: LayoutObject) => string[][];
+    }
+);
 
 const exactMatchCheckbox = $("#wordFilterModal #exactMatchOnly");
 
@@ -29,6 +36,7 @@ const presets: Record<string, FilterPreset> = {
       const homeKeysRight = layout.keys.row3.slice(6, 10);
       return [...homeKeysLeft, ...homeKeysRight];
     },
+    exactMatch: true,
   },
   leftHand: {
     display: "left hand",
@@ -38,6 +46,7 @@ const presets: Record<string, FilterPreset> = {
       const bottomRowInclude = layout.keys.row4.slice(0, 5);
       return [...topRowInclude, ...homeRowInclude, ...bottomRowInclude];
     },
+    exactMatch: true,
   },
   rightHand: {
     display: "right hand",
@@ -47,24 +56,28 @@ const presets: Record<string, FilterPreset> = {
       const bottomRowInclude = layout.keys.row4.slice(4);
       return [...topRowInclude, ...homeRowInclude, ...bottomRowInclude];
     },
+    exactMatch: true,
   },
   homeRow: {
     display: "home row",
     getIncludeString: (layout) => {
       return layout.keys.row3;
     },
+    exactMatch: true,
   },
   topRow: {
     display: "top row",
     getIncludeString: (layout) => {
       return layout.keys.row2;
     },
+    exactMatch: true,
   },
   bottomRow: {
     display: "bottom row",
     getIncludeString: (layout) => {
       return layout.keys.row4;
     },
+    exactMatch: true,
   },
 };
 
@@ -260,16 +273,18 @@ async function setup(): Promise<void> {
         .join(" "),
     );
 
-    if (presetToApply.getExcludeString === undefined) {
+    if (presetToApply.exactMatch === true) {
       setExactMatchInput(true);
     } else {
       setExactMatchInput(false);
-      $("#wordExcludeInput").val(
-        presetToApply
-          .getExcludeString(layout)
-          .map((x) => x[0])
-          .join(" "),
-      );
+      if (presetToApply.getExcludeString !== undefined) {
+        $("#wordExcludeInput").val(
+          presetToApply
+            .getExcludeString(layout)
+            .map((x) => x[0])
+            .join(" "),
+        );
+      }
     }
   });
 
