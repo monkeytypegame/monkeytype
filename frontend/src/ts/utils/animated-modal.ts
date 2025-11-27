@@ -270,7 +270,7 @@ export default class AnimatedModal<
       const animationMode =
         this.previousModalInChain !== undefined
           ? "modalOnly"
-          : options?.animationMode ?? "both";
+          : (options?.animationMode ?? "both");
 
       if (animationMode === "both" || animationMode === "none") {
         if (hasModalAnimation) {
@@ -360,7 +360,7 @@ export default class AnimatedModal<
       const animationMode =
         this.previousModalInChain !== undefined
           ? "modalOnly"
-          : options?.animationMode ?? "both";
+          : (options?.animationMode ?? "both");
 
       if (animationMode === "both" || animationMode === "none") {
         if (hasModalAnimation) {

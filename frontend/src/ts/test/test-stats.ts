@@ -226,9 +226,9 @@ export function calculateBurst(): number {
     : Hangul.disassemble(TestInput.input.current).length;
   if (wordLength === 0) {
     wordLength = !containsKorean
-      ? TestInput.input.getHistoryLast()?.length ?? 0
-      : Hangul.disassemble(TestInput.input.getHistoryLast() as string)
-          ?.length ?? 0;
+      ? (TestInput.input.getHistoryLast()?.length ?? 0)
+      : (Hangul.disassemble(TestInput.input.getHistoryLast() as string)
+          ?.length ?? 0);
   }
   if (wordLength === 0) return 0;
   const speed = Numbers.roundTo2((wordLength * (60 / timeToWrite)) / 5);

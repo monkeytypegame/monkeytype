@@ -196,8 +196,8 @@ export function getFrontendUrl(): string {
   return isDevEnvironment()
     ? "http://localhost:3000"
     : process.env["FRONTEND_URL"] !== undefined
-    ? process.env["FRONTEND_URL"]
-    : "https://monkeytype.com";
+      ? process.env["FRONTEND_URL"]
+      : "https://monkeytype.com";
 }
 
 /**

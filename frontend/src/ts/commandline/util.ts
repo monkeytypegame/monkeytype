@@ -226,7 +226,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
       inputProps?.defaultValue ?? (() => Config[key]?.toString() ?? ""),
     configValue:
       inputProps !== undefined && "configValue" in inputProps
-        ? inputProps.configValue ?? undefined
+        ? (inputProps.configValue ?? undefined)
         : undefined,
     display: displayString,
     alias: inputProps?.alias ?? undefined,

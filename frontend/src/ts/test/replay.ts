@@ -276,9 +276,12 @@ function playReplay(): void {
   while (swTime <= swEndTime) {
     const time = swTime;
     stopwatchList.push(
-      setTimeout(() => {
-        updateStatsString(time);
-      }, time * 1000 - lastTime),
+      setTimeout(
+        () => {
+          updateStatsString(time);
+        },
+        time * 1000 - lastTime,
+      ),
     );
     swTime++;
   }
@@ -291,16 +294,19 @@ function playReplay(): void {
     );
   });
   timeoutList.push(
-    setTimeout(() => {
-      //after the replay has finished, this will run
-      targetCurPos = 0;
-      targetWordPos = 0;
-      toggleButton.className = "fas fa-play";
-      (toggleButton.parentNode as Element).setAttribute(
-        "aria-label",
-        "Start replay",
-      );
-    }, (Arrays.lastElementFromArray(replayData) as Replay).time - lastTime),
+    setTimeout(
+      () => {
+        //after the replay has finished, this will run
+        targetCurPos = 0;
+        targetWordPos = 0;
+        toggleButton.className = "fas fa-play";
+        (toggleButton.parentNode as Element).setAttribute(
+          "aria-label",
+          "Start replay",
+        );
+      },
+      (Arrays.lastElementFromArray(replayData) as Replay).time - lastTime,
+    ),
   );
 }
 

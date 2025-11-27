@@ -11,7 +11,7 @@ export function onDocumentReady(callback: () => void): void {
  * @returns An ElementWithUtils wrapping the found element, null if not found.
  */
 export function qs<T extends HTMLElement = HTMLElement>(
-  selector: string
+  selector: string,
 ): ElementWithUtils<T> | null {
   const el = document.querySelector<T>(selector);
   return el ? new ElementWithUtils(el) : null;
@@ -22,7 +22,7 @@ export function qs<T extends HTMLElement = HTMLElement>(
  * @returns An ArrayWithUtils containing ElementWithUtils wrapping each found element.
  */
 export function qsa<T extends HTMLElement = HTMLElement>(
-  selector: string
+  selector: string,
 ): ArrayWithUtils<T> {
   const elements = Array.from(document.querySelectorAll<T>(selector))
     .filter((el) => el !== null)
@@ -37,7 +37,7 @@ export function qsa<T extends HTMLElement = HTMLElement>(
  * @throws Error if the element is not found.
  */
 export function qsr<T extends HTMLElement = HTMLElement>(
-  selector: string
+  selector: string,
 ): ElementWithUtils<T> {
   const el = document.querySelector<T>(selector);
   if (el === null) {
@@ -51,7 +51,7 @@ export function createElementWithUtils<T extends HTMLElement>(
   options?: {
     className?: string;
     classList?: string[];
-  }
+  },
 ): ElementWithUtils<T> {
   const element = document.createElement(tagName) as T;
   if (options?.className !== undefined) {
@@ -224,17 +224,19 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    */
   on<K extends keyof HTMLElementEventMap>(
     event: K,
-    handler: (this: T, ev: HTMLElementEventMap[K]) => void
+    handler: (this: T, ev: HTMLElementEventMap[K]) => void,
   ): this;
   on(event: string, handler: EventListenerOrEventListenerObject): this;
   on(
     event: keyof HTMLElementEventMap | string,
-    handler: EventListenerOrEventListenerObject | ((this: T, ev: Event) => void)
+    handler:
+      | EventListenerOrEventListenerObject
+      | ((this: T, ev: Event) => void),
   ): this {
     // this type was some AI magic but if it works it works
     this.native.addEventListener(
       event,
-      handler as EventListenerOrEventListenerObject
+      handler as EventListenerOrEventListenerObject,
     );
     return this;
   }
@@ -246,19 +248,19 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   onChild<K extends keyof HTMLElementEventMap>(
     query: string,
     event: K,
-    handler: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void
+    handler: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void,
   ): this;
   onChild(
     query: string,
     event: string,
-    handler: EventListenerOrEventListenerObject
+    handler: EventListenerOrEventListenerObject,
   ): this;
   onChild(
     query: string,
     event: keyof HTMLElementEventMap | string,
     handler:
       | EventListenerOrEventListenerObject
-      | ((this: HTMLElement, ev: Event) => void)
+      | ((this: HTMLElement, ev: Event) => void),
   ): this {
     // this type was some AI magic but if it works it works
     this.native.addEventListener(event, (e) => {
@@ -353,7 +355,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Query the element for all child elements matching the selector
    */
   qsa<U extends HTMLElement = HTMLElement>(
-    selector: string
+    selector: string,
   ): ArrayWithUtils<U> {
     const elements = Array.from(this.native.querySelectorAll<U>(selector))
       .filter((el) => el !== null)

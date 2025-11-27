@@ -1135,7 +1135,7 @@ export const ThemesList: Theme[] = Object.keys(themes)
       ({
         ...themes[it as ThemeName],
         name: it,
-      } as Theme),
+      }) as Theme,
   );
 
 export const ThemesListSorted = [

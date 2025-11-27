@@ -8,7 +8,7 @@ export class CharacterCounter {
 
   constructor(
     textareaElement: ElementWithUtils<HTMLTextAreaElement>,
-    maxLength: number
+    maxLength: number,
   ) {
     this.textareaElement = textareaElement;
     this.maxLength = maxLength;
@@ -19,7 +19,7 @@ export class CharacterCounter {
     if (!textAreaParent) {
       // Wrap the textarea element in a div if not already wrapped
       const wrapper = this.textareaElement?.wrapWith(
-        `<div class="textareaWithCounter"></div>`
+        `<div class="textareaWithCounter"></div>`,
       );
       this.parentElement = wrapper;
     } else {

@@ -244,12 +244,12 @@ export class Caret {
       Config.smoothCaret === "off"
         ? 0
         : Config.smoothCaret === "slow"
-        ? 150
-        : Config.smoothCaret === "medium"
-        ? 100
-        : Config.smoothCaret === "fast"
-        ? 85
-        : 0;
+          ? 150
+          : Config.smoothCaret === "medium"
+            ? 100
+            : Config.smoothCaret === "fast"
+              ? 85
+              : 0;
 
     const finalDuration = options.duration ?? smoothCaretSpeed;
 

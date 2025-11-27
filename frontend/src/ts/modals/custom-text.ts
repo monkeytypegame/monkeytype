@@ -203,7 +203,7 @@ async function beforeAnimation(
     }
 
     const newText =
-      modalChainData.set ?? true
+      (modalChainData.set ?? true)
         ? modalChainData.text
         : state.textarea + " " + modalChainData.text;
     state.textarea = newText;

@@ -236,8 +236,8 @@ export async function addPower(good = true, extra = false): Promise<void> {
     const color = ["2", "4"].includes(Config.monkeyPowerLevel)
       ? randomColor()
       : good
-      ? await ThemeColors.get("caret")
-      : await ThemeColors.get("error");
+        ? await ThemeColors.get("caret")
+        : await ThemeColors.get("error");
     ctx.particles.push(
       createParticle(...(coords as [x: number, y: number]), color),
     );

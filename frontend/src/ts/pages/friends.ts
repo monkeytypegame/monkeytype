@@ -263,10 +263,10 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
           <div class="avatarNameBadge">
             <div class="avatarPlaceholder"></div>
               <a href="${location.origin}/profile/${
-    entry.uid
-  }?isUid" class="entryName" uid=${entry.uid} router-link>${
-    entry.name
-  }</a>            <div class="flagsAndBadge">
+                entry.uid
+              }?isUid" class="entryName" uid=${entry.uid} router-link>${
+                entry.name
+              }</a>            <div class="flagsAndBadge">
             ${getHtmlByUserFlags(entry)}
               ${
                 isSafeNumber(entry.badgeId)
@@ -281,20 +281,20 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
             ? "since " + format(entry.lastModified, "dd MMM yyyy HH:mm")
             : ""
         }">${
-    entry.lastModified !== undefined
-      ? formatAge(entry.lastModified, "short")
-      : "-"
-  }</span></td>
+          entry.lastModified !== undefined
+            ? formatAge(entry.lastModified, "short")
+            : "-"
+        }</span></td>
         <td><span aria-label="total xp: ${
           isSafeNumber(entry.xp) ? formatXp(entry.xp) : ""
         }" data-balloon-pos="up">
           ${xpDetails.level}
         </span></td>
         <td><span aria-label="${testStats.completedPercentage}% (${
-    testStats.restartRatio
-  } restarts per completed test)" data-balloon-pos="up">${
-    entry.completedTests
-  }/${entry.startedTests}</span></td>
+          testStats.restartRatio
+        } restarts per completed test)" data-balloon-pos="up">${
+          entry.completedTests
+        }/${entry.startedTests}</span></td>
         <td>${secondsToString(
           Math.round(entry.timeTyping ?? 0),
           true,
@@ -309,13 +309,13 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         <td class="small"><span aria-label="${
           top15?.details
         }" data-balloon-pos="up" data-balloon-break="">${
-    top15?.wpm ?? "-"
-  }<div class="sub">${top15?.acc ?? "-"}</div><span></td>
+          top15?.wpm ?? "-"
+        }<div class="sub">${top15?.acc ?? "-"}</div><span></td>
         <td class="small"><span aria-label="${
           top60?.details
         }" data-balloon-pos="up" data-balloon-break="">${
-    top60?.wpm ?? "-"
-  }<div class="sub">${top60?.acc ?? "-"}</div></span></td>
+          top60?.wpm ?? "-"
+        }<div class="sub">${top60?.acc ?? "-"}</div></span></td>
   <td class="actions">
   ${actions}
             

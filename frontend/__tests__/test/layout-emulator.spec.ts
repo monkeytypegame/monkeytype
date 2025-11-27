@@ -20,7 +20,7 @@ describe("LayoutEmulator", () => {
       ({
         code,
         type,
-      } as JQuery.KeyboardEventBase);
+      }) as JQuery.KeyboardEventBase;
 
     it("should set isAltGrPressed to true on AltRight keydown", () => {
       const event = createEvent("AltRight", "keydown");
