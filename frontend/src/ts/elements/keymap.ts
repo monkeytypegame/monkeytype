@@ -96,43 +96,44 @@ function highlightKey(currentKey: string): void {
 
 async function flashKey(key: string, correct?: boolean): Promise<void> {
   if (key === undefined) return;
+  requestDebouncedAnimationFrame(`keymap.flashKey.${key}`, async () => {
+    const $target = findKeyElements(key);
 
-  const $target = findKeyElements(key);
+    const elements = $target.toArray();
+    if (elements.length === 0) return;
 
-  const elements = $target.toArray();
-  if (elements.length === 0) return;
+    const themecolors = await ThemeColors.getAll();
 
-  const themecolors = await ThemeColors.getAll();
-
-  try {
-    let startingStyle = {
-      color: themecolors.bg,
-      backgroundColor: themecolors.sub,
-      borderColor: themecolors.sub,
-    };
-
-    if (correct || Config.blindMode) {
-      startingStyle = {
+    try {
+      let startingStyle = {
         color: themecolors.bg,
-        backgroundColor: themecolors.main,
-        borderColor: themecolors.main,
+        backgroundColor: themecolors.sub,
+        borderColor: themecolors.sub,
       };
-    } else {
-      startingStyle = {
-        color: themecolors.bg,
-        backgroundColor: themecolors.error,
-        borderColor: themecolors.error,
-      };
-    }
 
-    animate(elements, {
-      color: [startingStyle.color, themecolors.sub],
-      backgroundColor: [startingStyle.backgroundColor, themecolors.subAlt],
-      borderColor: [startingStyle.borderColor, themecolors.sub],
-      duration: 250,
-      easing: "out(5)",
-    });
-  } catch (e) {}
+      if (correct || Config.blindMode) {
+        startingStyle = {
+          color: themecolors.bg,
+          backgroundColor: themecolors.main,
+          borderColor: themecolors.main,
+        };
+      } else {
+        startingStyle = {
+          color: themecolors.bg,
+          backgroundColor: themecolors.error,
+          borderColor: themecolors.error,
+        };
+      }
+
+      animate(elements, {
+        color: [startingStyle.color, themecolors.sub],
+        backgroundColor: [startingStyle.backgroundColor, themecolors.subAlt],
+        borderColor: [startingStyle.borderColor, themecolors.sub],
+        duration: 250,
+        easing: "out(5)",
+      });
+    } catch (e) {}
+  });
 }
 
 export function hide(): void {
