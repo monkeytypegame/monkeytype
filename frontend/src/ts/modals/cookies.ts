@@ -94,7 +94,7 @@ const modal = new AnimatedModal({
           console.error("Failed to open ad consent UI");
           Notifications.add(
             "Failed to open Ad consent popup. Do you have an ad or cookie popup blocker enabled?",
-            -1
+            -1,
           );
         }
       });

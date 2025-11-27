@@ -126,7 +126,7 @@ function layoutfluid(): void {
 
 function checkIfFailed(
   wpmAndRaw: { wpm: number; raw: number },
-  acc: number
+  acc: number,
 ): boolean {
   if (timerDebug) console.time("fail conditions");
   TestInput.pushKeypressesToHistory();
@@ -249,12 +249,12 @@ export async function start(): Promise<void> {
           //slow timer
 
           Notifications.add(
-            'This could be caused by "efficiency mode" on Microsoft Edge.'
+            'This could be caused by "efficiency mode" on Microsoft Edge.',
           );
 
           Notifications.add(
             "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
-            -1
+            -1,
           );
 
           TimerEvent.dispatch("fail", "slow timer");

@@ -23,12 +23,12 @@ export function fontawesomeSubset(): Plugin {
         "src/webfonts-generated",
         {
           targetFormats: ["woff2"],
-        }
+        },
       );
 
       const end = performance.now();
       console.log(
-        `Creating fontawesome subset took ${Math.round(end - start)} ms`
+        `Creating fontawesome subset took ${Math.round(end - start)} ms`,
       );
     },
   };
@@ -94,11 +94,11 @@ function getFontawesomeConfig(debug = false): FontawesomeConfig {
     "./src",
     (filename) =>
       !filename.endsWith("fontawesome-5.scss") &&
-      !filename.endsWith("fontawesome-6.scss") //ignore our own css
+      !filename.endsWith("fontawesome-6.scss"), //ignore our own css
   );
   const staticFiles = findAllFiles(
     "./static",
-    (filename) => filename.endsWith(".html") || filename.endsWith(".css")
+    (filename) => filename.endsWith(".html") || filename.endsWith(".css"),
   );
 
   const allFiles = [...srcFiles, ...staticFiles];
@@ -127,11 +127,12 @@ function getFontawesomeConfig(debug = false): FontawesomeConfig {
   const brands = usedClasses.filter((it) => iconSet.brands.includes(it));
 
   const leftOvers = icons.filter(
-    (it) => !(solid.includes(it) || regular.includes(it) || brands.includes(it))
+    (it) =>
+      !(solid.includes(it) || regular.includes(it) || brands.includes(it)),
   );
   if (leftOvers.length !== 0) {
     throw new Error(
-      "Fontawesome failed with unknown icons: " + leftOvers.toString()
+      "Fontawesome failed with unknown icons: " + leftOvers.toString(),
     );
   }
 
@@ -142,7 +143,7 @@ function getFontawesomeConfig(debug = false): FontawesomeConfig {
         .filter((it) => usedClasses.filter((c) => it[1].includes(c)).length > 0)
         .map((it) => it[0])
         .filter((it) => it !== "brands")
-        .join(", ")
+        .join(", "),
     );
 
     console.debug(
@@ -151,7 +152,7 @@ function getFontawesomeConfig(debug = false): FontawesomeConfig {
         regular,
         solid,
         brands,
-      })
+      }),
     );
     console.debug("Detected fontawesome classes in", Date.now() - time, "ms");
   }
@@ -175,7 +176,7 @@ function toFileAndDir(dir: string, file: string): FileObject {
 
 function findAllFiles(
   dir: string,
-  filter: (filename: string) => boolean = (_it): boolean => true
+  filter: (filename: string) => boolean = (_it): boolean => true,
 ): string[] {
   const files = fs
     .readdirSync(dir)
@@ -196,7 +197,7 @@ function findAllFiles(
 function parseIcons(iconSet: string): string[] {
   const require = createRequire(import.meta.url);
   const path = require.resolve(
-    `@fortawesome/fontawesome-free/js/${iconSet}.js`
+    `@fortawesome/fontawesome-free/js/${iconSet}.js`,
   );
   const file: string | null = fs.readFileSync(path).toString();
 

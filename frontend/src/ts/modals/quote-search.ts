@@ -32,7 +32,7 @@ let usingCustomLength = true;
 function getSearchService<T>(
   language: string,
   data: T[],
-  textExtractor: TextExtractor<T>
+  textExtractor: TextExtractor<T>,
 ): SearchService<T> {
   if (language in searchServiceCache) {
     return searchServiceCache[language] as unknown as SearchService<T>;
@@ -48,7 +48,7 @@ function getSearchService<T>(
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (!modal.isOpen()) return [];
   const quoteLengthFilterValue = $(
-    "#quoteSearchModal .quoteLengthFilter"
+    "#quoteSearchModal .quoteLengthFilter",
   ).val() as string[];
 
   if (quoteLengthFilterValue.length === 0) {
@@ -58,7 +58,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
 
   let filteredQuotes = quotes;
   const quoteLengthFilter = new Set(
-    quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10))
+    quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10)),
   );
 
   if (quoteLengthFilterValue.includes("4")) {
@@ -76,7 +76,7 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   } else {
     usingCustomLength = true;
     filteredQuotes = quotes.filter((quote) =>
-      quoteLengthFilter.has(quote.group)
+      quoteLengthFilter.has(quote.group),
     );
   }
 
@@ -102,7 +102,7 @@ function applyQuoteFavFilter(quotes: Quote[]): Quote[] {
 
 function buildQuoteSearchResult(
   quote: Quote,
-  matchedSearchTerms: string[]
+  matchedSearchTerms: string[],
 ): string {
   let lengthDesc;
   if (quote.length < 101) {
@@ -168,13 +168,13 @@ async function updateResults(searchText: string): Promise<void> {
     quotes,
     (quote: Quote) => {
       return `${quote.text} ${quote.id} ${quote.source}`;
-    }
+    },
   );
   const { results: matches, matchedQueryTerms } =
     quoteSearchService.query(searchText);
 
   const quotesToShow = applyQuoteLengthFilter(
-    applyQuoteFavFilter(searchText === "" ? quotes : matches)
+    applyQuoteFavFilter(searchText === "" ? quotes : matches),
   );
 
   const resultsList = $("#quoteSearchResults");
@@ -203,7 +203,7 @@ async function updateResults(searchText: string): Promise<void> {
   const endIndex = Math.min(currentPageNumber * pageSize, quotesToShow.length);
 
   $("#quoteSearchModal  .pageInfo").html(
-    `${startIndex + 1} - ${endIndex} of ${quotesToShow.length}`
+    `${startIndex + 1} - ${endIndex} of ${quotesToShow.length}`,
   );
 
   quotesToShow.slice(startIndex, endIndex).forEach((quote) => {
@@ -223,7 +223,7 @@ async function updateResults(searchText: string): Promise<void> {
         if (quoteId === undefined || isNaN(quoteId)) {
           Notifications.add(
             "Could not toggle quote favorite: quote id is not a number",
-            -1
+            -1,
           );
           return;
         }
@@ -236,7 +236,7 @@ async function updateResults(searchText: string): Promise<void> {
         if (quoteId === undefined || isNaN(quoteId)) {
           Notifications.add(
             "Could not open quote report modal: quote id is not a number",
-            -1
+            -1,
           );
           return;
         }
@@ -311,7 +311,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
     },
     afterAnimation: async () => {
       const quoteSearchInputValue = $(
-        "#quoteSearchModal input"
+        "#quoteSearchModal input",
       ).val() as string;
       currentPageNumber = 1;
 
@@ -329,7 +329,7 @@ function hide(clearChain = false): void {
 function apply(val: number): void {
   if (isNaN(val)) {
     val = parseInt(
-      (document.getElementById("searchBox") as HTMLInputElement).value
+      (document.getElementById("searchBox") as HTMLInputElement).value,
     );
   }
   if (val !== null && !isNaN(val) && val >= 0) {
@@ -368,7 +368,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
   const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
 
   const $button = $(
-    `#quoteSearchModal .searchResult[data-quote-id=${quoteId}] .textButton.favorite i`
+    `#quoteSearchModal .searchResult[data-quote-id=${quoteId}] .textButton.favorite i`,
   );
   const dbSnapshot = DB.getSnapshot();
   if (!dbSnapshot) return;
@@ -383,7 +383,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
       Loader.hide();
       const message = createErrorMessage(
         e,
-        "Failed to remove quote from favorites"
+        "Failed to remove quote from favorites",
       );
       Notifications.add(message, -1);
     }
@@ -437,7 +437,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
           0,
           {
             duration: 5,
-          }
+          },
         );
         return;
       }

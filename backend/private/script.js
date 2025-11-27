@@ -141,7 +141,7 @@ const render = (state, schema) => {
     state,
     parentState,
     currentKey = "",
-    path = "configuration"
+    path = "configuration",
   ) => {
     const parent = document.createElement("div");
     parent.classList.add("form-element");
@@ -166,7 +166,7 @@ const render = (state, schema) => {
           state[key],
           state,
           key,
-          `${path}.${key}`
+          `${path}.${key}`,
         );
         parent.appendChild(childElement);
       });
@@ -181,13 +181,13 @@ const render = (state, schema) => {
             element,
             state,
             index,
-            `${path}[${index}]`
+            `${path}[${index}]`,
           );
 
           const decoratedChildElement = arrayFormElementDecorator(
             childElement,
             state,
-            index
+            index,
           );
           parent.appendChild(decoratedChildElement);
         });
@@ -287,7 +287,7 @@ window.onload = async () => {
   exportButton.addEventListener("click", async () => {
     download(
       "backend-configuration.json",
-      JSON.stringify({ configuration: state })
+      JSON.stringify({ configuration: state }),
     );
   });
 };
@@ -296,7 +296,7 @@ function download(filename, text) {
   let element = document.createElement("a");
   element.setAttribute(
     "href",
-    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+    "data:text/plain;charset=utf-8," + encodeURIComponent(text),
   );
   element.setAttribute("download", filename);
 

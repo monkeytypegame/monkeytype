@@ -187,7 +187,7 @@ function showLoaderRow(): void {
 
   table.empty();
   table.append(
-    "<tr><td colspan='6' style='text-align: center;font-size:1rem;'><i class='fas fa-spin fa-circle-notch'></i></td></tr>"
+    "<tr><td colspan='6' style='text-align: center;font-size:1rem;'><i class='fas fa-spin fa-circle-notch'></i></td></tr>",
   );
 }
 
@@ -199,7 +199,7 @@ function refreshList(): void {
   const apeKeyIds = Object.keys(data);
   if (apeKeyIds.length === 0) {
     table.append(
-      "<tr><td colspan='6' style='text-align: center;'>No keys found</td></tr>"
+      "<tr><td colspan='6' style='text-align: center;'>No keys found</td></tr>",
     );
     return;
   }
@@ -282,7 +282,7 @@ export async function update(onApeKeyChangee?: () => void): Promise<void> {
     $(".pageAccountSettings .tab[data-tab='apeKeys'] table").remove();
     $(".pageAccountSettings .section.apeKeys .buttons").remove();
     $(".pageAccountSettings .section.apeKeys .lostAccess").removeClass(
-      "hidden"
+      "hidden",
     );
     return;
   }

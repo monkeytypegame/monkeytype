@@ -431,7 +431,7 @@ export const LanguageSchema = z.enum(
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
-  }
+  },
 );
 
 export type Language = z.infer<typeof LanguageSchema>;

@@ -154,7 +154,7 @@ describe("colors.ts", () => {
       ({ color1, color2, alpha, expected }) => {
         const result = blendTwoHexColors(color1, color2, alpha);
         expect(result).toBe(expected);
-      }
+      },
     );
 
     // cases.forEach(({ color1, color2, alpha, expected }) => {

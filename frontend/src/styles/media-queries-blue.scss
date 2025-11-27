@@ -245,7 +245,8 @@
   }
 
   .pageFriends {
-    .content .friends table {
+    .content .friends table,
+    .content .pendingRequests table {
       font-size: 0.75rem;
     }
   }

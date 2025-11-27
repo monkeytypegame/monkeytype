@@ -39,7 +39,7 @@ export default (redisConnection?: IORedis.Redis): Worker => {
   });
   worker.on("failed", (job, error) => {
     Logger.error(
-      `Job: ${job.data.type} - failed with error "${error.message}"`
+      `Job: ${job.data.type} - failed with error "${error.message}"`,
     );
   });
   return worker;

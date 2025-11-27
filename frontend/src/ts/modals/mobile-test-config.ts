@@ -40,7 +40,7 @@ function update(): void {
     el.find(".numbers").removeClass("disabled");
   } else if (Config.mode === "words") {
     el.find(`.wordsGroup button[data-words='${Config.words}']`).addClass(
-      "active"
+      "active",
     );
     el.find(".punctuation").removeClass("disabled");
     el.find(".numbers").removeClass("disabled");
@@ -50,7 +50,7 @@ function update(): void {
     } else {
       for (const ql of Config.quoteLength) {
         el.find(`.quoteGroup button[data-quoteLength='${ql}']`).addClass(
-          "active"
+          "active",
         );
       }
     }

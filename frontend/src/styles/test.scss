@@ -17,7 +17,10 @@
     z-index: 1;
 
     &.withAnimation {
-      transition: left 0.25s ease, right 0.25s ease, opacity 0.125s linear;
+      transition:
+        left 0.25s ease,
+        right 0.25s ease,
+        opacity 0.125s linear;
     }
 
     &.highlight-hidden {
@@ -558,12 +561,14 @@
   &.error {
     /*   margin-bottom: 1px; */
     border-bottom: 2px solid var(--error-color);
-    text-shadow: 1px 0px 0px var(--bg-color),
+    text-shadow:
+      1px 0px 0px var(--bg-color),
       // 2px 0px 0px var(--bg-color),
       -1px 0px 0px var(--bg-color),
       // -2px 0px 0px var(--bg-color),
       0px 1px 0px var(--bg-color),
-      1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
+      1px 1px 0px var(--bg-color),
+      -1px 1px 0px var(--bg-color);
   }
 }
 
@@ -1074,7 +1079,10 @@
             align-items: center;
             justify-items: center;
 
-            transition: opacity 0.125s, background 0.125s, color 0.125s,
+            transition:
+              opacity 0.125s,
+              background 0.125s,
+              color 0.125s,
               outline 0.125s;
 
             i {
@@ -1334,7 +1342,9 @@
     right: 0;
     padding: var(--verticalPadding) var(--horizontalPadding);
     z-index: 1;
-    transition: opacity 0.25s, right 0.25s;
+    transition:
+      opacity 0.25s,
+      right 0.25s;
     opacity: 0;
   }
 

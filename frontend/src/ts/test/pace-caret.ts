@@ -24,7 +24,7 @@ export let settings: Settings | null = null;
 
 export const caret = new Caret(
   document.getElementById("paceCaret") as HTMLElement,
-  Config.paceCaretStyle
+  Config.paceCaretStyle,
 );
 
 let lastTestWpm = 0;
@@ -70,7 +70,7 @@ export async function init(): Promise<void> {
           Config.language,
           Config.difficulty,
           Config.lazyMode,
-          getActiveFunboxes()
+          getActiveFunboxes(),
         )
       )?.wpm ?? 0;
   } else if (Config.paceCaret === "tagPb") {
@@ -81,7 +81,7 @@ export async function init(): Promise<void> {
       Config.numbers,
       Config.language,
       Config.difficulty,
-      Config.lazyMode
+      Config.lazyMode,
     );
   } else if (Config.paceCaret === "average") {
     [wpm] = await DB.getUserAverage10(
@@ -91,7 +91,7 @@ export async function init(): Promise<void> {
       Config.numbers,
       Config.language,
       Config.difficulty,
-      Config.lazyMode
+      Config.lazyMode,
     );
     wpm = Math.round(wpm);
   } else if (Config.paceCaret === "daily") {
@@ -102,7 +102,7 @@ export async function init(): Promise<void> {
       Config.numbers,
       Config.language,
       Config.difficulty,
-      Config.lazyMode
+      Config.lazyMode,
     );
     wpm = Math.round(wpm);
   } else if (Config.paceCaret === "custom") {
@@ -160,11 +160,14 @@ export async function update(expectedStepEnd: number): Promise<void> {
     });
 
     // Normal case - schedule next step
-    settings.timeout = setTimeout(() => {
-      update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
-        settings = null;
-      });
-    }, Math.max(0, duration));
+    settings.timeout = setTimeout(
+      () => {
+        update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
+          settings = null;
+        });
+      },
+      Math.max(0, duration),
+    );
   } catch (e) {
     console.error(e);
     caret.hide();

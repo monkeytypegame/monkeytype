@@ -8,7 +8,7 @@ import { getGroupForLanguage, LanguageGroupName } from "../constants/languages";
 import { Language } from "@monkeytype/schemas/languages";
 
 export async function getTLD(
-  languageGroup: LanguageGroupName
+  languageGroup: LanguageGroupName,
 ): Promise<
   | "en"
   | "es"
@@ -252,13 +252,13 @@ const SectionSchema = z.object({
       z.string(),
       z.object({
         extract: z.string(),
-      })
+      }),
     ),
   }),
 });
 
 export async function getSection(
-  language: Language
+  language: Language,
 ): Promise<JSONData.Section> {
   // console.log("Getting section");
   Loader.show();
@@ -296,7 +296,7 @@ export async function getSection(
         if (sectionReq.status === 200) {
           const parsedResponse = parseJsonWithSchema(
             sectionReq.responseText,
-            SectionSchema
+            SectionSchema,
           );
           const page = parsedResponse.query.pages[pageid.toString()];
           if (!page) {
@@ -337,7 +337,7 @@ export async function getSection(
           const section = new JSONData.Section(
             sectionObj.title,
             sectionObj.author,
-            words
+            words,
           );
           Loader.hide();
           res(section);

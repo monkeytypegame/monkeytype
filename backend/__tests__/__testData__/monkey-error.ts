@@ -6,7 +6,7 @@ export function enableMonkeyErrorExpects(): void {
   expect.extend({
     toMatchMonkeyError(
       received: MonkeyError,
-      expected: MonkeyError
+      expected: MonkeyError,
     ): MatcherResult {
       return {
         pass:

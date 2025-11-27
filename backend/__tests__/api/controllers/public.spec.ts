@@ -31,7 +31,7 @@ describe("PublicController", () => {
       expect(getSpeedHistogramMock).toHaveBeenCalledWith(
         "english",
         "time",
-        "60"
+        "60",
       );
     });
 

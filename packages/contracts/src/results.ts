@@ -22,7 +22,7 @@ export const GetResultsQuerySchema = z.object({
     .min(1589428800000)
     .optional()
     .describe(
-      "Timestamp of the earliest result to fetch. If omitted the most recent results are fetched."
+      "Timestamp of the earliest result to fetch. If omitted the most recent results are fetched.",
     ),
   offset: z
     .number()
@@ -41,7 +41,7 @@ export const GetResultsQuerySchema = z.object({
 export type GetResultsQuery = z.infer<typeof GetResultsQuerySchema>;
 
 export const GetResultsResponseSchema = responseWithData(
-  z.array(ResultMinifiedSchema)
+  z.array(ResultMinifiedSchema),
 );
 export type GetResultsResponse = z.infer<typeof GetResultsResponseSchema>;
 
@@ -60,7 +60,7 @@ export const AddResultRequestSchema = z.object({
 export type AddResultRequest = z.infer<typeof AddResultRequestSchema>;
 
 export const AddResultResponseSchema = responseWithData(
-  PostResultResponseSchema
+  PostResultResponseSchema,
 );
 export type AddResultResponse = z.infer<typeof AddResultResponseSchema>;
 
@@ -74,7 +74,7 @@ export type UpdateResultTagsRequest = z.infer<
 export const UpdateResultTagsResponseSchema = responseWithData(
   z.object({
     tagPbs: z.array(IdSchema),
-  })
+  }),
 );
 export type UpdateResultTagsResponse = z.infer<
   typeof UpdateResultTagsResponseSchema
@@ -200,5 +200,5 @@ export const resultsContract = c.router(
       openApiTags: "results",
     }),
     commonResponses: CommonResponses,
-  }
+  },
 );

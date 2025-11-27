@@ -49,12 +49,12 @@ describe("format.ts", () => {
       expect(format.typingSpeed(null, { fallback: "none" })).toEqual("none");
       expect(format.typingSpeed(null, { fallback: "" })).toEqual("");
       expect(format.typingSpeed(undefined, { fallback: "none" })).toEqual(
-        "none"
+        "none",
       );
 
       expect(format.typingSpeed(undefined, { fallback: "" })).toEqual("");
       expect(format.typingSpeed(undefined, { fallback: undefined })).toEqual(
-        ""
+        "",
       );
     });
 
@@ -65,7 +65,7 @@ describe("format.ts", () => {
         alwaysShowDecimalPlaces: false,
       });
       expect(
-        wpmNoDecimals.typingSpeed(100, { showDecimalPlaces: true })
+        wpmNoDecimals.typingSpeed(100, { showDecimalPlaces: true }),
       ).toEqual("100.00");
       //force without decimals
       const wpmWithDecimals = getInstance({
@@ -73,7 +73,7 @@ describe("format.ts", () => {
         alwaysShowDecimalPlaces: true,
       });
       expect(
-        wpmWithDecimals.typingSpeed(100, { showDecimalPlaces: false })
+        wpmWithDecimals.typingSpeed(100, { showDecimalPlaces: false }),
       ).toEqual("100");
     });
 
@@ -120,7 +120,7 @@ describe("format.ts", () => {
       expect(format.percentage(null, { fallback: "none" })).toEqual("none");
       expect(format.percentage(null, { fallback: "" })).toEqual("");
       expect(format.percentage(undefined, { fallback: "none" })).toEqual(
-        "none"
+        "none",
       );
 
       expect(format.percentage(undefined, { fallback: "" })).toEqual("");
@@ -131,12 +131,12 @@ describe("format.ts", () => {
       //force with decimals
       const noDecimals = getInstance({ alwaysShowDecimalPlaces: false });
       expect(noDecimals.percentage(100, { showDecimalPlaces: true })).toEqual(
-        "100.00%"
+        "100.00%",
       );
       //force without decimals
       const withDecimals = getInstance({ alwaysShowDecimalPlaces: true });
       expect(
-        withDecimals.percentage(100, { showDecimalPlaces: false })
+        withDecimals.percentage(100, { showDecimalPlaces: false }),
       ).toEqual("100%");
     });
 
@@ -207,12 +207,12 @@ describe("format.ts", () => {
       //force with decimals
       const noDecimals = getInstance({ alwaysShowDecimalPlaces: false });
       expect(noDecimals.decimals(100, { showDecimalPlaces: true })).toEqual(
-        "100.00"
+        "100.00",
       );
       //force without decimals
       const withDecimals = getInstance({ alwaysShowDecimalPlaces: true });
       expect(withDecimals.decimals(100, { showDecimalPlaces: false })).toEqual(
-        "100"
+        "100",
       );
     });
 

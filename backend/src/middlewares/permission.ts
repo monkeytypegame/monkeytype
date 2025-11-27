@@ -18,7 +18,7 @@ type RequestPermissionCheck = {
   type: "request";
   criteria: (
     req: TsRestRequestWithContext,
-    metadata: EndpointMetadata | undefined
+    metadata: EndpointMetadata | undefined,
   ) => Promise<boolean>;
   invalidMessage?: string;
 };
@@ -35,7 +35,7 @@ type PermissionCheck = UserPermissionCheck | RequestPermissionCheck;
 function buildUserPermission<K extends keyof DBUser>(
   fields: K[],
   criteria: (user: Pick<DBUser, K>) => boolean,
-  invalidMessage?: string
+  invalidMessage?: string,
 ): UserPermissionCheck {
   return {
     type: "user",
@@ -51,33 +51,33 @@ const permissionChecks: Record<PermissionId, PermissionCheck> = {
     criteria: async (req, metadata) =>
       await checkIfUserIsAdmin(
         req.ctx.decodedToken,
-        metadata?.authenticationOptions
+        metadata?.authenticationOptions,
       ),
   },
   quoteMod: buildUserPermission(
     ["quoteMod"],
     (user) =>
       user.quoteMod === true ||
-      (typeof user.quoteMod === "string" && (user.quoteMod as string) !== "")
+      (typeof user.quoteMod === "string" && (user.quoteMod as string) !== ""),
   ),
   canReport: buildUserPermission(
     ["canReport"],
-    (user) => user.canReport !== false
+    (user) => user.canReport !== false,
   ),
   canManageApeKeys: buildUserPermission(
     ["canManageApeKeys"],
     (user) => user.canManageApeKeys ?? true,
-    "You have lost access to ape keys, please contact support"
+    "You have lost access to ape keys, please contact support",
   ),
 };
 
 export function verifyPermissions<
-  T extends AppRouter | AppRoute
+  T extends AppRouter | AppRoute,
 >(): TsRestRequestHandler<T> {
   return async (
     req: TsRestRequestWithContext,
     _res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     const metadata = getMetadata(req);
     const requiredPermissionIds = getRequiredPermissionIds(metadata);
@@ -103,8 +103,8 @@ export function verifyPermissions<
         next(
           new MonkeyError(
             403,
-            check.invalidMessage ?? "You don't have permission to do this."
-          )
+            check.invalidMessage ?? "You don't have permission to do this.",
+          ),
         );
         return;
       }
@@ -114,15 +114,15 @@ export function verifyPermissions<
     const userChecks = checks.filter((it) => it.type === "user");
     const checkResult = await checkUserPermissions(
       req.ctx.decodedToken,
-      userChecks
+      userChecks,
     );
 
     if (!checkResult.passed) {
       next(
         new MonkeyError(
           403,
-          checkResult.invalidMessage ?? "You don't have permission to do this."
-        )
+          checkResult.invalidMessage ?? "You don't have permission to do this.",
+        ),
       );
       return;
     }
@@ -134,7 +134,7 @@ export function verifyPermissions<
 }
 
 function getRequiredPermissionIds(
-  metadata: EndpointMetadata | undefined
+  metadata: EndpointMetadata | undefined,
 ): PermissionId[] | undefined {
   if (metadata === undefined || metadata.requirePermission === undefined)
     return undefined;
@@ -146,7 +146,7 @@ function getRequiredPermissionIds(
 
 async function checkIfUserIsAdmin(
   decodedToken: DecodedToken | undefined,
-  options: RequestAuthenticationOptions | undefined
+  options: RequestAuthenticationOptions | undefined,
 ): Promise<boolean> {
   if (decodedToken === undefined) return false;
   if (options?.isPublicOnDev && isDevEnvironment()) return true;
@@ -165,7 +165,7 @@ type CheckResult =
 
 async function checkUserPermissions(
   decodedToken: DecodedToken | undefined,
-  checks: UserPermissionCheck[]
+  checks: UserPermissionCheck[],
 ): Promise<CheckResult> {
   if (checks === undefined || checks.length === 0) {
     return {
@@ -182,7 +182,7 @@ async function checkUserPermissions(
   const user = (await getPartialUser(
     decodedToken.uid,
     "check user permissions",
-    checks.flatMap((it) => it.fields)
+    checks.flatMap((it) => it.fields),
   )) as DBUser;
 
   for (const check of checks) {

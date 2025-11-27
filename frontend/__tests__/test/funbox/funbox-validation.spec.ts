@@ -54,7 +54,7 @@ describe("funbox-validation", () => {
           value,
           funbox: [funbox],
           error: `You can't set mode to ${value} with currently active funboxes.`,
-        }))
+        })),
       ),
       { key: "mode", value: "quote", funbox: ["space_balls"] }, //no frontendFunctions
     ];
@@ -62,7 +62,7 @@ describe("funbox-validation", () => {
       `check $funbox with $key=$value`,
       ({ key, value, funbox, error }) => {
         expect(
-          canSetConfigWithCurrentFunboxes(key, value, funbox as FunboxName[])
+          canSetConfigWithCurrentFunboxes(key, value, funbox as FunboxName[]),
         ).toBe(error === undefined);
 
         if (error !== undefined) {
@@ -70,7 +70,7 @@ describe("funbox-validation", () => {
             duration: 5,
           });
         }
-      }
+      },
     );
   });
 });

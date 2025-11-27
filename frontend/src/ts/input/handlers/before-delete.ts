@@ -16,7 +16,7 @@ export function onBeforeDelete(event: InputEvent): void {
   if (inputIsEmpty) {
     // this is nested because we only wanna pull the element from the dom if needed
     const previousWordElement = TestUI.getWordElement(
-      TestState.activeWordIndex - 1
+      TestState.activeWordIndex - 1,
     );
     if (previousWordElement === null) {
       event.preventDefault();

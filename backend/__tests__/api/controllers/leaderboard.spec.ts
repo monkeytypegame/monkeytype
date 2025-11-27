@@ -95,14 +95,14 @@ describe("Loaderboard Controller", () => {
         0,
         50,
         false,
-        undefined
+        undefined,
       );
 
       expect(getLeaderboardCountMock).toHaveBeenCalledWith(
         "time",
         "60",
         "english",
-        undefined
+        undefined,
       );
     });
 
@@ -143,7 +143,7 @@ describe("Loaderboard Controller", () => {
         page,
         pageSize,
         false,
-        undefined
+        undefined,
       );
     });
 
@@ -176,13 +176,13 @@ describe("Loaderboard Controller", () => {
         0,
         50,
         false,
-        uid
+        uid,
       );
       expect(getLeaderboardCountMock).toHaveBeenCalledWith(
         "time",
         "60",
         "english",
-        uid
+        uid,
       );
     });
 
@@ -205,7 +205,7 @@ describe("Loaderboard Controller", () => {
             .get("/leaderboards")
             .query({ language, mode, mode2 })
             .expect(expectStatus);
-        }
+        },
       );
     });
 
@@ -275,7 +275,7 @@ describe("Loaderboard Controller", () => {
         .expect(503);
 
       expect(body.message).toEqual(
-        "Leaderboard is currently updating. Please try again in a few seconds."
+        "Leaderboard is currently updating. Please try again in a few seconds.",
       );
     });
   });
@@ -329,7 +329,7 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         uid,
-        false
+        false,
       );
     });
     it("should get for english time 60 friends only", async () => {
@@ -355,7 +355,7 @@ describe("Loaderboard Controller", () => {
         "60",
         "english",
         uid,
-        true
+        true,
       );
     });
     it("should get with ape key", async () => {
@@ -458,7 +458,7 @@ describe("Loaderboard Controller", () => {
         .expect(503);
 
       expect(body.message).toEqual(
-        "Leaderboard is currently updating. Please try again in a few seconds."
+        "Leaderboard is currently updating. Please try again in a few seconds.",
       );
     });
   });
@@ -466,14 +466,14 @@ describe("Loaderboard Controller", () => {
   describe("get daily leaderboard", () => {
     const getDailyLeaderboardMock = vi.spyOn(
       DailyLeaderboards,
-      "getDailyLeaderboard"
+      "getDailyLeaderboard",
     );
     const getFriendsUidsMock = vi.spyOn(ConnectionsDal, "getFriendsUids");
     const getResultMock = vi.fn();
 
     beforeEach(async () => {
       [getDailyLeaderboardMock, getFriendsUidsMock, getResultMock].forEach(
-        (it) => it.mockClear()
+        (it) => it.mockClear(),
       );
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
@@ -551,7 +551,7 @@ describe("Loaderboard Controller", () => {
         "time",
         "60",
         lbConf,
-        -1
+        -1,
       );
 
       expect(getResultMock).toHaveBeenCalledWith(
@@ -559,7 +559,7 @@ describe("Loaderboard Controller", () => {
         50,
         lbConf,
         premiumEnabled,
-        undefined
+        undefined,
       );
     });
 
@@ -594,7 +594,7 @@ describe("Loaderboard Controller", () => {
         "time",
         "60",
         lbConf,
-        1722470400000
+        1722470400000,
       );
     });
     it("should get for english time 60 with page and pageSize", async () => {
@@ -634,7 +634,7 @@ describe("Loaderboard Controller", () => {
         "time",
         "60",
         lbConf,
-        -1
+        -1,
       );
 
       expect(getResultMock).toHaveBeenCalledWith(
@@ -642,7 +642,7 @@ describe("Loaderboard Controller", () => {
         pageSize,
         lbConf,
         premiumEnabled,
-        undefined
+        undefined,
       );
     });
 
@@ -676,7 +676,7 @@ describe("Loaderboard Controller", () => {
         "time",
         "60",
         lbConf,
-        -1
+        -1,
       );
 
       expect(getResultMock).toHaveBeenCalledWith(
@@ -684,7 +684,7 @@ describe("Loaderboard Controller", () => {
         50,
         lbConf,
         premiumEnabled,
-        friends
+        friends,
       );
     });
 
@@ -711,7 +711,7 @@ describe("Loaderboard Controller", () => {
       const { body } = await mockApp.get("/leaderboards/daily").expect(503);
 
       expect(body.message).toEqual(
-        "Daily leaderboards are not available at this time."
+        "Daily leaderboards are not available at this time.",
       );
     });
 
@@ -797,7 +797,7 @@ describe("Loaderboard Controller", () => {
         .expect(404);
 
       expect(body.message).toEqual(
-        "There is no daily leaderboard for this mode"
+        "There is no daily leaderboard for this mode",
       );
     });
   });
@@ -805,14 +805,14 @@ describe("Loaderboard Controller", () => {
   describe("get daily leaderboard rank", () => {
     const getDailyLeaderboardMock = vi.spyOn(
       DailyLeaderboards,
-      "getDailyLeaderboard"
+      "getDailyLeaderboard",
     );
     const getRankMock = vi.fn();
     const getFriendsUidsMock = vi.spyOn(ConnectionsDal, "getFriendsUids");
 
     beforeEach(async () => {
       [getDailyLeaderboardMock, getRankMock, getFriendsUidsMock].forEach((it) =>
-        it.mockClear()
+        it.mockClear(),
       );
 
       getDailyLeaderboardMock.mockReturnValue({
@@ -874,7 +874,7 @@ describe("Loaderboard Controller", () => {
         "time",
         "60",
         lbConf,
-        -1
+        -1,
       );
 
       expect(getRankMock).toHaveBeenCalledWith(uid, lbConf, undefined);
@@ -907,7 +907,7 @@ describe("Loaderboard Controller", () => {
         "time",
         "60",
         lbConf,
-        -1
+        -1,
       );
 
       expect(getRankMock).toHaveBeenCalledWith(uid, lbConf, friends);
@@ -923,7 +923,7 @@ describe("Loaderboard Controller", () => {
         .expect(503);
 
       expect(body.message).toEqual(
-        "Daily leaderboards are not available at this time."
+        "Daily leaderboards are not available at this time.",
       );
     });
 
@@ -1019,7 +1019,7 @@ describe("Loaderboard Controller", () => {
         .expect(404);
 
       expect(body.message).toEqual(
-        "There is no daily leaderboard for this mode"
+        "There is no daily leaderboard for this mode",
       );
     });
   });
@@ -1031,7 +1031,7 @@ describe("Loaderboard Controller", () => {
 
     beforeEach(async () => {
       [getXpWeeklyLeaderboardMock, getResultMock, getFriendsUidsMock].forEach(
-        (it) => it.mockClear()
+        (it) => it.mockClear(),
       );
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
@@ -1100,7 +1100,7 @@ describe("Loaderboard Controller", () => {
         50,
         lbConf,
         false,
-        undefined
+        undefined,
       );
     });
 
@@ -1128,7 +1128,7 @@ describe("Loaderboard Controller", () => {
 
       expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(
         lbConf,
-        1721606400000
+        1721606400000,
       );
     });
 
@@ -1164,7 +1164,7 @@ describe("Loaderboard Controller", () => {
         pageSize,
         lbConf,
         false,
-        undefined
+        undefined,
       );
     });
 
@@ -1200,7 +1200,7 @@ describe("Loaderboard Controller", () => {
         pageSize,
         lbConf,
         false,
-        friends
+        friends,
       );
     });
 
@@ -1210,7 +1210,7 @@ describe("Loaderboard Controller", () => {
       const { body } = await mockApp.get("/leaderboards/xp/weekly").expect(503);
 
       expect(body.message).toEqual(
-        "Weekly XP leaderboards are not available at this time."
+        "Weekly XP leaderboards are not available at this time.",
       );
     });
 
@@ -1260,7 +1260,7 @@ describe("Loaderboard Controller", () => {
 
     beforeEach(async () => {
       [getXpWeeklyLeaderboardMock, getRankMock, getFriendsUidsMock].forEach(
-        (it) => it.mockClear()
+        (it) => it.mockClear(),
       );
 
       await weeklyLeaderboardEnabled(true);
@@ -1330,7 +1330,7 @@ describe("Loaderboard Controller", () => {
 
       expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(
         lbConf,
-        1721606400000
+        1721606400000,
       );
 
       expect(getRankMock).toHaveBeenCalledWith(uid, lbConf, undefined);
@@ -1371,7 +1371,7 @@ describe("Loaderboard Controller", () => {
         .expect(503);
 
       expect(body.message).toEqual(
-        "Weekly XP leaderboards are not available at this time."
+        "Weekly XP leaderboards are not available at this time.",
       );
     });
 
@@ -1425,7 +1425,7 @@ async function acceptApeKeys(enabled: boolean): Promise<void> {
   mockConfig.apeKeys = { ...mockConfig.apeKeys, acceptKeys: enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
@@ -1437,7 +1437,7 @@ async function dailyLeaderboardEnabled(enabled: boolean): Promise<void> {
   };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 async function weeklyLeaderboardEnabled(enabled: boolean): Promise<void> {
@@ -1448,7 +1448,7 @@ async function weeklyLeaderboardEnabled(enabled: boolean): Promise<void> {
   };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 async function enableConnectionsFeature(enabled: boolean): Promise<void> {
@@ -1456,6 +1456,6 @@ async function enableConnectionsFeature(enabled: boolean): Promise<void> {
   mockConfig.connections = { ...mockConfig.connections, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }

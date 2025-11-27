@@ -12,7 +12,7 @@
 export function blendTwoHexColors(
   color1: string,
   color2: string,
-  opacity: number
+  opacity: number,
 ): string {
   const rgb1 = hexToRgb(color1);
   const rgb2 = hexToRgb(color2);
@@ -245,7 +245,7 @@ export function isColorDark(hex: string): boolean {
  */
 export function rgbStringtoHex(rgb: string): string | undefined {
   const match: RegExpMatchArray | null = rgb.match(
-    /^rgb\((\d+), \s*(\d+), \s*(\d+)\)$/
+    /^rgb\((\d+), \s*(\d+), \s*(\d+)\)$/,
   );
   if (match === null) return;
   if (match.length < 3) return;

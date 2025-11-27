@@ -29,7 +29,7 @@ describe("ConfigDal", () => {
 
       //THEN
       const savedConfig = (await ConfigDal.getConfig(
-        uid
+        uid,
       )) as ConfigDal.DBConfig;
 
       expect(savedConfig.config.ads).toBe("off");

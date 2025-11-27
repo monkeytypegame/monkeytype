@@ -16,7 +16,7 @@ const SUPPORTED_INPUT_TYPES: Set<SupportedInputType> = new Set([
 ]);
 
 export function isSupportedInputType(
-  inputType: string
+  inputType: string,
 ): inputType is SupportedInputType {
   return SUPPORTED_INPUT_TYPES.has(inputType as SupportedInputType);
 }
