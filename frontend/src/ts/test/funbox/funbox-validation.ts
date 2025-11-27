@@ -7,7 +7,7 @@ import { intersect } from "@monkeytype/util/arrays";
 export function checkForcedConfig(
   key: string,
   value: ConfigValue,
-  funboxes: FunboxMetadata[]
+  funboxes: FunboxMetadata[],
 ): {
   result: boolean;
   forcedConfigs?: ConfigValue[];
@@ -19,7 +19,7 @@ export function checkForcedConfig(
   if (key === "words" || key === "time") {
     if (value === 0) {
       const fb = funboxes.filter((f) =>
-        f.properties?.includes("noInfiniteDuration")
+        f.properties?.includes("noInfiniteDuration"),
       );
       if (fb.length > 0) {
         return {
@@ -45,7 +45,7 @@ export function checkForcedConfig(
             forcedConfigs[key] = intersect(
               forcedConfigs[key],
               fb.frontendForcedConfig[key] as ConfigValue[],
-              true
+              true,
             );
           }
         }
@@ -74,7 +74,7 @@ export function canSetConfigWithCurrentFunboxes(
   key: string,
   value: ConfigValue,
   funbox: FunboxName[] = [],
-  noNotification = false
+  noNotification = false,
 ): boolean {
   let errorCount = 0;
   const funboxes = getFunbox(funbox);
@@ -82,7 +82,7 @@ export function canSetConfigWithCurrentFunboxes(
     let fb = getFunbox(funbox).filter(
       (f) =>
         f.frontendForcedConfig?.["mode"] !== undefined &&
-        !(f.frontendForcedConfig["mode"] as ConfigValue[]).includes(value)
+        !(f.frontendForcedConfig["mode"] as ConfigValue[]).includes(value),
     );
     if (value === "zen") {
       fb = fb.concat(
@@ -102,7 +102,7 @@ export function canSetConfigWithCurrentFunboxes(
             props.includes("changesLayout") ||
             props.includes("changesWordsFrequency")
           );
-        })
+        }),
       );
     }
     if (value === "quote" || value === "custom") {
@@ -116,7 +116,7 @@ export function canSetConfigWithCurrentFunboxes(
             funcs.includes("withWords") ||
             props.includes("changesWordsFrequency")
           );
-        })
+        }),
       );
     }
 
@@ -141,12 +141,12 @@ export function canSetConfigWithCurrentFunboxes(
     if (!noNotification) {
       Notifications.add(
         `You can't set ${Strings.camelCaseToWords(
-          key
+          key,
         )} to ${value.toString()} with currently active funboxes.`,
         0,
         {
           duration: 5,
-        }
+        },
       );
     }
     return false;
@@ -157,7 +157,7 @@ export function canSetConfigWithCurrentFunboxes(
 
 export function canSetFunboxWithConfig(
   funbox: FunboxName,
-  config: Config
+  config: Config,
 ): boolean {
   console.log("cansetfunboxwithconfig", funbox, config.mode);
   let funboxToCheck = [...config.funbox, funbox];
@@ -169,7 +169,7 @@ export function canSetFunboxWithConfig(
         configKey,
         configValue,
         funboxToCheck,
-        true
+        true,
       )
     ) {
       errors.push({
@@ -183,19 +183,19 @@ export function canSetFunboxWithConfig(
     for (const error of errors) {
       errorStrings.push(
         `${Strings.capitalizeFirstLetter(
-          Strings.camelCaseToWords(error.key)
-        )} cannot be set to ${error.value.toString()}.`
+          Strings.camelCaseToWords(error.key),
+        )} cannot be set to ${error.value.toString()}.`,
       );
     }
     Notifications.add(
       `You can't enable ${funbox.replace(/_/g, " ")}:<br>${errorStrings.join(
-        "<br>"
+        "<br>",
       )}`,
       0,
       {
         duration: 5,
         allowHTML: true,
-      }
+      },
     );
     return false;
   } else {

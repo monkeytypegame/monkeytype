@@ -14,7 +14,7 @@ export async function setup(): Promise<void> {
   startedMongoContainer = await mongoContainer.start();
 
   const mongoUrl = `mongodb://${startedMongoContainer?.getHost()}:${startedMongoContainer?.getMappedPort(
-    27017
+    27017,
   )}`;
   process.env["TEST_DB_URL"] = mongoUrl;
 
@@ -26,7 +26,7 @@ export async function setup(): Promise<void> {
   startedRedisContainer = await redisContainer.start();
 
   const redisUrl = `redis://${startedRedisContainer.getHost()}:${startedRedisContainer.getMappedPort(
-    6379
+    6379,
   )}`;
   process.env["REDIS_URI"] = redisUrl;
 }

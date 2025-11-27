@@ -39,11 +39,11 @@ class Problems<K extends string, T extends string> {
 
   public addValidation(
     key: K | T,
-    validationResult: z.SafeParseReturnType<unknown, unknown>
+    validationResult: z.SafeParseReturnType<unknown, unknown>,
   ): void {
     if (validationResult.success) return;
     validationResult.error.errors.forEach((e) =>
-      this.add(key, `${e.path.join(".")}: ${e.message}`)
+      this.add(key, `${e.path.join(".")}: ${e.message}`),
     );
   }
 
@@ -92,7 +92,7 @@ async function validateChallenges(): Promise<void> {
     fs.readFileSync("./static/challenges/_list.json", {
       encoding: "utf8",
       flag: "r",
-    })
+    }),
   ) as Challenge;
   const validationResult = z.array(ChallengeSchema).safeParse(challengesData);
   problems.addValidation("_list.json", validationResult);
@@ -114,18 +114,18 @@ async function validateLayouts(): Promise<void> {
     if (!fs.existsSync(`./static/layouts/${layoutName}.json`)) {
       problems.add(
         layoutName,
-        `missing json file frontend/static/layouts/${layoutName}.json`
+        `missing json file frontend/static/layouts/${layoutName}.json`,
       );
       continue;
     }
     try {
       layoutData = JSON.parse(
-        fs.readFileSync(`./static/layouts/${layoutName}.json`, "utf-8")
+        fs.readFileSync(`./static/layouts/${layoutName}.json`, "utf-8"),
       ) as LayoutObject;
     } catch (e) {
       problems.add(
         layoutName,
-        `Unable to parse ${e instanceof Error ? e.message : e}`
+        `Unable to parse ${e instanceof Error ? e.message : e}`,
       );
       continue;
     }
@@ -162,12 +162,12 @@ async function validateQuotes(): Promise<void> {
         fs.readFileSync(`./static/quotes/${quotefilename}.json`, {
           encoding: "utf8",
           flag: "r",
-        })
+        }),
       ) as QuoteData;
     } catch (e) {
       problems.add(
         quotefilename,
-        `Unable to parse ${e instanceof Error ? e.message : e}`
+        `Unable to parse ${e instanceof Error ? e.message : e}`,
       );
       continue;
     }
@@ -176,7 +176,7 @@ async function validateQuotes(): Promise<void> {
     if (quoteData.language !== quotefilename) {
       problems.add(
         quotefilename,
-        `Name not matching language ${quoteData.language}`
+        `Name not matching language ${quoteData.language}`,
       );
     }
 
@@ -193,7 +193,7 @@ async function validateQuotes(): Promise<void> {
     if (duplicates.length !== 0) {
       problems.add(
         quotefilename,
-        `contains ${duplicates.length} duplicates:\n ${duplicates.join(",")}`
+        `contains ${duplicates.length} duplicates:\n ${duplicates.join(",")}`,
       );
     }
 
@@ -203,8 +203,8 @@ async function validateQuotes(): Promise<void> {
       .forEach((quote) =>
         problems.add(
           quotefilename,
-          `ID ${quote.id}: expected length ${quote.text.length}`
-        )
+          `ID ${quote.id}: expected length ${quote.text.length}`,
+        ),
       );
 
     //check groups
@@ -213,12 +213,12 @@ async function validateQuotes(): Promise<void> {
       if (group[0] !== last + 1) {
         problems.add(
           quotefilename,
-          `error in  group ${group}: expect to start at ${last + 1}`
+          `error in  group ${group}: expect to start at ${last + 1}`,
         );
       } else if (group[0] >= group[1]) {
         problems.add(
           quotefilename,
-          `error in  group ${group}: second number to be greater than first number`
+          `error in  group ${group}: second number to be greater than first number`,
         );
       }
       last = group[1];
@@ -240,7 +240,7 @@ async function validateLanguages(): Promise<void> {
         "Language files present but missing in packages/schemas/src/languages.ts",
       _groups:
         "Problems in LanguageGroups in frontend/src/ts/constants/languages.ts",
-    }
+    },
   );
 
   const duplicatePercentageThreshold = 0.0001;
@@ -251,12 +251,12 @@ async function validateLanguages(): Promise<void> {
         fs.readFileSync(`./static/languages/${language}.json`, {
           encoding: "utf8",
           flag: "r",
-        })
+        }),
       ) as LanguageObject;
     } catch (e) {
       problems.add(
         language,
-        `missing json file frontend/static/languages/${language}.json`
+        `missing json file frontend/static/languages/${language}.json`,
       );
 
       continue;
@@ -265,7 +265,7 @@ async function validateLanguages(): Promise<void> {
       language,
       LanguageObjectSchema.extend({
         _comment: z.string().optional(),
-      }).safeParse(languageFileData)
+      }).safeParse(languageFileData),
     );
 
     if (languageFileData.name !== language) {
@@ -278,8 +278,8 @@ async function validateLanguages(): Promise<void> {
       problems.add(
         language,
         `contains ${duplicates.length} (${Math.round(
-          duplicatePercentage
-        )}%) duplicates:\n ${duplicates.join(",")}`
+          duplicatePercentage,
+        )}%) duplicates:\n ${duplicates.join(",")}`,
       );
     }
   }
@@ -305,18 +305,18 @@ async function validateLanguages(): Promise<void> {
     problems.add(
       "_groups",
       `languages with multiple groups: ${languagesWithMultipleGroups.join(
-        ", "
-      )}`
+        ", ",
+      )}`,
     );
   }
 
   const languagesMissingGroup = LanguageList.filter(
-    (lang) => !groupByLanguage.has(lang)
+    (lang) => !groupByLanguage.has(lang),
   );
   if (languagesMissingGroup.length !== 0) {
     problems.add(
       "_groups",
-      `languages missing group: ${languagesMissingGroup.join(", ")}`
+      `languages missing group: ${languagesMissingGroup.join(", ")}`,
     );
   }
 
@@ -350,15 +350,15 @@ async function validateFonts(): Promise<void> {
     .forEach(([name, config]) =>
       problems.add(
         name as KnownFontName,
-        `missing file frontend/static/webfonts/${config.fileName}`
-      )
+        `missing file frontend/static/webfonts/${config.fileName}`,
+      ),
     );
 
   //additional font files
   const expectedFontFiles = new Set(
     Object.entries(Fonts)
       .filter(([_name, config]) => !config.systemFont)
-      .map(([_name, config]) => config.fileName as string)
+      .map(([_name, config]) => config.fileName as string),
   );
 
   fontFiles
@@ -386,8 +386,8 @@ async function validateThemes(): Promise<void> {
     (it) =>
       problems.add(
         it.name,
-        `missing file frontend/static/themes/${it.name}.css`
-      )
+        `missing file frontend/static/themes/${it.name}.css`,
+      ),
   );
 
   //additional theme files
@@ -431,7 +431,7 @@ async function main(): Promise<void> {
     flags.has("--pass-with-no-validators") || flags.has("-p");
 
   const tasks: Set<Validator> = new Set(
-    validateAll ? Object.values(validators).flat() : []
+    validateAll ? Object.values(validators).flat() : [],
   );
   for (const key of keys) {
     if (!Object.keys(validators).includes(key)) {

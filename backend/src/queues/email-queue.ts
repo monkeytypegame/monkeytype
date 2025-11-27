@@ -24,7 +24,7 @@ export type EmailTaskContexts = {
 function buildTask(
   taskName: EmailType,
   email: string,
-  taskContext: EmailTaskContexts[EmailType]
+  taskContext: EmailTaskContexts[EmailType],
 ): EmailTask<EmailType> {
   return {
     type: taskName,
@@ -37,7 +37,7 @@ class EmailQueue extends MonkeyQueue<EmailTask<EmailType>> {
   async sendVerificationEmail(
     email: string,
     name: string,
-    verificationLink: string
+    verificationLink: string,
   ): Promise<void> {
     const taskName = "verify";
     const task = buildTask(taskName, email, { name, verificationLink });
@@ -47,7 +47,7 @@ class EmailQueue extends MonkeyQueue<EmailTask<EmailType>> {
   async sendForgotPasswordEmail(
     email: string,
     name: string,
-    passwordResetLink: string
+    passwordResetLink: string,
   ): Promise<void> {
     const taskName = "resetPassword";
     const task = buildTask(taskName, email, { name, passwordResetLink });

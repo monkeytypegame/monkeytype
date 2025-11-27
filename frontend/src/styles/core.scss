@@ -140,13 +140,18 @@ html {
 a {
   display: inline-block;
   color: var(--sub-color);
-  transition: color 0.125s, opacity 0.125s, background 0.125s;
+  transition:
+    color 0.125s,
+    opacity 0.125s,
+    background 0.125s;
   &:hover {
     color: var(--text-color);
   }
   &:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
+    box-shadow:
+      0 0 0 0.1rem var(--bg-color),
+      0 0 0 0.2rem var(--text-color);
     border-radius: calc(var(--roundness) / 2);
   }
 }
@@ -336,7 +341,10 @@ key {
 .avatar {
   --size: 1em;
 
-  transition: opacity 0.125s, filter 0.125s, webkit-filter 0.125s;
+  transition:
+    opacity 0.125s,
+    filter 0.125s,
+    webkit-filter 0.125s;
   width: var(--size);
   height: var(--size);
   font-size: var(--size);

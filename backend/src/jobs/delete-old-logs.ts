@@ -21,7 +21,7 @@ async function deleteOldLogs(): Promise<void> {
   void addLog(
     "system_logs_deleted",
     `${data.deletedCount} logs deleted older than ${LOG_MAX_AGE_DAYS} day(s)`,
-    undefined
+    undefined,
   );
 }
 

@@ -41,7 +41,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
         : SimpleValidation<T> & {
             inputValueConvert: (val: string) => T;
           };
-    }
+    },
   ) {
     this.configName = configName;
     this.mode = mode;
@@ -66,7 +66,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
 
     if (this.mode === "select") {
       const el = document.querySelector(
-        `.pageSettings .section[data-config-name=${this.configName}] select`
+        `.pageSettings .section[data-config-name=${this.configName}] select`,
       );
 
       if (el === null) {
@@ -75,7 +75,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
 
       if (el.hasAttribute("multiple")) {
         throw new Error(
-          "multi-select dropdowns not supported. Config: " + this.configName
+          "multi-select dropdowns not supported. Config: " + this.configName,
         );
       }
 
@@ -109,11 +109,11 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
           let value = button.getAttribute("data-config-value");
           if (value === null || value === "") {
             console.error(
-              `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`
+              `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`,
             );
             Notifications.add(
               "Button is missing data property. Please report this.",
-              -1
+              -1,
             );
             return;
           }
@@ -152,7 +152,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
       this.elements = [input];
     } else if (this.mode === "range") {
       const el = document.querySelector(
-        `.pageSettings .section[data-config-name=${this.configName}] input[type=range]`
+        `.pageSettings .section[data-config-name=${this.configName}] input[type=range]`,
       );
 
       if (el === null) {
@@ -182,7 +182,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
 
     if (this.elements.length === 0 || this.elements === undefined) {
       throw new Error(
-        `Failed to find elements for ${configName} with mode ${mode}`
+        `Failed to find elements for ${configName} with mode ${mode}`,
       );
     }
 
@@ -236,7 +236,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
       const range = this.elements?.[0] as HTMLInputElement | null | undefined;
 
       const rangeValue = document.querySelector(
-        `.pageSettings .section[data-config-name='${this.configName}'] .value`
+        `.pageSettings .section[data-config-name='${this.configName}'] .value`,
       );
 
       if (range === undefined || range === null || rangeValue === null) {

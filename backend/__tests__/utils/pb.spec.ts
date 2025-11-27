@@ -35,7 +35,7 @@ describe("Pb Utils", () => {
       ({ funbox, expected }) => {
         const result = pb.canFunboxGetPb({ funbox } as any);
         expect(result).toBe(expected);
-      }
+      },
     );
   });
 
@@ -65,7 +65,7 @@ describe("Pb Utils", () => {
       const run = pb.checkAndUpdatePb(
         userPbs,
         {} as pb.LbPersonalBests,
-        result
+        result,
       );
 
       expect(run.isPb).toBe(true);
@@ -117,7 +117,7 @@ describe("Pb Utils", () => {
         expect.arrayContaining([
           expect.objectContaining({ numbers: false, wpm: 100 }),
           expect.objectContaining({ numbers: true, wpm: 110 }),
-        ])
+        ]),
       );
     });
   });
@@ -174,7 +174,7 @@ describe("Pb Utils", () => {
         const lbPbPb = pb.updateLeaderboardPersonalBests(
           userPbs,
           structuredClone(lbPb) as pb.LbPersonalBests,
-          result15
+          result15,
         );
 
         expect(lbPbPb).toEqual({

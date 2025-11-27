@@ -97,6 +97,7 @@ const obj: Config = {
   britishEnglish: false,
   lazyMode: false,
   showAverage: "off",
+  showPb: false,
   tapeMode: "off",
   tapeMargin: 50,
   maxLineWidth: 0,

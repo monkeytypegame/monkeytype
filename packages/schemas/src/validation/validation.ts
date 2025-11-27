@@ -3,7 +3,7 @@ import { ZodEffects, ZodString } from "zod";
 
 export function containsProfanity(
   text: string,
-  mode: "word" | "substring"
+  mode: "word" | "substring",
 ): boolean {
   const normalizedText = text
     .toLowerCase()
@@ -37,7 +37,7 @@ function sanitizeString(str: string | undefined): string | undefined {
 
 export function doesNotContainProfanity(
   mode: "word" | "substring",
-  schema: ZodString
+  schema: ZodString,
 ): ZodEffects<ZodString> {
   return schema.refine(
     (val) => {
@@ -45,7 +45,7 @@ export function doesNotContainProfanity(
     },
     (val) => ({
       message: `Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (${val})`,
-    })
+    }),
   );
 }
 

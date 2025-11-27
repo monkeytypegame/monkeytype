@@ -21,7 +21,7 @@ export function hide(): void {
 export async function instantUpdate(): Promise<void> {
   $("#testConfig .mode .textButton").removeClass("active");
   $("#testConfig .mode .textButton[mode='" + Config.mode + "']").addClass(
-    "active"
+    "active",
   );
 
   $("#testConfig .puncAndNum").addClass("hidden");
@@ -124,7 +124,7 @@ async function update(previous: Mode, current: Mode): Promise<void> {
       .removeClass("hidden");
 
     const width = Math.round(
-      puncAndNumEl[0]?.getBoundingClientRect().width ?? 0
+      puncAndNumEl[0]?.getBoundingClientRect().width ?? 0,
     );
 
     animate(puncAndNumEl[0] as HTMLElement, {
@@ -150,7 +150,7 @@ async function update(previous: Mode, current: Mode): Promise<void> {
     });
 
     const leftSpacerEl = document.querySelector(
-      "#testConfig .leftSpacer"
+      "#testConfig .leftSpacer",
     ) as HTMLElement;
 
     leftSpacerEl.style.width = "0.5em";
@@ -181,7 +181,7 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   }
 
   const rightSpacerEl = document.querySelector(
-    "#testConfig .rightSpacer"
+    "#testConfig .rightSpacer",
   ) as HTMLElement;
 
   rightSpacerEl.style.width = "0.5em";
@@ -213,14 +213,14 @@ async function update(previous: Mode, current: Mode): Promise<void> {
   const previousEl = $(`#testConfig .${submenu[previous]}`);
 
   const previousWidth = Math.round(
-    previousEl[0]?.getBoundingClientRect().width ?? 0
+    previousEl[0]?.getBoundingClientRect().width ?? 0,
   );
 
   previousEl.addClass("hidden");
   currentEl.removeClass("hidden");
 
   const currentWidth = Math.round(
-    currentEl[0]?.getBoundingClientRect().width ?? 0
+    currentEl[0]?.getBoundingClientRect().width ?? 0,
   );
 
   previousEl.removeClass("hidden");
@@ -269,7 +269,7 @@ function updateActiveExtraButtons(key: string, value: ConfigValue): void {
       ? "custom"
       : (value as number);
     $(
-      "#testConfig .time .textButton[timeConfig='" + timeCustom + "']"
+      "#testConfig .time .textButton[timeConfig='" + timeCustom + "']",
     ).addClass("active");
   } else if (key === "words") {
     $("#testConfig .wordCount .textButton").removeClass("active");
@@ -279,19 +279,19 @@ function updateActiveExtraButtons(key: string, value: ConfigValue): void {
       : (value as number);
 
     $(
-      "#testConfig .wordCount .textButton[wordCount='" + wordCustom + "']"
+      "#testConfig .wordCount .textButton[wordCount='" + wordCustom + "']",
     ).addClass("active");
   } else if (key === "quoteLength") {
     $("#testConfig .quoteLength .textButton").removeClass("active");
 
     if (areUnsortedArraysEqual(value as QuoteLength[], [0, 1, 2, 3])) {
       $("#testConfig .quoteLength .textButton[quotelength='all']").addClass(
-        "active"
+        "active",
       );
     } else {
       (value as QuoteLength[]).forEach((ql) => {
         $(
-          "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
+          "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']",
         ).addClass("active");
       });
     }
@@ -339,7 +339,7 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
     void update(eventPreviousValue as Mode, eventValue as Mode);
   } else if (
     ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
-      eventKey
+      eventKey,
     )
   ) {
     if (eventValue !== undefined)

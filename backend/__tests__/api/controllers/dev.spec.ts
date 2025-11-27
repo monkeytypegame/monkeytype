@@ -23,7 +23,7 @@ describe("DevController", () => {
         .expect(503);
       //THEN
       expect(body.message).toEqual(
-        "Development endpoints are only available in DEV mode."
+        "Development endpoints are only available in DEV mode.",
       );
     });
     it("should fail without mandatory properties", async () => {

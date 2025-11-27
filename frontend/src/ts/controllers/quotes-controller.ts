@@ -39,13 +39,13 @@ class QuotesController {
 
   async getQuotes(
     language: Language,
-    quoteLengths?: number[]
+    quoteLengths?: number[],
   ): Promise<QuoteCollection> {
     const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage) {
       const { data, error } = await tryCatch(
-        cachedFetchJson<QuoteData>(`quotes/${normalizedLanguage}.json`)
+        cachedFetchJson<QuoteData>(`quotes/${normalizedLanguage}.json`),
       );
       if (error) {
         if (
@@ -200,7 +200,7 @@ class QuotesController {
           return false;
         }
         return (favoriteQuotes[language] ?? []).includes(id.toString());
-      }
+      },
     );
 
     return matchedLanguage !== undefined;
@@ -223,7 +223,7 @@ class QuotesController {
 
       if (response.status === 200) {
         const quoteIndex = snapshot.favoriteQuotes?.[quote.language]?.indexOf(
-          `${quote.id}`
+          `${quote.id}`,
         ) as number;
         snapshot.favoriteQuotes?.[quote.language]?.splice(quoteIndex, 1);
       } else {

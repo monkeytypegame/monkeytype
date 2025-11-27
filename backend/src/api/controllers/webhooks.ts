@@ -5,7 +5,7 @@ import MonkeyError from "../../utils/error";
 import { MonkeyRequest } from "../types";
 
 export async function githubRelease(
-  req: MonkeyRequest<undefined, PostGithubReleaseRequest>
+  req: MonkeyRequest<undefined, PostGithubReleaseRequest>,
 ): Promise<MonkeyResponse> {
   const action = req.body.action;
 

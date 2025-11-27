@@ -232,7 +232,7 @@ export const LayoutNameSchema = z.enum(
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),
-  }
+  },
 );
 
 export type LayoutName = z.infer<typeof LayoutNameSchema>;

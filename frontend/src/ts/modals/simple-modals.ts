@@ -117,7 +117,7 @@ type ReauthenticateOptions = {
 };
 
 function getPreferredAuthenticationMethod(
-  exclude?: AuthMethod
+  exclude?: AuthMethod,
 ): AuthMethod | undefined {
   const authMethods = ["password", "github.com", "google.com"] as AuthMethod[];
   const filteredMethods = authMethods.filter((it) => it !== exclude);
@@ -142,13 +142,13 @@ function isUsingGoogleAuthentication(): boolean {
 function isUsingAuthentication(authProvider: AuthMethod): boolean {
   return (
     getAuthenticatedUser()?.providerData.some(
-      (p) => p.providerId === authProvider
+      (p) => p.providerId === authProvider,
     ) || false
   );
 }
 
 async function reauthenticate(
-  options: ReauthenticateOptions
+  options: ReauthenticateOptions,
 ): Promise<ReauthSuccess | ReauthFailed> {
   if (!isAuthAvailable()) {
     return {
@@ -185,7 +185,7 @@ async function reauthenticate(
       }
       const credential = EmailAuthProvider.credential(
         user.email as string,
-        options.password
+        options.password,
       );
       await reauthenticateWithCredential(user, credential);
     } else {
@@ -261,7 +261,7 @@ list.updateEmail = new SimpleModal({
     _thisPopup,
     password,
     email,
-    emailConfirm
+    emailConfirm,
   ): Promise<ExecReturn> => {
     if (email !== emailConfirm) {
       return {
@@ -444,7 +444,7 @@ list.removePasswordAuth = new SimpleModal({
     } catch (e) {
       const message = createErrorMessage(
         e,
-        "Failed to remove password authentication"
+        "Failed to remove password authentication",
       );
       return {
         status: -1,
@@ -482,7 +482,7 @@ list.updateName = new SimpleModal({
         schema: UserNameSchema,
         isValid: remoteValidation(
           async (name) => Ape.users.getNameAvailability({ params: { name } }),
-          { check: (data) => data.available || "Name not available" }
+          { check: (data) => data.available || "Name not available" },
         ),
         debounceDelay: 1000,
       },
@@ -567,7 +567,7 @@ list.updatePassword = new SimpleModal({
     _thisPopup,
     previousPass,
     newPassword,
-    newPassConfirm
+    newPassConfirm,
   ): Promise<ExecReturn> => {
     if (newPassword !== newPassConfirm) {
       return {
@@ -651,7 +651,7 @@ list.addPasswordAuth = new SimpleModal({
     email,
     emailConfirm,
     password,
-    passConfirm
+    passConfirm,
   ): Promise<ExecReturn> => {
     if (email !== emailConfirm) {
       return {
@@ -681,7 +681,7 @@ list.addPasswordAuth = new SimpleModal({
     } catch (e) {
       const message = createErrorMessage(
         e,
-        "Failed to add password authentication"
+        "Failed to add password authentication",
       );
       return {
         status: -1,
@@ -1078,7 +1078,7 @@ list.resetProgressCustomTextLong = new SimpleModal({
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
     const text = CustomText.getCustomText(
       _thisPopup.parameters[0] as string,
-      true
+      true,
     );
     CustomText.setText(text);
     return {
@@ -1119,7 +1119,7 @@ list.updateCustomTheme = new SimpleModal({
     }
 
     const customTheme = snapshot.customThemes?.find(
-      (t) => t._id === _thisPopup.parameters[0]
+      (t) => t._id === _thisPopup.parameters[0],
     );
     if (customTheme === undefined) {
       return {
@@ -1133,8 +1133,8 @@ list.updateCustomTheme = new SimpleModal({
       for (const color of ThemeController.colorVars) {
         newColors.push(
           $(
-            `.pageSettings .customTheme .tabContent.customTheme #${color}[type='color']`
-          ).attr("value") as string
+            `.pageSettings .tabContent.customTheme #${color}[type='color']`,
+          ).attr("value") as string,
         );
       }
     } else {
@@ -1165,7 +1165,7 @@ list.updateCustomTheme = new SimpleModal({
     if (!snapshot) return;
 
     const customTheme = snapshot.customThemes?.find(
-      (t) => t._id === _thisPopup.parameters[0]
+      (t) => t._id === _thisPopup.parameters[0],
     );
     if (!customTheme) return;
     (_thisPopup.inputs[0] as TextInput).initVal = customTheme.name;
@@ -1201,7 +1201,7 @@ list.devGenerateData = new SimpleModal({
       oninput: (event): void => {
         const target = event.target as HTMLInputElement;
         const span = document.querySelector(
-          "#devGenerateData_1 + span"
+          "#devGenerateData_1 + span",
         ) as HTMLInputElement;
         span.innerHTML = `if checked, user will be created with ${target.value}@example.com and password: password`;
         return;
@@ -1253,7 +1253,7 @@ list.devGenerateData = new SimpleModal({
     firstTestTimestamp,
     lastTestTimestamp,
     minTestsPerDay,
-    maxTestsPerDay
+    maxTestsPerDay,
   ): Promise<ExecReturn> => {
     const request: GenerateDataRequest = {
       username,
@@ -1312,7 +1312,7 @@ list.lbGoToPage = new SimpleModal({
 export function showPopup(
   key: PopupKey,
   showParams = [] as string[],
-  showOptions: ShowOptions = {}
+  showOptions: ShowOptions = {},
 ): void {
   const popup = list[key];
   if (popup === undefined) {
@@ -1390,7 +1390,7 @@ $(".pageSettings").on(
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     showPopup("deleteCustomTheme", [customThemeId]);
-  }
+  },
 );
 
 $(".pageSettings").on(
@@ -1402,7 +1402,7 @@ $(".pageSettings").on(
     showPopup("updateCustomTheme", [customThemeId], {
       focusFirstInput: "focusAndSelect",
     });
-  }
+  },
 );
 
 $(".pageSettings").on(
@@ -1410,5 +1410,5 @@ $(".pageSettings").on(
   ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
   () => {
     showPopup("applyCustomFont");
-  }
+  },
 );

@@ -162,14 +162,14 @@ export function getOpenApi(): OpenAPIObject {
         addTags(operation, metadata);
         return operation;
       },
-    }
+    },
   );
   return openApiDocument;
 }
 
 function addAuth(
   operation: OperationObject,
-  metadata: EndpointMetadata | undefined
+  metadata: EndpointMetadata | undefined,
 ): void {
   const auth = metadata?.authenticationOptions ?? {};
   const permissions = getRequiredPermissions(metadata) ?? [];
@@ -188,13 +188,13 @@ function addAuth(
 
   if (permissions.length !== 0) {
     operation.description += `**Required permissions:** ${permissions.join(
-      ", "
+      ", ",
     )}\n\n`;
   }
 }
 
 function getRequiredPermissions(
-  metadata: EndpointMetadata | undefined
+  metadata: EndpointMetadata | undefined,
 ): PermissionId[] | undefined {
   if (metadata === undefined || metadata.requirePermission === undefined)
     return undefined;
@@ -206,7 +206,7 @@ function getRequiredPermissions(
 
 function addTags(
   operation: OperationObject,
-  metadata: EndpointMetadata | undefined
+  metadata: EndpointMetadata | undefined,
 ): void {
   if (metadata === undefined || metadata.openApiTags === undefined) return;
   operation.tags = Array.isArray(metadata.openApiTags)
@@ -216,7 +216,7 @@ function addTags(
 
 function addRateLimit(
   operation: OperationObject,
-  metadata: EndpointMetadata | undefined
+  metadata: EndpointMetadata | undefined,
 ): void {
   if (metadata === undefined || metadata.rateLimit === undefined) return;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -252,7 +252,7 @@ function getRateLimitDescription(limit: RateLimiterId | RateLimitIds): string {
 
   if (limits.apeKeyLimiter !== undefined) {
     result += ` and up to ${limits.apeKeyLimiter.max} times ${formatWindow(
-      limits.apeKeyLimiter.window
+      limits.apeKeyLimiter.window,
     )} with ApeKeys`;
   }
 
@@ -275,7 +275,7 @@ function formatWindow(window: Window): string {
 
 function addRequiredConfiguration(
   operation: OperationObject,
-  metadata: EndpointMetadata | undefined
+  metadata: EndpointMetadata | undefined,
 ): void {
   if (metadata === undefined || metadata.requireConfiguration === undefined)
     return;
