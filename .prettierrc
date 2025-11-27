@@ -2,6 +2,7 @@
   "tabWidth": 2,
   "useTabs": false,
   "htmlWhitespaceSensitivity": "ignore",
+  "trailingComma": "all",
   "endOfLine": "lf",
   "overrides": [
     {

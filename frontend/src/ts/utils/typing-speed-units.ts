@@ -20,7 +20,7 @@ class Unit implements TypingSpeedUnitSettings {
     convertFactor: number,
     fullUnitString: string,
     histogramDataBucketSize: number,
-    historyStepSize: number
+    historyStepSize: number,
   ) {
     this.unit = unit;
     this.convertFactor = convertFactor;

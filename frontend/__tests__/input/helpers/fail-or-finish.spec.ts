@@ -360,6 +360,6 @@ describe("checkIfFinished", () => {
       });
 
       expect(result).toBe(expected);
-    }
+    },
   );
 });

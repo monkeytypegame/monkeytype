@@ -20,7 +20,7 @@ const alertsPopupEl = qsr("#alertsPopup");
 const accountAlertsListEl = alertsPopupEl.qsr(".accountAlerts .list");
 const psasListEl = alertsPopupEl.qsr(".psas .list");
 const notificationHistoryListEl = alertsPopupEl.qsr(
-  ".notificationHistory .list"
+  ".notificationHistory .list",
 );
 
 let accountAlerts: MonkeyMail[] = [];
@@ -97,7 +97,7 @@ function hide(): void {
             duration: 5,
             customTitle: "Reward",
             customIcon: "gift",
-          }
+          },
         );
       }
 
@@ -222,7 +222,7 @@ async function getAccountAlerts(): Promise<void> {
       <div class="item" data-id="${ie.id}">
         <div class="indicator ${ie.read ? "" : "main"}"></div>
         <div class="timestamp">${formatDistanceToNowStrict(
-          new Date(ie.timestamp)
+          new Date(ie.timestamp),
         )} ago</div>
         <div class="title">${ie.subject}</div>
         <div class="body">
@@ -284,7 +284,7 @@ function fillPSAs(): void {
 function fillNotifications(): void {
   if (state.notifications.length === 0) {
     notificationHistoryListEl.setHtml(
-      `<div class="nothing">Nothing to show</div>`
+      `<div class="nothing">Nothing to show</div>`,
     );
   } else {
     notificationHistoryListEl.empty();
@@ -356,7 +356,7 @@ function markReadAlert(id: string): void {
   item
     .qs(".buttons")
     ?.appendHtml(
-      `<button class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></button>`
+      `<button class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></button>`,
     );
 
   const itemToAnimate = item.qsr(".rewards");
@@ -480,7 +480,7 @@ const modal = new AnimatedModal({
         }
 
         deleteAlert(id);
-      }
+      },
     );
 
     qs("#alertsPopup .accountAlerts .list")?.onChild(
@@ -497,7 +497,7 @@ const modal = new AnimatedModal({
         }
 
         markReadAlert(id);
-      }
+      },
     );
   },
 });

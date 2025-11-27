@@ -33,7 +33,7 @@ describe("ConnectionsDal", () => {
         await ConnectionsDal.getConnections({
           initiatorUid: uid,
           receiverUid: uid,
-        })
+        }),
       ).toStrictEqual([initOne, initTwo, friendOne]);
     });
 
@@ -71,7 +71,7 @@ describe("ConnectionsDal", () => {
           initiatorUid: uid,
           receiverUid: uid,
           status: ["accepted", "blocked"],
-        })
+        }),
       ).toStrictEqual([initAccepted, initBlocked, friendAccepted]);
     });
   });
@@ -98,7 +98,7 @@ describe("ConnectionsDal", () => {
         createConnection({
           initiatorUid: first.receiverUid,
           receiverUid: uid,
-        })
+        }),
       ).rejects.toThrow("Connection request already sent");
     });
 
@@ -111,7 +111,7 @@ describe("ConnectionsDal", () => {
       const created = await ConnectionsDal.create(
         { uid, name: "Bob" },
         { uid: receiverUid, name: "Kevin" },
-        2
+        2,
       );
 
       //THEN
@@ -135,7 +135,7 @@ describe("ConnectionsDal", () => {
 
       //WHEN / THEM
       await expect(createConnection({ initiatorUid }, 2)).rejects.toThrow(
-        "Maximum number of connections reached\nStack: create connection request"
+        "Maximum number of connections reached\nStack: create connection request",
       );
     });
 
@@ -152,7 +152,7 @@ describe("ConnectionsDal", () => {
         createConnection({
           initiatorUid: first.receiverUid,
           receiverUid: uid,
-        })
+        }),
       ).rejects.toThrow("Connection blocked");
     });
   });
@@ -181,19 +181,19 @@ describe("ConnectionsDal", () => {
       await ConnectionsDal.updateStatus(
         uid,
         first._id.toHexString(),
-        "accepted"
+        "accepted",
       );
 
       //THEN
       expect(await ConnectionsDal.getConnections({ receiverUid: uid })).toEqual(
-        [{ ...first, status: "accepted", lastModified: now }, second]
+        [{ ...first, status: "accepted", lastModified: now }, second],
       );
 
       //can update twice to the same status
       await ConnectionsDal.updateStatus(
         uid,
         first._id.toHexString(),
-        "accepted"
+        "accepted",
       );
     });
     it("should fail if uid does not match the reeceiverUid", async () => {
@@ -205,7 +205,7 @@ describe("ConnectionsDal", () => {
 
       //WHEN / THEN
       await expect(
-        ConnectionsDal.updateStatus(uid, first._id.toHexString(), "accepted")
+        ConnectionsDal.updateStatus(uid, first._id.toHexString(), "accepted"),
       ).rejects.toThrow("No permission or connection not found");
     });
   });
@@ -226,7 +226,7 @@ describe("ConnectionsDal", () => {
 
       //THEN
       expect(
-        await ConnectionsDal.getConnections({ initiatorUid: uid })
+        await ConnectionsDal.getConnections({ initiatorUid: uid }),
       ).toStrictEqual([second]);
     });
 
@@ -248,7 +248,7 @@ describe("ConnectionsDal", () => {
       expect(
         await ConnectionsDal.getConnections({
           initiatorUid: second.initiatorUid,
-        })
+        }),
       ).toStrictEqual([second]);
     });
 
@@ -261,7 +261,7 @@ describe("ConnectionsDal", () => {
 
       //WHEN / THEN
       await expect(
-        ConnectionsDal.deleteById("Bob", first._id.toHexString())
+        ConnectionsDal.deleteById("Bob", first._id.toHexString()),
       ).rejects.toThrow("No permission or connection not found");
     });
 
@@ -275,7 +275,7 @@ describe("ConnectionsDal", () => {
 
       //WHEN / THEN
       await expect(
-        ConnectionsDal.deleteById(uid, myRequestWasBlocked._id.toHexString())
+        ConnectionsDal.deleteById(uid, myRequestWasBlocked._id.toHexString()),
       ).rejects.toThrow("No permission or connection not found");
     });
     it("allow receiver to delete blocked", async () => {
@@ -291,7 +291,7 @@ describe("ConnectionsDal", () => {
 
       //THEN
       expect(await ConnectionsDal.getConnections({ receiverUid: uid })).toEqual(
-        []
+        [],
       );
     });
   });
@@ -313,13 +313,13 @@ describe("ConnectionsDal", () => {
         await ConnectionsDal.getConnections({
           initiatorUid: uid,
           receiverUid: uid,
-        })
+        }),
       ).toEqual([]);
 
       expect(
         await ConnectionsDal.getConnections({
           initiatorUid: decoy.initiatorUid,
-        })
+        }),
       ).toEqual([decoy]);
     });
   });
@@ -349,7 +349,7 @@ describe("ConnectionsDal", () => {
         await ConnectionsDal.getConnections({
           initiatorUid: uid,
           receiverUid: uid,
-        })
+        }),
       ).toEqual([
         { ...initOne, initiatorName: "King Bob" },
         { ...initTwo, initiatorName: "King Bob" },
@@ -359,7 +359,7 @@ describe("ConnectionsDal", () => {
       expect(
         await ConnectionsDal.getConnections({
           initiatorUid: decoy.initiatorUid,
-        })
+        }),
       ).toEqual([decoy]);
     });
   });
@@ -472,7 +472,7 @@ describe("ConnectionsDal", () => {
               connectionId: "$connectionMeta._id",
             },
           },
-        ]
+        ],
       );
 
       //THEN

@@ -82,7 +82,7 @@ function toHtml(flag: UserFlag, formatOptions: UserFlagOptions): string {
 
 export function getHtmlByUserFlags(
   source: SupportsFlags,
-  options?: UserFlagOptions
+  options?: UserFlagOptions,
 ): string {
   const formatOptions = { ...USER_FLAG_OPTIONS_DEFAULT, ...options };
   return getMatchingFlags(source)

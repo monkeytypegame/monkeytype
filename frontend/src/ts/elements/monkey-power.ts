@@ -146,7 +146,7 @@ function render(): void {
     ctx.context2d.beginPath();
     ctx.context2d.moveTo(
       Math.round(particle.prev.x),
-      Math.round(particle.prev.y)
+      Math.round(particle.prev.y),
     );
     ctx.context2d.lineTo(Math.round(particle.x), Math.round(particle.y));
     ctx.context2d.stroke();
@@ -177,7 +177,7 @@ export function reset(immediate = false): void {
       $("html").css("overflow", "inherit");
       $("html").css("overflow-y", "scroll");
     },
-    immediate ? 0 : 1000
+    immediate ? 0 : 1000,
   );
 }
 
@@ -212,7 +212,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
     ];
     $(document.body).css(
       "transform",
-      `translate(${shake[0]}px, ${shake[1]}px)`
+      `translate(${shake[0]}px, ${shake[1]}px)`,
     );
     if (isSafeNumber(ctx.resetTimeOut)) clearTimeout(ctx.resetTimeOut);
     ctx.resetTimeOut = setTimeout(reset, 2000) as unknown as number;
@@ -228,7 +228,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
   for (
     let i = Math.round(
       (particleCreateCount[0] + Math.random() * particleCreateCount[1]) *
-        (extra ? 2 : 1)
+        (extra ? 2 : 1),
     );
     i > 0;
     i--
@@ -239,7 +239,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
       ? await ThemeColors.get("caret")
       : await ThemeColors.get("error");
     ctx.particles.push(
-      createParticle(...(coords as [x: number, y: number]), color)
+      createParticle(...(coords as [x: number, y: number]), color),
     );
   }
 

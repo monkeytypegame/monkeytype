@@ -4,7 +4,7 @@ export const StringNumberSchema = z
   .string()
   .regex(
     /^\d+$/,
-    'Needs to be a number or a number represented as a string e.g. "10".'
+    'Needs to be a number or a number represented as a string e.g. "10".',
   )
   .or(z.number().transform(String));
 export type StringNumber = z.infer<typeof StringNumberSchema>;

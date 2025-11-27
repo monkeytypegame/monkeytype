@@ -17,7 +17,7 @@ let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
+    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"',
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
@@ -61,10 +61,10 @@ function updateKeytips(): void {
 if (isDevEnvironment()) {
   qs("header #logo .top")?.setText("localhost");
   qs("head title")?.setText(
-    (qs("head title")?.native.textContent ?? "") + " (localhost)"
+    (qs("head title")?.native.textContent ?? "") + " (localhost)",
   );
   qs("body")?.appendHtml(
-    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
+    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`,
   );
 }
 
@@ -76,7 +76,7 @@ window.addEventListener("beforeunload", (event) => {
       Config.words,
       Config.time,
       CustomText.getData(),
-      isCustomTextLong() ?? false
+      isCustomTextLong() ?? false,
     )
   ) {
     //ignore

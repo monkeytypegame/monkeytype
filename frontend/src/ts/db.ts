@@ -56,7 +56,7 @@ export function getSnapshot(): Snapshot | undefined {
 
 export function setSnapshot(
   newSnapshot: Snapshot | undefined,
-  options?: { dispatchEvent?: boolean }
+  options?: { dispatchEvent?: boolean },
 ): void {
   const originalBanned = dbSnapshot?.banned;
   const originalVerified = dbSnapshot?.verified;
@@ -107,25 +107,25 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     if (userResponse.status !== 200) {
       throw new SnapshotInitError(
         `${userResponse.body.message} (user)`,
-        userResponse.status
+        userResponse.status,
       );
     }
     if (configResponse.status !== 200) {
       throw new SnapshotInitError(
         `${configResponse.body.message} (config)`,
-        configResponse.status
+        configResponse.status,
       );
     }
     if (presetsResponse.status !== 200) {
       throw new SnapshotInitError(
         `${presetsResponse.body.message} (presets)`,
-        presetsResponse.status
+        presetsResponse.status,
       );
     }
     if (connectionsResponse.status !== 200) {
       throw new SnapshotInitError(
         `${connectionsResponse.body.message} (connections)`,
-        connectionsResponse.status
+        connectionsResponse.status,
       );
     }
 
@@ -137,13 +137,13 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     if (userData === null) {
       throw new SnapshotInitError(
         `Request was successful but user data is null`,
-        200
+        200,
       );
     }
 
     if (configData !== null && "config" in configData) {
       throw new Error(
-        "Config data is not in the correct format. Please refresh the page or contact support."
+        "Config data is not in the correct format. Please refresh the page or contact support.",
       );
     }
 
@@ -190,7 +190,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       snap.testActivity = new ModifiableTestActivityCalendar(
         userData.testActivity.testsByDays,
         new Date(userData.testActivity.lastDay),
-        firstDayOfTheWeek
+        firstDayOfTheWeek,
       );
     }
 
@@ -265,7 +265,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
           } else {
             return 0;
           }
-        }
+        },
       );
     }
 
@@ -332,7 +332,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     const oldestTimestamp = lastElementFromArray(dbSnapshot.results)
       ?.timestamp as number;
     const resultsWithoutDuplicates = results.filter(
-      (it) => it.timestamp < oldestTimestamp
+      (it) => it.timestamp < oldestTimestamp,
     );
     dbSnapshot.results.push(...resultsWithoutDuplicates);
   } else {
@@ -346,7 +346,7 @@ function _getCustomThemeById(themeID: string): CustomTheme | undefined {
 }
 
 export async function addCustomTheme(
-  theme: Omit<CustomTheme, "_id">
+  theme: Omit<CustomTheme, "_id">,
 ): Promise<boolean> {
   if (!dbSnapshot) return false;
 
@@ -363,7 +363,7 @@ export async function addCustomTheme(
   if (response.status !== 200) {
     Notifications.add(
       "Error adding custom theme: " + response.body.message,
-      -1
+      -1,
     );
     return false;
   }
@@ -384,7 +384,7 @@ export async function addCustomTheme(
 
 export async function editCustomTheme(
   themeId: string,
-  newTheme: Omit<CustomTheme, "_id">
+  newTheme: Omit<CustomTheme, "_id">,
 ): Promise<boolean> {
   if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
@@ -397,7 +397,7 @@ export async function editCustomTheme(
   if (!customTheme) {
     Notifications.add(
       "Editing failed: Custom theme with id: " + themeId + " does not exist",
-      -1
+      -1,
     );
     return false;
   }
@@ -408,7 +408,7 @@ export async function editCustomTheme(
   if (response.status !== 200) {
     Notifications.add(
       "Error editing custom theme: " + response.body.message,
-      -1
+      -1,
     );
     return false;
   }
@@ -435,13 +435,13 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   if (response.status !== 200) {
     Notifications.add(
       "Error deleting custom theme: " + response.body.message,
-      -1
+      -1,
     );
     return false;
   }
 
   dbSnapshot.customThemes = dbSnapshot.customThemes?.filter(
-    (t) => t._id !== themeId
+    (t) => t._id !== themeId,
   );
 
   return true;
@@ -454,7 +454,7 @@ export async function getUserAverage10<M extends Mode>(
   numbers: boolean,
   language: string,
   difficulty: Difficulty,
-  lazyMode: boolean
+  lazyMode: boolean,
 ): Promise<[number, number]> {
   const snapshot = getSnapshot();
 
@@ -539,7 +539,7 @@ export async function getUserDailyBest<M extends Mode>(
   numbers: boolean,
   language: string,
   difficulty: Difficulty,
-  lazyMode: boolean
+  lazyMode: boolean,
 ): Promise<number> {
   const snapshot = getSnapshot();
 
@@ -604,7 +604,7 @@ export async function getActiveTagsPB<M extends Mode>(
   numbers: boolean,
   language: string,
   difficulty: Difficulty,
-  lazyMode: boolean
+  lazyMode: boolean,
 ): Promise<number> {
   const snapshot = getSnapshot();
   if (!snapshot) return 0;
@@ -620,7 +620,7 @@ export async function getActiveTagsPB<M extends Mode>(
       numbers,
       language,
       difficulty,
-      lazyMode
+      lazyMode,
     );
     if (currTagPB > tagPbWpm) tagPbWpm = currTagPB;
   }
@@ -636,7 +636,7 @@ export async function getLocalPB<M extends Mode>(
   language: string,
   difficulty: Difficulty,
   lazyMode: boolean,
-  funboxes: FunboxMetadata[]
+  funboxes: FunboxMetadata[],
 ): Promise<PersonalBest | undefined> {
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;
@@ -652,7 +652,7 @@ export async function getLocalPB<M extends Mode>(
       (pb.numbers ?? false) === numbers &&
       pb.difficulty === difficulty &&
       pb.language === language &&
-      (pb.lazyMode ?? false) === lazyMode
+      (pb.lazyMode ?? false) === lazyMode,
   );
 }
 
@@ -667,7 +667,7 @@ function saveLocalPB<M extends Mode>(
   wpm: number,
   acc: number,
   raw: number,
-  consistency: number
+  consistency: number,
 ): void {
   if (mode === "quote") return;
   if (!dbSnapshot) return;
@@ -723,7 +723,7 @@ function saveLocalPB<M extends Mode>(
           raw,
           timestamp: Date.now(),
           consistency,
-        }
+        },
       );
     }
   }
@@ -741,7 +741,7 @@ export async function getLocalTagPB<M extends Mode>(
   numbers: boolean,
   language: string,
   difficulty: Difficulty,
-  lazyMode: boolean
+  lazyMode: boolean,
 ): Promise<number> {
   if (dbSnapshot === null) return 0;
 
@@ -776,7 +776,7 @@ export async function getLocalTagPB<M extends Mode>(
         (pb.numbers ?? false) === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
-        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode)),
     )?.wpm ?? 0;
 
   return ret;
@@ -794,13 +794,13 @@ export async function saveLocalTagPB<M extends Mode>(
   wpm: number,
   acc: number,
   raw: number,
-  consistency: number
+  consistency: number,
 ): Promise<number | undefined> {
   if (!dbSnapshot) return;
   if (mode === "quote") return;
   function cont(): void {
     const filteredtag = dbSnapshot?.tags?.find(
-      (t) => t._id === tagId
+      (t) => t._id === tagId,
     ) as SnapshotUserTag;
 
     filteredtag.personalBests ??= {
@@ -895,7 +895,7 @@ export async function updateLbMemory<M extends Mode>(
   mode2: Mode2<M>,
   language: Language,
   rank: number,
-  api = false
+  api = false,
 ): Promise<void> {
   if (mode === "time") {
     const timeMode = mode;
@@ -996,7 +996,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
         data.result.wpm,
         data.result.acc,
         data.result.rawWpm,
-        data.result.consistency
+        data.result.consistency,
       );
     }
   }
@@ -1056,7 +1056,7 @@ export function addBadge(badge: Badge): void {
 }
 
 export async function getTestActivityCalendar(
-  yearString: string
+  yearString: string,
 ): Promise<TestActivityCalendar | undefined> {
   if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
 
@@ -1077,7 +1077,7 @@ export async function getTestActivityCalendar(
     if (response.status !== 200) {
       Notifications.add(
         "Error getting test activities: " + response.body.message,
-        -1
+        -1,
       );
       Loader.hide();
       return undefined;
@@ -1089,14 +1089,14 @@ export async function getTestActivityCalendar(
       const testsByDays = response.body.data[year] ?? [];
       const lastDay = Dates.addDays(
         new Date(parseInt(year), 0, 1),
-        testsByDays.length
+        testsByDays.length,
       );
 
       dbSnapshot.testActivityByYear[year] = new TestActivityCalendar(
         testsByDays,
         lastDay,
         firstDayOfTheWeek,
-        true
+        true,
       );
     }
     Loader.hide();
@@ -1119,7 +1119,7 @@ export function mergeConnections(connections: Connection[]): void {
 }
 
 function convertConnections(
-  connectionsData: Connection[]
+  connectionsData: Connection[],
 ): Snapshot["connections"] {
   return Object.fromEntries(
     connectionsData.map((connection) => {
@@ -1132,7 +1132,7 @@ function convertConnections(
           ? "incoming"
           : connection.status,
       ];
-    })
+    }),
   );
 }
 
@@ -1143,7 +1143,7 @@ export function isFriend(uid: string | undefined): boolean {
   if (!snapshot) return false;
 
   return Object.entries(snapshot.connections).some(
-    ([receiverUid, status]) => receiverUid === uid && status === "accepted"
+    ([receiverUid, status]) => receiverUid === uid && status === "accepted",
   );
 }
 

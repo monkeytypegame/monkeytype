@@ -6,10 +6,10 @@ import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import {
   IsValidResponse,
+  ValidatedHtmlInputElement,
   Validation,
   ValidationOptions,
   ValidationResult,
-  validateWithIndicator as withValidation,
 } from "../elements/input-validation";
 import { qsr } from "./dom";
 
@@ -37,7 +37,7 @@ type CommonInput<TType, TValue> = {
      */
     isValid?: (
       value: string,
-      thisPopup: SimpleModal
+      thisPopup: SimpleModal,
     ) => Promise<IsValidResponse>;
   };
 };
@@ -232,7 +232,7 @@ export class SimpleModal {
             classes,
             attributes,
             innerHTML: input.initVal,
-          })
+          }),
         );
       } else if (input.type === "checkbox") {
         let html = buildTag({ tagname, classes, attributes });
@@ -279,19 +279,19 @@ export class SimpleModal {
             if (input.min !== undefined) {
               attributes["min"] = dateFormat(
                 input.min,
-                "yyyy-MM-dd'T'HH:mm:ss"
+                "yyyy-MM-dd'T'HH:mm:ss",
               );
             }
             if (input.max !== undefined) {
               attributes["max"] = dateFormat(
                 input.max,
-                "yyyy-MM-dd'T'HH:mm:ss"
+                "yyyy-MM-dd'T'HH:mm:ss",
               );
             }
             if (input.initVal !== undefined) {
               attributes["value"] = dateFormat(
                 input.initVal,
-                "yyyy-MM-dd'T'HH:mm:ss"
+                "yyyy-MM-dd'T'HH:mm:ss",
               );
             }
             break;
@@ -350,7 +350,7 @@ export class SimpleModal {
           debounceDelay: input.validation.debounceDelay,
         };
 
-        withValidation(element, options);
+        new ValidatedHtmlInputElement(element, options);
       }
     });
 
@@ -386,7 +386,7 @@ export class SimpleModal {
       } else {
         this.enableInputs();
         $($("#simpleModal").find("input")[0] as HTMLInputElement).trigger(
-          "focus"
+          "focus",
         );
       }
     });
@@ -446,7 +446,7 @@ export class SimpleModal {
 
   updateSubmitButtonState(): void {
     const button = this.element.querySelector(
-      ".submitButton"
+      ".submitButton",
     ) as HTMLButtonElement;
     if (button === null) return;
 

@@ -32,10 +32,10 @@ describe("british-english", () => {
 
     it("should replace hyphenated words", async () => {
       await expect(replace("cream-colored", "")).resolves.toEqual(
-        "cream-coloured"
+        "cream-coloured",
       );
       await expect(replace("armor-flavoring", "")).resolves.toEqual(
-        "armour-flavouring"
+        "armour-flavouring",
       );
     });
 
@@ -43,7 +43,7 @@ describe("british-english", () => {
       await expect(replace('"hello"', "")).resolves.toEqual("'hello'");
       await expect(replace('"test"', "")).resolves.toEqual("'test'");
       await expect(replace('"Hello World"', "")).resolves.toEqual(
-        "'Hello World'"
+        "'Hello World'",
       );
     });
 
@@ -55,7 +55,7 @@ describe("british-english", () => {
 
     it("should handle multiple double quotes in a word", async () => {
       await expect(
-        replace('He said "hello" and "goodbye"', "")
+        replace('He said "hello" and "goodbye"', ""),
       ).resolves.toEqual("He said 'hello' and 'goodbye'");
     });
 

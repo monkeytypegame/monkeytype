@@ -68,7 +68,7 @@ export function update(): void {
     void Misc.swapElements(
       loginButtonEl.native,
       accountButtonAndMenuEl.native,
-      250
+      250,
     );
   } else {
     void Misc.swapElements(
@@ -80,7 +80,7 @@ export function update(): void {
         updateFlags({});
         XpBar.setXp(0);
         updateAvatar();
-      }
+      },
     );
   }
 
@@ -97,7 +97,7 @@ export function updateFriendRequestsIndicator(): void {
 
   if (friends !== undefined) {
     const pendingFriendRequests = Object.values(friends).filter(
-      (it) => it === "incoming"
+      (it) => it === "incoming",
     ).length;
     if (pendingFriendRequests > 0) {
       for (const bubbleEl of bubbleElements) {

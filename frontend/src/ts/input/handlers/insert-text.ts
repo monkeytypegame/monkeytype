@@ -88,6 +88,10 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     TestWords.words.getCurrent()[TestInput.input.current.length] !==
       options.data
   ) {
+    // replace the data with the override
+    setInputElementValue(
+      inputValue.slice(0, -options.data.length) + charOverride,
+    );
     await onInsertText({
       ...options,
       data: charOverride,
@@ -95,19 +99,17 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     return;
   }
 
+  // input and target word
+  const testInput = TestInput.input.current;
+  const currentWord = TestWords.words.getCurrent();
+
   // if the character is visually equal, replace it with the target character
   // this ensures all future equivalence checks work correctly
-  let normalizedData: string | null = null;
-  const targetChar =
-    TestWords.words.getCurrent()[TestInput.input.current.length];
-  if (
-    targetChar !== undefined &&
-    areCharactersVisuallyEqual(options.data, targetChar, Config.language)
-  ) {
-    replaceInputElementLastValueChar(targetChar);
-    normalizedData = targetChar;
-  }
-
+  const normalizedData = normalizeDataAndUpdateInputIfNeeded(
+    options.data,
+    testInput,
+    currentWord,
+  );
   const data = normalizedData ?? options.data;
 
   // start if needed
@@ -118,8 +120,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // helper consts
   const lastInMultiOrSingle =
     lastInMultiIndex === true || lastInMultiIndex === undefined;
-  const testInput = TestInput.input.current;
-  const currentWord = TestWords.words.getCurrent();
   const wordIndex = TestState.activeWordIndex;
   const charIsSpace = isSpace(data);
   const charIsNewline = data === "\n";
@@ -134,8 +134,11 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // is char correct
   const funboxCorrect = findSingleActiveFunboxWithFunction(
-    "isCharCorrect"
-  )?.functions.isCharCorrect(data, currentWord[inputValue.length] ?? "");
+    "isCharCorrect",
+  )?.functions.isCharCorrect(
+    data,
+    currentWord[(testInput + data).length - 1] ?? "",
+  );
   const correct =
     funboxCorrect ??
     isCharCorrect({
@@ -148,7 +151,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // word navigation check
   const noSpaceForce =
     isFunboxActiveWithProperty("nospace") &&
-    TestInput.input.current.length === TestWords.words.getCurrent().length;
+    (testInput + data).length === TestWords.words.getCurrent().length;
   const shouldGoToNextWord =
     ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
 
@@ -286,8 +289,25 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 }
 
+function normalizeDataAndUpdateInputIfNeeded(
+  data: string,
+  testInput: string,
+  currentWord: string,
+): string | null {
+  let normalizedData: string | null = null;
+  const targetChar = currentWord[testInput.length];
+  if (
+    targetChar !== undefined &&
+    areCharactersVisuallyEqual(data, targetChar, Config.language)
+  ) {
+    replaceInputElementLastValueChar(targetChar);
+    normalizedData = targetChar;
+  }
+  return normalizedData;
+}
+
 export async function emulateInsertText(
-  options: OnInsertTextParams
+  options: OnInsertTextParams,
 ): Promise<void> {
   const inputStopped = onBeforeInsertText(options.data);
 

@@ -1,7 +1,7 @@
 type SubscribeFunction = (
   message: string,
   level: number,
-  customTitle?: string
+  customTitle?: string,
 ) => void;
 
 const subscribers: SubscribeFunction[] = [];
@@ -13,7 +13,7 @@ export function subscribe(fn: SubscribeFunction): void {
 export function dispatch(
   message: string,
   level: number,
-  customTitle?: string
+  customTitle?: string,
 ): void {
   subscribers.forEach((fn) => {
     try {

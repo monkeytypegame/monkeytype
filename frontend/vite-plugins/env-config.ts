@@ -28,7 +28,7 @@ export function envConfig(
     | {
         isDevelopment: false;
         clientVersion: string;
-      }
+      },
 ): Plugin {
   return {
     name: "virtual-env-config",

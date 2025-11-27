@@ -14,7 +14,7 @@ import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import AnimatedModal from "../utils/animated-modal";
 import { resetIgnoreAuthCallback } from "../firebase";
-import { validateWithIndicator } from "../elements/input-validation";
+import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
 import { qsr } from "../utils/dom";
@@ -31,14 +31,14 @@ function show(credential: UserCredential): void {
       if (!CaptchaController.isCaptchaAvailable()) {
         Notifications.add(
           "Could not show google sign up popup: Captcha is not avilable. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-          -1
+          -1,
         );
         return;
       }
       CaptchaController.reset("googleSignUpModal");
       CaptchaController.render(
         $("#googleSignUpModal .captcha")[0] as HTMLElement,
-        "googleSignUpModal"
+        "googleSignUpModal",
       );
       enableInput();
       disableButton();
@@ -78,7 +78,7 @@ async function apply(): Promise<void> {
   if (!signedInUser) {
     Notifications.add(
       "Missing user credential. Please close the popup and try again.",
-      -1
+      -1,
     );
     return;
   }
@@ -152,11 +152,11 @@ function disableInput(): void {
   nameInputEl?.disable();
 }
 
-validateWithIndicator(nameInputEl, {
+new ValidatedHtmlInputElement(nameInputEl, {
   schema: UserNameSchema,
   isValid: remoteValidation(
     async (name) => Ape.users.getNameAvailability({ params: { name } }),
-    { check: (data) => data.available || "Name not available" }
+    { check: (data) => data.available || "Name not available" },
   ),
   debounceDelay: 1000,
   callback: (result) => {

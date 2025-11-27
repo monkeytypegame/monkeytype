@@ -39,7 +39,7 @@ let pendingRequests: Connection[] | undefined;
 let friendsList: Friend[] | undefined;
 
 export function getReceiverUid(
-  connection: Pick<Connection, "initiatorUid" | "receiverUid">
+  connection: Pick<Connection, "initiatorUid" | "receiverUid">,
 ): string {
   const me = getAuthenticatedUser();
   if (me === null)
@@ -78,7 +78,7 @@ const addFriendModal = new SimpleModal({
         schema: UserNameSchema,
         isValid: remoteValidation(
           async (name) => Ape.users.getNameAvailability({ params: { name } }),
-          { check: (data) => !data.available || "Unknown user" }
+          { check: (data) => !data.available || "Unknown user" },
         ),
         debounceDelay: 1000,
       },
@@ -131,7 +131,7 @@ const removeFriendModal = new SimpleModal({
       return { status: -1, message: result.body.message };
     } else {
       friendsList = friendsList?.filter(
-        (it) => it.connectionId !== connectionId
+        (it) => it.connectionId !== connectionId,
       );
       friendsTable?.setData(friendsList ?? []);
       friendsTable?.updateBody();
@@ -173,7 +173,7 @@ function updatePendingConnections(): void {
         <td>
           <span data-balloon-pos="up" aria-label="since ${format(
             item.lastModified,
-            "dd MMM yyyy HH:mm"
+            "dd MMM yyyy HH:mm",
           )}">
             ${formatAge(item.lastModified)} ago
           <span>
@@ -189,7 +189,7 @@ function updatePendingConnections(): void {
             <i class="fas fa-shield-alt fa-fw"></i>
           </button>
         </td>
-      </tr>`
+      </tr>`,
       )
       .join("\n");
 
@@ -298,11 +298,11 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         <td>${secondsToString(
           Math.round(entry.timeTyping ?? 0),
           true,
-          true
+          true,
         )}</td>
         <td><span aria-label="${formatStreak(
           entry.streak?.maxLength,
-          "max streak"
+          "max streak",
         )}" data-balloon-pos="up">
           ${formatStreak(entry.streak?.length)} 
         </span></td>
@@ -330,7 +330,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
 
 function formatAge(
   timestamp: number | undefined,
-  format?: "short" | "full"
+  format?: "short" | "full",
 ): string {
   if (timestamp === undefined) return "";
   let formatted = "";
@@ -393,7 +393,7 @@ $(".pageFriends button.friendAdd").on("click", () => {
 // need to set the listener for action buttons on the table because the table content is getting replaced
 $(".pageFriends .pendingRequests table").on("click", async (e) => {
   const action = Array.from(e.target.classList).find((it) =>
-    ["accepted", "rejected", "blocked"].includes(it)
+    ["accepted", "rejected", "blocked"].includes(it),
   ) as "accepted" | "rejected" | "blocked";
 
   if (action === undefined) return;
@@ -420,7 +420,7 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
   if (result.status !== 200) {
     Notifications.add(
       `Cannot update friend request: ${result.body.message}`,
-      -1
+      -1,
     );
   } else {
     //remove from cache
@@ -464,7 +464,7 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
 // need to set the listener for action buttons on the table because the table content is getting replaced
 $(".pageFriends .friends table").on("click", async (e) => {
   const action = Array.from(e.target.classList).find((it) =>
-    ["remove"].includes(it)
+    ["remove"].includes(it),
   );
 
   if (action === undefined) return;

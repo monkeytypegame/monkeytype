@@ -11,10 +11,10 @@ import { animate } from "animejs";
 
 const barEl = document.querySelector("#barTimerProgress .bar") as HTMLElement;
 const barOpacityEl = document.querySelector(
-  "#barTimerProgress .opacityWrapper"
+  "#barTimerProgress .opacityWrapper",
 ) as HTMLElement;
 const textEl = document.querySelector(
-  "#liveStatsTextTop .timerProgress"
+  "#liveStatsTextTop .timerProgress",
 ) as HTMLElement;
 const miniEl = document.querySelector("#liveStatsMini .time") as HTMLElement;
 
@@ -150,7 +150,7 @@ export function update(): void {
     }
     if (Config.timerStyle === "bar") {
       const percent = Math.floor(
-        ((TestState.activeWordIndex + 1) / outof) * 100
+        ((TestState.activeWordIndex + 1) / outof) * 100,
       );
 
       animate(barEl, {

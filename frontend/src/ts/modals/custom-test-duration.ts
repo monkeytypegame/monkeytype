@@ -102,7 +102,7 @@ function apply(): void {
         0,
         {
           duration: 7,
-        }
+        },
       );
     }
   } else {

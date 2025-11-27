@@ -61,7 +61,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
         .firebaseConfig;
     } else {
       throw new Error(
-        "No config file found. Make sure frontend/src/ts/constants/firebase-config.ts exists"
+        "No config file found. Make sure frontend/src/ts/constants/firebase-config.ts exists",
       );
     }
 
@@ -88,7 +88,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
         createErrorMessage(e, "Firebase uninitialized"),
         0,
         undefined,
-        false
+        false,
       );
     }
   } finally {
@@ -124,19 +124,19 @@ export async function signOut(): Promise<void> {
 export async function signInWithEmailAndPassword(
   email: string,
   password: string,
-  rememberMe: boolean
+  rememberMe: boolean,
 ): Promise<UserCredential> {
   if (Auth === undefined) throw new Error("Authentication uninitialized");
   await setPersistence(rememberMe, true);
 
   const { data: result, error } = await tryCatch(
-    firebaseSignInWithEmailAndPassword(Auth, email, password)
+    firebaseSignInWithEmailAndPassword(Auth, email, password),
   );
   if (error !== null) {
     console.error(error);
     throw translateFirebaseError(
       error,
-      "Failed to sign in with email and password"
+      "Failed to sign in with email and password",
     );
   }
 
@@ -145,14 +145,14 @@ export async function signInWithEmailAndPassword(
 
 export async function signInWithPopup(
   provider: AuthProvider,
-  rememberMe: boolean
+  rememberMe: boolean,
 ): Promise<void> {
   if (Auth === undefined) throw new Error("Authentication uninitialized");
   await setPersistence(rememberMe, true);
   ignoreAuthCallback = true;
 
   const { data: signedInUser, error } = await tryCatch(
-    firebaseSignInWithPopup(Auth, provider)
+    firebaseSignInWithPopup(Auth, provider),
   );
   if (error !== null) {
     ignoreAuthCallback = false;
@@ -170,14 +170,14 @@ export async function signInWithPopup(
 
 export async function createUserWithEmailAndPassword(
   email: string,
-  password: string
+  password: string,
 ): Promise<UserCredential> {
   if (Auth === undefined) throw new Error("Authentication uninitialized");
   ignoreAuthCallback = true;
   const result = await firebaseCreateUserWithEmailAndPassword(
     Auth,
     email,
-    password
+    password,
   );
 
   return result;
@@ -190,7 +190,7 @@ export async function getIdToken(): Promise<string | null> {
 }
 async function setPersistence(
   rememberMe: boolean,
-  store = false
+  store = false,
 ): Promise<void> {
   if (Auth === undefined) throw new Error("Authentication uninitialized");
   const persistence = rememberMe
@@ -200,7 +200,7 @@ async function setPersistence(
   if (store) {
     window.localStorage.setItem(
       "firebasePersistence",
-      rememberMe ? "LOCAL" : "SESSION"
+      rememberMe ? "LOCAL" : "SESSION",
     );
   }
 
@@ -209,7 +209,7 @@ async function setPersistence(
 
 function translateFirebaseError(
   error: Error | FirebaseError,
-  defaultMessage: string
+  defaultMessage: string,
 ): Error {
   let message = createErrorMessage(error, defaultMessage);
 

@@ -65,5 +65,5 @@ export const configsContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );

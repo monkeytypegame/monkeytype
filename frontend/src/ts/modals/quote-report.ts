@@ -23,12 +23,12 @@ const state: State = {
 
 export async function show(
   quoteId: number,
-  showOptions?: ShowOptions
+  showOptions?: ShowOptions,
 ): Promise<void> {
   if (!CaptchaController.isCaptchaAvailable()) {
     Notifications.add(
       "Could not show quote report popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-      -1
+      -1,
     );
     return;
   }
@@ -39,7 +39,7 @@ export async function show(
     beforeAnimation: async () => {
       CaptchaController.render(
         document.querySelector("#quoteReportModal .g-recaptcha") as HTMLElement,
-        "quoteReportModal"
+        "quoteReportModal",
       );
 
       const language =
@@ -103,7 +103,7 @@ async function submitReport(): Promise<void> {
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
     Notifications.add(
-      `Report comment is ${characterDifference} character(s) too long`
+      `Report comment is ${characterDifference} character(s) too long`,
     );
     return;
   }

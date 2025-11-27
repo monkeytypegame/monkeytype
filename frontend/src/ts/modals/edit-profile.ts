@@ -44,23 +44,23 @@ function hide(): void {
 }
 
 const bioInput = qs(
-  "#editProfileModal .bio"
+  "#editProfileModal .bio",
 ) as ElementWithUtils<HTMLTextAreaElement>;
 const keyboardInput = qs(
-  "#editProfileModal .keyboard"
+  "#editProfileModal .keyboard",
 ) as ElementWithUtils<HTMLTextAreaElement>;
 const twitterInput = qs(
-  "#editProfileModal .twitter"
+  "#editProfileModal .twitter",
 ) as ElementWithUtils<HTMLInputElement>;
 const githubInput = qs(
-  "#editProfileModal .github"
+  "#editProfileModal .github",
 ) as ElementWithUtils<HTMLInputElement>;
 const websiteInput = qs(
-  "#editProfileModal .website"
+  "#editProfileModal .website",
 ) as ElementWithUtils<HTMLInputElement>;
 const badgeIdsSelect = qs("#editProfileModal .badgeSelectionContainer");
 const showActivityOnPublicProfileInput = document.querySelector(
-  "#editProfileModal .editProfileShowActivityOnPublicProfile"
+  "#editProfileModal .editProfileShowActivityOnPublicProfile",
 ) as HTMLInputElement;
 
 const indicators = [
@@ -108,7 +108,7 @@ function hydrateInputs(): void {
         <i class="fas fa-frown-open"></i>
         <div class="text">none</div>
       </div>
-    </button>`
+    </button>`,
   );
 
   $(".badgeSelectionItem").on("click", ({ currentTarget }) => {
@@ -163,7 +163,7 @@ async function updateProfile(): Promise<void> {
   ) {
     Notifications.add(
       `GitHub username exceeds maximum allowed length (${githubLengthLimit} characters).`,
-      -1
+      -1,
     );
     return;
   }
@@ -175,7 +175,7 @@ async function updateProfile(): Promise<void> {
   ) {
     Notifications.add(
       `Twitter username exceeds maximum allowed length (${twitterLengthLimit} characters).`,
-      -1
+      -1,
     );
     return;
   }
@@ -210,7 +210,7 @@ async function updateProfile(): Promise<void> {
 
 function addValidation(
   element: ElementWithUtils<HTMLInputElement>,
-  schema: Zod.Schema
+  schema: Zod.Schema,
 ): InputIndicator {
   const indicator = new InputIndicator(element, {
     valid: {
@@ -238,7 +238,7 @@ function addValidation(
     if (!validationResult.success) {
       indicator.show(
         "invalid",
-        validationResult.error.errors.map((err) => err.message).join(", ")
+        validationResult.error.errors.map((err) => err.message).join(", "),
       );
       return;
     }

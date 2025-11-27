@@ -66,5 +66,5 @@ export const publicContract = c.router(
       rateLimit: "publicStatsGet",
     }),
     commonResponses: CommonResponses,
-  }
+  },
 );

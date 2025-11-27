@@ -11,7 +11,7 @@ const timestamp = Date.now() - 60000;
 async function createDummyData(
   uid: string,
   count: number,
-  modify?: Partial<DBResult>
+  modify?: Partial<DBResult>,
 ): Promise<void> {
   const dummyUser: UserDal.DBUser = {
     _id: new ObjectId(),

@@ -462,7 +462,7 @@ type GetNoteFrequencyCallback = (octave: number) => number;
 
 function bindToNote(
   noteFrequencies: ValidFrequencies,
-  octaveOffset = 0
+  octaveOffset = 0,
 ): GetNoteFrequencyCallback {
   return (octave: number): number => {
     return noteFrequencies[octave + octaveOffset] ?? 0;
@@ -534,7 +534,7 @@ function initAudioContext(): void {
     Notifications.add(
       createErrorMessage(e, "Error initializing audio context") +
         ". Notes will not play.",
-      -1
+      -1,
     );
   }
 }
@@ -640,7 +640,7 @@ export async function playTimeWarning(): Promise<void> {
 
 function playNote(
   codeOverride?: string,
-  oscillatorTypeOverride?: SupportedOscillatorTypes
+  oscillatorTypeOverride?: SupportedOscillatorTypes,
 ): void {
   if (audioCtx === undefined) {
     initAudioContext();

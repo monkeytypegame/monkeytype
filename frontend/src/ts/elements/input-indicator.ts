@@ -15,11 +15,11 @@ export class InputIndicator {
 
   constructor(
     inputElement: ElementWithUtils<HTMLInputElement>,
-    options: Record<string, InputIndicatorOption>
+    options: Record<string, InputIndicatorOption>,
   ) {
     this.inputElement = inputElement;
     const wrapper = this.inputElement.wrapWith(
-      `<div class="inputAndIndicator"></div>`
+      `<div class="inputAndIndicator"></div>`,
     );
     this.parentElement = wrapper;
     this.options = options;

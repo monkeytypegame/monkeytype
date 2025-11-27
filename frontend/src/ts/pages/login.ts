@@ -7,7 +7,7 @@ import {
   UserEmailSchema,
   UserNameSchema,
 } from "@monkeytype/schemas/users";
-import { validateWithIndicator } from "../elements/input-validation";
+import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
@@ -71,13 +71,13 @@ export function getSignupData(): SignupData | false {
 }
 
 const nameInputEl = qsr<HTMLInputElement>(
-  ".page.pageLogin .register.side input.usernameInput"
+  ".page.pageLogin .register.side input.usernameInput",
 );
-validateWithIndicator(nameInputEl, {
+new ValidatedHtmlInputElement(nameInputEl, {
   schema: UserNameSchema,
   isValid: remoteValidation(
     async (name) => Ape.users.getNameAvailability({ params: { name } }),
-    { check: (data) => data.available || "Name not available" }
+    { check: (data) => data.available || "Name not available" },
   ),
   debounceDelay: 1000,
   callback: (result) => {
@@ -91,7 +91,7 @@ let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
   null;
 let moduleLoadAttempted = false;
 
-const emailInputEl = validateWithIndicator(
+const emailInputEl = new ValidatedHtmlInputElement(
   qsr(".page.pageLogin .register.side input.emailInput"),
   {
     schema: UserEmailSchema,
@@ -139,10 +139,10 @@ const emailInputEl = validateWithIndicator(
         emailVerifyInputEl?.dispatch("input");
       }
     },
-  }
+  },
 );
 
-emailInputEl.on("focus", async () => {
+emailInputEl.element.on("focus", async () => {
   if (!moduleLoadAttempted) {
     moduleLoadAttempted = true;
     try {
@@ -154,9 +154,9 @@ emailInputEl.on("focus", async () => {
 });
 
 const emailVerifyInputEl = qsr<HTMLInputElement>(
-  ".page.pageLogin .register.side input.verifyEmailInput"
+  ".page.pageLogin .register.side input.verifyEmailInput",
 );
-validateWithIndicator(emailVerifyInputEl, {
+new ValidatedHtmlInputElement(emailVerifyInputEl, {
   isValid: async (emailVerify: string) => {
     return emailInputEl.getValue() === emailVerify
       ? true
@@ -173,7 +173,7 @@ validateWithIndicator(emailVerifyInputEl, {
   },
 });
 
-const passwordInputEl = validateWithIndicator(
+const passwordInputEl = new ValidatedHtmlInputElement(
   qsr(".page.pageLogin .register.side .passwordInput"),
   {
     schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
@@ -183,13 +183,13 @@ const passwordInputEl = validateWithIndicator(
         passwordVerifyInputEl?.dispatch("input");
       }
     },
-  }
+  },
 );
 
 const passwordVerifyInputEl = qsr<HTMLInputElement>(
-  ".page.pageLogin .register.side .verifyPasswordInput"
+  ".page.pageLogin .register.side .verifyPasswordInput",
 );
-validateWithIndicator(passwordVerifyInputEl, {
+new ValidatedHtmlInputElement(passwordVerifyInputEl, {
   isValid: async (passwordVerify: string) => {
     return passwordInputEl.getValue() === passwordVerify
       ? true

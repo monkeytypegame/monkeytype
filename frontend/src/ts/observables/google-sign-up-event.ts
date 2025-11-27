@@ -2,7 +2,7 @@ import { UserCredential } from "firebase/auth";
 
 type SubscribeFunction = (
   signedInUser: UserCredential,
-  isNewUser: boolean
+  isNewUser: boolean,
 ) => void;
 
 const subscribers: SubscribeFunction[] = [];
@@ -13,7 +13,7 @@ export function subscribe(fn: SubscribeFunction): void {
 
 export function dispatch(
   signedInUser: UserCredential,
-  isNewUser: boolean
+  isNewUser: boolean,
 ): void {
   subscribers.forEach((fn) => {
     try {

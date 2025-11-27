@@ -9,7 +9,7 @@ $("#nocss .requestedStylesheets").html(
     )
       .map((l) => l.href)
       .filter((l) => /\/css\/style/gi.test(l))
-      .join("<br>")
+      .join("<br>"),
 );
 
 $("#nocss .requestedJs").html(
@@ -19,7 +19,7 @@ $("#nocss .requestedJs").html(
       .filter((l) => /(\/js\/mon|\/js\/vendor)/gi.test(l))
       .join("<br>") +
     "<br><br>Client version:<br>" +
-    envConfig.clientVersion
+    envConfig.clientVersion,
 );
 
 if (window.navigator.userAgent.toLowerCase().includes("mac")) {

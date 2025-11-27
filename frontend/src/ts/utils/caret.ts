@@ -8,7 +8,7 @@ import { animate, EasingParam, JSAnimation } from "animejs";
 
 const wordsCache = document.querySelector<HTMLElement>("#words") as HTMLElement;
 const wordsWrapperCache = document.querySelector<HTMLElement>(
-  "#wordsWrapper"
+  "#wordsWrapper",
 ) as HTMLElement;
 
 let lockedMainCaretInTape = true;
@@ -64,7 +64,7 @@ export class Caret {
         "carrot",
         "banana",
         "monkey",
-      ]
+      ],
     );
     this.element.classList.add(style);
   }
@@ -283,7 +283,7 @@ export class Caret {
     if (this.style === "off") return;
     requestDebouncedAnimationFrame(`caret.${this.id}.goTo`, () => {
       const word = wordsCache.querySelector<HTMLElement>(
-        `.word[data-wordindex="${options.wordIndex}"]`
+        `.word[data-wordindex="${options.wordIndex}"]`,
       );
       const letters = word?.querySelectorAll<HTMLElement>("letter") ?? [];
       const wordText = TestWords.words.get(options.wordIndex);
@@ -400,7 +400,7 @@ export class Caret {
     const isWordRTL = isWordRightToLeft(
       options.wordText,
       options.isLanguageRightToLeft,
-      options.isDirectionReversed
+      options.isDirectionReversed,
     );
 
     //if the letter is not visible, use the closest visible letter

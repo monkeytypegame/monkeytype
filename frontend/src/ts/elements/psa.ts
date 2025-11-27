@@ -41,7 +41,7 @@ async function getLatest(): Promise<PSA[] | null> {
         "Dev Info: Backend server not running",
         0,
         "exclamation-triangle",
-        false
+        false,
       );
     } else {
       type InstatusSummary = {
@@ -73,7 +73,7 @@ async function getLatest(): Promise<PSA[] | null> {
       };
 
       const { data: instatus, error } = await tryCatch(
-        fetch("https://monkeytype.instatus.com/summary.json")
+        fetch("https://monkeytype.instatus.com/summary.json"),
       );
 
       let maintenanceData: undefined | InstatusSummary["activeMaintenances"];
@@ -99,7 +99,7 @@ async function getLatest(): Promise<PSA[] | null> {
           "bullhorn",
           true,
           undefined,
-          true
+          true,
         );
       } else {
         Notifications.addPSA(
@@ -108,7 +108,7 @@ async function getLatest(): Promise<PSA[] | null> {
           "exclamation-triangle",
           false,
           undefined,
-          true
+          true,
         );
       }
     }
@@ -120,7 +120,7 @@ async function getLatest(): Promise<PSA[] | null> {
       "bullhorn",
       true,
       undefined,
-      true
+      true,
     );
     return null;
   } else if (response.status !== 200) {
@@ -147,16 +147,16 @@ export async function show(): Promise<void> {
         false,
         "text",
         false,
-        true
+        true,
       );
       psa.message = psa.message.replace("{dateDifference}", string);
       psa.message = psa.message.replace(
         "{dateNoTime}",
-        format(dateObj, "dd MMM yyyy")
+        format(dateObj, "dd MMM yyyy"),
       );
       psa.message = psa.message.replace(
         "{date}",
-        format(dateObj, "dd MMM yyyy HH:mm")
+        format(dateObj, "dd MMM yyyy HH:mm"),
       );
     }
 
@@ -174,7 +174,7 @@ export async function show(): Promise<void> {
       () => {
         setMemory(psa._id);
       },
-      true
+      true,
     );
   });
 }
