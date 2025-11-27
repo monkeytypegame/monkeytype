@@ -1286,7 +1286,8 @@ function buildWordLettersHTML(
 async function loadWordsHistory(): Promise<boolean> {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
-  for (let i = 0; i < TestInput.input.getHistory().length + 2; i++) {
+  const inputHistoryLength = TestInput.input.getHistory().length;
+  for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = TestInput.input.getHistory(i);
     const corrected = TestInput.corrected.getHistory(i);
     const word = TestWords.words.get(i);
@@ -1307,8 +1308,9 @@ async function loadWordsHistory(): Promise<boolean> {
         Config.mode === "zen"
           ? ""
           : input !== word
-            ? word.substring(0, input.length) === input &&
-              Config.mode === "time"
+            ? i === inputHistoryLength - 1 &&
+              Config.mode === "time" &&
+              word.substring(0, input.length) === input
               ? ""
               : "error"
             : "";
