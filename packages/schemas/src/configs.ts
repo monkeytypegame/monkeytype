@@ -54,7 +54,14 @@ export type ConfidenceMode = z.infer<typeof ConfidenceModeSchema>;
 export const IndicateTyposSchema = z.enum(["off", "below", "replace", "both"]);
 export type IndicateTypos = z.infer<typeof IndicateTyposSchema>;
 
-export const TimerStyleSchema = z.enum(["off", "bar", "text", "mini"]);
+export const TimerStyleSchema = z.enum([
+  "off",
+  "bar",
+  "text",
+  "mini",
+  "flash text",
+  "flash mini",
+]);
 export type TimerStyle = z.infer<typeof TimerStyleSchema>;
 
 export const LiveSpeedAccBurstStyleSchema = z.enum(["off", "text", "mini"]);

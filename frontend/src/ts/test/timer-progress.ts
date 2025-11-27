@@ -36,6 +36,22 @@ export function show(): void {
         textEl.classList.remove("hidden");
       },
     });
+  } else if (Config.timerStyle === "flash mini") {
+    animate(miniEl, {
+      opacity: [0, 1],
+      duration: applyReducedMotion(125),
+      onBegin: () => {
+        miniEl.classList.remove("hidden");
+      },
+    });
+  } else if (Config.timerStyle === "flash text") {
+    animate(textEl, {
+      opacity: [0, 1],
+      duration: applyReducedMotion(125),
+      onBegin: () => {
+        textEl.classList.remove("hidden");
+      },
+    });
   } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
     animate(miniEl, {
       opacity: [0, 1],
@@ -124,6 +140,30 @@ export function update(): void {
       if (textEl !== null) {
         textEl.innerHTML = "<div>" + displayTime + "</div>";
       }
+    } else if (Config.timerStyle === "flash mini") {
+      let displayTime = DateTime.secondsToString(maxtime - time);
+      if (maxtime === 0) {
+        displayTime = DateTime.secondsToString(time);
+      }
+      if (miniEl !== null) {
+        if ((maxtime - time) % 15 !== 0) {
+          miniEl.style.opacity = "0";
+        } else {
+          miniEl.style.opacity = "1";
+        }
+        miniEl.innerHTML = "<div>" + displayTime + "</div>";
+      }
+    } else if (Config.timerStyle === "flash text") {
+      let displayTime = DateTime.secondsToString(maxtime - time);
+      if (maxtime === 0) {
+        displayTime = DateTime.secondsToString(time);
+      }
+      if (textEl !== null) {
+        textEl.innerHTML =
+          "<div>" +
+          `${(maxtime - time) % 15 !== 0 ? "" : displayTime}` +
+          "</div>";
+      }
     } else if (Config.timerStyle === "mini") {
       let displayTime = DateTime.secondsToString(maxtime - time);
       if (maxtime === 0) {
@@ -163,6 +203,18 @@ export function update(): void {
       } else {
         textEl.innerHTML = `<div>${getCurrentCount()}/${outof}</div>`;
       }
+    } else if (Config.timerStyle === "flash mini") {
+      if (outof === 0) {
+        miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
+      } else {
+        miniEl.innerHTML = `${getCurrentCount()}/${outof}`;
+      }
+    } else if (Config.timerStyle === "flash text") {
+      if (outof === 0) {
+        textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
+      } else {
+        textEl.innerHTML = `<div>${getCurrentCount()}/${outof}</div>`;
+      }
     } else if (Config.timerStyle === "mini") {
       if (outof === 0) {
         miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
@@ -172,6 +224,10 @@ export function update(): void {
     }
   } else if (Config.mode === "zen") {
     if (Config.timerStyle === "text") {
+      textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
+    } else if (Config.timerStyle === "flash mini") {
+      miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
+    } else if (Config.timerStyle === "flash text") {
       textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
     } else {
       miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
