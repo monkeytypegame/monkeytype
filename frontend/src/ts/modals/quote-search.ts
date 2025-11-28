@@ -56,29 +56,36 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
     return quotes;
   }
 
-  let filteredQuotes = quotes;
   const quoteLengthFilter = new Set(
     quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10)),
   );
 
-  if (quoteLengthFilterValue.includes("4")) {
-    if (usingCustomLength) {
-      QuoteFilterPopup.quoteFilterModal.show(undefined, {});
-      usingCustomLength = false;
-    }
+  const customFilterIndex = quoteLengthFilterValue.indexOf("4");
 
-    filteredQuotes = quotes.filter(
-      (quote) =>
-        (quote.length >= QuoteFilterPopup.minFilterLength &&
-          quote.length <= QuoteFilterPopup.maxFilterLength) ||
-        quoteLengthFilter.has(quote.group),
-    );
-  } else {
-    usingCustomLength = true;
-    filteredQuotes = quotes.filter((quote) =>
-      quoteLengthFilter.has(quote.group),
-    );
+  if (customFilterIndex !== -1) {
+    if (QuoteFilterPopup.removeCustom) {
+      quoteLengthFilterValue.splice(customFilterIndex, 1);
+    } else {
+      if (usingCustomLength) {
+        QuoteFilterPopup.quoteFilterModal.show(undefined, {});
+        usingCustomLength = false;
+      }
+
+      const filteredQuotes = quotes.filter(
+        (quote) =>
+          (quote.length >= QuoteFilterPopup.minFilterLength &&
+            quote.length <= QuoteFilterPopup.maxFilterLength) ||
+          quoteLengthFilter.has(quote.group),
+      );
+
+      return filteredQuotes;
+    }
   }
+
+  usingCustomLength = true;
+  const filteredQuotes = quotes.filter((quote) =>
+    quoteLengthFilter.has(quote.group),
+  );
 
   return filteredQuotes;
 }

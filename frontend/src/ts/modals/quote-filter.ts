@@ -2,6 +2,7 @@ import { SimpleModal } from "../utils/simple-modal";
 
 export let minFilterLength: number = 0;
 export let maxFilterLength: number = 0;
+export let removeCustom: boolean = false;
 
 function refresh(): void {
   const refreshEvent = new CustomEvent("refresh");
@@ -22,7 +23,6 @@ export const quoteFilterModal = new SimpleModal({
     },
   ],
   buttonText: "save",
-  hideCallsExec: true,
   execFn: async (_thisPopup, min, max) => {
     const minNum = parseInt(min, 10);
     const maxNum = parseInt(max, 10);
@@ -39,5 +39,10 @@ export const quoteFilterModal = new SimpleModal({
 
     let message: string = "saved custom filter";
     return { status: 1, message };
+  },
+  afterClickAway: () => {
+    removeCustom = true;
+    refresh();
+    removeCustom = false;
   },
 });
