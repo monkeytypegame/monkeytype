@@ -708,14 +708,38 @@ function updateWordsMargin(): void {
   }
 }
 
-//todo: this raf might break things
 export function addWord(
   word: string,
   wordIndex = TestWords.words.length - 1,
 ): void {
-  requestAnimationFrame(() => {
-    wordsEl.append(buildWordHTML(word, wordIndex));
-  });
+  // if the current active word is the last word, we need to NOT use raf
+  // because other ui parts depend on the word existing
+  if (TestState.activeWordIndex === wordIndex - 1) {
+    wordsEl.insertAdjacentHTML("beforeend", buildWordHTML(word, wordIndex));
+  } else {
+    requestAnimationFrame(async () => {
+      wordsEl.insertAdjacentHTML("beforeend", buildWordHTML(word, wordIndex));
+    });
+  }
+
+  // maybe ill come back to this
+  // requestAnimationFrame(async () => {
+  //   wordsEl.insertAdjacentHTML("beforeend", buildWordHTML(word, wordIndex));
+  //   // in case word addition took a long time and some input happened in the mean time
+  //   // we need to update word letters for that word
+  //   const inputHistory = [
+  //     ...TestInput.input.getHistory(),
+  //     TestInput.input.current,
+  //   ];
+  //   const input = inputHistory[wordIndex];
+  //   if (input !== undefined && input !== "") {
+  //     await updateWordLetters({
+  //       wordIndex,
+  //       input,
+  //       compositionData: CompositionState.getData(),
+  //     });
+  //   }
+  // });
 }
 
 export function flipColors(tf: boolean): void {
