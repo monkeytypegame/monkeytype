@@ -59,6 +59,7 @@ export const ThemeNameSchema = z.enum(
     "fledgling",
     "fleuriste",
     "floret",
+    "forest",
     "froyo",
     "frozen_llama",
     "fruit_chew",
