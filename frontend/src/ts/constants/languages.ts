@@ -134,7 +134,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   dutch: ["dutch", "dutch_1k", "dutch_10k"],
   filipino: ["filipino", "filipino_1k"],
   danish: ["danish", "danish_1k", "danish_10k"],
-  hungarian: ["hungarian", "hungarian_1k", "hungarian_2k"],
+  hungarian: ["hungarian", "hungarian_1k", "hungarian_2k", "hungarian_no_accents"],
   norwegian_bokmal: [
     "norwegian_bokmal",
     "norwegian_bokmal_1k",
