@@ -442,7 +442,7 @@ export type JQueryEasing =
   | "easeInOutBounce";
 
 export async function promiseAnimate(
-  el: HTMLElement,
+  el: HTMLElement | string,
   options: AnimationParams,
 ): Promise<void> {
   return new Promise((resolve) => {
