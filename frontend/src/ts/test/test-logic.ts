@@ -501,7 +501,7 @@ async function init(): Promise<boolean> {
           important: true,
         },
       );
-      UpdateConfig.setLazyMode(false, true);
+      UpdateConfig.setLazyMode(false, false);
     } else if (rememberLazyMode && anySupportsLazyMode) {
       UpdateConfig.setLazyMode(true, true);
     }
@@ -512,7 +512,7 @@ async function init(): Promise<boolean> {
       Notifications.add("This language does not support lazy mode.", 0, {
         important: true,
       });
-      UpdateConfig.setLazyMode(false, true);
+      UpdateConfig.setLazyMode(false, false);
     } else if (rememberLazyMode && !language.noLazyMode) {
       UpdateConfig.setLazyMode(true, true);
     }
