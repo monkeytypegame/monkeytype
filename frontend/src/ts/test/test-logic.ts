@@ -930,6 +930,17 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const now = performance.now();
   TestStats.setEnd(now);
 
+  // fade out the test and show loading
+  // because the css animation has a delay,
+  // if the test calculation is fast the loading will not show
+  await Misc.promiseAnimate("#typingTest", {
+    opacity: 0,
+    duration: Misc.applyReducedMotion(125),
+  });
+  $(".pageTest #typingTest").addClass("hidden");
+  $(".pageTest .loading").removeClass("hidden");
+  await Misc.sleep(0); //allow ui update
+
   if (TestState.isRepeated && Config.mode === "quote") {
     TestState.setRepeated(false);
   }
