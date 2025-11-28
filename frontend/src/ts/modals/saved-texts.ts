@@ -72,7 +72,7 @@ async function fill(): Promise<void> {
       showPopup("deleteCustomTextLong", [name], {
         modalChain: modal as AnimatedModal,
       });
-    }
+    },
   );
 
   $("#savedTextsModal .listLong .savedLongText .button.resetProgress").on(
@@ -88,7 +88,7 @@ async function fill(): Promise<void> {
       showPopup("resetProgressCustomTextLong", [name], {
         modalChain: modal as AnimatedModal,
       });
-    }
+    },
   );
 
   $("#savedTextsModal .list .savedText .button.name").on("click", (e) => {
@@ -105,7 +105,7 @@ async function fill(): Promise<void> {
       CustomTextState.setCustomTextName(name, true);
       const text = getSavedText(name, true);
       hide({ modalChainData: { text, long: true } });
-    }
+    },
   );
 }
 

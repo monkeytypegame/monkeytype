@@ -1,6 +1,8 @@
 import { lastElementFromArray } from "../utils/arrays";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestState from "./test-state";
+import Config from "../config";
+import { getInputElementValue } from "../input/input-element";
 
 const keysToTrack = new Set([
   "NumpadMultiply",
@@ -131,6 +133,10 @@ class Input {
     return ret;
   }
 
+  get(index: number): string | undefined {
+    return this.history[index];
+  }
+
   getHistory(): string[];
   getHistory(i: number): string | undefined;
   getHistory(i?: number): unknown {
@@ -143,6 +149,10 @@ class Input {
 
   getHistoryLast(): string | undefined {
     return lastElementFromArray(this.history);
+  }
+
+  syncWithInputElement(): void {
+    this.current = getInputElementValue().inputValue;
   }
 }
 
@@ -159,12 +169,33 @@ class Corrected {
     this.current = "";
   }
 
+  update(char: string, correct: boolean): void {
+    if (this.current === "") {
+      this.current += input.current;
+    } else {
+      const currCorrectedTestInputLength = this.current.length;
+
+      const charIndex = input.current.length - 1;
+
+      if (charIndex >= currCorrectedTestInputLength) {
+        this.current += char;
+      } else if (!correct) {
+        this.current =
+          this.current.substring(0, charIndex) +
+          char +
+          this.current.substring(charIndex + 1);
+      }
+    }
+  }
+
   getHistory(i: number): string | undefined {
     return this.history[i];
   }
 
   popHistory(): string {
-    return this.history.pop() ?? "";
+    const popped = this.history.pop() ?? "";
+    this.current = popped;
+    return popped;
   }
 
   pushHistory(): void {
@@ -262,22 +293,76 @@ export function forceKeyup(now: number): void {
   //using mean here because for words mode, the last keypress ends the test.
   //if we then force keyup on that last keypress, it will record a duration of 0
   //skewing the average and standard deviation
-  const avg = roundTo2(mean(keypressTimings.duration.array));
-  const keysOrder = Object.entries(keyDownData);
-  keysOrder.sort((a, b) => a[1].timestamp - b[1].timestamp);
-  for (const keyOrder of keysOrder) {
-    recordKeyupTime(now, keyOrder[0]);
+
+  const indexesToRemove = new Set(
+    Object.values(keyDownData).map((data) => data.index),
+  );
+
+  const keypressDurations = keypressTimings.duration.array.filter(
+    (_, index) => !indexesToRemove.has(index),
+  );
+  if (keypressDurations.length === 0) {
+    // this means the test ended while all keys were still held - probably safe to ignore
+    // since this will result in a "too short" test anyway
+    return;
   }
-  const last = lastElementFromArray(keysOrder)?.[0] as string;
-  const index = keyDownData[last]?.index;
-  if (last !== undefined && index !== undefined) {
+
+  const avg = roundTo2(mean(keypressDurations));
+
+  const orderedKeys = Object.entries(keyDownData).sort(
+    (a, b) => a[1].timestamp - b[1].timestamp,
+  );
+
+  for (const [key, { index }] of orderedKeys) {
     keypressTimings.duration.array[index] = avg;
+
+    if (key === "NoCode") {
+      noCodeIndex--;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete keyDownData[key];
+
+    updateOverlap(now);
   }
 }
 
-let noCodeIndex = 0;
+function getEventCode(event: KeyboardEvent): string {
+  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+    return "Space";
+  }
 
-export function recordKeyupTime(now: number, key: string): void {
+  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+    return "NoCode";
+  }
+
+  if (
+    event.code === "" ||
+    event.code === undefined ||
+    event.key === "Unidentified"
+  ) {
+    return "NoCode";
+  }
+
+  return event.code;
+}
+
+let noCodeIndex = 0;
+export function recordKeyupTime(now: number, event: KeyboardEvent): void {
+  if (event.repeat) {
+    console.log(
+      "Keyup not recorded - repeat",
+      event.key,
+      event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      event.which,
+    );
+    return;
+  }
+
+  let key = getEventCode(event);
+
   if (!keysToTrack.has(key)) return;
 
   if (key === "NoCode") {
@@ -299,20 +384,34 @@ export function recordKeyupTime(now: number, key: string): void {
   updateOverlap(now);
 }
 
-export function recordKeydownTime(now: number, key: string): void {
+export function recordKeydownTime(now: number, event: KeyboardEvent): void {
+  if (event.repeat) {
+    console.log(
+      "Keydown not recorded - repeat",
+      event.key,
+      event.code,
+      //ignore for logging
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      event.which,
+    );
+    return;
+  }
+
+  let key = getEventCode(event);
+
   if (!keysToTrack.has(key)) {
-    console.debug("Key not tracked", key);
+    console.debug("Keydown not recorded - not tracked", key);
+    return;
+  }
+
+  if (keyDownData[key] !== undefined) {
+    console.debug("Key already down", key);
     return;
   }
 
   if (key === "NoCode") {
     key = "NoCode" + noCodeIndex;
     noCodeIndex++;
-  }
-
-  if (keyDownData[key] !== undefined) {
-    console.debug("Key already down", key);
-    return;
   }
 
   keyDownData[key] = {
@@ -350,6 +449,21 @@ function updateOverlap(now: number): void {
 }
 
 export function resetKeypressTimings(): void {
+  //because keydown triggers before input, we need to grab the first keypress data here and carry it over
+
+  //take the key with the largest index
+  const lastKey = Object.keys(keyDownData).reduce((a, b) => {
+    const aIndex = keyDownData[a]?.index;
+    const bIndex = keyDownData[b]?.index;
+    if (aIndex === undefined) return b;
+    if (bIndex === undefined) return a;
+    return aIndex > bIndex ? a : b;
+  }, "");
+
+  //get the data
+  const lastKeyData = keyDownData[lastKey];
+
+  //reset
   keypressTimings = {
     spacing: {
       first: -1,
@@ -366,6 +480,26 @@ export function resetKeypressTimings(): void {
   };
   keyDownData = {};
   noCodeIndex = 0;
+
+  //carry over
+  if (lastKeyData !== undefined) {
+    keypressTimings = {
+      spacing: {
+        first: lastKeyData.timestamp,
+        last: lastKeyData.timestamp,
+        array: [],
+      },
+      duration: {
+        array: [0],
+      },
+    };
+    keyDownData[lastKey] = {
+      timestamp: lastKeyData.timestamp,
+      // make sure to set it to the first index
+      index: 0,
+    };
+  }
+
   console.debug("Keypress timings reset");
 }
 
@@ -412,15 +546,5 @@ export function restart(): void {
   accuracy = {
     correct: 0,
     incorrect: 0,
-  };
-  keypressTimings = {
-    spacing: {
-      first: -1,
-      last: -1,
-      array: [],
-    },
-    duration: {
-      array: [],
-    },
   };
 }

@@ -6,6 +6,7 @@ import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import * as Notifications from "../elements/notifications";
 import { LoadingOptions } from "../pages/page";
+import * as NavigationEvent from "../observables/navigation-event";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -20,7 +21,7 @@ type NavigateOptions = {
 
 function pathToRegex(path: string): RegExp {
   return new RegExp(
-    "^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$"
+    "^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$",
   );
 }
 
@@ -30,7 +31,7 @@ function getParams(match: {
 }): Record<string, string> {
   const values = match.result.slice(1);
   const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
-    (result) => result[1]
+    (result) => result[1],
   );
 
   const a = keys.map((key, index) => [key, values[index]]);
@@ -41,14 +42,14 @@ type Route = {
   path: string;
   load: (
     params: Record<string, string>,
-    navigateOptions: NavigateOptions
+    navigateOptions: NavigateOptions,
   ) => Promise<void>;
 };
 
 const route404: Route = {
   path: "404",
-  load: async () => {
-    await PageController.change("404");
+  load: async (_params, options) => {
+    await PageController.change("404", options);
   },
 };
 
@@ -165,7 +166,7 @@ export async function navigate(
   url = window.location.pathname +
     window.location.search +
     window.location.hash,
-  options = {} as NavigateOptions
+  options = {} as NavigateOptions,
 ): Promise<void> {
   if (
     !options.force &&
@@ -178,7 +179,7 @@ export async function navigate(
         TestState.testRestarting
       }, resultCalculating: ${
         TestUI.resultCalculating
-      }, pageTransition: ${PageTransition.get()})`
+      }, pageTransition: ${PageTransition.get()})`,
     );
     return;
   }
@@ -224,7 +225,12 @@ async function router(options = {} as NavigateOptions): Promise<void> {
   };
 
   if (match === undefined) {
-    await route404.load({}, {});
+    await route404.load(
+      {},
+      {
+        force: true,
+      },
+    );
     return;
   }
 
@@ -243,4 +249,8 @@ document.addEventListener("DOMContentLoaded", () => {
       void navigate(target.href);
     }
   });
+});
+
+NavigationEvent.subscribe((it) => {
+  void navigate(it.url, { data: it.data });
 });

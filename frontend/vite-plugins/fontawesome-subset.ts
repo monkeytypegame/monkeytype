@@ -1,6 +1,38 @@
+import { Plugin } from "vite";
 import * as fs from "fs";
 import { createRequire } from "module";
 import * as path from "path";
+import { fontawesomeSubset as createFontawesomeSubset } from "fontawesome-subset";
+
+/**
+ * Detect fontawesome icons used by the application and creates subset font files only containing the used icons.
+ * @param options
+ * @returns
+ */
+export function fontawesomeSubset(): Plugin {
+  return {
+    name: "vite-plugin-fontawesome-subset",
+    apply: "build",
+    async buildStart() {
+      const start = performance.now();
+      console.log("\nCreating fontawesome subset...");
+
+      const fontawesomeClasses = getFontawesomeConfig();
+      await createFontawesomeSubset(
+        fontawesomeClasses,
+        "src/webfonts-generated",
+        {
+          targetFormats: ["woff2"],
+        },
+      );
+
+      const end = performance.now();
+      console.log(
+        `Creating fontawesome subset took ${Math.round(end - start)} ms`,
+      );
+    },
+  };
+}
 
 type FontawesomeConfig = {
   /* used regular icons without `fa-` prefix*/
@@ -56,18 +88,17 @@ const modules2 = {
  * @param {boolean} debug - Enable debug output
  * @returns {FontawesomeConfig} - used icons
  */
-
-export function getFontawesomeConfig(debug = false): FontawesomeConfig {
+function getFontawesomeConfig(debug = false): FontawesomeConfig {
   const time = Date.now();
   const srcFiles = findAllFiles(
     "./src",
     (filename) =>
       !filename.endsWith("fontawesome-5.scss") &&
-      !filename.endsWith("fontawesome-6.scss") //ignore our own css
+      !filename.endsWith("fontawesome-6.scss"), //ignore our own css
   );
   const staticFiles = findAllFiles(
     "./static",
-    (filename) => filename.endsWith(".html") || filename.endsWith(".css")
+    (filename) => filename.endsWith(".html") || filename.endsWith(".css"),
   );
 
   const allFiles = [...srcFiles, ...staticFiles];
@@ -96,11 +127,12 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
   const brands = usedClasses.filter((it) => iconSet.brands.includes(it));
 
   const leftOvers = icons.filter(
-    (it) => !(solid.includes(it) || regular.includes(it) || brands.includes(it))
+    (it) =>
+      !(solid.includes(it) || regular.includes(it) || brands.includes(it)),
   );
   if (leftOvers.length !== 0) {
     throw new Error(
-      "Fontawesome failed with unknown icons: " + leftOvers.toString()
+      "Fontawesome failed with unknown icons: " + leftOvers.toString(),
     );
   }
 
@@ -111,7 +143,7 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
         .filter((it) => usedClasses.filter((c) => it[1].includes(c)).length > 0)
         .map((it) => it[0])
         .filter((it) => it !== "brands")
-        .join(", ")
+        .join(", "),
     );
 
     console.debug(
@@ -120,7 +152,7 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
         regular,
         solid,
         brands,
-      })
+      }),
     );
     console.debug("Detected fontawesome classes in", Date.now() - time, "ms");
   }
@@ -144,7 +176,7 @@ function toFileAndDir(dir: string, file: string): FileObject {
 
 function findAllFiles(
   dir: string,
-  filter: (filename: string) => boolean = (_it): boolean => true
+  filter: (filename: string) => boolean = (_it): boolean => true,
 ): string[] {
   const files = fs
     .readdirSync(dir)
@@ -165,7 +197,7 @@ function findAllFiles(
 function parseIcons(iconSet: string): string[] {
   const require = createRequire(import.meta.url);
   const path = require.resolve(
-    `@fortawesome/fontawesome-free/js/${iconSet}.js`
+    `@fortawesome/fontawesome-free/js/${iconSet}.js`,
   );
   const file: string | null = fs.readFileSync(path).toString();
 

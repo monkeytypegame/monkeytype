@@ -17,7 +17,7 @@ describe("funbox", () => {
         }
 
         expect(packageFunctions, `Funbox ${funbox.name} ${message}`).toEqual(
-          implementations
+          implementations,
         );
       }
     });

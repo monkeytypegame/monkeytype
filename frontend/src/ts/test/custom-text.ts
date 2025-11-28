@@ -8,7 +8,7 @@ type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
 
 const CustomTextLongObjectSchema = z.record(
   z.string(),
-  z.object({ text: z.string(), progress: z.number() })
+  z.object({ text: z.string(), progress: z.number() }),
 );
 type CustomTextLongObject = z.infer<typeof CustomTextLongObjectSchema>;
 
@@ -154,7 +154,7 @@ export function getCustomText(name: string, long = false): string[] {
 export function setCustomText(
   name: string,
   text: string | string[],
-  long = false
+  long = false,
 ): boolean {
   if (long) {
     const customText = getLocalStorageLong();
@@ -211,7 +211,7 @@ export function getCustomTextLongProgress(name: string): number {
 
 export function setCustomTextLongProgress(
   name: string,
-  progress: number
+  progress: number,
 ): void {
   const customTexts = getLocalStorageLong();
   const customText = customTexts[name];

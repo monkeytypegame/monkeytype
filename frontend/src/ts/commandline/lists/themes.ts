@@ -52,7 +52,7 @@ const subgroup: CommandsSubgroup = {
   title: "Theme...",
   configKey: "theme",
   list: sortThemesByFavorite(ThemesList).map((theme) =>
-    createThemeCommand(theme)
+    createThemeCommand(theme),
   ),
 };
 
@@ -71,7 +71,7 @@ export function update(themes: Theme[]): void {
 
   // rebuild with favorites first, then non-favorites
   subgroup.list = sortThemesByFavorite(themes).map((theme) =>
-    createThemeCommand(theme)
+    createThemeCommand(theme),
   );
 }
 
@@ -83,7 +83,7 @@ ConfigEvent.subscribe((eventKey, _eventValue) => {
       update(ThemesList);
     } catch (e: unknown) {
       console.error(
-        Misc.createErrorMessage(e, "Failed to update themes commands")
+        Misc.createErrorMessage(e, "Failed to update themes commands"),
       );
     }
   }

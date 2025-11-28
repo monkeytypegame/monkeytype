@@ -25,7 +25,7 @@ export function updateName(name: string): void {
 
 function updateFlags(flags: SupportsFlags): void {
   $("nav .textButton.view-account > .text").append(
-    getHtmlByUserFlags(flags, { iconsOnly: true })
+    getHtmlByUserFlags(flags, { iconsOnly: true }),
   );
 }
 
@@ -55,24 +55,24 @@ export function update(): void {
 
     $("nav .accountButtonAndMenu .menu .items .goToProfile").attr(
       "href",
-      `/profile/${name}`
+      `/profile/${name}`,
     );
     void Misc.swapElements(
-      $("nav .textButton.view-login"),
-      $("nav .accountButtonAndMenu"),
-      250
+      document.querySelector("nav .textButton.view-login") as HTMLElement,
+      document.querySelector("nav .accountButtonAndMenu") as HTMLElement,
+      250,
     );
   } else {
     void Misc.swapElements(
-      $("nav .accountButtonAndMenu"),
-      $("nav .textButton.view-login"),
+      document.querySelector("nav .accountButtonAndMenu") as HTMLElement,
+      document.querySelector("nav .textButton.view-login") as HTMLElement,
       250,
       async () => {
         updateName("");
         updateFlags({});
         XpBar.setXp(0);
         updateAvatar();
-      }
+      },
     );
   }
 
@@ -84,7 +84,7 @@ export function updateFriendRequestsIndicator(): void {
 
   if (friends !== undefined) {
     const pendingFriendRequests = Object.values(friends).filter(
-      (it) => it === "incoming"
+      (it) => it === "incoming",
     ).length;
     if (pendingFriendRequests > 0) {
       $("nav .view-account > .notificationBubble").removeClass("hidden");

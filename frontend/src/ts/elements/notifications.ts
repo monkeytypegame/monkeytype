@@ -1,9 +1,9 @@
 import { debounce } from "throttle-debounce";
 import * as Misc from "../utils/misc";
 import * as BannerEvent from "../observables/banner-event";
-// import * as Alerts from "./alerts";
 import * as NotificationEvent from "../observables/notification-event";
 import { convertRemToPixels } from "../utils/numbers";
+import { animate } from "animejs";
 
 function updateMargin(): void {
   const height = $("#bannerCenter").height() as number;
@@ -13,6 +13,7 @@ function updateMargin(): void {
 
 let visibleStickyNotifications = 0;
 let id = 0;
+
 type NotificationType = "notification" | "banner" | "psa";
 class Notification {
   id: number;
@@ -35,7 +36,7 @@ class Notification {
     closeCallback = (): void => {
       //
     },
-    allowHTML?: boolean
+    allowHTML?: boolean,
   ) {
     this.type = type;
     this.message = allowHTML ? message : Misc.escapeHTML(message);
@@ -99,56 +100,43 @@ class Notification {
         visibleStickyNotifications++;
         updateClearAllButton();
       }
-      const oldHeight = $("#notificationCenter .history").height() as number;
       $("#notificationCenter .history").prepend(`
+        <div class="notif ${cls}" id=${this.id} style="opacity: 0;">
+            <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
+        </div>
+      `);
+      const notif = document.querySelector<HTMLElement>(
+        `#notificationCenter .notif[id='${this.id}']`,
+      );
+      if (notif === null) return;
 
-          <div class="notif ${cls}" id=${this.id}>
-              <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
-          </div>
+      const notifHeight = notif.offsetHeight;
+      const duration = Misc.applyReducedMotion(250);
 
-          `);
-      const newHeight = $("#notificationCenter .history").height() as number;
-      $(`#notificationCenter .notif[id='${this.id}']`).remove();
-      $("#notificationCenter .history")
-        .css("margin-top", 0)
-        .animate(
-          {
-            marginTop: newHeight - oldHeight,
-          },
-          Misc.applyReducedMotion(125),
-          () => {
-            $("#notificationCenter .history").css("margin-top", 0);
-            $("#notificationCenter .history").prepend(`
+      animate(notif, {
+        opacity: [0, 1],
+        duration: duration / 2,
+        delay: duration / 2,
+      });
+      notif?.addEventListener("click", () => {
+        this.hide();
+        this.closeCallback();
+        if (this.duration === 0) {
+          visibleStickyNotifications--;
+        }
+        updateClearAllButton();
+      });
 
-                  <div class="notif ${cls}" id=${this.id}>
-                      <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
-                  </div>
-
-              `);
-            $(`#notificationCenter .notif[id='${this.id}']`)
-              .css("opacity", 0)
-              .animate(
-                {
-                  opacity: 1,
-                },
-                Misc.applyReducedMotion(125),
-                () => {
-                  $(`#notificationCenter .notif[id='${this.id}']`).css(
-                    "opacity",
-                    ""
-                  );
-                }
-              );
-            $(`#notificationCenter .notif[id='${this.id}']`).on("click", () => {
-              this.hide();
-              this.closeCallback();
-              if (this.duration === 0) {
-                visibleStickyNotifications--;
-              }
-              updateClearAllButton();
-            });
-          }
-        );
+      const historyElement = document.querySelector(
+        "#notificationCenter .history",
+      ) as HTMLElement;
+      animate(historyElement, {
+        marginTop: {
+          from: "-=" + notifHeight,
+          to: 0,
+        },
+        duration: duration / 2,
+      });
       $(`#notificationCenter .notif[id='${this.id}']`).on("hover", () => {
         $(`#notificationCenter .notif[id='${this.id}']`).toggleClass("hover");
       });
@@ -163,8 +151,8 @@ class Notification {
 
       $("#bannerCenter").prepend(`
         <div class="${this.type} ${cls} content-grid ${
-        withImage ? "withImage" : ""
-      }" id="${this.id}">
+          withImage ? "withImage" : ""
+        }" id="${this.id}">
         <div class="container">
           ${leftside}
           <div class="text">
@@ -186,7 +174,7 @@ class Notification {
       BannerEvent.dispatch();
       if (this.duration >= 0) {
         $(
-          `#bannerCenter .banner[id='${this.id}'] .closeButton, #bannerCenter .psa[id='${this.id}'] .closeButton`
+          `#bannerCenter .banner[id='${this.id}'] .closeButton, #bannerCenter .psa[id='${this.id}'] .closeButton`,
         ).on("click", () => {
           this.hide();
           this.closeCallback();
@@ -196,11 +184,11 @@ class Notification {
       if (/please (<a.*>)?refresh/i.test(this.message)) {
         // add pointer when refresh is needed
         $(
-          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`,
         ).addClass("clickable");
         // refresh on clicking banner
         $(
-          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`,
         ).on("click", () => {
           window.location.reload();
         });
@@ -214,43 +202,37 @@ class Notification {
   }
   hide(): void {
     if (this.type === "notification") {
-      $(`#notificationCenter .notif[id='${this.id}']`)
-        .css("opacity", 1)
-        .animate(
-          {
-            opacity: 0,
-          },
-          Misc.applyReducedMotion(125),
-          () => {
-            $(`#notificationCenter .notif[id='${this.id}']`).animate(
-              {
-                height: 0,
-              },
-              Misc.applyReducedMotion(125),
-              () => {
-                $(`#notificationCenter .notif[id='${this.id}']`).remove();
-              }
-            );
-          }
-        );
+      const elem = document.querySelector(
+        `#notificationCenter .notif[id='${this.id}']`,
+      ) as HTMLElement;
+
+      const duration = Misc.applyReducedMotion(250);
+
+      animate(elem, {
+        opacity: {
+          to: 0,
+          duration: duration,
+        },
+        height: {
+          to: 0,
+          duration: duration / 2,
+          delay: duration / 2,
+        },
+        marginBottom: {
+          to: 0,
+          duration: duration / 2,
+          delay: duration / 2,
+        },
+        onComplete: () => {
+          elem.remove();
+        },
+      });
     } else if (this.type === "banner" || this.type === "psa") {
       $(
-        `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
-      )
-        .css("opacity", 1)
-        .animate(
-          {
-            opacity: 0,
-          },
-          Misc.applyReducedMotion(125),
-          () => {
-            $(
-              `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
-            ).remove();
-            updateMargin();
-            BannerEvent.dispatch();
-          }
-        );
+        `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`,
+      ).remove();
+      updateMargin();
+      BannerEvent.dispatch();
     }
   }
 }
@@ -277,7 +259,7 @@ export type AddNotificationOptions = {
 export function add(
   message: string,
   level = 0,
-  options: AddNotificationOptions = {}
+  options: AddNotificationOptions = {},
 ): void {
   NotificationEvent.dispatch(message, level, options.customTitle);
 
@@ -290,7 +272,7 @@ export function add(
     options.customTitle,
     options.customIcon,
     options.closeCallback,
-    options.allowHTML
+    options.allowHTML,
   ).show();
 }
 
@@ -300,7 +282,7 @@ export function addBanner(
   customIcon = "bullhorn",
   sticky = false,
   closeCallback?: () => void,
-  allowHTML?: boolean
+  allowHTML?: boolean,
 ): number {
   const banner = new Notification(
     "banner",
@@ -311,7 +293,7 @@ export function addBanner(
     undefined,
     customIcon,
     closeCallback,
-    allowHTML
+    allowHTML,
   );
   banner.show();
   return banner.id;
@@ -323,7 +305,7 @@ export function addPSA(
   customIcon = "bullhorn",
   sticky = false,
   closeCallback?: () => void,
-  allowHTML?: boolean
+  allowHTML?: boolean,
 ): number {
   const psa = new Notification(
     "psa",
@@ -334,7 +316,7 @@ export function addPSA(
     undefined,
     customIcon,
     closeCallback,
-    allowHTML
+    allowHTML,
   );
   psa.show();
   return psa.id;

@@ -1,7 +1,7 @@
 type SubscribeFunction = (
   mode: "highlight" | "flash",
   key: string,
-  correct?: boolean
+  correct?: boolean,
 ) => void;
 
 const subscribers: SubscribeFunction[] = [];

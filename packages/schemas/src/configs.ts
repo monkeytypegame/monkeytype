@@ -32,7 +32,7 @@ export const QuoteLengthConfigSchema = z
       "|1|Medium quotes|",
       "|2|Long quotes|",
       "|3|Thicc quotes|",
-    ].join("\n")
+    ].join("\n"),
   );
 export type QuoteLengthConfig = z.infer<typeof QuoteLengthConfigSchema>;
 
@@ -44,16 +44,24 @@ export const CaretStyleSchema = z.enum([
   "underline",
   "carrot",
   "banana",
+  "monkey",
 ]);
 export type CaretStyle = z.infer<typeof CaretStyleSchema>;
 
 export const ConfidenceModeSchema = z.enum(["off", "on", "max"]);
 export type ConfidenceMode = z.infer<typeof ConfidenceModeSchema>;
 
-export const IndicateTyposSchema = z.enum(["off", "below", "replace"]);
+export const IndicateTyposSchema = z.enum(["off", "below", "replace", "both"]);
 export type IndicateTypos = z.infer<typeof IndicateTyposSchema>;
 
-export const TimerStyleSchema = z.enum(["off", "bar", "text", "mini"]);
+export const TimerStyleSchema = z.enum([
+  "off",
+  "bar",
+  "text",
+  "mini",
+  "flash text",
+  "flash mini",
+]);
 export type TimerStyle = z.infer<typeof TimerStyleSchema>;
 
 export const LiveSpeedAccBurstStyleSchema = z.enum(["off", "text", "mini"]);
@@ -68,6 +76,7 @@ export const RandomThemeSchema = z.enum([
   "light",
   "dark",
   "custom",
+  "auto",
 ]);
 export type RandomTheme = z.infer<typeof RandomThemeSchema>;
 
@@ -227,6 +236,9 @@ export type MinimumBurst = z.infer<typeof MinimumBurstSchema>;
 export const ShowAverageSchema = z.enum(["off", "speed", "acc", "both"]);
 export type ShowAverage = z.infer<typeof ShowAverageSchema>;
 
+export const ShowPbSchema = z.boolean();
+export type ShowPb = z.infer<typeof ShowPbSchema>;
+
 export const ColorHexValueSchema = z.string().regex(/^#([\da-f]{3}){1,2}$/i);
 export type ColorHexValue = z.infer<typeof ColorHexValueSchema>;
 
@@ -299,6 +311,7 @@ export const FunboxNameSchema = z.enum([
   "ALL_CAPS",
   "polyglot",
   "asl",
+  "rot13",
   "no_quit",
 ]);
 export type FunboxName = z.infer<typeof FunboxNameSchema>;
@@ -353,7 +366,7 @@ export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 export const PlayTimeWarningSchema = z
   .enum(["off", "1", "3", "5", "10"])
   .describe(
-    "How many seconds before the end of the test to play a warning sound."
+    "How many seconds before the end of the test to play a warning sound.",
   );
 export type PlayTimeWarning = z.infer<typeof PlayTimeWarningSchema>;
 
@@ -459,6 +472,7 @@ export const ConfigSchema = z
     showOutOfFocusWarning: z.boolean(),
     capsLockWarning: z.boolean(),
     showAverage: ShowAverageSchema,
+    showPb: ShowPbSchema,
 
     // other (hidden)
     accountChart: AccountChartSchema,
@@ -594,6 +608,7 @@ export const ConfigGroupsLiteral = {
   showOutOfFocusWarning: "hideElements",
   capsLockWarning: "hideElements",
   showAverage: "hideElements",
+  showPb: "hideElements",
 
   //other
   accountChart: "hidden",

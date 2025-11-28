@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { ObjectId } from "mongodb";
 import * as PresetDal from "../../../src/dal/preset";
-import _ from "lodash";
 
 describe("PresetDal", () => {
   describe("readPreset", () => {
@@ -54,7 +53,7 @@ describe("PresetDal", () => {
               showAverage: "off",
             },
           }),
-        ])
+        ]),
       );
     });
   });
@@ -69,7 +68,7 @@ describe("PresetDal", () => {
 
       //WHEN / THEN
       await expect(() =>
-        PresetDal.addPreset(uid, { name: "max", config: {} })
+        PresetDal.addPreset(uid, { name: "max", config: {} }),
       ).rejects.toThrowError("Too many presets");
     });
     it("should add preset", async () => {
@@ -99,7 +98,7 @@ describe("PresetDal", () => {
             name: "new",
             config: { ads: "sellout" },
           }),
-        ])
+        ]),
       );
     });
   });
@@ -163,7 +162,7 @@ describe("PresetDal", () => {
             name: "second",
             config: { ads: "result" },
           }),
-        ])
+        ]),
       );
       expect(await PresetDal.getPresets(decoyUid)).toEqual(
         expect.arrayContaining([
@@ -173,7 +172,7 @@ describe("PresetDal", () => {
             name: "unknown",
             config: { ads: "result" },
           }),
-        ])
+        ]),
       );
     });
 
@@ -200,7 +199,7 @@ describe("PresetDal", () => {
             name: "newName",
             config: { ads: "sellout" },
           }),
-        ])
+        ]),
       );
     });
     it("should edit with name only - partial preset", async () => {
@@ -238,7 +237,7 @@ describe("PresetDal", () => {
               showAverage: "off",
             },
           }),
-        ])
+        ]),
       );
     });
     it("should not edit present not matching uid", async () => {
@@ -270,7 +269,7 @@ describe("PresetDal", () => {
             name: "first",
             config: { ads: "sellout" },
           }),
-        ])
+        ]),
       );
     });
     it("should edit when partial is edited to full", async () => {
@@ -306,7 +305,7 @@ describe("PresetDal", () => {
             config: { ads: "off" },
             settingGroups: null,
           }),
-        ])
+        ]),
       );
     });
     it("should edit when full is edited to partial", async () => {
@@ -349,7 +348,7 @@ describe("PresetDal", () => {
               showAverage: "off",
             },
           }),
-        ])
+        ]),
       );
     });
   });
@@ -358,7 +357,7 @@ describe("PresetDal", () => {
     it("should fail if preset is unknown", async () => {
       const uid = new ObjectId().toHexString();
       await expect(() =>
-        PresetDal.removePreset(uid, new ObjectId().toHexString())
+        PresetDal.removePreset(uid, new ObjectId().toHexString()),
       ).rejects.toThrowError("Preset not found");
     });
     it("should remove", async () => {
@@ -395,7 +394,7 @@ describe("PresetDal", () => {
             name: "second",
             config: { ads: "result" },
           }),
-        ])
+        ]),
       );
       expect(await PresetDal.getPresets(decoyUid)).toEqual(
         expect.arrayContaining([
@@ -405,7 +404,7 @@ describe("PresetDal", () => {
             name: "unknown",
             config: { ads: "result" },
           }),
-        ])
+        ]),
       );
     });
     it("should not remove present not matching uid", async () => {
@@ -421,7 +420,7 @@ describe("PresetDal", () => {
 
       //WHEN
       await expect(() =>
-        PresetDal.removePreset(decoyUid, first)
+        PresetDal.removePreset(decoyUid, first),
       ).rejects.toThrowError("Preset not found");
 
       //THEN
@@ -435,7 +434,7 @@ describe("PresetDal", () => {
             name: "first",
             config: { ads: "sellout" },
           }),
-        ])
+        ]),
       );
     });
   });
@@ -476,7 +475,7 @@ describe("PresetDal", () => {
             name: "unknown",
             config: { ads: "result" },
           }),
-        ])
+        ]),
       );
     });
   });

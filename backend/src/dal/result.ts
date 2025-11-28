@@ -1,7 +1,7 @@
-import _ from "lodash";
 import {
   Collection,
   type DeleteResult,
+  Filter,
   ObjectId,
   type UpdateResult,
 } from "mongodb";
@@ -16,7 +16,7 @@ export const getResultCollection = (): Collection<DBResult> =>
 
 export async function addResult(
   uid: string,
-  result: DBResult
+  result: DBResult,
 ): Promise<{ insertedId: ObjectId }> {
   const { data: user } = await tryCatch(getUser(uid, "add result"));
 
@@ -36,7 +36,7 @@ export async function deleteAll(uid: string): Promise<DeleteResult> {
 export async function updateTags(
   uid: string,
   resultId: string,
-  tags: string[]
+  tags: string[],
 ): Promise<UpdateResult> {
   const result = await getResultCollection().findOne({
     _id: new ObjectId(resultId),
@@ -54,7 +54,7 @@ export async function updateTags(
   }
   return await getResultCollection().updateOne(
     { _id: new ObjectId(resultId), uid },
-    { $set: { tags } }
+    { $set: { tags } },
   );
 }
 
@@ -71,7 +71,7 @@ export async function getResult(uid: string, id: string): Promise<DBResult> {
 export async function getLastResult(uid: string): Promise<DBResult> {
   const lastResult = await getResultCollection().findOne(
     { uid },
-    { sort: { timestamp: -1 } }
+    { sort: { timestamp: -1 } },
   );
 
   if (lastResult === null) throw new MonkeyError(404, "No last result found");
@@ -84,7 +84,7 @@ export async function getLastResultTimestamp(uid: string): Promise<number> {
     {
       projection: { timestamp: 1, _id: 0 },
       sort: { timestamp: -1 },
-    }
+    },
   );
 
   if (lastResult === null) throw new MonkeyError(404, "No last result found");
@@ -93,7 +93,7 @@ export async function getLastResultTimestamp(uid: string): Promise<number> {
 
 export async function getResultByTimestamp(
   uid: string,
-  timestamp: number
+  timestamp: number,
 ): Promise<DBResult | null> {
   const result = await getResultCollection().findOne({ uid, timestamp });
   if (result === null) return null;
@@ -108,27 +108,28 @@ type GetResultsOpts = {
 
 export async function getResults(
   uid: string,
-  opts?: GetResultsOpts
+  opts?: GetResultsOpts,
 ): Promise<DBResult[]> {
   const { onOrAfterTimestamp, offset, limit } = opts ?? {};
+
+  const condition: Filter<DBResult> = { uid };
+  if (
+    onOrAfterTimestamp !== undefined &&
+    onOrAfterTimestamp !== null &&
+    !isNaN(onOrAfterTimestamp)
+  ) {
+    condition.timestamp = { $gte: onOrAfterTimestamp };
+  }
+
   let query = getResultCollection()
-    .find(
-      {
-        uid,
-        ...(!_.isNil(onOrAfterTimestamp) &&
-          !_.isNaN(onOrAfterTimestamp) && {
-            timestamp: { $gte: onOrAfterTimestamp },
-          }),
+    .find(condition, {
+      projection: {
+        chartData: 0,
+        keySpacingStats: 0,
+        keyDurationStats: 0,
+        name: 0,
       },
-      {
-        projection: {
-          chartData: 0,
-          keySpacingStats: 0,
-          keyDurationStats: 0,
-          name: 0,
-        },
-      }
-    )
+    })
     .sort({ timestamp: -1 });
 
   if (limit !== undefined) {

@@ -78,7 +78,7 @@ function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
 
   let icons = `<span aria-label="${result.language?.replace(
     "_",
-    " "
+    " ",
   )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i></span>`;
 
   if (diff === "normal") {
@@ -109,7 +109,7 @@ function buildResultRow(result: SnapshotResult<Mode>): HTMLTableRowElement {
     icons += `<span aria-label="${result.funbox
       .map((it) => it.replace(/_/g, " "))
       .join(
-        ", "
+        ", ",
       )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
   }
 
@@ -228,7 +228,7 @@ async function fillContent(): Promise<void> {
   TestActivity.init(
     testActivityEl as HTMLElement,
     snapshot.testActivity,
-    new Date(snapshot.addedAt)
+    new Date(snapshot.addedAt),
   );
   void ResultBatches.update();
 
@@ -321,7 +321,7 @@ async function fillContent(): Promise<void> {
         let timefilter: Mode2<"time"> | "custom" = "custom";
         if (
           ["15", "30", "60", "120"].includes(
-            `${result.mode2}` //legacy results could have a number in mode2
+            `${result.mode2}`, //legacy results could have a number in mode2
           )
         ) {
           timefilter = `${result.mode2}` as `${number}`;
@@ -329,7 +329,7 @@ async function fillContent(): Promise<void> {
         if (
           !ResultFilters.getFilter(
             "time",
-            timefilter as "custom" | "15" | "30" | "60" | "120"
+            timefilter as "custom" | "15" | "30" | "60" | "120",
           )
         ) {
           if (filterDebug) {
@@ -341,7 +341,7 @@ async function fillContent(): Promise<void> {
         let wordfilter: Mode2Custom<"words"> = "custom";
         if (
           ["10", "25", "50", "100", "200"].includes(
-            `${result.mode2}` //legacy results could have a number in mode2
+            `${result.mode2}`, //legacy results could have a number in mode2
           )
         ) {
           wordfilter = `${result.mode2}` as `${number}`;
@@ -349,7 +349,7 @@ async function fillContent(): Promise<void> {
         if (
           !ResultFilters.getFilter(
             "words",
-            wordfilter as "custom" | "10" | "25" | "50" | "100"
+            wordfilter as "custom" | "10" | "25" | "50" | "100",
           )
         ) {
           if (filterDebug) {
@@ -507,7 +507,7 @@ async function fillContent(): Promise<void> {
     } catch (e) {
       Notifications.add(
         "Something went wrong when filtering. Resetting filters.",
-        0
+        0,
       );
       console.log(result);
       console.error(e);
@@ -560,7 +560,7 @@ async function fillContent(): Promise<void> {
 
     const bucketSize = typingSpeedUnit.histogramDataBucketSize;
     const bucket = Math.floor(
-      Math.round(typingSpeedUnit.fromWpm(result.wpm)) / bucketSize
+      Math.round(typingSpeedUnit.fromWpm(result.wpm)) / bucketSize,
     );
 
     //grow array if needed
@@ -679,7 +679,7 @@ async function fillContent(): Promise<void> {
   historyTable.setData(filteredResults);
 
   $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
-    Config.typingSpeedUnit
+    Config.typingSpeedUnit,
   );
 
   await Misc.sleep(0);
@@ -711,7 +711,7 @@ async function fillContent(): Promise<void> {
     activityChartData_avgWpm.push({
       x: dateInt,
       y: Numbers.roundTo2(
-        typingSpeedUnit.fromWpm(dataPoint.totalWpm) / dataPoint.amount
+        typingSpeedUnit.fromWpm(dataPoint.totalWpm) / dataPoint.amount,
       ),
     });
   }
@@ -879,7 +879,7 @@ async function fillContent(): Promise<void> {
   }
 
   $(".pageAccount .timeTotalFiltered .val").text(
-    DateTime.secondsToString(Math.round(totalSecondsFiltered), true, true)
+    DateTime.secondsToString(Math.round(totalSecondsFiltered), true, true),
   );
 
   const speedUnit = Config.typingSpeedUnit;
@@ -889,14 +889,14 @@ async function fillContent(): Promise<void> {
 
   $(".pageAccount .averageWpm .title").text(`average ${speedUnit}`);
   $(".pageAccount .averageWpm .val").text(
-    Format.typingSpeed(totalWpm / testCount)
+    Format.typingSpeed(totalWpm / testCount),
   );
 
   $(".pageAccount .averageWpm10 .title").text(
-    `average ${speedUnit} (last 10 tests)`
+    `average ${speedUnit} (last 10 tests)`,
   );
   $(".pageAccount .averageWpm10 .val").text(
-    Format.typingSpeed(wpmLast10total / last10)
+    Format.typingSpeed(wpmLast10total / last10),
   );
 
   $(".pageAccount .highestRaw .title").text(`highest raw ${speedUnit}`);
@@ -904,14 +904,14 @@ async function fillContent(): Promise<void> {
 
   $(".pageAccount .averageRaw .title").text(`average raw ${speedUnit}`);
   $(".pageAccount .averageRaw .val").text(
-    Format.typingSpeed(rawWpm.total / rawWpm.count)
+    Format.typingSpeed(rawWpm.total / rawWpm.count),
   );
 
   $(".pageAccount .averageRaw10 .title").text(
-    `average raw ${speedUnit} (last 10 tests)`
+    `average raw ${speedUnit} (last 10 tests)`,
   );
   $(".pageAccount .averageRaw10 .val").text(
-    Format.typingSpeed(rawWpm.last10Total / rawWpm.last10Count)
+    Format.typingSpeed(rawWpm.last10Total / rawWpm.last10Count),
   );
 
   $(".pageAccount .highestWpm .mode").html(topMode);
@@ -928,19 +928,19 @@ async function fillContent(): Promise<void> {
     $(".pageAccount .highestCons .val").text(Format.percentage(topCons));
 
     $(".pageAccount .avgCons .val").text(
-      Format.percentage(totalCons / consCount)
+      Format.percentage(totalCons / consCount),
     );
 
     $(".pageAccount .avgCons10 .val").text(
-      Format.percentage(totalCons10 / Math.min(last10, consCount))
+      Format.percentage(totalCons10 / Math.min(last10, consCount)),
     );
   }
 
   $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
   $(".pageAccount .testsCompleted .val").text(
     `${testCount}(${Math.floor(
-      (testCount / (testCount + testRestarts)) * 100
-    )}%)`
+      (testCount / (testCount + testRestarts)) * 100,
+    )}%)`,
   );
 
   $(".pageAccount .testsCompleted .avgres").text(`
@@ -957,7 +957,7 @@ async function fillContent(): Promise<void> {
     $(".pageAccount .group.chart .below .text").text(
       `Speed change per hour spent typing: ${
         plus + Format.typingSpeed(wpmChangePerHour, { showDecimalPlaces: true })
-      } ${Config.typingSpeedUnit}`
+      } ${Config.typingSpeedUnit}`,
     );
   }
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
@@ -1018,7 +1018,7 @@ export function updateTagsForResult(resultId: string, tagIds: string[]): void {
   }
 
   const el = $(
-    `.pageAccount .resultEditTagsButton[data-result-id='${resultId}']`
+    `.pageAccount .resultEditTagsButton[data-result-id='${resultId}']`,
   );
 
   el.attr("data-tags", JSON.stringify(tagIds));
@@ -1070,7 +1070,6 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const index: number = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
   if (window === undefined) return;
-  const windowHeight = $(window).height() ?? 0;
 
   const resultId = filteredResults[index]?._id;
   if (resultId === undefined) {
@@ -1079,20 +1078,11 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   const element = $(`.resultRow[data-id="${resultId}"`);
   $(".resultRow").removeClass("active");
 
-  const offset = element.offset()?.top ?? 0;
-  const scrollTo = offset - windowHeight / 2;
-  $([document.documentElement, document.body])
-    .stop(true)
-    .animate(
-      { scrollTop: scrollTo },
-      {
-        duration: Misc.applyReducedMotion(500),
-        done: () => {
-          $(".resultRow").removeClass("active");
-          requestAnimationFrame(() => element.addClass("active"));
-        },
-      }
-    );
+  element[0]?.scrollIntoView({
+    block: "center",
+  });
+
+  element.addClass("active");
 });
 
 $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
@@ -1131,7 +1121,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
     //update local cache
     result.chartData = chartData;
     const dbResult = DB.getSnapshot()?.results?.find(
-      (it) => it._id === result._id
+      (it) => it._id === result._id,
     );
     if (dbResult !== undefined) {
       dbResult["chartData"] = result.chartData;
@@ -1140,7 +1130,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", async (event) => {
     if (response.body.data.chartData === "toolong") {
       target.attr(
         "aria-label",
-        "Graph history is not available for long tests"
+        "Graph history is not available for long tests",
       );
       target.attr("data-baloon-pos", "up");
       target.addClass("disabled");
@@ -1160,7 +1150,7 @@ $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
     setTimeout(() => {
       void update();
     }, 0);
-  }
+  },
 );
 
 $(".pageAccount .group.presetFilterButtons").on(
@@ -1169,7 +1159,7 @@ $(".pageAccount .group.presetFilterButtons").on(
   async (e) => {
     await ResultFilters.setFilterPreset($(e.target).data("id") as string);
     void update();
-  }
+  },
 );
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
@@ -1188,7 +1178,7 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
     },
     function () {
       alert("Failed to copy using the Clipboard API. Here's the link: " + url);
-    }
+    },
   );
 });
 
@@ -1224,7 +1214,7 @@ export const page = new Page<undefined>({
     loadingPromise: async () => {
       if (DB.getSnapshot() === null) {
         throw new Error(
-          "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support."
+          "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
         );
       }
       return downloadResults();
@@ -1250,13 +1240,13 @@ export const page = new Page<undefined>({
     await Misc.sleep(0);
 
     testActivityEl = document.querySelector(
-      ".page.pageAccount .testActivity"
+      ".page.pageAccount .testActivity",
     ) as HTMLElement;
 
     TestActivity.initYearSelector(
       testActivityEl,
       "current",
-      snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
+      snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020,
     );
 
     if (historyTable === undefined) {
@@ -1276,7 +1266,7 @@ export const page = new Page<undefined>({
       $(".pageAccount .content .accountVerificatinNotice").remove();
       if (getAuthenticatedUser()?.emailVerified === false) {
         $(".pageAccount .content").prepend(
-          `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`
+          `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`,
         );
       }
       ResultBatches.showOrHideIfNeeded();

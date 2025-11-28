@@ -112,7 +112,7 @@ export function highlightMatches(text: string, matches: string[]): string {
   // matches that don't have a letter before or after them
   const pattern = new RegExp(
     `(?<!\\p{L})(?:${matches.join("|")})(?!\\p{L})`,
-    "gu"
+    "gu",
   );
 
   return text.replace(pattern, '<span class="highlight">$&</span>');
@@ -126,7 +126,7 @@ export function highlightMatches(text: string, matches: string[]): string {
  */
 export function getLanguageDisplayString(
   language: Language,
-  noSizeString = false
+  noSizeString = false,
 ): string {
   let out = "";
   if (noSizeString) {
@@ -171,7 +171,7 @@ export function cleanTypographySymbols(textToClean: string): string {
   };
   return textToClean.replace(
     /[“”’‘—,…«»–\u2007\u202F\u00A0]/g,
-    (char) => specials[char as keyof typeof specials] || ""
+    (char) => specials[char as keyof typeof specials] || "",
   );
 }
 
@@ -239,7 +239,7 @@ export function clearWordDirectionCache(): void {
 export function isWordRightToLeft(
   word: string | undefined,
   languageRTL: boolean,
-  reverseDirection?: boolean
+  reverseDirection?: boolean,
 ): boolean {
   if (word === undefined || word.length === 0) {
     return reverseDirection ? !languageRTL : languageRTL;
@@ -261,25 +261,30 @@ export function isWordRightToLeft(
   return reverseDirection ? !result : result;
 }
 
-export const CHAR_EQUIVALENCE_MAPS = [
-  new Map(
-    ["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"].map((char, index) => [char, index])
-  ),
-  new Map([`"`, "”", "“", "„"].map((char, index) => [char, index])),
-  new Map(["–", "—", "-", "‐"].map((char, index) => [char, index])),
-  new Map([",", "‚"].map((char, index) => [char, index])),
+export const CHAR_EQUIVALENCE_SETS = [
+  new Set(["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"]),
+  new Set([`"`, "”", "“", "„"]),
+  new Set(["–", "—", "-", "‐"]),
+  new Set([",", "‚"]),
 ];
+
+export const LANGUAGE_EQUIVALENCE_SETS: Partial<Record<Language, Set<string>>> =
+  {
+    russian: new Set(["ё", "е", "e"]),
+  };
 
 /**
  * Checks if two characters are visually/typographically equivalent for typing purposes.
  * This allows users to type different variants of the same character and still be considered correct.
  * @param char1 The first character to compare
  * @param char2 The second character to compare
+ * @param language Optional language context to check for language-specific equivalences
  * @returns true if the characters are equivalent, false otherwise
  */
 export function areCharactersVisuallyEqual(
   char1: string,
-  char2: string
+  char2: string,
+  language?: Language,
 ): boolean {
   // If characters are exactly the same, they're equivalent
   if (char1 === char2) {
@@ -287,13 +292,68 @@ export function areCharactersVisuallyEqual(
   }
 
   // Check each equivalence map
-  for (const map of CHAR_EQUIVALENCE_MAPS) {
+  for (const map of CHAR_EQUIVALENCE_SETS) {
     if (map.has(char1) && map.has(char2)) {
       return true;
     }
   }
 
+  if (language !== undefined) {
+    const langMap = LANGUAGE_EQUIVALENCE_SETS[removeLanguageSize(language)];
+    if (langMap !== undefined) {
+      if (langMap.has(char1) && langMap.has(char2)) {
+        return true;
+      }
+    }
+  }
+
   return false;
+}
+
+export function toHex(buffer: ArrayBuffer): string {
+  // @ts-expect-error modern browsers
+  if (Uint8Array.prototype.toHex !== undefined) {
+    // @ts-expect-error modern browsers
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    return new Uint8Array(buffer).toHex() as string;
+  }
+  const hashArray = Array.from(new Uint8Array(buffer));
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+}
+
+/**
+ * Checks if a character is a directly typable space character on a standard keyboard.
+ * These are space characters that can be typed without special input methods or copy-pasting.
+ * @param char The character to check.
+ * @returns True if the character is a directly typable space, false otherwise.
+ */
+export function isSpace(char: string): boolean {
+  if (char.length !== 1) return false;
+
+  const codePoint = char.codePointAt(0);
+  if (codePoint === undefined) return false;
+
+  const spaces = new Set([
+    0x0020, // Regular space (spacebar)
+    0x2002, // En space (Option+Space on Mac)
+    0x2003, // Em space (Option+Shift+Space on Mac)
+    0x2009, // Thin space (various input methods)
+    0x3000, // Ideographic space (CJK input methods)
+    0x00a0, // Non-breaking space (Alt+0160 on Windows, Option+Space on Mac)
+    0x1680, // Ogham space mark (rare, but included for completeness)
+    0x202f, // Narrow no-break space (various input methods)
+    0xfeff, // Zero width no-break space (various input methods)
+    0x2007, // Figure space (various input methods)
+    0x2008, // Punctuation space (various input methods)
+    0x2004, // Three-per-em space (various input methods)
+    0x200a, // Hair space (various input methods)
+    0x200b, // Zero width space (various input methods)
+  ]);
+
+  return spaces.has(codePoint);
 }
 
 // Export testing utilities for unit tests

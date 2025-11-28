@@ -1,6 +1,5 @@
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import _, { omit } from "lodash";
 import uaparser from "ua-parser-js";
 import { MonkeyRequest } from "../api/types";
 import { ObjectId } from "mongodb";
@@ -54,10 +53,10 @@ export function buildAgentLog(req: MonkeyRequest): AgentLog {
 export function padNumbers(
   numbers: number[],
   maxLength: number,
-  fillString: string
+  fillString: string,
 ): string[] {
   return numbers.map((number) =>
-    number.toString().padStart(maxLength, fillString)
+    number.toString().padStart(maxLength, fillString),
   );
 }
 
@@ -87,7 +86,7 @@ export function kogascore(wpm: number, acc: number, timestamp: number): number {
 
 export function flattenObjectDeep(
   obj: Record<string, unknown>,
-  prefix = ""
+  prefix = "",
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   const keys = Object.keys(obj);
@@ -97,7 +96,7 @@ export function flattenObjectDeep(
 
     const newPrefix = prefix.length > 0 ? `${prefix}.${key}` : key;
 
-    if (_.isPlainObject(value)) {
+    if (isPlainObject(value)) {
       const flattened = flattenObjectDeep(value as Record<string, unknown>);
       const flattenedKeys = Object.keys(flattened);
 
@@ -154,7 +153,7 @@ export const MONTH_IN_SECONDS = 1 * 30.4167 * DAY_IN_SECONDS;
 export const YEAR_IN_SECONDS = 1 * 12 * MONTH_IN_SECONDS;
 
 export function formatSeconds(
-  seconds: number
+  seconds: number,
 ): `${number} ${TimeUnit}${"s" | ""}` {
   let unit: TimeUnit;
   let secondsInUnit: number;
@@ -197,8 +196,8 @@ export function getFrontendUrl(): string {
   return isDevEnvironment()
     ? "http://localhost:3000"
     : process.env["FRONTEND_URL"] !== undefined
-    ? process.env["FRONTEND_URL"]
-    : "https://monkeytype.com";
+      ? process.env["FRONTEND_URL"]
+      : "https://monkeytype.com";
 }
 
 /**
@@ -208,20 +207,20 @@ export function getFrontendUrl(): string {
  */
 
 export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T
+  data: T,
 ): T & { _id: string };
 export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T | null
+  data: T | null,
 ): (T & { _id: string }) | null;
 export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T | null
+  data: T | null,
 ): (T & { _id: string }) | null {
   if (data === null) {
     return null;
   }
   const result = {
+    ...data,
     _id: data._id.toString(),
-    ...omit(data, "_id"),
   } as T & { _id: string };
   return result;
 }
@@ -232,7 +231,7 @@ export function replaceObjectId<T extends { _id: ObjectId }>(
  * @returns api objects with `id: string`
  */
 export function replaceObjectIds<T extends { _id: ObjectId }>(
-  data: T[]
+  data: T[],
 ): (T & { _id: string })[] {
   if (data === undefined) return data;
   return data.map((it) => replaceObjectId(it));
@@ -240,3 +239,23 @@ export function replaceObjectIds<T extends { _id: ObjectId }>(
 export type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
   _id: ObjectId;
 };
+
+export function omit<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[],
+): Omit<T, K> {
+  const result = { ...obj };
+  for (const key of keys) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete result[key];
+  }
+  return result;
+}
+
+export function isPlainObject(value: unknown): boolean {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    Object.getPrototypeOf(value) === Object.prototype
+  );
+}

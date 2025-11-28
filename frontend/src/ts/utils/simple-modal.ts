@@ -5,10 +5,11 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import {
+  IsValidResponse,
+  ValidatedHtmlInputElement,
   Validation,
   ValidationOptions,
   ValidationResult,
-  validateWithIndicator as withValidation,
 } from "../elements/input-validation";
 
 type CommonInput<TType, TValue> = {
@@ -33,7 +34,10 @@ type CommonInput<TType, TValue> = {
      * @param thisPopup the current modal
      * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
      */
-    isValid?: (value: string, thisPopup: SimpleModal) => Promise<true | string>;
+    isValid?: (
+      value: string,
+      thisPopup: SimpleModal,
+    ) => Promise<IsValidResponse>;
   };
 };
 
@@ -227,7 +231,7 @@ export class SimpleModal {
             classes,
             attributes,
             innerHTML: input.initVal,
-          })
+          }),
         );
       } else if (input.type === "checkbox") {
         let html = buildTag({ tagname, classes, attributes });
@@ -274,19 +278,19 @@ export class SimpleModal {
             if (input.min !== undefined) {
               attributes["min"] = dateFormat(
                 input.min,
-                "yyyy-MM-dd'T'HH:mm:ss"
+                "yyyy-MM-dd'T'HH:mm:ss",
               );
             }
             if (input.max !== undefined) {
               attributes["max"] = dateFormat(
                 input.max,
-                "yyyy-MM-dd'T'HH:mm:ss"
+                "yyyy-MM-dd'T'HH:mm:ss",
               );
             }
             if (input.initVal !== undefined) {
               attributes["value"] = dateFormat(
                 input.initVal,
-                "yyyy-MM-dd'T'HH:mm:ss"
+                "yyyy-MM-dd'T'HH:mm:ss",
               );
             }
             break;
@@ -312,7 +316,7 @@ export class SimpleModal {
         inputs.append(buildTag({ tagname, classes, attributes }));
       }
       const element = document.querySelector(
-        "#" + attributes["id"]
+        "#" + attributes["id"],
       ) as HTMLInputElement;
 
       const originalOnInput = element.oninput;
@@ -347,7 +351,7 @@ export class SimpleModal {
           debounceDelay: input.validation.debounceDelay,
         };
 
-        withValidation(element, options);
+        new ValidatedHtmlInputElement(element, options);
       }
     });
 
@@ -383,7 +387,7 @@ export class SimpleModal {
       } else {
         this.enableInputs();
         $($("#simpleModal").find("input")[0] as HTMLInputElement).trigger(
-          "focus"
+          "focus",
         );
       }
     });
@@ -443,7 +447,7 @@ export class SimpleModal {
 
   updateSubmitButtonState(): void {
     const button = this.element.querySelector(
-      ".submitButton"
+      ".submitButton",
     ) as HTMLButtonElement;
     if (button === null) return;
 

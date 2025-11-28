@@ -9,7 +9,6 @@ import * as ReportDal from "../../../src/dal/report";
 import * as LogsDal from "../../../src/dal/logs";
 import * as Captcha from "../../../src/utils/captcha";
 import { ObjectId } from "mongodb";
-import _ from "lodash";
 import { ApproveQuote } from "@monkeytype/schemas/quotes";
 
 const { mockApp, uid } = setup();
@@ -193,7 +192,7 @@ describe("QuotesController", () => {
         newQuote.text,
         newQuote.source,
         newQuote.language,
-        uid
+        uid,
       );
 
       expect(verifyCaptchaMock).toHaveBeenCalledWith(newQuote.captcha);
@@ -213,7 +212,7 @@ describe("QuotesController", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up."
+        "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up.",
       );
     });
     it("should fail without mandatory properties", async () => {
@@ -316,7 +315,7 @@ describe("QuotesController", () => {
         quoteId,
         "editedText",
         "editedSource",
-        "Bob"
+        "Bob",
       );
     });
     it("should approve with optional parameters as null", async () => {
@@ -344,7 +343,7 @@ describe("QuotesController", () => {
         quoteId,
         undefined,
         undefined,
-        "Bob"
+        "Bob",
       );
     });
     it("should approve without optional parameters", async () => {
@@ -372,7 +371,7 @@ describe("QuotesController", () => {
         quoteId,
         undefined,
         undefined,
-        "Bob"
+        "Bob",
       );
     });
     it("should fail without mandatory properties", async () => {
@@ -795,7 +794,7 @@ describe("QuotesController", () => {
           comment: "I don't like this.",
         }),
         10, //configuration maxReport
-        20 //configuration contentReportLimit
+        20, //configuration contentReportLimit
       );
     });
 
@@ -874,21 +873,24 @@ describe("QuotesController", () => {
 });
 
 async function enableQuotes(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    quotes: { submissionsEnabled: enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.quotes = { ...mockConfig.quotes, submissionsEnabled: enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
 async function enableQuoteReporting(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    quotes: { reporting: { enabled, maxReports: 10, contentReportLimit: 20 } },
-  });
+  const mockConfig = await configuration;
+  mockConfig.quotes.reporting = {
+    ...mockConfig.quotes.reporting,
+    enabled,
+    maxReports: 10,
+    contentReportLimit: 20,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }

@@ -1,4 +1,4 @@
-import { envConfig } from "../constants/env-config";
+import { envConfig } from "virtual:env-config";
 import AnimatedModal from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
 import * as Notifications from "../elements/notifications";
@@ -8,6 +8,7 @@ import * as Loader from "../elements/loader";
 import { update } from "../elements/xp-bar";
 import { toggleUserFakeChartData } from "../test/result";
 import { toggleCaretDebug } from "../utils/caret";
+import { getInputElement } from "../input/input-element";
 
 let mediaQueryDebugLevel = 0;
 
@@ -42,14 +43,14 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       }
       Notifications.add(
         `Setting media query debug level to ${mediaQueryDebugLevel}`,
-        5
+        5,
       );
       setMediaQueryDebugLevel(mediaQueryDebugLevel);
     });
   modalEl
     .querySelector(".showRealWordsInput")
     ?.addEventListener("click", () => {
-      $("#wordsInput").css("opacity", "1");
+      getInputElement().style.opacity = "1";
       void modal.hide();
     });
   modalEl.querySelector(".quickLogin")?.addEventListener("click", () => {
@@ -59,7 +60,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     ) {
       Notifications.add(
         "Quick login credentials not set. Add QUICK_LOGIN_EMAIL and QUICK_LOGIN_PASSWORD to your frontend .env file.",
-        -1
+        -1,
       );
       return;
     }
@@ -67,7 +68,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     void signIn(envConfig.quickLoginEmail, envConfig.quickLoginPassword).then(
       () => {
         Loader.hide();
-      }
+      },
     );
     void modal.hide();
   });
@@ -107,7 +108,7 @@ export function appendButton(): void {
         <a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>
         <button class='button showDevOptionsModal' aria-label="Dev options" data-balloon-pos="right"><i class="fas fa-fw fa-flask"></i></button>
       <div>
-      `
+      `,
   );
   document
     .querySelector("#devButtons .button.showDevOptionsModal")

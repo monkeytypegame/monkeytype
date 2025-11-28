@@ -82,9 +82,15 @@ import * as Sentry from "../sentry";
 import * as Loader from "../elements/loader";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
+import { animate } from "animejs";
+import * as CompositionDisplay from "../elements/composition-display";
+import {
+  getInputElement,
+  isInputElementFocused,
+  setInputElementValue,
+} from "../input/input-element";
 
 let failReason = "";
-const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
 export let notSignedInLastResult: CompletedEvent | null = null;
 
@@ -115,13 +121,7 @@ export function startTest(now: number): boolean {
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
-  TimerProgress.show();
-  LiveSpeed.show();
-  LiveAcc.show();
-  LiveBurst.show();
-  TimerProgress.update();
   TestTimer.clear();
-  Monkey.show();
 
   for (const fb of getActiveFunboxesWithFunction("start")) {
     fb.functions.start();
@@ -138,6 +138,7 @@ export function startTest(now: number): boolean {
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(now);
   void TestTimer.start();
+  TestUI.afterTestStart();
   return true;
 }
 
@@ -190,7 +191,7 @@ export function restart(options = {} as RestartOptions): void {
           Config.words,
           Config.time,
           CustomText.getData(),
-          CustomTextState.isCustomTextLong() ?? false
+          CustomTextState.isCustomTextLong() ?? false,
         )
       ) {
         let message = "Use your mouse to confirm.";
@@ -207,7 +208,7 @@ export function restart(options = {} as RestartOptions): void {
           {
             duration: 4,
             important: true,
-          }
+          },
         );
         return;
       }
@@ -262,7 +263,7 @@ export function restart(options = {} as RestartOptions): void {
       CustomText.setLimitMode(PractiseWords.before.customText.limit.mode);
       CustomText.setLimitValue(PractiseWords.before.customText.limit.value);
       CustomText.setPipeDelimiter(
-        PractiseWords.before.customText.pipeDelimiter
+        PractiseWords.before.customText.pipeDelimiter,
       );
     }
 
@@ -295,6 +296,7 @@ export function restart(options = {} as RestartOptions): void {
   QuoteRateModal.clearQuoteStats();
   TestUI.reset();
   CompositionState.setComposing(false);
+  CompositionState.setData("");
 
   if (TestState.resultVisible) {
     if (Config.randomTheme !== "off") {
@@ -307,33 +309,31 @@ export function restart(options = {} as RestartOptions): void {
     ConnectionState.showOfflineBanner();
   }
 
-  let el = null;
+  let el: HTMLElement;
   if (TestState.resultVisible) {
     //results are being displayed
-    el = $("#result");
+    el = document.querySelector("#result") as HTMLElement;
   } else {
     //words are being displayed
-    el = $("#typingTest");
+    el = document.querySelector("#typingTest") as HTMLElement;
   }
   TestState.setResultVisible(false);
   TestState.setTestRestarting(true);
-  el.stop(true, true).animate(
-    {
-      opacity: 0,
-    },
-    animationTime,
-    async () => {
+
+  animate(el, {
+    opacity: 0,
+    duration: animationTime,
+    onComplete: async () => {
       $("#result").addClass("hidden");
       $("#typingTest").css("opacity", 0).removeClass("hidden");
-      $("#wordsInput").css({ left: 0 }).val(" ");
+      getInputElement().style.left = "0";
+      setInputElementValue("");
 
-      if (Config.language.startsWith("korean")) {
-        koInputVisual.innerText = " ";
-        Config.mode !== "zen"
-          ? $("#koInputVisualContainer").show()
-          : $("#koInputVisualContainer").hide();
+      if (CompositionDisplay.shouldShow()) {
+        CompositionDisplay.update(" ");
+        CompositionDisplay.show();
       } else {
-        $("#koInputVisualContainer").hide();
+        CompositionDisplay.hide();
       }
 
       Focus.set(false);
@@ -378,31 +378,29 @@ export function restart(options = {} as RestartOptions): void {
         void ModesNotice.update();
       }
 
-      const isWordsFocused = $("#wordsInput").is(":focus");
-      if (isWordsFocused) OutOfFocus.hide();
+      if (isInputElementFocused()) OutOfFocus.hide();
       TestUI.focusWords(true);
 
-      $("#typingTest")
-        .css("opacity", 0)
-        .removeClass("hidden")
-        .stop(true, true)
-        .animate(
-          {
-            opacity: 1,
-          },
-          animationTime,
-          () => {
-            TimerProgress.reset();
-            LiveSpeed.reset();
-            LiveAcc.reset();
-            LiveBurst.reset();
-            TestUI.updatePremid();
-            ManualRestart.reset();
-            TestState.setTestRestarting(false);
-          }
-        );
-    }
-  );
+      const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
+
+      animate(typingTestEl, {
+        opacity: [0, 1],
+        onBegin: () => {
+          typingTestEl.classList.remove("hidden");
+        },
+        duration: animationTime,
+        onComplete: () => {
+          TimerProgress.reset();
+          LiveSpeed.reset();
+          LiveAcc.reset();
+          LiveBurst.reset();
+          TestUI.updatePremid();
+          ManualRestart.reset();
+          TestState.setTestRestarting(false);
+        },
+      });
+    },
+  });
 
   ResultWordHighlight.destroy();
 }
@@ -418,7 +416,7 @@ async function init(): Promise<boolean> {
     if (lastInitError) {
       void Sentry.captureException(lastInitError);
       TestInitFailed.showError(
-        `${lastInitError.name}: ${lastInitError.message}`
+        `${lastInitError.name}: ${lastInitError.message}`,
       );
     }
     TestInitFailed.show();
@@ -444,19 +442,18 @@ async function init(): Promise<boolean> {
 
   Loader.show();
   const { data: language, error } = await tryCatch(
-    JSONData.getLanguage(Config.language)
+    JSONData.getLanguage(Config.language),
   );
   Loader.hide();
 
   if (error) {
     Notifications.add(
       Misc.createErrorMessage(error, "Failed to load language"),
-      -1
+      -1,
     );
   }
 
   if (!language || language.name !== Config.language) {
-    UpdateConfig.setLanguage("english");
     return await init();
   }
 
@@ -477,15 +474,15 @@ async function init(): Promise<boolean> {
     const polyglotLanguages = Config.customPolyglot;
     const languagePromises = polyglotLanguages.map(async (langName) => {
       const { data: lang, error } = await tryCatch(
-        JSONData.getLanguage(langName)
+        JSONData.getLanguage(langName),
       );
       if (error) {
         Notifications.add(
           Misc.createErrorMessage(
             error,
-            `Failed to load language: ${langName}`
+            `Failed to load language: ${langName}`,
           ),
-          -1
+          -1,
         );
       }
       return lang;
@@ -502,7 +499,7 @@ async function init(): Promise<boolean> {
         0,
         {
           important: true,
-        }
+        },
       );
       UpdateConfig.setLazyMode(false, true);
     } else if (rememberLazyMode && anySupportsLazyMode) {
@@ -575,7 +572,7 @@ async function init(): Promise<boolean> {
         -1,
         {
           important: true,
-        }
+        },
       );
     }
 
@@ -600,18 +597,32 @@ async function init(): Promise<boolean> {
     void Keymap.refresh();
   }
 
+  if (
+    generatedWords
+      .join()
+      .normalize()
+      .match(
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
+      )
+  ) {
+    TestInput.input.setKoreanStatus(true);
+  }
+
   for (let i = 0; i < generatedWords.length; i++) {
     TestWords.words.push(
       generatedWords[i] as string,
-      generatedSectionIndexes[i] as number
+      generatedSectionIndexes[i] as number,
     );
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     void KeymapEvent.highlight(
-      // ignoring for now but this might need a different approach
-      // eslint-disable-next-line @typescript-eslint/no-misused-spread
-      Arrays.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
+      Arrays.nthElementFromArray(
+        // ignoring for now but this might need a different approach
+        // eslint-disable-next-line @typescript-eslint/no-misused-spread
+        [...TestWords.words.getCurrent()],
+        0,
+      ) as string,
     );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
@@ -621,14 +632,14 @@ async function init(): Promise<boolean> {
   TestUI.setRightToLeft(isLanguageRTL);
   TestState.setIsLanguageRightToLeft(isLanguageRTL);
   TestState.setIsDirectionReversed(
-    isFunboxActiveWithProperty("reverseDirection")
+    isFunboxActiveWithProperty("reverseDirection"),
   );
 
   TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
   console.debug(
     "Test initialized with section indexes",
-    generatedSectionIndexes
+    generatedSectionIndexes,
   );
   return true;
 }
@@ -682,13 +693,13 @@ export async function addWord(): Promise<void> {
   if (sectionFunbox) {
     if (TestWords.words.length - TestState.activeWordIndex < 20) {
       const section = await sectionFunbox.functions.pullSection(
-        Config.language
+        Config.language,
       );
 
       if (section === false) {
         Notifications.add(
           "Error while getting section. Please try again later",
-          -1
+          -1,
         );
         UpdateConfig.toggleFunbox(sectionFunbox.name);
         restart();
@@ -715,7 +726,7 @@ export async function addWord(): Promise<void> {
       TestWords.words.length,
       bound,
       TestWords.words.get(TestWords.words.length - 1),
-      TestWords.words.get(TestWords.words.length - 2)
+      TestWords.words.get(TestWords.words.length - 2),
     );
 
     TestWords.words.push(randomWord.word, randomWord.sectionIndex);
@@ -725,12 +736,12 @@ export async function addWord(): Promise<void> {
     Notifications.add(
       Misc.createErrorMessage(
         e,
-        "Error while getting next word. Please try again later"
+        "Error while getting next word. Please try again later",
       ),
       -1,
       {
         important: true,
-      }
+      },
     );
   }
 }
@@ -755,7 +766,7 @@ export async function retrySavingResult(): Promise<void> {
       {
         duration: 5,
         important: true,
-      }
+      },
     );
 
     return;
@@ -777,18 +788,18 @@ export async function retrySavingResult(): Promise<void> {
 
 function buildCompletedEvent(
   stats: TestStats.Stats,
-  rawPerSecond: number[]
+  rawPerSecond: number[],
 ): Omit<CompletedEvent, "hash" | "uid"> {
   //build completed event object
   let stfk = Numbers.roundTo2(
-    TestInput.keypressTimings.spacing.first - TestStats.start
+    TestInput.keypressTimings.spacing.first - TestStats.start,
   );
   if (stfk < 0 || Config.mode === "zen") {
     stfk = 0;
   }
 
   let lkte = Numbers.roundTo2(
-    TestStats.end - TestInput.keypressTimings.spacing.last
+    TestStats.end - TestInput.keypressTimings.spacing.last,
   );
   if (lkte < 0 || Config.mode === "zen") {
     lkte = 0;
@@ -802,13 +813,13 @@ function buildCompletedEvent(
   if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
       0,
-      keyConsistencyArray.length - 1
+      keyConsistencyArray.length - 1,
     );
   }
   let keyConsistency = Numbers.roundTo2(
     Numbers.kogasa(
-      Numbers.stdDev(keyConsistencyArray) / Numbers.mean(keyConsistencyArray)
-    )
+      Numbers.stdDev(keyConsistencyArray) / Numbers.mean(keyConsistencyArray),
+    ),
   );
   if (!consistency || isNaN(consistency)) {
     consistency = 0;
@@ -968,7 +979,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   // stats
-  const stats = TestStats.calculateStats();
+  const stats = TestStats.calculateFinalStats();
   if (stats.time % 1 !== 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
@@ -986,7 +997,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   const rawPerSecond = TestInput.keypressCountHistory.map((count) =>
-    Math.round((count / 5) * 60)
+    Math.round((count / 5) * 60),
   );
 
   //adjust last second if last second is not round
@@ -1000,7 +1011,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
     //multiply last element of rawBefore by scale, and round it
     rawPerSecond[rawPerSecond.length - 1] = Math.round(
-      (rawPerSecond[rawPerSecond.length - 1] as number) * timescale
+      (rawPerSecond[rawPerSecond.length - 1] as number) * timescale,
     );
   }
 
@@ -1016,7 +1027,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     } else if (typeof input === "object" && input !== null) {
       return Object.values(input).reduce(
         (a, b) => (a + countUndefined(b)) as number,
-        0
+        0,
       ) as number;
     } else {
       return 0;
@@ -1029,7 +1040,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     console.log(ce);
     Notifications.add(
       "Failed to build result object: One of the fields is undefined or NaN",
-      -1
+      -1,
     );
     dontSave = true;
   }
@@ -1174,7 +1185,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   TodayTracker.addSeconds(
-    completedEvent.testDuration - completedEvent.afkDuration
+    completedEvent.testDuration - completedEvent.afkDuration,
   );
   Result.updateTodayTracker();
 
@@ -1204,7 +1215,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestState.isRepeated,
     tooShort,
     TestWords.currentQuote,
-    dontSave
+    dontSave,
   );
 
   if (completedEvent.chartData !== "toolong") {
@@ -1279,7 +1290,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
 async function saveResult(
   completedEvent: CompletedEvent,
-  isRetrying: boolean
+  isRetrying: boolean,
 ): Promise<void> {
   if (!TestState.savingEnabled) {
     Notifications.add("Result not saved: disabled by user", -1, {
@@ -1337,7 +1348,7 @@ async function saveResult(
   const data = response.body.data;
   $("#result .stats .tags .editTagsButton").attr(
     "data-result-id",
-    data.insertedId
+    data.insertedId,
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
@@ -1349,7 +1360,7 @@ async function saveResult(
     void XPBar.update(
       snapxp,
       data.xp,
-      TestState.resultVisible ? data.xpBreakdown : undefined
+      TestState.resultVisible ? data.xpBreakdown : undefined,
     );
     dataToSave.xp = data.xp;
   }
@@ -1363,7 +1374,7 @@ async function saveResult(
     // but now with the stronger types it shows that we are forcing completed event
     // into a snapshot result - might not cuase issues but worth investigating
     const result = structuredClone(
-      completedEvent
+      completedEvent,
     ) as unknown as SnapshotResult<Mode>;
     result._id = data.insertedId;
     if (data.isPb !== undefined && data.isPb) {
@@ -1384,7 +1395,7 @@ async function saveResult(
       completedEvent.language,
       completedEvent.difficulty,
       completedEvent.lazyMode,
-      getFunbox(completedEvent.funbox)
+      getFunbox(completedEvent.funbox),
     );
 
     if (localPb !== undefined) {
@@ -1397,24 +1408,23 @@ async function saveResult(
     Result.showErrorCrownIfNeeded();
   }
 
+  const dailyLeaderboardEl = document.querySelector(
+    "#result .stats .dailyLeaderboard",
+  ) as HTMLElement;
+
   if (data.dailyLeaderboardRank === undefined) {
-    $("#result .stats .dailyLeaderboard").addClass("hidden");
+    dailyLeaderboardEl.classList.add("hidden");
   } else {
-    $("#result .stats .dailyLeaderboard")
-      .css({
-        maxWidth: "13rem",
-        opacity: 0,
-      })
-      .removeClass("hidden")
-      .animate(
-        {
-          // maxWidth: "10rem",
-          opacity: 1,
-        },
-        Misc.applyReducedMotion(500)
-      );
+    dailyLeaderboardEl.classList.remove("hidden");
+    dailyLeaderboardEl.style.maxWidth = "13rem";
+
+    animate(dailyLeaderboardEl, {
+      opacity: [0, 1],
+      duration: Misc.applyReducedMotion(250),
+    });
+
     $("#result .stats .dailyLeaderboard .bottom").html(
-      Format.rank(data.dailyLeaderboardRank, { fallback: "" })
+      Format.rank(data.dailyLeaderboardRank, { fallback: "" }),
     );
   }
 
@@ -1601,8 +1611,8 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
             // ignoring for now but this might need a different approach
             // eslint-disable-next-line @typescript-eslint/no-misused-spread
             [...TestWords.words.getCurrent()],
-            0
-          ) as string
+            0,
+          ) as string,
         );
       }, 0);
     }

@@ -1,3 +1,4 @@
+import { Plugin } from "vite";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -9,9 +10,30 @@ import { KnownFontName } from "@monkeytype/schemas/fonts";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export async function generatePreviewFonts(
-  debug: boolean = false
-): Promise<void> {
+/**
+ * Generate a preview file from each font in `static/webfonts` into `static/webfonts-preview`.
+ * A preview file only contains the characters needed to show the preview.
+ * @returns
+ */
+export function fontPreview(): Plugin {
+  return {
+    name: "vite-plugin-webfonts-preview",
+    apply: "build",
+    async buildStart() {
+      const start = performance.now();
+      console.log("\nCreating webfonts preview...");
+
+      await generatePreviewFonts();
+
+      const end = performance.now();
+      console.log(
+        `Creating webfonts preview took ${Math.round(end - start)} ms`,
+      );
+    },
+  };
+}
+
+async function generatePreviewFonts(debug: boolean = false): Promise<void> {
   const srcDir = __dirname + "/../static/webfonts";
   const targetDir = __dirname + "/../static/webfonts-preview";
   fs.mkdirSync(targetDir, { recursive: true });
@@ -28,11 +50,11 @@ export async function generatePreviewFonts(
     await generateSubset(
       srcDir + "/" + fileName,
       targetDir + "/" + fileName,
-      includedCharacters
+      includedCharacters,
     );
     if (debug) {
       console.log(
-        `Processing ${name} with file ${fileName} to display "${includedCharacters}".`
+        `Processing ${name} with file ${fileName} to display "${includedCharacters}".`,
       );
     }
   }
@@ -41,7 +63,7 @@ export async function generatePreviewFonts(
 async function generateSubset(
   source: string,
   target: string,
-  includedCharacters: string
+  includedCharacters: string,
 ): Promise<void> {
   const font = fs.readFileSync(source);
   const subset = await subsetFont(font, includedCharacters, {

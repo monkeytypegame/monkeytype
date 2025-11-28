@@ -36,7 +36,7 @@ describe("validation", () => {
 
     testCases.forEach((testCase) => {
       expect(Validation.containsProfanity(testCase.text, "substring")).toBe(
-        testCase.expected
+        testCase.expected,
       );
     });
   });

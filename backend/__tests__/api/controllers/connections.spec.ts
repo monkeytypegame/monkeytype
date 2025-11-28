@@ -4,7 +4,6 @@ import app from "../../../src/app";
 import { mockBearerAuthentication } from "../../__testData__/auth";
 import * as Configuration from "../../../src/init/configuration";
 import { ObjectId } from "mongodb";
-import _ from "lodash";
 import * as ConnectionsDal from "../../../src/dal/connections";
 import * as UserDal from "../../../src/dal/user";
 
@@ -151,7 +150,7 @@ describe("ConnectionsController", () => {
 
     it("should fail if connections endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
-        mockApp.get("/connections").set("Authorization", `Bearer ${uid}`)
+        mockApp.get("/connections").set("Authorization", `Bearer ${uid}`),
       );
     });
     it("should fail without authentication", async () => {
@@ -178,7 +177,7 @@ describe("ConnectionsController", () => {
 
     beforeEach(() => {
       [getUserByNameMock, getPartialUserMock, createUserMock].forEach((it) =>
-        it.mockClear()
+        it.mockClear(),
       );
     });
 
@@ -221,12 +220,12 @@ describe("ConnectionsController", () => {
 
       expect(getUserByNameMock).toHaveBeenCalledWith(
         "Kevin",
-        "create connection"
+        "create connection",
       );
       expect(getPartialUserMock).toHaveBeenCalledWith(
         uid,
         "create connection",
-        ["uid", "name"]
+        ["uid", "name"],
       );
       expect(createUserMock).toHaveBeenCalledWith(me, myFriend, 100);
     });
@@ -283,7 +282,7 @@ describe("ConnectionsController", () => {
         mockApp
           .post("/connections")
           .send({ receiverName: "1" })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       );
     });
 
@@ -311,7 +310,7 @@ describe("ConnectionsController", () => {
     });
     it("should fail if connections endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
-        mockApp.delete("/connections/1").set("Authorization", `Bearer ${uid}`)
+        mockApp.delete("/connections/1").set("Authorization", `Bearer ${uid}`),
       );
     });
 
@@ -369,7 +368,7 @@ describe("ConnectionsController", () => {
         mockApp
           .patch("/connections/1")
           .send({ status: "accepted" })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       );
     });
 
@@ -383,14 +382,14 @@ describe("ConnectionsController", () => {
 });
 
 async function enableConnectionsEndpoints(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    connections: { enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.connections = { ...mockConfig.connections, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
+
 async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
   await enableConnectionsEndpoints(false);
   const { body } = await call.expect(503);

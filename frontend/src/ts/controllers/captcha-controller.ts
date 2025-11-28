@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { envConfig } from "../constants/env-config";
+import { envConfig } from "virtual:env-config";
 const siteKey = envConfig.recaptchaSiteKey;
 
 const captchas: Record<string, number> = {};
@@ -9,7 +6,7 @@ const captchas: Record<string, number> = {};
 type Grecaptcha = {
   render: (
     element: HTMLElement,
-    options: { sitekey: string; callback?: (responseToken: string) => void }
+    options: { sitekey: string; callback?: (responseToken: string) => void },
   ) => number;
   reset: (widgetId: number) => void;
   getResponse: (widgetId: number) => string;
@@ -30,7 +27,7 @@ export function isCaptchaAvailable(): boolean {
 export function render(
   element: HTMLElement,
   id: string,
-  callback?: (responseToken: string) => void
+  callback?: (responseToken: string) => void,
 ): void {
   if (captchas[id] !== undefined && captchas[id] !== null) {
     return;

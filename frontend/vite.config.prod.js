@@ -1,28 +1,23 @@
-import { fontawesomeSubset } from "fontawesome-subset";
-import { getFontawesomeConfig } from "./scripts/fontawesome";
-import { generatePreviewFonts } from "./scripts/font-preview";
 import { VitePWA } from "vite-plugin-pwa";
 import replace from "vite-plugin-filter-replace";
 import path from "node:path";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
-import { writeFileSync } from "fs";
 // eslint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
-import {
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  statSync,
-} from "node:fs";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { getFontsConig } from "./vite.config";
+import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
+import { fontPreview } from "./vite-plugins/font-preview";
+import { envConfig } from "./vite-plugins/env-config";
+import { languageHashes } from "./vite-plugins/language-hashes";
+import { minifyJson } from "./vite-plugins/minify-json";
+import { versionFile } from "./vite-plugins/version-file";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
-    number.toString().padStart(maxLength, fillString)
+    number.toString().padStart(maxLength, fillString),
   );
 }
 
@@ -31,10 +26,10 @@ const CLIENT_VERSION = (() => {
   const versionPrefix = pad(
     [date.getFullYear(), date.getMonth() + 1, date.getDate()],
     2,
-    "0"
+    "0",
   ).join(".");
   const versionSuffix = pad([date.getHours(), date.getMinutes()], 2, "0").join(
-    "."
+    ".",
   );
   const version = [versionPrefix, versionSuffix].join("_");
 
@@ -59,39 +54,11 @@ function sassList(values) {
 /** @type {import("vite").UserConfig} */
 export default {
   plugins: [
-    {
-      name: "vite-plugin-fontawesome-subset",
-      apply: "build",
-      buildStart() {
-        const fontawesomeClasses = getFontawesomeConfig();
-        fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
-          targetFormats: ["woff2"],
-        });
-      },
-    },
-    {
-      name: "generate-version-json",
-      apply: "build",
-
-      closeBundle() {
-        const distPath = path.resolve(__dirname, "dist");
-        if (!existsSync(distPath)) {
-          mkdirSync(distPath, { recursive: true });
-        }
-
-        const version = CLIENT_VERSION;
-        const versionJson = JSON.stringify({ version });
-        const versionPath = path.resolve(distPath, "version.json");
-        writeFileSync(versionPath, versionJson);
-      },
-    },
-    {
-      name: "vite-plugin-webfonts-preview",
-      apply: "build",
-      buildStart() {
-        generatePreviewFonts();
-      },
-    },
+    envConfig({ isDevelopment: false, clientVersion: CLIENT_VERSION }),
+    languageHashes(),
+    fontawesomeSubset(),
+    versionFile({ clientVersion: CLIENT_VERSION }),
+    fontPreview(),
     checker({
       typescript: {
         tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
@@ -201,68 +168,7 @@ export default {
       ],
       injectTo: "head-prepend",
     }),
-    {
-      name: "minify-json",
-      apply: "build",
-      generateBundle() {
-        let totalOriginalSize = 0;
-        let totalMinifiedSize = 0;
-
-        const minifyJsonFiles = (dir) => {
-          readdirSync(dir).forEach((file) => {
-            const sourcePath = path.join(dir, file);
-            const stat = statSync(sourcePath);
-
-            if (stat.isDirectory()) {
-              minifyJsonFiles(sourcePath);
-            } else if (path.extname(file) === ".json") {
-              const originalContent = readFileSync(sourcePath, "utf8");
-              const originalSize = Buffer.byteLength(originalContent, "utf8");
-              const minifiedContent = JSON.stringify(
-                JSON.parse(originalContent)
-              );
-              const minifiedSize = Buffer.byteLength(minifiedContent, "utf8");
-
-              totalOriginalSize += originalSize;
-              totalMinifiedSize += minifiedSize;
-
-              writeFileSync(sourcePath, minifiedContent);
-
-              // const savings =
-              //   ((originalSize - minifiedSize) / originalSize) * 100;
-              // console.log(
-              //   `\x1b[0m \x1b[36m${sourcePath}\x1b[0m | ` +
-              //     `\x1b[90mOriginal: ${originalSize} bytes\x1b[0m | ` +
-              //     `\x1b[90mMinified: ${minifiedSize} bytes\x1b[0m | ` +
-              //     `\x1b[32mSavings: ${savings.toFixed(2)}%\x1b[0m`
-              // );
-            }
-          });
-        };
-
-        // console.log("\n\x1b[1mMinifying JSON files...\x1b[0m\n");
-
-        minifyJsonFiles("./dist");
-
-        const totalSavings =
-          ((totalOriginalSize - totalMinifiedSize) / totalOriginalSize) * 100;
-
-        console.log(
-          `\n\n\x1b[1mJSON Minification Summary:\x1b[0m\n` +
-            `  \x1b[90mTotal original size: ${(
-              totalOriginalSize /
-              1024 /
-              1024
-            ).toFixed(2)} mB\x1b[0m\n` +
-            `  \x1b[90mTotal minified size: ${(
-              totalMinifiedSize /
-              1024 /
-              1024
-            ).toFixed(2)} mB\x1b[0m\n` +
-            `  \x1b[32mTotal savings: ${totalSavings.toFixed(2)}%\x1b[0m\n`
-        );
-      },
-    },
+    minifyJson(),
   ],
   build: {
     sourcemap: process.env.SENTRY,
@@ -311,17 +217,6 @@ export default {
       },
     },
   },
-  define: {
-    BACKEND_URL: JSON.stringify(
-      process.env.BACKEND_URL || "https://api.monkeytype.com"
-    ),
-    IS_DEVELOPMENT: JSON.stringify(false),
-    CLIENT_VERSION: JSON.stringify(CLIENT_VERSION),
-    RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),
-    QUICK_LOGIN_EMAIL: undefined,
-    QUICK_LOGIN_PASSWORD: undefined,
-  },
-
   css: {
     preprocessorOptions: {
       scss: {

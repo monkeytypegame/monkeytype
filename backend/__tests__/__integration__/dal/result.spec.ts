@@ -11,7 +11,7 @@ const timestamp = Date.now() - 60000;
 async function createDummyData(
   uid: string,
   count: number,
-  modify?: Partial<DBResult>
+  modify?: Partial<DBResult>,
 ): Promise<void> {
   const dummyUser: UserDal.DBUser = {
     _id: new ObjectId(),
@@ -50,7 +50,7 @@ async function createDummyData(
         tags: [],
         consistency: 100,
         keyConsistency: 100,
-        chartData: { wpm: [], raw: [], err: [] },
+        chartData: { wpm: [], burst: [], err: [] },
         uid,
         keySpacingStats: { average: 0, sd: 0 },
         keyDurationStats: { average: 0, sd: 0 },

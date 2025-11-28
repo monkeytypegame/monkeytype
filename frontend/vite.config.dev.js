@@ -2,10 +2,14 @@ import { checker } from "vite-plugin-checker";
 import Inspect from "vite-plugin-inspect";
 import path from "node:path";
 import { getFontsConig } from "./vite.config";
+import { envConfig } from "./vite-plugins/env-config";
+import { languageHashes } from "./vite-plugins/language-hashes";
 
 /** @type {import("vite").UserConfig} */
 export default {
   plugins: [
+    envConfig({ isDevelopment: true }),
+    languageHashes({ skip: true }),
     checker({
       typescript: {
         tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
@@ -31,18 +35,6 @@ export default {
         `,
       },
     },
-  },
-  define: {
-    BACKEND_URL: JSON.stringify(
-      process.env.BACKEND_URL || "http://localhost:5005"
-    ),
-    IS_DEVELOPMENT: JSON.stringify(true),
-    CLIENT_VERSION: JSON.stringify("DEVELOPMENT_CLIENT"),
-    RECAPTCHA_SITE_KEY: JSON.stringify(
-      "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-    ),
-    QUICK_LOGIN_EMAIL: JSON.stringify(process.env.QUICK_LOGIN_EMAIL),
-    QUICK_LOGIN_PASSWORD: JSON.stringify(process.env.QUICK_LOGIN_PASSWORD),
   },
   build: {
     outDir: "../dist",

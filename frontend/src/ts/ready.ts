@@ -9,6 +9,7 @@ import * as ServerConfiguration from "./ape/server-configuration";
 import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { loadPromise } from "./config";
 import { authPromise } from "./firebase";
+import { animate } from "animejs";
 
 $(async (): Promise<void> => {
   await loadPromise;
@@ -23,11 +24,12 @@ $(async (): Promise<void> => {
     fb.functions.applyGlobalCSS();
   }
 
-  $("#app")
-    .css("opacity", "0")
-    .removeClass("hidden")
-    .stop(true, true)
-    .animate({ opacity: 1 }, Misc.applyReducedMotion(250));
+  const app = document.querySelector("#app") as HTMLElement;
+  app?.classList.remove("hidden");
+  animate(app, {
+    opacity: [0, 1],
+    duration: Misc.applyReducedMotion(250),
+  });
   if (ConnectionState.get()) {
     void ServerConfiguration.sync().then(() => {
       if (!ServerConfiguration.get()?.users.signUp) {
@@ -63,7 +65,7 @@ $(async (): Promise<void> => {
           .then((registration) => {
             console.log(
               "ServiceWorker registration successful with scope: ",
-              registration.scope
+              registration.scope,
             );
           })
           .catch((error: unknown) => {

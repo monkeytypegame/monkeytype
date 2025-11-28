@@ -11,6 +11,7 @@ import { ObjectId } from "mongodb";
 
 import * as ConnectionsDal from "../../../src/dal/connections";
 import { createConnection } from "../../__testData__/connections";
+import { createUser } from "../../__testData__/users";
 
 describe("ConnectionsDal", () => {
   beforeAll(async () => {
@@ -32,7 +33,7 @@ describe("ConnectionsDal", () => {
         await ConnectionsDal.getConnections({
           initiatorUid: uid,
           receiverUid: uid,
-        })
+        }),
       ).toStrictEqual([initOne, initTwo, friendOne]);
     });
 
@@ -70,7 +71,7 @@ describe("ConnectionsDal", () => {
           initiatorUid: uid,
           receiverUid: uid,
           status: ["accepted", "blocked"],
-        })
+        }),
       ).toStrictEqual([initAccepted, initBlocked, friendAccepted]);
     });
   });
@@ -97,7 +98,7 @@ describe("ConnectionsDal", () => {
         createConnection({
           initiatorUid: first.receiverUid,
           receiverUid: uid,
-        })
+        }),
       ).rejects.toThrow("Connection request already sent");
     });
 
@@ -110,7 +111,7 @@ describe("ConnectionsDal", () => {
       const created = await ConnectionsDal.create(
         { uid, name: "Bob" },
         { uid: receiverUid, name: "Kevin" },
-        2
+        2,
       );
 
       //THEN
@@ -134,7 +135,7 @@ describe("ConnectionsDal", () => {
 
       //WHEN / THEM
       await expect(createConnection({ initiatorUid }, 2)).rejects.toThrow(
-        "Maximum number of connections reached\nStack: create connection request"
+        "Maximum number of connections reached\nStack: create connection request",
       );
     });
 
@@ -151,7 +152,7 @@ describe("ConnectionsDal", () => {
         createConnection({
           initiatorUid: first.receiverUid,
           receiverUid: uid,
-        })
+        }),
       ).rejects.toThrow("Connection blocked");
     });
   });
@@ -180,19 +181,19 @@ describe("ConnectionsDal", () => {
       await ConnectionsDal.updateStatus(
         uid,
         first._id.toHexString(),
-        "accepted"
+        "accepted",
       );
 
       //THEN
       expect(await ConnectionsDal.getConnections({ receiverUid: uid })).toEqual(
-        [{ ...first, status: "accepted", lastModified: now }, second]
+        [{ ...first, status: "accepted", lastModified: now }, second],
       );
 
       //can update twice to the same status
       await ConnectionsDal.updateStatus(
         uid,
         first._id.toHexString(),
-        "accepted"
+        "accepted",
       );
     });
     it("should fail if uid does not match the reeceiverUid", async () => {
@@ -204,7 +205,7 @@ describe("ConnectionsDal", () => {
 
       //WHEN / THEN
       await expect(
-        ConnectionsDal.updateStatus(uid, first._id.toHexString(), "accepted")
+        ConnectionsDal.updateStatus(uid, first._id.toHexString(), "accepted"),
       ).rejects.toThrow("No permission or connection not found");
     });
   });
@@ -225,7 +226,7 @@ describe("ConnectionsDal", () => {
 
       //THEN
       expect(
-        await ConnectionsDal.getConnections({ initiatorUid: uid })
+        await ConnectionsDal.getConnections({ initiatorUid: uid }),
       ).toStrictEqual([second]);
     });
 
@@ -247,7 +248,7 @@ describe("ConnectionsDal", () => {
       expect(
         await ConnectionsDal.getConnections({
           initiatorUid: second.initiatorUid,
-        })
+        }),
       ).toStrictEqual([second]);
     });
 
@@ -260,7 +261,7 @@ describe("ConnectionsDal", () => {
 
       //WHEN / THEN
       await expect(
-        ConnectionsDal.deleteById("Bob", first._id.toHexString())
+        ConnectionsDal.deleteById("Bob", first._id.toHexString()),
       ).rejects.toThrow("No permission or connection not found");
     });
 
@@ -274,7 +275,7 @@ describe("ConnectionsDal", () => {
 
       //WHEN / THEN
       await expect(
-        ConnectionsDal.deleteById(uid, myRequestWasBlocked._id.toHexString())
+        ConnectionsDal.deleteById(uid, myRequestWasBlocked._id.toHexString()),
       ).rejects.toThrow("No permission or connection not found");
     });
     it("allow receiver to delete blocked", async () => {
@@ -290,7 +291,7 @@ describe("ConnectionsDal", () => {
 
       //THEN
       expect(await ConnectionsDal.getConnections({ receiverUid: uid })).toEqual(
-        []
+        [],
       );
     });
   });
@@ -312,13 +313,13 @@ describe("ConnectionsDal", () => {
         await ConnectionsDal.getConnections({
           initiatorUid: uid,
           receiverUid: uid,
-        })
+        }),
       ).toEqual([]);
 
       expect(
         await ConnectionsDal.getConnections({
           initiatorUid: decoy.initiatorUid,
-        })
+        }),
       ).toEqual([decoy]);
     });
   });
@@ -348,7 +349,7 @@ describe("ConnectionsDal", () => {
         await ConnectionsDal.getConnections({
           initiatorUid: uid,
           receiverUid: uid,
-        })
+        }),
       ).toEqual([
         { ...initOne, initiatorName: "King Bob" },
         { ...initTwo, initiatorName: "King Bob" },
@@ -358,7 +359,7 @@ describe("ConnectionsDal", () => {
       expect(
         await ConnectionsDal.getConnections({
           initiatorUid: decoy.initiatorUid,
-        })
+        }),
       ).toEqual([decoy]);
     });
   });
@@ -398,6 +399,94 @@ describe("ConnectionsDal", () => {
         friendOne.receiverUid,
         friendTwo.initiatorUid,
         friendThree.initiatorUid,
+      ]);
+    });
+  });
+
+  describe("aggregateWithAcceptedConnections", () => {
+    it("should return friend uids", async () => {
+      //GIVE
+      const uid = (await createUser()).uid;
+      const friendOne = await createConnection({
+        initiatorUid: uid,
+        receiverUid: (await createUser()).uid,
+        status: "accepted",
+      });
+      const friendTwo = await createConnection({
+        initiatorUid: (await createUser()).uid,
+        receiverUid: uid,
+        status: "accepted",
+      });
+      const friendThree = await createConnection({
+        initiatorUid: (await createUser()).uid,
+        receiverUid: uid,
+        status: "accepted",
+      });
+      const _pending = await createConnection({
+        initiatorUid: uid,
+        receiverUid: (await createUser()).uid,
+        status: "pending",
+      });
+      const _blocked = await createConnection({
+        initiatorUid: uid,
+        receiverUid: (await createUser()).uid,
+        status: "blocked",
+      });
+      const _decoy = await createConnection({
+        receiverUid: (await createUser()).uid,
+        status: "accepted",
+      });
+
+      //WHEN
+      const friendUids = await ConnectionsDal.aggregateWithAcceptedConnections<{
+        uid: string;
+      }>({ collectionName: "users", uid }, [{ $project: { uid: true } }]);
+
+      //THEN
+      expect(friendUids.flatMap((it) => it.uid).toSorted()).toEqual([
+        uid,
+        friendOne.receiverUid,
+        friendTwo.initiatorUid,
+        friendThree.initiatorUid,
+      ]);
+    });
+    it("should return friend uids and metaData", async () => {
+      //GIVE
+      const me = await createUser();
+      const friend = await createUser();
+
+      const connection = await createConnection({
+        initiatorUid: me.uid,
+        receiverUid: friend.uid,
+        status: "accepted",
+      });
+
+      //WHEN
+      const friendUids = await ConnectionsDal.aggregateWithAcceptedConnections(
+        { collectionName: "users", uid: me.uid, includeMetaData: true },
+        [
+          {
+            $project: {
+              uid: true,
+              lastModified: "$connectionMeta.lastModified",
+              connectionId: "$connectionMeta._id",
+            },
+          },
+        ],
+      );
+
+      //THEN
+      expect(friendUids).toEqual([
+        {
+          _id: friend._id,
+          connectionId: connection._id,
+          lastModified: connection.lastModified,
+          uid: friend.uid,
+        },
+        {
+          _id: me._id,
+          uid: me.uid,
+        },
       ]);
     });
   });

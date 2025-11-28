@@ -9,7 +9,7 @@ describe("WebhooksController", () => {
   describe("githubRelease", () => {
     const georgeSendReleaseAnnouncementMock = vi.spyOn(
       GeorgeQueue,
-      "sendReleaseAnnouncement"
+      "sendReleaseAnnouncement",
     );
     const timingSafeEqualMock = vi.spyOn(crypto, "timingSafeEqual");
 
@@ -37,9 +37,9 @@ describe("WebhooksController", () => {
       expect(georgeSendReleaseAnnouncementMock).toHaveBeenCalledWith("1");
       expect(timingSafeEqualMock).toHaveBeenCalledWith(
         Buffer.from(
-          "sha256=ff0f3080539e9df19153f6b5b5780f66e558d61038e6cf5ecf4efdc7266a7751"
+          "sha256=ff0f3080539e9df19153f6b5b5780f66e558d61038e6cf5ecf4efdc7266a7751",
         ),
-        Buffer.from("the-signature")
+        Buffer.from("the-signature"),
       );
     });
     it("should ignore non-published actions", async () => {

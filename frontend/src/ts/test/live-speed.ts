@@ -3,9 +3,10 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import Format from "../utils/format";
 import { applyReducedMotion } from "../utils/misc";
+import { animate } from "animejs";
 
 const textElement = document.querySelector(
-  "#liveStatsTextBottom .liveSpeed"
+  "#liveStatsTextBottom .liveSpeed",
 ) as Element;
 const miniElement = document.querySelector("#liveStatsMini .speed") as Element;
 
@@ -31,55 +32,37 @@ export function show(): void {
   if (!TestState.isActive) return;
   if (state) return;
   if (Config.liveSpeedStyle === "mini") {
-    $(miniElement)
-      .stop(true, false)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        applyReducedMotion(125)
-      );
+    miniElement.classList.remove("hidden");
+    animate(miniElement, {
+      opacity: [0, 1],
+      duration: applyReducedMotion(125),
+    });
   } else {
-    $(textElement)
-      .stop(true, false)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        applyReducedMotion(125)
-      );
+    textElement.classList.remove("hidden");
+    animate(textElement, {
+      opacity: [0, 1],
+      duration: applyReducedMotion(125),
+    });
   }
   state = true;
 }
 
 export function hide(): void {
   if (!state) return;
-  $(textElement)
-    .stop(true, false)
-    .animate(
-      {
-        opacity: 0,
-      },
-      applyReducedMotion(125),
-      () => {
-        textElement.classList.add("hidden");
-      }
-    );
-  $(miniElement)
-    .stop(true, false)
-    .animate(
-      {
-        opacity: 0,
-      },
-      applyReducedMotion(125),
-      () => {
-        miniElement.classList.add("hidden");
-      }
-    );
+  animate(miniElement, {
+    opacity: [1, 0],
+    duration: applyReducedMotion(125),
+    onComplete: () => {
+      miniElement.classList.add("hidden");
+    },
+  });
+  animate(textElement, {
+    opacity: [1, 0],
+    duration: applyReducedMotion(125),
+    onComplete: () => {
+      textElement.classList.add("hidden");
+    },
+  });
   state = false;
 }
 

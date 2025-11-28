@@ -4,7 +4,7 @@ import {
   tsRestFetchApi,
   type ApiFetcherArgs,
 } from "@ts-rest/core";
-import { envConfig } from "../../constants/env-config";
+import { envConfig } from "virtual:env-config";
 import { getIdToken } from "../../firebase";
 import {
   COMPATIBILITY_CHECK,
@@ -51,7 +51,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
       }
 
       const compatibilityCheckHeader = response.headers.get(
-        COMPATIBILITY_CHECK_HEADER
+        COMPATIBILITY_CHECK_HEADER,
       );
 
       if (compatibilityCheckHeader !== null) {
@@ -95,7 +95,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
 export function buildClient<T extends AppRouter>(
   contract: T,
   baseUrl: string,
-  timeout: number = 10_000
+  timeout: number = 10_000,
 ) {
   return initClient(contract, {
     baseUrl: baseUrl,

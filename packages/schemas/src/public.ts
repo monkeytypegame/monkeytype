@@ -3,7 +3,7 @@ import { StringNumberSchema } from "./util";
 
 export const SpeedHistogramSchema = z.record(
   StringNumberSchema,
-  z.number().int()
+  z.number().int(),
 );
 export type SpeedHistogram = z.infer<typeof SpeedHistogramSchema>;
 

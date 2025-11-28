@@ -13,6 +13,7 @@ import { MonkeyMail } from "@monkeytype/schemas/users";
 import * as XPBar from "../elements/xp-bar";
 import * as AuthEvent from "../observables/auth-event";
 import * as ActivePage from "../states/active-page";
+import { animate } from "animejs";
 
 let accountAlerts: MonkeyMail[] = [];
 let maxMail = 0;
@@ -88,7 +89,7 @@ function hide(): void {
             duration: 5,
             customTitle: "Reward",
             customIcon: "gift",
-          }
+          },
         );
       }
 
@@ -202,7 +203,7 @@ async function getAccountAlerts(): Promise<void> {
       <div class="item" data-id="${ie.id}">
         <div class="indicator ${ie.read ? "" : "main"}"></div>
         <div class="timestamp">${formatDistanceToNowStrict(
-          new Date(ie.timestamp)
+          new Date(ie.timestamp),
         )} ago</div>
         <div class="title">${ie.subject}</div>
         <div class="body">
@@ -236,7 +237,7 @@ export function addPSA(message: string, level: number): void {
 function fillPSAs(): void {
   if (state.psas.length === 0) {
     $("#alertsPopup .psas .list").html(
-      `<div class="nothing">Nothing to show</div>`
+      `<div class="nothing">Nothing to show</div>`,
     );
   } else {
     $("#alertsPopup .psas .list").empty();
@@ -266,7 +267,7 @@ function fillPSAs(): void {
 function fillNotifications(): void {
   if (state.notifications.length === 0) {
     $("#alertsPopup .notificationHistory .list").html(
-      `<div class="nothing">Nothing to show</div>`
+      `<div class="nothing">Nothing to show</div>`,
     );
   } else {
     $("#alertsPopup .notificationHistory .list").empty();
@@ -311,7 +312,7 @@ export function setNotificationBubbleVisible(tf: boolean): void {
 function updateInboxSize(): void {
   const remainingItems = accountAlerts.length - mailToDelete.length;
   $("#alertsPopup .accountAlerts .title .right").text(
-    `${remainingItems}/${maxMail}`
+    `${remainingItems}/${maxMail}`,
   );
 }
 
@@ -339,20 +340,18 @@ function markReadAlert(id: string): void {
   item
     .find(".buttons")
     .append(
-      `<button class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></button>`
+      `<button class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></button>`,
     );
-  item.find(".rewards").animate(
-    {
-      opacity: 0,
-      height: 0,
-      marginTop: 0,
-    },
-    250,
-    "easeOutCubic",
-    () => {
+
+  animate(item.find(".rewards")[0] as HTMLElement, {
+    opacity: 0,
+    height: 0,
+    marginTop: 0,
+    duration: 250,
+    onComplete: () => {
       item.find(".rewards").remove();
-    }
-  );
+    },
+  });
 }
 
 function updateClaimDeleteAllButton(): void {
@@ -414,24 +413,12 @@ const modal = new AnimatedModal({
   customAnimations: {
     show: {
       modal: {
-        from: {
-          marginRight: "-10rem",
-        },
-        to: {
-          marginRight: "0",
-        },
-        easing: "easeOutCirc",
+        marginRight: ["-10rem", "0"],
       },
     },
     hide: {
       modal: {
-        from: {
-          marginRight: "0",
-        },
-        to: {
-          marginRight: "-10rem",
-        },
-        easing: "easeInCirc",
+        marginRight: ["0", "-10rem"],
       },
     },
   },
@@ -470,7 +457,7 @@ const modal = new AnimatedModal({
           .closest(".item")
           .attr("data-id") as string;
         deleteAlert(id);
-      }
+      },
     );
 
     $("#alertsPopup .accountAlerts .list").on(
@@ -481,7 +468,7 @@ const modal = new AnimatedModal({
           .closest(".item")
           .attr("data-id") as string;
         markReadAlert(id);
-      }
+      },
     );
   },
 });

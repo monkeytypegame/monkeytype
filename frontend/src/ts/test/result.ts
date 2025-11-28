@@ -45,6 +45,7 @@ import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import * as TestState from "./test-state";
+import { blurInputElement } from "../input/input-element";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -96,13 +97,13 @@ async function updateGraph(): Promise<void> {
 
   const chartData1 = [
     ...result.chartData["wpm"].map((a) =>
-      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
     ),
   ];
 
   const chartData2 = [
     ...TestInput.rawHistory.map((a) =>
-      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
     ),
   ];
 
@@ -110,7 +111,7 @@ async function updateGraph(): Promise<void> {
   let smoothedBurst = Arrays.smoothWithValueWindow(
     result.chartData["burst"],
     1,
-    useSmoothedBurst ? valueWindow : 0
+    useSmoothedBurst ? valueWindow : 0,
   );
 
   const chartData3 = [
@@ -132,7 +133,7 @@ async function updateGraph(): Promise<void> {
       Math.max(...chartData1),
       Math.max(...chartData2),
       Math.max(...chartData3),
-    ]
+    ],
   );
 
   let minChartVal = 0;
@@ -143,7 +144,7 @@ async function updateGraph(): Promise<void> {
         Math.min(...chartData1),
         Math.min(...chartData2),
         Math.min(...chartData3),
-      ]
+      ],
     );
 
     // Round down to nearest multiple of 10
@@ -207,7 +208,7 @@ async function updateGraph(): Promise<void> {
 
   ChartController.result.getDataset("error").data = result.chartData.err;
   ChartController.result.getScale("error").max = Math.max(
-    ...result.chartData.err
+    ...result.chartData.err,
   );
 
   if (useFakeChartData) {
@@ -241,19 +242,19 @@ function applyFakeChartData(): void {
 
   const chartData1 = [
     ...fakeChartData["wpm"].map((a) =>
-      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
     ),
   ];
 
   const chartData2 = [
     ...fakeChartData["raw"].map((a) =>
-      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
     ),
   ];
 
   const chartData3 = [
     ...fakeChartData["burst"].map((a) =>
-      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
     ),
   ];
 
@@ -262,7 +263,7 @@ function applyFakeChartData(): void {
       Math.max(...chartData1),
       Math.max(...chartData2),
       Math.max(...chartData3),
-    ]
+    ],
   );
 
   let minChartVal = 0;
@@ -273,7 +274,7 @@ function applyFakeChartData(): void {
         Math.min(...chartData1),
         Math.min(...chartData2),
         Math.min(...chartData3),
-      ]
+      ],
     );
 
     // Round down to nearest multiple of 10
@@ -309,13 +310,13 @@ export async function updateGraphPBLine(): Promise<void> {
     result.language,
     result.difficulty,
     result.lazyMode ?? false,
-    getFunbox(result.funbox)
+    getFunbox(result.funbox),
   );
   const localPbWpm = localPb?.wpm ?? 0;
   if (localPbWpm === 0) return;
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   const chartlpb = Numbers.roundTo2(
-    typingSpeedUnit.fromWpm(localPbWpm)
+    typingSpeedUnit.fromWpm(localPbWpm),
   ).toFixed(2);
   resultAnnotation.push({
     display: true,
@@ -371,18 +372,18 @@ function updateWpmAndAcc(): void {
   }
   $("#result .stats .raw .bottom").text(Format.typingSpeed(result.rawWpm));
   $("#result .stats .acc .bottom").text(
-    result.acc === 100 ? "100%" : Format.accuracy(result.acc)
+    result.acc === 100 ? "100%" : Format.accuracy(result.acc),
   );
 
   if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit !== "wpm") {
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
-        result.wpm.toFixed(2) + " wpm"
+        result.wpm.toFixed(2) + " wpm",
       );
       $("#result .stats .raw .bottom").attr(
         "aria-label",
-        result.rawWpm.toFixed(2) + " wpm"
+        result.rawWpm.toFixed(2) + " wpm",
       );
     } else {
       $("#result .stats .wpm .bottom").removeAttr("aria-label");
@@ -398,7 +399,7 @@ function updateWpmAndAcc(): void {
 
     $("#result .stats .acc .bottom").attr(
       "aria-label",
-      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`
+      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`,
     );
   } else {
     //not showing decimal places
@@ -426,7 +427,7 @@ function updateWpmAndAcc(): void {
             : Format.percentage(result.acc, { showDecimalPlaces: true })
         }\n${TestInput.accuracy.correct} correct\n${
           TestInput.accuracy.incorrect
-        } incorrect`
+        } incorrect`,
       )
       .attr("data-balloon-break", "");
   }
@@ -434,7 +435,7 @@ function updateWpmAndAcc(): void {
 
 function updateConsistency(): void {
   $("#result .stats .consistency .bottom").text(
-    Format.percentage(result.consistency)
+    Format.percentage(result.consistency),
   );
   if (Config.alwaysShowDecimalPlaces) {
     $("#result .stats .consistency .bottom").attr(
@@ -442,19 +443,19 @@ function updateConsistency(): void {
       Format.percentage(result.keyConsistency, {
         showDecimalPlaces: true,
         suffix: " key",
-      })
+      }),
     );
   } else {
     $("#result .stats .consistency .bottom").attr(
       "aria-label",
-      `${result.consistency}% (${result.keyConsistency}% key)`
+      `${result.consistency}% (${result.keyConsistency}% key)`,
     );
   }
 }
 
 function updateTime(): void {
   const afkSecondsPercent = Numbers.roundTo2(
-    (result.afkDuration / result.testDuration) * 100
+    (result.afkDuration / result.testDuration) * 100,
   );
   $("#result .stats .time .bottom .afk").text("");
   if (afkSecondsPercent > 0) {
@@ -462,7 +463,7 @@ function updateTime(): void {
   }
   $("#result .stats .time .bottom").attr(
     "aria-label",
-    `${result.afkDuration}s afk ${afkSecondsPercent}%`
+    `${result.afkDuration}s afk ${afkSecondsPercent}%`,
   );
 
   if (Config.alwaysShowDecimalPlaces) {
@@ -481,7 +482,7 @@ function updateTime(): void {
       "aria-label",
       `${Numbers.roundTo2(result.testDuration)}s (${
         result.afkDuration
-      }s afk ${afkSecondsPercent}%)`
+      }s afk ${afkSecondsPercent}%)`,
     );
   }
 }
@@ -498,7 +499,7 @@ function updateKey(): void {
       "/" +
       result.charStats[2] +
       "/" +
-      result.charStats[3]
+      result.charStats[3],
   );
 }
 
@@ -511,7 +512,7 @@ export function updateCrownText(text: string, wide = false): void {
   $("#result .stats .wpm .crown").attr("aria-label", text);
   $("#result .stats .wpm .crown").attr(
     "data-balloon-length",
-    wide ? "medium" : ""
+    wide ? "medium" : "",
   );
 }
 
@@ -535,7 +536,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.language,
       Config.difficulty,
       Config.lazyMode,
-      getActiveFunboxes()
+      getActiveFunboxes(),
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
@@ -548,7 +549,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       console.debug("Showing pending crown");
       showCrown("pending");
       updateCrownText(
-        "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
+        "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true }),
       );
     }
   } else {
@@ -560,7 +561,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.language,
       Config.difficulty,
       Config.lazyMode,
-      []
+      [],
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
@@ -571,7 +572,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       showCrown("warning");
       updateCrownText(
         `This result is not eligible for a new PB (${canGetPb.reason})`,
-        true
+        true,
       );
     } else {
       console.debug("Showing ineligible crown");
@@ -580,7 +581,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
         `You could've gotten a new PB (+${Format.typingSpeed(pbDiff, {
           showDecimalPlaces: true,
         })}), but your config does not allow it (${canGetPb.reason})`,
-        true
+        true,
       );
     }
   }
@@ -597,7 +598,7 @@ export function showErrorCrownIfNeeded(): void {
   PbCrown.update("error");
   updateCrownText(
     `Local PB data is out of sync with the server - please refresh (pb mismatch)`,
-    true
+    true,
   );
 }
 
@@ -703,7 +704,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   $("#result .stats .tags .editTagsButton").attr("data-result-id", "");
   $("#result .stats .tags .editTagsButton").attr(
     "data-active-tag-ids",
-    activeTags.map((t) => t._id).join(",")
+    activeTags.map((t) => t._id).join(","),
   );
   $("#result .stats .tags .editTagsButton").addClass("invisible");
 
@@ -718,7 +719,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
       Config.numbers,
       Config.language,
       Config.difficulty,
-      Config.lazyMode
+      Config.lazyMode,
     );
     $("#result .stats .tags .bottom").append(`
       <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
@@ -743,14 +744,14 @@ async function updateTags(dontSave: boolean): Promise<void> {
           result.wpm,
           result.acc,
           result.rawWpm,
-          result.consistency
+          result.consistency,
         );
         $(
-          `#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`
+          `#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`,
         ).removeClass("hidden");
         $(`#result .stats .tags .bottom div[tagid="${tag._id}"]`).attr(
           "aria-label",
-          "+" + Numbers.roundTo2(result.wpm - tpb)
+          "+" + Numbers.roundTo2(result.wpm - tpb),
         );
         // console.log("new pb for tag " + tag.display);
       } else {
@@ -780,7 +781,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             xAdjust: labelAdjust,
             display: true,
             content: `${tag.display} PB: ${Numbers.roundTo2(
-              typingSpeedUnit.fromWpm(tpb)
+              typingSpeedUnit.fromWpm(tpb),
             ).toFixed(2)}`,
           },
         });
@@ -847,7 +848,7 @@ function updateOther(
   failReason: string,
   afkDetected: boolean,
   isRepeated: boolean,
-  tooShort: boolean
+  tooShort: boolean,
 ): void {
   let otherText = "";
   if (difficultyFailed) {
@@ -905,7 +906,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
   if (Config.mode === "quote") {
     if (randomQuote === null) {
       console.error(
-        "Failed to update quote rating button: randomQuote is null"
+        "Failed to update quote rating button: randomQuote is null",
       );
       return;
     }
@@ -921,7 +922,7 @@ export function updateRateQuote(randomQuote: Quote | null): void {
       .getQuoteStats(randomQuote)
       .then((quoteStats) => {
         $(".pageTest #result #rateQuoteButton .rating").text(
-          quoteStats?.average?.toFixed(1) ?? ""
+          quoteStats?.average?.toFixed(1) ?? "",
         );
       })
       .catch((_e: unknown) => {
@@ -944,7 +945,7 @@ function updateQuoteFavorite(randomQuote: Quote | null): void {
 
   if (randomQuote === null) {
     console.error(
-      "Failed to update quote favorite button: randomQuote is null"
+      "Failed to update quote favorite button: randomQuote is null",
     );
     return;
   }
@@ -961,7 +962,7 @@ function updateQuoteSource(randomQuote: Quote | null): void {
   if (Config.mode === "quote") {
     $("#result .stats .source").removeClass("hidden");
     $("#result .stats .source .bottom").html(
-      randomQuote?.source ?? "Error: Source unknown"
+      randomQuote?.source ?? "Error: Source unknown",
     );
   } else {
     $("#result .stats .source").addClass("hidden");
@@ -976,7 +977,7 @@ export async function update(
   isRepeated: boolean,
   tooShort: boolean,
   randomQuote: Quote | null,
-  dontSave: boolean
+  dontSave: boolean,
 ): Promise<void> {
   resultAnnotation = [];
   result = structuredClone(res);
@@ -990,7 +991,7 @@ export async function update(
   $(".pageTest #result #rateQuoteButton .rating").text("");
   $(".pageTest #result #rateQuoteButton").addClass("hidden");
   $("#words").removeClass("blurred");
-  $("#wordsInput").trigger("blur");
+  blurInputElement();
   $("#result .stats .time .bottom .afk").text("");
   if (isAuthenticated()) {
     $("#result .loginTip").addClass("hidden");
@@ -1055,7 +1056,7 @@ export async function update(
     $("main #result #saveScreenshotButton").addClass("hidden");
 
     console.log(
-      `Test Completed: ${result.wpm} wpm ${result.acc}% acc ${result.rawWpm} raw ${result.consistency}% consistency`
+      `Test Completed: ${result.wpm} wpm ${result.acc}% acc ${result.rawWpm} raw ${result.consistency}% consistency`,
     );
   } else {
     $("main #result .stats").removeClass("hidden");
@@ -1072,8 +1073,8 @@ export async function update(
   TestConfig.hide();
 
   void Misc.swapElements(
-    $("#typingTest"),
-    $("#result"),
+    document.querySelector("#typingTest") as HTMLElement,
+    document.querySelector("#result") as HTMLElement,
     250,
     async () => {
       const result = document.querySelector<HTMLElement>("#result");
@@ -1088,19 +1089,13 @@ export async function update(
     },
     async () => {
       Focus.set(false);
-      $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
-        {
-          opacity: 1,
-        },
-        Misc.applyReducedMotion(125)
-      );
 
       const canQuickRestart = canQuickRestartFn(
         Config.mode,
         Config.words,
         Config.time,
         CustomText.getData(),
-        CustomTextState.isCustomTextLong() ?? false
+        CustomTextState.isCustomTextLong() ?? false,
       );
 
       if (
@@ -1112,7 +1107,7 @@ export async function update(
       }
       AdController.updateFooterAndVerticalAds(true);
       void Funbox.clear();
-    }
+    },
   );
 }
 
@@ -1156,7 +1151,7 @@ function updateResultChartDataVisibility(update = false): void {
 
   // Check if there are any tag PB annotations
   const hasTagPbAnnotations = resultAnnotation.some(
-    (annotation) => annotation.id === "tpb"
+    (annotation) => annotation.id === "tpb",
   );
 
   for (const button of buttons) {
@@ -1179,7 +1174,7 @@ function updateResultChartDataVisibility(update = false): void {
     } else if (id === "tagPbLine") {
       $(button).toggleClass(
         "hidden",
-        !isAuthenticated() || !hasTagPbAnnotations
+        !isAuthenticated() || !hasTagPbAnnotations,
       );
     }
   }
@@ -1187,7 +1182,7 @@ function updateResultChartDataVisibility(update = false): void {
 
 export function updateTagsAfterEdit(
   tagIds: string[],
-  tagPbIds: string[]
+  tagPbIds: string[],
 ): void {
   const tagNames: string[] = [];
 
@@ -1203,7 +1198,7 @@ export function updateTagsAfterEdit(
 
   if (tagIds.length === 0) {
     $(`.pageTest #result .tags .bottom`).html(
-      "<div class='noTags'>no tags</div>"
+      "<div class='noTags'>no tags</div>",
     );
   } else {
     $(`.pageTest #result .tags .bottom div.noTags`).remove();
@@ -1234,7 +1229,7 @@ export function updateTagsAfterEdit(
     $(`.pageTest #result .tags .bottom`).append(html);
     $(`.pageTest #result .tags .top .editTagsButton`).attr(
       "active-tag-ids",
-      tagIds.join(",")
+      tagIds.join(","),
     );
   }
 }
@@ -1285,7 +1280,7 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
     if (response.status === 200) {
       $button.removeClass("fas").addClass("far");
       const quoteIndex = dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(
-        quoteId
+        quoteId,
       ) as number;
       dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
     }

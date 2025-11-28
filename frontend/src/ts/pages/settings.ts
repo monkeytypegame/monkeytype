@@ -42,6 +42,7 @@ import { Fonts } from "../constants/fonts";
 import * as CustomBackgroundPicker from "../elements/settings/custom-background-picker";
 import * as CustomFontPicker from "../elements/settings/custom-font-picker";
 import * as AuthEvent from "../observables/auth-event";
+import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 
 let settingsInitialized = false;
 
@@ -59,7 +60,7 @@ const HighlightSchema = ConfigKeySchema.or(
     "theme",
     "presets",
     "tags",
-  ])
+  ]),
 );
 type Highlight = z.infer<typeof HighlightSchema>;
 
@@ -73,27 +74,27 @@ async function initGroups(): Promise<void> {
   groups["smoothCaret"] = new SettingsGroup(
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
-    "button"
+    "button",
   );
   groups["codeUnindentOnBackspace"] = new SettingsGroup(
     "codeUnindentOnBackspace",
     UpdateConfig.setCodeUnindentOnBackspace,
-    "button"
+    "button",
   );
   groups["difficulty"] = new SettingsGroup(
     "difficulty",
     UpdateConfig.setDifficulty,
-    "button"
+    "button",
   );
   groups["quickRestart"] = new SettingsGroup(
     "quickRestart",
     UpdateConfig.setQuickRestartMode,
-    "button"
+    "button",
   );
   groups["showAverage"] = new SettingsGroup(
     "showAverage",
     UpdateConfig.setShowAverage,
-    "button"
+    "button",
   );
   groups["keymapMode"] = new SettingsGroup(
     "keymapMode",
@@ -103,69 +104,69 @@ async function initGroups(): Promise<void> {
       updateCallback: () => {
         if (Config.keymapMode === "off") {
           $(".pageSettings .section[data-config-name='keymapStyle']").addClass(
-            "hidden"
+            "hidden",
           );
           $(".pageSettings .section[data-config-name='keymapLayout']").addClass(
-            "hidden"
+            "hidden",
           );
           $(
-            ".pageSettings .section[data-config-name='keymapLegendStyle']"
+            ".pageSettings .section[data-config-name='keymapLegendStyle']",
           ).addClass("hidden");
           $(
-            ".pageSettings .section[data-config-name='keymapShowTopRow']"
+            ".pageSettings .section[data-config-name='keymapShowTopRow']",
           ).addClass("hidden");
           $(".pageSettings .section[data-config-name='keymapSize']").addClass(
-            "hidden"
+            "hidden",
           );
         } else {
           $(
-            ".pageSettings .section[data-config-name='keymapStyle']"
+            ".pageSettings .section[data-config-name='keymapStyle']",
           ).removeClass("hidden");
           $(
-            ".pageSettings .section[data-config-name='keymapLayout']"
+            ".pageSettings .section[data-config-name='keymapLayout']",
           ).removeClass("hidden");
           $(
-            ".pageSettings .section[data-config-name='keymapLegendStyle']"
+            ".pageSettings .section[data-config-name='keymapLegendStyle']",
           ).removeClass("hidden");
           $(
-            ".pageSettings .section[data-config-name='keymapShowTopRow']"
+            ".pageSettings .section[data-config-name='keymapShowTopRow']",
           ).removeClass("hidden");
           $(
-            ".pageSettings .section[data-config-name='keymapSize']"
+            ".pageSettings .section[data-config-name='keymapSize']",
           ).removeClass("hidden");
         }
       },
-    }
+    },
   );
   groups["keymapStyle"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
-    "button"
+    "button",
   );
   groups["keymapLayout"] = new SettingsGroup(
     "keymapLayout",
     UpdateConfig.setKeymapLayout,
-    "select"
+    "select",
   );
   groups["keymapLegendStyle"] = new SettingsGroup(
     "keymapLegendStyle",
     UpdateConfig.setKeymapLegendStyle,
-    "button"
+    "button",
   );
   groups["keymapShowTopRow"] = new SettingsGroup(
     "keymapShowTopRow",
     UpdateConfig.setKeymapShowTopRow,
-    "button"
+    "button",
   );
   groups["keymapSize"] = new SettingsGroup(
     "keymapSize",
     UpdateConfig.setKeymapSize,
-    "range"
+    "range",
   );
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
-    "button"
+    "button",
   );
   groups["freedomMode"] = new SettingsGroup(
     "freedomMode",
@@ -175,17 +176,17 @@ async function initGroups(): Promise<void> {
       setCallback: () => {
         groups["confidenceMode"]?.updateUI();
       },
-    }
+    },
   );
   groups["strictSpace"] = new SettingsGroup(
     "strictSpace",
     UpdateConfig.setStrictSpace,
-    "button"
+    "button",
   );
   groups["oppositeShiftMode"] = new SettingsGroup(
     "oppositeShiftMode",
     UpdateConfig.setOppositeShiftMode,
-    "button"
+    "button",
   );
   groups["confidenceMode"] = new SettingsGroup(
     "confidenceMode",
@@ -196,83 +197,83 @@ async function initGroups(): Promise<void> {
         groups["freedomMode"]?.updateUI();
         groups["stopOnError"]?.updateUI();
       },
-    }
+    },
   );
   groups["indicateTypos"] = new SettingsGroup(
     "indicateTypos",
     UpdateConfig.setIndicateTypos,
-    "button"
+    "button",
   );
   groups["hideExtraLetters"] = new SettingsGroup(
     "hideExtraLetters",
     UpdateConfig.setHideExtraLetters,
-    "button"
+    "button",
   );
   groups["blindMode"] = new SettingsGroup(
     "blindMode",
     UpdateConfig.setBlindMode,
-    "button"
+    "button",
   );
   groups["quickEnd"] = new SettingsGroup(
     "quickEnd",
     UpdateConfig.setQuickEnd,
-    "button"
+    "button",
   );
   groups["repeatQuotes"] = new SettingsGroup(
     "repeatQuotes",
     UpdateConfig.setRepeatQuotes,
-    "button"
+    "button",
   );
   groups["ads"] = new SettingsGroup("ads", UpdateConfig.setAds, "button");
   groups["alwaysShowWordsHistory"] = new SettingsGroup(
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory,
-    "button"
+    "button",
   );
   groups["britishEnglish"] = new SettingsGroup(
     "britishEnglish",
     UpdateConfig.setBritishEnglish,
-    "button"
+    "button",
   );
   groups["singleListCommandLine"] = new SettingsGroup(
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine,
-    "button"
+    "button",
   );
   groups["capsLockWarning"] = new SettingsGroup(
     "capsLockWarning",
     UpdateConfig.setCapsLockWarning,
-    "button"
+    "button",
   );
   groups["flipTestColors"] = new SettingsGroup(
     "flipTestColors",
     UpdateConfig.setFlipTestColors,
-    "button"
+    "button",
   );
   groups["showOutOfFocusWarning"] = new SettingsGroup(
     "showOutOfFocusWarning",
     UpdateConfig.setShowOutOfFocusWarning,
-    "button"
+    "button",
   );
   groups["colorfulMode"] = new SettingsGroup(
     "colorfulMode",
     UpdateConfig.setColorfulMode,
-    "button"
+    "button",
   );
   groups["startGraphsAtZero"] = new SettingsGroup(
     "startGraphsAtZero",
     UpdateConfig.setStartGraphsAtZero,
-    "button"
+    "button",
   );
   groups["autoSwitchTheme"] = new SettingsGroup(
     "autoSwitchTheme",
     UpdateConfig.setAutoSwitchTheme,
-    "button"
+    "button",
   );
   groups["randomTheme"] = new SettingsGroup(
     "randomTheme",
     UpdateConfig.setRandomTheme,
-    "button"
+    "button",
   );
   groups["stopOnError"] = new SettingsGroup(
     "stopOnError",
@@ -282,12 +283,12 @@ async function initGroups(): Promise<void> {
       setCallback: () => {
         groups["confidenceMode"]?.updateUI();
       },
-    }
+    },
   );
   groups["soundVolume"] = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
-    "range"
+    "range",
   );
   groups["playTimeWarning"] = new SettingsGroup(
     "playTimeWarning",
@@ -297,7 +298,7 @@ async function initGroups(): Promise<void> {
       setCallback: () => {
         if (Config.playTimeWarning !== "off") void Sound.playTimeWarning();
       },
-    }
+    },
   );
   groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
@@ -307,7 +308,7 @@ async function initGroups(): Promise<void> {
       setCallback: () => {
         if (Config.playSoundOnError !== "off") void Sound.playError();
       },
-    }
+    },
   );
   groups["playSoundOnClick"] = new SettingsGroup(
     "playSoundOnClick",
@@ -317,125 +318,125 @@ async function initGroups(): Promise<void> {
       setCallback: () => {
         if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
       },
-    }
+    },
   );
   groups["showAllLines"] = new SettingsGroup(
     "showAllLines",
     UpdateConfig.setShowAllLines,
-    "button"
+    "button",
   );
   groups["paceCaret"] = new SettingsGroup(
     "paceCaret",
     UpdateConfig.setPaceCaret,
-    "button"
+    "button",
   );
   groups["repeatedPace"] = new SettingsGroup(
     "repeatedPace",
     UpdateConfig.setRepeatedPace,
-    "button"
+    "button",
   );
   groups["minWpm"] = new SettingsGroup(
     "minWpm",
     UpdateConfig.setMinWpm,
-    "button"
+    "button",
   );
   groups["minAcc"] = new SettingsGroup(
     "minAcc",
     UpdateConfig.setMinAcc,
-    "button"
+    "button",
   );
   groups["minBurst"] = new SettingsGroup(
     "minBurst",
     UpdateConfig.setMinBurst,
-    "button"
+    "button",
   );
   groups["smoothLineScroll"] = new SettingsGroup(
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll,
-    "button"
+    "button",
   );
   groups["lazyMode"] = new SettingsGroup(
     "lazyMode",
     UpdateConfig.setLazyMode,
-    "button"
+    "button",
   );
   groups["layout"] = new SettingsGroup(
     "layout",
     UpdateConfig.setLayout,
-    "select"
+    "select",
   );
   groups["language"] = new SettingsGroup(
     "language",
     UpdateConfig.setLanguage,
-    "select"
+    "select",
   );
   groups["fontSize"] = new SettingsGroup(
     "fontSize",
     UpdateConfig.setFontSize,
     "input",
-    { validation: { schema: true, inputValueConvert: Number } }
+    { validation: { schema: true, inputValueConvert: Number } },
   );
   groups["maxLineWidth"] = new SettingsGroup(
     "maxLineWidth",
     UpdateConfig.setMaxLineWidth,
     "input",
-    { validation: { schema: true, inputValueConvert: Number } }
+    { validation: { schema: true, inputValueConvert: Number } },
   );
   groups["caretStyle"] = new SettingsGroup(
     "caretStyle",
     UpdateConfig.setCaretStyle,
-    "button"
+    "button",
   );
   groups["paceCaretStyle"] = new SettingsGroup(
     "paceCaretStyle",
     UpdateConfig.setPaceCaretStyle,
-    "button"
+    "button",
   );
   groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
-    "button"
+    "button",
   );
   groups["liveSpeedStyle"] = new SettingsGroup(
     "liveSpeedStyle",
     UpdateConfig.setLiveSpeedStyle,
-    "button"
+    "button",
   );
   groups["liveAccStyle"] = new SettingsGroup(
     "liveAccStyle",
     UpdateConfig.setLiveAccStyle,
-    "button"
+    "button",
   );
   groups["liveBurstStyle"] = new SettingsGroup(
     "liveBurstStyle",
     UpdateConfig.setLiveBurstStyle,
-    "button"
+    "button",
   );
   groups["highlightMode"] = new SettingsGroup(
     "highlightMode",
     UpdateConfig.setHighlightMode,
-    "button"
+    "button",
   );
   groups["tapeMode"] = new SettingsGroup(
     "tapeMode",
     UpdateConfig.setTapeMode,
-    "button"
+    "button",
   );
   groups["tapeMargin"] = new SettingsGroup(
     "tapeMargin",
     UpdateConfig.setTapeMargin,
     "input",
-    { validation: { schema: true, inputValueConvert: Number } }
+    { validation: { schema: true, inputValueConvert: Number } },
   );
   groups["timerOpacity"] = new SettingsGroup(
     "timerOpacity",
     UpdateConfig.setTimerOpacity,
-    "button"
+    "button",
   );
   groups["timerColor"] = new SettingsGroup(
     "timerColor",
     UpdateConfig.setTimerColor,
-    "button"
+    "button",
   );
   groups["fontFamily"] = new SettingsGroup(
     "fontFamily",
@@ -444,12 +445,12 @@ async function initGroups(): Promise<void> {
     {
       updateCallback: () => {
         const customButton = $(
-          ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']"
+          ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']",
         );
 
         if (
           $(
-            ".pageSettings .section[data-config-name='fontFamily'] .buttons .active"
+            ".pageSettings .section[data-config-name='fontFamily'] .buttons .active",
           ).length === 0
         ) {
           customButton.addClass("active");
@@ -458,22 +459,22 @@ async function initGroups(): Promise<void> {
           customButton.text("Custom");
         }
       },
-    }
+    },
   );
   groups["alwaysShowDecimalPlaces"] = new SettingsGroup(
     "alwaysShowDecimalPlaces",
     UpdateConfig.setAlwaysShowDecimalPlaces,
-    "button"
+    "button",
   );
   groups["typingSpeedUnit"] = new SettingsGroup(
     "typingSpeedUnit",
     UpdateConfig.setTypingSpeedUnit,
-    "button"
+    "button",
   );
   groups["customBackgroundSize"] = new SettingsGroup(
     "customBackgroundSize",
     UpdateConfig.setCustomBackgroundSize,
-    "button"
+    "button",
   );
 }
 
@@ -500,7 +501,7 @@ async function fillSettingsPage(): Promise<void> {
     data: [
       { text: "off", value: "default" },
       ...LayoutsList.filter((layout) => layout !== "korean").map(
-        layoutToOption
+        layoutToOption,
       ),
     ],
   });
@@ -536,7 +537,7 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   const funboxEl = document.querySelector(
-    ".pageSettings .section[data-config-name='funbox'] .buttons"
+    ".pageSettings .section[data-config-name='funbox'] .buttons",
   ) as HTMLDivElement;
   let funboxElHTML = "";
 
@@ -548,7 +549,7 @@ async function fillSettingsPage(): Promise<void> {
         funbox.description
       }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
         /_/g,
-        " "
+        " ",
       )}</button>`;
     } else if (funbox.name === "upside_down") {
       funboxElHTML += `<button class="funbox" data-funbox-name="upside_down" data-config-value='${
@@ -557,7 +558,7 @@ async function fillSettingsPage(): Promise<void> {
         funbox.description
       }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1); z-index:1;">${funbox.name.replace(
         /_/g,
-        " "
+        " ",
       )}</button>`;
     } else if (funbox.name === "underscore_spaces") {
       // Display as "underscore_spaces". Does not replace underscores with spaces.
@@ -569,14 +570,14 @@ async function fillSettingsPage(): Promise<void> {
         funbox.description
       }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
         /_/g,
-        " "
+        " ",
       )}</button>`;
     }
   }
   funboxEl.innerHTML = funboxElHTML;
 
   const fontsEl = document.querySelector(
-    ".pageSettings .section[data-config-name='fontFamily'] .buttons"
+    ".pageSettings .section[data-config-name='fontFamily'] .buttons",
   ) as HTMLDivElement;
 
   if (fontsEl.innerHTML === "") {
@@ -584,8 +585,8 @@ async function fillSettingsPage(): Promise<void> {
 
     for (const name of Misc.typedKeys(Fonts).sort((a, b) =>
       (Fonts[a].display ?? a.replace(/_/g, " ")).localeCompare(
-        Fonts[b].display ?? b.replace(/_/g, " ")
-      )
+        Fonts[b].display ?? b.replace(/_/g, " "),
+      ),
     )) {
       const font = Fonts[name];
       let fontFamily = name.replace(/_/g, " ");
@@ -612,7 +613,7 @@ async function fillSettingsPage(): Promise<void> {
     events: {
       afterChange: (newVal): void => {
         const customLayoutfluid = newVal.map(
-          (it) => it.value
+          (it) => it.value,
         ) as CustomLayoutFluid;
         //checking equal with order, because customLayoutfluid is ordered
         if (
@@ -628,7 +629,7 @@ async function fillSettingsPage(): Promise<void> {
     select: ".pageSettings .section[data-config-name='customPolyglot'] select",
     settings: { minSelected: 2 },
     data: getLanguageDropdownData((language) =>
-      Config.customPolyglot.includes(language)
+      Config.customPolyglot.includes(language),
     ),
     events: {
       afterChange: (newVal): void => {
@@ -643,21 +644,21 @@ async function fillSettingsPage(): Promise<void> {
 
   handleConfigInput({
     input: document.querySelector(
-      ".pageSettings .section[data-config-name='minWpm'] input"
+      ".pageSettings .section[data-config-name='minWpm'] input",
     ),
     configName: "minWpmCustomSpeed",
     validation: {
       schema: true,
       inputValueConvert: (it) =>
         getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-          new Number(it).valueOf()
+          new Number(it).valueOf(),
         ),
     },
   });
 
   handleConfigInput({
     input: document.querySelector(
-      ".pageSettings .section[data-config-name='minAcc'] input"
+      ".pageSettings .section[data-config-name='minAcc'] input",
     ),
     configName: "minAccCustom",
     validation: {
@@ -668,21 +669,21 @@ async function fillSettingsPage(): Promise<void> {
 
   handleConfigInput({
     input: document.querySelector(
-      ".pageSettings .section[data-config-name='minBurst'] input"
+      ".pageSettings .section[data-config-name='minBurst'] input",
     ),
     configName: "minBurstCustomSpeed",
     validation: {
       schema: true,
       inputValueConvert: (it) =>
         getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-          new Number(it).valueOf()
+          new Number(it).valueOf(),
         ),
     },
   });
 
   handleConfigInput({
     input: document.querySelector(
-      ".pageSettings .section[data-config-name='paceCaret'] input"
+      ".pageSettings .section[data-config-name='paceCaret'] input",
     ),
     configName: "paceCaretCustomSpeed",
     validation: {
@@ -693,7 +694,7 @@ async function fillSettingsPage(): Promise<void> {
 
   handleConfigInput({
     input: document.querySelector(
-      ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']"
+      ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']",
     ),
     configName: "customBackground",
     validation: {
@@ -725,7 +726,7 @@ function showAccountSection(): void {
 
 function setActiveFunboxButton(): void {
   const buttons = document.querySelectorAll(
-    `.pageSettings .section[data-config-name='funbox'] button`
+    `.pageSettings .section[data-config-name='funbox'] button`,
   );
 
   for (const button of buttons) {
@@ -763,8 +764,8 @@ function refreshTagsSettingsSection(): void {
         tag.name
       }" data-display="${tag.display}">
         <button class="tagButton ${tag.active ? "active" : ""}" active="${
-        tag.active
-      }">
+          tag.active
+        }">
           ${tag.display}
         </button>
         <button class="clearPbButton" aria-label="clear tags personal bests" data-balloon-pos="left" >
@@ -817,11 +818,11 @@ export async function updateFilterSectionVisibility(): Promise<void> {
 
   if (hasBackgroundUrl && isImageVisible) {
     $(
-      ".pageSettings .section[data-config-name='customBackgroundFilter']"
+      ".pageSettings .section[data-config-name='customBackgroundFilter']",
     ).removeClass("hidden");
   } else {
     $(
-      ".pageSettings .section[data-config-name='customBackgroundFilter']"
+      ".pageSettings .section[data-config-name='customBackgroundFilter']",
     ).addClass("hidden");
   }
 }
@@ -829,7 +830,7 @@ export async function updateFilterSectionVisibility(): Promise<void> {
 export async function update(
   options: {
     eventKey?: ConfigEvent.ConfigEventKey;
-  } = {}
+  } = {},
 ): Promise<void> {
   if (ActivePage.get() !== "settings") {
     return;
@@ -857,11 +858,12 @@ export async function update(
   await CustomBackgroundPicker.updateUI();
   await updateFilterSectionVisibility();
   await CustomFontPicker.updateUI();
+  FpsLimitSection.update();
 
   const setInputValue = (
     key: ConfigKey,
     query: string,
-    value: string | number
+    value: string | number,
   ): void => {
     if (options.eventKey === undefined || options.eventKey === key) {
       const element = document.querySelector(query) as HTMLInputElement;
@@ -878,68 +880,70 @@ export async function update(
     "paceCaret",
     ".pageSettings .section[data-config-name='paceCaret'] input.customPaceCaretSpeed",
     getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-      Config.paceCaretCustomSpeed
-    )
+      Config.paceCaretCustomSpeed,
+    ),
   );
 
   setInputValue(
     "minWpmCustomSpeed",
     ".pageSettings .section[data-config-name='minWpm'] input.customMinWpmSpeed",
-    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(Config.minWpmCustomSpeed)
+    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+      Config.minWpmCustomSpeed,
+    ),
   );
 
   setInputValue(
     "minAccCustom",
     ".pageSettings .section[data-config-name='minAcc'] input.customMinAcc",
-    Config.minAccCustom
+    Config.minAccCustom,
   );
 
   setInputValue(
     "minBurstCustomSpeed",
     ".pageSettings .section[data-config-name='minBurst'] input.customMinBurst",
     getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-      Config.minBurstCustomSpeed
-    )
+      Config.minBurstCustomSpeed,
+    ),
   );
 
   if (Config.autoSwitchTheme) {
     $(
-      ".pageSettings .section[data-config-name='autoSwitchThemeInputs']"
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs']",
     ).removeClass("hidden");
   } else {
     $(
-      ".pageSettings .section[data-config-name='autoSwitchThemeInputs']"
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs']",
     ).addClass("hidden");
   }
 
   setInputValue(
     "fontSize",
     ".pageSettings .section[data-config-name='fontSize'] input",
-    Config.fontSize
+    Config.fontSize,
   );
 
   setInputValue(
     "maxLineWidth",
     ".pageSettings .section[data-config-name='maxLineWidth'] input",
-    Config.maxLineWidth
+    Config.maxLineWidth,
   );
 
   setInputValue(
     "keymapSize",
     ".pageSettings .section[data-config-name='keymapSize'] input",
-    Config.keymapSize
+    Config.keymapSize,
   );
 
   setInputValue(
     "tapeMargin",
     ".pageSettings .section[data-config-name='tapeMargin'] input",
-    Config.tapeMargin
+    Config.tapeMargin,
   );
 
   setInputValue(
     "customBackground",
     ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']",
-    Config.customBackground
+    Config.customBackground,
   );
 
   if (isAuthenticated()) {
@@ -966,7 +970,7 @@ export async function update(
     //checking equal with order, because customLayoutFluid is ordered
     !areSortedArraysEqual(
       customLayoutFluidSelect.getSelected(),
-      Config.customLayoutfluid
+      Config.customLayoutfluid,
     )
   ) {
     //replace the data because the data is ordered. do not use setSelected
@@ -978,7 +982,7 @@ export async function update(
     //checking equal without order, because customPolyglot is not ordered
     !areUnsortedArraysEqual(
       customPolyglotSelect.getSelected(),
-      Config.customPolyglot
+      Config.customPolyglot,
     )
   ) {
     customPolyglotSelect.setSelected(Config.customPolyglot);
@@ -992,11 +996,11 @@ function toggleSettingsGroup(groupName: string): void {
   groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
   if (groupEl.hasClass("slideup")) {
     $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).addClass(
-      "rotateIcon"
+      "rotateIcon",
     );
   } else {
     $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
-      "rotateIcon"
+      "rotateIcon",
     );
   }
 }
@@ -1009,7 +1013,7 @@ $(".pageSettings .section[data-config-name='funbox'] .buttons").on(
     const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
     Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
-  }
+  },
 );
 
 //tags
@@ -1021,7 +1025,7 @@ $(".pageSettings .section.tags").on(
     const tagid = $(target).parent(".tag").attr("data-id") as string;
     TagController.toggle(tagid);
     $(target).toggleClass("active");
-  }
+  },
 );
 
 $(".pageSettings .section.presets").on(
@@ -1032,7 +1036,7 @@ $(".pageSettings .section.presets").on(
     const presetid = $(target).parent(".preset").attr("data-id") as string;
     await PresetController.apply(presetid);
     void update();
-  }
+  },
 );
 
 $("#importSettingsButton").on("click", () => {
@@ -1047,7 +1051,7 @@ $("#exportSettingsButton").on("click", () => {
     },
     function () {
       ImportExportSettingsModal.show("export");
-    }
+    },
   );
 });
 
@@ -1056,14 +1060,14 @@ $(".pageSettings .sectionGroupTitle").on("click", (e) => {
 });
 
 $(
-  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton button.save"
+  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton button.save",
 ).on("click", () => {
   const didConfigSave = UpdateConfig.setKeymapSize(
     parseFloat(
       $(
-        ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
-      ).val() as string
-    )
+        ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
+      ).val() as string,
+    ),
   );
   if (didConfigSave) {
     Notifications.add("Saved", 1, {
@@ -1073,14 +1077,14 @@ $(
 });
 
 $(
-  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
+  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
 ).on("focusout", () => {
   const didConfigSave = UpdateConfig.setKeymapSize(
     parseFloat(
       $(
-        ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
-      ).val() as string
-    )
+        ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
+      ).val() as string,
+    ),
   );
   if (didConfigSave) {
     Notifications.add("Saved", 1, {
@@ -1090,15 +1094,15 @@ $(
 });
 
 $(
-  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
+  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
 ).on("keypress", (e) => {
   if (e.key === "Enter") {
     const didConfigSave = UpdateConfig.setKeymapSize(
       parseFloat(
         $(
-          ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
-        ).val() as string
-      )
+          ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input",
+        ).val() as string,
+      ),
     );
     if (didConfigSave) {
       Notifications.add("Saved", 1, {
@@ -1111,7 +1115,7 @@ $(
 $(".pageSettings .quickNav .links a").on("click", (e) => {
   const settingsGroup = e.target.innerText;
   const isClosed = $(`.pageSettings .settingsGroup.${settingsGroup}`).hasClass(
-    "slideup"
+    "slideup",
   );
   if (isClosed) {
     toggleSettingsGroup(settingsGroup);
@@ -1124,7 +1128,7 @@ export function setEventDisabled(value: boolean): void {
 }
 
 function getLanguageDropdownData(
-  isActive: (val: Language) => boolean
+  isActive: (val: Language) => boolean,
 ): DataArrayPartial {
   return LanguageGroupNames.map(
     (group) =>
@@ -1135,7 +1139,7 @@ function getLanguageDropdownData(
           value: language,
           selected: isActive(language),
         })),
-      } as Optgroup)
+      }) as Optgroup,
   );
 }
 
@@ -1152,7 +1156,7 @@ function getLayoutfluidDropdownData(): DataArrayPartial {
 }
 
 function getThemeDropdownData(
-  isActive: (theme: Theme) => boolean
+  isActive: (theme: Theme) => boolean,
 ): DataArrayPartial {
   return ThemesList.map((theme) => ({
     value: theme.name,
@@ -1171,7 +1175,7 @@ function handleHighlightSection(highlight: Highlight | undefined): void {
   }
 
   const element = document.querySelector(
-    `[data-config-name="${highlight}"] .groupTitle,[data-section-id="${highlight}"] .groupTitle`
+    `[data-config-name="${highlight}"] .groupTitle,[data-section-id="${highlight}"] .groupTitle`,
   );
 
   if (element !== null) {
@@ -1209,11 +1213,11 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
   if (eventKey === "themeLight") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${eventValue}"]`
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${eventValue}"]`,
     ).attr("selected", "true");
   } else if (eventKey === "themeDark") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${eventValue}"]`
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${eventValue}"]`,
     ).attr("selected", "true");
   }
   //make sure the page doesnt update a billion times when applying a preset/config at once

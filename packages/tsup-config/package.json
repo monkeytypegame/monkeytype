@@ -15,8 +15,8 @@
   "devDependencies": {
     "@monkeytype/typescript-config": "workspace:*",
     "eslint": "8.57.1",
-    "oxlint": "1.25.0",
-    "typescript": "5.5.4"
+    "oxlint": "1.29.0",
+    "typescript": "5.9.3"
   },
   "exports": {
     ".": {

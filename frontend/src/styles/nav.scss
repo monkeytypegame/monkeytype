@@ -69,7 +69,6 @@ nav {
       }
 
       .level {
-        transition: 0.125s;
         width: max-content;
         font-size: 0.65em;
         line-height: 0.65em;
@@ -297,7 +296,9 @@ header {
         font-size: 0.325em;
         line-height: 0.325em;
         color: var(--sub-color);
-        transition: color 0.125s, opacity 0.125s;
+        transition:
+          color 0.125s,
+          opacity 0.125s;
       }
       position: relative;
       font-size: 2rem;
@@ -340,7 +341,9 @@ header {
     }
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
+      box-shadow:
+        0 0 0 0.1rem var(--bg-color),
+        0 0 0 0.2rem var(--text-color);
       border-radius: var(--roundness);
       .text .top {
         opacity: 0;

@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import * as ConnectionsDal from "../../dal/connections";
@@ -27,9 +26,10 @@ import {
   MILLISECONDS_IN_DAY,
 } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
+import { omit } from "../../utils/misc";
 
 export async function getLeaderboard(
-  req: MonkeyRequest<GetLeaderboardQuery>
+  req: MonkeyRequest<GetLeaderboardQuery>,
 ): Promise<GetLeaderboardResponse> {
   const { language, mode, mode2, page, pageSize, friendsOnly } = req.query;
   const { uid } = req.ctx.decodedToken;
@@ -43,11 +43,7 @@ export async function getLeaderboard(
     throw new MonkeyError(404, "There is no leaderboard for this mode");
   }
 
-  const friendUids = await getFriendsUids(
-    uid,
-    friendsOnly === true,
-    connectionsConfig
-  );
+  const friendsOnlyUid = getFriendsOnlyUid(uid, friendsOnly, connectionsConfig);
 
   const leaderboard = await LeaderboardsDAL.get(
     mode,
@@ -56,13 +52,13 @@ export async function getLeaderboard(
     page,
     pageSize,
     req.ctx.configuration.users.premium.enabled,
-    friendUids
+    friendsOnlyUid,
   );
 
   if (leaderboard === false) {
     throw new MonkeyError(
       503,
-      "Leaderboard is currently updating. Please try again in a few seconds."
+      "Leaderboard is currently updating. Please try again in a few seconds.",
     );
   }
 
@@ -70,9 +66,9 @@ export async function getLeaderboard(
     mode,
     mode2,
     language,
-    friendUids
+    friendsOnlyUid,
   );
-  const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
+  const normalizedLeaderboard = leaderboard.map((it) => omit(it, ["_id"]));
 
   return new MonkeyResponse("Leaderboard retrieved", {
     count,
@@ -82,38 +78,35 @@ export async function getLeaderboard(
 }
 
 export async function getRankFromLeaderboard(
-  req: MonkeyRequest<GetLeaderboardRankQuery>
+  req: MonkeyRequest<GetLeaderboardRankQuery>,
 ): Promise<GetLeaderboardRankResponse> {
   const { language, mode, mode2, friendsOnly } = req.query;
   const { uid } = req.ctx.decodedToken;
   const connectionsConfig = req.ctx.configuration.connections;
-
-  const friendUids = await getFriendsUids(
-    uid,
-    friendsOnly === true,
-    connectionsConfig
-  );
 
   const data = await LeaderboardsDAL.getRank(
     mode,
     mode2,
     language,
     uid,
-    friendUids
+    getFriendsOnlyUid(uid, friendsOnly, connectionsConfig) !== undefined,
   );
   if (data === false) {
     throw new MonkeyError(
       503,
-      "Leaderboard is currently updating. Please try again in a few seconds."
+      "Leaderboard is currently updating. Please try again in a few seconds.",
     );
   }
 
-  return new MonkeyResponse("Rank retrieved", _.omit(data, "_id"));
+  return new MonkeyResponse(
+    "Rank retrieved",
+    omit(data as LeaderboardsDAL.DBLeaderboardEntry, ["_id"]),
+  );
 }
 
 function getDailyLeaderboardWithError(
   { language, mode, mode2, daysBefore }: DailyLeaderboardQuery,
-  config: Configuration["dailyLeaderboards"]
+  config: Configuration["dailyLeaderboards"],
 ): DailyLeaderboards.DailyLeaderboard {
   const customTimestamp =
     daysBefore === undefined
@@ -125,7 +118,7 @@ function getDailyLeaderboardWithError(
     mode,
     mode2,
     config,
-    customTimestamp
+    customTimestamp,
   );
   if (!dailyLeaderboard) {
     throw new MonkeyError(404, "There is no daily leaderboard for this mode");
@@ -135,49 +128,61 @@ function getDailyLeaderboardWithError(
 }
 
 export async function getDailyLeaderboard(
-  req: MonkeyRequest<GetDailyLeaderboardQuery>
+  req: MonkeyRequest<GetDailyLeaderboardQuery>,
 ): Promise<GetDailyLeaderboardResponse> {
-  const { page, pageSize } = req.query;
+  const { page, pageSize, friendsOnly } = req.query;
+  const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const friendUids = await getFriendsUids(
+    uid,
+    friendsOnly === true,
+    connectionsConfig,
+  );
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
     req.query,
-    req.ctx.configuration.dailyLeaderboards
+    req.ctx.configuration.dailyLeaderboards,
   );
 
   const results = await dailyLeaderboard.getResults(
     page,
     pageSize,
     req.ctx.configuration.dailyLeaderboards,
-    req.ctx.configuration.users.premium.enabled
+    req.ctx.configuration.users.premium.enabled,
+    friendUids,
   );
-
-  const minWpm = await dailyLeaderboard.getMinWpm(
-    req.ctx.configuration.dailyLeaderboards
-  );
-
-  const count = await dailyLeaderboard.getCount();
 
   return new MonkeyResponse("Daily leaderboard retrieved", {
-    entries: results,
-    minWpm,
-    count,
+    entries: results?.entries ?? [],
+    count: results?.count ?? 0,
+    minWpm: results?.minWpm ?? 0,
     pageSize,
   });
 }
 
 export async function getDailyLeaderboardRank(
-  req: MonkeyRequest<GetDailyLeaderboardRankQuery>
+  req: MonkeyRequest<GetDailyLeaderboardRankQuery>,
 ): Promise<GetLeaderboardDailyRankResponse> {
+  const { friendsOnly } = req.query;
   const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const friendUids = await getFriendsUids(
+    uid,
+    friendsOnly === true,
+    connectionsConfig,
+  );
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
     req.query,
-    req.ctx.configuration.dailyLeaderboards
+    req.ctx.configuration.dailyLeaderboards,
   );
 
   const rank = await dailyLeaderboard.getRank(
     uid,
-    req.ctx.configuration.dailyLeaderboards
+    req.ctx.configuration.dailyLeaderboards,
+    friendUids,
   );
 
   return new MonkeyResponse("Daily leaderboard rank retrieved", rank);
@@ -185,7 +190,7 @@ export async function getDailyLeaderboardRank(
 
 function getWeeklyXpLeaderboardWithError(
   config: Configuration["leaderboards"]["weeklyXp"],
-  weeksBefore?: number
+  weeksBefore?: number,
 ): WeeklyXpLeaderboard.WeeklyXpLeaderboard {
   const customTimestamp =
     weeksBefore === undefined
@@ -200,43 +205,60 @@ function getWeeklyXpLeaderboardWithError(
   return weeklyXpLeaderboard;
 }
 
-export async function getWeeklyXpLeaderboardResults(
-  req: MonkeyRequest<GetWeeklyXpLeaderboardQuery>
+export async function getWeeklyXpLeaderboard(
+  req: MonkeyRequest<GetWeeklyXpLeaderboardQuery>,
 ): Promise<GetWeeklyXpLeaderboardResponse> {
-  const { page, pageSize, weeksBefore } = req.query;
+  const { page, pageSize, weeksBefore, friendsOnly } = req.query;
+
+  const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const friendUids = await getFriendsUids(
+    uid,
+    friendsOnly === true,
+    connectionsConfig,
+  );
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
     req.ctx.configuration.leaderboards.weeklyXp,
-    weeksBefore
+    weeksBefore,
   );
   const results = await weeklyXpLeaderboard.getResults(
     page,
     pageSize,
     req.ctx.configuration.leaderboards.weeklyXp,
-    req.ctx.configuration.users.premium.enabled
+    req.ctx.configuration.users.premium.enabled,
+    friendUids,
   );
 
-  const count = await weeklyXpLeaderboard.getCount();
-
   return new MonkeyResponse("Weekly xp leaderboard retrieved", {
-    entries: results,
-    count,
+    entries: results?.entries ?? [],
+    count: results?.count ?? 0,
     pageSize,
   });
 }
 
 export async function getWeeklyXpLeaderboardRank(
-  req: MonkeyRequest<GetWeeklyXpLeaderboardRankQuery>
+  req: MonkeyRequest<GetWeeklyXpLeaderboardRankQuery>,
 ): Promise<GetWeeklyXpLeaderboardRankResponse> {
+  const { friendsOnly } = req.query;
   const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const friendUids = await getFriendsUids(
+    uid,
+    friendsOnly === true,
+    connectionsConfig,
+  );
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
     req.ctx.configuration.leaderboards.weeklyXp,
-    req.query.weeksBefore
+    req.query.weeksBefore,
   );
   const rankEntry = await weeklyXpLeaderboard.getRank(
     uid,
-    req.ctx.configuration.leaderboards.weeklyXp
+    req.ctx.configuration.leaderboards.weeklyXp,
+    friendUids,
   );
 
   return new MonkeyResponse("Weekly xp leaderboard rank retrieved", rankEntry);
@@ -245,13 +267,27 @@ export async function getWeeklyXpLeaderboardRank(
 async function getFriendsUids(
   uid: string,
   friendsOnly: boolean,
-  friendsConfig: Configuration["connections"]
+  friendsConfig: Configuration["connections"],
 ): Promise<string[] | undefined> {
   if (uid !== "" && friendsOnly) {
     if (!friendsConfig.enabled) {
       throw new MonkeyError(503, "This feature is currently unavailable.");
     }
     return await ConnectionsDal.getFriendsUids(uid);
+  }
+  return undefined;
+}
+
+function getFriendsOnlyUid(
+  uid: string,
+  friendsOnly: boolean | undefined,
+  friendsConfig: Configuration["connections"],
+): string | undefined {
+  if (uid !== "" && friendsOnly === true) {
+    if (!friendsConfig.enabled) {
+      throw new MonkeyError(503, "This feature is currently unavailable.");
+    }
+    return uid;
   }
   return undefined;
 }
