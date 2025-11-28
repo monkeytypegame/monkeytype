@@ -589,7 +589,7 @@
 }
 
 #wordsInput {
-  width: 1ch;
+  width: 0;
   font-size: 1em;
   height: 1em;
   opacity: 0;
@@ -628,6 +628,22 @@
 
   i {
     margin-right: 0.5rem;
+  }
+}
+
+.pageTest > .loading {
+  text-align: center;
+  & > i {
+    font-size: 2rem;
+    color: var(--main-color);
+  }
+  opacity: 0;
+  &:not(.hidden) {
+    animation-name: fadeIn;
+    animation-duration: 0.125s;
+    animation-delay: 0.5s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease;
   }
 }
 

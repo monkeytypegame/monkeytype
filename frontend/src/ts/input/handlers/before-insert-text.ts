@@ -8,6 +8,7 @@ import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
+import * as SlowTimer from "../../states/slow-timer";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -67,14 +68,12 @@ export function onBeforeInsertText(data: string): boolean {
 
   // prevent the word from jumping to the next line if the word is too long
   // this will not work for the first word of each line, but that has a low chance of happening
-  // make sure to only check this when necessary (hide extra letters is off or input is longer than word)
-  // because this check is expensive (causes layout reflows)
-
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
     TestInput.input.current.length >= TestWords.words.getCurrent().length;
 
   if (
+    !SlowTimer.get() && // don't do this check if slow timer is active
     dataIsNotFalsy &&
     !Config.blindMode &&
     !Config.hideExtraLetters &&
@@ -82,7 +81,16 @@ export function onBeforeInsertText(data: string): boolean {
     (shouldInsertSpaceAsCharacter === true || !dataIsSpace) &&
     Config.mode !== "zen"
   ) {
-    const topAfterAppend = TestUI.getActiveWordTopAfterAppend(data);
+    // make sure to only check this when really necessary
+    // because this check is expensive (causes layout reflows)
+
+    // if there is pending word data, wwe need to account for that
+    const pendingWordData = TestUI.pendingWordData.get(
+      TestState.activeWordIndex,
+    );
+    const topAfterAppend = TestUI.getActiveWordTopWithDifferentData(
+      (pendingWordData ?? TestInput.input.current) + data,
+    );
     const wordJumped = topAfterAppend > TestUI.activeWordTop;
     if (wordJumped) {
       return true;

@@ -219,11 +219,6 @@ function toggleReplayDisplay(): void {
 }
 
 function startReplayRecording(): void {
-  if (!$("#resultReplay").stop(true, true).hasClass("hidden")) {
-    //hide replay display if user left it open
-    toggleReplayDisplay();
-  }
-  $("#replayStats").text("");
   replayData = [];
   replayStartTime = performance.now();
   replayRecording = true;
