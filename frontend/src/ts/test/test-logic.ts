@@ -934,7 +934,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestState.setRepeated(false);
   }
 
-  await Misc.sleep(1); //this is needed to make sure the last keypress is registered
   if (TestInput.input.current.length !== 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
