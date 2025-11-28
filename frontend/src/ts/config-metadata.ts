@@ -463,7 +463,7 @@ export const configMetadata: ConfigMetadataObject = {
   // appearance
   timerStyle: {
     icon: "fa-chart-pie",
-    displayString: "timer style",
+    displayString: "live progress style",
     changeRequiresRestart: false,
   },
   liveSpeedStyle: {
