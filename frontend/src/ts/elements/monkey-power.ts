@@ -2,6 +2,7 @@ import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import Config from "../config";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import { ElementWithUtils, qsr } from "../utils/dom";
 
 type Particle = {
   x: number;
@@ -14,7 +15,7 @@ type Particle = {
 
 type CTX = {
   particles: Particle[];
-  caret?: JQuery;
+  caret?: ElementWithUtils;
   canvas?: HTMLCanvasElement;
   context2d?: CanvasRenderingContext2D;
   rendering: boolean;
@@ -118,7 +119,7 @@ function updateParticle(particle: Particle): void {
 }
 
 export function init(): void {
-  ctx.caret = $("#caret");
+  ctx.caret = qsr("#caret");
   ctx.canvas = createCanvas();
   ctx.context2d = ctx.canvas.getContext("2d") as CanvasRenderingContext2D;
 }
@@ -168,14 +169,14 @@ export function reset(immediate = false): void {
   delete ctx.resetTimeOut;
 
   clearTimeout(ctx.resetTimeOut);
-  const body = $(document.body);
-  body.css("transition", "all .25s, transform 0.8s");
-  body.css("transform", `translate(0,0)`);
+  const body = qsr("body");
+  body.setStyle({ transition: "all .25s, transform 0.8s" });
+  body.setStyle({ transform: `translate(0,0)` });
   setTimeout(
     () => {
-      body.css("transition", "all .25s, transform .05s");
-      $("html").css("overflow", "inherit");
-      $("html").css("overflow-y", "scroll");
+      body.setStyle({ transition: "all .25s, transform .05s" });
+      qsr("html").setStyle({ overflow: "inherit" });
+      qsr("html").setStyle({ overflowY: "scroll" });
     },
     immediate ? 0 : 1000,
   );
@@ -205,15 +206,14 @@ export async function addPower(good = true, extra = false): Promise<void> {
 
   // Shake
   if (["3", "4"].includes(Config.monkeyPowerLevel)) {
-    $("html").css("overflow", "hidden");
+    qsr("html").setStyle({ overflow: "hidden" });
     const shake = [
       Math.round(shakeAmount - Math.random() * shakeAmount),
       Math.round(shakeAmount - Math.random() * shakeAmount),
     ];
-    $(document.body).css(
-      "transform",
-      `translate(${shake[0]}px, ${shake[1]}px)`,
-    );
+    qsr("body").setStyle({
+      transform: `translate(${shake[0]}px, ${shake[1]}px)`,
+    });
     if (isSafeNumber(ctx.resetTimeOut)) clearTimeout(ctx.resetTimeOut);
     ctx.resetTimeOut = setTimeout(reset, 2000) as unknown as number;
   }
@@ -222,7 +222,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
   const offset = ctx.caret?.offset();
   const coords = [
     offset?.left ?? 0,
-    (offset?.top ?? 0) + (ctx.caret?.height() ?? 0),
+    (offset?.top ?? 0) + (ctx.caret?.native.offsetHeight ?? 0),
   ];
 
   for (
