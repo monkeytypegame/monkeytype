@@ -111,6 +111,7 @@ type SimpleModalOptions = {
   onlineOnly?: boolean;
   hideCallsExec?: boolean;
   showLabels?: boolean;
+  afterClickAway?: () => void;
 };
 
 export class SimpleModal {
@@ -131,6 +132,7 @@ export class SimpleModal {
   onlineOnly: boolean;
   hideCallsExec: boolean;
   showLabels: boolean;
+  afterClickAway: (() => void) | undefined;
   constructor(options: SimpleModalOptions) {
     this.parameters = [];
     this.id = options.id;
@@ -149,6 +151,7 @@ export class SimpleModal {
     this.onlineOnly = options.onlineOnly ?? false;
     this.hideCallsExec = options.hideCallsExec ?? false;
     this.showLabels = options.showLabels ?? false;
+    this.afterClickAway = options.afterClickAway;
   }
   reset(): void {
     this.element.innerHTML = `
@@ -480,6 +483,7 @@ const modal = new AnimatedModal({
     hide();
   },
   customWrapperClickHandler: (e): void => {
+    activePopup?.afterClickAway?.();
     hide();
   },
 });
