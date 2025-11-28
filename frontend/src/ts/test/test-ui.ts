@@ -626,14 +626,13 @@ export async function centerActiveLine(): Promise<void> {
 export function updateWordsWrapperHeight(force = false): void {
   if (ActivePage.get() !== "test" || TestState.resultVisible) return;
   if (!force && Config.mode !== "custom") return;
-  const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
   const outOfFocusEl = document.querySelector(
     ".outOfFocusWarning",
   ) as HTMLElement;
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
 
-  wrapperEl.classList.remove("hidden");
+  wordsWrapperEl.classList.remove("hidden");
 
   const wordComputedStyle = window.getComputedStyle(activeWordEl);
   const wordMargin =
@@ -650,10 +649,10 @@ export function updateWordsWrapperHeight(force = false): void {
 
   if (showAllLines) {
     //allow the wrapper to grow and shink with the words
-    wrapperEl.style.height = "";
+    wordsWrapperEl.style.height = "";
   } else if (Config.mode === "zen") {
     //zen mode, showAllLines off
-    wrapperEl.style.height = wordHeight * 2 + "px";
+    wordsWrapperEl.style.height = wordHeight * 2 + "px";
   } else {
     if (Config.tapeMode === "off") {
       //tape off, showAllLines off, non-zen mode
@@ -677,14 +676,14 @@ export function updateWordsWrapperHeight(force = false): void {
       if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
 
       //limit to 3 lines
-      wrapperEl.style.height = wrapperHeight + "px";
+      wordsWrapperEl.style.height = wrapperHeight + "px";
     } else {
       //show 3 lines if tape mode is on and has newlines, otherwise use words height (because of indicate typos: below)
       if (TestWords.hasNewline) {
-        wrapperEl.style.height = wordHeight * 3 + "px";
+        wordsWrapperEl.style.height = wordHeight * 3 + "px";
       } else {
         const wordsHeight = wordsEl.offsetHeight ?? wordHeight;
-        wrapperEl.style.height = wordsHeight + "px";
+        wordsWrapperEl.style.height = wordsHeight + "px";
       }
     }
   }
@@ -696,8 +695,6 @@ function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
     void scrollTape(true);
   } else {
-    $(wordsEl).stop(true, false);
-
     const afterNewlineEls =
       wordsEl.querySelectorAll<HTMLElement>(".afterNewline");
     wordsEl.style.marginLeft = `0`;
