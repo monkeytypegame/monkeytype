@@ -8,7 +8,7 @@ import { animate, EasingParam, JSAnimation } from "animejs";
 
 const wordsCache = document.querySelector<HTMLElement>("#words") as HTMLElement;
 const wordsWrapperCache = document.querySelector<HTMLElement>(
-  "#wordsWrapper"
+  "#wordsWrapper",
 ) as HTMLElement;
 
 let lockedMainCaretInTape = true;
@@ -55,7 +55,16 @@ export class Caret {
     this.style = style;
     this.element.style.width = "";
     this.element.classList.remove(
-      ...["off", "default", "underline", "outline", "block", "carrot", "banana"]
+      ...[
+        "off",
+        "default",
+        "underline",
+        "outline",
+        "block",
+        "carrot",
+        "banana",
+        "monkey",
+      ],
     );
     this.element.classList.add(style);
   }
@@ -235,12 +244,12 @@ export class Caret {
       Config.smoothCaret === "off"
         ? 0
         : Config.smoothCaret === "slow"
-        ? 150
-        : Config.smoothCaret === "medium"
-        ? 100
-        : Config.smoothCaret === "fast"
-        ? 85
-        : 0;
+          ? 150
+          : Config.smoothCaret === "medium"
+            ? 100
+            : Config.smoothCaret === "fast"
+              ? 85
+              : 0;
 
     const finalDuration = options.duration ?? smoothCaretSpeed;
 
@@ -274,7 +283,7 @@ export class Caret {
     if (this.style === "off") return;
     requestDebouncedAnimationFrame(`caret.${this.id}.goTo`, () => {
       const word = wordsCache.querySelector<HTMLElement>(
-        `.word[data-wordindex="${options.wordIndex}"]`
+        `.word[data-wordindex="${options.wordIndex}"]`,
       );
       const letters = word?.querySelectorAll<HTMLElement>("letter") ?? [];
       const wordText = TestWords.words.get(options.wordIndex);
@@ -391,7 +400,7 @@ export class Caret {
     const isWordRTL = isWordRightToLeft(
       options.wordText,
       options.isLanguageRightToLeft,
-      options.isDirectionReversed
+      options.isDirectionReversed,
     );
 
     //if the letter is not visible, use the closest visible letter

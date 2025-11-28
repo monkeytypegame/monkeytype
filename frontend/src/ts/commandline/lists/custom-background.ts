@@ -58,7 +58,7 @@ const customBackgroundCommand: Command = {
               } catch (e) {
                 Notifications.add(
                   "Error uploading background: " + (e as Error).message,
-                  0
+                  0,
                 );
               }
               cleanup();
@@ -85,7 +85,7 @@ const customBackgroundCommand: Command = {
           } catch (e) {
             Notifications.add(
               "Error removing background: " + (e as Error).message,
-              0
+              0,
             );
           }
         },

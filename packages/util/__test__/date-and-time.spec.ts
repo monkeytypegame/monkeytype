@@ -100,7 +100,7 @@ describe("date-and-time", () => {
 
     testCases.forEach(({ input, offset, expected }) => {
       expect(
-        DateAndTime.getStartOfDayTimestamp(input, offset * 3600000)
+        DateAndTime.getStartOfDayTimestamp(input, offset * 3600000),
       ).toEqual(expected);
     });
   });

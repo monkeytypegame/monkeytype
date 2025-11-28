@@ -7,6 +7,7 @@ import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { capitalizeFirstLetter } from "./utils/strings";
+import { getDefaultConfig } from "./constants/default-config";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -266,9 +267,9 @@ export const configMetadata: ConfigMetadataObject = {
       if (!checkCompatibility(value)) {
         Notifications.add(
           `${capitalizeFirstLetter(
-            value.join(", ")
+            value.join(", "),
           )} is an invalid combination of funboxes`,
-          0
+          0,
         );
         return true;
       }
@@ -277,7 +278,7 @@ export const configMetadata: ConfigMetadataObject = {
         if (!canSetFunboxWithConfig(funbox, currentConfig)) {
           Notifications.add(
             `${value}" cannot be enabled with the current config`,
-            0
+            0,
           );
           return true;
         }
@@ -427,7 +428,7 @@ export const configMetadata: ConfigMetadataObject = {
         if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
           Notifications.add(
             `Pace caret "pb" and "tag pb" are unavailable without an account`,
-            0
+            0,
           );
           return true;
         }
@@ -665,21 +666,21 @@ export const configMetadata: ConfigMetadataObject = {
         if (!isAuthenticated()) {
           Notifications.add(
             "Random theme 'custom' is unavailable without an account",
-            0
+            0,
           );
           return true;
         }
         if (!snapshot) {
           Notifications.add(
             "Random theme 'custom' requires a snapshot to be set",
-            0
+            0,
           );
           return true;
         }
         if (snapshot?.customThemes?.length === 0) {
           Notifications.add(
             "Random theme 'custom' requires at least one custom theme to be saved",
-            0
+            0,
           );
           return true;
         }
@@ -710,6 +711,14 @@ export const configMetadata: ConfigMetadataObject = {
     icon: "fa-palette",
     displayString: "custom theme colors",
     changeRequiresRestart: false,
+    overrideValue: ({ value }) => {
+      const allColorsThesame = value.every((color) => color === value[0]);
+      if (allColorsThesame) {
+        return getDefaultConfig().customThemeColors;
+      } else {
+        return value;
+      }
+    },
   },
 
   // hide elements
@@ -731,6 +740,11 @@ export const configMetadata: ConfigMetadataObject = {
   showAverage: {
     icon: "fa-chart-bar",
     displayString: "show average",
+    changeRequiresRestart: false,
+  },
+  showPb: {
+    icon: "fa-crown",
+    displayString: "show personal best",
     changeRequiresRestart: false,
   },
 

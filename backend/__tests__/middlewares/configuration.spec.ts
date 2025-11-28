@@ -45,7 +45,7 @@ describe("configuration middleware", () => {
     //GIVEN
     const req = givenRequest(
       { path: "users.xp.streak.enabled" },
-      { users: { xp: { streak: { enabled: true } as any } as any } as any }
+      { users: { xp: { streak: { enabled: true } as any } as any } as any },
     );
 
     //WHEN
@@ -64,15 +64,15 @@ describe("configuration middleware", () => {
     //THEN
     expect(next).toHaveBeenCalledWith(
       expect.toMatchMonkeyError(
-        new MonkeyError(503, "This endpoint is currently unavailable.")
-      )
+        new MonkeyError(503, "This endpoint is currently unavailable."),
+      ),
     );
   });
   it("should fail for disabled configuration and custom message", async () => {
     //GIVEN
     const req = givenRequest(
       { path: "maintenance", invalidMessage: "Feature not enabled." },
-      { maintenance: false }
+      { maintenance: false },
     );
 
     //WHEN
@@ -80,7 +80,7 @@ describe("configuration middleware", () => {
 
     //THEN
     expect(next).toHaveBeenCalledWith(
-      expect.toMatchMonkeyError(new MonkeyError(503, "Feature not enabled."))
+      expect.toMatchMonkeyError(new MonkeyError(503, "Feature not enabled.")),
     );
   });
   it("should fail for invalid path", async () => {
@@ -93,15 +93,15 @@ describe("configuration middleware", () => {
     //THEN
     expect(next).toHaveBeenCalledWith(
       expect.toMatchMonkeyError(
-        new MonkeyError(500, 'Invalid configuration path: "invalid.path"')
-      )
+        new MonkeyError(500, 'Invalid configuration path: "invalid.path"'),
+      ),
     );
   });
   it("should fail for undefined value", async () => {
     //GIVEN
     const req = givenRequest(
       { path: "admin.endpointsEnabled" },
-      { admin: {} as any }
+      { admin: {} as any },
     );
 
     //WHEN
@@ -112,16 +112,16 @@ describe("configuration middleware", () => {
       expect.toMatchMonkeyError(
         new MonkeyError(
           500,
-          'Required configuration doesnt exist: "admin.endpointsEnabled"'
-        )
-      )
+          'Required configuration doesnt exist: "admin.endpointsEnabled"',
+        ),
+      ),
     );
   });
   it("should fail for null value", async () => {
     //GIVEN
     const req = givenRequest(
       { path: "admin.endpointsEnabled" },
-      { admin: { endpointsEnabled: null as any } }
+      { admin: { endpointsEnabled: null as any } },
     );
 
     //WHEN
@@ -132,16 +132,16 @@ describe("configuration middleware", () => {
       expect.toMatchMonkeyError(
         new MonkeyError(
           500,
-          'Required configuration doesnt exist: "admin.endpointsEnabled"'
-        )
-      )
+          'Required configuration doesnt exist: "admin.endpointsEnabled"',
+        ),
+      ),
     );
   });
   it("should fail for non booean value", async () => {
     //GIVEN
     const req = givenRequest(
       { path: "admin.endpointsEnabled" },
-      { admin: { endpointsEnabled: "disabled" as any } }
+      { admin: { endpointsEnabled: "disabled" as any } },
     );
 
     //WHEN
@@ -152,16 +152,16 @@ describe("configuration middleware", () => {
       expect.toMatchMonkeyError(
         new MonkeyError(
           500,
-          'Required configuration is not a boolean: "admin.endpointsEnabled"'
-        )
-      )
+          'Required configuration is not a boolean: "admin.endpointsEnabled"',
+        ),
+      ),
     );
   });
   it("should pass for multiple configurations", async () => {
     //GIVEN
     const req = givenRequest(
       [{ path: "maintenance" }, { path: "admin.endpointsEnabled" }],
-      { maintenance: true, admin: { endpointsEnabled: true } }
+      { maintenance: true, admin: { endpointsEnabled: true } },
     );
 
     //WHEN
@@ -177,7 +177,7 @@ describe("configuration middleware", () => {
         { path: "maintenance", invalidMessage: "maintenance mode" },
         { path: "admin.endpointsEnabled", invalidMessage: "admin disabled" },
       ],
-      { maintenance: true, admin: { endpointsEnabled: false } }
+      { maintenance: true, admin: { endpointsEnabled: false } },
     );
 
     //WHEN
@@ -185,14 +185,14 @@ describe("configuration middleware", () => {
 
     //THEN
     expect(next).toHaveBeenCalledWith(
-      expect.toMatchMonkeyError(new MonkeyError(503, "admin disabled"))
+      expect.toMatchMonkeyError(new MonkeyError(503, "admin disabled")),
     );
   });
 });
 
 function givenRequest(
   requireConfiguration: RequireConfiguration | RequireConfiguration[],
-  configuration: Partial<Configuration>
+  configuration: Partial<Configuration>,
 ): TsRestRequest {
   return {
     tsRestRoute: { metadata: { requireConfiguration } },

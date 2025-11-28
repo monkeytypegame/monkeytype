@@ -49,10 +49,10 @@ $(".pageTest").on("click", "#testConfig .shareButton", (e) => {
 $(".pageTest").on("click", ".tags .editTagsButton", () => {
   if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
     const resultid = $(".pageTest .tags .editTagsButton").attr(
-      "data-result-id"
+      "data-result-id",
     ) as string;
     const activeTagIds = $(".pageTest .tags .editTagsButton").attr(
-      "data-active-tag-ids"
+      "data-active-tag-ids",
     ) as string;
     const tags = activeTagIds === "" ? [] : activeTagIds.split(",");
     EditResultTagsModal.show(resultid, tags, "resultPage");
@@ -102,7 +102,7 @@ $(".pageTest #dailyLeaderboardRank").on("click", async () => {
   void navigate(
     `/leaderboards?type=daily&language=${Config.language}&mode2=${getMode2(
       Config,
-      null
-    )}&goToUserPage=true`
+      null,
+    )}&goToUserPage=true`,
   );
 });

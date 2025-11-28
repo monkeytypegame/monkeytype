@@ -10,7 +10,7 @@ import * as AuthUtils from "../../src/utils/auth";
 
 export async function mockAuthenticateWithApeKey(
   uid: string,
-  config: Configuration
+  config: Configuration,
 ): Promise<string> {
   if (!config.apeKeys.acceptKeys)
     throw Error("config.apeKeys.acceptedKeys needs to be set to true");

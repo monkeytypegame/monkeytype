@@ -16,8 +16,17 @@ import { LayoutObject } from "@monkeytype/schemas/layouts";
 type FilterPreset = {
   display: string;
   getIncludeString: (layout: LayoutObject) => string[][];
-  getExcludeString: (layout: LayoutObject) => string[][];
-};
+} & (
+  | {
+      exactMatch: true;
+    }
+  | {
+      exactMatch?: false;
+      getExcludeString?: (layout: LayoutObject) => string[][];
+    }
+);
+
+const exactMatchCheckbox = $("#wordFilterModal #exactMatchOnly");
 
 const presets: Record<string, FilterPreset> = {
   homeKeys: {
@@ -27,13 +36,7 @@ const presets: Record<string, FilterPreset> = {
       const homeKeysRight = layout.keys.row3.slice(6, 10);
       return [...homeKeysLeft, ...homeKeysRight];
     },
-    getExcludeString: (layout) => {
-      const topRow = layout.keys.row2;
-      const bottomRow = layout.keys.row4;
-      const homeRowRight = layout.keys.row3.slice(10);
-      const homeRowMiddle = layout.keys.row3.slice(4, 6);
-      return [...topRow, ...homeRowMiddle, ...homeRowRight, ...bottomRow];
-    },
+    exactMatch: true,
   },
   leftHand: {
     display: "left hand",
@@ -43,12 +46,7 @@ const presets: Record<string, FilterPreset> = {
       const bottomRowInclude = layout.keys.row4.slice(0, 5);
       return [...topRowInclude, ...homeRowInclude, ...bottomRowInclude];
     },
-    getExcludeString: (layout) => {
-      const topRowExclude = layout.keys.row2.slice(5);
-      const homeRowExclude = layout.keys.row3.slice(5);
-      const bottomRowExclude = layout.keys.row4.slice(5);
-      return [...topRowExclude, ...homeRowExclude, ...bottomRowExclude];
-    },
+    exactMatch: true,
   },
   rightHand: {
     display: "right hand",
@@ -58,45 +56,28 @@ const presets: Record<string, FilterPreset> = {
       const bottomRowInclude = layout.keys.row4.slice(4);
       return [...topRowInclude, ...homeRowInclude, ...bottomRowInclude];
     },
-    getExcludeString: (layout) => {
-      const topRowExclude = layout.keys.row2.slice(0, 5);
-      const homeRowExclude = layout.keys.row3.slice(0, 5);
-      const bottomRowExclude = layout.keys.row4.slice(0, 4);
-      return [...topRowExclude, ...homeRowExclude, ...bottomRowExclude];
-    },
+    exactMatch: true,
   },
   homeRow: {
     display: "home row",
     getIncludeString: (layout) => {
       return layout.keys.row3;
     },
-    getExcludeString: (layout) => {
-      const topRowExclude = layout.keys.row2;
-      const bottomRowExclude = layout.keys.row4;
-      return [...topRowExclude, ...bottomRowExclude];
-    },
+    exactMatch: true,
   },
   topRow: {
     display: "top row",
     getIncludeString: (layout) => {
       return layout.keys.row2;
     },
-    getExcludeString: (layout) => {
-      const homeRowExclude = layout.keys.row3;
-      const bottomRowExclude = layout.keys.row4;
-      return [...homeRowExclude, ...bottomRowExclude];
-    },
+    exactMatch: true,
   },
   bottomRow: {
     display: "bottom row",
     getIncludeString: (layout) => {
       return layout.keys.row4;
     },
-    getExcludeString: (layout) => {
-      const topRowExclude = layout.keys.row2;
-      const homeRowExclude = layout.keys.row3;
-      return [...topRowExclude, ...homeRowExclude];
-    },
+    exactMatch: true,
   },
 };
 
@@ -121,7 +102,7 @@ async function initSelectOptions(): Promise<void> {
 
   for (const [presetId, preset] of Object.entries(presets)) {
     $("#wordFilterModal .presetInput").append(
-      `<option value=${presetId}>${preset.display}</option>`
+      `<option value=${presetId}>${preset.display}</option>`,
     );
   }
 }
@@ -165,10 +146,18 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 }
 
 async function filter(language: Language): Promise<string[]> {
+  const exactMatchOnly = exactMatchCheckbox.is(":checked");
   let filterin = $("#wordFilterModal .wordIncludeInput").val() as string;
   filterin = Misc.escapeRegExp(filterin?.trim());
   filterin = filterin.replace(/\s+/gi, "|");
-  const regincl = new RegExp(filterin, "i");
+  let regincl;
+
+  if (exactMatchOnly) {
+    regincl = new RegExp("^[" + filterin + "]+$", "i");
+  } else {
+    regincl = new RegExp(filterin, "i");
+  }
+
   let filterout = $("#wordFilterModal .wordExcludeInput").val() as string;
   filterout = Misc.escapeRegExp(filterout.trim());
   filterout = filterout.replace(/\s+/gi, "|");
@@ -176,12 +165,12 @@ async function filter(language: Language): Promise<string[]> {
   const filteredWords = [];
 
   const { data: languageWordList, error } = await tryCatch(
-    JSONData.getLanguage(language)
+    JSONData.getLanguage(language),
   );
   if (error) {
     Notifications.add(
       Misc.createErrorMessage(error, "Failed to filter language words"),
-      -1
+      -1,
     );
     return [];
   }
@@ -202,7 +191,7 @@ async function filter(language: Language): Promise<string[]> {
   }
   for (const word of languageWordList.words) {
     const test1 = regincl.test(word);
-    const test2 = regexcl.test(word);
+    const test2 = exactMatchOnly ? false : regexcl.test(word);
     if (
       ((test1 && !test2) || (test1 && filterout === "")) &&
       word.length <= maxLength &&
@@ -225,7 +214,7 @@ async function apply(set: boolean): Promise<void> {
   }
 
   const customText = filteredWords.join(
-    CustomText.getPipeDelimiter() ? "|" : " "
+    CustomText.getPipeDelimiter() ? "|" : " ",
   );
 
   hide({
@@ -234,6 +223,19 @@ async function apply(set: boolean): Promise<void> {
       set,
     },
   });
+}
+
+function setExactMatchInput(disable: boolean): void {
+  const wordExcludeInputEl = $("#wordFilterModal #wordExcludeInput");
+
+  if (disable) {
+    $("#wordFilterModal #wordExcludeInput").val("");
+    wordExcludeInputEl.attr("disabled", "disabled");
+  } else {
+    wordExcludeInputEl.removeAttr("disabled");
+  }
+
+  exactMatchCheckbox.prop("checked", disable);
 }
 
 function disableButtons(): void {
@@ -268,15 +270,28 @@ async function setup(): Promise<void> {
       presetToApply
         .getIncludeString(layout)
         .map((x) => x[0])
-        .join(" ")
+        .join(" "),
     );
-    $("#wordExcludeInput").val(
-      presetToApply
-        .getExcludeString(layout)
-        .map((x) => x[0])
-        .join(" ")
-    );
+
+    if (presetToApply.exactMatch === true) {
+      setExactMatchInput(true);
+    } else {
+      setExactMatchInput(false);
+      if (presetToApply.getExcludeString !== undefined) {
+        $("#wordExcludeInput").val(
+          presetToApply
+            .getExcludeString(layout)
+            .map((x) => x[0])
+            .join(" "),
+        );
+      }
+    }
   });
+
+  exactMatchCheckbox.on("change", () => {
+    setExactMatchInput(exactMatchCheckbox.is(":checked"));
+  });
+
   $("#wordFilterModal button.addButton").on("click", () => {
     $("#wordFilterModal .loadingIndicator").removeClass("hidden");
     disableButtons();

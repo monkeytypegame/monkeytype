@@ -7,7 +7,7 @@ describe("strings", () => {
       expect(kebabToCamelCase("hello-world")).toEqual("helloWorld");
       expect(kebabToCamelCase("helloWorld")).toEqual("helloWorld");
       expect(
-        kebabToCamelCase("one-two-three-four-five-six-seven-eight-nine-ten")
+        kebabToCamelCase("one-two-three-four-five-six-seven-eight-nine-ten"),
       ).toEqual("oneTwoThreeFourFiveSixSevenEightNineTen");
     });
   });

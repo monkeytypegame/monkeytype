@@ -44,14 +44,14 @@ function hide(): void {
 
 const bioInput: JQuery<HTMLTextAreaElement> = $("#editProfileModal .bio");
 const keyboardInput: JQuery<HTMLTextAreaElement> = $(
-  "#editProfileModal .keyboard"
+  "#editProfileModal .keyboard",
 );
 const twitterInput = $("#editProfileModal .twitter");
 const githubInput = $("#editProfileModal .github");
 const websiteInput = $("#editProfileModal .website");
 const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
 const showActivityOnPublicProfileInput = document.querySelector(
-  "#editProfileModal .editProfileShowActivityOnPublicProfile"
+  "#editProfileModal .editProfileShowActivityOnPublicProfile",
 ) as HTMLInputElement;
 
 const indicators = [
@@ -99,7 +99,7 @@ function hydrateInputs(): void {
         <i class="fas fa-frown-open"></i>
         <div class="text">none</div>
       </div>
-    </button>`
+    </button>`,
   );
 
   $(".badgeSelectionItem").on("click", ({ currentTarget }) => {
@@ -154,7 +154,7 @@ async function updateProfile(): Promise<void> {
   ) {
     Notifications.add(
       `GitHub username exceeds maximum allowed length (${githubLengthLimit} characters).`,
-      -1
+      -1,
     );
     return;
   }
@@ -166,7 +166,7 @@ async function updateProfile(): Promise<void> {
   ) {
     Notifications.add(
       `Twitter username exceeds maximum allowed length (${twitterLengthLimit} characters).`,
-      -1
+      -1,
     );
     return;
   }
@@ -226,7 +226,7 @@ function addValidation(element: JQuery, schema: Zod.Schema): InputIndicator {
     if (!validationResult.success) {
       indicator.show(
         "invalid",
-        validationResult.error.errors.map((err) => err.message).join(", ")
+        validationResult.error.errors.map((err) => err.message).join(", "),
       );
       return;
     }

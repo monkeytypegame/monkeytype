@@ -339,6 +339,12 @@
       }
     }
 
+    &[data-config-name="timerStyle"] {
+      .buttons {
+        grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+      }
+    }
+
     &.tags {
       .tagsListAndButton {
         grid-area: buttons;

@@ -10,12 +10,12 @@ function addSwaggerMiddlewares(app: Application): void {
 
   const { data: spec, error } = tryCatchSync(
     () =>
-      JSON.parse(readFileSync(openApiSpec, "utf8")) as Record<string, unknown>
+      JSON.parse(readFileSync(openApiSpec, "utf8")) as Record<string, unknown>,
   );
 
   if (error) {
     Logger.warning(
-      `Cannot read openApi specification from ${openApiSpec}. Swagger stats will not fully work.`
+      `Cannot read openApi specification from ${openApiSpec}. Swagger stats will not fully work.`,
     );
   }
 
@@ -32,7 +32,7 @@ function addSwaggerMiddlewares(app: Application): void {
           password === process.env["STATS_PASSWORD"]
         );
       },
-    })
+    }),
   );
 }
 

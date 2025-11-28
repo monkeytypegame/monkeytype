@@ -139,14 +139,14 @@ type Schema<T> = {
   [P in keyof T]: T[P] extends unknown[]
     ? ArraySchema<T[P]>
     : T[P] extends number
-    ? NumberSchema
-    : T[P] extends boolean
-    ? BooleanSchema
-    : T[P] extends string
-    ? StringSchema
-    : T[P] extends object
-    ? ObjectSchema<T[P]>
-    : never;
+      ? NumberSchema
+      : T[P] extends boolean
+        ? BooleanSchema
+        : T[P] extends string
+          ? StringSchema
+          : T[P] extends object
+            ? ObjectSchema<T[P]>
+            : never;
 };
 
 export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {

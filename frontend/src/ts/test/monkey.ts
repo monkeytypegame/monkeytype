@@ -74,11 +74,11 @@ export function updateFastOpacity(num: number): void {
   $("#monkey").css({ animationDuration: animDuration + "s" });
 }
 
-export function type(event: JQuery.KeyDownEvent): void {
+export function type(event: JQuery.KeyDownEvent | KeyboardEvent): void {
   if (!Config.monkey) return;
 
   const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
-    event.code as KeyConverter.Keycode
+    event.code as KeyConverter.Keycode,
   );
   if (leftSide && rightSide) {
     // if its a middle key handle special case
@@ -112,11 +112,11 @@ export function type(event: JQuery.KeyDownEvent): void {
   update();
 }
 
-export function stop(event: JQuery.KeyUpEvent): void {
+export function stop(event: JQuery.KeyUpEvent | KeyboardEvent): void {
   if (!Config.monkey) return;
 
   const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
-    event.code as KeyConverter.Keycode
+    event.code as KeyConverter.Keycode,
   );
   if (leftSide && rightSide) {
     // if middle key handle special case

@@ -25,7 +25,7 @@ export const ChallengeSchema = z
         .or(z.null())
         .or(z.number())
         .or(z.boolean())
-        .or(z.array(FunboxNameSchema))
+        .or(z.array(FunboxNameSchema)),
     ),
     requirements: z
       .object({

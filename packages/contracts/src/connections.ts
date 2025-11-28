@@ -17,7 +17,7 @@ import { IdSchema } from "@monkeytype/schemas/util";
 const c = initContract();
 
 export const GetConnectionsResponseSchema = responseWithData(
-  z.array(ConnectionSchema)
+  z.array(ConnectionSchema),
 );
 export type GetConnectionsResponse = z.infer<
   typeof GetConnectionsResponseSchema
@@ -85,7 +85,7 @@ export const connectionsContract = c.router(
         200: CreateConnectionResponseSchema,
         404: MonkeyResponseSchema.describe("ReceiverUid unknown"),
         409: MonkeyResponseSchema.describe(
-          "Duplicate connection, blocked or max connections reached"
+          "Duplicate connection, blocked or max connections reached",
         ),
       },
       metadata: meta({
@@ -132,5 +132,5 @@ export const connectionsContract = c.router(
       },
     }),
     commonResponses: CommonResponses,
-  }
+  },
 );

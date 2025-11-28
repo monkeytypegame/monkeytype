@@ -27,7 +27,7 @@ export function fontPreview(): Plugin {
 
       const end = performance.now();
       console.log(
-        `Creating webfonts preview took ${Math.round(end - start)} ms`
+        `Creating webfonts preview took ${Math.round(end - start)} ms`,
       );
     },
   };
@@ -50,11 +50,11 @@ async function generatePreviewFonts(debug: boolean = false): Promise<void> {
     await generateSubset(
       srcDir + "/" + fileName,
       targetDir + "/" + fileName,
-      includedCharacters
+      includedCharacters,
     );
     if (debug) {
       console.log(
-        `Processing ${name} with file ${fileName} to display "${includedCharacters}".`
+        `Processing ${name} with file ${fileName} to display "${includedCharacters}".`,
       );
     }
   }
@@ -63,7 +63,7 @@ async function generatePreviewFonts(debug: boolean = false): Promise<void> {
 async function generateSubset(
   source: string,
   target: string,
-  includedCharacters: string
+  includedCharacters: string,
 ): Promise<void> {
   const font = fs.readFileSync(source);
   const subset = await subsetFont(font, includedCharacters, {

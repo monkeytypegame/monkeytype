@@ -17,7 +17,7 @@ async function initDropdown(): Promise<void> {
   for (const group of LanguageGroupNames) {
     if (group === "swiss_german") continue;
     $("#quoteSubmitModal .newQuoteLanguage").append(
-      `<option value="${group}">${group.replace(/_/g, " ")}</option>`
+      `<option value="${group}">${group.replace(/_/g, " ")}</option>`,
     );
   }
   dropdownReady = true;
@@ -57,7 +57,7 @@ export async function show(showOptions: ShowOptions): Promise<void> {
   if (!CaptchaController.isCaptchaAvailable()) {
     Notifications.add(
       "Could not show quote submit popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-      -1
+      -1,
     );
     return;
   }
@@ -69,7 +69,7 @@ export async function show(showOptions: ShowOptions): Promise<void> {
     afterAnimation: async () => {
       CaptchaController.render(
         document.querySelector("#quoteSubmitModal .g-recaptcha") as HTMLElement,
-        "submitQuote"
+        "submitQuote",
       );
       await initDropdown();
 
@@ -78,7 +78,7 @@ export async function show(showOptions: ShowOptions): Promise<void> {
       });
 
       $("#quoteSubmitModal .newQuoteLanguage").val(
-        Strings.removeLanguageSize(Config.language)
+        Strings.removeLanguageSize(Config.language),
       );
       $("#quoteSubmitModal .newQuoteLanguage").trigger("change");
       $("#quoteSubmitModal input").val("");

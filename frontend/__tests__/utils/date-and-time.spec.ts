@@ -81,9 +81,9 @@ describe("date-and-time", () => {
           expect(DateAndTime.getFirstDayOfTheWeek()).toEqual(
             firefoxFirstDayOfWeek !== undefined
               ? firefoxFirstDayOfWeek
-              : firstDayOfWeek
+              : firstDayOfWeek,
           );
-        }
+        },
       );
     });
   });

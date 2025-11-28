@@ -54,7 +54,7 @@ const MODAL_ONLY_ANIMATION_MULTIPLIER = 0.75;
 
 export default class AnimatedModal<
   IncomingModalChainData = unknown,
-  OutgoingModalChainData = unknown
+  OutgoingModalChainData = unknown,
 > {
   private wrapperEl: HTMLDialogElement;
   private modalEl: HTMLElement;
@@ -86,12 +86,12 @@ export default class AnimatedModal<
 
     const dialogElement = document.getElementById(constructorParams.dialogId);
     const modalElement = document.querySelector(
-      `#${constructorParams.dialogId} > .modal`
+      `#${constructorParams.dialogId} > .modal`,
     ) as HTMLElement;
 
     if (dialogElement === null) {
       throw new Error(
-        `Dialog element with id ${constructorParams.dialogId} not found`
+        `Dialog element with id ${constructorParams.dialogId} not found`,
       );
     }
 
@@ -101,13 +101,13 @@ export default class AnimatedModal<
 
     if (dialogElement === null) {
       throw new Error(
-        `Dialog element with id ${constructorParams.dialogId} not found`
+        `Dialog element with id ${constructorParams.dialogId} not found`,
       );
     }
 
     if (modalElement === null) {
       throw new Error(
-        `Div element inside #${constructorParams.dialogId} with class 'modal' not found`
+        `Div element inside #${constructorParams.dialogId} with class 'modal' not found`,
       );
     }
 
@@ -221,7 +221,7 @@ export default class AnimatedModal<
           DEFAULT_ANIMATION_DURATION) *
           (options?.modalChain !== undefined
             ? MODAL_ONLY_ANIMATION_MULTIPLIER
-            : 1)
+            : 1),
       );
 
       if (options?.modalChain !== undefined) {
@@ -248,6 +248,10 @@ export default class AnimatedModal<
         this.focusFirstInput(options?.focusFirstInput);
       }, 1);
 
+      const hasModalAnimation =
+        (options?.customAnimation?.modal ??
+          this.customHideAnimations?.modal) !== undefined;
+
       const modalAnimation = options?.customAnimation?.modal ??
         this.customShowAnimations?.modal ?? {
           opacity: [0, 1],
@@ -260,19 +264,23 @@ export default class AnimatedModal<
       const wrapperAnimationDuration = applyReducedMotion(
         options?.customAnimation?.wrapper?.duration ??
           this.customShowAnimations?.wrapper?.duration ??
-          DEFAULT_ANIMATION_DURATION
+          DEFAULT_ANIMATION_DURATION,
       );
 
       const animationMode =
         this.previousModalInChain !== undefined
           ? "modalOnly"
-          : options?.animationMode ?? "both";
+          : (options?.animationMode ?? "both");
 
       if (animationMode === "both" || animationMode === "none") {
-        animate(this.modalEl, {
-          ...modalAnimation,
-          duration: animationMode === "none" ? 0 : modalAnimationDuration,
-        });
+        if (hasModalAnimation) {
+          animate(this.modalEl, {
+            ...modalAnimation,
+            duration: animationMode === "none" ? 0 : modalAnimationDuration,
+          });
+        } else {
+          this.modalEl.style.opacity = "1";
+        }
 
         animate(this.wrapperEl, {
           ...wrapperAnimation,
@@ -284,7 +292,7 @@ export default class AnimatedModal<
             this.focusFirstInput(options?.focusFirstInput);
             await options?.afterAnimation?.(
               this.modalEl,
-              options?.modalChainData
+              options?.modalChainData,
             );
             resolve();
           },
@@ -299,7 +307,7 @@ export default class AnimatedModal<
             this.focusFirstInput(options?.focusFirstInput);
             await options?.afterAnimation?.(
               this.modalEl,
-              options?.modalChainData
+              options?.modalChainData,
             );
             resolve();
           },
@@ -322,6 +330,10 @@ export default class AnimatedModal<
 
       await options?.beforeAnimation?.(this.modalEl);
 
+      const hasModalAnimation =
+        (options?.customAnimation?.modal ??
+          this.customHideAnimations?.modal) !== undefined;
+
       const modalAnimation = options?.customAnimation?.modal ??
         this.customHideAnimations?.modal ?? {
           opacity: [1, 0],
@@ -334,7 +346,7 @@ export default class AnimatedModal<
           DEFAULT_ANIMATION_DURATION) *
           (this.previousModalInChain !== undefined
             ? MODAL_ONLY_ANIMATION_MULTIPLIER
-            : 1)
+            : 1),
       );
       const wrapperAnimation = options?.customAnimation?.wrapper ??
         this.customHideAnimations?.wrapper ?? {
@@ -343,18 +355,22 @@ export default class AnimatedModal<
       const wrapperAnimationDuration = applyReducedMotion(
         options?.customAnimation?.wrapper?.duration ??
           this.customHideAnimations?.wrapper?.duration ??
-          DEFAULT_ANIMATION_DURATION
+          DEFAULT_ANIMATION_DURATION,
       );
       const animationMode =
         this.previousModalInChain !== undefined
           ? "modalOnly"
-          : options?.animationMode ?? "both";
+          : (options?.animationMode ?? "both");
 
       if (animationMode === "both" || animationMode === "none") {
-        animate(this.modalEl, {
-          ...modalAnimation,
-          duration: animationMode === "none" ? 0 : modalAnimationDuration,
-        });
+        if (hasModalAnimation) {
+          animate(this.modalEl, {
+            ...modalAnimation,
+            duration: animationMode === "none" ? 0 : modalAnimationDuration,
+          });
+        } else {
+          this.modalEl.style.opacity = "1";
+        }
 
         animate(this.wrapperEl, {
           ...wrapperAnimation,
