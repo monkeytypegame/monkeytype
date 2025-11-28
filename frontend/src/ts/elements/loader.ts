@@ -1,31 +1,31 @@
-const element = $("#backgroundLoader");
-let timeout: NodeJS.Timeout | null = null;
-let visible = false;
+import { animate, JSAnimation } from "animejs";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 
-function clearTimeout(): void {
-  if (timeout !== null) {
-    window.clearTimeout(timeout);
-    timeout = null;
-  }
-}
+const element = document.querySelector("#backgroundLoader") as HTMLElement;
+let showAnim: JSAnimation | null = null;
 
 export function show(instant = false): void {
-  if (visible) return;
-
-  if (instant) {
-    element.stop(true, true).show();
-    visible = true;
-  } else {
-    timeout = setTimeout(() => {
-      element.stop(true, true).show();
-    }, 125);
-    visible = true;
-  }
+  requestDebouncedAnimationFrame("loader.show", () => {
+    showAnim = animate(element, {
+      opacity: 1,
+      duration: 125,
+      delay: instant ? 0 : 125,
+      onBegin: () => {
+        element.classList.remove("hidden");
+      },
+    });
+  });
 }
 
 export function hide(): void {
-  if (!visible) return;
-  clearTimeout();
-  element.stop(true, true).fadeOut(125);
-  visible = false;
+  requestDebouncedAnimationFrame("loader.hide", () => {
+    showAnim?.pause();
+    animate(element, {
+      opacity: 0,
+      duration: 125,
+      onComplete: () => {
+        element.classList.add("hidden");
+      },
+    });
+  });
 }
