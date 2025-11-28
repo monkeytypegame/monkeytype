@@ -929,7 +929,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestUI.setResultCalculating(true);
   const now = performance.now();
   TestStats.setEnd(now);
-  console.log(`Test time timer based: `, TestTimer.getTimerTime() / 1000);
 
   if (TestState.isRepeated && Config.mode === "quote") {
     TestState.setRepeated(false);

@@ -38,10 +38,6 @@ const newTimer = createTimer({
   },
 });
 
-export function getTimerTime(): number {
-  return newTimer.currentTime;
-}
-
 type TimerStats = {
   dateNow: number;
   now: number;
