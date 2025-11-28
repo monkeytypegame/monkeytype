@@ -1,5 +1,5 @@
 {
-  "name": "hungarian",
+  "name": "hungarian_no_accents",
   "orderedByFrequency": true,
   "bcp47": "hu-HU",
   "words": [
