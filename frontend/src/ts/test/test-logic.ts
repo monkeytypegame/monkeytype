@@ -934,6 +934,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestState.setRepeated(false);
   }
 
+  // in case the tests ends with a keypress (not a word submission)
+  // we need to push the current input to history
   if (TestInput.input.current.length !== 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
