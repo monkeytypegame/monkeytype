@@ -575,4 +575,24 @@ class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
     }
     return this;
   }
+
+  /**
+   * Attach an event listener to all elements in the array
+   */
+  on<K extends keyof HTMLElementEventMap>(
+    event: K,
+    handler: (this: T, ev: HTMLElementEventMap[K]) => void,
+  ): this;
+  on(event: string, handler: EventListenerOrEventListenerObject): this;
+  on(
+    event: keyof HTMLElementEventMap | string,
+    handler:
+      | EventListenerOrEventListenerObject
+      | ((this: T, ev: Event) => void),
+  ): this {
+    for (const item of this) {
+      item.on(event, handler);
+    }
+    return this;
+  }
 }
