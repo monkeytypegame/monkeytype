@@ -207,8 +207,12 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Remove a class from the element
    */
-  removeClass(className: string): this {
-    this.native.classList.remove(className);
+  removeClass(className: string | string[]): this {
+    if (Array.isArray(className)) {
+      this.native.classList.remove(...className);
+    } else {
+      this.native.classList.remove(className);
+    }
     return this;
   }
 
@@ -483,9 +487,16 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 }
 
-class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
+export class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
   ElementWithUtils<T>
 > {
+  public native: T[];
+
+  constructor(...items: ElementWithUtils<T>[]) {
+    super(...items);
+    this.native = items.map((item) => item.native);
+  }
+
   /**
    * Remove all elements in the array from the DOM
    */
@@ -592,6 +603,16 @@ class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
   ): this {
     for (const item of this) {
       item.on(event, handler);
+    }
+    return this;
+  }
+
+  /**
+   * Set attribute value on all elements in the array
+   */
+  setAttribute(key: string, value: string): this {
+    for (const item of this) {
+      item.setAttribute(key, value);
     }
     return this;
   }
