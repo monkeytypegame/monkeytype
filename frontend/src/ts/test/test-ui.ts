@@ -1587,14 +1587,14 @@ export async function applyBurstHeatmap(): Promise<void> {
 }
 
 export function highlightBadWord(index: number): void {
-  requestDebouncedAnimationFrame(`test-ui.highlightBadWord[${index}]`, () => {
+  requestDebouncedAnimationFrame(`test-ui.highlightBadWord.${index}`, () => {
     getWordElement(index)?.classList.add("error");
   });
 }
 
 export function highlightAllLettersAsCorrect(wordIndex: number): void {
   requestDebouncedAnimationFrame(
-    `test-ui.highlightAllLettersAsCorrect[${wordIndex}]`,
+    `test-ui.highlightAllLettersAsCorrect.${wordIndex}`,
     () => {
       const letters = getWordElement(wordIndex)?.children;
       for (const letter of letters ?? []) {
