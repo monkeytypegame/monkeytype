@@ -984,6 +984,9 @@ export async function update(
   hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
+  $("#result #replayStats").text("");
+  $("#result #resultReplay").addClass("hidden");
+  $("#result #replayWords").empty();
   $("#retrySavingResultButton").addClass("hidden");
   $(".pageTest #result #rateQuoteButton .icon")
     .removeClass("fas")

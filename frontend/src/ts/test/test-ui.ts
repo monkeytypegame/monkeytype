@@ -242,6 +242,7 @@ export function updateActiveElement(
     newActiveWord.classList.remove("typed");
 
     activeWordTop = newActiveWord.offsetTop;
+    console.log("activewordtopupdated");
 
     updateWordsInputPosition();
 
@@ -1760,7 +1761,7 @@ export function afterTestTextInput(
   // is already increased at this point
 
   void MonkeyPower.addPower(correct);
-  setActiveWordTop();
+
   if (!increasedWordIndex) {
     void updateWordLetters({
       input: inputOverride ?? TestInput.input.current,
@@ -1867,7 +1868,6 @@ export async function afterTestWordChange(
 }
 
 export function afterTestStart(): void {
-  setActiveWordTop();
   Focus.set(true);
   Monkey.show();
   TimerProgress.show();
