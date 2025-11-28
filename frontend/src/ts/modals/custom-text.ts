@@ -269,7 +269,7 @@ function cleanUpText(): string[] {
 
   if (text === "") return [];
 
-  text = text.normalize().trim();
+  text = text.normalize();
   // text = text.replace(/[\r]/gm, " ");
 
   //replace any characters that look like a space with an actual space
