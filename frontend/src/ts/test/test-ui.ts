@@ -1373,7 +1373,8 @@ function buildWordLettersHTML(
 async function loadWordsHistory(): Promise<boolean> {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
-  for (let i = 0; i < TestInput.input.getHistory().length + 2; i++) {
+  const inputHistoryLength = TestInput.input.getHistory().length;
+  for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = TestInput.input.getHistory(i);
     const corrected = TestInput.corrected.getHistory(i);
     const word = TestWords.words.get(i);
@@ -1390,8 +1391,19 @@ async function loadWordsHistory(): Promise<boolean> {
         throw new Error("empty input word");
       }
 
-      const errorClass =
-        Config.mode === "zen" ? "" : input !== word ? "error" : "";
+      const isIncorrectWord = input !== word;
+      const isLastWord = i === inputHistoryLength - 1;
+      const isTimedTest =
+        Config.mode === "time" ||
+        (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+        (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+      const isPartiallyCorrect = word.substring(0, input.length) === input;
+
+      const shouldShowError =
+        Config.mode !== "zen" &&
+        !(isLastWord && isTimedTest && isPartiallyCorrect);
+
+      const errorClass = isIncorrectWord && shouldShowError ? "error" : "";
 
       if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean

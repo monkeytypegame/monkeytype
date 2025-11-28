@@ -15,6 +15,7 @@ inputEl.addEventListener("compositionstart", (event) => {
     data: event.data,
   });
 
+  if (TestState.testRestarting || TestUI.resultCalculating) return;
   CompositionState.setComposing(true);
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
@@ -29,6 +30,7 @@ inputEl.addEventListener("compositionupdate", (event) => {
     data: event.data,
   });
 
+  if (TestState.testRestarting || TestUI.resultCalculating) return;
   CompositionState.setData(event.data);
   CompositionDisplay.update(event.data);
 });

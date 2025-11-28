@@ -3,13 +3,5 @@
   "useTabs": false,
   "htmlWhitespaceSensitivity": "ignore",
   "trailingComma": "all",
-  "endOfLine": "lf",
-  "overrides": [
-    {
-      "files": ["*.ts"],
-      "options": {
-        "parser": "typescript"
-      }
-    }
-  ]
+  "endOfLine": "lf"
 }
