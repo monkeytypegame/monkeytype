@@ -59,8 +59,8 @@ export const TimerStyleSchema = z.enum([
   "bar",
   "text",
   "mini",
-  "flash text",
-  "flash mini",
+  "flash_text",
+  "flash_mini",
 ]);
 export type TimerStyle = z.infer<typeof TimerStyleSchema>;
 
