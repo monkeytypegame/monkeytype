@@ -38,7 +38,7 @@ export function show(): void {
           textEl.classList.remove("hidden");
         },
       });
-    } else if (Config.timerStyle === "flash mini") {
+    } else if (Config.timerStyle === "flash_mini") {
       animate(miniEl, {
         opacity: [0, 1],
         duration: applyReducedMotion(125),
@@ -46,7 +46,7 @@ export function show(): void {
           miniEl.classList.remove("hidden");
         },
       });
-    } else if (Config.timerStyle === "flash text") {
+    } else if (Config.timerStyle === "flash_text") {
       animate(textEl, {
         opacity: [0, 1],
         duration: applyReducedMotion(125),
@@ -148,7 +148,7 @@ export function update(): void {
         if (textEl !== null) {
           textEl.innerHTML = "<div>" + displayTime + "</div>";
         }
-      } else if (Config.timerStyle === "flash mini") {
+      } else if (Config.timerStyle === "flash_mini") {
         let displayTime = DateTime.secondsToString(maxtime - time);
         if (maxtime === 0) {
           displayTime = DateTime.secondsToString(time);
@@ -161,7 +161,7 @@ export function update(): void {
           }
           miniEl.innerHTML = "<div>" + displayTime + "</div>";
         }
-      } else if (Config.timerStyle === "flash text") {
+      } else if (Config.timerStyle === "flash_text") {
         let displayTime = DateTime.secondsToString(maxtime - time);
         if (maxtime === 0) {
           displayTime = DateTime.secondsToString(time);
@@ -211,13 +211,13 @@ export function update(): void {
         } else {
           textEl.innerHTML = `<div>${getCurrentCount()}/${outof}</div>`;
         }
-      } else if (Config.timerStyle === "flash mini") {
+      } else if (Config.timerStyle === "flash_mini") {
         if (outof === 0) {
           miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
         } else {
           miniEl.innerHTML = `${getCurrentCount()}/${outof}`;
         }
-      } else if (Config.timerStyle === "flash text") {
+      } else if (Config.timerStyle === "flash_text") {
         if (outof === 0) {
           textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
         } else {
@@ -233,9 +233,9 @@ export function update(): void {
     } else if (Config.mode === "zen") {
       if (Config.timerStyle === "text") {
         textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
-      } else if (Config.timerStyle === "flash mini") {
+      } else if (Config.timerStyle === "flash_mini") {
         miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
-      } else if (Config.timerStyle === "flash text") {
+      } else if (Config.timerStyle === "flash_text") {
         textEl.innerHTML = `<div>${TestInput.input.getHistory().length}</div>`;
       } else {
         miniEl.innerHTML = `${TestInput.input.getHistory().length}`;
