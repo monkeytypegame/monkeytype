@@ -4,6 +4,10 @@ export let minFilterLength: number = 0;
 export let maxFilterLength: number = 0;
 export let removeCustom: boolean = false;
 
+export function setRemoveCustom(value: boolean): void {
+  removeCustom = value;
+}
+
 function refresh(): void {
   const refreshEvent = new CustomEvent("refresh");
   document.dispatchEvent(refreshEvent);
@@ -41,8 +45,7 @@ export const quoteFilterModal = new SimpleModal({
     return { status: 1, message };
   },
   afterClickAway: () => {
-    removeCustom = true;
+    setRemoveCustom(true);
     refresh();
-    removeCustom = false;
   },
 });

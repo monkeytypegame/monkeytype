@@ -47,9 +47,8 @@ function getSearchService<T>(
 
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (!modal.isOpen()) return [];
-  const quoteLengthFilterValue = $(
-    "#quoteSearchModal .quoteLengthFilter",
-  ).val() as string[];
+  const quoteLengthDropdown = $("#quoteSearchModal .quoteLengthFilter");
+  const quoteLengthFilterValue = quoteLengthDropdown.val() as string[];
 
   if (quoteLengthFilterValue.length === 0) {
     usingCustomLength = true;
@@ -64,7 +63,28 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
 
   if (customFilterIndex !== -1) {
     if (QuoteFilterPopup.removeCustom) {
-      quoteLengthFilterValue.splice(customFilterIndex, 1);
+      QuoteFilterPopup.setRemoveCustom(false);
+      const selectElement = quoteLengthDropdown.get(0) as
+        | HTMLSelectElement
+        | null
+        | undefined;
+
+      if (!selectElement) {
+        return quotes;
+      }
+
+      //@ts-expect-error SlimSelect adds slim to the element
+      const ss = selectElement.slim as SlimSelect | undefined;
+
+      if (ss !== undefined) {
+        const currentSelected = ss.getSelected();
+
+        // remove custom selection
+        const withoutCustom = currentSelected.filter(
+          (selection) => selection !== "4",
+        );
+        ss.setSelected(withoutCustom);
+      }
     } else {
       if (usingCustomLength) {
         QuoteFilterPopup.quoteFilterModal.show(undefined, {});
