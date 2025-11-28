@@ -80,10 +80,12 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
         const currentSelected = ss.getSelected();
 
         // remove custom selection
-        const withoutCustom = currentSelected.filter(
-          (selection) => selection !== "4",
-        );
-        ss.setSelected(withoutCustom);
+        const customIndex = currentSelected.indexOf("4");
+        if (customIndex > -1) {
+          currentSelected.splice(customIndex, 1);
+        }
+
+        ss.setSelected(currentSelected);
       }
     } else {
       if (usingCustomLength) {
