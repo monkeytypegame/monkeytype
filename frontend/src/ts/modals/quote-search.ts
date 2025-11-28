@@ -91,20 +91,21 @@ function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
       if (usingCustomLength) {
         QuoteFilterPopup.quoteFilterModal.show(undefined, {});
         usingCustomLength = false;
+      } else {
+        const filteredQuotes = quotes.filter(
+          (quote) =>
+            (quote.length >= QuoteFilterPopup.minFilterLength &&
+              quote.length <= QuoteFilterPopup.maxFilterLength) ||
+            quoteLengthFilter.has(quote.group),
+        );
+
+        return filteredQuotes;
       }
-
-      const filteredQuotes = quotes.filter(
-        (quote) =>
-          (quote.length >= QuoteFilterPopup.minFilterLength &&
-            quote.length <= QuoteFilterPopup.maxFilterLength) ||
-          quoteLengthFilter.has(quote.group),
-      );
-
-      return filteredQuotes;
     }
+  } else {
+    usingCustomLength = true;
   }
 
-  usingCustomLength = true;
   const filteredQuotes = quotes.filter((quote) =>
     quoteLengthFilter.has(quote.group),
   );
