@@ -1042,7 +1042,11 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     const child = wordsChildrenArr[i] as HTMLElement;
     if (child.classList.contains("word")) {
       leadingNewLine = false;
-      const wordOuterWidth = $(child).outerWidth(true) ?? 0;
+      const childComputedStyle = window.getComputedStyle(child);
+      const wordOuterWidth =
+        child.offsetWidth +
+        parseFloat(childComputedStyle.marginRight) +
+        parseFloat(childComputedStyle.marginLeft);
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
       if (
@@ -1104,22 +1108,22 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   let currentWordWidth = 0;
   const inputLength = TestInput.input.current.length;
   if (Config.tapeMode === "letter" && inputLength > 0) {
-    const letters = activeWordEl.querySelectorAll("letter");
+    const letters = activeWordEl.querySelectorAll<HTMLElement>("letter");
     let lastPositiveLetterWidth = 0;
     for (let i = 0; i < inputLength; i++) {
-      const letter = letters[i] as HTMLElement;
+      const letter = letters[i];
       if (
         (Config.blindMode || Config.hideExtraLetters) &&
-        letter.classList.contains("extra")
+        letter?.classList.contains("extra")
       ) {
         continue;
       }
-      const letterOuterWidth = $(letter).outerWidth(true) ?? 0;
+      const letterOuterWidth = letter?.offsetWidth ?? 0;
       currentWordWidth += letterOuterWidth;
       if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
     }
     // if current letter has zero width move the tape to previous positive width letter
-    if ($(letters[inputLength] as Element).outerWidth(true) === 0)
+    if (letters[inputLength]?.offsetWidth === 0)
       currentWordWidth -= lastPositiveLetterWidth;
   }
 
