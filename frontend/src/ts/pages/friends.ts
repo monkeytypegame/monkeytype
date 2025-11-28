@@ -302,7 +302,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         )}</td>
         <td><span aria-label="${formatStreak(
           entry.streak?.maxLength,
-          "max streak",
+          "longest streak",
         )}" data-balloon-pos="up">
           ${formatStreak(entry.streak?.length)} 
         </span></td>
