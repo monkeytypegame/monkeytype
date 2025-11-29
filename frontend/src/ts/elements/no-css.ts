@@ -1,7 +1,7 @@
 import { envConfig } from "virtual:env-config";
 import { qs } from "../utils/dom";
 
-qs("#nocss .requestedStylesheets")?.setStyle(
+qs("#nocss .requestedStylesheets")?.setHtml(
   "Requested stylesheets:<br>" +
     (
       [
@@ -13,7 +13,7 @@ qs("#nocss .requestedStylesheets")?.setStyle(
       .join("<br>"),
 );
 
-qs("#nocss .requestedJs")?.setStyle(
+qs("#nocss .requestedJs")?.setHtml(
   "Requested Javascript files:<br>" +
     ([...document.querySelectorAll("script")] as HTMLScriptElement[])
       .map((l) => l.src)
@@ -24,7 +24,7 @@ qs("#nocss .requestedJs")?.setStyle(
 );
 
 if (window.navigator.userAgent.toLowerCase().includes("mac")) {
-  qs("#nocss .keys")?.setStyle(`
+  qs("#nocss .keys")?.setHtml(`
     <span
       style="
         padding: 1rem;
@@ -61,7 +61,7 @@ if (window.navigator.userAgent.toLowerCase().includes("mac")) {
     </span>
   `);
 } else {
-  qs("#nocss .keys")?.setStyle(`
+  qs("#nocss .keys")?.setHtml(`
     <span
       style="
         padding: 1rem;
