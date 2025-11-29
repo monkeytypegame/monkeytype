@@ -291,7 +291,7 @@ export function handleConfigInput<T extends ConfigKey>({
       }, 500);
       return;
     }
-    const value = (inputValueConvert?.(input.getValue()) ??
+    const value = (inputValueConvert?.(input.getValue() ?? "") ??
       input.getValue()) as ConfigType[T];
 
     if (Config[configName] === value) {

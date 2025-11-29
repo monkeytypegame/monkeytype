@@ -43,7 +43,7 @@ export class CharacterCounter {
 
   private updateCounter(): void {
     const maxLength = this.maxLength;
-    const currentLength = this.textareaElement.getValue().length;
+    const currentLength = (this.textareaElement.getValue() ?? "").length;
     const remaining = maxLength - currentLength;
     this.counterElement.setText(`${currentLength}/${maxLength}`);
 

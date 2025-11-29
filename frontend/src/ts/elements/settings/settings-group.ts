@@ -171,7 +171,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
         if (el.hasClass("disabled") || el.hasClass("no-auto-handle")) {
           return;
         }
-        const val = parseFloat(el.getValue()) as T;
+        const val = parseFloat(el.getValue() ?? "") as T;
         this.updateUI(val);
         debounced(val);
       });

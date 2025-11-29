@@ -132,7 +132,10 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Check if the input element is checked
    */
-  isChecked(this: ElementWithUtils<HTMLInputElement>): boolean {
+  isChecked(this: ElementWithUtils<HTMLInputElement>): boolean | undefined {
+    if (!(this.native instanceof HTMLInputElement)) {
+      return undefined;
+    }
     return this.native.checked;
   }
 
@@ -420,14 +423,20 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    * Set value of input or textarea to a string.
    */
   setValue(this: ElementWithUtils<ValueElement>, value: string): this {
-    this.native.value = value;
+    if (this.native instanceof HTMLInputElement) {
+      this.native.value = value;
+    }
     return this as unknown as this;
   }
 
   /**
    * Get value of input or textarea
+   * @returns The value of the element, or undefined if the element is not an input or textarea.
    */
-  getValue(this: ElementWithUtils<ValueElement>): string {
+  getValue(this: ElementWithUtils<ValueElement>): string | undefined {
+    if (!(this.native instanceof HTMLInputElement)) {
+      return undefined;
+    }
     return this.native.value;
   }
 

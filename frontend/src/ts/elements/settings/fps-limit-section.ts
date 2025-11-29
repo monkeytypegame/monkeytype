@@ -35,7 +35,7 @@ function save(value: number): void {
 
 function saveFromInput(): void {
   if (input.getValidationResult().status !== "success") return;
-  const val = parseInt(input.getValue(), 10);
+  const val = parseInt(input.getValue() ?? "", 10);
   save(val);
 }
 
