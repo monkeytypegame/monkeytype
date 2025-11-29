@@ -433,6 +433,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
     return null;
   }
 
+  /**
+   * Replace this element with another element
+   */
   replaceWith(element: HTMLElement | ElementWithUtils): this {
     if (element instanceof ElementWithUtils) {
       this.native.replaceWith(element.native);
@@ -443,9 +446,15 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 }
 
+/**
+ * An array of ElementWithUtils with utility methods that operate on all elements in the array.
+ */
 export class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
   ElementWithUtils<T>
 > {
+  /**
+   * Array of native DOM elements
+   */
   public native: T[];
 
   constructor(...items: ElementWithUtils<T>[]) {
