@@ -7,6 +7,8 @@ export function onDocumentReady(callback: () => void): void {
 }
 
 /**
+ * Query Selector
+ *
  * Query the document for a single element matching the selector.
  * @returns An ElementWithUtils wrapping the found element, null if not found.
  */
@@ -18,6 +20,8 @@ export function qs<T extends HTMLElement = HTMLElement>(
 }
 
 /**
+ * Query Selector All
+ *
  * Query the document for all elements matching the selector.
  * @returns An ArrayWithUtils containing ElementWithUtils wrapping each found element.
  */
@@ -31,8 +35,11 @@ export function qsa<T extends HTMLElement = HTMLElement>(
 }
 
 /**
+ * Query Selector Required
+ *
  * Query the document for a single element matching the selector.
- * This element must exist, otherwise an error is thrown.
+ * Useful for elements that are guaranteed to exist,
+ * as you don't need to handle the null case.
  * @returns An ElementWithUtils wrapping the found element.
  * @throws Error if the element is not found.
  */

@@ -155,6 +155,8 @@ If you are on a UNIX system and you get a spawn error, run npm with `sudo`.
 
 Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you make a commit.
 
+We are currently in the process of converting from JQuery to vanilla JS. When submitting new code, please use the `qs`, `qsa` and `qsr` helper functions. These return a class with a lot of JQuery-like methods. You can read how they work and import them from `frontend/src/ts/utils/dom.ts`.
+
 For guidelines on commit messages, adding themes, languages, or quotes, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
 
 ## Questions
