@@ -180,6 +180,14 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Toggle a class on the element
+   */
+  toggleClass(className: string): this {
+    this.native.classList.toggle(className);
+    return this;
+  }
+
+  /**
    * Attach an event listener to the element
    */
   on<K extends keyof HTMLElementEventMap>(
