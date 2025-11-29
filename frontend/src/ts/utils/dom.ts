@@ -1,11 +1,3 @@
-export function onDocumentReady(callback: () => void): void {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", callback);
-  } else {
-    callback();
-  }
-}
-
 /**
  * Query Selector
  *
@@ -53,6 +45,24 @@ export function qsr<T extends HTMLElement = HTMLElement>(
   return new ElementWithUtils(el);
 }
 
+/**
+ * Execute a callback function when the document is fully loaded.
+ * If the document is already loaded, the callback is executed immediately.
+ */
+export function onDocumentReady(callback: () => void): void {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", callback);
+  } else {
+    callback();
+  }
+}
+
+/**
+ * Creates an ElementWithUtils wrapping a newly created element.
+ * @param tagName The tag name of the element to create.
+ * @param options Optional options to set on the element.
+ * @returns An ElementWithUtils wrapping the created element.
+ */
 export function createElementWithUtils<T extends HTMLElement>(
   tagName: string,
   options?: {
@@ -69,67 +79,6 @@ export function createElementWithUtils<T extends HTMLElement>(
   }
   return new ElementWithUtils(element);
 }
-// export type ElementWithUtils<T = HTMLElement> = T & ElementUtils<T>;
-
-// type ElementUtils<T> = {
-//   /**
-//    * Set disabled attribute to true
-//    */
-//   disable(): void;
-//   /**
-//    * Remove disabled attribute
-//    */
-//   enable(): void;
-//   /**
-//    * Check if the element is disabled
-//    */
-//   isDisabled(): boolean;
-//   isChecked(): boolean;
-//   addClass(className: string): void;
-//   removeClass(className: string): ElementWithUtils<T>;
-//   hasClass(className: string): boolean;
-//   /**
-//    * Attach an event listener to the element
-//    */
-//   on(
-//     event: keyof HTMLElementEventMap,
-//     handler: EventListenerOrEventListenerObject
-//   ): void;
-//   /**
-//    * Attach an event listener to child elements matching the query. Useful for dynamically added elements.
-//    */
-//   onChild(
-//     query: string,
-//     event: keyof HTMLElementEventMap,
-//     handler: EventListenerOrEventListenerObject
-//   ): void;
-//   html(content: string): void;
-//   /**
-//    * Set textContent of the element
-//    */
-//   setText(content: string): void;
-//   remove(): void;
-//   setStyle(object: Partial<CSSStyleDeclaration>): void;
-//   isFocused(): boolean;
-//   qs<T extends HTMLElement>(selector: string): ElementWithUtils<T> | null;
-//   qsa<T extends HTMLElement>(
-//     selector: string
-//   ): ArrayWithUtils<ElementWithUtils<T>>;
-//   empty(): void;
-//   appendHtml(htmlString: string): void;
-//   prependHtml(htmlString: string): void;
-//   trigger(event: string): void;
-//   offset(): {
-//     top: number;
-//     left: number;
-//   };
-//   wrapWith(htmlString: string): ElementWithUtils<T>;
-//   setValue(value: string): void;
-//   /**
-//    * Get the parent element
-//    */
-//   getParent(): ElementWithUtils | null;
-// };
 
 type ValueElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
