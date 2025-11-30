@@ -89,6 +89,22 @@ import {
   isInputElementFocused,
   setInputElementValue,
 } from "../input/input-element";
+import {
+  getAllTestEvents,
+  logTestEvent,
+  resetTestEvents,
+  testing,
+} from "./events/data";
+import * as Time from "../states/time";
+import {
+  getChars,
+  getKeypressesPerSecond,
+  getLastKeypressToEndMs,
+  getStartToFirstKeypressMs,
+  getTestDurationMs,
+  getAccuracy,
+} from "./events/stats";
+import { calculateWpm } from "../utils/numbers";
 
 let failReason = "";
 
@@ -271,6 +287,7 @@ export function restart(options = {} as RestartOptions): void {
     PractiseWords.resetBefore();
   }
 
+  resetTestEvents();
   ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
@@ -924,6 +941,117 @@ function buildCompletedEvent(
   return completedEvent;
 }
 
+function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
+  const chars = getChars(true);
+
+  //tags
+  const activeTagsIds: string[] = [];
+  for (const tag of DB.getSnapshot()?.tags ?? []) {
+    if (tag.active === true) {
+      activeTagsIds.push(tag._id);
+    }
+  }
+
+  let language = Config.language;
+  if (Config.mode === "quote") {
+    language = Strings.removeLanguageSize(Config.language);
+  }
+
+  let customText: CompletedEventCustomText | undefined = undefined;
+  if (Config.mode === "custom") {
+    const temp = CustomText.getData();
+    customText = {
+      textLen: temp.text.length,
+      mode: temp.mode,
+      pipeDelimiter: temp.pipeDelimiter,
+      limit: temp.limit,
+    };
+  }
+
+  const duration = getTestDurationMs() / 1000;
+
+  let kps = getKeypressesPerSecond();
+  if (kps.length < Math.floor(duration)) {
+    for (let i = 0; i < Math.floor(duration); i++) {
+      if (kps[i] === undefined) {
+        kps[i] = 0;
+      }
+    }
+  }
+  const keypressesPerSecond = kps;
+
+  // let afkDuration = 0;
+  // for (let i = keypressesPerSecond.length - 1; i >= 0; i--) {
+  //   if (keypressesPerSecond[i] === 0) {
+  //     afkDuration++;
+  //   } else {
+  //     break;
+  //   }
+  // }
+
+  // todo: this is not completely done
+  const afkDuration = keypressesPerSecond.filter((kps) => kps === 0).length;
+
+  const rawPerSecond = keypressesPerSecond.map((kps) => calculateWpm(kps, 1));
+  const stddev = Numbers.stdDev(rawPerSecond);
+  const avg = Numbers.mean(rawPerSecond);
+  let consistency = Numbers.roundTo2(Numbers.kogasa(stddev / avg));
+  if (!consistency || isNaN(consistency)) {
+    consistency = 0;
+  }
+
+  const completedEvent: Omit<CompletedEvent, "hash" | "uid"> = {
+    wpm: Numbers.roundTo2(calculateWpm(chars.correctWord, duration)),
+    rawWpm: Numbers.roundTo2(
+      calculateWpm(chars.allCorrect + chars.incorrect + chars.extra, duration),
+    ),
+    charStats: [chars.correctWord, chars.incorrect, chars.extra, chars.missed],
+    charTotal: chars.allCorrect + chars.incorrect + chars.extra + chars.missed,
+    acc: Numbers.roundTo2(getAccuracy().percentage),
+    language: language,
+    testDuration: duration,
+    lastKeyToEnd: getLastKeypressToEndMs(),
+    startToFirstKey: getStartToFirstKeypressMs(),
+    afkDuration: afkDuration,
+    quoteLength: TestWords.currentQuote?.group ?? -1,
+    customText: customText,
+    tags: activeTagsIds,
+    punctuation: Config.punctuation,
+    numbers: Config.numbers,
+    lazyMode: Config.lazyMode,
+    timestamp: Date.now(),
+    mode: Config.mode,
+    mode2: Misc.getMode2(Config, TestWords.currentQuote),
+    bailedOut: TestState.bailedOut,
+    funbox: Config.funbox,
+    difficulty: Config.difficulty,
+    blindMode: Config.blindMode,
+    stopOnLetter: Config.stopOnError === "letter",
+
+    restartCount: TestStats.restartCount, // move somewhere else
+    incompleteTests: TestStats.incompleteTests, //move semewhere else
+    //move
+    incompleteTestSeconds:
+      TestStats.incompleteSeconds < 0
+        ? 0
+        : Numbers.roundTo2(TestStats.incompleteSeconds),
+
+    consistency: consistency,
+    // wpmConsistency: wpmConsistency,
+    // keyConsistency: keyConsistency,
+    // chartData: chartData,
+
+    keySpacing: TestInput.keypressTimings.spacing.array,
+    keyDuration: TestInput.keypressTimings.duration.array,
+    keyOverlap: Numbers.roundTo2(TestInput.keyOverlap.total),
+  } as Omit<CompletedEvent, "hash" | "uid">;
+
+  if (completedEvent.mode !== "custom") delete completedEvent.customText;
+  if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
+
+  return completedEvent;
+}
+
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
   TestUI.setResultCalculating(true);
@@ -966,6 +1094,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestTimer.clear();
   Monkey.hide();
   void ModesNotice.update();
+
+  logTestEvent("timer", now, {
+    event: "end",
+    timer: Time.get(),
+    delta: 0,
+  });
+
+  console.table(getAllTestEvents());
+  console.log(getAllTestEvents());
+  testing();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
@@ -1016,6 +1154,20 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   const ce = buildCompletedEvent(stats, rawPerSecond);
+
+  const ce2 = buildCompletedEvent2();
+
+  //compare ce and ce2, log differences
+  const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
+  for (const key of ceKeys) {
+    const val1 = ce[key];
+    const val2 = ce2[key];
+    if (JSON.stringify(val1) !== JSON.stringify(val2)) {
+      console.error(`Completed event mismatch on key ${key}:`, val1, val2);
+    } else {
+      console.debug(`Completed event match on key ${key}:`, val1);
+    }
+  }
 
   console.debug("Completed event object", ce);
 

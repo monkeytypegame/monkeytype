@@ -7,11 +7,14 @@ import * as Replay from "../../test/replay";
 import Config from "../../config";
 import { goToPreviousWord } from "../helpers/word-navigation";
 import { DeleteInputType } from "../helpers/input-type";
+import { logTestEvent } from "../../test/events/data";
+import { activeWordIndex } from "../../test/test-state";
 
-export function onDelete(inputType: DeleteInputType): void {
+export function onDelete(inputType: DeleteInputType, now: number): void {
   const { realInputValue } = getInputElementValue();
 
   const inputBeforeDelete = TestInput.input.current;
+  const activeWordIndexBeforeDelete = activeWordIndex;
 
   TestInput.input.syncWithInputElement();
 
@@ -43,6 +46,12 @@ export function onDelete(inputType: DeleteInputType): void {
       goToPreviousWord(inputType);
     }
   }
+
+  logTestEvent("input", now, {
+    inputType: inputType,
+    wordIndex: activeWordIndexBeforeDelete,
+    charIndex: inputBeforeDelete.length,
+  });
 
   TestUI.afterTestDelete();
 }

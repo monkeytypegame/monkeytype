@@ -109,7 +109,7 @@ inputEl.addEventListener("input", async (event) => {
     inputType === "deleteWordBackward" ||
     inputType === "deleteContentBackward"
   ) {
-    onDelete(inputType);
+    onDelete(inputType, now);
   } else if (
     inputType === "insertCompositionText" ||
     inputType === "insertFromComposition"

@@ -38,6 +38,7 @@ import {
   isCharCorrect,
   shouldInsertSpaceCharacter,
 } from "../helpers/validation";
+import { logTestEvent } from "../../test/events/data";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -283,6 +284,14 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       void TestLogic.finish();
     }
   }
+
+  logTestEvent("input", now, {
+    inputType: "insertText",
+    data,
+    correct,
+    wordIndex,
+    charIndex: testInput.length,
+  });
 
   if (lastInMultiOrSingle) {
     TestUI.afterTestTextInput(correct, increasedWordIndex, visualInputOverride);

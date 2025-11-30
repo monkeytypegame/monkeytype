@@ -24,6 +24,7 @@ import {
   getActiveFunboxesWithFunction,
   getActiveFunboxNames,
 } from "../../test/funbox/list";
+import { logTestEvent } from "../../test/events/data";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (Config.quickRestart === "tab") {
@@ -160,6 +161,14 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
 
   const now = performance.now();
   TestInput.recordKeydownTime(now, event);
+  logTestEvent("keydown", now, {
+    code: event.code,
+    ctrl: event.ctrlKey,
+    shift: event.shiftKey,
+    alt: event.altKey,
+    meta: event.metaKey,
+    repeat: event.repeat,
+  });
 
   // allow arrows in arrows funbox
   const arrowsActive = Config.funbox.includes("arrows");

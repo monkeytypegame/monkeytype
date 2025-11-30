@@ -106,6 +106,10 @@ export function getStats(): unknown {
 export function restart(): void {
   start = 0;
   end = 0;
+  start2 = 0;
+  end2 = 0;
+  start3 = 0;
+  end3 = 0;
   invalid = false;
   lastSecondNotRound = false;
 }

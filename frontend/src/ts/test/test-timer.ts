@@ -19,6 +19,7 @@ import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
+import { logTestEvent } from "./events/data";
 
 type TimerStats = {
   dateNow: number;
@@ -226,6 +227,11 @@ export async function start(): Promise<void> {
   slowTimerCount = 0;
   timerStats = [];
   expected = TestStats.start + interval;
+  logTestEvent("timer", performance.now(), {
+    event: "start",
+    timer: Time.get(),
+    delta: 0,
+  });
   (function loop(): void {
     const delay = expected - performance.now();
     timerStats.push({
@@ -270,6 +276,13 @@ export async function start(): Promise<void> {
         slowTimerCount = 0;
         return;
       }
+
+      logTestEvent("timer", performance.now(), {
+        event: "step",
+        timer: Time.get(),
+        delta: delay,
+        slowTimer: SlowTimer.get() ? true : undefined,
+      });
 
       void timerStep();
 
