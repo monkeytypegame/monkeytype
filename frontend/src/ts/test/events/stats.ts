@@ -9,6 +9,8 @@ import { CharCounts, countChars } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
 import { getSimulatedInput } from "./helpers";
 import { activeWordIndex } from "../test-state";
+import { calculateWpm } from "../../utils/numbers";
+import { InputEvent } from "./types";
 
 export function getStartToFirstKeypressMs(): number {
   const events = getAllTestEvents();
@@ -333,4 +335,48 @@ export function getErrorCountHistory(): number[] {
   }
 
   return errorCounts;
+}
+
+export function getWpmHistory(): number[] {
+  const testDuration = getTestDurationMs();
+  const expectedLength = Math.floor(testDuration / 1000);
+
+  // not calculating correctly if get partial crecdit but then submit incorrect word
+
+  const wpmHistory: number[] = [];
+
+  for (let second = 0; second < expectedLength; second++) {
+    const eventsPerWordIndex = getInputEventsPerWord((second + 1) * 1000);
+
+    let correctWordChars = 0;
+    for (const [wordIndex, events] of eventsPerWordIndex.entries()) {
+      let maxWordIndex = Math.max(...eventsPerWordIndex.keys());
+      const lastEventOfWord = events[events.length - 1] as InputEvent;
+      if (
+        lastEventOfWord.data.inputType === "insertText" &&
+        lastEventOfWord.data.data === " "
+      ) {
+        maxWordIndex++;
+      }
+      const lastWord = wordIndex === maxWordIndex;
+
+      let simulatedInput = getSimulatedInput(events);
+
+      //todo decide if this should be done or not
+      if (lastWord) {
+        //remove trailing space for last word
+        simulatedInput = simulatedInput.trimEnd();
+      }
+
+      const targetWord = TestWords.words.get(wordIndex) + (lastWord ? "" : " ");
+
+      const charCounts = countChars(simulatedInput, targetWord, lastWord, true);
+
+      correctWordChars += charCounts.correctWord;
+    }
+
+    wpmHistory.push(calculateWpm(correctWordChars, second + 1));
+  }
+
+  return wpmHistory;
 }

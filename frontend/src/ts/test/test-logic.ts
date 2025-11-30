@@ -108,6 +108,7 @@ import {
   getKeypressSpacing,
   getKeypressOverlap,
   getErrorCountHistory,
+  getWpmHistory,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 
@@ -1020,7 +1021,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
   }
 
   const chartData = {
-    wpm: undefined,
+    wpm: getWpmHistory(),
     burst: rawPerSecond,
     err: getErrorCountHistory(),
   };
@@ -1197,6 +1198,37 @@ export async function finish(difficultyFailed = false): Promise<void> {
     if (key === "keyOverlap") {
       val1 = Numbers.roundTo2(val1 as number);
       val2 = Numbers.roundTo2(val2 as number);
+    }
+
+    if (key === "chartData") {
+      val1 = {
+        //@ts-expect-error temp
+        // eslint-disable-next-line
+        wpm: (val1 as CompletedEvent["chartData"]).wpm.map((v) =>
+          // eslint-disable-next-line
+          Math.round(v),
+        ),
+        //@ts-expect-error temp
+        // eslint-disable-next-line
+        burst: (val1 as CompletedEvent["chartData"]).burst,
+        //@ts-expect-error temp
+        // eslint-disable-next-line
+        err: (val1 as CompletedEvent["chartData"]).err,
+      };
+      val2 = {
+        //@ts-expect-error temp
+        // eslint-disable-next-line
+        wpm: (val2 as CompletedEvent["chartData"]).wpm.map((v) =>
+          // eslint-disable-next-line
+          Math.round(v),
+        ),
+        //@ts-expect-error temp
+        // eslint-disable-next-line
+        burst: (val2 as CompletedEvent["chartData"]).burst,
+        //@ts-expect-error temp
+        // eslint-disable-next-line
+        err: (val2 as CompletedEvent["chartData"]).err,
+      };
     }
 
     if (JSON.stringify(val1) !== JSON.stringify(val2)) {

@@ -176,12 +176,18 @@ export function forceReleaseAllKeys(): void {
   }
 }
 
-export function getInputEventsPerWord(): Map<number, InputEvent[]> {
+export function getInputEventsPerWord(
+  testMsLimit?: number,
+): Map<number, InputEvent[]> {
   let eventsPerWordIndex: Map<number, InputEvent[]> = new Map();
   const events = getInputEvents();
   for (const event of events) {
     if (event.type !== "input") {
       continue;
+    }
+
+    if (testMsLimit !== undefined && event.testMs > testMsLimit) {
+      break;
     }
 
     let wordIndex = event.data.wordIndex;
