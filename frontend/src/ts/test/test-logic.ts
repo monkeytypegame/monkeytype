@@ -1164,8 +1164,14 @@ export async function finish(difficultyFailed = false): Promise<void> {
   //compare ce and ce2, log differences
   const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
   for (const key of ceKeys) {
-    const val1 = ce[key];
-    const val2 = ce2[key];
+    let val1 = ce[key];
+    let val2 = ce2[key];
+
+    if (key === "keyDuration" || key === "keySpacing") {
+      val1 = (val1 as number[]).map((v) => Numbers.roundTo2(v));
+      val2 = (val2 as number[]).map((v) => Numbers.roundTo2(v));
+    }
+
     if (JSON.stringify(val1) !== JSON.stringify(val2)) {
       console.error(`Completed event mismatch on key ${key}:`, val1, val2);
     } else {
