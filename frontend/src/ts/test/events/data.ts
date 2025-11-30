@@ -13,7 +13,7 @@ import {
 } from "./types";
 import { keysToTrack } from "./helpers";
 import { getKeypressDurations } from "./stats";
-import { mean, roundTo2 } from "@monkeytype/util/numbers";
+import { mean } from "@monkeytype/util/numbers";
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -148,8 +148,16 @@ export function getPressedKeys(): Map<string, { timestamp: number }> {
 }
 
 export function forceReleaseAllKeys(): void {
-  const durations = getKeypressDurations();
-  const avg = roundTo2(mean(durations));
+  const filteredDurations = getKeypressDurations().filter((d) => d > 0);
+
+  let avg: number;
+  if (filteredDurations.length === 0) {
+    // this means the test ended while all keys were still held - probably safe to ignore
+    // since this will result in a "too short" test anyway, but ill just set it to a magic number
+    avg = 80;
+  } else {
+    avg = mean(filteredDurations);
+  }
 
   for (const [key, { timestamp }] of pressedKeys.entries()) {
     logTestEvent("keyup", timestamp + avg, {
@@ -158,7 +166,6 @@ export function forceReleaseAllKeys(): void {
       shift: false,
       alt: false,
       meta: false,
-      repeat: false,
     });
   }
 }
