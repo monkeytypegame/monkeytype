@@ -1,4 +1,4 @@
-import * as TestStats from "../../test/test-stats";
+// import * as TestStats from "../../test/test-stats";
 import {
   InputEvent,
   InputEventData,
@@ -14,6 +14,7 @@ import {
 import { keysToTrack } from "./helpers";
 import { getKeypressDurations } from "./stats";
 import { mean } from "@monkeytype/util/numbers";
+import testData300 from "./test-data-300";
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -98,12 +99,13 @@ export function logTestEvent(
 }
 
 export function getAllTestEvents(): TestEvent[] {
-  return [...keydownEvents, ...keyupEvents, ...timerEvents, ...inputEvents]
-    .sort((a, b) => a.ms - b.ms)
-    .map((event) => {
-      event.testMs = event.ms - TestStats.start;
-      return event;
-    });
+  // return [...keydownEvents, ...keyupEvents, ...timerEvents, ...inputEvents]
+  //   .sort((a, b) => a.ms - b.ms)
+  //   .map((event) => {
+  //     event.testMs = event.ms - TestStats.start;
+  //     return event;
+  //   });
+  return testData300;
 }
 
 export function logEventsDataToTheConsole(): void {

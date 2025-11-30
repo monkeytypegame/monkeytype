@@ -1182,7 +1182,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const ce = buildCompletedEvent(stats, rawPerSecond);
 
+  const start = performance.now();
   const ce2 = buildCompletedEvent2();
+  const end = performance.now();
+
+  console.debug(
+    `Built completed event 2 in ${Numbers.roundTo2(end - start)} ms`,
+  );
 
   //compare ce and ce2, log differences
   const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
