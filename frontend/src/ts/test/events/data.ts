@@ -109,12 +109,18 @@ export function getAllTestEvents(): TestEvent[] {
 export function logEventsDataToTheConsole(): void {
   console.table(
     getAllTestEvents().map((event) => {
-      const e = {
+      const d = event.data;
+      let e = {
         ...event,
         ...event.data,
       };
       // @ts-expect-error just for logging to the console
       delete e.data;
+      // @ts-expect-error just for logging to the console
+      e = {
+        ...e,
+        ...d,
+      };
       return e;
     }),
   );
