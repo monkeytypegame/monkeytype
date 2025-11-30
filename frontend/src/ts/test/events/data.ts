@@ -11,11 +11,22 @@ import {
   TimerEvent,
   TimerEventData,
 } from "./types";
+import { keysToTrack } from "./helpers";
+import { getKeypressDurations } from "./stats";
+import { mean, roundTo2 } from "@monkeytype/util/numbers";
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
 let timerEvents: TimerEvent[] = [];
 let inputEvents: InputEvent[] = [];
+
+let noCodeIndex = 0;
+let pressedKeys: Map<
+  string,
+  {
+    timestamp: number;
+  }
+> = new Map();
 
 export function logTestEvent(
   type: TestEventType,
@@ -35,8 +46,49 @@ export function logTestEvent(
   console.log("logging test event", event);
 
   if (type === "keydown") {
+    const code = (event as KeydownEvent).data.code;
+
+    if (!keysToTrack.has(code)) {
+      return;
+    }
+
+    if (pressedKeys.has(code)) {
+      //already pressed - ignore
+      return;
+    }
+
+    //todo: move this to input code i think
+    let key = code;
+    if (key === "NoCode") {
+      key = "NoCode" + noCodeIndex;
+      noCodeIndex++;
+    }
+
+    pressedKeys.set(key, {
+      timestamp: now,
+    });
+
     keydownEvents.push(event as KeydownEvent);
   } else if (type === "keyup") {
+    const code = (event as KeyupEvent).data.code;
+
+    if (!keysToTrack.has(code)) {
+      return;
+    }
+
+    if (!pressedKeys.has(code)) {
+      //not pressed - ignore
+      return;
+    }
+
+    let key = code;
+    if (key === "NoCode") {
+      noCodeIndex--;
+      key = "NoCode" + noCodeIndex;
+    }
+
+    pressedKeys.delete(key);
+
     keyupEvents.push(event as KeyupEvent);
   } else if (type === "timer") {
     timerEvents.push(event as TimerEvent);
@@ -54,9 +106,23 @@ export function getAllTestEvents(): TestEvent[] {
     });
 }
 
+export function logEventsDataToTheConsole(): void {
+  console.table(
+    getAllTestEvents().map((event) => {
+      const e = {
+        ...event,
+        ...event.data,
+      };
+      // @ts-expect-error just for logging to the console
+      delete e.data;
+      return e;
+    }),
+  );
+}
+
+//@ts-expect-error testing
 window["testevents"] = {
   getAllTestEvents,
-  _calculateRawWpmForTime,
   getInputEvents,
 };
 
@@ -71,35 +137,30 @@ export function testing(): void {
   // getAllTestEvents().
 }
 
-function _calculateRawWpmForTime(
-  startSecondInclusive: number,
-  endSecondExclusive = startSecondInclusive + 1,
-): number {
-  const keypresses = getAllTestEvents().filter((event) => {
-    if (
-      event.testMs < startSecondInclusive * 1000 ||
-      event.testMs >= endSecondExclusive * 1000
-    ) {
-      return false;
-    }
-    if (event.type !== "input") {
-      return false;
-    }
-
-    if (event.data.inputType !== "insertText") {
-      return false;
-    }
-
-    return true;
-  });
-
-  return keypresses.length;
-}
-
 export function getInputEvents(): InputEvent[] {
   return getAllTestEvents().filter(
     (event): event is InputEvent => event.type === "input",
   );
+}
+
+export function getPressedKeys(): Map<string, { timestamp: number }> {
+  return pressedKeys;
+}
+
+export function forceReleaseAllKeys(): void {
+  const durations = getKeypressDurations();
+  const avg = roundTo2(mean(durations));
+
+  for (const [key, { timestamp }] of pressedKeys.entries()) {
+    logTestEvent("keyup", timestamp + avg, {
+      code: key,
+      ctrl: false,
+      shift: false,
+      alt: false,
+      meta: false,
+      repeat: false,
+    });
+  }
 }
 
 export function getInputEventsPerWord(): Map<number, InputEvent[]> {
@@ -127,25 +188,4 @@ export function getInputEventsPerWord(): Map<number, InputEvent[]> {
     eventsPerWordIndex.set(wordIndex, existing);
   }
   return eventsPerWordIndex;
-}
-
-export function getSimulatedInput(events: InputEvent[]): string {
-  let simulatedInput = "";
-
-  for (const event of events) {
-    if (event.data.inputType === "insertText") {
-      simulatedInput += event.data.data;
-    }
-    if (event.data.inputType === "insertCompositionText") {
-      simulatedInput += event.data.data;
-    }
-    if (event.data.inputType === "deleteContentBackward") {
-      simulatedInput = simulatedInput.slice(0, -1);
-    }
-    if (event.data.inputType === "deleteWordBackward") {
-      simulatedInput = "";
-    }
-  }
-
-  return simulatedInput;
 }

@@ -23,7 +23,6 @@ export type KeydownEventData = {
   shift: boolean;
   alt: boolean;
   meta: boolean;
-  repeat: boolean;
 };
 
 export type KeyupEvent = CommonProps<"keyup"> & {

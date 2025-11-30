@@ -25,6 +25,7 @@ import {
   getActiveFunboxNames,
 } from "../../test/funbox/list";
 import { logTestEvent } from "../../test/events/data";
+import { getTestEventCode } from "../../test/events/helpers";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (Config.quickRestart === "tab") {
@@ -153,6 +154,11 @@ async function handleFunboxes(
 }
 
 export async function onKeydown(event: KeyboardEvent): Promise<void> {
+  if (event.repeat) {
+    // just ignore all repeats
+    return;
+  }
+
   console.debug("wordsInput event keydown", {
     event,
     key: event.key,
@@ -161,13 +167,13 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
 
   const now = performance.now();
   TestInput.recordKeydownTime(now, event);
+
   logTestEvent("keydown", now, {
-    code: event.code,
+    code: getTestEventCode(event),
     ctrl: event.ctrlKey,
     shift: event.shiftKey,
     alt: event.altKey,
     meta: event.metaKey,
-    repeat: event.repeat,
   });
 
   // allow arrows in arrows funbox

@@ -2,12 +2,12 @@ import {
   getAllTestEvents,
   getInputEvents,
   getInputEventsPerWord,
-  getSimulatedInput,
 } from "./data";
 import * as TestWords from "../../test/test-words";
 import Config from "../../config";
 import { CharCounts, countChars } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
+import { getSimulatedInput } from "./helpers";
 
 export function getStartToFirstKeypressMs(): number {
   const events = getAllTestEvents();
@@ -212,4 +212,26 @@ export function getAccuracy(): {
     incorrect: incorrect,
     percentage: percentage,
   };
+}
+
+export function getKeypressDurations(): number[] {
+  const events = getAllTestEvents();
+
+  const keydownTimes: Map<string, number> = new Map();
+  const durations: number[] = [];
+
+  for (const event of events) {
+    if (event.type === "keydown") {
+      keydownTimes.set(event.data.code, event.ms);
+    } else if (event.type === "keyup") {
+      const keydownTime = keydownTimes.get(event.data.code);
+      if (keydownTime !== undefined) {
+        const duration = event.ms - keydownTime;
+        durations.push(duration);
+        keydownTimes.delete(event.data.code);
+      }
+    }
+  }
+
+  return durations;
 }

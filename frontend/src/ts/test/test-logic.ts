@@ -90,7 +90,8 @@ import {
   setInputElementValue,
 } from "../input/input-element";
 import {
-  getAllTestEvents,
+  forceReleaseAllKeys,
+  logEventsDataToTheConsole,
   logTestEvent,
   resetTestEvents,
   testing,
@@ -98,6 +99,7 @@ import {
 import * as Time from "../states/time";
 import {
   getChars,
+  getKeypressDurations,
   getKeypressesPerSecond,
   getLastKeypressToEndMs,
   getStartToFirstKeypressMs,
@@ -1041,9 +1043,10 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     // keyConsistency: keyConsistency,
     // chartData: chartData,
 
-    keySpacing: TestInput.keypressTimings.spacing.array,
-    keyDuration: TestInput.keypressTimings.duration.array,
-    keyOverlap: Numbers.roundTo2(TestInput.keyOverlap.total),
+    // keySpacing: TestInput.keypressTimings.spacing.array,
+    // keyDuration: TestInput.keypressTimings.duration.array,
+    keyDuration: getKeypressDurations(),
+    // keyOverlap: Numbers.roundTo2(TestInput.keyOverlap.total),
   } as Omit<CompletedEvent, "hash" | "uid">;
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
@@ -1101,8 +1104,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     delta: 0,
   });
 
-  console.table(getAllTestEvents());
-  console.log(getAllTestEvents());
+  forceReleaseAllKeys();
+
+  logEventsDataToTheConsole();
   testing();
 
   //need one more calculation for the last word if test auto ended
@@ -1170,6 +1174,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   console.debug("Completed event object", ce);
+  console.debug("Completed event object2", ce2);
 
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
