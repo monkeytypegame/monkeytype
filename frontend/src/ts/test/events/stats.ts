@@ -8,6 +8,7 @@ import Config from "../../config";
 import { CharCounts, countChars } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
 import { getSimulatedInput } from "./helpers";
+import { activeWordIndex } from "../test-state";
 
 export function getStartToFirstKeypressMs(): number {
   const events = getAllTestEvents();
@@ -82,6 +83,8 @@ export function getLastKeypressToEndMs(): number {
 
 export function getKeypressesPerSecond(): number[] {
   const events = getAllTestEvents();
+  const testDuration = getTestDurationMs();
+  const expectedLength = Math.floor(testDuration / 1000);
 
   const keypresses: number[] = [];
   for (const event of events) {
@@ -95,8 +98,7 @@ export function getKeypressesPerSecond(): number[] {
   }
 
   // Fill in empty values with 0
-  const maxTime = keypresses.length;
-  for (let i = 0; i < maxTime; i++) {
+  for (let i = 0; i < expectedLength; i++) {
     if (keypresses[i] === undefined) {
       keypresses[i] = 0;
     }
@@ -149,7 +151,7 @@ export function getChars(final: boolean): CharCounts {
   let missed = 0;
 
   for (const [wordIndex, events] of eventsPerWordIndex.entries()) {
-    const lastWord = wordIndex === Math.max(...eventsPerWordIndex.keys());
+    const lastWord = wordIndex === activeWordIndex;
 
     let simulatedInput = getSimulatedInput(events);
 
@@ -217,21 +219,118 @@ export function getAccuracy(): {
 export function getKeypressDurations(): number[] {
   const events = getAllTestEvents();
 
-  const keydownTimes: Map<string, number> = new Map();
+  const keydownTimes: Map<
+    string,
+    {
+      timestamp: number;
+      index: number;
+    }
+  > = new Map();
   const durations: number[] = [];
 
   for (const event of events) {
     if (event.type === "keydown") {
-      keydownTimes.set(event.data.code, event.ms);
+      keydownTimes.set(event.data.code, {
+        timestamp: event.ms,
+        index: durations.length,
+      });
+      durations.push(0); // placeholder
     } else if (event.type === "keyup") {
       const keydownTime = keydownTimes.get(event.data.code);
       if (keydownTime !== undefined) {
-        const duration = event.ms - keydownTime;
-        durations.push(duration);
+        const duration = event.ms - keydownTime.timestamp;
+        durations[keydownTime.index] = duration;
         keydownTimes.delete(event.data.code);
       }
     }
   }
 
   return durations;
+}
+
+export function getKeypressSpacing(): number[] {
+  const events = getAllTestEvents();
+
+  const spacings: number[] = [];
+  let lastKeydownTime: number | undefined;
+
+  for (const event of events) {
+    if (event.type === "keydown") {
+      if (lastKeydownTime !== undefined) {
+        const spacing = event.ms - lastKeydownTime;
+        spacings.push(spacing);
+      }
+      lastKeydownTime = event.ms;
+    }
+  }
+
+  return spacings;
+}
+
+export function getKeypressOverlap(): number {
+  const events = getAllTestEvents();
+
+  const keydownTimes: Map<
+    string,
+    {
+      timestamp: number;
+    }
+  > = new Map();
+  let overlap = 0;
+  let lastStartTime: number | undefined;
+
+  for (const event of events) {
+    if (event.type === "keydown") {
+      keydownTimes.set(event.data.code, {
+        timestamp: event.ms,
+      });
+      if (lastStartTime === undefined && keydownTimes.size > 1) {
+        lastStartTime = event.ms;
+      }
+    } else if (event.type === "keyup") {
+      keydownTimes.delete(event.data.code);
+      if (lastStartTime !== undefined && keydownTimes.size === 1) {
+        const endTime = event.ms;
+        overlap += endTime - lastStartTime;
+        lastStartTime = undefined;
+      }
+    }
+  }
+  return overlap;
+}
+
+export function getErrorCountHistory(): number[] {
+  //gets a history of error counts per second, errors from prevoius seconds are carried not over
+  const events = getAllTestEvents();
+  const testDuration = getTestDurationMs();
+  const expectedLength = Math.floor(testDuration / 1000);
+  const errorCounts: number[] = [];
+
+  for (const event of events) {
+    if (
+      event.type === "input" &&
+      event.data.inputType === "insertText" &&
+      !event.data.correct
+    ) {
+      const eventSecond = Math.floor(event.testMs / 1000);
+      if (errorCounts[eventSecond] === undefined) {
+        errorCounts[eventSecond] = 0;
+      }
+      errorCounts[eventSecond]++;
+    }
+  }
+
+  //fill in empty values with 0
+  const maxTime = errorCounts.length;
+  for (let i = 0; i < maxTime; i++) {
+    if (errorCounts[i] === undefined) {
+      errorCounts[i] = 0;
+    }
+  }
+
+  while (errorCounts.length < expectedLength) {
+    errorCounts.push(0);
+  }
+
+  return errorCounts;
 }

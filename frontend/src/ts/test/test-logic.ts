@@ -105,6 +105,9 @@ import {
   getStartToFirstKeypressMs,
   getTestDurationMs,
   getAccuracy,
+  getKeypressSpacing,
+  getKeypressOverlap,
+  getErrorCountHistory,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 
@@ -970,17 +973,14 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     };
   }
 
-  const duration = getTestDurationMs() / 1000;
+  let duration = getTestDurationMs() / 1000;
 
-  let kps = getKeypressesPerSecond();
-  if (kps.length < Math.floor(duration)) {
-    for (let i = 0; i < Math.floor(duration); i++) {
-      if (kps[i] === undefined) {
-        kps[i] = 0;
-      }
-    }
+  if (Config.mode !== "custom") {
+    duration = Numbers.roundTo2(duration);
+    console.debug("Mode is not custom - rounding to 2. New time: ", duration);
   }
-  const keypressesPerSecond = kps;
+
+  const keypressesPerSecond = getKeypressesPerSecond();
 
   // let afkDuration = 0;
   // for (let i = keypressesPerSecond.length - 1; i >= 0; i--) {
@@ -1002,13 +1002,36 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     consistency = 0;
   }
 
+  const keypressSpacing = getKeypressSpacing();
+
+  //todo: why slice?
+  let keyConsistencyArray = keypressSpacing.slice();
+  if (keypressSpacing.length > 0) {
+    keyConsistencyArray = keyConsistencyArray.slice(
+      0,
+      keyConsistencyArray.length - 1,
+    );
+  }
+  const keyStddev = Numbers.stdDev(keyConsistencyArray);
+  const keyAvg = Numbers.mean(keyConsistencyArray);
+  let keyConsistency = Numbers.roundTo2(Numbers.kogasa(keyStddev / keyAvg));
+  if (!keyConsistency || isNaN(keyConsistency)) {
+    keyConsistency = 0;
+  }
+
+  const chartData = {
+    wpm: undefined,
+    burst: rawPerSecond,
+    err: getErrorCountHistory(),
+  };
+
   const completedEvent: Omit<CompletedEvent, "hash" | "uid"> = {
     wpm: Numbers.roundTo2(calculateWpm(chars.correctWord, duration)),
     rawWpm: Numbers.roundTo2(
       calculateWpm(chars.allCorrect + chars.incorrect + chars.extra, duration),
     ),
     charStats: [chars.correctWord, chars.incorrect, chars.extra, chars.missed],
-    charTotal: chars.allCorrect + chars.incorrect + chars.extra + chars.missed,
+    charTotal: chars.allCorrect + chars.incorrect + chars.extra,
     acc: Numbers.roundTo2(getAccuracy().percentage),
     language: language,
     testDuration: duration,
@@ -1040,14 +1063,13 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
 
     consistency: consistency,
     // wpmConsistency: wpmConsistency,
-    // keyConsistency: keyConsistency,
-    // chartData: chartData,
+    keyConsistency: keyConsistency,
+    chartData: chartData,
 
-    // keySpacing: TestInput.keypressTimings.spacing.array,
-    // keyDuration: TestInput.keypressTimings.duration.array,
+    keySpacing: keypressSpacing,
     keyDuration: getKeypressDurations(),
-    // keyOverlap: Numbers.roundTo2(TestInput.keyOverlap.total),
-  } as Omit<CompletedEvent, "hash" | "uid">;
+    keyOverlap: getKeypressOverlap(),
+  } as unknown as Omit<CompletedEvent, "hash" | "uid">;
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
   if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
@@ -1170,6 +1192,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     if (key === "keyDuration" || key === "keySpacing") {
       val1 = (val1 as number[]).map((v) => Numbers.roundTo2(v));
       val2 = (val2 as number[]).map((v) => Numbers.roundTo2(v));
+    }
+
+    if (key === "keyOverlap") {
+      val1 = Numbers.roundTo2(val1 as number);
+      val2 = Numbers.roundTo2(val2 as number);
     }
 
     if (JSON.stringify(val1) !== JSON.stringify(val2)) {
