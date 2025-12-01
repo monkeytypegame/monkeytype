@@ -2,6 +2,7 @@ import {
   getAllTestEvents,
   getInputEvents,
   getInputEventsPerWord,
+  // simulateInput,
 } from "./data";
 import * as TestWords from "../../test/test-words";
 import Config from "../../config";
@@ -345,10 +346,11 @@ export function getWpmHistory(): number[] {
 
   const wpmHistory: number[] = [];
 
+  const start = performance.now();
   for (let second = 0; second < expectedLength; second++) {
     const eventsPerWordIndex = getInputEventsPerWord((second + 1) * 1000);
 
-    let correctWordChars = 0;
+    let correctWordChars: number[] = [];
     for (const [wordIndex, events] of eventsPerWordIndex.entries()) {
       let maxWordIndex = Math.max(...eventsPerWordIndex.keys());
       const lastEventOfWord = events[events.length - 1] as InputEvent;
@@ -372,11 +374,26 @@ export function getWpmHistory(): number[] {
 
       const charCounts = countChars(simulatedInput, targetWord, lastWord, true);
 
-      correctWordChars += charCounts.correctWord;
+      correctWordChars.push(charCounts.correctWord);
     }
 
-    wpmHistory.push(calculateWpm(correctWordChars, second + 1));
+    console.debug(eventsPerWordIndex);
+
+    console.debug(
+      `Correct chars after second ${second + 1}: ${correctWordChars}`,
+    );
+
+    wpmHistory.push(
+      calculateWpm(
+        correctWordChars.reduce((a, b) => a + b, 0),
+        second + 1,
+      ),
+    );
+    const end = performance.now();
+    console.debug(`Second ${second + 1} took ${end - start} ms`);
   }
+
+  // console.log(simulateInput());
 
   return wpmHistory;
 }

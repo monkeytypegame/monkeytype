@@ -1022,6 +1022,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
 
   const chartData = {
     wpm: getWpmHistory(),
+    // wpm: undefined,
     burst: rawPerSecond,
     err: getErrorCountHistory(),
   };
@@ -1206,36 +1207,36 @@ export async function finish(difficultyFailed = false): Promise<void> {
       val2 = Numbers.roundTo2(val2 as number);
     }
 
-    if (key === "chartData") {
-      val1 = {
-        //@ts-expect-error temp
-        // eslint-disable-next-line
-        wpm: (val1 as CompletedEvent["chartData"]).wpm.map((v) =>
-          // eslint-disable-next-line
-          Math.round(v),
-        ),
-        //@ts-expect-error temp
-        // eslint-disable-next-line
-        burst: (val1 as CompletedEvent["chartData"]).burst,
-        //@ts-expect-error temp
-        // eslint-disable-next-line
-        err: (val1 as CompletedEvent["chartData"]).err,
-      };
-      val2 = {
-        //@ts-expect-error temp
-        // eslint-disable-next-line
-        wpm: (val2 as CompletedEvent["chartData"]).wpm.map((v) =>
-          // eslint-disable-next-line
-          Math.round(v),
-        ),
-        //@ts-expect-error temp
-        // eslint-disable-next-line
-        burst: (val2 as CompletedEvent["chartData"]).burst,
-        //@ts-expect-error temp
-        // eslint-disable-next-line
-        err: (val2 as CompletedEvent["chartData"]).err,
-      };
-    }
+    // if (key === "chartData") {
+    //   val1 = {
+    //     //@ts-expect-error temp
+    //     // eslint-disable-next-line
+    //     wpm: (val1 as CompletedEvent["chartData"]).wpm.map((v) =>
+    //       // eslint-disable-next-line
+    //       Math.round(v),
+    //     ),
+    //     //@ts-expect-error temp
+    //     // eslint-disable-next-line
+    //     burst: (val1 as CompletedEvent["chartData"]).burst,
+    //     //@ts-expect-error temp
+    //     // eslint-disable-next-line
+    //     err: (val1 as CompletedEvent["chartData"]).err,
+    //   };
+    //   val2 = {
+    //     //@ts-expect-error temp
+    //     // eslint-disable-next-line
+    //     wpm: (val2 as CompletedEvent["chartData"]).wpm.map((v) =>
+    //       // eslint-disable-next-line
+    //       Math.round(v),
+    //     ),
+    //     //@ts-expect-error temp
+    //     // eslint-disable-next-line
+    //     burst: (val2 as CompletedEvent["chartData"]).burst,
+    //     //@ts-expect-error temp
+    //     // eslint-disable-next-line
+    //     err: (val2 as CompletedEvent["chartData"]).err,
+    //   };
+    // }
 
     if (JSON.stringify(val1) !== JSON.stringify(val2)) {
       console.error(`Completed event mismatch on key ${key}:`, val1, val2);

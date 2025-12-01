@@ -1,4 +1,4 @@
-// import * as TestStats from "../../test/test-stats";
+import * as TestStats from "../../test/test-stats";
 import {
   InputEvent,
   InputEventData,
@@ -44,7 +44,7 @@ export function logTestEvent(
     data: eventData,
   };
 
-  console.log("logging test event", event);
+  console.debug("logging test event", event);
 
   if (type === "keydown") {
     const code = (event as KeydownEvent).data.code;
@@ -99,17 +99,17 @@ export function logTestEvent(
 }
 
 export function getAllTestEvents(): TestEvent[] {
-  // return [...keydownEvents, ...keyupEvents, ...timerEvents, ...inputEvents]
-  //   .sort((a, b) => a.ms - b.ms)
-  //   .map((event) => {
-  //     event.testMs = event.ms - TestStats.start;
-  //     return event;
-  //   });
   return testData300;
+  return [...keydownEvents, ...keyupEvents, ...timerEvents, ...inputEvents]
+    .sort((a, b) => a.ms - b.ms)
+    .map((event) => {
+      event.testMs = event.ms - TestStats.start;
+      return event;
+    });
 }
 
 export function logEventsDataToTheConsole(): void {
-  console.table(
+  console.debug(
     getAllTestEvents().map((event) => {
       const d = event.data;
       let e = {
@@ -179,12 +179,17 @@ export function forceReleaseAllKeys(): void {
 }
 
 export function getInputEventsPerWord(
+  startMs?: number,
   testMsLimit?: number,
 ): Map<number, InputEvent[]> {
   let eventsPerWordIndex: Map<number, InputEvent[]> = new Map();
-  const events = getInputEvents();
+  const events = getAllTestEvents();
   for (const event of events) {
     if (event.type !== "input") {
+      continue;
+    }
+
+    if (startMs !== undefined && event.testMs < startMs) {
       continue;
     }
 
@@ -209,4 +214,69 @@ export function getInputEventsPerWord(
     eventsPerWordIndex.set(wordIndex, existing);
   }
   return eventsPerWordIndex;
+}
+
+export function simulateInput(testMsLimit?: number): Map<number, string> {
+  const events = getAllTestEvents();
+  let simulatedInputMap: Map<number, string> = new Map();
+  let simulatedInput = "";
+  let lastWordIndex;
+  for (const event of events) {
+    if (testMsLimit !== undefined && event.testMs > testMsLimit) {
+      break;
+    }
+
+    if (event.type !== "input") {
+      continue;
+    }
+
+    if (lastWordIndex === undefined) {
+      lastWordIndex = event.data.wordIndex;
+    }
+
+    if (event.data.wordIndex > lastWordIndex) {
+      //new word - reset simulated input
+      simulatedInputMap.set(lastWordIndex, simulatedInput);
+      simulatedInput = "";
+      lastWordIndex = event.data.wordIndex;
+    }
+
+    if (event.data.wordIndex < lastWordIndex) {
+      // went back to previous word - store current simulated input and reset
+      simulatedInputMap.delete(lastWordIndex);
+      simulatedInput = simulatedInputMap.get(event.data.wordIndex) ?? "";
+      lastWordIndex = event.data.wordIndex;
+    }
+
+    if (event.data.inputType === "insertText") {
+      simulatedInput += event.data.data;
+    }
+    if (event.data.inputType === "insertCompositionText") {
+      simulatedInput += event.data.data;
+    }
+    if (event.data.inputType === "deleteContentBackward") {
+      if (event.data.charIndex === 0) {
+        //delete previous character
+        simulatedInputMap.set(
+          lastWordIndex - 1,
+          simulatedInputMap.get(lastWordIndex - 1)?.slice(0, -1) ?? "",
+        );
+      } else {
+        simulatedInput = simulatedInput.slice(0, -1);
+      }
+    }
+    if (event.data.inputType === "deleteWordBackward") {
+      if (event.data.charIndex === 0) {
+        //delete previous word
+        simulatedInputMap.delete(lastWordIndex - 1);
+      }
+      simulatedInput = "";
+    }
+  }
+
+  if (simulatedInput !== "") {
+    simulatedInputMap.set(lastWordIndex as number, simulatedInput);
+  }
+
+  return simulatedInputMap;
 }
