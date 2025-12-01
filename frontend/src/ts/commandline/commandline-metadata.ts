@@ -732,4 +732,16 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
     },
   },
+
+  //tribe
+  tribeDelta: {
+    subgroup: {
+      options: "fromSchema",
+    },
+  },
+  tribeCarets: {
+    subgroup: {
+      options: "fromSchema",
+    },
+  },
 };

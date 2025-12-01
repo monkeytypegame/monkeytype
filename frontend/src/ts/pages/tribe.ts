@@ -4,7 +4,7 @@ import * as TribeState from "../tribe/tribe-state";
 import * as TribeChat from "../tribe/tribe-chat";
 
 export const page = new Page({
-  name: "tribe",
+  id: "tribe",
   element: $(".page.pageTribe"),
   path: "/tribe",
   beforeHide: async () => {

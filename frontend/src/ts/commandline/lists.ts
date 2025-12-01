@@ -60,6 +60,12 @@ const adsCommand = buildCommandForConfigKey("ads");
 const minSpeedCommand = buildCommandForConfigKey("minWpm");
 const minAccCommand = buildCommandForConfigKey("minAcc");
 const paceCaretCommand = buildCommandForConfigKey("paceCaret");
+const modeCommand = buildCommandForConfigKey("mode");
+const timeCommand = buildCommandForConfigKey("time");
+const wordsCommand = buildCommandForConfigKey("words");
+const quoteLengthCommand = buildCommandForConfigKey("quoteLength");
+const punctuationCommand = buildCommandForConfigKey("punctuation");
+const numbersCommand = buildCommandForConfigKey("numbers");
 
 export const commands: CommandsSubgroup = {
   title: "",
@@ -68,12 +74,12 @@ export const commands: CommandsSubgroup = {
     ...ResultScreenCommands,
 
     //test screen
-    buildCommandForConfigKey("punctuation"),
-    buildCommandForConfigKey("numbers"),
-    buildCommandForConfigKey("mode"),
-    buildCommandForConfigKey("time"),
-    buildCommandForConfigKey("words"),
-    buildCommandForConfigKey("quoteLength"),
+    punctuationCommand,
+    numbersCommand,
+    modeCommand,
+    timeCommand,
+    wordsCommand,
+    quoteLengthCommand,
     languageCommand,
     {
       id: "changeCustomModeText",
@@ -371,12 +377,12 @@ const lists = {
   tags: TagsCommands[0]?.subgroup,
   resultSaving: ResultSavingCommands[0]?.subgroup,
   blindMode: blindModeCommand.subgroup,
-  mode: ModeCommands[0]?.subgroup,
-  time: TimeCommands[0]?.subgroup,
-  words: WordsCommands[0]?.subgroup,
-  quoteLength: QuoteLengthCommands[0]?.subgroup,
-  punctuation: PunctuationCommands[0]?.subgroup,
-  numbers: NumbersCommands[0]?.subgroup,
+  mode: modeCommand.subgroup,
+  time: timeCommand.subgroup,
+  words: wordsCommand.subgroup,
+  quoteLength: quoteLengthCommand.subgroup,
+  punctuation: punctuationCommand.subgroup,
+  numbers: numbersCommand.subgroup,
 };
 
 export function doesListExist(listName: string): boolean {

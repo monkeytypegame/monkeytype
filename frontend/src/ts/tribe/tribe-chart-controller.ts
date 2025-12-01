@@ -270,7 +270,7 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
   //   Math.max(...result.chartData.raw)
   // );
 
-  const smoothedRawData = smooth(result.chartData.raw, 1);
+  const smoothedRawData = smooth(result.chartData.burst, 1);
 
   chart.data.labels = labels;
   //@ts-expect-error tribe
@@ -351,7 +351,7 @@ export async function updateChartMaxValues(): Promise<void> {
     const result = room.users[userId]?.result;
     if (!result) continue;
     const maxUserWpm = Math.max(maxWpm, Math.max(...result.chartData.wpm));
-    const maxUserRaw = Math.max(maxRaw, Math.max(...result.chartData.raw));
+    const maxUserRaw = Math.max(maxRaw, Math.max(...result.chartData.burst));
     if (maxUserWpm > maxWpm) {
       maxWpm = maxUserWpm;
     }

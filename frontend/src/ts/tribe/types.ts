@@ -1,4 +1,4 @@
-import { ChartData } from "@monkeytype/contracts/schemas/results";
+import { ChartData } from "@monkeytype/schemas/results";
 
 export type SystemStats = {
   pingStart: number;
