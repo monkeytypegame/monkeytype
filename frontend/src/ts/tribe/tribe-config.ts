@@ -67,7 +67,7 @@ export function getArray(config: TribeTypes.RoomConfig): string[] {
 }
 
 export function apply(config: TribeTypes.RoomConfig): void {
-  UpdateConfig.setMode(config.mode as Mode, true);
+  UpdateConfig.setMode(config.mode as Mode, true, true);
   if (config.mode === "time") {
     UpdateConfig.setTimeConfig(config.mode2 as number, true, true);
   } else if (config.mode === "words") {
@@ -84,8 +84,8 @@ export function apply(config: TribeTypes.RoomConfig): void {
   }
   UpdateConfig.setDifficulty(config.difficulty as Difficulty, true, true);
   UpdateConfig.setLanguage(config.language as Language, true, true);
-  UpdateConfig.setPunctuation(config.punctuation, true);
-  UpdateConfig.setNumbers(config.numbers, true);
+  UpdateConfig.setPunctuation(config.punctuation, true, true);
+  UpdateConfig.setNumbers(config.numbers, true, true);
   Funbox.setFunbox(config.funbox as FunboxName[], true);
   UpdateConfig.setLazyMode(config.lazyMode, true, true);
   UpdateConfig.setStopOnError(config.stopOnError as StopOnError, true, true);
