@@ -161,7 +161,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-be
+        run: npm run lint-fast-be && npm run lint-be
 
       - name: Build
         run: npm run build-be
@@ -214,7 +214,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-fe
+        run: npm run lint-fast-fe && npm run lint-fe
 
       - name: Build
         run: npm run build-fe
@@ -330,7 +330,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-pkg
+        run: npm run lint-fast-pkg && npm run lint-pkg
 
       - name: Build
         run: npm run build-pkg
