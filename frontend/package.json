@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "oxlint": "oxlint . --type-aware",
+    "oxlint": "oxlint . --type-aware --type-check",
     "oxlint-plugin": "oxlint -c .oxlintrc-plugin.json",
     "lint": "npm run oxlint && npm run oxlint-plugin",
     "check-assets": "tsx ./scripts/check-assets.ts",
@@ -37,7 +37,7 @@
     ],
     "*.{ts,js}": [
       "prettier --write",
-      "oxlint --type-aware"
+      "oxlint --type-aware --type-check"
     ]
   },
   "devDependencies": {

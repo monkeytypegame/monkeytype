@@ -48,7 +48,6 @@ export function reinstate(): boolean {
 }
 
 export async function refreshVisible(): Promise<void> {
-  ////@ts-expect-error 3rd party ad code
   // const adDivs = Object.keys(window.egAdPack.gptAdSlots);
   // const visibleAdDivs = [];
   // for (let i = 0; i < adDivs.length; i++) {

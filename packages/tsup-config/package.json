@@ -5,7 +5,7 @@
     "dev": "tsup-node --watch",
     "build": "tsup-node",
     "ts-check": "tsc --noEmit",
-    "oxlint": "oxlint . --type-aware",
+    "oxlint": "oxlint . --type-aware --type-check",
     "lint": "npm run oxlint"
   },
   "peerDependencies": {

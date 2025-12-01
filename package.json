@@ -85,7 +85,7 @@
     ],
     "*.{ts,js}": [
       "prettier --write",
-      "oxlint --type-aware"
+      "oxlint --type-aware --type-check"
     ]
   },
   "version": "25.46.0",

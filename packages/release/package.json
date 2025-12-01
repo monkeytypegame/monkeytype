@@ -6,7 +6,7 @@
     "dev": "nodemon --watch src --exec \"node ./src/index.js --dry\"",
     "dev-hotfix": "nodemon --watch src --exec \"node ./src/index.js --dry --hotfix\"",
     "dev-changelog": "nodemon ./src/buildChangelog.js",
-    "oxlint": "oxlint . --type-aware",
+    "oxlint": "oxlint . --type-aware --type-check",
     "lint": "npm run oxlint",
     "purge-cf-cache": "./bin/purgeCfCache.sh"
   },
