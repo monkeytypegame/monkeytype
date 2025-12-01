@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "oxlint": "oxlint . --type-aware",
+    "oxlint": "oxlint . --type-aware --type-check",
     "oxlint-plugin": "oxlint -c .oxlintrc-plugin.json",
     "lint": "npm run oxlint && npm run oxlint-plugin",
     "build": "npm run gen-docs && tsc --build",
