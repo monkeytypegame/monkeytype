@@ -109,7 +109,7 @@ export function updateBar(
       Config.mode === "time"
         ? user.progress?.wpmProgress + "%"
         : user.progress?.progress + "%";
-    if (percentOverride) {
+    if (percentOverride !== undefined && percentOverride !== 0) {
       percent = percentOverride + "%";
     }
     el.stop(true, false).animate(
@@ -161,7 +161,7 @@ export function updatePositions(
     //todo once i use state and redraw elements as needed instead of always keeping elements in the dom
     //reorder table rows based on the ordered list
     if (reorder) {
-      const elements: Record<string, JQuery<HTMLElement>> = {};
+      const elements: Record<string, JQuery> = {};
       const el = $(".pageTest #result #tribeResults table tbody");
       el.find("tr.user").each((_, userEl) => {
         const id = $(userEl).attr("id");
@@ -175,13 +175,13 @@ export function updatePositions(
 
       for (const [_pos, users] of Object.entries(positions)) {
         for (const user of users) {
-          el.append(elements[user.id] as JQuery<HTMLElement>);
+          el.append(elements[user.id] as JQuery);
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete elements[user.id];
         }
       }
       for (const id of Object.keys(elements)) {
-        el.append(elements[id] as JQuery<HTMLElement>);
+        el.append(elements[id] as JQuery);
       }
     }
   }

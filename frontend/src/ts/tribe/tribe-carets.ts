@@ -13,7 +13,7 @@ import * as TribeTypes from "./types";
 const carets: { [key: string]: TribeCaret } = {};
 
 export class TribeCaret {
-  private element: JQuery<HTMLElement> | undefined;
+  private element: JQuery | undefined;
 
   constructor(
     private socketId: string,
@@ -138,8 +138,7 @@ export class TribeCaret {
           caretWidth === undefined
         ) {
           //todo fix
-          // oxlint-disable-next-line @typescript-eslint/only-throw-error
-          // eslint-disable-next-line no-throw-literal
+          // eslint-disable-next-line @typescript-eslint/only-throw-error, no-throw-literal
           throw ``;
         }
 

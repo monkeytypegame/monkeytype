@@ -5,7 +5,7 @@ import tribeSocket from "./tribe-socket";
 import * as ThemeColors from "../elements/theme-colors";
 
 export function init(page: string): void {
-  let el: JQuery<HTMLElement> | undefined;
+  let el: JQuery | undefined;
 
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
@@ -100,7 +100,7 @@ export function update(page: string, userId: string): void {
     update("tribe", userId);
     return;
   }
-  let el: JQuery<HTMLElement> | undefined;
+  let el: JQuery | undefined;
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
   } else if (page === "tribe") {
@@ -138,7 +138,7 @@ export function completeBar(page: string, userId: string): void {
     completeBar("tribe", userId);
     return;
   }
-  let el: JQuery<HTMLElement> | undefined;
+  let el: JQuery | undefined;
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
   } else if (page === "tribe") {
@@ -169,7 +169,7 @@ export function fadeUser(
     fadeUser("tribe", userId, changeColor);
     return;
   }
-  let el: JQuery<HTMLElement> | undefined;
+  let el: JQuery | undefined;
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
   } else if (page === "tribe") {

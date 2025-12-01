@@ -1008,12 +1008,12 @@ $(document).on("keydown", async (event) => {
     if (TribeState.getState() >= 5) {
       if (TribeState.getState() > 5 && TribeState.getState() < 21) return;
       if (TribeState.getState() === 5 && ActivePage.get() !== "tribe") {
-        navigate("/tribe");
+        void navigate("/tribe");
         return;
       }
     } else {
       if (ActivePage.get() !== "test") {
-        navigate("/");
+        void navigate("/");
         return;
       }
     }
@@ -1061,10 +1061,10 @@ $(document).on("keydown", async (event) => {
         event,
       });
     } else {
-      handleChar("\n", TestInput.input.current.length);
+      void handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       if (Config.tapeMode !== "off") {
-        TestUI.scrollTape();
+        void TestUI.scrollTape();
       }
     }
   }
@@ -1093,12 +1093,12 @@ $(document).on("keydown", async (event) => {
     if (TribeState.getState() >= 5) {
       if (TribeState.getState() > 5 && TribeState.getState() < 21) return;
       if (TribeState.getState() === 5 && ActivePage.get() !== "tribe") {
-        navigate("/tribe");
+        void navigate("/tribe");
         return;
       }
     } else {
       if (ActivePage.get() !== "test") {
-        navigate("/");
+        void navigate("/");
         return;
       }
     }
@@ -1146,10 +1146,10 @@ $(document).on("keydown", async (event) => {
         event,
       });
     } else {
-      handleChar("\n", TestInput.input.current.length);
+      void handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       if (Config.tapeMode !== "off") {
-        TestUI.scrollTape();
+        void TestUI.scrollTape();
       }
     }
   }
