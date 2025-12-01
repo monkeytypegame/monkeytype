@@ -14,8 +14,8 @@
     "@monkeytype/tsup-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "madge": "8.0.0",
-    "oxlint": "1.30.0",
-    "oxlint-tsgolint": "0.8.2",
+    "oxlint": "1.31.0",
+    "oxlint-tsgolint": "0.8.3",
     "tsup": "8.4.0",
     "typescript": "5.9.3",
     "vitest": "4.0.8"

@@ -12,8 +12,8 @@
   },
   "devDependencies": {
     "nodemon": "3.1.4",
-    "oxlint": "1.30.0",
-    "oxlint-tsgolint": "0.8.2"
+    "oxlint": "1.31.0",
+    "oxlint-tsgolint": "0.8.3"
   },
   "bin": {
     "monkeytype-release": "./src/index.js"

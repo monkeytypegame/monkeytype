@@ -73,8 +73,8 @@
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "oxlint": "1.30.0",
-    "oxlint-tsgolint": "0.8.2",
+    "oxlint": "1.31.0",
+    "oxlint-tsgolint": "0.8.3",
     "prettier": "2.8.8",
     "turbo": "2.5.6",
     "vitest": "4.0.8"
