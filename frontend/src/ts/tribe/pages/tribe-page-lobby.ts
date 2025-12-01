@@ -194,7 +194,9 @@ export function updateRoomConfig(): void {
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Funbox" data-balloon-pos="up" commands="funbox">
-    <i class="fas fa-gamepad"></i>${room.config.funbox.replace(/_/g, " ")}
+    <i class="fas fa-gamepad"></i>${
+      room.config.funbox.join(", ").replace(/_/g, " ") || "none"
+    }
     </div>
     `);
 
@@ -264,29 +266,27 @@ export function init(): void {
   TribeConfig.apply(room.config);
 }
 
-$(".pageTribe .tribePage.lobby .inviteLink .text").hover(
-  function () {
+$(".pageTribe .tribePage.lobby .inviteLink .text")
+  .on("mouseenter", function () {
     $(this).css(
       "color",
       "#" + $(".pageTribe .tribePage.lobby .inviteLink .text").text()
     );
-  },
-  function () {
+  })
+  .on("mouseleave", function () {
     $(this).css("color", "");
-  }
-);
+  });
 
-$(".pageTest #result #tribeResultBottom .inviteLink .text").hover(
-  function () {
+$(".pageTest #result #tribeResultBottom .inviteLink .text")
+  .on("mouseenter", function () {
     $(this).css(
       "color",
       "#" + $(".pageTest #result #tribeResultBottom .inviteLink .text").text()
     );
-  },
-  function () {
+  })
+  .on("mouseleave", function () {
     $(this).css("color", "");
-  }
-);
+  });
 
 $(
   ".pageTribe .tribePage.lobby .inviteLink .text, .pageTest #result #tribeResultBottom .inviteLink .text"
@@ -297,7 +297,7 @@ $(
     );
     Notifications.add("Code copied", 1);
   } catch (e) {
-    Notifications.add("Could not copy to clipboard: " + e, -1);
+    Notifications.add("Could not copy to clipboard: " + String(e), -1);
   }
 });
 
@@ -310,7 +310,7 @@ $(
     );
     Notifications.add("Link copied", 1);
   } catch (e) {
-    Notifications.add("Could not copy to clipboard: " + e, -1);
+    Notifications.add("Could not copy to clipboard: " + String(e), -1);
   }
 });
 

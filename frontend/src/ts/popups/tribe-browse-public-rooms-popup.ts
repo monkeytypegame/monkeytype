@@ -56,7 +56,7 @@ export function show(): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
-        $("#tribeBrowsePublicRoomsPopup .search").focus();
+        $("#tribeBrowsePublicRoomsPopup .search").trigger("focus");
         $("#tribeBrowsePublicRoomsPopup .search").val("");
       });
   }

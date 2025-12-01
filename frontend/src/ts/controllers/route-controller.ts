@@ -7,8 +7,9 @@ import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
 import * as Notifications from "../elements/notifications";
 import tribeSocket from "../tribe/tribe-socket";
-import { setAutoJoin } from "../tribe/tribe";
+import { setAutoJoin } from "../tribe/tribe-auto-join";
 import { LoadingOptions } from "../pages/page";
+import { setNavigationService } from "../observables/navigate-event";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -309,4 +310,12 @@ document.addEventListener("DOMContentLoaded", () => {
       void navigate(target.href);
     }
   });
+});
+
+// Register navigation service for modules that can't directly import navigate
+// due to circular dependency constraints
+setNavigationService({
+  navigate(url, options) {
+    void navigate(url, options);
+  },
 });

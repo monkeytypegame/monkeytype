@@ -1,8 +1,8 @@
 import * as TribeTypes from "../tribe/types";
 
 export class InputSuggestions {
-  private inputElement: JQuery<HTMLElement>;
-  private suggestionsElement: JQuery<HTMLElement> | undefined;
+  private inputElement: JQuery;
+  private suggestionsElement: JQuery | undefined;
   private maxSuggestions: number;
   private selectedIndex: number | undefined;
   private prefix: string;
@@ -14,7 +14,7 @@ export class InputSuggestions {
   private applyWith: string[];
 
   constructor(
-    inputElement: JQuery<HTMLElement>,
+    inputElement: JQuery,
     prefix: string,
     suffix: string,
     maxSuggestions: number,

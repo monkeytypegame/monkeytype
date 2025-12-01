@@ -17,11 +17,10 @@ export const page = new Page({
   beforeHide: async (): Promise<void> => {
     $("#wordsInput").trigger("focusout");
   },
-  afterHide: async (options): Promise<void> => {
+  afterHide: async (): Promise<void> => {
     ManualRestart.set();
     TestLogic.restart({
       noAnim: true,
-      tribeOverride: options.tribeOverride ?? false,
     });
     void Funbox.clear();
     void ModesNotice.update();

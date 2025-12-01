@@ -7,12 +7,13 @@ import * as TribeButtons from "./tribe-buttons";
 import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "./tribe-socket";
 import * as TribeTypes from "./types";
-import { Difficulty, Mode } from "@monkeytype/contracts/schemas/shared";
+import { Difficulty, Mode } from "@monkeytype/schemas/shared";
 import {
   FunboxName,
-  QuoteLength,
+  QuoteLengthConfig,
   StopOnError,
-} from "@monkeytype/contracts/schemas/configs";
+} from "@monkeytype/schemas/configs";
+import { Language } from "@monkeytype/schemas/languages";
 
 export function getArray(config: TribeTypes.RoomConfig): string[] {
   const ret: string[] = [];
@@ -72,7 +73,7 @@ export function apply(config: TribeTypes.RoomConfig): void {
   } else if (config.mode === "words") {
     UpdateConfig.setWordCount(config.mode2 as number, true, true);
   } else if (config.mode === "quote") {
-    UpdateConfig.setQuoteLength(config.mode2 as QuoteLength, true, true, true);
+    UpdateConfig.setQuoteLength(config.mode2 as QuoteLengthConfig, true, true);
   } else if (config.mode === "custom") {
     //todo fix
     // CustomText.setText(config.customText.text, true);
@@ -82,7 +83,7 @@ export function apply(config: TribeTypes.RoomConfig): void {
     // CustomText.setWord(config.customText.word, true);
   }
   UpdateConfig.setDifficulty(config.difficulty as Difficulty, true, true);
-  UpdateConfig.setLanguage(config.language, true, true);
+  UpdateConfig.setLanguage(config.language as Language, true, true);
   UpdateConfig.setPunctuation(config.punctuation, true, true);
   UpdateConfig.setNumbers(config.numbers, true, true);
   Funbox.setFunbox(config.funbox as FunboxName[], true);

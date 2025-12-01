@@ -189,7 +189,7 @@ export function formatSeconds(
 }
 
 export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
-  let t;
+  let t: T[];
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
   const filtered = a.filter(function (e) {
@@ -198,9 +198,8 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
   return removeDuplicates ? [...new Set(filtered)] : filtered;
 }
 
-
 export function escapeHTML(str: string): string {
-  return String(str).replace(/[^\w. ]/gi, function (c) {
+  return str.replace(/[^\w. ]/gi, function (c) {
     return "&#" + c.charCodeAt(0) + ";";
   });
 }

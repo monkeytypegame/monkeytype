@@ -8,7 +8,7 @@ export function show(): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
-        $("#tribeRoomCodePopup input").focus();
+        $("#tribeRoomCodePopup input").trigger("focus");
         $("#tribeRoomCodePopup input").val("");
       });
   }

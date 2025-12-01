@@ -173,9 +173,9 @@ export function escapeHTML<T extends string | null | undefined>(str: T): T {
   if (str === null || str === undefined) {
     return str;
   }
-  return String(str).replace(/[^\w. ]/gi, function (c) {
+  return str.replace(/[^\w. ]/gi, function (c) {
     return "&#" + c.charCodeAt(0) + ";";
-  });
+  }) as T;
 }
 
 export function isUsernameValid(name: string): boolean {

@@ -1,6 +1,6 @@
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { Mode } from "@monkeytype/schemas/shared";
 import Socket from "../socket";
-import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
+import { QuoteLength } from "@monkeytype/schemas/configs";
 import * as TribeTypes from "../../types";
 
 type GetPublicRoomsResponse = {

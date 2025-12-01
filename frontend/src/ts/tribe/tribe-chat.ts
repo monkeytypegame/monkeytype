@@ -1,7 +1,7 @@
 import * as Notifications from "../elements/notifications";
 import * as TribeState from "../tribe/tribe-state";
 import * as Misc from "../utils/misc";
-import * as TestUI from "../test/test-ui";
+import * as TestState from "../test/test-state";
 import tribeSocket from "./tribe-socket";
 import { InputSuggestions } from "../elements/input-suggestions";
 import { getEmojiList } from "../utils/json-data";
@@ -331,21 +331,23 @@ $(".pageTest #result #tribeResultBottom .chat .input input").on(
   }
 );
 
-$(document).keydown((e) => {
+$(document).on("keydown", (e) => {
   if (TribeState.getState() === 5) {
     if (
       e.key === "/" &&
       !$(".pageTribe .lobby .chat .input input").is(":focus")
     ) {
-      $(".pageTribe .lobby .chat .input input").focus();
+      $(".pageTribe .lobby .chat .input input").trigger("focus");
       e.preventDefault();
     }
-  } else if (TestUI.resultVisible && TribeState.getState() >= 20) {
+  } else if (TestState.resultVisible && TribeState.getState() >= 20) {
     if (
       e.key === "/" &&
       !$(".pageTest #result #tribeResultBottom .chat .input input").is(":focus")
     ) {
-      $(".pageTest #result #tribeResultBottom .chat .input input").focus();
+      $(".pageTest #result #tribeResultBottom .chat .input input").trigger(
+        "focus"
+      );
       e.preventDefault();
     }
   }

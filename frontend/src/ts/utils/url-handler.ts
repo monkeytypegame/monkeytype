@@ -11,7 +11,7 @@ import * as Loader from "../elements/loader";
 import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
-import * as Tribe from "../tribe/tribe";
+import { setAutoJoin } from "../tribe/tribe-auto-join";
 import {
   DifficultySchema,
   Mode2Schema,
@@ -315,7 +315,7 @@ export function loadTribeAutoJoinFromUrl(override?: string): void {
   if (window.location.pathname !== "/tribe") return;
   const getValue = Misc.findGetParameter("code", override);
   if (getValue === null) return;
-  Tribe.setAutoJoin(getValue);
+  setAutoJoin(getValue);
 }
 
 AuthEvent.subscribe((event) => {

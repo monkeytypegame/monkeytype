@@ -14,6 +14,7 @@ export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
+export let removedUIWordCount = 0;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -84,4 +85,12 @@ export function setTestRestarting(val: boolean): void {
 
 export function setResultVisible(val: boolean): void {
   resultVisible = val;
+}
+
+export function setRemovedUIWordCount(val: number): void {
+  removedUIWordCount = val;
+}
+
+export function incrementRemovedUIWordCount(): void {
+  removedUIWordCount++;
 }

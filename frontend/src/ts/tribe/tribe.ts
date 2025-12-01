@@ -29,19 +29,14 @@ import * as TestStats from "../test/test-stats";
 import * as TestInput from "../test/test-input";
 import * as TribeCarets from "./tribe-carets";
 import * as TribeTypes from "./types";
-import { navigate } from "../controllers/route-controller";
+import { navigate } from "../observables/navigate-event";
 import { ColorName } from "../elements/theme-colors";
+import * as TribeAutoJoin from "./tribe-auto-join";
 
 const defaultName = "Guest";
 let name = "Guest";
 
 export const expectedVersion = "0.13.5";
-
-let autoJoin: string | undefined = undefined;
-
-export function setAutoJoin(code: string): void {
-  autoJoin = code;
-}
 
 export function getStateString(state: number): string {
   if (state === -1) return "error";
@@ -220,11 +215,12 @@ async function connect(): Promise<void> {
   UpdateConfig.setTimerStyle("mini", true);
   TribePageMenu.enableButtons();
   updateState(1);
-  if (autoJoin !== undefined) {
-    TribePagePreloader.updateText(`Joining room ${autoJoin}`);
+  const autoJoinCode = TribeAutoJoin.getAutoJoin();
+  if (autoJoinCode !== undefined) {
+    TribePagePreloader.updateText(`Joining room ${autoJoinCode}`);
     TribePagePreloader.updateSubtext("Please wait...");
     setTimeout(() => {
-      joinRoom(autoJoin as string);
+      joinRoom(autoJoinCode);
     }, 500);
   } else {
     void TribePages.change("menu");
@@ -296,7 +292,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
 
   void reset();
   if (roomId !== undefined) {
-    autoJoin = roomId;
+    TribeAutoJoin.setAutoJoin(roomId);
   }
 });
 

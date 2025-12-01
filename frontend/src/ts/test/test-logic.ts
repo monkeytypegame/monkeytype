@@ -807,7 +807,7 @@ export async function retrySavingResult(): Promise<void> {
 
   const tribeChartData = {
     wpm: [...(completedEvent.chartData as ChartData).wpm],
-    raw: [...(completedEvent.chartData as ChartData).raw],
+    burst: [...(completedEvent.chartData as ChartData).burst],
     err: [...(completedEvent.chartData as ChartData).err],
   };
 
@@ -1302,7 +1302,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const tribeChartData = {
     wpm: [...(completedEvent.chartData as ChartData).wpm],
-    raw: [...(completedEvent.chartData as ChartData).raw],
+    burst: [...(completedEvent.chartData as ChartData).burst],
     err: [...(completedEvent.chartData as ChartData).err],
   };
 

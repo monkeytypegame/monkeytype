@@ -15,9 +15,13 @@ export async function change(
     if (transition) return;
     transition = true;
     const activePage = $(".page.pageTribe .tribePage.active");
+    const activePageEl = activePage[0] as HTMLElement;
+    const newPageEl = document.querySelector(
+      `.page.pageTribe .tribePage.${page}`
+    ) as HTMLElement;
     void swapElements(
-      activePage,
-      $(`.page.pageTribe .tribePage.${page}`),
+      activePageEl,
+      newPageEl,
       250,
       async () => {
         active = page;

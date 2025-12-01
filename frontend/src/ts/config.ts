@@ -210,17 +210,29 @@ export function genericSet<T extends keyof ConfigSchemas.Config>(
 }
 
 //numbers
-export function setNumbers(numb: boolean, nosave?: boolean): boolean {
-  return genericSet("numbers", numb, nosave);
+export function setNumbers(
+  numb: boolean,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
+  return genericSet("numbers", numb, nosave, tribeOverride);
 }
 
 //punctuation
-export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
-  return genericSet("punctuation", punc, nosave);
+export function setPunctuation(
+  punc: boolean,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
+  return genericSet("punctuation", punc, nosave, tribeOverride);
 }
 
-export function setMode(mode: Mode, nosave?: boolean): boolean {
-  return genericSet("mode", mode, nosave);
+export function setMode(
+  mode: Mode,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
+  return genericSet("mode", mode, nosave, tribeOverride);
 }
 
 export function setPlaySoundOnError(
