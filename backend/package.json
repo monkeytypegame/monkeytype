@@ -7,6 +7,7 @@
     "oxlint": "oxlint . --type-aware --type-check",
     "oxlint-plugin": "oxlint -c .oxlintrc-plugin.json",
     "lint": "npm run oxlint && npm run oxlint-plugin",
+    "lint-fast": "oxlint .",
     "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",

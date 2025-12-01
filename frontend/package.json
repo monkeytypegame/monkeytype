@@ -7,6 +7,7 @@
     "oxlint": "oxlint . --type-aware --type-check",
     "oxlint-plugin": "oxlint -c .oxlintrc-plugin.json",
     "lint": "npm run oxlint && npm run oxlint-plugin",
+    "lint-fast": "oxlint .",
     "check-assets": "tsx ./scripts/check-assets.ts",
     "audit": "vite-bundle-visualizer",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",

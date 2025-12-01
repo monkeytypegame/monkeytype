@@ -8,6 +8,7 @@
     "dev-changelog": "nodemon ./src/buildChangelog.js",
     "oxlint": "oxlint . --type-aware --type-check",
     "lint": "npm run oxlint",
+    "lint-fast": "oxlint .",
     "purge-cf-cache": "./bin/purgeCfCache.sh"
   },
   "devDependencies": {
