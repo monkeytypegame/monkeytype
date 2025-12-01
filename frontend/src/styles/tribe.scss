@@ -711,9 +711,17 @@
   }
 }
 
-.pageTest #typingTest .tribeBars,
 .pageTribe .tribeBars {
   grid-area: players;
+}
+
+.pageTest #typingTest .tribeBars {
+  margin-bottom: 1em;
+  font-size: 1rem;
+}
+
+.pageTest #typingTest .tribeBars,
+.pageTribe .tribeBars {
   td {
     padding: 0 0.5rem;
   }
