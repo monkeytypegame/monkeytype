@@ -1,24 +1,4 @@
 {
-  "categories": {
-    "correctness": "off",
-    "suspicious": "off",
-    "pedantic": "off",
-    "perf": "off",
-    "style": "off",
-    "restriction": "off",
-    "nursery": "off"
-  },
-  "jsPlugins": ["../packages/oxlint-config/plugins/monkeytype-rules.js"],
-  "rules": {
-    "all": "off",
-    "monkeytype-rules/no-testing-access": "error"
-  },
-  "overrides": [
-    {
-      "files": ["__tests__/**/*.ts"],
-      "rules": {
-        "monkeytype-rules/no-testing-access": "off"
-      }
-    }
-  ]
+  "ignorePatterns": ["node_modules", "__migration__", "dist", ".turbo"],
+  "extends": ["../packages/oxlint-config/plugin.jsonc"]
 }
