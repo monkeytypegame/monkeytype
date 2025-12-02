@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "rules": {
+    "typescript/non-nullable-type-assertion-style": "error",
+    "typescript/switch-exhaustiveness-check": "off",
+    "typescript/unbound-method": "off",
+    "typescript/prefer-promise-reject-errors": "off",
+    "typescript/no-redundant-type-constituents": "off",
+    "typescript/require-array-sort-compare": "off",
+    //unnecessary, might aswell keep template strings in case a string might be added in the future
+    "typescript/no-unnecessary-template-expression": "off",
+  }
+}

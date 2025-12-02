@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "rules": {
+    //936, no options on this one. super strict, it doesnt allow casting to a narrower type
+    "typescript/no-unsafe-type-assertion": "off",
+    //224 errors, very easy to fix.
+    // adds unnecessary promise overhead and pushing the function to the microtask queue, creating a delay
+    // all though performance impact probably minimal
+    // anything that needs to be absolutely as fast as possible should not be async (if not using await)
+    "typescript/require-await": "off",
+    //388, when allowing numbers only 27, when also allowing arrays 12
+    // could be nice to avoid some weird things showing up in templated strings
+    "typescript/restrict-template-expressions": [
+      "off",
+      {
+        "allowNumber": true,
+        "allowArray": true
+      }
+    ],
+  }
+}

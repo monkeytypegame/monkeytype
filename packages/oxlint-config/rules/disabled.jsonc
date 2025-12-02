@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "rules": {
+    "no-await-in-loop": "off",
+    "consistent-function-scoping": "off",
+    "prefer-add-event-listener": "off",
+    "no-new": "off",
+    "no-new-array": "off",
+    "no-useless-spread": "off",
+    "no-async-endpoint-handlers": "off",
+    "no-this-alias": "off",
+    "no-unassigned-import": "off",
+    "no-array-reverse": "off", // disabled for compatibility
+  }
+}
