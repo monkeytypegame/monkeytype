@@ -4,6 +4,5 @@
   "useTabs": false,
   "htmlWhitespaceSensitivity": "ignore",
   "trailingComma": "all",
-  "endOfLine": "lf",
-  "plugins": ["@prettier/plugin-oxc"]
+  "endOfLine": "lf"
 }
