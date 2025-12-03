@@ -35,9 +35,8 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Install formatter
-        run: pnpm install -D -w prettier
-
+      - name: Install formatters
+        run: pnpm install -D -w prettier oxfmt
 
       - name: Get changed files
         id: get-changed-files
@@ -52,12 +51,35 @@ jobs:
                 pull_number: context.payload.pull_request.number,
               }
             );
-            return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
+            const files = changedFiles.filter(file=> file.status !== "removed").map(file => file.filename);
+            
+            // Separate TS/JS files from other files
+            const tsJsFiles = files.filter(file => /\.(ts|js|tsx|jsx)$/.test(file));
+            const otherFiles = files.filter(file => !/\.(ts|js|tsx|jsx)$/.test(file));
+            
+            return JSON.stringify({ tsJsFiles, otherFiles });
 
-      - name: Check formatting (changed files)
+      - name: Check TypeScript/JavaScript formatting with oxfmt
         run: |
-          CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
-          if [ -n "$CHANGED_FILES" ]; then
-            pnpm prettier --check $CHANGED_FILES
+          FILES_JSON='${{ steps.get-changed-files.outputs.result }}'
+          TS_JS_FILES=$(echo $FILES_JSON | jq -r '.tsJsFiles[]' | tr '\n' ' ')
+          
+          if [ -n "$TS_JS_FILES" ] && [ "$TS_JS_FILES" != " " ]; then
+            echo "Checking TS/JS files with oxfmt: $TS_JS_FILES"
+            pnpm oxfmt --check $TS_JS_FILES
+          else
+            echo "No TypeScript/JavaScript files to check"
+          fi
+
+      - name: Check other file formatting with prettier
+        run: |
+          FILES_JSON='${{ steps.get-changed-files.outputs.result }}'
+          OTHER_FILES=$(echo $FILES_JSON | jq -r '.otherFiles[]' | tr '\n' ' ')
+          
+          if [ -n "$OTHER_FILES" ] && [ "$OTHER_FILES" != " " ]; then
+            echo "Checking other files with prettier: $OTHER_FILES"
+            pnpm prettier --check $OTHER_FILES
+          else
+            echo "No other files to check"
           fi
       
