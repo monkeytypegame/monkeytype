@@ -57,7 +57,7 @@
     "format-fix-fe": "prettier --write ./frontend/src",
     "format-fix-assets": "prettier --write ./frontend/static",
     "format-fix-pkg": "prettier --write ./packages",
-    "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
+    "lint-json-assets": "cd frontend && npm run lint-json",
     "check-assets": "turbo check-assets --filter @monkeytype/frontend",
     "check-assets-quotes": "turbo check-assets --filter @monkeytype/frontend  -- quotes",
     "check-assets-languages": "turbo check-assets --filter @monkeytype/frontend  -- languages",
