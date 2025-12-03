@@ -4,9 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "oxlint": "oxlint . --type-aware --type-check",
-    "oxlint-plugin": "oxlint -c .oxlintrc-plugin.json",
-    "lint": "npm run oxlint && npm run oxlint-plugin",
+    "lint": "oxlint . --type-aware --type-check && oxlint -c .oxlintrc-plugin.json",
     "lint-fast": "oxlint .",
     "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",

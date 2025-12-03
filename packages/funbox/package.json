@@ -7,8 +7,7 @@
     "test": "vitest run",
     "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
-    "oxlint": "oxlint . --type-aware --type-check",
-    "lint": "npm run oxlint",
+    "lint": "oxlint . --type-aware --type-check",
     "lint-fast": "oxlint ."
   },
   "devDependencies": {

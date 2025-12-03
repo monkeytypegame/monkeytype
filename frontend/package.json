@@ -4,9 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "oxlint": "oxlint . --type-aware --type-check",
-    "oxlint-plugin": "oxlint -c .oxlintrc-plugin.json",
-    "lint": "npm run oxlint && npm run oxlint-plugin",
+    "lint": "oxlint . --type-aware --type-check && oxlint -c .oxlintrc-plugin.json",
     "lint-fast": "oxlint .",
     "lint-json": "eslint static/**/*.json",
     "check-assets": "tsx ./scripts/check-assets.ts",
