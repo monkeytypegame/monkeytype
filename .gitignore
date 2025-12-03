@@ -67,6 +67,7 @@ node_modules_bak/
 
 # dotenv environment variables file
 .env
+.env*
 
 #vs code
 .vscode/*
