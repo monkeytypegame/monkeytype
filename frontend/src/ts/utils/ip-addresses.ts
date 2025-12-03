@@ -5,7 +5,7 @@ function getRandomIPvXaddress(
   parts: number,
   base: number,
   pad: boolean,
-  separator: string
+  separator: string,
 ): string {
   const addr: string[] = [];
   const b = Math.round(bits / parts);
@@ -27,7 +27,7 @@ function getIPCidr(
   base: number,
   separator: string,
   address: string,
-  maskSize: number
+  maskSize: number,
 ): string {
   const addr = address.split(separator).map((a) => parseInt(a, base));
   const b = Math.round(bits / parts);

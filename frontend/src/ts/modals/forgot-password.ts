@@ -9,7 +9,7 @@ export function show(): void {
   if (!CaptchaController.isCaptchaAvailable()) {
     Notifications.add(
       "Could not show forgot password popup: Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.",
-      -1
+      -1,
     );
     return;
   }
@@ -24,7 +24,7 @@ export function show(): void {
         "forgotPasswordModal",
         async () => {
           await submit();
-        }
+        },
       );
     },
   });
@@ -64,7 +64,7 @@ async function submit(): Promise<void> {
       if (result.status !== 200) {
         Notifications.add(
           "Failed to send password reset email: " + result.body.message,
-          -1
+          -1,
         );
         return;
       }

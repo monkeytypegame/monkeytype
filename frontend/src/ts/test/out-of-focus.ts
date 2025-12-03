@@ -17,6 +17,6 @@ export function show(): void {
         .css("transition", "0.25s")
         .addClass("blurred");
       $(".outOfFocusWarning").removeClass("hidden");
-    }, 1000)
+    }, 1000),
   );
 }

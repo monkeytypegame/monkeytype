@@ -9,7 +9,7 @@ import { Mode, Mode2 } from "@monkeytype/schemas/shared";
 
 function getCheckboxValue(checkbox: string): boolean {
   return $(`#shareTestSettingsModal label.${checkbox} input`).prop(
-    "checked"
+    "checked",
   ) as boolean;
 }
 
@@ -21,13 +21,13 @@ type SharedTestSettings = [
   boolean | null,
   string | null,
   Difficulty | null,
-  FunboxName[] | null
+  FunboxName[] | null,
 ];
 
 function updateURL(): void {
   const baseUrl = location.origin + "?testSettings=";
   const settings: SharedTestSettings = new Array(8).fill(
-    null
+    null,
   ) as SharedTestSettings;
 
   const settingsMap = [

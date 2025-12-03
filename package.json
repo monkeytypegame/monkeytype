@@ -47,16 +47,16 @@
     "hotfix-fe": "monkeytype-release --hotfix --fe",
     "hotfix-be": "monkeytype-release --hotfix --be",
     "hotfix-dry": "monkeytype-release --hotfix --dry",
-    "pretty-check": "prettier --check .",
-    "pretty-check-be": "prettier --check ./backend",
-    "pretty-check-fe": "prettier --check ./frontend/src",
-    "pretty-check-assets": "prettier --check ./frontend/static",
-    "pretty-check-pkg": "prettier --check ./packages",
-    "pretty-fix": "prettier --write .",
-    "pretty-fix-be": "prettier --write ./backend",
-    "pretty-fix-fe": "prettier --write ./frontend/src",
-    "pretty-fix-assets": "prettier --write ./frontend/static",
-    "pretty-fix-pkg": "prettier --write ./packages",
+    "format-check": "prettier --check .",
+    "format-check-be": "prettier --check ./backend",
+    "format-check-fe": "prettier --check ./frontend/src",
+    "format-check-assets": "prettier --check ./frontend/static",
+    "format-check-pkg": "prettier --check ./packages",
+    "format-fix": "prettier --write .",
+    "format-fix-be": "prettier --write ./backend",
+    "format-fix-fe": "prettier --write ./frontend/src",
+    "format-fix-assets": "prettier --write ./frontend/static",
+    "format-fix-pkg": "prettier --write ./packages",
     "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
     "check-assets": "turbo check-assets --filter @monkeytype/frontend",
     "check-assets-quotes": "turbo check-assets --filter @monkeytype/frontend  -- quotes",
@@ -79,7 +79,7 @@
     "only-allow": "1.2.1",
     "oxlint": "1.31.0",
     "oxlint-tsgolint": "0.8.3",
-    "prettier": "2.8.8",
+    "prettier": "3.7.1",
     "turbo": "2.5.6",
     "vitest": "4.0.8"
   },
@@ -92,6 +92,6 @@
       "oxlint --type-aware --type-check"
     ]
   },
-  "version": "25.46.0",
+  "version": "25.48.0",
   "packageManager": "pnpm@9.6.0"
 }

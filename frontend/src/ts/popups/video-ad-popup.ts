@@ -17,7 +17,7 @@ export async function show(): Promise<void> {
       0,
       {
         duration: 6,
-      }
+      },
     );
     return;
   }
@@ -29,7 +29,7 @@ export async function show(): Promise<void> {
       0,
       {
         duration: 7,
-      }
+      },
     );
     return;
   }

@@ -192,5 +192,5 @@ export const ThemeNameSchema = z.enum(
   ],
   {
     errorMap: customEnumErrorHandler("Must be a known theme"),
-  }
+  },
 );

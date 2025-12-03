@@ -16,7 +16,7 @@ let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
+    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"',
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
@@ -61,7 +61,7 @@ if (isDevEnvironment()) {
   $("header #logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
   $("body").append(
-    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
+    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`,
   );
 }
 
@@ -73,7 +73,7 @@ window.addEventListener("beforeunload", (event) => {
       Config.words,
       Config.time,
       CustomText.getData(),
-      isCustomTextLong() ?? false
+      isCustomTextLong() ?? false,
     )
   ) {
     //ignore

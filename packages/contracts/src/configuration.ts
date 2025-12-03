@@ -98,5 +98,5 @@ export const configurationContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );

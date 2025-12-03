@@ -2,7 +2,7 @@ import { z } from "zod";
 
 function removeProblems<T extends object | unknown[]>(
   obj: T,
-  problems: (number | string)[]
+  problems: (number | string)[],
 ): T | undefined {
   if (Array.isArray(obj)) {
     if (problems.length === obj.length) return undefined;
@@ -13,7 +13,7 @@ function removeProblems<T extends object | unknown[]>(
     if (problems.length === entries.length) return undefined;
 
     return Object.fromEntries(
-      entries.filter(([key]) => !problems.includes(key))
+      entries.filter(([key]) => !problems.includes(key)),
     ) as T;
   }
 }
@@ -32,7 +32,7 @@ function getNestedValue(obj: [] | object, path: string[]): [] | object {
  */
 export function sanitize<T extends z.ZodTypeAny>(
   schema: T,
-  obj: z.infer<T>
+  obj: z.infer<T>,
 ): z.infer<T> {
   const maxAttempts = 2;
   let result;

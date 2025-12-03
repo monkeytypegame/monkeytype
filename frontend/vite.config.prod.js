@@ -17,7 +17,7 @@ import { versionFile } from "./vite-plugins/version-file";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
-    number.toString().padStart(maxLength, fillString)
+    number.toString().padStart(maxLength, fillString),
   );
 }
 
@@ -26,10 +26,10 @@ const CLIENT_VERSION = (() => {
   const versionPrefix = pad(
     [date.getFullYear(), date.getMonth() + 1, date.getDate()],
     2,
-    "0"
+    "0",
   ).join(".");
   const versionSuffix = pad([date.getHours(), date.getMinutes()], 2, "0").join(
-    "."
+    ".",
   );
   const version = [versionPrefix, versionSuffix].join("_");
 

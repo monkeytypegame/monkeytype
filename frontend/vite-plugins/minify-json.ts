@@ -68,8 +68,8 @@ export function minifyJson(): Plugin {
             1024
           ).toFixed(2)} mB\x1b[0m\n` +
           `  \x1b[32mTotal savings: ${totalSavings.toFixed(
-            2
-          )}%\x1b[0m took ${Math.round(end - start)} ms\n`
+            2,
+          )}%\x1b[0m took ${Math.round(end - start)} ms\n`,
       );
     },
   };

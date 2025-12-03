@@ -83,7 +83,7 @@ export const UserTagSchema = z
 export type UserTag = z.infer<typeof UserTagSchema>;
 
 function profileDetailsBase(
-  schema: ZodString
+  schema: ZodString,
 ): ZodEffects<ZodOptional<ZodEffects<ZodString>>> {
   return doesNotContainProfanity("word", schema)
     .optional()
@@ -94,18 +94,18 @@ export const TwitterProfileSchema = profileDetailsBase(
   z
     .string()
     .max(20)
-    .regex(/^[0-9a-zA-Z_.-]+$/)
+    .regex(/^[0-9a-zA-Z_.-]+$/),
 ).or(z.literal(""));
 
 export const GithubProfileSchema = profileDetailsBase(
   z
     .string()
     .max(39)
-    .regex(/^[0-9a-zA-Z_.-]+$/)
+    .regex(/^[0-9a-zA-Z_.-]+$/),
 ).or(z.literal(""));
 
 export const WebsiteSchema = profileDetailsBase(
-  z.string().url().max(200).startsWith("https://")
+  z.string().url().max(200).startsWith("https://"),
 ).or(z.literal(""));
 
 export const UserProfileDetailsSchema = z
@@ -154,8 +154,8 @@ export const UserQuoteRatingsSchema = z.record(
   LanguageSchema,
   z.record(
     StringNumberSchema.describe("quoteId as string"),
-    z.number().nonnegative()
-  )
+    z.number().nonnegative(),
+  ),
 );
 export type UserQuoteRatings = z.infer<typeof UserQuoteRatingsSchema>;
 
@@ -163,8 +163,8 @@ export const UserLbMemorySchema = z.record(
   ModeSchema,
   z.record(
     Mode2Schema,
-    z.record(LanguageSchema, z.number().int().nonnegative())
-  )
+    z.record(LanguageSchema, z.number().int().nonnegative()),
+  ),
 );
 export type UserLbMemory = z.infer<typeof UserLbMemorySchema>;
 
@@ -177,7 +177,7 @@ export type RankAndCount = z.infer<typeof RankAndCountSchema>;
 export const AllTimeLbsSchema = z.object({
   time: z.record(
     Mode2Schema,
-    z.record(LanguageSchema, RankAndCountSchema.optional())
+    z.record(LanguageSchema, RankAndCountSchema.optional()),
   ),
 });
 export type AllTimeLbs = z.infer<typeof AllTimeLbsSchema>;
@@ -208,7 +208,7 @@ export const TestActivitySchema = z
     testsByDays: z
       .array(z.number().int().nonnegative().or(z.null()))
       .describe(
-        "Number of tests by day. Last element of the array is on the date `lastDay`. `null` means no tests on that day."
+        "Number of tests by day. Last element of the array is on the date `lastDay`. `null` means no tests on that day.",
       ),
     lastDay: z
       .number()
@@ -227,15 +227,17 @@ export const CountByYearAndDaySchema = z.record(
       .int()
       .nonnegative()
       .nullable()
-      .describe("number of tests, position in the array is the day of the year")
-  )
+      .describe(
+        "number of tests, position in the array is the day of the year",
+      ),
+  ),
 );
 export type CountByYearAndDay = z.infer<typeof CountByYearAndDaySchema>;
 
 //Record<language, array with quoteIds as string
 export const FavoriteQuotesSchema = z.record(
   LanguageSchema,
-  z.array(StringNumberSchema)
+  z.array(StringNumberSchema),
 );
 export type FavoriteQuotes = z.infer<typeof FavoriteQuotesSchema>;
 
@@ -248,8 +250,8 @@ export const UserNameSchema = doesNotContainProfanity(
     .max(16)
     .regex(
       /^[\da-zA-Z_-]+$/,
-      "Can only contain lower/uppercase letters, underscore and minus."
-    )
+      "Can only contain lower/uppercase letters, underscore and minus.",
+    ),
 );
 
 export const UserSchema = z.object({

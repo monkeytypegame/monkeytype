@@ -66,6 +66,12 @@
       "source": "Monitoring disk usage in Bash",
       "length": 218,
       "id": 10
+    },
+    {
+      "text": "echo INSTALLING PACKAGES\nsudo apt install python3 --assume-yes\nsudo apt install python3-pip --assume-yes\nsudo apt install python3-flask --assume-yes\nsudo apt install python3-transliterate --assume-yes\nsudo apt install python3-fuzzywuzzy --assume-yes\nsudo apt install vsftpd --assume-yes\nsudo apt install nginx --assume-yes\npip install bext --break-system-packages",
+      "source": "eChat - Install script line 1-9",
+      "length": 363,
+      "id": 11
     }
   ]
 }

@@ -17,14 +17,14 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
     fallback?: z.infer<T>;
     migrate?: (
       value: Record<string, unknown> | unknown[],
-      zodIssues?: ZodIssue[]
+      zodIssues?: ZodIssue[],
     ) => z.infer<T>;
-  }
+  },
 ): z.infer<T> {
   const { fallback, migrate } = fallbackAndMigrate ?? {};
 
   const { data: jsonParsed, error } = tryCatchSync(
-    () => JSON.parse(json) as Record<string, unknown>
+    () => JSON.parse(json) as Record<string, unknown>,
   );
 
   if (error) {
@@ -45,7 +45,7 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
     throw new Error(
       `JSON does not match schema: ${safeParse.error.issues
         .map(prettyErrorMessage)
-        .join(", ")}`
+        .join(", ")}`,
     );
   }
 
@@ -57,7 +57,7 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
       throw new Error(
         `Migrated value does not match schema: ${safeParseMigrated.error.issues
           .map(prettyErrorMessage)
-          .join(", ")}`
+          .join(", ")}`,
       );
     }
     // todo fix me

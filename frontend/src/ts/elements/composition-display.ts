@@ -1,7 +1,7 @@
 import Config from "../config";
 
 const compositionDisplay = document.getElementById(
-  "compositionDisplay"
+  "compositionDisplay",
 ) as HTMLElement;
 
 const languagesToShow = ["korean", "japanese", "chinese"];

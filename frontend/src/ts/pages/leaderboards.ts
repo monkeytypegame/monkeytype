@@ -154,8 +154,8 @@ function updateTitle(): void {
     state.type === "allTime"
       ? "All-time"
       : state.type === "weekly"
-      ? "Weekly XP"
-      : "Daily";
+        ? "Weekly XP"
+        : "Daily";
 
   const friend = state.friendsOnly ? "Friends " : "";
 
@@ -177,22 +177,22 @@ function updateTitle(): void {
   if (state.type === "daily") {
     $(".page.pageLeaderboards .bigtitle .subtext").removeClass("hidden");
     $(
-      ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']"
+      ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']",
     ).removeClass("hidden");
     $(".page.pageLeaderboards .bigtitle .subtext .divider").removeClass(
-      "hidden"
+      "hidden",
     );
 
     if (state.yesterday) {
       $(
-        ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']"
+        ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']",
       ).html(`
         <i class="fas fa-forward"></i>
             show today
         `);
     } else {
       $(
-        ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']"
+        ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']",
       ).html(`
         <i class="fas fa-backward"></i>
             show yesterday
@@ -207,15 +207,15 @@ function updateTitle(): void {
     updateTimeText(
       format(timestamp, utcDateFormat) + " UTC",
       utcToLocalDate(timestamp),
-      utcToLocalDate(endOfDay(timestamp))
+      utcToLocalDate(endOfDay(timestamp)),
     );
   } else if (state.type === "weekly") {
     $(".page.pageLeaderboards .bigtitle .subtext").removeClass("hidden");
     $(
-      ".page.pageLeaderboards .bigtitle button[data-action='toggleLastWeek']"
+      ".page.pageLeaderboards .bigtitle button[data-action='toggleLastWeek']",
     ).removeClass("hidden");
     $(".page.pageLeaderboards .bigtitle .subtext .divider").removeClass(
-      "hidden"
+      "hidden",
     );
 
     if (state.lastWeek) {
@@ -240,12 +240,12 @@ function updateTitle(): void {
 
     const dateString = `${format(timestamp, utcDateFormat)} - ${format(
       endingTimestamp,
-      utcDateFormat
+      utcDateFormat,
     )} UTC`;
     updateTimeText(
       dateString,
       utcToLocalDate(timestamp),
-      utcToLocalDate(endingTimestamp)
+      utcToLocalDate(endingTimestamp),
     );
   }
 }
@@ -267,7 +267,7 @@ async function requestData(update = false): Promise<void> {
       query: TQuery & PaginationQuery & FriendsOnlyQuery;
     }) => Promise<TData>,
     rank: (args: { query: TQuery }) => Promise<TRank>,
-    baseQuery: TQuery
+    baseQuery: TQuery,
   ): {
     rank: undefined | (() => Promise<TRank>);
     data: () => Promise<TData>;
@@ -306,7 +306,7 @@ async function requestData(update = false): Promise<void> {
         mode: state.mode,
         mode2: state.mode2,
         daysBefore: state.yesterday ? 1 : undefined,
-      }
+      },
     );
   } else if (state.type === "weekly") {
     requests = defineRequests(
@@ -314,7 +314,7 @@ async function requestData(update = false): Promise<void> {
       Ape.leaderboards.getWeeklyXpRank,
       {
         weeksBefore: state.lastWeek ? 1 : undefined,
-      }
+      },
     );
   } else {
     throw new Error("unknown state type");
@@ -363,7 +363,7 @@ async function requestData(update = false): Promise<void> {
       state.error = "Something went wrong";
       Notifications.add(
         "Failed to get leaderboard: " + dataResponse.body.message,
-        -1
+        -1,
       );
     }
   }
@@ -450,8 +450,8 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
         <div class="avatarNameBadge">
           <div class="avatarPlaceholder"></div>
           <a href="${location.origin}/profile/${
-    entry.uid
-  }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
+            entry.uid
+          }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
             ${getHtmlByUserFlags({
               ...entry,
@@ -478,7 +478,7 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
       <td class="stat wide">${formatted.con}</td>
       <td class="date">${format(
         entry.timestamp,
-        "dd MMM yyyy"
+        "dd MMM yyyy",
       )}<div class="sub">${format(entry.timestamp, "HH:mm")}</div></td>
     
   `;
@@ -490,7 +490,7 @@ function buildTableRow(entry: LeaderboardEntry, me = false): HTMLElement {
 
 function buildWeeklyTableRow(
   entry: XpLeaderboardEntry,
-  me = false
+  me = false,
 ): HTMLElement {
   const activeDiff = formatDistanceToNow(entry.lastActivityTimestamp, {
     addSuffix: true,
@@ -507,8 +507,8 @@ function buildWeeklyTableRow(
         <div class="avatarNameBadge">
           <div class="avatarPlaceholder"></div>
           <a href="${location.origin}/profile/${
-    entry.uid
-  }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
+            entry.uid
+          }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
             ${getHtmlByUserFlags({
               ...entry,
@@ -527,7 +527,7 @@ function buildWeeklyTableRow(
         Math.round(entry.timeTypedSeconds),
         true,
         true,
-        ":"
+        ":",
       )}</td>
       <td class="stat narrow">
       ${entry.totalXp < 1000 ? entry.totalXp : abbreviateNumber(entry.totalXp)}
@@ -535,7 +535,7 @@ function buildWeeklyTableRow(
         Math.round(entry.timeTypedSeconds),
         true,
         true,
-        ":"
+        ":",
       )}</td>
       </td>
       <td class="date" data-balloon-pos="left"  aria-label="${activeDiff}">
@@ -565,7 +565,7 @@ function fillTable(): void {
   $(".page.pageLeaderboards table thead").addClass("hidden");
   if (state.type === "allTime" || state.type === "daily") {
     $(".page.pageLeaderboards table thead.allTimeAndDaily").removeClass(
-      "hidden"
+      "hidden",
     );
   } else if (state.type === "weekly") {
     $(".page.pageLeaderboards table thead.weekly").removeClass("hidden");
@@ -612,14 +612,14 @@ function getLbMemoryDifference(): number | null {
 function fillUser(): void {
   if (isAuthenticated() && DB.getSnapshot()?.lbOptOut === true) {
     $(".page.pageLeaderboards .bigUser").html(
-      '<div class="warning">You have opted out of the leaderboards.</div>'
+      '<div class="warning">You have opted out of the leaderboards.</div>',
     );
     return;
   }
 
   if (isAuthenticated() && DB.getSnapshot()?.banned === true) {
     $(".page.pageLeaderboards .bigUser").html(
-      '<div class="warning">Your account is banned</div>'
+      '<div class="warning">Your account is banned</div>',
     );
     return;
   }
@@ -634,8 +634,8 @@ function fillUser(): void {
   ) {
     $(".page.pageLeaderboards .bigUser").html(
       `<div class="warning">Your account must have ${formatDuration(
-        intervalToDuration({ start: 0, end: minTimeTyping * 1000 })
-      )} typed to be placed on the leaderboard.</div>`
+        intervalToDuration({ start: 0, end: minTimeTyping * 1000 }),
+      )} typed to be placed on the leaderboard.</div>`,
     );
     return;
   }
@@ -651,14 +651,14 @@ function fillUser(): void {
     }
 
     $(".page.pageLeaderboards .bigUser").html(
-      `<div class="warning">${str}</div>`
+      `<div class="warning">${str}</div>`,
     );
     return;
   }
 
   if (isAuthenticated() && state.userData === null) {
     $(".page.pageLeaderboards .bigUser").html(
-      `<div class="warning">Not qualified</div>`
+      `<div class="warning">Not qualified</div>`,
     );
     return;
   }
@@ -671,7 +671,7 @@ function fillUser(): void {
     if (!state.userData || !state.count) {
       $(".page.pageLeaderboards .bigUser").addClass("hidden");
       $(".page.pageLeaderboards .tableAndUser > .divider").removeClass(
-        "hidden"
+        "hidden",
       );
       return;
     }
@@ -696,12 +696,12 @@ function fillUser(): void {
       diffText = ` ( = since you last checked)`;
     } else if (diff > 0) {
       diffText = ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
-        diff
+        diff,
       )} since you last checked
       )`;
     } else {
       diffText = ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
-        diff
+        diff,
       )} since you last checked
         )`;
     }
@@ -739,7 +739,7 @@ function fillUser(): void {
           <div class="title">date</div>
           <div class="value">${format(
             userData.timestamp,
-            "dd MMM yyyy HH:mm"
+            "dd MMM yyyy HH:mm",
           )}</div>
         </div>
 
@@ -785,12 +785,12 @@ function fillUser(): void {
       diffText = ` ( = since you last checked)`;
     } else if (diff > 0) {
       diffText = ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
-        diff
+        diff,
       )} since you last checked
       )`;
     } else {
       diffText = ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
-        diff
+        diff,
       )} since you last checked
         )`;
     }
@@ -804,7 +804,7 @@ function fillUser(): void {
         Math.round(userData.timeTypedSeconds),
         true,
         true,
-        ":"
+        ":",
       ),
     };
 
@@ -830,14 +830,14 @@ function fillUser(): void {
           <div class="title">last activity</div>
           <div class="value">${format(
             userData.lastActivityTimestamp,
-            "dd MMM yyyy HH:mm"
+            "dd MMM yyyy HH:mm",
           )}</div>
         </div>
         <div class="stat narrow">
           <div>${format(userData.lastActivityTimestamp, "dd MMM yyyy")}</div>
           <div class="sub">${format(
             userData.lastActivityTimestamp,
-            "HH:mm"
+            "HH:mm",
           )}</div>
         </div>
         `;
@@ -892,7 +892,7 @@ function updateContent(): void {
   fillTable();
 
   for (const element of document.querySelectorAll(
-    ".page.pageLeaderboards .wide.speedUnit, .page.pageLeaderboards .narrow.speedUnit span"
+    ".page.pageLeaderboards .wide.speedUnit, .page.pageLeaderboards .narrow.speedUnit span",
   )) {
     element.innerHTML = Config.typingSpeedUnit;
   }
@@ -920,7 +920,7 @@ function updateTypeButtons(): void {
 
 function updateFriendsButtons(): void {
   const friendsOnlyGroup = $(
-    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons"
+    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons",
   );
   if (
     isAuthenticated() &&
@@ -934,10 +934,10 @@ function updateFriendsButtons(): void {
   }
 
   const everyoneButton = $(
-    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .everyone"
+    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .everyone",
   );
   const friendsOnlyButton = $(
-    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .friendsOnly"
+    ".page.pageLeaderboards .buttonGroup.friendsOnlyButtons .friendsOnly",
   );
   if (state.friendsOnly) {
     friendsOnlyButton.addClass("active");
@@ -958,22 +958,22 @@ function updateModeButtons(): void {
   const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
   el.find("button").removeClass("active");
   el.find(
-    `button[data-mode=${state.mode}][data-mode2=${state.mode2}]`
+    `button[data-mode=${state.mode}][data-mode2=${state.mode2}]`,
   ).addClass("active");
 
   //hide all mode buttons
   $(`.page.pageLeaderboards .buttonGroup.modeButtons button`).addClass(
-    "hidden"
+    "hidden",
   );
 
   //show all valid ones
   for (const mode of Object.keys(validLeaderboards[state.type]) as Mode[]) {
     for (const mode2 of Object.keys(
       // oxlint-disable-next-line no-non-null-assertion
-      validLeaderboards[state.type][mode]!
+      validLeaderboards[state.type][mode]!,
     )) {
       $(
-        `.page.pageLeaderboards .buttonGroup.modeButtons button[data-mode="${mode}"][data-mode2="${mode2}"]`
+        `.page.pageLeaderboards .buttonGroup.modeButtons button[data-mode="${mode}"][data-mode2="${mode2}"]`,
       ).removeClass("hidden");
     }
   }
@@ -985,7 +985,7 @@ function updateLanguageButtons(): void {
     return;
   }
   $(".page.pageLeaderboards .buttonGroup.languageButtons").removeClass(
-    "hidden"
+    "hidden",
   );
 
   const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
@@ -994,14 +994,14 @@ function updateLanguageButtons(): void {
 
   //hide all languages
   $(`.page.pageLeaderboards .buttonGroup.languageButtons button`).addClass(
-    "hidden"
+    "hidden",
   );
 
   //show all valid ones
   for (const lang of validLeaderboards[state.type][state.mode]?.[state.mode2] ??
     []) {
     $(
-      `.page.pageLeaderboards .buttonGroup.languageButtons button[data-language="${lang}"]`
+      `.page.pageLeaderboards .buttonGroup.languageButtons button[data-language="${lang}"]`,
     ).removeClass("hidden");
   }
 }
@@ -1013,7 +1013,7 @@ function updateTimerElement(): void {
     const diff = differenceInSeconds(new Date(), endOfDay(new UTCDateMini()));
 
     $(".page.pageLeaderboards .titleAndButtons .timer").text(
-      "Next reset in: " + DateTime.secondsToString(diff, true)
+      "Next reset in: " + DateTime.secondsToString(diff, true),
     );
   } else if (state.type === "allTime") {
     const date = new Date();
@@ -1021,14 +1021,14 @@ function updateTimerElement(): void {
     const secondsToNextUpdate = 60 - date.getSeconds();
     const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
     $(".page.pageLeaderboards .titleAndButtons .timer").text(
-      "Next update in: " + DateTime.secondsToString(totalSeconds, true)
+      "Next update in: " + DateTime.secondsToString(totalSeconds, true),
     );
   } else if (state.type === "weekly") {
     const nextWeekTimestamp = endOfWeek(new UTCDateMini(), { weekStartsOn: 1 });
     const totalSeconds = differenceInSeconds(new Date(), nextWeekTimestamp);
     $(".page.pageLeaderboards .titleAndButtons .timer").text(
       "Next reset in: " +
-        DateTime.secondsToString(totalSeconds, true, true, ":", true, true)
+        DateTime.secondsToString(totalSeconds, true, true, ":", true, true),
     );
   }
 }
@@ -1045,7 +1045,7 @@ function updateTimerVisibility(): void {
 
   if (visible) {
     $(".page.pageLeaderboards .titleAndButtons .timer").removeClass(
-      "invisible"
+      "invisible",
     );
   } else {
     $(".page.pageLeaderboards .titleAndButtons .timer").addClass("invisible");
@@ -1078,7 +1078,7 @@ async function updateValidDailyLeaderboards(): Promise<void> {
 
   if (dailyRulesConfig === undefined) {
     throw new Error(
-      "cannot load server configuration for dailyLeaderboards.validModeRules"
+      "cannot load server configuration for dailyLeaderboards.validModeRules",
     );
   }
 
@@ -1133,11 +1133,11 @@ function checkIfLeaderboardIsValid(): void {
   let supportedLanguages = validModes2[state.mode2];
   if (supportedLanguages === undefined) {
     const firstMode2 = Object.keys(validModes2).sort(
-      (a, b) => parseInt(a) - parseInt(b)
+      (a, b) => parseInt(a) - parseInt(b),
     )[0];
     if (firstMode2 === undefined) {
       throw new Error(
-        `no valid leaderboard config for type ${state.type} and mode ${state.mode}`
+        `no valid leaderboard config for type ${state.type} and mode ${state.mode}`,
       );
     }
     state.mode2 = firstMode2;
@@ -1146,7 +1146,7 @@ function checkIfLeaderboardIsValid(): void {
 
   if (supportedLanguages === undefined || supportedLanguages.length < 1) {
     throw new Error(
-      `Daily leaderboard config not valid for mode:${state.mode} mode2:${state.mode2}`
+      `Daily leaderboard config not valid for mode:${state.mode} mode2:${state.mode2}`,
     );
   }
 
@@ -1159,18 +1159,18 @@ async function appendModeAndLanguageButtons(): Promise<void> {
   const modes = Array.from(
     new Set(
       Object.values(validLeaderboards).flatMap(
-        (rule) => Object.keys(rule) as Mode[]
-      )
-    )
+        (rule) => Object.keys(rule) as Mode[],
+      ),
+    ),
   ).sort();
 
   const mode2Buttons = modes.flatMap((mode) => {
     const modes2 = Array.from(
       new Set(
         Object.values(validLeaderboards).flatMap((rule) =>
-          Object.keys(rule[mode] ?? {})
-        )
-      )
+          Object.keys(rule[mode] ?? {}),
+        ),
+      ),
     ).sort((a, b) => parseInt(a) - parseInt(b));
 
     const icon = mode === "time" ? "fas fa-clock" : "fas fa-align-left";
@@ -1179,11 +1179,11 @@ async function appendModeAndLanguageButtons(): Promise<void> {
       (mode2) => `<button data-mode="${mode}" data-mode2="${mode2}">
       <i class="${icon}"></i>
        ${mode} ${mode2}
-    </button>`
+    </button>`,
     );
   });
   $(".modeButtons").html(
-    `<div class="divider"></div>` + mode2Buttons.join("\n")
+    `<div class="divider"></div>` + mode2Buttons.join("\n"),
   );
 
   const availableLanguages = Array.from(
@@ -1191,8 +1191,8 @@ async function appendModeAndLanguageButtons(): Promise<void> {
       Object.values(validLeaderboards)
         .flatMap((rule) => Object.values(rule))
         .flatMap((mode) => Object.values(mode))
-        .flatMap((it) => it)
-    )
+        .flatMap((it) => it),
+    ),
   ).sort();
 
   const languageButtons = availableLanguages.map(
@@ -1200,10 +1200,10 @@ async function appendModeAndLanguageButtons(): Promise<void> {
       `<button data-language="${lang}">
           <i class="fas fa-globe"></i>
           ${lang}
-        </button>`
+        </button>`,
   );
   $(".languageButtons").html(
-    `<div class="divider"></div>` + languageButtons.join("\n")
+    `<div class="divider"></div>` + languageButtons.join("\n"),
   );
 }
 
@@ -1364,7 +1364,7 @@ function utcToLocalDate(timestamp: UTCDateMini): Date {
 function updateTimeText(
   dateString: string,
   localStart: Date,
-  localEnd: Date
+  localEnd: Date,
 ): void {
   const localDateString =
     "local time \n" +
@@ -1418,7 +1418,7 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     updateSideButtons();
     updateContent();
     updateGetParameters();
-  }
+  },
 );
 
 $(".page.pageLeaderboards .buttonGroup.modeButtons").on(
@@ -1447,7 +1447,7 @@ $(".page.pageLeaderboards .buttonGroup.modeButtons").on(
     updateTitle();
     updateContent();
     updateGetParameters();
-  }
+  },
 );
 
 $(".page.pageLeaderboards .buttonGroup.languageButtons").on(
@@ -1470,7 +1470,7 @@ $(".page.pageLeaderboards .buttonGroup.languageButtons").on(
     updateTitle();
     updateContent();
     updateGetParameters();
-  }
+  },
 );
 
 $(".page.pageLeaderboards .buttonGroup.friendsOnlyButtons").on(
@@ -1484,7 +1484,7 @@ $(".page.pageLeaderboards .buttonGroup.friendsOnlyButtons").on(
     updateSideButtons();
     updateContent();
     updateGetParameters();
-  }
+  },
 );
 
 export const page = new PageWithUrlParams({

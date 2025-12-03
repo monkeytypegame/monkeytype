@@ -295,11 +295,11 @@ export function forceKeyup(now: number): void {
   //skewing the average and standard deviation
 
   const indexesToRemove = new Set(
-    Object.values(keyDownData).map((data) => data.index)
+    Object.values(keyDownData).map((data) => data.index),
   );
 
   const keypressDurations = keypressTimings.duration.array.filter(
-    (_, index) => !indexesToRemove.has(index)
+    (_, index) => !indexesToRemove.has(index),
   );
   if (keypressDurations.length === 0) {
     // this means the test ended while all keys were still held - probably safe to ignore
@@ -310,7 +310,7 @@ export function forceKeyup(now: number): void {
   const avg = roundTo2(mean(keypressDurations));
 
   const orderedKeys = Object.entries(keyDownData).sort(
-    (a, b) => a[1].timestamp - b[1].timestamp
+    (a, b) => a[1].timestamp - b[1].timestamp,
   );
 
   for (const [key, { index }] of orderedKeys) {
@@ -356,7 +356,7 @@ export function recordKeyupTime(now: number, event: KeyboardEvent): void {
       event.code,
       //ignore for logging
       // oxlint-disable-next-line no-deprecated
-      event.which
+      event.which,
     );
     return;
   }
@@ -392,7 +392,7 @@ export function recordKeydownTime(now: number, event: KeyboardEvent): void {
       event.code,
       //ignore for logging
       // oxlint-disable-next-line no-deprecated
-      event.which
+      event.which,
     );
     return;
   }

@@ -2,7 +2,7 @@ const pendingFrames = new Map<string, number>();
 
 export function requestDebouncedAnimationFrame(
   frameId: string,
-  callback: () => void
+  callback: () => void,
 ): void {
   cancelIfPending(frameId);
   const frame = requestAnimationFrame(() => {

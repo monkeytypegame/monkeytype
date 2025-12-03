@@ -75,7 +75,7 @@ const leaderboardUpdate = new Gauge({
 });
 
 export function incrementAuth(
-  type: "Bearer" | "ApeKey" | "None" | "GithubWebhook"
+  type: "Bearer" | "ApeKey" | "None" | "GithubWebhook",
 ): void {
   auth.inc({ type });
 }
@@ -84,7 +84,7 @@ export function setLeaderboard(
   language: string,
   mode: string,
   mode2: string,
-  times: [number, number, number, number]
+  times: [number, number, number, number],
 ): void {
   leaderboardUpdate.set({ language, mode, mode2, step: "aggregate" }, times[0]);
   leaderboardUpdate.set({ language, mode, mode2, step: "loop" }, times[1]);
@@ -138,7 +138,7 @@ export function incrementResult(res: CompletedEvent, isPb?: boolean): void {
       mode,
       mode2: m2,
     },
-    res.wpm
+    res.wpm,
   );
 
   resultAcc.observe(
@@ -146,7 +146,7 @@ export function incrementResult(res: CompletedEvent, isPb?: boolean): void {
       mode,
       mode2: m2,
     },
-    res.acc
+    res.acc,
   );
 
   resultDuration.observe(res.testDuration);
@@ -155,7 +155,7 @@ export function incrementResult(res: CompletedEvent, isPb?: boolean): void {
 export function incrementDailyLeaderboard(
   mode: string,
   mode2: string,
-  language: string
+  language: string,
 ): void {
   dailyLb.inc({ mode, mode2, language });
 }
@@ -213,7 +213,7 @@ export function recordAuthTime(
   type: string,
   status: "success" | "failure",
   time: number,
-  req: Request
+  req: Request,
 ): void {
   // for some reason route is not in the types
   // oxlint-disable-next-line no-unsafe-member-access
@@ -257,7 +257,7 @@ const tokenCacheAccess = new Counter({
 });
 
 export function recordTokenCacheAccess(
-  status: "hit" | "miss" | "hit_expired"
+  status: "hit" | "miss" | "hit_expired",
 ): void {
   tokenCacheAccess.inc({ status });
 }
@@ -309,7 +309,7 @@ const queueLength = new Gauge({
 export function setQueueLength(
   queueName: string,
   countType: string,
-  length: number
+  length: number,
 ): void {
   queueLength.set({ queueName, countType }, length);
 }
@@ -339,7 +339,7 @@ const timeToCompleteJobCount = new Counter({
 export function recordTimeToCompleteJob(
   queueName: string,
   jobName: string,
-  time: number
+  time: number,
 ): void {
   timeToCompleteJobTotal.inc({ queueName, jobName }, time);
   timeToCompleteJobCount.inc({ queueName, jobName });

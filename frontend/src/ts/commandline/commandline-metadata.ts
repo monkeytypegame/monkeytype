@@ -66,7 +66,7 @@ export type SecondaryInputProps<T extends keyof ConfigSchemas.Config> = {
 
 export type CommandlineConfigMetadata<
   T extends keyof ConfigSchemas.Config,
-  T2 extends keyof ConfigSchemas.Config
+  T2 extends keyof ConfigSchemas.Config,
 > = {
   alias?: string;
   display?: string;
@@ -82,7 +82,7 @@ export type SubgroupProps<T extends keyof ConfigSchemas.Config> = {
   isVisible?: (value: ConfigSchemas.Config[T]) => boolean;
   isAvailable?: (value: ConfigSchemas.Config[T]) => (() => boolean) | undefined;
   customData?: (
-    value: ConfigSchemas.Config[T]
+    value: ConfigSchemas.Config[T],
   ) => Record<string, string | boolean>;
   hover?: (value: ConfigSchemas.Config[T]) => void;
   afterExec?: (value: ConfigSchemas.Config[T]) => void;
@@ -513,8 +513,10 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     alias: "wpm",
   },
   timerStyle: {
-    display: "Live progress style...",
-    subgroup: { options: "fromSchema" },
+    subgroup: {
+      options: "fromSchema",
+      display: (value) => value.replaceAll(/_/g, " "),
+    },
     alias: "timer",
   },
   timerColor: {
@@ -589,8 +591,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: typedKeys(Fonts).sort((a, b) =>
         (Fonts[a]?.display ?? a.replace(/_/g, " ")).localeCompare(
-          Fonts[b]?.display ?? b.replace(/_/g, " ")
-        )
+          Fonts[b]?.display ?? b.replace(/_/g, " "),
+        ),
       ),
       display: (name) =>
         Fonts[name as KnownFontName]?.display ?? name.replaceAll(/_/g, " "),

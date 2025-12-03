@@ -29,7 +29,7 @@ describe("IP Addresses", () => {
 
       for (let i = 0; i < rawIps.length; i++) {
         expect(IpAddresses.compressIpv6(rawIps[i] as string)).toEqual(
-          compressedIps[i]
+          compressedIps[i],
         );
       }
     });
@@ -43,18 +43,18 @@ describe("IP Addresses", () => {
         const splitIpAddress = ipAddress.split(".");
 
         expect(splitIpAddress.length, "Make sure there are four parts").toEqual(
-          4
+          4,
         );
 
         for (let j = 0; j < 4; j++) {
           const currentNumber = Number(splitIpAddress[j]);
           expect(
             currentNumber,
-            "Each part of an IPv4 should be >= 0"
+            "Each part of an IPv4 should be >= 0",
           ).toBeGreaterThanOrEqual(0);
           expect(
             currentNumber,
-            "Each part of an IPv4 should be <= 255"
+            "Each part of an IPv4 should be <= 255",
           ).toBeLessThanOrEqual(255);
         }
       }
@@ -69,32 +69,32 @@ describe("IP Addresses", () => {
 
         expect(
           splitIpAddress.length,
-          "Make sure there are eight parts"
+          "Make sure there are eight parts",
         ).toEqual(8);
 
         for (let j = 0; j < 8; j++) {
           const currentPart = splitIpAddress[j] as string;
           expect(
             currentPart.length,
-            "Each part of an IPv6 should be between 1 and 4 characters"
+            "Each part of an IPv6 should be between 1 and 4 characters",
           ).toBeGreaterThanOrEqual(1);
           expect(
             currentPart.length,
-            "Each part of an IPv6 should be between 1 and 4 characters"
+            "Each part of an IPv6 should be between 1 and 4 characters",
           ).toBeLessThanOrEqual(4);
 
           const currentNumber = parseInt(currentPart, 16);
           expect(
             currentNumber,
-            "Each part of an IPv6 should be a valid hexadecimal number"
+            "Each part of an IPv6 should be a valid hexadecimal number",
           ).not.toBeNaN();
           expect(
             currentNumber,
-            "Each part of an IPv6 should be >= 0"
+            "Each part of an IPv6 should be >= 0",
           ).toBeGreaterThanOrEqual(0);
           expect(
             currentNumber,
-            "Each part of an IPv6 should be <= 65535"
+            "Each part of an IPv6 should be <= 65535",
           ).toBeLessThanOrEqual(65535);
         }
       }
@@ -108,7 +108,7 @@ describe("IP Addresses", () => {
       const ipParts = cidr.split("/");
       expect(
         ipParts.length,
-        "There should only be one '/' in the ip addresss"
+        "There should only be one '/' in the ip addresss",
       ).toEqual(2);
       const maskSize = Number(ipParts[1]);
       expect(maskSize).not.toBeNaN();
@@ -122,7 +122,7 @@ describe("IP Addresses", () => {
       const ipParts = cidr.split("/");
       expect(
         ipParts.length,
-        "There should only be one '/' in the ip addresss"
+        "There should only be one '/' in the ip addresss",
       ).toEqual(2);
       console.log(cidr);
       const maskSize = Number(ipParts[1]);

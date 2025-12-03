@@ -47,7 +47,7 @@ export function getAvatarElement(
     discordId?: string;
     discordAvatar?: string;
   },
-  options?: Options
+  options?: Options,
 ): HTMLElement {
   if (
     discordId === undefined ||
@@ -60,7 +60,7 @@ export function getAvatarElement(
 
   const element = buildElement(
     `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png`,
-    options
+    options,
   );
 
   return element;

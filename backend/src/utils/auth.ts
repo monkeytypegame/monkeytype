@@ -22,7 +22,7 @@ const TOKEN_CACHE_BUFFER = 1000 * 60 * 5; // 5 minutes
 
 export async function verifyIdToken(
   idToken: string,
-  noCache = false
+  noCache = false,
 ): Promise<DecodedIdToken> {
   if (noCache) {
     return await FirebaseAdmin().auth().verifyIdToken(idToken, true);
@@ -54,7 +54,7 @@ export async function verifyIdToken(
 
 export async function updateUserEmail(
   uid: string,
-  email: string
+  email: string,
 ): Promise<UserRecord> {
   await revokeTokensByUid(uid);
   return await FirebaseAdmin().auth().updateUser(uid, {
@@ -65,7 +65,7 @@ export async function updateUserEmail(
 
 export async function updateUserPassword(
   uid: string,
-  password: string
+  password: string,
 ): Promise<UserRecord> {
   await revokeTokensByUid(uid);
   return await FirebaseAdmin().auth().updateUser(uid, {
@@ -93,7 +93,7 @@ export async function sendForgotPasswordEmail(email: string): Promise<void> {
     const { name } = await UserDAL.getPartialUser(
       uid,
       "request forgot password email",
-      ["name"]
+      ["name"],
     );
 
     const link = await FirebaseAdmin()

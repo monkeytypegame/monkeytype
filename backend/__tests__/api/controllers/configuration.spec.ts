@@ -100,7 +100,7 @@ describe("Configuration Controller", () => {
   describe("updateConfiguration", () => {
     const patchConfigurationMock = vi.spyOn(
       Configuration,
-      "patchConfiguration"
+      "patchConfiguration",
     );
     beforeEach(() => {
       patchConfigurationMock.mockClear();

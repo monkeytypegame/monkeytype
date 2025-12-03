@@ -42,7 +42,7 @@ export async function goToNextWord({
   TestUI.beforeTestWordChange(
     "forward",
     correctInsert,
-    isCompositionEnding || zenNewline === true
+    isCompositionEnding || zenNewline === true,
   );
 
   if (correctInsert) {
@@ -95,7 +95,7 @@ export async function goToNextWord({
 
 export function goToPreviousWord(
   inputType: DeleteInputType,
-  forceUpdateActiveWordLetters = false
+  forceUpdateActiveWordLetters = false,
 ): void {
   if (TestState.activeWordIndex === 0) {
     setInputElementValue("");

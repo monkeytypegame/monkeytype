@@ -32,6 +32,11 @@ let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
 let expected = 0;
 
+let slowTimerFailEnabled = true;
+export function disableSlowTimerFail(): void {
+  slowTimerFailEnabled = false;
+}
+
 let timerDebug = false;
 export function enableTimerDebug(): void {
   timerDebug = true;
@@ -126,7 +131,7 @@ function layoutfluid(): void {
 
 function checkIfFailed(
   wpmAndRaw: { wpm: number; raw: number },
-  acc: number
+  acc: number,
 ): boolean {
   if (timerDebug) console.time("fail conditions");
   TestInput.pushKeypressesToHistory();
@@ -234,30 +239,32 @@ export async function start(): Promise<void> {
       expected: expected,
       nextDelay: delay,
     });
-    if (
-      (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
-      (Config.mode === "words" && Config.words < 250 && Config.words > 0)
-    ) {
-      if (delay < interval / 2) {
-        //slow timer
-        SlowTimer.set();
-        setLowFpsMode();
-      }
-      if (delay < interval / 10) {
-        slowTimerCount++;
-        if (slowTimerCount > 5) {
+    if (slowTimerFailEnabled) {
+      if (
+        (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
+        (Config.mode === "words" && Config.words < 250 && Config.words > 0)
+      ) {
+        if (delay < interval / 2) {
           //slow timer
+          SlowTimer.set();
+          setLowFpsMode();
+        }
+        if (delay < interval / 10) {
+          slowTimerCount++;
+          if (slowTimerCount > 5) {
+            //slow timer
 
-          Notifications.add(
-            'This could be caused by "efficiency mode" on Microsoft Edge.'
-          );
+            Notifications.add(
+              'This could be caused by "efficiency mode" on Microsoft Edge.',
+            );
 
-          Notifications.add(
-            "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
-            -1
-          );
+            Notifications.add(
+              "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+              -1,
+            );
 
-          TimerEvent.dispatch("fail", "slow timer");
+            TimerEvent.dispatch("fail", "slow timer");
+          }
         }
       }
     }

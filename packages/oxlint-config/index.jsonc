@@ -3,7 +3,7 @@
   "categories": {
     "correctness": "error",
     "suspicious": "error",
-    "perf": "error"
+    "perf": "error",
   },
   "plugins": ["typescript", "unicorn", "oxc", "import", "node", "promise"],
   "extends": [

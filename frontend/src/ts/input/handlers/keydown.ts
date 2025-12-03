@@ -45,7 +45,7 @@ export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
 
 export async function handleEnter(
   e: KeyboardEvent,
-  now: number
+  now: number,
 ): Promise<void> {
   if (e.shiftKey) {
     if (Config.mode === "zen") {
@@ -57,7 +57,7 @@ export async function handleEnter(
         Config.words,
         Config.time,
         CustomText.getData(),
-        CustomTextState.isCustomTextLong() ?? false
+        CustomTextState.isCustomTextLong() ?? false,
       )
     ) {
       const delay = Date.now() - getLastBailoutAttempt();
@@ -70,7 +70,7 @@ export async function handleEnter(
             {
               important: true,
               duration: 5,
-            }
+            },
           );
         }
         return;
@@ -108,7 +108,7 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
     Config.keymapLayout !== "overrideSync"
   ) {
     let keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
-      () => undefined
+      () => undefined,
     );
     if (keymapLayout === undefined) {
       Notifications.add("Failed to load keymap layout", -1);
@@ -124,18 +124,18 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
     const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
 
     setCorrectShiftUsed(
-      keycode === undefined ? true : ShiftTracker.isUsingOppositeShift(keycode)
+      keycode === undefined ? true : ShiftTracker.isUsingOppositeShift(keycode),
     );
   } else {
     setCorrectShiftUsed(
-      ShiftTracker.isUsingOppositeShift(event.code as KeyConverter.Keycode)
+      ShiftTracker.isUsingOppositeShift(event.code as KeyConverter.Keycode),
     );
   }
 }
 
 async function handleFunboxes(
   event: KeyboardEvent,
-  now: number
+  now: number,
 ): Promise<boolean> {
   for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
     void fb.functions.handleKeydown(event);
@@ -152,12 +152,6 @@ async function handleFunboxes(
 }
 
 export async function onKeydown(event: KeyboardEvent): Promise<void> {
-  console.debug("wordsInput event keydown", {
-    event,
-    key: event.key,
-    code: event.code,
-  });
-
   const now = performance.now();
   TestInput.recordKeydownTime(now, event);
 

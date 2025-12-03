@@ -30,7 +30,7 @@ for (const [name, data] of Object.entries(metadata)) {
 export function get(funboxName: FunboxName): FunboxMetadataWithFunctions;
 export function get(funboxNames: FunboxName[]): FunboxMetadataWithFunctions[];
 export function get(
-  funboxNameOrNames: FunboxName | FunboxName[]
+  funboxNameOrNames: FunboxName | FunboxName[],
 ): FunboxMetadataWithFunctions | FunboxMetadataWithFunctions[] {
   if (Array.isArray(funboxNameOrNames)) {
     const fns = funboxNameOrNames.map((name) => metadataWithFunctions[name]);
@@ -58,7 +58,7 @@ export function getActiveFunboxNames(): FunboxName[] {
  * @returns list of matching funboxes, empty list if none matching
  */
 export function getActiveFunboxesWithProperty(
-  property: FunboxProperty
+  property: FunboxProperty,
 ): FunboxMetadataWithFunctions[] {
   return getActiveFunboxes().filter((fb) => fb.properties?.includes(property));
 }
@@ -70,13 +70,13 @@ export function getActiveFunboxesWithProperty(
  * @throws Error if there are multiple funboxes defining the given property
  */
 export function findSingleActiveFunboxWithProperty(
-  property: FunboxProperty
+  property: FunboxProperty,
 ): FunboxMetadataWithFunctions | undefined {
   const matching = getActiveFunboxesWithProperty(property);
   if (matching.length === 0) return undefined;
   if (matching.length === 1) return matching[0];
   throw new Error(
-    `Expecting exactly one funbox with property "${property} but found ${matching.length}`
+    `Expecting exactly one funbox with property "${property} but found ${matching.length}`,
   );
 }
 
@@ -113,10 +113,10 @@ type FunboxWithFunction<F extends keyof FunboxFunctions> =
  * @returns list of matching funboxes, empty list if none matching
  */
 export function getActiveFunboxesWithFunction<F extends keyof FunboxFunctions>(
-  functionName: F
+  functionName: F,
 ): FunboxWithFunction<F>[] {
   return getActiveFunboxes().filter(
-    (fb) => fb.functions?.[functionName] !== undefined
+    (fb) => fb.functions?.[functionName] !== undefined,
   ) as FunboxWithFunction<F>[];
 }
 
@@ -126,7 +126,7 @@ export function getActiveFunboxesWithFunction<F extends keyof FunboxFunctions>(
  * @returns
  */
 export function isFunboxActiveWithFunction(
-  functionName: keyof FunboxFunctions
+  functionName: keyof FunboxFunctions,
 ): boolean {
   return getActiveFunboxesWithFunction(functionName).length > 0;
 }
@@ -138,12 +138,12 @@ export function isFunboxActiveWithFunction(
  * @throws Error if there are multiple funboxes implementing the function name
  */
 export function findSingleActiveFunboxWithFunction<
-  F extends keyof FunboxFunctions
+  F extends keyof FunboxFunctions,
 >(functionName: F): FunboxWithFunction<F> | undefined {
   const matching = getActiveFunboxesWithFunction(functionName);
   if (matching.length === 0) return undefined;
   if (matching.length === 1) return matching[0] as FunboxWithFunction<F>;
   throw new Error(
-    `Expecting exactly one funbox implementing "${functionName} but found ${matching.length}`
+    `Expecting exactly one funbox implementing "${functionName} but found ${matching.length}`,
   );
 }

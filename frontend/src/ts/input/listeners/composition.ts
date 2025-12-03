@@ -5,6 +5,7 @@ import * as TestLogic from "../../test/test-logic";
 import { setLastInsertCompositionTextData } from "../state";
 import * as CompositionDisplay from "../../elements/composition-display";
 import { onInsertText } from "../handlers/insert-text";
+import * as TestUI from "../../test/test-ui";
 
 const inputEl = getInputElement();
 
@@ -14,6 +15,7 @@ inputEl.addEventListener("compositionstart", (event) => {
     data: event.data,
   });
 
+  if (TestState.testRestarting || TestUI.resultCalculating) return;
   CompositionState.setComposing(true);
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
@@ -28,6 +30,7 @@ inputEl.addEventListener("compositionupdate", (event) => {
     data: event.data,
   });
 
+  if (TestState.testRestarting || TestUI.resultCalculating) return;
   CompositionState.setData(event.data);
   CompositionDisplay.update(event.data);
 });
@@ -35,7 +38,7 @@ inputEl.addEventListener("compositionupdate", (event) => {
 inputEl.addEventListener("compositionend", async (event) => {
   console.debug("wordsInput event compositionend", { event, data: event.data });
 
-  if (TestState.testRestarting) return;
+  if (TestState.testRestarting || TestUI.resultCalculating) return;
   CompositionState.setComposing(false);
   CompositionState.setData("");
   CompositionDisplay.update("");

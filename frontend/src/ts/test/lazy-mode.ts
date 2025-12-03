@@ -48,12 +48,12 @@ const accents: Accents = [
 const accentsMap = new Map<string, string>(
   // ignoring for now but this might need a different approach
   // oxlint-disable-next-line no-misused-spread
-  accents.flatMap((rule) => [...rule[0]].map((accent) => [accent, rule[1]]))
+  accents.flatMap((rule) => [...rule[0]].map((accent) => [accent, rule[1]])),
 );
 
 function findAccent(
   wordSlice: string,
-  additionalAccents?: Accents
+  additionalAccents?: Accents,
 ): [string, string] | undefined {
   const lookup = wordSlice.toLowerCase();
 
@@ -61,8 +61,8 @@ function findAccent(
     additionalAccents?.flatMap((rule) =>
       // ignoring for now but this might need a different approach
       // oxlint-disable-next-line no-misused-spread
-      [...rule[0]].map((accent) => [accent, rule[1]])
-    ) ?? []
+      [...rule[0]].map((accent) => [accent, rule[1]]),
+    ) ?? [],
   );
 
   const common = accentsMap.get(lookup[0] as string);
@@ -83,7 +83,7 @@ function findAccent(
 
 export function replaceAccents(
   word: string,
-  additionalAccents?: Accents
+  additionalAccents?: Accents,
 ): string {
   if (!word) return word;
   const uppercased = word.toUpperCase();

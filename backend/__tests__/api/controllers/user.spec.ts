@@ -329,11 +329,11 @@ describe("user controller test", () => {
       expect(getPartialUserMock).toHaveBeenCalledWith(
         uid,
         "request verification email",
-        ["uid", "name", "email"]
+        ["uid", "name", "email"],
       );
       expect(adminGenerateVerificationLinkMock).toHaveBeenCalledWith(
         "newuser@mail.com",
-        { url: "http://localhost:3000" }
+        { url: "http://localhost:3000" },
       );
     });
     it("should fail with missing firebase user", async () => {
@@ -348,7 +348,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toContain(
-        "Auth user not found, even though the token got decoded"
+        "Auth user not found, even though the token got decoded",
       );
     });
     it("should fail with already verified email", async () => {
@@ -378,7 +378,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Authenticated email does not match the email found in the database. This might happen if you recently changed your email. Please refresh and try again."
+        "Authenticated email does not match the email found in the database. This might happen if you recently changed your email. Please refresh and try again.",
       );
     });
 
@@ -426,7 +426,7 @@ describe("user controller test", () => {
       //THEN
       expect(body.message).toEqual(
         "Auth user not found when the user was found in the database. Contact support with this error message and your email\n" +
-          'Stack: {"decodedTokenEmail":"newuser@mail.com","userInfoEmail":"newuser@mail.com"}'
+          'Stack: {"decodedTokenEmail":"newuser@mail.com","userInfoEmail":"newuser@mail.com"}',
       );
     });
     it("should fail with unknown error", async () => {
@@ -445,14 +445,14 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Failed to generate an email verification link: Internal server error"
+        "Failed to generate an email verification link: Internal server error",
       );
     });
   });
   describe("sendForgotPasswordEmail", () => {
     const sendForgotPasswordEmailMock = vi.spyOn(
       AuthUtils,
-      "sendForgotPasswordEmail"
+      "sendForgotPasswordEmail",
     );
     const verifyCaptchaMock = vi.spyOn(Captcha, "verify");
 
@@ -477,7 +477,7 @@ describe("user controller test", () => {
       });
 
       expect(sendForgotPasswordEmailMock).toHaveBeenCalledWith(
-        "bob@example.com"
+        "bob@example.com",
       );
     });
     it("should fail without mandatory properties", async () => {
@@ -626,11 +626,11 @@ describe("user controller test", () => {
     const deleteAllResultMock = vi.spyOn(ResultDal, "deleteAll");
     const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
       DailyLeaderboards,
-      "purgeUserFromDailyLeaderboards"
+      "purgeUserFromDailyLeaderboards",
     );
     const purgeUserFromXpLeaderboardsMock = vi.spyOn(
       WeeklyXpLeaderboard,
-      "purgeUserFromXpLeaderboards"
+      "purgeUserFromXpLeaderboards",
     );
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
     const connectionsDeletebyUidMock = vi.spyOn(ConnectionsDal, "deleteByUid");
@@ -699,11 +699,11 @@ describe("user controller test", () => {
       expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await configuration).dailyLeaderboards
+        (await configuration).dailyLeaderboards,
       );
       expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await configuration).leaderboards.weeklyXp
+        (await configuration).leaderboards.weeklyXp,
       );
       expect(logsDeleteUserMock).toHaveBeenCalledWith(uid);
     });
@@ -735,11 +735,11 @@ describe("user controller test", () => {
       expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await configuration).dailyLeaderboards
+        (await configuration).dailyLeaderboards,
       );
       expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await configuration).leaderboards.weeklyXp
+        (await configuration).leaderboards.weeklyXp,
       );
       expect(logsDeleteUserMock).toHaveBeenCalledWith(uid);
     });
@@ -766,11 +766,11 @@ describe("user controller test", () => {
       expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await configuration).dailyLeaderboards
+        (await configuration).dailyLeaderboards,
       );
       expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await configuration).leaderboards.weeklyXp
+        (await configuration).leaderboards.weeklyXp,
       );
       expect(logsDeleteUserMock).toHaveBeenCalledWith(uid);
     });
@@ -796,11 +796,11 @@ describe("user controller test", () => {
       expect(connectionsDeletebyUidMock).not.toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).not.toHaveBeenCalledWith(
         uid,
-        (await configuration).dailyLeaderboards
+        (await configuration).dailyLeaderboards,
       );
       expect(purgeUserFromXpLeaderboardsMock).not.toHaveBeenCalledWith(
         uid,
-        (await configuration).leaderboards.weeklyXp
+        (await configuration).leaderboards.weeklyXp,
       );
       expect(logsDeleteUserMock).not.toHaveBeenCalled();
     });
@@ -837,11 +837,11 @@ describe("user controller test", () => {
       expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await configuration).dailyLeaderboards
+        (await configuration).dailyLeaderboards,
       );
       expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await configuration).leaderboards.weeklyXp
+        (await configuration).leaderboards.weeklyXp,
       );
       expect(logsDeleteUserMock).toHaveBeenCalledWith(uid);
     });
@@ -878,11 +878,11 @@ describe("user controller test", () => {
       expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await configuration).dailyLeaderboards
+        (await configuration).dailyLeaderboards,
       );
       expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await configuration).leaderboards.weeklyXp
+        (await configuration).leaderboards.weeklyXp,
       );
     });
   });
@@ -895,11 +895,11 @@ describe("user controller test", () => {
     const deleteConfigMock = vi.spyOn(ConfigDal, "deleteConfig");
     const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
       DailyLeaderboards,
-      "purgeUserFromDailyLeaderboards"
+      "purgeUserFromDailyLeaderboards",
     );
     const purgeUserFromXpLeaderboardsMock = vi.spyOn(
       WeeklyXpLeaderboard,
-      "purgeUserFromXpLeaderboards"
+      "purgeUserFromXpLeaderboards",
     );
 
     const unlinkDiscordMock = vi.spyOn(GeorgeQueue, "unlinkDiscord");
@@ -950,11 +950,11 @@ describe("user controller test", () => {
       }
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await Configuration.getLiveConfiguration()).dailyLeaderboards
+        (await Configuration.getLiveConfiguration()).dailyLeaderboards,
       );
       expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await configuration).leaderboards.weeklyXp
+        (await configuration).leaderboards.weeklyXp,
       );
       expect(unlinkDiscordMock).not.toHaveBeenCalled();
       /*TODO
@@ -1034,7 +1034,7 @@ describe("user controller test", () => {
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_name_updated",
         "changed name from Bob to newName",
-        uid
+        uid,
       );
       expect(connectionsUpdateNameMock).toHaveBeenCalledWith(uid, "newName");
     });
@@ -1086,7 +1086,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "You can change your name once every 30 days"
+        "You can change your name once every 30 days",
       );
       expect(updateNameMock).not.toHaveBeenCalled();
     });
@@ -1160,7 +1160,7 @@ describe("user controller test", () => {
     const clearPbMock = vi.spyOn(UserDal, "clearPb");
     const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
       DailyLeaderboards,
-      "purgeUserFromDailyLeaderboards"
+      "purgeUserFromDailyLeaderboards",
     );
     const addImportantLogMock = vi.spyOn(LogDal, "addImportantLog");
 
@@ -1189,12 +1189,12 @@ describe("user controller test", () => {
       expect(clearPbMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await Configuration.getLiveConfiguration()).dailyLeaderboards
+        (await Configuration.getLiveConfiguration()).dailyLeaderboards,
       );
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_cleared_pbs",
         "",
-        uid
+        uid,
       );
     });
   });
@@ -1202,7 +1202,7 @@ describe("user controller test", () => {
     const optOutOfLeaderboardsMock = vi.spyOn(UserDal, "optOutOfLeaderboards");
     const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
       DailyLeaderboards,
-      "purgeUserFromDailyLeaderboards"
+      "purgeUserFromDailyLeaderboards",
     );
     const addImportantLogMock = vi.spyOn(LogDal, "addImportantLog");
 
@@ -1231,12 +1231,12 @@ describe("user controller test", () => {
       expect(optOutOfLeaderboardsMock).toHaveBeenCalledWith(uid);
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
-        (await Configuration.getLiveConfiguration()).dailyLeaderboards
+        (await Configuration.getLiveConfiguration()).dailyLeaderboards,
       );
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_opted_out_of_leaderboards",
         "",
-        uid
+        uid,
       );
     });
     // it("should fail with unknown properties", async () => {
@@ -1259,7 +1259,7 @@ describe("user controller test", () => {
 
     beforeEach(() => {
       [authUpdateEmailMock, userUpdateEmailMock, addImportantLogMock].forEach(
-        (it) => it.mockClear().mockResolvedValue(null as never)
+        (it) => it.mockClear().mockResolvedValue(null as never),
       );
     });
     it("should update users email", async () => {
@@ -1281,16 +1281,16 @@ describe("user controller test", () => {
 
       expect(authUpdateEmailMock).toHaveBeenCalledWith(
         uid,
-        newEmail.toLowerCase()
+        newEmail.toLowerCase(),
       );
       expect(userUpdateEmailMock).toHaveBeenCalledWith(
         uid,
-        newEmail.toLowerCase()
+        newEmail.toLowerCase(),
       );
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_email_updated",
         "changed email from previousemail@example.com to newemail@example.com",
-        uid
+        uid,
       );
     });
     it("should fail for duplicate email", async () => {
@@ -1317,7 +1317,7 @@ describe("user controller test", () => {
         .expect(409);
 
       expect(body.message).toEqual(
-        "The email address is already in use by another account"
+        "The email address is already in use by another account",
       );
 
       expect(userUpdateEmailMock).not.toHaveBeenCalled();
@@ -1401,7 +1401,7 @@ describe("user controller test", () => {
         .expect(404);
 
       expect(body.message).toEqual(
-        "User not found in the auth system\nStack: update email"
+        "User not found in the auth system\nStack: update email",
       );
 
       expect(userUpdateEmailMock).not.toHaveBeenCalled();
@@ -1575,7 +1575,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Discord integration is not available at this time"
+        "Discord integration is not available at this time",
       );
     });
   });
@@ -1584,7 +1584,7 @@ describe("user controller test", () => {
     const isDiscordIdAvailableMock = vi.spyOn(UserDal, "isDiscordIdAvailable");
     const isStateValidForUserMock = vi.spyOn(
       DiscordUtils,
-      "iStateValidForUser"
+      "iStateValidForUser",
     );
     const getDiscordUserMock = vi.spyOn(DiscordUtils, "getDiscordUser");
     const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
@@ -1642,16 +1642,16 @@ describe("user controller test", () => {
       });
       expect(isStateValidForUserMock).toHaveBeenCalledWith(
         "statestatestatestate",
-        uid
+        uid,
       );
       expect(getUserMock).toHaveBeenCalledWith(
         uid,
         "link discord",
-        expect.any(Array)
+        expect.any(Array),
       );
       expect(getDiscordUserMock).toHaveBeenCalledWith(
         "tokenType",
-        "accessToken"
+        "accessToken",
       );
       expect(isDiscordIdAvailableMock).toHaveBeenCalledWith("discordUserId");
       expect(blocklistContainsMock).toHaveBeenCalledWith({
@@ -1660,17 +1660,17 @@ describe("user controller test", () => {
       expect(userLinkDiscordMock).toHaveBeenCalledWith(
         uid,
         "discordUserId",
-        "discordUserAvatar"
+        "discordUserAvatar",
       );
       expect(georgeLinkDiscordMock).toHaveBeenCalledWith(
         "discordUserId",
         uid,
-        false
+        false,
       );
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_discord_link",
         "linked to discordUserId",
-        uid
+        uid,
       );
     });
 
@@ -1700,7 +1700,7 @@ describe("user controller test", () => {
       expect(userLinkDiscordMock).toHaveBeenCalledWith(
         uid,
         "existingDiscordId",
-        "discordUserAvatar"
+        "discordUserAvatar",
       );
       expect(isDiscordIdAvailableMock).not.toHaveBeenCalled();
       expect(blocklistContainsMock).not.toHaveBeenCalled();
@@ -1760,7 +1760,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Could not get Discord account info\nStack: discord id is undefined"
+        "Could not get Discord account info\nStack: discord id is undefined",
       );
 
       //THEN
@@ -1783,7 +1783,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "This Discord account is linked to a different account"
+        "This Discord account is linked to a different account",
       );
 
       //THEN
@@ -1892,7 +1892,7 @@ describe("user controller test", () => {
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_discord_unlinked",
         "discordId",
-        uid
+        uid,
       );
     });
     it("should fail for banned user", async () => {
@@ -1924,7 +1924,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "User does not have a linked Discord account"
+        "User does not have a linked Discord account",
       );
       expect(userUnlinkDiscordMock).not.toHaveBeenCalled();
       expect(georgeUnlinkDiscordMock).not.toHaveBeenCalled();
@@ -1992,7 +1992,7 @@ describe("user controller test", () => {
 
     const addResultFilterPresetMock = vi.spyOn(
       UserDal,
-      "addResultFilterPreset"
+      "addResultFilterPreset",
     );
 
     beforeEach(async () => {
@@ -2019,7 +2019,7 @@ describe("user controller test", () => {
         uid,
         validPreset,
         (await Configuration.getLiveConfiguration()).results.filterPresets
-          .maxPresetsPerUser
+          .maxPresetsPerUser,
       );
     });
     it("should fail without mandatory properties", async () => {
@@ -2076,14 +2076,14 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Result filter presets are not available at this time."
+        "Result filter presets are not available at this time.",
       );
     });
   });
   describe("remove result filter preset", () => {
     const removeResultFilterPresetMock = vi.spyOn(
       UserDal,
-      "removeResultFilterPreset"
+      "removeResultFilterPreset",
     );
 
     beforeEach(() => {
@@ -2117,7 +2117,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Result filter presets are not available at this time."
+        "Result filter presets are not available at this time.",
       );
     });
   });
@@ -2364,7 +2364,7 @@ describe("user controller test", () => {
         "time",
         "60",
         "english",
-        7
+        7,
       );
     });
 
@@ -2829,7 +2829,7 @@ describe("user controller test", () => {
         uid,
         "english",
         "7",
-        (await Configuration.getLiveConfiguration()).quotes.maxFavorites
+        (await Configuration.getLiveConfiguration()).quotes.maxFavorites,
       );
     });
     it("should fail without mandatory properties", async () => {
@@ -3052,7 +3052,7 @@ describe("user controller test", () => {
         expect.objectContaining({
           lastDay: 1712102400000,
           testsByDays: expect.arrayContaining([]),
-        })
+        }),
       );
     });
     it("should not get testActivity if disabled", async () => {
@@ -3219,7 +3219,7 @@ describe("user controller test", () => {
         },
         {
           badges: [{ id: 4 }, { id: 2, selected: true }, { id: 3 }],
-        }
+        },
       );
     });
     it("should update with empty strings", async () => {
@@ -3263,7 +3263,7 @@ describe("user controller test", () => {
         },
         {
           badges: [{ id: 4 }, { id: 2 }, { id: 3 }],
-        }
+        },
       );
     });
     it("should fail with unknown properties", async () => {
@@ -3307,7 +3307,7 @@ describe("user controller test", () => {
           keyboard: "string  with  many  spaces",
           socialProfiles: {},
         },
-        expect.objectContaining({})
+        expect.objectContaining({}),
       );
     });
     it("should fail with profanity", async () => {
@@ -3491,7 +3491,7 @@ describe("user controller test", () => {
       expect(updateInboxMock).toHaveBeenCalledWith(
         uid,
         [mailIdOne, mailIdTwo],
-        [mailIdOne]
+        [mailIdOne],
       );
     });
     it("should update without body", async () => {
@@ -3592,7 +3592,7 @@ describe("user controller test", () => {
         (await Configuration.getLiveConfiguration()).quotes.reporting
           .maxReports,
         (await Configuration.getLiveConfiguration()).quotes.reporting
-          .contentReportLimit
+          .contentReportLimit,
       );
       expect(verifyCaptchaMock).toHaveBeenCalledWith("captcha");
     });
@@ -3745,7 +3745,7 @@ describe("user controller test", () => {
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_streak_hour_offset_set",
         { hourOffset: -2 },
-        uid
+        uid,
       );
     });
     it("should fail if offset already set", async () => {
@@ -3823,7 +3823,7 @@ describe("user controller test", () => {
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_tokens_revoked",
         "",
-        uid
+        uid,
       );
     });
   });
@@ -3945,7 +3945,7 @@ describe("user controller test", () => {
 
     it("should fail if friends endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
-        mockApp.get("/users/friends").set("Authorization", `Bearer ${uid}`)
+        mockApp.get("/users/friends").set("Authorization", `Bearer ${uid}`),
       );
     });
 
@@ -3968,7 +3968,7 @@ async function enablePremiumFeatures(enabled: boolean): Promise<void> {
   mockConfig.users.premium = { ...mockConfig.users.premium, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
@@ -3977,7 +3977,7 @@ async function enableSignup(signUp: boolean): Promise<void> {
   mockConfig.users = { ...mockConfig.users, signUp };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
@@ -3989,7 +3989,7 @@ async function enableDiscordIntegration(enabled: boolean): Promise<void> {
   };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
@@ -4001,7 +4001,7 @@ async function enableResultFilterPresets(enabled: boolean): Promise<void> {
   };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
@@ -4010,7 +4010,7 @@ async function acceptApeKeys(acceptKeys: boolean): Promise<void> {
   mockConfig.apeKeys = { ...mockConfig.apeKeys, acceptKeys };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
@@ -4019,7 +4019,7 @@ async function enableProfiles(enabled: boolean): Promise<void> {
   mockConfig.users.profiles = { ...mockConfig.users.profiles, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 async function enableInbox(enabled: boolean): Promise<void> {
@@ -4027,7 +4027,7 @@ async function enableInbox(enabled: boolean): Promise<void> {
   mockConfig.users.inbox = { ...mockConfig.users.inbox, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
@@ -4036,7 +4036,7 @@ async function enableReporting(enabled: boolean): Promise<void> {
   mockConfig.quotes.reporting = { ...mockConfig.quotes.reporting, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 
@@ -4045,7 +4045,7 @@ async function enableConnectionsEndpoints(enabled: boolean): Promise<void> {
   mockConfig.connections = { ...mockConfig.connections, enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }
 

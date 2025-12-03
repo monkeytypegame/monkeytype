@@ -211,7 +211,7 @@ describe("CommandlineUtils", () => {
           alias: "alias",
           input: true,
           icon: "icon",
-        })
+        }),
       );
     });
 
@@ -300,7 +300,7 @@ describe("CommandlineUtils", () => {
       expect(cmd).toEqual(
         expect.objectContaining({
           inputValueConvert: Number,
-        })
+        }),
       );
     });
 
@@ -318,7 +318,7 @@ describe("CommandlineUtils", () => {
       expect(cmd).toEqual(
         expect.objectContaining({
           validation: { schema },
-        })
+        }),
       );
     });
 
@@ -350,7 +350,7 @@ describe("CommandlineUtils", () => {
       expect(cmd).toEqual(
         expect.objectContaining({
           validation: { schema },
-        })
+        }),
       );
     });
 
@@ -370,7 +370,7 @@ describe("CommandlineUtils", () => {
       expect(cmd).toEqual(
         expect.objectContaining({
           validation: { isValid },
-        })
+        }),
       );
     });
 
@@ -391,7 +391,7 @@ describe("CommandlineUtils", () => {
         expect.objectContaining({
           id: "setMySecondKeyCustom",
           display: "MySecondKey...",
-        })
+        }),
       );
     });
   });
@@ -412,6 +412,6 @@ function buildCommand<K extends ConfigKey>({
     key ?? ("" as any),
     configMeta ?? ({} as any),
     cmdMeta as any,
-    schema ?? z.string()
+    schema ?? z.string(),
   );
 }

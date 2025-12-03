@@ -44,7 +44,7 @@ describe("ConfigMeta", () => {
         "lazyMode",
         "layout",
         "codeUnindentOnBackspace",
-      ].sort()
+      ].sort(),
     );
   });
 
@@ -61,7 +61,7 @@ describe("ConfigMeta", () => {
         "maxLineWidth",
         "tapeMode",
         "tapeMargin",
-      ].sort()
+      ].sort(),
     );
   });
   describe("overrideValue", () => {
@@ -129,8 +129,8 @@ describe("ConfigMeta", () => {
 
     it.for(
       Object.entries(testCases).flatMap(([key, value]) =>
-        value.flatMap((it) => ({ key: key as ConfigKey, ...it }))
-      )
+        value.flatMap((it) => ({ key: key as ConfigKey, ...it })),
+      ),
     )(
       `$key value=$value given=$given expect=$expected`,
       ({ key, value, given, expected }) => {
@@ -142,7 +142,7 @@ describe("ConfigMeta", () => {
 
         //THEN
         expect(getConfig()).toMatchObject(expected);
-      }
+      },
     );
   });
   describe("isBlocked", () => {
@@ -166,8 +166,8 @@ describe("ConfigMeta", () => {
 
     it.for(
       Object.entries(testCases).flatMap(([key, value]) =>
-        value.flatMap((it) => ({ key: key as ConfigKey, ...it }))
-      )
+        value.flatMap((it) => ({ key: key as ConfigKey, ...it })),
+      ),
     )(
       `$key value=$value given=$given fail=$fail`,
       ({ key, value, given, fail }) => {
@@ -179,7 +179,7 @@ describe("ConfigMeta", () => {
 
         //THEN
         expect(applied).toEqual(!fail);
-      }
+      },
     );
   });
 
@@ -326,8 +326,8 @@ describe("ConfigMeta", () => {
 
     it.for(
       Object.entries(testCases).flatMap(([key, value]) =>
-        value.flatMap((it) => ({ key: key as ConfigKey, ...it }))
-      )
+        value.flatMap((it) => ({ key: key as ConfigKey, ...it })),
+      ),
     )(
       `$key value=$value given=$given expected=$expected`,
       ({ key, value, given, expected }) => {
@@ -339,7 +339,7 @@ describe("ConfigMeta", () => {
 
         //THEN
         expect(getConfig()).toMatchObject(expected ?? {});
-      }
+      },
     );
   });
 });

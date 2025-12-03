@@ -26,7 +26,7 @@ async function getData(): Promise<boolean> {
     blockedUsers = [];
     Notifications.add(
       "Error getting blocked users: " + response.body.message,
-      -1
+      -1,
     );
     return false;
   }
@@ -44,7 +44,7 @@ function showLoaderRow(): void {
 
   table.empty();
   table.append(
-    "<tr><td colspan='3' style='text-align: center;font-size:1rem;'><i class='fas fa-spin fa-circle-notch'></i></td></tr>"
+    "<tr><td colspan='3' style='text-align: center;font-size:1rem;'><i class='fas fa-spin fa-circle-notch'></i></td></tr>",
   );
 }
 
@@ -53,7 +53,7 @@ function refreshList(): void {
   table.empty();
   if (blockedUsers.length === 0) {
     table.append(
-      "<tr><td colspan='3' style='text-align: center;'>No blocked users</td></tr>"
+      "<tr><td colspan='3' style='text-align: center;'>No blocked users</td></tr>",
     );
     return;
   }
@@ -61,8 +61,8 @@ function refreshList(): void {
     (blocked) => `
     <tr data-id="${blocked._id}" data-uid="${getReceiverUid(blocked)}">
        <td><a href="${location.origin}/profile/${
-      blocked.initiatorUid
-    }?isUid" router-link>${blocked.initiatorName}</a></td>
+         blocked.initiatorUid
+       }?isUid" router-link>${blocked.initiatorName}</a></td>
        <td>${format(new Date(blocked.lastModified), "dd MMM yyyy HH:mm")}</td>
        <td>
          <button class="delete">
@@ -70,7 +70,7 @@ function refreshList(): void {
          </button>
        </td>
     </tr>
-    `
+    `,
   );
   table.append(content.join());
 }

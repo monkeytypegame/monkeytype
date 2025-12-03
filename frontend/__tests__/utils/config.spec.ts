@@ -65,7 +65,7 @@ describe("config.ts", () => {
         },
       ])(`$given`, ({ given, expected }) => {
         const description = `given: ${JSON.stringify(
-          given
+          given,
         )}, expected: ${JSON.stringify(expected)} `;
         const result = migrateConfig(given);
         expect(result, description).toEqual(expect.objectContaining(expected));
@@ -105,7 +105,7 @@ describe("config.ts", () => {
         //WHEN
 
         const description = `given: ${JSON.stringify(
-          given
+          given,
         )}, expected: ${JSON.stringify(expected)} `;
 
         const result = migrateConfig(given);
@@ -241,7 +241,7 @@ describe("config.ts", () => {
         },
       ])(`$given`, ({ given, expected }) => {
         const description = `given: ${JSON.stringify(
-          given
+          given,
         )}, expected: ${JSON.stringify(expected)} `;
 
         const result = migrateConfig(given);

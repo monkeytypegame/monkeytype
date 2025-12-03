@@ -19,7 +19,7 @@ export type DBResult = WithObjectId<Result<Mode>> & {
 export function buildDbResult(
   completedEvent: CompletedEvent,
   userName: string,
-  isPb: boolean
+  isPb: boolean,
 ): DBResult {
   const ce = completedEvent;
   const res: DBResult = {

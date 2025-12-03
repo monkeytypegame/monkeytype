@@ -22,10 +22,10 @@ function updateData(data: ChartData): void {
   ChartController.miniResult.getDataset("error").data = data.err;
 
   const maxChartVal = Math.max(
-    ...[Math.max(...data.wpm), Math.max(...data.burst)]
+    ...[Math.max(...data.wpm), Math.max(...data.burst)],
   );
   const minChartVal = Math.min(
-    ...[Math.min(...data.wpm), Math.min(...data.burst)]
+    ...[Math.min(...data.wpm), Math.min(...data.burst)],
   );
 
   ChartController.miniResult.getScale("wpm").max = Math.round(maxChartVal);

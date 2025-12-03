@@ -112,7 +112,7 @@ export function highlightMatches(text: string, matches: string[]): string {
   // matches that don't have a letter before or after them
   const pattern = new RegExp(
     `(?<!\\p{L})(?:${matches.join("|")})(?!\\p{L})`,
-    "gu"
+    "gu",
   );
 
   return text.replace(pattern, '<span class="highlight">$&</span>');
@@ -126,7 +126,7 @@ export function highlightMatches(text: string, matches: string[]): string {
  */
 export function getLanguageDisplayString(
   language: Language,
-  noSizeString = false
+  noSizeString = false,
 ): string {
   let out = "";
   if (noSizeString) {
@@ -171,7 +171,7 @@ export function cleanTypographySymbols(textToClean: string): string {
   };
   return textToClean.replace(
     /[“”’‘—,…«»–\u2007\u202F\u00A0]/g,
-    (char) => specials[char as keyof typeof specials] || ""
+    (char) => specials[char as keyof typeof specials] || "",
   );
 }
 
@@ -239,7 +239,7 @@ export function clearWordDirectionCache(): void {
 export function isWordRightToLeft(
   word: string | undefined,
   languageRTL: boolean,
-  reverseDirection?: boolean
+  reverseDirection?: boolean,
 ): boolean {
   if (word === undefined || word.length === 0) {
     return reverseDirection ? !languageRTL : languageRTL;
@@ -284,7 +284,7 @@ export const LANGUAGE_EQUIVALENCE_SETS: Partial<Record<Language, Set<string>>> =
 export function areCharactersVisuallyEqual(
   char1: string,
   char2: string,
-  language?: Language
+  language?: Language,
 ): boolean {
   // If characters are exactly the same, they're equivalent
   if (char1 === char2) {

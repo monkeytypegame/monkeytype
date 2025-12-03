@@ -3,26 +3,26 @@
     //root needs to be first
     {
       "name": "root",
-      "path": "./"
+      "path": "./",
     },
     {
       "name": "backend",
-      "path": "backend"
+      "path": "backend",
     },
     {
       "name": "frontend",
-      "path": "frontend"
+      "path": "frontend",
     },
     {
       "name": "packages",
-      "path": "packages"
-    }
+      "path": "packages",
+    },
   ],
   "settings": {
     "files.exclude": {
       "frontend": true,
       "backend": true,
-      "packages": true
+      "packages": true,
     },
     "search.exclude": {
       //defaults
@@ -36,17 +36,17 @@
       "**/coverage/**": true,
       "**/logs/**": true,
       "**/.firebase/**": true,
-      "**/.turbo/**": true
+      "**/.turbo/**": true,
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSaveMode": "file",
     "editor.formatOnSave": true,
     "testing.automaticallyOpenTestResults": "neverOpen",
     "[json]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode"
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[html]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode"
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "vitest.maximumConfigs": 10,
     "oxc.typeAware": true,
@@ -60,7 +60,7 @@
         "request": "attach",
         "name": "Backend: Attach",
         "port": 9229,
-        "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+        "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
       },
       {
         "type": "chrome",
@@ -69,17 +69,18 @@
         "port": 9222,
         "skipFiles": ["**/node_modules/**"],
         "webRoot": "${workspaceFolder:frontend}/src",
-        "url": "http://localhost:3000"
-      }
+        "url": "http://localhost:3000",
+      },
     ],
-    "compounds": []
+    "compounds": [],
   },
   "extensions": {
     "recommendations": [
       "esbenp.prettier-vscode",
       "vitest.explorer",
       "huntertran.auto-markdown-toc",
-      "oxc.oxc-vscode"
-    ]
-  }
+      "dbaeumer.vscode-eslint",
+      "oxc.oxc-vscode",
+    ],
+  },
 }

@@ -159,7 +159,7 @@ export function getHTMLById(
   id: number,
   noText = false,
   noBalloon = false,
-  showUnknown = false
+  showUnknown = false,
 ): string {
   const badge = badges[id] as UserBadge | undefined;
 

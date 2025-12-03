@@ -17,7 +17,7 @@ export function secondsToString(
   alwaysShowHours = false,
   delimiter: ":" | "text" = ":",
   showSeconds = true,
-  showDays = false
+  showDays = false,
 ): string {
   sec = Math.abs(sec);
   let days = 0;

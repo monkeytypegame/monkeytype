@@ -14,7 +14,7 @@ let yearSelector: SlimSelect | undefined = undefined;
 export function init(
   element: HTMLElement,
   calendar?: TestActivityCalendar,
-  userSignUpDate?: Date
+  userSignUpDate?: Date,
 ): void {
   if (calendar === undefined) {
     clear(element);
@@ -27,7 +27,7 @@ export function init(
     initYearSelector(
       element,
       "current",
-      safeNumber(userSignUpDate?.getFullYear()) ?? 2022
+      safeNumber(userSignUpDate?.getFullYear()) ?? 2022,
     );
   }
   updateLabels(element, calendar.firstDayOfWeek);
@@ -79,7 +79,7 @@ function update(element: HTMLElement, calendar?: TestActivityCalendar): void {
 export function initYearSelector(
   element: HTMLElement,
   selectedYear: number | "current",
-  startYear: number
+  startYear: number,
 ): void {
   const currentYear = new Date().getFullYear();
   const years: DataObjectPartial[] = [
@@ -120,7 +120,7 @@ function updateMonths(months: TestActivityMonth[]): void {
   element.innerHTML = months
     .map(
       (month) =>
-        `<div style="grid-column: span ${month.weeks}">${month.text}</div>`
+        `<div style="grid-column: span ${month.weeks}">${month.text}</div>`,
     )
     .join("");
 }
@@ -165,7 +165,7 @@ function updateLabels(element: HTMLElement, firstDayOfWeek: number): void {
     days.push(
       i % 2 !== firstDayOfWeek % 2
         ? daysDisplay[(firstDayOfWeek + i) % 7]
-        : undefined
+        : undefined,
     );
   }
 
@@ -178,7 +178,7 @@ function updateLabels(element: HTMLElement, firstDayOfWeek: number): void {
       .map((it) =>
         it !== undefined
           ? `<div><div class="text">${shorten(it)}</div></div>`
-          : "<div></div>"
+          : "<div></div>",
       )
       .join("");
   };

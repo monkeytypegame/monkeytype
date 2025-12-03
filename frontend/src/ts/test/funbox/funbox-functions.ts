@@ -150,7 +150,7 @@ export class PolyglotWordset extends Wordset {
 
   constructor(
     wordsWithLanguage: Map<string, Language>,
-    languageProperties: Map<Language, JSONData.LanguageProperties>
+    languageProperties: Map<Language, JSONData.LanguageProperties>,
   ) {
     // build and shuffle the word array
     const wordArray = Array.from(wordsWithLanguage.keys());
@@ -178,7 +178,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           word = Strings.replaceCharAt(
             word,
             randomIntFromRange(1, word.length - 2),
-            "."
+            ".",
           );
         }
         if (Math.random() < 0.75) {
@@ -236,7 +236,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       save(
         "highlightMode",
         Config.highlightMode,
-        UpdateConfig.setHighlightMode
+        UpdateConfig.setHighlightMode,
       );
     },
     getEmulatedChar(event: KeyboardEvent): string | null {
@@ -257,25 +257,34 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     isCharCorrect(char: string, originalChar: string): boolean {
       if (
-        (char === "a" || char === "ArrowLeft" || char === "j") &&
+        (char === "a" ||
+          char === "ArrowLeft" ||
+          char === "j" ||
+          char === "←") &&
         originalChar === "←"
       ) {
         return true;
       }
       if (
-        (char === "s" || char === "ArrowDown" || char === "k") &&
+        (char === "s" ||
+          char === "ArrowDown" ||
+          char === "k" ||
+          char === "↓") &&
         originalChar === "↓"
       ) {
         return true;
       }
       if (
-        (char === "w" || char === "ArrowUp" || char === "i") &&
+        (char === "w" || char === "ArrowUp" || char === "i" || char === "↑") &&
         originalChar === "↑"
       ) {
         return true;
       }
       if (
-        (char === "d" || char === "ArrowRight" || char === "l") &&
+        (char === "d" ||
+          char === "ArrowRight" ||
+          char === "l" ||
+          char === "→") &&
         originalChar === "→"
       ) {
         return true;
@@ -323,6 +332,30 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return randomcaseword;
     },
   },
+  rot13: {
+    alterText(word: string): string {
+      let alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+      let rot13Word = "";
+
+      for (let ch of word) {
+        let chIndex = alphabet.indexOf(ch.toLowerCase());
+        if (chIndex === -1) {
+          rot13Word += ch;
+          continue;
+        }
+
+        let rot13Ch = (chIndex + 13) % 26;
+        if (ch.toUpperCase() === ch) {
+          rot13Word += alphabet[rot13Ch]?.toUpperCase();
+        } else {
+          rot13Word += alphabet[rot13Ch];
+        }
+      }
+
+      return rot13Word;
+    },
+  },
   backwards: {
     alterText(word: string): string {
       return word.split("").reverse().join("");
@@ -365,7 +398,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
         const index = Math.floor(
-          (TestInput.input.getHistory().length + 1) / wordsPerLayout
+          (TestInput.input.getHistory().length + 1) / wordsPerLayout,
         );
         const mod =
           wordsPerLayout - ((TestState.activeWordIndex + 1) % wordsPerLayout);
@@ -375,7 +408,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             LayoutfluidFunboxTimer.show();
             LayoutfluidFunboxTimer.updateWords(
               mod,
-              layouts[index + 1] as string
+              layouts[index + 1] as string,
             );
           } else {
             LayoutfluidFunboxTimer.hide();
@@ -392,7 +425,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }
         setTimeout(() => {
           void KeymapEvent.highlight(
-            TestWords.words.getCurrent().charAt(TestInput.input.current.length)
+            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
           );
         }, 1);
       }
@@ -408,8 +441,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             .getCurrent()
             .substring(
               TestInput.input.current.length,
-              TestInput.input.current.length + 1
-            )
+              TestInput.input.current.length + 1,
+            ),
         );
       }, 1);
     },
@@ -434,7 +467,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       save(
         "highlightMode",
         Config.highlightMode,
-        UpdateConfig.setHighlightMode
+        UpdateConfig.setHighlightMode,
       );
     },
     async handleKeydown(event): Promise<void> {
@@ -446,7 +479,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       save(
         "highlightMode",
         Config.highlightMode,
-        UpdateConfig.setHighlightMode
+        UpdateConfig.setHighlightMode,
       );
     },
     async handleKeydown(event): Promise<void> {
@@ -458,7 +491,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       save(
         "highlightMode",
         Config.highlightMode,
-        UpdateConfig.setHighlightMode
+        UpdateConfig.setHighlightMode,
       );
     },
     async handleKeydown(event): Promise<void> {
@@ -497,7 +530,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       save(
         "highlightMode",
         Config.highlightMode,
-        UpdateConfig.setHighlightMode
+        UpdateConfig.setHighlightMode,
       );
     },
   },
@@ -606,12 +639,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   crt: {
     applyGlobalCSS(): void {
       const isSafari = /^((?!chrome|android).)*safari/i.test(
-        navigator.userAgent
+        navigator.userAgent,
       );
       if (isSafari) {
         //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
         const versionMatch = navigator.userAgent.match(
-          /.*Version\/([0-9]*)\.([0-9]*).*/
+          /.*Version\/([0-9]*)\.([0-9]*).*/,
         );
         const mainVersion =
           versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
@@ -623,7 +656,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             0,
             {
               duration: 5,
-            }
+            },
           );
           UpdateConfig.toggleFunbox("crt");
           return;
@@ -650,22 +683,22 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         JSONData.getLanguage(language).catch(() => {
           Notifications.add(
             `Failed to load language: ${language}. It will be ignored.`,
-            0
+            0,
           );
           return null;
-        })
+        }),
       );
 
       const languages = (await Promise.all(promises)).filter(
-        (lang): lang is LanguageObject => lang !== null
+        (lang): lang is LanguageObject => lang !== null,
       );
 
       if (languages.length === 0) {
         UpdateConfig.toggleFunbox("polyglot");
         throw new Error(
           `No valid languages found. Please check your polyglot languages config (${Config.customPolyglot.join(
-            ", "
-          )}).`
+            ", ",
+          )}).`,
         );
       }
 
@@ -675,12 +708,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         UpdateConfig.toggleFunbox("polyglot", true);
         Notifications.add(
           `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${Config.customPolyglot.join(
-            ", "
+            ", ",
           )}).`,
           0,
           {
             duration: 7,
-          }
+          },
         );
         throw new WordGenError("");
       }
@@ -700,7 +733,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         Notifications.add(
           `Language direction conflict: switched to ${fallbackLanguage} for consistency.`,
           0,
-          { duration: 5 }
+          { duration: 5 },
         );
         throw new WordGenError("");
       }
@@ -715,11 +748,13 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             rightToLeft: lang.rightToLeft,
             additionalAccents: lang.additionalAccents,
           },
-        ])
+        ]),
       );
 
       const wordsWithLanguage = new Map(
-        languages.flatMap((lang) => lang.words.map((word) => [word, lang.name]))
+        languages.flatMap((lang) =>
+          lang.words.map((word) => [word, lang.name]),
+        ),
       );
 
       return new PolyglotWordset(wordsWithLanguage, languageProperties);

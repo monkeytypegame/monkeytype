@@ -63,7 +63,7 @@ class MonkeyError extends Error implements MonkeyServerErrorType {
 
     if (isDevEnvironment()) {
       this.message =
-        stack ?? ""
+        (stack ?? "")
           ? String(message) + "\nStack: " + String(stack)
           : String(message);
     } else {
