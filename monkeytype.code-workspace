@@ -39,17 +39,18 @@
       "**/.turbo/**": true,
     },
     "oxc.fmt.experimental": true,
-    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSaveMode": "file",
     "editor.formatOnSave": true,
     "testing.automaticallyOpenTestResults": "neverOpen",
-    "[json]": {
-      "editor.defaultFormatter": "oxc.oxc-vscode"
+    "[javascript]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
     },
-    "[html]": {
-      "editor.defaultFormatter": "oxc.oxc-vscode"
+    "[typescript]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
     },
     "vitest.maximumConfigs": 10,
+    "typescript.format.enable": false,
   },
 
   "launch": {

@@ -43,16 +43,8 @@
     "hotfix-fe": "monkeytype-release --hotfix --fe",
     "hotfix-be": "monkeytype-release --hotfix --be",
     "hotfix-dry": "monkeytype-release --hotfix --dry",
-    "format-check": "prettier --check .",
-    "format-check-be": "prettier --check ./backend",
-    "format-check-fe": "prettier --check ./frontend/src",
-    "format-check-assets": "prettier --check ./frontend/static",
-    "format-check-pkg": "prettier --check ./packages",
-    "format-fix": "prettier --write .",
-    "format-fix-be": "prettier --write ./backend",
-    "format-fix-fe": "prettier --write ./frontend/src",
-    "format-fix-assets": "prettier --write ./frontend/static",
-    "format-fix-pkg": "prettier --write ./packages",
+    "format-check": "oxfmt . --check && prettier \"**/!(*.js|*.ts)\" --check -u",
+    "format-fix": "oxfmt . && prettier \"**/!(*.js|*.ts)\" --write -u --log-level=warn",
     "lint-json-assets": "cd frontend && eslint \"./static/**/*.json\"",
     "check-assets": "turbo check-assets --filter @monkeytype/frontend",
     "check-assets-quotes": "turbo check-assets --filter @monkeytype/frontend  -- quotes",
@@ -68,6 +60,7 @@
     "@commitlint/config-conventional": "19.2.2",
     "@monkeytype/release": "workspace:*",
     "@vitest/coverage-v8": "4.0.8",
+    "concurrently": "8.2.2",
     "conventional-changelog": "6.0.0",
     "eslint": "8.57.1",
     "husky": "8.0.1",
@@ -81,11 +74,9 @@
     "vitest": "4.0.8"
   },
   "lint-staged": {
-    "*.{json,scss,css,html}": [
-      "prettier --write"
-    ],
+    "!(*.js|*.ts)": "prettier --write -u --no-error-on-unmatched-pattern",
     "*.{ts,js}": [
-      "prettier --write",
+      "oxfmt",
       "oxlint",
       "eslint"
     ]

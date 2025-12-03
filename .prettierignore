@@ -7,3 +7,5 @@ coverage
 public
 dist
 build
+*.md
+pnpm-lock.yaml
