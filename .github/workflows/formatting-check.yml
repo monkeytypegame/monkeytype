@@ -1,4 +1,4 @@
-name: Formatting Check
+name: Formatting check
 
 env:
   PNPM_VERSION: "9.6.0"
@@ -35,7 +35,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Install Formatter
+      - name: Install formatter
         run: pnpm install -D -w prettier
 
 

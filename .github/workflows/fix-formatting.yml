@@ -1,4 +1,4 @@
-name: Fix Formatting
+name: Fix formatting
 
 env:
   PNPM_VERSION: "9.6.0"
@@ -33,7 +33,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Install Formatter
+      - name: Install formatter
         run: pnpm install -D -w prettier
 
       - name: Get changed files
@@ -52,7 +52,7 @@ jobs:
             return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
 
 
-      - name: Fix Formatting
+      - name: Fix formatting
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then
