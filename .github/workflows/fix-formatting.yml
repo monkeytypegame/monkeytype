@@ -34,7 +34,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Install Formatter
-        run: pnpm add -g prettier@3.6.2
+        run: pnpm install -D -w prettier
 
       - name: Get changed files
         id: get-changed-files
