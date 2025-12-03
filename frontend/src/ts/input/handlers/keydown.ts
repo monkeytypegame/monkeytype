@@ -152,12 +152,6 @@ async function handleFunboxes(
 }
 
 export async function onKeydown(event: KeyboardEvent): Promise<void> {
-  console.debug("wordsInput event keydown", {
-    event,
-    key: event.key,
-    code: event.code,
-  });
-
   const now = performance.now();
   TestInput.recordKeydownTime(now, event);
 
