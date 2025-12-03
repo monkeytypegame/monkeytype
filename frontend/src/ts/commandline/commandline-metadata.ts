@@ -513,8 +513,10 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     alias: "wpm",
   },
   timerStyle: {
-    display: "Live progress style...",
-    subgroup: { options: "fromSchema" },
+    subgroup: {
+      options: "fromSchema",
+      display: (value) => value.replaceAll(/_/g, " "),
+    },
     alias: "timer",
   },
   timerColor: {

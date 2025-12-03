@@ -1,4 +1,4 @@
-name: Prettier Fix
+name: Fix formatting
 
 env:
   PNPM_VERSION: "9.6.0"
@@ -13,9 +13,9 @@ on:
     types: [labeled]
 
 jobs:
-  prettify:
+  format:
     runs-on: ubuntu-latest
-    if: github.event.label.name == 'prettify'
+    if: github.event.label.name == 'format'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,8 +33,8 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Install prettier
-        run: pnpm add -g prettier@3.6.2
+      - name: Install formatter
+        run: pnpm install -D -w prettier
 
       - name: Get changed files
         id: get-changed-files
@@ -52,7 +52,7 @@ jobs:
             return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
 
 
-      - name: Run Prettier fix
+      - name: Fix formatting
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then
@@ -62,9 +62,9 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "prettier fix"
+          commit_message: "fix formatting"
 
       - name: Remove label
         uses: actions-ecosystem/action-remove-labels@v1
         with:
-          labels: prettify
+          labels: format

@@ -9,6 +9,7 @@ import { update } from "../elements/xp-bar";
 import { toggleUserFakeChartData } from "../test/result";
 import { toggleCaretDebug } from "../utils/caret";
 import { getInputElement } from "../input/input-element";
+import { disableSlowTimerFail } from "../test/test-timer";
 
 let mediaQueryDebugLevel = 0;
 
@@ -94,6 +95,11 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.querySelector(".toggleCaretDebug")?.addEventListener("click", () => {
     toggleCaretDebug();
   });
+  modalEl
+    .querySelector(".disableSlowTimerFail")
+    ?.addEventListener("click", () => {
+      disableSlowTimerFail();
+    });
 }
 
 const modal = new AnimatedModal({
