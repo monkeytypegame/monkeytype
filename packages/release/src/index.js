@@ -179,15 +179,15 @@ const buildProject = () => {
 
   if (isFrontend && !isBackend) {
     runProjectRootCommand(
-      "SENTRY=1 npx turbo lint test check-assets build --filter @monkeytype/frontend --force",
+      "NODE_ENV=production SENTRY=1 npx turbo lint test check-assets build --filter @monkeytype/frontend --force",
     );
   } else if (isBackend && !isFrontend) {
     runProjectRootCommand(
-      "SENTRY=1 npx turbo lint test build --filter @monkeytype/backend --force",
+      "NODE_ENV=production SENTRY=1 npx turbo lint test build --filter @monkeytype/backend --force",
     );
   } else {
     runProjectRootCommand(
-      "SENTRY=1 npx turbo lint test check-assets build --force",
+      "NODE_ENV=production SENTRY=1 npx turbo lint test check-assets build --force",
     );
   }
 };
