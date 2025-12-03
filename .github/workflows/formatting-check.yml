@@ -54,7 +54,7 @@ jobs:
             );
             return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
 
-      - name: Check format (changed files)
+      - name: Check formatting (changed files)
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then
