@@ -9,7 +9,7 @@ import * as Notifications from "../elements/notifications";
 import tribeSocket from "../tribe/tribe-socket";
 import { setAutoJoin } from "../tribe/tribe-auto-join";
 import { LoadingOptions } from "../pages/page";
-import { setNavigationService } from "../observables/navigate-event";
+import * as NavigationEvent from "../observables/navigation-event";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -312,10 +312,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Register navigation service for modules that can't directly import navigate
+// Subscribe to navigation events from modules that can't directly import navigate
 // due to circular dependency constraints
-setNavigationService({
-  navigate(url, options) {
-    void navigate(url, options);
-  },
+NavigationEvent.subscribe((url, options) => {
+  void navigate(url, options);
 });

@@ -29,7 +29,7 @@ import * as TestStats from "../test/test-stats";
 import * as TestInput from "../test/test-input";
 import * as TribeCarets from "./tribe-carets";
 import * as TribeTypes from "./types";
-import { navigate } from "../observables/navigate-event";
+import * as NavigationEvent from "../observables/navigation-event";
 import { ColorName } from "../elements/theme-colors";
 import * as TribeAutoJoin from "./tribe-auto-join";
 
@@ -392,7 +392,7 @@ TribeSocket.in.room.left(() => {
   updateState(1);
   TribePageMenu.enableButtons();
   if (!$(".pageTribe").hasClass("active")) {
-    navigate("/tribe");
+    NavigationEvent.dispatch("/tribe");
   }
   TribeCarets.destroyAll();
   TribeSound.play("leave");
@@ -521,7 +521,7 @@ TribeSocket.in.room.initRace((data) => {
   } else {
     //TODO update lobby bars
     if (ActivePage.get() !== "tribe") {
-      navigate("/tribe", {
+      NavigationEvent.dispatch("/tribe", {
         tribeOverride: true,
       });
     }
@@ -531,7 +531,7 @@ TribeSocket.in.room.initRace((data) => {
   }
   if (room) room.seed = data.seed;
   Random.setSeed(TribeState.getRoom()?.seed.toString() ?? "");
-  navigate("/", {
+  NavigationEvent.dispatch("/", {
     tribeOverride: true,
     force: true,
   });
@@ -766,7 +766,7 @@ TribeSocket.in.room.readyTimerOver(() => {
 });
 
 TribeSocket.in.room.backToLobby(() => {
-  navigate("/tribe");
+  NavigationEvent.dispatch("/tribe");
 });
 
 TribeSocket.in.room.finalPositions((data) => {
