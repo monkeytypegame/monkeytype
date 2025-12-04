@@ -137,6 +137,11 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
+const wordsEl = document.querySelector(".pageTest #words") as HTMLElement;
+const wordsWrapperEl = document.querySelector(
+  ".pageTest #wordsWrapper",
+) as HTMLElement;
+
 export let activeWordTop = 0;
 export let lineTransition = false;
 export let currentTestLine = 0;
@@ -170,10 +175,9 @@ export function focusWords(force = false): void {
 
 export function keepWordsInputInTheCenter(force = false): void {
   const wordsInput = getInputElement();
-  const wordsWrapper = document.querySelector<HTMLElement>("#wordsWrapper");
-  if (wordsInput === null || wordsWrapper === null) return;
+  if (wordsInput === null || wordsWrapperEl === null) return;
 
-  const wordsWrapperHeight = wordsWrapper.offsetHeight;
+  const wordsWrapperHeight = wordsWrapperEl.offsetHeight;
   const windowHeight = window.innerHeight;
 
   // dont do anything if the wrapper can fit on screen
@@ -191,8 +195,8 @@ export function keepWordsInputInTheCenter(force = false): void {
 }
 
 export function getWordElement(index: number): HTMLElement | null {
-  const el = document.querySelector<HTMLElement>(
-    `#words .word[data-wordindex='${index}']`,
+  const el = wordsEl.querySelector<HTMLElement>(
+    `.word[data-wordindex='${index}']`,
   );
   return el;
 }
@@ -205,7 +209,7 @@ export function updateActiveElement(
   backspace?: boolean,
   initial = false,
 ): void {
-  const active = document.querySelector("#words .active");
+  const active = wordsEl.querySelector(".active");
   if (!backspace) {
     active?.classList.add("typed");
   }
@@ -434,47 +438,46 @@ function buildWordHTML(word: string, wordIndex: number): string {
 
 function updateWordWrapperClasses(): void {
   if (Config.tapeMode !== "off") {
-    $("#words").addClass("tape");
-    $("#wordsWrapper").addClass("tape");
+    wordsEl.classList.add("tape");
+    wordsWrapperEl.classList.add("tape");
   } else {
-    $("#words").removeClass("tape");
-    $("#wordsWrapper").removeClass("tape");
+    wordsEl.classList.remove("tape");
+    wordsWrapperEl.classList.remove("tape");
   }
 
   if (Config.blindMode) {
-    $("#words").addClass("blind");
-    $("#wordsWrapper").addClass("blind");
+    wordsEl.classList.add("blind");
+    wordsWrapperEl.classList.add("blind");
   } else {
-    $("#words").removeClass("blind");
-    $("#wordsWrapper").removeClass("blind");
+    wordsEl.classList.remove("blind");
+    wordsWrapperEl.classList.remove("blind");
   }
 
   if (Config.indicateTypos === "below" || Config.indicateTypos === "both") {
-    $("#words").addClass("indicateTyposBelow");
-    $("#wordsWrapper").addClass("indicateTyposBelow");
+    wordsEl.classList.add("indicateTyposBelow");
+    wordsWrapperEl.classList.add("indicateTyposBelow");
   } else {
-    $("#words").removeClass("indicateTyposBelow");
-    $("#wordsWrapper").removeClass("indicateTyposBelow");
+    wordsEl.classList.remove("indicateTyposBelow");
+    wordsWrapperEl.classList.remove("indicateTyposBelow");
   }
 
   if (Config.hideExtraLetters) {
-    $("#words").addClass("hideExtraLetters");
-    $("#wordsWrapper").addClass("hideExtraLetters");
+    wordsEl.classList.add("hideExtraLetters");
+    wordsWrapperEl.classList.add("hideExtraLetters");
   } else {
-    $("#words").removeClass("hideExtraLetters");
-    $("#wordsWrapper").removeClass("hideExtraLetters");
+    wordsEl.classList.remove("hideExtraLetters");
+    wordsWrapperEl.classList.remove("hideExtraLetters");
   }
 
   const existing =
-    $("#words")
-      ?.attr("class")
-      ?.split(/\s+/)
-      ?.filter((it) => !it.startsWith("highlight-")) ?? [];
+    wordsEl?.className
+      .split(/\s+/)
+      .filter((className) => !className.startsWith("highlight-")) ?? [];
   if (Config.highlightMode !== null) {
     existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
   }
 
-  $("#words").attr("class", existing.join(" "));
+  wordsEl.className = existing.join(" ");
 
   updateWordsWidth();
   updateWordsWrapperHeight(true);
@@ -485,9 +488,7 @@ function updateWordWrapperClasses(): void {
 }
 
 export function showWords(): void {
-  const words = $("#words");
-
-  words.empty();
+  wordsEl.innerHTML = "";
 
   if (Config.mode === "zen") {
     appendEmptyWordElement();
@@ -496,7 +497,7 @@ export function showWords(): void {
     for (let i = 0; i < TestWords.words.length; i++) {
       wordsHTML += buildWordHTML(TestWords.words.get(i), i);
     }
-    words.html(wordsHTML);
+    wordsEl.innerHTML = wordsHTML;
   }
 
   updateActiveElement(undefined, true);
@@ -507,7 +508,8 @@ export function showWords(): void {
 export function appendEmptyWordElement(
   index = TestInput.input.getHistory().length,
 ): void {
-  $("#words").append(
+  wordsEl.insertAdjacentHTML(
+    "beforeend",
     `<div class='word' data-wordindex='${index}'><letter class='invisible'>_</letter></div>`,
   );
 }
@@ -520,9 +522,8 @@ export function updateWordsInputPosition(): void {
       : TestState.isLanguageRightToLeft;
 
     const el = getInputElement();
-    const wrapperElement = document.querySelector<HTMLElement>("#wordsWrapper");
 
-    if (el === null || wrapperElement === null) return;
+    if (el === null) return;
 
     const activeWord = getActiveWordElement();
 
@@ -551,7 +552,7 @@ export function updateWordsInputPosition(): void {
 
     if (Config.tapeMode !== "off") {
       el.style.left = `${
-        wrapperElement.offsetWidth * (Config.tapeMargin / 100)
+        wordsWrapperEl.offsetWidth * (Config.tapeMargin / 100)
       }px`;
     } else {
       if (activeWord.offsetWidth < letterHeight && isTestRightToLeft) {
@@ -598,14 +599,13 @@ export async function centerActiveLine(): Promise<void> {
 export function updateWordsWrapperHeight(force = false): void {
   if (ActivePage.get() !== "test" || TestState.resultVisible) return;
   if (!force && Config.mode !== "custom") return;
-  const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
   const outOfFocusEl = document.querySelector(
     ".outOfFocusWarning",
   ) as HTMLElement;
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
 
-  wrapperEl.classList.remove("hidden");
+  wordsWrapperEl.classList.remove("hidden");
 
   const wordComputedStyle = window.getComputedStyle(activeWordEl);
   const wordMargin =
@@ -622,15 +622,14 @@ export function updateWordsWrapperHeight(force = false): void {
 
   if (showAllLines) {
     //allow the wrapper to grow and shink with the words
-    wrapperEl.style.height = "";
+    wordsWrapperEl.style.height = "";
   } else if (Config.mode === "zen") {
     //zen mode, showAllLines off
-    wrapperEl.style.height = wordHeight * 2 + "px";
+    wordsWrapperEl.style.height = wordHeight * 2 + "px";
   } else {
     if (Config.tapeMode === "off") {
       //tape off, showAllLines off, non-zen mode
-      const wordElements =
-        document.querySelectorAll<HTMLElement>("#words .word");
+      const wordElements = wordsEl.querySelectorAll<HTMLElement>(".word");
       let lines = 0;
       let lastTop = 0;
       let wordIndex = 0;
@@ -650,15 +649,14 @@ export function updateWordsWrapperHeight(force = false): void {
       if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
 
       //limit to 3 lines
-      wrapperEl.style.height = wrapperHeight + "px";
+      wordsWrapperEl.style.height = wrapperHeight + "px";
     } else {
       //show 3 lines if tape mode is on and has newlines, otherwise use words height (because of indicate typos: below)
       if (TestWords.hasNewline) {
-        wrapperEl.style.height = wordHeight * 3 + "px";
+        wordsWrapperEl.style.height = wordHeight * 3 + "px";
       } else {
-        const wordsHeight =
-          document.getElementById("words")?.offsetHeight ?? wordHeight;
-        wrapperEl.style.height = wordsHeight + "px";
+        const wordsHeight = wordsEl.offsetHeight ?? wordHeight;
+        wordsWrapperEl.style.height = wordsHeight + "px";
       }
     }
   }
@@ -670,8 +668,6 @@ function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
     void scrollTape(true);
   } else {
-    const wordsEl = document.getElementById("words") as HTMLElement;
-
     $(wordsEl).stop(true, false);
 
     const afterNewlineEls =
@@ -688,22 +684,22 @@ export function addWord(
   word: string,
   wordIndex = TestWords.words.length - 1,
 ): void {
-  $("#words").append(buildWordHTML(word, wordIndex));
+  wordsEl.insertAdjacentHTML("beforeend", buildWordHTML(word, wordIndex));
 }
 
 export function flipColors(tf: boolean): void {
   if (tf) {
-    $("#words").addClass("flipped");
+    wordsEl.classList.add("flipped");
   } else {
-    $("#words").removeClass("flipped");
+    wordsEl.classList.remove("flipped");
   }
 }
 
 export function colorful(tc: boolean): void {
   if (tc) {
-    $("#words").addClass("colorfulMode");
+    wordsEl.classList.add("colorfulMode");
   } else {
-    $("#words").removeClass("colorfulMode");
+    wordsEl.classList.remove("colorfulMode");
   }
 }
 
@@ -846,7 +842,8 @@ export async function updateActiveWordLetters(
   }
 
   if (newlineafter)
-    $("#words").append(
+    wordsEl.insertAdjacentHTML(
+      "beforeend",
       "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>",
     );
   if (Config.tapeMode !== "off") {
@@ -887,10 +884,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     ? !TestState.isLanguageRightToLeft
     : TestState.isLanguageRightToLeft;
 
-  const wordsWrapperWidth = (
-    document.querySelector("#wordsWrapper") as HTMLElement
-  ).offsetWidth;
-  const wordsEl = document.getElementById("words") as HTMLElement;
+  const wordsWrapperWidth = wordsWrapperEl.offsetWidth;
   const wordsChildrenArr = [...wordsEl.children] as HTMLElement[];
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
@@ -1096,7 +1090,7 @@ export function updatePremid(): void {
 }
 
 function removeTestElements(lastElementIndexToRemove: number): void {
-  const wordsChildren = document.getElementById("words")?.children;
+  const wordsChildren = wordsEl.children;
 
   if (wordsChildren === undefined) return;
 
@@ -1118,7 +1112,6 @@ export async function lineJump(
   if (currentTestLine > 0 || force) {
     const hideBound = currentTop;
 
-    const wordsEl = document.getElementById("words") as HTMLElement;
     const activeWordEl = getActiveWordElement();
     if (!activeWordEl) {
       resolve();
@@ -1195,11 +1188,11 @@ export async function lineJump(
 
 export function setRightToLeft(isEnabled: boolean): void {
   if (isEnabled) {
-    $("#words").addClass("rightToLeftTest");
+    wordsEl.classList.add("rightToLeftTest");
     $("#resultWordsHistory .words").addClass("rightToLeftTest");
     $("#resultReplay .words").addClass("rightToLeftTest");
   } else {
-    $("#words").removeClass("rightToLeftTest");
+    wordsEl.classList.remove("rightToLeftTest");
     $("#resultWordsHistory .words").removeClass("rightToLeftTest");
     $("#resultReplay .words").removeClass("rightToLeftTest");
   }
@@ -1207,11 +1200,11 @@ export function setRightToLeft(isEnabled: boolean): void {
 
 export function setLigatures(isEnabled: boolean): void {
   if (isEnabled || Config.mode === "custom" || Config.mode === "zen") {
-    $("#words").addClass("withLigatures");
+    wordsEl.classList.add("withLigatures");
     $("#resultWordsHistory .words").addClass("withLigatures");
     $("#resultReplay .words").addClass("withLigatures");
   } else {
-    $("#words").removeClass("withLigatures");
+    wordsEl.classList.remove("withLigatures");
     $("#resultWordsHistory .words").removeClass("withLigatures");
     $("#resultReplay .words").removeClass("withLigatures");
   }
@@ -1383,9 +1376,7 @@ export function toggleResultWords(noAnimation = false): void {
       //show
 
       if ($("#resultWordsHistory .words .word").length === 0) {
-        $("#words").html(
-          `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`,
-        );
+        wordsEl.innerHTML = `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`;
         void loadWordsHistory().then(() => {
           if (Config.burstHeatmap) {
             void applyBurstHeatmap();
@@ -1785,9 +1776,7 @@ export async function afterTestWordChange(
     }
   } else if (direction === "back") {
     if (Config.mode === "zen") {
-      const wordsChildren = [
-        ...(document.querySelector("#words")?.children ?? []),
-      ] as HTMLElement[];
+      const wordsChildren = [...(wordsEl.children ?? [])] as HTMLElement[];
 
       let deleteElements = false;
       for (const child of wordsChildren) {
