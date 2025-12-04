@@ -4,6 +4,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as QuoteSubmitPopup from "./quote-submit";
 import * as QuoteApprovePopup from "./quote-approve";
+import * as QuoteFilterPopup from "./quote-filter";
 import * as QuoteReportModal from "./quote-report";
 import {
   buildSearchService,
@@ -26,6 +27,7 @@ const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
 const pageSize = 100;
 let currentPageNumber = 1;
+let usingCustomLength = true;
 
 function getSearchService<T>(
   language: string,
@@ -45,16 +47,65 @@ function getSearchService<T>(
 
 function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   if (!modal.isOpen()) return [];
-  const quoteLengthFilterValue = $(
-    "#quoteSearchModal .quoteLengthFilter",
-  ).val() as string[];
+  const quoteLengthDropdown = $("#quoteSearchModal .quoteLengthFilter");
+  const quoteLengthFilterValue = quoteLengthDropdown.val() as string[];
+
   if (quoteLengthFilterValue.length === 0) {
+    usingCustomLength = true;
     return quotes;
   }
 
   const quoteLengthFilter = new Set(
     quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10)),
   );
+
+  const customFilterIndex = quoteLengthFilterValue.indexOf("4");
+
+  if (customFilterIndex !== -1) {
+    if (QuoteFilterPopup.removeCustom) {
+      QuoteFilterPopup.setRemoveCustom(false);
+      const selectElement = quoteLengthDropdown.get(0) as
+        | HTMLSelectElement
+        | null
+        | undefined;
+
+      if (!selectElement) {
+        return quotes;
+      }
+
+      //@ts-expect-error SlimSelect adds slim to the element
+      const ss = selectElement.slim as SlimSelect | undefined;
+
+      if (ss !== undefined) {
+        const currentSelected = ss.getSelected();
+
+        // remove custom selection
+        const customIndex = currentSelected.indexOf("4");
+        if (customIndex > -1) {
+          currentSelected.splice(customIndex, 1);
+        }
+
+        ss.setSelected(currentSelected);
+      }
+    } else {
+      if (usingCustomLength) {
+        QuoteFilterPopup.quoteFilterModal.show(undefined, {});
+        usingCustomLength = false;
+      } else {
+        const filteredQuotes = quotes.filter(
+          (quote) =>
+            (quote.length >= QuoteFilterPopup.minFilterLength &&
+              quote.length <= QuoteFilterPopup.maxFilterLength) ||
+            quoteLengthFilter.has(quote.group),
+        );
+
+        return filteredQuotes;
+      }
+    }
+  } else {
+    usingCustomLength = true;
+  }
+
   const filteredQuotes = quotes.filter((quote) =>
     quoteLengthFilter.has(quote.group),
   );
@@ -281,6 +332,10 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
             text: "thicc",
             value: "3",
           },
+          {
+            text: "custom",
+            value: "4",
+          },
         ],
       });
     },
@@ -435,6 +490,13 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       document.getElementById("searchBox") as HTMLInputElement
     ).value;
     currentPageNumber--;
+    void updateResults(searchText);
+  });
+
+  document?.addEventListener("refresh", () => {
+    const searchText = (
+      document.getElementById("searchBox") as HTMLInputElement
+    ).value;
     void updateResults(searchText);
   });
 }
