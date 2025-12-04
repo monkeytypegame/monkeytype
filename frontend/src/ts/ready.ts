@@ -10,14 +10,17 @@ import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { loadPromise } from "./config";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
+import { onDocumentReady, qs } from "./utils/dom";
 
-$(async (): Promise<void> => {
+onDocumentReady(async () => {
   await loadPromise;
   await authPromise;
 
   //this line goes back to pretty much the beginning of the project and im pretty sure its here
   //to make sure the initial theme application doesnt animate the background color
-  $("body").css("transition", "background .25s, transform .05s");
+  qs("body")?.setStyle({
+    transition: "background .25s, transform .05s",
+  });
   MerchBanner.showIfNotClosedBefore();
 
   for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
@@ -34,12 +37,12 @@ $(async (): Promise<void> => {
     void ServerConfiguration.sync().then(() => {
       if (!ServerConfiguration.get()?.users.signUp) {
         AccountButton.hide();
-        $(".register").addClass("hidden");
-        $(".login").addClass("hidden");
-        $(".disabledNotification").removeClass("hidden");
+        qs(".register")?.addClass("hidden");
+        qs(".login")?.addClass("hidden");
+        qs(".disabledNotification")?.removeClass("hidden");
       }
       if (!ServerConfiguration.get()?.connections.enabled) {
-        $(".accountButtonAndMenu .goToFriends").addClass("hidden");
+        qs(".accountButtonAndMenu .goToFriends")?.addClass("hidden");
       }
     });
   }

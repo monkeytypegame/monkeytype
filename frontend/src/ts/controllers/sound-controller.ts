@@ -436,7 +436,7 @@ export async function previewError(val: string): Promise<void> {
 
 let currentCode = "KeyA";
 
-$(document).on("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   currentCode = event.code || "KeyA";
 });
 

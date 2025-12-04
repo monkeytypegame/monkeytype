@@ -9,6 +9,7 @@ import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
 import { QuoteReportReason } from "@monkeytype/schemas/quotes";
+import { qsr } from "../utils/dom";
 
 type State = {
   quoteToReport?: Quote;
@@ -60,7 +61,7 @@ export async function show(
         },
       });
 
-      new CharacterCounter($("#quoteReportModal .comment"), 250);
+      new CharacterCounter(qsr("#quoteReportModal .comment"), 250);
     },
   });
 }

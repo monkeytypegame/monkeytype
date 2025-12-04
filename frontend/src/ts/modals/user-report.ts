@@ -7,6 +7,7 @@ import AnimatedModal from "../utils/animated-modal";
 import { isAuthenticated } from "../firebase";
 import { CharacterCounter } from "../elements/character-counter";
 import { ReportUserReason } from "@monkeytype/schemas/users";
+import { qsr } from "../utils/dom";
 
 type State = {
   userUid?: string;
@@ -68,7 +69,7 @@ export async function show(options: ShowOptions): Promise<void> {
     },
   });
 
-  new CharacterCounter($("#userReportModal .comment"), 250);
+  new CharacterCounter(qsr("#userReportModal .comment"), 250);
 }
 
 async function hide(): Promise<void> {

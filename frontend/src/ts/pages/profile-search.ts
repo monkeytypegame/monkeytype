@@ -5,6 +5,7 @@ import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema, UserProfile } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
 import * as NavigationEvent from "../observables/navigation-event";
+import { qsr } from "../utils/dom";
 
 let nameInputEl: ValidatedHtmlInputElement | null = null;
 let lastProfile: UserProfile | null = null;
@@ -29,9 +30,7 @@ export const page = new Page({
 
     if (nameInputEl === null) {
       nameInputEl = new ValidatedHtmlInputElement(
-        document.querySelector(
-          ".page.pageProfileSearch input",
-        ) as HTMLInputElement,
+        qsr(".page.pageProfileSearch input"),
         {
           schema: UserNameSchema,
           isValid: remoteValidation(

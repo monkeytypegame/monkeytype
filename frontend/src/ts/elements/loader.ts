@@ -1,4 +1,6 @@
-const element = $("#backgroundLoader");
+import { qsr } from "../utils/dom";
+
+const element = qsr("#backgroundLoader");
 let timeout: NodeJS.Timeout | null = null;
 let visible = false;
 
@@ -13,11 +15,11 @@ export function show(instant = false): void {
   if (visible) return;
 
   if (instant) {
-    element.stop(true, true).show();
+    element.show();
     visible = true;
   } else {
     timeout = setTimeout(() => {
-      element.stop(true, true).show();
+      element.show();
     }, 125);
     visible = true;
   }
@@ -26,6 +28,6 @@ export function show(instant = false): void {
 export function hide(): void {
   if (!visible) return;
   clearTimeout();
-  element.stop(true, true).fadeOut(125);
+  element.hide();
   visible = false;
 }

@@ -11,6 +11,7 @@ import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { isDevEnvironment } from "../utils/misc";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
+import { qsr } from "../utils/dom";
 
 let registerForm: {
   name?: string;
@@ -69,9 +70,9 @@ export function getSignupData(): SignupData | false {
   return isFormComplete() ? (registerForm as SignupData) : false;
 }
 
-const nameInputEl = document.querySelector(
+const nameInputEl = qsr<HTMLInputElement>(
   ".page.pageLogin .register.side input.usernameInput",
-) as HTMLInputElement;
+);
 new ValidatedHtmlInputElement(nameInputEl, {
   schema: UserNameSchema,
   isValid: remoteValidation(
@@ -81,7 +82,7 @@ new ValidatedHtmlInputElement(nameInputEl, {
   debounceDelay: 1000,
   callback: (result) => {
     registerForm.name =
-      result.status === "success" ? nameInputEl.value : undefined;
+      result.status === "success" ? nameInputEl?.getValue() : undefined;
     updateSignupButton();
   },
 });
@@ -91,9 +92,7 @@ let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
 let moduleLoadAttempted = false;
 
 const emailInputEl = new ValidatedHtmlInputElement(
-  document.querySelector(
-    ".page.pageLogin .register.side input.emailInput",
-  ) as HTMLInputElement,
+  qsr(".page.pageLogin .register.side input.emailInput"),
   {
     schema: UserEmailSchema,
     isValid: async (email: string) => {
@@ -137,13 +136,13 @@ const emailInputEl = new ValidatedHtmlInputElement(
     callback: (result) => {
       if (result.status === "success") {
         //re-validate the verify email
-        emailVerifyInputEl.dispatchEvent(new Event("input"));
+        emailVerifyInputEl?.dispatch("input");
       }
     },
   },
 );
 
-emailInputEl.native.addEventListener("focus", async () => {
+emailInputEl.on("focus", async () => {
   if (!moduleLoadAttempted) {
     moduleLoadAttempted = true;
     try {
@@ -154,9 +153,9 @@ emailInputEl.native.addEventListener("focus", async () => {
   }
 });
 
-const emailVerifyInputEl = document.querySelector(
+const emailVerifyInputEl = qsr<HTMLInputElement>(
   ".page.pageLogin .register.side input.verifyEmailInput",
-) as HTMLInputElement;
+);
 new ValidatedHtmlInputElement(emailVerifyInputEl, {
   isValid: async (emailVerify: string) => {
     return emailInputEl.getValue() === emailVerify
@@ -175,23 +174,21 @@ new ValidatedHtmlInputElement(emailVerifyInputEl, {
 });
 
 const passwordInputEl = new ValidatedHtmlInputElement(
-  document.querySelector(
-    ".page.pageLogin .register.side .passwordInput",
-  ) as HTMLInputElement,
+  qsr(".page.pageLogin .register.side .passwordInput"),
   {
     schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
     callback: (result) => {
       if (result.status === "success") {
         //re-validate the verify password
-        passwordVerifyInputEl.dispatchEvent(new Event("input"));
+        passwordVerifyInputEl?.dispatch("input");
       }
     },
   },
 );
 
-const passwordVerifyInputEl = document.querySelector(
+const passwordVerifyInputEl = qsr<HTMLInputElement>(
   ".page.pageLogin .register.side .verifyPasswordInput",
-) as HTMLInputElement;
+);
 new ValidatedHtmlInputElement(passwordVerifyInputEl, {
   isValid: async (passwordVerify: string) => {
     return passwordInputEl.getValue() === passwordVerify

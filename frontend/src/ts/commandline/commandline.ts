@@ -19,6 +19,7 @@ import {
   ValidationResult,
 } from "../elements/input-validation";
 import { isInputElementFocused } from "../input/input-element";
+import { qs } from "../utils/dom";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -55,14 +56,14 @@ let lastState:
   | undefined;
 
 function removeCommandlineBackground(): void {
-  $("#commandLine").addClass("noBackground");
+  qs("#commandLine")?.addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
 }
 
 function addCommandlineBackground(): void {
-  $("#commandLine").removeClass("noBackground");
+  qs("#commandLine")?.removeClass("noBackground");
   if (Config.showOutOfFocusWarning && !isInputElementFocused()) {
     OutOfFocus.show();
   }
