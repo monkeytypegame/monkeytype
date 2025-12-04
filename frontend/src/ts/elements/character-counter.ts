@@ -31,7 +31,7 @@ export class CharacterCounter {
       this.counterElement = counterElement;
     } else {
       const counterElement = createElementWithUtils("span", {
-        className: "char-counter",
+        classList: ["char-counter"],
       });
       this.parentElement.append(counterElement);
       this.counterElement = counterElement;

@@ -66,14 +66,10 @@ export function onDocumentReady(callback: () => void): void {
 export function createElementWithUtils<T extends HTMLElement>(
   tagName: string,
   options?: {
-    className?: string;
     classList?: string[];
   },
 ): ElementWithUtils<T> {
   const element = document.createElement(tagName) as T;
-  if (options?.className !== undefined) {
-    element.className = options.className;
-  }
   if (options?.classList !== undefined) {
     element.classList.add(...options.classList);
   }
