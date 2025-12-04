@@ -15,7 +15,7 @@ import {
   WebsiteSchema,
 } from "@monkeytype/schemas/users";
 import { InputIndicator } from "../elements/input-indicator";
-import { ElementWithUtils, qs } from "../utils/dom";
+import { ElementWithUtils, qsr } from "../utils/dom";
 
 export function show(): void {
   if (!ConnectionState.get()) {
@@ -43,25 +43,15 @@ function hide(): void {
   });
 }
 
-const bioInput = qs(
-  "#editProfileModal .bio",
-) as ElementWithUtils<HTMLTextAreaElement>;
-const keyboardInput = qs(
-  "#editProfileModal .keyboard",
-) as ElementWithUtils<HTMLTextAreaElement>;
-const twitterInput = qs(
-  "#editProfileModal .twitter",
-) as ElementWithUtils<HTMLInputElement>;
-const githubInput = qs(
-  "#editProfileModal .github",
-) as ElementWithUtils<HTMLInputElement>;
-const websiteInput = qs(
-  "#editProfileModal .website",
-) as ElementWithUtils<HTMLInputElement>;
-const badgeIdsSelect = qs("#editProfileModal .badgeSelectionContainer");
-const showActivityOnPublicProfileInput = document.querySelector(
+const bioInput = qsr<HTMLTextAreaElement>("#editProfileModal .bio");
+const keyboardInput = qsr<HTMLTextAreaElement>("#editProfileModal .keyboard");
+const twitterInput = qsr<HTMLInputElement>("#editProfileModal .twitter");
+const githubInput = qsr<HTMLInputElement>("#editProfileModal .github");
+const websiteInput = qsr<HTMLInputElement>("#editProfileModal .website");
+const badgeIdsSelect = qsr("#editProfileModal .badgeSelectionContainer");
+const showActivityOnPublicProfileInput = qsr<HTMLInputElement>(
   "#editProfileModal .editProfileShowActivityOnPublicProfile",
-) as HTMLInputElement;
+);
 
 const indicators = [
   addValidation(twitterInput, TwitterProfileSchema),
@@ -85,7 +75,7 @@ function hydrateInputs(): void {
   githubInput.setValue(socialProfiles?.github ?? "");
   websiteInput.setValue(socialProfiles?.website ?? "");
   badgeIdsSelect?.setHtml("");
-  showActivityOnPublicProfileInput.checked =
+  showActivityOnPublicProfileInput.native.checked =
     showActivityOnPublicProfile || false;
 
   badges?.forEach((badge: Badge) => {
@@ -134,7 +124,7 @@ function buildUpdatesFromInputs(): UserProfileDetails {
   const github = githubInput.getValue() ?? "";
   const website = websiteInput.getValue() ?? "";
   const showActivityOnPublicProfile =
-    showActivityOnPublicProfileInput.checked ?? false;
+    showActivityOnPublicProfileInput.isChecked() ?? false;
 
   const profileUpdates: UserProfileDetails = {
     bio,
