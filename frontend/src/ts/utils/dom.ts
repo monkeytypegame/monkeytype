@@ -100,7 +100,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Check if the element is disabled
+   * Remove disabled attribute
    */
   enable(): this {
     this.native.removeAttribute("disabled");
@@ -126,6 +126,22 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    */
   hasAttribute(attribute: string): boolean {
     return this.native.hasAttribute(attribute);
+  }
+
+  /**
+   * Set attribute value
+   */
+  setAttribute(qualifiedName: string, value: string): this {
+    this.native.setAttribute(qualifiedName, value);
+    return this;
+  }
+
+  /**
+   * Remove attribute
+   */
+  removeAttribute(qualifiedName: string): this {
+    this.native.removeAttribute(qualifiedName);
+    return this;
   }
 
   /**
@@ -291,22 +307,6 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
         this.native.style[key] = value;
       }
     }
-    return this;
-  }
-
-  /**
-   * Set attribute value
-   */
-  setAttribute(qualifiedName: string, value: string): this {
-    this.native.setAttribute(qualifiedName, value);
-    return this;
-  }
-
-  /**
-   * Remove attribute
-   */
-  removeAttribute(qualifiedName: string): this {
-    this.native.removeAttribute(qualifiedName);
     return this;
   }
 
