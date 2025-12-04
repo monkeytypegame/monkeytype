@@ -157,12 +157,11 @@ export class ValidatedHtmlInputElement<
     options: ValidationOptions<T>,
   ) {
     if (inputElement instanceof HTMLInputElement) {
-      //@ts-expect-error huh?
+      //@ts-expect-error not sure what this means
       super(inputElement);
     } else {
       super(inputElement.native);
     }
-    // this.element = inputElement;
 
     this.indicator = new InputIndicator(this, {
       success: {
