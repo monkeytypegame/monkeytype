@@ -146,7 +146,6 @@ export type ValidationOptions<T> = (T extends string
 export class ValidatedHtmlInputElement<
   T = string,
 > extends ElementWithUtils<HTMLInputElement> {
-  // public element: ElementWithUtils<HTMLInputElement>;
   private indicator: InputIndicator;
   private currentStatus: ValidationResult = {
     status: "checking",
