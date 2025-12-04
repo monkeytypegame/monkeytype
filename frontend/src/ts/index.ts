@@ -47,7 +47,7 @@ import "./elements/psa";
 import "./utils/url-handler";
 import "./modals/last-signed-out-result";
 import { applyEngineSettings } from "./anim";
-import { qs, qsa } from "./utils/dom";
+import { qs, qsa, qsr } from "./utils/dom";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -96,6 +96,7 @@ addToGlobal({
   toggleSentryDebug: Sentry.toggleDebug,
   qs: qs,
   qsa: qsa,
+  qsr: qsr,
 });
 
 if (isDevEnvironment()) {
