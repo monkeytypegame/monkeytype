@@ -20,7 +20,6 @@ import {
   isFunboxActiveWithProperty,
 } from "../../test/funbox/list";
 import * as Replay from "../../test/replay";
-import * as MonkeyPower from "../../elements/monkey-power";
 import Config from "../../config";
 import * as KeymapEvent from "../../observables/keymap-event";
 import * as WeakSpot from "../../test/weak-spot";
@@ -164,7 +163,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // general per keypress updates
   TestInput.setCurrentNotAfk();
   Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
-  void MonkeyPower.addPower(correct);
   TestInput.incrementAccuracy(correct);
   WeakSpot.updateScore(data, correct);
   TestInput.incrementKeypressCount();

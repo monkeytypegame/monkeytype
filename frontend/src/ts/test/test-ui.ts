@@ -44,6 +44,8 @@ import {
   getInputElement,
   isInputElementFocused,
 } from "../input/input-element";
+import * as MonkeyPower from "../elements/monkey-power";
+import * as SlowTimer from "../states/slow-timer";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
@@ -105,7 +107,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
-    if (ActivePage.get() === "test") updateActiveElement();
+    if (ActivePage.get() === "test")
+      void updateWordLetters({
+        input: TestInput.input.current,
+        wordIndex: TestState.activeWordIndex,
+        compositionData: CompositionState.getData(),
+      });
   }
 
   if (
@@ -206,34 +213,54 @@ export function getActiveWordElement(): HTMLElement | null {
 }
 
 export function updateActiveElement(
-  backspace?: boolean,
-  initial = false,
+  options:
+    | { direction: "forward" | "back"; initial?: undefined }
+    | { direction?: undefined; initial: true },
 ): void {
-  const active = wordsEl.querySelector(".active");
-  if (!backspace) {
-    active?.classList.add("typed");
-  }
-  if (Config.mode === "zen" && backspace) {
-    active?.remove();
-  } else if (active !== null && !initial) {
-    active.classList.remove("active");
-  }
-  const newActiveWord = getActiveWordElement();
-  if (newActiveWord === null) {
-    throw new Error("activeWord is null - can't update active element");
-  }
+  requestDebouncedAnimationFrame("test-ui.updateActiveElement", () => {
+    const { direction, initial } = options;
 
-  newActiveWord.classList.add("active");
-  newActiveWord.classList.remove("error");
-  newActiveWord.classList.remove("typed");
+    let previousActiveWordTop: number | null = null;
+    if (initial === undefined) {
+      const previousActiveWord = wordsEl.querySelector(
+        ".active",
+      ) as HTMLElement;
+      if (direction === "forward") {
+        previousActiveWord.classList.add("typed");
+      } else if (direction === "back") {
+        if (Config.mode === "zen") {
+          previousActiveWord.remove();
+        }
+      }
+      previousActiveWord.classList.remove("active");
+      previousActiveWordTop = previousActiveWord.offsetTop;
+    }
 
-  activeWordTop = newActiveWord.offsetTop;
+    const newActiveWord = getActiveWordElement();
+    if (newActiveWord === null) {
+      throw new Error("activeWord is null - can't update active element");
+    }
 
-  updateWordsInputPosition();
+    newActiveWord.classList.add("active");
+    newActiveWord.classList.remove("error");
+    newActiveWord.classList.remove("typed");
 
-  if (!initial && Config.tapeMode !== "off") {
-    void scrollTape();
-  }
+    activeWordTop = newActiveWord.offsetTop;
+    console.log("activewordtopupdated");
+
+    updateWordsInputPosition();
+
+    if (!initial && Config.tapeMode !== "off") {
+      void scrollTape();
+    }
+
+    if (!Config.showAllLines && previousActiveWordTop !== null) {
+      const newActiveWordTop = newActiveWord.offsetTop;
+      if (newActiveWordTop > previousActiveWordTop) {
+        void lineJump(previousActiveWordTop);
+      }
+    }
+  });
 }
 
 function createHintsHtml(
@@ -500,7 +527,9 @@ export function showWords(): void {
     wordsEl.innerHTML = wordsHTML;
   }
 
-  updateActiveElement(undefined, true);
+  updateActiveElement({
+    initial: true,
+  });
   updateWordWrapperClasses();
   PaceCaret.resetCaretPosition();
 }
@@ -515,55 +544,53 @@ export function appendEmptyWordElement(
 }
 
 export function updateWordsInputPosition(): void {
-  requestDebouncedAnimationFrame("test-ui.updateWordsInputPosition", () => {
-    if (ActivePage.get() !== "test") return;
-    const isTestRightToLeft = TestState.isDirectionReversed
-      ? !TestState.isLanguageRightToLeft
-      : TestState.isLanguageRightToLeft;
+  if (ActivePage.get() !== "test") return;
+  const isTestRightToLeft = TestState.isDirectionReversed
+    ? !TestState.isLanguageRightToLeft
+    : TestState.isLanguageRightToLeft;
 
-    const el = getInputElement();
+  const el = getInputElement();
 
-    if (el === null) return;
+  if (el === null) return;
 
-    const activeWord = getActiveWordElement();
+  const activeWord = getActiveWordElement();
 
-    if (!activeWord) {
-      el.style.top = "0px";
-      el.style.left = "0px";
-      return;
-    }
+  if (!activeWord) {
+    el.style.top = "0px";
+    el.style.left = "0px";
+    return;
+  }
 
-    const letterHeight = convertRemToPixels(Config.fontSize);
-    const targetTop =
-      activeWord.offsetTop + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
+  const letterHeight = convertRemToPixels(Config.fontSize);
+  const targetTop =
+    activeWord.offsetTop + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
 
-    if (Config.tapeMode !== "off") {
-      el.style.maxWidth = `${100 - Config.tapeMargin}%`;
+  if (Config.tapeMode !== "off") {
+    el.style.maxWidth = `${100 - Config.tapeMargin}%`;
+  } else {
+    el.style.maxWidth = "";
+  }
+  if (activeWord.offsetWidth < letterHeight) {
+    el.style.width = letterHeight + "px";
+  } else {
+    el.style.width = activeWord.offsetWidth + "px";
+  }
+
+  el.style.top = targetTop + "px";
+
+  if (Config.tapeMode !== "off") {
+    el.style.left = `${
+      wordsWrapperEl.offsetWidth * (Config.tapeMargin / 100)
+    }px`;
+  } else {
+    if (activeWord.offsetWidth < letterHeight && isTestRightToLeft) {
+      el.style.left = activeWord.offsetLeft - letterHeight + "px";
     } else {
-      el.style.maxWidth = "";
+      el.style.left = Math.max(0, activeWord.offsetLeft) + "px";
     }
-    if (activeWord.offsetWidth < letterHeight) {
-      el.style.width = letterHeight + "px";
-    } else {
-      el.style.width = activeWord.offsetWidth + "px";
-    }
+  }
 
-    el.style.top = targetTop + "px";
-
-    if (Config.tapeMode !== "off") {
-      el.style.left = `${
-        wordsWrapperEl.offsetWidth * (Config.tapeMargin / 100)
-      }px`;
-    } else {
-      if (activeWord.offsetWidth < letterHeight && isTestRightToLeft) {
-        el.style.left = activeWord.offsetLeft - letterHeight + "px";
-      } else {
-        el.style.left = Math.max(0, activeWord.offsetLeft) + "px";
-      }
-    }
-
-    keepWordsInputInTheCenter();
-  });
+  keepWordsInputInTheCenter();
 }
 
 let centeringActiveLine: Promise<void> = Promise.resolve();
@@ -668,8 +695,6 @@ function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
     void scrollTape(true);
   } else {
-    $(wordsEl).stop(true, false);
-
     const afterNewlineEls =
       wordsEl.querySelectorAll<HTMLElement>(".afterNewline");
     wordsEl.style.marginLeft = `0`;
@@ -684,7 +709,34 @@ export function addWord(
   word: string,
   wordIndex = TestWords.words.length - 1,
 ): void {
-  wordsEl.insertAdjacentHTML("beforeend", buildWordHTML(word, wordIndex));
+  // if the current active word is the last word, we need to NOT use raf
+  // because other ui parts depend on the word existing
+  if (TestState.activeWordIndex === wordIndex - 1) {
+    wordsEl.insertAdjacentHTML("beforeend", buildWordHTML(word, wordIndex));
+  } else {
+    requestAnimationFrame(async () => {
+      wordsEl.insertAdjacentHTML("beforeend", buildWordHTML(word, wordIndex));
+    });
+  }
+
+  // maybe ill come back to this
+  // requestAnimationFrame(async () => {
+  //   wordsEl.insertAdjacentHTML("beforeend", buildWordHTML(word, wordIndex));
+  //   // in case word addition took a long time and some input happened in the mean time
+  //   // we need to update word letters for that word
+  //   const inputHistory = [
+  //     ...TestInput.input.getHistory(),
+  //     TestInput.input.current,
+  //   ];
+  //   const input = inputHistory[wordIndex];
+  //   if (input !== undefined && input !== "") {
+  //     await updateWordLetters({
+  //       wordIndex,
+  //       input,
+  //       compositionData: CompositionState.getData(),
+  //     });
+  //   }
+  // });
 }
 
 export function flipColors(tf: boolean): void {
@@ -703,152 +755,190 @@ export function colorful(tc: boolean): void {
   }
 }
 
-export async function updateActiveWordLetters(
-  inputOverride?: string,
-): Promise<void> {
-  const input = inputOverride ?? TestInput.input.current;
-  const currentWord = TestWords.words.getCurrent();
-  if (!currentWord && Config.mode !== "zen") return;
-  let ret = "";
-  const activeWord = getActiveWordElement();
-  if (!activeWord) return;
-  const hintIndices: number[][] = [];
+// because of the requestAnimationFrame, multiple calls to updateWordLetters
+// can be made before the actual update happens. This map keeps track of the
+// latest input for each word and is used in before-insert-text to
+// make sure the currently typed word will not overflow to the next line
+export let pendingWordData: Map<number, string> = new Map();
 
-  let newlineafter = false;
+export async function updateWordLetters({
+  wordIndex,
+  input,
+  compositionData,
+}: {
+  wordIndex: number;
+  input: string;
+  compositionData: string;
+}): Promise<void> {
+  pendingWordData.set(wordIndex, input);
+  requestDebouncedAnimationFrame(
+    `test-ui.updateWordLetters.${wordIndex}`,
+    async () => {
+      pendingWordData.delete(wordIndex);
+      const currentWord = TestWords.words.get(wordIndex);
+      if (!currentWord && Config.mode !== "zen") return;
+      let ret = "";
+      const wordAtIndex = getWordElement(wordIndex);
+      if (!wordAtIndex) return;
+      const hintIndices: number[][] = [];
 
-  if (Config.mode === "zen") {
-    for (const char of TestInput.input.current) {
-      if (char === "\t") {
-        ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-      } else if (char === "\n") {
-        newlineafter = true;
-        ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
-      } else {
-        ret += `<letter class="correct">${char}</letter>`;
-      }
-    }
-    if (TestInput.input.current === "" && CompositionState.getData() === "") {
-      ret += `<letter class='invisible'>_</letter>`;
-    }
+      let newlineafter = false;
 
-    const compositionData = CompositionState.getData();
-    for (const char of compositionData) {
-      ret += `<letter class="dead">${char}</letter>`;
-    }
-  } else {
-    const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
-
-    const inputChars = Strings.splitIntoCharacters(input);
-    const currentWordChars = Strings.splitIntoCharacters(currentWord);
-    for (let i = 0; i < inputChars.length; i++) {
-      const charCorrect = currentWordChars[i] === inputChars[i];
-
-      let currentLetter = currentWordChars[i] as string;
-      let tabChar = "";
-      let nlChar = "";
-      if (funbox) {
-        const cl = funbox.functions.getWordHtml(currentLetter);
-        if (cl !== "") {
-          currentLetter = cl;
+      if (Config.mode === "zen") {
+        for (const char of input) {
+          if (char === "\t") {
+            ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
+          } else if (char === "\n") {
+            newlineafter = true;
+            ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
+          } else {
+            ret += `<letter class="correct">${char}</letter>`;
+          }
         }
-      } else if (currentLetter === "\t") {
-        tabChar = "tabChar";
-        currentLetter = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
-      } else if (currentLetter === "\n") {
-        nlChar = "nlChar";
-        currentLetter = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
-      }
-
-      if (charCorrect) {
-        ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
-      } else if (currentLetter === undefined) {
-        let letter = inputChars[i];
-        if (letter === " ") {
-          letter = "_";
-        } else if (letter === "\t") {
-          letter = "<i class='fas fa-long-arrow-alt-right fa-fw'></i>";
-        } else if (letter === "\n") {
-          letter = "<i class='fas fa-level-down-alt fa-rotate-90 fa-fw'></i>";
+        if (input === "" && compositionData === "") {
+          ret += `<letter class='invisible'>_</letter>`;
         }
-        ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
+
+        for (const char of compositionData) {
+          ret += `<letter class="dead">${char}</letter>`;
+        }
       } else {
-        ret +=
-          `<letter class="incorrect ${tabChar}${nlChar}">` +
-          (Config.indicateTypos === "replace" || Config.indicateTypos === "both"
-            ? inputChars[i] === " "
-              ? "_"
-              : inputChars[i]
-            : currentLetter) +
-          "</letter>";
-        if (
-          Config.indicateTypos === "below" ||
-          Config.indicateTypos === "both"
+        const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
+
+        const inputChars = Strings.splitIntoCharacters(input);
+        const currentWordChars = Strings.splitIntoCharacters(currentWord);
+        for (let i = 0; i < inputChars.length; i++) {
+          const charCorrect = currentWordChars[i] === inputChars[i];
+
+          let currentLetter = currentWordChars[i] as string;
+          let tabChar = "";
+          let nlChar = "";
+          if (funbox) {
+            const cl = funbox.functions.getWordHtml(currentLetter);
+            if (cl !== "") {
+              currentLetter = cl;
+            }
+          } else if (currentLetter === "\t") {
+            tabChar = "tabChar";
+            currentLetter = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
+          } else if (currentLetter === "\n") {
+            nlChar = "nlChar";
+            currentLetter = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
+          }
+
+          if (charCorrect) {
+            ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
+          } else if (currentLetter === undefined) {
+            let letter = inputChars[i];
+            if (letter === " ") {
+              letter = "_";
+            } else if (letter === "\t") {
+              letter = "<i class='fas fa-long-arrow-alt-right fa-fw'></i>";
+            } else if (letter === "\n") {
+              letter =
+                "<i class='fas fa-level-down-alt fa-rotate-90 fa-fw'></i>";
+            }
+            ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
+          } else {
+            ret +=
+              `<letter class="incorrect ${tabChar}${nlChar}">` +
+              (Config.indicateTypos === "replace" ||
+              Config.indicateTypos === "both"
+                ? inputChars[i] === " "
+                  ? "_"
+                  : inputChars[i]
+                : currentLetter) +
+              "</letter>";
+            if (
+              Config.indicateTypos === "below" ||
+              Config.indicateTypos === "both"
+            ) {
+              const lastBlock = hintIndices[hintIndices.length - 1];
+              if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1)
+                lastBlock.push(i);
+              else hintIndices.push([i]);
+            }
+          }
+        }
+
+        for (let i = 0; i < compositionData.length; i++) {
+          const compositionChar = compositionData[i];
+          let charToShow = currentWordChars[input.length + i];
+
+          if (charToShow === undefined) {
+            charToShow = compositionChar;
+          }
+
+          if (Config.indicateTypos === "replace") {
+            charToShow = compositionChar === " " ? "_" : compositionChar;
+          }
+
+          ret += `<letter class="dead">${charToShow}</letter>`;
+        }
+
+        for (
+          let i = inputChars.length + compositionData.length;
+          i < currentWordChars.length;
+          i++
         ) {
-          const lastBlock = hintIndices[hintIndices.length - 1];
-          if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1)
-            lastBlock.push(i);
-          else hintIndices.push([i]);
+          const currentLetter = currentWordChars[i];
+          if (funbox?.functions?.getWordHtml) {
+            ret += funbox.functions.getWordHtml(currentLetter as string, true);
+          } else if (currentLetter === "\t") {
+            ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
+          } else if (currentLetter === "\n") {
+            ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
+          } else {
+            ret += `<letter>` + currentLetter + "</letter>";
+          }
         }
       }
-    }
 
-    const compositionData = CompositionState.getData();
-    for (let i = 0; i < compositionData.length; i++) {
-      const compositionChar = compositionData[i];
-      let charToShow = currentWordChars[input.length + i];
+      wordAtIndex.innerHTML = ret;
 
-      if (charToShow === undefined) {
-        charToShow = compositionChar;
+      if (hintIndices?.length) {
+        const wordAtIndexLetters = wordAtIndex.querySelectorAll("letter");
+        let hintsHtml;
+        if (Config.indicateTypos === "both") {
+          hintsHtml = createHintsHtml(
+            hintIndices,
+            wordAtIndexLetters,
+            currentWord,
+          );
+        } else {
+          hintsHtml = createHintsHtml(hintIndices, wordAtIndexLetters, input);
+        }
+        wordAtIndex.insertAdjacentHTML("beforeend", hintsHtml);
+        const hintElements = wordAtIndex.getElementsByTagName("hint");
+        await joinOverlappingHints(
+          hintIndices,
+          wordAtIndexLetters,
+          hintElements,
+        );
       }
 
-      if (Config.indicateTypos === "replace") {
-        charToShow = compositionChar === " " ? "_" : compositionChar;
+      if (newlineafter)
+        wordAtIndex.insertAdjacentHTML(
+          "afterend",
+          "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>",
+        );
+      if (Config.tapeMode !== "off") {
+        void scrollTape();
       }
-
-      ret += `<letter class="dead">${charToShow}</letter>`;
-    }
-
-    for (
-      let i = inputChars.length + compositionData.length;
-      i < currentWordChars.length;
-      i++
-    ) {
-      const currentLetter = currentWordChars[i];
-      if (funbox?.functions?.getWordHtml) {
-        ret += funbox.functions.getWordHtml(currentLetter as string, true);
-      } else if (currentLetter === "\t") {
-        ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-      } else if (currentLetter === "\n") {
-        ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
-      } else {
-        ret += `<letter>` + currentLetter + "</letter>";
+      if (Config.mode === "zen" || SlowTimer.get()) {
+        // because we block word jumps in before-insert-text
+        // this check only needs to happen in zen mode
+        // unless slow timer is on, then it needs to happen
+        // because the word jump check is disabled
+        if (!Config.showAllLines) {
+          const wordTopAfterUpdate = wordAtIndex.offsetTop;
+          if (wordTopAfterUpdate > activeWordTop) {
+            void lineJump(activeWordTop, true);
+          }
+        }
       }
-    }
-  }
-
-  activeWord.innerHTML = ret;
-
-  if (hintIndices?.length) {
-    const activeWordLetters = activeWord.querySelectorAll("letter");
-    let hintsHtml;
-    if (Config.indicateTypos === "both") {
-      hintsHtml = createHintsHtml(hintIndices, activeWordLetters, currentWord);
-    } else {
-      hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
-    }
-    activeWord.insertAdjacentHTML("beforeend", hintsHtml);
-    const hintElements = activeWord.getElementsByTagName("hint");
-    await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
-  }
-
-  if (newlineafter)
-    wordsEl.insertAdjacentHTML(
-      "beforeend",
-      "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>",
-    );
-  if (Config.tapeMode !== "off") {
-    void scrollTape();
-  }
+    }, //end of raf
+  );
 }
 
 // this is needed in tape mode because sometimes we want the newline character to appear above the next line
@@ -949,7 +1039,11 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     const child = wordsChildrenArr[i] as HTMLElement;
     if (child.classList.contains("word")) {
       leadingNewLine = false;
-      const wordOuterWidth = $(child).outerWidth(true) ?? 0;
+      const childComputedStyle = window.getComputedStyle(child);
+      const wordOuterWidth =
+        child.offsetWidth +
+        parseFloat(childComputedStyle.marginRight) +
+        parseFloat(childComputedStyle.marginLeft);
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
       if (
@@ -1011,22 +1105,22 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   let currentWordWidth = 0;
   const inputLength = TestInput.input.current.length;
   if (Config.tapeMode === "letter" && inputLength > 0) {
-    const letters = activeWordEl.querySelectorAll("letter");
+    const letters = activeWordEl.querySelectorAll<HTMLElement>("letter");
     let lastPositiveLetterWidth = 0;
     for (let i = 0; i < inputLength; i++) {
-      const letter = letters[i] as HTMLElement;
+      const letter = letters[i];
       if (
         (Config.blindMode || Config.hideExtraLetters) &&
-        letter.classList.contains("extra")
+        letter?.classList.contains("extra")
       ) {
         continue;
       }
-      const letterOuterWidth = $(letter).outerWidth(true) ?? 0;
+      const letterOuterWidth = letter?.offsetWidth ?? 0;
       currentWordWidth += letterOuterWidth;
       if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
     }
     // if current letter has zero width move the tape to previous positive width letter
-    if ($(letters[inputLength] as Element).outerWidth(true) === 0)
+    if (letters[inputLength]?.offsetWidth === 0)
       currentWordWidth -= lastPositiveLetterWidth;
   }
 
@@ -1376,7 +1470,6 @@ export function toggleResultWords(noAnimation = false): void {
       //show
 
       if ($("#resultWordsHistory .words .word").length === 0) {
-        wordsEl.innerHTML = `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`;
         void loadWordsHistory().then(() => {
           if (Config.burstHeatmap) {
             void applyBurstHeatmap();
@@ -1522,14 +1615,21 @@ export async function applyBurstHeatmap(): Promise<void> {
 }
 
 export function highlightBadWord(index: number): void {
-  getWordElement(index)?.classList.add("error");
+  requestDebouncedAnimationFrame(`test-ui.highlightBadWord.${index}`, () => {
+    getWordElement(index)?.classList.add("error");
+  });
 }
 
 export function highlightAllLettersAsCorrect(wordIndex: number): void {
-  const letters = getWordElement(wordIndex)?.children;
-  for (const letter of letters ?? []) {
-    letter.classList.add("correct");
-  }
+  requestDebouncedAnimationFrame(
+    `test-ui.highlightAllLettersAsCorrect.${wordIndex}`,
+    () => {
+      const letters = getWordElement(wordIndex)?.children;
+      for (const letter of letters ?? []) {
+        letter.classList.add("correct");
+      }
+    },
+  );
 }
 
 function updateWordsWidth(): void {
@@ -1620,21 +1720,25 @@ function updateLiveStatsColor(value: TimerColor): void {
   }
 }
 
-export function getActiveWordTopAfterAppend(data: string): number {
+export function getActiveWordTopWithDifferentData(data: string): number {
   const activeWord = getActiveWordElement();
 
   if (!activeWord) throw new Error("No active word element found");
 
-  const displayData = data === " " ? "_" : data;
+  const nodes = [];
+  for (let i = activeWord.children.length; i < data.length; i++) {
+    const tempLetter = document.createElement("letter");
+    const displayData = data[i] === " " ? "_" : data[i];
+    tempLetter.textContent = displayData as string;
+    nodes.push(tempLetter);
+  }
 
-  const tempLetter = document.createElement("letter");
-  tempLetter.className = "temp";
-  tempLetter.textContent = displayData;
-
-  activeWord.appendChild(tempLetter);
+  activeWord.append(...nodes);
 
   const top = activeWord.offsetTop;
-  tempLetter.remove();
+  for (const node of nodes) {
+    node.remove();
+  }
 
   return top;
 }
@@ -1684,27 +1788,35 @@ export function afterTestTextInput(
   //nospace cant be handled here becauseword index
   // is already increased at this point
 
-  setActiveWordTop();
-  if (!increasedWordIndex) void updateActiveWordLetters(inputOverride);
+  void MonkeyPower.addPower(correct);
 
-  if (Config.mode === "zen") {
-    const currentTop = getActiveWordElement()?.offsetTop;
-    if (currentTop !== undefined && currentTop > activeWordTop) {
-      void lineJump(activeWordTop, true);
-    }
+  if (!increasedWordIndex) {
+    void updateWordLetters({
+      input: inputOverride ?? TestInput.input.current,
+      wordIndex: TestState.activeWordIndex,
+      compositionData: CompositionState.getData(),
+    });
   }
 
   afterAnyTestInput("textInput", correct);
 }
 
 export function afterTestCompositionUpdate(): void {
-  void updateActiveWordLetters();
+  void updateWordLetters({
+    input: TestInput.input.current,
+    wordIndex: TestState.activeWordIndex,
+    compositionData: CompositionState.getData(),
+  });
   // correct needs to be true to get the normal click sound
   afterAnyTestInput("compositionUpdate", true);
 }
 
 export function afterTestDelete(): void {
-  void updateActiveWordLetters();
+  void updateWordLetters({
+    input: TestInput.input.current,
+    wordIndex: TestState.activeWordIndex,
+    compositionData: CompositionState.getData(),
+  });
   afterAnyTestInput("delete", null);
 }
 
@@ -1729,7 +1841,11 @@ export function beforeTestWordChange(
     nospaceEnabled ||
     forceUpdateActiveWordLetters
   ) {
-    void updateActiveWordLetters();
+    void updateWordLetters({
+      input: TestInput.input.current,
+      wordIndex: TestState.activeWordIndex,
+      compositionData: CompositionState.getData(),
+    });
   }
 
   if (direction === "forward") {
@@ -1744,7 +1860,9 @@ export function beforeTestWordChange(
 export async function afterTestWordChange(
   direction: "forward" | "back",
 ): Promise<void> {
-  updateActiveElement();
+  updateActiveElement({
+    direction,
+  });
   Caret.updatePosition();
 
   const lastBurst = TestInput.burstHistory[TestInput.burstHistory.length - 1];
@@ -1752,28 +1870,7 @@ export async function afterTestWordChange(
     void LiveBurst.update(Math.round(lastBurst));
   }
   if (direction === "forward") {
-    if (
-      !Config.showAllLines ||
-      Config.mode === "time" ||
-      (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||
-      (Config.mode === "custom" && CustomText.getLimitMode() === "time")
-    ) {
-      const previousWord = getWordElement(TestState.activeWordIndex - 1);
-      const activeWord = getActiveWordElement();
-
-      if (!previousWord || !activeWord) return;
-
-      const previousTop = previousWord.offsetTop;
-      const activeTop = activeWord.offsetTop;
-
-      if (
-        activeTop !== null &&
-        previousTop !== null &&
-        Math.floor(activeTop) > Math.floor(previousTop)
-      ) {
-        void lineJump(previousTop);
-      }
-    }
+    //
   } else if (direction === "back") {
     if (Config.mode === "zen") {
       const wordsChildren = [...(wordsEl.children ?? [])] as HTMLElement[];
@@ -1797,7 +1894,6 @@ export async function afterTestWordChange(
 }
 
 export function afterTestStart(): void {
-  setActiveWordTop();
   Focus.set(true);
   Monkey.show();
   TimerProgress.show();
