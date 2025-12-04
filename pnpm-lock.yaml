@@ -20,9 +20,6 @@ importers:
       '@vitest/coverage-v8':
         specifier: 4.0.8
         version: 4.0.8(vitest@4.0.8(@types/node@20.5.1)(happy-dom@20.0.10)(sass@1.70.0)(terser@5.44.1)(tsx@4.16.2)(yaml@2.8.1))
-      concurrently:
-        specifier: 8.2.2
-        version: 8.2.2
       conventional-changelog:
         specifier: 6.0.0
         version: 6.0.0(conventional-commits-filter@5.0.0)

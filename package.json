@@ -60,7 +60,6 @@
     "@commitlint/config-conventional": "19.2.2",
     "@monkeytype/release": "workspace:*",
     "@vitest/coverage-v8": "4.0.8",
-    "concurrently": "8.2.2",
     "conventional-changelog": "6.0.0",
     "eslint": "8.57.1",
     "husky": "8.0.1",
