@@ -1,10 +1,10 @@
-const el = document.querySelector("#wordsInput") as HTMLInputElement;
+const el = document.querySelector("#wordsInput") as HTMLTextAreaElement;
 
 if (el === null) {
   throw new Error("Words input element not found");
 }
 
-export function getInputElement(): HTMLInputElement {
+export function getInputElement(): HTMLTextAreaElement {
   return el;
 }
 

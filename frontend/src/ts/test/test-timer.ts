@@ -50,6 +50,11 @@ let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
 let expected = 0;
 
+let slowTimerFailEnabled = true;
+export function disableSlowTimerFail(): void {
+  slowTimerFailEnabled = false;
+}
+
 let timerDebug = false;
 export function enableTimerDebug(): void {
   timerDebug = true;
@@ -239,6 +244,7 @@ function timerStep(): void {
 }
 
 function checkIfTimerIsSlow(drift: number): void {
+  if (!slowTimerFailEnabled) return;
   if (
     (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
     (Config.mode === "words" && Config.words < 250 && Config.words > 0)

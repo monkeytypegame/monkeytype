@@ -68,6 +68,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     // make sure to not call TestInput.input.syncWithInputElement in here
     // it will be updated later in the body of onInsertText
     setInputElementValue(inputValue.slice(0, -options.data.length));
+    TestInput.input.syncWithInputElement();
     for (let i = 0; i < options.data.length; i++) {
       const char = options.data[i] as string;
 
