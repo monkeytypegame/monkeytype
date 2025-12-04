@@ -254,7 +254,14 @@ export function updateActiveElement(
       void scrollTape();
     }
 
-    if (!Config.showAllLines && previousActiveWordTop !== null) {
+    if (previousActiveWordTop === null) return;
+
+    const isTimedTest =
+      Config.mode === "time" ||
+      (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+      (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+
+    if (isTimedTest || !Config.showAllLines) {
       const newActiveWordTop = newActiveWord.offsetTop;
       if (newActiveWordTop > previousActiveWordTop) {
         void lineJump(previousActiveWordTop);
