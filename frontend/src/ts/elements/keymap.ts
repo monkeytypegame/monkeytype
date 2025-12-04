@@ -60,7 +60,7 @@ const stenoKeys: LayoutObject = {
   },
 };
 
-function findKeyElements(char: string): ArrayWithUtils | null {
+function findKeyElements(char: string): ArrayWithUtils {
   if (char === " ") {
     return keymap.qsa(".keySpace");
   }
@@ -95,7 +95,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
   if (key === undefined) return;
 
   const targets = findKeyElements(key);
-  if (targets === null) return;
+  if (targets.length === 0) return;
 
   const themecolors = await ThemeColors.getAll();
 
