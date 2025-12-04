@@ -276,19 +276,17 @@ function checkIfTimerIsSlow(drift: number): void {
 }
 
 export async function start(): Promise<void> {
+  SlowTimer.clear();
+  slowTimerCount = 0;
   void _startNew();
   // void _startOld();
 }
 
 async function _startNew(): Promise<void> {
-  SlowTimer.clear();
-  slowTimerCount = 0;
   newTimer.play();
 }
 
 async function _startOld(): Promise<void> {
-  SlowTimer.clear();
-  slowTimerCount = 0;
   timerStats = [];
   expected = TestStats.start + interval;
   (function loop(): void {
