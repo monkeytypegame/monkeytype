@@ -1,5 +1,10 @@
 import { Plugin } from "vite";
 import { EnvConfig } from "virtual:env-config";
+import { config as dotenvConfig } from "dotenv";
+
+const envFile =
+  process.env["NODE_ENV"] === "production" ? ".env.production" : ".env";
+dotenvConfig({ path: envFile });
 
 const virtualModuleId = "virtual:env-config";
 const resolvedVirtualModuleId = "\0" + virtualModuleId;
