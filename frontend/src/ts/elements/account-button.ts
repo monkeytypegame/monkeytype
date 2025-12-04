@@ -90,26 +90,20 @@ export function update(): void {
 export function updateFriendRequestsIndicator(): void {
   const friends = getSnapshot()?.connections;
 
-  const bubbleElements = [
-    accountButtonAndMenuEl.qs(".view-account > .notificationBubble"),
-    accountButtonAndMenuEl.qs(".goToFriends > .notificationBubble"),
-  ];
-
+  const bubbleElements = accountButtonAndMenuEl.qsa(
+    ".view-account > .notificationBubble, .goToFriends > .notificationBubble",
+  );
   if (friends !== undefined) {
     const pendingFriendRequests = Object.values(friends).filter(
       (it) => it === "incoming",
     ).length;
     if (pendingFriendRequests > 0) {
-      for (const bubbleEl of bubbleElements) {
-        bubbleEl?.removeClass("hidden");
-      }
+      bubbleElements.show();
       return;
     }
   }
 
-  for (const bubbleEl of bubbleElements) {
-    bubbleEl?.addClass("hidden");
-  }
+  bubbleElements.hide();
 }
 
 const coarse = window.matchMedia("(pointer:coarse)")?.matches;
