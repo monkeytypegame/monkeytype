@@ -26,7 +26,10 @@ import {
 } from "./funbox/list";
 import * as TestState from "./test-state";
 import * as PaceCaret from "./pace-caret";
-import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import {
+  cancelPendingAnimationFramesStartingWith,
+  requestDebouncedAnimationFrame,
+} from "../utils/debounced-animation-frame";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as TestStats from "./test-stats";
@@ -165,6 +168,7 @@ export function setResultCalculating(val: boolean): void {
 
 export function reset(): void {
   currentTestLine = 0;
+  cancelPendingAnimationFramesStartingWith("test-ui");
 }
 
 export function focusWords(force = false): void {
