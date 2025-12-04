@@ -10,7 +10,7 @@ import * as AuthEvent from "../observables/auth-event";
 import { getSnapshot } from "../db";
 import { qsr } from "../utils/dom";
 
-const nav = qsr("header nav ");
+const nav = qsr("header nav");
 const accountButtonAndMenuEl = nav.qsr(".accountButtonAndMenu");
 const loginButtonEl = nav.qsr(".textButton.view-login");
 
