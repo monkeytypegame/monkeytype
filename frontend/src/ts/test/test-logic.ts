@@ -619,7 +619,7 @@ async function init(): Promise<boolean> {
     void KeymapEvent.highlight(
       Arrays.nthElementFromArray(
         // ignoring for now but this might need a different approach
-        // eslint-disable-next-line @typescript-eslint/no-misused-spread
+        // oxlint-disable-next-line no-misused-spread
         [...TestWords.words.getCurrent()],
         0,
       ) as string,
@@ -1609,7 +1609,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
         void KeymapEvent.highlight(
           Arrays.nthElementFromArray(
             // ignoring for now but this might need a different approach
-            // eslint-disable-next-line @typescript-eslint/no-misused-spread
+            // oxlint-disable-next-line no-misused-spread
             [...TestWords.words.getCurrent()],
             0,
           ) as string,

@@ -1,6 +1,6 @@
 import { checker } from "vite-plugin-checker";
 import Inspect from "vite-plugin-inspect";
-import path from "node:path";
+// import path from "node:path";
 import { getFontsConig } from "./vite.config";
 import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
@@ -11,13 +11,11 @@ export default {
     envConfig({ isDevelopment: true }),
     languageHashes({ skip: true }),
     checker({
-      typescript: {
-        tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
-      },
-      oxlint: true,
-      eslint: {
-        lintCommand: `eslint "${path.resolve(__dirname, "./src/ts/**/*.ts")}"`,
-        watchPath: path.resolve(__dirname, "./src/"),
+      // typescript: {
+      //   tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
+      // },
+      oxlint: {
+        lintCommand: "oxlint . --type-aware --type-check",
       },
       overlay: {
         initialIsOpen: false,

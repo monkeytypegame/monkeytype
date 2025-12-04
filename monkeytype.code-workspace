@@ -49,6 +49,7 @@
       "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "vitest.maximumConfigs": 10,
+    "oxc.typeAware": true,
   },
 
   "launch": {

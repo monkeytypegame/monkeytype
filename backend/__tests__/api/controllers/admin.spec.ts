@@ -10,6 +10,7 @@ import GeorgeQueue from "../../../src/queues/george-queue";
 import * as AuthUtil from "../../../src/utils/auth";
 
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
+import Test from "supertest/lib/test";
 
 const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -558,12 +559,12 @@ describe("AdminController", () => {
     });
   });
 
-  async function expectFailForNonAdmin(call: SuperTest): Promise<void> {
+  async function expectFailForNonAdmin(call: Test): Promise<void> {
     isAdminMock.mockResolvedValue(false);
     const { body } = await call.expect(403);
     expect(body.message).toEqual("You don't have permission to do this.");
   }
-  async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
+  async function expectFailForDisabledEndpoint(call: Test): Promise<void> {
     await enableAdminEndpoints(false);
     const { body } = await call.expect(503);
     expect(body.message).toEqual("Admin endpoints are currently disabled.");

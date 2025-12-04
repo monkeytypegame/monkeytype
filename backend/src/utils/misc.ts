@@ -246,7 +246,7 @@ export function omit<T extends object, K extends keyof T>(
 ): Omit<T, K> {
   const result = { ...obj };
   for (const key of keys) {
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    // oxlint-disable-next-line no-dynamic-delete
     delete result[key];
   }
   return result;

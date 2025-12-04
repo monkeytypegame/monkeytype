@@ -158,7 +158,7 @@ describe("CommandlineUtils", () => {
           schema,
         });
 
-        const inputCmd = cmd.subgroup?.list.at(cmd.subgroup?.list.length - 1);
+        const inputCmd = cmd.subgroup?.list[cmd.subgroup?.list.length - 1];
 
         //THEN
         expect(cmd.subgroup?.list.map((it) => it.id)).toEqual([

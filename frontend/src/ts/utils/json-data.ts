@@ -57,7 +57,7 @@ export function memoizeAsync<P, T extends <B>(...args: P[]) => Promise<B>>(
       }
     }
 
-    // eslint-disable-next-line prefer-spread
+    // oxlint-disable-next-line prefer-spread
     const result = fn.apply(null, args) as Promise<ReturnType<T>>;
     cache.set(key, result);
 
