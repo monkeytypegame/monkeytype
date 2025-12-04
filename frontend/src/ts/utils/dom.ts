@@ -157,8 +157,12 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   /**
    * Add a class to the element
    */
-  addClass(className: string): this {
-    this.native.classList.add(className);
+  addClass(className: string | string[]): this {
+    if (Array.isArray(className)) {
+      this.native.classList.add(...className);
+    } else {
+      this.native.classList.add(className);
+    }
     return this;
   }
 
@@ -490,7 +494,7 @@ export class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
   /**
    * Remove a class from all elements in the array
    */
-  removeClass(className: string): this {
+  removeClass(className: string | string[]): this {
     for (const item of this) {
       item.removeClass(className);
     }
@@ -500,7 +504,7 @@ export class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
   /**
    * Add a class to all elements in the array
    */
-  addClass(className: string): this {
+  addClass(className: string | string[]): this {
     for (const item of this) {
       item.addClass(className);
     }
