@@ -446,7 +446,7 @@ const modal = new AnimatedModal({
     hide();
   },
   setup: async (): Promise<void> => {
-    qs("#alertsPopup .accountAlerts")?.onChild(".claimAll", "click", () => {
+    alertsPopupEl.qs(".accountAlerts")?.onChild(".claimAll", "click", () => {
       for (const ie of accountAlerts) {
         if (!ie.read && !mailToMarkRead.includes(ie.id)) {
           markReadAlert(ie.id);
@@ -454,7 +454,7 @@ const modal = new AnimatedModal({
       }
     });
 
-    qs("#alertsPopup .accountAlerts")?.onChild(".deleteAll", "click", () => {
+    alertsPopupEl.qs(".accountAlerts")?.onChild(".deleteAll", "click", () => {
       for (const ie of accountAlerts) {
         if (!mailToDelete.includes(ie.id)) {
           deleteAlert(ie.id);
@@ -462,14 +462,13 @@ const modal = new AnimatedModal({
       }
     });
 
-    qs("#alertsPopup .mobileClose")?.on("click", () => {
+    alertsPopupEl.qs(".mobileClose")?.on("click", () => {
       hide();
     });
 
-    qs("#alertsPopup .accountAlerts .list")?.onChild(
-      ".item .buttons .deleteAlert",
-      "click",
-      (e) => {
+    alertsPopupEl
+      .qs(".accountAlerts .list")
+      ?.onChild(".item .buttons .deleteAlert", "click", (e) => {
         const id = (e.target as HTMLElement | null)
           ?.closest(".item")
           ?.getAttribute("data-id")
@@ -480,13 +479,11 @@ const modal = new AnimatedModal({
         }
 
         deleteAlert(id);
-      },
-    );
+      });
 
-    qs("#alertsPopup .accountAlerts .list")?.onChild(
-      ".item .buttons .markReadAlert",
-      "click",
-      (e) => {
+    alertsPopupEl
+      .qs(".accountAlerts .list")
+      ?.onChild(".item .buttons .markReadAlert", "click", (e) => {
         const id = (e.target as HTMLElement | null)
           ?.closest(".item")
           ?.getAttribute("data-id")
@@ -497,7 +494,6 @@ const modal = new AnimatedModal({
         }
 
         markReadAlert(id);
-      },
-    );
+      });
   },
 });
