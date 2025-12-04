@@ -19,11 +19,11 @@ export function qs<T extends HTMLElement = HTMLElement>(
  */
 export function qsa<T extends HTMLElement = HTMLElement>(
   selector: string,
-): ArrayWithUtils<T> {
+): ElementsWithUtils<T> {
   const elements = Array.from(document.querySelectorAll<T>(selector))
     .filter((el) => el !== null)
     .map((el) => new ElementWithUtils(el));
-  return new ArrayWithUtils<T>(...elements);
+  return new ElementsWithUtils<T>(...elements);
 }
 
 /**
@@ -330,12 +330,12 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
    */
   qsa<U extends HTMLElement = HTMLElement>(
     selector: string,
-  ): ArrayWithUtils<U> {
+  ): ElementsWithUtils<U> {
     const elements = Array.from(this.native.querySelectorAll<U>(selector))
       .filter((el) => el !== null)
       .map((el) => new ElementWithUtils<U>(el));
 
-    return new ArrayWithUtils<U>(...elements);
+    return new ElementsWithUtils<U>(...elements);
   }
 
   /**
@@ -469,9 +469,9 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
 /**
  * An array of ElementWithUtils with utility methods that operate on all elements in the array.
  */
-export class ArrayWithUtils<T extends HTMLElement = HTMLElement> extends Array<
-  ElementWithUtils<T>
-> {
+export class ElementsWithUtils<
+  T extends HTMLElement = HTMLElement,
+> extends Array<ElementWithUtils<T>> {
   /**
    * Array of native DOM elements
    */

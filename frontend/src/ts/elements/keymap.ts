@@ -16,7 +16,7 @@ import { getActiveFunboxNames } from "../test/funbox/list";
 import { areSortedArraysEqual } from "../utils/arrays";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
-import { ArrayWithUtils, qsr } from "../utils/dom";
+import { ElementsWithUtils, qsr } from "../utils/dom";
 
 export const keyDataDelimiter = "\uE000";
 const keymap = qsr("#keymap");
@@ -60,7 +60,7 @@ const stenoKeys: LayoutObject = {
   },
 };
 
-function findKeyElements(char: string): ArrayWithUtils {
+function findKeyElements(char: string): ElementsWithUtils {
   if (char === " ") {
     return keymap.qsa(".keySpace");
   }
