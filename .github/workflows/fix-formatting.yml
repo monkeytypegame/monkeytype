@@ -55,7 +55,7 @@ jobs:
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then
-            pnpm oxfmt $CHANGED_FILES --ignore-path .oxfmtignore --no-error-on-unmatched-pattern && pnpm prettier $CHANGED_FILES --write --log-level=warn --no-error-on-unmatched-pattern
+            pnpm oxfmt $CHANGED_FILES --ignore-path .oxfmtignore --no-error-on-unmatched-pattern && pnpm prettier $CHANGED_FILES --write --log-level=warn -u --no-error-on-unmatched-pattern
           fi
 
       - name: Commit changes
