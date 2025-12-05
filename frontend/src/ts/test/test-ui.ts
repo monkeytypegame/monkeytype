@@ -704,6 +704,7 @@ export function updateWordsWrapperHeight(force = false): void {
 
 function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
+    wordsEl.style.marginLeft = "0";
     void scrollTape(true);
   } else {
     const afterNewlineEls =
