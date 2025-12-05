@@ -58,7 +58,6 @@
     "@vitest/coverage-v8": "4.0.8",
     "autoprefixer": "10.4.20",
     "concurrently": "8.2.2",
-    "dotenv": "16.4.5",
     "eslint": "8.57.1",
     "eslint-plugin-compat": "6.0.2",
     "firebase-tools": "13.15.1",
