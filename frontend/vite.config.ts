@@ -206,58 +206,54 @@ export default defineConfig(({ mode }): UserConfig => {
     plugins: [...plugins, ...(isDevelopment ? devPlugins : prodPlugins)].filter(
       (it) => it !== null,
     ),
-    build: isDevelopment
-      ? ({
-          outDir: "../dist",
-        } as BuildEnvironmentOptions)
-      : ({
-          sourcemap: process.env["SENTRY"],
-          emptyOutDir: true,
-          outDir: "../dist",
-          assetsInlineLimit: 0, //dont inline small files as data
-          rollupOptions: {
-            input: {
-              monkeytype: path.resolve(__dirname, "src/index.html"),
-              email: path.resolve(__dirname, "src/email-handler.html"),
-              privacy: path.resolve(__dirname, "src/privacy-policy.html"),
-              security: path.resolve(__dirname, "src/security-policy.html"),
-              terms: path.resolve(__dirname, "src/terms-of-service.html"),
-              404: path.resolve(__dirname, "src/404.html"),
-            },
-            output: {
-              assetFileNames: (assetInfo: { name: string }) => {
-                let extType = assetInfo.name.split(".").at(1) as string;
-                if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
-                  extType = "images";
-                }
-                if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
-                  return `webfonts/[name]-[hash].${extType}`;
-                }
-                return `${extType}/[name].[hash][extname]`;
-              },
-              chunkFileNames: "js/[name].[hash].js",
-              entryFileNames: "js/[name].[hash].js",
-              manualChunks: (id) => {
-                if (id.includes("@sentry")) {
-                  return "vendor-sentry";
-                }
-                if (id.includes("jquery")) {
-                  return "vendor-jquery";
-                }
-                if (id.includes("@firebase")) {
-                  return "vendor-firebase";
-                }
-                if (id.includes("monkeytype/packages")) {
-                  return "monkeytype-packages";
-                }
-                if (id.includes("node_modules")) {
-                  return "vendor";
-                }
-                return;
-              },
-            },
+    build: {
+      sourcemap: process.env["SENTRY"],
+      emptyOutDir: true,
+      outDir: "../dist",
+      assetsInlineLimit: 0, //dont inline small files as data
+      rollupOptions: {
+        input: {
+          monkeytype: path.resolve(__dirname, "src/index.html"),
+          email: path.resolve(__dirname, "src/email-handler.html"),
+          privacy: path.resolve(__dirname, "src/privacy-policy.html"),
+          security: path.resolve(__dirname, "src/security-policy.html"),
+          terms: path.resolve(__dirname, "src/terms-of-service.html"),
+          404: path.resolve(__dirname, "src/404.html"),
+        },
+        output: {
+          assetFileNames: (assetInfo: { name: string }) => {
+            let extType = assetInfo.name.split(".").at(1) as string;
+            if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+              extType = "images";
+            }
+            if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
+              return `webfonts/[name]-[hash].${extType}`;
+            }
+            return `${extType}/[name].[hash][extname]`;
           },
-        } as BuildEnvironmentOptions),
+          chunkFileNames: "js/[name].[hash].js",
+          entryFileNames: "js/[name].[hash].js",
+          manualChunks: (id) => {
+            if (id.includes("@sentry")) {
+              return "vendor-sentry";
+            }
+            if (id.includes("jquery")) {
+              return "vendor-jquery";
+            }
+            if (id.includes("@firebase")) {
+              return "vendor-firebase";
+            }
+            if (id.includes("monkeytype/packages")) {
+              return "monkeytype-packages";
+            }
+            if (id.includes("node_modules")) {
+              return "vendor";
+            }
+            return;
+          },
+        },
+      },
+    } as BuildEnvironmentOptions,
     server: {
       open: process.env["SERVER_OPEN"] !== "false",
       port: 3000,
@@ -321,13 +317,6 @@ export default defineConfig(({ mode }): UserConfig => {
     },
   };
 });
-
-/** Enable for font awesome v6 */
-/*
-function sassList(values) {
-  return values.map((it) => `"${it}"`).join(",");
-}
-*/
 
 export function getFontsConfig(): string {
   return (
