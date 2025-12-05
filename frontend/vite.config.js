@@ -1,14 +1,63 @@
-import { defineConfig, mergeConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv } from "vite";
+import path from "node:path";
 import injectHTML from "vite-plugin-html-inject";
+import childProcess from "child_process";
 import autoprefixer from "autoprefixer";
-import PROD_CONFIG from "./vite.config.prod";
-import DEV_CONFIG from "./vite.config.dev";
 import MagicString from "magic-string";
 import { Fonts } from "./src/ts/constants/fonts";
+import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
+import { fontPreview } from "./vite-plugins/font-preview";
+import { envConfig } from "./vite-plugins/env-config";
+import { languageHashes } from "./vite-plugins/language-hashes";
+import { minifyJson } from "./vite-plugins/minify-json";
+import { versionFile } from "./vite-plugins/version-file";
+import { checker } from "vite-plugin-checker";
+import Inspect from "vite-plugin-inspect";
+import { ViteMinifyPlugin } from "vite-plugin-minify";
+import { VitePWA } from "vite-plugin-pwa";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+import replace from "vite-plugin-filter-replace";
+// eslint-disable-next-line import/no-unresolved
+import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 
-/** @type {import("vite").UserConfig} */
-const BASE_CONFIG = {
-  plugins: [
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+
+  if (mode === "production") {
+    if (env.RECAPTCHA_SITE_KEY === undefined) {
+      throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
+    }
+    if (env.SENTRY && env.SENTRY_AUTH_TOKEN === undefined) {
+      throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
+    }
+  }
+
+  const isDevelopment = mode !== "production";
+  const clientVersion = getClientVersion();
+
+  const plugins = [
+    envConfig({ isDevelopment, clientVersion, env }),
+    languageHashes({ skip: isDevelopment }),
+    fontawesomeSubset({ skip: isDevelopment }),
+    versionFile({ clientVersion, skip: isDevelopment }),
+    fontPreview({ skip: isDevelopment }),
+    checker({
+      typescript: {
+        tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
+      },
+      oxlint: isDevelopment,
+      eslint: isDevelopment
+        ? {
+            lintCommand: `eslint "${path.resolve(__dirname, "./src/ts/**/*.ts")}"`,
+            watchPath: path.resolve(__dirname, "./src/"),
+          }
+        : false,
+      overlay: isDevelopment
+        ? {
+            initialIsOpen: false,
+          }
+        : false,
+    }),
     {
       name: "simple-jquery-inject",
       async transform(src, id) {
@@ -33,46 +82,230 @@ const BASE_CONFIG = {
       },
     },
     injectHTML(),
-  ],
-  server: {
-    open: process.env.SERVER_OPEN !== "false",
-    port: 3000,
-    host: process.env.BACKEND_URL !== undefined,
-    watch: {
-      //we rebuild the whole contracts package when a file changes
-      //so we only want to watch one file
-      ignored: [/.*\/packages\/contracts\/dist\/(?!configs).*/],
-    },
-  },
-  clearScreen: false,
-  root: "src",
-  publicDir: "../static",
-  css: {
-    devSourcemap: true,
-    postcss: {
-      plugins: [autoprefixer({})],
-    },
-  },
-  optimizeDeps: {
-    include: ["jquery"],
-    exclude: ["@fortawesome/fontawesome-free"],
-  },
-};
+  ];
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
+  const additionalPlugins = isDevelopment
+    ? [Inspect()]
+    : [
+        ViteMinifyPlugin(),
+        VitePWA({
+          // injectRegister: "networkfirst",
+          injectRegister: null,
+          registerType: "autoUpdate",
+          manifest: {
+            short_name: "Monkeytype",
+            name: "Monkeytype",
+            start_url: "/",
+            icons: [
+              {
+                src: "/images/icons/maskable_icon_x512.png",
+                sizes: "512x512",
+                type: "image/png",
+                purpose: "maskable",
+              },
+              {
+                src: "/images/icons/general_icon_x512.png",
+                sizes: "512x512",
+                type: "image/png",
+                purpose: "any",
+              },
+            ],
+            background_color: "#323437",
+            display: "standalone",
+            theme_color: "#323437",
+          },
+          manifestFilename: "manifest.json",
+          workbox: {
+            clientsClaim: true,
+            cleanupOutdatedCaches: true,
+            globIgnores: ["**/.*"],
+            globPatterns: [],
+            navigateFallback: "",
+            runtimeCaching: [
+              {
+                urlPattern: (options) => {
+                  const isApi = options.url.hostname === "api.monkeytype.com";
+                  return options.sameOrigin && !isApi;
+                },
+                handler: "NetworkFirst",
+                options: {},
+              },
+              {
+                urlPattern: (options) => {
+                  //disable caching for version.json
+                  return options.url.pathname === "/version.json";
+                },
+                handler: "NetworkOnly",
+                options: {},
+              },
+            ],
+          },
+        }),
+        process.env.SENTRY
+          ? sentryVitePlugin({
+              authToken: process.env.SENTRY_AUTH_TOKEN,
+              org: "monkeytype",
+              project: "frontend",
+              release: {
+                name: clientVersion,
+              },
+              applicationKey: "monkeytype-frontend",
+            })
+          : null,
+        replace([
+          {
+            filter: ["src/ts/firebase.ts"],
+            replace: {
+              from: `"./constants/firebase-config.ts"`,
+              to: `"./constants/firebase-config-live.ts"`,
+            },
+          },
+          {
+            filter: ["src/email-handler.html"],
+            replace: {
+              from: `"./ts/constants/firebase-config"`,
+              to: `"./ts/constants/firebase-config-live"`,
+            },
+          },
+        ]),
+        UnpluginInjectPreload({
+          files: [
+            {
+              outputMatch: /css\/vendor.*\.css$/,
+              attributes: {
+                as: "style",
+                type: "text/css",
+                rel: "preload",
+                crossorigin: true,
+              },
+            },
+            {
+              outputMatch: /.*\.woff2$/,
+              attributes: {
+                as: "font",
+                type: "font/woff2",
+                rel: "preload",
+                crossorigin: true,
+              },
+            },
+          ],
+          injectTo: "head-prepend",
+        }),
+        minifyJson(),
+      ];
 
-  if (mode === "production") {
-    if (env.RECAPTCHA_SITE_KEY === undefined) {
-      throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
-    }
-    if (env.SENTRY && env.SENTRY_AUTH_TOKEN === undefined) {
-      throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
-    }
-    return mergeConfig(BASE_CONFIG, PROD_CONFIG(env));
-  } else {
-    return mergeConfig(BASE_CONFIG, DEV_CONFIG(env));
-  }
+  return {
+    plugins: [...plugins, ...additionalPlugins],
+    build: isDevelopment
+      ? {
+          outDir: "../dist",
+        }
+      : {
+          sourcemap: process.env.SENTRY,
+          emptyOutDir: true,
+          outDir: "../dist",
+          assetsInlineLimit: 0, //dont inline small files as data
+          rollupOptions: {
+            input: {
+              monkeytype: path.resolve(__dirname, "src/index.html"),
+              email: path.resolve(__dirname, "src/email-handler.html"),
+              privacy: path.resolve(__dirname, "src/privacy-policy.html"),
+              security: path.resolve(__dirname, "src/security-policy.html"),
+              terms: path.resolve(__dirname, "src/terms-of-service.html"),
+              404: path.resolve(__dirname, "src/404.html"),
+            },
+            output: {
+              assetFileNames: (assetInfo) => {
+                let extType = assetInfo.name.split(".").at(1);
+                if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+                  extType = "images";
+                }
+                if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
+                  return `webfonts/[name]-[hash].${extType}`;
+                }
+                return `${extType}/[name].[hash][extname]`;
+              },
+              chunkFileNames: "js/[name].[hash].js",
+              entryFileNames: "js/[name].[hash].js",
+              manualChunks: (id) => {
+                if (id.includes("@sentry")) {
+                  return "vendor-sentry";
+                }
+                if (id.includes("jquery")) {
+                  return "vendor-jquery";
+                }
+                if (id.includes("@firebase")) {
+                  return "vendor-firebase";
+                }
+                if (id.includes("monkeytype/packages")) {
+                  return "monkeytype-packages";
+                }
+                if (id.includes("node_modules")) {
+                  return "vendor";
+                }
+              },
+            },
+          },
+        },
+    server: {
+      open: process.env.SERVER_OPEN !== "false",
+      port: 3000,
+      host: process.env.BACKEND_URL !== undefined,
+      watch: {
+        //we rebuild the whole contracts package when a file changes
+        //so we only want to watch one file
+        ignored: [/.*\/packages\/contracts\/dist\/(?!configs).*/],
+      },
+    },
+    clearScreen: false,
+    root: "src",
+    publicDir: "../static",
+    css: {
+      devSourcemap: true,
+      postcss: {
+        plugins: [autoprefixer({})],
+      },
+      preprocessorOptions: {
+        scss: {
+          additionalData(source, fp) {
+            if (fp.endsWith("index.scss")) {
+              /** Enable for font awesome v6 */
+              /*
+          const fontawesomeClasses = getFontawesomeConfig();
+
+          //inject variables into sass context
+          $fontawesomeBrands: ${sassList(
+            fontawesomeClasses.brands
+          )};             
+          $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
+        */
+
+              const bypassFonts = isDevelopment
+                ? `
+                $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";
+                $previewFontsPath:"webfonts";`
+                : "";
+              const fonts = `
+              ${bypassFonts}
+              $fonts: (${getFontsConig()});
+              `;
+              return `
+              //inject variables into sass context
+              ${fonts}
+            
+              ${source}`;
+            } else {
+              return source;
+            }
+          },
+        },
+      },
+    },
+    optimizeDeps: {
+      include: ["jquery"],
+      exclude: ["@fortawesome/fontawesome-free"],
+    },
+  };
 });
 
 /** Enable for font awesome v6 */
@@ -98,4 +331,43 @@ export function getFontsConig() {
       .join("\n") +
     "\n"
   );
+}
+
+function pad(numbers, maxLength, fillString) {
+  return numbers.map((number) =>
+    number.toString().padStart(maxLength, fillString),
+  );
+}
+
+/** Enable for font awesome v6 */
+/*
+function sassList(values) {
+  return values.map((it) => `"${it}"`).join(",");
+}
+*/
+
+function getClientVersion(isDevelopment) {
+  if (isDevelopment) {
+    return "DEVELOPMENT_CLIENT";
+  }
+  const date = new Date();
+  const versionPrefix = pad(
+    [date.getFullYear(), date.getMonth() + 1, date.getDate()],
+    2,
+    "0",
+  ).join(".");
+  const versionSuffix = pad([date.getHours(), date.getMinutes()], 2, "0").join(
+    ".",
+  );
+  const version = [versionPrefix, versionSuffix].join("_");
+
+  try {
+    const commitHash = childProcess
+      .execSync("git rev-parse --short HEAD")
+      .toString();
+
+    return `${version}_${commitHash}`.replace(/\n/g, "");
+  } catch (e) {
+    return `${version}_unknown-hash`;
+  }
 }

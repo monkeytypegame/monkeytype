@@ -15,11 +15,14 @@ const __dirname = path.dirname(__filename);
  * A preview file only contains the characters needed to show the preview.
  * @returns
  */
-export function fontPreview(): Plugin {
+export function fontPreview(options?: { skip: boolean }): Plugin {
   return {
     name: "vite-plugin-webfonts-preview",
     apply: "build",
     async buildStart() {
+      if (options?.skip) {
+        console.log("Skipping creating webfonts preview in dev environment.");
+      }
       const start = performance.now();
       console.log("\nCreating webfonts preview...");
 
