@@ -407,6 +407,7 @@ export function restart(options = {} as RestartOptions): void {
 
 let lastInitError: Error | null = null;
 let rememberLazyMode: boolean;
+let showedLazyModeNotification: boolean = false;
 let testReinitCount = 0;
 
 async function init(): Promise<boolean> {
@@ -509,9 +510,11 @@ async function init(): Promise<boolean> {
     // normal mode
     if (Config.lazyMode && !allowLazyMode) {
       rememberLazyMode = true;
+      showedLazyModeNotification = true;
       Notifications.add("This language does not support lazy mode.", 0, {
         important: true,
       });
+
       UpdateConfig.setLazyMode(false, false);
     } else if (rememberLazyMode && !language.noLazyMode) {
       UpdateConfig.setLazyMode(true, true);
@@ -1622,7 +1625,10 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       ArabicLazyMode.set(eventValue as boolean);
     }
     if (eventValue === false) {
-      rememberLazyMode = false;
+      if (!showedLazyModeNotification) {
+        rememberLazyMode = false;
+      }
+      showedLazyModeNotification = false;
     }
   }
 });
