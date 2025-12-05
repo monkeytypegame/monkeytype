@@ -35,7 +35,7 @@ export default defineConfig(({ mode }): UserConfig => {
     if (env["RECAPTCHA_SITE_KEY"] === undefined) {
       throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
     }
-    if (env["SENTRY"] !== null && env["SENTRY_AUTH_TOKEN"] === undefined) {
+    if (env["SENTRY"] !== undefined && env["SENTRY_AUTH_TOKEN"] === undefined) {
       throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
     }
   }
@@ -149,7 +149,7 @@ export default defineConfig(({ mode }): UserConfig => {
         ],
       },
     }),
-    process.env["SENTRY"] !== null
+    process.env["SENTRY"] !== undefined
       ? (sentryVitePlugin({
           authToken: process.env["SENTRY_AUTH_TOKEN"],
           org: "monkeytype",
