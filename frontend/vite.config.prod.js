@@ -51,179 +51,181 @@ function sassList(values) {
 }
 */
 
-/** @type {import("vite").UserConfig} */
-export default {
-  plugins: [
-    envConfig({ isDevelopment: false, clientVersion: CLIENT_VERSION }),
-    languageHashes(),
-    fontawesomeSubset(),
-    versionFile({ clientVersion: CLIENT_VERSION }),
-    fontPreview(),
-    checker({
-      typescript: {
-        tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
-      },
-    }),
-    ViteMinifyPlugin({}),
-    VitePWA({
-      // injectRegister: "networkfirst",
-      injectRegister: null,
-      registerType: "autoUpdate",
-      manifest: {
-        short_name: "Monkeytype",
-        name: "Monkeytype",
-        start_url: "/",
-        icons: [
-          {
-            src: "/images/icons/maskable_icon_x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
+export default function (env) {
+  return (
+    /** @type {import("vite").UserConfig} */
+    {
+      plugins: [
+        envConfig({ isDevelopment: false, clientVersion: CLIENT_VERSION, env }),
+        languageHashes(),
+        fontawesomeSubset(),
+        versionFile({ clientVersion: CLIENT_VERSION }),
+        fontPreview(),
+        checker({
+          typescript: {
+            tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
           },
-          {
-            src: "/images/icons/general_icon_x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any",
+        }),
+        ViteMinifyPlugin({}),
+        VitePWA({
+          // injectRegister: "networkfirst",
+          injectRegister: null,
+          registerType: "autoUpdate",
+          manifest: {
+            short_name: "Monkeytype",
+            name: "Monkeytype",
+            start_url: "/",
+            icons: [
+              {
+                src: "/images/icons/maskable_icon_x512.png",
+                sizes: "512x512",
+                type: "image/png",
+                purpose: "maskable",
+              },
+              {
+                src: "/images/icons/general_icon_x512.png",
+                sizes: "512x512",
+                type: "image/png",
+                purpose: "any",
+              },
+            ],
+            background_color: "#323437",
+            display: "standalone",
+            theme_color: "#323437",
           },
-        ],
-        background_color: "#323437",
-        display: "standalone",
-        theme_color: "#323437",
-      },
-      manifestFilename: "manifest.json",
-      workbox: {
-        clientsClaim: true,
-        cleanupOutdatedCaches: true,
-        globIgnores: ["**/.*"],
-        globPatterns: [],
-        navigateFallback: "",
-        runtimeCaching: [
+          manifestFilename: "manifest.json",
+          workbox: {
+            clientsClaim: true,
+            cleanupOutdatedCaches: true,
+            globIgnores: ["**/.*"],
+            globPatterns: [],
+            navigateFallback: "",
+            runtimeCaching: [
+              {
+                urlPattern: (options) => {
+                  const isApi = options.url.hostname === "api.monkeytype.com";
+                  return options.sameOrigin && !isApi;
+                },
+                handler: "NetworkFirst",
+                options: {},
+              },
+              {
+                urlPattern: (options) => {
+                  //disable caching for version.json
+                  return options.url.pathname === "/version.json";
+                },
+                handler: "NetworkOnly",
+                options: {},
+              },
+            ],
+          },
+        }),
+        process.env.SENTRY
+          ? sentryVitePlugin({
+              authToken: process.env.SENTRY_AUTH_TOKEN,
+              org: "monkeytype",
+              project: "frontend",
+              release: {
+                name: CLIENT_VERSION,
+              },
+              applicationKey: "monkeytype-frontend",
+            })
+          : null,
+        replace([
           {
-            urlPattern: (options) => {
-              const isApi = options.url.hostname === "api.monkeytype.com";
-              return options.sameOrigin && !isApi;
+            filter: ["src/ts/firebase.ts"],
+            replace: {
+              from: `"./constants/firebase-config.ts"`,
+              to: `"./constants/firebase-config-live.ts"`,
             },
-            handler: "NetworkFirst",
-            options: {},
           },
           {
-            urlPattern: (options) => {
-              //disable caching for version.json
-              return options.url.pathname === "/version.json";
+            filter: ["src/email-handler.html"],
+            replace: {
+              from: `"./ts/constants/firebase-config"`,
+              to: `"./ts/constants/firebase-config-live"`,
             },
-            handler: "NetworkOnly",
-            options: {},
           },
-        ],
-      },
-    }),
-    process.env.SENTRY
-      ? sentryVitePlugin({
-          authToken: process.env.SENTRY_AUTH_TOKEN,
-          org: "monkeytype",
-          project: "frontend",
-          release: {
-            name: CLIENT_VERSION,
-          },
-          applicationKey: "monkeytype-frontend",
-        })
-      : null,
-    replace([
-      {
-        filter: ["src/ts/firebase.ts"],
-        replace: {
-          from: `"./constants/firebase-config.ts"`,
-          to: `"./constants/firebase-config-live.ts"`,
-        },
-      },
-      {
-        filter: ["src/email-handler.html"],
-        replace: {
-          from: `"./ts/constants/firebase-config"`,
-          to: `"./ts/constants/firebase-config-live"`,
-        },
-      },
-    ]),
-    UnpluginInjectPreload({
-      files: [
-        {
-          outputMatch: /css\/vendor.*\.css$/,
-          attributes: {
-            as: "style",
-            type: "text/css",
-            rel: "preload",
-            crossorigin: true,
-          },
-        },
-        {
-          outputMatch: /.*\.woff2$/,
-          attributes: {
-            as: "font",
-            type: "font/woff2",
-            rel: "preload",
-            crossorigin: true,
-          },
-        },
+        ]),
+        UnpluginInjectPreload({
+          files: [
+            {
+              outputMatch: /css\/vendor.*\.css$/,
+              attributes: {
+                as: "style",
+                type: "text/css",
+                rel: "preload",
+                crossorigin: true,
+              },
+            },
+            {
+              outputMatch: /.*\.woff2$/,
+              attributes: {
+                as: "font",
+                type: "font/woff2",
+                rel: "preload",
+                crossorigin: true,
+              },
+            },
+          ],
+          injectTo: "head-prepend",
+        }),
+        minifyJson(),
       ],
-      injectTo: "head-prepend",
-    }),
-    minifyJson(),
-  ],
-  build: {
-    sourcemap: process.env.SENTRY,
-    emptyOutDir: true,
-    outDir: "../dist",
-    assetsInlineLimit: 0, //dont inline small files as data
-    rollupOptions: {
-      input: {
-        monkeytype: path.resolve(__dirname, "src/index.html"),
-        email: path.resolve(__dirname, "src/email-handler.html"),
-        privacy: path.resolve(__dirname, "src/privacy-policy.html"),
-        security: path.resolve(__dirname, "src/security-policy.html"),
-        terms: path.resolve(__dirname, "src/terms-of-service.html"),
-        404: path.resolve(__dirname, "src/404.html"),
-      },
-      output: {
-        assetFileNames: (assetInfo) => {
-          let extType = assetInfo.name.split(".").at(1);
-          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
-            extType = "images";
-          }
-          if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
-            return `webfonts/[name]-[hash].${extType}`;
-          }
-          return `${extType}/[name].[hash][extname]`;
-        },
-        chunkFileNames: "js/[name].[hash].js",
-        entryFileNames: "js/[name].[hash].js",
-        manualChunks: (id) => {
-          if (id.includes("@sentry")) {
-            return "vendor-sentry";
-          }
-          if (id.includes("jquery")) {
-            return "vendor-jquery";
-          }
-          if (id.includes("@firebase")) {
-            return "vendor-firebase";
-          }
-          if (id.includes("monkeytype/packages")) {
-            return "monkeytype-packages";
-          }
-          if (id.includes("node_modules")) {
-            return "vendor";
-          }
+      build: {
+        sourcemap: process.env.SENTRY,
+        emptyOutDir: true,
+        outDir: "../dist",
+        assetsInlineLimit: 0, //dont inline small files as data
+        rollupOptions: {
+          input: {
+            monkeytype: path.resolve(__dirname, "src/index.html"),
+            email: path.resolve(__dirname, "src/email-handler.html"),
+            privacy: path.resolve(__dirname, "src/privacy-policy.html"),
+            security: path.resolve(__dirname, "src/security-policy.html"),
+            terms: path.resolve(__dirname, "src/terms-of-service.html"),
+            404: path.resolve(__dirname, "src/404.html"),
+          },
+          output: {
+            assetFileNames: (assetInfo) => {
+              let extType = assetInfo.name.split(".").at(1);
+              if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+                extType = "images";
+              }
+              if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
+                return `webfonts/[name]-[hash].${extType}`;
+              }
+              return `${extType}/[name].[hash][extname]`;
+            },
+            chunkFileNames: "js/[name].[hash].js",
+            entryFileNames: "js/[name].[hash].js",
+            manualChunks: (id) => {
+              if (id.includes("@sentry")) {
+                return "vendor-sentry";
+              }
+              if (id.includes("jquery")) {
+                return "vendor-jquery";
+              }
+              if (id.includes("@firebase")) {
+                return "vendor-firebase";
+              }
+              if (id.includes("monkeytype/packages")) {
+                return "monkeytype-packages";
+              }
+              if (id.includes("node_modules")) {
+                return "vendor";
+              }
+            },
+          },
         },
       },
-    },
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData(source, fp) {
-          if (fp.endsWith("index.scss")) {
-            /** Enable for font awesome v6 */
-            /*
+      css: {
+        preprocessorOptions: {
+          scss: {
+            additionalData(source, fp) {
+              if (fp.endsWith("index.scss")) {
+                /** Enable for font awesome v6 */
+                /*
           const fontawesomeClasses = getFontawesomeConfig();
 
           //inject variables into sass context
@@ -232,17 +234,19 @@ export default {
           )};             
           $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
         */
-            const fonts = `$fonts: (${getFontsConig()});`;
-            return `
+                const fonts = `$fonts: (${getFontsConig()});`;
+                return `
               //inject variables into sass context
               ${fonts}
             
               ${source}`;
-          } else {
-            return source;
-          }
+              } else {
+                return source;
+              }
+            },
+          },
         },
       },
-    },
-  },
-};
+    }
+  );
+}

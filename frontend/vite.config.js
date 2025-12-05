@@ -1,16 +1,10 @@
-import { defineConfig, mergeConfig } from "vite";
+import { defineConfig, mergeConfig, loadEnv } from "vite";
 import injectHTML from "vite-plugin-html-inject";
 import autoprefixer from "autoprefixer";
-import { config as dotenvConfig } from "dotenv";
 import PROD_CONFIG from "./vite.config.prod";
 import DEV_CONFIG from "./vite.config.dev";
 import MagicString from "magic-string";
 import { Fonts } from "./src/ts/constants/fonts";
-
-// Load environment variables based on NODE_ENV
-const envFile =
-  process.env.NODE_ENV === "production" ? ".env.production" : ".env";
-dotenvConfig({ path: envFile });
 
 /** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
@@ -59,26 +53,25 @@ const BASE_CONFIG = {
       plugins: [autoprefixer({})],
     },
   },
-  envDir: "../",
   optimizeDeps: {
     include: ["jquery"],
     exclude: ["@fortawesome/fontawesome-free"],
   },
 };
 
-export default defineConfig(({ command }) => {
-  if (command === "build") {
-    const envFileName =
-      process.env.NODE_ENV === "production" ? ".env.production" : ".env";
-    if (process.env.RECAPTCHA_SITE_KEY === undefined) {
-      throw new Error(`${envFileName}: RECAPTCHA_SITE_KEY is not defined`);
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+
+  if (mode === "production") {
+    if (env.RECAPTCHA_SITE_KEY === undefined) {
+      throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
     }
-    if (process.env.SENTRY && process.env.SENTRY_AUTH_TOKEN === undefined) {
-      throw new Error(`${envFileName}: SENTRY_AUTH_TOKEN is not defined`);
+    if (env.SENTRY && env.SENTRY_AUTH_TOKEN === undefined) {
+      throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
     }
-    return mergeConfig(BASE_CONFIG, PROD_CONFIG);
+    return mergeConfig(BASE_CONFIG, PROD_CONFIG(env));
   } else {
-    return mergeConfig(BASE_CONFIG, DEV_CONFIG);
+    return mergeConfig(BASE_CONFIG, DEV_CONFIG(env));
   }
 });
 

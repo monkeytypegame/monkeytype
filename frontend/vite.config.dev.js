@@ -5,38 +5,42 @@ import { getFontsConig } from "./vite.config";
 import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
 
-/** @type {import("vite").UserConfig} */
-export default {
-  plugins: [
-    envConfig({ isDevelopment: true }),
-    languageHashes({ skip: true }),
-    checker({
-      typescript: {
-        tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
-      },
-      oxlint: true,
-      eslint: {
-        lintCommand: `eslint "${path.resolve(__dirname, "./src/ts/**/*.ts")}"`,
-        watchPath: path.resolve(__dirname, "./src/"),
-      },
-      overlay: {
-        initialIsOpen: false,
-      },
-    }),
-    Inspect(),
-  ],
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `
+export default function (env) {
+  return (
+    /** @type {import("vite").UserConfig} */
+    {
+      plugins: [
+        envConfig({ isDevelopment: true, env }),
+        languageHashes({ skip: true }),
+        checker({
+          typescript: {
+            tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
+          },
+          oxlint: true,
+          eslint: {
+            lintCommand: `eslint "${path.resolve(__dirname, "./src/ts/**/*.ts")}"`,
+            watchPath: path.resolve(__dirname, "./src/"),
+          },
+          overlay: {
+            initialIsOpen: false,
+          },
+        }),
+        Inspect(),
+      ],
+      css: {
+        preprocessorOptions: {
+          scss: {
+            additionalData: `
         $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";
         $previewFontsPath:"webfonts";
         $fonts: (${getFontsConig()});
         `,
+          },
+        },
       },
-    },
-  },
-  build: {
-    outDir: "../dist",
-  },
-};
+      build: {
+        outDir: "../dist",
+      },
+    }
+  );
+}
