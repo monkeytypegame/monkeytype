@@ -16,7 +16,7 @@ export function languageHashes(options?: { skip: boolean }): Plugin {
     load(id) {
       if (id === resolvedVirtualModuleId) {
         if (options?.skip) {
-          console.log("Skipping language hashing environment.");
+          console.log("Skipping language hashing.");
         }
 
         const hashes: Record<string, string> = options?.skip ? {} : getHashes();
