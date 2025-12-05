@@ -44,7 +44,7 @@ export default defineConfig(({ mode }): UserConfig => {
   }
 
   return {
-    plugins: getPlugins({ isDevelopment, env }),
+    plugins: getPlugins({ isDevelopment, hasSentry, env }),
     build: getBuildOptions({ enableSourceMaps: hasSentry }),
     css: getCssOptions({ isDevelopment }),
     server: {
@@ -70,9 +70,11 @@ export default defineConfig(({ mode }): UserConfig => {
 function getPlugins({
   isDevelopment,
   env,
+  hasSentry,
 }: {
   isDevelopment: boolean;
   env: Record<string, string>;
+  hasSentry: boolean;
 }): PluginOption[] {
   const clientVersion = getClientVersion(isDevelopment);
 
@@ -160,9 +162,9 @@ function getPlugins({
         ],
       },
     }),
-    process.env["SENTRY"] !== undefined
+    hasSentry
       ? (sentryVitePlugin({
-          authToken: process.env["SENTRY_AUTH_TOKEN"],
+          authToken: env["SENTRY_AUTH_TOKEN"],
           org: "monkeytype",
           project: "frontend",
           release: {
