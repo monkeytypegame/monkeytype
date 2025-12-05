@@ -284,7 +284,7 @@ function getCssOptions({
     devSourcemap: true,
     postcss: {
       plugins: [
-        // @ts-expect-error TODO maybe update the plugin?
+        // @ts-expect-error  this is fine
         autoprefixer({}),
       ],
     },
