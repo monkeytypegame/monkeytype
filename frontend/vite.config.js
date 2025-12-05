@@ -1,11 +1,16 @@
 import { defineConfig, mergeConfig } from "vite";
 import injectHTML from "vite-plugin-html-inject";
 import autoprefixer from "autoprefixer";
-import "dotenv/config";
+import { config as dotenvConfig } from "dotenv";
 import PROD_CONFIG from "./vite.config.prod";
 import DEV_CONFIG from "./vite.config.dev";
 import MagicString from "magic-string";
 import { Fonts } from "./src/ts/constants/fonts";
+
+// Load environment variables based on NODE_ENV
+const envFile =
+  process.env.NODE_ENV === "production" ? ".env.production" : ".env";
+dotenvConfig({ path: envFile });
 
 /** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
@@ -63,8 +68,13 @@ const BASE_CONFIG = {
 
 export default defineConfig(({ command }) => {
   if (command === "build") {
+    const envFileName =
+      process.env.NODE_ENV === "production" ? ".env.production" : ".env";
     if (process.env.RECAPTCHA_SITE_KEY === undefined) {
-      throw new Error(".env: RECAPTCHA_SITE_KEY is not defined");
+      throw new Error(`${envFileName}: RECAPTCHA_SITE_KEY is not defined`);
+    }
+    if (process.env.SENTRY && process.env.SENTRY_AUTH_TOKEN === undefined) {
+      throw new Error(`${envFileName}: SENTRY_AUTH_TOKEN is not defined`);
     }
     return mergeConfig(BASE_CONFIG, PROD_CONFIG);
   } else {
