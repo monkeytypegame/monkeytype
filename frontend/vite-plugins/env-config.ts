@@ -41,8 +41,6 @@ export function envConfig(options: {
               clientVersion: options.clientVersion,
             };
 
-        //TODO remove after testing
-        console.log("### using config", JSON.stringify(envConfig));
         return `
           export const envConfig = ${JSON.stringify(envConfig)};
         `;

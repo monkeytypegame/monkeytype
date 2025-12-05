@@ -5,12 +5,12 @@ import {
   BuildEnvironmentOptions,
   PluginOption,
   Plugin,
+  CSSOptions,
 } from "vite";
 import path from "node:path";
 import injectHTML from "vite-plugin-html-inject";
 import childProcess from "child_process";
 import autoprefixer from "autoprefixer";
-import MagicString from "magic-string";
 import { Fonts } from "./src/ts/constants/fonts";
 import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
 import { fontPreview } from "./vite-plugins/font-preview";
@@ -18,6 +18,7 @@ import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
 import { minifyJson } from "./vite-plugins/minify-json";
 import { versionFile } from "./vite-plugins/version-file";
+import { jqueryInject } from "./vite-plugins/jquery-inject";
 import { checker } from "vite-plugin-checker";
 import Inspect from "vite-plugin-inspect";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
@@ -30,20 +31,52 @@ import { KnownFontName } from "@monkeytype/schemas/fonts";
 
 export default defineConfig(({ mode }): UserConfig => {
   const env = loadEnv(mode, process.cwd(), "");
+  const hasSentry = env["SENTRY"] !== undefined;
+  const isDevelopment = mode !== "production";
 
-  if (mode === "production") {
+  if (!isDevelopment) {
     if (env["RECAPTCHA_SITE_KEY"] === undefined) {
       throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
     }
-    if (env["SENTRY"] !== undefined && env["SENTRY_AUTH_TOKEN"] === undefined) {
+    if (hasSentry && env["SENTRY_AUTH_TOKEN"] === undefined) {
       throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
     }
   }
 
-  const isDevelopment = mode !== "production";
+  return {
+    plugins: getPlugins({ isDevelopment, env }),
+    build: getBuildOptions({ enableSourceMaps: hasSentry }),
+    css: getCssOptions({ isDevelopment }),
+    server: {
+      open: env["SERVER_OPEN"] !== "false",
+      port: 3000,
+      host: env["BACKEND_URL"] !== undefined,
+      watch: {
+        //we rebuild the whole contracts package when a file changes
+        //so we only want to watch one file
+        ignored: [/.*\/packages\/contracts\/dist\/(?!configs).*/],
+      },
+    },
+    clearScreen: false,
+    root: "src",
+    publicDir: "../static",
+    optimizeDeps: {
+      include: ["jquery"],
+      exclude: ["@fortawesome/fontawesome-free"],
+    },
+  };
+});
+
+function getPlugins({
+  isDevelopment,
+  env,
+}: {
+  isDevelopment: boolean;
+  env: Record<string, string>;
+}): PluginOption[] {
   const clientVersion = getClientVersion(isDevelopment);
 
-  const plugins: Plugin[] = [
+  const plugins: PluginOption[] = [
     envConfig({ isDevelopment, clientVersion, env }),
     languageHashes({ skip: isDevelopment }),
     checker({
@@ -63,35 +96,13 @@ export default defineConfig(({ mode }): UserConfig => {
           }
         : false,
     }),
-    {
-      name: "simple-jquery-inject",
-      async transform(src: string, id: string) {
-        if (id.endsWith(".ts")) {
-          //check if file has a jQuery or $() call
-          if (/(?:jQuery|\$)\([^)]*\)/.test(src)) {
-            const s = new MagicString(src);
-
-            //if file has "use strict"; at the top, add it below that line, if not, add it at the very top
-            if (src.startsWith(`"use strict";`)) {
-              s.appendRight(12, `\nimport $ from "jquery";`);
-            } else {
-              s.prepend(`import $ from "jquery";`);
-            }
-
-            return {
-              code: s.toString(),
-              map: s.generateMap({ hires: true, source: id }),
-            };
-          }
-        }
-        return;
-      },
-    },
+    jqueryInject(),
     injectHTML(),
   ];
 
-  const devPlugins: Plugin[] = [Inspect()];
-  const prodPlugins: (Plugin | PluginOption)[] = [
+  const devPlugins: PluginOption[] = [Inspect()];
+
+  const prodPlugins: PluginOption[] = [
     fontPreview(),
     fontawesomeSubset(),
     versionFile({ clientVersion }),
@@ -202,85 +213,85 @@ export default defineConfig(({ mode }): UserConfig => {
     minifyJson(),
   ];
 
+  return [...plugins, ...(isDevelopment ? devPlugins : prodPlugins)].filter(
+    (it) => it !== null,
+  );
+}
+
+function getBuildOptions({
+  enableSourceMaps,
+}: {
+  enableSourceMaps: boolean;
+}): BuildEnvironmentOptions {
   return {
-    plugins: [...plugins, ...(isDevelopment ? devPlugins : prodPlugins)].filter(
-      (it) => it !== null,
-    ),
-    build: {
-      sourcemap: process.env["SENTRY"],
-      emptyOutDir: true,
-      outDir: "../dist",
-      assetsInlineLimit: 0, //dont inline small files as data
-      rollupOptions: {
-        input: {
-          monkeytype: path.resolve(__dirname, "src/index.html"),
-          email: path.resolve(__dirname, "src/email-handler.html"),
-          privacy: path.resolve(__dirname, "src/privacy-policy.html"),
-          security: path.resolve(__dirname, "src/security-policy.html"),
-          terms: path.resolve(__dirname, "src/terms-of-service.html"),
-          404: path.resolve(__dirname, "src/404.html"),
-        },
-        output: {
-          assetFileNames: (assetInfo: { name: string }) => {
-            let extType = assetInfo.name.split(".").at(1) as string;
-            if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
-              extType = "images";
-            }
-            if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
-              return `webfonts/[name]-[hash].${extType}`;
-            }
-            return `${extType}/[name].[hash][extname]`;
-          },
-          chunkFileNames: "js/[name].[hash].js",
-          entryFileNames: "js/[name].[hash].js",
-          manualChunks: (id) => {
-            if (id.includes("@sentry")) {
-              return "vendor-sentry";
-            }
-            if (id.includes("jquery")) {
-              return "vendor-jquery";
-            }
-            if (id.includes("@firebase")) {
-              return "vendor-firebase";
-            }
-            if (id.includes("monkeytype/packages")) {
-              return "monkeytype-packages";
-            }
-            if (id.includes("node_modules")) {
-              return "vendor";
-            }
-            return;
-          },
-        },
+    sourcemap: enableSourceMaps,
+    emptyOutDir: true,
+    outDir: "../dist",
+    assetsInlineLimit: 0, //dont inline small files as data
+    rollupOptions: {
+      input: {
+        monkeytype: path.resolve(__dirname, "src/index.html"),
+        email: path.resolve(__dirname, "src/email-handler.html"),
+        privacy: path.resolve(__dirname, "src/privacy-policy.html"),
+        security: path.resolve(__dirname, "src/security-policy.html"),
+        terms: path.resolve(__dirname, "src/terms-of-service.html"),
+        404: path.resolve(__dirname, "src/404.html"),
       },
-    } as BuildEnvironmentOptions,
-    server: {
-      open: process.env["SERVER_OPEN"] !== "false",
-      port: 3000,
-      host: process.env["BACKEND_URL"] !== undefined,
-      watch: {
-        //we rebuild the whole contracts package when a file changes
-        //so we only want to watch one file
-        ignored: [/.*\/packages\/contracts\/dist\/(?!configs).*/],
+      output: {
+        assetFileNames: (assetInfo: { name: string }) => {
+          let extType = assetInfo.name.split(".").at(1) as string;
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+            extType = "images";
+          }
+          if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
+            return `webfonts/[name]-[hash].${extType}`;
+          }
+          return `${extType}/[name].[hash][extname]`;
+        },
+        chunkFileNames: "js/[name].[hash].js",
+        entryFileNames: "js/[name].[hash].js",
+        manualChunks: (id) => {
+          if (id.includes("@sentry")) {
+            return "vendor-sentry";
+          }
+          if (id.includes("jquery")) {
+            return "vendor-jquery";
+          }
+          if (id.includes("@firebase")) {
+            return "vendor-firebase";
+          }
+          if (id.includes("monkeytype/packages")) {
+            return "monkeytype-packages";
+          }
+          if (id.includes("node_modules")) {
+            return "vendor";
+          }
+          return;
+        },
       },
     },
-    clearScreen: false,
-    root: "src",
-    publicDir: "../static",
-    css: {
-      devSourcemap: true,
-      postcss: {
-        plugins: [
-          // @ts-expect-error TODO maybe update the plugin?
-          autoprefixer({}),
-        ],
-      },
-      preprocessorOptions: {
-        scss: {
-          additionalData(source, fp) {
-            if (fp.endsWith("index.scss")) {
-              /** Enable for font awesome v6 */
-              /*
+  } as BuildEnvironmentOptions;
+}
+
+function getCssOptions({
+  isDevelopment,
+}: {
+  isDevelopment: boolean;
+}): CSSOptions {
+  return {
+    devSourcemap: true,
+    postcss: {
+      plugins: [
+        // @ts-expect-error TODO maybe update the plugin?
+        autoprefixer({}),
+      ],
+    },
+    preprocessorOptions: {
+      scss: {
+        additionalData(source, fp) {
+          if (fp.endsWith("index.scss")) {
+            /** Enable for font awesome v6 */
+            /*
                 const fontawesomeClasses = getFontawesomeConfig();
 
                 //inject variables into sass context
@@ -290,35 +301,30 @@ export default defineConfig(({ mode }): UserConfig => {
                 $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
               */
 
-              const bypassFonts = isDevelopment
-                ? `
+            const bypassFonts = isDevelopment
+              ? `
                 $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";
                 $previewFontsPath:"webfonts";`
-                : "";
-              const fonts = `
+              : "";
+            const fonts = `
               ${bypassFonts}
               $fonts: (${getFontsConfig()});
               `;
-              return `
+            return `
               //inject variables into sass context
               ${fonts}
             
               ${source}`;
-            } else {
-              return source;
-            }
-          },
+          } else {
+            return source;
+          }
         },
       },
     },
-    optimizeDeps: {
-      include: ["jquery"],
-      exclude: ["@fortawesome/fontawesome-free"],
-    },
   };
-});
+}
 
-export function getFontsConfig(): string {
+function getFontsConfig(): string {
   return (
     "\n" +
     Object.keys(Fonts)
