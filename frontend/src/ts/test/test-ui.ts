@@ -217,7 +217,7 @@ export function updateActiveElement(
     | { direction: "forward" | "back"; initial?: undefined }
     | { direction?: undefined; initial: true },
 ): void {
-  requestDebouncedAnimationFrame("test-ui.updateActiveElement", () => {
+  requestDebouncedAnimationFrame("test-ui.updateActiveElement", async () => {
     const { direction, initial } = options;
 
     let previousActiveWordTop: number | null = null;
@@ -251,10 +251,6 @@ export function updateActiveElement(
 
     updateWordsInputPosition();
 
-    if (!initial && Config.tapeMode !== "off") {
-      void scrollTape();
-    }
-
     if (previousActiveWordTop === null) return;
 
     const isTimedTest =
@@ -265,8 +261,12 @@ export function updateActiveElement(
     if (isTimedTest || !Config.showAllLines) {
       const newActiveWordTop = newActiveWord.offsetTop;
       if (newActiveWordTop > previousActiveWordTop) {
-        void lineJump(previousActiveWordTop);
+        await lineJump(previousActiveWordTop);
       }
+    }
+
+    if (!initial && Config.tapeMode !== "off") {
+      await scrollTape();
     }
   });
 }
@@ -942,7 +942,7 @@ export async function updateWordLetters({
         if (!Config.showAllLines) {
           const wordTopAfterUpdate = wordAtIndex.offsetTop;
           if (wordTopAfterUpdate > activeWordTop) {
-            void lineJump(activeWordTop, true);
+            await lineJump(activeWordTop, true);
           }
         }
       }
@@ -1210,14 +1210,13 @@ export async function lineJump(
   currentTop: number,
   force = false,
 ): Promise<void> {
-  const { resolve, promise } = Misc.promiseWithResolvers();
   //last word of the line
   if (currentTestLine > 0 || force) {
     const hideBound = currentTop;
 
     const activeWordEl = getActiveWordElement();
     if (!activeWordEl) {
-      resolve();
+      // resolve();
       return;
     }
 
@@ -1244,10 +1243,9 @@ export async function lineJump(
     }
 
     if (lastElementIndexToRemove === undefined) {
-      resolve();
       currentTestLine++;
       updateWordsWrapperHeight();
-      return promise;
+      return;
     }
 
     currentLinesJumping++;
@@ -1265,29 +1263,24 @@ export async function lineJump(
 
     if (Config.smoothLineScroll) {
       lineTransition = true;
-      animate(wordsEl, {
+      await Misc.promiseAnimate(wordsEl, {
         marginTop: newMarginTop,
         duration,
-        onComplete: () => {
-          currentLinesJumping = 0;
-          activeWordTop = activeWordEl.offsetTop;
-          activeWordHeight = activeWordEl.offsetHeight;
-          removeTestElements(lastElementIndexToRemove);
-          wordsEl.style.marginTop = "0";
-          lineTransition = false;
-          resolve();
-        },
       });
+      currentLinesJumping = 0;
+      activeWordTop = activeWordEl.offsetTop;
+      activeWordHeight = activeWordEl.offsetHeight;
+      removeTestElements(lastElementIndexToRemove);
+      wordsEl.style.marginTop = "0";
+      lineTransition = false;
     } else {
       currentLinesJumping = 0;
       removeTestElements(lastElementIndexToRemove);
-      resolve();
     }
   }
   currentTestLine++;
   updateWordsWrapperHeight();
-
-  return promise;
+  return;
 }
 
 export function setRightToLeft(isEnabled: boolean): void {
