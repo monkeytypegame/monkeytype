@@ -1,4 +1,4 @@
-name: Formatting check
+name: Check formatting
 
 env:
   PNPM_VERSION: "9.6.0"
