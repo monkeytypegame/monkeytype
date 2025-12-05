@@ -31,21 +31,21 @@ import { KnownFontName } from "@monkeytype/schemas/fonts";
 
 export default defineConfig(({ mode }): UserConfig => {
   const env = loadEnv(mode, process.cwd(), "");
-  const hasSentry = env["SENTRY"] !== undefined;
+  const useSentry = env["SENTRY"] !== undefined;
   const isDevelopment = mode !== "production";
 
   if (!isDevelopment) {
     if (env["RECAPTCHA_SITE_KEY"] === undefined) {
       throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
     }
-    if (hasSentry && env["SENTRY_AUTH_TOKEN"] === undefined) {
+    if (useSentry && env["SENTRY_AUTH_TOKEN"] === undefined) {
       throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
     }
   }
 
   return {
-    plugins: getPlugins({ isDevelopment, hasSentry, env }),
-    build: getBuildOptions({ enableSourceMaps: hasSentry }),
+    plugins: getPlugins({ isDevelopment, useSentry: useSentry, env }),
+    build: getBuildOptions({ enableSourceMaps: useSentry }),
     css: getCssOptions({ isDevelopment }),
     server: {
       open: env["SERVER_OPEN"] !== "false",
@@ -70,11 +70,11 @@ export default defineConfig(({ mode }): UserConfig => {
 function getPlugins({
   isDevelopment,
   env,
-  hasSentry,
+  useSentry,
 }: {
   isDevelopment: boolean;
   env: Record<string, string>;
-  hasSentry: boolean;
+  useSentry: boolean;
 }): PluginOption[] {
   const clientVersion = getClientVersion(isDevelopment);
 
@@ -162,7 +162,7 @@ function getPlugins({
         ],
       },
     }),
-    hasSentry
+    useSentry
       ? (sentryVitePlugin({
           authToken: env["SENTRY_AUTH_TOKEN"],
           org: "monkeytype",
