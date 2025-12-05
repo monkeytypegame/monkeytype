@@ -9,15 +9,11 @@ import { fontawesomeSubset as createFontawesomeSubset } from "fontawesome-subset
  * @param options
  * @returns
  */
-export function fontawesomeSubset(options?: { skip: boolean }): Plugin {
+export function fontawesomeSubset(): Plugin {
   return {
     name: "vite-plugin-fontawesome-subset",
     apply: "build",
     async buildStart() {
-      if (options?.skip) {
-        console.log("Skipping fontawesome subset creation in dev environment.");
-        return;
-      }
       const start = performance.now();
       console.log("\nCreating fontawesome subset...");
 

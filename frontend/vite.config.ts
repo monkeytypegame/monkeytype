@@ -1,4 +1,11 @@
-import { defineConfig, loadEnv } from "vite";
+import {
+  defineConfig,
+  loadEnv,
+  UserConfig,
+  BuildEnvironmentOptions,
+  PluginOption,
+  Plugin,
+} from "vite";
 import path from "node:path";
 import injectHTML from "vite-plugin-html-inject";
 import childProcess from "child_process";
@@ -19,28 +26,26 @@ import { sentryVitePlugin } from "@sentry/vite-plugin";
 import replace from "vite-plugin-filter-replace";
 // eslint-disable-next-line import/no-unresolved
 import UnpluginInjectPreload from "unplugin-inject-preload/vite";
+import { KnownFontName } from "@monkeytype/schemas/fonts";
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode }): UserConfig => {
   const env = loadEnv(mode, process.cwd(), "");
 
   if (mode === "production") {
-    if (env.RECAPTCHA_SITE_KEY === undefined) {
+    if (env["RECAPTCHA_SITE_KEY"] === undefined) {
       throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
     }
-    if (env.SENTRY && env.SENTRY_AUTH_TOKEN === undefined) {
+    if (env["SENTRY"] !== null && env["SENTRY_AUTH_TOKEN"] === undefined) {
       throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
     }
   }
 
   const isDevelopment = mode !== "production";
-  const clientVersion = getClientVersion();
+  const clientVersion = getClientVersion(isDevelopment);
 
-  const plugins = [
+  const plugins: Plugin[] = [
     envConfig({ isDevelopment, clientVersion, env }),
     languageHashes({ skip: isDevelopment }),
-    fontawesomeSubset({ skip: isDevelopment }),
-    versionFile({ clientVersion, skip: isDevelopment }),
-    fontPreview({ skip: isDevelopment }),
     checker({
       typescript: {
         tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
@@ -60,7 +65,7 @@ export default defineConfig(({ mode }) => {
     }),
     {
       name: "simple-jquery-inject",
-      async transform(src, id) {
+      async transform(src: string, id: string) {
         if (id.endsWith(".ts")) {
           //check if file has a jQuery or $() call
           if (/(?:jQuery|\$)\([^)]*\)/.test(src)) {
@@ -79,129 +84,134 @@ export default defineConfig(({ mode }) => {
             };
           }
         }
+        return;
       },
     },
     injectHTML(),
   ];
 
-  const additionalPlugins = isDevelopment
-    ? [Inspect()]
-    : [
-        ViteMinifyPlugin(),
-        VitePWA({
-          // injectRegister: "networkfirst",
-          injectRegister: null,
-          registerType: "autoUpdate",
-          manifest: {
-            short_name: "Monkeytype",
-            name: "Monkeytype",
-            start_url: "/",
-            icons: [
-              {
-                src: "/images/icons/maskable_icon_x512.png",
-                sizes: "512x512",
-                type: "image/png",
-                purpose: "maskable",
-              },
-              {
-                src: "/images/icons/general_icon_x512.png",
-                sizes: "512x512",
-                type: "image/png",
-                purpose: "any",
-              },
-            ],
-            background_color: "#323437",
-            display: "standalone",
-            theme_color: "#323437",
-          },
-          manifestFilename: "manifest.json",
-          workbox: {
-            clientsClaim: true,
-            cleanupOutdatedCaches: true,
-            globIgnores: ["**/.*"],
-            globPatterns: [],
-            navigateFallback: "",
-            runtimeCaching: [
-              {
-                urlPattern: (options) => {
-                  const isApi = options.url.hostname === "api.monkeytype.com";
-                  return options.sameOrigin && !isApi;
-                },
-                handler: "NetworkFirst",
-                options: {},
-              },
-              {
-                urlPattern: (options) => {
-                  //disable caching for version.json
-                  return options.url.pathname === "/version.json";
-                },
-                handler: "NetworkOnly",
-                options: {},
-              },
-            ],
-          },
-        }),
-        process.env.SENTRY
-          ? sentryVitePlugin({
-              authToken: process.env.SENTRY_AUTH_TOKEN,
-              org: "monkeytype",
-              project: "frontend",
-              release: {
-                name: clientVersion,
-              },
-              applicationKey: "monkeytype-frontend",
-            })
-          : null,
-        replace([
+  const devPlugins: Plugin[] = [Inspect()];
+  const prodPlugins: (Plugin | PluginOption)[] = [
+    fontPreview(),
+    fontawesomeSubset(),
+    versionFile({ clientVersion }),
+    ViteMinifyPlugin(),
+    VitePWA({
+      // injectRegister: "networkfirst",
+      injectRegister: null,
+      registerType: "autoUpdate",
+      manifest: {
+        short_name: "Monkeytype",
+        name: "Monkeytype",
+        start_url: "/",
+        icons: [
           {
-            filter: ["src/ts/firebase.ts"],
-            replace: {
-              from: `"./constants/firebase-config.ts"`,
-              to: `"./constants/firebase-config-live.ts"`,
-            },
+            src: "/images/icons/maskable_icon_x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
           },
           {
-            filter: ["src/email-handler.html"],
-            replace: {
-              from: `"./ts/constants/firebase-config"`,
-              to: `"./ts/constants/firebase-config-live"`,
-            },
+            src: "/images/icons/general_icon_x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
           },
-        ]),
-        UnpluginInjectPreload({
-          files: [
-            {
-              outputMatch: /css\/vendor.*\.css$/,
-              attributes: {
-                as: "style",
-                type: "text/css",
-                rel: "preload",
-                crossorigin: true,
-              },
+        ],
+        background_color: "#323437",
+        display: "standalone",
+        theme_color: "#323437",
+      },
+      manifestFilename: "manifest.json",
+      workbox: {
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
+        globIgnores: ["**/.*"],
+        globPatterns: [],
+        navigateFallback: "",
+        runtimeCaching: [
+          {
+            urlPattern: (options) => {
+              const isApi = options.url.hostname === "api.monkeytype.com";
+              return options.sameOrigin && !isApi;
             },
-            {
-              outputMatch: /.*\.woff2$/,
-              attributes: {
-                as: "font",
-                type: "font/woff2",
-                rel: "preload",
-                crossorigin: true,
-              },
+            handler: "NetworkFirst",
+            options: {},
+          },
+          {
+            urlPattern: (options) => {
+              //disable caching for version.json
+              return options.url.pathname === "/version.json";
             },
-          ],
-          injectTo: "head-prepend",
-        }),
-        minifyJson(),
-      ];
+            handler: "NetworkOnly",
+            options: {},
+          },
+        ],
+      },
+    }),
+    process.env["SENTRY"] !== null
+      ? (sentryVitePlugin({
+          authToken: process.env["SENTRY_AUTH_TOKEN"],
+          org: "monkeytype",
+          project: "frontend",
+          release: {
+            name: clientVersion,
+          },
+          applicationKey: "monkeytype-frontend",
+        }) as Plugin)
+      : null,
+    replace([
+      {
+        filter: ["src/ts/firebase.ts"],
+        replace: {
+          from: `"./constants/firebase-config.ts"`,
+          to: `"./constants/firebase-config-live.ts"`,
+        },
+      },
+      {
+        filter: ["src/email-handler.html"],
+        replace: {
+          from: `"./ts/constants/firebase-config"`,
+          to: `"./ts/constants/firebase-config-live"`,
+        },
+      },
+    ]),
+    UnpluginInjectPreload({
+      files: [
+        {
+          outputMatch: /css\/vendor.*\.css$/,
+          attributes: {
+            as: "style",
+            type: "text/css",
+            rel: "preload",
+            crossorigin: true,
+          },
+        },
+        {
+          outputMatch: /.*\.woff2$/,
+          attributes: {
+            as: "font",
+            type: "font/woff2",
+            rel: "preload",
+            crossorigin: true,
+          },
+        },
+      ],
+      injectTo: "head-prepend",
+    }),
+    minifyJson(),
+  ];
 
   return {
-    plugins: [...plugins, ...additionalPlugins],
+    plugins: [...plugins, ...(isDevelopment ? devPlugins : prodPlugins)].filter(
+      (it) => it !== null,
+    ),
     build: isDevelopment
-      ? {
+      ? ({
           outDir: "../dist",
-        }
-      : {
-          sourcemap: process.env.SENTRY,
+        } as BuildEnvironmentOptions)
+      : ({
+          sourcemap: process.env["SENTRY"],
           emptyOutDir: true,
           outDir: "../dist",
           assetsInlineLimit: 0, //dont inline small files as data
@@ -215,8 +225,8 @@ export default defineConfig(({ mode }) => {
               404: path.resolve(__dirname, "src/404.html"),
             },
             output: {
-              assetFileNames: (assetInfo) => {
-                let extType = assetInfo.name.split(".").at(1);
+              assetFileNames: (assetInfo: { name: string }) => {
+                let extType = assetInfo.name.split(".").at(1) as string;
                 if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
                   extType = "images";
                 }
@@ -243,14 +253,15 @@ export default defineConfig(({ mode }) => {
                 if (id.includes("node_modules")) {
                   return "vendor";
                 }
+                return;
               },
             },
           },
-        },
+        } as BuildEnvironmentOptions),
     server: {
-      open: process.env.SERVER_OPEN !== "false",
+      open: process.env["SERVER_OPEN"] !== "false",
       port: 3000,
-      host: process.env.BACKEND_URL !== undefined,
+      host: process.env["BACKEND_URL"] !== undefined,
       watch: {
         //we rebuild the whole contracts package when a file changes
         //so we only want to watch one file
@@ -263,7 +274,10 @@ export default defineConfig(({ mode }) => {
     css: {
       devSourcemap: true,
       postcss: {
-        plugins: [autoprefixer({})],
+        plugins: [
+          // @ts-expect-error TODO maybe update the plugin?
+          autoprefixer({}),
+        ],
       },
       preprocessorOptions: {
         scss: {
@@ -271,14 +285,14 @@ export default defineConfig(({ mode }) => {
             if (fp.endsWith("index.scss")) {
               /** Enable for font awesome v6 */
               /*
-          const fontawesomeClasses = getFontawesomeConfig();
+                const fontawesomeClasses = getFontawesomeConfig();
 
-          //inject variables into sass context
-          $fontawesomeBrands: ${sassList(
-            fontawesomeClasses.brands
-          )};             
-          $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
-        */
+                //inject variables into sass context
+                $fontawesomeBrands: ${sassList(
+                  fontawesomeClasses.brands
+                )};             
+                $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
+              */
 
               const bypassFonts = isDevelopment
                 ? `
@@ -287,7 +301,7 @@ export default defineConfig(({ mode }) => {
                 : "";
               const fonts = `
               ${bypassFonts}
-              $fonts: (${getFontsConig()});
+              $fonts: (${getFontsConfig()});
               `;
               return `
               //inject variables into sass context
@@ -315,13 +329,13 @@ function sassList(values) {
 }
 */
 
-export function getFontsConig() {
+export function getFontsConfig(): string {
   return (
     "\n" +
     Object.keys(Fonts)
       .sort()
-      .map((name) => {
-        const config = Fonts[name];
+      .map((name: string) => {
+        const config = Fonts[name as KnownFontName];
         if (config.systemFont === true) return "";
         return `"${name.replaceAll("_", " ")}": (
         "src": "${config.fileName}",
@@ -333,7 +347,11 @@ export function getFontsConig() {
   );
 }
 
-function pad(numbers, maxLength, fillString) {
+function pad(
+  numbers: number[],
+  maxLength: number,
+  fillString: string,
+): string[] {
   return numbers.map((number) =>
     number.toString().padStart(maxLength, fillString),
   );
@@ -346,7 +364,7 @@ function sassList(values) {
 }
 */
 
-function getClientVersion(isDevelopment) {
+function getClientVersion(isDevelopment: boolean): string {
   if (isDevelopment) {
     return "DEVELOPMENT_CLIENT";
   }
