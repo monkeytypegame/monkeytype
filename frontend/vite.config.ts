@@ -92,11 +92,9 @@ function getPlugins({
             watchPath: path.resolve(__dirname, "./src/"),
           }
         : false,
-      overlay: isDevelopment
-        ? {
-            initialIsOpen: false,
-          }
-        : false,
+      overlay: {
+        initialIsOpen: false,
+      },
     }),
     jqueryInject(),
     injectHTML(),
