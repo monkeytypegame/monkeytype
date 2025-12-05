@@ -49,36 +49,13 @@ jobs:
                 pull_number: context.payload.pull_request.number,
               }
             );
-            const files = changedFiles.filter(file=> file.status !== "removed").map(file => file.filename);
-            
-            // Separate TS/JS files from other files
-            const tsJsFiles = files.filter(file => /\.(ts|js|tsx|jsx)$/.test(file));
-            const otherFiles = files.filter(file => !/\.(ts|js|tsx|jsx)$/.test(file));
-            
-            return JSON.stringify({ tsJsFiles, otherFiles });
+            return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
 
-      - name: Format TypeScript/JavaScript files with oxfmt
+      - name: Fix formatting
         run: |
-          FILES_JSON='${{ steps.get-changed-files.outputs.result }}'
-          TS_JS_FILES=$(echo $FILES_JSON | jq -r '.tsJsFiles[]' | tr '\n' ' ')
-          
-          if [ -n "$TS_JS_FILES" ] && [ "$TS_JS_FILES" != " " ]; then
-            echo "Formatting TS/JS files with oxfmt: $TS_JS_FILES"
-            pnpm oxfmt $TS_JS_FILES
-          else
-            echo "No TypeScript/JavaScript files to format"
-          fi
-
-      - name: Format other files with prettier
-        run: |
-          FILES_JSON='${{ steps.get-changed-files.outputs.result }}'
-          OTHER_FILES=$(echo $FILES_JSON | jq -r '.otherFiles[]' | tr '\n' ' ')
-          
-          if [ -n "$OTHER_FILES" ] && [ "$OTHER_FILES" != " " ]; then
-            echo "Formatting other files with prettier: $OTHER_FILES"
-            pnpm prettier --write $OTHER_FILES
-          else
-            echo "No other files to format"
+          CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
+          if [ -n "$CHANGED_FILES" ]; then
+            pnpm oxfmt $CHANGED_FILES --ignore-path .oxfmtignore --no-error-on-unmatched-pattern && pnpm prettier $CHANGED_FILES --write --log-level=warn --no-error-on-unmatched-pattern
           fi
 
       - name: Commit changes
