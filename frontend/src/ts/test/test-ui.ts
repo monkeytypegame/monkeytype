@@ -153,14 +153,10 @@ const wordsWrapperEl = document.querySelector(
 ) as HTMLElement;
 
 export let activeWordTop = 0;
+export let activeWordHeight = 0;
 export let lineTransition = false;
 export let currentTestLine = 0;
 export let resultCalculating = false;
-
-export function setActiveWordTop(): void {
-  const activeWord = getActiveWordElement();
-  activeWordTop = activeWord?.offsetTop ?? 0;
-}
 
 export function setResultCalculating(val: boolean): void {
   resultCalculating = val;
@@ -250,6 +246,7 @@ export function updateActiveElement(
     newActiveWord.classList.remove("typed");
 
     activeWordTop = newActiveWord.offsetTop;
+    activeWordHeight = newActiveWord.offsetHeight;
     console.log("activewordtopupdated");
 
     updateWordsInputPosition();
@@ -1274,6 +1271,7 @@ export async function lineJump(
         onComplete: () => {
           currentLinesJumping = 0;
           activeWordTop = activeWordEl.offsetTop;
+          activeWordHeight = activeWordEl.offsetHeight;
           removeTestElements(lastElementIndexToRemove);
           wordsEl.style.marginTop = "0";
           lineTransition = false;
@@ -1732,7 +1730,10 @@ function updateLiveStatsColor(value: TimerColor): void {
   }
 }
 
-export function getActiveWordTopWithDifferentData(data: string): number {
+export function getActiveWordTopAndHeightWithDifferentData(data: string): {
+  top: number;
+  height: number;
+} {
   const activeWord = getActiveWordElement();
 
   if (!activeWord) throw new Error("No active word element found");
@@ -1748,11 +1749,12 @@ export function getActiveWordTopWithDifferentData(data: string): number {
   activeWord.append(...nodes);
 
   const top = activeWord.offsetTop;
+  const height = activeWord.offsetHeight;
   for (const node of nodes) {
     node.remove();
   }
 
-  return top;
+  return { top, height };
 }
 
 // this means input, delete or composition

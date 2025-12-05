@@ -88,11 +88,16 @@ export function onBeforeInsertText(data: string): boolean {
     const pendingWordData = TestUI.pendingWordData.get(
       TestState.activeWordIndex,
     );
-    const topAfterAppend = TestUI.getActiveWordTopWithDifferentData(
-      (pendingWordData ?? TestInput.input.current) + data,
-    );
-    const wordJumped = topAfterAppend > TestUI.activeWordTop;
-    if (wordJumped) {
+    const { top: topAfterAppend, height: heightAfterAppend } =
+      TestUI.getActiveWordTopAndHeightWithDifferentData(
+        (pendingWordData ?? TestInput.input.current) + data,
+      );
+    if (topAfterAppend > TestUI.activeWordTop) {
+      //word jumped to next line
+      return true;
+    }
+    if (heightAfterAppend > TestUI.activeWordHeight) {
+      // letters wrapped to next line
       return true;
     }
   }
