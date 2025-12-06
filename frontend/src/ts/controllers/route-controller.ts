@@ -314,6 +314,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Subscribe to navigation events from modules that can't directly import navigate
 // due to circular dependency constraints
-NavigationEvent.subscribe((url, options) => {
-  void navigate(url, options);
+NavigationEvent.subscribe((event) => {
+  void navigate(event.url, event);
 });
