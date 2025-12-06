@@ -638,6 +638,11 @@ export async function playTimeWarning(): Promise<void> {
   soundToPlay.play();
 }
 
+export async function clearAllSounds(): Promise<void> {
+  const Howl = (await gethowler()).Howler;
+  Howl.stop();
+}
+
 function playNote(
   codeOverride?: string,
   oscillatorTypeOverride?: SupportedOscillatorTypes,
