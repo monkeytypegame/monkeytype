@@ -1180,10 +1180,19 @@ export async function finish(difficultyFailed = false): Promise<void> {
         const currentWordLength = TestWords.words.get(i).length;
         const currentInputLength =
           Strings.splitIntoCharacters(history[i] ?? "")?.length ?? 0;
-        historyLength +=
-          currentInputLength <= currentWordLength
-            ? currentInputLength
-            : currentWordLength;
+
+        if (currentInputLength <= currentWordLength) {
+          historyLength += currentInputLength;
+
+          if (
+            i === history.length - 1 &&
+            currentInputLength === currentWordLength
+          ) {
+            historyLength += 1;
+          }
+        } else {
+          historyLength += currentWordLength;
+        }
       }
 
       historyLength += i - 1;
@@ -1197,7 +1206,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       });
 
       let newText = CustomText.getCustomText(customTextName, true).join(" ");
-      newText = newText.slice(newProgress).trim();
+      newText = newText.slice(newProgress);
       CustomText.setText(newText.split(" "));
     } else {
       // They finished the test
