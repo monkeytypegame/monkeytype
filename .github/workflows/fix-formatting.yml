@@ -33,8 +33,8 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Install formatter
-        run: pnpm install -D -w prettier
+      - name: Install formatters
+        run: pnpm install -D -w prettier oxfmt
 
       - name: Get changed files
         id: get-changed-files
@@ -51,12 +51,11 @@ jobs:
             );
             return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
 
-
       - name: Fix formatting
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then
-            pnpm prettier --write $CHANGED_FILES
+            pnpm oxfmt $CHANGED_FILES --ignore-path .oxfmtignore --no-error-on-unmatched-pattern && pnpm prettier $CHANGED_FILES --write --log-level=warn -u --no-error-on-unmatched-pattern
           fi
 
       - name: Commit changes

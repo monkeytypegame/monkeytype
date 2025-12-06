@@ -9,7 +9,3 @@ dist
 build
 *.md
 pnpm-lock.yaml
-*.ts
-*.js
-*.tsx
-*.jsx
