@@ -125,11 +125,11 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
 }
 
 function getSavedText(name: string, long: boolean): string {
-  let text = CustomText.getCustomText(name, long);
+  let text = CustomText.getCustomText(name, long).join(" ");
   if (long) {
     text = text.slice(CustomText.getCustomTextLongProgress(name));
   }
-  return text.join(" ");
+  return text;
 }
 
 async function setup(): Promise<void> {

@@ -1172,7 +1172,31 @@ export async function finish(difficultyFailed = false): Promise<void> {
     ) {
       // They bailed out
 
-      const historyLength = TestInput.input.getHistory()?.length;
+      const history = TestInput.input.getHistory();
+      let historyLength = 0;
+      let i = 0;
+
+      for (; i < history.length; i++) {
+        const currentWordLength = TestWords.words.get(i).length;
+        const currentInputLength =
+          Strings.splitIntoCharacters(history[i] ?? "")?.length ?? 0;
+
+        if (currentInputLength <= currentWordLength) {
+          historyLength += currentInputLength;
+
+          if (
+            i === history.length - 1 &&
+            currentInputLength === currentWordLength
+          ) {
+            historyLength += 1;
+          }
+        } else {
+          historyLength += currentWordLength;
+        }
+      }
+
+      historyLength += i - 1;
+
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
@@ -1181,9 +1205,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
         important: true,
       });
 
-      let newText = CustomText.getCustomText(customTextName, true);
+      let newText = CustomText.getCustomText(customTextName, true).join(" ");
       newText = newText.slice(newProgress);
-      CustomText.setText(newText);
+      CustomText.setText(newText.split(" "));
     } else {
       // They finished the test
       CustomText.setCustomTextLongProgress(customTextName, 0);
