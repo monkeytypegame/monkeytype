@@ -1177,7 +1177,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
       let i = 0;
 
       for (; i < history.length; i++) {
-        historyLength += Strings.splitIntoCharacters(history[i] ?? "")?.length;
+        const currentWordLength = TestWords.words.get(i).length;
+        const currentInputLength =
+          Strings.splitIntoCharacters(history[i] ?? "")?.length ?? 0;
+        historyLength +=
+          currentInputLength <= currentWordLength
+            ? currentInputLength
+            : currentWordLength;
       }
 
       historyLength += i - 1;
