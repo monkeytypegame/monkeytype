@@ -392,7 +392,7 @@ TribeSocket.in.room.left(() => {
   updateState(1);
   TribePageMenu.enableButtons();
   if (!$(".pageTribe").hasClass("active")) {
-    NavigationEvent.dispatch("/tribe");
+    NavigationEvent.dispatch({ url: "/tribe" });
   }
   TribeCarets.destroyAll();
   TribeSound.play("leave");
@@ -521,9 +521,7 @@ TribeSocket.in.room.initRace((data) => {
   } else {
     //TODO update lobby bars
     if (ActivePage.get() !== "tribe") {
-      NavigationEvent.dispatch("/tribe", {
-        tribeOverride: true,
-      });
+      NavigationEvent.dispatch({ url: "/tribe", tribeOverride: true });
     }
     TribeBars.init("tribe");
     TribeBars.show("tribe");
@@ -531,10 +529,7 @@ TribeSocket.in.room.initRace((data) => {
   }
   if (room) room.seed = data.seed;
   Random.setSeed(TribeState.getRoom()?.seed.toString() ?? "");
-  NavigationEvent.dispatch("/", {
-    tribeOverride: true,
-    force: true,
-  });
+  NavigationEvent.dispatch({ url: "/", tribeOverride: true, force: true });
   TribeDelta.reset();
   TribeDelta.showBar();
   TribeCountdown.show2();
@@ -766,7 +761,7 @@ TribeSocket.in.room.readyTimerOver(() => {
 });
 
 TribeSocket.in.room.backToLobby(() => {
-  NavigationEvent.dispatch("/tribe");
+  NavigationEvent.dispatch({ url: "/tribe" });
 });
 
 TribeSocket.in.room.finalPositions((data) => {
