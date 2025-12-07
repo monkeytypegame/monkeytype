@@ -95,6 +95,7 @@ export const ThemeNameSchema = z.enum(
     "magic_girl",
     "mashu",
     "matcha_moccha",
+    "matcha",
     "material",
     "matrix",
     "menthol",

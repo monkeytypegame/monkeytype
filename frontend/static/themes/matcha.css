@@ -1,0 +1,36 @@
+:root {
+  --bg-color: #fbf9f8;
+  --main-color: #919b8b;
+  --caret-color: #d2d7c6;
+  --sub-color: #d2d7c6;
+  --sub-alt-color: #ffffff;
+  --text-color: #4f5e50;
+  --error-color: #ad4f4e;
+  --error-extra-color: #7e3a39;
+  --colorful-error-color: #ad4f4e;
+  --colorful-error-extra-color: #7e3a39;
+}
+
+#notificationCenter .notif.good {
+  --notif-border-color: #4f5e50;
+  --notif-background-color: #919b8b;
+  &:hover {
+    --notif-background-color: #4f5e50;
+  }
+}
+
+#notificationCenter .notif.bad {
+  --notif-border-color: #7e3a39;
+  --notif-background-color: #ad4f4e;
+  &:hover {
+    --notif-background-color: #7e3a39;
+  }
+}
+
+#notificationCenter .notif.notice {
+  --notif-border-color: #333344;
+  --notif-background-color: #6385c0;
+  &:hover {
+    --notif-background-color: #333344;
+  }
+}
