@@ -65,7 +65,7 @@
     "madge": "8.0.0",
     "magic-string": "0.30.17",
     "normalize.css": "8.0.1",
-    "oxlint": "1.31.0",
+    "oxlint": "1.32.0",
     "oxlint-tsgolint": "0.8.3",
     "postcss": "8.4.31",
     "sass": "1.70.0",
