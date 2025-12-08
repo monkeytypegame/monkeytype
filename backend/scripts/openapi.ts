@@ -83,8 +83,8 @@ export function getOpenApi(): OpenAPIObject {
           "x-public": "yes",
         },
         {
-          name: "ape-keys",
-          description: "Ape keys provide access to certain API endpoints.",
+          name: "api-keys",
+          description: "Api keys provide access to certain API endpoints.",
           "x-displayName": "Ape Keys",
           "x-public": "no",
         },
@@ -246,9 +246,8 @@ function addRateLimit(
 function getRateLimitDescription(limit: RateLimiterId | RateLimitIds): string {
   const limits = getLimits(limit);
 
-  let result = `**Rate limit:** This operation can be called up to ${
-    limits.limiter.max
-  } times ${formatWindow(limits.limiter.window)} for regular users`;
+  let result = `**Rate limit:** This operation can be called up to ${limits.limiter.max
+    } times ${formatWindow(limits.limiter.window)} for regular users`;
 
   if (limits.apeKeyLimiter !== undefined) {
     result += ` and up to ${limits.apeKeyLimiter.max} times ${formatWindow(
