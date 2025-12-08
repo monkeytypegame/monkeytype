@@ -9,3 +9,10 @@ dist
 build
 *.md
 pnpm-lock.yaml
+
+*.json
+*.html
+*.scss
+*.css
+.prettierrc
+.code-workspace
