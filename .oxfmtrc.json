@@ -12,7 +12,6 @@
     "pnpm-lock.yaml",
     "logs",
     "coverage",
-    "*.md",
-    "tsconfig.json" //remove after https://github.com/oxc-project/oxc/issues/16637
+    "*.md"
   ]
 }
