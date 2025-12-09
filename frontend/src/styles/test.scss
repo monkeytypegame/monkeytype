@@ -607,6 +607,7 @@
   caret-color: transparent;
   resize: none;
   overflow: hidden;
+  white-space: nowrap; // if the text wraps, ctrl backspace will not work on firefox >:|
 }
 
 #capsWarning {
