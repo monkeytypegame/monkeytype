@@ -3,7 +3,7 @@
   "rules": {
     "typescript/strict-boolean-expressions": [
       "error",
-      { "allowNullableBoolean": true }
+      { "allowNullableBoolean": true },
     ],
     "typescript/only-throw-error": "error",
     "typescript/no-unsafe-member-access": "error",
@@ -13,13 +13,13 @@
     "typescript/no-unnecessary-type-assertion": "error",
     "typescript/no-confusing-void-expression": [
       "error",
-      { "ignoreArrowShorthand": true }
+      { "ignoreArrowShorthand": true },
     ],
     "typescript/no-misused-promises": [
       "error",
       {
-        "checksVoidReturn": false
-      }
+        "checksVoidReturn": false,
+      },
     ],
     "typescript/promise-function-async": "error",
     "typescript/no-floating-promises": "error",
@@ -45,8 +45,10 @@
     "typescript/restrict-plus-operands": [
       "error",
       {
-        "allowNumberAndString": true
-      }
-    ]
-  }
+        "allowNumberAndString": true,
+      },
+    ],
+    "typescript/no-deprecated": "error",
+    "typescript/prefer-includes": "error",
+  },
 }
