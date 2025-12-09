@@ -51,7 +51,7 @@ function updateKeytips(): void {
   $("footer .keyTips").html(`
     ${
       Config.quickRestart === "off"
-        ? "<key>tab</key> + <key>enter</key>"
+        ? "<key>off</key>"
         : `<key>${Config.quickRestart}</key>`
     } - restart test<br>
     <key>${commandKey}</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);

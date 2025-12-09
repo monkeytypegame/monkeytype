@@ -111,7 +111,7 @@ async function getDataAndInit(): Promise<boolean> {
           },
         );
         Notifications.add(
-          "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
+          "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, enable quick restart in settings (tab, esc, or enter) to restart the test.",
           0,
           {
             duration: 0,
