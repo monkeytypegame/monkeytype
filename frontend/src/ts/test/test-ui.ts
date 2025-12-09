@@ -872,11 +872,8 @@ export async function updateWordLetters({
 
         for (let i = 0; i < compositionData.length; i++) {
           const compositionChar = compositionData[i];
-          let charToShow = currentWordChars[input.length + i];
-
-          if (charToShow === undefined) {
-            charToShow = compositionChar;
-          }
+          let charToShow =
+            currentWordChars[input.length + i] ?? compositionChar;
 
           if (Config.indicateTypos === "replace") {
             charToShow = compositionChar === " " ? "_" : compositionChar;

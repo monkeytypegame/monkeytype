@@ -74,9 +74,8 @@ export class Formatting {
     const suffix = formatOptions.suffix ?? "";
 
     if (
-      formatOptions.showDecimalPlaces !== undefined
-        ? formatOptions.showDecimalPlaces
-        : this.config.alwaysShowDecimalPlaces
+      formatOptions.showDecimalPlaces ??
+      this.config.alwaysShowDecimalPlaces
     ) {
       return Numbers.roundTo2(value).toFixed(2) + suffix;
     }
