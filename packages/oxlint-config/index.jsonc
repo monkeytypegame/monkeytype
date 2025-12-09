@@ -13,6 +13,6 @@
     "./rules/ts-disabled.jsonc",
     "./rules/consider.jsonc",
     "./rules/ts-consider.jsonc",
-    "./overrides.jsonc"
+    "./overrides.jsonc",
   ],
 }

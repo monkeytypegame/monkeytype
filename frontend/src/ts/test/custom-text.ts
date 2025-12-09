@@ -140,13 +140,15 @@ export function getCustomText(name: string, long = false): string[] {
   if (long) {
     const customTextLong = getLocalStorageLong();
     const customText = customTextLong[name];
-    if (customText === undefined)
+    if (customText === undefined) {
       throw new Error(`Custom text ${name} not found`);
+    }
     return customText.text.split(/ +/);
   } else {
     const customText = getLocalStorage()[name];
-    if (customText === undefined)
+    if (customText === undefined) {
       throw new Error(`Custom text ${name} not found`);
+    }
     return customText.split(/ +/);
   }
 }

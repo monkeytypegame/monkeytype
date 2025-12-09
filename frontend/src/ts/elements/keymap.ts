@@ -563,8 +563,9 @@ async function updateLegends(): Promise<void> {
       layoutKey === undefined ||
       lowerCaseCharacter === undefined ||
       upperCaseCharacter === undefined
-    )
+    ) {
       continue;
+    }
 
     const keyIsSymbol = [lowerCaseCharacter, upperCaseCharacter].some(
       (character) => symbolsPattern.test(character ?? ""),

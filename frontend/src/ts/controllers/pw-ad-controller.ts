@@ -146,11 +146,11 @@ export function init(): void {
   headOfDocument.appendChild(rampScript);
 
   window._pwGA4PageviewId = "".concat(Date.now());
-  // oxlint-disable-next-line strict-boolean-expressions, no-unsafe-assignment
+  // oxlint-disable-next-line strict-boolean-expressions, no-unsafe-assignment, typescript/prefer-nullish-coalescing
   window.dataLayer = window.dataLayer || [];
   // oxlint-disable-next-line no-unsafe-assignment
   window.gtag =
-    // oxlint-disable-next-line strict-boolean-expressions
+    // oxlint-disable-next-line strict-boolean-expressions, typescript/prefer-nullish-coalescing
     window.gtag ||
     function (): void {
       // oxlint-disable-next-line prefer-rest-params

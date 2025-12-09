@@ -60,7 +60,8 @@ export function authenticateTsRestRequest<
     let authType = "None";
 
     const isPublic =
-      options.isPublic || (options.isPublicOnDev && isDevEnvironment());
+      options.isPublic === true ||
+      (options.isPublicOnDev && isDevEnvironment());
 
     const {
       authorization: authHeader,
@@ -241,7 +242,7 @@ async function authenticateWithApeKey(
   options: RequestAuthenticationOptions,
 ): Promise<DecodedToken> {
   const isPublic =
-    options.isPublic || (options.isPublicOnDev && isDevEnvironment());
+    options.isPublic === true || (options.isPublicOnDev && isDevEnvironment());
 
   if (!isPublic) {
     if (!configuration.apeKeys.acceptKeys) {

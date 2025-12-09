@@ -594,10 +594,7 @@ export const accountHistory = new ChartWithUpdateColors<
                 label += resultData.mode2;
               }
 
-              let diff = resultData.difficulty;
-              if (diff === undefined) {
-                diff = "normal";
-              }
+              let diff = resultData.difficulty ?? "normal";
               label += `\ndifficulty: ${diff}`;
 
               label +=
@@ -1363,8 +1360,9 @@ async function updateColors<
       ao10accDataset === undefined ||
       ao100wpmDataset === undefined ||
       ao100accDataset === undefined
-    )
+    ) {
       return;
+    }
 
     if (avg10On && avg100On) {
       wpmDataset.pointBackgroundColor = main02;
